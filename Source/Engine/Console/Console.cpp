@@ -28,5 +28,7 @@ void Console::Init()
 	setbuf(stdin, NULL);
 	setbuf(stdout, NULL);
 	setbuf(stderr, NULL);
+
+	SetConsoleTitle(L"Simple Makes Every Thing Easy");
 #pragma warning( pop )
 }
