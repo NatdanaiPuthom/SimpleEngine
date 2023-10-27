@@ -39,7 +39,7 @@ namespace SimpleUtilities
 		std::string GetKeyAsString() const;
 		bool GetAKeyIsPressed() const;
 	public:
-		void SetHWND(HWND aWindowHandle);
+		void SetHWND(HWND& aWindowHandle);
 	private:
 		InputManager();
 	private:

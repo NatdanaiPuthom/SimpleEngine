@@ -118,3 +118,8 @@ double Engine::GetTotalTime() const
 {
 	return myTimer->GetTotalTime();
 }
+
+HWND& Engine::GetHWND()
+{
+	return *myHWND;
+}

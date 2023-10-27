@@ -20,6 +20,7 @@ public:
 public:
 	float GetDeltaTime() const;
 	double GetTotalTime() const;
+	HWND& GetHWND();
 private:
 	HWND* SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
 private:

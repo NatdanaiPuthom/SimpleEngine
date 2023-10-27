@@ -272,7 +272,7 @@ namespace SimpleUtilities
 		return myAKeyIsPressed;
 	}
 
-	void InputManager::SetHWND(HWND aWindowHandle)
+	void InputManager::SetHWND(HWND& aWindowHandle)
 	{
 		myOwnerHWND = aWindowHandle;
 
