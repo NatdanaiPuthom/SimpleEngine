@@ -41,8 +41,8 @@ workspace "SimpleEngine"
 		targetdir "Lib"
 		targetname("%{prj.name}_%{cfg.buildcfg}")
 		location "Source/Engine"
-		includedirs{"Source/Engine/"}
-		files {"Source/Engine/**.h", "Source/Engine/**.cpp", "Source/Engine/Shaders/**.hlsl" , "Source/Engine/Shaders/**.hlsli"}
+		includedirs{"Source/Engine/", "Source/Engine/Graphics/"}
+		files {"Source/Engine/**.h", "Source/Engine/**.cpp", "Source/Engine/Graphics/Shaders/**.hlsl" , "Source/Engine/Graphics/Shaders/**.hlsli"}
 		links {"d3d11"}
 
 		pchheader "stdafx.h"
@@ -54,10 +54,10 @@ workspace "SimpleEngine"
 		filter("files:**.hlsl")
 			shaderobjectfileoutput(shader_dir.."%{file.basename}"..".cso")
 
-		filter("files:Source/Engine/Shaders/PS/**.hlsl")
+		filter("files:Source/Engine/Graphics/Shaders/PS/**.hlsl")
 			shadertype("Pixel")
 
-		filter("files:Source/Engine/Shaders/VS/**.hlsl")
+		filter("files:Source/Engine/Graphics/Shaders/VS/**.hlsl")
 			shadertype("Vertex")
 
 	project "External"

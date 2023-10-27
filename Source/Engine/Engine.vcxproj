@@ -77,7 +77,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -104,7 +104,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -135,7 +135,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -160,17 +160,17 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Camera\Camera.h" />
-    <ClInclude Include="Camera\Circle.h" />
-    <ClInclude Include="Camera\Cube.h" />
     <ClInclude Include="Console\Console.h" />
-    <ClInclude Include="ConstantBuffer\ConstantBuffer.h" />
+    <ClInclude Include="Graphics\Buffers\ConstantBuffer.h" />
+    <ClInclude Include="Graphics\Camera\Camera.h" />
     <ClInclude Include="Graphics\GraphicsEngine.h" />
+    <ClInclude Include="Graphics\Model\Model.h" />
+    <ClInclude Include="Graphics\Shaders\Shader.h" />
+    <ClInclude Include="Graphics\Shapes\Cube.h" />
+    <ClInclude Include="Graphics\Shapes\Triangle.h" />
     <ClInclude Include="MemoryTracker\MemoryTracker.h" />
     <ClInclude Include="MemoryTracker\StackTrace.h" />
     <ClInclude Include="MemoryTracker\StackWalker.h" />
-    <ClInclude Include="Model\Model.h" />
-    <ClInclude Include="Shaders\Shader.h" />
     <ClInclude Include="SimpleUtilities\InputManager.h" />
     <ClInclude Include="SimpleUtilities\Matrix4x4.h" />
     <ClInclude Include="SimpleUtilities\Vector.h" />
@@ -178,26 +178,24 @@
     <ClInclude Include="SimpleUtilities\Vector3.h" />
     <ClInclude Include="SimpleUtilities\Vector4.h" />
     <ClInclude Include="Timer\Timer.h" />
-    <ClInclude Include="Triangle\Triangle.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera\Camera.cpp" />
-    <ClCompile Include="Camera\Circle.cpp" />
-    <ClCompile Include="Camera\Cube.cpp" />
     <ClCompile Include="Console\Console.cpp" />
-    <ClCompile Include="ConstantBuffer\ConstantBuffer.cpp" />
+    <ClCompile Include="Graphics\Buffers\ConstantBuffer.cpp" />
+    <ClCompile Include="Graphics\Camera\Camera.cpp" />
     <ClCompile Include="Graphics\GraphicsEngine.cpp" />
+    <ClCompile Include="Graphics\Model\Model.cpp" />
+    <ClCompile Include="Graphics\Shaders\Shader.cpp" />
+    <ClCompile Include="Graphics\Shapes\Cube.cpp" />
+    <ClCompile Include="Graphics\Shapes\Triangle.cpp" />
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp" />
     <ClCompile Include="MemoryTracker\StackTrace.cpp" />
     <ClCompile Include="MemoryTracker\StackWalker.cpp" />
-    <ClCompile Include="Model\Model.cpp" />
-    <ClCompile Include="Shaders\Shader.cpp" />
     <ClCompile Include="SimpleUtilities\InputManager.cpp" />
     <ClCompile Include="Timer\Timer.cpp" />
-    <ClCompile Include="Triangle\Triangle.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -205,29 +203,29 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\PS\TrianglePS.hlsl">
+    <FxCompile Include="Graphics\Shaders\PS\TrianglePS.hlsl">
       <ShaderType>Pixel</ShaderType>
       <ObjectFileOutput>../../Bin/Shaders/TrianglePS.cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="Shaders\PS\TrianglePS_2.hlsl">
+    <FxCompile Include="Graphics\Shaders\PS\TrianglePS_2.hlsl">
       <ShaderType>Pixel</ShaderType>
       <ObjectFileOutput>../../Bin/Shaders/TrianglePS_2.cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="Shaders\VS\DefaultColorfulVS.hlsl">
+    <FxCompile Include="Graphics\Shaders\VS\DefaultColorfulVS.hlsl">
       <ShaderType>Vertex</ShaderType>
       <ObjectFileOutput>../../Bin/Shaders/DefaultColorfulVS.cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="Shaders\VS\DefaultVS.hlsl">
+    <FxCompile Include="Graphics\Shaders\VS\DefaultVS.hlsl">
       <ShaderType>Vertex</ShaderType>
       <ObjectFileOutput>../../Bin/Shaders/DefaultVS.cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="Shaders\VS\TriangleVS.hlsl">
+    <FxCompile Include="Graphics\Shaders\VS\TriangleVS.hlsl">
       <ShaderType>Vertex</ShaderType>
       <ObjectFileOutput>../../Bin/Shaders/TriangleVS.cso</ObjectFileOutput>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Common.hlsli" />
+    <None Include="Graphics\Shaders\Common.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

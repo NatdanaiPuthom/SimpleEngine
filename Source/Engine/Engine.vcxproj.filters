@@ -1,32 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Camera">
-      <UniqueIdentifier>{CE7141AB-BA13-6C81-A3CE-7FD58F0FF3D1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Console">
       <UniqueIdentifier>{389F3134-A47E-B0CF-AD96-3BA619F51631}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ConstantBuffer">
-      <UniqueIdentifier>{A9A8B2E9-9576-A6EF-7E0A-17166A778254}</UniqueIdentifier>
     </Filter>
     <Filter Include="Graphics">
       <UniqueIdentifier>{1653CE33-0220-293F-2B39-17E717655ECD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\Buffers">
+      <UniqueIdentifier>{92C817CE-7EC1-3620-A7F3-1BA5934B162C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Camera">
+      <UniqueIdentifier>{CED20E8B-3A5E-7C4F-436F-FF43AF79D84F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Model">
+      <UniqueIdentifier>{D634D488-C202-C88E-AB96-38B59703A4F3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Shaders">
+      <UniqueIdentifier>{EF2D07CC-DB26-261E-0459-0BA3F0B0052A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Shaders\PS">
+      <UniqueIdentifier>{21EED73B-8D4F-B549-16BD-FBFB821DEC08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Shaders\VS">
+      <UniqueIdentifier>{E7EED73B-5350-B549-DCBD-FBFB481EEC08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Shapes">
+      <UniqueIdentifier>{09A1D9B0-752C-4775-7E3D-CA69EA47A375}</UniqueIdentifier>
+    </Filter>
     <Filter Include="MemoryTracker">
       <UniqueIdentifier>{0A814603-7641-C239-3F7C-0BB7ABFB0616}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Model">
-      <UniqueIdentifier>{D6F3AE0D-4208-D7BE-0B8A-7A1E775DD3EF}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{EFAC8DF2-5B8C-0C8E-64A4-9764D00273EF}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\PS">
-      <UniqueIdentifier>{210D4262-0DC5-83AF-76CC-5C0B62A31EA0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\VS">
-      <UniqueIdentifier>{E70D4262-D3C5-83AF-3CCD-5C0B28A41EA0}</UniqueIdentifier>
     </Filter>
     <Filter Include="SimpleUtilities">
       <UniqueIdentifier>{2B8A4039-9715-AEFD-A026-31F20C310AFE}</UniqueIdentifier>
@@ -34,28 +37,31 @@
     <Filter Include="Timer">
       <UniqueIdentifier>{667B2A0E-D28F-52BF-9B11-F61E07E54EF0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Triangle">
-      <UniqueIdentifier>{DB3AC344-C707-1E50-F020-0CF8DC4C53DE}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera\Camera.h">
-      <Filter>Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera\Circle.h">
-      <Filter>Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera\Cube.h">
-      <Filter>Camera</Filter>
-    </ClInclude>
     <ClInclude Include="Console\Console.h">
       <Filter>Console</Filter>
     </ClInclude>
-    <ClInclude Include="ConstantBuffer\ConstantBuffer.h">
-      <Filter>ConstantBuffer</Filter>
+    <ClInclude Include="Graphics\Buffers\ConstantBuffer.h">
+      <Filter>Graphics\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Camera\Camera.h">
+      <Filter>Graphics\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\GraphicsEngine.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Model\Model.h">
+      <Filter>Graphics\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Shaders\Shader.h">
+      <Filter>Graphics\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Shapes\Cube.h">
+      <Filter>Graphics\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Shapes\Triangle.h">
+      <Filter>Graphics\Shapes</Filter>
     </ClInclude>
     <ClInclude Include="MemoryTracker\MemoryTracker.h">
       <Filter>MemoryTracker</Filter>
@@ -65,12 +71,6 @@
     </ClInclude>
     <ClInclude Include="MemoryTracker\StackWalker.h">
       <Filter>MemoryTracker</Filter>
-    </ClInclude>
-    <ClInclude Include="Model\Model.h">
-      <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders\Shader.h">
-      <Filter>Shaders</Filter>
     </ClInclude>
     <ClInclude Include="SimpleUtilities\InputManager.h">
       <Filter>SimpleUtilities</Filter>
@@ -93,31 +93,34 @@
     <ClInclude Include="Timer\Timer.h">
       <Filter>Timer</Filter>
     </ClInclude>
-    <ClInclude Include="Triangle\Triangle.h">
-      <Filter>Triangle</Filter>
-    </ClInclude>
     <ClInclude Include="engine.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera\Camera.cpp">
-      <Filter>Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera\Circle.cpp">
-      <Filter>Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera\Cube.cpp">
-      <Filter>Camera</Filter>
-    </ClCompile>
     <ClCompile Include="Console\Console.cpp">
       <Filter>Console</Filter>
     </ClCompile>
-    <ClCompile Include="ConstantBuffer\ConstantBuffer.cpp">
-      <Filter>ConstantBuffer</Filter>
+    <ClCompile Include="Graphics\Buffers\ConstantBuffer.cpp">
+      <Filter>Graphics\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Camera\Camera.cpp">
+      <Filter>Graphics\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\GraphicsEngine.cpp">
       <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Model\Model.cpp">
+      <Filter>Graphics\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Shaders\Shader.cpp">
+      <Filter>Graphics\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Shapes\Cube.cpp">
+      <Filter>Graphics\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Shapes\Triangle.cpp">
+      <Filter>Graphics\Shapes</Filter>
     </ClCompile>
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp">
       <Filter>MemoryTracker</Filter>
@@ -128,45 +131,36 @@
     <ClCompile Include="MemoryTracker\StackWalker.cpp">
       <Filter>MemoryTracker</Filter>
     </ClCompile>
-    <ClCompile Include="Model\Model.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Shaders\Shader.cpp">
-      <Filter>Shaders</Filter>
-    </ClCompile>
     <ClCompile Include="SimpleUtilities\InputManager.cpp">
       <Filter>SimpleUtilities</Filter>
     </ClCompile>
     <ClCompile Include="Timer\Timer.cpp">
       <Filter>Timer</Filter>
     </ClCompile>
-    <ClCompile Include="Triangle\Triangle.cpp">
-      <Filter>Triangle</Filter>
-    </ClCompile>
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\PS\TrianglePS.hlsl">
-      <Filter>Shaders\PS</Filter>
+    <FxCompile Include="Graphics\Shaders\PS\TrianglePS.hlsl">
+      <Filter>Graphics\Shaders\PS</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\PS\TrianglePS_2.hlsl">
-      <Filter>Shaders\PS</Filter>
+    <FxCompile Include="Graphics\Shaders\PS\TrianglePS_2.hlsl">
+      <Filter>Graphics\Shaders\PS</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\VS\DefaultColorfulVS.hlsl">
-      <Filter>Shaders\VS</Filter>
+    <FxCompile Include="Graphics\Shaders\VS\DefaultColorfulVS.hlsl">
+      <Filter>Graphics\Shaders\VS</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\VS\DefaultVS.hlsl">
-      <Filter>Shaders\VS</Filter>
+    <FxCompile Include="Graphics\Shaders\VS\DefaultVS.hlsl">
+      <Filter>Graphics\Shaders\VS</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\VS\TriangleVS.hlsl">
-      <Filter>Shaders\VS</Filter>
+    <FxCompile Include="Graphics\Shaders\VS\TriangleVS.hlsl">
+      <Filter>Graphics\Shaders\VS</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Common.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="Graphics\Shaders\Common.hlsli">
+      <Filter>Graphics\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

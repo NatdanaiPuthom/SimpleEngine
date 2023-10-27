@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Triangle/Triangle.h"
 #include "Camera/Camera.h"
 #include "global.h"
 

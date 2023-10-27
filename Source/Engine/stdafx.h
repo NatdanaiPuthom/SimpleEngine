@@ -25,6 +25,6 @@ using Microsoft::WRL::ComPtr;
 #include "Graphics/GraphicsEngine.h"
 #include "engine.h"
 
-#include "ConstantBuffer/ConstantBuffer.h"
-#include "Shaders/Shader.h"
-#include "Model/Model.h"
+#include "Graphics/Buffers/ConstantBuffer.h"
+#include "Graphics/Shaders/Shader.h"
+#include "Graphics/Model/Model.h"
