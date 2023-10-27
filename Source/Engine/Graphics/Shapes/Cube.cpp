@@ -49,9 +49,10 @@ bool Cube::Create()
 	};
 
 	SimpleUtilities::Matrix4x4f transform;
-	transform(4, 1) = 0;
+	transform(4, 1) = -2;
 	transform(4, 2) = 0;
 	transform(4, 3) = 10;
+
 	bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, eShaderType::Colorful);
 	return success;
 }

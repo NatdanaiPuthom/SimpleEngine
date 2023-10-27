@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Graphics/Shapes/Cube.h"
+#include "Graphics/Shapes/Pyramid.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -32,11 +33,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		SimpleUtilities::InputManager::GetInstance().SetHWND(engine.GetHWND());
 
 		Cube cube;
-		cube.Create();
+		Pyramid pyramid;
+
+		if (!cube.Create())
+			assert(false && "Failed to create Cube");
+
+		if (!pyramid.Create())
+			assert(false && "Failed to create Pyramid");
 
 		while (engine.BeginFrame())
 		{
 			cube.Draw();
+			pyramid.Draw();
 			engine.EndFrame();;
 		}
 	}

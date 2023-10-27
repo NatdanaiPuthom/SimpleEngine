@@ -60,6 +60,9 @@
     <ClInclude Include="Graphics\Shapes\Cube.h">
       <Filter>Graphics\Shapes</Filter>
     </ClInclude>
+    <ClInclude Include="Graphics\Shapes\Pyramid.h">
+      <Filter>Graphics\Shapes</Filter>
+    </ClInclude>
     <ClInclude Include="Graphics\Shapes\Triangle.h">
       <Filter>Graphics\Shapes</Filter>
     </ClInclude>
@@ -117,6 +120,9 @@
       <Filter>Graphics\Shaders</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\Shapes\Cube.cpp">
+      <Filter>Graphics\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Shapes\Pyramid.cpp">
       <Filter>Graphics\Shapes</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\Shapes\Triangle.cpp">

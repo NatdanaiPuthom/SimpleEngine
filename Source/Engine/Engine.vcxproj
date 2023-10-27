@@ -167,6 +167,7 @@
     <ClInclude Include="Graphics\Model\Model.h" />
     <ClInclude Include="Graphics\Shaders\Shader.h" />
     <ClInclude Include="Graphics\Shapes\Cube.h" />
+    <ClInclude Include="Graphics\Shapes\Pyramid.h" />
     <ClInclude Include="Graphics\Shapes\Triangle.h" />
     <ClInclude Include="MemoryTracker\MemoryTracker.h" />
     <ClInclude Include="MemoryTracker\StackTrace.h" />
@@ -190,6 +191,7 @@
     <ClCompile Include="Graphics\Model\Model.cpp" />
     <ClCompile Include="Graphics\Shaders\Shader.cpp" />
     <ClCompile Include="Graphics\Shapes\Cube.cpp" />
+    <ClCompile Include="Graphics\Shapes\Pyramid.cpp" />
     <ClCompile Include="Graphics\Shapes\Triangle.cpp" />
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp" />
     <ClCompile Include="MemoryTracker\StackTrace.cpp" />
