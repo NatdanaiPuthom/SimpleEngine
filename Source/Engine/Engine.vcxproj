@@ -164,6 +164,7 @@
     <ClInclude Include="Camera\Circle.h" />
     <ClInclude Include="Camera\Cube.h" />
     <ClInclude Include="Console\Console.h" />
+    <ClInclude Include="ConstantBuffer\ConstantBuffer.h" />
     <ClInclude Include="Graphics\GraphicsEngine.h" />
     <ClInclude Include="MemoryTracker\MemoryTracker.h" />
     <ClInclude Include="MemoryTracker\StackTrace.h" />
@@ -187,6 +188,7 @@
     <ClCompile Include="Camera\Circle.cpp" />
     <ClCompile Include="Camera\Cube.cpp" />
     <ClCompile Include="Console\Console.cpp" />
+    <ClCompile Include="ConstantBuffer\ConstantBuffer.cpp" />
     <ClCompile Include="Graphics\GraphicsEngine.cpp" />
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp" />
     <ClCompile Include="MemoryTracker\StackTrace.cpp" />

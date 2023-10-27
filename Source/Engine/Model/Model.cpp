@@ -1,9 +1,13 @@
 #include "stdafx.h"
-#include <cassert>
-#include <d3d11.h>
-#include "Model/Model.h"
+#include "Camera/Camera.h"
+#include "Shaders/Shader.h"
+#include "ConstantBuffer/ConstantBuffer.h"
 
 Model::Model()
+	: myShader(std::make_shared<Shader>())
+	, myFrameBuffer(std::make_unique<ConstantBuffer>())
+	, myObjectBuffer(std::make_unique<ConstantBuffer>())
+	, myTimeBuffer(std::make_unique<ConstantBuffer>())
 {
 }
 
@@ -11,11 +15,13 @@ Model::~Model()
 {
 }
 
-void Model::Init(const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, ID3D11Device* aDevice)
+bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, ID3D11Device* aDevice)
 {
 	myVertices = aVertices;
 	myIndices = aIndices;
 	myModelToWorld = aModelToWorld;
+
+	std::shared_ptr<Camera> camera = aGraphicsEngine->GetCamera();
 
 	{
 		D3D11_BUFFER_DESC vertexBufferDesc = {};
@@ -33,7 +39,7 @@ void Model::Init(const std::vector<Vertex>& aVertices, const std::vector<unsigne
 
 		HRESULT result = aDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &myVertexBuffer);
 		if (FAILED(result))
-			assert(false && "Could not create vertex buffer");
+			return false;
 	}
 
 	{
@@ -45,15 +51,31 @@ void Model::Init(const std::vector<Vertex>& aVertices, const std::vector<unsigne
 		indexBufferDesc.MiscFlags = 0;
 		indexBufferDesc.StructureByteStride = 0;
 
-		D3D11_SUBRESOURCE_DATA indexData;
+		D3D11_SUBRESOURCE_DATA indexData = {};
 		indexData.pSysMem = &myIndices[0];
 		indexData.SysMemPitch = 0;
 		indexData.SysMemSlicePitch = 0;
 		HRESULT result = aDevice->CreateBuffer(&indexBufferDesc, &indexData, &myIndexBuffer);
 		if (FAILED(result))
-			assert(false && "Could not create index buffer");
+			return false;
 	}
 
+	{
+		FrameBufferData frameBuffer =
+		{
+			camera->GetModelToWorldMatrix().GetFastInverse() * camera->GetProjectionMatrix()
+		};
+
+		if (!myFrameBuffer->Init(aGraphicsEngine, sizeof(FrameBufferData), &frameBuffer))
+			return false;
+	}
+
+	return true;
+}
+
+void Model::Draw(const float aDeltaTime)
+{
+	aDeltaTime;
 }
 
 int Model::GetIndexCount()
@@ -71,7 +93,12 @@ ComPtr<ID3D11Buffer> Model::GetIndexBuffer()
 	return myIndexBuffer;
 }
 
-SimpleUtilities::Matrix4x4f Model::GetModelToWorldMatrix()
+Shader& Model::GetShader()
+{
+	return *myShader;
+}
+
+SimpleUtilities::Matrix4x4f& Model::GetModelToWorldMatrix()
 {
 	return myModelToWorld;
 }

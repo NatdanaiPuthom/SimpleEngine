@@ -297,8 +297,12 @@ namespace SimpleUtilities
 		{
 		case WM_MOUSEMOVE:
 		{
+			RECT clientRect;
+			GetClientRect(myOwnerHWND, &clientRect);
+			const int windowHeight = clientRect.bottom - clientRect.top;
+
 			const int xPos = GET_X_LPARAM(lParam);
-			const int yPos = GET_Y_LPARAM(lParam);
+			const int yPos = windowHeight - GET_Y_LPARAM(lParam);
 
 			myTentativeMousePosition.x = xPos;
 			myTentativeMousePosition.y = yPos;

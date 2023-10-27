@@ -1,11 +1,9 @@
 #pragma once
-#include "Model/Model.h"
-#include "Shaders/Shader.h"
-
-using Microsoft::WRL::ComPtr;
 
 class Camera;
 class Triangle;
+class Model;
+class Shader;
 
 struct FrameBufferData
 {
@@ -29,6 +27,10 @@ public:
 	void Render();
 	void Draw(Model& aModel, Shader& aShader);
 	void Test();
+public:
+	ComPtr<ID3D11Device>& GetDevice();
+	ComPtr<ID3D11DeviceContext>& GetContext();
+	std::shared_ptr<Camera> GetCamera();
 private:
 	void CreateViewport(const int aHeight, const int aWidth);
 	bool CreateSwapChain(HWND& aWindowHandle, const int aHeight, const int aWidth);
@@ -45,8 +47,8 @@ private:
 	ComPtr<ID3D11Buffer> myFrameBuffer;
 	ComPtr<ID3D11Buffer> myObjectBuffer;
 	
-	Camera* myCamera;
-	Triangle* myTriangle;
+	std::shared_ptr<Camera> myCamera;
+	std::shared_ptr<Triangle> myTriangle;
 
 	float myColor[4];
 };

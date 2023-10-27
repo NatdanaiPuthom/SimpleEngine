@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <mutex>
-#include <unordered_map>
 #include <debugapi.h>
 
 #include "MemoryTracker.h"

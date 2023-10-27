@@ -7,6 +7,9 @@
     <Filter Include="Console">
       <UniqueIdentifier>{389F3134-A47E-B0CF-AD96-3BA619F51631}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ConstantBuffer">
+      <UniqueIdentifier>{A9A8B2E9-9576-A6EF-7E0A-17166A778254}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Graphics">
       <UniqueIdentifier>{1653CE33-0220-293F-2B39-17E717655ECD}</UniqueIdentifier>
     </Filter>
@@ -47,6 +50,9 @@
     </ClInclude>
     <ClInclude Include="Console\Console.h">
       <Filter>Console</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffer\ConstantBuffer.h">
+      <Filter>ConstantBuffer</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\GraphicsEngine.h">
       <Filter>Graphics</Filter>
@@ -106,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="Console\Console.cpp">
       <Filter>Console</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBuffer\ConstantBuffer.cpp">
+      <Filter>ConstantBuffer</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\GraphicsEngine.cpp">
       <Filter>Graphics</Filter>

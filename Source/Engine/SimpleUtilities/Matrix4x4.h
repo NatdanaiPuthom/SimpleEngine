@@ -21,6 +21,7 @@ namespace SimpleUtilities
 
 		static Matrix4x4<T> Transpose(const Matrix4x4<T>& aMatrixToTranspose);
 		static Matrix4x4<T> GetFastInverse(const Matrix4x4<T>& aTransform);
+		Matrix4x4<T> GetFastInverse();
 
 	private:
 		T myMatrix[4][4];
@@ -335,5 +336,11 @@ namespace SimpleUtilities
 		inverse(4, 4) = aTransform(4, 4);
 
 		return inverse;
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::GetFastInverse()
+	{
+		return GetFastInverse(*this);
 	}
 }

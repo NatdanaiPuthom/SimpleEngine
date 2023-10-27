@@ -1,8 +1,4 @@
 #include "stdafx.h"
-#include <cassert>
-#include "engine.h"
-#include "MemoryTracker/MemoryTracker.h"
-#include "Graphics/GraphicsEngine.h"
 #include "Timer/Timer.h"
 #include "global.h"
 
@@ -13,32 +9,11 @@
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 Engine::Engine()
-	: myHWND(nullptr)
-	, myGraphicsEngine(nullptr)
-	, myTimer(nullptr)
 {
-	SimpleTracker::MemoryTrackingSettings memoryTrackerSettings = {};
-	memoryTrackerSettings.myShouldStoreStackTraces = false;
-	memoryTrackerSettings.myShouldTrackAllAllocations = true;
-	SimpleTracker::StartMemoryTracking(memoryTrackerSettings);
 }
 
 Engine::~Engine()
 {
-	if (myHWND != nullptr)
-		delete myHWND;
-
-	if (myGraphicsEngine != nullptr)
-		delete myGraphicsEngine;
-
-	if (myTimer != nullptr)
-		delete myTimer;
-
-	myHWND = nullptr;
-	myGraphicsEngine = nullptr;
-	myTimer = nullptr;
-
-	SimpleTracker::StopMemoryTrackingAndPrint();
 }
 
 void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight)
@@ -55,14 +30,14 @@ void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight)
 	ShowWindow(*myHWND, 1);
 	UpdateWindow(*myHWND);
 
-	myGraphicsEngine = new GraphicsEngine();
+	myGraphicsEngine = std::make_unique<GraphicsEngine>();
 	bool success = myGraphicsEngine->Init(aHeight, aWidth, *myHWND);
 	assert(success && "Failed To Init Graphics Engine");
 
-	myTimer = new Timer();
+	myTimer = std::make_unique<Timer>();
 }
 
-HWND* Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)
+std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)
 {
 	WNDCLASSEXW wcex = {};
 	wcex.cbSize = sizeof(WNDCLASSEX);
@@ -81,10 +56,10 @@ HWND* Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int 
 		return nullptr;
 	}
 
-	HWND* hwnd = new HWND;
+	std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 	*hwnd = CreateWindow(
 		L"Natdanai",
-		L"SimpleEngine",
+		L"SimpleEngine v3.2",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -122,4 +97,9 @@ double Engine::GetTotalTime() const
 HWND& Engine::GetHWND()
 {
 	return *myHWND;
+}
+
+GraphicsEngine* Engine::GetGraphicsEngine()
+{
+	return myGraphicsEngine.get();
 }

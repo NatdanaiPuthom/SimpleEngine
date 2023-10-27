@@ -18,15 +18,16 @@ public:
 	bool BeginFrame();
 	void EndFrame();
 public:
-	float GetDeltaTime() const;
+	GraphicsEngine* GetGraphicsEngine();
 	double GetTotalTime() const;
+	float GetDeltaTime() const;
 	HWND& GetHWND();
 private:
-	HWND* SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
+	std::unique_ptr<HWND> SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
 private:
-	GraphicsEngine* myGraphicsEngine;
-	Timer* myTimer;
-	HWND* myHWND;
+	std::unique_ptr<GraphicsEngine> myGraphicsEngine;
+	std::unique_ptr<Timer> myTimer;
+	std::unique_ptr<HWND> myHWND;
 
 #ifdef _DEBUG
 	Console myConsole;

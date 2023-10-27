@@ -1,27 +1,18 @@
 #include "stdafx.h"
-#include "GraphicsEngine.h"
 #include "Triangle/Triangle.h"
 #include "Camera/Camera.h"
 
 //#define REPORT_DX_WARNINGS
 
 GraphicsEngine::GraphicsEngine()
-	: myTriangle(nullptr)
-	, myCamera(new Camera)
+	: myTriangle(std::make_shared<Triangle>())
+	, myCamera(std::make_shared<Camera>())
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 {
 }
 
 GraphicsEngine::~GraphicsEngine()
 {
-	if (myCamera != nullptr)
-		delete myCamera;
-
-	if (myTriangle != nullptr)
-		delete myTriangle;
-
-	myCamera = nullptr;
-	myTriangle = nullptr;
 }
 
 bool GraphicsEngine::Init(const int aHeight, const int aWidth, HWND& aWindowHandle)
@@ -42,7 +33,6 @@ bool GraphicsEngine::Init(const int aHeight, const int aWidth, HWND& aWindowHand
 	if (!CreateFrameBuffer())
 		return false;
 
-	myTriangle = new Triangle;
 	if (!myTriangle->Init(myDevice.Get()))
 		return false;
 
@@ -121,6 +111,21 @@ void GraphicsEngine::Test()
 		myContext->UpdateSubresource(myFrameBuffer.Get(), 0, nullptr, &objectBufferData, 0, 0);
 	}
 
+}
+
+ComPtr<ID3D11Device>& GraphicsEngine::GetDevice()
+{
+	return myDevice;
+}
+
+ComPtr<ID3D11DeviceContext>& GraphicsEngine::GetContext()
+{
+	return myContext;
+}
+
+std::shared_ptr<Camera> GraphicsEngine::GetCamera()
+{
+	return myCamera;
 }
 
 void GraphicsEngine::CreateViewport(const int aHeight, const int aWidth)

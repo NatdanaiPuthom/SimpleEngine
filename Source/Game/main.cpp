@@ -21,17 +21,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int /*nCmdShow*/)
 {
-	Engine engine;
-	engine.Init(hInstance, 1280, 720);
+	SimpleTracker::MemoryTrackingSettings memoryTrackerSettings = {};
+	memoryTrackerSettings.myShouldStoreStackTraces = false;
+	memoryTrackerSettings.myShouldTrackAllAllocations = true;
+	SimpleTracker::StartMemoryTracking(memoryTrackerSettings);
 
-	SimpleUtilities::InputManager* input = &SimpleUtilities::InputManager::GetInstance();
-	input->SetHWND(engine.GetHWND());
-
-	while (engine.BeginFrame())
 	{
-		input->Update();
-		engine.EndFrame();;
+		Engine engine;
+		engine.Init(hInstance, 1280, 720);
+
+		SimpleUtilities::InputManager* input = &SimpleUtilities::InputManager::GetInstance();
+		input->SetHWND(engine.GetHWND());
+
+		while (engine.BeginFrame())
+		{
+			std::cout << "Pos: " << input->GetMousePosition() << std::endl;
+			input->Update();
+			engine.EndFrame();;
+		}
+
 	}
 
+	SimpleTracker::StopMemoryTrackingAndPrint();
 	return 0;
 }
