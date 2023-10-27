@@ -5,6 +5,8 @@ class Triangle;
 class Model;
 class Shader;
 
+#include "Camera/Cube.h"
+
 struct FrameBufferData
 {
 	SimpleUtilities::Matrix4x4f worldToClipMatrix;
@@ -57,6 +59,8 @@ private:
 	
 	std::shared_ptr<Camera> myCamera;
 	std::shared_ptr<Triangle> myTriangle;
+
+	Cube myCube;
 
 	float myColor[4];
 };

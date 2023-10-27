@@ -38,6 +38,11 @@ bool GraphicsEngine::Init(const int aHeight, const int aWidth, HWND& aWindowHand
 	if (!myTriangle->Init(myDevice.Get()))
 		return false;
 
+	if (myCube.Create())
+		std::cout << "Succeess" << std::endl;
+	else
+		std::cout << "Failed" << std::endl;
+
 	return true;
 }
 
@@ -55,7 +60,7 @@ bool GraphicsEngine::BeginFrame()
 	}
 
 	Render();
-
+	myCube.Draw();
 	return true;
 }
 

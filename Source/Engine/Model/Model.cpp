@@ -128,7 +128,7 @@ void Model::Draw()
 	//myTimeBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 	//myTimer += SimplyGlobal::GetDeltaTime();
 
-	context->DrawIndexed(static_cast<unsigned int>(myIndices.size()), 0, 0);
+	context->DrawIndexed(static_cast<UINT>(myIndices.size()), 0, 0);
 }
 
 int Model::GetIndexCount()
