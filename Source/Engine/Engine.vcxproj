@@ -213,9 +213,13 @@
       <ShaderType>Pixel</ShaderType>
       <ObjectFileOutput>../../Bin/Shaders/TrianglePS_2.cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="Shaders\VS\Test.hlsl">
+    <FxCompile Include="Shaders\VS\DefaultColorfulVS.hlsl">
       <ShaderType>Vertex</ShaderType>
-      <ObjectFileOutput>../../Bin/Shaders/Test.cso</ObjectFileOutput>
+      <ObjectFileOutput>../../Bin/Shaders/DefaultColorfulVS.cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Shaders\VS\DefaultVS.hlsl">
+      <ShaderType>Vertex</ShaderType>
+      <ObjectFileOutput>../../Bin/Shaders/DefaultVS.cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\VS\TriangleVS.hlsl">
       <ShaderType>Vertex</ShaderType>

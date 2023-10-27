@@ -154,7 +154,10 @@
     <FxCompile Include="Shaders\PS\TrianglePS_2.hlsl">
       <Filter>Shaders\PS</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\VS\Test.hlsl">
+    <FxCompile Include="Shaders\VS\DefaultColorfulVS.hlsl">
+      <Filter>Shaders\VS</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\VS\DefaultVS.hlsl">
       <Filter>Shaders\VS</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\VS\TriangleVS.hlsl">

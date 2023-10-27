@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Camera/Cube.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -30,8 +31,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 		SimpleUtilities::InputManager::GetInstance().SetHWND(engine.GetHWND());
 
+		Cube cube;
+		cube.Create();
+
+		if (cube.Create())
+			std::cout << "Succeess" << std::endl;
+		else
+			std::cout << "Failed" << std::endl;
+
 		while (engine.BeginFrame())
 		{
+			cube.Draw();
 			engine.EndFrame();;
 		}
 	}

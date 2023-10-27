@@ -1,11 +1,6 @@
 #pragma once
 
 class Camera;
-class Triangle;
-class Model;
-class Shader;
-
-#include "Camera/Cube.h"
 
 struct FrameBufferData
 {
@@ -20,6 +15,7 @@ struct ObjectBufferData
 struct TimeBufferData
 {
 	float time;
+	float padding[3];
 };
 
 class GraphicsEngine
@@ -33,8 +29,6 @@ public:
 	void EndFrame();
 
 	void Render();
-	void Draw(Model& aModel, Shader& aShader);
-	void Test();
 public:
 	ComPtr<ID3D11Device>& GetDevice();
 	ComPtr<ID3D11DeviceContext>& GetContext();
@@ -58,9 +52,6 @@ private:
 	ComPtr<ID3D11Buffer> myObjectBuffer;
 	
 	std::shared_ptr<Camera> myCamera;
-	std::shared_ptr<Triangle> myTriangle;
-
-	Cube myCube;
 
 	float myColor[4];
 };

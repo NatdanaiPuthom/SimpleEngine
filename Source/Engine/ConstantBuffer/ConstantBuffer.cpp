@@ -28,8 +28,6 @@ bool ConstantBuffer::Init(GraphicsEngine* aGraphicsEngine, unsigned int aSize, v
 	if (FAILED(result))
 		return false;
 
-	myGraphicsEngine->GetContext()->UpdateSubresource(myBuffer.Get(), 0, nullptr, aData, 0, 0);
-
 	return true;
 }
 

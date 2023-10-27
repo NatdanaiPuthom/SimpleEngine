@@ -16,7 +16,7 @@ public:
 	SimpleUtilities::Vector4f WorldToCameraSpace(const SimpleUtilities::Vector4f& aVector);
 	SimpleUtilities::Vector4f CameraToProjectionSpace(const SimpleUtilities::Vector4f& aVector);
 	SimpleUtilities::Vector2f ProjectionToPixel(SimpleUtilities::Vector4f aVector);
-	SimpleUtilities::Matrix4x4f WorldToClipMatrix(const SimpleUtilities::Matrix4x4f& aObjectModelToWorldTransform);
+	SimpleUtilities::Matrix4x4f WorldToClipMatrix();
 public:
 	void SetCameraValues(const SimpleUtilities::Vector3f& aPosition, SimpleUtilities::Vector2f& aResolution, const float aNearPlane, const float aFoV);
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);

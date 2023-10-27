@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "Camera/Camera.h"
-#include "Shaders/Shader.h"
-#include "ConstantBuffer/ConstantBuffer.h"
 #include "global.h"
 
 Model::Model()
@@ -10,7 +8,6 @@ Model::Model()
 	, myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myTimeBuffer(std::make_unique<ConstantBuffer>())
 	, myGraphicsEngine(nullptr)
-	, myTimer(0.0f)
 {
 }
 
@@ -18,7 +15,7 @@ Model::~Model()
 {
 }
 
-bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, ID3D11Device* aDevice)
+bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, eShaderType aShaderType)
 {
 	myGraphicsEngine = aGraphicsEngine;
 
@@ -27,6 +24,7 @@ bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVe
 	myModelToWorld = aModelToWorld;
 
 	std::shared_ptr<Camera> camera = myGraphicsEngine->GetCamera();
+	auto& device = myGraphicsEngine->GetDevice();
 
 	{
 		D3D11_BUFFER_DESC vertexBufferDesc = {};
@@ -42,7 +40,7 @@ bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVe
 		vertexData.SysMemPitch = 0;
 		vertexData.SysMemSlicePitch = 0;
 
-		HRESULT result = aDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &myVertexBuffer);
+		HRESULT result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &myVertexBuffer);
 		if (FAILED(result))
 			return false;
 	}
@@ -60,7 +58,7 @@ bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVe
 		indexData.pSysMem = &myIndices[0];
 		indexData.SysMemPitch = 0;
 		indexData.SysMemSlicePitch = 0;
-		HRESULT result = aDevice->CreateBuffer(&indexBufferDesc, &indexData, &myIndexBuffer);
+		HRESULT result = device->CreateBuffer(&indexBufferDesc, &indexData, &myIndexBuffer);
 		if (FAILED(result))
 			return false;
 	}
@@ -85,15 +83,32 @@ bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVe
 			return false;
 	}
 
-	//{
-	//	TimeBufferData timeBuffer =
-	//	{
-	//		1.0f
-	//	};
+	{
+		TimeBufferData timeBuffer =
+		{
+			1.0f
+		};
 
-	//	if (!myTimeBuffer->Init(aGraphicsEngine, sizeof(TimeBufferData), &timeBuffer))
-	//		return false;
-	//}
+		if (!myTimeBuffer->Init(aGraphicsEngine, sizeof(TimeBufferData), &timeBuffer))
+			return false;
+	}
+
+	const char* shaderType = "DefaultVS.cso";
+	switch (aShaderType)
+	{
+	case eShaderType::Default:
+		shaderType = "DefaultVS.cso";
+		break;
+	case eShaderType::Colorful:
+		shaderType = "DefaultColorfulVS.cso";
+		break;
+	default:
+		shaderType = "DefaultVS.cso";
+		break;
+	}
+
+	if (!myShader->Init(device.Get(), "TrianglePS.cso", shaderType))
+		return false;
 
 	return true;
 }
@@ -112,21 +127,20 @@ void Model::Draw()
 
 	myShader->SetShader(context.Get());
 
-	FrameBufferData frameBuffer;
-	frameBuffer.worldToClipMatrix = camera->WorldToClipMatrix(camera->GetModelToWorldMatrix());
+	FrameBufferData frameBuffer = {};
+	frameBuffer.worldToClipMatrix = SimpleUtilities::Matrix4x4f::GetFastInverse(camera->GetModelToWorldMatrix()) * camera->GetProjectionMatrix();
 	myFrameBuffer->Bind(0);
 	myFrameBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
 
-	ObjectBufferData objectBuffer;
+	ObjectBufferData objectBuffer = {};
 	objectBuffer.modelToWorldMatrix = myModelToWorld;
 	myObjectBuffer->Bind(1);
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-	//TimeBufferData timeBuffer = {};
-	//timeBuffer.time = myTimer;
-	//myTimeBuffer->Bind(2);
-	//myTimeBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
-	//myTimer += SimplyGlobal::GetDeltaTime();
+	TimeBufferData timeBuffer = {};
+	timeBuffer.time = static_cast<float>(SimplyGlobal::GetTotalTime());
+	myTimeBuffer->Bind(2);
+	myTimeBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 
 	context->DrawIndexed(static_cast<UINT>(myIndices.size()), 0, 0);
 }

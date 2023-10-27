@@ -9,6 +9,12 @@ cbuffer ObjectBuffer : register(b1)
     float4x4 modelToWorld;
 }
 
+cbuffer TimeBuffer : register(b2)
+{
+    float elapsedTime;
+    float3 padding;
+}
+
 struct VertexInputType
 {
     float4 position : POSITION;
@@ -20,7 +26,6 @@ struct PixelInputType
     float4 position : SV_POSITION;
     float4 color : COLOR;
 };
-
 
 PixelInputType main (VertexInputType aInput)
 {

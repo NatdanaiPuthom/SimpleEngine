@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "Triangle/Triangle.h"
 #include "Camera/Camera.h"
+#include "global.h"
 
+#ifdef _DEBUG
 //#define REPORT_DX_WARNINGS
+#endif
 
 GraphicsEngine::GraphicsEngine()
-	: myTriangle(std::make_shared<Triangle>())
-	, myCamera(std::make_shared<Camera>())
+	: myCamera(std::make_shared<Camera>())
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 {
 }
@@ -17,10 +19,6 @@ GraphicsEngine::~GraphicsEngine()
 
 bool GraphicsEngine::Init(const int aHeight, const int aWidth, HWND& aWindowHandle)
 {
-#if defined (REPORT_DX_WARNINGS)
-	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
 	if (!CreateSwapChain(aWindowHandle, aHeight, aWidth))
 		return false;
 
@@ -34,14 +32,6 @@ bool GraphicsEngine::Init(const int aHeight, const int aWidth, HWND& aWindowHand
 
 	if (!CreateFrameBuffer())
 		return false;
-
-	if (!myTriangle->Init(myDevice.Get()))
-		return false;
-
-	if (myCube.Create())
-		std::cout << "Succeess" << std::endl;
-	else
-		std::cout << "Failed" << std::endl;
 
 	return true;
 }
@@ -60,7 +50,6 @@ bool GraphicsEngine::BeginFrame()
 	}
 
 	Render();
-	myCube.Draw();
 	return true;
 }
 
@@ -77,54 +66,7 @@ void GraphicsEngine::Render()
 	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	myTriangle->Render(myContext.Get());
-}
-
-void GraphicsEngine::Draw(Model& aModel, Shader& aShader)
-{
-	ComPtr<ID3D11Buffer> vertexBuffer = aModel.GetVertexBuffer();
-	ComPtr<ID3D11Buffer> indexBuffer = aModel.GetIndexBuffer();
-
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-
-	myContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	myContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	myContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	aShader.SetShader(myContext.Get());
-
-	ObjectBufferData objectBufferData;
-	objectBufferData.modelToWorldMatrix = aModel.GetModelToWorldMatrix();
-
-	myContext->DrawIndexed(aModel.GetIndexCount(), 0, 0);
-}
-
-void GraphicsEngine::Test()
-{
-	{
-		FrameBufferData frameBufferData = {};
-		frameBufferData.worldToClipMatrix = SimpleUtilities::Matrix4x4f::GetFastInverse(myCamera->GetModelToWorldMatrix()) * myCamera->GetProjectionMatrix();
-
-		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
-		myContext->Map(myFrameBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
-		memcpy(mappedBuffer.pData, &frameBufferData, sizeof(FrameBufferData));
-		myContext->Unmap(myFrameBuffer.Get(), 0);
-		myContext->VSSetConstantBuffers(0, 1, myFrameBuffer.GetAddressOf());
-		myContext->UpdateSubresource(myFrameBuffer.Get(), 0, nullptr, &frameBufferData, 0, 0);
-	}
-
-	{
-		ObjectBufferData objectBufferData = {};
-		objectBufferData.modelToWorldMatrix = SimpleUtilities::Matrix4x4f::GetFastInverse(myCamera->GetModelToWorldMatrix()) * myCamera->GetProjectionMatrix();
-		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
-		myContext->Map(myObjectBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
-		memcpy(mappedBuffer.pData, &objectBufferData, sizeof(ObjectBufferData));
-		myContext->Unmap(myObjectBuffer.Get(), 0);
-		myContext->VSSetConstantBuffers(1, 1, myObjectBuffer.GetAddressOf());
-		myContext->UpdateSubresource(myFrameBuffer.Get(), 0, nullptr, &objectBufferData, 0, 0);
-	}
-
+	myCamera->Update(SimplyGlobal::GetDeltaTime());
 }
 
 ComPtr<ID3D11Device>& GraphicsEngine::GetDevice()
@@ -162,12 +104,17 @@ bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aHeight, con
 	swapChainDesc.BufferDesc.Width = aWidth;
 	swapChainDesc.BufferDesc.Height = aHeight;
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.OutputWindow = aWindowHandle;
 	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.SampleDesc.Quality = 0;
 	swapChainDesc.Windowed = true;
 
 	UINT creationFlags = 0;
+#if defined (REPORT_DX_WARNINGS)
+	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
 	HRESULT result = D3D11CreateDeviceAndSwapChain(
 		nullptr,
