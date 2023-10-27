@@ -2,12 +2,15 @@
 #include "Camera/Camera.h"
 #include "Shaders/Shader.h"
 #include "ConstantBuffer/ConstantBuffer.h"
+#include "global.h"
 
 Model::Model()
 	: myShader(std::make_shared<Shader>())
 	, myFrameBuffer(std::make_unique<ConstantBuffer>())
 	, myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myTimeBuffer(std::make_unique<ConstantBuffer>())
+	, myGraphicsEngine(nullptr)
+	, myTimer(0.0f)
 {
 }
 
@@ -17,11 +20,13 @@ Model::~Model()
 
 bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, ID3D11Device* aDevice)
 {
+	myGraphicsEngine = aGraphicsEngine;
+
 	myVertices = aVertices;
 	myIndices = aIndices;
 	myModelToWorld = aModelToWorld;
 
-	std::shared_ptr<Camera> camera = aGraphicsEngine->GetCamera();
+	std::shared_ptr<Camera> camera = myGraphicsEngine->GetCamera();
 
 	{
 		D3D11_BUFFER_DESC vertexBufferDesc = {};
@@ -66,16 +71,64 @@ bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVe
 			camera->GetModelToWorldMatrix().GetFastInverse() * camera->GetProjectionMatrix()
 		};
 
-		if (!myFrameBuffer->Init(aGraphicsEngine, sizeof(FrameBufferData), &frameBuffer))
+		if (!myFrameBuffer->Init(myGraphicsEngine, sizeof(FrameBufferData), &frameBuffer))
 			return false;
 	}
+
+	{
+		ObjectBufferData objectBuffer =
+		{
+			camera->GetModelToWorldMatrix().GetFastInverse() * camera->GetProjectionMatrix()
+		};
+
+		if (!myObjectBuffer->Init(myGraphicsEngine, sizeof(ObjectBufferData), &objectBuffer))
+			return false;
+	}
+
+	//{
+	//	TimeBufferData timeBuffer =
+	//	{
+	//		1.0f
+	//	};
+
+	//	if (!myTimeBuffer->Init(aGraphicsEngine, sizeof(TimeBufferData), &timeBuffer))
+	//		return false;
+	//}
 
 	return true;
 }
 
-void Model::Draw(const float aDeltaTime)
+void Model::Draw()
 {
-	aDeltaTime;
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+
+	auto& context = myGraphicsEngine->GetContext();
+	auto camera = myGraphicsEngine->GetCamera();
+
+	context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
+	context->IASetIndexBuffer(myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	myShader->SetShader(context.Get());
+
+	FrameBufferData frameBuffer;
+	frameBuffer.worldToClipMatrix = camera->WorldToClipMatrix(camera->GetModelToWorldMatrix());
+	myFrameBuffer->Bind(0);
+	myFrameBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
+
+	ObjectBufferData objectBuffer;
+	objectBuffer.modelToWorldMatrix = myModelToWorld;
+	myObjectBuffer->Bind(1);
+	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+
+	//TimeBufferData timeBuffer = {};
+	//timeBuffer.time = myTimer;
+	//myTimeBuffer->Bind(2);
+	//myTimeBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
+	//myTimer += SimplyGlobal::GetDeltaTime();
+
+	context->DrawIndexed(static_cast<unsigned int>(myIndices.size()), 0, 0);
 }
 
 int Model::GetIndexCount()
@@ -101,15 +154,4 @@ Shader& Model::GetShader()
 SimpleUtilities::Matrix4x4f& Model::GetModelToWorldMatrix()
 {
 	return myModelToWorld;
-}
-
-std::vector<D3D11_INPUT_ELEMENT_DESC> Model::GetInputLayout()
-{
-	std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayout =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
-	};
-
-	return inputLayout;
 }

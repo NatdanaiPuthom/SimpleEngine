@@ -9,11 +9,13 @@
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 Engine::Engine()
+	: myInput(nullptr)
 {
 }
 
 Engine::~Engine()
 {
+	myInput = nullptr;
 }
 
 void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight)
@@ -35,6 +37,7 @@ void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight)
 	assert(success && "Failed To Init Graphics Engine");
 
 	myTimer = std::make_unique<Timer>();
+	myInput = &SimpleUtilities::InputManager::GetInstance();
 }
 
 std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)
@@ -59,7 +62,7 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 	std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 	*hwnd = CreateWindow(
 		L"Natdanai",
-		L"SimpleEngine v3.2",
+		L"SimpleEngine v3.4",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -76,12 +79,13 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 bool Engine::BeginFrame()
 {
 	myTimer->Update();
+	myInput->Update();
 	return myGraphicsEngine->BeginFrame();
 }
 
 void Engine::EndFrame()
 {
-	myGraphicsEngine->Render();
+	myGraphicsEngine->EndFrame();
 }
 
 float Engine::GetDeltaTime() const

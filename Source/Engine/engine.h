@@ -5,7 +5,6 @@
 #endif
 
 class Timer;
-class GraphicsEngine;
 
 class Engine
 {
@@ -25,6 +24,8 @@ public:
 private:
 	std::unique_ptr<HWND> SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
 private:
+	SimpleUtilities::InputManager* myInput;
+
 	std::unique_ptr<GraphicsEngine> myGraphicsEngine;
 	std::unique_ptr<Timer> myTimer;
 	std::unique_ptr<HWND> myHWND;

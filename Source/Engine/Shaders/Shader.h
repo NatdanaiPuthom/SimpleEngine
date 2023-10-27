@@ -6,7 +6,7 @@ public:
 	Shader();
 	~Shader();
 
-	bool Init(ID3D11Device* aDevice, std::vector<D3D11_INPUT_ELEMENT_DESC> aInputLayout,const std::string& aPSFileName, const std::string& aVSFileName);
+	bool Init(ID3D11Device* aDevice, const std::string& aPSFileName, const std::string& aVSFileName);
 	void SetShader(ID3D11DeviceContext* aContext);
 private:
 	ComPtr<ID3D11VertexShader> myVertexShader;

@@ -1,4 +1,45 @@
-//#pragma once
+#pragma once
+#include "Model/Model.h"
+
+
+class Cube : public Model
+{
+public:
+	Cube();
+	~Cube();
+
+	bool Create();
+private:
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //#include "../Engine/tge/drawers/DebugDrawer.h"
 //#include <vector>
 //

@@ -22,8 +22,6 @@ bool ConstantBuffer::Init(GraphicsEngine* aGraphicsEngine, unsigned int aSize, v
 	bufferDescription.Usage = D3D11_USAGE_DYNAMIC;
 	bufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferDescription.MiscFlags = 0;
-	bufferDescription.StructureByteStride = 0;
 	bufferDescription.ByteWidth = aSize;
 
 	HRESULT result = myGraphicsEngine->GetDevice()->CreateBuffer(&bufferDescription, nullptr, &myBuffer);

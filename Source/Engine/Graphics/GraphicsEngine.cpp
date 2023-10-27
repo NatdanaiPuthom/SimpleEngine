@@ -24,10 +24,12 @@ bool GraphicsEngine::Init(const int aHeight, const int aWidth, HWND& aWindowHand
 	if (!CreateSwapChain(aWindowHandle, aHeight, aWidth))
 		return false;
 
+	if (!CreateDepthBuffer(aHeight, aWidth))
+		return false;
+
 	if (!CreateBackBuffer())
 		return false;
 
-	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), nullptr);
 	CreateViewport(aHeight, aWidth);
 
 	if (!CreateFrameBuffer())
@@ -52,18 +54,25 @@ bool GraphicsEngine::BeginFrame()
 			return false;
 	}
 
+	Render();
+
 	return true;
+}
+
+void GraphicsEngine::EndFrame()
+{
+	mySwapChain->Present(1, 0);
 }
 
 void GraphicsEngine::Render()
 {
+	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
+	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
+
 	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
+	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	myTriangle->Render(myContext.Get());
-
-	Test(); //Trying to draw 3D Cube & Triangle
-
-	mySwapChain->Present(1, 0);
 }
 
 void GraphicsEngine::Draw(Model& aModel, Shader& aShader)
@@ -207,6 +216,37 @@ bool GraphicsEngine::CreateFrameBuffer()
 
 	bufferDescription.ByteWidth = sizeof(ObjectBufferData);
 	result = myDevice->CreateBuffer(&bufferDescription, nullptr, &myObjectBuffer);
+	if (FAILED(result))
+		return false;
+
+	return true;
+}
+
+bool GraphicsEngine::CreateDepthBuffer(const int aHeight, const int aWidth)
+{
+	ComPtr<ID3D11Texture2D> depthBufferTexture;
+	D3D11_TEXTURE2D_DESC depthBufferDesc = { 0 };
+	depthBufferDesc.Height = aHeight;
+	depthBufferDesc.Width = aWidth;
+	depthBufferDesc.ArraySize = 1;
+	depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthBufferDesc.SampleDesc.Count = 1;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+	HRESULT result = myDevice->CreateTexture2D(&depthBufferDesc, nullptr, &depthBufferTexture);
+	if (FAILED(result))
+		return false;
+
+	result = myDevice->CreateDepthStencilView(depthBufferTexture.Get(), nullptr, &myDepthBuffer);
+	if (FAILED(result))
+		return false;
+
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilState.GetAddressOf());
 	if (FAILED(result))
 		return false;
 

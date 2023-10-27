@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include "Engine/engine.h"
-#include "Engine/SimpleUtilities/InputManager.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -30,17 +28,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		Engine engine;
 		engine.Init(hInstance, 1280, 720);
 
-		SimpleUtilities::InputManager* input = &SimpleUtilities::InputManager::GetInstance();
-		input->SetHWND(engine.GetHWND());
+		SimpleUtilities::InputManager::GetInstance().SetHWND(engine.GetHWND());
 
 		while (engine.BeginFrame())
 		{
-			std::cout << "Pos: " << input->GetMousePosition() << std::endl;
-			input->Update();
 			engine.EndFrame();;
 		}
-
 	}
+
+	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!
+	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here!
 
 	SimpleTracker::StopMemoryTrackingAndPrint();
 	return 0;

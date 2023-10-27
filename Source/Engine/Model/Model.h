@@ -16,15 +16,14 @@ public:
 	~Model();
 
 	bool Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, ID3D11Device* aDevice);
-	void Draw(const float aDeltaTime);
+	void Draw();
 public:
 	SimpleUtilities::Matrix4x4f& GetModelToWorldMatrix();
-	std::vector<D3D11_INPUT_ELEMENT_DESC> GetInputLayout();
 	ComPtr<ID3D11Buffer> GetVertexBuffer();
 	ComPtr<ID3D11Buffer> GetIndexBuffer();
 	Shader& GetShader();
 	int GetIndexCount();
-private:
+protected:
 	std::vector<Vertex> myVertices;
 	std::vector<unsigned int> myIndices;
 
@@ -37,4 +36,8 @@ private:
 	std::unique_ptr<ConstantBuffer> myFrameBuffer;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;
+
+	float myTimer;
+private:
+	GraphicsEngine* myGraphicsEngine;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 class Engine;
+class GraphicsEngine;
 
 class SimplyGlobalImpl
 {
@@ -13,4 +14,5 @@ namespace SimplyGlobal
 {
 	double GetTotalTime();
 	float GetDeltaTime();
+	GraphicsEngine* GetGraphicsEngine();
 }

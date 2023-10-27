@@ -22,3 +22,8 @@ float SimplyGlobal::GetDeltaTime()
 	return globalEngine->GetDeltaTime();
 }
 
+GraphicsEngine* SimplyGlobal::GetGraphicsEngine()
+{
+	return globalEngine->GetGraphicsEngine();
+}
+
