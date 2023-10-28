@@ -4,7 +4,10 @@
 #include "Console/Console.h"
 #endif
 
-class Timer;
+namespace SimpleUtilities
+{
+	class Timer;
+}
 
 class Engine
 {
@@ -27,7 +30,7 @@ private:
 	SimpleUtilities::InputManager* myInput;
 
 	std::unique_ptr<GraphicsEngine> myGraphicsEngine;
-	std::unique_ptr<Timer> myTimer;
+	std::unique_ptr<SimpleUtilities::Timer> myTimer;
 	std::unique_ptr<HWND> myHWND;
 
 #ifdef _DEBUG

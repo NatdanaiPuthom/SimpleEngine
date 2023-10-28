@@ -34,9 +34,6 @@
     <Filter Include="SimpleUtilities">
       <UniqueIdentifier>{2B8A4039-9715-AEFD-A026-31F20C310AFE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Timer">
-      <UniqueIdentifier>{667B2A0E-D28F-52BF-9B11-F61E07E54EF0}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console\Console.h">
@@ -81,6 +78,9 @@
     <ClInclude Include="SimpleUtilities\Matrix4x4.h">
       <Filter>SimpleUtilities</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleUtilities\Timer.h">
+      <Filter>SimpleUtilities</Filter>
+    </ClInclude>
     <ClInclude Include="SimpleUtilities\Vector.h">
       <Filter>SimpleUtilities</Filter>
     </ClInclude>
@@ -92,9 +92,6 @@
     </ClInclude>
     <ClInclude Include="SimpleUtilities\Vector4.h">
       <Filter>SimpleUtilities</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer\Timer.h">
-      <Filter>Timer</Filter>
     </ClInclude>
     <ClInclude Include="engine.h" />
     <ClInclude Include="global.h" />
@@ -140,8 +137,8 @@
     <ClCompile Include="SimpleUtilities\InputManager.cpp">
       <Filter>SimpleUtilities</Filter>
     </ClCompile>
-    <ClCompile Include="Timer\Timer.cpp">
-      <Filter>Timer</Filter>
+    <ClCompile Include="SimpleUtilities\Timer.cpp">
+      <Filter>SimpleUtilities</Filter>
     </ClCompile>
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="global.cpp" />

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Timer/Timer.h"
+#include "SimpleUtilities/Timer.h"
 #include "global.h"
 
 #ifdef _DEBUG
@@ -36,7 +36,7 @@ void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight)
 	bool success = myGraphicsEngine->Init(aHeight, aWidth, *myHWND);
 	assert(success && "Failed To Init Graphics Engine");
 
-	myTimer = std::make_unique<Timer>();
+	myTimer = std::make_unique<SimpleUtilities::Timer>();
 	myInput = &SimpleUtilities::InputManager::GetInstance();
 }
 

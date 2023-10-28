@@ -174,11 +174,11 @@
     <ClInclude Include="MemoryTracker\StackWalker.h" />
     <ClInclude Include="SimpleUtilities\InputManager.h" />
     <ClInclude Include="SimpleUtilities\Matrix4x4.h" />
+    <ClInclude Include="SimpleUtilities\Timer.h" />
     <ClInclude Include="SimpleUtilities\Vector.h" />
     <ClInclude Include="SimpleUtilities\Vector2.h" />
     <ClInclude Include="SimpleUtilities\Vector3.h" />
     <ClInclude Include="SimpleUtilities\Vector4.h" />
-    <ClInclude Include="Timer\Timer.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="stdafx.h" />
@@ -197,7 +197,7 @@
     <ClCompile Include="MemoryTracker\StackTrace.cpp" />
     <ClCompile Include="MemoryTracker\StackWalker.cpp" />
     <ClCompile Include="SimpleUtilities\InputManager.cpp" />
-    <ClCompile Include="Timer\Timer.cpp" />
+    <ClCompile Include="SimpleUtilities\Timer.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="stdafx.cpp">
