@@ -17,6 +17,7 @@ namespace SimpleUtilities
 		myPreviousMousePosition = { 0,0 };
 		myMouseDelta = { 0,0 };
 
+		myMouseIsHidden = false;
 		myAKeyIsPressed = false;
 	}
 
@@ -272,6 +273,11 @@ namespace SimpleUtilities
 		return myAKeyIsPressed;
 	}
 
+	bool InputManager::GetMouseIsHidden() const
+	{
+		return myMouseIsHidden;
+	}
+
 	void InputManager::SetHWND(HWND& aWindowHandle)
 	{
 		myOwnerHWND = aWindowHandle;
@@ -355,14 +361,16 @@ namespace SimpleUtilities
 		return true;
 	}
 
-	void InputManager::ShowMouse() const
+	void InputManager::ShowMouse()
 	{
 		ShowCursor(true);
+		myMouseIsHidden = false;
 	}
 
-	void InputManager::HideMouse() const
+	void InputManager::HideMouse()
 	{
 		ShowCursor(false);
+		myMouseIsHidden = true;
 	}
 
 	SimpleUtilities::Vector2f InputManager::GetMouseDelta() const

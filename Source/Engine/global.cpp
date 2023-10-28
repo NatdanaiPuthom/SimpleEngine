@@ -22,6 +22,11 @@ float SimplyGlobal::GetDeltaTime()
 	return globalEngine->GetDeltaTime();
 }
 
+HWND& SimplyGlobal::GetHWND()
+{
+	return globalEngine->GetHWND();
+}
+
 GraphicsEngine* SimplyGlobal::GetGraphicsEngine()
 {
 	return globalEngine->GetGraphicsEngine();

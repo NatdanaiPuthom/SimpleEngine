@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Camera.h"
 #include "SimpleUtilities/InputManager.h"
+#include "global.h"
 
 Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, const float aNearPlane, const float aFarPlane)
 	: myResolution(aResolution)
@@ -10,6 +11,7 @@ Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, c
 	, myMoveSpeed(3)
 	, myRotateSpeed(30)
 	, myInput(&SimpleUtilities::InputManager::GetInstance())
+	, myFreeFly(false)
 {
 	SetPosition({ 0,0,0 });
 	CreateProjectionMatrix();
@@ -28,6 +30,18 @@ void Camera::Update(const float aDeltaTime)
 		if (myInput->IsHold(VK_SHIFT))
 		{
 			speed *= 3.0f;
+		}
+
+		if (myInput->IsPressed(VK_TAB))
+		{
+			if (!myFreeFly)
+			{
+				myFreeFly = true;
+			}
+			else
+			{
+				myFreeFly = false;
+			}
 		}
 
 		if (myInput->IsHold('W'))
@@ -68,6 +82,44 @@ void Camera::Update(const float aDeltaTime)
 			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
 			SetPosition(position);
 			UpdateCameraVectors();
+		}
+
+		float direction = 1.0f;
+		if (myInput->IsHold(VK_CONTROL))
+		{
+			direction = -1.0f;
+		}
+
+		if (myInput->IsHold(VK_SPACE))
+		{
+			forward = direction * myUp * speed * aDeltaTime;
+			position += forward;
+		}
+
+		HWND& hwnd = SimplyGlobal::GetHWND();
+		if (myFreeFly && GetForegroundWindow() == hwnd)
+		{
+			if (!myInput->GetMouseIsHidden())
+			{
+				SimpleUtilities::Vector2f pos = myInput->GetMousePosition();
+				myCapturedPosition.x = static_cast<int>(pos.x);
+				myCapturedPosition.y = static_cast<int>(pos.y);
+
+				myInput->HideMouse();
+				myInput->CaptureMouse();
+			}
+
+			SetCursorPos(myCapturedPosition.x, myCapturedPosition.y);
+
+			//TODO: Add Freefly with Mouse
+		}
+		else
+		{
+			if (myInput->GetMouseIsHidden())
+			{
+				myInput->ShowMouse();
+				myInput->ReleaseMouse();
+			}
 		}
 
 		myModelToWorldTransform(4, 1) = position.x;
@@ -216,6 +268,16 @@ SimpleUtilities::Vector3f Camera::GetPosition() const
 {
 	const SimpleUtilities::Vector3f position(myModelToWorldTransform(4, 1), myModelToWorldTransform(4, 2), myModelToWorldTransform(4, 3));
 	return position;
+}
+
+SimpleUtilities::Vector3f Camera::GetRotationRad() const
+{
+	SimpleUtilities::Vector3f rotation;
+	rotation.x = atan2(-myForward.y, sqrt(myForward.x * myForward.x + myForward.z * myForward.z));
+	rotation.y = atan2(myForward.x, myForward.z);
+	rotation.z = atan2(myRight.y, myUp.y);
+
+	return rotation;
 }
 
 float Camera::GetMoveSpeed() const

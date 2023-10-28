@@ -12,7 +12,8 @@ class SimplyGlobalImpl
 
 namespace SimplyGlobal
 {
+	GraphicsEngine* GetGraphicsEngine();
 	double GetTotalTime();
 	float GetDeltaTime();
-	GraphicsEngine* GetGraphicsEngine();
+	HWND& GetHWND();
 }

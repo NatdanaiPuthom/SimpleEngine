@@ -16,7 +16,7 @@ public:
 	SimpleUtilities::Vector4f WorldToCameraSpace(const SimpleUtilities::Vector4f& aVector);
 	SimpleUtilities::Vector4f CameraToProjectionSpace(const SimpleUtilities::Vector4f& aVector);
 	SimpleUtilities::Vector2f ProjectionToPixel(SimpleUtilities::Vector4f aVector);
-	SimpleUtilities::Matrix4x4f WorldToClipMatrix();
+	SimpleUtilities::Matrix4x4f WorldToClipMatrix(); //Likely wrong
 public:
 	void SetCameraValues(const SimpleUtilities::Vector3f& aPosition, SimpleUtilities::Vector2f& aResolution, const float aNearPlane, const float aFoV);
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
@@ -29,6 +29,7 @@ public:
 	SimpleUtilities::Matrix4x4f GetProjectionMatrix() const;
 	SimpleUtilities::Matrix4x4f GetViewMatrix() const;
 	SimpleUtilities::Vector3f GetPosition() const;
+	SimpleUtilities::Vector3f GetRotationRad() const;
 	SimpleUtilities::Vector3f GetForward() const;
 	SimpleUtilities::Vector3f GetUp() const;
 	SimpleUtilities::Vector3f GetRight() const;
@@ -49,10 +50,13 @@ private:
 
 	SimpleUtilities::InputManager* myInput;
 	SimpleUtilities::Vector2f myResolution;
+	SimpleUtilities::Vector2i myCapturedPosition;
 
 	float myFoV;
 	float myNearPlane;
 	float myFarPlane;
 	float myMoveSpeed;
 	float myRotateSpeed;
+
+	bool myFreeFly;
 };

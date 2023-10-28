@@ -28,8 +28,8 @@ namespace SimpleUtilities
 		bool IsHold(const int aKeyCode) const;
 		bool IsReleased(const int aKeyCode) const;
 
-		void ShowMouse() const;
-		void HideMouse() const;
+		void ShowMouse();
+		void HideMouse();
 		void CaptureMouse() const;
 		void ReleaseMouse() const;
 	public:
@@ -38,6 +38,7 @@ namespace SimpleUtilities
 		std::string GetKeyAsString(std::string& aString, const int aCharactersLimit = 30) const;
 		std::string GetKeyAsString() const;
 		bool GetAKeyIsPressed() const;
+		bool GetMouseIsHidden() const;
 	public:
 		void SetHWND(HWND& aWindowHandle);
 	private:
@@ -56,6 +57,7 @@ namespace SimpleUtilities
 		SimpleUtilities::Vector2i myTentativeMouseDelta;
 		SimpleUtilities::Vector2i myMouseDelta;
 
+		bool myMouseIsHidden;
 		bool myAKeyIsPressed;
 	};
 }
