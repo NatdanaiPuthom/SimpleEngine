@@ -41,7 +41,7 @@ workspace "SimpleEngine"
 		targetdir "Lib"
 		targetname("%{prj.name}_%{cfg.buildcfg}")
 		location "Source/Engine"
-		includedirs{"Source/Engine/", "Source/Engine/Graphics/"}
+		includedirs{"Source/Engine/", "Source/Engine/Graphics/", "Source/External/"}
 		files {"Source/Engine/**.h", "Source/Engine/**.cpp", "Source/Engine/Graphics/Shaders/**.hlsl" , "Source/Engine/Graphics/Shaders/**.hlsli"}
 		links {"d3d11"}
 
@@ -77,10 +77,7 @@ workspace "SimpleEngine"
 		files {"Source/Game/**.h", "Source/Game/**.cpp", "Source/Game/Resources/**.rc"}
 		dependson { "Engine" }
 		libdirs{"Lib", "DLL"}
-		links { "Engine"}
-
-      filter "configurations:Debug"
-        links { "easy_profiler.lib","easy_profiler.dll" }
+		links { "Engine", "easy_profiler.lib","easy_profiler.dll"}
 
         -- Copy easy_profiler.dll to the output directory after build
         postbuildcommands {

@@ -125,9 +125,13 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\Lib;..\..\DLL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
+    <PostBuildEvent>
+      <Command>IF EXIST $(SolutionDir)\DLL\easy_profiler.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin\Release &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin\Release &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Simple|x64'">
     <ClCompile>
@@ -153,9 +157,13 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\Lib;..\..\DLL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
+    <PostBuildEvent>
+      <Command>IF EXIST $(SolutionDir)\DLL\easy_profiler.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin\Simple &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin\Simple &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Resources\resource.h" />
