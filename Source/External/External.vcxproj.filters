@@ -1,14 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="HelloWorld">
-      <UniqueIdentifier>{4179687C-2D31-AAC9-9638-8325820F45BA}</UniqueIdentifier>
+    <Filter Include="easy">
+      <UniqueIdentifier>{B71D967C-A354-970D-4C41-7D103857130F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="easy\details">
+      <UniqueIdentifier>{2CD53076-1838-C01A-C1BD-F8D0ADFF8B9D}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HelloWorld\helloworld.h">
-      <Filter>HelloWorld</Filter>
+    <ClInclude Include="easy\arbitrary_value.h">
+      <Filter>easy</Filter>
     </ClInclude>
-    <ClInclude Include="test.h" />
+    <ClInclude Include="easy\details\arbitrary_value_aux.h">
+      <Filter>easy\details</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\details\arbitrary_value_public_types.h">
+      <Filter>easy\details</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\details\easy_compiler_support.h">
+      <Filter>easy\details</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\details\profiler_aux.h">
+      <Filter>easy\details</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\details\profiler_colors.h">
+      <Filter>easy\details</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\details\profiler_in_use.h">
+      <Filter>easy\details</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\details\profiler_public_types.h">
+      <Filter>easy\details</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\easy_net.h">
+      <Filter>easy</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\easy_protocol.h">
+      <Filter>easy</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\easy_socket.h">
+      <Filter>easy</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\profiler.h">
+      <Filter>easy</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\reader.h">
+      <Filter>easy</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\serialized_block.h">
+      <Filter>easy</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\utility.h">
+      <Filter>easy</Filter>
+    </ClInclude>
+    <ClInclude Include="easy\writer.h">
+      <Filter>easy</Filter>
+    </ClInclude>
+    <ClInclude Include="profiler.h" />
   </ItemGroup>
 </Project>

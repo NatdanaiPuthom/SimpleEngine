@@ -40,6 +40,11 @@ void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight)
 	myInput = &SimpleUtilities::InputManager::GetInstance();
 }
 
+void Engine::Render()
+{
+	myGraphicsEngine->Render();
+}
+
 std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)
 {
 	WNDCLASSEXW wcex = {};
@@ -62,7 +67,7 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 	std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 	*hwnd = CreateWindow(
 		L"Natdanai",
-		L"SimpleEngine v4.1",
+		L"SimpleEngine v4.2",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,

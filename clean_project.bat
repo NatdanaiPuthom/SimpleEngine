@@ -9,14 +9,24 @@ cd %folderPath%
 for /d %%d in (*) do (
     if /i not "%%d"=="Assets" (
         rmdir /s /q "%%d"
-    )
+    	)
 )
 cd ..
 
 rem delete Temp folder
-set "folderPaths=Temp Lib"
+set "folderPaths=Temp"
 for %%d in (%folderPaths%) do (
     rd /s /q "%%d"
+)
+
+set "folderPath=Lib"
+set "excludeFile=easy_profiler.lib"
+for %%f in ("%folderPath%\*") do (
+    echo "%%~nxf" | findstr /i /c:"%excludeFile%" >nul && (
+        echo Keeping "%%~nxf"
+    ) || (
+        del /f /q "%%f"
+    )
 )
 
 rem delete hidden ".vs" folder

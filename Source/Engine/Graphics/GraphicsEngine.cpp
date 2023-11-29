@@ -3,7 +3,7 @@
 #include "global.h"
 
 #ifdef _DEBUG
-//#define REPORT_DX_WARNINGS
+#define REPORT_DX_WARNINGS
 #endif
 
 GraphicsEngine::GraphicsEngine()
@@ -48,7 +48,6 @@ bool GraphicsEngine::BeginFrame()
 			return false;
 	}
 
-	Render();
 	return true;
 }
 
@@ -99,11 +98,11 @@ void GraphicsEngine::CreateViewport(const int aHeight, const int aWidth)
 bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aHeight, const int aWidth)
 {
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-	swapChainDesc.BufferCount = 1;
+	swapChainDesc.BufferCount = 2;
 	swapChainDesc.BufferDesc.Width = aWidth;
 	swapChainDesc.BufferDesc.Height = aHeight;
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.OutputWindow = aWindowHandle;
 	swapChainDesc.SampleDesc.Count = 1;

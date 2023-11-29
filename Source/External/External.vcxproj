@@ -142,8 +142,23 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="HelloWorld\helloworld.h" />
-    <ClInclude Include="test.h" />
+    <ClInclude Include="easy\arbitrary_value.h" />
+    <ClInclude Include="easy\details\arbitrary_value_aux.h" />
+    <ClInclude Include="easy\details\arbitrary_value_public_types.h" />
+    <ClInclude Include="easy\details\easy_compiler_support.h" />
+    <ClInclude Include="easy\details\profiler_aux.h" />
+    <ClInclude Include="easy\details\profiler_colors.h" />
+    <ClInclude Include="easy\details\profiler_in_use.h" />
+    <ClInclude Include="easy\details\profiler_public_types.h" />
+    <ClInclude Include="easy\easy_net.h" />
+    <ClInclude Include="easy\easy_protocol.h" />
+    <ClInclude Include="easy\easy_socket.h" />
+    <ClInclude Include="easy\profiler.h" />
+    <ClInclude Include="easy\reader.h" />
+    <ClInclude Include="easy\serialized_block.h" />
+    <ClInclude Include="easy\utility.h" />
+    <ClInclude Include="easy\writer.h" />
+    <ClInclude Include="profiler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

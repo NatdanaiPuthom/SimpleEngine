@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Graphics/Shapes/Cube.h"
 #include "Graphics/Shapes/Pyramid.h"
+//#include <External/profiler.h>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -26,6 +27,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	memoryTrackerSettings.myShouldTrackAllAllocations = true;
 	SimpleTracker::StartMemoryTracking(memoryTrackerSettings);
 
+	/*PROFILER_INIT();
+	PROFILER_ENABLE();
+	PROFILER_START_LISTEN();
+	PROFILER_BEGIN("MainLoop");
+	PROFILER_END();
+	PROFILER_DISABLE();
+	PROFILER_DUMP_FILE("../../profile_data.prof");*/
+
 	{
 		Engine engine;
 		engine.Init(hInstance, 1280, 720);
@@ -40,9 +49,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 		if (!pyramid.Create())
 			assert(false && "Failed to create Pyramid");
-
+;
 		while (engine.BeginFrame())
 		{
+			engine.Render();
 			cube.Draw();
 			pyramid.Draw();
 			engine.EndFrame();;
@@ -50,8 +60,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	}
 
 	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!
-	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here!
-
+	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here before StopMemoryTrackingAndPrint function!
 	SimpleTracker::StopMemoryTrackingAndPrint();
+
 	return 0;
 }

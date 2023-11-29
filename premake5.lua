@@ -73,7 +73,16 @@ workspace "SimpleEngine"
 		targetdir "Bin/%{cfg.buildcfg}"
 		targetname "SimpleEngine_%{cfg.buildcfg}"
 		location "Source/Game"
-		includedirs{ "Source/", "Source/Engine/" ,"Source/Game/"}
+		includedirs{ "Source/", "Source/Engine/" ,"Source/Game/", "Source/External/"}
 		files {"Source/Game/**.h", "Source/Game/**.cpp", "Source/Game/Resources/**.rc"}
 		dependson { "Engine" }
+		libdirs{"Lib", "DLL"}
 		links { "Engine"}
+
+      filter "configurations:Debug"
+        links { "easy_profiler.lib","easy_profiler.dll" }
+
+        -- Copy easy_profiler.dll to the output directory after build
+        postbuildcommands {
+            "{COPY} %{wks.location}/DLL/easy_profiler.dll %{cfg.targetdir}"
+        }
