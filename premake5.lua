@@ -8,11 +8,11 @@ workspace "SimpleEngine"
 	flags { "FatalWarnings" }
 	objdir "Temp"
 
-	local shader_dir = "../../Bin/Shaders/"
+	local shader_dir = path.join(_SCRIPT_DIR, "Bin/Shaders/")
 	os.mkdir(shader_dir)
 
 	defines { 
-		'SHADER_DIR="' .. shader_dir .. '"' 
+		'SHADER_DIR="' .. shader_dir .. '/"' 
 	}
 
 	configurations {
@@ -53,7 +53,8 @@ workspace "SimpleEngine"
 		shaderoptions({"/WX"})
 		
 		filter("files:**.hlsl")
-			shaderobjectfileoutput(shader_dir.."%{file.basename}"..".cso")
+			 local output_dir = path.join(shader_dir, "%{file.basename}.cso")
+				shaderobjectfileoutput(output_dir)
 
 		filter("files:Source/Engine/Graphics/Shaders/PS/**.hlsl")
 			shadertype("Pixel")
@@ -71,16 +72,15 @@ workspace "SimpleEngine"
 
 	project "Game"
 		kind "WindowedApp"
-		targetdir "Bin/%{cfg.buildcfg}"
+		targetdir "Bin"
 		targetname "SimpleEngine_%{cfg.buildcfg}"
 		location "Source/Game"
 		includedirs{ "Source/", "Source/Engine/" ,"Source/Game/", "Source/External/"}
 		files {"Source/Game/**.h", "Source/Game/**.cpp", "Source/Game/Resources/**.rc"}
 		dependson { "Engine" }
 		libdirs{"Lib", "DLL"}
-		links { "Engine", "easy_profiler.lib","easy_profiler.dll"}
+		links { "Engine", "easy_profiler.lib", "easy_profiler.dll"}
 
-        -- Copy easy_profiler.dll to the output directory after build
         postbuildcommands {
             "{COPY} %{wks.location}/DLL/easy_profiler.dll %{cfg.targetdir}"
         }

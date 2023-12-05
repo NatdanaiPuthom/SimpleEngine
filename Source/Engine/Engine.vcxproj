@@ -76,7 +76,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;Graphics;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -103,7 +103,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;Graphics;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -134,7 +134,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;Graphics;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -205,15 +205,15 @@
   <ItemGroup>
     <FxCompile Include="Graphics\Shaders\PS\DefaultPS.hlsl">
       <ShaderType>Pixel</ShaderType>
-      <ObjectFileOutput>../../Bin/Shaders/DefaultPS.cso</ObjectFileOutput>
+      <ObjectFileOutput>C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/DefaultPS.cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Graphics\Shaders\VS\DefaultColorfulVS.hlsl">
       <ShaderType>Vertex</ShaderType>
-      <ObjectFileOutput>../../Bin/Shaders/DefaultColorfulVS.cso</ObjectFileOutput>
+      <ObjectFileOutput>C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/DefaultColorfulVS.cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Graphics\Shaders\VS\DefaultVS.hlsl">
       <ShaderType>Vertex</ShaderType>
-      <ObjectFileOutput>../../Bin/Shaders/DefaultVS.cso</ObjectFileOutput>
+      <ObjectFileOutput>C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/DefaultVS.cso</ObjectFileOutput>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

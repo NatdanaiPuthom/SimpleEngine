@@ -54,21 +54,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\Bin\Debug\</OutDir>
+    <OutDir>..\..\Bin\</OutDir>
     <IntDir>..\..\Temp\Debug\Game\</IntDir>
     <TargetName>SimpleEngine_Debug</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\Bin\Release\</OutDir>
+    <OutDir>..\..\Bin\</OutDir>
     <IntDir>..\..\Temp\Release\Game\</IntDir>
     <TargetName>SimpleEngine_Release</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Simple|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\Bin\Simple\</OutDir>
+    <OutDir>..\..\Bin\</OutDir>
     <IntDir>..\..\Temp\Simple\Game\</IntDir>
     <TargetName>SimpleEngine_Simple</TargetName>
     <TargetExt>.exe</TargetExt>
@@ -78,7 +78,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -87,7 +87,7 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SHADER_DIR=\"../../Bin/Shaders/\";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/\";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -98,7 +98,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST $(SolutionDir)\DLL\easy_profiler.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin\Debug &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin\Debug &gt; nul)</Command>
+      <Command>IF EXIST $(SolutionDir)\DLL\easy_profiler.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -106,7 +106,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -118,7 +118,7 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SHADER_DIR=\"../../Bin/Shaders/\";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/\";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -130,7 +130,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST $(SolutionDir)\DLL\easy_profiler.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin\Release &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin\Release &gt; nul)</Command>
+      <Command>IF EXIST $(SolutionDir)\DLL\easy_profiler.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Simple|x64'">
@@ -138,7 +138,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -150,7 +150,7 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SHADER_DIR=\"../../Bin/Shaders/\";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/\";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -162,7 +162,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST $(SolutionDir)\DLL\easy_profiler.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin\Simple &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin\Simple &gt; nul)</Command>
+      <Command>IF EXIST $(SolutionDir)\DLL\easy_profiler.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\DLL\easy_profiler.dll ..\..\Bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
