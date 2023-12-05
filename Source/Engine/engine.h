@@ -15,7 +15,7 @@ public:
 	Engine();
 	~Engine();
 
-	void Init(HINSTANCE& hInstance, const int aWidth, const int aHeight);
+	void Init(HINSTANCE& hInstance, const int aWidth, const int aHeight, const int nCmdShow);
 	void Render();
 
 	bool BeginFrame();

@@ -21,7 +21,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int /*nCmdShow*/)
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
 {
 	SimpleTracker::MemoryTrackingSettings memoryTrackerSettings = {};
 	memoryTrackerSettings.myShouldStoreStackTraces = false;
@@ -37,7 +37,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		PROFILER_FUNCTION(profiler::colors::Blue);
 
 		Engine engine;
-		engine.Init(hInstance, 1280, 720);
+		engine.Init(hInstance, 1280, 720, nCmdShow);
 
 		SimpleUtilities::InputManager::GetInstance().SetHWND(engine.GetHWND());
 
@@ -55,7 +55,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		{
 			engine.Render();
 
-			for (auto& model : models)
+			for (const auto& model : models)
 			{
 				model->Draw();
 			}

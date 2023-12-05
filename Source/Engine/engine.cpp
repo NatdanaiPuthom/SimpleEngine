@@ -18,7 +18,7 @@ Engine::~Engine()
 	myInput = nullptr;
 }
 
-void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight)
+void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight, const int nCmdShow)
 {
 	myHWND = SetupMainWindow(hInstance, aWidth, aHeight);
 	assert(myHWND && "Failed To Create Window");
@@ -29,7 +29,7 @@ void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight)
 	myConsole.Init();
 #endif
 
-	ShowWindow(*myHWND, 1);
+	ShowWindow(*myHWND, nCmdShow);
 	UpdateWindow(*myHWND);
 
 	myGraphicsEngine = std::make_unique<GraphicsEngine>();
