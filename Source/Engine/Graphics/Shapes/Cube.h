@@ -6,5 +6,5 @@ public:
 	Cube();
 	~Cube();
 
-	bool Create();
+	const bool Create() override;
 };

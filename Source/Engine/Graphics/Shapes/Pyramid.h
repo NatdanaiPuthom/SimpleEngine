@@ -6,5 +6,5 @@ public:
 	Pyramid();
 	~Pyramid();
 
-	bool Create();
+	const bool Create() override;
 };

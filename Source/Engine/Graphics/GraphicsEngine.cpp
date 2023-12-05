@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Camera/Camera.h"
 #include "global.h"
+#include "Texture/Texture.h"
 
 #ifdef _DEBUG
 #define REPORT_DX_WARNINGS
@@ -8,6 +9,7 @@
 
 GraphicsEngine::GraphicsEngine()
 	: myCamera(std::make_shared<Camera>())
+	, myTexture(std::make_shared<Texture>())
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 {
 }
@@ -31,6 +33,22 @@ bool GraphicsEngine::Init(const int aHeight, const int aWidth, HWND& aWindowHand
 
 	if (!CreateFrameBuffer())
 		return false;
+
+	if (!CreateSamplerState())
+		return false;
+
+	const int channels = 4;
+	unsigned char* aRGBAPixels = new unsigned char[aWidth * aHeight * channels];
+
+	for (int i = 0; i < aWidth * aHeight; ++i) {
+		aRGBAPixels[i * channels] = 255;   // Red component
+		aRGBAPixels[i * channels + 1] = 0; // Green component
+		aRGBAPixels[i * channels + 2] = 0; // Blue component
+		aRGBAPixels[i * channels + 3] = 255; // Alpha component
+	}
+
+	myTexture->Init(myDevice, aRGBAPixels, 1280, 720);
+	delete[] aRGBAPixels;
 
 	return true;
 }
@@ -63,6 +81,9 @@ void GraphicsEngine::Render()
 
 	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
+	myTexture->Bind(myContext, 0);
 
 	myCamera->Update(SimplyGlobal::GetDeltaTime());
 }
@@ -111,7 +132,7 @@ bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aHeight, con
 
 	UINT creationFlags = 0;
 #if defined (REPORT_DX_WARNINGS)
-	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	creationFlags = D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
 	HRESULT result = D3D11CreateDeviceAndSwapChain(
@@ -197,6 +218,30 @@ bool GraphicsEngine::CreateDepthBuffer(const int aHeight, const int aWidth)
 	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
 	result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilState.GetAddressOf());
+	if (FAILED(result))
+		return false;
+
+	return true;
+}
+
+bool GraphicsEngine::CreateSamplerState()
+{
+	D3D11_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	HRESULT result = myDevice->CreateSamplerState(&samplerDesc, &mySamplerState);
 	if (FAILED(result))
 		return false;
 

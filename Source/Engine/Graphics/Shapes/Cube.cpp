@@ -10,7 +10,7 @@ Cube::~Cube()
 {
 }
 
-bool Cube::Create()
+const bool Cube::Create()
 {
 	myVertices =
 	{

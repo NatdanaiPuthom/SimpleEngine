@@ -28,3 +28,5 @@ using Microsoft::WRL::ComPtr;
 #include "Graphics/Buffers/ConstantBuffer.h"
 #include "Graphics/Shaders/Shader.h"
 #include "Graphics/Model/Model.h"
+
+#include "../External/profiler.h" //TO-DO: Fix so it works with <External/profiler.h>

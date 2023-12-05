@@ -2,6 +2,7 @@
 
 class GraphicsEngine;
 class ConstantBuffer;
+class Texture;
 
 enum class eShaderType
 {
@@ -13,6 +14,8 @@ struct Vertex
 {
 	SimpleUtilities::Vector4f position;
 	SimpleUtilities::Vector4f color;
+	float u;
+	float v;
 };
 
 class Model
@@ -21,7 +24,8 @@ public:
 	Model();
 	~Model();
 
-	bool Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, eShaderType aShaderType = eShaderType::Default);
+	virtual const bool Create() = 0;
+	const bool Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, eShaderType aShaderType = eShaderType::Default);
 	void Draw();
 public:
 	SimpleUtilities::Matrix4x4f& GetModelToWorldMatrix();
@@ -42,6 +46,8 @@ protected:
 	std::unique_ptr<ConstantBuffer> myFrameBuffer;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;
+
+	std::shared_ptr<Texture> myTexture;
 private:
 	GraphicsEngine* myGraphicsEngine;
 };

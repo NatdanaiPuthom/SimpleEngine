@@ -10,7 +10,7 @@ struct PixelOutput
     float4 color : SV_TARGET;
 };
 
-PixelOutput main (PixelInputType input)
+PixelOutput main(PixelInputType input)
 {
     PixelOutput result;
     result.color = input.color;

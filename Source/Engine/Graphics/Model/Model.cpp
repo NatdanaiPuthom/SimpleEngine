@@ -1,12 +1,14 @@
 #include "stdafx.h"
-#include "Camera/Camera.h"
 #include "global.h"
+#include "Camera/Camera.h"
+#include "Texture/Texture.h"
 
 Model::Model()
 	: myShader(std::make_shared<Shader>())
 	, myFrameBuffer(std::make_unique<ConstantBuffer>())
 	, myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myTimeBuffer(std::make_unique<ConstantBuffer>())
+	, myTexture(std::make_shared<Texture>())
 	, myGraphicsEngine(nullptr)
 {
 }
@@ -15,7 +17,7 @@ Model::~Model()
 {
 }
 
-bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, eShaderType aShaderType)
+const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, eShaderType aShaderType)
 {
 	myGraphicsEngine = aGraphicsEngine;
 
@@ -107,8 +109,26 @@ bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVe
 		break;
 	}
 
-	if (!myShader->Init(device.Get(), "TrianglePS.cso", shaderType))
+	if (!myShader->Init(device, "DefaultPS.cso", shaderType))
 		return false;
+
+	{ //Test No Clue What It Is
+		const int channels = 4;
+		unsigned char* aRGBAPixels = new unsigned char[1280 * 720 * channels];
+
+		for (int i = 0; i < 1280 * 720; ++i) {
+			aRGBAPixels[i * channels] = 255;   // Red component
+			aRGBAPixels[i * channels + 1] = 0; // Green component
+			aRGBAPixels[i * channels + 2] = 0; // Blue component
+			aRGBAPixels[i * channels + 3] = 255; // Alpha component
+		}
+
+		const bool success = myTexture->Init(device, aRGBAPixels, 1280, 720);
+		delete[] aRGBAPixels;
+
+		if (success == false)
+			return false;
+	}
 
 	return true;
 }

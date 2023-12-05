@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Graphics/Model/Model.h"
 #include "Graphics/Shapes/Cube.h"
 #include "Graphics/Shapes/Pyramid.h"
 #include <External/profiler.h>
@@ -40,20 +41,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 		SimpleUtilities::InputManager::GetInstance().SetHWND(engine.GetHWND());
 
-		Cube cube;
-		Pyramid pyramid;
+		std::vector<std::unique_ptr<Model>> models;
+		models.emplace_back(std::make_unique<Cube>());
+		models.emplace_back(std::make_unique<Pyramid>());
 
-		if (!cube.Create())
-			assert(false && "Failed to create Cube");
+		for (auto& model : models)
+		{
+			if (model->Create() == false)
+				assert(false && "Failed to create model");
+		}
 
-		if (!pyramid.Create())
-			assert(false && "Failed to create Pyramid");
-		
 		while (engine.BeginFrame())
 		{
 			engine.Render();
-			cube.Draw();
-			pyramid.Draw();
+
+			for (auto& model : models)
+			{
+				model->Draw();
+			}
+
 			engine.EndFrame();;
 		}
 	}

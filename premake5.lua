@@ -42,7 +42,7 @@ workspace "SimpleEngine"
 		targetname("%{prj.name}_%{cfg.buildcfg}")
 		location "Source/Engine"
 		includedirs{"Source/Engine/", "Source/Engine/Graphics/", "Source/External/"}
-		files {"Source/Engine/**.h", "Source/Engine/**.cpp", "Source/Engine/Graphics/Shaders/**.hlsl" , "Source/Engine/Graphics/Shaders/**.hlsli"}
+		files {"Source/Engine/**.h", "Source/Engine/**.cpp","Source/Engine/Graphics/Shaders/**.hlsl" , "Source/Engine/Graphics/Shaders/**.hlsli"}
 		links {"d3d11"}
 
 		pchheader "stdafx.h"

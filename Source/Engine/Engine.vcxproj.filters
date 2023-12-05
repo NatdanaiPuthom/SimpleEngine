@@ -28,6 +28,9 @@
     <Filter Include="Graphics\Shapes">
       <UniqueIdentifier>{09A1D9B0-752C-4775-7E3D-CA69EA47A375}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\Texture">
+      <UniqueIdentifier>{762EAB13-6227-CA65-8B59-AFEA77B1A971}</UniqueIdentifier>
+    </Filter>
     <Filter Include="MemoryTracker">
       <UniqueIdentifier>{0A814603-7641-C239-3F7C-0BB7ABFB0616}</UniqueIdentifier>
     </Filter>
@@ -62,6 +65,9 @@
     </ClInclude>
     <ClInclude Include="Graphics\Shapes\Triangle.h">
       <Filter>Graphics\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Texture\Texture.h">
+      <Filter>Graphics\Texture</Filter>
     </ClInclude>
     <ClInclude Include="MemoryTracker\MemoryTracker.h">
       <Filter>MemoryTracker</Filter>
@@ -125,6 +131,9 @@
     <ClCompile Include="Graphics\Shapes\Triangle.cpp">
       <Filter>Graphics\Shapes</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\Texture\Texture.cpp">
+      <Filter>Graphics\Texture</Filter>
+    </ClCompile>
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp">
       <Filter>MemoryTracker</Filter>
     </ClCompile>
@@ -145,19 +154,13 @@
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Graphics\Shaders\PS\TrianglePS.hlsl">
-      <Filter>Graphics\Shaders\PS</Filter>
-    </FxCompile>
-    <FxCompile Include="Graphics\Shaders\PS\TrianglePS_2.hlsl">
+    <FxCompile Include="Graphics\Shaders\PS\DefaultPS.hlsl">
       <Filter>Graphics\Shaders\PS</Filter>
     </FxCompile>
     <FxCompile Include="Graphics\Shaders\VS\DefaultColorfulVS.hlsl">
       <Filter>Graphics\Shaders\VS</Filter>
     </FxCompile>
     <FxCompile Include="Graphics\Shaders\VS\DefaultVS.hlsl">
-      <Filter>Graphics\Shaders\VS</Filter>
-    </FxCompile>
-    <FxCompile Include="Graphics\Shaders\VS\TriangleVS.hlsl">
       <Filter>Graphics\Shaders\VS</Filter>
     </FxCompile>
   </ItemGroup>

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Pyramid.h"
 #include "global.h"
+#include "Texture/Texture.h"
 
 Pyramid::Pyramid()
 {
@@ -10,7 +11,7 @@ Pyramid::~Pyramid()
 {
 }
 
-bool Pyramid::Create()
+const bool Pyramid::Create()
 {
 	myVertices =
 	{
@@ -42,6 +43,7 @@ bool Pyramid::Create()
 	transform(4, 2) = 0;
 	transform(4, 3) = 10;
 
-	bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, eShaderType::Default);
+	const bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, eShaderType::Default);
+
 	return success;
 }

@@ -169,6 +169,7 @@
     <ClInclude Include="Graphics\Shapes\Cube.h" />
     <ClInclude Include="Graphics\Shapes\Pyramid.h" />
     <ClInclude Include="Graphics\Shapes\Triangle.h" />
+    <ClInclude Include="Graphics\Texture\Texture.h" />
     <ClInclude Include="MemoryTracker\MemoryTracker.h" />
     <ClInclude Include="MemoryTracker\StackTrace.h" />
     <ClInclude Include="MemoryTracker\StackWalker.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="Graphics\Shapes\Cube.cpp" />
     <ClCompile Include="Graphics\Shapes\Pyramid.cpp" />
     <ClCompile Include="Graphics\Shapes\Triangle.cpp" />
+    <ClCompile Include="Graphics\Texture\Texture.cpp" />
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp" />
     <ClCompile Include="MemoryTracker\StackTrace.cpp" />
     <ClCompile Include="MemoryTracker\StackWalker.cpp" />
@@ -205,13 +207,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Graphics\Shaders\PS\TrianglePS.hlsl">
+    <FxCompile Include="Graphics\Shaders\PS\DefaultPS.hlsl">
       <ShaderType>Pixel</ShaderType>
-      <ObjectFileOutput>../../Bin/Shaders/TrianglePS.cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Graphics\Shaders\PS\TrianglePS_2.hlsl">
-      <ShaderType>Pixel</ShaderType>
-      <ObjectFileOutput>../../Bin/Shaders/TrianglePS_2.cso</ObjectFileOutput>
+      <ObjectFileOutput>../../Bin/Shaders/DefaultPS.cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Graphics\Shaders\VS\DefaultColorfulVS.hlsl">
       <ShaderType>Vertex</ShaderType>
@@ -220,10 +218,6 @@
     <FxCompile Include="Graphics\Shaders\VS\DefaultVS.hlsl">
       <ShaderType>Vertex</ShaderType>
       <ObjectFileOutput>../../Bin/Shaders/DefaultVS.cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Graphics\Shaders\VS\TriangleVS.hlsl">
-      <ShaderType>Vertex</ShaderType>
-      <ObjectFileOutput>../../Bin/Shaders/TriangleVS.cso</ObjectFileOutput>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

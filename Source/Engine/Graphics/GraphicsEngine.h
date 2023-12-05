@@ -1,6 +1,7 @@
 #pragma once
 
 class Camera;
+class Texture;
 
 struct FrameBufferData
 {
@@ -39,6 +40,7 @@ private:
 	bool CreateBackBuffer();
 	bool CreateFrameBuffer();
 	bool CreateDepthBuffer(const int aHeight, const int aWidth);
+	bool CreateSamplerState();
 private:
 	ComPtr<ID3D11Device> myDevice;
 	ComPtr<ID3D11DeviceContext> myContext;
@@ -50,6 +52,9 @@ private:
 
 	ComPtr<ID3D11Buffer> myFrameBuffer;
 	ComPtr<ID3D11Buffer> myObjectBuffer;
+
+	ComPtr<ID3D11SamplerState> mySamplerState;
+	std::shared_ptr<Texture> myTexture;
 	
 	std::shared_ptr<Camera> myCamera;
 
