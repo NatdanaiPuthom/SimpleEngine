@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "Camera/Camera.h"
-#include "global.h"
-#include "Texture/Texture.h"
+#include "Engine/global.h"
+#include "Graphics/Camera/Camera.h"
+#include "Graphics/Texture/Texture.h"
 
 #ifdef _DEBUG
 #define REPORT_DX_WARNINGS

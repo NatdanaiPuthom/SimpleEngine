@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <string_view>
 
-#include "MemoryTracker/StackTrace.h"
-#include "MemoryTracker/StackWalker.h"
+#include <External/StackWalker/StackWalker.h>
+#include "Engine/MemoryTracker/StackTrace.h"
 
 using namespace SimpleTracker;
 

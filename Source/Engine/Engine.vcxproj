@@ -77,7 +77,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Graphics;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;.;Graphics;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -104,7 +104,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Graphics;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;.;Graphics;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -135,7 +135,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SHADER_DIR="../../Bin/Shaders/";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Graphics;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;.;Graphics;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -168,11 +168,9 @@
     <ClInclude Include="Graphics\Shaders\Shader.h" />
     <ClInclude Include="Graphics\Shapes\Cube.h" />
     <ClInclude Include="Graphics\Shapes\Pyramid.h" />
-    <ClInclude Include="Graphics\Shapes\Triangle.h" />
     <ClInclude Include="Graphics\Texture\Texture.h" />
     <ClInclude Include="MemoryTracker\MemoryTracker.h" />
     <ClInclude Include="MemoryTracker\StackTrace.h" />
-    <ClInclude Include="MemoryTracker\StackWalker.h" />
     <ClInclude Include="SimpleUtilities\InputManager.h" />
     <ClInclude Include="SimpleUtilities\Matrix4x4.h" />
     <ClInclude Include="SimpleUtilities\Timer.h" />
@@ -193,11 +191,9 @@
     <ClCompile Include="Graphics\Shaders\Shader.cpp" />
     <ClCompile Include="Graphics\Shapes\Cube.cpp" />
     <ClCompile Include="Graphics\Shapes\Pyramid.cpp" />
-    <ClCompile Include="Graphics\Shapes\Triangle.cpp" />
     <ClCompile Include="Graphics\Texture\Texture.cpp" />
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp" />
     <ClCompile Include="MemoryTracker\StackTrace.cpp" />
-    <ClCompile Include="MemoryTracker\StackWalker.cpp" />
     <ClCompile Include="SimpleUtilities\InputManager.cpp" />
     <ClCompile Include="SimpleUtilities\Timer.cpp" />
     <ClCompile Include="engine.cpp" />
@@ -222,6 +218,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Graphics\Shaders\Common.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\External\External.vcxproj">
+      <Project>{089DB854-F469-1360-1D83-010809AF48EE}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

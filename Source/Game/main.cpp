@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "Graphics/Model/Model.h"
-#include "Graphics/Shapes/Cube.h"
-#include "Graphics/Shapes/Pyramid.h"
+#include "Engine/Graphics/Model/Model.h"
+#include "Engine/Graphics/Shapes/Cube.h"
+#include "Engine/Graphics/Shapes/Pyramid.h"
 #include <External/profiler.h>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

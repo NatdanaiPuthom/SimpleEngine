@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Cube.h"
-#include "global.h"
+#include "Engine/global.h"
+#include "Engine/Graphics/Shapes/Cube.h"
 
 Cube::Cube()
 {

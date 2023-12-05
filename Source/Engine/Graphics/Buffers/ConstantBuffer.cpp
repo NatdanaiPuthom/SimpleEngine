@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "ConstantBuffer.h"
+#include "Engine/Graphics/Buffers/ConstantBuffer.h"
 
 ConstantBuffer::ConstantBuffer()
 	: myGraphicsEngine(nullptr)

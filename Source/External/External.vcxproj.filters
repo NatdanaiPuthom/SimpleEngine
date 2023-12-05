@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="StackWalker">
+      <UniqueIdentifier>{21FD7E7C-8DB2-F771-16A7-F148825BEE75}</UniqueIdentifier>
+    </Filter>
     <Filter Include="easy">
       <UniqueIdentifier>{B71D967C-A354-970D-4C41-7D103857130F}</UniqueIdentifier>
     </Filter>
@@ -9,6 +12,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="StackWalker\StackWalker.h">
+      <Filter>StackWalker</Filter>
+    </ClInclude>
     <ClInclude Include="easy\arbitrary_value.h">
       <Filter>easy</Filter>
     </ClInclude>
@@ -58,5 +64,10 @@
       <Filter>easy</Filter>
     </ClInclude>
     <ClInclude Include="profiler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="StackWalker\StackWalker.cpp">
+      <Filter>StackWalker</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

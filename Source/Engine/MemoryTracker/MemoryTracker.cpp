@@ -2,8 +2,8 @@
 #include <mutex>
 #include <debugapi.h>
 
-#include "MemoryTracker.h"
-#include "StackTrace.h"
+#include "Engine/MemoryTracker/MemoryTracker.h"
+#include "Engine/MemoryTracker/StackTrace.h"
 
 using namespace SimpleTracker;
 

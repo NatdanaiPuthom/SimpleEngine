@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Texture.h"
+#include "Engine/Graphics/Texture/Texture.h"
 
 Texture::Texture()
 {

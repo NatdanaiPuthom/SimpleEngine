@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "global.h"
-#include "engine.h"
+#include "Engine/global.h"
+#include "Engine/engine.h"
 
 namespace
 {

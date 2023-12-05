@@ -142,6 +142,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="StackWalker\StackWalker.h" />
     <ClInclude Include="easy\arbitrary_value.h" />
     <ClInclude Include="easy\details\arbitrary_value_aux.h" />
     <ClInclude Include="easy\details\arbitrary_value_public_types.h" />
@@ -159,6 +160,9 @@
     <ClInclude Include="easy\utility.h" />
     <ClInclude Include="easy\writer.h" />
     <ClInclude Include="profiler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="StackWalker\StackWalker.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

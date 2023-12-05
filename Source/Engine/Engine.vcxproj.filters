@@ -63,9 +63,6 @@
     <ClInclude Include="Graphics\Shapes\Pyramid.h">
       <Filter>Graphics\Shapes</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Shapes\Triangle.h">
-      <Filter>Graphics\Shapes</Filter>
-    </ClInclude>
     <ClInclude Include="Graphics\Texture\Texture.h">
       <Filter>Graphics\Texture</Filter>
     </ClInclude>
@@ -73,9 +70,6 @@
       <Filter>MemoryTracker</Filter>
     </ClInclude>
     <ClInclude Include="MemoryTracker\StackTrace.h">
-      <Filter>MemoryTracker</Filter>
-    </ClInclude>
-    <ClInclude Include="MemoryTracker\StackWalker.h">
       <Filter>MemoryTracker</Filter>
     </ClInclude>
     <ClInclude Include="SimpleUtilities\InputManager.h">
@@ -128,9 +122,6 @@
     <ClCompile Include="Graphics\Shapes\Pyramid.cpp">
       <Filter>Graphics\Shapes</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Shapes\Triangle.cpp">
-      <Filter>Graphics\Shapes</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics\Texture\Texture.cpp">
       <Filter>Graphics\Texture</Filter>
     </ClCompile>
@@ -138,9 +129,6 @@
       <Filter>MemoryTracker</Filter>
     </ClCompile>
     <ClCompile Include="MemoryTracker\StackTrace.cpp">
-      <Filter>MemoryTracker</Filter>
-    </ClCompile>
-    <ClCompile Include="MemoryTracker\StackWalker.cpp">
       <Filter>MemoryTracker</Filter>
     </ClCompile>
     <ClCompile Include="SimpleUtilities\InputManager.cpp">

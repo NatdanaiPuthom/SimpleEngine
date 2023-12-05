@@ -1,6 +1,6 @@
 #include "stdafx.h"
+#include "Engine/Graphics/Shaders/Shader.h"
 #include <fstream>
-#include "Shaders/Shader.h"
 
 Shader::Shader()
 {

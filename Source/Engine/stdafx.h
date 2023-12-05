@@ -16,17 +16,17 @@ using Microsoft::WRL::ComPtr;
 #include <vector>
 #include <unordered_map>
 
-#include "MemoryTracker/MemoryTracker.h"
+#include <External/profiler.h>
 
-#include "SimpleUtilities/Vector.h"
-#include "SimpleUtilities/Matrix4x4.h"
-#include "SimpleUtilities/InputManager.h"
+#include "Engine/MemoryTracker/MemoryTracker.h"
 
-#include "Graphics/GraphicsEngine.h"
-#include "engine.h"
+#include "Engine/SimpleUtilities/Vector.h"
+#include "Engine/SimpleUtilities/Matrix4x4.h"
+#include "Engine/SimpleUtilities/InputManager.h"
 
-#include "Graphics/Buffers/ConstantBuffer.h"
-#include "Graphics/Shaders/Shader.h"
-#include "Graphics/Model/Model.h"
+#include "Engine/Graphics/GraphicsEngine.h" //TO-DO: Fix dependency (Currently it need to be include before engine.h)
+#include "Engine/engine.h"
 
-#include "../External/profiler.h" //TO-DO: Fix so it works with <External/profiler.h>
+#include "Engine/Graphics/Buffers/ConstantBuffer.h"
+#include "Engine/Graphics/Shaders/Shader.h"
+#include "Engine/Graphics/Model/Model.h"

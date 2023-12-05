@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "SimpleUtilities/Timer.h"
-#include "global.h"
+#include "Engine/SimpleUtilities/Timer.h"
+#include "Engine/global.h"
 
 #ifdef _DEBUG
-#include "Console/Console.h"
+#include "Engine/Console/Console.h"
 #endif
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -67,7 +67,7 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 	std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 	*hwnd = CreateWindow(
 		L"Natdanai",
-		L"SimpleEngine v4.3",
+		L"SimpleEngine v4.4",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,

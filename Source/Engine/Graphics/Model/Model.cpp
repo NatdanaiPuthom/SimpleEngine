@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "global.h"
-#include "Camera/Camera.h"
-#include "Texture/Texture.h"
+#include "Engine/global.h"
+#include "Engine/Graphics/Camera/Camera.h"
+#include "Engine/Graphics/Texture/Texture.h"
 
 Model::Model()
 	: myShader(std::make_shared<Shader>())

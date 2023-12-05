@@ -1,6 +1,6 @@
 #include "stdafx.h"
+#include "Engine/SimpleUtilities/InputManager.h"
 #include <windowsx.h>
-#include "SimpleUtilities/InputManager.h"
 
 namespace SimpleUtilities
 {

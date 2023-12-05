@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "Pyramid.h"
-#include "global.h"
-#include "Texture/Texture.h"
+#include "Engine/global.h"
+#include "Engine/Graphics/Shapes/Pyramid.h"
+#include "Engine/Graphics/Texture/Texture.h"
 
 Pyramid::Pyramid()
 {
