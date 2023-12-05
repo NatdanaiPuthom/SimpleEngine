@@ -66,7 +66,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	PROFILER_END();
 	PROFILER_DISABLE();
-	PROFILER_DUMP_FILE("../../Bin/profile_data.prof");
+
+	const std::string output = SIMPLE_PROFILER_DIR + std::string("profiler_data.prof");
+	PROFILER_DUMP_FILE(output.c_str());
 
 	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!
 	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here before StopMemoryTrackingAndPrint function!

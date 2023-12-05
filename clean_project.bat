@@ -1,9 +1,13 @@
 @echo off
 
 rem delete all .sln files
+
 del *.sln
 
+
+
 rem delete all files and folder in Bin except "Assets" folder
+
 set "folderPath=Bin"
 cd %folderPath%
 for /d %%d in (*) do (
@@ -13,11 +17,18 @@ for /d %%d in (*) do (
 )
 cd ..
 
+
+
+
 rem delete Temp folder
+
 set "folderPaths=Temp"
 for %%d in (%folderPaths%) do (
     rd /s /q "%%d"
 )
+
+
+
 
 set "folderPath=Lib"
 set "excludeFile=easy_profiler.lib"
@@ -29,7 +40,11 @@ for %%f in ("%folderPath%\*") do (
     )
 )
 
+
+
+
 rem delete hidden ".vs" folder
+
 rmdir /s /q .vs
 
 set /p DUMMY=Success cleaning project, press any key to exit

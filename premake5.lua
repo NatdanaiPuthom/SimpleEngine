@@ -11,8 +11,12 @@ workspace "SimpleEngine"
 	local shader_dir = path.join(_SCRIPT_DIR, "Bin/Shaders/")
 	os.mkdir(shader_dir)
 
+	local profiler_dir = path.join(_SCRIPT_DIR, "Bin/Profilers/")
+	os.mkdir(profiler_dir)
+
 	defines { 
-		'SHADER_DIR="' .. shader_dir .. '/"' 
+		'SIMPLE_SHADER_DIR="' .. shader_dir .. '/"' ,
+		'SIMPLE_PROFILER_DIR="' ..profiler_dir ..'/"'
 	}
 
 	configurations {
