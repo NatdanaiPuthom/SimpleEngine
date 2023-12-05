@@ -6,7 +6,7 @@ del *.sln
 
 
 
-rem delete all files and folder in Bin except "Assets" folder
+rem delete all folder and it's content in Bin except "Assets" and "Shaders" folder
 
 set "folderPath=Bin"
 cd %folderPath%
@@ -15,6 +15,12 @@ for /d %%d in (*) do (
         rmdir /s /q "%%d"
     )
 )
+
+rem Remove files with .pdb extension
+for %%f in (*.pdb) do (
+    del /q "%%f"
+)
+
 cd ..
 
 
