@@ -11,9 +11,9 @@ rem delete all files and folder in Bin except "Assets" folder
 set "folderPath=Bin"
 cd %folderPath%
 for /d %%d in (*) do (
-    if /i not "%%d"=="Assets" (
+    if /i not "%%d"=="Assets" if /i not "%%d"=="Shaders" (
         rmdir /s /q "%%d"
-    	)
+    )
 )
 cd ..
 
