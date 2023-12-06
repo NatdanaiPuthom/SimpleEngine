@@ -19,7 +19,6 @@ PixelInputType main (VertexInputType aInput)
     output.color.b = (sin(elapsedTime + offsetB) + 1.0f) * 0.5f;
     output.color.a = aInput.color.a;
     
-    output.worldPosition = vertexWorldPos;
     output.uv = aInput.uv;
     
     return output;

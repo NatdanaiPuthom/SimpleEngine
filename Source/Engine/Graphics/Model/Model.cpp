@@ -112,23 +112,10 @@ const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex
 	if (!myShader->Init(device, "DefaultPS.cso", shaderType))
 		return false;
 
-	{ //Test No Clue What It Is
-		const int channels = 4;
-		unsigned char* aRGBAPixels = new unsigned char[1280 * 720 * channels];
+	const bool success = myTexture->Init(device, "colors.dds");
 
-		for (int i = 0; i < 1280 * 720; ++i) {
-			aRGBAPixels[i * channels] = 255;   // Red component
-			aRGBAPixels[i * channels + 1] = 0; // Green component
-			aRGBAPixels[i * channels + 2] = 0; // Blue component
-			aRGBAPixels[i * channels + 3] = 255; // Alpha component
-		}
-
-		const bool success = myTexture->Init(device, aRGBAPixels, 1280, 720);
-		delete[] aRGBAPixels;
-
-		if (success == false)
-			return false;
-	}
+	if (success == false)
+		return false;
 
 	return true;
 }
@@ -161,6 +148,8 @@ void Model::Draw()
 	timeBuffer.time = static_cast<float>(SimplyGlobal::GetTotalTime());
 	myTimeBuffer->Bind(2);
 	myTimeBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
+
+	myTexture->Bind(context, 0);
 
 	context->DrawIndexed(static_cast<UINT>(myIndices.size()), 0, 0);
 }

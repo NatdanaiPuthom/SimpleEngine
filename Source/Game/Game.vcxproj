@@ -78,7 +78,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_IMGUI_FILENAME="imgui.ini";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -87,7 +87,7 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/\";SIMPLE_PROFILER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/\";SIMPLE_IMGUI_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/\";SIMPLE_ROOT_DIR=\"C:/Users/panda/Desktop/SimpleEngine/\";SIMPLE_IMGUI_FILENAME=\"imgui.ini\";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_SHADER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/\";SIMPLE_PROFILER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/\";SIMPLE_IMGUI_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/\";SIMPLE_ROOT_DIR=\"C:/Users/panda/Desktop/SimpleEngine/\";SIMPLE_ASSETS_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/\";SIMPLE_IMGUI_FILENAME=\"imgui.ini\";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -106,7 +106,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_IMGUI_FILENAME="imgui.ini";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -118,7 +118,7 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/\";SIMPLE_PROFILER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/\";SIMPLE_IMGUI_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/\";SIMPLE_ROOT_DIR=\"C:/Users/panda/Desktop/SimpleEngine/\";SIMPLE_IMGUI_FILENAME=\"imgui.ini\";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_SHADER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/\";SIMPLE_PROFILER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/\";SIMPLE_IMGUI_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/\";SIMPLE_ROOT_DIR=\"C:/Users/panda/Desktop/SimpleEngine/\";SIMPLE_ASSETS_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/\";SIMPLE_IMGUI_FILENAME=\"imgui.ini\";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -138,7 +138,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_IMGUI_FILENAME="imgui.ini";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -150,7 +150,7 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/\";SIMPLE_PROFILER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/\";SIMPLE_IMGUI_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/\";SIMPLE_ROOT_DIR=\"C:/Users/panda/Desktop/SimpleEngine/\";SIMPLE_IMGUI_FILENAME=\"imgui.ini\";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_SHADER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/\";SIMPLE_PROFILER_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/\";SIMPLE_IMGUI_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/\";SIMPLE_ROOT_DIR=\"C:/Users/panda/Desktop/SimpleEngine/\";SIMPLE_ASSETS_DIR=\"C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/\";SIMPLE_IMGUI_FILENAME=\"imgui.ini\";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;..\Engine;.;..\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>

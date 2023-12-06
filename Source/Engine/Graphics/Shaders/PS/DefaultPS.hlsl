@@ -1,18 +1,13 @@
+#include "../Common.hlsli"
 
-struct PixelInputType
-{
-    float4 position : SV_POSITION;
-    float4 color : COLOR;
-};
-
-struct PixelOutput
-{
-    float4 color : SV_TARGET;
-};
+Texture2D aTexture : register(t0);
+SamplerState aSampler : register(s0);
 
 PixelOutput main(PixelInputType input)
-{
+{  
     PixelOutput result;
-    result.color = input.color;
+    
+    result.color = aTexture.Sample(aSampler, input.uv.xy).rgba;
+    
     return result;
 }

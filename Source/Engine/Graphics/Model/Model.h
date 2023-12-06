@@ -14,8 +14,7 @@ struct Vertex
 {
 	SimpleUtilities::Vector4f position;
 	SimpleUtilities::Vector4f color;
-	float u;
-	float v;
+	SimpleUtilities::Vector2f uv;
 };
 
 class Model

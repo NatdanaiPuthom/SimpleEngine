@@ -81,6 +81,9 @@
     <ClInclude Include="SimpleUtilities\Timer.h">
       <Filter>SimpleUtilities</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleUtilities\Utility.h">
+      <Filter>SimpleUtilities</Filter>
+    </ClInclude>
     <ClInclude Include="SimpleUtilities\Vector.h">
       <Filter>SimpleUtilities</Filter>
     </ClInclude>

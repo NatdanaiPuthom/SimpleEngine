@@ -1,7 +1,6 @@
 #pragma once
 
 class Camera;
-class Texture;
 
 struct FrameBufferData
 {
@@ -54,7 +53,6 @@ private:
 	ComPtr<ID3D11Buffer> myObjectBuffer;
 
 	ComPtr<ID3D11SamplerState> mySamplerState;
-	std::shared_ptr<Texture> myTexture;
 	
 	std::shared_ptr<Camera> myCamera;
 

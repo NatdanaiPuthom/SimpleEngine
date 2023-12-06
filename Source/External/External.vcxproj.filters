@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="DDSTextureLoader">
+      <UniqueIdentifier>{681569CE-540E-8820-7D40-6DA56998672C}</UniqueIdentifier>
+    </Filter>
     <Filter Include="StackWalker">
       <UniqueIdentifier>{21FD7E7C-8DB2-F771-16A7-F148825BEE75}</UniqueIdentifier>
     </Filter>
@@ -48,6 +51,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h">
+      <Filter>DDSTextureLoader</Filter>
+    </ClInclude>
     <ClInclude Include="StackWalker\StackWalker.h">
       <Filter>StackWalker</Filter>
     </ClInclude>
@@ -409,6 +415,9 @@
     <ClInclude Include="profiler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DDSTextureLoader\DDSTextureLoader11.cpp">
+      <Filter>DDSTextureLoader</Filter>
+    </ClCompile>
     <ClCompile Include="StackWalker\StackWalker.cpp">
       <Filter>StackWalker</Filter>
     </ClCompile>

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Engine/global.h"
 #include "Graphics/Camera/Camera.h"
-#include "Graphics/Texture/Texture.h"
 
 #ifdef _DEBUG
 #define REPORT_DX_WARNINGS
@@ -9,7 +8,6 @@
 
 GraphicsEngine::GraphicsEngine()
 	: myCamera(std::make_shared<Camera>())
-	, myTexture(std::make_shared<Texture>())
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 {
 }
@@ -36,19 +34,6 @@ bool GraphicsEngine::Init(const int aHeight, const int aWidth, HWND& aWindowHand
 
 	if (!CreateSamplerState())
 		return false;
-
-	const int channels = 4;
-	unsigned char* aRGBAPixels = new unsigned char[aWidth * aHeight * channels];
-
-	for (int i = 0; i < aWidth * aHeight; ++i) {
-		aRGBAPixels[i * channels] = 255;   // Red component
-		aRGBAPixels[i * channels + 1] = 0; // Green component
-		aRGBAPixels[i * channels + 2] = 0; // Blue component
-		aRGBAPixels[i * channels + 3] = 255; // Alpha component
-	}
-
-	myTexture->Init(myDevice, aRGBAPixels, 1280, 720);
-	delete[] aRGBAPixels;
 
 	return true;
 }
@@ -83,7 +68,6 @@ void GraphicsEngine::Render()
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
-	myTexture->Bind(myContext, 0);
 
 	myCamera->Update(SimplyGlobal::GetDeltaTime());
 }

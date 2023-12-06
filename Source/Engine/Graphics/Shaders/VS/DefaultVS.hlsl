@@ -10,7 +10,6 @@ PixelInputType main (VertexInputType aInput)
     
     output.position = vertexClipPos;
     output.color = aInput.color;
-    output.worldPosition = vertexWorldPos;
     output.uv = aInput.uv;
    
     return output;

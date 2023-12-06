@@ -4,7 +4,6 @@
 
 Shader::Shader()
 {
-
 }
 
 Shader::~Shader()

@@ -12,6 +12,7 @@ workspace "SimpleEngine"
 	local shader_dir = path.join(_SCRIPT_DIR, "Bin/Shaders/") -- Absolute path to this file plus "Bin/Shaders/"
 	local profiler_dir = path.join(_SCRIPT_DIR, "Bin/Profilers/")
 	local imgui_dir = path.join(_SCRIPT_DIR, "Bin/")
+	local assets_dir = path.join(_SCRIPT_DIR, "Bin/Assets/")
 
 	os.mkdir(shader_dir)
 	os.mkdir(profiler_dir)
@@ -21,7 +22,8 @@ workspace "SimpleEngine"
 		'SIMPLE_SHADER_DIR="' .. shader_dir .. '/"' ,
 		'SIMPLE_PROFILER_DIR="' ..profiler_dir ..'/"',
 		'SIMPLE_IMGUI_DIR="' ..imgui_dir .. '/"',
-		'SIMPLE_ROOT_DIR="' ..root_dir .. '/"'
+		'SIMPLE_ROOT_DIR="' ..root_dir .. '/"',
+		'SIMPLE_ASSETS_DIR="' ..assets_dir .. '/"'
 	}
 
 	defines { -- Create Global Macro For Strings
