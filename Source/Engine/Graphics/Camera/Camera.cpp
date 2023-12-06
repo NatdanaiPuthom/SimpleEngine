@@ -2,6 +2,7 @@
 #include "Engine/global.h"
 #include "Engine/Graphics/Camera/Camera.h"
 #include "Engine/SimpleUtilities/InputManager.h"
+#include "Engine/SimpleUtilities/Utility.h"
 
 Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, const float aNearPlane, const float aFarPlane)
 	: myResolution(aResolution)
@@ -23,7 +24,7 @@ void Camera::Update(const float aDeltaTime)
 	if (myInput->GetAKeyIsPressed())
 	{
 		SimpleUtilities::Vector3f forward;
-		SimpleUtilities::Vector3f position(myModelToWorldTransform(4, 1), myModelToWorldTransform(4, 2), myModelToWorldTransform(4, 3));
+		SimpleUtilities::Vector3f targetPosition(myModelToWorldTransform(4, 1), myModelToWorldTransform(4, 2), myModelToWorldTransform(4, 3));
 
 		float speed = myMoveSpeed;
 
@@ -47,32 +48,32 @@ void Camera::Update(const float aDeltaTime)
 		if (myInput->IsHold('W'))
 		{
 			forward = myForward * speed * aDeltaTime;
-			position += forward;
+			targetPosition += forward;
 		}
 
 		if (myInput->IsHold('S'))
 		{
 			forward = -1.0f * myForward * speed * aDeltaTime;
-			position += forward;
+			targetPosition += forward;
 		}
 
 		if (myInput->IsHold('A'))
 		{
 			forward = -1.0f * myRight * speed * aDeltaTime;
-			position += forward;
+			targetPosition += forward;
 		}
 
 		if (myInput->IsHold('D'))
 		{
 			forward = myRight * speed * aDeltaTime;
-			position += forward;
+			targetPosition += forward;
 		}
 
 		if (myInput->IsHold('Q'))
 		{
 			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
 			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(-myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(position);
+			SetPosition(targetPosition);
 			UpdateCameraVectors();
 		}
 
@@ -80,7 +81,7 @@ void Camera::Update(const float aDeltaTime)
 		{
 			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
 			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(position);
+			SetPosition(targetPosition);
 			UpdateCameraVectors();
 		}
 
@@ -93,7 +94,7 @@ void Camera::Update(const float aDeltaTime)
 		if (myInput->IsHold(VK_SPACE))
 		{
 			forward = direction * myUp * speed * aDeltaTime;
-			position += forward;
+			targetPosition += forward;
 		}
 
 		HWND& hwnd = SimplyGlobal::GetHWND();
@@ -122,10 +123,15 @@ void Camera::Update(const float aDeltaTime)
 			}
 		}
 
-		myModelToWorldTransform(4, 1) = position.x;
-		myModelToWorldTransform(4, 2) = position.y;
-		myModelToWorldTransform(4, 3) = position.z;
+		const float lerpFactor = 0.5f;
+		myCurrentPosition.x = SimpleUtilities::Lerp<float>(myCurrentPosition.x, targetPosition.x, lerpFactor);
+		myCurrentPosition.y = SimpleUtilities::Lerp<float>(myCurrentPosition.y, targetPosition.y, lerpFactor);
+		myCurrentPosition.z = SimpleUtilities::Lerp<float>(myCurrentPosition.z, targetPosition.z, lerpFactor);
 	}
+
+	myModelToWorldTransform(4, 1) = myCurrentPosition.x;
+	myModelToWorldTransform(4, 2) = myCurrentPosition.y;
+	myModelToWorldTransform(4, 3) = myCurrentPosition.z;
 }
 
 SimpleUtilities::Vector4f Camera::WorldToCameraSpace(const SimpleUtilities::Vector4f& aVector)

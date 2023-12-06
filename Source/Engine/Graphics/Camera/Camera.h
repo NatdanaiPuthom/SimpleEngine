@@ -44,6 +44,7 @@ private:
 	SimpleUtilities::Matrix4x4f myModelToWorldTransform;
 	SimpleUtilities::Matrix4x4f myProjectionMatrix;
 
+	SimpleUtilities::Vector3f myCurrentPosition;
 	SimpleUtilities::Vector3f myForward;
 	SimpleUtilities::Vector3f myRight;
 	SimpleUtilities::Vector3f myUp;
