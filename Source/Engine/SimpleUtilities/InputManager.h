@@ -32,6 +32,7 @@ namespace SimpleUtilities
 		void HideMouse();
 		void CaptureMouse() const;
 		void ReleaseMouse() const;
+		void ResetKeyStates();
 	public:
 		SimpleUtilities::Vector2f GetMouseDelta() const;
 		SimpleUtilities::Vector2f GetMousePosition() const;

@@ -5,20 +5,18 @@
 namespace SimpleUtilities
 {
 	InputManager::InputManager()
+		: myMouseIsHidden(false)
+		, myAKeyIsPressed(false)
+		, myTentativeMousePosition(0,0)
+		, myCurrentMousePosition(0,0)
+		, myPreviousMousePosition(0,0)
+		, myMouseDelta(0,0)
 	{
 		myOwnerHWND = GetActiveWindow();
 
 		myKeyLiveState = { 0 };
 		myKeyState = { 0 };
 		myKeyPreviousState = { 0 };
-
-		myTentativeMousePosition = { 0,0 };
-		myCurrentMousePosition = { 0,0 };
-		myPreviousMousePosition = { 0,0 };
-		myMouseDelta = { 0,0 };
-
-		myMouseIsHidden = false;
-		myAKeyIsPressed = false;
 	}
 
 	bool InputManager::IsPressed(const int aKeyCode) const
@@ -410,5 +408,12 @@ namespace SimpleUtilities
 	void InputManager::ReleaseMouse() const
 	{
 		ClipCursor(nullptr);
+	}
+
+	void InputManager::ResetKeyStates()
+	{
+		myKeyState.reset();
+		myKeyPreviousState.reset();
+		myKeyLiveState.reset();
 	}
 }
