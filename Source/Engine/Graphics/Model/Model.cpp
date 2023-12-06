@@ -95,7 +95,7 @@ const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex
 			return false;
 	}
 
-	const char* shaderType = "DefaultVS.cso";
+	const char* shaderType = "DefaultPS.cso";
 	switch (aShaderType)
 	{
 	case eShaderType::Default:

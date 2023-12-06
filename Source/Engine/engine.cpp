@@ -71,7 +71,10 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
 	wcex.lpszClassName = L"Natdanai";
 	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+	wcex.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+
 	assert(wcex.hIcon != NULL && "Failed to load icon");
+	assert(wcex.hIconSm != NULL && "Failed to load small icon");
 
 	if (!RegisterClassExW(&wcex))
 	{
@@ -84,12 +87,13 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 	wr.right = aWidth + wr.left;
 	wr.top = 0;
 	wr.bottom = aHeight + wr.top;
+
 	AdjustWindowRect(&wr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX, FALSE);
 
 	std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 	*hwnd = CreateWindow(
 		L"Natdanai",
-		L"SimpleEngine v4.5",
+		L"SimpleEngine v4.6",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
