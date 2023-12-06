@@ -1,13 +1,10 @@
 #include "../Common.hlsli"
 
-Texture2D aTexture : register(t0);
-SamplerState aSampler : register(s0);
-
-PixelOutput main(PixelInputType input)
+PixelOutput main(PixelInputType aInput)
 {  
-    PixelOutput result;
+    PixelOutput output;
     
-    result.color = aTexture.Sample(aSampler, input.uv.xy).rgba;
+    output.color = aInput.color * aTexture.Sample(aSampler, aInput.uv);
     
-    return result;
+    return output;
 }

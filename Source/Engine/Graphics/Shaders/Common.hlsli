@@ -1,4 +1,7 @@
 
+SamplerState aSampler : register(s0);
+Texture2D aTexture : register(t0);
+
 cbuffer FrameBuffer : register(b0)
 {
     float4x4 worldToClipMatrix;

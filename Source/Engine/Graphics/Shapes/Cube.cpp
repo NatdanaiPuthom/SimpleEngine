@@ -14,26 +14,37 @@ const bool Cube::Create()
 {
     myVertices =
     {
+        //North
         {SimpleUtilities::Vector4f(0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)},
         {SimpleUtilities::Vector4f(0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)},
         {SimpleUtilities::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 0)},
         {SimpleUtilities::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)},
+
+        //West
         {SimpleUtilities::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 0, 1), SimpleUtilities::Vector2f(0, 1)},
         {SimpleUtilities::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 0, 1), SimpleUtilities::Vector2f(0, 0)},
         {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 0, 1), SimpleUtilities::Vector2f(1, 0)},
         {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 0, 1), SimpleUtilities::Vector2f(1, 1)},
+
+        //South
         {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 1, 0, 1), SimpleUtilities::Vector2f(0, 1)},
         {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 1, 0, 1), SimpleUtilities::Vector2f(0, 0)},
         {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 1, 0, 1), SimpleUtilities::Vector2f(1, 0)},
         {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 1, 0, 1), SimpleUtilities::Vector2f(1, 1)},
+
+        //East
         {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 0, 1, 1), SimpleUtilities::Vector2f(0, 1)},
         {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 0, 1, 1), SimpleUtilities::Vector2f(0, 0)},
         {SimpleUtilities::Vector4f(0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(0, 0, 1, 1), SimpleUtilities::Vector2f(1, 0)},
         {SimpleUtilities::Vector4f(0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(0, 0, 1, 1), SimpleUtilities::Vector2f(1, 1)},
+
+        //Up
         {SimpleUtilities::Vector4f(0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 0, 1), SimpleUtilities::Vector2f(0, 1)},
         {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 0, 1), SimpleUtilities::Vector2f(0, 0)},
         {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 0, 1), SimpleUtilities::Vector2f(1, 0)},
         {SimpleUtilities::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 0, 1), SimpleUtilities::Vector2f(1, 1)},
+
+        //Down
         {SimpleUtilities::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 1, 1), SimpleUtilities::Vector2f(0, 1)},
         {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 1, 1), SimpleUtilities::Vector2f(0, 0)},
         {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 1, 1), SimpleUtilities::Vector2f(1, 0)},
@@ -61,6 +72,6 @@ const bool Cube::Create()
 	transform(4, 2) = 0;
 	transform(4, 3) = 10;
 
-	bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, eShaderType::Colorful);
+	bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, eShaderType::Default);
 	return success;
 }

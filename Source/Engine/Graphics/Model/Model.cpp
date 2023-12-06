@@ -99,17 +99,17 @@ const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex
 	switch (aShaderType)
 	{
 	case eShaderType::Default:
-		shaderType = "DefaultVS.cso";
+		shaderType = "DefaultPS.cso";
 		break;
 	case eShaderType::Colorful:
-		shaderType = "DefaultColorfulVS.cso";
+		shaderType = "ColorfulPS.cso";
 		break;
 	default:
-		shaderType = "DefaultVS.cso";
+		shaderType = "DefaultPS.cso";
 		break;
 	}
 
-	if (!myShader->Init(device, "DefaultPS.cso", shaderType))
+	if (!myShader->Init(device, shaderType, "DefaultVS.cso"))
 		return false;
 
 	const bool success = myTexture->Init(device, "colors.dds");
