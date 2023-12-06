@@ -75,7 +75,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_IMGUI_FILENAME="imgui.ini";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -96,7 +96,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_IMGUI_FILENAME="imgui.ini";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -121,7 +121,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_IMGUI_FILENAME="imgui.ini";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -243,6 +243,8 @@
     <ClInclude Include="dearimgui\imgui\misc\cpp\imgui_stdlib.h" />
     <ClInclude Include="dearimgui\imgui\misc\freetype\imgui_freetype.h" />
     <ClInclude Include="dearimgui\imgui\misc\single_file\imgui_single_file.h" />
+    <ClInclude Include="dearimgui\imnodes\imnodes.h" />
+    <ClInclude Include="dearimgui\imnodes\imnodes_internal.h" />
     <ClInclude Include="easy\arbitrary_value.h" />
     <ClInclude Include="easy\details\arbitrary_value_aux.h" />
     <ClInclude Include="easy\details\arbitrary_value_public_types.h" />
@@ -274,6 +276,7 @@
     <ClCompile Include="dearimgui\imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="dearimgui\imgui\misc\fonts\binary_to_compressed_c.cpp" />
     <ClCompile Include="dearimgui\imgui\misc\freetype\imgui_freetype.cpp" />
+    <ClCompile Include="dearimgui\imnodes\imnodes.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

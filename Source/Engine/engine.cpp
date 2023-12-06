@@ -5,6 +5,7 @@
 #include <External/dearimgui/imgui/imgui.h>
 #include <External/dearimgui/imgui/imgui_impl_win32.h>
 #include <External/dearimgui/imgui/imgui_impl_dx11.h>
+#include <External/dearimgui/imnodes/imnodes.h>
 
 #ifdef _DEBUG
 #include "Engine/Console/Console.h"
@@ -21,8 +22,12 @@ Engine::~Engine()
 {
 	myInput = nullptr;
 
+	const std::string output = SIMPLE_IMGUI_DIR + std::string(SIMPLE_IMGUI_FILENAME);
+	ImGui::SaveIniSettingsToDisk(output.c_str());
+
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
+	ImNodes::DestroyContext();
 	ImGui::DestroyContext();
 }
 
@@ -96,6 +101,17 @@ void Engine::InitDearImGui()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.IniFilename = nullptr;
+	io.LogFilename = nullptr;
+
+	const std::string output = SIMPLE_IMGUI_DIR + std::string(SIMPLE_IMGUI_FILENAME);
+	ImGui::LoadIniSettingsFromDisk(output.c_str());
+
+	ImNodes::CreateContext();
 	ImGui_ImplWin32_Init(*myHWND);
 	ImGui_ImplDX11_Init(myGraphicsEngine->GetDevice().Get(), myGraphicsEngine->GetContext().Get());
 }
@@ -116,6 +132,8 @@ void Engine::EndFrame()
 {
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	ImGui::UpdatePlatformWindows();
+	ImGui::RenderPlatformWindowsDefault();
 
 	myGraphicsEngine->EndFrame();
 }

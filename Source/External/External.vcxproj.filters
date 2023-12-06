@@ -37,6 +37,9 @@
     <Filter Include="dearimgui\imgui\misc\single_file">
       <UniqueIdentifier>{F1BFB5A1-DD10-A1E3-0675-8FA5F224344D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dearimgui\imnodes">
+      <UniqueIdentifier>{DA85BF8C-469C-BD22-8F13-4944FB688EAA}</UniqueIdentifier>
+    </Filter>
     <Filter Include="easy">
       <UniqueIdentifier>{B71D967C-A354-970D-4C41-7D103857130F}</UniqueIdentifier>
     </Filter>
@@ -348,6 +351,12 @@
     <ClInclude Include="dearimgui\imgui\misc\single_file\imgui_single_file.h">
       <Filter>dearimgui\imgui\misc\single_file</Filter>
     </ClInclude>
+    <ClInclude Include="dearimgui\imnodes\imnodes.h">
+      <Filter>dearimgui\imnodes</Filter>
+    </ClInclude>
+    <ClInclude Include="dearimgui\imnodes\imnodes_internal.h">
+      <Filter>dearimgui\imnodes</Filter>
+    </ClInclude>
     <ClInclude Include="easy\arbitrary_value.h">
       <Filter>easy</Filter>
     </ClInclude>
@@ -432,6 +441,9 @@
     </ClCompile>
     <ClCompile Include="dearimgui\imgui\misc\freetype\imgui_freetype.cpp">
       <Filter>dearimgui\imgui\misc\freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="dearimgui\imnodes\imnodes.cpp">
+      <Filter>dearimgui\imnodes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

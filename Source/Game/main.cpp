@@ -5,8 +5,13 @@
 #include <External/profiler.h>
 #include <External/imgui.h>
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+		return 0;
+
 	if (SimpleUtilities::InputManager::GetInstance().UpdateEvents(message, wParam, lParam))
 		return 0;
 
@@ -61,7 +66,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 				model->Draw();
 			}
 
-			ImGui::Text("Hello, world!");
+			if (ImGui::Begin("My Window", nullptr))
+				ImGui::Text("Hello, world!");
+			ImGui::End();
 
 			engine.EndFrame();;
 		}
