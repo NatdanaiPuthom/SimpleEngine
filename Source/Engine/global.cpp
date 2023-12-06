@@ -1,34 +1,33 @@
 #include "stdafx.h"
 #include "Engine/global.h"
-#include "Engine/engine.h"
 
 namespace
 {
-	Engine* globalEngine = nullptr;
+	Engine* localEngine = nullptr;
 }
 
 void SimplyGlobalImpl::SetEngine(Engine* aEngine)
 {
-	globalEngine = aEngine;
+	localEngine = aEngine;
 }
 
 double SimplyGlobal::GetTotalTime()
 {
-	return globalEngine->GetTotalTime();
+	return localEngine->GetTotalTime();
 }
 
 float SimplyGlobal::GetDeltaTime()
 {
-	return globalEngine->GetDeltaTime();
+	return localEngine->GetDeltaTime();
 }
 
 HWND& SimplyGlobal::GetHWND()
 {
-	return globalEngine->GetHWND();
+	return localEngine->GetHWND();
 }
 
 GraphicsEngine* SimplyGlobal::GetGraphicsEngine()
 {
-	return globalEngine->GetGraphicsEngine();
+	return localEngine->GetGraphicsEngine();
 }
 

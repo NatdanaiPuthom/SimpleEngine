@@ -4,6 +4,9 @@
 #include "Engine/Console/Console.h"
 #endif
 
+class ImGuiInterface;
+class GraphicsEngine;
+
 namespace SimpleUtilities
 {
 	class Timer;
@@ -27,13 +30,13 @@ public:
 	HWND& GetHWND();
 private:
 	std::unique_ptr<HWND> SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
-	void InitDearImGui();
 private:
 	SimpleUtilities::InputManager* myInput;
 
 	std::unique_ptr<GraphicsEngine> myGraphicsEngine;
 	std::unique_ptr<SimpleUtilities::Timer> myTimer;
 	std::unique_ptr<HWND> myHWND;
+	std::unique_ptr<ImGuiInterface> myImGuiInterface;
 
 #ifdef _DEBUG
 	Console myConsole;

@@ -169,6 +169,7 @@
     <ClInclude Include="Graphics\Shapes\Cube.h" />
     <ClInclude Include="Graphics\Shapes\Pyramid.h" />
     <ClInclude Include="Graphics\Texture\Texture.h" />
+    <ClInclude Include="ImGuiInterface\ImGuiInterface.h" />
     <ClInclude Include="MemoryTracker\MemoryTracker.h" />
     <ClInclude Include="MemoryTracker\StackTrace.h" />
     <ClInclude Include="SimpleUtilities\InputManager.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="Graphics\Shapes\Cube.cpp" />
     <ClCompile Include="Graphics\Shapes\Pyramid.cpp" />
     <ClCompile Include="Graphics\Texture\Texture.cpp" />
+    <ClCompile Include="ImGuiInterface\ImGuiInterface.cpp" />
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp" />
     <ClCompile Include="MemoryTracker\StackTrace.cpp" />
     <ClCompile Include="SimpleUtilities\InputManager.cpp" />

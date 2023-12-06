@@ -1,5 +1,7 @@
 #pragma once
 
+constexpr const char* SIMPLE_PROFILER_FILENAME = "profiler_data.prof";
+
 #ifndef _Simple
 #define BUILD_WITH_EASY_PROFILER
 #endif

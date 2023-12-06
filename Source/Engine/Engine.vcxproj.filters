@@ -31,6 +31,9 @@
     <Filter Include="Graphics\Texture">
       <UniqueIdentifier>{762EAB13-6227-CA65-8B59-AFEA77B1A971}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImGuiInterface">
+      <UniqueIdentifier>{917A6B7D-7D48-5F83-66DC-CFA952493BE8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="MemoryTracker">
       <UniqueIdentifier>{0A814603-7641-C239-3F7C-0BB7ABFB0616}</UniqueIdentifier>
     </Filter>
@@ -65,6 +68,9 @@
     </ClInclude>
     <ClInclude Include="Graphics\Texture\Texture.h">
       <Filter>Graphics\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiInterface\ImGuiInterface.h">
+      <Filter>ImGuiInterface</Filter>
     </ClInclude>
     <ClInclude Include="MemoryTracker\MemoryTracker.h">
       <Filter>MemoryTracker</Filter>
@@ -127,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="Graphics\Texture\Texture.cpp">
       <Filter>Graphics\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiInterface\ImGuiInterface.cpp">
+      <Filter>ImGuiInterface</Filter>
     </ClCompile>
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp">
       <Filter>MemoryTracker</Filter>

@@ -1,11 +1,7 @@
 #include "stdafx.h"
-#include "Engine/SimpleUtilities/Timer.h"
 #include "Engine/global.h"
-
-#include <External/dearimgui/imgui/imgui.h>
-#include <External/dearimgui/imgui/imgui_impl_win32.h>
-#include <External/dearimgui/imgui/imgui_impl_dx11.h>
-#include <External/dearimgui/imnodes/imnodes.h>
+#include "Engine/SimpleUtilities/Timer.h"
+#include "Engine/ImGuiInterface/ImGuiInterface.h"
 
 #ifdef _DEBUG
 #include "Engine/Console/Console.h"
@@ -15,20 +11,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 Engine::Engine()
 	: myInput(nullptr)
+	, myImGuiInterface(std::make_unique<ImGuiInterface>())
 {
 }
 
 Engine::~Engine()
 {
 	myInput = nullptr;
-
-	const std::string output = SIMPLE_IMGUI_DIR + std::string(SIMPLE_IMGUI_FILENAME);
-	ImGui::SaveIniSettingsToDisk(output.c_str());
-
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImNodes::DestroyContext();
-	ImGui::DestroyContext();
 }
 
 void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight, const int nCmdShow)
@@ -52,7 +41,7 @@ void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight, con
 	myTimer = std::make_unique<SimpleUtilities::Timer>();
 	myInput = &SimpleUtilities::InputManager::GetInstance();
 
-	InitDearImGui();
+	myImGuiInterface->Init();
 }
 
 void Engine::Render()
@@ -107,31 +96,9 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 	return hwnd;
 }
 
-void Engine::InitDearImGui()
-{
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	io.IniFilename = nullptr;
-	io.LogFilename = nullptr;
-
-	const std::string output = SIMPLE_IMGUI_DIR + std::string(SIMPLE_IMGUI_FILENAME);
-	ImGui::LoadIniSettingsFromDisk(output.c_str());
-
-	ImNodes::CreateContext();
-	ImGui_ImplWin32_Init(*myHWND);
-	ImGui_ImplDX11_Init(myGraphicsEngine->GetDevice().Get(), myGraphicsEngine->GetContext().Get());
-}
-
 bool Engine::BeginFrame()
 {
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
+	myImGuiInterface->BeginFrame();
 
 	myTimer->Update();
 	myInput->Update();
@@ -141,11 +108,7 @@ bool Engine::BeginFrame()
 
 void Engine::EndFrame()
 {
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-	ImGui::UpdatePlatformWindows();
-	ImGui::RenderPlatformWindowsDefault();
-
+	myImGuiInterface->EndFrame();
 	myGraphicsEngine->EndFrame();
 }
 
