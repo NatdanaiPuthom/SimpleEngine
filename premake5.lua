@@ -8,19 +8,20 @@ workspace "SimpleEngine"
 	flags { "FatalWarnings" } -- Threat All Warnings As Errors
 	objdir "Temp" -- Location for garbage created by Visual Studio
 
+	local root_dir = _SCRIPT_DIR -- _WORKING_DIR
 	local shader_dir = path.join(_SCRIPT_DIR, "Bin/Shaders/") -- Absolute path to this file plus "Bin/Shaders/"
-	os.mkdir(shader_dir)
-
 	local profiler_dir = path.join(_SCRIPT_DIR, "Bin/Profilers/")
-	os.mkdir(profiler_dir)
-
 	local imgui_dir = path.join(_SCRIPT_DIR, "Bin/")
+
+	os.mkdir(shader_dir)
+	os.mkdir(profiler_dir)
 	os.mkdir(imgui_dir)
 
 	defines { -- Create Global Macro For This "Path"
 		'SIMPLE_SHADER_DIR="' .. shader_dir .. '/"' ,
 		'SIMPLE_PROFILER_DIR="' ..profiler_dir ..'/"',
-		'SIMPLE_IMGUI_DIR="' ..imgui_dir .. '/"'
+		'SIMPLE_IMGUI_DIR="' ..imgui_dir .. '/"',
+		'SIMPLE_ROOT_DIR="' ..root_dir .. '/"'
 	}
 
 	defines { -- Create Global Macro For Strings
