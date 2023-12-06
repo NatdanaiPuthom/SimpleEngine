@@ -17,7 +17,7 @@ Model::~Model()
 {
 }
 
-const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, eShaderType aShaderType)
+const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, const char* aPSShaderFile, const char* aVSShaderFile, const char* aTextureFile)
 {
 	myGraphicsEngine = aGraphicsEngine;
 
@@ -95,24 +95,10 @@ const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex
 			return false;
 	}
 
-	const char* shaderType = "DefaultPS.cso";
-	switch (aShaderType)
-	{
-	case eShaderType::Default:
-		shaderType = "DefaultPS.cso";
-		break;
-	case eShaderType::Colorful:
-		shaderType = "ColorfulPS.cso";
-		break;
-	default:
-		shaderType = "DefaultPS.cso";
-		break;
-	}
-
-	if (!myShader->Init(device, shaderType, "DefaultVS.cso"))
+	if (!myShader->Init(device, aPSShaderFile, aVSShaderFile))
 		return false;
 
-	const bool success = myTexture->Init(device, "colors.dds");
+	const bool success = myTexture->Init(device, aTextureFile);
 
 	if (success == false)
 		return false;

@@ -4,12 +4,6 @@ class GraphicsEngine;
 class ConstantBuffer;
 class Texture;
 
-enum class eShaderType
-{
-	Default,
-	Colorful
-};
-
 struct Vertex
 {
 	SimpleUtilities::Vector4f position;
@@ -24,7 +18,7 @@ public:
 	~Model();
 
 	virtual const bool Create() = 0;
-	const bool Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, eShaderType aShaderType = eShaderType::Default);
+	const bool Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, const char* aPSShaderFile = "DefaultPS.cso", const char* aVSShaderFile = "DefaultVS.cso", const char* aTextureFile = "colors.dds");
 	void Draw();
 public:
 	SimpleUtilities::Matrix4x4f& GetModelToWorldMatrix();

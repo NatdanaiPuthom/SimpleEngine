@@ -116,7 +116,7 @@ bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aHeight, con
 
 	UINT creationFlags = 0;
 #if defined (REPORT_DX_WARNINGS)
-	creationFlags = D3D11_CREATE_DEVICE_DEBUG;
+	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
 	HRESULT result = D3D11CreateDeviceAndSwapChain(

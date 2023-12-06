@@ -15,40 +15,40 @@ const bool Cube::Create()
     myVertices =
     {
         //North
-        {SimpleUtilities::Vector4f(0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)},
-        {SimpleUtilities::Vector4f(0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)},
-        {SimpleUtilities::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 0)},
-        {SimpleUtilities::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)},
+        {SimpleUtilities::Vector4f(0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)}, //0
+        {SimpleUtilities::Vector4f(0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)}, //1
+        {SimpleUtilities::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 0)}, //2
+        {SimpleUtilities::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)}, //3
 
         //West
-        {SimpleUtilities::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 0, 1), SimpleUtilities::Vector2f(0, 1)},
-        {SimpleUtilities::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 0, 1), SimpleUtilities::Vector2f(0, 0)},
-        {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 0, 1), SimpleUtilities::Vector2f(1, 0)},
-        {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 0, 1), SimpleUtilities::Vector2f(1, 1)},
+        {SimpleUtilities::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)}, //4
+        {SimpleUtilities::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)}, //5
+        {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 0)}, //6
+        {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)}, //7
 
         //South
-        {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 1, 0, 1), SimpleUtilities::Vector2f(0, 1)},
-        {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 1, 0, 1), SimpleUtilities::Vector2f(0, 0)},
-        {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 1, 0, 1), SimpleUtilities::Vector2f(1, 0)},
-        {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 1, 0, 1), SimpleUtilities::Vector2f(1, 1)},
+        {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)}, //8 A
+        {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)}, //9 B
+        {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)}, //10 C
+        {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)}, //11 D
 
         //East
-        {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 0, 1, 1), SimpleUtilities::Vector2f(0, 1)},
-        {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(0, 0, 1, 1), SimpleUtilities::Vector2f(0, 0)},
-        {SimpleUtilities::Vector4f(0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(0, 0, 1, 1), SimpleUtilities::Vector2f(1, 0)},
-        {SimpleUtilities::Vector4f(0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(0, 0, 1, 1), SimpleUtilities::Vector2f(1, 1)},
+        {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)}, //12
+        {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)}, //13
+        {SimpleUtilities::Vector4f(0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 0)}, //14
+        {SimpleUtilities::Vector4f(0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)}, //15
 
         //Up
-        {SimpleUtilities::Vector4f(0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 0, 1), SimpleUtilities::Vector2f(0, 1)},
-        {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 0, 1), SimpleUtilities::Vector2f(0, 0)},
-        {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 0, 1), SimpleUtilities::Vector2f(1, 0)},
-        {SimpleUtilities::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 0, 1), SimpleUtilities::Vector2f(1, 1)},
+        {SimpleUtilities::Vector4f(0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)}, //16
+        {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)}, //17
+        {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 0)}, //18
+        {SimpleUtilities::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)}, //19
 
         //Down
-        {SimpleUtilities::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 1, 1), SimpleUtilities::Vector2f(0, 1)},
-        {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 1, 1), SimpleUtilities::Vector2f(0, 0)},
-        {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 1, 1), SimpleUtilities::Vector2f(1, 0)},
-        {SimpleUtilities::Vector4f(0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 0, 1, 1), SimpleUtilities::Vector2f(1, 1)}
+        {SimpleUtilities::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)}, //20
+        {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)}, //21
+        {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 0)}, //22
+        {SimpleUtilities::Vector4f(0.5f, -0.5f, 0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)} //23
     };
 
 	myIndices =
@@ -72,6 +72,6 @@ const bool Cube::Create()
 	transform(4, 2) = 0;
 	transform(4, 3) = 10;
 
-	bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, eShaderType::Default);
+	bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, "DefaultPS.cso", "DefaultVS.cso", "colors.dds");
 	return success;
 }
