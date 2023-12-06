@@ -73,7 +73,7 @@ void Camera::Update(const float aDeltaTime)
 		{
 			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
 			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(-myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(targetPosition);
+			SetPosition(myCurrentPosition);
 			UpdateCameraVectors();
 		}
 
@@ -81,7 +81,7 @@ void Camera::Update(const float aDeltaTime)
 		{
 			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
 			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(targetPosition);
+			SetPosition(myCurrentPosition);
 			UpdateCameraVectors();
 		}
 
@@ -113,6 +113,15 @@ void Camera::Update(const float aDeltaTime)
 			SetCursorPos(myCapturedPosition.x, myCapturedPosition.y);
 
 			//TODO: Add Freefly with Mouse
+			SimpleUtilities::Vector2f camRotation;
+			SimpleUtilities::Vector2f mouseDelta = myInput->GetMouseDelta();
+			camRotation.y = mouseDelta.x;
+			camRotation.y *= myRotateSpeed * 3.14f / 180.0f * aDeltaTime;
+
+			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
+			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(camRotation.y * 0.5f);
+			SetPosition(myCurrentPosition);
+			UpdateCameraVectors();
 		}
 		else
 		{

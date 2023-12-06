@@ -27,10 +27,10 @@ const bool Cube::Create()
         {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)}, //7
 
         //South
-        {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)}, //8 A
-        {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)}, //9 B
-        {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)}, //10 C
-        {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)}, //11 D
+        {SimpleUtilities::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)}, //8 A
+        {SimpleUtilities::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 0)}, //9 B
+        {SimpleUtilities::Vector4f(0.5f, 0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 0)}, //10 C
+        {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(1, 1)}, //11 D
 
         //East
         {SimpleUtilities::Vector4f(0.5f, -0.5f, -0.5f, 1.0f), SimpleUtilities::Vector4f(1, 1, 1, 1), SimpleUtilities::Vector2f(0, 1)}, //12
@@ -72,6 +72,6 @@ const bool Cube::Create()
 	transform(4, 2) = 0;
 	transform(4, 3) = 10;
 
-	bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, "DefaultPS.cso", "DefaultVS.cso", "colors.dds");
+	bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, "DefaultPS.cso", "DefaultVS.cso", "Wood.dds");
 	return success;
 }

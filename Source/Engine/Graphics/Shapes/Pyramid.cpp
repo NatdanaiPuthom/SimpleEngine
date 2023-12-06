@@ -16,13 +16,13 @@ const bool Pyramid::Create()
 	myVertices =
 	{
 		// Base
-		{ SimpleUtilities::Vector4f(- 1.0f, -1.0f, -1.0f, 1), SimpleUtilities::Vector4f(0.0f, 0.0f, 1.0f, 1.0f)},
-		{ SimpleUtilities::Vector4f(1.0f, -1.0f, -1.0f, 1), SimpleUtilities::Vector4f(0.0f, 0.0f, 1.0f, 1.0f) },
-		{ SimpleUtilities::Vector4f(1.0f, -1.0f, 1.0f, 1), SimpleUtilities::Vector4f(0.0f, 0.0f, 1.0f, 1.0f) },
-		{ SimpleUtilities::Vector4f(- 1.0f, -1.0f, 1.0f, 1), SimpleUtilities::Vector4f(0.0f, 0.0f, 1.0f, 1.0f)},
+		{ SimpleUtilities::Vector4f(-1.0f, -1.0f, -1.0f, 1), SimpleUtilities::Vector4f(1.0f, 0.0f, 0.0f, 1.0f), SimpleUtilities::Vector2f(0.0f, 0.0f) },
+		{ SimpleUtilities::Vector4f(1.0f, -1.0f, -1.0f, 1), SimpleUtilities::Vector4f(0.0f, 1.0f, 0.0f, 1.0f), SimpleUtilities::Vector2f(1.0f, 0.0f) },
+		{ SimpleUtilities::Vector4f(1.0f, -1.0f, 1.0f, 1), SimpleUtilities::Vector4f(0.0f, 0.0f, 1.0f, 1.0f), SimpleUtilities::Vector2f(1.0f, 1.0f) },
+		{ SimpleUtilities::Vector4f(-1.0f, -1.0f, 1.0f, 1), SimpleUtilities::Vector4f(1.0f, 1.0f, 0.0f, 1.0f), SimpleUtilities::Vector2f(0.0f, 1.0f) },
 
 		// Top
-		{ SimpleUtilities::Vector4f(0.0f, 1.0f, 0.0f, 1), SimpleUtilities::Vector4f(1.0f, 0.0f, 0.0f, 1.0f) }
+		{ SimpleUtilities::Vector4f(0.0f, 1.0f, 0.0f, 1), SimpleUtilities::Vector4f(1.0f, 0.0f, 1.0f, 1.0f), SimpleUtilities::Vector2f(0.5f, 0.5f) }
 	};
 
 	myIndices =
