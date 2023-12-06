@@ -75,7 +75,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -96,7 +96,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -121,7 +121,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_IMGUI_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -263,6 +263,8 @@
     <ClInclude Include="easy\utility.h" />
     <ClInclude Include="easy\writer.h" />
     <ClInclude Include="imgui.h" />
+    <ClInclude Include="json.h" />
+    <ClInclude Include="nlohmann\json.hpp" />
     <ClInclude Include="profiler.h" />
   </ItemGroup>
   <ItemGroup>

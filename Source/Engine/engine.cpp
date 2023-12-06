@@ -3,6 +3,8 @@
 #include "Engine/SimpleUtilities/Timer.h"
 #include "Engine/ImGuiInterface/ImGuiInterface.h"
 
+#include <External/json.h>
+
 #ifdef _DEBUG
 #include "Engine/Console/Console.h"
 #endif
@@ -20,9 +22,11 @@ Engine::~Engine()
 	myInput = nullptr;
 }
 
-void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight, const int nCmdShow)
+void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 {
-	myHWND = SetupMainWindow(hInstance, aWidth, aHeight);
+	LoadSettingsFromJson();
+
+	myHWND = SetupMainWindow(hInstance, myWindowSize.x, myWindowSize.y);
 	assert(myHWND && "Failed To Create Window");
 
 	SimplyGlobalImpl::SetEngine(this);
@@ -35,7 +39,7 @@ void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight, con
 	UpdateWindow(*myHWND);
 
 	myGraphicsEngine = std::make_unique<GraphicsEngine>();
-	bool success = myGraphicsEngine->Init(aHeight, aWidth, *myHWND);
+	bool success = myGraphicsEngine->Init(myWindowSize.x, myWindowSize.y, *myHWND);
 	assert(success && "Failed To Init Graphics Engine");
 
 	myTimer = std::make_unique<SimpleUtilities::Timer>();
@@ -47,6 +51,21 @@ void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight, con
 void Engine::Render()
 {
 	myGraphicsEngine->Render();
+}
+
+void Engine::LoadSettingsFromJson()
+{
+	const std::string filename = SIMPLE_BIN_DIR + std::string(SIMPLE_SETTINGS_FILENAME);
+	std::ifstream file(filename);
+	assert(file.is_open());
+
+	nlohmann::json json = nlohmann::json::parse(file);
+	file.close();
+
+	nlohmann::json& object = json["game_settings"]["window_size"];
+
+	myWindowSize.x = object["x"];
+	myWindowSize.y = object["y"];
 }
 
 std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)
@@ -82,7 +101,7 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 	std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 	*hwnd = CreateWindow(
 		L"Natdanai",
-		L"SimpleEngine v4.6",
+		L"SimpleEngine v4.7",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,

@@ -18,7 +18,7 @@ public:
 	Engine();
 	~Engine();
 
-	void Init(HINSTANCE& hInstance, const int aWidth, const int aHeight, const int nCmdShow);
+	void Init(HINSTANCE& hInstance, const int nCmdShow);
 	void Render();
 
 	bool BeginFrame();
@@ -30,7 +30,9 @@ public:
 	HWND& GetHWND();
 private:
 	std::unique_ptr<HWND> SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
+	void LoadSettingsFromJson();
 private:
+	SimpleUtilities::Vector2i myWindowSize;
 	SimpleUtilities::InputManager* myInput;
 
 	std::unique_ptr<GraphicsEngine> myGraphicsEngine;

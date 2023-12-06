@@ -24,7 +24,7 @@ public:
 	GraphicsEngine();
 	~GraphicsEngine();
 
-	bool Init(const int aHeight, const int aWidth, HWND& aWindowHandle);
+	bool Init(const int aWidth, const int aHeight, HWND& aWindowHandle);
 	bool BeginFrame();
 	void EndFrame();
 
@@ -34,11 +34,11 @@ public:
 	ComPtr<ID3D11DeviceContext>& GetContext();
 	std::shared_ptr<Camera> GetCamera();
 private:
-	void CreateViewport(const int aHeight, const int aWidth);
-	bool CreateSwapChain(HWND& aWindowHandle, const int aHeight, const int aWidth);
+	void CreateViewport(const int aWidth, const int aHeight);
+	bool CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight);
 	bool CreateBackBuffer();
 	bool CreateFrameBuffer();
-	bool CreateDepthBuffer(const int aHeight, const int aWidth);
+	bool CreateDepthBuffer(const int aWidth, const int aHeight);
 	bool CreateSamplerState();
 private:
 	ComPtr<ID3D11Device> myDevice;

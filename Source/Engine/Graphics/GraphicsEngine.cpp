@@ -16,18 +16,18 @@ GraphicsEngine::~GraphicsEngine()
 {
 }
 
-bool GraphicsEngine::Init(const int aHeight, const int aWidth, HWND& aWindowHandle)
+bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHandle)
 {
-	if (!CreateSwapChain(aWindowHandle, aHeight, aWidth))
+	if (!CreateSwapChain(aWindowHandle, aWidth, aHeight))
 		return false;
 
-	if (!CreateDepthBuffer(aHeight, aWidth))
+	if (!CreateDepthBuffer(aWidth, aHeight))
 		return false;
 
 	if (!CreateBackBuffer())
 		return false;
 
-	CreateViewport(aHeight, aWidth);
+	CreateViewport(aWidth, aHeight);
 
 	if (!CreateFrameBuffer())
 		return false;
@@ -87,7 +87,7 @@ std::shared_ptr<Camera> GraphicsEngine::GetCamera()
 	return myCamera;
 }
 
-void GraphicsEngine::CreateViewport(const int aHeight, const int aWidth)
+void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
 {
 	D3D11_VIEWPORT viewport = { 0 };
 	viewport.TopLeftX = 0.0f;
@@ -100,7 +100,7 @@ void GraphicsEngine::CreateViewport(const int aHeight, const int aWidth)
 	myContext->RSSetViewports(1, &viewport);
 }
 
-bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aHeight, const int aWidth)
+bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight)
 {
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 	swapChainDesc.BufferCount = 2;
@@ -177,7 +177,7 @@ bool GraphicsEngine::CreateFrameBuffer()
 	return true;
 }
 
-bool GraphicsEngine::CreateDepthBuffer(const int aHeight, const int aWidth)
+bool GraphicsEngine::CreateDepthBuffer(const int aWidth, const int aHeight)
 {
 	ComPtr<ID3D11Texture2D> depthBufferTexture;
 	D3D11_TEXTURE2D_DESC depthBufferDesc = { 0 };

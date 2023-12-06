@@ -49,6 +49,9 @@
     <Filter Include="easy\details">
       <UniqueIdentifier>{2CD53076-1838-C01A-C1BD-F8D0ADFF8B9D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="nlohmann">
+      <UniqueIdentifier>{E0661284-CC33-6D8F-F54C-5B37E178A21D}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h">
@@ -412,6 +415,10 @@
       <Filter>easy</Filter>
     </ClInclude>
     <ClInclude Include="imgui.h" />
+    <ClInclude Include="json.h" />
+    <ClInclude Include="nlohmann\json.hpp">
+      <Filter>nlohmann</Filter>
+    </ClInclude>
     <ClInclude Include="profiler.h" />
   </ItemGroup>
   <ItemGroup>

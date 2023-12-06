@@ -409,5 +409,6 @@ FodyWeavers.xsd
 [Bb]in/*
 ![Bb]in/Assets/
 #![Bb]in/imgui.ini
+![Bb]in/settings.json
 
 ########################################################################################

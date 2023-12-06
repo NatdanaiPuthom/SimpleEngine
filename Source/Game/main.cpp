@@ -5,7 +5,6 @@
 #include <External/profiler.h>
 #include <External/imgui.h>
 
-
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -44,7 +43,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		PROFILER_FUNCTION(profiler::colors::Blue);
 
 		Engine engine;
-		engine.Init(hInstance, 1280, 720, nCmdShow);
+		engine.Init(hInstance, nCmdShow);
 
 		SimpleUtilities::InputManager::GetInstance().SetHWND(engine.GetHWND());
 
@@ -57,8 +56,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 			if (model->Create() == false)
 				assert(false && "Failed to create model");
 		}
-
-		SimpleUtilities::Vector2f size(0, 0);
 
 		while (engine.BeginFrame())
 		{
@@ -77,8 +74,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 			if (ImGui::Begin("Scene"))
 			{
-				
 
+
+			}
+			ImGui::End();
+
+			if (ImGui::Begin("Game"))
+			{
 			}
 			ImGui::End();
 
