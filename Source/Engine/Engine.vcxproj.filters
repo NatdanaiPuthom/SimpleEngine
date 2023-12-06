@@ -154,9 +154,6 @@
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Graphics\Shaders\PS\ColorfulPS.hlsl">
-      <Filter>Graphics\Shaders\PS</Filter>
-    </FxCompile>
     <FxCompile Include="Graphics\Shaders\PS\DefaultPS.hlsl">
       <Filter>Graphics\Shaders\PS</Filter>
     </FxCompile>

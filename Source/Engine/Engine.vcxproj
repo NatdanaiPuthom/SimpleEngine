@@ -206,10 +206,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Graphics\Shaders\PS\ColorfulPS.hlsl">
-      <ShaderType>Pixel</ShaderType>
-      <ObjectFileOutput>C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/ColorfulPS.cso</ObjectFileOutput>
-    </FxCompile>
     <FxCompile Include="Graphics\Shaders\PS\DefaultPS.hlsl">
       <ShaderType>Pixel</ShaderType>
       <ObjectFileOutput>C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/DefaultPS.cso</ObjectFileOutput>

@@ -43,7 +43,7 @@ const bool Pyramid::Create()
 	transform(4, 2) = 0;
 	transform(4, 3) = 10;
 
-	const bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, "ColorfulPS.cso", "DefaultVS.cso", "colors.dds");
+	const bool success = Model::Init(SimplyGlobal::GetGraphicsEngine(), myVertices, myIndices, transform, "DefaultPS.cso", "DefaultColorfulVS.cso", "Wood.dds");
 
 	return success;
 }
