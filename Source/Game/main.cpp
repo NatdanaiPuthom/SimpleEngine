@@ -5,6 +5,7 @@
 #include <External/profiler.h>
 #include <External/imgui.h>
 
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -57,6 +58,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 				assert(false && "Failed to create model");
 		}
 
+		SimpleUtilities::Vector2f size(0, 0);
+
 		while (engine.BeginFrame())
 		{
 			engine.Render();
@@ -66,8 +69,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 				model->Draw();
 			}
 
-			if (ImGui::Begin("My Window", nullptr))
-				ImGui::Text("Hello, world!");
+			if (ImGui::Begin("Assets", nullptr))
+			{
+				ImGui::Text("Hello World");
+			}
+			ImGui::End();
+
+			if (ImGui::Begin("Scene"))
+			{
+				
+
+			}
 			ImGui::End();
 
 			engine.EndFrame();;
