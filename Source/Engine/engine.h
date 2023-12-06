@@ -27,6 +27,7 @@ public:
 	HWND& GetHWND();
 private:
 	std::unique_ptr<HWND> SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
+	void InitDearImGui();
 private:
 	SimpleUtilities::InputManager* myInput;
 

@@ -71,7 +71,7 @@ workspace "SimpleEngine"
 		targetdir "Lib"
 		targetname("%{prj.name}_%{cfg.buildcfg}")
 		location "Source/External"
-		includedirs{ "Source/External/" }
+		includedirs{"Source/","Source/External/", "Source/External/dearimgui","Source/External/dearimgui/imgui/", "Source/External/dearimgui/freetype/"}
 		files {"Source/External/**.h", "Source/External/**.cpp"}
 
 	project "Game"

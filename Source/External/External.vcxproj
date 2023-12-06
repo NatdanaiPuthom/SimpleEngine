@@ -76,7 +76,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -97,7 +97,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -122,7 +122,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -143,6 +143,106 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="StackWalker\StackWalker.h" />
+    <ClInclude Include="dearimgui\freetype\config\ftconfig.h" />
+    <ClInclude Include="dearimgui\freetype\config\ftheader.h" />
+    <ClInclude Include="dearimgui\freetype\config\ftmodule.h" />
+    <ClInclude Include="dearimgui\freetype\config\ftoption.h" />
+    <ClInclude Include="dearimgui\freetype\config\ftstdlib.h" />
+    <ClInclude Include="dearimgui\freetype\freetype.h" />
+    <ClInclude Include="dearimgui\freetype\ftadvanc.h" />
+    <ClInclude Include="dearimgui\freetype\ftautoh.h" />
+    <ClInclude Include="dearimgui\freetype\ftbbox.h" />
+    <ClInclude Include="dearimgui\freetype\ftbdf.h" />
+    <ClInclude Include="dearimgui\freetype\ftbitmap.h" />
+    <ClInclude Include="dearimgui\freetype\ftbzip2.h" />
+    <ClInclude Include="dearimgui\freetype\ftcache.h" />
+    <ClInclude Include="dearimgui\freetype\ftcffdrv.h" />
+    <ClInclude Include="dearimgui\freetype\ftchapters.h" />
+    <ClInclude Include="dearimgui\freetype\ftcid.h" />
+    <ClInclude Include="dearimgui\freetype\fterrdef.h" />
+    <ClInclude Include="dearimgui\freetype\fterrors.h" />
+    <ClInclude Include="dearimgui\freetype\ftfntfmt.h" />
+    <ClInclude Include="dearimgui\freetype\ftgasp.h" />
+    <ClInclude Include="dearimgui\freetype\ftglyph.h" />
+    <ClInclude Include="dearimgui\freetype\ftgxval.h" />
+    <ClInclude Include="dearimgui\freetype\ftgzip.h" />
+    <ClInclude Include="dearimgui\freetype\ftimage.h" />
+    <ClInclude Include="dearimgui\freetype\ftincrem.h" />
+    <ClInclude Include="dearimgui\freetype\ftlcdfil.h" />
+    <ClInclude Include="dearimgui\freetype\ftlist.h" />
+    <ClInclude Include="dearimgui\freetype\ftlzw.h" />
+    <ClInclude Include="dearimgui\freetype\ftmac.h" />
+    <ClInclude Include="dearimgui\freetype\ftmm.h" />
+    <ClInclude Include="dearimgui\freetype\ftmodapi.h" />
+    <ClInclude Include="dearimgui\freetype\ftmoderr.h" />
+    <ClInclude Include="dearimgui\freetype\ftotval.h" />
+    <ClInclude Include="dearimgui\freetype\ftoutln.h" />
+    <ClInclude Include="dearimgui\freetype\ftpfr.h" />
+    <ClInclude Include="dearimgui\freetype\ftrender.h" />
+    <ClInclude Include="dearimgui\freetype\ftsizes.h" />
+    <ClInclude Include="dearimgui\freetype\ftsnames.h" />
+    <ClInclude Include="dearimgui\freetype\ftstroke.h" />
+    <ClInclude Include="dearimgui\freetype\ftsynth.h" />
+    <ClInclude Include="dearimgui\freetype\ftsystem.h" />
+    <ClInclude Include="dearimgui\freetype\fttrigon.h" />
+    <ClInclude Include="dearimgui\freetype\ftttdrv.h" />
+    <ClInclude Include="dearimgui\freetype\fttypes.h" />
+    <ClInclude Include="dearimgui\freetype\ftwinfnt.h" />
+    <ClInclude Include="dearimgui\freetype\internal\autohint.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftcalc.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftdebug.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftdriver.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="dearimgui\freetype\internal\fthash.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftmemory.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftobjs.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftpic.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftrfork.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftserv.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftstream.h" />
+    <ClInclude Include="dearimgui\freetype\internal\fttrace.h" />
+    <ClInclude Include="dearimgui\freetype\internal\ftvalid.h" />
+    <ClInclude Include="dearimgui\freetype\internal\internal.h" />
+    <ClInclude Include="dearimgui\freetype\internal\psaux.h" />
+    <ClInclude Include="dearimgui\freetype\internal\pshints.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svbdf.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svcid.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svfntfmt.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svgldict.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svgxval.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svkern.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svmm.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svotval.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svpfr.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svpostnm.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svprop.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svpscmap.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svpsinfo.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svsfnt.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svttcmap.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svtteng.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svttglyf.h" />
+    <ClInclude Include="dearimgui\freetype\internal\services\svwinfnt.h" />
+    <ClInclude Include="dearimgui\freetype\internal\sfnt.h" />
+    <ClInclude Include="dearimgui\freetype\internal\t1types.h" />
+    <ClInclude Include="dearimgui\freetype\internal\tttypes.h" />
+    <ClInclude Include="dearimgui\freetype\t1tables.h" />
+    <ClInclude Include="dearimgui\freetype\ttnameid.h" />
+    <ClInclude Include="dearimgui\freetype\tttables.h" />
+    <ClInclude Include="dearimgui\freetype\tttags.h" />
+    <ClInclude Include="dearimgui\freetype\ttunpat.h" />
+    <ClInclude Include="dearimgui\ft2build.h" />
+    <ClInclude Include="dearimgui\imgui\imconfig.h" />
+    <ClInclude Include="dearimgui\imgui\imgui.h" />
+    <ClInclude Include="dearimgui\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="dearimgui\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="dearimgui\imgui\imgui_internal.h" />
+    <ClInclude Include="dearimgui\imgui\imstb_rectpack.h" />
+    <ClInclude Include="dearimgui\imgui\imstb_textedit.h" />
+    <ClInclude Include="dearimgui\imgui\imstb_truetype.h" />
+    <ClInclude Include="dearimgui\imgui\misc\cpp\imgui_stdlib.h" />
+    <ClInclude Include="dearimgui\imgui\misc\freetype\imgui_freetype.h" />
+    <ClInclude Include="dearimgui\imgui\misc\single_file\imgui_single_file.h" />
     <ClInclude Include="easy\arbitrary_value.h" />
     <ClInclude Include="easy\details\arbitrary_value_aux.h" />
     <ClInclude Include="easy\details\arbitrary_value_public_types.h" />
@@ -159,10 +259,21 @@
     <ClInclude Include="easy\serialized_block.h" />
     <ClInclude Include="easy\utility.h" />
     <ClInclude Include="easy\writer.h" />
+    <ClInclude Include="imgui.h" />
     <ClInclude Include="profiler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StackWalker\StackWalker.cpp" />
+    <ClCompile Include="dearimgui\imgui\imgui.cpp" />
+    <ClCompile Include="dearimgui\imgui\imgui_demo.cpp" />
+    <ClCompile Include="dearimgui\imgui\imgui_draw.cpp" />
+    <ClCompile Include="dearimgui\imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="dearimgui\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="dearimgui\imgui\imgui_tables.cpp" />
+    <ClCompile Include="dearimgui\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="dearimgui\imgui\misc\cpp\imgui_stdlib.cpp" />
+    <ClCompile Include="dearimgui\imgui\misc\fonts\binary_to_compressed_c.cpp" />
+    <ClCompile Include="dearimgui\imgui\misc\freetype\imgui_freetype.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

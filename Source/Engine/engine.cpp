@@ -2,6 +2,10 @@
 #include "Engine/SimpleUtilities/Timer.h"
 #include "Engine/global.h"
 
+#include <External/dearimgui/imgui/imgui.h>
+#include <External/dearimgui/imgui/imgui_impl_win32.h>
+#include <External/dearimgui/imgui/imgui_impl_dx11.h>
+
 #ifdef _DEBUG
 #include "Engine/Console/Console.h"
 #endif
@@ -16,6 +20,10 @@ Engine::Engine()
 Engine::~Engine()
 {
 	myInput = nullptr;
+
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight, const int nCmdShow)
@@ -38,6 +46,8 @@ void Engine::Init(HINSTANCE& hInstance, const int aWidth, const int aHeight, con
 
 	myTimer = std::make_unique<SimpleUtilities::Timer>();
 	myInput = &SimpleUtilities::InputManager::GetInstance();
+
+	InitDearImGui();
 }
 
 void Engine::Render()
@@ -81,15 +91,32 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 	return hwnd;
 }
 
+void Engine::InitDearImGui()
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(*myHWND);
+	ImGui_ImplDX11_Init(myGraphicsEngine->GetDevice().Get(), myGraphicsEngine->GetContext().Get());
+}
+
 bool Engine::BeginFrame()
 {
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
 	myTimer->Update();
 	myInput->Update();
+
 	return myGraphicsEngine->BeginFrame();
 }
 
 void Engine::EndFrame()
 {
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	myGraphicsEngine->EndFrame();
 }
 
