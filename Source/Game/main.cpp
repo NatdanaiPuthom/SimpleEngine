@@ -66,21 +66,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 				model->Draw();
 			}
 
-			if (ImGui::Begin("Assets", nullptr))
+			if (ImGui::Begin("My Window", nullptr))
 			{
 				ImGui::Text("Hello World");
-			}
-			ImGui::End();
-
-			if (ImGui::Begin("Scene"))
-			{
-
-
-			}
-			ImGui::End();
-
-			if (ImGui::Begin("Game"))
-			{
 			}
 			ImGui::End();
 
