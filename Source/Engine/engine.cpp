@@ -79,6 +79,13 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 		return nullptr;
 	}
 
+	RECT wr = {};
+	wr.left = 0;
+	wr.right = aWidth + wr.left;
+	wr.top = 0;
+	wr.bottom = aHeight + wr.top;
+	AdjustWindowRect(&wr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX, FALSE);
+
 	std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 	*hwnd = CreateWindow(
 		L"Natdanai",
@@ -86,8 +93,8 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		aWidth,
-		aHeight,
+		wr.right - wr.left,
+		wr.bottom - wr.top,
 		nullptr,
 		nullptr,
 		hInstance,
