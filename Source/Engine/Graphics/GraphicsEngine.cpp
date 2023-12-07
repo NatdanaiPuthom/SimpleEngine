@@ -51,16 +51,6 @@ bool GraphicsEngine::BeginFrame()
 			return false;
 	}
 
-	return true;
-}
-
-void GraphicsEngine::EndFrame()
-{
-	mySwapChain->Present(1, 0);
-}
-
-void GraphicsEngine::Render()
-{
 	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
 
@@ -70,6 +60,13 @@ void GraphicsEngine::Render()
 	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
 
 	myCamera->Update(SimplyGlobal::GetDeltaTime());
+
+	return true;
+}
+
+void GraphicsEngine::EndFrame()
+{
+	mySwapChain->Present(1, 0);
 }
 
 ComPtr<ID3D11Device>& GraphicsEngine::GetDevice()

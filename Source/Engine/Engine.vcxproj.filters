@@ -34,6 +34,9 @@
     <Filter Include="ImGuiInterface">
       <UniqueIdentifier>{917A6B7D-7D48-5F83-66DC-CFA952493BE8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{953A660D-014F-8EBE-CAD0-311E36A48AEF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="MemoryTracker">
       <UniqueIdentifier>{0A814603-7641-C239-3F7C-0BB7ABFB0616}</UniqueIdentifier>
     </Filter>
@@ -72,14 +75,14 @@
     <ClInclude Include="ImGuiInterface\ImGuiInterface.h">
       <Filter>ImGuiInterface</Filter>
     </ClInclude>
+    <ClInclude Include="Input\InputManager.h">
+      <Filter>Input</Filter>
+    </ClInclude>
     <ClInclude Include="MemoryTracker\MemoryTracker.h">
       <Filter>MemoryTracker</Filter>
     </ClInclude>
     <ClInclude Include="MemoryTracker\StackTrace.h">
       <Filter>MemoryTracker</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleUtilities\InputManager.h">
-      <Filter>SimpleUtilities</Filter>
     </ClInclude>
     <ClInclude Include="SimpleUtilities\Matrix4x4.h">
       <Filter>SimpleUtilities</Filter>
@@ -137,17 +140,14 @@
     <ClCompile Include="ImGuiInterface\ImGuiInterface.cpp">
       <Filter>ImGuiInterface</Filter>
     </ClCompile>
+    <ClCompile Include="Input\InputManager.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp">
       <Filter>MemoryTracker</Filter>
     </ClCompile>
     <ClCompile Include="MemoryTracker\StackTrace.cpp">
       <Filter>MemoryTracker</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleUtilities\InputManager.cpp">
-      <Filter>SimpleUtilities</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleUtilities\Timer.cpp">
-      <Filter>SimpleUtilities</Filter>
     </ClCompile>
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="global.cpp" />

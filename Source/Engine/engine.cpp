@@ -48,11 +48,6 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	myImGuiInterface->Init();
 }
 
-void Engine::Render()
-{
-	myGraphicsEngine->Render();
-}
-
 void Engine::LoadSettingsFromJson()
 {
 	const std::string filename = SIMPLE_BIN_DIR + std::string(SIMPLE_SETTINGS_FILENAME);

@@ -27,8 +27,6 @@ public:
 	bool Init(const int aWidth, const int aHeight, HWND& aWindowHandle);
 	bool BeginFrame();
 	void EndFrame();
-
-	void Render();
 public:
 	ComPtr<ID3D11Device>& GetDevice();
 	ComPtr<ID3D11DeviceContext>& GetContext();

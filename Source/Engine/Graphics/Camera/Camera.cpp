@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Engine/global.h"
 #include "Engine/Graphics/Camera/Camera.h"
-#include "Engine/SimpleUtilities/InputManager.h"
 #include "Engine/SimpleUtilities/Utility.h"
 
 Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, const float aNearPlane, const float aFarPlane)

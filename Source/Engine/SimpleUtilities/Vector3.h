@@ -48,8 +48,6 @@ namespace SimpleUtilities
 	template <class T> void operator*=(Vector3<T>& aVector, const T& aScalar);
 	template <class T> void operator/=(Vector3<T>& aVector, const T& aScalar);
 
-	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector3<T>& aVector);
-
 	template<class T>
 	inline Vector3<T>::Vector3() : Vector3(0, 0, 0)
 	{
@@ -217,11 +215,4 @@ namespace SimpleUtilities
 
 		return vector;
 	}
-
-	template <class T>
-	std::ostream& operator<<(std::ostream& aOS, const Vector3<T>& aVector)
-	{
-		return aOS << "{X: " << aVector.x << " Y: " << aVector.y << " Z: " << aVector.z << "}";
-	}
-
 }

@@ -1,4 +1,6 @@
 #pragma once
+#include "Engine/SimpleUtilities/Vector2.h"
+#include <Windows.h>
 
 #ifdef _DEBUG
 #include "Engine/Console/Console.h"
@@ -10,6 +12,7 @@ class GraphicsEngine;
 namespace SimpleUtilities
 {
 	class Timer;
+	class InputManager;
 }
 
 class Engine
@@ -19,7 +22,6 @@ public:
 	~Engine();
 
 	void Init(HINSTANCE& hInstance, const int nCmdShow);
-	void Render();
 
 	bool BeginFrame();
 	void EndFrame();

@@ -1,7 +1,7 @@
-#include "stdafx.h"
-#include "Engine/Graphics/Model/Model.h"
-#include "Engine/Graphics/Shapes/Cube.h"
-#include "Engine/Graphics/Shapes/Pyramid.h"
+#include "Game/GameWorld.h"
+#include "Engine/engine.h"
+#include "Engine/Input/InputManager.h"
+#include "Engine/MemoryTracker/MemoryTracker.h"
 #include <External/profiler.h>
 #include <External/imgui.h>
 
@@ -50,31 +50,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 		SimpleUtilities::InputManager::GetInstance().SetHWND(engine.GetHWND());
 
-		std::vector<std::unique_ptr<Model>> models;
-		models.emplace_back(std::make_unique<Cube>());
-		models.emplace_back(std::make_unique<Pyramid>());
-
-		for (auto& model : models)
-		{
-			if (model->Create() == false)
-				assert(false && "Failed to create model");
-		}
+		GameWorld gameWorld;
 
 		while (engine.BeginFrame())
 		{
-			engine.Render();
-
-			for (const auto& model : models)
-			{
-				model->Draw();
-			}
-
-			if (ImGui::Begin("My Window", nullptr))
-			{
-				ImGui::Text("Hello World");
-			}
-			ImGui::End();
-
+			gameWorld.Render();
 			engine.EndFrame();;
 		}
 	}

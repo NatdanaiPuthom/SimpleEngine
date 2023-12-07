@@ -18,7 +18,8 @@ using Microsoft::WRL::ComPtr;
 
 #include "Engine/SimpleUtilities/Vector.h"
 #include "Engine/SimpleUtilities/Matrix4x4.h"
-#include "Engine/SimpleUtilities/InputManager.h"
+
+#include "Engine/Input/InputManager.h"
 
 #include "Engine/MemoryTracker/MemoryTracker.h"
 

@@ -44,8 +44,6 @@ namespace SimpleUtilities
 	template <class T> void operator*=(Vector2<T>& aVector, const T& aScalar);
 	template <class T> void operator/=(Vector2<T>& aVector, const T& aScalar);
 
-	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector2<T>& aVector);
-
 	template<class T>
 	inline Vector2<T>::Vector2() : Vector2(0, 0)
 	{}
@@ -177,11 +175,5 @@ namespace SimpleUtilities
 		const T inverse = (1 / aScalar);
 		aVector.x *= inverse;
 		aVector.y *= inverse;
-	}
-
-	template <class T>
-	std::ostream& operator<<(std::ostream& aOS, const Vector2<T>& aVector)
-	{
-		return aOS << "{X: " << aVector.x << " Y: " << aVector.y << "}";
 	}
 }

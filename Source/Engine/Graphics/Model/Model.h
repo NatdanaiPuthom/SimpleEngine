@@ -1,8 +1,17 @@
 #pragma once
+#include "Engine/SimpleUtilities/Vector2.h"
+#include "Engine/SimpleUtilities/Vector4.h"
+#include "Engine/SimpleUtilities/Matrix4x4.h"
+#include <vector>
+#include <wrl/client.h>
 
 class GraphicsEngine;
 class ConstantBuffer;
 class Texture;
+class Shader;
+
+using Microsoft::WRL::ComPtr;
+struct ID3D11Buffer;
 
 struct Vertex
 {

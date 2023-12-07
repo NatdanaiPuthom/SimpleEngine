@@ -170,9 +170,9 @@
     <ClInclude Include="Graphics\Shapes\Pyramid.h" />
     <ClInclude Include="Graphics\Texture\Texture.h" />
     <ClInclude Include="ImGuiInterface\ImGuiInterface.h" />
+    <ClInclude Include="Input\InputManager.h" />
     <ClInclude Include="MemoryTracker\MemoryTracker.h" />
     <ClInclude Include="MemoryTracker\StackTrace.h" />
-    <ClInclude Include="SimpleUtilities\InputManager.h" />
     <ClInclude Include="SimpleUtilities\Matrix4x4.h" />
     <ClInclude Include="SimpleUtilities\Timer.h" />
     <ClInclude Include="SimpleUtilities\Utility.h" />
@@ -195,10 +195,9 @@
     <ClCompile Include="Graphics\Shapes\Pyramid.cpp" />
     <ClCompile Include="Graphics\Texture\Texture.cpp" />
     <ClCompile Include="ImGuiInterface\ImGuiInterface.cpp" />
+    <ClCompile Include="Input\InputManager.cpp" />
     <ClCompile Include="MemoryTracker\MemoryTracker.cpp" />
     <ClCompile Include="MemoryTracker\StackTrace.cpp" />
-    <ClCompile Include="SimpleUtilities\InputManager.cpp" />
-    <ClCompile Include="SimpleUtilities\Timer.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="global.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 #include <cassert>
 
 namespace SimpleUtilities
@@ -17,7 +18,6 @@ namespace SimpleUtilities
 		static Matrix4x4<T> CreateRotationAroundX(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundY(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundZ(const T aAngleInRadians);
-		static Matrix4x4<T> CreateTranslation(const SimpleUtilities::Vector3f& aTranslation);
 
 		static Matrix4x4<T> Transpose(const Matrix4x4<T>& aMatrixToTranspose);
 		static Matrix4x4<T> GetFastInverse(const Matrix4x4<T>& aTransform);
@@ -284,20 +284,6 @@ namespace SimpleUtilities
 
 		return rotationMatrix;
 	}
-
-	template<typename T>
-	inline Matrix4x4<T> Matrix4x4<T>::CreateTranslation(const SimpleUtilities::Vector3f& aTranslation)
-	{
-		Matrix4x4<T> translationMatrix;
-
-		translationMatrix(4, 1) = aTranslation.x;
-		translationMatrix(4, 2) = aTranslation.y;
-		translationMatrix(4, 3) = aTranslation.z;
-
-		return translationMatrix;
-	}
-
-
 
 	template<typename T>
 	inline Matrix4x4<T> Matrix4x4<T>::Transpose(const Matrix4x4<T>& aMatrixToTranspose)

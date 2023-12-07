@@ -6,11 +6,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameWorld.h" />
     <ClInclude Include="Resources\resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
