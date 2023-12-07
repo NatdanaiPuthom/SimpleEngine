@@ -29,15 +29,15 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	myHWND = SetupMainWindow(hInstance, myWindowSize.x, myWindowSize.y);
 	assert(myHWND && "Failed To Create Window");
 
-	SimpleUtilities::InputManager::GetInstance().SetHWND(*myHWND);
-	SimplyGlobalImpl::SetEngine(this);
-
 #ifdef _DEBUG
 	myConsole.Init();
 #endif
 
 	ShowWindow(*myHWND, nCmdShow);
 	UpdateWindow(*myHWND);
+
+	SimpleUtilities::InputManager::GetInstance().SetHWND(*myHWND);
+	SimplyGlobalImpl::SetEngine(this);
 
 	myGraphicsEngine = std::make_unique<GraphicsEngine>();
 	bool success = myGraphicsEngine->Init(myWindowSize.x, myWindowSize.y, *myHWND);
