@@ -1,10 +1,4 @@
 #pragma once
-#include "Engine/SimpleUtilities/Vector2.h"
-#include <Windows.h>
-
-#ifdef _DEBUG
-#include "Engine/Console/Console.h"
-#endif
 
 class ImGuiInterface;
 class GraphicsEngine;

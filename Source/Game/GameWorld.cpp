@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Game/GameWorld.h"
 #include "Engine/Graphics/Model/Model.h"
 #include "Engine/Graphics/Shapes/Cube.h"
@@ -5,6 +6,14 @@
 #include <External/imgui.h>
 
 GameWorld::GameWorld()
+{
+}
+
+GameWorld::~GameWorld()
+{
+}
+
+void GameWorld::Init()
 {
 	myModels.emplace_back(std::make_unique<Cube>());
 	myModels.emplace_back(std::make_unique<Pyramid>());
@@ -14,10 +23,6 @@ GameWorld::GameWorld()
 		if (model->Create() == false)
 			assert(false && "Failed to create model");
 	}
-}
-
-GameWorld::~GameWorld()
-{
 }
 
 void GameWorld::Render()

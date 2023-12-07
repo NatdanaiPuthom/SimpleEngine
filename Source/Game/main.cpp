@@ -1,8 +1,7 @@
+#include "stdafx.h"
 #include "Game/GameWorld.h"
 #include "Engine/engine.h"
-#include "Engine/Input/InputManager.h"
 #include "Engine/MemoryTracker/MemoryTracker.h"
-#include <External/profiler.h>
 #include <External/imgui.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -48,9 +47,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		Engine engine;
 		engine.Init(hInstance, nCmdShow);
 
-		SimpleUtilities::InputManager::GetInstance().SetHWND(engine.GetHWND());
-
 		GameWorld gameWorld;
+		gameWorld.Init();
 
 		while (engine.BeginFrame())
 		{

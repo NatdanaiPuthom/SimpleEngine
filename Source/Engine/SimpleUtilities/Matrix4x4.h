@@ -1,6 +1,4 @@
 #pragma once
-#include <cmath>
-#include <cassert>
 
 namespace SimpleUtilities
 {

@@ -75,7 +75,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -103,7 +104,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -135,7 +137,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Simple|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -168,10 +171,14 @@
   <ItemGroup>
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="Resources\resource.h" />
+    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources\Game.rc" />

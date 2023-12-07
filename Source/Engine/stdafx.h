@@ -14,6 +14,10 @@ using Microsoft::WRL::ComPtr;
 #include <string>
 #include <vector>
 
+#ifndef _SIMPLE
+#include "Engine/Console/Console.h"
+#endif
+
 #include <External/profiler.h>
 
 #include "Engine/SimpleUtilities/Vector.h"
@@ -24,6 +28,7 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/MemoryTracker/MemoryTracker.h"
 
 #include "Engine/engine.h"
+#include "Engine/global.h"
 #include "Engine/Graphics/GraphicsEngine.h"
 #include "Engine/Graphics/Buffers/ConstantBuffer.h"
 #include "Engine/Graphics/Shaders/Shader.h"

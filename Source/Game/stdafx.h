@@ -1,0 +1,23 @@
+#pragma once
+#include <Windows.h>
+
+#include <iostream>
+#include <cassert>
+#include <algorithm>
+#include <array>
+#include <string>
+#include <vector>
+#include <memory>
+#include <unordered_map>
+
+#ifndef _SIMPLE
+#include "Engine/Console/Console.h"
+#endif
+
+#include "Engine/SimpleUtilities/Vector.h"
+#include "Engine/SimpleUtilities/Matrix4x4.h"
+
+#include "Engine/global.h"
+#include "Engine/Input/InputManager.h"
+
+#include <External/profiler.h>

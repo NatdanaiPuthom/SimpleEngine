@@ -29,6 +29,7 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	myHWND = SetupMainWindow(hInstance, myWindowSize.x, myWindowSize.y);
 	assert(myHWND && "Failed To Create Window");
 
+	SimpleUtilities::InputManager::GetInstance().SetHWND(*myHWND);
 	SimplyGlobalImpl::SetEngine(this);
 
 #ifdef _DEBUG

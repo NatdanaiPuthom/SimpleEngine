@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-#include <memory>
 
 class Model;
 
@@ -10,6 +8,7 @@ public:
 	GameWorld();
 	~GameWorld();
 
+	void Init();
 	void Render();
 private:
 	std::vector<std::unique_ptr<Model>> myModels;
