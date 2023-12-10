@@ -121,7 +121,7 @@ void Model::Draw()
 	myShader->SetShader(context.Get());
 
 	FrameBufferData frameBuffer = {};
-	frameBuffer.worldToClipMatrix = SimpleUtilities::Matrix4x4f::GetFastInverse(camera->GetModelToWorldMatrix()) * camera->GetProjectionMatrix();
+	frameBuffer.worldToClipMatrix = camera->GetWorldToClipMatrix();
 	myFrameBuffer->Bind(0);
 	myFrameBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
 

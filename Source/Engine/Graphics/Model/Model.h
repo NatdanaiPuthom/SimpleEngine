@@ -17,6 +17,7 @@ struct Vertex
 {
 	SimpleUtilities::Vector4f position;
 	SimpleUtilities::Vector4f color;
+	SimpleUtilities::Vector4f normal;
 	SimpleUtilities::Vector2f uv;
 };
 
