@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Engine/global.h"
 #include "Engine/Graphics/Camera/Camera.h"
 #include "Engine/SimpleUtilities/Utility.h"
 
@@ -114,6 +113,7 @@ void Camera::Update(const float aDeltaTime)
 			//TODO: Add Freefly with Mouse
 			SimpleUtilities::Vector2f camRotation;
 			SimpleUtilities::Vector2f mouseDelta = myInput->GetMouseDelta();
+
 			camRotation.y = mouseDelta.x;
 			camRotation.y *= myRotateSpeed * 3.14f / 180.0f * aDeltaTime;
 
@@ -156,14 +156,14 @@ SimpleUtilities::Vector4f Camera::CameraToProjectionSpace(const SimpleUtilities:
 	return projectedVector;
 }
 
-SimpleUtilities::Vector2f Camera::ProjectionToPixel(SimpleUtilities::Vector4f aVector)
+SimpleUtilities::Vector2f Camera::ProjectionToPixel(const SimpleUtilities::Vector4f& aVector)
 {
 	return SimpleUtilities::Vector2f(aVector.x * myResolution.x / 2.0f + myResolution.x / 2.0f, aVector.y * myResolution.y / 2.0f + myResolution.y / 2.0f);
 }
 
-SimpleUtilities::Matrix4x4f Camera::WorldToClipMatrix()
+SimpleUtilities::Matrix4x4f Camera::GetWorldToClipMatrix()
 {
-	SimpleUtilities::Matrix4x4f clipMatrix = myProjectionMatrix * GetViewMatrix() * myModelToWorldTransform;
+	const SimpleUtilities::Matrix4x4f clipMatrix = myModelToWorldTransform.GetFastInverse() * myProjectionMatrix;
 	return clipMatrix;
 }
 
@@ -195,7 +195,7 @@ void Camera::UpdateCameraVectors()
 	myUp.Normalize();
 }
 
-void Camera::SetCameraValues(const SimpleUtilities::Vector3f& aPosition, SimpleUtilities::Vector2f& aResolution, const float aNearPlane, const float aFoV)
+void Camera::SetCameraValues(const SimpleUtilities::Vector3f& aPosition, const SimpleUtilities::Vector2f& aResolution, const float aNearPlane, const float aFoV)
 {
 	SetPosition(aPosition);
 

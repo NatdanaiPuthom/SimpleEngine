@@ -1,10 +1,5 @@
 #pragma once
 
-namespace SimpleUtilities
-{
-	class InputManager;
-}
-
 class Camera
 {
 public:
@@ -15,16 +10,16 @@ public:
 
 	SimpleUtilities::Vector4f WorldToCameraSpace(const SimpleUtilities::Vector4f& aVector);
 	SimpleUtilities::Vector4f CameraToProjectionSpace(const SimpleUtilities::Vector4f& aVector);
-	SimpleUtilities::Vector2f ProjectionToPixel(SimpleUtilities::Vector4f aVector);
-	SimpleUtilities::Matrix4x4f WorldToClipMatrix(); //Likely wrong
+	SimpleUtilities::Vector2f ProjectionToPixel(const SimpleUtilities::Vector4f& aVector);
 public:
-	void SetCameraValues(const SimpleUtilities::Vector3f& aPosition, SimpleUtilities::Vector2f& aResolution, const float aNearPlane, const float aFoV);
+	void SetCameraValues(const SimpleUtilities::Vector3f& aPosition, const SimpleUtilities::Vector2f& aResolution, const float aNearPlane, const float aFoV);
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
 	void SetResolution(const SimpleUtilities::Vector2f& aResolution);
 	void SetNearPlane(const float aNearPlane);
 	void SetMoveSpeed(const float aSpeed);
 	void SetFoV(const float aFoV);
 public:
+	SimpleUtilities::Matrix4x4f GetWorldToClipMatrix();
 	SimpleUtilities::Matrix4x4f GetModelToWorldMatrix() const;
 	SimpleUtilities::Matrix4x4f GetProjectionMatrix() const;
 	SimpleUtilities::Matrix4x4f GetViewMatrix() const;
