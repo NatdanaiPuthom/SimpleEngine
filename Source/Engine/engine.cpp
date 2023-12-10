@@ -40,7 +40,7 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	SimplyGlobalImpl::SetEngine(this);
 
 	myGraphicsEngine = std::make_unique<GraphicsEngine>();
-	bool success = myGraphicsEngine->Init(myWindowSize.x, myWindowSize.y, *myHWND);
+	const bool success = myGraphicsEngine->Init(myWindowSize.x, myWindowSize.y, *myHWND);
 	assert(success && "Failed To Init Graphics Engine");
 
 	myTimer = std::make_unique<SimpleUtilities::Timer>();
@@ -55,13 +55,13 @@ void Engine::LoadSettingsFromJson()
 	std::ifstream file(filename);
 	assert(file.is_open());
 
-	nlohmann::json json = nlohmann::json::parse(file);
+	const nlohmann::json json = nlohmann::json::parse(file);
 	file.close();
 
-	nlohmann::json& object = json["game_settings"]["window_size"];
+	const nlohmann::json& windowSize = json["game_settings"]["window_size"];
 
-	myWindowSize.x = object["x"];
-	myWindowSize.y = object["y"];
+	myWindowSize.x = windowSize["x"];
+	myWindowSize.y = windowSize["y"];
 }
 
 std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)

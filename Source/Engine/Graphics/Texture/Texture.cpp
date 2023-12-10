@@ -16,7 +16,7 @@ bool Texture::Init(ComPtr<ID3D11Device>& aDevice, const char* aFileName)
 	const std::string texturePath = std::string(SIMPLE_ASSETS_DIR) + std::string(aFileName);
 	const std::wstring texturePathW = SimpleUtilities::ToWString(texturePath);
 
-	HRESULT result = DirectX::CreateDDSTextureFromFile(aDevice.Get(), texturePathW.c_str(), NULL, &myShaderResourceView);
+	const HRESULT result = DirectX::CreateDDSTextureFromFile(aDevice.Get(), texturePathW.c_str(), NULL, &myShaderResourceView);
 	if (FAILED(result))
 		return false;
 

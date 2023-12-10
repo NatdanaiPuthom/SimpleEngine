@@ -116,7 +116,7 @@ bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, cons
 	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	HRESULT result = D3D11CreateDeviceAndSwapChain(
+	const HRESULT result = D3D11CreateDeviceAndSwapChain(
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
@@ -222,7 +222,7 @@ bool GraphicsEngine::CreateSamplerState()
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	HRESULT result = myDevice->CreateSamplerState(&samplerDesc, &mySamplerState);
+	const HRESULT result = myDevice->CreateSamplerState(&samplerDesc, &mySamplerState);
 	if (FAILED(result))
 		return false;
 

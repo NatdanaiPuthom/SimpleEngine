@@ -37,10 +37,10 @@ public:
 	Shader& GetShader();
 	int GetIndexCount();
 protected:
+	SimpleUtilities::Matrix4x4f myModelToWorld;
+
 	std::vector<Vertex> myVertices;
 	std::vector<unsigned int> myIndices;
-
-	SimpleUtilities::Matrix4x4f myModelToWorld;
 
 	ComPtr<ID3D11Buffer> myVertexBuffer;
 	ComPtr<ID3D11Buffer> myIndexBuffer;
