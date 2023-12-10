@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "Engine/global.h"
 #include "Engine/Graphics/Shapes/Pyramid.h"
-#include "Engine/Graphics/Texture/Texture.h"
+
+namespace SU = SimpleUtilities;
 
 Pyramid::Pyramid()
 {
@@ -16,13 +16,13 @@ const bool Pyramid::Create()
 	myVertices =
 	{
 		// Base
-		{ SimpleUtilities::Vector4f(-1.0f, -1.0f, -1.0f, 1), SimpleUtilities::Vector4f(1.0f, 0.0f, 0.0f, 1.0f), SimpleUtilities::Vector2f(0.0f, 0.0f) },
-		{ SimpleUtilities::Vector4f(1.0f, -1.0f, -1.0f, 1), SimpleUtilities::Vector4f(0.0f, 1.0f, 0.0f, 1.0f), SimpleUtilities::Vector2f(1.0f, 0.0f) },
-		{ SimpleUtilities::Vector4f(1.0f, -1.0f, 1.0f, 1), SimpleUtilities::Vector4f(0.0f, 0.0f, 1.0f, 1.0f), SimpleUtilities::Vector2f(1.0f, 1.0f) },
-		{ SimpleUtilities::Vector4f(-1.0f, -1.0f, 1.0f, 1), SimpleUtilities::Vector4f(1.0f, 1.0f, 0.0f, 1.0f), SimpleUtilities::Vector2f(0.0f, 1.0f) },
+		{ SU::Vector4f(-1.0f, -1.0f, -1.0f, 1), SU::Vector4f(1.0f, 0.0f, 0.0f, 1.0f),SU::Vector4f(1, 1, 1, 1), SU::Vector2f(0.0f, 0.0f) },
+		{ SU::Vector4f(1.0f, -1.0f, -1.0f, 1), SU::Vector4f(0.0f, 1.0f, 0.0f, 1.0f), SU::Vector4f(1, 1, 1, 1),SU::Vector2f(1.0f, 0.0f) },
+		{ SU::Vector4f(1.0f, -1.0f, 1.0f, 1), SU::Vector4f(0.0f, 0.0f, 1.0f, 1.0f),SU::Vector4f(1, 1, 1, 1), SU::Vector2f(1.0f, 1.0f) },
+		{ SU::Vector4f(-1.0f, -1.0f, 1.0f, 1), SU::Vector4f(1.0f, 1.0f, 0.0f, 1.0f), SU::Vector4f(1, 1, 1, 1),SU::Vector2f(0.0f, 1.0f) },
 
 		// Top
-		{ SimpleUtilities::Vector4f(0.0f, 1.0f, 0.0f, 1), SimpleUtilities::Vector4f(1.0f, 0.0f, 1.0f, 1.0f), SimpleUtilities::Vector2f(0.5f, 0.5f) }
+		{ SU::Vector4f(0.0f, 1.0f, 0.0f, 1), SU::Vector4f(1.0f, 0.0f, 1.0f, 1.0f), SU::Vector4f(1, 1, 1, 1),SU::Vector2f(0.5f, 0.5f) }
 	};
 
 	myIndices =
@@ -38,7 +38,7 @@ const bool Pyramid::Create()
 		3, 4, 0
 	};
 
-	SimpleUtilities::Matrix4x4f transform;
+	SU::Matrix4x4f transform;
 	transform(4, 1) = 1;
 	transform(4, 2) = 0;
 	transform(4, 3) = 10;
