@@ -11,6 +11,7 @@ PixelInputType main (VertexInputType aInput)
     output.position = vertexClipPos;
     output.color = aInput.color;
     output.uv = aInput.uv;
+    output.normal = aInput.normal;
    
     return output;
 }

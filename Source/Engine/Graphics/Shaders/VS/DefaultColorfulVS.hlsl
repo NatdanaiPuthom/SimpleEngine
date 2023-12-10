@@ -20,6 +20,7 @@ PixelInputType main (VertexInputType aInput)
     output.color.a = aInput.color.a;
     
     output.uv = aInput.uv;
+    output.normal = aInput.normal;
     
     return output;
 }
