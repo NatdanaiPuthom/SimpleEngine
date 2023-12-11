@@ -2,20 +2,38 @@
 
 class Camera;
 
-struct FrameBufferData
+struct ID3D11Device;
+struct ID3D11DeviceContext;
+struct IDXGISwapChain;
+struct ID3D11RenderTargetView;
+struct ID3D11DepthStencilView;
+struct ID3D11DepthStencilState;
+struct ID3D11Buffer;
+struct ID3D11SamplerState;
+struct ID3D11Texture2D;
+struct ID3D11ShaderResourceView;
+struct ID3D11RenderTargetView;
+
+struct alignas(16) FrameBufferData
 {
 	SimpleUtilities::Matrix4x4f worldToClipMatrix;
 };
 
-struct ObjectBufferData
+struct alignas(16) ObjectBufferData
 {
 	SimpleUtilities::Matrix4x4f modelToWorldMatrix;
 };
 
-struct TimeBufferData
+struct alignas(16) TimeBufferData
 {
 	float time;
 	float padding[3];
+};
+
+struct alignas(16) PositionBufferData
+{
+	SimpleUtilities::Vector3f position;
+	float padding;
 };
 
 class GraphicsEngine

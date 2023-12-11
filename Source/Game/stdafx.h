@@ -1,9 +1,7 @@
 #pragma once
 //TO-DO: Fix A Way To Not Need to Include These
 #include <Windows.h>
-#include <wrl/client.h>
 #include <d3d11.h>
-using Microsoft::WRL::ComPtr;
 
 #include <iostream>
 #include <cassert>
