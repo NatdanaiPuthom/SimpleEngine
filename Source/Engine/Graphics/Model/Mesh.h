@@ -1,8 +1,4 @@
 #pragma once
-#include "Engine/SimpleUtilities/Vector2.h"
-#include "Engine/SimpleUtilities/Vector4.h"
-#include "Engine/SimpleUtilities/Matrix4x4.h"
-#include <vector>
 #include <wrl/client.h>
 
 class GraphicsEngine;
@@ -36,12 +32,16 @@ public:
 	const bool Init(const MeshData& aMeshData, const char* aPSShaderFile = "DefaultPS.cso", const char* aVSShaderFile = "DefaultVS.cso", const char* aTextureFile = "colors.dds");
 	void Draw();
 public:
+	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
+public:
 	SimpleUtilities::Matrix4x4f& GetModelToWorldMatrix();
 	ComPtr<ID3D11Buffer> GetVertexBuffer();
 	ComPtr<ID3D11Buffer> GetIndexBuffer();
 	Shader& GetShader();
 	int GetIndexCount();
-protected:
+private:
+	GraphicsEngine* myGraphicsEngine;
+
 	SimpleUtilities::Matrix4x4f myModelToWorld;
 
 	MeshData myMeshData;
@@ -50,11 +50,9 @@ protected:
 	ComPtr<ID3D11Buffer> myIndexBuffer;
 
 	std::shared_ptr<Shader> myShader;
+	std::shared_ptr<Texture> myTexture;
+
 	std::unique_ptr<ConstantBuffer> myFrameBuffer;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;
-
-	std::shared_ptr<Texture> myTexture;
-private:
-	GraphicsEngine* myGraphicsEngine;
 };

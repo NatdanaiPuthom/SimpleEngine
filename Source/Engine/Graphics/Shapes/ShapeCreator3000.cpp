@@ -6,10 +6,8 @@ namespace SU = SimpleUtilities;
 
 MeshData Shape::CreateTerrain()
 {
-
 	unsigned int gridSize = 12;
 	unsigned int vertexSize = gridSize + 1;
-
 	const unsigned int upSampleMultiply = 1;
 
 	std::vector<float> heightMap(vertexSize * vertexSize);
@@ -24,10 +22,7 @@ MeshData Shape::CreateTerrain()
 
 	gridSize = vertexSize - 1;
 
-
-	const SU::Vector3f startPos(-1, -1.f, 10);
 	const float size = 0.2f;
-
 	std::vector<Vertex> vertices(vertexSize * vertexSize);
 	std::vector<unsigned int> indices;
 
@@ -43,7 +38,6 @@ MeshData Shape::CreateTerrain()
 			vertex.uv = { static_cast<float>(x) / vertexSize, static_cast<float>(y) / vertexSize };
 			vertex.normal = SU::Vector4f(0, 1, 0, 0);
 			vertices[index] = vertex;
-
 		}
 	}
 
@@ -95,13 +89,13 @@ MeshData Shape::CreatePyramid()
 	std::vector<Vertex> vertices =
 	{
 		// Base
-		{ SU::Vector4f(-1.0f, -1.0f, -1.0f, 1), SU::Vector4f(1.0f, 0.0f, 0.0f, 1.0f),SU::Vector4f(1, 1, 1, 1), SU::Vector2f(0.0f, 0.0f) },
-		{ SU::Vector4f(1.0f, -1.0f, -1.0f, 1), SU::Vector4f(0.0f, 1.0f, 0.0f, 1.0f), SU::Vector4f(1, 1, 1, 1),SU::Vector2f(1.0f, 0.0f) },
-		{ SU::Vector4f(1.0f, -1.0f, 1.0f, 1), SU::Vector4f(0.0f, 0.0f, 1.0f, 1.0f),SU::Vector4f(1, 1, 1, 1), SU::Vector2f(1.0f, 1.0f) },
-		{ SU::Vector4f(-1.0f, -1.0f, 1.0f, 1), SU::Vector4f(1.0f, 1.0f, 0.0f, 1.0f), SU::Vector4f(1, 1, 1, 1),SU::Vector2f(0.0f, 1.0f) },
+		{ SU::Vector4f(-1.0f, -1.0f, -1.0f, 1), SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f),SU::Vector4f(1, 1, 1, 1), SU::Vector2f(0.0f, 0.0f) },
+		{ SU::Vector4f(1.0f, -1.0f, -1.0f, 1), SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f), SU::Vector4f(1, 1, 1, 1),SU::Vector2f(1.0f, 0.0f) },
+		{ SU::Vector4f(1.0f, -1.0f, 1.0f, 1), SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f),SU::Vector4f(1, 1, 1, 1), SU::Vector2f(1.0f, 1.0f) },
+		{ SU::Vector4f(-1.0f, -1.0f, 1.0f, 1), SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f), SU::Vector4f(1, 1, 1, 1),SU::Vector2f(0.0f, 1.0f) },
 
 		// Top
-		{ SU::Vector4f(0.0f, 1.0f, 0.0f, 1), SU::Vector4f(1.0f, 0.0f, 1.0f, 1.0f), SU::Vector4f(1, 1, 1, 1),SU::Vector2f(0.5f, 0.5f) }
+		{ SU::Vector4f(0.0f, 1.0f, 0.0f, 1), SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f), SU::Vector4f(1, 1, 1, 1),SU::Vector2f(0.5f, 0.5f) }
 	};
 
 	std::vector<unsigned int> indices =

@@ -20,14 +20,18 @@ void GameWorld::Init()
 	meshData.emplace_back(Shape::CreatePyramid());
 	meshData.emplace_back(Shape::CreateTerrain());
 
-	for (size_t i = 0; i < 2; ++i)
-	{
-		if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[i], "DefaultPS.cso", "DefaultColorfulVS.cso", "grass.dds"))
-			assert(false && "Failed To Create Mesh");
-	}
+	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[0], "DefaultPS.cso", "DefaultColorfulVS.cso", "colors.dds"))
+		assert(false && "Failed To Create Cube");
 
-	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[2], "DefaultPS.cso", "DefaultVS.cso", "grass.dds"))
-		assert(false && "Failed To Create Mesh");
+	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[1], "DefaultPS.cso", "DefaultVS.cso", "wood.dds"))
+		assert(false && "Failed To Create Pyramid");
+
+	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[2], "DefaultPS.cso", "Terrain.cso", "grass.dds"))
+		assert(false && "Failed To Create Terrain");
+
+	myMeshes[0]->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
+	myMeshes[1]->SetPosition(SimpleUtilities::Vector3f(-1, 0, 0));
+	myMeshes[2]->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 }
 
 void GameWorld::Render()

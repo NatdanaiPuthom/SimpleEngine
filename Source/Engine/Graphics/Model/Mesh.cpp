@@ -139,6 +139,11 @@ void Mesh::Draw()
 	context->DrawIndexed(static_cast<UINT>(myMeshData.myIndices.size()), 0, 0);
 }
 
+void Mesh::SetPosition(const SimpleUtilities::Vector3f& aPosition)
+{
+	myModelToWorld.SetPosition(aPosition);
+}
+
 int Mesh::GetIndexCount()
 {
 	return static_cast<int>(myMeshData.myIndices.size());
