@@ -30,9 +30,9 @@ struct alignas(16) TimeBufferData
 	float padding[3];
 };
 
-struct alignas(16) PositionBufferData
+struct alignas(16) DirectionalLightBufferData
 {
-	SimpleUtilities::Vector3f position;
+	SimpleUtilities::Vector3f dir;
 	float padding;
 };
 
