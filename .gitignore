@@ -403,6 +403,9 @@ FodyWeavers.xsd
 
 ############### Natdanai Modify 2023 ##########################
 
+*.vcxproj
+*.vcxproj.filters
+
 [Ll]ocal
 [Tt]emp
 [Ll]ib
