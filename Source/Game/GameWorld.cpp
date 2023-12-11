@@ -3,6 +3,7 @@
 #include "Engine/Graphics/Model/Model.h"
 #include "Engine/Graphics/Shapes/Cube.h"
 #include "Engine/Graphics/Shapes/Pyramid.h"
+#include "Engine/Graphics/GraphicsEngine.h"
 #include <External/imgui.h>
 
 GameWorld::GameWorld()
@@ -35,6 +36,13 @@ void GameWorld::Render()
 	if (ImGui::Begin("My Window", nullptr))
 	{
 		ImGui::Text("Hello World");
+	}
+	ImGui::End();
+
+	if (ImGui::Begin("Scene"))
+	{
+		ImVec2 size(1280, 720);
+		ImGui::Image(SimplyGlobal::GetGraphicsEngine()->GetShaderResourceView().Get(), size);
 	}
 	ImGui::End();
 }

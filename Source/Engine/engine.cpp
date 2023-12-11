@@ -123,6 +123,8 @@ bool Engine::BeginFrame()
 
 void Engine::EndFrame()
 {
+	myGraphicsEngine->SetToBackBuffer();
+
 	myImGuiInterface->EndFrame();
 	myGraphicsEngine->EndFrame();
 }

@@ -14,6 +14,9 @@ GraphicsEngine::GraphicsEngine()
 
 GraphicsEngine::~GraphicsEngine()
 {
+	myTexture.Reset();
+	mySRV.Reset();
+	myRTV.Reset();
 }
 
 bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHandle)
@@ -35,6 +38,9 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 	if (!CreateSamplerState())
 		return false;
 
+	if (!CreateStuffForImGuiImage(aWidth, aHeight))
+		return false;
+
 	return true;
 }
 
@@ -52,9 +58,9 @@ bool GraphicsEngine::BeginFrame()
 	}
 
 	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
-	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
+	myContext->OMSetRenderTargets(1, myRTV.GetAddressOf(), myDepthBuffer.Get());
 
-	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
+	myContext->ClearRenderTargetView(myRTV.Get(), myColor);
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
@@ -69,6 +75,12 @@ void GraphicsEngine::EndFrame()
 	mySwapChain->Present(1, 0);
 }
 
+void GraphicsEngine::SetToBackBuffer()
+{
+	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
+	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
+}
+
 ComPtr<ID3D11Device>& GraphicsEngine::GetDevice()
 {
 	return myDevice;
@@ -79,9 +91,39 @@ ComPtr<ID3D11DeviceContext>& GraphicsEngine::GetContext()
 	return myContext;
 }
 
+ComPtr<ID3D11ShaderResourceView>& GraphicsEngine::GetShaderResourceView()
+{
+	return mySRV;
+}
+
 std::shared_ptr<Camera> GraphicsEngine::GetCamera()
 {
 	return myCamera;
+}
+
+bool GraphicsEngine::CreateStuffForImGuiImage(const int aWidth, const int aHeight)
+{
+	D3D11_TEXTURE2D_DESC texDesc = { 0 };
+	texDesc.Width = aWidth;
+	texDesc.Height = aHeight;
+	texDesc.ArraySize = 1;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+
+	HRESULT result = myDevice->CreateTexture2D(&texDesc, nullptr, myTexture.GetAddressOf());
+	if (FAILED(result))
+		return false;
+
+	result = myDevice->CreateShaderResourceView(myTexture.Get(), nullptr, &mySRV);
+	if (FAILED(result))
+		return false;
+
+	result = myDevice->CreateRenderTargetView(myTexture.Get(), nullptr, &myRTV);
+	if (FAILED(result))
+		return false;
+
+	return true;
 }
 
 void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
