@@ -14,9 +14,6 @@ GraphicsEngine::GraphicsEngine()
 
 GraphicsEngine::~GraphicsEngine()
 {
-	myTexture.Reset();
-	mySRV.Reset();
-	myRTV.Reset();
 }
 
 bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHandle)
@@ -81,17 +78,17 @@ void GraphicsEngine::SetToBackBuffer()
 	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
 }
 
-ComPtr<ID3D11Device>& GraphicsEngine::GetDevice()
+ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
 {
 	return myDevice;
 }
 
-ComPtr<ID3D11DeviceContext>& GraphicsEngine::GetContext()
+ComPtr<ID3D11DeviceContext> GraphicsEngine::GetContext()
 {
 	return myContext;
 }
 
-ComPtr<ID3D11ShaderResourceView>& GraphicsEngine::GetShaderResourceView()
+ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetShaderResourceView()
 {
 	return mySRV;
 }

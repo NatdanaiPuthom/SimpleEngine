@@ -30,9 +30,9 @@ public:
 
 	void SetToBackBuffer();
 public:
-	ComPtr<ID3D11Device>& GetDevice();
-	ComPtr<ID3D11DeviceContext>& GetContext();
-	ComPtr<ID3D11ShaderResourceView>& GetShaderResourceView();
+	ComPtr<ID3D11Device> GetDevice();
+	ComPtr<ID3D11DeviceContext> GetContext();
+	ComPtr<ID3D11ShaderResourceView> GetShaderResourceView();
 	std::shared_ptr<Camera> GetCamera();
 private:
 	void CreateViewport(const int aWidth, const int aHeight);

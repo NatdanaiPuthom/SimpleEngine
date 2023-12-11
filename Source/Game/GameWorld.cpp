@@ -33,7 +33,7 @@ void GameWorld::Render()
 		model->Draw();
 	}
 
-	if (ImGui::Begin("My Window", nullptr))
+	if (ImGui::Begin("My Window"))
 	{
 		ImGui::Text("Hello World");
 	}
@@ -42,7 +42,8 @@ void GameWorld::Render()
 	if (ImGui::Begin("Scene"))
 	{
 		ImVec2 size(1280, 720);
-		ImGui::Image(SimplyGlobal::GetGraphicsEngine()->GetShaderResourceView().Get(), size);
+		const ImTextureID textureID = reinterpret_cast<ImTextureID>(SimplyGlobal::GetGraphicsEngine()->GetShaderResourceView().Get());
+		ImGui::Image(textureID, size);
 	}
 	ImGui::End();
 }

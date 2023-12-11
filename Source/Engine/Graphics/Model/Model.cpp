@@ -26,7 +26,7 @@ const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex
 	myModelToWorld = aModelToWorld;
 
 	std::shared_ptr<Camera> camera = myGraphicsEngine->GetCamera();
-	auto& device = myGraphicsEngine->GetDevice();
+	auto device = myGraphicsEngine->GetDevice();
 
 	{
 		D3D11_BUFFER_DESC vertexBufferDesc = {};
@@ -111,7 +111,7 @@ void Model::Draw()
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	auto& context = myGraphicsEngine->GetContext();
+	auto context = myGraphicsEngine->GetContext();
 	auto camera = myGraphicsEngine->GetCamera();
 
 	context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
