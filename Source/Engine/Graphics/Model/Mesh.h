@@ -21,14 +21,19 @@ struct Vertex
 	SimpleUtilities::Vector2f uv;
 };
 
-class Model
+struct MeshData
+{
+	std::vector<Vertex> myVertices;
+	std::vector<unsigned int> myIndices;
+};
+
+class Mesh final
 {
 public:
-	Model();
-	~Model();
+	Mesh();
+	~Mesh();
 
-	virtual const bool Create() = 0;
-	const bool Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, const char* aPSShaderFile = "DefaultPS.cso", const char* aVSShaderFile = "DefaultVS.cso", const char* aTextureFile = "colors.dds");
+	const bool Init(const MeshData& aMeshData, const char* aPSShaderFile = "DefaultPS.cso", const char* aVSShaderFile = "DefaultVS.cso", const char* aTextureFile = "colors.dds");
 	void Draw();
 public:
 	SimpleUtilities::Matrix4x4f& GetModelToWorldMatrix();
@@ -39,8 +44,7 @@ public:
 protected:
 	SimpleUtilities::Matrix4x4f myModelToWorld;
 
-	std::vector<Vertex> myVertices;
-	std::vector<unsigned int> myIndices;
+	MeshData myMeshData;
 
 	ComPtr<ID3D11Buffer> myVertexBuffer;
 	ComPtr<ID3D11Buffer> myIndexBuffer;

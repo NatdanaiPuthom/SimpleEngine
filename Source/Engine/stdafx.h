@@ -32,4 +32,4 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/Graphics/GraphicsEngine.h"
 #include "Engine/Graphics/Buffers/ConstantBuffer.h"
 #include "Engine/Graphics/Shaders/Shader.h"
-#include "Engine/Graphics/Model/Model.h"
+#include "Engine/Graphics/Model/Mesh.h"

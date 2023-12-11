@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "Game/GameWorld.h"
-#include "Engine/Graphics/Model/Model.h"
-#include "Engine/Graphics/Shapes/Cube.h"
-#include "Engine/Graphics/Shapes/Pyramid.h"
+#include "Engine/Graphics/Model/Mesh.h"
+#include "Engine/Graphics/Shapes/ShapeCreator3000.h"
 #include "Engine/Graphics/GraphicsEngine.h"
 #include <External/imgui.h>
 
@@ -16,19 +15,24 @@ GameWorld::~GameWorld()
 
 void GameWorld::Init()
 {
-	myModels.emplace_back(std::make_unique<Cube>());
-	myModels.emplace_back(std::make_unique<Pyramid>());
+	std::vector<MeshData> meshData;
+	meshData.emplace_back(Shape::CreateCube());
+	meshData.emplace_back(Shape::CreatePyramid());
+	meshData.emplace_back(Shape::CreateTerrain());
 
-	for (auto& model : myModels)
+	for (size_t i = 0; i < 2; ++i)
 	{
-		if (model->Create() == false)
-			assert(false && "Failed to create model");
+		if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[i], "DefaultPS.cso", "DefaultColorfulVS.cso", "grass.dds"))
+			assert(false && "Failed To Create Mesh");
 	}
+
+	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[2], "DefaultPS.cso", "DefaultVS.cso", "grass.dds"))
+		assert(false && "Failed To Create Mesh");
 }
 
 void GameWorld::Render()
 {
-	for (const auto& model : myModels)
+	for (const auto& model : myMeshes)
 	{
 		model->Draw();
 	}

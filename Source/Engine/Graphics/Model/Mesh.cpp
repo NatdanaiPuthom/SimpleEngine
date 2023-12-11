@@ -3,7 +3,7 @@
 #include "Engine/Graphics/Camera/Camera.h"
 #include "Engine/Graphics/Texture/Texture.h"
 
-Model::Model()
+Mesh::Mesh()
 	: myShader(std::make_shared<Shader>())
 	, myFrameBuffer(std::make_unique<ConstantBuffer>())
 	, myObjectBuffer(std::make_unique<ConstantBuffer>())
@@ -13,17 +13,16 @@ Model::Model()
 {
 }
 
-Model::~Model()
+Mesh::~Mesh()
 {
 }
 
-const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex>& aVertices, const std::vector<unsigned int>& aIndices, const SimpleUtilities::Matrix4x4f& aModelToWorld, const char* aPSShaderFile, const char* aVSShaderFile, const char* aTextureFile)
+const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, const char* aVSShaderFile, const char* aTextureFile)
 {
-	myGraphicsEngine = aGraphicsEngine;
+	myGraphicsEngine = SimplyGlobal::GetGraphicsEngine();
 
-	myVertices = aVertices;
-	myIndices = aIndices;
-	myModelToWorld = aModelToWorld;
+	myMeshData = aMeshData;
+	myModelToWorld = SimpleUtilities::Matrix4x4f();
 
 	std::shared_ptr<Camera> camera = myGraphicsEngine->GetCamera();
 	auto device = myGraphicsEngine->GetDevice();
@@ -31,14 +30,14 @@ const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex
 	{
 		D3D11_BUFFER_DESC vertexBufferDesc = {};
 		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		vertexBufferDesc.ByteWidth = sizeof(Vertex) * static_cast<int>(myVertices.size());
+		vertexBufferDesc.ByteWidth = sizeof(Vertex) * static_cast<int>(myMeshData.myVertices.size());
 		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags = 0;
 		vertexBufferDesc.MiscFlags = 0;
 		vertexBufferDesc.StructureByteStride = 0;
 
 		D3D11_SUBRESOURCE_DATA vertexData = {};
-		vertexData.pSysMem = &myVertices[0];
+		vertexData.pSysMem = &myMeshData.myVertices[0];
 		vertexData.SysMemPitch = 0;
 		vertexData.SysMemSlicePitch = 0;
 
@@ -50,14 +49,14 @@ const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex
 	{
 		D3D11_BUFFER_DESC indexBufferDesc = {};
 		indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		indexBufferDesc.ByteWidth = sizeof(unsigned int) * static_cast<int>(myIndices.size());
+		indexBufferDesc.ByteWidth = sizeof(unsigned int) * static_cast<int>(myMeshData.myIndices.size());
 		indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		indexBufferDesc.CPUAccessFlags = 0;
 		indexBufferDesc.MiscFlags = 0;
 		indexBufferDesc.StructureByteStride = 0;
 
 		D3D11_SUBRESOURCE_DATA indexData = {};
-		indexData.pSysMem = &myIndices[0];
+		indexData.pSysMem = &myMeshData.myIndices[0];
 		indexData.SysMemPitch = 0;
 		indexData.SysMemSlicePitch = 0;
 		HRESULT result = device->CreateBuffer(&indexBufferDesc, &indexData, &myIndexBuffer);
@@ -91,7 +90,7 @@ const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex
 			1.0f
 		};
 
-		if (!myTimeBuffer->Init(aGraphicsEngine, sizeof(TimeBufferData), &timeBuffer))
+		if (!myTimeBuffer->Init(myGraphicsEngine, sizeof(TimeBufferData), &timeBuffer))
 			return false;
 	}
 
@@ -106,7 +105,7 @@ const bool Model::Init(GraphicsEngine* aGraphicsEngine, const std::vector<Vertex
 	return true;
 }
 
-void Model::Draw()
+void Mesh::Draw()
 {
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
@@ -137,30 +136,30 @@ void Model::Draw()
 
 	myTexture->Bind(context, 0);
 
-	context->DrawIndexed(static_cast<UINT>(myIndices.size()), 0, 0);
+	context->DrawIndexed(static_cast<UINT>(myMeshData.myIndices.size()), 0, 0);
 }
 
-int Model::GetIndexCount()
+int Mesh::GetIndexCount()
 {
-	return static_cast<int>(myIndices.size());
+	return static_cast<int>(myMeshData.myIndices.size());
 }
 
-ComPtr<ID3D11Buffer> Model::GetVertexBuffer()
+ComPtr<ID3D11Buffer> Mesh::GetVertexBuffer()
 {
 	return myVertexBuffer;
 }
 
-ComPtr<ID3D11Buffer> Model::GetIndexBuffer()
+ComPtr<ID3D11Buffer> Mesh::GetIndexBuffer()
 {
 	return myIndexBuffer;
 }
 
-Shader& Model::GetShader()
+Shader& Mesh::GetShader()
 {
 	return *myShader;
 }
 
-SimpleUtilities::Matrix4x4f& Model::GetModelToWorldMatrix()
+SimpleUtilities::Matrix4x4f& Mesh::GetModelToWorldMatrix()
 {
 	return myModelToWorld;
 }

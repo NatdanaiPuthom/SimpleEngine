@@ -1,6 +1,6 @@
 #pragma once
 
-class Model;
+class Mesh;
 
 class GameWorld
 {
@@ -11,5 +11,5 @@ public:
 	void Init();
 	void Render();
 private:
-	std::vector<std::unique_ptr<Model>> myModels;
+	std::vector<std::unique_ptr<Mesh>> myMeshes;
 };

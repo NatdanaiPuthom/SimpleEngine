@@ -27,6 +27,7 @@ namespace SimpleUtilities
 
 	typedef Vector2<float> Vector2f;
 	typedef Vector2<int> Vector2i;
+	typedef Vector2<unsigned int> Vector2ui;
 
 	template <class T> Vector2<T> operator+(const Vector2<T>& aVectorA, const Vector2<T>& aVectorB);
 	template <class T> Vector2<T> operator-(const Vector2<T>& aVectorA, const Vector2<T>& aVectorB);

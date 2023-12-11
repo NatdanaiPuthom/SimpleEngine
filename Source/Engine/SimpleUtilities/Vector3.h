@@ -17,6 +17,7 @@ namespace SimpleUtilities
 		Vector3<T>(const Vector3<T>& aVector) = default;
 
 		Vector3<T>& operator=(const Vector3<T>& aVector2) = default;
+
 		Vector3<T> GetNormalized() const;
 
 		Vector3<T> Cross(const Vector3<T>& aVector) const;

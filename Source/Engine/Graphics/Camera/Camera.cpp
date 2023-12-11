@@ -15,6 +15,8 @@ Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, c
 	SetPosition({ 0,0,0 });
 	CreateProjectionMatrix();
 	UpdateCameraVectors();
+
+	myCurrentPosition = SimpleUtilities::Vector3f(0, 0, -10); //TO-DO: Fix Better Design
 }
 
 void Camera::Update(const float aDeltaTime)
@@ -83,6 +85,22 @@ void Camera::Update(const float aDeltaTime)
 			UpdateCameraVectors();
 		}
 
+		if (myInput->IsHold('Z'))
+		{
+			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
+			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundX(-myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
+			SetPosition(myCurrentPosition);
+			UpdateCameraVectors();
+		}
+
+		if (myInput->IsHold('C'))
+		{
+			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
+			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundX(myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
+			SetPosition(myCurrentPosition);
+			UpdateCameraVectors();
+		}
+
 		float direction = 1.0f;
 		if (myInput->IsHold(VK_CONTROL))
 		{
@@ -91,8 +109,7 @@ void Camera::Update(const float aDeltaTime)
 
 		if (myInput->IsHold(VK_SPACE))
 		{
-			forward = direction * myUp * speed * aDeltaTime;
-			targetPosition += forward;
+			targetPosition.y += myUp.y * speed * aDeltaTime;
 		}
 
 		HWND& hwnd = SimplyGlobal::GetHWND();

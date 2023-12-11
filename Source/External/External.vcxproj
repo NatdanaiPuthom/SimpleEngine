@@ -75,7 +75,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -96,7 +96,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -121,7 +121,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/panda/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/panda/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIMPLE_ROOT_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/";SIMPLE_BIN_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/";SIMPLE_SHADER_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/Shaders/";SIMPLE_PROFILER_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/Profilers/";SIMPLE_ASSETS_DIR="C:/Users/emil.olofsson3/Desktop/SimpleEngine/Bin/Assets/";SIMPLE_IMGUI_FILENAME="imgui.ini";SIMPLE_SETTINGS_FILENAME="settings.json";_SIMPLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;.;dearimgui;dearimgui\imgui;dearimgui\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h" />
     <ClInclude Include="StackWalker\StackWalker.h" />
+    <ClInclude Include="Uppgift5_Helper\uppgift05_helper.h" />
     <ClInclude Include="dearimgui\freetype\config\ftconfig.h" />
     <ClInclude Include="dearimgui\freetype\config\ftheader.h" />
     <ClInclude Include="dearimgui\freetype\config\ftmodule.h" />

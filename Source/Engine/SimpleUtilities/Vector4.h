@@ -18,6 +18,9 @@ namespace SimpleUtilities
 		Vector4<T>(const Vector4<T>& aVector) = default;
 
 		Vector4<T>& operator=(const Vector4<T>& aVector2) = default;
+
+		Vector3<T> AsVector3() const;
+
 		Vector4<T> GetNormalized() const;
 
 		T LengthSqr() const;
@@ -53,6 +56,12 @@ namespace SimpleUtilities
 	template<class T>
 	inline Vector4<T>::Vector4(const T& aX, const T& aY, const T& aZ, const T& aW) : x(aX), y(aY), z(aZ), w(aW)
 	{}
+
+	template<class T>
+	inline Vector3<T> Vector4<T>::AsVector3() const
+	{
+		return Vector3<T>(x, y, z);
+	}
 
 	template<class T>
 	inline Vector4<T> Vector4<T>::GetNormalized() const

@@ -7,6 +7,9 @@
     <Filter Include="StackWalker">
       <UniqueIdentifier>{21FD7E7C-8DB2-F771-16A7-F148825BEE75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Uppgift5_Helper">
+      <UniqueIdentifier>{D8CCE568-4458-532D-4D69-D621B973AF2D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="dearimgui">
       <UniqueIdentifier>{7C6018E5-E8CA-CC5B-3109-7E019DB2AAB0}</UniqueIdentifier>
     </Filter>
@@ -59,6 +62,9 @@
     </ClInclude>
     <ClInclude Include="StackWalker\StackWalker.h">
       <Filter>StackWalker</Filter>
+    </ClInclude>
+    <ClInclude Include="Uppgift5_Helper\uppgift05_helper.h">
+      <Filter>Uppgift5_Helper</Filter>
     </ClInclude>
     <ClInclude Include="dearimgui\freetype\config\ftconfig.h">
       <Filter>dearimgui\freetype\config</Filter>
