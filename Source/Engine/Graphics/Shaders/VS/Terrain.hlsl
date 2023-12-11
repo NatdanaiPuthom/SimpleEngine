@@ -12,8 +12,7 @@ PixelInputType main(VertexInputType aInput)
     output.normal = aInput.normal;
     output.position = vertexClipPos;
     
-    float3 lightDir = normalize(float3(0, -0.5, 1));
-    output.color = aInput.color * dot(lightDir, float3(-aInput.normal.xyz));
+    output.color = aInput.color * dot(directionLight, float3(-aInput.normal.xyz));
     output.color.a = 1;
     
     return output;

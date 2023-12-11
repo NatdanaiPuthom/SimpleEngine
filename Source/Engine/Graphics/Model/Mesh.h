@@ -50,9 +50,10 @@ private:
 	ComPtr<ID3D11Buffer> myIndexBuffer;
 
 	std::shared_ptr<Shader> myShader;
-	std::shared_ptr<Texture> myTexture;
 
+	std::unique_ptr<Texture> myTexture;
 	std::unique_ptr<ConstantBuffer> myFrameBuffer;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;
+	std::unique_ptr<ConstantBuffer> myDirectionLightBuffer;
 };
