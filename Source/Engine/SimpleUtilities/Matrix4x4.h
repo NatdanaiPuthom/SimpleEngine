@@ -13,6 +13,8 @@ namespace SimpleUtilities
 		const T& operator()(const int aRow, const int aColumn) const;
 		void operator=(const Matrix4x4<T>& aMatrix);
 
+		void SetPosition(const SimpleUtilities::Vector3<T>& aPosition);
+
 		static Matrix4x4<T> CreateRotationAroundX(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundY(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundZ(const T aAngleInRadians);
@@ -205,6 +207,14 @@ namespace SimpleUtilities
 				myMatrix[i][j] = aMatrix(i + 1, j + 1);
 			}
 		}
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::SetPosition(const SimpleUtilities::Vector3<T>& aPosition)
+	{
+		myMatrix[3][0] = aPosition.x;
+		myMatrix[3][1] = aPosition.y;
+		myMatrix[3][2] = aPosition.z;
 	}
 
 	template<typename T>
