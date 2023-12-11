@@ -42,7 +42,7 @@ void GameWorld::Render()
 	if (ImGui::Begin("Scene"))
 	{
 		ImVec2 size(1280, 720);
-		const ImTextureID textureID = reinterpret_cast<ImTextureID>(SimplyGlobal::GetGraphicsEngine()->GetShaderResourceView().Get());
+		const ImTextureID textureID = SimplyGlobal::GetGraphicsEngine()->GetShaderResourceView().Get();
 		ImGui::Image(textureID, size);
 	}
 	ImGui::End();
