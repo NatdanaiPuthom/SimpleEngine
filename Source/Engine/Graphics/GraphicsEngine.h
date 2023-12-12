@@ -47,6 +47,7 @@ public:
 	void EndFrame();
 
 	void SetToBackBuffer();
+	void SetVSync(const bool aShouldTurnOn);
 public:
 	ComPtr<ID3D11Device> GetDevice();
 	ComPtr<ID3D11DeviceContext> GetContext();
@@ -61,6 +62,8 @@ private:
 	bool CreateSamplerState();
 
 	bool CreateStuffForImGuiImage(const int aWidth, const int aHeight);
+private:
+	void LoadSettingsFromJson();
 private:
 	ComPtr<ID3D11Device> myDevice;
 	ComPtr<ID3D11DeviceContext> myContext;

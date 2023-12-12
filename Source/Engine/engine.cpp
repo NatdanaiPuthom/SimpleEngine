@@ -2,7 +2,6 @@
 #include "Engine/global.h"
 #include "Engine/SimpleUtilities/Timer.h"
 #include "Engine/ImGuiInterface/ImGuiInterface.h"
-
 #include <External/json.h>
 
 #ifdef _DEBUG

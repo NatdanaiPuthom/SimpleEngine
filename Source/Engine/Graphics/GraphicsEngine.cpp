@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Engine/global.h"
 #include "Graphics/Camera/Camera.h"
+#include <External/json.h>
 
 #ifdef _DEBUG
 #define REPORT_DX_WARNINGS
@@ -39,11 +40,27 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 	if (!CreateStuffForImGuiImage(aWidth, aHeight))
 		return false;
 
+	LoadSettingsFromJson();
+
 	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(aWidth), static_cast<float>(aHeight) });
 	myCamera->SetRotation(SimpleUtilities::Vector3f(50.0f, 0, 0));
 	myCamera->SetPosition(SimpleUtilities::Vector3f(0, 15, -12));
 
 	return true;
+}
+
+void GraphicsEngine::LoadSettingsFromJson()
+{
+	PROFILER_FUNCTION(profiler::colors::Red);
+
+	const std::string filename = SimpleUtilities::GetPath(SIMPLE_SETTINGS_FILENAME);
+	std::ifstream file(filename);
+	assert(file.is_open());
+
+	const nlohmann::json json = nlohmann::json::parse(file);
+	file.close();
+
+	myVSync = json["game_settings"]["vsync"];
 }
 
 bool GraphicsEngine::BeginFrame()
@@ -81,6 +98,11 @@ void GraphicsEngine::SetToBackBuffer()
 {
 	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
 	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
+}
+
+void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
+{
+	myVSync = aShouldTurnOn;
 }
 
 ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
