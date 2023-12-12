@@ -82,4 +82,5 @@ private:
 	std::shared_ptr<Camera> myCamera;
 
 	float myColor[4];
+	bool myVSync;
 };

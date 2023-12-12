@@ -29,7 +29,7 @@ public:
 	Mesh();
 	~Mesh();
 
-	const bool Init(const MeshData& aMeshData, const char* aPSShaderFile = "DefaultPS.cso", const char* aVSShaderFile = "DefaultVS.cso", const char* aTextureFile = "colors.dds");
+	const bool Init(const MeshData& aMeshData, const char* aPSShaderFile = "Shaders/DefaultPS.cso", const char* aVSShaderFile = "Shaders/DefaultVS.cso", const char* aTextureFile = "Shaders/colors.dds");
 	void Draw();
 public:
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);

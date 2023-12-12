@@ -1,7 +1,6 @@
 #pragma once
 
 //SimpleEngine Makes It Lazy
-constexpr const char* SIMPLE_PROFILER_FILENAME = "profiler_data.prof";
 
 #ifndef _Simple
 #define BUILD_WITH_EASY_PROFILER

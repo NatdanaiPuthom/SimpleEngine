@@ -21,5 +21,6 @@
 
 #include "Engine/global.h"
 #include "Engine/Input/InputManager.h"
+#include "Engine/SimpleUtilities/Utility.h"
 
 #include <External/profiler.h>

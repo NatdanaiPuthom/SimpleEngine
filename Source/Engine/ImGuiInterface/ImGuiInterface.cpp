@@ -13,7 +13,7 @@ ImGuiInterface::ImGuiInterface()
 
 ImGuiInterface::~ImGuiInterface()
 {
-	const std::string output = SIMPLE_BIN_DIR + std::string(SIMPLE_IMGUI_FILENAME);
+	const std::string output = SimpleUtilities::GetPath(SIMPLE_IMGUI_FILENAME);
 	ImGui::SaveIniSettingsToDisk(output.c_str());
 
 	ImGui_ImplDX11_Shutdown();
@@ -34,7 +34,7 @@ void ImGuiInterface::Init()
 	io.IniFilename = nullptr;
 	io.LogFilename = nullptr;
 
-	const std::string output = SIMPLE_BIN_DIR + std::string(SIMPLE_IMGUI_FILENAME);
+	const std::string output = SimpleUtilities::GetPath(SIMPLE_IMGUI_FILENAME);
 	ImGui::LoadIniSettingsFromDisk(output.c_str());
 
 	ImNodes::CreateContext();

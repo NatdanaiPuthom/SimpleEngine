@@ -51,7 +51,7 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 
 void Engine::LoadSettingsFromJson()
 {
-	const std::string filename = SIMPLE_BIN_DIR + std::string(SIMPLE_SETTINGS_FILENAME);
+	const std::string filename = SimpleUtilities::GetPath(SIMPLE_SETTINGS_FILENAME);
 	std::ifstream file(filename);
 	assert(file.is_open());
 

@@ -61,8 +61,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	PROFILER_DISABLE();
 
 	{
-		const std::string output = SIMPLE_PROFILER_DIR + std::string(SIMPLE_PROFILER_FILENAME);
-		PROFILER_DUMP_FILE(output.c_str());
+		const std::string outputPath = SimpleUtilities::GetPath(SIMPLE_PROFILER_FILENAME);
+		PROFILER_DUMP_FILE(outputPath.c_str());
 	}
 
 	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!

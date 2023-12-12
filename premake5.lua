@@ -8,27 +8,18 @@ workspace "SimpleEngine"
 	flags { "FatalWarnings" } -- Threat All Warnings As Errors
 	objdir "Temp" -- Location for garbage created by Visual Studio
 
-	local root_dir = _SCRIPT_DIR -- _WORKING_DIR
 	local bin_dir = path.join(_SCRIPT_DIR, "Bin/")
 	local shader_dir = path.join(_SCRIPT_DIR, "Bin/Shaders/") 
 	local profiler_dir = path.join(_SCRIPT_DIR, "Bin/Profilers/")
-	local assets_dir = path.join(_SCRIPT_DIR, "Bin/Assets/")
 
 	os.mkdir(shader_dir)
 	os.mkdir(profiler_dir)
 	os.mkdir(bin_dir)
 
-	defines { -- Create Global Macro For This "Path"
-		'SIMPLE_ROOT_DIR="' ..root_dir .. '/"',
-		'SIMPLE_BIN_DIR="' ..bin_dir .. '/"',
-		'SIMPLE_SHADER_DIR="' .. shader_dir .. '/"' ,
-		'SIMPLE_PROFILER_DIR="' ..profiler_dir ..'/"',
-		'SIMPLE_ASSETS_DIR="' ..assets_dir .. '/"'
-	}
-
 	defines { -- Create Global Macro For Strings
 		'SIMPLE_IMGUI_FILENAME="' .."imgui.ini" .. '"',
-		'SIMPLE_SETTINGS_FILENAME="' .. "settings.json" .. '"'
+		'SIMPLE_SETTINGS_FILENAME="' .. "settings.json" .. '"',
+		'SIMPLE_PROFILER_FILENAME="' .. "Profilers/profiler_data.prof" .. '"'
 	}
 
 	configurations {
@@ -76,7 +67,7 @@ workspace "SimpleEngine"
 			shadertype("Pixel") -- Set all .hlsl shadertype in this folder to "Pixel"
 
 		filter("files:Source/Engine/Graphics/Shaders/VS/**.hlsl")
-			shadertype("Vertex")  -- Set all .hlsl shadertype in this folder to "Vertex"
+			shadertype("Vertex") 
 
 	project "External"
 		kind "StaticLib"

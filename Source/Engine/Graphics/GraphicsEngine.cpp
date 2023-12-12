@@ -9,6 +9,7 @@
 GraphicsEngine::GraphicsEngine()
 	: myCamera(std::make_shared<Camera>())
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
+	, myVSync(true)
 {
 }
 
@@ -73,7 +74,7 @@ bool GraphicsEngine::BeginFrame()
 
 void GraphicsEngine::EndFrame()
 {
-	mySwapChain->Present(1, 0);
+	mySwapChain->Present(myVSync, 0);
 }
 
 void GraphicsEngine::SetToBackBuffer()
