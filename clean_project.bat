@@ -4,7 +4,19 @@ rem delete all .sln files
 
 del *.sln
 
+rem delete all .vcxproj files
 
+for /r %%i in (*.vcxproj) do (
+    del "%%i" /q
+)
+
+for /r %%i in (*.vcxproj.filters) do (
+    del "%%i" /q
+)
+
+for /r %%i in (*.vcxproj.user) do (
+    del "%%i" /q
+)
 
 rem delete all folder and it's content in Bin except "Assets" and "Shaders" folder
 
