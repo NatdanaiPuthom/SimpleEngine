@@ -41,9 +41,15 @@ void GameWorld::Render()
 		model->Draw();
 	}
 
-	if (ImGui::Begin("My Window"))
+	if (ImGui::Begin("Camera Controls"))
 	{
-		ImGui::Text("Hello World");
+		ImGui::Text("Movements    - WASD");
+		ImGui::Text("Fly Up       - SPACE");
+		ImGui::Text("Fly Down     - Ctrl + SPACE");
+		ImGui::Text("Rotate Left  - E");
+		ImGui::Text("Rotate Right - Q");
+		ImGui::Text("Rotate Up    - C");
+		ImGui::Text("Rotate Down  - Z");
 	}
 	ImGui::End();
 

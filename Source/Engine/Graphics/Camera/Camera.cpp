@@ -15,8 +15,6 @@ Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, c
 	SetPosition({ 0,0,0 });
 	CreateProjectionMatrix();
 	UpdateCameraVectors();
-
-	myCurrentPosition = SimpleUtilities::Vector3f(0, 0, -10); //TO-DO: Fix Better Design
 }
 
 void Camera::Update(const float aDeltaTime)
@@ -69,39 +67,37 @@ void Camera::Update(const float aDeltaTime)
 			targetPosition += forward;
 		}
 
+		//TO-DO: Use New SetRotation function from Matrix4x4
 		if (myInput->IsHold('Q'))
 		{
 			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
 			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(-myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(myCurrentPosition);
-			UpdateCameraVectors();
+			SetPosition(targetPosition);
 		}
 
 		if (myInput->IsHold('E'))
 		{
 			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
 			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(myCurrentPosition);
-			UpdateCameraVectors();
+			SetPosition(targetPosition);
 		}
 
 		if (myInput->IsHold('Z'))
 		{
 			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
-			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundX(-myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(myCurrentPosition);
-			UpdateCameraVectors();
+			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundX(myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
+			SetPosition(targetPosition);
 		}
 
 		if (myInput->IsHold('C'))
 		{
 			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
-			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundX(myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(myCurrentPosition);
-			UpdateCameraVectors();
+			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundX(-myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
+			SetPosition(targetPosition);
 		}
 
 		float direction = 1.0f;
+
 		if (myInput->IsHold(VK_CONTROL))
 		{
 			direction = -1.0f;
@@ -109,7 +105,7 @@ void Camera::Update(const float aDeltaTime)
 
 		if (myInput->IsHold(VK_SPACE))
 		{
-			targetPosition.y += myUp.y * speed * aDeltaTime;
+			targetPosition.y += direction * speed * myUp.y * aDeltaTime;
 		}
 
 		HWND& hwnd = SimplyGlobal::GetHWND();
@@ -128,16 +124,12 @@ void Camera::Update(const float aDeltaTime)
 			SetCursorPos(myCapturedPosition.x, myCapturedPosition.y);
 
 			//TODO: Add Freefly with Mouse
-			SimpleUtilities::Vector2f camRotation;
 			SimpleUtilities::Vector2f mouseDelta = myInput->GetMouseDelta();
-
-			camRotation.y = mouseDelta.x;
-			camRotation.y *= myRotateSpeed * 3.14f / 180.0f * aDeltaTime;
+			mouseDelta *= myRotateSpeed * 3.14f / 180.0f * aDeltaTime;
 
 			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
-			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(camRotation.y * 0.5f);
-			SetPosition(myCurrentPosition);
-			UpdateCameraVectors();
+			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(mouseDelta.y * 0.5f);
+			SetPosition(targetPosition);
 		}
 		else
 		{
@@ -148,23 +140,16 @@ void Camera::Update(const float aDeltaTime)
 			}
 		}
 
-		const float lerpFactor = 0.5f;
-		myCurrentPosition.x = SimpleUtilities::Lerp<float>(myCurrentPosition.x, targetPosition.x, lerpFactor);
-		myCurrentPosition.y = SimpleUtilities::Lerp<float>(myCurrentPosition.y, targetPosition.y, lerpFactor);
-		myCurrentPosition.z = SimpleUtilities::Lerp<float>(myCurrentPosition.z, targetPosition.z, lerpFactor);
+		SetPosition(targetPosition);
 	}
-
-	myModelToWorldTransform(4, 1) = myCurrentPosition.x;
-	myModelToWorldTransform(4, 2) = myCurrentPosition.y;
-	myModelToWorldTransform(4, 3) = myCurrentPosition.z;
 }
 
-SimpleUtilities::Vector4f Camera::WorldToCameraSpace(const SimpleUtilities::Vector4f& aVector)
+SimpleUtilities::Vector4f Camera::WorldToCameraSpace(const SimpleUtilities::Vector4f& aVector) const
 {
 	return SimpleUtilities::Matrix4x4f::GetFastInverse(myModelToWorldTransform) * aVector;
 }
 
-SimpleUtilities::Vector4f Camera::CameraToProjectionSpace(const SimpleUtilities::Vector4f& aVector)
+SimpleUtilities::Vector4f Camera::CameraToProjectionSpace(const SimpleUtilities::Vector4f& aVector) const
 {
 	SimpleUtilities::Vector4f projectedVector = myProjectionMatrix * aVector;
 	projectedVector.x = projectedVector.x / projectedVector.z;
@@ -173,7 +158,7 @@ SimpleUtilities::Vector4f Camera::CameraToProjectionSpace(const SimpleUtilities:
 	return projectedVector;
 }
 
-SimpleUtilities::Vector2f Camera::ProjectionToPixel(const SimpleUtilities::Vector4f& aVector)
+SimpleUtilities::Vector2f Camera::ProjectionToPixel(const SimpleUtilities::Vector4f& aVector) const
 {
 	return SimpleUtilities::Vector2f(aVector.x * myResolution.x / 2.0f + myResolution.x / 2.0f, aVector.y * myResolution.y / 2.0f + myResolution.y / 2.0f);
 }
@@ -225,9 +210,13 @@ void Camera::SetCameraValues(const SimpleUtilities::Vector3f& aPosition, const S
 
 void Camera::SetPosition(const SimpleUtilities::Vector3f& aPosition)
 {
-	myModelToWorldTransform(4, 1) = aPosition.x;
-	myModelToWorldTransform(4, 2) = aPosition.y;
-	myModelToWorldTransform(4, 3) = aPosition.z;
+	myModelToWorldTransform.SetPosition(aPosition);
+	UpdateCameraVectors();
+}
+
+void Camera::SetRotation(const SimpleUtilities::Vector3f aRotation)
+{
+	myModelToWorldTransform.SetRotation(aRotation);
 }
 
 void Camera::SetResolution(const SimpleUtilities::Vector2f& aResolution)
@@ -297,18 +286,7 @@ SimpleUtilities::Matrix4x4f Camera::GetViewMatrix() const
 
 SimpleUtilities::Vector3f Camera::GetPosition() const
 {
-	const SimpleUtilities::Vector3f position(myModelToWorldTransform(4, 1), myModelToWorldTransform(4, 2), myModelToWorldTransform(4, 3));
-	return position;
-}
-
-SimpleUtilities::Vector3f Camera::GetRotationRad() const
-{
-	SimpleUtilities::Vector3f rotation;
-	rotation.x = atan2(-myForward.y, sqrt(myForward.x * myForward.x + myForward.z * myForward.z));
-	rotation.y = atan2(myForward.x, myForward.z);
-	rotation.z = atan2(myRight.y, myUp.y);
-
-	return rotation;
+	return myModelToWorldTransform.GetPosition();;
 }
 
 float Camera::GetMoveSpeed() const

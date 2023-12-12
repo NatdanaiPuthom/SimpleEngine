@@ -2,6 +2,18 @@
 
 namespace SimpleUtilities
 {
+	template<typename T>
+	class Vector3;
+
+	template<typename T>
+	class Vector4;
+
+	template<typename T>
+	inline Vector3<T> RadToDegree(const Vector3<T>& aRotation);
+
+	template<typename T>
+	inline Vector3<T> DegreeToRad(const Vector3<T>& aRotation);
+
 	template <typename T>
 	class Matrix4x4
 	{
@@ -14,12 +26,18 @@ namespace SimpleUtilities
 		void operator=(const Matrix4x4<T>& aMatrix);
 
 		void SetPosition(const SimpleUtilities::Vector3<T>& aPosition);
+		void SetRotation(const SimpleUtilities::Vector3<T>& aRotation);
 
+		Vector3<T> GetPosition() const;
+		Vector3<T> GetRotation() const;
+
+		static Matrix4x4<T> Identity();
 		static Matrix4x4<T> CreateRotationAroundX(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundY(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundZ(const T aAngleInRadians);
 
 		static Matrix4x4<T> Transpose(const Matrix4x4<T>& aMatrixToTranspose);
+
 		static Matrix4x4<T> GetFastInverse(const Matrix4x4<T>& aTransform);
 		Matrix4x4<T> GetFastInverse();
 
@@ -218,6 +236,66 @@ namespace SimpleUtilities
 	}
 
 	template<typename T>
+	inline void Matrix4x4<T>::SetRotation(const SimpleUtilities::Vector3<T>& aRotation)
+	{
+		const SimpleUtilities::Vector3<T> rad = SimpleUtilities::DegreeToRad(aRotation);
+
+		SimpleUtilities::Matrix4x4<T> rotationMatrix = SimpleUtilities::Matrix4x4<T>::Identity();
+		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundX(rad.x);
+		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundY(rad.y);
+		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundZ(rad.z);
+
+		SimpleUtilities::Matrix4x4<T> matrix = SimpleUtilities::Matrix4x4<T>::Identity();
+		matrix = rotationMatrix * matrix;
+
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				myMatrix[i][j] = matrix(i + 1, j + 1);
+			}
+		}
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetPosition() const
+	{
+		const Vector3<T> position(myMatrix[3][0], myMatrix[3][1], myMatrix[3][2]);
+		return position;
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetRotation() const
+	{
+		Vector3<T> forward;
+		Vector3<T> right;
+		Vector3<T> up;
+
+		forward.x = myMatrix[2][0];
+		forward.y = myMatrix[2][1];
+		forward.z = myMatrix[2][2];
+		forward.Normalize();
+
+		right.x = myMatrix[0][0];
+		right.y = myMatrix[0][1];
+		right.z = myMatrix[0][2];
+		right.Normalize();
+
+		up.x = myMatrix[1][0];
+		up.y = myMatrix[1][1];
+		up.z = myMatrix[1][2];
+		up.Normalize();
+
+		SimpleUtilities::Vector3<T> rotation;
+		rotation.x = atan2(-forward.y, sqrt(forward.x * forward.x + forward.z * forward.z));
+		rotation.y = atan2(forward.x, forward.z);
+		rotation.z = atan2(right.y, up.y);
+
+		const SimpleUtilities::Vector3<T> rotationInDegree = SimpleUtilities::RadToDegree(rotation);
+		return rotationInDegree;
+	}
+
+	template<typename T>
 	inline Matrix4x4<T>::Matrix4x4()
 	{
 		for (int i = 0; i < 4; ++i)
@@ -246,6 +324,12 @@ namespace SimpleUtilities
 				myMatrix[i][j] = aMatrix(i + 1, j + 1);
 			}
 		}
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::Identity()
+	{
+		return Matrix4x4<T>(); //Just For Stupid Brain Like Me
 	}
 
 	template<typename T>

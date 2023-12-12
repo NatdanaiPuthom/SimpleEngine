@@ -8,12 +8,13 @@ public:
 
 	void Update(const float aDeltaTime);
 
-	SimpleUtilities::Vector4f WorldToCameraSpace(const SimpleUtilities::Vector4f& aVector);
-	SimpleUtilities::Vector4f CameraToProjectionSpace(const SimpleUtilities::Vector4f& aVector);
-	SimpleUtilities::Vector2f ProjectionToPixel(const SimpleUtilities::Vector4f& aVector);
+	SimpleUtilities::Vector4f WorldToCameraSpace(const SimpleUtilities::Vector4f& aVector) const;
+	SimpleUtilities::Vector4f CameraToProjectionSpace(const SimpleUtilities::Vector4f& aVector) const;
+	SimpleUtilities::Vector2f ProjectionToPixel(const SimpleUtilities::Vector4f& aVector) const;
 public:
 	void SetCameraValues(const SimpleUtilities::Vector3f& aPosition, const SimpleUtilities::Vector2f& aResolution, const float aNearPlane, const float aFoV);
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
+	void SetRotation(const SimpleUtilities::Vector3f aRotation);
 	void SetResolution(const SimpleUtilities::Vector2f& aResolution);
 	void SetNearPlane(const float aNearPlane);
 	void SetMoveSpeed(const float aSpeed);
@@ -24,7 +25,6 @@ public:
 	SimpleUtilities::Matrix4x4f GetProjectionMatrix() const;
 	SimpleUtilities::Matrix4x4f GetViewMatrix() const;
 	SimpleUtilities::Vector3f GetPosition() const;
-	SimpleUtilities::Vector3f GetRotationRad() const;
 	SimpleUtilities::Vector3f GetForward() const;
 	SimpleUtilities::Vector3f GetUp() const;
 	SimpleUtilities::Vector3f GetRight() const;
@@ -39,7 +39,6 @@ private:
 	SimpleUtilities::Matrix4x4f myModelToWorldTransform;
 	SimpleUtilities::Matrix4x4f myProjectionMatrix;
 
-	SimpleUtilities::Vector3f myCurrentPosition;
 	SimpleUtilities::Vector3f myForward;
 	SimpleUtilities::Vector3f myRight;
 	SimpleUtilities::Vector3f myUp;
