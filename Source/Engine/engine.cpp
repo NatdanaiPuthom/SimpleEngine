@@ -115,6 +115,8 @@ bool Engine::BeginFrame()
 {
 	myImGuiInterface->BeginFrame();
 
+	SimplyGlobalImpl::UpdateFPSCounter();
+
 	myTimer->Update();
 	myInput->Update();
 

@@ -53,6 +53,13 @@ void GameWorld::Render()
 	}
 	ImGui::End();
 
+	if (ImGui::Begin("Frame Counter"))
+	{
+		std::string fps = "FPS: " + std::to_string(SimplyGlobal::GetFPS());
+		ImGui::Text(fps.c_str());
+	}
+	ImGui::End();
+
 	if (ImGui::Begin("Scene"))
 	{
 		ImVec2 size(1280, 720);
