@@ -23,12 +23,6 @@ namespace SimpleUtilities
 		T LengthSqr() const;
 		T Length() const;
 
-		//TO-DO: Fix wrapper for Distance and Dot
-		static T Distance(const Vector3<T>& aVector1, const Vector3<T>& aVector2);
-		static Vector3<T> Cross(const Vector3<T>& aVector1, const Vector3<T>& aVector2);
-		static T Dot(const Vector3<T>& aVector1, const Vector3<T>& aVector2);
-		T Dot(const Vector3<T>& aVector) const;
-
 		void Normalize();
 	};
 
@@ -94,17 +88,6 @@ namespace SimpleUtilities
 	}
 
 	template<class T>
-	inline Vector3<T> Vector3<T>::Cross(const Vector3<T>& aVector1, const Vector3<T>& aVector2)
-	{
-		return
-		{
-			(aVector1.y * aVector2.z) - (aVector1.z * aVector2.y),
-			(aVector1.z * aVector2.x) - (aVector1.x * aVector2.z),
-			(aVector1.x * aVector2.y) - (aVector1.y * aVector2.x)
-		};
-	}
-
-	template<class T>
 	inline T Vector3<T>::LengthSqr() const
 	{
 		return abs((x * x) + (y * y) + (z * z));
@@ -114,24 +97,6 @@ namespace SimpleUtilities
 	inline T Vector3<T>::Length() const
 	{
 		return static_cast<T> (sqrt((x * x) + (y * y) + (z * z)));
-	}
-
-	template<class T>
-	inline T Vector3<T>::Dot(const Vector3<T>& aVector1, const Vector3<T>& aVector2)
-	{
-		return (aVector1.x * aVector2.x) + (aVector1.y * aVector2.y) + (aVector1.z * aVector2.z);
-	}
-
-	template<class T>
-	inline T Vector3<T>::Dot(const Vector3<T>& aVector) const
-	{
-		return Dot(*this, aVector);
-	}
-
-	template<class T>
-	inline T Vector3<T>::Distance(const Vector3<T>& aVector1, const Vector3<T>& aVector2)
-	{
-		return sqrt(pow(aVector1.x - aVector2.x, 2.0f) + pow(aVector1.y - aVector2.y, 2.0f) + pow(aVector1.z - aVector2.z, 2.0f));
 	}
 
 	template<class T>

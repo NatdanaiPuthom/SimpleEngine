@@ -272,9 +272,9 @@ SimpleUtilities::Matrix4x4f Camera::GetViewMatrix() const
 	viewMatrix(2, 3) = -myForward.y;
 	viewMatrix(3, 3) = -myForward.z;
 
-	viewMatrix(4, 1) = -position.Dot(myRight);
-	viewMatrix(4, 1) = -position.Dot(myUp);
-	viewMatrix(4, 1) = position.Dot(myForward);
+	viewMatrix(4, 1) = Dot(-1.0f * position, myRight);
+	viewMatrix(4, 1) = Dot(-1.0f * position, myUp);
+	viewMatrix(4, 1) = Dot(position, myForward);
 
 	viewMatrix(1, 4) = 0.0f;
 	viewMatrix(2, 4) = 0.0f;

@@ -2,6 +2,9 @@
 
 namespace SimpleUtilities
 {
+	template<class T>
+	class Vector3;
+
 	template <class T>
 	class Vector4
 	{
@@ -20,7 +23,6 @@ namespace SimpleUtilities
 		Vector4<T>& operator=(const Vector4<T>& aVector2) = default;
 
 		Vector3<T> AsVector3() const;
-
 		Vector4<T> GetNormalized() const;
 
 		T LengthSqr() const;

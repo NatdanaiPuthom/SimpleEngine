@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Engine/Graphics/Shapes/ShapeCreator3000.h"
-#include <External/Uppgift5_Helper/uppgift05_helper.h>
-#include "Engine/SimpleUtilities/Plane.h"
+#include <External/tga/Uppgift5/uppgift05_helper.h>
 
 namespace SU = SimpleUtilities;
 
@@ -15,11 +14,11 @@ MeshData Shape::CreateTerrain()
 
 	for (unsigned int i = 0; i < upSampleMultiply; i++)
 	{
-		heightMap = Upsample2X(heightMap, vertexSize);
+		heightMap = Tga::Upsample2X(heightMap, vertexSize);
 		vertexSize *= 2;
 	}
 
-	AddNoise(heightMap, 0.5f);
+	Tga::AddNoise(heightMap, 0.5f);
 
 	gridSize = vertexSize - 1;
 
@@ -76,7 +75,7 @@ MeshData Shape::CreateTerrain()
 
 			SU::Vector3f tangentVertical = vertices[indexUp].position.AsVector3() - vertices[indexDown].position.AsVector3();
 			SU::Vector3f tangentHorizontal = vertices[indexRight].position.AsVector3() - vertices[indexLeft].position.AsVector3();
-			SU::Vector3f normal = SU::Vector3f::Cross(tangentVertical, tangentHorizontal);
+			SU::Vector3f normal = SU::Cross(tangentVertical, tangentHorizontal);
 			normal.Normalize();
 			vertices[index].normal = SU::Vector3f(normal.x, normal.y, normal.z);
 			

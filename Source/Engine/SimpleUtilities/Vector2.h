@@ -1,5 +1,4 @@
 #pragma once
-#include "Engine/SimpleUtilities/Utility.h"
 
 namespace SimpleUtilities
 {
@@ -21,9 +20,6 @@ namespace SimpleUtilities
 
 		T LengthSqr() const;
 		T Length() const;
-		T Dot(const Vector2<T>& aVector) const;
-
-		static float CalculateAngle(Vector2<T> aPointLeft, Vector2<T> aPointRight);
 
 		void Normalize();
 	};
@@ -96,30 +92,6 @@ namespace SimpleUtilities
 	inline T Vector2<T>::Length() const
 	{
 		return static_cast<T> (sqrt((x * x) + (y * y)));
-	}
-
-	template<class T>
-	inline T Vector2<T>::Dot(const Vector2<T>& aVector) const
-	{
-		return (x * aVector.x) + (y * aVector.y);
-	}
-
-	template<class T>
-	inline float Vector2<T>::CalculateAngle(Vector2<T> aPointLeft, Vector2<T> aPointRight)
-	{
-		aPointLeft.Normalize();
-		aPointRight.Normalize();
-
-		const float dotProduct = aPointLeft.Dot(aPointRight);
-		const float crossProduct = aPointRight.Cross(aPointLeft);
-
-		const float angleRadians = acos(dotProduct);
-		float angleDegrees = angleRadians * globalRadToDeg; //TO-DO: Fix dependency
-
-		if (crossProduct < 0)
-			angleDegrees = -angleDegrees;  // Flip the sign for clockwise rotations
-
-		return angleDegrees;
 	}
 
 	template<class T>

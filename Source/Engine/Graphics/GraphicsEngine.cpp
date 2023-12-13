@@ -51,8 +51,6 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 
 void GraphicsEngine::LoadSettingsFromJson()
 {
-	PROFILER_FUNCTION(profiler::colors::Red);
-
 	const std::string filename = SimpleUtilities::GetPath(SIMPLE_SETTINGS_FILENAME);
 	std::ifstream file(filename);
 	assert(file.is_open());

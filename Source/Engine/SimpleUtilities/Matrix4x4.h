@@ -8,6 +8,9 @@ namespace SimpleUtilities
 	template<typename T>
 	class Vector4;
 
+	static float GetRadToDeg();
+	static float GetDegToRad();
+
 	template <typename T>
 	class Matrix4x4
 	{
@@ -232,7 +235,7 @@ namespace SimpleUtilities
 	template<typename T>
 	inline void Matrix4x4<T>::SetRotation(const SimpleUtilities::Vector3<T>& aRotation)
 	{
-		const SimpleUtilities::Vector3<T> rad = aRotation * globalDegToRad;
+		const SimpleUtilities::Vector3<T> rad = aRotation * GetDegToRad();
 
 		SimpleUtilities::Matrix4x4<T> rotationMatrix = SimpleUtilities::Matrix4x4<T>::Identity();
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundX(rad.x);
@@ -285,7 +288,7 @@ namespace SimpleUtilities
 		rotation.y = atan2(forward.x, forward.z);
 		rotation.z = atan2(right.y, up.y);
 
-		const SimpleUtilities::Vector3<T> rotationInDegree = rotation * globalRadToDeg;
+		const SimpleUtilities::Vector3<T> rotationInDegree = rotation * GetRadToDeg();
 		return rotationInDegree;
 	}
 

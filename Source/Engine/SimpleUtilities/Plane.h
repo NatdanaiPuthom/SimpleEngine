@@ -19,14 +19,14 @@ namespace SimpleUtilities
 		bool IsInside(const Vector3<T>& aPosition) const;
 
 		const Vector3<T>& GetNormal() const;
-		Vector3<T> GetPoint() const;
+		Vector3<T> GetPosition() const;
 	private:
-		Vector3<T> myPoint;
+		Vector3<T> myPosition;
 		Vector3<T> myNormal;
 	};
 
 	template<typename T>
-	inline Plane<T>::Plane() : myNormal(Vector3<T>(0,0,0)), myPoint({0,0,0})
+	inline Plane<T>::Plane() : myNormal(Vector3<T>(0,0,0)), myPosition({0,0,0})
 	{
 
 	}
@@ -52,20 +52,20 @@ namespace SimpleUtilities
 		myNormal = vector1.Cross(vector2);
 		myNormal.Normalize();
 
-		myPoint = aPoint0;
+		myPosition = aPoint0;
 	}
 
 	template<typename T>
 	inline void Plane<T>::InitWithPointAndNormal(const Vector3<T>& aPoint, const Vector3<T>& aNormal)
 	{
 		myNormal = aNormal;
-		myPoint = aPoint;
+		myPosition = aPoint;
 	}
 
 	template<typename T>
 	inline bool Plane<T>::IsInside(const Vector3<T>& aPosition) const
 	{
-		T pa = (aPosition - myPoint).Dot(GetNormal());
+		T pa = (aPosition - myPosition).Dot(GetNormal());
 		return pa <= 0.0f;
 	}
 
@@ -76,8 +76,8 @@ namespace SimpleUtilities
 	}
 
 	template<typename T>
-	inline Vector3<T> Plane<T>::GetPoint() const
+	inline Vector3<T> Plane<T>::GetPosition() const
 	{
-		return myPoint;
+		return myPosition;
 	}
 }
