@@ -20,11 +20,14 @@ namespace SimpleUtilities
 
 		Vector3<T> GetNormalized() const;
 
-		Vector3<T> Cross(const Vector3<T>& aVector) const;
 		T LengthSqr() const;
 		T Length() const;
+
+		//TO-DO: Fix wrapper for Distance and Dot
+		static T Distance(const Vector3<T>& aVector1, const Vector3<T>& aVector2);
+		static Vector3<T> Cross(const Vector3<T>& aVector1, const Vector3<T>& aVector2);
+		static T Dot(const Vector3<T>& aVector1, const Vector3<T>& aVector2);
 		T Dot(const Vector3<T>& aVector) const;
-		T Distance(const Vector3<T>& aVector) const;
 
 		void Normalize();
 	};
@@ -91,13 +94,13 @@ namespace SimpleUtilities
 	}
 
 	template<class T>
-	inline Vector3<T> Vector3<T>::Cross(const Vector3<T>& aVector) const
+	inline Vector3<T> Vector3<T>::Cross(const Vector3<T>& aVector1, const Vector3<T>& aVector2)
 	{
 		return
 		{
-			(y * aVector.z) - (z * aVector.y),
-			(z * aVector.x) - (x * aVector.z),
-			(x * aVector.y) - (y * aVector.x)
+			(aVector1.y * aVector2.z) - (aVector1.z * aVector2.y),
+			(aVector1.z * aVector2.x) - (aVector1.x * aVector2.z),
+			(aVector1.x * aVector2.y) - (aVector1.y * aVector2.x)
 		};
 	}
 
@@ -114,15 +117,21 @@ namespace SimpleUtilities
 	}
 
 	template<class T>
-	inline T Vector3<T>::Dot(const Vector3<T>& aVector) const
+	inline T Vector3<T>::Dot(const Vector3<T>& aVector1, const Vector3<T>& aVector2)
 	{
-		return (x * aVector.x) + (y * aVector.y) + (z * aVector.z);
+		return (aVector1.x * aVector2.x) + (aVector1.y * aVector2.y) + (aVector1.z * aVector2.z);
 	}
 
 	template<class T>
-	inline T Vector3<T>::Distance(const Vector3<T>& aVector) const
+	inline T Vector3<T>::Dot(const Vector3<T>& aVector) const
 	{
-		return sqrt(pow(x - aVector.x, 2.0f) + pow(y - aVector.y, 2.0f) + pow(z - aVector.z, 2.0f));
+		return Dot(*this, aVector);
+	}
+
+	template<class T>
+	inline T Vector3<T>::Distance(const Vector3<T>& aVector1, const Vector3<T>& aVector2)
+	{
+		return sqrt(pow(aVector1.x - aVector2.x, 2.0f) + pow(aVector1.y - aVector2.y, 2.0f) + pow(aVector1.z - aVector2.z, 2.0f));
 	}
 
 	template<class T>

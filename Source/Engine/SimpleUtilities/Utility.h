@@ -2,6 +2,8 @@
 #include <External/profiler.h>
 
 constexpr float globalPi = 3.141592f; //Highest Precision For Floating Point
+constexpr float globalDegToRad = globalPi / 180.0f;
+constexpr float globalRadToDeg = (180.0f / globalPi);
 
 namespace SimpleUtilities
 {
@@ -10,20 +12,6 @@ namespace SimpleUtilities
 
 	template<typename T>
 	class Vector4;
-
-	template<typename T>
-	inline Vector3<T> DegreeToRad(const Vector3<T>& aRotation)
-	{
-		const Vector3<T> rotationInRad = aRotation * (globalPi / 180.0f);
-		return rotationInRad;
-	}
-
-	template<typename T>
-	inline Vector3<T> RadToDegree(const Vector3<T>& aRotation)
-	{
-		const Vector3<T> rotationInDegree = aRotation * (180.0f / globalPi);
-		return rotationInDegree;
-	}
 
 	template<typename T>
 	static inline Vector3<T> ToVector3(const Vector4<T>& aVector)

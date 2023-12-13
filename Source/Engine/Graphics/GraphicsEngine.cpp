@@ -60,6 +60,9 @@ void GraphicsEngine::LoadSettingsFromJson()
 	const nlohmann::json json = nlohmann::json::parse(file);
 	file.close();
 
+	bool test = json["game_settings"]["vsync"];
+	test;
+
 	myVSync = json["game_settings"]["vsync"];
 }
 

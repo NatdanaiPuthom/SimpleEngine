@@ -20,9 +20,9 @@ using Microsoft::WRL::ComPtr;
 
 #include <External/profiler.h>
 
+#include "Engine/SimpleUtilities/Utility.h"
 #include "Engine/SimpleUtilities/Vector.h"
 #include "Engine/SimpleUtilities/Matrix4x4.h"
-#include "Engine/SimpleUtilities/Utility.h"
 
 #include "Engine/Input/InputManager.h"
 

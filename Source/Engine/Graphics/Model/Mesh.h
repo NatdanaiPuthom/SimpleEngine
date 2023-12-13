@@ -9,12 +9,15 @@ class Shader;
 using Microsoft::WRL::ComPtr;
 struct ID3D11Buffer;
 
-struct Vertex
+struct alignas(16) Vertex
 {
 	SimpleUtilities::Vector4f position;
 	SimpleUtilities::Vector4f color;
-	SimpleUtilities::Vector4f normal;
+	SimpleUtilities::Vector3f normal;
+	SimpleUtilities::Vector3f tangent;
+	SimpleUtilities::Vector3f bitangent;
 	SimpleUtilities::Vector2f uv;
+	float padding;
 };
 
 struct MeshData
