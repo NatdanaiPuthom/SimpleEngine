@@ -23,7 +23,7 @@ namespace SimpleUtilities
 		void operator=(const Matrix4x4<T>& aMatrix);
 
 		void SetPosition(const SimpleUtilities::Vector3<T>& aPosition);
-		void SetRotation(const SimpleUtilities::Vector3<T>& aRotation);
+		void SetLocalRotation(const SimpleUtilities::Vector3<T>& aRotation);
 
 		Vector3<T> GetPosition() const;
 		Vector3<T> GetRotation() const;
@@ -233,7 +233,7 @@ namespace SimpleUtilities
 	}
 
 	template<typename T>
-	inline void Matrix4x4<T>::SetRotation(const SimpleUtilities::Vector3<T>& aRotationInDegree)
+	inline void Matrix4x4<T>::SetLocalRotation(const SimpleUtilities::Vector3<T>& aRotationInDegree)
 	{
 		const SimpleUtilities::Vector3<T> rad = aRotationInDegree * GetDegToRad();
 

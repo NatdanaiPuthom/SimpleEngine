@@ -6,7 +6,7 @@
 #include "Engine/Graphics/Renderer/Renderer.h"
 #include <External/imgui.h>
 
-GameWorld::GameWorld() 
+GameWorld::GameWorld()
 	: myRenderer(std::make_unique<Renderer>())
 {
 }
@@ -35,6 +35,7 @@ void GameWorld::Render()
 	if (ImGui::Begin("Camera Controls"))
 	{
 		ImGui::Text("Movements    - WASD");
+		ImGui::Text("FreeFly      - TAB");
 		ImGui::Text("Fly Up       - SPACE");
 		ImGui::Text("Fly Down     - Ctrl + SPACE");
 		ImGui::Text("Rotate Left  - E");

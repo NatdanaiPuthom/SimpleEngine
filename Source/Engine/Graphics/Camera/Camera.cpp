@@ -19,7 +19,7 @@ Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, c
 
 void Camera::Update(const float aDeltaTime)
 {
-	if (myInput->GetAKeyIsPressed())
+	if (myInput->GetAKeyIsPressed() || myFreeFly)
 	{
 		SimpleUtilities::Vector3f forward;
 		SimpleUtilities::Vector3f targetPosition(myModelToWorldTransform(4, 1), myModelToWorldTransform(4, 2), myModelToWorldTransform(4, 3));
@@ -71,28 +71,28 @@ void Camera::Update(const float aDeltaTime)
 		{
 			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
 			currentRotation.y += -myRotateSpeed * aDeltaTime;
-			myModelToWorldTransform.SetRotation(currentRotation);
+			myModelToWorldTransform.SetLocalRotation(currentRotation);
 		}
 
 		if (myInput->IsHold('E'))
 		{
 			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
 			currentRotation.y += myRotateSpeed * aDeltaTime;
-			myModelToWorldTransform.SetRotation(currentRotation);
+			myModelToWorldTransform.SetLocalRotation(currentRotation);
 		}
 
 		if (myInput->IsHold('Z'))
 		{
 			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
 			currentRotation.x += -myRotateSpeed * aDeltaTime;
-			myModelToWorldTransform.SetRotation(currentRotation);
+			myModelToWorldTransform.SetLocalRotation(currentRotation);
 		}
 
 		if (myInput->IsHold('C'))
 		{
 			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
 			currentRotation.x += myRotateSpeed * aDeltaTime;
-			myModelToWorldTransform.SetRotation(currentRotation);
+			myModelToWorldTransform.SetLocalRotation(currentRotation);
 		}
 
 		float direction = 1.0f;
@@ -122,13 +122,14 @@ void Camera::Update(const float aDeltaTime)
 
 			SetCursorPos(myCapturedPosition.x, myCapturedPosition.y);
 
-			//TODO: Add Freefly with Mouse
 			SimpleUtilities::Vector2f mouseDelta = myInput->GetMouseDelta();
-			mouseDelta *= myRotateSpeed * 3.14f / 180.0f * aDeltaTime;
+			mouseDelta *= myRotateSpeed * aDeltaTime;
 
-			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
-			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(mouseDelta.y * 0.5f);
-			SetPosition(targetPosition);
+			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
+			currentRotation.x += mouseDelta.y;
+			currentRotation.y += mouseDelta.x;
+
+			myModelToWorldTransform.SetLocalRotation(currentRotation);
 		}
 		else
 		{
@@ -215,7 +216,7 @@ void Camera::SetPosition(const SimpleUtilities::Vector3f& aPosition)
 
 void Camera::SetRotation(const SimpleUtilities::Vector3f aRotation)
 {
-	myModelToWorldTransform.SetRotation(aRotation);
+	myModelToWorldTransform.SetLocalRotation(aRotation);
 }
 
 void Camera::SetResolution(const SimpleUtilities::Vector2f& aResolution)
