@@ -8,7 +8,7 @@ namespace SimpleUtilities
 	template<typename T>
 	class Vector4;
 
-	static float GetRadToDeg();
+	static float GetRadToDeg(); //TO-DO: Maybe change to .h + .cpp instead of .h only?
 	static float GetDegToRad();
 
 	template <typename T>
@@ -23,7 +23,8 @@ namespace SimpleUtilities
 		void operator=(const Matrix4x4<T>& aMatrix);
 
 		void SetPosition(const SimpleUtilities::Vector3<T>& aPosition);
-		void SetLocalRotation(const SimpleUtilities::Vector3<T>& aRotation);
+		void SetLocalRotation(const SimpleUtilities::Vector3<T>& aRotationInDegree);
+		void SetWorldRotation(const SimpleUtilities::Vector3<T>& aRotationInDegree); //This function have not been tested yet
 
 		Vector3<T> GetPosition() const;
 		Vector3<T> GetRotation() const;
@@ -241,6 +242,28 @@ namespace SimpleUtilities
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundX(rad.x);
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundY(rad.y);
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundZ(rad.z);
+
+		SimpleUtilities::Matrix4x4<T> matrix = SimpleUtilities::Matrix4x4<T>::Identity();
+		matrix = rotationMatrix * matrix;
+
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				myMatrix[i][j] = matrix(i + 1, j + 1);
+			}
+		}
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::SetWorldRotation(const SimpleUtilities::Vector3<T>& aRotationInDegree)
+	{
+		const SimpleUtilities::Vector3<T> rad = aRotationInDegree * GetDegToRad();
+
+		SimpleUtilities::Matrix4x4<T> rotationMatrix = SimpleUtilities::Matrix4x4<T>::Identity();
+		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundZ(rad.z);
+		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundY(rad.y);
+		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundX(rad.x);
 
 		SimpleUtilities::Matrix4x4<T> matrix = SimpleUtilities::Matrix4x4<T>::Identity();
 		matrix = rotationMatrix * matrix;
