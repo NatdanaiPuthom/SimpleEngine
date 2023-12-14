@@ -182,6 +182,11 @@ std::shared_ptr<Camera> GraphicsEngine::GetCamera()
 	return myCamera;
 }
 
+bool GraphicsEngine::IsVSyncActive() const
+{
+	return myVSync;
+}
+
 bool GraphicsEngine::CreateStuffForImGuiImage(const int aWidth, const int aHeight)
 {
 	D3D11_TEXTURE2D_DESC texDesc = { 0 };

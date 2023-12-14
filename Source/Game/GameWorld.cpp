@@ -3,8 +3,8 @@
 #include "Engine/Graphics/Model/Mesh.h"
 #include "Engine/Graphics/Shapes/ShapeCreator3000.h"
 #include "Engine/Graphics/GraphicsEngine.h"
-#include <External/imgui.h>
 #include "Engine/Graphics/Renderer/Renderer.h"
+#include <External/imgui.h>
 
 GameWorld::GameWorld() 
 	: myRenderer(std::make_unique<Renderer>())
@@ -17,21 +17,20 @@ GameWorld::~GameWorld()
 
 void GameWorld::Init()
 {
-	std::vector<MeshData> meshData;
-	meshData.emplace_back(Shape::CreateTerrain());
+	MeshData meshData = Shape::CreateTerrain();
+	std::unique_ptr<Mesh>  mesh = std::make_unique<Mesh>();
 
-	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[0], "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso", "Assets/Uppgift6/testnormal.dds"))
-		assert(false && "Failed To Create Terrain");
+	if (!mesh->Init(meshData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso", "Assets/Uppgift6/testnormal.dds"))
+		assert(false && "Failed to Init Mesh");
 
-	myMeshes[0]->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
+	mesh->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
+
+	myRenderer->AddMesh(std::move(mesh));
 }
 
 void GameWorld::Render()
 {
-	for (const auto& model : myMeshes)
-	{
-		model->Draw();
-	}
+	myRenderer->Render();
 
 	if (ImGui::Begin("Camera Controls"))
 	{
@@ -49,6 +48,13 @@ void GameWorld::Render()
 	{
 		std::string fps = "FPS: " + std::to_string(SimplyGlobal::GetFPS());
 		ImGui::Text(fps.c_str());
+
+		GraphicsEngine* graphicsEngine = SimplyGlobal::GetGraphicsEngine();
+		bool vsync = graphicsEngine->IsVSyncActive();
+
+		ImGui::Checkbox("VSync", &vsync);
+
+		graphicsEngine->SetVSync(vsync);
 	}
 	ImGui::End();
 

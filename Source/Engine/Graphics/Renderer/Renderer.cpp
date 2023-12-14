@@ -9,10 +9,15 @@ Renderer::~Renderer()
 {
 }
 
-void Renderer::Init()
+void Renderer::AddMesh(std::unique_ptr<Mesh> aMesh)
 {
+	myMeshes.emplace_back(std::move(aMesh));
 }
 
 void Renderer::Render()
 {
+	for (const auto& mesh : myMeshes)
+	{
+		mesh->Draw();
+	}
 }
