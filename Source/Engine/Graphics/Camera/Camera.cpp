@@ -67,33 +67,32 @@ void Camera::Update(const float aDeltaTime)
 			targetPosition += forward;
 		}
 
-		//TO-DO: Use New SetRotation function from Matrix4x4
 		if (myInput->IsHold('Q'))
 		{
-			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
-			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(-myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(targetPosition);
+			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
+			currentRotation.y += -myRotateSpeed * aDeltaTime;
+			myModelToWorldTransform.SetRotation(currentRotation);
 		}
 
 		if (myInput->IsHold('E'))
 		{
-			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
-			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundY(myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(targetPosition);
+			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
+			currentRotation.y += myRotateSpeed * aDeltaTime;
+			myModelToWorldTransform.SetRotation(currentRotation);
 		}
 
 		if (myInput->IsHold('Z'))
 		{
-			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
-			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundX(myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(targetPosition);
+			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
+			currentRotation.x += -myRotateSpeed * aDeltaTime;
+			myModelToWorldTransform.SetRotation(currentRotation);
 		}
 
 		if (myInput->IsHold('C'))
 		{
-			SetPosition(SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f));
-			myModelToWorldTransform *= SimpleUtilities::Matrix4x4f::CreateRotationAroundX(-myRotateSpeed * 3.14f / 180.0f * aDeltaTime);
-			SetPosition(targetPosition);
+			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
+			currentRotation.x += myRotateSpeed * aDeltaTime;
+			myModelToWorldTransform.SetRotation(currentRotation);
 		}
 
 		float direction = 1.0f;

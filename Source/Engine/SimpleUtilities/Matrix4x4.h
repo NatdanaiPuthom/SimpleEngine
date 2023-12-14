@@ -233,9 +233,9 @@ namespace SimpleUtilities
 	}
 
 	template<typename T>
-	inline void Matrix4x4<T>::SetRotation(const SimpleUtilities::Vector3<T>& aRotation)
+	inline void Matrix4x4<T>::SetRotation(const SimpleUtilities::Vector3<T>& aRotationInDegree)
 	{
-		const SimpleUtilities::Vector3<T> rad = aRotation * GetDegToRad();
+		const SimpleUtilities::Vector3<T> rad = aRotationInDegree * GetDegToRad();
 
 		SimpleUtilities::Matrix4x4<T> rotationMatrix = SimpleUtilities::Matrix4x4<T>::Identity();
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundX(rad.x);
