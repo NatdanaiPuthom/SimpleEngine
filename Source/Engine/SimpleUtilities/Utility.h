@@ -4,6 +4,7 @@ constexpr float globalPi = 3.141592f; //Highest Precision For Floating Point
 constexpr float globalDegToRad = globalPi / 180.0f;
 constexpr float globalRadToDeg = (180.0f / globalPi);
 
+
 namespace SimpleUtilities
 {
 	template<class T>
@@ -45,13 +46,13 @@ namespace SimpleUtilities
 	}
 
 	template<typename T>
-	static inline float Distance(const Vector3<T>& aPositionA, const Vector3<T>& aPositionB)
+	static inline T Distance(const Vector3<T>& aPositionA, const Vector3<T>& aPositionB)
 	{
 		return sqrt(pow(aPositionA.x - aPositionB.x, 2.0f) + pow(aPositionA.y - aPositionB.y, 2.0f) + pow(aPositionA.z - aPositionB.z, 2.0f));
 	}
 
 	template<typename T>
-	static inline float Distance(const Vector2<T>& aPositionA, const Vector2<T>& aPositionB)
+	static inline T Distance(const Vector2<T>& aPositionA, const Vector2<T>& aPositionB)
 	{
 		return sqrt(pow(aPositionA.x - aPositionB.x, 2.0f) + pow(aPositionA.y - aPositionB.y, 2.0f));
 	}
