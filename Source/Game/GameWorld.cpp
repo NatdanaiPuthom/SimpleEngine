@@ -4,6 +4,7 @@
 #include "Engine/Graphics/Shapes/ShapeCreator3000.h"
 #include "Engine/Graphics/GraphicsEngine.h"
 #include "Engine/Graphics/Renderer/Renderer.h"
+#include "Engine/Graphics/Camera/Camera.h"
 #include <External/imgui.h>
 
 GameWorld::GameWorld()
@@ -30,11 +31,21 @@ void GameWorld::Init()
 
 void GameWorld::Render()
 {
+	GraphicsEngine* graphicsEngine = SimplyGlobal::GetGraphicsEngine();
+
 	myRenderer->Render();
 
 	if (ImGui::Begin("Camera Controls"))
 	{
 		ImGui::Text("Movements    - WASD");
+		ImGui::SameLine();
+		ImGui::Dummy(ImVec2(200, 0));
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100.0f);
+		float speed = graphicsEngine->GetCamera()->GetMoveSpeed();
+		if (ImGui::SliderFloat("Speed", &speed, 0, 100, "%0.2f"))
+			graphicsEngine->GetCamera()->SetMoveSpeed(speed);
+
 		ImGui::Text("FreeFly      - TAB");
 		ImGui::Text("Fly Up       - SPACE");
 		ImGui::Text("Fly Down     - Ctrl + SPACE");
@@ -50,19 +61,16 @@ void GameWorld::Render()
 		std::string fps = "FPS: " + std::to_string(SimplyGlobal::GetFPS());
 		ImGui::Text(fps.c_str());
 
-		GraphicsEngine* graphicsEngine = SimplyGlobal::GetGraphicsEngine();
 		bool vsync = graphicsEngine->IsVSyncActive();
-
-		ImGui::Checkbox("VSync", &vsync);
-
-		graphicsEngine->SetVSync(vsync);
+		if (ImGui::Checkbox("VSync", &vsync))
+			graphicsEngine->SetVSync(vsync);
 	}
 	ImGui::End();
 
 	if (ImGui::Begin("Scene"))
 	{
 		ImVec2 size(1280, 720);
-		const ImTextureID textureID = SimplyGlobal::GetGraphicsEngine()->GetShaderResourceView().Get();
+		const ImTextureID textureID = graphicsEngine->GetShaderResourceView().Get();
 		ImGui::Image(textureID, size);
 	}
 	ImGui::End();

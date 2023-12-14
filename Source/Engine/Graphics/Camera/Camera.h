@@ -17,8 +17,10 @@ public:
 	void SetRotation(const SimpleUtilities::Vector3f aRotation);
 	void SetResolution(const SimpleUtilities::Vector2f& aResolution);
 	void SetNearPlane(const float aNearPlane);
-	void SetMoveSpeed(const float aSpeed);
 	void SetFoV(const float aFoV);
+
+	void SetMoveSpeed(const float aSpeed);
+	void SetRotateSpeed(const float aRotationSpeed);
 public:
 	SimpleUtilities::Matrix4x4f GetWorldToClipMatrix();
 	SimpleUtilities::Matrix4x4f GetModelToWorldMatrix() const;

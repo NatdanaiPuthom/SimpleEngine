@@ -23,6 +23,7 @@ void Camera::Update(const float aDeltaTime)
 	{
 		SimpleUtilities::Vector3f forward;
 		SimpleUtilities::Vector3f targetPosition(myModelToWorldTransform(4, 1), myModelToWorldTransform(4, 2), myModelToWorldTransform(4, 3));
+		SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
 
 		float speed = myMoveSpeed;
 
@@ -69,30 +70,22 @@ void Camera::Update(const float aDeltaTime)
 
 		if (myInput->IsHold('Q'))
 		{
-			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
-			currentRotation.y += -myRotateSpeed * aDeltaTime;
-			myModelToWorldTransform.SetLocalRotation(currentRotation);
+			currentRotation.y -= myRotateSpeed * aDeltaTime;
 		}
 
 		if (myInput->IsHold('E'))
 		{
-			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
 			currentRotation.y += myRotateSpeed * aDeltaTime;
-			myModelToWorldTransform.SetLocalRotation(currentRotation);
 		}
 
 		if (myInput->IsHold('Z'))
 		{
-			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
-			currentRotation.x += -myRotateSpeed * aDeltaTime;
-			myModelToWorldTransform.SetLocalRotation(currentRotation);
+			currentRotation.x -= myRotateSpeed * aDeltaTime;
 		}
 
 		if (myInput->IsHold('C'))
 		{
-			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
 			currentRotation.x += myRotateSpeed * aDeltaTime;
-			myModelToWorldTransform.SetLocalRotation(currentRotation);
 		}
 
 		float direction = 1.0f;
@@ -125,11 +118,8 @@ void Camera::Update(const float aDeltaTime)
 			SimpleUtilities::Vector2f mouseDelta = myInput->GetMouseDelta();
 			mouseDelta *= myRotateSpeed * aDeltaTime;
 
-			SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
 			currentRotation.x += mouseDelta.y;
 			currentRotation.y += mouseDelta.x;
-
-			myModelToWorldTransform.SetLocalRotation(currentRotation);
 		}
 		else
 		{
@@ -140,6 +130,7 @@ void Camera::Update(const float aDeltaTime)
 			}
 		}
 
+		myModelToWorldTransform.SetLocalRotation(currentRotation);
 		SetPosition(targetPosition);
 	}
 }
@@ -236,6 +227,11 @@ void Camera::SetNearPlane(const float aNearPlane)
 void Camera::SetMoveSpeed(const float aSpeed)
 {
 	myMoveSpeed = aSpeed;
+}
+
+void Camera::SetRotateSpeed(const float aRotationSpeed)
+{
+	myRotateSpeed = aRotationSpeed;
 }
 
 void Camera::SetFoV(const float aFoV)
