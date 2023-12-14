@@ -2,6 +2,8 @@
 
 class GraphicsEngine;
 
+struct ID3D11Buffer;
+
 class ConstantBuffer
 {
 public:

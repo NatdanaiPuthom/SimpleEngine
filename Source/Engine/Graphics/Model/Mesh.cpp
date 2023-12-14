@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Engine/global.h"
 #include "Engine/Graphics/Camera/Camera.h"
 #include "Engine/Graphics/Texture/Texture.h"
 
@@ -9,10 +8,12 @@ Mesh::Mesh()
 	, myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myTimeBuffer(std::make_unique<ConstantBuffer>())
 	, myDirectionLightBuffer(std::make_unique<ConstantBuffer>())
-	, myTexture(std::make_unique<Texture>())
-	, myTexture2(std::make_unique<Texture>())
 	, myGraphicsEngine(nullptr)
 {
+	for (auto& texture : myTextures)
+	{
+		texture = std::make_unique<Texture>();
+	}
 }
 
 Mesh::~Mesh()
@@ -109,17 +110,16 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	if (!myShader->Init(device, aPSShaderFile, aVSShaderFile))
 		return false;
 
-	const bool success = myTexture->Init(device, aTextureFile);
+	const bool success = myTextures[0]->Init(device, aTextureFile);
 	if (success == false)
 		return false;
 
-	const bool success2 = myTexture2->Init(device, "Assets/Uppgift6/Grass_c.dds");
+	const bool success2 = myTextures[1]->Init(device, "Assets/Uppgift6/Grass_c.dds");
 	if (success2 == false)
 		return false;
 
-
-	myTexture->Bind(myGraphicsEngine->GetContext(), 0);
-	myTexture2->Bind(myGraphicsEngine->GetContext(), 1);
+	myTextures[0]->Bind(myGraphicsEngine->GetContext(), 0);
+	myTextures[1]->Bind(myGraphicsEngine->GetContext(), 1);
 
 	return true;
 }
@@ -138,40 +138,10 @@ void Mesh::Draw()
 
 	myShader->SetShader(context.Get());
 
-	FrameBufferData frameBuffer = {};
-	frameBuffer.worldToClipMatrix = camera->GetWorldToClipMatrix();
-	myFrameBuffer->Bind(0);
-	myFrameBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
-
 	ObjectBufferData objectBuffer = {};
 	objectBuffer.modelToWorldMatrix = myModelToWorld;
 	myObjectBuffer->Bind(1);
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
-
-	TimeBufferData timeBuffer = {};
-	timeBuffer.time = static_cast<float>(SimplyGlobal::GetTotalTime());
-	myTimeBuffer->Bind(2);
-	myTimeBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
-
-	{ //Day & Night Cycle
-		DirectionalLightBufferData directionLightBuffer = {};
-		/*const float cycleDuration = 2.0f;
-		const float angularVelocity = 2 * 3.14f / cycleDuration;
-		const float elevationAngle = 0.5f * sin(angularVelocity * static_cast<float>(SimplyGlobal::GetTotalTime()) + cycleDuration);
-
-		directionLightBuffer.dir.x = cos(elevationAngle);
-		directionLightBuffer.dir.y = sin(elevationAngle);
-		directionLightBuffer.dir.z = 0;*/
-
-		directionLightBuffer.dir.x = 0;
-		directionLightBuffer.dir.y = -1;
-		directionLightBuffer.dir.z = 0; 
-		directionLightBuffer.dir.Normalize();
-
-		myDirectionLightBuffer->Bind(3);
-		myDirectionLightBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);
-	}
-
 
 	context->DrawIndexed(static_cast<UINT>(myMeshData.myIndices.size()), 0, 0);
 }

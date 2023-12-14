@@ -4,8 +4,10 @@
 #include "Engine/Graphics/Shapes/ShapeCreator3000.h"
 #include "Engine/Graphics/GraphicsEngine.h"
 #include <External/imgui.h>
+#include "Engine/Graphics/Renderer/Renderer.h"
 
-GameWorld::GameWorld()
+GameWorld::GameWorld() 
+	: myRenderer(std::make_unique<Renderer>())
 {
 }
 
@@ -16,22 +18,12 @@ GameWorld::~GameWorld()
 void GameWorld::Init()
 {
 	std::vector<MeshData> meshData;
-	//meshData.emplace_back(Shape::CreateCube());
-	//meshData.emplace_back(Shape::CreatePyramid());
 	meshData.emplace_back(Shape::CreateTerrain());
-
-	/*if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[0], "Shaders/DefaultPS.cso", "Shaders/DefaultColorfulVS.cso", "Assets/colors.dds"))
-		assert(false && "Failed To Create Cube");
-
-	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[1], "Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso", "Assets/Uppgift6/testnormal.dds"))
-		assert(false && "Failed To Create Pyramid");*/
 
 	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[0], "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso", "Assets/Uppgift6/testnormal.dds"))
 		assert(false && "Failed To Create Terrain");
 
 	myMeshes[0]->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
-	/*myMeshes[1]->SetPosition(SimpleUtilities::Vector3f(-1, 0, 0));
-	myMeshes[2]->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));*/
 }
 
 void GameWorld::Render()

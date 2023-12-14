@@ -9,6 +9,9 @@
 
 GraphicsEngine::GraphicsEngine()
 	: myCamera(std::make_shared<Camera>())
+	, myCameraBuffer(std::make_unique<ConstantBuffer>())
+	, myTimeBuffer(std::make_unique<ConstantBuffer>())
+	, myDirectionLightBuffer(std::make_unique<ConstantBuffer>())
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
 {
@@ -40,6 +43,15 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 	if (!CreateStuffForImGuiImage(aWidth, aHeight))
 		return false;
 
+	if (!CreateCameraBuffer())
+		return false;
+
+	if (!CreateTimeBuffer())
+		return false;
+
+	if (!CreateDirectionalLightBuffer())
+		return false;
+
 	LoadSettingsFromJson();
 
 	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(aWidth), static_cast<float>(aHeight) });
@@ -47,6 +59,50 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 	myCamera->SetPosition(SimpleUtilities::Vector3f(0, 15, -12));
 
 	return true;
+}
+
+void GraphicsEngine::Update()
+{
+	{
+		FrameBufferData frameBuffer = {};
+		frameBuffer.worldToClipMatrix = myCamera->GetWorldToClipMatrix();
+		myCameraBuffer->Bind(0);
+		myCameraBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
+	}
+
+	{
+		TimeBufferData timeBuffer = {};
+		timeBuffer.time = static_cast<float>(SimplyGlobal::GetTotalTime());
+		myTimeBuffer->Bind(2);
+		myTimeBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
+	}
+
+	{ //Day & Night Cycle
+	/*	DirectionalLightBufferData directionLightBuffer = {};
+		const float cycleDuration = 2.0f;
+		const float angularVelocity = 2 * 3.14f / cycleDuration;
+		const float elevationAngle = 0.5f * sin(angularVelocity * static_cast<float>(SimplyGlobal::GetTotalTime()) + cycleDuration);
+
+		directionLightBuffer.dir.x = cos(elevationAngle);
+		directionLightBuffer.dir.y = sin(elevationAngle);
+		directionLightBuffer.dir.z = 0;
+		directionLightBuffer.dir.Normalize();
+
+		myDirectionLightBuffer->Bind(3);
+		myDirectionLightBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);*/
+
+		DirectionalLightBufferData directionLightBuffer = {};
+
+		directionLightBuffer.dir.x = 0;
+		directionLightBuffer.dir.y = -1;
+		directionLightBuffer.dir.z = 0;
+		directionLightBuffer.dir.Normalize();
+
+		myDirectionLightBuffer->Bind(3);
+		myDirectionLightBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);
+	}
+
+	myCamera->Update(SimplyGlobal::GetDeltaTime());
 }
 
 void GraphicsEngine::LoadSettingsFromJson()
@@ -85,7 +141,7 @@ bool GraphicsEngine::BeginFrame()
 
 	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
 
-	myCamera->Update(SimplyGlobal::GetDeltaTime());
+	Update();
 
 	return true;
 }
@@ -291,6 +347,45 @@ bool GraphicsEngine::CreateSamplerState()
 
 	const HRESULT result = myDevice->CreateSamplerState(&samplerDesc, &mySamplerState);
 	if (FAILED(result))
+		return false;
+
+	return true;
+}
+
+bool GraphicsEngine::CreateCameraBuffer()
+{
+	FrameBufferData cameraBuffer =
+	{
+		myCamera->GetModelToWorldMatrix().GetFastInverse() * myCamera->GetProjectionMatrix()
+	};
+
+	if (!myCameraBuffer->Init(this, sizeof(FrameBufferData), &cameraBuffer))
+		return false;
+
+	return true;
+}
+
+bool GraphicsEngine::CreateTimeBuffer()
+{
+	TimeBufferData timeBuffer =
+	{
+		1.0f
+	};
+
+	if (!myTimeBuffer->Init(this, sizeof(TimeBufferData), &timeBuffer))
+		return false;
+
+	return true;
+}
+
+bool GraphicsEngine::CreateDirectionalLightBuffer()
+{
+	DirectionalLightBufferData directionLightBuffer =
+	{
+		SimpleUtilities::Vector3f(0,-1,0)
+	};
+
+	if (!myDirectionLightBuffer->Init(this, sizeof(DirectionalLightBufferData), &directionLightBuffer))
 		return false;
 
 	return true;

@@ -1,6 +1,7 @@
 #pragma once
 
 class Camera;
+class ConstantBuffer;
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -56,13 +57,17 @@ public:
 private:
 	void CreateViewport(const int aWidth, const int aHeight);
 	bool CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight);
+	bool CreateDepthBuffer(const int aWidth, const int aHeight);
 	bool CreateBackBuffer();
 	bool CreateFrameBuffer();
-	bool CreateDepthBuffer(const int aWidth, const int aHeight);
 	bool CreateSamplerState();
+	bool CreateCameraBuffer();
+	bool CreateTimeBuffer();
+	bool CreateDirectionalLightBuffer();
 
 	bool CreateStuffForImGuiImage(const int aWidth, const int aHeight);
 private:
+	void Update();
 	void LoadSettingsFromJson();
 private:
 	ComPtr<ID3D11Device> myDevice;
@@ -83,6 +88,10 @@ private:
 	ComPtr<ID3D11RenderTargetView> myRTV;
 
 	std::shared_ptr<Camera> myCamera;
+
+	std::unique_ptr<ConstantBuffer> myCameraBuffer;
+	std::unique_ptr<ConstantBuffer> myTimeBuffer;
+	std::unique_ptr<ConstantBuffer> myDirectionLightBuffer;
 
 	float myColor[4];
 	bool myVSync;

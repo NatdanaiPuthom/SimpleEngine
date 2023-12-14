@@ -1,5 +1,6 @@
 #pragma once
 #include <wrl/client.h>
+#include <array>
 
 class GraphicsEngine;
 class ConstantBuffer;
@@ -54,8 +55,7 @@ private:
 
 	std::shared_ptr<Shader> myShader;
 
-	std::unique_ptr<Texture> myTexture;
-	std::unique_ptr<Texture> myTexture2;
+	std::array<std::unique_ptr<Texture>, 4> myTextures;
 
 	std::unique_ptr<ConstantBuffer> myFrameBuffer;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
