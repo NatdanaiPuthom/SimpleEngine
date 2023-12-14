@@ -26,7 +26,7 @@ void GameWorld::Init()
 	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[1], "Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso", "Assets/Uppgift6/testnormal.dds"))
 		assert(false && "Failed To Create Pyramid");*/
 
-	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[0], "Shaders/DefaultPS.cso", "Shaders/Terrain.cso", "Assets/Uppgift6/testnormal.dds"))
+	if (!myMeshes.emplace_back(std::make_unique<Mesh>())->Init(meshData[0], "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso", "Assets/Uppgift6/testnormal.dds"))
 		assert(false && "Failed To Create Terrain");
 
 	myMeshes[0]->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));

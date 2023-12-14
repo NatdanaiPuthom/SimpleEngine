@@ -19,7 +19,7 @@ PixelInputType main (VertexInputType aInput)
     output.color.b = (sin(elapsedTime + offsetB) + 1.0f) * 0.5f;
     output.color.a = aInput.color.a;
     
-    //output.normal = aInput.normal;
+    output.normal = aInput.normal;
     output.uv = aInput.uv;
     
     return output;

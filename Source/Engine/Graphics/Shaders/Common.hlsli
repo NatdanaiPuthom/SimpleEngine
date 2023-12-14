@@ -1,6 +1,6 @@
 
 SamplerState aSampler : register(s0);
-Texture2D aTexture : register(t0);
+Texture2D aDefaultTexture : register(t0);
 
 cbuffer FrameBuffer : register(b0)
 {
@@ -43,5 +43,6 @@ struct PixelInputType
 {
     float4 position : SV_POSITION;
     float4 color : COLOR;
+    float3 normal : NORMAL;
     float2 uv : TEXCOORD0;
 };

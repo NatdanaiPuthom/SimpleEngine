@@ -10,6 +10,7 @@ Mesh::Mesh()
 	, myTimeBuffer(std::make_unique<ConstantBuffer>())
 	, myDirectionLightBuffer(std::make_unique<ConstantBuffer>())
 	, myTexture(std::make_unique<Texture>())
+	, myTexture2(std::make_unique<Texture>())
 	, myGraphicsEngine(nullptr)
 {
 }
@@ -109,9 +110,16 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 		return false;
 
 	const bool success = myTexture->Init(device, aTextureFile);
-
 	if (success == false)
 		return false;
+
+	const bool success2 = myTexture2->Init(device, "Assets/Uppgift6/Grass_c.dds");
+	if (success2 == false)
+		return false;
+
+
+	myTexture->Bind(myGraphicsEngine->GetContext(), 0);
+	myTexture2->Bind(myGraphicsEngine->GetContext(), 1);
 
 	return true;
 }
@@ -147,20 +155,23 @@ void Mesh::Draw()
 
 	{ //Day & Night Cycle
 		DirectionalLightBufferData directionLightBuffer = {};
-		const float cycleDuration = 20.0f;
+		/*const float cycleDuration = 2.0f;
 		const float angularVelocity = 2 * 3.14f / cycleDuration;
-		const float elevationAngle = 0.5f * sin(angularVelocity * static_cast<float>(SimplyGlobal::GetTotalTime()) + 20);
+		const float elevationAngle = 0.5f * sin(angularVelocity * static_cast<float>(SimplyGlobal::GetTotalTime()) + cycleDuration);
 
 		directionLightBuffer.dir.x = cos(elevationAngle);
 		directionLightBuffer.dir.y = sin(elevationAngle);
-		directionLightBuffer.dir.z = 0;
+		directionLightBuffer.dir.z = 0;*/
+
+		directionLightBuffer.dir.x = 0;
+		directionLightBuffer.dir.y = -1;
+		directionLightBuffer.dir.z = 0; 
 		directionLightBuffer.dir.Normalize();
 
 		myDirectionLightBuffer->Bind(3);
 		myDirectionLightBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);
 	}
 
-	myTexture->Bind(context, 0);
 
 	context->DrawIndexed(static_cast<UINT>(myMeshData.myIndices.size()), 0, 0);
 }

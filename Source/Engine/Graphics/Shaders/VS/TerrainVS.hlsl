@@ -9,11 +9,11 @@ PixelInputType main(VertexInputType aInput)
     float4 vertexClipPos = mul(worldToClipMatrix, vertexWorldPos);
     
     output.uv = aInput.uv;
-    //output.normal = aInput.normal;
     output.position = vertexClipPos;
     
-    output.color = aInput.color * dot(directionLight, float3(-aInput.normal.xyz));
+    output.color = aInput.color; /* * dot(directionLight, float3(-aInput.normal.xyz))*/;
     output.color.a = 1;
+    output.normal = aInput.normal;
     
     return output;
 }

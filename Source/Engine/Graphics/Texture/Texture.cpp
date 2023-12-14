@@ -23,7 +23,7 @@ bool Texture::Init(ComPtr<ID3D11Device>& aDevice, const char* aFileName)
 	return true;
 }
 
-void Texture::Bind(ComPtr<ID3D11DeviceContext>& aContext, const unsigned int aSlot)
+void Texture::Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot)
 {
 	aContext->PSSetShaderResources(aSlot, 1, myShaderResourceView.GetAddressOf());
 }

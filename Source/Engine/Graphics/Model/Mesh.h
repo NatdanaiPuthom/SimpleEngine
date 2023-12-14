@@ -55,6 +55,8 @@ private:
 	std::shared_ptr<Shader> myShader;
 
 	std::unique_ptr<Texture> myTexture;
+	std::unique_ptr<Texture> myTexture2;
+
 	std::unique_ptr<ConstantBuffer> myFrameBuffer;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;
