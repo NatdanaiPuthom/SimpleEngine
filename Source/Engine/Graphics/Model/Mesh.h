@@ -55,10 +55,7 @@ private:
 
 	std::shared_ptr<Shader> myShader;
 
-	std::array<std::unique_ptr<Texture>, 4> myTextures;
+	std::array<std::unique_ptr<Texture>, 6> myTextures;
 
-	std::unique_ptr<ConstantBuffer> myFrameBuffer;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
-	std::unique_ptr<ConstantBuffer> myTimeBuffer;
-	std::unique_ptr<ConstantBuffer> myDirectionLightBuffer;
 };

@@ -1,8 +1,8 @@
 #include "../Common.hlsli"
 
 Texture2D aGrassC : register(t0);
-Texture2D aSnowC : register(t1);
-Texture2D aRockC : register(t2);
+Texture2D aRockC : register(t1);
+Texture2D aSnowC : register(t2);
 
 Texture2D aGrassN : register(t3);
 Texture2D aSnowN : register(t4);
@@ -12,7 +12,7 @@ PixelOutput main(PixelInputType aInput)
 {
     PixelOutput output;
     
-    float slopeBlend = smoothstep(0.7f, 1.0f, aInput.normal.y);
+    float slopeBlend = smoothstep(0.70f, 1.0f, aInput.normal.y);
     float heightBlend = smoothstep(-0.05f, 0.25f, aInput.position.y);
     
     float4 rockColor = aRockC.Sample(aSampler, aInput.uv);

@@ -18,11 +18,11 @@ MeshData Shape::CreateTerrain()
 		vertexSize *= 2;
 	}
 
-	Tga::AddNoise(heightMap, 0.5f);
+	Tga::AddNoise(heightMap, 1.0f);
 
 	gridSize = vertexSize - 1;
 
-	const float size = 0.2f;
+	const float size = 5.0f;
 	std::vector<Vertex> vertices(vertexSize * vertexSize);
 	std::vector<unsigned int> indices;
 

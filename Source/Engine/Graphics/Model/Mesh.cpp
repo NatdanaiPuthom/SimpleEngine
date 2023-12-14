@@ -4,10 +4,7 @@
 
 Mesh::Mesh()
 	: myShader(std::make_shared<Shader>())
-	, myFrameBuffer(std::make_unique<ConstantBuffer>())
 	, myObjectBuffer(std::make_unique<ConstantBuffer>())
-	, myTimeBuffer(std::make_unique<ConstantBuffer>())
-	, myDirectionLightBuffer(std::make_unique<ConstantBuffer>())
 	, myGraphicsEngine(nullptr)
 {
 	for (auto& texture : myTextures)
@@ -68,16 +65,6 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	}
 
 	{
-		FrameBufferData frameBuffer =
-		{
-			camera->GetModelToWorldMatrix().GetFastInverse() * camera->GetProjectionMatrix()
-		};
-
-		if (!myFrameBuffer->Init(myGraphicsEngine, sizeof(FrameBufferData), &frameBuffer))
-			return false;
-	}
-
-	{
 		ObjectBufferData objectBuffer =
 		{
 			camera->GetModelToWorldMatrix().GetFastInverse() * camera->GetProjectionMatrix()
@@ -87,39 +74,25 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 			return false;
 	}
 
-	{
-		TimeBufferData timeBuffer =
-		{
-			1.0f
-		};
-
-		if (!myTimeBuffer->Init(myGraphicsEngine, sizeof(TimeBufferData), &timeBuffer))
-			return false;
-	}
-
-	{
-		DirectionalLightBufferData directionLightBuffer =
-		{
-			SimpleUtilities::Vector3f(0,-1,0)
-		};
-
-		if (!myDirectionLightBuffer->Init(myGraphicsEngine, sizeof(DirectionalLightBufferData), &directionLightBuffer))
-			return false;
-	}
-
 	if (!myShader->Init(device, aPSShaderFile, aVSShaderFile))
 		return false;
 
-	const bool success = myTextures[0]->Init(device, aTextureFile);
+	aTextureFile;
+	const bool success = myTextures[0]->Init(device, "Assets/Uppgift6/Grass_c.dds");
 	if (success == false)
 		return false;
 
-	const bool success2 = myTextures[1]->Init(device, "Assets/Uppgift6/Grass_c.dds");
+	const bool success2 = myTextures[1]->Init(device, "Assets/Uppgift6/Rock_c.dds");
 	if (success2 == false)
+		return false;
+
+	const bool success3 = myTextures[2]->Init(device, "Assets/Uppgift6/Snow_c.dds");
+	if (success3 == false)
 		return false;
 
 	myTextures[0]->Bind(myGraphicsEngine->GetContext(), 0);
 	myTextures[1]->Bind(myGraphicsEngine->GetContext(), 1);
+	myTextures[2]->Bind(myGraphicsEngine->GetContext(), 2);
 
 	return true;
 }
