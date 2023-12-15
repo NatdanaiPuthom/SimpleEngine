@@ -49,7 +49,7 @@ workspace "SimpleEngine"
 		targetname("%{prj.name}_%{cfg.buildcfg}")
 		location "Source/Engine"
 		includedirs{"Source/" , "Source/Engine/", "Source/Engine/Graphics/", "Source/External/"} -- Included "Source/" so that we do not need "../../Engine/Graphics/Test.h" and instead can do "Engine/Graphics/Test.h"
-		files {"Source/Engine/**.h", "Source/Engine/**.cpp","Source/Engine/Graphics/Shaders/**.hlsl" , "Source/Engine/Graphics/Shaders/**.hlsli"} -- Files that shown in Visual Studio's Solution
+		files {"Source/Engine/**.h", "Source/Engine/**.hpp", "Source/Engine/**.cpp","Source/Engine/Graphics/Shaders/**.hlsl" , "Source/Engine/Graphics/Shaders/**.hlsli"} -- Files that shown in Visual Studio's Solution
 		dependson { "External" }
 		links {"External", "d3d11"}
 
@@ -83,7 +83,7 @@ workspace "SimpleEngine"
 		targetname "SimpleEngine_%{cfg.buildcfg}"
 		location "Source/Game"
 		includedirs{ "Source/", "Source/Engine/" ,"Source/Game/", "Source/External/"}
-		files {"Source/Game/**.h", "Source/Game/**.cpp", "Source/Game/Resources/**.rc"}
+		files {"Source/Game/**.h", "Source/Game/**.hpp", "Source/Game/**.cpp", "Source/Game/Resources/**.rc"}
 		dependson { "Engine" }
 		libdirs{"Lib", "DLL"}
 		links { "Engine", "easy_profiler.lib", "easy_profiler.dll"}

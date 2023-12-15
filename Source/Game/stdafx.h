@@ -14,14 +14,14 @@
 #include <unordered_map>
 
 #ifndef _SIMPLE
-#include "Engine/Console/Console.h"
+#include "Engine/Console/Console.hpp"
 #endif
 
-#include "Engine/SimpleUtilities/Vector.h"
-#include "Engine/SimpleUtilities/Matrix4x4.h"
+#include "Engine/SimpleUtilities/Vector.hpp"
+#include "Engine/SimpleUtilities/Matrix4x4.hpp"
 
-#include "Engine/global.h"
-#include "Engine/Input/InputManager.h"
-#include "Engine/SimpleUtilities/Utility.h"
+#include "Engine/global.hpp"
+#include "Engine/Input/InputManager.hpp"
+#include "Engine/SimpleUtilities/Utility.hpp"
 
 #include <External/profiler.h>

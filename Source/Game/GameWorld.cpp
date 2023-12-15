@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "Game/GameWorld.h"
-#include "Engine/Graphics/Model/Mesh.h"
-#include "Engine/Graphics/Shapes/ShapeCreator3000.h"
-#include "Engine/Graphics/GraphicsEngine.h"
-#include "Engine/Graphics/Renderer/Renderer.h"
-#include "Engine/Graphics/Camera/Camera.h"
+#include "Game/GameWorld.hpp"
+#include "Engine/Graphics/Model/Mesh.hpp"
+#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
+#include "Engine/Graphics/GraphicsEngine.hpp"
+#include "Engine/Graphics/Renderer/Renderer.hpp"
+#include "Engine/Graphics/Camera/Camera.hpp"
 #include <External/imgui.h>
 
 GameWorld::GameWorld()

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Engine/Graphics/Renderer/Renderer.h"
+#include "Engine/Graphics/Renderer/Renderer.hpp"
 
 Renderer::Renderer()
 {

@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Engine/Graphics/Camera/Camera.h"
-#include "Engine/Graphics/Texture/Texture.h"
+#include "Engine/Graphics/Camera/Camera.hpp"
+#include "Engine/Graphics/Texture/Texture.hpp"
 
 Mesh::Mesh()
 	: myShader(std::make_shared<Shader>())

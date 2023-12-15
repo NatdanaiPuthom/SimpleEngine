@@ -15,22 +15,22 @@ using Microsoft::WRL::ComPtr;
 #include <vector>
 
 #ifndef _SIMPLE
-#include "Engine/Console/Console.h"
+#include "Engine/Console/Console.hpp"
 #endif
 
 #include <External/profiler.h>
 
-#include "Engine/SimpleUtilities/Vector.h"
-#include "Engine/SimpleUtilities/Matrix4x4.h"
-#include "Engine/SimpleUtilities/Utility.h"
+#include "Engine/SimpleUtilities/Vector.hpp"
+#include "Engine/SimpleUtilities/Matrix4x4.hpp"
+#include "Engine/SimpleUtilities/Utility.hpp"
 
-#include "Engine/Input/InputManager.h"
+#include "Engine/Input/InputManager.hpp"
 
 #include "Engine/MemoryTracker/MemoryTracker.h"
 
-#include "Engine/engine.h"
-#include "Engine/global.h"
-#include "Engine/Graphics/Buffers/ConstantBuffer.h"
-#include "Engine/Graphics/GraphicsEngine.h"
-#include "Engine/Graphics/Shaders/Shader.h"
-#include "Engine/Graphics/Model/Mesh.h"
+#include "Engine/engine.hpp"
+#include "Engine/global.hpp"
+#include "Engine/Graphics/Buffers/ConstantBuffer.hpp"
+#include "Engine/Graphics/GraphicsEngine.hpp"
+#include "Engine/Graphics/Shaders/Shader.hpp"
+#include "Engine/Graphics/Model/Mesh.hpp"

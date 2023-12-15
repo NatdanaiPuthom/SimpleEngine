@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Engine/global.h"
+#include "Engine/global.hpp"
 
 namespace
 {

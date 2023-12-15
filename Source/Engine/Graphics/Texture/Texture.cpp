@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Engine/Graphics/Texture/Texture.h"
-#include "Engine/SimpleUtilities/Utility.h"
+#include "Engine/Graphics/Texture/Texture.hpp"
+#include "Engine/SimpleUtilities/Utility.hpp"
 #include <External/DDSTextureLoader/DDSTextureLoader11.h>
 
 Texture::Texture()

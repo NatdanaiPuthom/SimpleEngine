@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "Engine/global.h"
-#include "Engine/SimpleUtilities/Timer.h"
-#include "Engine/ImGuiInterface/ImGuiInterface.h"
+#include "Engine/global.hpp"
+#include "Engine/SimpleUtilities/Timer.hpp"
+#include "Engine/ImGuiInterface/ImGuiInterface.hpp"
 #include <External/json.h>
 
 #ifdef _DEBUG
-#include "Engine/Console/Console.h"
+#include "Engine/Console/Console.hpp"
 #endif
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

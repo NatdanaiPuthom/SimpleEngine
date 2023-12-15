@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Engine/global.h"
-#include "Engine/ImGuiInterface/ImGuiInterface.h"
+#include "Engine/global.hpp"
+#include "Engine/ImGuiInterface/ImGuiInterface.hpp"
 
 #include <External/dearimgui/imgui/imgui.h>
 #include <External/dearimgui/imgui/imgui_impl_win32.h>

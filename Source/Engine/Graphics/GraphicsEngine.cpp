@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Engine/global.h"
-#include "Graphics/Camera/Camera.h"
+#include "Engine/global.hpp"
+#include "Graphics/Camera/Camera.hpp"
 #include <External/json.h>
 
 #ifdef _DEBUG

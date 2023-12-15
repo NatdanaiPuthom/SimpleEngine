@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Game/GameWorld.h"
-#include "Engine/engine.h"
+#include "Game/GameWorld.hpp"
+#include "Engine/engine.hpp"
 #include "Engine/MemoryTracker/MemoryTracker.h"
 #include <External/imgui.h>
 
