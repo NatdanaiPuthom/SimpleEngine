@@ -8,7 +8,7 @@ Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, c
 	, myFarPlane(aFarPlane)
 	, myNearPlane(aNearPlane)
 	, myMoveSpeed(3)
-	, myRotateSpeed(30)
+	, myRotateSpeed(90)
 	, myInput(&SimpleUtilities::InputManager::GetInstance())
 	, myFreeFly(false)
 {
@@ -21,9 +21,11 @@ void Camera::Update(const float aDeltaTime)
 {
 	if (myInput->GetAKeyIsPressed() || myFreeFly)
 	{
+		const SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
+
 		SimpleUtilities::Vector3f forward;
 		SimpleUtilities::Vector3f targetPosition(myModelToWorldTransform(4, 1), myModelToWorldTransform(4, 2), myModelToWorldTransform(4, 3));
-		SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
+		SimpleUtilities::Vector3f targetRotation = currentRotation;
 
 		float speed = myMoveSpeed;
 
@@ -43,6 +45,7 @@ void Camera::Update(const float aDeltaTime)
 				myFreeFly = false;
 			}
 		}
+	
 
 		if (myInput->IsHold('W'))
 		{
@@ -70,22 +73,22 @@ void Camera::Update(const float aDeltaTime)
 
 		if (myInput->IsHold('Q'))
 		{
-			currentRotation.y -= myRotateSpeed * aDeltaTime;
+			targetRotation.y -= myRotateSpeed * aDeltaTime;
 		}
 
 		if (myInput->IsHold('E'))
 		{
-			currentRotation.y += myRotateSpeed * aDeltaTime;
+			targetRotation.y += myRotateSpeed * aDeltaTime;
 		}
 
 		if (myInput->IsHold('Z'))
 		{
-			currentRotation.x -= myRotateSpeed * aDeltaTime;
+			targetRotation.x -= myRotateSpeed * aDeltaTime;
 		}
 
 		if (myInput->IsHold('C'))
 		{
-			currentRotation.x += myRotateSpeed * aDeltaTime;
+			targetRotation.x += myRotateSpeed * aDeltaTime;
 		}
 
 		float direction = 1.0f;
@@ -116,10 +119,15 @@ void Camera::Update(const float aDeltaTime)
 			SetCursorPos(myCapturedPosition.x, myCapturedPosition.y);
 
 			SimpleUtilities::Vector2f mouseDelta = myInput->GetMouseDelta();
-			mouseDelta *= myRotateSpeed * aDeltaTime;
+			mouseDelta *= myRotateSpeed * 0.3f * aDeltaTime;
 
-			currentRotation.x += mouseDelta.y;
-			currentRotation.y += mouseDelta.x;
+			const float minimumDelta = 0.1f; //For shaky mouse/hands
+
+			if (std::abs(mouseDelta.x) > minimumDelta || std::abs(mouseDelta.y) > minimumDelta)
+			{
+				targetRotation.x += mouseDelta.y;
+				targetRotation.y += mouseDelta.x;
+			}
 		}
 		else
 		{
@@ -130,7 +138,8 @@ void Camera::Update(const float aDeltaTime)
 			}
 		}
 
-		myModelToWorldTransform.SetLocalRotation(currentRotation);
+		targetRotation = SimpleUtilities::SmoothStep(currentRotation, targetRotation, 0.3f);
+		myModelToWorldTransform.SetLocalRotation(targetRotation);
 		SetPosition(targetPosition);
 	}
 }

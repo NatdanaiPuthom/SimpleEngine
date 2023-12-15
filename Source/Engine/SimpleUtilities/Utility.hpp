@@ -40,9 +40,32 @@ namespace SimpleUtilities
 	}
 
 	template<typename T>
-	static inline T Lerp(const T aStart, const T aEnd, const float aPercent)
+	static inline T Clamp(const T aValue, const T aMin, const T aMax)
 	{
-		return aStart + aPercent * (aEnd - aStart);
+		if (aValue < aMin)
+			return aMin;
+
+		if (aValue > aMax)
+			return aMax;
+
+		return aValue;
+	}
+
+	template<typename T>
+	static inline T Lerp(const T aStart, const T aTarget, float aPercent)
+	{
+		aPercent = SimpleUtilities::Clamp(aPercent, 0.0f, 1.0f);
+
+		return aStart + aPercent * (aTarget - aStart);
+	}
+
+	template<typename T>
+	static inline T SmoothStep(const T aStart, const T aTarget, float aPercent)
+	{
+		aPercent = SimpleUtilities::Clamp(aPercent, 0.0f, 1.0f);
+
+		const float t = aPercent * aPercent * (3.0f - 2.0f * aPercent);
+		return aStart + t * (aTarget - aStart);
 	}
 
 	template<typename T>
