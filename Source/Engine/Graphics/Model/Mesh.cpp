@@ -49,9 +49,25 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 		if (success3 == false)
 			return false;
 
+		const bool success4 = myTextures[3]->Init(device, "Assets/tga/Uppgift6/Grass_n.dds");
+		if (success4 == false)
+			return false;
+
+		const bool success5 = myTextures[4]->Init(device, "Assets/tga/Uppgift6/Rock_n.dds");
+		if (success5 == false)
+			return false;
+
+		const bool success6 = myTextures[5]->Init(device, "Assets/tga/Uppgift6/Snow_n.dds");
+		if (success6 == false)
+			return false;
+
 		myTextures[0]->Bind(myGraphicsEngine->GetContext(), 0);
 		myTextures[1]->Bind(myGraphicsEngine->GetContext(), 1);
 		myTextures[2]->Bind(myGraphicsEngine->GetContext(), 2);
+
+		myTextures[3]->Bind(myGraphicsEngine->GetContext(), 3);
+		myTextures[4]->Bind(myGraphicsEngine->GetContext(), 4);
+		myTextures[5]->Bind(myGraphicsEngine->GetContext(), 5);
 	}
 
 	return true;

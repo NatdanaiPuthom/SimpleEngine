@@ -20,7 +20,10 @@ PixelInputType main (VertexInputType aInput)
     output.color.a = aInput.color.a;
     
     output.normal = aInput.normal;
+    output.worldPosition = vertexWorldPos.xyzw;
     output.uv = aInput.uv;
+    output.tangent = aInput.tangent;
+    output.bitangent = aInput.bitangent;
     
     return output;
 }

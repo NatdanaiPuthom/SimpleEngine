@@ -8,12 +8,20 @@ Texture2D aGrassN : register(t3);
 Texture2D aSnowN : register(t4);
 Texture2D aRockN : register(t5);
 
+float3 expandNormal(float4 normalTexture)
+{
+    float3 normal = normalTexture.agg;
+    normal = 2.0f * normal - 1.0f;
+    normal.z = sqrt(1 - saturate(normal.x * normal.x + normal.y * normal.y));
+    return normalize(normal);
+}
+
 PixelOutput main(PixelInputType aInput)
 {
     PixelOutput output;
     
     float slopeBlend = smoothstep(0.70f, 1.0f, aInput.normal.y);
-    float heightBlend = smoothstep(-0.05f, 0.25f, aInput.position.y);
+    float heightBlend = smoothstep(-0.05f, 0.25f, aInput.worldPosition.y);
     
     float4 rockColor = aRockC.Sample(aSampler, aInput.uv);
     float4 snowColor = aSnowC.Sample(aSampler, aInput.uv);

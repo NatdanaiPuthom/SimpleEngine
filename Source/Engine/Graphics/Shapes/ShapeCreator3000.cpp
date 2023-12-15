@@ -6,23 +6,25 @@ namespace SU = SimpleUtilities;
 
 MeshData Shape::CreateTerrain()
 {
-	unsigned int gridSize = 12;
+	unsigned int gridSize = 16;
 	unsigned int vertexSize = gridSize + 1;
-	const unsigned int upSampleMultiply = 1;
+	const unsigned int upSampleMultiply = 2;
+	const float vertexDistance = 0.50f;
+	const float amplitude = 4.f;
 
 	std::vector<float> heightMap(vertexSize * vertexSize);
 
+	float amplitudeMultiplier = amplitude;
 	for (unsigned int i = 0; i < upSampleMultiply; i++)
 	{
+		Tga::AddNoise(heightMap, amplitudeMultiplier);
 		heightMap = Tga::Upsample2X(heightMap, vertexSize);
+		amplitudeMultiplier *= 0.25f;
 		vertexSize *= 2;
 	}
 
-	Tga::AddNoise(heightMap, 1.0f);
-
 	gridSize = vertexSize - 1;
 
-	const float size = 5.0f;
 	std::vector<Vertex> vertices(vertexSize * vertexSize);
 	std::vector<unsigned int> indices;
 
@@ -32,7 +34,7 @@ MeshData Shape::CreateTerrain()
 		{
 			const unsigned int index = x + vertexSize * y;
 			Vertex vertex;
-			SU::Vector3f pos = SU::Vector3f(static_cast<float>(x), heightMap[index], static_cast<float>(y)) * size;
+			SU::Vector3f pos = SU::Vector3f(static_cast<float>(x), heightMap[index], static_cast<float>(y)) * vertexDistance;
 			vertex.position = SU::Vector4f(pos.x, pos.y, pos.z, 1.f);
 			vertex.color = SU::Vector4f(1.f, 1.f, 1.f, 1.f);
 			vertex.uv = { static_cast<float>(x) / vertexSize, static_cast<float>(y) / vertexSize };
@@ -79,8 +81,14 @@ MeshData Shape::CreateTerrain()
 			normal.Normalize();
 			vertices[index].normal = SU::Vector3f(normal.x, normal.y, normal.z);
 			
-			vertices[index].tangent = tangentHorizontal.GetNormalized();
-			vertices[index].bitangent = tangentVertical.GetNormalized();
+			if (normal.y < 0.1f)
+			{
+				int a = 4;
+				a;
+			}
+			SU::Vector3f right(1, 0, 0);
+			vertices[index].tangent = SU::Cross(vertices[index].normal, right).GetNormalized();
+			vertices[index].bitangent = SU::Cross(vertices[index].normal, vertices[index].tangent).GetNormalized();
 		}
 	}
 

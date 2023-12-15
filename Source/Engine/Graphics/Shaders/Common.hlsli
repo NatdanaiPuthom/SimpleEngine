@@ -42,7 +42,10 @@ struct VertexInputType
 struct PixelInputType
 {
     float4 position : SV_POSITION;
+    float4 worldPosition : WORLDPOSITION;
     float4 color : COLOR;
     float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 bitangent : BITANGENT;
     float2 uv : TEXCOORD0;
 };

@@ -79,7 +79,7 @@ void GraphicsEngine::Update()
 
 	{ //Day & Night Cycle
 	/*	DirectionalLightBufferData directionLightBuffer = {};
-		const float cycleDuration = 2.0f;
+		const float cycleDuration = 2;
 		const float angularVelocity = 2 * 3.14f / cycleDuration;
 		const float elevationAngle = 0.5f * sin(angularVelocity * static_cast<float>(SimplyGlobal::GetTotalTime()) + cycleDuration);
 
