@@ -46,7 +46,6 @@ void Camera::Update(const float aDeltaTime)
 			}
 		}
 	
-
 		if (myInput->IsHold('W'))
 		{
 			forward = myForward * speed * aDeltaTime;
