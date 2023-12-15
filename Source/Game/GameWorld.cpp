@@ -21,7 +21,7 @@ void GameWorld::Init()
 	MeshData meshData = Shape::CreateTerrain();
 	std::unique_ptr<Mesh>  mesh = std::make_unique<Mesh>();
 
-	if (!mesh->Init(meshData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso", "Assets/Uppgift6/testnormal.dds"))
+	if (!mesh->Init(meshData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
 		assert(false && "Failed to Init Mesh");
 
 	mesh->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));

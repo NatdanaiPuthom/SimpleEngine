@@ -1,14 +1,14 @@
 #pragma once
 #include <wrl/client.h>
-#include <array>
 
 class GraphicsEngine;
 class ConstantBuffer;
 class Texture;
 class Shader;
 
-using Microsoft::WRL::ComPtr;
 struct ID3D11Buffer;
+
+using Microsoft::WRL::ComPtr;
 
 struct alignas(16) Vertex
 {
@@ -33,7 +33,7 @@ public:
 	Mesh();
 	~Mesh();
 
-	const bool Init(const MeshData& aMeshData, const char* aPSShaderFile = "Shaders/DefaultPS.cso", const char* aVSShaderFile = "Shaders/DefaultVS.cso", const char* aTextureFile = "Shaders/colors.dds");
+	const bool Init(const MeshData& aMeshData, const char* aPSShaderFile = "Shaders/DefaultPS.cso", const char* aVSShaderFile = "Shaders/DefaultVS.cso");
 	void Draw();
 public:
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
@@ -44,18 +44,20 @@ public:
 	Shader& GetShader();
 	int GetIndexCount();
 private:
-	GraphicsEngine* myGraphicsEngine;
-
+	bool CreateVertexBuffer(ComPtr<ID3D11Device> aDevice);
+	bool CreateIndexBuffer(ComPtr<ID3D11Device> aDevice);
+	bool CreateObjectBuffer();
+private:
 	SimpleUtilities::Matrix4x4f myModelToWorld;
 
 	MeshData myMeshData;
+	GraphicsEngine* myGraphicsEngine;
 
 	ComPtr<ID3D11Buffer> myVertexBuffer;
 	ComPtr<ID3D11Buffer> myIndexBuffer;
 
 	std::shared_ptr<Shader> myShader;
+	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 
 	std::array<std::unique_ptr<Texture>, 6> myTextures;
-
-	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 };
