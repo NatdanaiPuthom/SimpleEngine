@@ -109,7 +109,7 @@ void GraphicsEngine::LoadSettingsFromJson()
 {
 	const std::string filename = SimpleUtilities::GetPath(SIMPLE_SETTINGS_FILENAME);
 	std::ifstream file(filename);
-	assert(file.is_open());
+	assert(file.is_open() && "Failed To Open File");
 
 	const nlohmann::json json = nlohmann::json::parse(file);
 	file.close();
