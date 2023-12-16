@@ -10,7 +10,7 @@ namespace SimpleUtilities
 	template<typename T>
 	class Vector4;
 
-	static float GetRadToDeg(); //TO-DO: Maybe change to .h + .cpp instead of .h only?
+	static float GetRadToDeg();
 	static float GetDegToRad();
 
 	template <typename T>

@@ -23,13 +23,24 @@ PixelOutput main(PixelInputType aInput)
     float slopeBlend = smoothstep(0.70f, 1.0f, aInput.normal.y);
     float heightBlend = smoothstep(-0.05f, 0.25f, aInput.worldPosition.y);
     
+    float4 grassColor = aGrassC.Sample(aSampler, aInput.uv);
     float4 rockColor = aRockC.Sample(aSampler, aInput.uv);
     float4 snowColor = aSnowC.Sample(aSampler, aInput.uv);
-    float4 grassColor = aGrassC.Sample(aSampler, aInput.uv);
-    
     float3 color = lerp(rockColor, lerp(grassColor, snowColor, heightBlend), slopeBlend).rgb;
     
-    output.color = float4(color, 1);
+    float4 grassNormal = aGrassN.Sample(aSampler, aInput.uv);
+    float4 rockNormal = aRockN.Sample(aSampler, aInput.uv);
+    float4 snowNormal = aSnowN.Sample(aSampler, aInput.uv);
+    float3 normal = lerp(rockNormal, lerp(grassNormal, snowNormal, heightBlend), slopeBlend).rgb;
+    float3x3 TBN = float3x3(aInput.tangent, aInput.bitangent, aInput.normal);
+    normal = normalize(mul(TBN, normal));
+    
+    float3 lightDirection = normalize(-directionLight);
+    float lightIntensity = max(0.0, dot(normal, lightDirection));
+    
+    float3 finalColor = color * lightIntensity;
+    
+    output.color = float4(finalColor, 1);
  
     return output;
 }

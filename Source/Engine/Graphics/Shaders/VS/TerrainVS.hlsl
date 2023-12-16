@@ -16,7 +16,7 @@ PixelInputType main(VertexInputType aInput)
     output.uv = aInput.uv;
     
     //output.color = aInput.color * dot(directionLight, float3(-aInput.normal.xyz)); //Directional Light
-    output.color = aInput.color; ;
+    output.color = aInput.color;
     output.color.a = 1;
     
     return output;

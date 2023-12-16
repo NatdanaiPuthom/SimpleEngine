@@ -18,4 +18,7 @@ namespace SimplyGlobal
 	float GetDeltaTime();
 	int GetFPS();
 	HWND& GetHWND();
+	bool GetGameIsRunning();
+
+	void SetGameIsRunning(bool aShouldRun);
 }

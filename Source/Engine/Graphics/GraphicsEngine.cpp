@@ -78,7 +78,7 @@ void GraphicsEngine::Update()
 	}
 
 	{ //Day & Night Cycle
-	/*	DirectionalLightBufferData directionLightBuffer = {};
+		/*DirectionalLightBufferData directionLightBuffer = {};
 		const float cycleDuration = 2;
 		const float angularVelocity = 2 * 3.14f / cycleDuration;
 		const float elevationAngle = 0.5f * sin(angularVelocity * static_cast<float>(SimplyGlobal::GetTotalTime()) + cycleDuration);
@@ -93,8 +93,8 @@ void GraphicsEngine::Update()
 
 		DirectionalLightBufferData directionLightBuffer = {};
 
-		directionLightBuffer.dir.x = 0;
-		directionLightBuffer.dir.y = -1;
+		directionLightBuffer.dir.x = 0.707f;
+		directionLightBuffer.dir.y = -0.707f;
 		directionLightBuffer.dir.z = 0;
 		directionLightBuffer.dir.Normalize();
 
@@ -134,9 +134,11 @@ bool GraphicsEngine::BeginFrame()
 	}
 
 	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
-	myContext->OMSetRenderTargets(1, myRTV.GetAddressOf(), myDepthBuffer.Get());
+	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
+	//myContext->OMSetRenderTargets(1, myRTV.GetAddressOf(), myDepthBuffer.Get());
 
-	myContext->ClearRenderTargetView(myRTV.Get(), myColor);
+	//myContext->ClearRenderTargetView(myRTV.Get(), myColor);
+	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
@@ -153,8 +155,8 @@ void GraphicsEngine::EndFrame()
 
 void GraphicsEngine::SetToBackBuffer()
 {
-	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
-	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
+	/*myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
+	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);*/
 }
 
 void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
@@ -231,7 +233,8 @@ bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, cons
 	swapChainDesc.BufferCount = 2;
 	swapChainDesc.BufferDesc.Width = aWidth;
 	swapChainDesc.BufferDesc.Height = aHeight;
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	//swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; //TO-DO: Make this looks good
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.OutputWindow = aWindowHandle;

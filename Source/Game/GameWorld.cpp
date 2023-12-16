@@ -29,6 +29,13 @@ void GameWorld::Init()
 	myRenderer->AddMesh(std::move(mesh));
 }
 
+void GameWorld::Update()
+{
+	while (SimplyGlobal::GetGameIsRunning())
+	{
+	}
+}
+
 void GameWorld::Render()
 {
 	GraphicsEngine* graphicsEngine = SimplyGlobal::GetGraphicsEngine();
@@ -67,11 +74,11 @@ void GameWorld::Render()
 	}
 	ImGui::End();
 
-	if (ImGui::Begin("Scene"))
+	/*if (ImGui::Begin("Scene"))
 	{
 		ImVec2 size(1280, 720);
 		const ImTextureID textureID = graphicsEngine->GetShaderResourceView().Get();
 		ImGui::Image(textureID, size);
 	}
-	ImGui::End();
+	ImGui::End();*/
 }

@@ -10,6 +10,7 @@ public:
 	~GameWorld();
 
 	void Init();
+	void Update();
 	void Render();
 private:
 	std::unique_ptr<Renderer> myRenderer;

@@ -10,6 +10,8 @@ namespace
 	const int localOneSecond = 1;
 	int localFramesPerSecond = 0;
 	int localFrames = 0;
+
+	bool localGameIsRunning = true;
 }
 
 void SimplyGlobalImpl::SetEngine(Engine* aEngine)
@@ -48,6 +50,16 @@ int SimplyGlobal::GetFPS()
 HWND& SimplyGlobal::GetHWND()
 {
 	return localEngine->GetHWND();
+}
+
+bool SimplyGlobal::GetGameIsRunning()
+{
+	return localGameIsRunning;
+}
+
+void SimplyGlobal::SetGameIsRunning(bool aShouldRun)
+{
+	localGameIsRunning = aShouldRun;
 }
 
 GraphicsEngine* SimplyGlobal::GetGraphicsEngine()

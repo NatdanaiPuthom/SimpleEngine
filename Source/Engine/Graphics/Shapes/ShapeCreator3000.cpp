@@ -6,11 +6,13 @@ namespace SU = SimpleUtilities;
 
 MeshData Shape::CreateTerrain()
 {
-	unsigned int gridSize = 16;
+	unsigned int gridSize = 12;
 	unsigned int vertexSize = gridSize + 1;
+
 	const unsigned int upSampleMultiply = 2;
+
 	const float vertexDistance = 0.50f;
-	const float amplitude = 4.f;
+	const float amplitude = 5.f;
 
 	std::vector<float> heightMap(vertexSize * vertexSize);
 
@@ -77,16 +79,11 @@ MeshData Shape::CreateTerrain()
 
 			SU::Vector3f tangentVertical = vertices[indexUp].position.AsVector3() - vertices[indexDown].position.AsVector3();
 			SU::Vector3f tangentHorizontal = vertices[indexRight].position.AsVector3() - vertices[indexLeft].position.AsVector3();
-			SU::Vector3f normal = SU::Cross(tangentVertical, tangentHorizontal);
-			normal.Normalize();
-			vertices[index].normal = SU::Vector3f(normal.x, normal.y, normal.z);
+			SU::Vector3f normal = SU::Cross(tangentVertical, tangentHorizontal).GetNormalized();
+
+			vertices[index].normal = SU::Vector3f(normal.x, normal.y, normal.z).GetNormalized();
 			
-			if (normal.y < 0.1f)
-			{
-				int a = 4;
-				a;
-			}
-			SU::Vector3f right(1, 0, 0);
+			const SU::Vector3f right(1, 0, 0);
 			vertices[index].tangent = SU::Cross(vertices[index].normal, right).GetNormalized();
 			vertices[index].bitangent = SU::Cross(vertices[index].normal, vertices[index].tangent).GetNormalized();
 		}

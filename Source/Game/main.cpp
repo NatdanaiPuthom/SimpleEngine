@@ -3,6 +3,7 @@
 #include "Engine/engine.hpp"
 #include "Engine/MemoryTracker/MemoryTracker.h"
 #include <External/imgui.h>
+#include <thread>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -18,6 +19,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
+		SimplyGlobal::SetGameIsRunning(false);
 		break;
 	case WM_ACTIVATE:
 		SimpleUtilities::InputManager::GetInstance().ResetKeyStates();
@@ -50,11 +52,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		GameWorld gameWorld;
 		gameWorld.Init();
 
+		std::thread logicThread(&GameWorld::Update, std::ref(gameWorld));
+
 		while (engine.BeginFrame())
 		{
 			gameWorld.Render();
 			engine.EndFrame();;
 		}
+
+		if (logicThread.joinable())
+			logicThread.join();
 	}
 
 	PROFILER_END();

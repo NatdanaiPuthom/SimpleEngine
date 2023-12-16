@@ -11,7 +11,7 @@ Texture::~Texture()
 {
 }
 
-bool Texture::Init(ComPtr<ID3D11Device>& aDevice, const char* aFileName)
+bool Texture::Init(ComPtr<ID3D11Device> aDevice, const char* aFileName)
 {
 	const std::string texturePath = SimpleUtilities::GetPath(aFileName);
 	const std::wstring texturePathW = SimpleUtilities::ToWString(texturePath);

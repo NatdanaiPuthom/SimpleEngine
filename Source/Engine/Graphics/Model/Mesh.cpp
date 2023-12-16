@@ -78,8 +78,7 @@ void Mesh::Draw()
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	auto context = myGraphicsEngine->GetContext();
-	auto camera = myGraphicsEngine->GetCamera();
+	const auto context = myGraphicsEngine->GetContext();
 
 	context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
