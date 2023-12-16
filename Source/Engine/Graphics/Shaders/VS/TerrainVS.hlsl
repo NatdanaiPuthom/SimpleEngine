@@ -10,14 +10,13 @@ PixelInputType main(VertexInputType aInput)
     
     output.position = vertexClipPos;
     output.worldPosition = vertexWorldPos;
-    output.normal = aInput.normal;
-    output.tangent = aInput.tangent;
-    output.bitangent = aInput.bitangent;
     output.uv = aInput.uv;
     
-    //output.color = aInput.color * dot(directionLight, float3(-aInput.normal.xyz)); //Directional Light
+    output.normal = mul(modelToWorld, float4(aInput.normal, 0)).xyz;
+    output.tangent = mul(modelToWorld, float4(aInput.tangent, 0)).xyz;
+    output.bitangent = mul(modelToWorld, float4(aInput.bitangent, 0)).xyz;
+    
     output.color = aInput.color;
-    output.color.a = 1;
     
     return output;
 }

@@ -49,12 +49,14 @@ public:
 
 	void SetToBackBuffer();
 	void SetVSync(const bool aShouldTurnOn);
+	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aVector);
 public:
 	ComPtr<ID3D11Device> GetDevice();
 	ComPtr<ID3D11DeviceContext> GetContext();
 	ComPtr<ID3D11ShaderResourceView> GetShaderResourceView();
 	std::shared_ptr<Camera> GetCamera();
 	bool IsVSyncActive() const;
+	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 private:
 	void CreateViewport(const int aWidth, const int aHeight);
 	bool CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight);
@@ -71,6 +73,8 @@ private:
 	void Update();
 	void LoadSettingsFromJson();
 private:
+	DirectionalLightBufferData myDirectionLightData;
+
 	ComPtr<ID3D11Device> myDevice;
 	ComPtr<ID3D11DeviceContext> myContext;
 	ComPtr<IDXGISwapChain> mySwapChain;

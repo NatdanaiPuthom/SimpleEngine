@@ -15,6 +15,9 @@ GraphicsEngine::GraphicsEngine()
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
 {
+	myDirectionLightData.dir.x = 0;
+	myDirectionLightData.dir.y = -1;
+	myDirectionLightData.dir.z = 0;
 }
 
 GraphicsEngine::~GraphicsEngine()
@@ -92,10 +95,9 @@ void GraphicsEngine::Update()
 		myDirectionLightBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);*/
 
 		DirectionalLightBufferData directionLightBuffer = {};
-
-		directionLightBuffer.dir.x = 0.707f;
-		directionLightBuffer.dir.y = -0.707f;
-		directionLightBuffer.dir.z = 0;
+		directionLightBuffer.dir.x = myDirectionLightData.dir.x;
+		directionLightBuffer.dir.y = myDirectionLightData.dir.y;
+		directionLightBuffer.dir.z = myDirectionLightData.dir.z;
 		directionLightBuffer.dir.Normalize();
 
 		myDirectionLightBuffer->Bind(3);
@@ -164,6 +166,11 @@ void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
 	myVSync = aShouldTurnOn;
 }
 
+void GraphicsEngine::SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aVector)
+{
+	myDirectionLightData.dir = aVector;
+}
+
 ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
 {
 	return myDevice;
@@ -225,6 +232,11 @@ void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
 	viewport.MaxDepth = 1.0f;
 
 	myContext->RSSetViewports(1, &viewport);
+}
+
+SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
+{
+	return myDirectionLightData.dir;
 }
 
 bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight)

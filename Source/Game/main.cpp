@@ -52,7 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		GameWorld gameWorld;
 		gameWorld.Init();
 
-		std::thread logicThread(&GameWorld::Update, std::ref(gameWorld));
+		//std::thread logicThread(&GameWorld::Update, std::ref(gameWorld));
 
 		while (engine.BeginFrame())
 		{
@@ -60,8 +60,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 			engine.EndFrame();;
 		}
 
-		if (logicThread.joinable())
-			logicThread.join();
+		/*if (logicThread.joinable())
+			logicThread.join();*/
 	}
 
 	PROFILER_END();

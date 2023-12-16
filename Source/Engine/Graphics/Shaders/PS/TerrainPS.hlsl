@@ -8,14 +8,6 @@ Texture2D aGrassN : register(t3);
 Texture2D aSnowN : register(t4);
 Texture2D aRockN : register(t5);
 
-float3 expandNormal(float4 normalTexture)
-{
-    float3 normal = normalTexture.agg;
-    normal = 2.0f * normal - 1.0f;
-    normal.z = sqrt(1 - saturate(normal.x * normal.x + normal.y * normal.y));
-    return normalize(normal);
-}
-
 PixelOutput main(PixelInputType aInput)
 {
     PixelOutput output;
@@ -32,11 +24,11 @@ PixelOutput main(PixelInputType aInput)
     float4 rockNormal = aRockN.Sample(aSampler, aInput.uv);
     float4 snowNormal = aSnowN.Sample(aSampler, aInput.uv);
     float3 normal = lerp(rockNormal, lerp(grassNormal, snowNormal, heightBlend), slopeBlend).rgb;
+    
     float3x3 TBN = float3x3(aInput.tangent, aInput.bitangent, aInput.normal);
     normal = normalize(mul(TBN, normal));
     
-    float3 lightDirection = normalize(-directionLight);
-    float lightIntensity = max(0.0, dot(normal, lightDirection));
+    float lightIntensity = max(0.0, dot(normal, directionLight));
     
     float3 finalColor = color * lightIntensity;
     

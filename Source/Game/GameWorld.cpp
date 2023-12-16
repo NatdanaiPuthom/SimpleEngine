@@ -49,9 +49,12 @@ void GameWorld::Render()
 		ImGui::Dummy(ImVec2(200, 0));
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100.0f);
+
 		float speed = graphicsEngine->GetCamera()->GetMoveSpeed();
 		if (ImGui::SliderFloat("Speed", &speed, 0, 100, "%0.2f"))
+		{
 			graphicsEngine->GetCamera()->SetMoveSpeed(speed);
+		}
 
 		ImGui::Text("FreeFly      - TAB");
 		ImGui::Text("Fly Up       - SPACE");
@@ -70,7 +73,21 @@ void GameWorld::Render()
 
 		bool vsync = graphicsEngine->IsVSyncActive();
 		if (ImGui::Checkbox("VSync", &vsync))
+		{
 			graphicsEngine->SetVSync(vsync);
+		}
+	}
+	ImGui::End();
+
+	if (ImGui::Begin("Directional Light"))
+	{
+		ImGui::SetNextItemWidth(400.0f);
+
+		SimpleUtilities::Vector3f direction = graphicsEngine->GetDirectionalLightDirection();
+		if (ImGui::SliderFloat3("Direction", &direction.x, -1.0f, 1.0f, "%.03f"))
+		{
+			graphicsEngine->SetDirectionalLightDirection(direction);
+		}
 	}
 	ImGui::End();
 

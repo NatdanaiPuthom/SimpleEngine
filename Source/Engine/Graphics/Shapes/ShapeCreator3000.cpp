@@ -81,10 +81,8 @@ MeshData Shape::CreateTerrain()
 			SU::Vector3f tangentHorizontal = vertices[indexRight].position.AsVector3() - vertices[indexLeft].position.AsVector3();
 			SU::Vector3f normal = SU::Cross(tangentVertical, tangentHorizontal).GetNormalized();
 
-			vertices[index].normal = SU::Vector3f(normal.x, normal.y, normal.z).GetNormalized();
-			
-			const SU::Vector3f right(1, 0, 0);
-			vertices[index].tangent = SU::Cross(vertices[index].normal, right).GetNormalized();
+			vertices[index].normal = SU::Vector3f(normal.x, normal.y, normal.z).GetNormalized();		
+			vertices[index].tangent = SU::Cross(vertices[index].normal, SU::Vector3f(0.0f, 0.0f, 1.0f)).GetNormalized();
 			vertices[index].bitangent = SU::Cross(vertices[index].normal, vertices[index].tangent).GetNormalized();
 		}
 	}
