@@ -12,13 +12,13 @@ using Microsoft::WRL::ComPtr;
 
 struct alignas(16) Vertex
 {
-	SimpleUtilities::Vector4f position;
-	SimpleUtilities::Vector4f color;
-	SimpleUtilities::Vector3f normal;
-	SimpleUtilities::Vector3f tangent;
-	SimpleUtilities::Vector3f bitangent;
-	SimpleUtilities::Vector2f uv;
-	float padding;
+	SimpleUtilities::Vector4f position = { 0,0,0,0 };
+	SimpleUtilities::Vector4f color = { 1,1,1,1 };
+	SimpleUtilities::Vector3f normal = { 1,1,1 };
+	SimpleUtilities::Vector3f tangent = { 1,1,1 };
+	SimpleUtilities::Vector3f bitangent = { 1,1,1 };
+	SimpleUtilities::Vector2f uv = { 1,1 };
+	float padding = -1;
 };
 
 struct MeshData
@@ -37,6 +37,9 @@ public:
 	void Draw();
 public:
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
+	void SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree);
+	SimpleUtilities::Vector3f GetPosition() const;
+	SimpleUtilities::Vector3f GetRotation() const;
 public:
 	SimpleUtilities::Matrix4x4f& GetModelToWorldMatrix();
 	ComPtr<ID3D11Buffer> GetVertexBuffer();
@@ -59,5 +62,5 @@ private:
 	std::shared_ptr<Shader> myShader;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 
-	std::array<std::unique_ptr<Texture>, 6> myTextures;
+	std::array<std::unique_ptr<Texture>, 15> myTextures;
 };

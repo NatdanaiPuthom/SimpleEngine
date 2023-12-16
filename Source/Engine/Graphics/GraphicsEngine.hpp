@@ -47,16 +47,18 @@ public:
 	bool BeginFrame();
 	void EndFrame();
 
+public:
+	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aVector);
 	void SetToBackBuffer();
 	void SetVSync(const bool aShouldTurnOn);
-	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aVector);
 public:
 	ComPtr<ID3D11Device> GetDevice();
 	ComPtr<ID3D11DeviceContext> GetContext();
 	ComPtr<ID3D11ShaderResourceView> GetShaderResourceView();
+
+	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 	std::shared_ptr<Camera> GetCamera();
 	bool IsVSyncActive() const;
-	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 private:
 	void CreateViewport(const int aWidth, const int aHeight);
 	bool CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight);
@@ -67,13 +69,12 @@ private:
 	bool CreateCameraBuffer();
 	bool CreateTimeBuffer();
 	bool CreateDirectionalLightBuffer();
-
 	bool CreateStuffForImGuiImage(const int aWidth, const int aHeight);
 private:
 	void Update();
 	void LoadSettingsFromJson();
 private:
-	DirectionalLightBufferData myDirectionLightData;
+	std::shared_ptr<Camera> myCamera;
 
 	ComPtr<ID3D11Device> myDevice;
 	ComPtr<ID3D11DeviceContext> myContext;
@@ -92,11 +93,11 @@ private:
 	ComPtr<ID3D11ShaderResourceView> mySRV;
 	ComPtr<ID3D11RenderTargetView> myRTV;
 
-	std::shared_ptr<Camera> myCamera;
-
 	std::unique_ptr<ConstantBuffer> myCameraBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;
 	std::unique_ptr<ConstantBuffer> myDirectionLightBuffer;
+
+	std::unique_ptr<DirectionalLightBufferData> myDirectionLightData;
 
 	float myColor[4];
 	bool myVSync;

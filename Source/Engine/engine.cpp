@@ -124,7 +124,7 @@ bool Engine::BeginFrame()
 
 void Engine::EndFrame()
 {
-	myGraphicsEngine->SetToBackBuffer();
+	//myGraphicsEngine->SetToBackBuffer(); //Disabled for now due to issue with ImGui::Image rendering
 
 	myImGuiInterface->EndFrame();
 	myGraphicsEngine->EndFrame();

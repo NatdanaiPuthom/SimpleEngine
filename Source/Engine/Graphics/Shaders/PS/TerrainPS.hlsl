@@ -1,12 +1,12 @@
 #include "../Common.hlsli"
 
-Texture2D aGrassC : register(t0);
-Texture2D aRockC : register(t1);
-Texture2D aSnowC : register(t2);
+Texture2D aGrassC : register(t1);
+Texture2D aRockC : register(t2);
+Texture2D aSnowC : register(t3);
 
-Texture2D aGrassN : register(t3);
-Texture2D aSnowN : register(t4);
-Texture2D aRockN : register(t5);
+Texture2D aGrassN : register(t4);
+Texture2D aSnowN : register(t5);
+Texture2D aRockN : register(t6);
 
 PixelOutput main(PixelInputType aInput)
 {

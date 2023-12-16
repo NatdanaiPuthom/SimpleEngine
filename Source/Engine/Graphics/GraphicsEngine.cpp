@@ -12,12 +12,13 @@ GraphicsEngine::GraphicsEngine()
 	, myCameraBuffer(std::make_unique<ConstantBuffer>())
 	, myTimeBuffer(std::make_unique<ConstantBuffer>())
 	, myDirectionLightBuffer(std::make_unique<ConstantBuffer>())
+	, myDirectionLightData(std::make_unique<DirectionalLightBufferData>())
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
 {
-	myDirectionLightData.dir.x = 0;
-	myDirectionLightData.dir.y = -1;
-	myDirectionLightData.dir.z = 0;
+	myDirectionLightData->dir.x = 0;
+	myDirectionLightData->dir.y = -1;
+	myDirectionLightData->dir.z = 0;
 }
 
 GraphicsEngine::~GraphicsEngine()
@@ -95,9 +96,9 @@ void GraphicsEngine::Update()
 		myDirectionLightBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);*/
 
 		DirectionalLightBufferData directionLightBuffer = {};
-		directionLightBuffer.dir.x = myDirectionLightData.dir.x;
-		directionLightBuffer.dir.y = myDirectionLightData.dir.y;
-		directionLightBuffer.dir.z = myDirectionLightData.dir.z;
+		directionLightBuffer.dir.x = myDirectionLightData->dir.x;
+		directionLightBuffer.dir.y = myDirectionLightData->dir.y;
+		directionLightBuffer.dir.z = myDirectionLightData->dir.z;
 		directionLightBuffer.dir.Normalize();
 
 		myDirectionLightBuffer->Bind(3);
@@ -137,9 +138,10 @@ bool GraphicsEngine::BeginFrame()
 
 	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
-	//myContext->OMSetRenderTargets(1, myRTV.GetAddressOf(), myDepthBuffer.Get());
 
+	//myContext->OMSetRenderTargets(1, myRTV.GetAddressOf(), myDepthBuffer.Get()); //TO-DO: Fix issue with ImGui::Image colors not rendering properly and rendering overlapp above other windows
 	//myContext->ClearRenderTargetView(myRTV.Get(), myColor);
+
 	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -157,7 +159,7 @@ void GraphicsEngine::EndFrame()
 
 void GraphicsEngine::SetToBackBuffer()
 {
-	/*myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
+	/*myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get()); //Disabled for now due to ImGui::Image issue
 	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);*/
 }
 
@@ -168,7 +170,7 @@ void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
 
 void GraphicsEngine::SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aVector)
 {
-	myDirectionLightData.dir = aVector;
+	myDirectionLightData->dir = aVector;
 }
 
 ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
@@ -236,7 +238,7 @@ void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
 
 SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
 {
-	return myDirectionLightData.dir;
+	return myDirectionLightData->dir;
 }
 
 bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight)

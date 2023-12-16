@@ -36,38 +36,37 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	if (!myShader->Init(device, aPSShaderFile, aVSShaderFile))
 		return false;
 
+	if (!myTextures[0]->Init(device, "Assets/fasterthanlight.dds")) //TO-DO: Re-structure how multiple textures work
+		return false;
+
+	myTextures[0]->Bind(myGraphicsEngine->GetContext(), 0);
+
 	{ //Test
-		const bool success = myTextures[0]->Init(device, "Assets/tga/Uppgift6/Grass_c.dds");
-		if (success == false)
+		if (!myTextures[1]->Init(device, "Assets/tga/Uppgift6/Grass_c.dds"))
 			return false;
 
-		const bool success2 = myTextures[1]->Init(device, "Assets/tga/Uppgift6/Rock_c.dds");
-		if (success2 == false)
+		if (!myTextures[2]->Init(device, "Assets/tga/Uppgift6/Rock_c.dds"))
 			return false;
 
-		const bool success3 = myTextures[2]->Init(device, "Assets/tga/Uppgift6/Snow_c.dds");
-		if (success3 == false)
+		if (!myTextures[3]->Init(device, "Assets/tga/Uppgift6/Snow_c.dds"))
 			return false;
 
-		const bool success4 = myTextures[3]->Init(device, "Assets/tga/Uppgift6/Grass_n.dds");
-		if (success4 == false)
+		if (!myTextures[4]->Init(device, "Assets/tga/Uppgift6/Grass_n.dds"))
 			return false;
 
-		const bool success5 = myTextures[4]->Init(device, "Assets/tga/Uppgift6/Rock_n.dds");
-		if (success5 == false)
+		if (!myTextures[5]->Init(device, "Assets/tga/Uppgift6/Rock_n.dds"))
 			return false;
 
-		const bool success6 = myTextures[5]->Init(device, "Assets/tga/Uppgift6/Snow_n.dds");
-		if (success6 == false)
+		if (!myTextures[6]->Init(device, "Assets/tga/Uppgift6/Snow_n.dds"))
 			return false;
 
-		myTextures[0]->Bind(myGraphicsEngine->GetContext(), 0);
 		myTextures[1]->Bind(myGraphicsEngine->GetContext(), 1);
 		myTextures[2]->Bind(myGraphicsEngine->GetContext(), 2);
 
 		myTextures[3]->Bind(myGraphicsEngine->GetContext(), 3);
 		myTextures[4]->Bind(myGraphicsEngine->GetContext(), 4);
 		myTextures[5]->Bind(myGraphicsEngine->GetContext(), 5);
+		myTextures[6]->Bind(myGraphicsEngine->GetContext(), 6);
 	}
 
 	return true;
@@ -156,6 +155,21 @@ bool Mesh::CreateObjectBuffer()
 void Mesh::SetPosition(const SimpleUtilities::Vector3f& aPosition)
 {
 	myModelToWorld.SetPosition(aPosition);
+}
+
+void Mesh::SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree)
+{
+	myModelToWorld.SetLocalRotation(aRotationInDegree);
+}
+
+SimpleUtilities::Vector3f Mesh::GetPosition() const
+{
+	return myModelToWorld.GetPosition();
+}
+
+SimpleUtilities::Vector3f Mesh::GetRotation() const
+{
+	return myModelToWorld.GetRotation();
 }
 
 int Mesh::GetIndexCount()

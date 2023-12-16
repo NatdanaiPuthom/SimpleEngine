@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 
 class Camera
 {
@@ -27,6 +28,7 @@ public:
 	SimpleUtilities::Matrix4x4f GetProjectionMatrix() const;
 	SimpleUtilities::Matrix4x4f GetViewMatrix() const;
 	SimpleUtilities::Vector3f GetPosition() const;
+	SimpleUtilities::Vector3f GetRotation() const;
 	SimpleUtilities::Vector3f GetForward() const;
 	SimpleUtilities::Vector3f GetUp() const;
 	SimpleUtilities::Vector3f GetRight() const;

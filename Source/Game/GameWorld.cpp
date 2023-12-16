@@ -18,15 +18,30 @@ GameWorld::~GameWorld()
 
 void GameWorld::Init()
 {
-	MeshData meshData = Shape::CreateTerrain();
-	std::unique_ptr<Mesh>  mesh = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> terrain = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
 
-	if (!mesh->Init(meshData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
-		assert(false && "Failed to Init Mesh");
+	MeshData terrainData = Shape::CreateTerrain();
+	MeshData pyramidData = Shape::CreatePyramid();
+	MeshData cubeData = Shape::CreateCube();
 
-	mesh->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
+	if (!terrain->Init(terrainData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
+		assert(false && "Failed to Init Terrain");
 
-	myRenderer->AddMesh(std::move(mesh));
+	if (!pyramid->Init(pyramidData))
+		assert(false && "Failed to Pyramid");
+
+	if (!cube->Init(cubeData))
+		assert(false && "Failed to Cube");
+
+	terrain->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
+	pyramid->SetPosition(SimpleUtilities::Vector3f(-5, 0, 0));
+	cube->SetPosition(SimpleUtilities::Vector3f(-5, 0, 5));
+
+	myRenderer->AddMesh(std::move(terrain));
+	myRenderer->AddMesh(std::move(pyramid));
+	myRenderer->AddMesh(std::move(cube));
 }
 
 void GameWorld::Update()

@@ -11,6 +11,8 @@ namespace
 	int localFramesPerSecond = 0;
 	int localFrames = 0;
 
+	int localDrawCalls = 0;
+
 	bool localGameIsRunning = true;
 }
 

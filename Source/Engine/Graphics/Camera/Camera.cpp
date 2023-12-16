@@ -21,11 +21,12 @@ void Camera::Update(const float aDeltaTime)
 {
 	if (myInput->GetAKeyIsPressed() || myFreeFly)
 	{
-		const SimpleUtilities::Vector3f currentRotation = myModelToWorldTransform.GetRotation();
+		const SimpleUtilities::Vector3f currentPosition = GetPosition();
+		const SimpleUtilities::Vector3f currentRotation = GetRotation();
 
 		SimpleUtilities::Vector3f forward;
-		SimpleUtilities::Vector3f targetPosition(myModelToWorldTransform(4, 1), myModelToWorldTransform(4, 2), myModelToWorldTransform(4, 3));
-		SimpleUtilities::Vector3f targetRotation = currentRotation;
+		SimpleUtilities::Vector3f targetPosition(currentPosition);
+		SimpleUtilities::Vector3f targetRotation(currentRotation);
 
 		float speed = myMoveSpeed;
 
@@ -45,7 +46,7 @@ void Camera::Update(const float aDeltaTime)
 				myFreeFly = false;
 			}
 		}
-	
+
 		if (myInput->IsHold('W'))
 		{
 			forward = myForward * speed * aDeltaTime;
@@ -117,16 +118,13 @@ void Camera::Update(const float aDeltaTime)
 
 			SetCursorPos(myCapturedPosition.x, myCapturedPosition.y);
 
+			//TO-DO: Fix hacky rotations
+			//TO-DO: Fix mouse rotation speed is different with VSync vs without VSync
 			SimpleUtilities::Vector2f mouseDelta = myInput->GetMouseDelta();
 			mouseDelta *= myRotateSpeed * 0.3f * aDeltaTime;
 
-			const float minimumDelta = 0.1f; //For shaky mouse/hands
-
-			if (std::abs(mouseDelta.x) > minimumDelta || std::abs(mouseDelta.y) > minimumDelta)
-			{
-				targetRotation.x += mouseDelta.y;
-				targetRotation.y += mouseDelta.x;
-			}
+			targetRotation.x += mouseDelta.y;
+			targetRotation.y += mouseDelta.x;
 		}
 		else
 		{
@@ -138,7 +136,9 @@ void Camera::Update(const float aDeltaTime)
 		}
 
 		targetRotation = SimpleUtilities::SmoothStep(currentRotation, targetRotation, 0.3f);
-		myModelToWorldTransform.SetLocalRotation(targetRotation);
+		targetPosition = SimpleUtilities::SmoothStep(currentPosition, targetPosition, 0.3f);
+
+		SetRotation(targetRotation);
 		SetPosition(targetPosition);
 	}
 }
@@ -290,7 +290,12 @@ SimpleUtilities::Matrix4x4f Camera::GetViewMatrix() const
 
 SimpleUtilities::Vector3f Camera::GetPosition() const
 {
-	return myModelToWorldTransform.GetPosition();;
+	return myModelToWorldTransform.GetPosition();
+}
+
+SimpleUtilities::Vector3f Camera::GetRotation() const
+{
+	return myModelToWorldTransform.GetRotation();
 }
 
 float Camera::GetMoveSpeed() const
