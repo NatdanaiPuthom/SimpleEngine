@@ -33,8 +33,9 @@ struct alignas(16) TimeBufferData
 
 struct alignas(16) DirectionalLightBufferData
 {
-	SimpleUtilities::Vector3f dir;
-	float padding;
+	SimpleUtilities::Vector3f direction;
+	SimpleUtilities::Vector3f color;
+	float padding[2];
 };
 
 class GraphicsEngine
@@ -48,7 +49,8 @@ public:
 	void EndFrame();
 
 public:
-	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aVector);
+	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection);
+	void SetDirectionalLightColor(const SimpleUtilities::Vector3f& aColor);
 	void SetToBackBuffer();
 	void SetVSync(const bool aShouldTurnOn);
 public:
@@ -57,6 +59,7 @@ public:
 	ComPtr<ID3D11ShaderResourceView> GetShaderResourceView();
 
 	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
+	SimpleUtilities::Vector3f GetDirectionalLightColor() const;
 	std::shared_ptr<Camera> GetCamera();
 	bool IsVSyncActive() const;
 private:

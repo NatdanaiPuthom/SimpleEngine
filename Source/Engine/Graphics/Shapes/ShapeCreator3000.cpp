@@ -66,6 +66,11 @@ MeshData Shape::CreateTerrain()
 		}
 	}
 
+	for (size_t i = 0; i < vertices.size(); ++i)
+	{
+
+	}
+
 	for (unsigned int y = 1; y < gridSize; ++y)
 	{
 		for (unsigned int x = 1; x < gridSize; ++x)
@@ -77,9 +82,9 @@ MeshData Shape::CreateTerrain()
 			const unsigned int indexRight = index + 1;
 			const unsigned int indexLeft = index - 1;
 
-			SU::Vector3f tangentVertical = vertices[indexUp].position.AsVector3() - vertices[indexDown].position.AsVector3();
+			SU::Vector3f tangentVertical = vertices[indexDown].position.AsVector3() - vertices[indexUp].position.AsVector3();
 			SU::Vector3f tangentHorizontal = vertices[indexRight].position.AsVector3() - vertices[indexLeft].position.AsVector3();
-			SU::Vector3f normal = SU::Cross(tangentVertical, tangentHorizontal).GetNormalized();
+			SU::Vector3f normal = SU::Cross(tangentHorizontal, tangentVertical).GetNormalized();
 
 			vertices[index].normal = SU::Vector3f(normal.x, normal.y, normal.z).GetNormalized();
 			vertices[index].tangent = SU::Cross(vertices[index].normal, SU::Vector3f(0.0f, 0.0f, 1.0f)).GetNormalized();
@@ -256,6 +261,133 @@ MeshData Shape::CreateCube()
 	Vertex down_topRight;
 	down_topRight.position = SU::Vector4f(0.5f, -0.5f, -0.5f, 1.0f);
 	down_topRight.uv = SU::Vector2f(1, 1);
+
+	std::vector<Vertex> vertices =
+	{
+		north_bottomLeft, north_topLeft, north_topRight, north_bottomRight,
+		west_bottomLeft, west_topLeft, west_topRight, west_bottomRight,
+		south_bottomLeft, south_topLeft, south_topRight, south_bottomRight,
+		east_bottomLeft, east_topLeft, east_topRight, east_bottomRight,
+		up_bottomLeft, up_topLeft, up_topRight, up_bottomRight,
+		down_bottomLeft, down_topLeft, down_topRight, down_bottomRight
+	};
+
+	std::vector<unsigned int> indices =
+	{
+		0, 1, 2,
+		0, 2, 3,
+		4, 5, 6,
+		4, 6, 7,
+		8, 9, 10,
+		8, 10, 11,
+		12, 13, 14,
+		12, 14, 15,
+		16, 17, 18,
+		16, 18, 19,
+		20, 21, 22,
+		20, 22, 23
+	};
+
+	return MeshData(vertices, indices);
+}
+
+MeshData Shape::CreateDirectionalLight()
+{
+	Vertex north_bottomLeft;
+	north_bottomLeft.color = { 1,0,0,1 };
+	north_bottomLeft.position = SU::Vector4f(0.5f, -0.5f, 0.5f, 1.0f);
+
+	Vertex north_bottomRight;
+	north_bottomRight.color = { 1,0,0,1 };
+	north_bottomRight.position = SU::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f);
+
+	Vertex north_topLeft;
+	north_topLeft.color = { 1,0,0,1 };
+	north_topLeft.position = SU::Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+
+	Vertex north_topRight;
+	north_topRight.color = { 1,0,0,1 };
+	north_topRight.position = SU::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f);
+
+	Vertex west_bottomLeft;
+	west_bottomLeft.color = { 0,1,0,1 };
+	west_bottomLeft.position = SU::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f);
+
+	Vertex west_bottomRight;
+	west_bottomRight.color = { 0,1,0,1 };
+	west_bottomRight.position = SU::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f);
+
+	Vertex west_topLeft;
+	west_topLeft.color = { 0,1,0,1 };
+	west_topLeft.position = SU::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f);
+
+	Vertex west_topRight;
+	west_topRight.color = { 0,1,0,1 };
+	west_topRight.position = SU::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f);
+
+	Vertex south_bottomLeft;
+	south_bottomLeft.color = { 0,0,1,1 };
+	south_bottomLeft.position = SU::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f);
+
+	Vertex south_bottomRight;
+	south_bottomRight.color = { 0,0,1,1 };
+	south_bottomRight.position = SU::Vector4f(0.5f, -0.5f, -0.5f, 1.0f);
+
+	Vertex south_topLeft;
+	south_topLeft.color = { 0,0,1,1 };
+	south_topLeft.position = SU::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f);
+
+	Vertex south_topRight;
+	south_topRight.color = { 0,0,1,1 };
+	south_topRight.position = SU::Vector4f(0.5f, 0.5f, -0.5f, 1.0f);
+
+	Vertex east_bottomLeft;
+	east_bottomLeft.color = { 0,1,1,1 };
+	east_bottomLeft.position = SU::Vector4f(0.5f, -0.5f, -0.5f, 1.0f);
+
+	Vertex east_bottomRight;
+	east_bottomRight.color = { 0,1,1,1 };
+	east_bottomRight.position = SU::Vector4f(0.5f, -0.5f, 0.5f, 1.0f);
+
+	Vertex east_topLeft;
+	east_topLeft.color = { 0,1,1,1 };
+	east_topLeft.position = SU::Vector4f(0.5f, 0.5f, -0.5f, 1.0f);
+
+	Vertex east_topRight;
+	east_topRight.color = { 0,1,1,1 };
+	east_topRight.position = SU::Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+
+	Vertex up_bottomLeft;
+	up_bottomLeft.color = { 1,1,1,1 };
+	up_bottomLeft.position = SU::Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+
+	Vertex up_bottomRight;
+	up_bottomLeft.color = { 1,1,1,1 };
+	up_bottomRight.position = SU::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f);
+
+	Vertex up_topLeft;
+	up_topLeft.color = { 1,1,1,1 };
+	up_topLeft.position = SU::Vector4f(0.5f, 0.5f, -0.5f, 1.0f);
+
+	Vertex up_topRight;
+	up_topLeft.color = { 1,1,1,1 };
+	up_topRight.position = SU::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f);
+
+	Vertex down_bottomLeft;
+	down_bottomLeft.color = { 0,0,0,1 };
+	down_bottomLeft.position = SU::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f);
+
+	Vertex down_bottomRight;
+	down_bottomRight.color = { 0,0,0,1 };
+	down_bottomRight.position = SU::Vector4f(0.5f, -0.5f, 0.5f, 1.0f);
+
+	Vertex down_topLeft;
+	down_topLeft.color = { 0,0,0,1 };
+	down_topLeft.position = SU::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f);
+
+	Vertex down_topRight;
+	down_topRight.color = { 0,0,0,1 };
+	down_topRight.position = SU::Vector4f(0.5f, -0.5f, -0.5f, 1.0f);
 
 	std::vector<Vertex> vertices =
 	{

@@ -60,6 +60,9 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 		if (!myTextures[6]->Init(device, "Assets/tga/Uppgift6/Snow_n.dds"))
 			return false;
 
+		if (!myTextures[7]->Init(device, "Assets/tga/Uppgift6/testnormal.dds"))
+			return false;
+
 		myTextures[1]->Bind(myGraphicsEngine->GetContext(), 1);
 		myTextures[2]->Bind(myGraphicsEngine->GetContext(), 2);
 
@@ -67,6 +70,8 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 		myTextures[4]->Bind(myGraphicsEngine->GetContext(), 4);
 		myTextures[5]->Bind(myGraphicsEngine->GetContext(), 5);
 		myTextures[6]->Bind(myGraphicsEngine->GetContext(), 6);
+
+		myTextures[7]->Bind(myGraphicsEngine->GetContext(), 7);
 	}
 
 	return true;

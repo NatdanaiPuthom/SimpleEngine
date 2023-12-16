@@ -21,10 +21,12 @@ void GameWorld::Init()
 	std::unique_ptr<Mesh> terrain = std::make_unique<Mesh>();
 	std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
 	std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> directionalLight = std::make_unique<Mesh>();
 
 	MeshData terrainData = Shape::CreateTerrain();
 	MeshData pyramidData = Shape::CreatePyramid();
 	MeshData cubeData = Shape::CreateCube();
+	MeshData directionalLightData = Shape::CreateDirectionalLight();
 
 	if (!terrain->Init(terrainData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
 		assert(false && "Failed to Init Terrain");
@@ -35,13 +37,18 @@ void GameWorld::Init()
 	if (!cube->Init(cubeData))
 		assert(false && "Failed to Cube");
 
+	if (!directionalLight->Init(directionalLightData))
+		assert(false && "Failed to Directional Light");
+
 	terrain->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
 	pyramid->SetPosition(SimpleUtilities::Vector3f(-5, 0, 0));
 	cube->SetPosition(SimpleUtilities::Vector3f(-5, 0, 5));
+	directionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
 
 	myRenderer->AddMesh(std::move(terrain));
 	myRenderer->AddMesh(std::move(pyramid));
 	myRenderer->AddMesh(std::move(cube));
+	myRenderer->AddMesh(std::move(directionalLight));
 }
 
 void GameWorld::Update()
@@ -61,19 +68,20 @@ void GameWorld::Render()
 	{
 		ImGui::Text("Movements    - WASD");
 		ImGui::SameLine();
-		ImGui::Dummy(ImVec2(200, 0));
+		ImGui::Dummy(ImVec2(100, 0));
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100.0f);
 
 		float speed = graphicsEngine->GetCamera()->GetMoveSpeed();
-		if (ImGui::SliderFloat("Speed", &speed, 0, 100, "%0.2f"))
+		if (ImGui::SliderFloat("MoveSpeed", &speed, 0, 100, "%0.2f"))
 		{
 			graphicsEngine->GetCamera()->SetMoveSpeed(speed);
 		}
 
 		ImGui::Text("FreeFly      - TAB");
+		ImGui::Text("Speedx3      - Hold Shift");
 		ImGui::Text("Fly Up       - SPACE");
-		ImGui::Text("Fly Down     - Ctrl + SPACE");
+		ImGui::Text("Fly Down     - Hold Ctrl + SPACE");
 		ImGui::Text("Rotate Left  - E");
 		ImGui::Text("Rotate Right - Q");
 		ImGui::Text("Rotate Up    - C");
@@ -97,16 +105,22 @@ void GameWorld::Render()
 	if (ImGui::Begin("Directional Light"))
 	{
 		ImGui::SetNextItemWidth(400.0f);
-
 		SimpleUtilities::Vector3f direction = graphicsEngine->GetDirectionalLightDirection();
 		if (ImGui::SliderFloat3("Direction", &direction.x, -1.0f, 1.0f, "%.03f"))
 		{
 			graphicsEngine->SetDirectionalLightDirection(direction);
 		}
+
+		ImGui::SetNextItemWidth(400.0f);
+		SimpleUtilities::Vector3f color = graphicsEngine->GetDirectionalLightColor();
+		if (ImGui::SliderFloat3("Color", &color.x, 0.0f, 1.0f, "%.03f"))
+		{
+			graphicsEngine->SetDirectionalLightColor(color);
+		}
 	}
 	ImGui::End();
 
-	/*if (ImGui::Begin("Scene"))
+	/*if (ImGui::Begin("Scene")) //Disabled due to issue with ImGui::Image rendering
 	{
 		ImVec2 size(1280, 720);
 		const ImTextureID textureID = graphicsEngine->GetShaderResourceView().Get();

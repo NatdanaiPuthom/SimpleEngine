@@ -16,9 +16,10 @@ GraphicsEngine::GraphicsEngine()
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
 {
-	myDirectionLightData->dir.x = 0;
-	myDirectionLightData->dir.y = -1;
-	myDirectionLightData->dir.z = 0;
+	myDirectionLightData->direction.x = 0;
+	myDirectionLightData->direction.y = -1;
+	myDirectionLightData->direction.z = 0;
+	myDirectionLightData->color = { 1,1,1 };
 }
 
 GraphicsEngine::~GraphicsEngine()
@@ -81,25 +82,13 @@ void GraphicsEngine::Update()
 		myTimeBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 	}
 
-	{ //Day & Night Cycle
-		/*DirectionalLightBufferData directionLightBuffer = {};
-		const float cycleDuration = 2;
-		const float angularVelocity = 2 * 3.14f / cycleDuration;
-		const float elevationAngle = 0.5f * sin(angularVelocity * static_cast<float>(SimplyGlobal::GetTotalTime()) + cycleDuration);
-
-		directionLightBuffer.dir.x = cos(elevationAngle);
-		directionLightBuffer.dir.y = sin(elevationAngle);
-		directionLightBuffer.dir.z = 0;
-		directionLightBuffer.dir.Normalize();
-
-		myDirectionLightBuffer->Bind(3);
-		myDirectionLightBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);*/
-
+	{ 
 		DirectionalLightBufferData directionLightBuffer = {};
-		directionLightBuffer.dir.x = myDirectionLightData->dir.x;
-		directionLightBuffer.dir.y = myDirectionLightData->dir.y;
-		directionLightBuffer.dir.z = myDirectionLightData->dir.z;
-		directionLightBuffer.dir.Normalize();
+		directionLightBuffer.direction.x = myDirectionLightData->direction.x;
+		directionLightBuffer.direction.y = myDirectionLightData->direction.y;
+		directionLightBuffer.direction.z = myDirectionLightData->direction.z;
+		directionLightBuffer.color = myDirectionLightData->color;
+		directionLightBuffer.direction.Normalize();
 
 		myDirectionLightBuffer->Bind(3);
 		myDirectionLightBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);
@@ -168,9 +157,14 @@ void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
 	myVSync = aShouldTurnOn;
 }
 
-void GraphicsEngine::SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aVector)
+void GraphicsEngine::SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection)
 {
-	myDirectionLightData->dir = aVector;
+	myDirectionLightData->direction = aDirection;
+}
+
+void GraphicsEngine::SetDirectionalLightColor(const SimpleUtilities::Vector3f& aColor)
+{
+	myDirectionLightData->color = aColor;
 }
 
 ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
@@ -238,7 +232,12 @@ void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
 
 SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
 {
-	return myDirectionLightData->dir;
+	return myDirectionLightData->direction;
+}
+
+SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightColor() const
+{
+	return myDirectionLightData->color;
 }
 
 bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight)
@@ -247,7 +246,7 @@ bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, cons
 	swapChainDesc.BufferCount = 2;
 	swapChainDesc.BufferDesc.Width = aWidth;
 	swapChainDesc.BufferDesc.Height = aHeight;
-	//swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; //TO-DO: Make this looks good
+	//swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; //TO-DO: I don't know but everything is extra bright
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;

@@ -15,13 +15,12 @@ cbuffer ObjectBuffer : register(b1)
 cbuffer TimeBuffer : register(b2)
 {
     float elapsedTime;
-    float3 timePadding;
 }
 
 cbuffer DirectionLightBuffer : register(b3)
 {
-    float3 directionLight;
-    float directionLightPadding;
+    float3 directionLightDirection;
+    float3 directionalLightColor;
 }
 
 struct PixelOutput

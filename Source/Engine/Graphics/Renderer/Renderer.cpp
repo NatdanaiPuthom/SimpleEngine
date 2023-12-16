@@ -16,10 +16,20 @@ void Renderer::AddMesh(std::unique_ptr<Mesh> aMesh)
 
 void Renderer::Render()
 {
-	{ //Test
-		SimpleUtilities::Vector3f rotation = myMeshes[2]->GetRotation();
-		rotation.y += 10 * SimplyGlobal::GetDeltaTime();
-		myMeshes[2]->SetRotation(rotation);
+	{ //Test Rotation Over Time
+		//Pyramid
+		SimpleUtilities::Vector3f pyramidRotation = myMeshes[1]->GetRotation();
+		pyramidRotation.y += -10 * SimplyGlobal::GetDeltaTime();
+		myMeshes[1]->SetRotation(pyramidRotation);
+
+		//Cube
+		SimpleUtilities::Vector3f cubeRotation = myMeshes[2]->GetRotation();
+		cubeRotation.y += 10 * SimplyGlobal::GetDeltaTime();
+		myMeshes[2]->SetRotation(cubeRotation);
+
+		//Directional Light test
+		SimpleUtilities::Vector3f directionalLight = SimplyGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
+		myMeshes[3]->SetRotation(directionalLight);
 	}
 
 	for (const auto& mesh : myMeshes)
