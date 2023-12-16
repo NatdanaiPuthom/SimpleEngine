@@ -81,7 +81,7 @@ MeshData Shape::CreateTerrain()
 			SU::Vector3f tangentHorizontal = vertices[indexRight].position.AsVector3() - vertices[indexLeft].position.AsVector3();
 			SU::Vector3f normal = SU::Cross(tangentVertical, tangentHorizontal).GetNormalized();
 
-			vertices[index].normal = SU::Vector3f(normal.x, normal.y, normal.z).GetNormalized();		
+			vertices[index].normal = SU::Vector3f(normal.x, normal.y, normal.z).GetNormalized();
 			vertices[index].tangent = SU::Cross(vertices[index].normal, SU::Vector3f(0.0f, 0.0f, 1.0f)).GetNormalized();
 			vertices[index].bitangent = SU::Cross(vertices[index].normal, vertices[index].tangent).GetNormalized();
 		}
@@ -92,42 +92,68 @@ MeshData Shape::CreateTerrain()
 
 MeshData Shape::CreatePyramid()
 {
-	Vertex southWest;
-	southWest.position = SU::Vector4f(-1.0f, -1.0f, -1.0f, 1);
-	southWest.uv = SU::Vector2f(0.0f, 0.0f);
+	Vertex south_West;
+	south_West.position = SU::Vector4f(-1.0f, -1.0f, -1.0f, 1);
+	south_West.uv = SU::Vector2f(0.0f, 0.0f);
 
-	Vertex southEast;
-	southEast.position = SU::Vector4f(1.0f, -1.0f, -1.0f, 1);
-	southEast.uv = SU::Vector2f(1.0f, 0.0f);
+	Vertex south_East;
+	south_East.position = SU::Vector4f(1.0f, -1.0f, -1.0f, 1);
+	south_East.uv = SU::Vector2f(1.0f, 0.0f);
 
-	Vertex northEast;
-	northEast.position = SU::Vector4f(1.0f, -1.0f, 1.0f, 1);
-	northEast.uv = SU::Vector2f(1.0f, 1.0f);
+	Vertex south_Top;
+	south_Top.position = SU::Vector4f(0.0f, 1.0f, 0.0f, 1);
+	south_Top.uv = SU::Vector2f(0.0f, 1.0f);
 
-	Vertex northWest;
-	northWest.position = SU::Vector4f(-1.0f, -1.0f, 1.0f, 1);
-	northWest.uv = SU::Vector2f(0.0f, 1.0f);
+	Vertex east_West;
+	east_West.position = SU::Vector4f(1.0f, -1.0f, -1.0f, 1);
+	east_West.uv = SU::Vector2f(0.0f, 0.0f);
 
-	Vertex top;
-	top.position = SU::Vector4f(0.0f, 1.0f, 0.0f, 1);
-	top.uv = SU::Vector2f(0.5f, 0.5f);
+	Vertex east_East;
+	east_East.position = SU::Vector4f(1.0f, -1.0f, 1.0f, 1);
+	east_East.uv = SU::Vector2f(1.0f, 0.0f);
+
+	Vertex east_Top;
+	east_Top.position = SU::Vector4f(0.0f, 1.0f, 0.0f, 1);
+	east_Top.uv = SU::Vector2f(0.0f, 1.0f);
+
+	Vertex north_West;
+	north_West.position = SU::Vector4f(-1.0f, -1.0f, 1.0f, 1);
+	north_West.uv = SU::Vector2f(0.0f, 0.0f);
+
+	Vertex north_East;
+	north_East.position = SU::Vector4f(1.0f, -1.0f, 1.0f, 1);
+	north_East.uv = SU::Vector2f(1.0f, 0.0f);
+
+	Vertex north_Top;
+	north_Top.position = SU::Vector4f(0.0f, 1.0f, 0.0f, 1);
+	north_Top.uv = SU::Vector2f(0.0f, 1.0f);
+
+	Vertex west_West;
+	west_West.position = SU::Vector4f(-1.0f, -1.0f, 1.0f, 1);
+	west_West.uv = SU::Vector2f(0.0f, 0.0f);
+
+	Vertex west_East;
+	west_East.position = SU::Vector4f(-1.0f, -1.0f, -1.0f, 1);
+	west_East.uv = SU::Vector2f(1.0f, 0.0f);
+
+	Vertex west_Top;
+	west_Top.position = SU::Vector4f(0.0f, 1.0f, 0.0f, 1);
+	west_Top.uv = SU::Vector2f(0.0f, 1.0f);
 
 	std::vector<Vertex> vertices =
 	{
-		southWest, southEast, northEast, northWest, top
+		south_West, south_Top, south_East,
+		east_West, east_Top, east_East,
+		north_East, north_Top, north_West,
+		west_West, west_Top, west_East
 	};
 
 	std::vector<unsigned int> indices =
 	{
-		// Base
-		0, 1, 2,
-		2, 3, 0,
-
-		// Sides
-		0, 4, 1,
-		1, 4, 2,
-		2, 4, 3,
-		3, 4, 0
+		0,1,2,
+		3,4,5,
+		6,7,8,
+		9,10,11
 	};
 
 	return MeshData(vertices, indices);
@@ -135,110 +161,110 @@ MeshData Shape::CreatePyramid()
 
 MeshData Shape::CreateCube()
 {
-	Vertex north1;
-	north1.position = SU::Vector4f(0.5f, -0.5f, 0.5f, 1.0f);
-	north1.uv = SU::Vector2f(0, 1);
+	Vertex north_bottomLeft;
+	north_bottomLeft.position = SU::Vector4f(0.5f, -0.5f, 0.5f, 1.0f);
+	north_bottomLeft.uv = SU::Vector2f(0, 0);
 
-	Vertex north2;
-	north2.position = SU::Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
-	north2.uv = SU::Vector2f(0, 0);
+	Vertex north_bottomRight;
+	north_bottomRight.position = SU::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f);
+	north_bottomRight.uv = SU::Vector2f(1, 0);
 
-	Vertex north3;
-	north3.position = SU::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f);
-	north3.uv = SU::Vector2f(1, 0);
+	Vertex north_topLeft;
+	north_topLeft.position = SU::Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+	north_topLeft.uv = SU::Vector2f(0, 1);
 
-	Vertex north4;
-	north4.position = SU::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f);
-	north4.uv = SU::Vector2f(1, 1);
+	Vertex north_topRight;
+	north_topRight.position = SU::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f);
+	north_topRight.uv = SU::Vector2f(1, 1);
 
-	Vertex west1;
-	west1.position = SU::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f);
-	west1.uv = SU::Vector2f(0, 1);
+	Vertex west_bottomLeft;
+	west_bottomLeft.position = SU::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f);
+	west_bottomLeft.uv = SU::Vector2f(0, 0);
 
-	Vertex west2;
-	west2.position = SU::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f);
-	west2.uv = SU::Vector2f(0, 0);
+	Vertex west_bottomRight;
+	west_bottomRight.position = SU::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f);
+	west_bottomRight.uv = SU::Vector2f(1, 0);
 
-	Vertex west3;
-	west3.position = SU::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f);
-	west3.uv = SU::Vector2f(1, 0);
+	Vertex west_topLeft;
+	west_topLeft.position = SU::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f);
+	west_topLeft.uv = SU::Vector2f(0, 1);
 
-	Vertex west4;
-	west4.position = SU::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f);
-	west4.uv = SU::Vector2f(1, 1);
+	Vertex west_topRight;
+	west_topRight.position = SU::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f);
+	west_topRight.uv = SU::Vector2f(1, 1);
 
-	Vertex south1;
-	south1.position = SU::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f);
-	south1.uv = SU::Vector2f(0, 1);
+	Vertex south_bottomLeft;
+	south_bottomLeft.position = SU::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f);
+	south_bottomLeft.uv = SU::Vector2f(0, 0);
 
-	Vertex south2;
-	south2.position = SU::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f);
-	south2.uv = SU::Vector2f(0, 0);
+	Vertex south_bottomRight;
+	south_bottomRight.position = SU::Vector4f(0.5f, -0.5f, -0.5f, 1.0f);
+	south_bottomRight.uv = SU::Vector2f(1, 0);
 
-	Vertex south3;
-	south3.position = SU::Vector4f(0.5f, 0.5f, -0.5f, 1.0f);
-	south3.uv = SU::Vector2f(1, 0);
+	Vertex south_topLeft;
+	south_topLeft.position = SU::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f);
+	south_topLeft.uv = SU::Vector2f(0, 1);
 
-	Vertex south4;
-	south4.position = SU::Vector4f(0.5f, -0.5f, -0.5f, 1.0f);
-	south4.uv = SU::Vector2f(1, 1);
+	Vertex south_topRight;
+	south_topRight.position = SU::Vector4f(0.5f, 0.5f, -0.5f, 1.0f);
+	south_topRight.uv = SU::Vector2f(1, 1);
 
-	Vertex east1;
-	east1.position = SU::Vector4f(0.5f, -0.5f, -0.5f, 1.0f);
-	east1.uv = SU::Vector2f(0, 1);
+	Vertex east_bottomLeft;
+	east_bottomLeft.position = SU::Vector4f(0.5f, -0.5f, -0.5f, 1.0f);
+	east_bottomLeft.uv = SU::Vector2f(0, 0);
 
-	Vertex east2;
-	east2.position = SU::Vector4f(0.5f, 0.5f, -0.5f, 1.0f);
-	east2.uv = SU::Vector2f(0, 0);
+	Vertex east_bottomRight;
+	east_bottomRight.position = SU::Vector4f(0.5f, -0.5f, 0.5f, 1.0f);
+	east_bottomRight.uv = SU::Vector2f(1, 0);
 
-	Vertex east3;
-	east3.position = SU::Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
-	east3.uv = SU::Vector2f(1, 0);
+	Vertex east_topLeft;
+	east_topLeft.position = SU::Vector4f(0.5f, 0.5f, -0.5f, 1.0f);
+	east_topLeft.uv = SU::Vector2f(0, 1);
 
-	Vertex east4;
-	east4.position = SU::Vector4f(0.5f, -0.5f, 0.5f, 1.0f);
-	east4.uv = SU::Vector2f(1, 1);
+	Vertex east_topRight;
+	east_topRight.position = SU::Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+	east_topRight.uv = SU::Vector2f(1, 1);
 
-	Vertex up1;
-	up1.position = SU::Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
-	up1.uv = SU::Vector2f(0, 1);
+	Vertex up_bottomLeft;
+	up_bottomLeft.position = SU::Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+	up_bottomLeft.uv = SU::Vector2f(0, 0);
 
-	Vertex up2;
-	up2.position = SU::Vector4f(0.5f, 0.5f, -0.5f, 1.0f);
-	up2.uv = SU::Vector2f(0, 0);
+	Vertex up_bottomRight;
+	up_bottomRight.position = SU::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f);
+	up_bottomRight.uv = SU::Vector2f(1, 0);
 
-	Vertex up3;
-	up3.position = SU::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f);
-	up3.uv = SU::Vector2f(1, 0);
+	Vertex up_topLeft;
+	up_topLeft.position = SU::Vector4f(0.5f, 0.5f, -0.5f, 1.0f);
+	up_topLeft.uv = SU::Vector2f(0, 1);
 
-	Vertex up4;
-	up4.position = SU::Vector4f(-0.5f, 0.5f, 0.5f, 1.0f);
-	up4.uv = SU::Vector2f(1, 1);
+	Vertex up_topRight;
+	up_topRight.position = SU::Vector4f(-0.5f, 0.5f, -0.5f, 1.0f);
+	up_topRight.uv = SU::Vector2f(1, 1);
 
-	Vertex down1;
-	down1.position = SU::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f);
-	down1.uv = SU::Vector2f(0, 1);
+	Vertex down_bottomLeft;
+	down_bottomLeft.position = SU::Vector4f(-0.5f, -0.5f, 0.5f, 1.0f);
+	down_bottomLeft.uv = SU::Vector2f(0, 0);
 
-	Vertex down2;
-	down2.position = SU::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f);
-	down2.uv = SU::Vector2f(0, 0);
+	Vertex down_bottomRight;
+	down_bottomRight.position = SU::Vector4f(0.5f, -0.5f, 0.5f, 1.0f);
+	down_bottomRight.uv = SU::Vector2f(1, 0);
 
-	Vertex down3;
-	down3.position = SU::Vector4f(0.5f, -0.5f, -0.5f, 1.0f);
-	down3.uv = SU::Vector2f(1, 0);
+	Vertex down_topLeft;
+	down_topLeft.position = SU::Vector4f(-0.5f, -0.5f, -0.5f, 1.0f);
+	down_topLeft.uv = SU::Vector2f(0, 1);
 
-	Vertex down4;
-	down4.position = SU::Vector4f(0.5f, -0.5f, 0.5f, 1.0f);
-	down4.uv = SU::Vector2f(1, 1);
+	Vertex down_topRight;
+	down_topRight.position = SU::Vector4f(0.5f, -0.5f, -0.5f, 1.0f);
+	down_topRight.uv = SU::Vector2f(1, 1);
 
 	std::vector<Vertex> vertices =
 	{
-		north1, north2, north3, north4, 
-		west1, west2, west3, west4, 
-		south1, south2, south3, south4, 
-		east1, east2, east3, east4,
-		up1, up2, up3, up4,
-		down1, down2, down3, down4
+		north_bottomLeft, north_topLeft, north_topRight, north_bottomRight,
+		west_bottomLeft, west_topLeft, west_topRight, west_bottomRight,
+		south_bottomLeft, south_topLeft, south_topRight, south_bottomRight,
+		east_bottomLeft, east_topLeft, east_topRight, east_bottomRight,
+		up_bottomLeft, up_topLeft, up_topRight, up_bottomRight,
+		down_bottomLeft, down_topLeft, down_topRight, down_bottomRight
 	};
 
 	std::vector<unsigned int> indices =

@@ -7,7 +7,7 @@ Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, c
 	, myFoV(aFoV)
 	, myFarPlane(aFarPlane)
 	, myNearPlane(aNearPlane)
-	, myMoveSpeed(3)
+	, myMoveSpeed(10)
 	, myRotateSpeed(90)
 	, myInput(&SimpleUtilities::InputManager::GetInstance())
 	, myFreeFly(false)

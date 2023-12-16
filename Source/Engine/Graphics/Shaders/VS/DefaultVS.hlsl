@@ -10,7 +10,9 @@ PixelInputType main(VertexInputType aInput)
     
     output.position = vertexClipPos;
     output.color = aInput.color;
-    output.uv = aInput.uv;
+    
+    output.uv = float2(aInput.uv.x, 1.0 - aInput.uv.y);
+    
     output.worldPosition = vertexWorldPos.xyzw;
     output.normal = aInput.normal;
     output.tangent = aInput.tangent;
