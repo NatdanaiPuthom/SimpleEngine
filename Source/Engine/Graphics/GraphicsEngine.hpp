@@ -38,6 +38,13 @@ struct alignas(16) DirectionalLightBufferData
 	float padding[2];
 };
 
+struct alignas(16) AmbientLightBufferData
+{
+	SimpleUtilities::Vector3f skyColor;
+	SimpleUtilities::Vector3f groundColor;
+	float padding[2];
+};
+
 class GraphicsEngine
 {
 public:
@@ -51,6 +58,8 @@ public:
 public:
 	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection);
 	void SetDirectionalLightColor(const SimpleUtilities::Vector3f& aColor);
+	void SetSkyColor(const SimpleUtilities::Vector3f& aColor);
+	void SetGroundColor(const SimpleUtilities::Vector3f& aColor);
 	void SetToBackBuffer();
 	void SetVSync(const bool aShouldTurnOn);
 public:
@@ -60,6 +69,8 @@ public:
 
 	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 	SimpleUtilities::Vector3f GetDirectionalLightColor() const;
+	SimpleUtilities::Vector3f GetSkyColor() const;
+	SimpleUtilities::Vector3f GetGroundColor() const;
 	std::shared_ptr<Camera> GetCamera();
 	bool IsVSyncActive() const;
 private:
@@ -72,6 +83,7 @@ private:
 	bool CreateCameraBuffer();
 	bool CreateTimeBuffer();
 	bool CreateDirectionalLightBuffer();
+	bool CreateAmbientLightBuffer();
 	bool CreateStuffForImGuiImage(const int aWidth, const int aHeight);
 private:
 	void Update();
@@ -99,8 +111,10 @@ private:
 	std::unique_ptr<ConstantBuffer> myCameraBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;
 	std::unique_ptr<ConstantBuffer> myDirectionLightBuffer;
+	std::unique_ptr<ConstantBuffer> myAmbientLightBuffer;
 
 	std::unique_ptr<DirectionalLightBufferData> myDirectionLightData;
+	std::unique_ptr<AmbientLightBufferData> myAmbientLightData;
 
 	float myColor[4];
 	bool myVSync;

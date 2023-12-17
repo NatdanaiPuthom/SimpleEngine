@@ -130,7 +130,19 @@ void GameWorld::Render()
 
 			if (ImGui::BeginTabItem("Ambient Light"))
 			{
+				ImGui::SetNextItemWidth(400.0f);
+				SimpleUtilities::Vector3f skyColor = graphicsEngine->GetSkyColor();
+				if (ImGui::SliderFloat3("SkyColor", &skyColor.x, 0.0f, 1.0f, "%0.3f"))
+				{
+					graphicsEngine->SetSkyColor(skyColor);
+				}
 
+				ImGui::SetNextItemWidth(400.0f);
+				SimpleUtilities::Vector3f groundColor = graphicsEngine->GetGroundColor();
+				if (ImGui::SliderFloat3("GroundColor", &groundColor.x, 0.0f, 1.0f, "%0.3f"))
+				{
+					graphicsEngine->SetGroundColor(groundColor);
+				}
 				ImGui::EndTabItem();
 			}
 

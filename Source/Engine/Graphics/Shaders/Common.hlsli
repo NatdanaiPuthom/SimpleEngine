@@ -23,6 +23,12 @@ cbuffer DirectionLightBuffer : register(b3)
     float3 directionalLightColor;
 }
 
+cbuffer AmbientLightBuffer : register(b4)
+{
+    float3 skyColor;
+    float3 groundColor;
+}
+
 struct PixelOutput
 {
     float4 color : SV_Target;
