@@ -31,9 +31,10 @@ PixelOutput main(PixelInputType aInput)
     normal = normalize(mul(TBN, normal));
     
     float lightIntensity = max(0.0, dot(directionLightDirection, normal));
+    float3 directional = directionalLightColor * lightIntensity;
     float3 ambient = ((0.5f + 0.5f * aInput.normal.y) * skyColor + (0.5f - 0.5f * aInput.normal.y) * groundColor);
     
-    float3 finalColor = color /** directionalLightColor*/ * ambient * lightIntensity;
+    float3 finalColor = saturate(color * (ambient + directional));
  
     output.color = float4(finalColor, 1);
     output.color.a = 1;

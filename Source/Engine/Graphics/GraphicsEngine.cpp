@@ -21,7 +21,7 @@ GraphicsEngine::GraphicsEngine()
 	myDirectionLightData->direction.x = 0;
 	myDirectionLightData->direction.y = -1;
 	myDirectionLightData->direction.z = 0;
-	myDirectionLightData->color = { 1,1,1 };
+	myDirectionLightData->color = { 0,0,0 };
 
 	myAmbientLightData->skyColor = { 1,1,1 };
 	myAmbientLightData->groundColor = { 1,1,1 };
