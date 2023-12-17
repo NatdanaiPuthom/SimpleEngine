@@ -225,7 +225,8 @@ bool GraphicsEngine::CreateStuffForImGuiImage(const int aWidth, const int aHeigh
 	texDesc.Height = aHeight;
 	texDesc.ArraySize = 1;
 	texDesc.SampleDesc.Count = 1;
-	texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	//texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
 	HRESULT result = myDevice->CreateTexture2D(&texDesc, nullptr, myTexture.GetAddressOf());
@@ -439,7 +440,10 @@ bool GraphicsEngine::CreateDirectionalLightBuffer()
 {
 	DirectionalLightBufferData directionLightBuffer =
 	{
-		SimpleUtilities::Vector3f(0,-1,0)
+		SimpleUtilities::Vector3f(0,-1,0),
+		-1,
+		SimpleUtilities::Vector3f(0,0,0),
+		-1
 	};
 
 	if (!myDirectionLightBuffer->Init(this, sizeof(DirectionalLightBufferData), &directionLightBuffer))
@@ -453,7 +457,9 @@ bool GraphicsEngine::CreateAmbientLightBuffer()
 	AmbientLightBufferData ambientLightBuffer =
 	{
 		SimpleUtilities::Vector3f(1,1,1),
-		SimpleUtilities::Vector3f(1,1,1)
+		-1,
+		SimpleUtilities::Vector3f(1,1,1),
+		-1
 	};
 
 	if (!myAmbientLightBuffer->Init(this, sizeof(AmbientLightBufferData), &ambientLightBuffer))

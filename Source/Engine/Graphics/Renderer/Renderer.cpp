@@ -24,7 +24,7 @@ void Renderer::Render()
 
 		//Cube
 		SimpleUtilities::Vector3f cubeRotation = myMeshes[2]->GetRotation();
-		cubeRotation.y += 10 * SimplyGlobal::GetDeltaTime();
+		cubeRotation.x += 10 * SimplyGlobal::GetDeltaTime();
 		myMeshes[2]->SetRotation(cubeRotation);
 
 		//Directional Light test

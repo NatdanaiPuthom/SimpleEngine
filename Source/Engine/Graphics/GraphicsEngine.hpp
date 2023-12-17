@@ -34,15 +34,19 @@ struct alignas(16) TimeBufferData
 struct alignas(16) DirectionalLightBufferData
 {
 	SimpleUtilities::Vector3f direction;
+	float padding1;
+
 	SimpleUtilities::Vector3f color;
-	float padding[2];
+	float padding2;
 };
 
 struct alignas(16) AmbientLightBufferData
 {
 	SimpleUtilities::Vector3f skyColor;
+	float padding1;
+
 	SimpleUtilities::Vector3f groundColor;
-	float padding[2];
+	float padding2;
 };
 
 class GraphicsEngine
