@@ -6,87 +6,101 @@ namespace SU = SimpleUtilities;
 
 MeshData Shape::CreateTerrain()
 {
+	const unsigned int upSampleMultiplier = 2;
+	const float vertexLength = 0.50f;
+	const float amplitude = 5.0f;
+
 	unsigned int gridSize = 12;
-	unsigned int vertexSize = gridSize + 1;
 
-	const unsigned int upSampleMultiply = 2;
+	std::vector<float> heightMap(gridSize * gridSize);
 
-	const float vertexDistance = 0.50f;
-	const float amplitude = 5.f;
-
-	std::vector<float> heightMap(vertexSize * vertexSize);
-
-	float amplitudeMultiplier = amplitude;
-	for (unsigned int i = 0; i < upSampleMultiply; i++)
 	{
-		Tga::AddNoise(heightMap, amplitudeMultiplier);
-		heightMap = Tga::Upsample2X(heightMap, vertexSize);
-		amplitudeMultiplier *= 0.25f;
-		vertexSize *= 2;
-	}
-
-	gridSize = vertexSize - 1;
-
-	std::vector<Vertex> vertices(vertexSize * vertexSize);
-	std::vector<unsigned int> indices;
-
-	for (unsigned int y = 0; y < vertexSize; ++y)
-	{
-		for (unsigned int x = 0; x < vertexSize; ++x)
+		float amplitudeMultiplier = amplitude;
+		for (unsigned int i = 0; i < upSampleMultiplier; ++i)
 		{
-			const unsigned int index = x + vertexSize * y;
-			Vertex vertex;
-			SU::Vector3f pos = SU::Vector3f(static_cast<float>(x), heightMap[index], static_cast<float>(y)) * vertexDistance;
-			vertex.position = SU::Vector4f(pos.x, pos.y, pos.z, 1.f);
-			vertex.color = SU::Vector4f(1.f, 1.f, 1.f, 1.f);
-			vertex.uv = { static_cast<float>(x) / vertexSize, static_cast<float>(y) / vertexSize };
-			vertex.normal = SU::Vector3f(0, 1, 0);
-			vertices[index] = vertex;
+			Tga::AddNoise(heightMap, amplitudeMultiplier);
+
+			heightMap = Tga::Upsample2X(heightMap, gridSize);
+
+			amplitudeMultiplier *= 0.25f;
+			gridSize *= 2;
 		}
 	}
 
-	for (unsigned int y = 0; y < gridSize; ++y)
-	{
-		for (unsigned int x = 0; x < gridSize; ++x)
-		{
-			const unsigned int index = x * vertexSize + y;
+	std::vector<Vertex> vertices(gridSize * gridSize);
+	std::vector<unsigned int> indices;
 
-			const unsigned int indexUp = index + vertexSize;
-			const unsigned int indexDiagonal = indexUp + 1;
-			const unsigned int indexRight = index + 1;
+	for (unsigned int x = 0; x < gridSize; ++x)
+	{
+		for (unsigned int y = 0; y < gridSize; ++y)
+		{
+			const unsigned int index = x + (gridSize * y);
+
+			const SU::Vector3f position = SU::Vector3f(static_cast<float>(x), heightMap[index], static_cast<float>(y)) * vertexLength;
+			const float u = static_cast<float>(x) / gridSize;
+			const float v = static_cast<float>(y) / gridSize;
+
+			vertices[index].position = SU::Vector4f(position.x, position.y, position.z, 1.f);
+			vertices[index].normal = SU::Vector3f(0, 1, 0);
+			vertices[index].uv = SU::Vector2f(u, v);
+		}
+	}
+
+	for (unsigned int x = 0; x < gridSize - 1; ++x)
+	{
+		for (unsigned int y = 0; y < gridSize - 1; ++y)
+		{
+			const unsigned int index = x + (gridSize * y);
+
+			const unsigned int north = index + gridSize;
+			const unsigned int northEast = north + 1;
+			const unsigned int east = index + 1;
 
 			// Clockwise - very important!!!
 			indices.push_back(index);
-			indices.push_back(indexUp);
-			indices.push_back(indexDiagonal);
+			indices.push_back(north);
+			indices.push_back(northEast);
 
 			indices.push_back(index);
-			indices.push_back(indexDiagonal);
-			indices.push_back(indexRight);
+			indices.push_back(northEast);
+			indices.push_back(east);
 		}
 	}
 
-	for (size_t i = 0; i < vertices.size(); ++i)
+	for (unsigned int x = 0; x < gridSize; ++x)
 	{
-
-	}
-
-	for (unsigned int y = 1; y < gridSize; ++y)
-	{
-		for (unsigned int x = 1; x < gridSize; ++x)
+		for (unsigned int y = 0; y < gridSize; ++y)
 		{
-			const unsigned int index = x * vertexSize + y;
+			const unsigned int index = x + (gridSize * y);
 
-			const unsigned int indexUp = index + vertexSize;
-			const unsigned int indexDown = index - vertexSize;
-			const unsigned int indexRight = index + 1;
-			const unsigned int indexLeft = index - 1;
+			unsigned int north = index + gridSize;
+			unsigned int south = index - gridSize;
+			unsigned int east = index + 1;
+			unsigned int west = index - 1;
 
-			SU::Vector3f tangentVertical = vertices[indexDown].position.AsVector3() - vertices[indexUp].position.AsVector3();
-			SU::Vector3f tangentHorizontal = vertices[indexRight].position.AsVector3() - vertices[indexLeft].position.AsVector3();
+			if (y == 0)
+			{
+				south = index;
+			}
+			else if (y == (gridSize - 1))
+			{
+				north = index;
+			}
+
+			if (x == 0)
+			{
+				west = index;
+			}
+			else if (x == (gridSize - 1))
+			{
+				east = index;
+			}
+
+			SU::Vector3f tangentVertical = vertices[north].position.AsVector3() - vertices[south].position.AsVector3();
+			SU::Vector3f tangentHorizontal = vertices[west].position.AsVector3() - vertices[east].position.AsVector3();
 			SU::Vector3f normal = SU::Cross(tangentHorizontal, tangentVertical).GetNormalized();
 
-			vertices[index].normal = SU::Vector3f(normal.x, normal.y, normal.z).GetNormalized();
+			vertices[index].normal = normal;
 			vertices[index].tangent = SU::Cross(vertices[index].normal, SU::Vector3f(0.0f, 0.0f, 1.0f)).GetNormalized();
 			vertices[index].bitangent = SU::Cross(vertices[index].normal, vertices[index].tangent).GetNormalized();
 		}

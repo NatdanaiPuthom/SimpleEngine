@@ -22,20 +22,20 @@ PixelOutput main(PixelInputType aInput)
     float4 snowColor = aSnowC.Sample(aSampler, aInput.uv);
     float3 color = lerp(rockColor, lerp(grassColor, snowColor, heightBlend), slopeBlend).rgb;
     
+    //float4 grassNormal = aGrassN.Sample(aSampler, aInput.uv);
+    //float4 rockNormal = aRockN.Sample(aSampler, aInput.uv);
+    //float4 snowNormal = aSnowN.Sample(aSampler, aInput.uv);
+    //float3 normal = lerp(rockNormal, lerp(grassNormal, snowNormal, heightBlend), slopeBlend).rgb;
     
-    float4 grassNormal = aGrassN.Sample(aSampler, aInput.uv);
-    float4 rockNormal = aRockN.Sample(aSampler, aInput.uv);
-    float4 snowNormal = aSnowN.Sample(aSampler, aInput.uv);
-    float3 normal = lerp(rockNormal, lerp(grassNormal, snowNormal, heightBlend), slopeBlend).rgb;
+    //float3x3 TBN = float3x3(aInput.tangent, aInput.bitangent, aInput.normal);
+    //normal = normalize(mul(TBN, normal));
     
-    float3x3 TBN = float3x3(aInput.tangent, aInput.bitangent, aInput.normal);
-    normal = normalize(mul(TBN, normal));
+    //float lightIntensity = max(0.0, dot(directionLightDirection, normal));
+    //float3 finalColor = color * lightIntensity;
     
-    float lightIntensity = max(0.0, dot(directionLightDirection, normal));
-    
-    float3 finalColor = color * lightIntensity;
-    
-    output.color = float4(finalColor, 1);
+    output.color = float4(color, 1);
+    output.color.rgb = 0.5f + 0.5f * aInput.normal;
+    output.color.a = 1;
     
     //Test
     //float4 testnormal = aTestNormal.Sample(aSampler, aInput.uv);

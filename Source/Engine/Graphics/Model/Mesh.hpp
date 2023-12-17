@@ -14,10 +14,10 @@ struct alignas(16) Vertex
 {
 	SimpleUtilities::Vector4f position = { 0,0,0,0 };
 	SimpleUtilities::Vector4f color = { 1,1,1,1 };
-	SimpleUtilities::Vector3f normal = { 1,1,1 };
+	SimpleUtilities::Vector3f normal = { 0,0,0 };
 	SimpleUtilities::Vector3f tangent = { 0,0,0 };
 	SimpleUtilities::Vector3f bitangent = { 0,0,0 };
-	SimpleUtilities::Vector2f uv = { 1,1 };
+	SimpleUtilities::Vector2f uv = { 0,0 };
 	float padding = -1;
 };
 

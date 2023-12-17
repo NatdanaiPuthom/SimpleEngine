@@ -18,37 +18,39 @@ GameWorld::~GameWorld()
 
 void GameWorld::Init()
 {
-	std::unique_ptr<Mesh> terrain = std::make_unique<Mesh>();
-	std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
-	std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
-	std::unique_ptr<Mesh> directionalLight = std::make_unique<Mesh>();
+	{ //Test stuff
+		std::unique_ptr<Mesh> terrain = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> directionalLight = std::make_unique<Mesh>();
 
-	MeshData terrainData = Shape::CreateTerrain();
-	MeshData pyramidData = Shape::CreatePyramid();
-	MeshData cubeData = Shape::CreateCube();
-	MeshData directionalLightData = Shape::CreateDirectionalLight();
+		MeshData terrainData = Shape::CreateTerrain();
+		MeshData pyramidData = Shape::CreatePyramid();
+		MeshData cubeData = Shape::CreateCube();
+		MeshData directionalLightData = Shape::CreateDirectionalLight();
 
-	if (!terrain->Init(terrainData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
-		assert(false && "Failed to Init Terrain");
+		if (!terrain->Init(terrainData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
+			assert(false && "Failed to Init Terrain");
 
-	if (!pyramid->Init(pyramidData))
-		assert(false && "Failed to Pyramid");
+		if (!pyramid->Init(pyramidData))
+			assert(false && "Failed to Pyramid");
 
-	if (!cube->Init(cubeData))
-		assert(false && "Failed to Cube");
+		if (!cube->Init(cubeData))
+			assert(false && "Failed to Cube");
 
-	if (!directionalLight->Init(directionalLightData))
-		assert(false && "Failed to Directional Light");
+		if (!directionalLight->Init(directionalLightData))
+			assert(false && "Failed to Directional Light");
 
-	terrain->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
-	pyramid->SetPosition(SimpleUtilities::Vector3f(-5, 0, 0));
-	cube->SetPosition(SimpleUtilities::Vector3f(-5, 0, 5));
-	directionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
+		terrain->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
+		pyramid->SetPosition(SimpleUtilities::Vector3f(-5, 0, 0));
+		cube->SetPosition(SimpleUtilities::Vector3f(-5, 0, 5));
+		directionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
 
-	myRenderer->AddMesh(std::move(terrain));
-	myRenderer->AddMesh(std::move(pyramid));
-	myRenderer->AddMesh(std::move(cube));
-	myRenderer->AddMesh(std::move(directionalLight));
+		myRenderer->AddMesh(std::move(terrain));
+		myRenderer->AddMesh(std::move(pyramid));
+		myRenderer->AddMesh(std::move(cube));
+		myRenderer->AddMesh(std::move(directionalLight));
+	}
 }
 
 void GameWorld::Update()
@@ -64,7 +66,8 @@ void GameWorld::Render()
 
 	myRenderer->Render();
 
-	if (ImGui::Begin("Camera Controls"))
+
+	if (ImGui::Begin("Camera Controls")) //TO-DO: Move All ImGui stuff to it's own place
 	{
 		ImGui::Text("Movements    - WASD");
 		ImGui::SameLine();
@@ -102,20 +105,36 @@ void GameWorld::Render()
 	}
 	ImGui::End();
 
-	if (ImGui::Begin("Directional Light"))
+	if (ImGui::Begin("Lights"))
 	{
-		ImGui::SetNextItemWidth(400.0f);
-		SimpleUtilities::Vector3f direction = graphicsEngine->GetDirectionalLightDirection();
-		if (ImGui::SliderFloat3("Direction", &direction.x, -1.0f, 1.0f, "%.03f"))
+		if (ImGui::BeginTabBar("Light Tab Bar"))
 		{
-			graphicsEngine->SetDirectionalLightDirection(direction);
-		}
+			if (ImGui::BeginTabItem("Directional Light"))
+			{
+				ImGui::SetNextItemWidth(400.0f);
+				SimpleUtilities::Vector3f direction = graphicsEngine->GetDirectionalLightDirection();
+				if (ImGui::SliderFloat3("Direction", &direction.x, -1.0f, 1.0f, "%.03f"))
+				{
+					graphicsEngine->SetDirectionalLightDirection(direction);
+				}
 
-		ImGui::SetNextItemWidth(400.0f);
-		SimpleUtilities::Vector3f color = graphicsEngine->GetDirectionalLightColor();
-		if (ImGui::SliderFloat3("Color", &color.x, 0.0f, 1.0f, "%.03f"))
-		{
-			graphicsEngine->SetDirectionalLightColor(color);
+				ImGui::SetNextItemWidth(400.0f);
+				SimpleUtilities::Vector3f color = graphicsEngine->GetDirectionalLightColor();
+				if (ImGui::SliderFloat3("Color", &color.x, 0.0f, 1.0f, "%.03f"))
+				{
+					graphicsEngine->SetDirectionalLightColor(color);
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Ambient Light"))
+			{
+
+				ImGui::EndTabItem();
+			}
+
+			ImGui::EndTabBar();
 		}
 	}
 	ImGui::End();
