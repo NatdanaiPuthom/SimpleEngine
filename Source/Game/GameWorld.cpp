@@ -1,14 +1,13 @@
 #include "stdafx.h"
-#include "Game/GameWorld.hpp"
 #include "Engine/Graphics/Model/Mesh.hpp"
 #include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
-#include "Engine/Graphics/GraphicsEngine.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
-#include "Engine/Graphics/Camera/Camera.hpp"
-#include <External/imgui.h>
+#include "Game/GameWorld.hpp"
+#include "Game/ImGuiManager.hpp"
 
 GameWorld::GameWorld()
 	: myRenderer(std::make_unique<Renderer>())
+	, myImGuiManager(std::make_unique<ImGuiManager>())
 {
 }
 
@@ -41,6 +40,27 @@ void GameWorld::Init()
 		if (!directionalLight->Init(directionalLightData))
 			assert(false && "Failed to Directional Light");
 
+		if (!terrain->AddTexture(1, "Assets/tga/Uppgift6/Grass_c.dds"))
+			assert(false && "Failed to Add Texture");
+
+		if (!terrain->AddTexture(2, "Assets/tga/Uppgift6/Rock_c.dds"))
+			assert(false && "Failed to Add Texture");
+
+		if (!terrain->AddTexture(3, "Assets/tga/Uppgift6/Snow_c.dds"))
+			assert(false && "Failed to Add Texture");
+
+		if (!terrain->AddTexture(4, "Assets/tga/Uppgift6/Grass_n.dds"))
+			assert(false && "Failed to Add Texture");
+
+		if (!terrain->AddTexture(5, "Assets/tga/Uppgift6/Rock_n.dds"))
+			assert(false && "Failed to Add Texture");
+
+		if (!terrain->AddTexture(6, "Assets/tga/Uppgift6/Snow_n.dds"))
+			assert(false && "Failed to Add Texture");
+
+		if (!terrain->AddTexture(7, "Assets/tga/Uppgift6/testnormal.dds"))
+			assert(false && "Failed to Add Texture");
+
 		terrain->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
 		pyramid->SetPosition(SimpleUtilities::Vector3f(-5, 0, 0));
 		cube->SetPosition(SimpleUtilities::Vector3f(-5, 0, 5));
@@ -62,100 +82,6 @@ void GameWorld::Update()
 
 void GameWorld::Render()
 {
-	GraphicsEngine* graphicsEngine = SimplyGlobal::GetGraphicsEngine();
-
 	myRenderer->Render();
-
-
-	if (ImGui::Begin("Camera Controls")) //TO-DO: Move All ImGui stuff to it's own place
-	{
-		ImGui::Text("Movements    - WASD");
-		ImGui::SameLine();
-		ImGui::Dummy(ImVec2(100, 0));
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(100.0f);
-
-		float speed = graphicsEngine->GetCamera()->GetMoveSpeed();
-		if (ImGui::SliderFloat("MoveSpeed", &speed, 0, 100, "%0.2f"))
-		{
-			graphicsEngine->GetCamera()->SetMoveSpeed(speed);
-		}
-
-		ImGui::Text("FreeFly      - TAB");
-		ImGui::Text("Speedx3      - Hold Shift");
-		ImGui::Text("Fly Up       - SPACE");
-		ImGui::Text("Fly Down     - Hold Ctrl + SPACE");
-		ImGui::Text("Rotate Left  - E");
-		ImGui::Text("Rotate Right - Q");
-		ImGui::Text("Rotate Up    - C");
-		ImGui::Text("Rotate Down  - Z");
-	}
-	ImGui::End();
-
-	if (ImGui::Begin("Frame Counter"))
-	{
-		std::string fps = "FPS: " + std::to_string(SimplyGlobal::GetFPS());
-		ImGui::Text(fps.c_str());
-
-		bool vsync = graphicsEngine->IsVSyncActive();
-		if (ImGui::Checkbox("VSync", &vsync))
-		{
-			graphicsEngine->SetVSync(vsync);
-		}
-	}
-	ImGui::End();
-
-	if (ImGui::Begin("Lights"))
-	{
-		if (ImGui::BeginTabBar("Light Tab Bar"))
-		{
-			if (ImGui::BeginTabItem("Directional Light"))
-			{
-				ImGui::SetNextItemWidth(400.0f);
-				SimpleUtilities::Vector3f direction = graphicsEngine->GetDirectionalLightDirection();
-				if (ImGui::SliderFloat3("Direction", &direction.x, -1.0f, 1.0f, "%.03f"))
-				{
-					graphicsEngine->SetDirectionalLightDirection(direction);
-				}
-
-				ImGui::SetNextItemWidth(400.0f);
-				SimpleUtilities::Vector3f color = graphicsEngine->GetDirectionalLightColor();
-				if (ImGui::SliderFloat3("Color", &color.x, 0.0f, 1.0f, "%.03f"))
-				{
-					graphicsEngine->SetDirectionalLightColor(color);
-				}
-
-				ImGui::EndTabItem();
-			}
-
-			if (ImGui::BeginTabItem("Ambient Light"))
-			{
-				ImGui::SetNextItemWidth(400.0f);
-				SimpleUtilities::Vector3f skyColor = graphicsEngine->GetSkyColor();
-				if (ImGui::SliderFloat3("SkyColor", &skyColor.x, 0.0f, 1.0f, "%0.3f"))
-				{
-					graphicsEngine->SetSkyColor(skyColor);
-				}
-
-				ImGui::SetNextItemWidth(400.0f);
-				SimpleUtilities::Vector3f groundColor = graphicsEngine->GetGroundColor();
-				if (ImGui::SliderFloat3("GroundColor", &groundColor.x, 0.0f, 1.0f, "%0.3f"))
-				{
-					graphicsEngine->SetGroundColor(groundColor);
-				}
-				ImGui::EndTabItem();
-			}
-
-			ImGui::EndTabBar();
-		}
-	}
-	ImGui::End();
-
-	/*if (ImGui::Begin("Scene")) //Disabled due to issue with ImGui::Image rendering
-	{
-		ImVec2 size(1280, 720);
-		const ImTextureID textureID = graphicsEngine->GetShaderResourceView().Get();
-		ImGui::Image(textureID, size);
-	}
-	ImGui::End();*/
+	myImGuiManager->Render();	
 }

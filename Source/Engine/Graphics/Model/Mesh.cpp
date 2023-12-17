@@ -6,11 +6,7 @@ Mesh::Mesh()
 	: myShader(std::make_shared<Shader>())
 	, myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myGraphicsEngine(nullptr)
-{
-	for (auto& texture : myTextures)
-	{
-		texture = std::make_unique<Texture>();
-	}
+{	
 }
 
 Mesh::~Mesh()
@@ -36,43 +32,23 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	if (!myShader->Init(device, aPSShaderFile, aVSShaderFile))
 		return false;
 
-	if (!myTextures[0]->Init(device, "Assets/fasterthanlight.dds")) //TO-DO: Re-structure how multiple textures work
+	if (!AddTexture(0, "Assets/fasterthanlight.dds"))
 		return false;
 
-	myTextures[0]->Bind(myGraphicsEngine->GetContext(), 0);
+	return true;
+}
 
-	{ //Test
-		if (!myTextures[1]->Init(device, "Assets/tga/Uppgift6/Grass_c.dds"))
-			return false;
+const bool Mesh::AddTexture(const int aSlot,  const char* aFilePath)
+{
+	auto device = myGraphicsEngine->GetDevice();
 
-		if (!myTextures[2]->Init(device, "Assets/tga/Uppgift6/Rock_c.dds"))
-			return false;
+	myTextures[aSlot].reset();
+	myTextures[aSlot] = std::make_unique<Texture>();
 
-		if (!myTextures[3]->Init(device, "Assets/tga/Uppgift6/Snow_c.dds"))
-			return false;
+	if (!myTextures[aSlot]->Init(device, aFilePath))
+		return false;
 
-		if (!myTextures[4]->Init(device, "Assets/tga/Uppgift6/Grass_n.dds"))
-			return false;
-
-		if (!myTextures[5]->Init(device, "Assets/tga/Uppgift6/Rock_n.dds"))
-			return false;
-
-		if (!myTextures[6]->Init(device, "Assets/tga/Uppgift6/Snow_n.dds"))
-			return false;
-
-		if (!myTextures[7]->Init(device, "Assets/tga/Uppgift6/testnormal.dds"))
-			return false;
-
-		myTextures[1]->Bind(myGraphicsEngine->GetContext(), 1);
-		myTextures[2]->Bind(myGraphicsEngine->GetContext(), 2);
-
-		myTextures[3]->Bind(myGraphicsEngine->GetContext(), 3);
-		myTextures[4]->Bind(myGraphicsEngine->GetContext(), 4);
-		myTextures[5]->Bind(myGraphicsEngine->GetContext(), 5);
-		myTextures[6]->Bind(myGraphicsEngine->GetContext(), 6);
-
-		myTextures[7]->Bind(myGraphicsEngine->GetContext(), 7);
-	}
+	myTextures[aSlot]->Bind(myGraphicsEngine->GetContext(), aSlot);
 
 	return true;
 }

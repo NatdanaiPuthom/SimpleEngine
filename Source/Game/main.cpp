@@ -1,9 +1,8 @@
 #include "stdafx.h"
-#include "Game/GameWorld.hpp"
 #include "Engine/engine.hpp"
 #include "Engine/MemoryTracker/MemoryTracker.h"
+#include "Game/GameWorld.hpp"
 #include <External/imgui.h>
-//#include <thread>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

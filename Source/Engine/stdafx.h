@@ -26,8 +26,6 @@ using Microsoft::WRL::ComPtr;
 
 #include "Engine/Input/InputManager.hpp"
 
-#include "Engine/MemoryTracker/MemoryTracker.h"
-
 #include "Engine/engine.hpp"
 #include "Engine/global.hpp"
 #include "Engine/Graphics/Buffers/ConstantBuffer.hpp"

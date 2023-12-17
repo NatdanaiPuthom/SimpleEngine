@@ -2,6 +2,7 @@
 
 class Mesh;
 class Renderer;
+class ImGuiManager;
 
 class GameWorld
 {
@@ -14,4 +15,5 @@ public:
 	void Render();
 private:
 	std::unique_ptr<Renderer> myRenderer;
+	std::unique_ptr<ImGuiManager> myImGuiManager;
 };

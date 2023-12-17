@@ -1,8 +1,13 @@
 #pragma once
-//TO-DO: Fix A Way To Not Need to Include These
+//TO-DO: Fix a way to not need to have these here and still fast complier time
 #include <Windows.h>
+#include <wrl/client.h>
 #include <d3d11.h>
-////
+
+#ifndef _SIMPLE
+#include "Engine/Console/Console.hpp"
+#endif
+///////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
 #include <cassert>
@@ -12,10 +17,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
-
-#ifndef _SIMPLE
-#include "Engine/Console/Console.hpp"
-#endif
+#include <thread>
 
 #include "Engine/SimpleUtilities/Vector.hpp"
 #include "Engine/SimpleUtilities/Matrix4x4.hpp"

@@ -263,7 +263,7 @@ namespace SimpleUtilities
 	template<typename T>
 	inline Vector3<T> Matrix4x4<T>::GetRotation() const
 	{
-		//TO-DO: Fix X rotation it got fuckt after 90 degree
+		//TO-DO: Fix X rotation it got fuckt after 90 degree. Maybe implement Quaternion
 
 		Vector3<T> forward;
 		Vector3<T> right;

@@ -67,9 +67,9 @@ public:
 	void SetToBackBuffer();
 	void SetVSync(const bool aShouldTurnOn);
 public:
-	ComPtr<ID3D11Device> GetDevice();
-	ComPtr<ID3D11DeviceContext> GetContext();
-	ComPtr<ID3D11ShaderResourceView> GetShaderResourceView();
+	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetShaderResourceView();
 
 	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 	SimpleUtilities::Vector3f GetDirectionalLightColor() const;
@@ -95,22 +95,22 @@ private:
 private:
 	std::shared_ptr<Camera> myCamera;
 
-	ComPtr<ID3D11Device> myDevice;
-	ComPtr<ID3D11DeviceContext> myContext;
-	ComPtr<IDXGISwapChain> mySwapChain;
+	Microsoft::WRL::ComPtr<ID3D11Device> myDevice;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> myContext;
+	Microsoft::WRL::ComPtr<IDXGISwapChain> mySwapChain;
 
-	ComPtr<ID3D11RenderTargetView> myBackBuffer;
-	ComPtr<ID3D11DepthStencilView> myDepthBuffer;
-	ComPtr<ID3D11DepthStencilState> myDepthStencilState;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> myBackBuffer;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> myDepthBuffer;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> myDepthStencilState;
 
-	ComPtr<ID3D11Buffer> myFrameBuffer;
-	ComPtr<ID3D11Buffer> myObjectBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> myFrameBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> myObjectBuffer;
 
-	ComPtr<ID3D11SamplerState> mySamplerState;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> mySamplerState;
 
-	ComPtr<ID3D11Texture2D> myTexture;
-	ComPtr<ID3D11ShaderResourceView> mySRV;
-	ComPtr<ID3D11RenderTargetView> myRTV;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> myTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mySRV;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> myRTV;
 
 	std::unique_ptr<ConstantBuffer> myCameraBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;
