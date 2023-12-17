@@ -1,9 +1,8 @@
 #include "stdafx.h"
-#include "Engine/Graphics/Model/Mesh.hpp"
 #include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
 #include "Game/GameWorld.hpp"
-#include "Game/ImGuiManager.hpp"
+#include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
 
 GameWorld::GameWorld()
 	: myRenderer(std::make_unique<Renderer>())

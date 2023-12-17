@@ -1,5 +1,4 @@
 #pragma once
-
 //TO-DO: May reconsider manually assign values instead of using for-loop for better performance as matrix is commonly used everywhere
 
 namespace SimpleUtilities

@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Graphics/Model/Mesh.hpp"
 
 namespace Shape
 {

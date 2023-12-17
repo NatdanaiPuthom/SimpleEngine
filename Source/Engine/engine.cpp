@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Engine/global.hpp"
 #include "Engine/SimpleUtilities/Timer.hpp"
 #include "Engine/ImGuiInterface/ImGuiInterface.hpp"
 #include <External/json.h>

@@ -1,5 +1,4 @@
 #pragma once
-
 class GraphicsEngine;
 
 struct ID3D11Buffer;

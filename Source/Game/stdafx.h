@@ -21,9 +21,11 @@
 
 #include "Engine/SimpleUtilities/Vector.hpp"
 #include "Engine/SimpleUtilities/Matrix4x4.hpp"
+#include "Engine/SimpleUtilities/Utility.hpp"
 
 #include "Engine/global.hpp"
+#include "Engine/engine.hpp"
 #include "Engine/Input/InputManager.hpp"
-#include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/Graphics/GraphicsEngine.hpp"
 
 #include <External/profiler.h>

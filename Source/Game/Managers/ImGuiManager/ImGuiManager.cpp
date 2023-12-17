@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Game/ImGuiManager.hpp"
+#include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
 #include "Engine/Graphics/GraphicsEngine.hpp"
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include <External/imgui.h>
