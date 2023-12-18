@@ -4,7 +4,6 @@ constexpr float globalPi = 3.141592f; //Highest Precision For Floating Point
 constexpr float globalDegToRad = globalPi / 180.0f;
 constexpr float globalRadToDeg = (180.0f / globalPi);
 
-
 namespace SimpleUtilities
 {
 	template<class T>

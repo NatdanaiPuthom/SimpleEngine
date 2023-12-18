@@ -35,6 +35,9 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	if (!AddTexture(0, "Assets/fasterthanlight.dds"))
 		return false;
 
+	bool test = myTextures[0]->Test(device);
+	test;
+
 	return true;
 }
 
