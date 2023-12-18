@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Engine/Graphics/Texture/Texture.hpp"
+
 #include <External/DDSTextureLoader/DDSTextureLoader11.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -43,7 +44,7 @@ bool Texture::Initialize(ComPtr<ID3D11Device> aDevice, unsigned char* aRGBAPixel
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
 	desc.Usage = D3D11_USAGE_IMMUTABLE;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
@@ -67,7 +68,7 @@ bool Texture::Initialize(ComPtr<ID3D11Device> aDevice, unsigned char* aRGBAPixel
 bool Texture::Test(ComPtr<ID3D11Device> aDevice)
 {
 	int width, height, channels;
-	auto fileName = SimpleUtilities::GetPath("Assets/fasterthanlight.jpg");
+	auto fileName = SimpleUtilities::GetPath("Assets/cat.png");
 	unsigned char* img = stbi_load(fileName.c_str(), &width, &height, &channels, 0);
 
 	if (img == nullptr)

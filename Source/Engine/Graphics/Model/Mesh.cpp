@@ -6,7 +6,7 @@ Mesh::Mesh()
 	: myShader(std::make_shared<Shader>())
 	, myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myGraphicsEngine(nullptr)
-{	
+{
 }
 
 Mesh::~Mesh()
@@ -35,13 +35,20 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	if (!AddTexture(0, "Assets/fasterthanlight.dds"))
 		return false;
 
-	bool test = myTextures[0]->Test(device);
-	test;
+	{ //Test
+		myTextures[0].reset();
+		myTextures[0] = std::make_unique<Texture>();
+
+		if (!myTextures[0]->Test(device))
+			return false;
+
+		myTextures[0]->Bind(myGraphicsEngine->GetContext(), 0);
+	}
 
 	return true;
 }
 
-const bool Mesh::AddTexture(const int aSlot,  const char* aFilePath)
+const bool Mesh::AddTexture(const int aSlot, const char* aFilePath)
 {
 	auto device = myGraphicsEngine->GetDevice();
 
