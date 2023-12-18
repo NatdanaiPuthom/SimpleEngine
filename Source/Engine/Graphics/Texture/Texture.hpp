@@ -6,11 +6,12 @@ public:
 	Texture();
 	~Texture();
 
-	bool Init(ComPtr<ID3D11Device> aDevice, const char* aFileName);
+	bool LoadDDS(const char* aFilePath);
+	bool LoadNonDDS(const char* aFilePath);
 	void Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot);
 
-	bool Initialize(ComPtr<ID3D11Device> aDevice, unsigned char* aRGBAPixels, int aWidth, int aHeight); //Test
-	bool Test(ComPtr<ID3D11Device> aDevice); //Test
+private:
+	bool InitNonDDS(ComPtr<ID3D11Device> aDevice, const unsigned char* aRGBAPixels, const int aWidth, const int aHeight);
 private:
 	ComPtr<ID3D11ShaderResourceView> myShaderResourceView;
 };

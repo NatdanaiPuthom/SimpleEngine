@@ -32,7 +32,7 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	if (!myShader->Init(device, aPSShaderFile, aVSShaderFile))
 		return false;
 
-	if (!AddTexture(0, "Assets/fasterthanlight.dds"))
+	if (!AddTexture(0, "Assets/DefaultTexture.dds")) //Default texture
 		return false;
 
 	return true;
@@ -45,7 +45,7 @@ const bool Mesh::AddTexture(const int aSlot, const char* aFilePath)
 	myTextures[aSlot].reset();
 	myTextures[aSlot] = std::make_unique<Texture>();
 
-	if (!myTextures[aSlot]->Init(device, aFilePath))
+	if (!myTextures[aSlot]->LoadDDS(aFilePath))
 		return false;
 
 	myTextures[aSlot]->Bind(myGraphicsEngine->GetContext(), aSlot);

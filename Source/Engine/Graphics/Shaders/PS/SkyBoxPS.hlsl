@@ -4,8 +4,7 @@ PixelOutput main(PixelInputType aInput)
 {
     PixelOutput output;
  
- 
-    float3 cubeMap = aCubeMap.Sample(aSampler, aInput.position.xyz).rgb;
+    float3 cubeMap = aCubeMap.Sample(aSampler, aInput.worldPosition.xyz).rgb;
 
     output.color = float4(cubeMap,1);
     

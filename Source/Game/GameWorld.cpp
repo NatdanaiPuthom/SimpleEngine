@@ -44,6 +44,9 @@ void GameWorld::Init()
 		if (!skybox->Init(skyboxData, "Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso"))
 			assert(false && "Failed to create SkyBox");
 
+		if (!skybox->AddTexture(14, "Assets/tga/Uppgift7/cubemap.dds"))
+			assert(false && "Failed to Add Texture");
+
 		if (!terrain->AddTexture(1, "Assets/tga/Uppgift6/Grass_c.dds"))
 			assert(false && "Failed to Add Texture");
 
@@ -81,7 +84,7 @@ void GameWorld::Init()
 		myRenderer->AddMesh(std::move(pyramid));
 		myRenderer->AddMesh(std::move(cube));
 		myRenderer->AddMesh(std::move(directionalLight));
-		//myRenderer->AddMesh(std::move(skybox));
+		myRenderer->AddMesh(std::move(skybox));
 	}
 }
 
