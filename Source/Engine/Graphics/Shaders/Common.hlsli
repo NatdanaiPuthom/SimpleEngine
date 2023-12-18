@@ -1,6 +1,7 @@
 
 SamplerState aSampler : register(s0);
 Texture2D aDefaultTexture : register(t0);
+TextureCube aCubeMap : register(t14); //Temporary
 
 cbuffer FrameBuffer : register(b0)
 {

@@ -7,4 +7,5 @@ namespace Shape
 	MeshData CreatePyramid();
 	MeshData CreateCube();
 	MeshData CreateDirectionalLight();
+	MeshData CreateSkyBox(const SimpleUtilities::Vector3f& aSize);
 }

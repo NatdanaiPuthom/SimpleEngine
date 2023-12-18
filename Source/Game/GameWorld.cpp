@@ -21,23 +21,28 @@ void GameWorld::Init()
 		std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> directionalLight = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> skybox = std::make_unique<Mesh>();
 
 		MeshData terrainData = Shape::CreateTerrain();
 		MeshData pyramidData = Shape::CreatePyramid();
 		MeshData cubeData = Shape::CreateCube();
 		MeshData directionalLightData = Shape::CreateDirectionalLight();
+		MeshData skyboxData = Shape::CreateSkyBox(SimpleUtilities::Vector3f(100, 100, 100));
 
 		if (!terrain->Init(terrainData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
 			assert(false && "Failed to Init Terrain");
 
 		if (!pyramid->Init(pyramidData))
-			assert(false && "Failed to Pyramid");
+			assert(false && "Failed to create Pyramid");
 
 		if (!cube->Init(cubeData))
-			assert(false && "Failed to Cube");
+			assert(false && "Failed to create Cube");
 
 		if (!directionalLight->Init(directionalLightData))
-			assert(false && "Failed to Directional Light");
+			assert(false && "Failed to create Directional Light");
+
+		if (!skybox->Init(skyboxData, "Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso"))
+			assert(false && "Failed to create SkyBox");
 
 		if (!terrain->AddTexture(1, "Assets/tga/Uppgift6/Grass_c.dds"))
 			assert(false && "Failed to Add Texture");
@@ -57,18 +62,26 @@ void GameWorld::Init()
 		if (!terrain->AddTexture(6, "Assets/tga/Uppgift6/Snow_n.dds"))
 			assert(false && "Failed to Add Texture");
 
-		if (!terrain->AddTexture(7, "Assets/tga/Uppgift6/testnormal.dds"))
+		if (!terrain->AddTexture(7, "Assets/tga/Uppgift7/Grass_m.dds"))
+			assert(false && "Failed to Add Texture");
+
+		if (!terrain->AddTexture(8, "Assets/tga/Uppgift7/Rock_m.dds"))
+			assert(false && "Failed to Add Texture");
+
+		if (!terrain->AddTexture(9, "Assets/tga/Uppgift7/Snow_m.dds"))
 			assert(false && "Failed to Add Texture");
 
 		terrain->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
 		pyramid->SetPosition(SimpleUtilities::Vector3f(-5, 0, 0));
 		cube->SetPosition(SimpleUtilities::Vector3f(-5, 0, 5));
 		directionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
+		skybox->SetPosition({ 0,0,20 });
 
 		myRenderer->AddMesh(std::move(terrain));
 		myRenderer->AddMesh(std::move(pyramid));
 		myRenderer->AddMesh(std::move(cube));
 		myRenderer->AddMesh(std::move(directionalLight));
+		//myRenderer->AddMesh(std::move(skybox));
 	}
 }
 

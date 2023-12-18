@@ -431,3 +431,133 @@ MeshData Shape::CreateDirectionalLight()
 
 	return MeshData(vertices, indices);
 }
+
+
+MeshData Shape::CreateSkyBox(const SU::Vector3f& aSize)
+{
+	Vertex north_bottomLeft;
+	north_bottomLeft.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
+	north_bottomLeft.uv = SU::Vector2f(0, 0);
+
+	Vertex north_bottomRight;
+	north_bottomRight.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1.0f);
+	north_bottomRight.uv = SU::Vector2f(1, 0);
+
+	Vertex north_topLeft;
+	north_topLeft.position = SU::Vector4f(aSize.x, aSize.y, aSize.z, 1.0f);
+	north_topLeft.uv = SU::Vector2f(0, 1);
+
+	Vertex north_topRight;
+	north_topRight.position = SU::Vector4f(-aSize.x, aSize.y, aSize.z, 1.0f);
+	north_topRight.uv = SU::Vector2f(1, 1);
+
+	Vertex west_bottomLeft;
+	west_bottomLeft.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1.0f);
+	west_bottomLeft.uv = SU::Vector2f(0, 0);
+
+	Vertex west_bottomRight;
+	west_bottomRight.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1.0f);
+	west_bottomRight.uv = SU::Vector2f(1, 0);
+
+	Vertex west_topLeft;
+	west_topLeft.position = SU::Vector4f(-aSize.x, aSize.y, aSize.z, 1.0f);
+	west_topLeft.uv = SU::Vector2f(0, 1);
+
+	Vertex west_topRight;
+	west_topRight.position = SU::Vector4f(-aSize.x, aSize.y, -aSize.z, 1.0f);
+	west_topRight.uv = SU::Vector2f(1, 1);
+
+	Vertex south_bottomLeft;
+	south_bottomLeft.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1.0f);
+	south_bottomLeft.uv = SU::Vector2f(0, 0);
+
+	Vertex south_bottomRight;
+	south_bottomRight.position = SU::Vector4f(aSize.x, -aSize.y, -aSize.z, 1.0f);
+	south_bottomRight.uv = SU::Vector2f(1, 0);
+
+	Vertex south_topLeft;
+	south_topLeft.position = SU::Vector4f(-aSize.x, aSize.y, -aSize.z, 1.0f);
+	south_topLeft.uv = SU::Vector2f(0, 1);
+
+	Vertex south_topRight;
+	south_topRight.position = SU::Vector4f(aSize.x, aSize.y, -aSize.z, 1.0f);
+	south_topRight.uv = SU::Vector2f(1, 1);
+
+	Vertex east_bottomLeft;
+	east_bottomLeft.position = SU::Vector4f(aSize.x, -aSize.y, -aSize.z, 1.0f);
+	east_bottomLeft.uv = SU::Vector2f(0, 0);
+
+	Vertex east_bottomRight;
+	east_bottomRight.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
+	east_bottomRight.uv = SU::Vector2f(1, 0);
+
+	Vertex east_topLeft;
+	east_topLeft.position = SU::Vector4f(aSize.x, aSize.y, -aSize.z, 1.0f);
+	east_topLeft.uv = SU::Vector2f(0, 1);
+
+	Vertex east_topRight;
+	east_topRight.position = SU::Vector4f(aSize.x, aSize.y, aSize.z, 1.0f);
+	east_topRight.uv = SU::Vector2f(1, 1);
+
+	Vertex up_bottomLeft;
+	up_bottomLeft.position = SU::Vector4f(aSize.x, aSize.y, aSize.z, 1.0f);
+	up_bottomLeft.uv = SU::Vector2f(0, 0);
+
+	Vertex up_bottomRight;
+	up_bottomRight.position = SU::Vector4f(-aSize.x, aSize.y, aSize.z, 1.0f);
+	up_bottomRight.uv = SU::Vector2f(1, 0);
+
+	Vertex up_topLeft;
+	up_topLeft.position = SU::Vector4f(aSize.x, aSize.y, -aSize.z, 1.0f);
+	up_topLeft.uv = SU::Vector2f(0, 1);
+
+	Vertex up_topRight;
+	up_topRight.position = SU::Vector4f(-aSize.x, aSize.y, -aSize.z, 1.0f);
+	up_topRight.uv = SU::Vector2f(1, 1);
+
+	Vertex down_bottomLeft;
+	down_bottomLeft.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1.0f);
+	down_bottomLeft.uv = SU::Vector2f(0, 0);
+
+	Vertex down_bottomRight;
+	down_bottomRight.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
+	down_bottomRight.uv = SU::Vector2f(1, 0);
+
+	Vertex down_topLeft;
+	down_topLeft.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1.0f);
+	down_topLeft.uv = SU::Vector2f(0, 1);
+
+	Vertex down_topRight;
+	down_topRight.position = SU::Vector4f(aSize.x, -aSize.y, -aSize.z, 1.0f);
+	down_topRight.uv = SU::Vector2f(1, 1);
+
+	std::vector<Vertex> vertices =
+	{
+		north_bottomLeft, north_topLeft, north_topRight, north_bottomRight,
+		west_bottomLeft, west_topLeft, west_topRight, west_bottomRight,
+		south_bottomLeft, south_topLeft, south_topRight, south_bottomRight,
+		east_bottomLeft, east_topLeft, east_topRight, east_bottomRight,
+		up_bottomLeft, up_topLeft, up_topRight, up_bottomRight,
+		down_bottomLeft, down_topLeft, down_topRight, down_bottomRight
+	};
+
+
+
+	std::vector<unsigned int> indices =
+	{
+		2, 1, 0,
+		3, 2, 0,
+		6, 5, 4,
+		7, 6, 4,
+		10, 9, 8,
+		11, 10, 8,
+		14, 13, 12,
+		15, 14, 12,
+		18, 17, 16,
+		19, 18, 16,
+		22, 21, 20,
+		23, 22, 20
+	};
+
+	return MeshData(vertices, indices);
+}
