@@ -118,6 +118,8 @@ void Camera::Update(const float aDeltaTime)
 
 			SetCursorPos(myCapturedPosition.x, myCapturedPosition.y);
 
+			//TO-DO: Fix hacky rotations
+			//TO-DO: Fix mouse rotation speed is different with VSync vs without VSync
 			SimpleUtilities::Vector2f mouseDelta = myInput->GetMouseDelta();
 			mouseDelta *= myRotateSpeed * 0.0015f;
 
