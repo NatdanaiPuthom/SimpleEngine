@@ -35,16 +35,6 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	if (!AddTexture(0, "Assets/fasterthanlight.dds"))
 		return false;
 
-	{ //Test
-		myTextures[0].reset();
-		myTextures[0] = std::make_unique<Texture>();
-
-		if (!myTextures[0]->Test(device))
-			return false;
-
-		myTextures[0]->Bind(myGraphicsEngine->GetContext(), 0);
-	}
-
 	return true;
 }
 
