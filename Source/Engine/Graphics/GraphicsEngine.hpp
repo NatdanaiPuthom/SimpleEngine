@@ -18,6 +18,8 @@ struct ID3D11RenderTargetView;
 struct alignas(16) FrameBufferData
 {
 	SimpleUtilities::Matrix4x4f worldToClipMatrix;
+	SimpleUtilities::Vector3f cameraPosition;
+	float padding;
 };
 
 struct alignas(16) ObjectBufferData

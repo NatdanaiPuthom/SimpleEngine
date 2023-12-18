@@ -3,7 +3,7 @@
 class Camera
 {
 public:
-	Camera(const SimpleUtilities::Vector2f& aResolution = {1280, 720}, const float aFoV = 0.70f, const float aNearPlane = 0.1f, const float aFarPlane = 1000.0f);
+	Camera(const SimpleUtilities::Vector2f& aResolution = {1280, 720}, const float aFoV = 2.0944f, const float aNearPlane = 0.1f, const float aFarPlane = 1000.0f);
 	~Camera() = default;
 
 	void Update(const float aDeltaTime);
@@ -31,6 +31,7 @@ public:
 	SimpleUtilities::Vector3f GetForward() const;
 	SimpleUtilities::Vector3f GetUp() const;
 	SimpleUtilities::Vector3f GetRight() const;
+	SimpleUtilities::Vector2f GetResolution() const;
 	float GetMoveSpeed() const;
 	float GetNearPlane() const;
 	float GetFarPlane() const;
@@ -47,7 +48,7 @@ private:
 	SimpleUtilities::Vector3f myUp;
 
 	SimpleUtilities::InputManager* myInput;
-	SimpleUtilities::Vector2f myResolution;
+	SimpleUtilities::Vector2f myResolution; 
 	SimpleUtilities::Vector2i myCapturedPosition;
 
 	float myFoV;

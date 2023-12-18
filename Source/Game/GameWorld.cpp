@@ -20,14 +20,10 @@ void GameWorld::Init()
 		std::unique_ptr<Mesh> terrain = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
-		std::unique_ptr<Mesh> directionalLight = std::make_unique<Mesh>();
-		std::unique_ptr<Mesh> skybox = std::make_unique<Mesh>();
 
 		MeshData terrainData = Shape::CreateTerrain();
 		MeshData pyramidData = Shape::CreatePyramid();
 		MeshData cubeData = Shape::CreateCube();
-		MeshData directionalLightData = Shape::CreateDirectionalLight();
-		MeshData skyboxData = Shape::CreateSkyBox(SimpleUtilities::Vector3f(100, 100, 100));
 
 		if (!terrain->Init(terrainData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
 			assert(false && "Failed to Init Terrain");
@@ -37,15 +33,6 @@ void GameWorld::Init()
 
 		if (!cube->Init(cubeData))
 			assert(false && "Failed to create Cube");
-
-		if (!directionalLight->Init(directionalLightData))
-			assert(false && "Failed to create Directional Light");
-
-		if (!skybox->Init(skyboxData, "Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso"))
-			assert(false && "Failed to create SkyBox");
-
-		if (!skybox->AddTexture(14, "Assets/tga/Uppgift7/cubemap.dds"))
-			assert(false && "Failed to Add Texture");
 
 		if (!terrain->AddTexture(1, "Assets/tga/Uppgift6/Grass_c.dds"))
 			assert(false && "Failed to Add Texture");
@@ -77,14 +64,10 @@ void GameWorld::Init()
 		terrain->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
 		pyramid->SetPosition(SimpleUtilities::Vector3f(-5, 0, 0));
 		cube->SetPosition(SimpleUtilities::Vector3f(-5, 0, 5));
-		directionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
-		skybox->SetPosition({ 0,0,20 });
 
 		myRenderer->AddMesh(std::move(terrain));
 		myRenderer->AddMesh(std::move(pyramid));
 		myRenderer->AddMesh(std::move(cube));
-		myRenderer->AddMesh(std::move(directionalLight));
-		myRenderer->AddMesh(std::move(skybox));
 	}
 }
 

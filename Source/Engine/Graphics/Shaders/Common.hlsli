@@ -6,6 +6,7 @@ TextureCube aCubeMap : register(t14); //Temporary
 cbuffer FrameBuffer : register(b0)
 {
     float4x4 worldToClipMatrix;
+    float3 cameraPosition;
 }
 
 cbuffer ObjectBuffer : register(b1)

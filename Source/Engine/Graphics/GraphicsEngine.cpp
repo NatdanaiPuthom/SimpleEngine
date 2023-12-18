@@ -68,8 +68,8 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 	LoadSettingsFromJson();
 
 	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(aWidth), static_cast<float>(aHeight) });
-	myCamera->SetRotation(SimpleUtilities::Vector3f(50.0f, 0, 0));
-	myCamera->SetPosition(SimpleUtilities::Vector3f(0, 15, -12));
+	myCamera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
+	myCamera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 
 	return true;
 }
@@ -79,6 +79,7 @@ void GraphicsEngine::Update()
 	{
 		FrameBufferData frameBuffer = {};
 		frameBuffer.worldToClipMatrix = myCamera->GetWorldToClipMatrix();
+		frameBuffer.cameraPosition = myCamera->GetPosition();
 		myCameraBuffer->Bind(0);
 		myCameraBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
 	}
@@ -414,7 +415,9 @@ bool GraphicsEngine::CreateCameraBuffer()
 {
 	FrameBufferData cameraBuffer =
 	{
-		myCamera->GetModelToWorldMatrix().GetFastInverse() * myCamera->GetProjectionMatrix()
+		myCamera->GetModelToWorldMatrix().GetFastInverse() * myCamera->GetProjectionMatrix(),
+		SimpleUtilities::Vector3f{0.0f,0.0f,0.0f},
+		-1.0f
 	};
 
 	if (!myCameraBuffer->Init(this, sizeof(FrameBufferData), &cameraBuffer))

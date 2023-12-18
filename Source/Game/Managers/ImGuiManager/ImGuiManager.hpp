@@ -7,4 +7,6 @@ public:
 	~ImGuiManager();
 
 	void Render();
+private:
+	int mySelectedResolution;
 };

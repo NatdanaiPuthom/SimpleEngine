@@ -332,3 +332,8 @@ SimpleUtilities::Vector3f Camera::GetRight() const
 {
 	return myRight;
 }
+
+SimpleUtilities::Vector2f Camera::GetResolution() const
+{
+	return myResolution;
+}

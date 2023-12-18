@@ -14,4 +14,6 @@ public:
 
 private:
 	std::vector<std::unique_ptr<Mesh>> myMeshes;
+	std::unique_ptr<Mesh> mySkyBox;
+	std::unique_ptr<Mesh> myDirectionalLight;
 };
