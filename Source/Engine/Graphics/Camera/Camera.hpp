@@ -3,7 +3,7 @@
 class Camera
 {
 public:
-	Camera(const SimpleUtilities::Vector2f& aResolution = {1280, 720}, const float aFoV = 2.0944f, const float aNearPlane = 0.1f, const float aFarPlane = 1000.0f);
+	Camera(const SimpleUtilities::Vector2f& aResolution = {1280, 720}, const float aFoV = 1.57075f, const float aNearPlane = 0.1f, const float aFarPlane = 1000.0f);
 	~Camera() = default;
 
 	void Update(const float aDeltaTime);

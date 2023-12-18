@@ -51,7 +51,7 @@ void ImGuiManager::Render()
 
 		std::vector<SimpleUtilities::Vector2i> resolutions =
 		{
-			SimpleUtilities::Vector2i(960, 540),
+			SimpleUtilities::Vector2i(800, 600),
 			SimpleUtilities::Vector2i(1280, 720),
 			SimpleUtilities::Vector2i(1920, 1080),
 		};
