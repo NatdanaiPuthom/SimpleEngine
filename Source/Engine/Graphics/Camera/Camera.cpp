@@ -143,7 +143,7 @@ void Camera::Update(const float aDeltaTime)
 
 SimpleUtilities::Vector4f Camera::WorldToCameraSpace(const SimpleUtilities::Vector4f& aVector) const
 {
-	return SimpleUtilities::Matrix4x4f::GetFastInverse(myModelToWorldTransform) * aVector;
+	return SimpleUtilities::Matrix4x4f::GetFastInverse(myTransform.GetMatrix()) * aVector;
 }
 
 SimpleUtilities::Vector4f Camera::CameraToProjectionSpace(const SimpleUtilities::Vector4f& aVector) const
@@ -162,7 +162,7 @@ SimpleUtilities::Vector2f Camera::ProjectionToPixel(const SimpleUtilities::Vecto
 
 SimpleUtilities::Matrix4x4f Camera::GetWorldToClipMatrix()
 {
-	const SimpleUtilities::Matrix4x4f clipMatrix = myModelToWorldTransform.GetFastInverse() * myProjectionMatrix;
+	const SimpleUtilities::Matrix4x4f clipMatrix = myTransform.GetMatrix().GetFastInverse() * myProjectionMatrix;
 	return clipMatrix;
 }
 
@@ -178,19 +178,21 @@ void Camera::CreateProjectionMatrix()
 
 void Camera::UpdateCameraVectors()
 {
-	myForward.x = myModelToWorldTransform(3, 1);
-	myForward.y = myModelToWorldTransform(3, 2);
-	myForward.z = myModelToWorldTransform(3, 3);
+	const SimpleUtilities::Matrix4x4f modelToWorldMatrix = myTransform.GetMatrix();
+
+	myForward.x = modelToWorldMatrix(3, 1);
+	myForward.y = modelToWorldMatrix(3, 2);
+	myForward.z = modelToWorldMatrix(3, 3);
 	myForward.Normalize();
 
-	myRight.x = myModelToWorldTransform(1, 1);
-	myRight.y = myModelToWorldTransform(1, 2);
-	myRight.z = myModelToWorldTransform(1, 3);
+	myRight.x = modelToWorldMatrix(1, 1);
+	myRight.y = modelToWorldMatrix(1, 2);
+	myRight.z = modelToWorldMatrix(1, 3);
 	myRight.Normalize();
 
-	myUp.x = myModelToWorldTransform(2, 1);
-	myUp.y = myModelToWorldTransform(2, 2);
-	myUp.z = myModelToWorldTransform(2, 3);
+	myUp.x = modelToWorldMatrix(2, 1);
+	myUp.y = modelToWorldMatrix(2, 2);
+	myUp.z = modelToWorldMatrix(2, 3);
 	myUp.Normalize();
 }
 
@@ -207,13 +209,13 @@ void Camera::SetCameraValues(const SimpleUtilities::Vector3f& aPosition, const S
 
 void Camera::SetPosition(const SimpleUtilities::Vector3f& aPosition)
 {
-	myModelToWorldTransform.SetPosition(aPosition);
+	myTransform.SetPosition(aPosition);
 	UpdateCameraVectors();
 }
 
-void Camera::SetRotation(const SimpleUtilities::Vector3f aRotation)
+void Camera::SetRotation(const SimpleUtilities::Vector3f aRotationInDegree)
 {
-	myModelToWorldTransform.SetLocalRotation(aRotation);
+	myTransform.SetRotation(aRotationInDegree);
 }
 
 void Camera::SetResolution(const SimpleUtilities::Vector2f& aResolution)
@@ -249,7 +251,7 @@ void Camera::SetFoV(const float aFoV)
 
 SimpleUtilities::Matrix4x4f Camera::GetModelToWorldMatrix() const
 {
-	return myModelToWorldTransform;
+	return myTransform.GetMatrix();
 }
 
 SimpleUtilities::Matrix4x4f Camera::GetProjectionMatrix() const
@@ -288,12 +290,12 @@ SimpleUtilities::Matrix4x4f Camera::GetViewMatrix() const
 
 SimpleUtilities::Vector3f Camera::GetPosition() const
 {
-	return myModelToWorldTransform.GetPosition();
+	return myTransform.GetPosition();
 }
 
 SimpleUtilities::Vector3f Camera::GetRotation() const
 {
-	return myModelToWorldTransform.GetRotation();
+	return myTransform.GetRotation();
 }
 
 float Camera::GetMoveSpeed() const

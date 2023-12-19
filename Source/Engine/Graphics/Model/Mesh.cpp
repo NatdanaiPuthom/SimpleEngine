@@ -67,7 +67,7 @@ void Mesh::Draw()
 	myShader->SetShader(context.Get());
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = myModelToWorld;
+	objectBuffer.modelToWorldMatrix = myTransform.GetMatrix();
 	myObjectBuffer->Bind(1);
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
@@ -135,22 +135,22 @@ bool Mesh::CreateObjectBuffer()
 
 void Mesh::SetPosition(const SimpleUtilities::Vector3f& aPosition)
 {
-	myModelToWorld.SetPosition(aPosition);
+	myTransform.SetPosition(aPosition);
 }
 
 void Mesh::SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree)
 {
-	myModelToWorld.SetLocalRotation(aRotationInDegree);
+	myTransform.SetRotation(aRotationInDegree);
 }
 
 SimpleUtilities::Vector3f Mesh::GetPosition() const
 {
-	return myModelToWorld.GetPosition();
+	return myTransform.GetPosition();
 }
 
 SimpleUtilities::Vector3f Mesh::GetRotation() const
 {
-	return myModelToWorld.GetRotation();
+	return myTransform.GetRotation();
 }
 
 int Mesh::GetIndexCount()
@@ -173,7 +173,3 @@ Shader& Mesh::GetShader()
 	return *myShader;
 }
 
-SimpleUtilities::Matrix4x4f Mesh::GetModelToWorldMatrix()
-{
-	return myModelToWorld;
-}

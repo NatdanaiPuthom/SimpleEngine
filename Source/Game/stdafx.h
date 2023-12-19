@@ -22,6 +22,7 @@
 #include "Engine/SimpleUtilities/Vector.hpp"
 #include "Engine/SimpleUtilities/Matrix4x4.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/SimpleUtilities/Transform.hpp"
 
 #include "Engine/global.hpp"
 #include "Engine/engine.hpp"

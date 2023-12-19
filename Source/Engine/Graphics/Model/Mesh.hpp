@@ -39,7 +39,6 @@ public:
 	SimpleUtilities::Vector3f GetPosition() const;
 	SimpleUtilities::Vector3f GetRotation() const;
 public:
-	SimpleUtilities::Matrix4x4f GetModelToWorldMatrix();
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer();
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetIndexBuffer();
 	Shader& GetShader();
@@ -49,7 +48,7 @@ private:
 	bool CreateIndexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
 	bool CreateObjectBuffer();
 private:
-	SimpleUtilities::Matrix4x4f myModelToWorld;
+	SimpleUtilities::Transform myTransform;
 
 	MeshData myMeshData;
 	GraphicsEngine* myGraphicsEngine;

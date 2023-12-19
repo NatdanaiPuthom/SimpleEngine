@@ -27,7 +27,6 @@ namespace SimpleUtilities
 		void SetLocalRotation(const Vector3<T>& aRotationInDegree);
 
 		Vector3<T> GetPosition() const;
-		Vector3<T> GetRotation() const;
 
 		static Matrix4x4<T> Identity();
 		static Matrix4x4<T> CreateRotationAroundX(const T aAngleInRadians);
@@ -41,8 +40,6 @@ namespace SimpleUtilities
 
 	private:
 		T myMatrix[4][4];
-		Vector3<T> myRotation;
-		T padding;
 	};
 
 	typedef Matrix4x4<float> Matrix4x4f;
@@ -225,8 +222,6 @@ namespace SimpleUtilities
 				myMatrix[i][j] = aMatrix(i + 1, j + 1);
 			}
 		}
-
-		myRotation = aMatrix.myRotation;
 	}
 
 	template<typename T>
@@ -254,16 +249,6 @@ namespace SimpleUtilities
 				myMatrix[i][j] = rotationMatrix(i + 1, j + 1);
 			}
 		}
-
-		myRotation = aRotationInDegree;
-
-		if (myRotation.x < 0.0f) myRotation.x += 360.0f;
-		if (myRotation.y < 0.0f) myRotation.y += 360.0f;
-		if (myRotation.z < 0.0f) myRotation.z += 360.0f;
-
-		if (myRotation.x > 360.0f) myRotation.x -= 360.0f;
-		if (myRotation.y > 360.0f) myRotation.y -= 360.0f;
-		if (myRotation.z > 360.0f) myRotation.z -= 360.0f;
 	}
 
 	template<typename T>
@@ -271,12 +256,6 @@ namespace SimpleUtilities
 	{
 		const Vector3<T> position(myMatrix[3][0], myMatrix[3][1], myMatrix[3][2]);
 		return position;
-	}
-
-	template<typename T>
-	inline Vector3<T> Matrix4x4<T>::GetRotation() const
-	{
-		return myRotation;
 	}
 
 	template<typename T>
@@ -296,8 +275,6 @@ namespace SimpleUtilities
 				}
 			}
 		}
-
-		myRotation = SimpleUtilities::Vector3f(0,0,0);
 	}
 
 	template<typename T>
@@ -310,8 +287,6 @@ namespace SimpleUtilities
 				myMatrix[i][j] = aMatrix(i + 1, j + 1);
 			}
 		}
-
-		myRotation = aMatrix.myRotation;
 	}
 
 	template<typename T>

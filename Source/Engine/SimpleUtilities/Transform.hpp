@@ -1,0 +1,70 @@
+#pragma once
+#include "Engine/SimpleUtilities/Vector3.hpp"
+#include "Engine/SimpleUtilities/Matrix4x4.hpp"
+
+namespace SimpleUtilities
+{
+	class Transform
+	{
+	public:
+		Transform();
+		~Transform();
+
+		void SetPosition(const Vector3f& aPosition);
+		void SetRotation(const Vector3f& aRotationInDegree);
+
+		Vector3f GetPosition() const;
+		Vector3f GetRotation() const;
+		Matrix4x4f GetMatrix() const;
+
+	private:
+		Matrix4x4f myMatrix;
+		Vector3f myPosition;
+		Vector3f myRotation;
+	};
+
+	inline Transform::Transform()
+	{
+	}
+
+	inline Transform::~Transform()
+	{
+	}
+
+	inline void Transform::SetPosition(const Vector3f& aPosition)
+	{
+		myPosition = aPosition;
+		myMatrix.SetPosition(myPosition);
+	}
+
+	inline void Transform::SetRotation(const Vector3f& aRotationInDegree)
+	{
+		myRotation = aRotationInDegree;
+
+		if (myRotation.x < 0.0f) myRotation.x += 360.0f;
+		else if (myRotation.x > 360.0f) myRotation.x -= 360.0f;
+
+		if (myRotation.y < 0.0f) myRotation.y += 360.0f;
+		else if (myRotation.y > 360.0f) myRotation.y -= 360.0f;
+
+		if (myRotation.z < 0.0f) myRotation.z += 360.0f;
+		else if (myRotation.z > 360.0f) myRotation.z -= 360.0f;
+
+		myMatrix.SetLocalRotation(myRotation);
+	}
+
+	inline Vector3f Transform::GetPosition() const
+	{
+		return myPosition;
+	}
+
+	inline Vector3f Transform::GetRotation() const
+	{
+		return myRotation;
+	}
+
+	inline Matrix4x4f Transform::GetMatrix() const
+	{
+		return myMatrix;
+	}
+}

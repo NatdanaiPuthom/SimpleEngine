@@ -14,7 +14,7 @@ public:
 public:
 	void SetCameraValues(const SimpleUtilities::Vector3f& aPosition, const SimpleUtilities::Vector2f& aResolution, const float aNearPlane, const float aFoV);
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
-	void SetRotation(const SimpleUtilities::Vector3f aRotation);
+	void SetRotation(const SimpleUtilities::Vector3f aRotationInDegree);
 	void SetResolution(const SimpleUtilities::Vector2f& aResolution);
 	void SetNearPlane(const float aNearPlane);
 	void SetFoV(const float aFoV);
@@ -40,7 +40,8 @@ private:
 	void CreateProjectionMatrix();
 	void UpdateCameraVectors();
 private:
-	SimpleUtilities::Matrix4x4f myModelToWorldTransform;
+	SimpleUtilities::Transform myTransform;
+
 	SimpleUtilities::Matrix4x4f myProjectionMatrix;
 
 	SimpleUtilities::Vector3f myForward;
