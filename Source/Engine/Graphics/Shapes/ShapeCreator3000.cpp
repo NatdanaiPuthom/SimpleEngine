@@ -109,55 +109,55 @@ MeshData Shape::CreateTerrain()
 	return MeshData(vertices, indices);
 }
 
-MeshData Shape::CreatePyramid()
+MeshData Shape::CreatePyramid(const SimpleUtilities::Vector3f aSize)
 {
 	Vertex south_West;
-	south_West.position = SU::Vector4f(-1.0f, -1.0f, -1.0f, 1);
+	south_West.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1);
 	south_West.uv = SU::Vector2f(0.0f, 0.0f);
 
 	Vertex south_East;
-	south_East.position = SU::Vector4f(1.0f, -1.0f, -1.0f, 1);
+	south_East.position = SU::Vector4f(aSize.x, -aSize.y, -aSize.z, 1);
 	south_East.uv = SU::Vector2f(1.0f, 0.0f);
 
 	Vertex south_Top;
-	south_Top.position = SU::Vector4f(0.0f, 1.0f, 0.0f, 1);
-	south_Top.uv = SU::Vector2f(0.0f, 1.0f);
+	south_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
+	south_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
 	Vertex east_West;
-	east_West.position = SU::Vector4f(1.0f, -1.0f, -1.0f, 1);
+	east_West.position = SU::Vector4f(aSize.x, -aSize.y, -aSize.z, 1);
 	east_West.uv = SU::Vector2f(0.0f, 0.0f);
 
 	Vertex east_East;
-	east_East.position = SU::Vector4f(1.0f, -1.0f, 1.0f, 1);
+	east_East.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1);
 	east_East.uv = SU::Vector2f(1.0f, 0.0f);
 
 	Vertex east_Top;
-	east_Top.position = SU::Vector4f(0.0f, 1.0f, 0.0f, 1);
-	east_Top.uv = SU::Vector2f(0.0f, 1.0f);
+	east_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
+	east_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
 	Vertex north_West;
-	north_West.position = SU::Vector4f(-1.0f, -1.0f, 1.0f, 1);
+	north_West.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1);
 	north_West.uv = SU::Vector2f(0.0f, 0.0f);
 
 	Vertex north_East;
-	north_East.position = SU::Vector4f(1.0f, -1.0f, 1.0f, 1);
+	north_East.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1);
 	north_East.uv = SU::Vector2f(1.0f, 0.0f);
 
 	Vertex north_Top;
-	north_Top.position = SU::Vector4f(0.0f, 1.0f, 0.0f, 1);
-	north_Top.uv = SU::Vector2f(0.0f, 1.0f);
+	north_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
+	north_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
 	Vertex west_West;
-	west_West.position = SU::Vector4f(-1.0f, -1.0f, 1.0f, 1);
+	west_West.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1);
 	west_West.uv = SU::Vector2f(0.0f, 0.0f);
 
 	Vertex west_East;
-	west_East.position = SU::Vector4f(-1.0f, -1.0f, -1.0f, 1);
+	west_East.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1);
 	west_East.uv = SU::Vector2f(1.0f, 0.0f);
 
 	Vertex west_Top;
-	west_Top.position = SU::Vector4f(0.0f, 1.0f, 0.0f, 1);
-	west_Top.uv = SU::Vector2f(0.0f, 1.0f);
+	west_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
+	west_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
 	std::vector<Vertex> vertices =
 	{
