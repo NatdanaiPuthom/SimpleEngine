@@ -121,7 +121,7 @@ MeshData Shape::CreatePyramid(const SimpleUtilities::Vector3f aSize)
 
 	Vertex south_Top;
 	south_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
-	south_Top.uv = SU::Vector2f(0.0f, 1.0f);
+	south_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
 	Vertex east_West;
 	east_West.position = SU::Vector4f(aSize.x, -aSize.y, -aSize.z, 1);
@@ -133,7 +133,7 @@ MeshData Shape::CreatePyramid(const SimpleUtilities::Vector3f aSize)
 
 	Vertex east_Top;
 	east_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
-	east_Top.uv = SU::Vector2f(0.0f, 1.0f);
+	east_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
 	Vertex north_West;
 	north_West.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1);
@@ -145,7 +145,7 @@ MeshData Shape::CreatePyramid(const SimpleUtilities::Vector3f aSize)
 
 	Vertex north_Top;
 	north_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
-	north_Top.uv = SU::Vector2f(0.0f, 1.0f);
+	north_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
 	Vertex west_West;
 	west_West.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1);
@@ -157,7 +157,7 @@ MeshData Shape::CreatePyramid(const SimpleUtilities::Vector3f aSize)
 
 	Vertex west_Top;
 	west_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
-	west_Top.uv = SU::Vector2f(0.0f, 1.0f);
+	west_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
 	std::vector<Vertex> vertices =
 	{
