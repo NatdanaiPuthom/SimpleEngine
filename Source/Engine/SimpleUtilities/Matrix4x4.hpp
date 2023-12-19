@@ -23,8 +23,8 @@ namespace SimpleUtilities
 		const T& operator()(const int aRow, const int aColumn) const;
 		void operator=(const Matrix4x4<T>& aMatrix);
 
-		void SetPosition(const SimpleUtilities::Vector3<T>& aPosition);
-		void SetLocalRotation(const SimpleUtilities::Vector3<T>& aRotationInDegree);
+		void SetPosition(const Vector3<T>& aPosition);
+		void SetLocalRotation(const Vector3<T>& aRotationInDegree);
 
 		Vector3<T> GetPosition() const;
 		Vector3<T> GetRotation() const;
@@ -41,6 +41,8 @@ namespace SimpleUtilities
 
 	private:
 		T myMatrix[4][4];
+		Vector3f myRotation;
+		float padding;
 	};
 
 	typedef Matrix4x4<float> Matrix4x4f;
@@ -223,6 +225,8 @@ namespace SimpleUtilities
 				myMatrix[i][j] = aMatrix(i + 1, j + 1);
 			}
 		}
+
+		myRotation = aMatrix.myRotation;
 	}
 
 	template<typename T>
@@ -250,6 +254,16 @@ namespace SimpleUtilities
 				myMatrix[i][j] = rotationMatrix(i + 1, j + 1);
 			}
 		}
+
+		myRotation = aRotationInDegree;
+
+		if (myRotation.x < 0.0f) myRotation.x += 360.0f;
+		if (myRotation.y < 0.0f) myRotation.y += 360.0f;
+		if (myRotation.z < 0.0f) myRotation.z += 360.0f;
+
+		if (myRotation.x > 360.0f) myRotation.x -= 360.0f;
+		if (myRotation.y > 360.0f) myRotation.y -= 360.0f;
+		if (myRotation.z > 360.0f) myRotation.z -= 360.0f;
 	}
 
 	template<typename T>
@@ -262,34 +276,7 @@ namespace SimpleUtilities
 	template<typename T>
 	inline Vector3<T> Matrix4x4<T>::GetRotation() const
 	{
-		//TO-DO: Fix X rotation it got fuckt after 90 degree. Maybe implement Quaternion
-
-		Vector3<T> forward;
-		Vector3<T> right;
-		Vector3<T> up;
-
-		forward.x = myMatrix[2][0];
-		forward.y = myMatrix[2][1];
-		forward.z = myMatrix[2][2];
-		forward.Normalize();
-
-		right.x = myMatrix[0][0];
-		right.y = myMatrix[0][1];
-		right.z = myMatrix[0][2];
-		right.Normalize();
-
-		up.x = myMatrix[1][0];
-		up.y = myMatrix[1][1];
-		up.z = myMatrix[1][2];
-		up.Normalize();
-
-		SimpleUtilities::Vector3<T> rotation;
-		rotation.x = atan2(-forward.y, sqrt(forward.x * forward.x + forward.z * forward.z));
-		rotation.y = atan2(forward.x, forward.z);
-		rotation.z = atan2(right.y, up.y);
-
-		const SimpleUtilities::Vector3<T> rotationInDegree = rotation * GetRadToDeg();
-		return rotationInDegree;
+		return myRotation;
 	}
 
 	template<typename T>
@@ -309,6 +296,8 @@ namespace SimpleUtilities
 				}
 			}
 		}
+
+		myRotation = SimpleUtilities::Vector3f(0,0,0);
 	}
 
 	template<typename T>
@@ -321,12 +310,14 @@ namespace SimpleUtilities
 				myMatrix[i][j] = aMatrix(i + 1, j + 1);
 			}
 		}
+
+		myRotation = aMatrix.myRotation;
 	}
 
 	template<typename T>
 	inline Matrix4x4<T> Matrix4x4<T>::Identity()
 	{
-		return Matrix4x4<T>(); //Just For Stupid Brain Like Me
+		return Matrix4x4<T>(); //Just For Dummies Like Me
 	}
 
 	template<typename T>

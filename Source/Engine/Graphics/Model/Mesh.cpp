@@ -173,7 +173,7 @@ Shader& Mesh::GetShader()
 	return *myShader;
 }
 
-SimpleUtilities::Matrix4x4f& Mesh::GetModelToWorldMatrix()
+SimpleUtilities::Matrix4x4f Mesh::GetModelToWorldMatrix()
 {
 	return myModelToWorld;
 }

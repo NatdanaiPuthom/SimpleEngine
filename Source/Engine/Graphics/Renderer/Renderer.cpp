@@ -20,6 +20,7 @@ Renderer::Renderer()
 
 	myDirectionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
 	mySkyBox->SetPosition({ 0,0,20 });
+
 }
 
 Renderer::~Renderer()
@@ -42,6 +43,7 @@ void Renderer::Render()
 		//Cube
 		SimpleUtilities::Vector3f cubeRotation = myMeshes[2]->GetRotation();
 		cubeRotation.x += 10 * SimplyGlobal::GetDeltaTime();
+		cubeRotation.z -= 10 * SimplyGlobal::GetDeltaTime();
 		myMeshes[2]->SetRotation(cubeRotation);
 
 		//Directional Light test
