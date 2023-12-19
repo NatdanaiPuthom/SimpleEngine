@@ -52,13 +52,13 @@ void GameWorld::Init()
 		if (!terrain->AddTexture(6, "Assets/tga/Uppgift6/Snow_n.dds"))
 			assert(false && "Failed to Add Texture");
 
-		if (!terrain->AddTexture(7, "Assets/tga/Uppgift7/Grass_m.dds"))
+		if (!terrain->AddTexture(8, "Assets/tga/Uppgift7/Grass_m.dds"))
 			assert(false && "Failed to Add Texture");
 
-		if (!terrain->AddTexture(8, "Assets/tga/Uppgift7/Rock_m.dds"))
+		if (!terrain->AddTexture(9, "Assets/tga/Uppgift7/Rock_m.dds"))
 			assert(false && "Failed to Add Texture");
 
-		if (!terrain->AddTexture(9, "Assets/tga/Uppgift7/Snow_m.dds"))
+		if (!terrain->AddTexture(10, "Assets/tga/Uppgift7/Snow_m.dds"))
 			assert(false && "Failed to Add Texture");
 
 		terrain->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
