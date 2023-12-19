@@ -41,8 +41,8 @@ namespace SimpleUtilities
 
 	private:
 		T myMatrix[4][4];
-		Vector3f myRotation;
-		float padding;
+		Vector3<T> myRotation;
+		T padding;
 	};
 
 	typedef Matrix4x4<float> Matrix4x4f;
