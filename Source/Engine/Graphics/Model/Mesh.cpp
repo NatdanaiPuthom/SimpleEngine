@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Engine/Graphics/Texture/Texture.hpp"
+#include <External/profiler.h>
 
 Mesh::Mesh()
 	: myShader(std::make_shared<Shader>())
@@ -32,7 +33,7 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	if (!myShader->Init(device, aPSShaderFile, aVSShaderFile))
 		return false;
 
-	if (!AddTexture(0, "Assets/DefaultTexture.dds")) //Default texture
+	if (!AddTexture(0, "Assets/Textures/DefaultTexture.dds")) //Default texture
 		return false;
 
 	return true;
@@ -70,6 +71,12 @@ void Mesh::Draw()
 	objectBuffer.modelToWorldMatrix = myTransform.GetMatrix();
 	myObjectBuffer->Bind(1);
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+
+	for (unsigned int i = 0; i < myTextures.size(); ++i) //TO-DO: Re-structure how textures are binded so it doesn't need to check for every mesh for every textures
+	{
+		if (myTextures[i] != nullptr)
+			myTextures[i]->Bind(myGraphicsEngine->GetContext(), i);
+	}
 
 	context->DrawIndexed(static_cast<UINT>(myMeshData.myIndices.size()), 0, 0);
 }

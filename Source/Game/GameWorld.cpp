@@ -34,6 +34,9 @@ void GameWorld::Init()
 		if (!cube->Init(cubeData))
 			assert(false && "Failed to create Cube");
 
+		if (!pyramid->AddTexture(0, "Assets/Textures/Cat.dds"))
+			assert(false && "Failed To Add Texture");
+
 		if (!terrain->AddTexture(1, "Assets/tga/Uppgift6/Grass_c.dds"))
 			assert(false && "Failed to Add Texture");
 
