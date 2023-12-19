@@ -1,4 +1,4 @@
-#include "../Common.hlsli"
+
 #include "../PBRFunctions.hlsli"
 
 Texture2D aGrassC : register(t1);
@@ -78,7 +78,7 @@ PixelOutput main(PixelInputType aInput)
     
     output.color = float4(ambiance + directionalLight, 1);
     
-    output.color.rgb = 0.5f + 0.5f * aInput.normal; //Debugging
+    //output.color.rgb = 0.5f + 0.5f * aInput.normal; //Debugging
  
     return output;
 }

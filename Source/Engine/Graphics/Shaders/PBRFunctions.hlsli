@@ -1,4 +1,4 @@
-
+#include "Common.hlsli"
 
 #define FLT_EPSILON 1.192092896e-07f
 #define nMipOffset 3
