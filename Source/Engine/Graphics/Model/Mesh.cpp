@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Engine/Graphics/Texture/Texture.hpp"
-#include <External/profiler.h>
 
 Mesh::Mesh()
 	: myShader(std::make_shared<Shader>())

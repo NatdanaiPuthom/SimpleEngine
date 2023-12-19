@@ -35,3 +35,4 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/Graphics/Shaders/Shader.hpp"
 #include "Engine/Graphics/Model/Mesh.hpp"
 #include "Engine/Graphics/Texture/Texture.hpp"
+#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp" //TO-DO: Remove later

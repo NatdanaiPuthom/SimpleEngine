@@ -28,5 +28,6 @@
 #include "Engine/engine.hpp"
 #include "Engine/Input/InputManager.hpp"
 #include "Engine/Graphics/GraphicsEngine.hpp"
+#include "Engine/Graphics/Model/Mesh.hpp"
 
 #include <External/profiler.h>

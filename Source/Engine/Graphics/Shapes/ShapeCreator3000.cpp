@@ -4,13 +4,13 @@
 
 namespace SU = SimpleUtilities;
 
-MeshData Shape::CreateTerrain()
+MeshData ShapeCreator3000::CreateTerrain(const Simple::TerrainData& aTerrainData)
 {
-	const unsigned int upSampleMultiplier = 2;
-	const float vertexLength = 0.50f;
-	const float amplitude = 5.0f;
+	const unsigned int upSampleMultiplier = aTerrainData.upSampleMultiplier;
+	const float vertexLength = aTerrainData.vertexLength;
+	const float amplitude = aTerrainData.amplitude;
 
-	unsigned int gridSize = 12;
+	unsigned int gridSize = aTerrainData.gridSize;
 
 	std::vector<float> heightMap(gridSize * gridSize);
 
@@ -109,7 +109,7 @@ MeshData Shape::CreateTerrain()
 	return MeshData(vertices, indices);
 }
 
-MeshData Shape::CreatePyramid(const SimpleUtilities::Vector3f aSize)
+MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f aSize)
 {
 	Vertex south_West;
 	south_West.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1);
@@ -178,7 +178,7 @@ MeshData Shape::CreatePyramid(const SimpleUtilities::Vector3f aSize)
 	return MeshData(vertices, indices);
 }
 
-MeshData Shape::CreateCube(const SimpleUtilities::Vector3f aSize)
+MeshData ShapeCreator3000::CreateCube(const SimpleUtilities::Vector3f aSize)
 {
 	Vertex north_bottomLeft;
 	north_bottomLeft.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
@@ -305,7 +305,7 @@ MeshData Shape::CreateCube(const SimpleUtilities::Vector3f aSize)
 	return MeshData(vertices, indices);
 }
 
-MeshData Shape::CreateDirectionalLight()
+MeshData ShapeCreator3000::CreateDirectionalLight()
 {
 	Vertex north_bottomLeft;
 	north_bottomLeft.color = { 1,0,0,1 };
@@ -432,8 +432,7 @@ MeshData Shape::CreateDirectionalLight()
 	return MeshData(vertices, indices);
 }
 
-
-MeshData Shape::CreateSkyBox(const SU::Vector3f& aSize)
+MeshData ShapeCreator3000::CreateSkyBox(const SU::Vector3f& aSize)
 {
 	Vertex north_bottomLeft;
 	north_bottomLeft.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);

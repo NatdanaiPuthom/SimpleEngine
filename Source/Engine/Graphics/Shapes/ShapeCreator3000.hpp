@@ -1,11 +1,22 @@
 #pragma once
-#include "Engine/Graphics/Model/Mesh.hpp"
 
-namespace Shape
+namespace Simple
 {
-	MeshData CreateTerrain();
-	MeshData CreatePyramid(const SimpleUtilities::Vector3f aSize = { 1.0f , 1.0f, 1.0f });
-	MeshData CreateCube(const SimpleUtilities::Vector3f aSize = { 0.5f, 0.5f , 0.5f });
-	MeshData CreateSkyBox(const SimpleUtilities::Vector3f& aSize = { 100.0f, 100.0f, 100.0f });
-	MeshData CreateDirectionalLight();
+	struct TerrainData
+	{
+		float amplitude = 5.0f;
+		float vertexLength = 0.50f;
+		unsigned int gridSize = 12;
+		unsigned int upSampleMultiplier = 2;
+	};
 }
+
+class ShapeCreator3000
+{
+public:
+	static MeshData CreateTerrain(const Simple::TerrainData& aTerrainData = Simple::TerrainData{});
+	static MeshData CreatePyramid(const SimpleUtilities::Vector3f aSize = { 1.0f , 1.0f, 1.0f });
+	static MeshData CreateCube(const SimpleUtilities::Vector3f aSize = { 0.5f, 0.5f , 0.5f });
+	static MeshData CreateSkyBox(const SimpleUtilities::Vector3f& aSize = { 100.0f, 100.0f, 100.0f });
+	static MeshData CreateDirectionalLight();
+};

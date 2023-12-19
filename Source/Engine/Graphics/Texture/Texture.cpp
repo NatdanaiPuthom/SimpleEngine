@@ -12,6 +12,7 @@ Texture::Texture()
 
 Texture::~Texture()
 {
+	myShaderResourceView.Reset();
 }
 
 bool Texture::LoadDDS(const char* aFilePath)
