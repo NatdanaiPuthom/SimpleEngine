@@ -22,7 +22,8 @@ cbuffer TimeBuffer : register(b2)
 cbuffer DirectionLightBuffer : register(b3)
 {
     float3 directionLightDirection;
-    float3 directionalLightColor;
+    float padding;
+    float4 directionalLightColor;
 }
 
 cbuffer AmbientLightBuffer : register(b4)

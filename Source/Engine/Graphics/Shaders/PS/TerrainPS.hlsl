@@ -12,6 +12,14 @@ Texture2D aGrassM : register(t7);
 Texture2D aRockM : register(t8);
 Texture2D aSnowM : register(t9);
 
+float3 expandNormal(float4 normalTexture)
+{
+    float3 normal = normalTexture.agg;
+    normal = 2.0f * normal - 1.0f;
+    normal.z = sqrt(1 - saturate(normal.x * normal.x + normal.y * normal.y));
+    return normalize(normal);
+}
+
 PixelOutput main(PixelInputType aInput)
 {
     PixelOutput output;
@@ -24,13 +32,13 @@ PixelOutput main(PixelInputType aInput)
     float4 snowColor = aSnowC.Sample(aSampler, aInput.uv);
     float3 color = lerp(rockColor, lerp(grassColor, snowColor, heightBlend), slopeBlend).rgb;
     
-    float4 grassNormal = aGrassN.Sample(aSampler, aInput.uv);
-    float4 rockNormal = aRockN.Sample(aSampler, aInput.uv);
-    float4 snowNormal = aSnowN.Sample(aSampler, aInput.uv);
-    float3 normal = lerp(rockNormal, lerp(grassNormal, snowNormal, heightBlend), slopeBlend).rgb;
+    float3 grassNormal = expandNormal(aGrassN.Sample(aSampler, aInput.uv));
+    float3 rockNormal = expandNormal(aRockN.Sample(aSampler, aInput.uv));
+    float3 snowNormal = expandNormal(aSnowN.Sample(aSampler, aInput.uv));
+    float3 normalTexture = lerp(rockNormal, lerp(grassNormal, snowNormal, heightBlend), slopeBlend);
     
     float3x3 TBN = float3x3(aInput.tangent, aInput.bitangent, aInput.normal);
-    normal = normalize(mul(TBN, normal));
+    normalTexture = normalize(mul(TBN, normalTexture));
     
     float3 toEye = normalize(cameraPosition - aInput.worldPosition.xyz);
     
@@ -45,31 +53,40 @@ PixelOutput main(PixelInputType aInput)
     float Roughness = materialLerp.g;
     float Emissive = materialLerp.b;
     
-    float3 specularColor = lerp((float3) 0.04f, color, Metalness);
+    float3 specularMin = float3(0.04f, 0.04f, 0.04f);
+    float3 specularColor = lerp(specularMin, color, Metalness);
+    //float3 specularColor = float3(0.f, 0.f, 0.f);
     float3 diffuseColor = lerp((float3) 0.00f, color, 1 - Metalness);
-    float ambientOcclusion = 1.0f;
+    //float3 diffuseColor = float3(1.f, 1.f, 1.f);
+
+    float ambientOcclusion = 1.0f-  normalTexture.r;
     
     float3 ambiance = EvaluateAmbiance(
-		aCubeMap, normal, aInput.normal.xyz,
+		aCubeMap, normalTexture, -aInput.normal.xyz,
 		toEye, Roughness,
 		ambientOcclusion, diffuseColor, specularColor
 	);
     
     float3 directionalLight = EvaluateDirectionalLight(
-		diffuseColor, specularColor, aInput.normal.xyz, Roughness,
+		diffuseColor, specularColor, -aInput.normal.xyz, Roughness,
 		directionalLightColor.xyz, directionLightDirection.xyz, toEye.xyz
 	);
     
-    output.color = float4(ambiance + directionalLight, 1);
     
-    float lightIntensity = max(0.0, dot(directionLightDirection, normal));
-    float3 directional = directionalLightColor * lightIntensity;
-    float3 ambient = ((0.5f + 0.5f * aInput.normal.y) * skyColor + (0.5f - 0.5f * aInput.normal.y) * groundColor);
+    float4 finalColor = float4((0.5f * ambiance + directionalLight/* * directionalLightColor.a*/), 1);
+    finalColor.rbg = tonemap_s_gamut3_cine(finalColor.rbg);
+    output.color = finalColor;
     
-    float3 finalColor = saturate(color * (ambient + directional));
+    //output.color = float4(directionalLight, 1);
     
-    output.color = float4(finalColor, 1);
-    output.color.a = 1;
+    //float lightIntensity = max(0.0, dot(directionLightDirection, normal));
+    //float3 directional = directionalLightColor * lightIntensity;
+    //float3 ambient = ((0.5f + 0.5f * aInput.normal.y) * skyColor + (0.5f - 0.5f * aInput.normal.y) * groundColor);
+    
+    //float3 finalColor = saturate(color * (ambient + directional));
+    
+    //output.color = float4(finalColor, 1);
+    //output.color.a = 1;
     
     
     //float2 scaledUV = aInput.uv;

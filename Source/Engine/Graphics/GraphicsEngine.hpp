@@ -38,8 +38,8 @@ struct alignas(16) DirectionalLightBufferData
 	SimpleUtilities::Vector3f direction;
 	float padding1;
 
-	SimpleUtilities::Vector3f color;
-	float padding2;
+	SimpleUtilities::Vector4f color;
+	//float padding2;
 };
 
 struct alignas(16) AmbientLightBufferData
@@ -63,7 +63,7 @@ public:
 
 public:
 	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection);
-	void SetDirectionalLightColor(const SimpleUtilities::Vector3f& aColor);
+	void SetDirectionalLightColor(const SimpleUtilities::Vector4f& aColor);
 	void SetSkyColor(const SimpleUtilities::Vector3f& aColor);
 	void SetGroundColor(const SimpleUtilities::Vector3f& aColor);
 	void SetToBackBuffer();
@@ -74,7 +74,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetShaderResourceView();
 
 	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
-	SimpleUtilities::Vector3f GetDirectionalLightColor() const;
+	SimpleUtilities::Vector4f GetDirectionalLightColor() const;
 	SimpleUtilities::Vector3f GetSkyColor() const;
 	SimpleUtilities::Vector3f GetGroundColor() const;
 	std::shared_ptr<Camera> GetCamera();

@@ -21,7 +21,7 @@ GraphicsEngine::GraphicsEngine()
 	myDirectionLightData->direction.x = 0;
 	myDirectionLightData->direction.y = -1;
 	myDirectionLightData->direction.z = 0;
-	myDirectionLightData->color = { 0,0,0 };
+	myDirectionLightData->color = { 0,0,0, 1 };
 
 	myAmbientLightData->skyColor = { 1,1,1 };
 	myAmbientLightData->groundColor = { 1,1,1 };
@@ -71,6 +71,7 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 	myCamera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 	myCamera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 
+	myDirectionLightData->color = SimpleUtilities::Vector4f(1, 1, 1, 1);
 	return true;
 }
 
@@ -179,7 +180,7 @@ void GraphicsEngine::SetDirectionalLightDirection(const SimpleUtilities::Vector3
 	myDirectionLightData->direction = aDirection;
 }
 
-void GraphicsEngine::SetDirectionalLightColor(const SimpleUtilities::Vector3f& aColor)
+void GraphicsEngine::SetDirectionalLightColor(const SimpleUtilities::Vector4f& aColor)
 {
 	myDirectionLightData->color = aColor;
 }
@@ -263,7 +264,7 @@ SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
 	return myDirectionLightData->direction;
 }
 
-SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightColor() const
+SimpleUtilities::Vector4f GraphicsEngine::GetDirectionalLightColor() const
 {
 	return myDirectionLightData->color;
 }
@@ -445,8 +446,7 @@ bool GraphicsEngine::CreateDirectionalLightBuffer()
 	{
 		SimpleUtilities::Vector3f(0,-1,0),
 		-1,
-		SimpleUtilities::Vector3f(0,0,0),
-		-1
+		SimpleUtilities::Vector4f(0,0,0,0)
 	};
 
 	if (!myDirectionLightBuffer->Init(this, sizeof(DirectionalLightBufferData), &directionLightBuffer))

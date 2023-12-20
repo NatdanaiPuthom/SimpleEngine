@@ -100,8 +100,14 @@ void ImGuiManager::Render()
 				}
 
 				ImGui::SetNextItemWidth(400.0f);
-				SimpleUtilities::Vector3f color = graphicsEngine->GetDirectionalLightColor();
-				if (ImGui::SliderFloat3("Color", &color.x, 0.0f, 1.0f, "%.03f"))
+				SimpleUtilities::Vector4f color = graphicsEngine->GetDirectionalLightColor();
+				if (ImGui::SliderFloat3("Color", &color.x, 0.0f, 1.f, "%.03f"))
+				{
+					graphicsEngine->SetDirectionalLightColor(color);
+				}
+				ImGui::SetNextItemWidth(400.0f);
+				ImGui::SameLine();
+				if (ImGui::SliderFloat("Dir Light Intensity", &color.w, 0.0f, 10.f, "%.03f"))
 				{
 					graphicsEngine->SetDirectionalLightColor(color);
 				}
