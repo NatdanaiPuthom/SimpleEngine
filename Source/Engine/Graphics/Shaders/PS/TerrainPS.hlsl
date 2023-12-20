@@ -1,4 +1,3 @@
-
 #include "../PBRFunctions.hlsli"
 
 Texture2D aGrassC : register(t1);
@@ -9,11 +8,9 @@ Texture2D aGrassN : register(t4);
 Texture2D aRockN : register(t5);
 Texture2D aSnowN : register(t6);
 
-Texture2D aGrassM : register(t8);
-Texture2D aRockM : register(t9);
-Texture2D aSnowM : register(t10);
-
-Texture2D aTestNormal : register(t7);
+Texture2D aGrassM : register(t7);
+Texture2D aRockM : register(t8);
+Texture2D aSnowM : register(t9);
 
 PixelOutput main(PixelInputType aInput)
 {
@@ -51,9 +48,6 @@ PixelOutput main(PixelInputType aInput)
     float3 specularColor = lerp((float3) 0.04f, color, Metalness);
     float3 diffuseColor = lerp((float3) 0.00f, color, 1 - Metalness);
     float ambientOcclusion = 1.0f;
-
-    
-   
     
     float3 ambiance = EvaluateAmbiance(
 		aCubeMap, normal, aInput.normal.xyz,
@@ -66,17 +60,20 @@ PixelOutput main(PixelInputType aInput)
 		directionalLightColor.xyz, directionLightDirection.xyz, toEye.xyz
 	);
     
-    
-    //float lightIntensity = max(0.0, dot(directionLightDirection, normal));
-    //float3 directional = directionalLightColor * lightIntensity;
-    //float3 ambient = ((0.5f + 0.5f * aInput.normal.y) * skyColor + (0.5f - 0.5f * aInput.normal.y) * groundColor);
-    
-    //float3 finalColor = saturate(color * (ambient + directional));
-    
-    //output.color = float4(finalColor, 1);
-    //output.color.a = 1;
-    
     output.color = float4(ambiance + directionalLight, 1);
+    
+    float lightIntensity = max(0.0, dot(directionLightDirection, normal));
+    float3 directional = directionalLightColor * lightIntensity;
+    float3 ambient = ((0.5f + 0.5f * aInput.normal.y) * skyColor + (0.5f - 0.5f * aInput.normal.y) * groundColor);
+    
+    float3 finalColor = saturate(color * (ambient + directional));
+    
+    output.color = float4(finalColor, 1);
+    output.color.a = 1;
+    
+    
+    //float2 scaledUV = aInput.uv;
+    //float3 toEye = normalize(cameraPosition.xyz - aInput.worldPosition.xyz);
     
     //output.color.rgb = 0.5f + 0.5f * aInput.normal; //Debugging
  

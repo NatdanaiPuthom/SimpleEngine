@@ -3,6 +3,7 @@
 #define FLT_EPSILON 1.192092896e-07f
 #define nMipOffset 3
 #define PI 3.14159265358979323846f
+
 float3 s_curve(float3 x)
 {
     float a = 2.51f;
@@ -12,7 +13,6 @@ float3 s_curve(float3 x)
     float e = 0.14f;
     return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
 }
-
 
 float3 tonemap_s_gamut3_cine(float3 c)
 {
@@ -29,6 +29,7 @@ float3 tonemap_s_gamut3_cine(float3 c)
 
     return mul(toSrgb, s_curve(mul(fromSrgb, c)));
 }
+
 float bias(float value, float b)
 {
     return (b > 0.0) ? pow(abs(value), log(b) / log(0.5)) : 0.0f;
@@ -42,6 +43,7 @@ float3 Diffuse(float3 pAlbedo)
 {
     return pAlbedo / PI;
 }
+
 float NormalDistribution_GGX(float a, float NdH)
 {
     // Isotropic ggx
@@ -79,6 +81,7 @@ float RoughnessFromPerceptualRoughness(float perceptualRoughness)
 {
     return perceptualRoughness * perceptualRoughness;
 }
+
 float3 GetSpecularDominantDir(float3 vN, float3 vR, float roughness)
 {
     float invRough = saturate(1 - roughness);
@@ -173,7 +176,6 @@ float3 EvaluateAmbiance(TextureCube lysBurleyCube, float3 vN, float3 VNUnit, flo
 
     return ambientdiffuse + ambientspecular;
 }
-
 
 float3 EvaluateDirectionalLight(float3 albedoColor, float3 specularColor, float3 normal, float roughness, float3 lightColor, float3 lightDir, float3 viewDir)
 {
