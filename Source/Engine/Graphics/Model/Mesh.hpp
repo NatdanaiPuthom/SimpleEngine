@@ -36,6 +36,7 @@ public:
 public:
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
 	void SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree);
+
 	SimpleUtilities::Vector3f GetPosition() const;
 	SimpleUtilities::Vector3f GetRotation() const;
 public:

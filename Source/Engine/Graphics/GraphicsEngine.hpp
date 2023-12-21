@@ -39,7 +39,6 @@ struct alignas(16) DirectionalLightBufferData
 	float padding1;
 
 	SimpleUtilities::Vector4f color;
-	//float padding2;
 };
 
 struct alignas(16) AmbientLightBufferData

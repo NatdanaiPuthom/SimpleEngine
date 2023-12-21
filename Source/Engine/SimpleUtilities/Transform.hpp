@@ -1,41 +1,40 @@
 #pragma once
-#include "Engine/SimpleUtilities/Vector3.hpp"
-#include "Engine/SimpleUtilities/Matrix4x4.hpp"
 
 namespace SimpleUtilities
 {
+	template<typename T>
+	class Vector3;
+
+	template<typename T>
+	class Matrix4x4;
+
 	class Transform
 	{
 	public:
 		Transform();
-		Transform(const Vector3f& aPosition, const Vector3f& aRotation, const Vector3f& aScale);
+		Transform(const Vector3f& aPosition, const Vector3f& aRotation);
 		~Transform();
 
 		void SetPosition(const Vector3f& aPosition);
 		void SetRotation(const Vector3f& aRotationInDegree);
-		void SetScale(const Vector3f& aScale);
 
 		Vector3f GetPosition() const;
 		Vector3f GetRotation() const;
-		Vector3f GetScale() const;
 		Matrix4x4f GetMatrix() const;
 
 	private:
 		Matrix4x4f myMatrix;
 		Vector3f myPosition;
 		Vector3f myRotation;
-		Vector3f myScale;
 	};
 
 	inline Transform::Transform()
-		: myScale(1, 1, 1)
 	{
 	}
 
-	inline Transform::Transform(const Vector3f& aPosition, const Vector3f& aRotation, const Vector3f& aScale)
+	inline Transform::Transform(const Vector3f& aPosition, const Vector3f& aRotation)
 		: myPosition(aPosition)
 		, myRotation(aRotation)
-		, myScale(aScale)
 	{
 		myMatrix.SetPosition(myPosition);
 		myMatrix.SetLocalRotation(aRotation);
@@ -67,11 +66,6 @@ namespace SimpleUtilities
 		myMatrix.SetLocalRotation(myRotation);
 	}
 
-	inline void Transform::SetScale(const Vector3f& aScale)
-	{
-		myScale = aScale;
-	}
-
 	inline Vector3f Transform::GetPosition() const
 	{
 		return myPosition;
@@ -80,11 +74,6 @@ namespace SimpleUtilities
 	inline Vector3f Transform::GetRotation() const
 	{
 		return myRotation;
-	}
-
-	inline Vector3f Transform::GetScale() const
-	{
-		return myScale;
 	}
 
 	inline Matrix4x4f Transform::GetMatrix() const
