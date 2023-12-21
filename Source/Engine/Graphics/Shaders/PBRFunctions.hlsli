@@ -4,6 +4,14 @@
 #define nMipOffset 3
 #define PI 3.14159265358979323846f
 
+float3 expandNormal(float4 normalTexture)
+{
+    float3 normal = normalTexture.agg;
+    normal = 2.0f * normal - 1.0f;
+    normal.z = sqrt(1 - saturate(normal.x * normal.x + normal.y * normal.y));
+    return normalize(normal);
+}
+
 float3 s_curve(float3 x)
 {
     float a = 2.51f;
