@@ -1,5 +1,5 @@
 #pragma once
-//TO-DO: May reconsider manually assign values instead of using for-loop for better performance as matrix is commonly used everywhere
+//TO-DO: Fix the operator shit
 
 namespace SimpleUtilities
 {
@@ -76,13 +76,25 @@ namespace SimpleUtilities
 	template<typename T>
 	void operator+=(Matrix4x4<T>& aMatrixA, const Matrix4x4<T>& aMatrixB)
 	{
-		for (int row = 0; row < 4; ++row)
-		{
-			for (int column = 0; column < 4; ++column)
-			{
-				aMatrixA(row + 1, column + 1) += aMatrixB(row + 1, column + 1);
-			}
-		}
+		aMatrixA[0][0] += aMatrixB(1, 1);
+		aMatrixA[0][1] += aMatrixB(1, 2);
+		aMatrixA[0][2] += aMatrixB(1, 3);
+		aMatrixA[0][3] += aMatrixB(1, 4);
+
+		aMatrixA[1][0] += aMatrixB(2, 1);
+		aMatrixA[1][1] += aMatrixB(2, 2);
+		aMatrixA[1][2] += aMatrixB(2, 3);
+		aMatrixA[1][3] += aMatrixB(2, 4);
+
+		aMatrixA[2][0] += aMatrixB(3, 1);
+		aMatrixA[2][1] += aMatrixB(3, 2);
+		aMatrixA[2][2] += aMatrixB(3, 3);
+		aMatrixA[2][3] += aMatrixB(3, 4);
+
+		aMatrixA[3][0] += aMatrixB(4, 1);
+		aMatrixA[3][1] += aMatrixB(4, 2);
+		aMatrixA[3][2] += aMatrixB(4, 3);
+		aMatrixA[3][3] += aMatrixB(4, 4);
 	}
 
 	template<typename T>
@@ -90,13 +102,25 @@ namespace SimpleUtilities
 	{
 		Matrix4x4<T> matrix;
 
-		for (int row = 0; row < 4; ++row)
-		{
-			for (int column = 0; column < 4; ++column)
-			{
-				matrix(row + 1, column + 1) = aMatrixA(row + 1, column + 1) + aMatrixB(row + 1, column + 1);
-			}
-		}
+		matrix(1, 1) = aMatrixA(1, 1) + aMatrixB(1, 1);
+		matrix(1, 2) = aMatrixA(1, 2) + aMatrixB(1, 2);
+		matrix(1, 3) = aMatrixA(1, 3) + aMatrixB(1, 3);
+		matrix(1, 4) = aMatrixA(1, 4) + aMatrixB(1, 4);
+
+		matrix(2, 1) = aMatrixA(2, 1) + aMatrixB(2, 1);
+		matrix(2, 2) = aMatrixA(2, 2) + aMatrixB(2, 2);
+		matrix(2, 3) = aMatrixA(2, 3) + aMatrixB(2, 3);
+		matrix(2, 4) = aMatrixA(2, 4) + aMatrixB(2, 4);
+
+		matrix(3, 1) = aMatrixA(3, 1) + aMatrixB(3, 1);
+		matrix(3, 2) = aMatrixA(3, 2) + aMatrixB(3, 2);
+		matrix(3, 3) = aMatrixA(3, 3) + aMatrixB(3, 3);
+		matrix(3, 4) = aMatrixA(3, 4) + aMatrixB(3, 4);
+
+		matrix(4, 1) = aMatrixA(4, 1) + aMatrixB(4, 1);
+		matrix(4, 2) = aMatrixA(4, 2) + aMatrixB(4, 2);
+		matrix(4, 3) = aMatrixA(4, 3) + aMatrixB(4, 3);
+		matrix(4, 4) = aMatrixA(4, 4) + aMatrixB(4, 4);
 
 		return matrix;
 	}
@@ -104,13 +128,25 @@ namespace SimpleUtilities
 	template<typename T>
 	void operator-=(Matrix4x4<T>& aMatrixA, const Matrix4x4<T>& aMatrixB)
 	{
-		for (int row = 0; row < 4; ++row)
-		{
-			for (int column = 0; column < 4; ++column)
-			{
-				aMatrixA(row + 1, column + 1) -= aMatrixB(row + 1, column + 1);
-			}
-		}
+		aMatrixA[0][0] -= aMatrixB(1, 1);
+		aMatrixA[0][1] -= aMatrixB(1, 2);
+		aMatrixA[0][2] -= aMatrixB(1, 3);
+		aMatrixA[0][3] -= aMatrixB(1, 4);
+
+		aMatrixA[1][0] -= aMatrixB(2, 1);
+		aMatrixA[1][1] -= aMatrixB(2, 2);
+		aMatrixA[1][2] -= aMatrixB(2, 3);
+		aMatrixA[1][3] -= aMatrixB(2, 4);
+
+		aMatrixA[2][0] -= aMatrixB(3, 1);
+		aMatrixA[2][1] -= aMatrixB(3, 2);
+		aMatrixA[2][2] -= aMatrixB(3, 3);
+		aMatrixA[2][3] -= aMatrixB(3, 4);
+
+		aMatrixA[3][0] -= aMatrixB(4, 1);
+		aMatrixA[3][1] -= aMatrixB(4, 2);
+		aMatrixA[3][2] -= aMatrixB(4, 3);
+		aMatrixA[3][3] -= aMatrixB(4, 4);
 	}
 
 	template<typename T>
@@ -139,13 +175,25 @@ namespace SimpleUtilities
 	{
 		Matrix4x4<T> matrix;
 
-		for (int row = 0; row < 4; ++row)
-		{
-			for (int column = 0; column < 4; ++column)
-			{
-				matrix(row + 1, column + 1) = aMatrixA(row + 1, column + 1) - aMatrixB(row + 1, column + 1);
-			}
-		}
+		matrix(1, 1) = aMatrixA(1, 1) - aMatrixB(1, 1);
+		matrix(1, 2) = aMatrixA(1, 2) - aMatrixB(1, 2);
+		matrix(1, 3) = aMatrixA(1, 3) - aMatrixB(1, 3);
+		matrix(1, 4) = aMatrixA(1, 4) - aMatrixB(1, 4);
+
+		matrix(2, 1) = aMatrixA(2, 1) - aMatrixB(2, 1);
+		matrix(2, 2) = aMatrixA(2, 2) - aMatrixB(2, 2);
+		matrix(2, 3) = aMatrixA(2, 3) - aMatrixB(2, 3);
+		matrix(2, 4) = aMatrixA(2, 4) - aMatrixB(2, 4);
+
+		matrix(3, 1) = aMatrixA(3, 1) - aMatrixB(3, 1);
+		matrix(3, 2) = aMatrixA(3, 2) - aMatrixB(3, 2);
+		matrix(3, 3) = aMatrixA(3, 3) - aMatrixB(3, 3);
+		matrix(3, 4) = aMatrixA(3, 4) - aMatrixB(3, 4);
+
+		matrix(4, 1) = aMatrixA(4, 1) - aMatrixB(4, 1);
+		matrix(4, 2) = aMatrixA(4, 2) - aMatrixB(4, 2);
+		matrix(4, 3) = aMatrixA(4, 3) - aMatrixB(4, 3);
+		matrix(4, 4) = aMatrixA(4, 4) - aMatrixB(4, 4);
 
 		return matrix;
 	}
@@ -215,13 +263,25 @@ namespace SimpleUtilities
 	template<typename T>
 	inline void Matrix4x4<T>::operator=(const Matrix4x4<T>& aMatrix)
 	{
-		for (int i = 0; i < 4; ++i)
-		{
-			for (int j = 0; j < 4; ++j)
-			{
-				myMatrix[i][j] = aMatrix(i + 1, j + 1);
-			}
-		}
+		myMatrix[0][0] = aMatrix(1, 1);
+		myMatrix[0][1] = aMatrix(1, 2);
+		myMatrix[0][2] = aMatrix(1, 3);
+		myMatrix[0][3] = aMatrix(1, 4);
+
+		myMatrix[1][0] = aMatrix(2, 1);
+		myMatrix[1][1] = aMatrix(2, 2);
+		myMatrix[1][2] = aMatrix(2, 3);
+		myMatrix[1][3] = aMatrix(2, 4);
+
+		myMatrix[2][0] = aMatrix(3, 1);
+		myMatrix[2][1] = aMatrix(3, 2);
+		myMatrix[2][2] = aMatrix(3, 3);
+		myMatrix[2][3] = aMatrix(3, 4);
+
+		myMatrix[3][0] = aMatrix(4, 1);
+		myMatrix[3][1] = aMatrix(4, 2);
+		myMatrix[3][2] = aMatrix(4, 3);
+		myMatrix[3][3] = aMatrix(4, 4);
 	}
 
 	template<typename T>
@@ -238,17 +298,27 @@ namespace SimpleUtilities
 		const SimpleUtilities::Vector3<T> rad = aRotationInDegree * GetDegToRad();
 
 		SimpleUtilities::Matrix4x4<T> rotationMatrix = SimpleUtilities::Matrix4x4<T>::Identity();
+
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundX(rad.x);
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundY(rad.y);
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundZ(rad.z);
 
-		for (int i = 0; i < 3; ++i) //Doesn't take row 4 to keep it's current Position
-		{
-			for (int j = 0; j < 4; ++j)
-			{
-				myMatrix[i][j] = rotationMatrix(i + 1, j + 1);
-			}
-		}
+		myMatrix[0][0] = rotationMatrix(1, 1);
+		myMatrix[0][1] = rotationMatrix(1, 2);
+		myMatrix[0][2] = rotationMatrix(1, 3);
+		myMatrix[0][3] = rotationMatrix(1, 4);
+
+		myMatrix[1][0] = rotationMatrix(2, 1);
+		myMatrix[1][1] = rotationMatrix(2, 2);
+		myMatrix[1][2] = rotationMatrix(2, 3);
+		myMatrix[1][3] = rotationMatrix(2, 4);
+
+		myMatrix[2][0] = rotationMatrix(3, 1);
+		myMatrix[2][1] = rotationMatrix(3, 2);
+		myMatrix[2][2] = rotationMatrix(3, 3);
+		myMatrix[2][3] = rotationMatrix(3, 4);
+
+		//Doesn't take row 4 to keep it's current position
 	}
 
 	template<typename T>
@@ -261,32 +331,49 @@ namespace SimpleUtilities
 	template<typename T>
 	inline Matrix4x4<T>::Matrix4x4()
 	{
-		for (int i = 0; i < 4; ++i)
-		{
-			for (int j = 0; j < 4; ++j)
-			{
-				if (i == j)
-				{
-					myMatrix[i][j] = static_cast<T>(1);
-				}
-				else
-				{
-					myMatrix[i][j] = static_cast<T>(0);
-				}
-			}
-		}
+		myMatrix[0][0] = 1;
+		myMatrix[0][1] = 0;
+		myMatrix[0][2] = 0;
+		myMatrix[0][3] = 0;
+
+		myMatrix[1][0] = 0;
+		myMatrix[1][1] = 1;
+		myMatrix[1][2] = 0;
+		myMatrix[1][3] = 0;
+
+		myMatrix[2][0] = 0;
+		myMatrix[2][1] = 0;
+		myMatrix[2][2] = 1;
+		myMatrix[2][3] = 0;
+
+		myMatrix[3][0] = 0;
+		myMatrix[3][1] = 0;
+		myMatrix[3][2] = 0;
+		myMatrix[3][3] = 1;
 	}
 
 	template<typename T>
 	inline Matrix4x4<T>::Matrix4x4(const Matrix4x4<T>& aMatrix)
 	{
-		for (int i = 0; i < 4; ++i)
-		{
-			for (int j = 0; j < 4; ++j)
-			{
-				myMatrix[i][j] = aMatrix(i + 1, j + 1);
-			}
-		}
+		myMatrix[0][0] = aMatrix(1, 1);
+		myMatrix[0][1] = aMatrix(1, 2);
+		myMatrix[0][2] = aMatrix(1, 3);
+		myMatrix[0][3] = aMatrix(1, 4);
+
+		myMatrix[1][0] = aMatrix(2, 1);
+		myMatrix[1][1] = aMatrix(2, 2);
+		myMatrix[1][2] = aMatrix(2, 3);
+		myMatrix[1][3] = aMatrix(2, 4);
+
+		myMatrix[2][0] = aMatrix(3, 1);
+		myMatrix[2][1] = aMatrix(3, 2);
+		myMatrix[2][2] = aMatrix(3, 3);
+		myMatrix[2][3] = aMatrix(3, 4);
+
+		myMatrix[3][0] = aMatrix(4, 1);
+		myMatrix[3][1] = aMatrix(4, 2);
+		myMatrix[3][2] = aMatrix(4, 3);
+		myMatrix[3][3] = aMatrix(4, 4);
 	}
 
 	template<typename T>
@@ -299,8 +386,8 @@ namespace SimpleUtilities
 	inline Matrix4x4<T> Matrix4x4<T>::CreateRotationAroundX(const T aAngleInRadians)
 	{
 		Matrix4x4<T> rotationMatrix;
-		T cosA = static_cast<T>(std::cos(aAngleInRadians));
-		T sinA = static_cast<T>(std::sin(aAngleInRadians));
+		const T cosA = static_cast<T>(std::cos(aAngleInRadians));
+		const T sinA = static_cast<T>(std::sin(aAngleInRadians));
 
 		rotationMatrix(2, 2) = cosA;
 		rotationMatrix(2, 3) = sinA;
@@ -314,8 +401,8 @@ namespace SimpleUtilities
 	inline Matrix4x4<T> Matrix4x4<T>::CreateRotationAroundY(const T aAngleInRadians)
 	{
 		Matrix4x4<T> rotationMatrix;
-		T cosA = static_cast<T>(std::cos(aAngleInRadians));
-		T sinA = static_cast<T>(std::sin(aAngleInRadians));
+		const T cosA = static_cast<T>(std::cos(aAngleInRadians));
+		const T sinA = static_cast<T>(std::sin(aAngleInRadians));
 
 		rotationMatrix(1, 1) = cosA;
 		rotationMatrix(1, 3) = -sinA;
@@ -329,8 +416,8 @@ namespace SimpleUtilities
 	inline Matrix4x4<T> Matrix4x4<T>::CreateRotationAroundZ(const T aAngleInRadians)
 	{
 		Matrix4x4<T> rotationMatrix;
-		T cosA = static_cast<T>(std::cos(aAngleInRadians));
-		T sinA = static_cast<T>(std::sin(aAngleInRadians));
+		const T cosA = static_cast<T>(std::cos(aAngleInRadians));
+		const T sinA = static_cast<T>(std::sin(aAngleInRadians));
 
 		rotationMatrix(1, 1) = cosA;
 		rotationMatrix(1, 2) = sinA;
