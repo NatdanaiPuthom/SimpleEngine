@@ -33,7 +33,7 @@ PixelOutput main(PixelInputType aInput)
     
     float4 albedo = lerp(rockColor, lerp(grassColor, snowColor, heightBlend), slopeBlend).rgba;
     float3 material = lerp(rockMaterial, lerp(grassMaterial, snowMaterial, heightBlend), slopeBlend).rgb;
-    float3 normal = lerp(rockNormal, lerp(grassNormal, snowNormal, heightBlend), slopeBlend);
+    float3 normal = lerp(rockNormal, lerp(grassNormal, snowNormal, heightBlend), slopeBlend).xyz;
     
     float3 toEye = normalize(cameraPosition.xyz - aInput.worldPosition.xyz);
     float ambientOcculusion = normal.b;
@@ -66,13 +66,16 @@ PixelOutput main(PixelInputType aInput)
     
     float3 directionalLight = EvaluateDirectionalLight(
         diffuseColor, specularColor, pixelNormal, roughness,
-        directionalLightColor.xyz,directionLightDirection.xyz, toEye.xyz
+        directionalLightColor.xyz, directionLightDirection.xyz, toEye.xyz
     );
     
     float3 emissiveAlbedo = albedo.rgb * emissive;
     float3 radiance = ambiance + directionalLight + emissiveAlbedo;
     
-    output.color.rgb = radiance * directionalLightColor.a;
+    float3 color = radiance * directionalLightColor.a;
+    color = tonemap_s_gamut3_cine(color);
+    
+    output.color.rgb = color;
     output.color.a = albedo.a;
  
     return output;
