@@ -159,16 +159,39 @@ MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f aSize)
 	west_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
 	west_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
+	Vertex southWest;
+	southWest.position = south_West.position;
+	southWest.uv = SU::Vector2f(0.0f, 0.0f);
+
+	Vertex northWest;
+	northWest.position = west_West.position;
+	northWest.uv = SU::Vector2f(0.0f, 1.0f);
+
+	Vertex northEast;
+	northEast.position = east_East.position;
+	northEast.uv = SU::Vector2f(1.0f, 1.0f);
+
+	Vertex southEast; 
+	southEast.position = south_East.position;
+	southEast.uv = SU::Vector2f(1.0f, 0.0f);
+
 	std::vector<Vertex> vertices =
 	{
 		south_West, south_Top, south_East,
 		east_West, east_Top, east_East,
 		north_East, north_Top, north_West,
-		west_West, west_Top, west_East
+		west_West, west_Top, west_East,
+		southWest, northWest, northEast, southEast
 	};
 
 	std::vector<unsigned int> indices =
 	{
+		//Base
+		14,13,12,
+		15,14,12,
+
+		//Sides
+		0,9, 1,
 		0,1,2,
 		3,4,5,
 		6,7,8,
