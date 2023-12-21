@@ -105,9 +105,9 @@ void ImGuiManager::Render()
 				{
 					graphicsEngine->SetDirectionalLightColor(color);
 				}
-				ImGui::SetNextItemWidth(400.0f);
 				ImGui::SameLine();
-				if (ImGui::SliderFloat("Dir Light Intensity", &color.w, 0.0f, 10.f, "%.03f"))
+				ImGui::SetNextItemWidth(100.0f);
+				if (ImGui::SliderFloat("Intensity", &color.w, 0.0f, 10.f, "%.03f"))
 				{
 					graphicsEngine->SetDirectionalLightColor(color);
 				}
