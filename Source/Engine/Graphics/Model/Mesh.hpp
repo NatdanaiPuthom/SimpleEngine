@@ -36,9 +36,11 @@ public:
 public:
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
 	void SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree);
+	void SetScale(const SimpleUtilities::Vector3f& aScale);
 
 	SimpleUtilities::Vector3f GetPosition() const;
 	SimpleUtilities::Vector3f GetRotation() const;
+	SimpleUtilities::Vector3f GetScale() const;
 public:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer();
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetIndexBuffer();

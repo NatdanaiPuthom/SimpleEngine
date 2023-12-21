@@ -32,7 +32,10 @@ void GameWorld::Init()
 		if (!pyramid->AddTexture(0, "Assets/Textures/Cat.dds"))
 			assert(false && "Failed To Add Texture");
 
-		pyramid->SetPosition(SimpleUtilities::Vector3f(-5, 0, 0));
+		pyramid->SetScale({5,5,5});
+		pyramid->SetPosition(SimpleUtilities::Vector3f(-10, 0, 5));
+
+		cube->SetScale({5,5,5});
 		cube->SetPosition(SimpleUtilities::Vector3f(-5, 0, 5));
 
 		myRenderer->AddMesh(std::move(pyramid));

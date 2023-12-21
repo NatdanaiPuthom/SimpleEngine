@@ -25,6 +25,7 @@ namespace SimpleUtilities
 
 		void SetPosition(const Vector3<T>& aPosition);
 		void SetLocalRotation(const Vector3<T>& aRotationInDegree);
+		void SetScale(const Vector3<T>& aScale);
 
 		Vector3<T> GetPosition() const;
 
@@ -319,6 +320,16 @@ namespace SimpleUtilities
 		myMatrix[2][3] = rotationMatrix(3, 4);
 
 		//Doesn't take row 4 to keep it's current position
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::SetScale(const Vector3<T>& aScale)
+	{
+		//TO-DO: Fix so it work correctly even after rotation
+
+		myMatrix[0][0] = aScale.x;
+		myMatrix[1][1] = aScale.y;
+		myMatrix[2][2] = aScale.z;
 	}
 
 	template<typename T>

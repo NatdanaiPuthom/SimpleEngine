@@ -149,6 +149,11 @@ void Mesh::SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree)
 	myTransform.SetRotation(aRotationInDegree);
 }
 
+void Mesh::SetScale(const SimpleUtilities::Vector3f& aScale)
+{
+	myTransform.SetScale(aScale);
+}
+
 SimpleUtilities::Vector3f Mesh::GetPosition() const
 {
 	return myTransform.GetPosition();
@@ -157,6 +162,11 @@ SimpleUtilities::Vector3f Mesh::GetPosition() const
 SimpleUtilities::Vector3f Mesh::GetRotation() const
 {
 	return myTransform.GetRotation();
+}
+
+SimpleUtilities::Vector3f Mesh::GetScale() const
+{
+	return myTransform.GetScale();
 }
 
 int Mesh::GetIndexCount()
