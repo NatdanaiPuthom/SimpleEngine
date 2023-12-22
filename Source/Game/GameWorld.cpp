@@ -72,6 +72,7 @@ void GameWorld::Render()
 		{
 		}
 
+		ImGui::Dummy(ImVec2(0, 10));
 		ImGui::SetNextItemWidth(400);
 		SimpleUtilities::Vector3f position = meshes[selectedMeshIndex]->GetPosition();
 		if (ImGui::SliderFloat3("Position", &position.x, -10.0f, 20.0f))
