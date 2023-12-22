@@ -7,7 +7,7 @@ namespace
 
 	float localTime = 0;
 
-	const int localOneSecond = 1;
+	const float localUpdatePeriodically = 0.5f;
 	int localFramesPerSecond = 0;
 	int localFrames = 0;
 
@@ -26,7 +26,7 @@ void SimplyGlobalImpl::UpdateFPSCounter()
 	localTime += localEngine->GetDeltaTime();
 	++localFrames;
 
-	if (localTime >= localOneSecond)
+	if (localTime >= localUpdatePeriodically)
 	{
 		localFramesPerSecond = static_cast<int>(localFrames / localTime);
 		localFrames = 0;
