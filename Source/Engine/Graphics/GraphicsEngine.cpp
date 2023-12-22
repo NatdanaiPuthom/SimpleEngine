@@ -67,11 +67,15 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 
 	LoadSettingsFromJson();
 
+
 	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(aWidth), static_cast<float>(aHeight) });
 	myCamera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 	myCamera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 
 	myDirectionLightData->color = SimpleUtilities::Vector4f(1, 1, 1, 1);
+
+	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
+
 	return true;
 }
 
@@ -143,17 +147,6 @@ bool GraphicsEngine::BeginFrame()
 			return false;
 	}
 
-	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
-	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
-
-	//myContext->OMSetRenderTargets(1, myRTV.GetAddressOf(), myDepthBuffer.Get()); //TO-DO: Fix issue with ImGui::Image colors not rendering properly and rendering overlapp above other windows
-	//myContext->ClearRenderTargetView(myRTV.Get(), myColor);
-
-	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
-	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
-
 	Update();
 
 	return true;
@@ -166,8 +159,20 @@ void GraphicsEngine::EndFrame()
 
 void GraphicsEngine::SetToBackBuffer()
 {
-	/*myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get()); //Disabled for now due to ImGui::Image issue
-	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);*/
+	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
+	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
+	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
+}
+
+void GraphicsEngine::SetToImGuiBuffer()
+{
+	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
+	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	myContext->OMSetRenderTargets(1, myRTV.GetAddressOf(), myDepthBuffer.Get());
+	myContext->ClearRenderTargetView(myRTV.Get(), myColor);
 }
 
 void GraphicsEngine::SetVSync(const bool aShouldTurnOn)

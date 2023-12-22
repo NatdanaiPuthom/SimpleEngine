@@ -13,6 +13,7 @@ public:
 	void Init();
 	void Update();
 	void Render();
+	void RenderImGui();
 private:
 	std::unique_ptr<Renderer> myRenderer;
 	std::unique_ptr<ImGuiManager> myImGuiManager;

@@ -22,14 +22,6 @@ void ImGuiManager::Render()
 	{
 		tool->Draw();
 	}
-
-	/*if (ImGui::Begin("Scene")) //Disabled due to issue with ImGui::Image rendering
-	{
-		ImVec2 size(1280, 720);
-		const ImTextureID textureID = graphicsEngine->GetShaderResourceView().Get();
-		ImGui::Image(textureID, size);
-	}
-	ImGui::End();*/
 }
 
 void ImGuiManager::SetRenderer(Renderer* aRenderer)

@@ -65,8 +65,9 @@ public:
 	void SetDirectionalLightColor(const SimpleUtilities::Vector4f& aColor);
 	void SetSkyColor(const SimpleUtilities::Vector3f& aColor);
 	void SetGroundColor(const SimpleUtilities::Vector3f& aColor);
-	void SetToBackBuffer();
 	void SetVSync(const bool aShouldTurnOn);
+	void SetToBackBuffer();
+	void SetToImGuiBuffer();
 public:
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();

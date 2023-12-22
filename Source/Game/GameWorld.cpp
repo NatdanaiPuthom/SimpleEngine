@@ -7,6 +7,7 @@
 #include "Game/Managers/ImGuiManager/Tools/StatsTool.hpp"
 #include "Game/Managers/ImGuiManager/Tools/LightTool.hpp"
 #include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
+#include "Game/Managers/ImGuiManager/Tools/SceneTool.hpp"
 #include <External/imgui.h>
 
 GameWorld::GameWorld()
@@ -27,6 +28,7 @@ void GameWorld::Init()
 	myImGuiManager->AddTool(std::move(std::make_unique<StatsTool>()));
 	myImGuiManager->AddTool(std::move(std::make_unique<LightTool>()));
 	myImGuiManager->AddTool(std::move(std::make_unique<MeshTool>(myRenderer.get())));
+	myImGuiManager->AddTool(std::move(std::make_unique<SceneTool>()));
 
 	{ //Test stuff
 		std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
@@ -67,5 +69,9 @@ void GameWorld::Update()
 void GameWorld::Render()
 {
 	myRenderer->Render();
+}
+
+void GameWorld::RenderImGui()
+{
 	myImGuiManager->Render();
 }
