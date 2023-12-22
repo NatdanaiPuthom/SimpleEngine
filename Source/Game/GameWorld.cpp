@@ -59,7 +59,7 @@ void GameWorld::Init()
 
 void GameWorld::Update()
 {
-	while (SimplyGlobal::GetGameIsRunning())
+	while (SimpleGlobal::GetGameIsRunning())
 	{
 	}
 }

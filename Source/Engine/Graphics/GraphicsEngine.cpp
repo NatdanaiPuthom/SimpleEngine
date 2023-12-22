@@ -87,7 +87,7 @@ void GraphicsEngine::Update()
 
 	{
 		TimeBufferData timeBuffer = {};
-		timeBuffer.time = static_cast<float>(SimplyGlobal::GetTotalTime());
+		timeBuffer.time = static_cast<float>(SimpleGlobal::GetTotalTime());
 		myTimeBuffer->Bind(2);
 		myTimeBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 	}
@@ -112,7 +112,7 @@ void GraphicsEngine::Update()
 		myAmbientLightBuffer->Update(sizeof(AmbientLightBufferData), &ambientLightBuffer);
 	}
 
-	myCamera->Update(SimplyGlobal::GetDeltaTime());
+	myCamera->Update(SimpleGlobal::GetDeltaTime());
 }
 
 void GraphicsEngine::LoadSettingsFromJson()

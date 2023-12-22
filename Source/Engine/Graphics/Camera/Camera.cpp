@@ -103,7 +103,7 @@ void Camera::Update(const float aDeltaTime)
 			targetPosition.y += direction * speed * myUp.y * aDeltaTime;
 		}
 
-		HWND& hwnd = SimplyGlobal::GetHWND();
+		HWND& hwnd = SimpleGlobal::GetHWND();
 		if (myFreeFly && GetForegroundWindow() == hwnd)
 		{
 			if (!myInput->GetMouseIsHidden())

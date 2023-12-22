@@ -20,7 +20,7 @@ bool Texture::LoadDDS(const char* aFilePath)
 	const std::string texturePath = SimpleUtilities::GetPath(aFilePath);
 	const std::wstring texturePathW = SimpleUtilities::ToWString(texturePath);
 
-	const HRESULT result = DirectX::CreateDDSTextureFromFile(SimplyGlobal::GetGraphicsEngine()->GetDevice().Get(), SimplyGlobal::GetGraphicsEngine()->GetContext().Get(), texturePathW.c_str(), NULL, &myShaderResourceView);
+	const HRESULT result = DirectX::CreateDDSTextureFromFile(SimpleGlobal::GetGraphicsEngine()->GetDevice().Get(), SimpleGlobal::GetGraphicsEngine()->GetContext().Get(), texturePathW.c_str(), NULL, &myShaderResourceView);
 	if (FAILED(result))
 		return false;
 
@@ -41,7 +41,7 @@ bool Texture::LoadNonDDS(const char* aFilePath)
 	if (img == nullptr)
 		return false;
 
-	auto device = SimplyGlobal::GetGraphicsEngine()->GetDevice();
+	auto device = SimpleGlobal::GetGraphicsEngine()->GetDevice();
 
 	if (channels == 3)
 	{

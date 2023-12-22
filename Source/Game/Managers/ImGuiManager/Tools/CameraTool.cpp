@@ -9,7 +9,7 @@ CameraTool::CameraTool()
 
 void CameraTool::Draw()
 {
-	GraphicsEngine* graphicsEngine = SimplyGlobal::GetGraphicsEngine();
+	GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 
 	if (ImGui::Begin("Camera Controls")) //TO-DO: Move All ImGui stuff to it's own place
 	{

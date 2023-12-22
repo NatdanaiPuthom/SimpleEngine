@@ -16,7 +16,7 @@ Mesh::~Mesh()
 
 const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, const char* aVSShaderFile)
 {
-	myGraphicsEngine = SimplyGlobal::GetGraphicsEngine();
+	myGraphicsEngine = SimpleGlobal::GetGraphicsEngine();
 	myMeshData = aMeshData;
 
 	auto device = myGraphicsEngine->GetDevice();

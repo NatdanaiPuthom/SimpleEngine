@@ -38,8 +38,8 @@ void ImGuiEngine::Init()
 	ImGui::LoadIniSettingsFromDisk(output.c_str());
 
 	ImNodes::CreateContext();
-	ImGui_ImplWin32_Init(SimplyGlobal::GetHWND());
-	ImGui_ImplDX11_Init(SimplyGlobal::GetGraphicsEngine()->GetDevice().Get(), SimplyGlobal::GetGraphicsEngine()->GetContext().Get());
+	ImGui_ImplWin32_Init(SimpleGlobal::GetHWND());
+	ImGui_ImplDX11_Init(SimpleGlobal::GetGraphicsEngine()->GetDevice().Get(), SimpleGlobal::GetGraphicsEngine()->GetContext().Get());
 }
 
 void ImGuiEngine::BeginFrame()

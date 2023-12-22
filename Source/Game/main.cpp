@@ -18,7 +18,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
-		SimplyGlobal::SetGameIsRunning(false);
+		SimpleGlobal::SetGameIsRunning(false);
 		break;
 	case WM_ACTIVATE:
 		SimpleUtilities::InputManager::GetInstance().ResetKeyStates();

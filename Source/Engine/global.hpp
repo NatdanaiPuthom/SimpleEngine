@@ -1,24 +1,16 @@
 #pragma once
 
-class Engine;
 class GraphicsEngine;
 
-class SimplyGlobalImpl
-{
-	friend class Engine;
-	SimplyGlobalImpl();
-	static void SetEngine(Engine* aEngine);
-	static void UpdateFPSCounter();
-};
-
-namespace SimplyGlobal
+namespace SimpleGlobal
 {
 	GraphicsEngine* GetGraphicsEngine();
+	HWND& GetHWND();
+
 	double GetTotalTime();
 	float GetDeltaTime();
 	int GetFPS();
-	HWND& GetHWND();
 	bool GetGameIsRunning();
 
-	void SetGameIsRunning(bool aShouldRun);
+	void SetGameIsRunning(const bool aShouldRun);
 }

@@ -1,6 +1,7 @@
 #include "Engine/stdafx.h"
 #include "Engine/SimpleUtilities/Timer.hpp"
 #include "Engine/ImGuiEngine/ImGuiEngine.hpp"
+#include "Engine/Imp/SimpleGlobalImp.hpp"
 #include <External/json.h>
 
 #ifdef _DEBUG
@@ -35,7 +36,7 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	UpdateWindow(*myHWND);
 
 	SimpleUtilities::InputManager::GetInstance().SetHWND(*myHWND);
-	SimplyGlobalImpl::SetEngine(this);
+	SimpleGlobalImpl::SetEngine(this);
 
 	myGraphicsEngine = std::make_unique<GraphicsEngine>();
 	const bool success = myGraphicsEngine->Init(myWindowSize.x, myWindowSize.y, *myHWND);
@@ -113,7 +114,7 @@ bool Engine::BeginFrame()
 {
 	myImGuiInterface->BeginFrame();
 
-	SimplyGlobalImpl::UpdateFPSCounter();
+	SimpleGlobalImpl::UpdateFPSCounter();
 
 	myTimer->Update();
 	myInput->Update();

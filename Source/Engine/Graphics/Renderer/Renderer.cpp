@@ -23,17 +23,17 @@ void Renderer::Render()
 	{ //Test Rotation Over Time
 		//Pyramid
 		SimpleUtilities::Vector3f pyramidRotation = myMeshes[2]->GetRotation();
-		pyramidRotation.y += -10 * SimplyGlobal::GetDeltaTime();
-		pyramidRotation.z += 10 * SimplyGlobal::GetDeltaTime();
+		pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
+		pyramidRotation.z += 10 * SimpleGlobal::GetDeltaTime();
 		myMeshes[2]->SetRotation(pyramidRotation);
 
 		//Cube
 		SimpleUtilities::Vector3f cubeRotation = myMeshes[3]->GetRotation();
-		cubeRotation.x += 10.0f * SimplyGlobal::GetDeltaTime();
+		cubeRotation.x += 10.0f * SimpleGlobal::GetDeltaTime();
 		myMeshes[3]->SetRotation(cubeRotation);
 
 		//Directional Light test
-		SimpleUtilities::Vector3f directionalLight = SimplyGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
+		SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
 		myDirectionalLight->SetRotation(directionalLight);
 	}
 

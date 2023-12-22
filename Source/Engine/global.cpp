@@ -1,27 +1,28 @@
 #include "Engine/stdafx.h"
 #include "Engine/global.hpp"
+#include "Engine/Imp/SimpleGlobalImp.hpp"
 
 namespace
 {
 	Engine* localEngine = nullptr;
 
+	const float localUpdatePeriodically = 0.5f;
+
 	float localTime = 0;
 
-	const float localUpdatePeriodically = 0.5f;
 	int localFramesPerSecond = 0;
 	int localFrames = 0;
-
 	int localDrawCalls = 0;
 
 	bool localGameIsRunning = true;
 }
 
-void SimplyGlobalImpl::SetEngine(Engine* aEngine)
+void SimpleGlobalImpl::SetEngine(Engine* aEngine)
 {
 	localEngine = aEngine;
 }
 
-void SimplyGlobalImpl::UpdateFPSCounter()
+void SimpleGlobalImpl::UpdateFPSCounter()
 {
 	localTime += localEngine->GetDeltaTime();
 	++localFrames;
@@ -34,38 +35,40 @@ void SimplyGlobalImpl::UpdateFPSCounter()
 	}
 }
 
-double SimplyGlobal::GetTotalTime()
+namespace SimpleGlobal
 {
-	return localEngine->GetTotalTime();
-}
+	GraphicsEngine* GetGraphicsEngine()
+	{
+		return localEngine->GetGraphicsEngine();
+	}
 
-float SimplyGlobal::GetDeltaTime()
-{
-	return localEngine->GetDeltaTime();
-}
+	HWND& GetHWND()
+	{
+		return localEngine->GetHWND();
+	}
 
-int SimplyGlobal::GetFPS()
-{
-	return localFramesPerSecond;
-}
+	double GetTotalTime()
+	{
+		return localEngine->GetTotalTime();
+	}
 
-HWND& SimplyGlobal::GetHWND()
-{
-	return localEngine->GetHWND();
-}
+	float GetDeltaTime()
+	{
+		return localEngine->GetDeltaTime();
+	}
 
-bool SimplyGlobal::GetGameIsRunning()
-{
-	return localGameIsRunning;
-}
+	int GetFPS()
+	{
+		return localFramesPerSecond;
+	}
 
-void SimplyGlobal::SetGameIsRunning(bool aShouldRun)
-{
-	localGameIsRunning = aShouldRun;
-}
+	bool GetGameIsRunning()
+	{
+		return localGameIsRunning;
+	}
 
-GraphicsEngine* SimplyGlobal::GetGraphicsEngine()
-{
-	return localEngine->GetGraphicsEngine();
+	void SetGameIsRunning(const bool aShouldRun)
+	{
+		localGameIsRunning = aShouldRun;
+	}
 }
-
