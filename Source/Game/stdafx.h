@@ -30,4 +30,8 @@
 #include "Engine/Graphics/GraphicsEngine.hpp"
 #include "Engine/Graphics/Model/Mesh.hpp"
 
+#include "Game/Managers/ImGuiManager/ToolInterface.hpp"
+
 #include <External/profiler.h>
+#include <External/imgui.h>
+

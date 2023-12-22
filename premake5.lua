@@ -53,7 +53,7 @@ workspace "SimpleEngine"
 		dependson { "External" }
 		links {"External", "d3d11"}
 
-		pchheader "stdafx.h" -- Precomplier header to reduce common files from begin unnessesary complied multiple times
+		pchheader "Engine/stdafx.h" -- Precomplier header to reduce common files from begin unnessesary complied multiple times
 		pchsource "Source/Engine/stdafx.cpp"
 
 		shadermodel("5.0")
@@ -88,7 +88,7 @@ workspace "SimpleEngine"
 		libdirs{"Lib", "DLL"}
 		links { "Engine", "easy_profiler.lib", "easy_profiler.dll"}
 
-		pchheader "stdafx.h"
+		pchheader "Game/stdafx.h"
 		pchsource "Source/Game/stdafx.cpp"
 
         postbuildcommands { -- Copy DLL to Bin

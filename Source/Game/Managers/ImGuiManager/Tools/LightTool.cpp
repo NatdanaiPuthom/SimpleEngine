@@ -1,0 +1,63 @@
+#include "Game/stdafx.h"
+#include "Game/Managers/ImGuiManager/Tools/LightTool.hpp"
+
+LightTool::LightTool()
+{
+}
+
+void LightTool::Draw()
+{
+	GraphicsEngine* graphicsEngine = SimplyGlobal::GetGraphicsEngine();
+
+	if (ImGui::Begin("Lights"))
+	{
+		if (ImGui::BeginTabBar("Light Tab Bar"))
+		{
+			if (ImGui::BeginTabItem("Directional Light"))
+			{
+				ImGui::SetNextItemWidth(400.0f);
+				SimpleUtilities::Vector3f direction = graphicsEngine->GetDirectionalLightDirection();
+				if (ImGui::SliderFloat3("Direction", &direction.x, -1.0f, 1.0f, "%.03f"))
+				{
+					graphicsEngine->SetDirectionalLightDirection(direction);
+				}
+
+				ImGui::SetNextItemWidth(400.0f);
+				SimpleUtilities::Vector4f color = graphicsEngine->GetDirectionalLightColor();
+				if (ImGui::SliderFloat3("Color", &color.x, 0.0f, 1.f, "%.03f"))
+				{
+					graphicsEngine->SetDirectionalLightColor(color);
+				}
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(100.0f);
+				if (ImGui::SliderFloat("Intensity", &color.w, 0.0f, 10.f, "%.03f"))
+				{
+					graphicsEngine->SetDirectionalLightColor(color);
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Ambient Light"))
+			{
+				ImGui::SetNextItemWidth(400.0f);
+				SimpleUtilities::Vector3f skyColor = graphicsEngine->GetSkyColor();
+				if (ImGui::SliderFloat3("SkyColor", &skyColor.x, 0.0f, 1.0f, "%0.3f"))
+				{
+					graphicsEngine->SetSkyColor(skyColor);
+				}
+
+				ImGui::SetNextItemWidth(400.0f);
+				SimpleUtilities::Vector3f groundColor = graphicsEngine->GetGroundColor();
+				if (ImGui::SliderFloat3("GroundColor", &groundColor.x, 0.0f, 1.0f, "%0.3f"))
+				{
+					graphicsEngine->SetGroundColor(groundColor);
+				}
+				ImGui::EndTabItem();
+			}
+
+			ImGui::EndTabBar();
+		}
+	}
+	ImGui::End();
+}
