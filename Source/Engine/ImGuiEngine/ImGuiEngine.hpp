@@ -1,10 +1,10 @@
 #pragma once
 
-class ImGuiInterface
+class ImGuiEngine
 {
 public:
-	ImGuiInterface();
-	~ImGuiInterface();
+	ImGuiEngine();
+	~ImGuiEngine();
 
 	void Init();
 	void BeginFrame();

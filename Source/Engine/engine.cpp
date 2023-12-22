@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Engine/SimpleUtilities/Timer.hpp"
-#include "Engine/ImGuiInterface/ImGuiInterface.hpp"
+#include "Engine/ImGuiEngine/ImGuiEngine.hpp"
 #include <External/json.h>
 
 #ifdef _DEBUG
@@ -11,7 +11,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 Engine::Engine()
 	: myInput(nullptr)
-	, myImGuiInterface(std::make_unique<ImGuiInterface>())
+	, myImGuiInterface(std::make_unique<ImGuiEngine>())
 {
 }
 

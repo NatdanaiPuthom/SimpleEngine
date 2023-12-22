@@ -1,6 +1,6 @@
 #pragma once
 
-class ImGuiInterface;
+class ImGuiEngine;
 class GraphicsEngine;
 
 namespace SimpleUtilities
@@ -34,7 +34,7 @@ private:
 	std::unique_ptr<GraphicsEngine> myGraphicsEngine;
 	std::unique_ptr<SimpleUtilities::Timer> myTimer;
 	std::unique_ptr<HWND> myHWND;
-	std::unique_ptr<ImGuiInterface> myImGuiInterface;
+	std::unique_ptr<ImGuiEngine> myImGuiInterface;
 
 #ifdef _DEBUG
 	Console myConsole;

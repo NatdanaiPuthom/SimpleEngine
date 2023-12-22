@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "Engine/global.hpp"
-#include "Engine/ImGuiInterface/ImGuiInterface.hpp"
+#include "Engine/ImGuiEngine/ImGuiEngine.hpp"
 
 #include <External/dearimgui/imgui/imgui.h>
 #include <External/dearimgui/imgui/imgui_impl_win32.h>
 #include <External/dearimgui/imgui/imgui_impl_dx11.h>
 #include <External/dearimgui/imnodes/imnodes.h>
 
-ImGuiInterface::ImGuiInterface()
+ImGuiEngine::ImGuiEngine()
 {
 }
 
-ImGuiInterface::~ImGuiInterface()
+ImGuiEngine::~ImGuiEngine()
 {
 	const std::string output = SimpleUtilities::GetPath(SIMPLE_IMGUI_FILENAME);
 	ImGui::SaveIniSettingsToDisk(output.c_str());
@@ -22,7 +22,7 @@ ImGuiInterface::~ImGuiInterface()
 	ImGui::DestroyContext();
 }
 
-void ImGuiInterface::Init()
+void ImGuiEngine::Init()
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -42,7 +42,7 @@ void ImGuiInterface::Init()
 	ImGui_ImplDX11_Init(SimplyGlobal::GetGraphicsEngine()->GetDevice().Get(), SimplyGlobal::GetGraphicsEngine()->GetContext().Get());
 }
 
-void ImGuiInterface::BeginFrame()
+void ImGuiEngine::BeginFrame()
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -69,7 +69,7 @@ void ImGuiInterface::BeginFrame()
 	ImGui::End();
 }
 
-void ImGuiInterface::EndFrame()
+void ImGuiEngine::EndFrame()
 {
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
