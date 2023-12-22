@@ -19,10 +19,11 @@ namespace SimpleUtilities
 		void SetRotation(const Vector3f& aRotationInDegree);
 		void SetScale(const Vector3f& aScale);
 
+		Matrix4x4f GetMatrix() const; 
+
 		Vector3f GetPosition() const;
 		Vector3f GetRotation() const;
 		Vector3f GetScale() const;
-		Matrix4x4f GetMatrix() const;
 
 	private:
 		Matrix4x4f myMatrix;
