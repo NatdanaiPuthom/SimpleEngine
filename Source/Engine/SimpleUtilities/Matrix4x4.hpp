@@ -1,5 +1,4 @@
 #pragma once
-//TO-DO: Fix the operator shit
 
 namespace SimpleUtilities
 {
@@ -28,6 +27,10 @@ namespace SimpleUtilities
 		void SetScale(const Vector3<T>& aScale);
 
 		Vector3<T> GetPosition() const;
+		Vector3<T> GetScale() const;
+		Vector3<T> GetUp() const;
+		Vector3<T> GetRight() const;
+		Vector3<T> GetForward() const;
 
 		static Matrix4x4<T> Identity();
 		static Matrix4x4<T> CreateRotationAroundX(const T aAngleInRadians);
@@ -297,27 +300,35 @@ namespace SimpleUtilities
 	inline void Matrix4x4<T>::SetLocalRotation(const SimpleUtilities::Vector3<T>& aRotationInDegree)
 	{
 		const SimpleUtilities::Vector3<T> rad = aRotationInDegree * GetDegToRad();
+		const SimpleUtilities::Vector3<T> scale = GetScale();
 
 		SimpleUtilities::Matrix4x4<T> rotationMatrix = SimpleUtilities::Matrix4x4<T>::Identity();
+		SimpleUtilities::Matrix4x4<T> scaleMatrix = SimpleUtilities::Matrix4x4<T>::Identity();
+
+		scaleMatrix(1, 1) = scale.x;
+		scaleMatrix(2, 2) = scale.y;
+		scaleMatrix(3, 3) = scale.z;
 
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundX(rad.x);
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundY(rad.y);
 		rotationMatrix *= SimpleUtilities::Matrix4x4<T>::CreateRotationAroundZ(rad.z);
 
-		myMatrix[0][0] = rotationMatrix(1, 1);
-		myMatrix[0][1] = rotationMatrix(1, 2);
-		myMatrix[0][2] = rotationMatrix(1, 3);
-		myMatrix[0][3] = rotationMatrix(1, 4);
+		SimpleUtilities::Matrix4x4<T> transformationMatrix = scaleMatrix * rotationMatrix;
 
-		myMatrix[1][0] = rotationMatrix(2, 1);
-		myMatrix[1][1] = rotationMatrix(2, 2);
-		myMatrix[1][2] = rotationMatrix(2, 3);
-		myMatrix[1][3] = rotationMatrix(2, 4);
+		myMatrix[0][0] = transformationMatrix(1, 1);
+		myMatrix[0][1] = transformationMatrix(1, 2);
+		myMatrix[0][2] = transformationMatrix(1, 3);
+		myMatrix[0][3] = transformationMatrix(1, 4);
 
-		myMatrix[2][0] = rotationMatrix(3, 1);
-		myMatrix[2][1] = rotationMatrix(3, 2);
-		myMatrix[2][2] = rotationMatrix(3, 3);
-		myMatrix[2][3] = rotationMatrix(3, 4);
+		myMatrix[1][0] = transformationMatrix(2, 1);
+		myMatrix[1][1] = transformationMatrix(2, 2);
+		myMatrix[1][2] = transformationMatrix(2, 3);
+		myMatrix[1][3] = transformationMatrix(2, 4);
+
+		myMatrix[2][0] = transformationMatrix(3, 1);
+		myMatrix[2][1] = transformationMatrix(3, 2);
+		myMatrix[2][2] = transformationMatrix(3, 3);
+		myMatrix[2][3] = transformationMatrix(3, 4);
 
 		//Doesn't take row 4 to keep it's current position
 	}
@@ -325,11 +336,32 @@ namespace SimpleUtilities
 	template<typename T>
 	inline void Matrix4x4<T>::SetScale(const Vector3<T>& aScale)
 	{
-		//TO-DO: Fix so it work correctly even after rotation
+		const float minScale = 0.001f;
 
-		myMatrix[0][0] = aScale.x;
-		myMatrix[1][1] = aScale.y;
-		myMatrix[2][2] = aScale.z;
+		const T scaleX = (aScale.x < minScale) ? minScale : aScale.x;
+		const T scaleY = (aScale.y < minScale) ? minScale : aScale.y;
+		const T scaleZ = (aScale.z < minScale) ? minScale : aScale.z;
+
+		const T posX = myMatrix[3][0];
+		const T posY = myMatrix[3][1];
+		const T posZ = myMatrix[3][2];
+
+		// Set the scale along the diagonal elements
+		myMatrix[0][0] = scaleX;
+		myMatrix[1][1] = scaleY;
+		myMatrix[2][2] = scaleZ;
+		myMatrix[3][3] = 1.0f;  // Homogeneous coordinate
+
+		// Clear the non-diagonal elements
+		myMatrix[0][1] = myMatrix[0][2] = 0.0f;
+		myMatrix[1][0] = myMatrix[1][2] = 0.0f;
+		myMatrix[2][0] = myMatrix[2][1] = 0.0f;
+		myMatrix[3][0] = myMatrix[3][1] = myMatrix[3][2] = 0.0f;
+
+		// Restore the translation components
+		myMatrix[3][0] = posX;
+		myMatrix[3][1] = posY;
+		myMatrix[3][2] = posZ;
 	}
 
 	template<typename T>
@@ -337,6 +369,39 @@ namespace SimpleUtilities
 	{
 		const Vector3<T> position(myMatrix[3][0], myMatrix[3][1], myMatrix[3][2]);
 		return position;
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetScale() const
+	{
+		Vector3<T> scale;
+
+		scale.x = GetRight().Length();
+		scale.y = GetUp().Length();
+		scale.z = GetForward().Length();
+
+		return scale;
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetUp() const
+	{
+		const Vector3<T> up(myMatrix[1][0], myMatrix[1][1], myMatrix[1][2]);
+		return up;
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetRight() const
+	{
+		const Vector3<T> right(myMatrix[0][0], myMatrix[0][1], myMatrix[0][2]);
+		return right;
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetForward() const
+	{
+		const Vector3<T> forward(myMatrix[2][0], myMatrix[2][1], myMatrix[2][2]);
+		return forward;
 	}
 
 	template<typename T>

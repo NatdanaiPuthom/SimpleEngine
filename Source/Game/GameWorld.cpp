@@ -33,12 +33,12 @@ void GameWorld::Init()
 		if (!pyramid->AddTexture(0, "Assets/Textures/Cat.dds"))
 			assert(false && "Failed To Add Texture");
 
-		pyramid->SetScale({5,5,5});
-		pyramid->SetPosition(SimpleUtilities::Vector3f(-10, 0, 5));
+		pyramid->SetScale({1,1,1});
+		pyramid->SetPosition(SimpleUtilities::Vector3f(-8, 2, 3));
 		pyramid->SetName("Pyramid");
 
-		cube->SetScale({5,5,5});
-		cube->SetPosition(SimpleUtilities::Vector3f(-5, 0, 5));
+		cube->SetScale({ 5,5,5 });
+		cube->SetPosition(SimpleUtilities::Vector3f(-7, 2, 10));
 		cube->SetName("Cube");
 
 		myRenderer->AddMesh(std::move(pyramid));
@@ -67,8 +67,14 @@ void GameWorld::Render()
 
 		static int selectedMeshIndex = 0;
 
+		std::vector<const char*> names;
+		for (const std::string& name : meshNames)
+		{
+			names.push_back(name.c_str());
+		}
+
 		ImGui::SetNextItemWidth(200);
-		if (ImGui::Combo("Meshes", &selectedMeshIndex, meshNames.data()->c_str(), static_cast<int>(meshNames.size())))
+		if (ImGui::Combo("Meshes", &selectedMeshIndex, names.data(), static_cast<int>(names.size())))
 		{
 		}
 

@@ -69,6 +69,7 @@ void Mesh::Draw()
 
 	ObjectBufferData objectBuffer = {};
 	objectBuffer.modelToWorldMatrix = myTransform.GetMatrix();
+
 	myObjectBuffer->Bind(1);
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
