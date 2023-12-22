@@ -44,7 +44,7 @@ void GameWorld::Init()
 		if (!pyramid->AddTexture(0, "Assets/Textures/Cat.dds"))
 			assert(false && "Failed To Add Texture");
 
-		pyramid->SetScale({1,1,1});
+		pyramid->SetScale({ 1,1,1 });
 		pyramid->SetPosition(SimpleUtilities::Vector3f(-8, 2, 3));
 		pyramid->SetName("Pyramid");
 
