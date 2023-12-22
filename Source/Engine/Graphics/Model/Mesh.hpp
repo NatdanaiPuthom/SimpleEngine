@@ -37,10 +37,12 @@ public:
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
 	void SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree);
 	void SetScale(const SimpleUtilities::Vector3f& aScale);
+	void SetName(const std::string& aName);
 
 	SimpleUtilities::Vector3f GetPosition() const;
 	SimpleUtilities::Vector3f GetRotation() const;
 	SimpleUtilities::Vector3f GetScale() const;
+	std::string GetName() const;
 public:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer();
 	Microsoft::WRL::ComPtr<ID3D11Buffer> GetIndexBuffer();
@@ -54,6 +56,8 @@ private:
 	SimpleUtilities::Transform myTransform;
 
 	MeshData myMeshData;
+	std::string myName;
+
 	GraphicsEngine* myGraphicsEngine;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;

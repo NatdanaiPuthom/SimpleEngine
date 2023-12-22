@@ -16,6 +16,8 @@ public:
 	void InitDirectionalLight();
 	void InitSkyBox();
 
+	std::vector<Mesh*> GetMeshes();
+
 private:
 	std::vector<std::unique_ptr<Mesh>> myMeshes;
 

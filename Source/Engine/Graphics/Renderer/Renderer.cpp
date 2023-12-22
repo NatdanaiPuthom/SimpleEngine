@@ -121,3 +121,15 @@ void Renderer::InitSkyBox()
 
 	mySkyBox->SetPosition({ 0,0,20 });
 }
+
+std::vector<Mesh*> Renderer::GetMeshes()
+{
+	std::vector<Mesh*> meshes;
+	
+	for (auto& mesh : myMeshes)
+	{
+		meshes.push_back(mesh.get());
+	}
+
+	return meshes;
+}

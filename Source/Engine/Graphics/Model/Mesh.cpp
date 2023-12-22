@@ -6,6 +6,7 @@ Mesh::Mesh()
 	: myShader(std::make_shared<Shader>())
 	, myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myGraphicsEngine(nullptr)
+	, myName("Unnamed Mesh")
 {
 }
 
@@ -154,6 +155,11 @@ void Mesh::SetScale(const SimpleUtilities::Vector3f& aScale)
 	myTransform.SetScale(aScale);
 }
 
+void Mesh::SetName(const std::string& aName)
+{
+	myName = aName;
+}
+
 SimpleUtilities::Vector3f Mesh::GetPosition() const
 {
 	return myTransform.GetPosition();
@@ -167,6 +173,11 @@ SimpleUtilities::Vector3f Mesh::GetRotation() const
 SimpleUtilities::Vector3f Mesh::GetScale() const
 {
 	return myTransform.GetScale();
+}
+
+std::string Mesh::GetName() const
+{
+	return myName;
 }
 
 int Mesh::GetIndexCount()
