@@ -19,7 +19,7 @@ struct alignas(16) FrameBufferData final
 {
 	SimpleUtilities::Matrix4x4f worldToClipMatrix;
 	SimpleUtilities::Vector3f cameraPosition;
-	float padding;
+	const float padding = -1.0f;
 };
 
 struct alignas(16) ObjectBufferData final
@@ -29,14 +29,14 @@ struct alignas(16) ObjectBufferData final
 
 struct alignas(16) TimeBufferData final
 {
-	float time;
-	float padding[3];
+	float time = 0;
+	const float padding[3] = { -1 };
 };
 
 struct alignas(16) DirectionalLightBufferData final
 {
 	SimpleUtilities::Vector3f direction;
-	float padding1;
+	const float padding1 = -1.0f;
 
 	SimpleUtilities::Vector4f color;
 };
@@ -44,10 +44,16 @@ struct alignas(16) DirectionalLightBufferData final
 struct alignas(16) AmbientLightBufferData final
 {
 	SimpleUtilities::Vector3f skyColor;
-	float padding1;
+	const float padding1 = -1.0f;
 
 	SimpleUtilities::Vector3f groundColor;
-	float padding2;
+	const float padding2 = -1.0f;
+};
+
+struct RenderTarget final
+{
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 };
 
 class GraphicsEngine final
@@ -68,6 +74,7 @@ public:
 	void SetVSync(const bool aShouldTurnOn);
 	void SetToBackBuffer();
 	void SetToImGuiBuffer();
+	void SetToWaterReflectionBuffer();
 public:
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
@@ -91,6 +98,8 @@ private:
 	bool CreateDirectionalLightBuffer();
 	bool CreateAmbientLightBuffer();
 	bool CreateStuffForImGuiImage(const int aWidth, const int aHeight);
+	bool CreateWaterRenderTarget(const int aWidth, const int aHeight);
+	bool CreateFrontFaceCullingRasterizerState();
 private:
 	void Update();
 	void LoadSettingsFromJson();
@@ -114,6 +123,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mySRV;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> myRTV;
 
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> myFrontFaceCullingRasterizerState;
+
 	std::unique_ptr<ConstantBuffer> myCameraBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;
 	std::unique_ptr<ConstantBuffer> myDirectionLightBuffer;
@@ -121,6 +132,8 @@ private:
 
 	std::unique_ptr<DirectionalLightBufferData> myDirectionLightData;
 	std::unique_ptr<AmbientLightBufferData> myAmbientLightData;
+
+	std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
 
 	float myColor[4];
 	bool myVSync;

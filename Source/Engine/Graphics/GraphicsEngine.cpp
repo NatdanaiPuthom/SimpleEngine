@@ -15,6 +15,7 @@ GraphicsEngine::GraphicsEngine()
 	, myAmbientLightBuffer(std::make_unique<ConstantBuffer>())
 	, myDirectionLightData(std::make_unique<DirectionalLightBufferData>())
 	, myAmbientLightData(std::make_unique<AmbientLightBufferData>())
+	, myWaterReflectionRenderTarget(std::make_unique<RenderTarget>())
 
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
@@ -66,8 +67,13 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 	if (!CreateAmbientLightBuffer())
 		return false;
 
-	LoadSettingsFromJson();
+	if (!CreateWaterRenderTarget(aWidth, aHeight))
+		return false;
 
+	if (!CreateFrontFaceCullingRasterizerState())
+		return false;
+
+	LoadSettingsFromJson();
 
 	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(aWidth), static_cast<float>(aHeight) });
 	myCamera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
@@ -165,6 +171,8 @@ void GraphicsEngine::SetToBackBuffer()
 
 	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
 	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
+
+	myContext->RSSetState(nullptr);
 }
 
 void GraphicsEngine::SetToImGuiBuffer()
@@ -174,6 +182,19 @@ void GraphicsEngine::SetToImGuiBuffer()
 
 	myContext->OMSetRenderTargets(1, myRTV.GetAddressOf(), myDepthBuffer.Get());
 	myContext->ClearRenderTargetView(myRTV.Get(), myColor);
+
+	myContext->RSSetState(nullptr);
+}
+
+void GraphicsEngine::SetToWaterReflectionBuffer()
+{
+	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
+	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	myContext->OMSetRenderTargets(1, myWaterReflectionRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
+	myContext->ClearRenderTargetView(myWaterReflectionRenderTarget->renderTargetView.Get(), myColor);
+
+	myContext->RSSetState(myFrontFaceCullingRasterizerState.Get());
 }
 
 void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
@@ -233,7 +254,6 @@ bool GraphicsEngine::CreateStuffForImGuiImage(const int aWidth, const int aHeigh
 	texDesc.Height = aHeight;
 	texDesc.ArraySize = 1;
 	texDesc.SampleDesc.Count = 1;
-	//texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; //TO-DO: Maybe use 8bits first
 	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
@@ -246,6 +266,55 @@ bool GraphicsEngine::CreateStuffForImGuiImage(const int aWidth, const int aHeigh
 		return false;
 
 	result = myDevice->CreateRenderTargetView(myTexture.Get(), nullptr, &myRTV);
+	if (FAILED(result))
+		return false;
+
+	return true;
+}
+
+bool GraphicsEngine::CreateWaterRenderTarget(const int aWidth, const int aHeight)
+{
+	D3D11_TEXTURE2D_DESC desc = { 0 };
+
+	desc.Width = aWidth;
+	desc.Height = aHeight;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	ID3D11Texture2D* texture;
+	
+	HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
+	if (FAILED(result))
+		return false;
+
+	result = myDevice->CreateShaderResourceView(texture, nullptr, &myWaterReflectionRenderTarget->shaderResourceView);
+	if (FAILED(result))
+		return false;
+
+	result = myDevice->CreateRenderTargetView(texture, nullptr, &myWaterReflectionRenderTarget->renderTargetView);
+	if (FAILED(result))
+		return false;
+
+	texture->Release();
+
+	return true;
+}
+
+bool GraphicsEngine::CreateFrontFaceCullingRasterizerState()
+{
+	D3D11_RASTERIZER_DESC rasterizerDesc = {};
+
+	rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+
+	const HRESULT result = myDevice->CreateRasterizerState(&rasterizerDesc, &myFrontFaceCullingRasterizerState);
 	if (FAILED(result))
 		return false;
 
@@ -420,12 +489,10 @@ bool GraphicsEngine::CreateSamplerState()
 
 bool GraphicsEngine::CreateCameraBuffer()
 {
-	FrameBufferData cameraBuffer =
-	{
-		myCamera->GetModelToWorldMatrix().GetFastInverse() * myCamera->GetProjectionMatrix(),
-		SimpleUtilities::Vector3f{0.0f,0.0f,0.0f},
-		-1.0f
-	};
+	FrameBufferData cameraBuffer;
+
+	cameraBuffer.worldToClipMatrix = myCamera->GetModelToWorldMatrix().GetFastInverse() * myCamera->GetProjectionMatrix();
+	cameraBuffer.cameraPosition = SimpleUtilities::Vector3f{ 0.0f,0.0f,0.0f };
 
 	if (!myCameraBuffer->Init(this, sizeof(FrameBufferData), &cameraBuffer))
 		return false;
@@ -435,10 +502,9 @@ bool GraphicsEngine::CreateCameraBuffer()
 
 bool GraphicsEngine::CreateTimeBuffer()
 {
-	TimeBufferData timeBuffer =
-	{
-		1.0f
-	};
+	TimeBufferData timeBuffer;
+
+	timeBuffer.time = 0.0f;
 
 	if (!myTimeBuffer->Init(this, sizeof(TimeBufferData), &timeBuffer))
 		return false;
@@ -448,12 +514,10 @@ bool GraphicsEngine::CreateTimeBuffer()
 
 bool GraphicsEngine::CreateDirectionalLightBuffer()
 {
-	DirectionalLightBufferData directionLightBuffer =
-	{
-		SimpleUtilities::Vector3f(0,-1,0),
-		-1,
-		SimpleUtilities::Vector4f(0,0,0,0)
-	};
+	DirectionalLightBufferData directionLightBuffer;
+
+	directionLightBuffer.direction = SimpleUtilities::Vector3f(0, -1, 0);
+	directionLightBuffer.color = SimpleUtilities::Vector4f(0, 0, 0, 0);
 
 	if (!myDirectionLightBuffer->Init(this, sizeof(DirectionalLightBufferData), &directionLightBuffer))
 		return false;
@@ -463,13 +527,10 @@ bool GraphicsEngine::CreateDirectionalLightBuffer()
 
 bool GraphicsEngine::CreateAmbientLightBuffer()
 {
-	AmbientLightBufferData ambientLightBuffer =
-	{
-		SimpleUtilities::Vector3f(1,1,1),
-		-1,
-		SimpleUtilities::Vector3f(1,1,1),
-		-1
-	};
+	AmbientLightBufferData ambientLightBuffer;
+
+	ambientLightBuffer.groundColor = SimpleUtilities::Vector3f(1, 1, 1);
+	ambientLightBuffer.skyColor = SimpleUtilities::Vector3f(1, 1, 1);
 
 	if (!myAmbientLightBuffer->Init(this, sizeof(AmbientLightBufferData), &ambientLightBuffer))
 		return false;
