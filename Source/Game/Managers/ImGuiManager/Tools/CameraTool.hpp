@@ -6,6 +6,4 @@ public:
 	CameraTool();
 
 	virtual void Draw() override;
-private:
-	int mySelectedResolution;
 };

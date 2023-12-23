@@ -6,4 +6,7 @@ public:
 	StatsTool();
 
 	virtual void Draw() override;
+private:
+	int mySelectedResolution;
+	int mySelectedWindowSize;
 };
