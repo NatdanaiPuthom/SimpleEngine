@@ -9,15 +9,16 @@ public:
 	Renderer();
 	~Renderer();
 
-	void AddMesh(std::unique_ptr<Mesh> aMesh);
+	void Update();
 	void Render();
 
+	void AddMesh(std::unique_ptr<Mesh> aMesh);
+public:
+	std::vector<Mesh*> GetMeshes();
+private:
 	void InitTerrain();
 	void InitDirectionalLight();
 	void InitSkyBox();
-
-	std::vector<Mesh*> GetMeshes();
-
 private:
 	std::vector<std::unique_ptr<Mesh>> myMeshes;
 

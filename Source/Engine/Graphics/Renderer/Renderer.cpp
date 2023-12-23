@@ -18,7 +18,7 @@ void Renderer::AddMesh(std::unique_ptr<Mesh> aMesh)
 	myMeshes.emplace_back(std::move(aMesh));
 }
 
-void Renderer::Render()
+void Renderer::Update()
 {
 	{ //Test Rotation Over Time
 		//Pyramid
@@ -36,7 +36,10 @@ void Renderer::Render()
 		SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
 		myDirectionalLight->SetRotation(directionalLight);
 	}
+}
 
+void Renderer::Render()
+{
 	for (const auto& mesh : myMeshes)
 	{
 		mesh->Draw();

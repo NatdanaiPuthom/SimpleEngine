@@ -68,6 +68,7 @@ void GameWorld::Update()
 
 void GameWorld::Render()
 {
+	myRenderer->Update(); //TO-DO: Move to Update thread later
 	myRenderer->Render();
 }
 
