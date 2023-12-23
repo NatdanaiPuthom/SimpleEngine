@@ -1,7 +1,7 @@
 #include "Engine/stdafx.h"
 #include "Engine/SimpleUtilities/Timer.hpp"
 #include "Engine/ImGuiEngine/ImGuiEngine.hpp"
-#include "Engine/Imp/SimpleGlobalImp.hpp"
+#include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include <External/json.h>
 
 #ifdef _DEBUG

@@ -2,7 +2,7 @@
 #include <External/imgui.h>
 #include "Engine/engine.hpp"
 #include "Engine/MemoryTracker/MemoryTracker.h"
-#include "Engine/Imp/EasyProfilerOutput.hpp"
+#include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
 #include "Game/GameWorld.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
