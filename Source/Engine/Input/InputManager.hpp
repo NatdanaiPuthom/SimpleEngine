@@ -3,7 +3,7 @@
 
 namespace SimpleUtilities
 {
-	class InputManager
+	class InputManager final
 	{
 	public:
 		static InputManager& GetInstance()

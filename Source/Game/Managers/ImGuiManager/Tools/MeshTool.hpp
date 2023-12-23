@@ -2,7 +2,7 @@
 
 class Renderer;
 
-class MeshTool : public ToolInterface
+class MeshTool final : public ToolInterface
 {
 public:
 	MeshTool(Renderer* aRenderer);

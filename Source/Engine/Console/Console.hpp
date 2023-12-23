@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <io.h>
 
-class Console
+class Console final
 {
 public:
 	Console();

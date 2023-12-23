@@ -5,7 +5,7 @@ namespace SimpleTracker
 {
 	struct StackTraceImpl;
 
-	class StackTrace
+	class StackTrace final
 	{
 	public:
 		StackTrace();

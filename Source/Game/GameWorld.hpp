@@ -4,7 +4,7 @@ class Mesh;
 class Renderer;
 class ImGuiManager;
 
-class GameWorld
+class GameWorld final
 {
 public:
 	GameWorld();

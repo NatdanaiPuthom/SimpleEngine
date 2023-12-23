@@ -8,7 +8,7 @@ namespace SimpleUtilities
 	template<typename T>
 	class Matrix4x4;
 
-	class Transform
+	class Transform final
 	{
 	public:
 		Transform();

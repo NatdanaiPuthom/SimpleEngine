@@ -3,7 +3,7 @@
 class ToolInterface;
 class Renderer;
 
-class ImGuiManager
+class ImGuiManager final
 {
 public:
 	ImGuiManager();

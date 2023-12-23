@@ -1,6 +1,6 @@
 #pragma once
 
-class LightTool : public ToolInterface
+class LightTool final : public ToolInterface
 {
 public:
 	LightTool();

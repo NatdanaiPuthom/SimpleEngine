@@ -14,7 +14,7 @@
 
 namespace Simple
 {
-	class ThreadPool
+	class ThreadPool final
 	{
 	public:
 		ThreadPool();

@@ -1,6 +1,6 @@
 #pragma once
 
-class StatsTool : public ToolInterface
+class StatsTool final : public ToolInterface
 {
 public:
 	StatsTool();

@@ -2,7 +2,7 @@
 
 namespace SimpleTracker
 {
-	struct MemoryTrackingSettings
+	struct MemoryTrackingSettings final
 	{
 		bool myShouldStoreStackTraces;
 		bool myShouldTrackAllAllocations;

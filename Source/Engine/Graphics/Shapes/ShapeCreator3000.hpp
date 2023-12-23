@@ -11,7 +11,7 @@ namespace Simple
 	};
 }
 
-class ShapeCreator3000
+class ShapeCreator3000 final
 {
 public:
 	static MeshData CreateTerrain(const Simple::TerrainData& aTerrainData = Simple::TerrainData{});

@@ -9,7 +9,7 @@ namespace SimpleUtilities
 	class InputManager;
 }
 
-class Engine
+class Engine final
 {
 public:
 	Engine();

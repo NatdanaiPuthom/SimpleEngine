@@ -1,6 +1,6 @@
 #pragma once
 
-class ImGuiEngine
+class ImGuiEngine final
 {
 public:
 	ImGuiEngine();

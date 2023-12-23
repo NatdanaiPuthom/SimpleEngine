@@ -1,6 +1,6 @@
 #pragma once
 
-class SceneTool : public ToolInterface
+class SceneTool final : public ToolInterface
 {
 public:
 	SceneTool();

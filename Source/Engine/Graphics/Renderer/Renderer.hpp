@@ -3,7 +3,7 @@
 class ConstantBuffer;
 class Mesh;
 
-class Renderer
+class Renderer final
 {
 public:
 	Renderer();

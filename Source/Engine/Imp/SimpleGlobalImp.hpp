@@ -2,7 +2,7 @@
 
 class Engine;
 
-class SimpleGlobalImpl
+class SimpleGlobalImpl final
 {
 private:
 	friend class Engine;

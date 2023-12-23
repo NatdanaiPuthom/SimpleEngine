@@ -1,6 +1,6 @@
 #pragma once
 
-class CameraTool : public ToolInterface
+class CameraTool final : public ToolInterface
 {
 public:
 	CameraTool();

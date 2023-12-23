@@ -14,7 +14,7 @@ constexpr std::size_t STACK_TRACE_MAX_LINE_LENGTH = 1024;
 
 namespace SimpleTracker
 {
-	struct StackTraceImpl
+	struct StackTraceImpl final
 	{
 		std::array<const char*, STACK_TRACE_MAX_LINES> myLines = {};
 

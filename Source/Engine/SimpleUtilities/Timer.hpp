@@ -3,7 +3,7 @@
 
 namespace SimpleUtilities
 {
-	class Timer
+	class Timer final
 	{
 	public:
 		Timer();

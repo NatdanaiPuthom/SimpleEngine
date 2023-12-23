@@ -15,25 +15,25 @@ struct ID3D11Texture2D;
 struct ID3D11ShaderResourceView;
 struct ID3D11RenderTargetView;
 
-struct alignas(16) FrameBufferData
+struct alignas(16) FrameBufferData final
 {
 	SimpleUtilities::Matrix4x4f worldToClipMatrix;
 	SimpleUtilities::Vector3f cameraPosition;
 	float padding;
 };
 
-struct alignas(16) ObjectBufferData
+struct alignas(16) ObjectBufferData final
 {
 	SimpleUtilities::Matrix4x4f modelToWorldMatrix;
 };
 
-struct alignas(16) TimeBufferData
+struct alignas(16) TimeBufferData final
 {
 	float time;
 	float padding[3];
 };
 
-struct alignas(16) DirectionalLightBufferData
+struct alignas(16) DirectionalLightBufferData final
 {
 	SimpleUtilities::Vector3f direction;
 	float padding1;
@@ -41,7 +41,7 @@ struct alignas(16) DirectionalLightBufferData
 	SimpleUtilities::Vector4f color;
 };
 
-struct alignas(16) AmbientLightBufferData
+struct alignas(16) AmbientLightBufferData final
 {
 	SimpleUtilities::Vector3f skyColor;
 	float padding1;
@@ -50,7 +50,7 @@ struct alignas(16) AmbientLightBufferData
 	float padding2;
 };
 
-class GraphicsEngine
+class GraphicsEngine final
 {
 public:
 	GraphicsEngine();

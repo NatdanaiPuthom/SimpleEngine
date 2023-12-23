@@ -1,9 +1,10 @@
 #pragma once
+
 class GraphicsEngine;
 
 struct ID3D11Buffer;
 
-class ConstantBuffer
+class ConstantBuffer final
 {
 public:
 	ConstantBuffer();
