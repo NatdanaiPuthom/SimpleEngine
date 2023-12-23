@@ -1,8 +1,9 @@
 #include "Game/stdafx.h"
+#include <External/imgui.h>
 #include "Engine/engine.hpp"
 #include "Engine/MemoryTracker/MemoryTracker.h"
+#include "Engine/Imp/EasyProfilerOutput.hpp"
 #include "Game/GameWorld.hpp"
-#include <External/imgui.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -72,10 +73,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	PROFILER_END();
 	PROFILER_DISABLE();
 
-	{
-		const std::string outputPath = SimpleUtilities::GetPath(SIMPLE_PROFILER_FILENAME);
-		PROFILER_DUMP_FILE(outputPath.c_str());
-	}
+	Simple::EasyProfilerOutput();
 
 	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!
 	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here before StopMemoryTrackingAndPrint function!
