@@ -19,7 +19,8 @@ struct alignas(16) FrameBufferData final
 {
 	SimpleUtilities::Matrix4x4f worldToClipMatrix;
 	SimpleUtilities::Vector3f cameraPosition;
-	const float padding = -1.0f;
+	SimpleUtilities::Vector2ui resolution;
+	float padding[3] = { -1.0f };
 };
 
 struct alignas(16) ObjectBufferData final
@@ -62,7 +63,7 @@ public:
 	GraphicsEngine();
 	~GraphicsEngine();
 
-	bool Init(const int aWidth, const int aHeight, HWND& aWindowHandle);
+	bool Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& aWindowHandle);
 	bool BeginFrame();
 	void EndFrame();
 

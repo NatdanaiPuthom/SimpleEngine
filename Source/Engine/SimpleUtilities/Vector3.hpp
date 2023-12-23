@@ -28,6 +28,7 @@ namespace SimpleUtilities
 
 	typedef Vector3<float> Vector3f;
 	typedef Vector3<int> Vector3i;
+	typedef Vector3<unsigned int> Vector3ui;
 
 	template <class T> Vector3<T> operator+(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
 	template <class T> Vector3<T> operator-(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);

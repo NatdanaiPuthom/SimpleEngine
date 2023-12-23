@@ -25,7 +25,9 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 {
 	LoadSettingsFromJson();
 
-	myHWND = SetupMainWindow(hInstance, myWindowSize.x, myWindowSize.y);
+	const SimpleUtilities::Vector2ui windowSize = SimpleGlobal::GetWindowSize();
+
+	myHWND = SetupMainWindow(hInstance, windowSize.x, windowSize.y);
 	assert(myHWND && "Failed To Create Window");
 
 #ifdef _DEBUG
@@ -39,7 +41,7 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	SimpleGlobalImpl::SetEngine(this);
 
 	myGraphicsEngine = std::make_unique<GraphicsEngine>();
-	const bool success = myGraphicsEngine->Init(myWindowSize.x, myWindowSize.y, *myHWND);
+	const bool success = myGraphicsEngine->Init(windowSize, *myHWND);
 	assert(success && "Failed To Init Graphics Engine");
 
 	myTimer = std::make_unique<SimpleUtilities::Timer>();
@@ -57,10 +59,19 @@ void Engine::LoadSettingsFromJson()
 	const nlohmann::json json = nlohmann::json::parse(file);
 	file.close();
 
-	const nlohmann::json& windowSize = json["game_settings"]["window_size"];
+	const nlohmann::json& windowSizeJson = json["game_settings"]["window_size"];
+	const nlohmann::json& resolutionJson = json["game_settings"]["resolution"];
 
-	myWindowSize.x = windowSize["x"];
-	myWindowSize.y = windowSize["y"];
+	SimpleUtilities::Vector2ui windowSize;
+	windowSize.x = windowSizeJson["x"];
+	windowSize.y = windowSizeJson["y"];
+
+	SimpleUtilities::Vector2ui resolution;
+	resolution.x = resolutionJson["x"];
+	resolution.y = resolutionJson["y"];
+
+	SimpleGlobal::SetResolution(resolution);
+	SimpleGlobal::SetWindowSize(windowSize);
 }
 
 std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)
@@ -96,7 +107,7 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 	std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 	*hwnd = CreateWindow(
 		L"Natdanai",
-		L"SimpleEngine v8.2",
+		L"SimpleEngine v8.3",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -124,8 +135,6 @@ bool Engine::BeginFrame()
 
 void Engine::EndFrame()
 {
-	//myGraphicsEngine->SetToBackBuffer(); //Disabled for now due to issue with ImGui::Image rendering
-
 	myImGuiInterface->EndFrame();
 	myGraphicsEngine->EndFrame();
 }

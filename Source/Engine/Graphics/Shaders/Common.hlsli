@@ -7,6 +7,8 @@ cbuffer FrameBuffer : register(b0)
 {
     float4x4 worldToClipMatrix;
     float3 cameraPosition;
+    int2 resolution;
+    float3 resolutionPadding;
 }
 
 cbuffer ObjectBuffer : register(b1)
@@ -22,7 +24,7 @@ cbuffer TimeBuffer : register(b2)
 cbuffer DirectionLightBuffer : register(b3)
 {
     float3 directionLightDirection;
-    float padding;
+    float directionLightDirectionPadding;
     float4 directionalLightColor;
 }
 

@@ -9,15 +9,16 @@ PixelInputType main(VertexInputType aInput)
     float4 vertexClipPos = mul(worldToClipMatrix, vertexWorldPos);
     
     output.position = vertexClipPos;
-    output.color = aInput.color;
-    
+    output.worldPosition = vertexWorldPos.xyzw;
     output.uv = float2(aInput.uv.x, 1.0 - aInput.uv.y);
     
-    output.worldPosition = vertexWorldPos.xyzw;
     output.normal = aInput.normal;
     output.tangent = aInput.tangent;
     output.bitangent = aInput.bitangent;
+    
     output.clip = aInput.clip;
+    
+    output.color = aInput.color;
 
     return output;
 }

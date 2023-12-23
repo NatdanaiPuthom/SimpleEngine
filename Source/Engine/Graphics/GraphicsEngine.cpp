@@ -33,18 +33,18 @@ GraphicsEngine::~GraphicsEngine()
 {
 }
 
-bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHandle)
+bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& aWindowHandle)
 {
-	if (!CreateSwapChain(aWindowHandle, aWidth, aHeight))
+	if (!CreateSwapChain(aWindowHandle, aWindowSize.x, aWindowSize.y))
 		return false;
 
-	if (!CreateDepthBuffer(aWidth, aHeight))
+	if (!CreateDepthBuffer(aWindowSize.x, aWindowSize.y))
 		return false;
 
 	if (!CreateBackBuffer())
 		return false;
 
-	CreateViewport(aWidth, aHeight);
+	CreateViewport(aWindowSize.x, aWindowSize.y);
 
 	if (!CreateFrameBuffer())
 		return false;
@@ -52,7 +52,7 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 	if (!CreateSamplerState())
 		return false;
 
-	if (!CreateStuffForImGuiImage(aWidth, aHeight))
+	if (!CreateStuffForImGuiImage(aWindowSize.x, aWindowSize.y))
 		return false;
 
 	if (!CreateCameraBuffer())
@@ -67,7 +67,7 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 	if (!CreateAmbientLightBuffer())
 		return false;
 
-	if (!CreateWaterRenderTarget(aWidth, aHeight))
+	if (!CreateWaterRenderTarget(aWindowSize.x, aWindowSize.y))
 		return false;
 
 	if (!CreateFrontFaceCullingRasterizerState())
@@ -75,7 +75,9 @@ bool GraphicsEngine::Init(const int aWidth, const int aHeight, HWND& aWindowHand
 
 	LoadSettingsFromJson();
 
-	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(aWidth), static_cast<float>(aHeight) });
+	const SimpleUtilities::Vector2ui resolution = SimpleGlobal::GetResolution();
+
+	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(resolution.x), static_cast<float>(resolution.y) });
 	myCamera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 	myCamera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 
@@ -92,6 +94,7 @@ void GraphicsEngine::Update()
 		FrameBufferData frameBuffer = {};
 		frameBuffer.worldToClipMatrix = myCamera->GetWorldToClipMatrix();
 		frameBuffer.cameraPosition = myCamera->GetPosition();
+		frameBuffer.resolution = SimpleGlobal::GetResolution();
 		myCameraBuffer->Bind(0);
 		myCameraBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
 	}
@@ -134,9 +137,6 @@ void GraphicsEngine::LoadSettingsFromJson()
 
 	const nlohmann::json json = nlohmann::json::parse(file);
 	file.close();
-
-	bool test = json["game_settings"]["vsync"];
-	test;
 
 	myVSync = json["game_settings"]["vsync"];
 }
@@ -242,6 +242,26 @@ std::shared_ptr<Camera> GraphicsEngine::GetCamera()
 	return myCamera;
 }
 
+SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
+{
+	return myDirectionLightData->direction;
+}
+
+SimpleUtilities::Vector4f GraphicsEngine::GetDirectionalLightColor() const
+{
+	return myDirectionLightData->color;
+}
+
+SimpleUtilities::Vector3f GraphicsEngine::GetSkyColor() const
+{
+	return myAmbientLightData->skyColor;
+}
+
+SimpleUtilities::Vector3f GraphicsEngine::GetGroundColor() const
+{
+	return myAmbientLightData->groundColor;
+}
+
 bool GraphicsEngine::IsVSyncActive() const
 {
 	return myVSync;
@@ -289,7 +309,7 @@ bool GraphicsEngine::CreateWaterRenderTarget(const int aWidth, const int aHeight
 	desc.MiscFlags = 0;
 
 	ID3D11Texture2D* texture;
-	
+
 	HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
 	if (FAILED(result))
 		return false;
@@ -332,26 +352,6 @@ void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
 	viewport.MaxDepth = 1.0f;
 
 	myContext->RSSetViewports(1, &viewport);
-}
-
-SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
-{
-	return myDirectionLightData->direction;
-}
-
-SimpleUtilities::Vector4f GraphicsEngine::GetDirectionalLightColor() const
-{
-	return myDirectionLightData->color;
-}
-
-SimpleUtilities::Vector3f GraphicsEngine::GetSkyColor() const
-{
-	return myAmbientLightData->skyColor;
-}
-
-SimpleUtilities::Vector3f GraphicsEngine::GetGroundColor() const
-{
-	return myAmbientLightData->groundColor;
 }
 
 bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight)

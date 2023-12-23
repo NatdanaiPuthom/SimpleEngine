@@ -4,6 +4,9 @@
 
 namespace
 {
+	SimpleUtilities::Vector2ui localResolution = { 800, 600 };
+	SimpleUtilities::Vector2ui localWindowSize = { 800, 600 };
+
 	Engine* localEngine = nullptr;
 
 	const float localUpdatePeriodically = 0.5f;
@@ -47,6 +50,16 @@ namespace SimpleGlobal
 		return localEngine->GetHWND();
 	}
 
+	SimpleUtilities::Vector2ui GetResolution()
+	{
+		return localResolution;
+	}
+
+	SimpleUtilities::Vector2ui GetWindowSize()
+	{
+		return localWindowSize;
+	}
+
 	double GetTotalTime()
 	{
 		return localEngine->GetTotalTime();
@@ -70,5 +83,15 @@ namespace SimpleGlobal
 	void SetGameIsRunning(const bool aShouldRun)
 	{
 		localGameIsRunning = aShouldRun;
+	}
+
+	void SetResolution(const SimpleUtilities::Vector2ui& aResolution)
+	{
+		localResolution = aResolution;
+	}
+
+	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize)
+	{
+		localWindowSize = aWindowSize;
 	}
 }

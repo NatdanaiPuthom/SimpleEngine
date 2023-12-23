@@ -1,5 +1,7 @@
 #pragma once
 
+//Only For global.cpp
+
 class Engine;
 
 class SimpleGlobalImpl final
