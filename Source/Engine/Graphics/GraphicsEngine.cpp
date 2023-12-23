@@ -16,6 +16,7 @@ GraphicsEngine::GraphicsEngine()
 	, myDirectionLightData(std::make_unique<DirectionalLightBufferData>())
 	, myAmbientLightData(std::make_unique<AmbientLightBufferData>())
 	, myWaterReflectionRenderTarget(std::make_unique<RenderTarget>())
+	, myImGuiImageRenderTarget(std::make_unique<RenderTarget>())
 
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
@@ -52,7 +53,7 @@ bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& a
 	if (!CreateSamplerState())
 		return false;
 
-	if (!CreateStuffForImGuiImage(aWindowSize.x, aWindowSize.y))
+	if (!CreateRenderTargetForImGuiImage(aWindowSize.x, aWindowSize.y))
 		return false;
 
 	if (!CreateCameraBuffer())
@@ -180,8 +181,8 @@ void GraphicsEngine::SetToImGuiBuffer()
 	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	myContext->OMSetRenderTargets(1, myRTV.GetAddressOf(), myDepthBuffer.Get());
-	myContext->ClearRenderTargetView(myRTV.Get(), myColor);
+	myContext->OMSetRenderTargets(1, myImGuiImageRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
+	myContext->ClearRenderTargetView(myImGuiImageRenderTarget->renderTargetView.Get(), myColor);
 
 	myContext->RSSetState(nullptr);
 }
@@ -232,9 +233,9 @@ ComPtr<ID3D11DeviceContext> GraphicsEngine::GetContext()
 	return myContext;
 }
 
-ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetShaderResourceView()
+ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetImGuiShaderResourceView()
 {
-	return mySRV;
+	return myImGuiImageRenderTarget->shaderResourceView;
 }
 
 std::shared_ptr<Camera> GraphicsEngine::GetCamera()
@@ -267,27 +268,37 @@ bool GraphicsEngine::IsVSyncActive() const
 	return myVSync;
 }
 
-bool GraphicsEngine::CreateStuffForImGuiImage(const int aWidth, const int aHeight)
+bool GraphicsEngine::CreateRenderTargetForImGuiImage(const int aWidth, const int aHeight)
 {
-	D3D11_TEXTURE2D_DESC texDesc = { 0 };
-	texDesc.Width = aWidth;
-	texDesc.Height = aHeight;
-	texDesc.ArraySize = 1;
-	texDesc.SampleDesc.Count = 1;
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	D3D11_TEXTURE2D_DESC desc = { 0 };
 
-	HRESULT result = myDevice->CreateTexture2D(&texDesc, nullptr, myTexture.GetAddressOf());
+	desc.Width = aWidth;
+	desc.Height = aHeight;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	ID3D11Texture2D* texture;
+
+	HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
 	if (FAILED(result))
 		return false;
 
-	result = myDevice->CreateShaderResourceView(myTexture.Get(), nullptr, &mySRV);
+	result = myDevice->CreateShaderResourceView(texture, nullptr, &myImGuiImageRenderTarget->shaderResourceView);
 	if (FAILED(result))
 		return false;
 
-	result = myDevice->CreateRenderTargetView(myTexture.Get(), nullptr, &myRTV);
+	result = myDevice->CreateRenderTargetView(texture, nullptr, &myImGuiImageRenderTarget->renderTargetView);
 	if (FAILED(result))
 		return false;
+
+	texture->Release();
 
 	return true;
 }

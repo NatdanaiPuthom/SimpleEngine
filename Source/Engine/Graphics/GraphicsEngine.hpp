@@ -79,7 +79,7 @@ public:
 public:
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetShaderResourceView();
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetImGuiShaderResourceView();
 
 	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 	SimpleUtilities::Vector4f GetDirectionalLightColor() const;
@@ -98,7 +98,7 @@ private:
 	bool CreateTimeBuffer();
 	bool CreateDirectionalLightBuffer();
 	bool CreateAmbientLightBuffer();
-	bool CreateStuffForImGuiImage(const int aWidth, const int aHeight);
+	bool CreateRenderTargetForImGuiImage(const int aWidth, const int aHeight);
 	bool CreateWaterRenderTarget(const int aWidth, const int aHeight);
 	bool CreateFrontFaceCullingRasterizerState();
 private:
@@ -120,10 +120,6 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> mySamplerState;
 
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> myTexture;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mySRV;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> myRTV;
-
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> myFrontFaceCullingRasterizerState;
 
 	std::unique_ptr<ConstantBuffer> myCameraBuffer;
@@ -135,6 +131,7 @@ private:
 	std::unique_ptr<AmbientLightBufferData> myAmbientLightData;
 
 	std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
+	std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
 
 	float myColor[4];
 	bool myVSync;
