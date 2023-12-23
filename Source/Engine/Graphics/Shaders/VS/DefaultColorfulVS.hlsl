@@ -24,6 +24,7 @@ PixelInputType main (VertexInputType aInput)
     output.uv = aInput.uv;
     output.tangent = aInput.tangent;
     output.bitangent = aInput.bitangent;
+    output.clip = aInput.clip;
     
     return output;
 }

@@ -2,6 +2,8 @@
 
 namespace SimpleTracker
 {
+	//The Game Assembly stuff but modified a little bit
+
 	struct MemoryTrackingSettings final
 	{
 		bool myShouldStoreStackTraces;

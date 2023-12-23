@@ -5,6 +5,7 @@
 #include "Engine/MemoryTracker/MemoryTracker.h"
 #include "Engine/MemoryTracker/StackTrace.h"
 
+//The Game Assembly Stuff but modified a little bit
 using namespace SimpleTracker;
 
 #ifdef _DEBUG

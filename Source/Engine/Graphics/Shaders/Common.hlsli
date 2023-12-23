@@ -39,21 +39,23 @@ struct PixelOutput
 
 struct VertexInputType
 {
-    float4 position : POSITION;
-    float4 color : COLOR;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float3 bitangent : BITANGENT;
+    float4 position : POSITION0;
+    float4 color : COLOR0;
+    float3 normal : NORMAL0;
+    float3 tangent : TANGENT0;
+    float3 bitangent : BITANGENT0;
     float2 uv : TEXCOORD0;
+    float clip : SV_ClipDistance0;
 };
 
 struct PixelInputType
 {
-    float4 position : SV_POSITION;
-    float4 worldPosition : WORLDPOSITION;
-    float4 color : COLOR;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float3 bitangent : BITANGENT;
+    float4 position : SV_POSITION0;
+    float4 worldPosition : WORLDPOSITION0;
+    float4 color : COLOR0;
+    float3 normal : NORMAL0;
+    float3 tangent : TANGENT0;
+    float3 bitangent : BITANGENT0;
     float2 uv : TEXCOORD0;
+    float clip : SV_ClipDistance0;
 };

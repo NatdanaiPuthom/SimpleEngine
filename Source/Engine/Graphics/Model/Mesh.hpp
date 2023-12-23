@@ -15,6 +15,7 @@ struct Vertex
 	SimpleUtilities::Vector3f tangent = { 0,0,0 };
 	SimpleUtilities::Vector3f bitangent = { 0,0,0 };
 	SimpleUtilities::Vector2f uv = { 0,0 };
+	float clip = 0.0f;
 };
 
 struct MeshData

@@ -15,6 +15,7 @@ GraphicsEngine::GraphicsEngine()
 	, myAmbientLightBuffer(std::make_unique<ConstantBuffer>())
 	, myDirectionLightData(std::make_unique<DirectionalLightBufferData>())
 	, myAmbientLightData(std::make_unique<AmbientLightBufferData>())
+
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
 {

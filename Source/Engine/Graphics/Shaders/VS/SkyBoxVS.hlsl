@@ -15,6 +15,7 @@ PixelInputType main(VertexInputType aInput)
     output.normal = normalize(mul(modelToWorld, float4(aInput.normal, 0)).xyz);
     output.tangent = normalize(mul(modelToWorld, float4(aInput.tangent, 0)).xyz);
     output.bitangent = normalize(mul(modelToWorld, float4(aInput.bitangent, 0)).xyz);
+    output.clip = aInput.clip;
     
     output.color = aInput.color;
     
