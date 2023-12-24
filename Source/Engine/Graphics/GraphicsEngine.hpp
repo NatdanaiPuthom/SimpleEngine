@@ -65,11 +65,13 @@ public:
 	GraphicsEngine();
 	~GraphicsEngine();
 
-	bool Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& aWindowHandle);
-	bool BeginFrame();
+	const bool Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& aWindowHandle);
+	const bool BeginFrame();
 	void EndFrame();
 
-	bool AddTexture(const char* aFilePath, const unsigned int aSlot = 0);
+	const bool AddTexture(const char* aFilePath, const unsigned int aSlot = 0);
+	const bool AddShader(const char* aPSFile, const char* aVSFile);
+	bool IsVSyncActive() const;
 public:
 	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection);
 	void SetDirectionalLightColor(const SimpleUtilities::Vector4f& aColor);
@@ -83,17 +85,18 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetImGuiShaderResourceView();
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
 
 	std::shared_ptr<Camera> GetCamera();
-
-	Texture* GetTexture(const char* aFilePath);
+	std::shared_ptr<Texture> GetTexture(const char* aFilePath);
+	std::shared_ptr<Texture> GetDefaultTexture();
 	std::shared_ptr<Shader> GetDefaultShader();
+	std::shared_ptr<Shader> GetShader(const char* aPSFile, const char* aVSFile);
 
 	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 	SimpleUtilities::Vector4f GetDirectionalLightColor() const;
 	SimpleUtilities::Vector3f GetSkyColor() const;
 	SimpleUtilities::Vector3f GetGroundColor() const;
-	bool IsVSyncActive() const;
 private:
 	void CreateViewport(const int aWidth, const int aHeight);
 	bool CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight);
@@ -114,10 +117,10 @@ private:
 	void LoadTextures();
 	void LoadShaders();
 private:
-	std::unordered_map<std::string, std::unique_ptr<Texture>> myLoadedTextures;
+	std::unordered_map<std::string, std::shared_ptr<Texture>> myLoadedTextures;
+	std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<Shader>, SimpleHash::PairHash, SimpleHash::PairEqual> myLoadedShaders;
 
 	std::shared_ptr<Camera> myCamera;
-	std::shared_ptr<Shader> myDefaultShader;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> myDevice;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> myContext;

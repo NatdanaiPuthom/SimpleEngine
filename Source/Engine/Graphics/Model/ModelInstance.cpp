@@ -18,17 +18,13 @@ ModelInstance::~ModelInstance()
 void ModelInstance::Init(Mesh* aMesh)
 {
 	myMesh = aMesh;
-
-	if (!AddTexture("Assets/Textures/DefaultTexture.dds"))
-		assert(false && "Failed to add Texture");
+	AddTexture("Assets/Textures/DefaultTexture.dds");
 }
 
 void ModelInstance::Init(Mesh* aMesh, const char* aTexturePath)
 {
 	myMesh = aMesh;
-
-	if (!AddTexture(aTexturePath))
-		assert(false && "Failed to add Texture");
+	AddTexture(aTexturePath);
 }
 
 void ModelInstance::Render()
@@ -47,16 +43,22 @@ void ModelInstance::Render()
 	myMesh->Draw();
 }
 
-const bool ModelInstance::AddTexture(const char* aFilePath)
+void ModelInstance::AddTexture(const char* aFilePath)
 {
-	Texture* texture = SimpleGlobal::GetGraphicsEngine()->GetTexture(aFilePath);
+	std::shared_ptr<Texture> texture = SimpleGlobal::GetGraphicsEngine()->GetTexture(aFilePath);
 
 	if (texture == nullptr)
-		return false;
+	{
+		if (!SimpleGlobal::GetGraphicsEngine()->AddTexture(aFilePath))
+			assert(false && "Failed to add Texture to the bank");
+
+		texture = SimpleGlobal::GetGraphicsEngine()->GetTexture(aFilePath);
+
+		if (texture == nullptr)
+			assert(false && "Skill Issues");
+	}
 
 	myTextures.push_back(texture);
-
-	return true;
 }
 
 void ModelInstance::ClearTextures()
@@ -67,12 +69,18 @@ void ModelInstance::ClearTextures()
 void ModelInstance::SetShader(const char* aPSShaderFile, const char* aVSShaderFile)
 {
 	myShader = nullptr;
-	myShader = std::make_shared<Shader>();
+	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader(aPSShaderFile, aVSShaderFile);
 
-	auto device = SimpleGlobal::GetGraphicsEngine()->GetDevice();
+	if (myShader == nullptr)
+	{
+		if (SimpleGlobal::GetGraphicsEngine()->AddShader(aPSShaderFile, aVSShaderFile))
+			assert(false && "Failed to add Shader to the bank");
 
-	if (!myShader->Init(device, aPSShaderFile, aVSShaderFile))
-		assert(false && "Failed to init Shader");
+		myShader = SimpleGlobal::GetGraphicsEngine()->GetShader(aPSShaderFile, aVSShaderFile);
+
+		if (myShader == nullptr)
+			assert(false && "Skill Issues");
+	}
 }
 
 void ModelInstance::SetPosition(const SimpleUtilities::Vector3f& aPosition)

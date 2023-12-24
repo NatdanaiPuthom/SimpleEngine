@@ -1,6 +1,5 @@
 #pragma once
 
-class ConstantBuffer;
 class Shader;
 class Mesh;
 class Texture;
@@ -15,7 +14,7 @@ public:
 	void Init(Mesh* aMesh, const char* aTexturePath);
 	void Render();
 
-	const bool AddTexture(const char* aFilePath);
+	void AddTexture(const char* aFilePath);
 	void ClearTextures();
 public:
 	void SetShader(const char* aPSShaderFile, const char* aVSShaderFile);
@@ -28,9 +27,8 @@ public:
 	SimpleUtilities::Vector3f GetRotation() const;
 	SimpleUtilities::Vector3f GetScale() const;
 	std::string GetName() const;
-
 private:
-	std::vector<Texture*> myTextures;
+	std::vector<std::shared_ptr<Texture>> myTextures;
 	std::string myName;
 
 	std::shared_ptr<Shader> myShader;

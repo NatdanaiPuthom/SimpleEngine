@@ -54,66 +54,6 @@ void Renderer::Render()
 	myDirectionalLight->Render();
 }
 
-void Renderer::InitTerrain()
-{
-	std::unique_ptr<ModelInstance> terrainModel = std::make_unique<ModelInstance>();
-	terrainModel->Init(GetMesh("Terrain"));
-	terrainModel->ClearTextures();
-	terrainModel->SetShader("Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso");
-
-	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Grass_c.dds"))
-		assert(false && "Failed to Add Texture");
-
-	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Rock_c.dds"))
-		assert(false && "Failed to Add Texture");
-
-	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Snow_c.dds"))
-		assert(false && "Failed to Add Texture");
-
-	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Grass_n.dds"))
-		assert(false && "Failed to Add Texture");
-
-	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Rock_n.dds"))
-		assert(false && "Failed to Add Texture");
-
-	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Snow_n.dds"))
-		assert(false && "Failed to Add Texture");
-
-	if (!terrainModel->AddTexture("Assets/tga/Uppgift7/Grass_m.dds"))
-		assert(false && "Failed to Add Texture");
-
-	if (!terrainModel->AddTexture("Assets/tga/Uppgift7/Rock_m.dds"))
-		assert(false && "Failed to Add Texture");
-
-	if (!terrainModel->AddTexture("Assets/tga/Uppgift7/Snow_m.dds"))
-		assert(false && "Failed to Add Texture");
-
-	terrainModel->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
-	terrainModel->SetName("Terrain");
-
-	AddModelInstance(std::move(terrainModel));
-}
-
-void Renderer::InitDirectionalLight()
-{
-	myDirectionalLight = std::make_unique<ModelInstance>();
-	myDirectionalLight->Init(GetMesh("DirectionalLight"));
-	myDirectionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
-	myDirectionalLight->SetName("DirectionalLight");
-}
-
-void Renderer::InitSkyBox()
-{
-	std::unique_ptr<ModelInstance> skyboxModel = std::make_unique<ModelInstance>();
-
-	skyboxModel->Init(GetMesh("Skybox"), "Assets/tga/Uppgift7/cubemap.dds");
-	skyboxModel->SetShader("Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso");
-	skyboxModel->SetPosition({ 0,0,20 });
-	skyboxModel->SetName("SkyBox");
-
-	AddModelInstance(std::move(skyboxModel));
-}
-
 void Renderer::InitShapes()
 {
 	MeshData cubeData = ShapeCreator3000::CreateCube();
@@ -154,6 +94,49 @@ void Renderer::InitShapes()
 	AddMesh("Skybox", std::move(skyboxMesh));
 	AddMesh("DirectionalLight", std::move(directionalLight));
 	AddMesh("Terrain", std::move(terrainMesh));
+}
+
+void Renderer::InitTerrain()
+{
+	std::unique_ptr<ModelInstance> terrainModel = std::make_unique<ModelInstance>();
+	terrainModel->Init(GetMesh("Terrain"));
+	terrainModel->ClearTextures();
+	terrainModel->SetShader("Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso");
+
+	terrainModel->AddTexture("Assets/tga/Uppgift6/Grass_c.dds");
+	terrainModel->AddTexture("Assets/tga/Uppgift6/Rock_c.dds");
+	terrainModel->AddTexture("Assets/tga/Uppgift6/Snow_c.dds");
+	terrainModel->AddTexture("Assets/tga/Uppgift6/Grass_n.dds");
+	terrainModel->AddTexture("Assets/tga/Uppgift6/Rock_n.dds");
+	terrainModel->AddTexture("Assets/tga/Uppgift6/Snow_n.dds");
+	terrainModel->AddTexture("Assets/tga/Uppgift7/Grass_m.dds");
+	terrainModel->AddTexture("Assets/tga/Uppgift7/Rock_m.dds");
+	terrainModel->AddTexture("Assets/tga/Uppgift7/Snow_m.dds");
+
+	terrainModel->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
+	terrainModel->SetName("Terrain");
+
+	AddModelInstance(std::move(terrainModel));
+}
+
+void Renderer::InitDirectionalLight()
+{
+	myDirectionalLight = std::make_unique<ModelInstance>();
+	myDirectionalLight->Init(GetMesh("DirectionalLight"));
+	myDirectionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
+	myDirectionalLight->SetName("DirectionalLight");
+}
+
+void Renderer::InitSkyBox()
+{
+	std::unique_ptr<ModelInstance> skyboxModel = std::make_unique<ModelInstance>();
+
+	skyboxModel->Init(GetMesh("Skybox"), "Assets/tga/Uppgift7/cubemap.dds");
+	skyboxModel->SetShader("Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso");
+	skyboxModel->SetPosition({ 0,0,20 });
+	skyboxModel->SetName("SkyBox");
+
+	AddModelInstance(std::move(skyboxModel));
 }
 
 Mesh* Renderer::GetMesh(const std::string& aMeshName)

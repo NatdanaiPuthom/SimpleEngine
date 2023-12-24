@@ -17,8 +17,6 @@ GraphicsEngine::GraphicsEngine()
 	, myAmbientLightData(std::make_unique<AmbientLightBufferData>())
 	, myWaterReflectionRenderTarget(std::make_unique<RenderTarget>())
 	, myImGuiImageRenderTarget(std::make_unique<RenderTarget>())
-	, myDefaultShader(std::make_shared<Shader>())
-
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
 {
@@ -35,7 +33,7 @@ GraphicsEngine::~GraphicsEngine()
 {
 }
 
-bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& aWindowHandle)
+const bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& aWindowHandle)
 {
 	if (!CreateSwapChain(aWindowHandle, aWindowSize.x, aWindowSize.y))
 		return false;
@@ -152,7 +150,7 @@ void GraphicsEngine::LoadTextures()
 	if (!AddTexture("Assets/Textures/Cat.dds", 0))
 		assert(false && "Failed to add Texture");
 
-	{ 	//Test
+	{ //TGA Uppgift
 		if (!AddTexture("Assets/tga/Uppgift6/Grass_c.dds", 1))
 			assert(false && "Failed to add Texture");
 
@@ -187,25 +185,51 @@ void GraphicsEngine::LoadTextures()
 
 void GraphicsEngine::LoadShaders()
 {
-	if (!myDefaultShader->Init(myDevice, "Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso"))
-		assert(false && "Failed to init Shader");
+	if (!AddShader("Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso"))
+		assert(false && "Failed to add Shader");
+
+	{ //TGA Uppgift
+		if (!AddShader("Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("Shaders/WaterReflectionPS.cso", "Shaders/DefaultVS.cso"))
+			assert(false && "Failed to add Shader");
+	}
 }
 
-bool GraphicsEngine::AddTexture(const char* aFilePath, const unsigned int aSlot)
+const bool GraphicsEngine::AddTexture(const char* aFilePath, const unsigned int aSlot)
 {
-	std::unique_ptr<Texture> texture = std::make_unique<Texture>();
+	std::shared_ptr<Texture> texture = std::make_shared<Texture>();
 
 	if (!texture->LoadDDS(aFilePath))
 		return false;
 
 	texture->SetSlot(aSlot);
 
-	myLoadedTextures.emplace(aFilePath, std::move(texture));
+	myLoadedTextures.emplace(aFilePath, texture);
 
 	return true;
 }
 
-bool GraphicsEngine::BeginFrame()
+const bool GraphicsEngine::AddShader(const char* aPSFile, const char* aVSFile)
+{
+	std::string PSKey = aPSFile;
+	std::string VSKey = aVSFile;
+
+	std::shared_ptr<Shader> shader = std::make_shared<Shader>();
+
+	if (!shader->Init(myDevice, PSKey, VSKey))
+		return false;
+
+	myLoadedShaders.emplace(std::make_pair(PSKey, VSKey), shader);
+
+	return true;
+}
+
+const bool GraphicsEngine::BeginFrame()
 {
 	MSG msg = { 0 };
 
@@ -286,19 +310,44 @@ void GraphicsEngine::SetGroundColor(const SimpleUtilities::Vector3f& aColor)
 	myAmbientLightData->groundColor = aColor;
 }
 
-Texture* GraphicsEngine::GetTexture(const char* aFilePath)
+std::shared_ptr<Texture> GraphicsEngine::GetTexture(const char* aFilePath)
 {
 	auto it = myLoadedTextures.find(aFilePath);
 
 	if (it != myLoadedTextures.end())
-		return it->second.get();
+		return it->second;
+
+	return nullptr;
+}
+
+std::shared_ptr<Texture> GraphicsEngine::GetDefaultTexture()
+{
+	auto texture = GetTexture("Assets/Textures/DefaultTexture.dds");
+
+	if (texture != nullptr)
+		return texture;
 
 	return nullptr;
 }
 
 std::shared_ptr<Shader> GraphicsEngine::GetDefaultShader()
 {
-	return myDefaultShader;
+	auto defaultShader = GetShader("Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso");
+
+	if (defaultShader != nullptr)
+		return defaultShader;
+
+	return nullptr;
+}
+
+std::shared_ptr<Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
+{
+	auto shader = myLoadedShaders.find({ aPSFile, aVSFile });
+
+	if (shader != myLoadedShaders.end())
+		return shader->second;
+
+	return nullptr;
 }
 
 ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
@@ -314,6 +363,11 @@ ComPtr<ID3D11DeviceContext> GraphicsEngine::GetContext()
 ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetImGuiShaderResourceView()
 {
 	return myImGuiImageRenderTarget->shaderResourceView;
+}
+
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetWaterShaderResourceView()
+{
+	return myWaterReflectionRenderTarget->shaderResourceView;
 }
 
 std::shared_ptr<Camera> GraphicsEngine::GetCamera()
