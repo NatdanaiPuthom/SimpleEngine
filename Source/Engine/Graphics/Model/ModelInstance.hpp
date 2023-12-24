@@ -6,13 +6,13 @@ class Texture;
 
 class ModelInstance final
 {
+	friend class Renderer;
 public:
 	ModelInstance();
 	~ModelInstance();
 
 	void Init(Mesh* aMesh);
 	void Init(Mesh* aMesh, const char* aTexturePath);
-	void Render();
 
 	void AddTexture(const char* aFilePath);
 	void ClearTextures();
@@ -23,6 +23,7 @@ public:
 	void SetScale(const SimpleUtilities::Vector3f& aScale);
 	void SetName(const std::string& aName);
 
+	SimpleUtilities::Matrix4x4f GetMatrix() const;
 	SimpleUtilities::Vector3f GetPosition() const;
 	SimpleUtilities::Vector3f GetRotation() const;
 	SimpleUtilities::Vector3f GetScale() const;

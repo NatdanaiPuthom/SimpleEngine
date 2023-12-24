@@ -1,6 +1,4 @@
 #include "Engine/stdafx.h"
-#include "Engine/Graphics/Model/ModelInstance.hpp"
-#include "Engine/Graphics/Texture/Texture.hpp"
 
 ModelInstance::ModelInstance()
 	: myMesh(nullptr)
@@ -25,22 +23,6 @@ void ModelInstance::Init(Mesh* aMesh, const char* aTexturePath)
 {
 	myMesh = aMesh;
 	AddTexture(aTexturePath);
-}
-
-void ModelInstance::Render()
-{
-	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
-
-	myShader->SetShader(context.Get());
-
-	for (const auto& texture : myTextures)
-	{
-		texture->Bind(context, texture->GetSlot());
-	}
-
-	myMesh->BindMatrix(myTransform.GetMatrix());
-
-	myMesh->Draw();
 }
 
 void ModelInstance::AddTexture(const char* aFilePath)
@@ -101,6 +83,11 @@ void ModelInstance::SetScale(const SimpleUtilities::Vector3f& aScale)
 void ModelInstance::SetName(const std::string& aName)
 {
 	myName = aName;
+}
+
+SimpleUtilities::Matrix4x4f ModelInstance::GetMatrix() const
+{
+	return myTransform.GetMatrix();
 }
 
 SimpleUtilities::Vector3f ModelInstance::GetPosition() const
