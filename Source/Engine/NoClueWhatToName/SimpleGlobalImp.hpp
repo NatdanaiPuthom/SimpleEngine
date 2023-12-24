@@ -4,6 +4,7 @@
 
 class Engine;
 class Renderer;
+class ModelFactory;
 
 class SimpleGlobalEngineImpl final
 {
@@ -25,4 +26,11 @@ private:
 
 	static void IncreaseDrawCall();
 	static void SetRenderer(Renderer* aRenderer);
+};
+
+class SimpleGlobalModelFactoryImpl final
+{
+private:
+	friend class ModelFactory;
+	static void SetModelFactory(ModelFactory* aModelFactory);
 };

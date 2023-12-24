@@ -2,11 +2,13 @@
 
 class GraphicsEngine;
 class Renderer;
+class ModelFactory;
 
 namespace SimpleGlobal
 {
 	GraphicsEngine* GetGraphicsEngine();
 	Renderer* GetRenderer();
+	ModelFactory* GetModelFactory();
 
 	HWND& GetHWND();
 	

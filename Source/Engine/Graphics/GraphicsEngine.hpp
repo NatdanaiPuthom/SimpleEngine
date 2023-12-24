@@ -4,6 +4,8 @@ class Camera;
 class ConstantBuffer;
 class Texture;
 class Shader;
+class Renderer;
+class ModelFactory;
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -147,6 +149,9 @@ private:
 
 	std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
 	std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
+
+	std::unique_ptr<Renderer> myRenderer;
+	std::unique_ptr<ModelFactory> myModelFactory;
 
 	float myColor[4];
 	bool myVSync;

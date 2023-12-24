@@ -31,6 +31,7 @@
 #include "Engine/Graphics/GraphicsEngine.hpp"
 #include "Engine/Graphics/Model/Mesh.hpp"
 #include "Engine/Graphics/Model/ModelInstance.hpp"
+#include "Engine/Graphics/Model/ModelFactory.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
 
 #include "Game/Managers/ImGuiManager/ToolInterface.hpp"

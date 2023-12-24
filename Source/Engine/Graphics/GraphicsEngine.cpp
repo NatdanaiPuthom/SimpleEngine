@@ -77,14 +77,17 @@ const bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, H
 	LoadTextures();
 	LoadShaders();
 
+	myRenderer = std::make_unique<Renderer>();
+	myModelFactory = std::make_unique<ModelFactory>();
+
+	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
+
 	const SimpleUtilities::Vector2ui resolution = SimpleGlobal::GetResolution();
 	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(resolution.x), static_cast<float>(resolution.y) });
 	myCamera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 	myCamera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 
 	myDirectionLightData->color = SimpleUtilities::Vector4f(1, 1, 1, 1);
-
-	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
 
 	return true;
 }

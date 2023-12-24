@@ -9,6 +9,7 @@ namespace
 
 	Engine* localEngine = nullptr;
 	Renderer* localRenderer = nullptr;
+	ModelFactory* localModelFactory = nullptr;
 
 	const float localUpdatePeriodically = 0.5f;
 
@@ -44,6 +45,11 @@ void SimpleGlobalEngineImpl::ResetDrawCalls()
 	localDrawCalls = 0;
 }
 
+void SimpleGlobalModelFactoryImpl::SetModelFactory(ModelFactory* aModelFactory)
+{
+	localModelFactory = aModelFactory;
+}
+
 void SimpleGlobalRendererImpl::SetRenderer(Renderer* aRenderer)
 {
 	localRenderer = aRenderer;
@@ -64,6 +70,11 @@ namespace SimpleGlobal
 	Renderer* GetRenderer()
 	{
 		return localRenderer;
+	}
+
+	ModelFactory* GetModelFactory()
+	{
+		return localModelFactory;
 	}
 
 	HWND& GetHWND()

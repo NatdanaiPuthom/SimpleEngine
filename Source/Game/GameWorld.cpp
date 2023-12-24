@@ -67,6 +67,8 @@ void GameWorld::Init()
 			position.z += 5;
 		}
 	}*/
+
+	myModelInstances.push_back(std::move(SimpleGlobal::GetModelFactory()->CreateTerrainModel()));
 }
 
 void GameWorld::Update()
