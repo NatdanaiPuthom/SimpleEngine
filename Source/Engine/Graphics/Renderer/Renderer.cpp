@@ -1,9 +1,10 @@
 #include "Engine/stdafx.h"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
-#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
 
 Renderer::Renderer()
 {
+	InitShapes();
+
 	InitTerrain();
 	InitSkyBox();
 	InitDirectionalLight();
@@ -13,24 +14,29 @@ Renderer::~Renderer()
 {
 }
 
-void Renderer::AddMesh(std::unique_ptr<Mesh> aMesh)
+void Renderer::AddMesh(const std::string& aName, std::unique_ptr<Mesh> aMesh)
 {
-	myMeshes.emplace_back(std::move(aMesh));
+	myMeshes.emplace(aName, std::move(aMesh));
+}
+
+void Renderer::AddModelInstance(std::unique_ptr<ModelInstance> aModelInstance)
+{
+	myModelInstances.push_back(std::move(aModelInstance));
 }
 
 void Renderer::Update()
 {
 	{ //Test Rotation Over Time
 		//Pyramid
-		SimpleUtilities::Vector3f pyramidRotation = myMeshes[2]->GetRotation();
+		SimpleUtilities::Vector3f pyramidRotation = myModelInstances[2]->GetRotation();
 		pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
 		pyramidRotation.z += 10 * SimpleGlobal::GetDeltaTime();
-		myMeshes[2]->SetRotation(pyramidRotation);
+		myModelInstances[2]->SetRotation(pyramidRotation);
 
 		//Cube
-		SimpleUtilities::Vector3f cubeRotation = myMeshes[3]->GetRotation();
+		SimpleUtilities::Vector3f cubeRotation = myModelInstances[3]->GetRotation();
 		cubeRotation.x += 10.0f * SimpleGlobal::GetDeltaTime();
-		myMeshes[3]->SetRotation(cubeRotation);
+		myModelInstances[3]->SetRotation(cubeRotation);
 
 		//Directional Light test
 		SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
@@ -40,95 +46,134 @@ void Renderer::Update()
 
 void Renderer::Render()
 {
-	for (const auto& mesh : myMeshes)
+	for (const auto& model : myModelInstances)
 	{
-		mesh->Draw();
+		model->Render();
 	}
 
-	myDirectionalLight->Draw();
+	myDirectionalLight->Render();
 }
 
 void Renderer::InitTerrain()
 {
-	std::unique_ptr<Mesh> terrain = std::make_unique<Mesh>();
-	MeshData terrainData = ShapeCreator3000::CreateTerrain();
+	std::unique_ptr<ModelInstance> terrainModel = std::make_unique<ModelInstance>();
+	terrainModel->Init(GetMesh("Terrain"));
+	terrainModel->ClearTextures();
+	terrainModel->SetShader("Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso");
 
-	if (!terrain->Init(terrainData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
-		assert(false && "Failed to Init Terrain");
-
-	if (!terrain->AddTexture("Assets/tga/Uppgift6/Grass_c.dds"))
+	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Grass_c.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture("Assets/tga/Uppgift6/Rock_c.dds"))
+	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Rock_c.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture("Assets/tga/Uppgift6/Snow_c.dds"))
+	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Snow_c.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture("Assets/tga/Uppgift6/Grass_n.dds"))
+	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Grass_n.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture("Assets/tga/Uppgift6/Rock_n.dds"))
+	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Rock_n.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture("Assets/tga/Uppgift6/Snow_n.dds"))
+	if (!terrainModel->AddTexture("Assets/tga/Uppgift6/Snow_n.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture("Assets/tga/Uppgift7/Grass_m.dds"))
+	if (!terrainModel->AddTexture("Assets/tga/Uppgift7/Grass_m.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture("Assets/tga/Uppgift7/Rock_m.dds"))
+	if (!terrainModel->AddTexture("Assets/tga/Uppgift7/Rock_m.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture("Assets/tga/Uppgift7/Snow_m.dds"))
+	if (!terrainModel->AddTexture("Assets/tga/Uppgift7/Snow_m.dds"))
 		assert(false && "Failed to Add Texture");
 
-	terrain->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
-	terrain->SetName("Terrain");
+	terrainModel->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
+	terrainModel->SetName("Terrain");
 
-	AddMesh(std::move(terrain));
+	AddModelInstance(std::move(terrainModel));
 }
 
 void Renderer::InitDirectionalLight()
 {
-	if (myDirectionalLight != nullptr)
-		assert(false && "Already Initialized");
-
-	myDirectionalLight = std::make_unique<Mesh>();
-
-	MeshData directionalLightData = ShapeCreator3000::CreateDirectionalLight();
-
-	if (!myDirectionalLight->Init(directionalLightData))
-		assert(false && "Failed to create Directional Light");
-
+	myDirectionalLight = std::make_unique<ModelInstance>();
+	myDirectionalLight->Init(GetMesh("DirectionalLight"));
 	myDirectionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
+	myDirectionalLight->SetName("DirectionalLight");
 }
 
 void Renderer::InitSkyBox()
 {
-	std::unique_ptr<Mesh> skybox = std::make_unique<Mesh>();
-	MeshData skyboxData = ShapeCreator3000::CreateSkyBox(SimpleUtilities::Vector3f(100, 100, 100));
+	std::unique_ptr<ModelInstance> skyboxModel = std::make_unique<ModelInstance>();
 
-	if (!skybox->Init(skyboxData, "Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso"))
-		assert(false && "Failed to create SkyBox");
+	skyboxModel->Init(GetMesh("Skybox"), "Assets/tga/Uppgift7/cubemap.dds");
+	skyboxModel->SetShader("Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso");
+	skyboxModel->SetPosition({ 0,0,20 });
+	skyboxModel->SetName("SkyBox");
 
-	if (!skybox->AddTexture("Assets/tga/Uppgift7/cubemap.dds"))
-		assert(false && "Failed to Add Texture");
-
-	skybox->SetPosition({ 0,0,20 });
-	skybox->SetName("SkyBox");
-
-	AddMesh(std::move(skybox));
+	AddModelInstance(std::move(skyboxModel));
 }
 
-std::vector<Mesh*> Renderer::GetMeshes()
+void Renderer::InitShapes()
 {
-	std::vector<Mesh*> meshes;
+	MeshData cubeData = ShapeCreator3000::CreateCube();
+	MeshData pyramidData = ShapeCreator3000::CreatePyramid();
+	MeshData planeData = ShapeCreator3000::CreatePlane();
+	MeshData skyboxData = ShapeCreator3000::CreateSkyBox(SimpleUtilities::Vector3f(100, 100, 100));
+	MeshData directionalLightData = ShapeCreator3000::CreateDirectionalLight();
+	MeshData terrainData = ShapeCreator3000::CreateTerrain();
 
-	for (auto& mesh : myMeshes)
+	std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> plane = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> skyboxMesh = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> directionalLight = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> terrainMesh = std::make_unique<Mesh>();
+
+	if (!cube->Init(cubeData))
+		assert(false && "Failed to create Cube");
+
+	if (!pyramid->Init(pyramidData))
+		assert(false && "Failed to create Pyramid");
+
+	if (!plane->Init(planeData))
+		assert(false && "Failed to create Plane");
+
+	if (!skyboxMesh->Init(skyboxData))
+		assert(false && "Failed to create SkyBox");
+
+	if (!directionalLight->Init(directionalLightData))
+		assert(false && "Failed to create Directional Light");
+
+	if (!terrainMesh->Init(terrainData))
+		assert(false && "Failed to create Terrain");
+
+	AddMesh("Cube", std::move(cube));
+	AddMesh("Pyramid", std::move(pyramid));
+	AddMesh("Plane", std::move(plane));
+	AddMesh("Skybox", std::move(skyboxMesh));
+	AddMesh("DirectionalLight", std::move(directionalLight));
+	AddMesh("Terrain", std::move(terrainMesh));
+}
+
+Mesh* Renderer::GetMesh(const std::string& aMeshName)
+{
+	auto it = myMeshes.find(aMeshName);
+
+	if (it != myMeshes.end())
+		return it->second.get();
+
+	return nullptr;
+}
+
+std::vector<ModelInstance*> Renderer::GetAllModelInstances()
+{
+	std::vector<ModelInstance*> modelInstances;
+
+	for (auto& model : myModelInstances)
 	{
-		meshes.push_back(mesh.get());
+		modelInstances.push_back(model.get());
 	}
 
-	return meshes;
+	return modelInstances;
 }

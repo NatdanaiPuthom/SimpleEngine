@@ -1,12 +1,7 @@
 #include "Engine/stdafx.h"
-#include "Engine/Graphics/Camera/Camera.hpp"
-#include "Engine/Graphics/Texture/Texture.hpp"
 
 Mesh::Mesh()
-	: myShader(std::make_shared<Shader>())
-	, myObjectBuffer(std::make_unique<ConstantBuffer>())
-	, myGraphicsEngine(nullptr)
-	, myName("Unnamed Mesh")
+	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 {
 }
 
@@ -14,12 +9,11 @@ Mesh::~Mesh()
 {
 }
 
-const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, const char* aVSShaderFile)
+const bool Mesh::Init(const MeshData& aMeshData)
 {
-	myGraphicsEngine = SimpleGlobal::GetGraphicsEngine();
 	myMeshData = aMeshData;
 
-	auto device = myGraphicsEngine->GetDevice();
+	auto device = SimpleGlobal::GetGraphicsEngine()->GetDevice();
 
 	if (!CreateVertexBuffer(device))
 		return false;
@@ -30,25 +24,16 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	if (!CreateObjectBuffer())
 		return false;
 
-	if (!myShader->Init(device, aPSShaderFile, aVSShaderFile))
-		return false;
-
-	if (!AddTexture("Assets/Textures/DefaultTexture.dds")) //Default texture
-		return false;
-
 	return true;
 }
 
-const bool Mesh::AddTexture(const char* aFilePath)
+void Mesh::BindMatrix(const SimpleUtilities::Matrix4x4f& aMatrix)
 {
-	Texture* texture = myGraphicsEngine->GetTexture(aFilePath);
+	ObjectBufferData objectBuffer = {};
+	objectBuffer.modelToWorldMatrix = aMatrix;
 
-	if (texture == nullptr)
-		return false;
-
-	myTextures.push_back(texture);
-
-	return true;
+	myObjectBuffer->Bind(1);
+	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 }
 
 void Mesh::Draw()
@@ -56,24 +41,11 @@ void Mesh::Draw()
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	const auto context = myGraphicsEngine->GetContext();
+	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
 	context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	myShader->SetShader(context.Get());
-
-	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = myTransform.GetMatrix();
-
-	myObjectBuffer->Bind(1);
-	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
-
-	for (const auto& texture : myTextures)
-	{
-		texture->Bind(context, texture->GetSlot());
-	}
 
 	context->DrawIndexed(static_cast<UINT>(myMeshData.myIndices.size()), 0, 0);
 }
@@ -124,76 +96,16 @@ bool Mesh::CreateIndexBuffer(ComPtr<ID3D11Device> aDevice)
 
 bool Mesh::CreateObjectBuffer()
 {
-	std::shared_ptr<Camera> camera = myGraphicsEngine->GetCamera();
+	//std::shared_ptr<Camera> camera = myGraphicsEngine->GetCamera();
 
-	ObjectBufferData objectBuffer =
-	{
-		camera->GetModelToWorldMatrix().GetFastInverse() * camera->GetProjectionMatrix()
-	};
+	//{
+	//	camera->GetModelToWorldMatrix().GetFastInverse() * camera->GetProjectionMatrix()
+	//};
 
-	if (!myObjectBuffer->Init(myGraphicsEngine, sizeof(ObjectBufferData), &objectBuffer))
+	ObjectBufferData objectBuffer;
+
+	if (!myObjectBuffer->Init(SimpleGlobal::GetGraphicsEngine(), sizeof(ObjectBufferData), &objectBuffer))
 		return false;
 
 	return true;
 }
-
-void Mesh::SetPosition(const SimpleUtilities::Vector3f& aPosition)
-{
-	myTransform.SetPosition(aPosition);
-}
-
-void Mesh::SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree)
-{
-	myTransform.SetRotation(aRotationInDegree);
-}
-
-void Mesh::SetScale(const SimpleUtilities::Vector3f& aScale)
-{
-	myTransform.SetScale(aScale);
-}
-
-void Mesh::SetName(const std::string& aName)
-{
-	myName = aName;
-}
-
-SimpleUtilities::Vector3f Mesh::GetPosition() const
-{
-	return myTransform.GetPosition();
-}
-
-SimpleUtilities::Vector3f Mesh::GetRotation() const
-{
-	return myTransform.GetRotation();
-}
-
-SimpleUtilities::Vector3f Mesh::GetScale() const
-{
-	return myTransform.GetScale();
-}
-
-std::string Mesh::GetName() const
-{
-	return myName;
-}
-
-int Mesh::GetIndexCount()
-{
-	return static_cast<int>(myMeshData.myIndices.size());
-}
-
-ComPtr<ID3D11Buffer> Mesh::GetVertexBuffer()
-{
-	return myVertexBuffer;
-}
-
-ComPtr<ID3D11Buffer> Mesh::GetIndexBuffer()
-{
-	return myIndexBuffer;
-}
-
-Shader& Mesh::GetShader()
-{
-	return *myShader;
-}
-
