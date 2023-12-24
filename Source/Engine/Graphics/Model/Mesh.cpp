@@ -1,4 +1,5 @@
 #include "Engine/stdafx.h"
+#include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 
 Mesh::Mesh()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
@@ -46,6 +47,8 @@ void Mesh::Draw()
 	context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	SimpleGlobalMeshImpl::IncreaseDrawCall();
 
 	context->DrawIndexed(static_cast<UINT>(myMeshData.myIndices.size()), 0, 0);
 }

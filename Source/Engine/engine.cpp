@@ -38,7 +38,7 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	UpdateWindow(*myHWND);
 
 	SimpleUtilities::InputManager::GetInstance().SetHWND(*myHWND);
-	SimpleGlobalImpl::SetEngine(this);
+	SimpleGlobalEngineImpl::SetEngine(this);
 
 	myGraphicsEngine = std::make_unique<GraphicsEngine>();
 	const bool success = myGraphicsEngine->Init(windowSize, *myHWND);
@@ -125,7 +125,8 @@ bool Engine::BeginFrame()
 {
 	myImGuiInterface->BeginFrame();
 
-	SimpleGlobalImpl::UpdateFPSCounter();
+	SimpleGlobalEngineImpl::UpdateFPSCounter();
+	SimpleGlobalEngineImpl::ResetDrawCalls();
 
 	myTimer->Update();
 	myInput->Update();

@@ -27,6 +27,15 @@ void StatsTool::Draw()
 			graphicsEngine->SetVSync(vsync);
 		}
 
+
+		ImGui::SameLine();
+		ImGui::Dummy(ImVec2(50, 0));
+		ImGui::SameLine();
+
+
+		std::string drawCalls = "DrawCalls: " + std::to_string(SimpleGlobal::GetDrawCalls());
+		ImGui::Text(drawCalls.c_str());
+
 		ImGui::SetNextItemWidth(200);
 		std::vector<const char*> windowSizes;
 

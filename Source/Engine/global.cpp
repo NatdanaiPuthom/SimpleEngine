@@ -20,12 +20,12 @@ namespace
 	bool localGameIsRunning = true;
 }
 
-void SimpleGlobalImpl::SetEngine(Engine* aEngine)
+void SimpleGlobalEngineImpl::SetEngine(Engine* aEngine)
 {
 	localEngine = aEngine;
 }
 
-void SimpleGlobalImpl::UpdateFPSCounter()
+void SimpleGlobalEngineImpl::UpdateFPSCounter()
 {
 	localTime += localEngine->GetDeltaTime();
 	++localFrames;
@@ -36,6 +36,16 @@ void SimpleGlobalImpl::UpdateFPSCounter()
 		localFrames = 0;
 		localTime = 0;
 	}
+}
+
+void SimpleGlobalEngineImpl::ResetDrawCalls()
+{
+	localDrawCalls = 0;
+}
+
+void SimpleGlobalMeshImpl::IncreaseDrawCall()
+{
+	++localDrawCalls;
 }
 
 namespace SimpleGlobal
@@ -68,6 +78,11 @@ namespace SimpleGlobal
 	float GetDeltaTime()
 	{
 		return localEngine->GetDeltaTime();
+	}
+
+	int GetDrawCalls()
+	{
+		return localDrawCalls;
 	}
 
 	int GetFPS()

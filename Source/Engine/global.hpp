@@ -11,6 +11,7 @@ namespace SimpleGlobal
 	SimpleUtilities::Vector2ui GetWindowSize();
 	double GetTotalTime();
 	float GetDeltaTime();
+	int GetDrawCalls();
 	int GetFPS();
 	bool GetGameIsRunning();
 
