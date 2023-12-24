@@ -1,13 +1,11 @@
 #include "Game/stdafx.h"
-#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
 #include "Game/GameWorld.hpp"
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
 #include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
 
 GameWorld::GameWorld()
-	: myRenderer(std::make_unique<Renderer>())
-	, myImGuiManager(std::make_unique<ImGuiManager>())
+	: myImGuiManager(std::make_unique<ImGuiManager>())
 {
 }
 
@@ -17,16 +15,18 @@ GameWorld::~GameWorld()
 
 void GameWorld::Init()
 {
-	myImGuiManager->SetRenderer(myRenderer.get());
-	myImGuiManager->AddTool(std::move(std::make_unique<MeshTool>(myRenderer.get())));
+	Renderer* renderer = SimpleGlobal::GetRenderer();
 
-	{
+	myImGuiManager->SetRenderer(renderer);
+	myImGuiManager->AddTool(std::move(std::make_unique<MeshTool>(renderer)));
+
+	/*{
 		std::unique_ptr<ModelInstance> pyramid = std::make_unique<ModelInstance>();
-		pyramid->Init(myRenderer->GetMesh("Pyramid"), "Assets/Textures/Cat.dds");
+		pyramid->Init(renderer->GetMesh("Pyramid"), "Assets/Textures/Cat.dds");
 		pyramid->SetScale({ 1,1,1 });
 		pyramid->SetPosition(SimpleUtilities::Vector3f(-8, 2, 3));
 		pyramid->SetName("Pyramid");
-		myRenderer->AddModelInstance(std::move(pyramid));
+		renderer->AddModelInstance(std::move(pyramid));
 	}
 
 	{
@@ -44,7 +44,7 @@ void GameWorld::Init()
 		plane->SetShader("Shaders/WaterReflectionPS.cso", "Shaders/DefaultVS.cso");
 		plane->SetName("Plane");
 		myRenderer->AddModelInstance(std::move(plane));
-	}
+	}*/
 
 	/*{
 		SimpleUtilities::Vector3f position(-10, 0, 30);
@@ -78,8 +78,12 @@ void GameWorld::Update()
 
 void GameWorld::Render()
 {
-	myRenderer->Update(); //TO-DO: Move to Update thread later
-	myRenderer->Render();
+	Renderer* renderer = SimpleGlobal::GetRenderer();
+
+	for (const auto& model : myModelInstances)
+	{
+		renderer->Render(*model);
+	}
 }
 
 void GameWorld::RenderImGui()

@@ -1,4 +1,5 @@
 #include "Engine/stdafx.h"
+#include "Engine/Graphics/Renderer/Renderer.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 
 Renderer::Renderer()

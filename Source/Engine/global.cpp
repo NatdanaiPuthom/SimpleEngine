@@ -8,6 +8,7 @@ namespace
 	SimpleUtilities::Vector2ui localWindowSize = { 800, 600 };
 
 	Engine* localEngine = nullptr;
+	Renderer* localRenderer = nullptr;
 
 	const float localUpdatePeriodically = 0.5f;
 
@@ -43,7 +44,12 @@ void SimpleGlobalEngineImpl::ResetDrawCalls()
 	localDrawCalls = 0;
 }
 
-void SimpleGlobalMeshImpl::IncreaseDrawCall()
+void SimpleGlobalRendererImpl::SetRenderer(Renderer* aRenderer)
+{
+	localRenderer = aRenderer;
+}
+
+void SimpleGlobalRendererImpl::IncreaseDrawCall()
 {
 	++localDrawCalls;
 }
@@ -53,6 +59,11 @@ namespace SimpleGlobal
 	GraphicsEngine* GetGraphicsEngine()
 	{
 		return localEngine->GetGraphicsEngine();
+	}
+
+	Renderer* GetRenderer()
+	{
+		return localRenderer;
 	}
 
 	HWND& GetHWND()

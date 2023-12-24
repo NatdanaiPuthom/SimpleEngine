@@ -1,7 +1,5 @@
 #pragma once
 
-class Mesh;
-class Renderer;
 class ImGuiManager;
 
 class GameWorld final
@@ -15,6 +13,7 @@ public:
 	void Render();
 	void RenderImGui();
 private:
-	std::unique_ptr<Renderer> myRenderer;
 	std::unique_ptr<ImGuiManager> myImGuiManager;
+	std::vector<std::unique_ptr<ModelInstance>> myModelInstances;
+	std::unique_ptr<ModelInstance> myDirectionalLight;
 };

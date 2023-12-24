@@ -1,10 +1,13 @@
 #pragma once
 
 class GraphicsEngine;
+class Renderer;
 
 namespace SimpleGlobal
 {
 	GraphicsEngine* GetGraphicsEngine();
+	Renderer* GetRenderer();
+
 	HWND& GetHWND();
 	
 	SimpleUtilities::Vector2ui GetResolution();

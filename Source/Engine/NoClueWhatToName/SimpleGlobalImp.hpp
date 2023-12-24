@@ -3,7 +3,7 @@
 //Only For global.cpp
 
 class Engine;
-class Mesh;
+class Renderer;
 
 class SimpleGlobalEngineImpl final
 {
@@ -17,11 +17,12 @@ private:
 	static void ResetDrawCalls();
 };
 
-class SimpleGlobalMeshImpl final
+class SimpleGlobalRendererImpl final
 {
 private:
-	friend class Mesh;
-	SimpleGlobalMeshImpl();
+	friend class Renderer;
+	SimpleGlobalRendererImpl();
 
 	static void IncreaseDrawCall();
+	static void SetRenderer(Renderer* aRenderer);
 };
