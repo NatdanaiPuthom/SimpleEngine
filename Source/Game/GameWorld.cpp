@@ -46,7 +46,7 @@ void GameWorld::Init()
 		myRenderer->AddModelInstance(std::move(plane));
 	}
 
-	{
+	/*{
 		SimpleUtilities::Vector3f position(-10, 0, 30);
 		unsigned int count = 1;
 		for (size_t x = 0; x < 10; ++x)
@@ -66,7 +66,7 @@ void GameWorld::Init()
 			position.x = -10;
 			position.z += 5;
 		}
-	}
+	}*/
 }
 
 void GameWorld::Update()
