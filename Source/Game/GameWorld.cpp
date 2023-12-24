@@ -60,6 +60,23 @@ void GameWorld::Update()
 
 void GameWorld::Render()
 {
+	{ //Test
+		//Pyramid
+		SimpleUtilities::Vector3f pyramidRotation = myModelInstances[0]->GetRotation();
+		pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
+		pyramidRotation.z += 10 * SimpleGlobal::GetDeltaTime();
+		myModelInstances[0]->SetRotation(pyramidRotation);
+
+		//Cube
+		SimpleUtilities::Vector3f cubeRotation = myModelInstances[1]->GetRotation();
+		cubeRotation.x += 10.0f * SimpleGlobal::GetDeltaTime();
+		myModelInstances[1]->SetRotation(cubeRotation);
+
+		//Directional Light test
+		SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
+		myDirectionalLight->SetRotation(directionalLight);
+	}
+
 	Renderer* renderer = SimpleGlobal::GetRenderer();
 
 	for (const auto& model : myModelInstances)
