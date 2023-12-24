@@ -20,13 +20,40 @@ void GameWorld::Init()
 	myImGuiManager->SetRenderer(renderer);
 	myImGuiManager->AddTool(std::move(std::make_unique<MeshTool>(renderer)));
 
-	myModelInstances.push_back(std::move(modelFactory->CreatePyramidModel()));
-	myModelInstances.push_back(std::move(modelFactory->CreateCubeModel()));
-	myModelInstances.push_back(std::move(modelFactory->CreatePlaneModel()));
-	myModelInstances.push_back(std::move(modelFactory->CreateTerrainModel()));
-	myModelInstances.push_back(std::move(modelFactory->CreateSkyBoxModel()));
+	{
+		std::unique_ptr<ModelInstance> pyramid = std::move(modelFactory->CreatePyramidModel());
+		pyramid->SetPosition({ -8.0f, 2.0f, 3.0f });
+		myModelInstances.push_back(std::move(pyramid));
+	}
+
+	{
+		std::unique_ptr<ModelInstance> cube = std::move(modelFactory->CreateCubeModel());
+		cube->SetScale({ 5,5,5 });
+		cube->SetPosition({ -7.0f, 2.0f, 10.0f });
+		myModelInstances.push_back(std::move(cube));
+	}
+
+	{
+		std::unique_ptr<ModelInstance> plane = std::move(modelFactory->CreatePlaneModel());
+		plane->SetScale({ 10,10,10 });
+		plane->SetPosition({ 9.0f, 0.0f, 5.0f });
+		myModelInstances.push_back(std::move(plane));
+	}
+
+	{
+		std::unique_ptr<ModelInstance> terrain = std::move(modelFactory->CreateTerrainModel());
+		terrain->SetPosition({ -3.0f, 0.0f, 0.0f });
+		myModelInstances.push_back(std::move(terrain));
+	}
+
+	{
+		std::unique_ptr<ModelInstance> skyBox = std::move(modelFactory->CreateSkyBoxModel());
+		skyBox->SetPosition({ 0.0f, 0.0f, 20.0f });
+		myModelInstances.push_back(std::move(skyBox));
+	}
 
 	myDirectionalLight = std::move(modelFactory->CreateDirectionalLightModel());
+	myDirectionalLight->SetPosition({ 8,6,10 });
 
 	{
 		std::vector<ModelInstance*> modelBuffer;

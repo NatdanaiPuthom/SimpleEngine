@@ -82,7 +82,8 @@ std::unique_ptr<ModelInstance> ModelFactory::CreateTerrainModel()
 	terrainModel->AddTexture("Assets/tga/Uppgift7/Rock_m.dds");
 	terrainModel->AddTexture("Assets/tga/Uppgift7/Snow_m.dds");
 
-	terrainModel->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
+	terrainModel->SetScale({ 1,1,1 });
+	terrainModel->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 	terrainModel->SetName("Terrain");
 
 	return std::move(terrainModel);
@@ -93,9 +94,9 @@ std::unique_ptr<ModelInstance> ModelFactory::CreateSkyBoxModel()
 	std::unique_ptr<ModelInstance> skyBoxModel = std::make_unique<ModelInstance>();
 
 	skyBoxModel->Init(GetMesh("Skybox"), "Assets/tga/Uppgift7/cubemap.dds");
-
 	skyBoxModel->SetShader("Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso");
-	skyBoxModel->SetPosition({ 0,0,20 });
+	skyBoxModel->SetScale({ 1,1,1 });
+	skyBoxModel->SetPosition({ 0,0,0 });
 	skyBoxModel->SetName("SkyBox");
 
 	return std::move(skyBoxModel);
@@ -107,7 +108,8 @@ std::unique_ptr<ModelInstance> ModelFactory::CreateDirectionalLightModel()
 
 	directionalLight = std::make_unique<ModelInstance>();
 	directionalLight->Init(GetMesh("DirectionalLight"));
-	directionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
+	directionalLight->SetScale({ 1,1,1 });
+	directionalLight->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 	directionalLight->SetName("DirectionalLight");
 
 	return std::move(directionalLight);
@@ -119,6 +121,8 @@ std::unique_ptr<ModelInstance> ModelFactory::CreatePlaneModel()
 
 	plane->Init(GetMesh("Plane"));
 	plane->SetShader("Shaders/WaterReflectionPS.cso", "Shaders/DefaultVS.cso");
+	plane->SetScale({ 1,1,1 });
+	plane->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 	plane->SetName("Plane");
 
 	return std::move(plane);
@@ -129,8 +133,8 @@ std::unique_ptr<ModelInstance> ModelFactory::CreateCubeModel()
 	std::unique_ptr<ModelInstance> cube = std::make_unique<ModelInstance>();
 
 	cube->Init(GetMesh("Cube"));
-	cube->SetScale({ 5,5,5 });
-	cube->SetPosition(SimpleUtilities::Vector3f(-7, 2, 10));
+	cube->SetScale({ 1,1,1 });
+	cube->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 	cube->SetName("Cube");
 
 	return std::move(cube);
@@ -139,9 +143,10 @@ std::unique_ptr<ModelInstance> ModelFactory::CreateCubeModel()
 std::unique_ptr<ModelInstance> ModelFactory::CreatePyramidModel()
 {
 	std::unique_ptr<ModelInstance> pyramid = std::make_unique<ModelInstance>();
+
 	pyramid->Init(GetMesh("Pyramid"), "Assets/Textures/Cat.dds");
 	pyramid->SetScale({ 1,1,1 });
-	pyramid->SetPosition(SimpleUtilities::Vector3f(-8, 2, 3));
+	pyramid->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 	pyramid->SetName("Pyramid");
 
 	return std::move(pyramid);
