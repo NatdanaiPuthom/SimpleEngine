@@ -6,6 +6,8 @@ class Texture;
 class Shader;
 
 struct ID3D11Buffer;
+struct ID3D11ShaderResourceView;
+struct ID3D11DeviceContext;
 
 struct Vertex
 {
@@ -31,7 +33,7 @@ public:
 	~Mesh();
 
 	const bool Init(const MeshData& aMeshData, const char* aPSShaderFile = "Shaders/DefaultPS.cso", const char* aVSShaderFile = "Shaders/DefaultVS.cso");
-	const bool AddTexture(const int aSlot, const char* aFilePath);
+	const bool AddTexture(const char* aFilePath);
 
 	void Draw();
 public:
@@ -54,6 +56,8 @@ private:
 	bool CreateIndexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
 	bool CreateObjectBuffer();
 private:
+	std::vector<Texture*> myTextures;
+
 	SimpleUtilities::Transform myTransform;
 
 	MeshData myMeshData;
@@ -66,6 +70,4 @@ private:
 
 	std::shared_ptr<Shader> myShader;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
-
-	std::array<std::unique_ptr<Texture>, 15> myTextures;
 };

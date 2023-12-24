@@ -75,9 +75,9 @@ bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& a
 		return false;
 
 	LoadSettingsFromJson();
+	LoadTextures();
 
 	const SimpleUtilities::Vector2ui resolution = SimpleGlobal::GetResolution();
-
 	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(resolution.x), static_cast<float>(resolution.y) });
 	myCamera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 	myCamera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
@@ -140,6 +140,61 @@ void GraphicsEngine::LoadSettingsFromJson()
 	file.close();
 
 	myVSync = json["game_settings"]["vsync"];
+}
+
+void GraphicsEngine::LoadTextures()
+{
+	if (!AddTexture("Assets/Textures/DefaultTexture.dds", 0))
+		assert(false && "Failed to add Texture");
+
+	if (!AddTexture("Assets/Textures/Cat.dds", 0))
+		assert(false && "Failed to add Texture");
+
+	{ 	//Test
+		if (!AddTexture("Assets/tga/Uppgift6/Grass_c.dds", 1))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets/tga/Uppgift6/Rock_c.dds", 2))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets/tga/Uppgift6/Snow_c.dds", 3))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets/tga/Uppgift6/Grass_n.dds", 4))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets/tga/Uppgift6/Rock_n.dds", 5))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets/tga/Uppgift6/Snow_n.dds", 6))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets/tga/Uppgift7/Grass_m.dds", 7))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets/tga/Uppgift7/Rock_m.dds", 8))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets/tga/Uppgift7/Snow_m.dds", 9))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets/tga/Uppgift7/cubemap.dds", 14))
+			assert(false && "Failed to add Texture");
+	}
+}
+
+bool GraphicsEngine::AddTexture(const char* aFilePath, const unsigned int aSlot)
+{
+	std::unique_ptr<Texture> texture = std::make_unique<Texture>();
+
+	if (!texture->LoadDDS(aFilePath))
+		return false;
+
+	texture->SetSlot(aSlot);
+
+	myLoadedTextures.emplace(aFilePath, std::move(texture));
+
+	return true;
 }
 
 bool GraphicsEngine::BeginFrame()
@@ -221,6 +276,16 @@ void GraphicsEngine::SetSkyColor(const SimpleUtilities::Vector3f& aColor)
 void GraphicsEngine::SetGroundColor(const SimpleUtilities::Vector3f& aColor)
 {
 	myAmbientLightData->groundColor = aColor;
+}
+
+Texture* GraphicsEngine::GetTexture(const char* aFilePath)
+{
+	auto it = myLoadedTextures.find(aFilePath);
+
+	if (it != myLoadedTextures.end())
+		return it->second.get();
+
+	return nullptr;
 }
 
 ComPtr<ID3D11Device> GraphicsEngine::GetDevice()

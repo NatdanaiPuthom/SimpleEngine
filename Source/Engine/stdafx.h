@@ -13,6 +13,7 @@ using Microsoft::WRL::ComPtr;
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #ifndef _SIMPLE
 #include "Engine/Console/Console.hpp"

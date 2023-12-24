@@ -33,23 +33,20 @@ const bool Mesh::Init(const MeshData& aMeshData, const char* aPSShaderFile, cons
 	if (!myShader->Init(device, aPSShaderFile, aVSShaderFile))
 		return false;
 
-	if (!AddTexture(0, "Assets/Textures/DefaultTexture.dds")) //Default texture
+	if (!AddTexture("Assets/Textures/DefaultTexture.dds")) //Default texture
 		return false;
 
 	return true;
 }
 
-const bool Mesh::AddTexture(const int aSlot, const char* aFilePath)
+const bool Mesh::AddTexture(const char* aFilePath)
 {
-	auto device = myGraphicsEngine->GetDevice();
+	Texture* texture = myGraphicsEngine->GetTexture(aFilePath);
 
-	myTextures[aSlot].reset();
-	myTextures[aSlot] = std::make_unique<Texture>();
-
-	if (!myTextures[aSlot]->LoadDDS(aFilePath))
+	if (texture == nullptr)
 		return false;
 
-	myTextures[aSlot]->Bind(myGraphicsEngine->GetContext(), aSlot);
+	myTextures.push_back(texture);
 
 	return true;
 }
@@ -73,10 +70,9 @@ void Mesh::Draw()
 	myObjectBuffer->Bind(1);
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-	for (unsigned int i = 0; i < myTextures.size(); ++i) //TO-DO: Re-structure how textures are binded so it doesn't need to check for every mesh for every textures
+	for (const auto& texture : myTextures)
 	{
-		if (myTextures[i] != nullptr)
-			myTextures[i]->Bind(myGraphicsEngine->GetContext(), i);
+		texture->Bind(context, texture->GetSlot());
 	}
 
 	context->DrawIndexed(static_cast<UINT>(myMeshData.myIndices.size()), 0, 0);

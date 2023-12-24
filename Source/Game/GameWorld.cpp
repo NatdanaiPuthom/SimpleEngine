@@ -33,9 +33,11 @@ void GameWorld::Init()
 	{ //Test stuff
 		std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> plane = std::make_unique<Mesh>();
 
 		MeshData pyramidData = ShapeCreator3000::CreatePyramid();
 		MeshData cubeData = ShapeCreator3000::CreateCube();
+		MeshData planeData = ShapeCreator3000::CreatePlane();
 
 		if (!pyramid->Init(pyramidData))
 			assert(false && "Failed to create Pyramid");
@@ -43,7 +45,10 @@ void GameWorld::Init()
 		if (!cube->Init(cubeData))
 			assert(false && "Failed to create Cube");
 
-		if (!pyramid->AddTexture(0, "Assets/Textures/Cat.dds"))
+		if (!plane->Init(planeData, "Shaders/WaterReflectionPS.cso", "Shaders/DefaultVS.cso"))
+			assert(false && "Failed To create Plane");
+
+		if (!pyramid->AddTexture("Assets/Textures/Cat.dds"))
 			assert(false && "Failed To Add Texture");
 
 		pyramid->SetScale({ 1,1,1 });
@@ -54,8 +59,11 @@ void GameWorld::Init()
 		cube->SetPosition(SimpleUtilities::Vector3f(-7, 2, 10));
 		cube->SetName("Cube");
 
+		plane->SetName("Plane");
+
 		myRenderer->AddMesh(std::move(pyramid));
 		myRenderer->AddMesh(std::move(cube));
+		myRenderer->AddMesh(std::move(plane));
 	}
 }
 

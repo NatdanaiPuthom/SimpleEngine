@@ -2,6 +2,7 @@
 
 class Camera;
 class ConstantBuffer;
+class Texture;
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -67,6 +68,7 @@ public:
 	bool BeginFrame();
 	void EndFrame();
 
+	bool AddTexture(const char* aFilePath, const unsigned int aSlot = 0);
 public:
 	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection);
 	void SetDirectionalLightColor(const SimpleUtilities::Vector4f& aColor);
@@ -81,11 +83,14 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetImGuiShaderResourceView();
 
+	std::shared_ptr<Camera> GetCamera();
+
+	Texture* GetTexture(const char* aFilePath);
+
 	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 	SimpleUtilities::Vector4f GetDirectionalLightColor() const;
 	SimpleUtilities::Vector3f GetSkyColor() const;
 	SimpleUtilities::Vector3f GetGroundColor() const;
-	std::shared_ptr<Camera> GetCamera();
 	bool IsVSyncActive() const;
 private:
 	void CreateViewport(const int aWidth, const int aHeight);
@@ -104,6 +109,7 @@ private:
 private:
 	void Update();
 	void LoadSettingsFromJson();
+	void LoadTextures();
 private:
 	std::shared_ptr<Camera> myCamera;
 
@@ -132,6 +138,8 @@ private:
 
 	std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
 	std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
+
+	std::unordered_map<std::string, std::unique_ptr<Texture>> myLoadedTextures;
 
 	float myColor[4];
 	bool myVSync;

@@ -109,7 +109,7 @@ MeshData ShapeCreator3000::CreateTerrain(const Simple::TerrainData& aTerrainData
 	return MeshData(vertices, indices);
 }
 
-MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f aSize)
+MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f& aSize)
 {
 	Vertex south_West;
 	south_West.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1);
@@ -201,7 +201,7 @@ MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f aSize)
 	return MeshData(vertices, indices);
 }
 
-MeshData ShapeCreator3000::CreateCube(const SimpleUtilities::Vector3f aSize)
+MeshData ShapeCreator3000::CreateCube(const SimpleUtilities::Vector3f& aSize)
 {
 	Vertex north_bottomLeft;
 	north_bottomLeft.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
@@ -450,6 +450,38 @@ MeshData ShapeCreator3000::CreateDirectionalLight()
 		16, 18, 19,
 		20, 21, 22,
 		20, 22, 23
+	};
+
+	return MeshData(vertices, indices);
+}
+
+MeshData ShapeCreator3000::CreatePlane()
+{
+	Vertex southWest;
+	southWest.position = SU::Vector4f(-1.0f, 0.0f, -1.0f, 1.0f);
+	southWest.color = SU::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+
+	Vertex southEast;
+	southEast.position = SU::Vector4f(1.0f, 0.0f, -1.0f, 1.0f);
+	southEast.color = SU::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+
+	Vertex northWest;
+	northWest.position = SU::Vector4f(-1.0f, 0.0f, 1.0f, 1.0f);
+	northWest.color = SU::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+
+	Vertex northEast;
+	northEast.position = SU::Vector4f(1.0f, 0.0f, 1.0f, 1.0f);
+	northEast.color = SU::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+
+	std::vector<Vertex> vertices =
+	{
+		southWest, southEast, northWest, northEast
+	};
+
+	std::vector<unsigned int> indices =
+	{
+		0, 2, 3,
+		0, 3, 1
 	};
 
 	return MeshData(vertices, indices);

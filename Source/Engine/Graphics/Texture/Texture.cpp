@@ -1,18 +1,33 @@
 #include "Engine/stdafx.h"
-#include "Engine/Graphics/Texture/Texture.hpp"
-
 #include <External/DDSTextureLoader/DDSTextureLoader11.h>
+#include "Engine/Graphics/Texture/Texture.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <External/stb/stb_image.h>
 
 Texture::Texture()
+	: mySlot(0)
 {
 }
 
 Texture::~Texture()
 {
 	myShaderResourceView.Reset();
+}
+
+void Texture::Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot)
+{
+	aContext->PSSetShaderResources(aSlot, 1, myShaderResourceView.GetAddressOf());
+}
+
+void Texture::SetSlot(const unsigned int aSlot)
+{
+	mySlot = aSlot;
+}
+
+unsigned int Texture::GetSlot() const
+{
+	return mySlot;
 }
 
 bool Texture::LoadDDS(const char* aFilePath)
@@ -25,11 +40,6 @@ bool Texture::LoadDDS(const char* aFilePath)
 		return false;
 
 	return true;
-}
-
-void Texture::Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot)
-{
-	aContext->PSSetShaderResources(aSlot, 1, myShaderResourceView.GetAddressOf());
 }
 
 bool Texture::LoadNonDDS(const char* aFilePath)

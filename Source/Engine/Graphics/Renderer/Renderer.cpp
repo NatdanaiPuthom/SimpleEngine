@@ -56,31 +56,31 @@ void Renderer::InitTerrain()
 	if (!terrain->Init(terrainData, "Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
 		assert(false && "Failed to Init Terrain");
 
-	if (!terrain->AddTexture(1, "Assets/tga/Uppgift6/Grass_c.dds"))
+	if (!terrain->AddTexture("Assets/tga/Uppgift6/Grass_c.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture(2, "Assets/tga/Uppgift6/Rock_c.dds"))
+	if (!terrain->AddTexture("Assets/tga/Uppgift6/Rock_c.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture(3, "Assets/tga/Uppgift6/Snow_c.dds"))
+	if (!terrain->AddTexture("Assets/tga/Uppgift6/Snow_c.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture(4, "Assets/tga/Uppgift6/Grass_n.dds"))
+	if (!terrain->AddTexture("Assets/tga/Uppgift6/Grass_n.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture(5, "Assets/tga/Uppgift6/Rock_n.dds"))
+	if (!terrain->AddTexture("Assets/tga/Uppgift6/Rock_n.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture(6, "Assets/tga/Uppgift6/Snow_n.dds"))
+	if (!terrain->AddTexture("Assets/tga/Uppgift6/Snow_n.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture(7, "Assets/tga/Uppgift7/Grass_m.dds"))
+	if (!terrain->AddTexture("Assets/tga/Uppgift7/Grass_m.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture(8, "Assets/tga/Uppgift7/Rock_m.dds"))
+	if (!terrain->AddTexture("Assets/tga/Uppgift7/Rock_m.dds"))
 		assert(false && "Failed to Add Texture");
 
-	if (!terrain->AddTexture(9, "Assets/tga/Uppgift7/Snow_m.dds"))
+	if (!terrain->AddTexture("Assets/tga/Uppgift7/Snow_m.dds"))
 		assert(false && "Failed to Add Texture");
 
 	terrain->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
@@ -112,7 +112,7 @@ void Renderer::InitSkyBox()
 	if (!skybox->Init(skyboxData, "Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso"))
 		assert(false && "Failed to create SkyBox");
 
-	if (!skybox->AddTexture(14, "Assets/tga/Uppgift7/cubemap.dds"))
+	if (!skybox->AddTexture("Assets/tga/Uppgift7/cubemap.dds"))
 		assert(false && "Failed to Add Texture");
 
 	skybox->SetPosition({ 0,0,20 });
@@ -124,7 +124,7 @@ void Renderer::InitSkyBox()
 std::vector<Mesh*> Renderer::GetMeshes()
 {
 	std::vector<Mesh*> meshes;
-	
+
 	for (auto& mesh : myMeshes)
 	{
 		meshes.push_back(mesh.get());
