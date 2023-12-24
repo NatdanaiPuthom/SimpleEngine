@@ -3,6 +3,7 @@
 
 ConstantBuffer::ConstantBuffer()
 	: myGraphicsEngine(nullptr)
+	, mySlot(100)
 {
 }
 
@@ -39,8 +40,18 @@ void ConstantBuffer::Update(unsigned int aSize, void* aData)
 	myGraphicsEngine->GetContext()->Unmap(myBuffer.Get(), 0);
 }
 
-void ConstantBuffer::Bind(int aSlot)
+void ConstantBuffer::Bind(const int aSlot)
 {
 	myGraphicsEngine->GetContext()->VSSetConstantBuffers(aSlot, 1, myBuffer.GetAddressOf());
 	myGraphicsEngine->GetContext()->PSSetConstantBuffers(aSlot, 1, myBuffer.GetAddressOf());
+}
+
+void ConstantBuffer::SetSlot(const unsigned int aSlot)
+{
+	mySlot = aSlot;
+}
+
+const unsigned int ConstantBuffer::GetSlot() const
+{
+	return mySlot;
 }
