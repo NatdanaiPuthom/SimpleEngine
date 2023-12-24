@@ -113,3 +113,37 @@ std::unique_ptr<ModelInstance> ModelFactory::CreateDirectionalLightModel()
 
 	return std::move(directionalLight);
 }
+
+std::unique_ptr<ModelInstance> ModelFactory::CreatePlaneModel()
+{
+	std::unique_ptr<ModelInstance> plane = std::make_unique<ModelInstance>();
+
+	plane->Init(GetMesh("Plane"));
+	plane->SetShader("Shaders/WaterReflectionPS.cso", "Shaders/DefaultVS.cso");
+	plane->SetName("Plane");
+
+	return std::move(plane);
+}
+
+std::unique_ptr<ModelInstance> ModelFactory::CreateCubeModel()
+{
+	std::unique_ptr<ModelInstance> cube = std::make_unique<ModelInstance>();
+
+	cube->Init(GetMesh("Cube"));
+	cube->SetScale({ 5,5,5 });
+	cube->SetPosition(SimpleUtilities::Vector3f(-7, 2, 10));
+	cube->SetName("Cube");
+
+	return std::move(cube);
+}
+
+std::unique_ptr<ModelInstance> ModelFactory::CreatePyramidModel()
+{
+	std::unique_ptr<ModelInstance> pyramid = std::make_unique<ModelInstance>();
+	pyramid->Init(GetMesh("Pyramid"), "Assets/Textures/Cat.dds");
+	pyramid->SetScale({ 1,1,1 });
+	pyramid->SetPosition(SimpleUtilities::Vector3f(-8, 2, 3));
+	pyramid->SetName("Pyramid");
+
+	return std::move(pyramid);
+}
