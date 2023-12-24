@@ -1,5 +1,4 @@
 #include "Engine/stdafx.h"
-#include "Engine/Graphics/Renderer/Renderer.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 
 Renderer::Renderer()
@@ -13,6 +12,12 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
+}
+
+void Renderer::SetModelBuffer(std::vector<ModelInstance*> aModelBuffer)
+{
+	myModelBuffer.clear();
+	myModelBuffer = aModelBuffer;
 }
 
 void Renderer::Render(const ModelInstance& aModelInstance)
@@ -49,14 +54,7 @@ void Renderer::Render(const ModelInstance& aModelInstance)
 
 std::vector<ModelInstance*> Renderer::GetAllModelInstances()
 {
-	std::vector<ModelInstance*> modelInstances;
-
-	for (auto& model : myModelInstances)
-	{
-		modelInstances.push_back(model);
-	}
-
-	return modelInstances;
+	return myModelBuffer;
 }
 
 const bool Renderer::CreateObjectBuffer()

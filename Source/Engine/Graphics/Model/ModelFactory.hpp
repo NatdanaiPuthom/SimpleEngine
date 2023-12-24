@@ -12,6 +12,7 @@ public:
 	void AddMesh(const char* aName, std::unique_ptr<Mesh> aMesh);
 	Mesh* GetMesh(const char* aMeshName);
 
+public:
 	std::unique_ptr<ModelInstance> CreateTerrainModel();
 	std::unique_ptr<ModelInstance> CreateSkyBoxModel();
 	std::unique_ptr<ModelInstance> CreateDirectionalLightModel();

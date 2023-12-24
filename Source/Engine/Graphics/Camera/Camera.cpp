@@ -1,6 +1,4 @@
 #include "Engine/stdafx.h"
-#include "Engine/Graphics/Camera/Camera.hpp"
-#include "Engine/SimpleUtilities/Utility.hpp"
 
 Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, const float aNearPlane, const float aFarPlane)
 	: myResolution(aResolution)

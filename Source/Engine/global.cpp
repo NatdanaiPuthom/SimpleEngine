@@ -1,5 +1,4 @@
 #include "Engine/stdafx.h"
-#include "Engine/global.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 
 namespace

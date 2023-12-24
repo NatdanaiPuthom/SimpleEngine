@@ -17,7 +17,7 @@ struct ID3D11Buffer;
 struct ID3D11SamplerState;
 struct ID3D11Texture2D;
 struct ID3D11ShaderResourceView;
-struct ID3D11RenderTargetView;
+struct ID3D11RasterizerState;
 
 struct alignas(16) FrameBufferData final
 {

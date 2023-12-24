@@ -25,7 +25,20 @@ void GameWorld::Init()
 	myModelInstances.push_back(std::move(modelFactory->CreatePlaneModel()));
 	myModelInstances.push_back(std::move(modelFactory->CreateTerrainModel()));
 	myModelInstances.push_back(std::move(modelFactory->CreateSkyBoxModel()));
+
 	myDirectionalLight = std::move(modelFactory->CreateDirectionalLightModel());
+
+	{
+		std::vector<ModelInstance*> modelBuffer;
+		for (auto& model : myModelInstances)
+		{
+			modelBuffer.push_back(model.get());
+		}
+
+		modelBuffer.push_back(myDirectionalLight.get());
+
+		renderer->SetModelBuffer(modelBuffer);
+	}
 }
 
 void GameWorld::Update()

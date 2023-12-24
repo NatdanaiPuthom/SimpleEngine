@@ -1,5 +1,4 @@
 #include "Engine/stdafx.h"
-#include "Engine/global.hpp"
 #include "Engine/ImGuiEngine/ImGuiEngine.hpp"
 
 #include <External/dearimgui/imgui/imgui.h>

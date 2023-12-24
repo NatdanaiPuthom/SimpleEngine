@@ -10,7 +10,7 @@ void MeshTool::Draw()
 {
 	if (ImGui::Begin("Meshes"))
 	{
-		/*std::vector<ModelInstance*> modelInstances = myRenderer->GetAllModelInstances();
+		std::vector<ModelInstance*> modelInstances = myRenderer->GetAllModelInstances();
 		std::vector<std::string> modelNames;
 
 		for (const ModelInstance* model : modelInstances)
@@ -51,7 +51,7 @@ void MeshTool::Draw()
 		if (ImGui::SliderFloat3("Scale", &scale.x, 1.0f, 20.0f))
 		{
 			modelInstances[selectedMeshIndex]->SetScale(scale);
-		}*/
+		}
 	}
 
 	ImGui::End();

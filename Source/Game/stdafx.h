@@ -1,5 +1,5 @@
 #pragma once
-//TO-DO: Fix a way to not need to have these here and still fast complier time
+//TO-DO: Fix a way to not need to have these
 #include <Windows.h>
 #include <wrl/client.h>
 #include <d3d11.h>
