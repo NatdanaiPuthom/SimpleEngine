@@ -45,8 +45,7 @@ typedef struct _CrtMemBlockHeader
 } _CrtMemBlockHeader;
 
 int AllocHook(int aAllocType, void* aUserData, size_t aSize, int aBlockType, long aRequestNumber, const unsigned char*, int)
-{
-	if (aBlockType == _CRT_BLOCK || localIsAllocationInProgress)
+{	if (aBlockType == _CRT_BLOCK || localIsAllocationInProgress)
 		return true;
 
 	// Do not track allocations by the memory tracker itself

@@ -31,11 +31,10 @@ public:
 
 private:
 	std::vector<Texture*> myTextures;
-
 	std::string myName;
 
+	std::shared_ptr<Shader> myShader;
 	Mesh* myMesh;
-	std::unique_ptr<Shader> myShader;
 
 	SimpleUtilities::Transform myTransform;
 };

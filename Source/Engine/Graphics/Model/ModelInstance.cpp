@@ -5,16 +5,14 @@
 ModelInstance::ModelInstance()
 	: myMesh(nullptr)
 	, myName("Unnamed")
-	, myShader(std::make_unique<Shader>())
 {
-	auto device = SimpleGlobal::GetGraphicsEngine()->GetDevice();
-
-	if (!myShader->Init(device, "Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso"))
-		assert(false && "Failed to init Shader");
+	myShader = SimpleGlobal::GetGraphicsEngine()->GetDefaultShader();
 }
 
 ModelInstance::~ModelInstance()
 {
+	myMesh = nullptr;
+	myShader = nullptr;
 }
 
 void ModelInstance::Init(Mesh* aMesh)
@@ -68,9 +66,8 @@ void ModelInstance::ClearTextures()
 
 void ModelInstance::SetShader(const char* aPSShaderFile, const char* aVSShaderFile)
 {
-	myShader.reset();
 	myShader = nullptr;
-	myShader = std::make_unique<Shader>();
+	myShader = std::make_shared<Shader>();
 
 	auto device = SimpleGlobal::GetGraphicsEngine()->GetDevice();
 

@@ -3,6 +3,7 @@
 class Camera;
 class ConstantBuffer;
 class Texture;
+class Shader;
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -86,6 +87,7 @@ public:
 	std::shared_ptr<Camera> GetCamera();
 
 	Texture* GetTexture(const char* aFilePath);
+	std::shared_ptr<Shader> GetDefaultShader();
 
 	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 	SimpleUtilities::Vector4f GetDirectionalLightColor() const;
@@ -110,8 +112,12 @@ private:
 	void Update();
 	void LoadSettingsFromJson();
 	void LoadTextures();
+	void LoadShaders();
 private:
+	std::unordered_map<std::string, std::unique_ptr<Texture>> myLoadedTextures;
+
 	std::shared_ptr<Camera> myCamera;
+	std::shared_ptr<Shader> myDefaultShader;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> myDevice;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> myContext;
@@ -138,8 +144,6 @@ private:
 
 	std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
 	std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
-
-	std::unordered_map<std::string, std::unique_ptr<Texture>> myLoadedTextures;
 
 	float myColor[4];
 	bool myVSync;

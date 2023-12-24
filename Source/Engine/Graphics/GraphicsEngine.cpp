@@ -17,6 +17,7 @@ GraphicsEngine::GraphicsEngine()
 	, myAmbientLightData(std::make_unique<AmbientLightBufferData>())
 	, myWaterReflectionRenderTarget(std::make_unique<RenderTarget>())
 	, myImGuiImageRenderTarget(std::make_unique<RenderTarget>())
+	, myDefaultShader(std::make_shared<Shader>())
 
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
@@ -76,6 +77,7 @@ bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& a
 
 	LoadSettingsFromJson();
 	LoadTextures();
+	LoadShaders();
 
 	const SimpleUtilities::Vector2ui resolution = SimpleGlobal::GetResolution();
 	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(resolution.x), static_cast<float>(resolution.y) });
@@ -183,6 +185,12 @@ void GraphicsEngine::LoadTextures()
 	}
 }
 
+void GraphicsEngine::LoadShaders()
+{
+	if (!myDefaultShader->Init(myDevice, "Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso"))
+		assert(false && "Failed to init Shader");
+}
+
 bool GraphicsEngine::AddTexture(const char* aFilePath, const unsigned int aSlot)
 {
 	std::unique_ptr<Texture> texture = std::make_unique<Texture>();
@@ -286,6 +294,11 @@ Texture* GraphicsEngine::GetTexture(const char* aFilePath)
 		return it->second.get();
 
 	return nullptr;
+}
+
+std::shared_ptr<Shader> GraphicsEngine::GetDefaultShader()
+{
+	return myDefaultShader;
 }
 
 ComPtr<ID3D11Device> GraphicsEngine::GetDevice()

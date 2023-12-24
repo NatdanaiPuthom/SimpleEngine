@@ -45,6 +45,28 @@ void GameWorld::Init()
 		plane->SetName("Plane");
 		myRenderer->AddModelInstance(std::move(plane));
 	}
+
+	{
+		SimpleUtilities::Vector3f position(-10, 0, 30);
+		unsigned int count = 1;
+		for (size_t x = 0; x < 10; ++x)
+		{
+			for (size_t y = 0; y < 10; ++y)
+			{
+				std::unique_ptr<ModelInstance> cube = std::make_unique<ModelInstance>();
+				cube->Init(myRenderer->GetMesh("Cube"));
+				cube->SetPosition(position);
+				cube->SetName("Cube" + std::to_string(count));
+
+				myRenderer->AddModelInstance(std::move(cube));
+
+				++count;
+				position.x += 5;
+			}
+			position.x = -10;
+			position.z += 5;
+		}
+	}
 }
 
 void GameWorld::Update()
