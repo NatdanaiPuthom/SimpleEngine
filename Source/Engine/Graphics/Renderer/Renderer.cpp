@@ -1,152 +1,49 @@
 #include "Engine/stdafx.h"
-#include "Engine/Graphics/Renderer/Renderer.hpp"
+#include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 
 Renderer::Renderer()
+	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 {
-	InitShapes();
+	SimpleGlobalRendererImpl::SetRenderer(this);
 
-	InitTerrain();
-	InitSkyBox();
-	InitDirectionalLight();
+	if (!CreateObjectBuffer())
+		assert(false && "Failed to create ObjectBuffer");
 }
 
 Renderer::~Renderer()
 {
 }
 
-void Renderer::AddMesh(const std::string& aName, std::unique_ptr<Mesh> aMesh)
+void Renderer::Render(const ModelInstance& aModelInstance)
 {
-	myMeshes.emplace(aName, std::move(aMesh));
-}
+	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
-void Renderer::AddModelInstance(std::unique_ptr<ModelInstance> aModelInstance)
-{
-	myModelInstances.push_back(std::move(aModelInstance));
-}
+	ObjectBufferData objectBuffer = {};
+	objectBuffer.modelToWorldMatrix = aModelInstance.GetMatrix();
 
-void Renderer::Update()
-{
-	{ //Test Rotation Over Time
-		//Pyramid
-		SimpleUtilities::Vector3f pyramidRotation = myModelInstances[2]->GetRotation();
-		pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
-		pyramidRotation.z += 10 * SimpleGlobal::GetDeltaTime();
-		myModelInstances[2]->SetRotation(pyramidRotation);
+	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
+	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		//Cube
-		SimpleUtilities::Vector3f cubeRotation = myModelInstances[3]->GetRotation();
-		cubeRotation.x += 10.0f * SimpleGlobal::GetDeltaTime();
-		myModelInstances[3]->SetRotation(cubeRotation);
+	aModelInstance.myShader->SetShader(context.Get());
 
-		//Directional Light test
-		SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
-		myDirectionalLight->SetRotation(directionalLight);
-	}
-}
-
-void Renderer::Render()
-{
-	for (const auto& model : myModelInstances)
+	for (const auto& texture : aModelInstance.myTextures)
 	{
-		model->Render();
+		texture->Bind(context, texture->GetSlot());
 	}
 
-	myDirectionalLight->Render();
-}
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
 
-void Renderer::InitShapes()
-{
-	MeshData cubeData = ShapeCreator3000::CreateCube();
-	MeshData pyramidData = ShapeCreator3000::CreatePyramid();
-	MeshData planeData = ShapeCreator3000::CreatePlane();
-	MeshData skyboxData = ShapeCreator3000::CreateSkyBox(SimpleUtilities::Vector3f(100, 100, 100));
-	MeshData directionalLightData = ShapeCreator3000::CreateDirectionalLight();
-	MeshData terrainData = ShapeCreator3000::CreateTerrain();
+	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer = aModelInstance.myMesh->myVertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer = aModelInstance.myMesh->myIndexBuffer;
 
-	std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
-	std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
-	std::unique_ptr<Mesh> plane = std::make_unique<Mesh>();
-	std::unique_ptr<Mesh> skyboxMesh = std::make_unique<Mesh>();
-	std::unique_ptr<Mesh> directionalLight = std::make_unique<Mesh>();
-	std::unique_ptr<Mesh> terrainMesh = std::make_unique<Mesh>();
+	context->IASetVertexBuffers(0, 1, aModelInstance.myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+	context->IASetIndexBuffer(aModelInstance.myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	if (!cube->Init(cubeData))
-		assert(false && "Failed to create Cube");
+	context->DrawIndexed(static_cast<UINT>(aModelInstance.myMesh->myMeshData.myIndices.size()), 0, 0);
 
-	if (!pyramid->Init(pyramidData))
-		assert(false && "Failed to create Pyramid");
-
-	if (!plane->Init(planeData))
-		assert(false && "Failed to create Plane");
-
-	if (!skyboxMesh->Init(skyboxData))
-		assert(false && "Failed to create SkyBox");
-
-	if (!directionalLight->Init(directionalLightData))
-		assert(false && "Failed to create Directional Light");
-
-	if (!terrainMesh->Init(terrainData))
-		assert(false && "Failed to create Terrain");
-
-	AddMesh("Cube", std::move(cube));
-	AddMesh("Pyramid", std::move(pyramid));
-	AddMesh("Plane", std::move(plane));
-	AddMesh("Skybox", std::move(skyboxMesh));
-	AddMesh("DirectionalLight", std::move(directionalLight));
-	AddMesh("Terrain", std::move(terrainMesh));
-}
-
-void Renderer::InitTerrain()
-{
-	std::unique_ptr<ModelInstance> terrainModel = std::make_unique<ModelInstance>();
-	terrainModel->Init(GetMesh("Terrain"));
-	terrainModel->ClearTextures();
-	terrainModel->SetShader("Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso");
-
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Grass_c.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Rock_c.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Snow_c.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Grass_n.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Rock_n.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Snow_n.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift7/Grass_m.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift7/Rock_m.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift7/Snow_m.dds");
-
-	terrainModel->SetPosition(SimpleUtilities::Vector3f(-3, 0, 0));
-	terrainModel->SetName("Terrain");
-
-	AddModelInstance(std::move(terrainModel));
-}
-
-void Renderer::InitDirectionalLight()
-{
-	myDirectionalLight = std::make_unique<ModelInstance>();
-	myDirectionalLight->Init(GetMesh("DirectionalLight"));
-	myDirectionalLight->SetPosition(SimpleUtilities::Vector3f(8, 6, 10));
-	myDirectionalLight->SetName("DirectionalLight");
-}
-
-void Renderer::InitSkyBox()
-{
-	std::unique_ptr<ModelInstance> skyboxModel = std::make_unique<ModelInstance>();
-
-	skyboxModel->Init(GetMesh("Skybox"), "Assets/tga/Uppgift7/cubemap.dds");
-	skyboxModel->SetShader("Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso");
-	skyboxModel->SetPosition({ 0,0,20 });
-	skyboxModel->SetName("SkyBox");
-
-	AddModelInstance(std::move(skyboxModel));
-}
-
-Mesh* Renderer::GetMesh(const std::string& aMeshName)
-{
-	auto it = myMeshes.find(aMeshName);
-
-	if (it != myMeshes.end())
-		return it->second.get();
-
-	return nullptr;
+	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
 
 std::vector<ModelInstance*> Renderer::GetAllModelInstances()
@@ -155,8 +52,20 @@ std::vector<ModelInstance*> Renderer::GetAllModelInstances()
 
 	for (auto& model : myModelInstances)
 	{
-		modelInstances.push_back(model.get());
+		modelInstances.push_back(model);
 	}
 
 	return modelInstances;
+}
+
+const bool Renderer::CreateObjectBuffer()
+{
+	ObjectBufferData objectBuffer;
+
+	if (!myObjectBuffer->Init(SimpleGlobal::GetGraphicsEngine(), sizeof(ObjectBufferData), &objectBuffer))
+		return false;
+
+	myObjectBuffer->SetSlot(1);
+
+	return true;
 }
