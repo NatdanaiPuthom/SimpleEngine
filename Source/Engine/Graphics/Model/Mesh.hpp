@@ -1,7 +1,5 @@
 #pragma once
 
-class ConstantBuffer;
-
 struct ID3D11Buffer;
 struct ID3D11Device;
 
@@ -24,20 +22,17 @@ struct MeshData
 
 class Mesh final
 {
+	friend class Renderer;
 public:
 	Mesh();
 	~Mesh();
 
 	const bool Init(const MeshData& aMeshData);
-	void BindMatrix(const SimpleUtilities::Matrix4x4f& aMatrix);
-	void Draw();
 private:
 	bool CreateVertexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
 	bool CreateIndexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
-	bool CreateObjectBuffer();
 private:
 	MeshData myMeshData;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;
-	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 };

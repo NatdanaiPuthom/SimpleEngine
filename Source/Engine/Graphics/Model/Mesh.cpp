@@ -1,8 +1,6 @@
 #include "Engine/stdafx.h"
-#include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 
 Mesh::Mesh()
-	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 {
 }
 
@@ -22,35 +20,7 @@ const bool Mesh::Init(const MeshData& aMeshData)
 	if (!CreateIndexBuffer(device))
 		return false;
 
-	if (!CreateObjectBuffer())
-		return false;
-
 	return true;
-}
-
-void Mesh::BindMatrix(const SimpleUtilities::Matrix4x4f& aMatrix)
-{
-	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = aMatrix;
-
-	myObjectBuffer->Bind(1);
-	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
-}
-
-void Mesh::Draw()
-{
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-
-	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
-
-	context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
-	context->IASetIndexBuffer(myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	SimpleGlobalMeshImpl::IncreaseDrawCall();
-
-	context->DrawIndexed(static_cast<UINT>(myMeshData.myIndices.size()), 0, 0);
 }
 
 bool Mesh::CreateVertexBuffer(ComPtr<ID3D11Device> aDevice)
@@ -92,22 +62,6 @@ bool Mesh::CreateIndexBuffer(ComPtr<ID3D11Device> aDevice)
 
 	HRESULT result = aDevice->CreateBuffer(&indexBufferDesc, &indexData, &myIndexBuffer);
 	if (FAILED(result))
-		return false;
-
-	return true;
-}
-
-bool Mesh::CreateObjectBuffer()
-{
-	//std::shared_ptr<Camera> camera = myGraphicsEngine->GetCamera();
-
-	//{
-	//	camera->GetModelToWorldMatrix().GetFastInverse() * camera->GetProjectionMatrix()
-	//};
-
-	ObjectBufferData objectBuffer;
-
-	if (!myObjectBuffer->Init(SimpleGlobal::GetGraphicsEngine(), sizeof(ObjectBufferData), &objectBuffer))
 		return false;
 
 	return true;
