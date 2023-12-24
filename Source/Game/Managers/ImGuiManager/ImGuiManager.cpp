@@ -6,14 +6,15 @@
 #include "Game/Managers/ImGuiManager/Tools/StatsTool.hpp"
 #include "Game/Managers/ImGuiManager/Tools/LightTool.hpp"
 #include "Game/Managers/ImGuiManager/Tools/SceneTool.hpp"
+#include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
 
 ImGuiManager::ImGuiManager() 
-	: myRenderer(nullptr)
 {
 	AddTool(std::move(std::make_unique<CameraTool>()));
 	AddTool(std::move(std::make_unique<StatsTool>()));
 	AddTool(std::move(std::make_unique<LightTool>()));
 	AddTool(std::move(std::make_unique<SceneTool>()));
+	AddTool(std::move(std::make_unique<MeshTool>()));
 }
 
 ImGuiManager::~ImGuiManager()
@@ -31,9 +32,4 @@ void ImGuiManager::Render()
 	{
 		tool->Draw();
 	}
-}
-
-void ImGuiManager::SetRenderer(Renderer* aRenderer)
-{
-	myRenderer = aRenderer;
 }

@@ -9,8 +9,8 @@ public:
 	Renderer();
 	~Renderer();
 
-	void SetModelBuffer(std::vector<ModelInstance*> aModelBuffer);
-	void Render(const ModelInstance& aModelInstance);
+	void SetModelBuffer(std::vector<ModelInstance*>& aModelBuffer);
+	void Render(const ModelInstance* const aModelInstance) const;
 public:
 	std::vector<ModelInstance*> GetAllModelInstances();
 private:

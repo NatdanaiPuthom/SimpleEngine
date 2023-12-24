@@ -14,25 +14,24 @@ Renderer::~Renderer()
 {
 }
 
-void Renderer::SetModelBuffer(std::vector<ModelInstance*> aModelBuffer)
+void Renderer::SetModelBuffer(std::vector<ModelInstance*>& aModelBuffer)
 {
-	myModelBuffer.clear();
 	myModelBuffer = aModelBuffer;
 }
 
-void Renderer::Render(const ModelInstance& aModelInstance)
+void Renderer::Render(const ModelInstance* const aModelInstance) const
 {
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = aModelInstance.GetMatrix();
+	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix();
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-	aModelInstance.myShader->SetShader(context.Get());
+	aModelInstance->myShader->SetShader(context.Get());
 
-	for (const auto& texture : aModelInstance.myTextures)
+	for (const auto& texture : aModelInstance->myTextures)
 	{
 		texture->Bind(context, texture->GetSlot());
 	}
@@ -40,14 +39,14 @@ void Renderer::Render(const ModelInstance& aModelInstance)
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer = aModelInstance.myMesh->myVertexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer = aModelInstance.myMesh->myIndexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer = aModelInstance->myMesh->myVertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer = aModelInstance->myMesh->myIndexBuffer;
 
-	context->IASetVertexBuffers(0, 1, aModelInstance.myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-	context->IASetIndexBuffer(aModelInstance.myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetVertexBuffers(0, 1, aModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+	context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	context->DrawIndexed(static_cast<UINT>(aModelInstance.myMesh->myMeshData.myIndices.size()), 0, 0);
+	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.myIndices.size()), 0, 0);
 
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }

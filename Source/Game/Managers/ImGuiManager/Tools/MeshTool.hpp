@@ -5,9 +5,7 @@ class Renderer;
 class MeshTool final : public ToolInterface
 {
 public:
-	MeshTool(Renderer* aRenderer);
+	MeshTool();
 
 	virtual void Draw() override;
-private:
-	Renderer* myRenderer;
 };

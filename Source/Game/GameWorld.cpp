@@ -1,7 +1,6 @@
 #include "Game/stdafx.h"
 #include "Game/GameWorld.hpp"
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
-#include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
 
 GameWorld::GameWorld()
 	: myImGuiManager(std::make_unique<ImGuiManager>())
@@ -14,11 +13,7 @@ GameWorld::~GameWorld()
 
 void GameWorld::Init()
 {
-	Renderer* renderer = SimpleGlobal::GetRenderer();
 	ModelFactory* modelFactory = SimpleGlobal::GetModelFactory();
-
-	myImGuiManager->SetRenderer(renderer);
-	myImGuiManager->AddTool(std::move(std::make_unique<MeshTool>(renderer)));
 
 	{
 		std::unique_ptr<ModelInstance> pyramid = std::move(modelFactory->CreatePyramidModel());
@@ -55,7 +50,7 @@ void GameWorld::Init()
 	myDirectionalLight = std::move(modelFactory->CreateDirectionalLightModel());
 	myDirectionalLight->SetPosition({ 8,6,10 });
 
-	{
+	{ //TO-DO: Fix better way to send data to ImGui
 		std::vector<ModelInstance*> modelBuffer;
 		for (auto& model : myModelInstances)
 		{
@@ -64,7 +59,7 @@ void GameWorld::Init()
 
 		modelBuffer.push_back(myDirectionalLight.get());
 
-		renderer->SetModelBuffer(modelBuffer);
+		SimpleGlobal::GetRenderer()->SetModelBuffer(modelBuffer);
 	}
 }
 
@@ -77,7 +72,7 @@ void GameWorld::Update()
 
 void GameWorld::Render()
 {
-	{ //Test
+	{ //Test //Also move to Update() later
 		//Pyramid
 		SimpleUtilities::Vector3f pyramidRotation = myModelInstances[0]->GetRotation();
 		pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
@@ -96,12 +91,14 @@ void GameWorld::Render()
 
 	Renderer* renderer = SimpleGlobal::GetRenderer();
 
+	ModelInstance test = *myModelInstances[0];
+
 	for (const auto& model : myModelInstances)
 	{
-		renderer->Render(*model);
+		renderer->Render(model.get());
 	}
 
-	renderer->Render(*myDirectionalLight);
+	renderer->Render(myDirectionalLight.get());
 }
 
 void GameWorld::RenderImGui()
