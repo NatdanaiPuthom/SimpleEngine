@@ -91,8 +91,6 @@ void GameWorld::Render()
 
 	Renderer* renderer = SimpleGlobal::GetRenderer();
 
-	ModelInstance test = *myModelInstances[0];
-
 	for (const auto& model : myModelInstances)
 	{
 		renderer->Render(model.get());
