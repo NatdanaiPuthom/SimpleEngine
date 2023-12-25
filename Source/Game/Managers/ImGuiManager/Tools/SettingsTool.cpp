@@ -5,6 +5,7 @@
 SettingsTool::SettingsTool()
 	: mySelectedWindowSize(0)
 	, mySelectedResolution(1)
+	, mySelectedRasterizerState(0)
 {
 }
 
@@ -32,22 +33,21 @@ void SettingsTool::Draw()
 		ImGui::Dummy(ImVec2(50, 0));
 		ImGui::SameLine();
 
-
 		std::string drawCalls = "DrawCalls: " + std::to_string(SimpleGlobal::GetDrawCalls());
 		ImGui::Text(drawCalls.c_str());
 
 		ImGui::SetNextItemWidth(200);
-		std::vector<const char*> windowSizes;
+		std::array<const char*, static_cast<int>(eRasterizerState::Count)> rasterizerStates;
+		rasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = "BackfaceCulling";
+		rasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)] = "NoFaceCulling";
+		rasterizerStates[static_cast<int>(eRasterizerState::Wireframe)] = "Wireframe";
+		rasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)] = "WireframeNoCulling";
 
-		const std::string size1 = std::to_string(SimpleGlobal::GetWindowSize().x) + "x" + std::to_string(SimpleGlobal::GetWindowSize().y);
-		windowSizes.push_back(size1.c_str());
-
-		if(ImGui::Combo("WindowSize", &mySelectedWindowSize, windowSizes.data(), static_cast<int>(windowSizes.size())))
+		if (ImGui::Combo("RasterizerState", &mySelectedRasterizerState, rasterizerStates.data(), static_cast<int>(rasterizerStates.size())))
 		{
-
+			SimpleGlobal::GetGraphicsEngine()->SetRasterizerState(static_cast<eRasterizerState>(mySelectedRasterizerState));
 		}
 
-		//Test
 		ImGui::SetNextItemWidth(200.0f);
 		std::vector<SimpleUtilities::Vector2i> resolutions =
 		{
@@ -61,6 +61,17 @@ void SettingsTool::Draw()
 		{
 			SimpleUtilities::Vector2f resolution(static_cast<float>(resolutions[mySelectedResolution].x), static_cast<float>(resolutions[mySelectedResolution].y));
 			graphicsEngine->GetCamera()->SetResolution(resolution);
+		}
+
+		ImGui::SetNextItemWidth(200);
+		std::vector<const char*> windowSizes;
+
+		const std::string size1 = std::to_string(SimpleGlobal::GetWindowSize().x) + "x" + std::to_string(SimpleGlobal::GetWindowSize().y);
+		windowSizes.push_back(size1.c_str());
+
+		if (ImGui::Combo("WindowSize", &mySelectedWindowSize, windowSizes.data(), static_cast<int>(windowSizes.size())))
+		{
+			//TO-DO: Implement change window size
 		}
 	}
 

@@ -9,4 +9,5 @@ public:
 private:
 	int mySelectedResolution;
 	int mySelectedWindowSize;
+	int mySelectedRasterizerState;
 };
