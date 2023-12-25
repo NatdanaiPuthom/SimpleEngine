@@ -1,14 +1,14 @@
 #include "Game/stdafx.h"
 #include "Engine/Graphics/Camera/Camera.hpp"
-#include "Game/Managers/ImGuiManager/Tools/StatsTool.hpp"
+#include "Game/Managers/ImGuiManager/Tools/SettingsTool.hpp"
 
-StatsTool::StatsTool()
+SettingsTool::SettingsTool()
 	: mySelectedWindowSize(0)
 	, mySelectedResolution(1)
 {
 }
 
-void StatsTool::Draw()
+void SettingsTool::Draw()
 {
 	GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 

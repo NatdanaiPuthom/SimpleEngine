@@ -1,9 +1,9 @@
 #pragma once
 
-class StatsTool final : public ToolInterface
+class SettingsTool final : public ToolInterface
 {
 public:
-	StatsTool();
+	SettingsTool();
 
 	virtual void Draw() override;
 private:
