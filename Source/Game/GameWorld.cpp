@@ -1,4 +1,5 @@
 #include "Game/stdafx.h"
+#include "Engine/Graphics/Camera/Camera.hpp"
 #include "Game/GameWorld.hpp"
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
 
@@ -36,8 +37,6 @@ void GameWorld::Init()
 
 	{
 		std::unique_ptr<ModelInstance> plane = std::move(modelFactory->CreatePlaneModel());
-		plane->SetScale({ 10,10,10 });
-		plane->SetPosition({ 9.0f, 0.0f, 5.0f });
 		myModelInstances.push_back(std::move(plane));
 	}
 
@@ -62,6 +61,15 @@ void GameWorld::Init()
 		}
 
 		SimpleGlobal::GetRenderer()->SetModelBuffer(modelBuffer);
+	}
+
+	{
+		auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
+
+		const SimpleUtilities::Vector2ui resolution = SimpleGlobal::GetResolution();
+		camera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(resolution.x), static_cast<float>(resolution.y) });
+		camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
+		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 	}
 }
 

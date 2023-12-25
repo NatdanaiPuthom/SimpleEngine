@@ -19,6 +19,15 @@ struct ID3D11Texture2D;
 struct ID3D11ShaderResourceView;
 struct ID3D11RasterizerState;
 
+enum class eRasterizerState
+{
+	BackfaceCulling,
+	NoFaceCulling,
+	Wireframe,
+	WireframeNoCulling,
+	Count
+};
+
 struct alignas(16) FrameBufferData final
 {
 	SimpleUtilities::Matrix4x4f worldToClipMatrix;
@@ -43,7 +52,7 @@ struct alignas(16) DirectionalLightBufferData final
 	SimpleUtilities::Vector3f direction;
 	const float padding1 = -1.0f;
 
-	SimpleUtilities::Vector4f color;
+	SimpleUtilities::Vector4f color = SimpleUtilities::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 };
 
 struct alignas(16) AmbientLightBufferData final
@@ -68,11 +77,13 @@ public:
 	~GraphicsEngine();
 
 	const bool Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& aWindowHandle);
+
 	const bool BeginFrame();
 	void EndFrame();
 
 	const bool AddTexture(const char* aFilePath, const unsigned int aSlot = 0);
 	const bool AddShader(const char* aPSFile, const char* aVSFile);
+
 	bool IsVSyncActive() const;
 public:
 	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection);
@@ -83,6 +94,7 @@ public:
 	void SetToBackBuffer();
 	void SetToImGuiBuffer();
 	void SetToWaterReflectionBuffer();
+	void SetRasterizerState(const eRasterizerState aRasterizerState);
 public:
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
@@ -112,7 +124,7 @@ private:
 	bool CreateAmbientLightBuffer();
 	bool CreateRenderTargetForImGuiImage(const int aWidth, const int aHeight);
 	bool CreateWaterRenderTarget(const int aWidth, const int aHeight);
-	bool CreateFrontFaceCullingRasterizerState();
+	bool CreateRasterizerStates();
 private:
 	void Update();
 	void LoadSettingsFromJson();
@@ -122,7 +134,7 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<Texture>> myLoadedTextures;
 	std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<Shader>, SimpleHash::PairHash, SimpleHash::PairEqual> myLoadedShaders;
 
-	std::shared_ptr<Camera> myCamera;
+	std::array<Microsoft::WRL::ComPtr<ID3D11RasterizerState>, static_cast<int>(eRasterizerState::Count)> myRasterizerStates;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> myDevice;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> myContext;
@@ -137,7 +149,9 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> mySamplerState;
 
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState> myFrontFaceCullingRasterizerState;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> myRasterizerState;
+
+	std::shared_ptr<Camera> myCamera;
 
 	std::unique_ptr<ConstantBuffer> myCameraBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;

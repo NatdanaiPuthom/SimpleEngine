@@ -459,19 +459,23 @@ MeshData ShapeCreator3000::CreatePlane()
 {
 	Vertex southWest;
 	southWest.position = SU::Vector4f(-1.0f, 0.0f, -1.0f, 1.0f);
-	southWest.color = SU::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+	southWest.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+	southWest.uv = SU::Vector2f(0.0f,0.0f);
 
 	Vertex southEast;
 	southEast.position = SU::Vector4f(1.0f, 0.0f, -1.0f, 1.0f);
-	southEast.color = SU::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+	southEast.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+	southEast.uv = SU::Vector2f(1.0f, 0.0f);
 
 	Vertex northWest;
 	northWest.position = SU::Vector4f(-1.0f, 0.0f, 1.0f, 1.0f);
-	northWest.color = SU::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+	northWest.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+	northWest.uv = SU::Vector2f(0.0f, 1.0f);
 
 	Vertex northEast;
 	northEast.position = SU::Vector4f(1.0f, 0.0f, 1.0f, 1.0f);
-	northEast.color = SU::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+	northEast.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+	northEast.uv = SU::Vector2f(1.0f, 1.0f);
 
 	std::vector<Vertex> vertices =
 	{

@@ -12,7 +12,7 @@ void SceneTool::Draw()
 	if (ImGui::Begin("Scene"))
 	{
 		ImVec2 size(1280, 720);
-		const ImTextureID textureID = graphicsEngine->GetImGuiShaderResourceView().Get();
+		const ImTextureID textureID = graphicsEngine->GetWaterShaderResourceView().Get();
 		ImGui::Image(textureID, size);
 	}
 	ImGui::End();

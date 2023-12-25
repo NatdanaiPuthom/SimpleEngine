@@ -3,6 +3,8 @@
 class ModelInstance;
 class ConstantBuffer;
 
+//class PlaneReflection;
+
 class Renderer final
 {
 public:
@@ -10,6 +12,7 @@ public:
 	~Renderer();
 
 	void Render(const ModelInstance* const aModelInstance) const;
+	//void RenderPlane(PlaneReflection* aModelInstance);
 public:
 	void SetModelBuffer(std::vector<ModelInstance*>& aModelBuffer);
 	std::vector<ModelInstance*> GetAllModelInstances();

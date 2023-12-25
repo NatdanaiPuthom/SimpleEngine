@@ -70,24 +70,18 @@ const bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, H
 	if (!CreateWaterRenderTarget(aWindowSize.x, aWindowSize.y))
 		return false;
 
-	if (!CreateFrontFaceCullingRasterizerState())
+	if (!CreateRasterizerStates())
 		return false;
 
 	LoadSettingsFromJson();
 	LoadTextures();
 	LoadShaders();
+	SetRasterizerState(eRasterizerState::BackfaceCulling);
 
 	myRenderer = std::make_unique<Renderer>();
 	myModelFactory = std::make_unique<ModelFactory>();
 
 	myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
-
-	const SimpleUtilities::Vector2ui resolution = SimpleGlobal::GetResolution();
-	myCamera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(resolution.x), static_cast<float>(resolution.y) });
-	myCamera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
-	myCamera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
-
-	myDirectionLightData->color = SimpleUtilities::Vector4f(1, 1, 1, 1);
 
 	return true;
 }
@@ -263,7 +257,7 @@ void GraphicsEngine::SetToBackBuffer()
 	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
 	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
 
-	myContext->RSSetState(nullptr);
+	myContext->RSSetState(myRasterizerState.Get());
 }
 
 void GraphicsEngine::SetToImGuiBuffer()
@@ -274,7 +268,7 @@ void GraphicsEngine::SetToImGuiBuffer()
 	myContext->OMSetRenderTargets(1, myImGuiImageRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
 	myContext->ClearRenderTargetView(myImGuiImageRenderTarget->renderTargetView.Get(), myColor);
 
-	myContext->RSSetState(nullptr);
+	myContext->RSSetState(myRasterizerState.Get());
 }
 
 void GraphicsEngine::SetToWaterReflectionBuffer()
@@ -285,7 +279,28 @@ void GraphicsEngine::SetToWaterReflectionBuffer()
 	myContext->OMSetRenderTargets(1, myWaterReflectionRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
 	myContext->ClearRenderTargetView(myWaterReflectionRenderTarget->renderTargetView.Get(), myColor);
 
-	myContext->RSSetState(myFrontFaceCullingRasterizerState.Get());
+	myContext->RSSetState(myRasterizerState.Get());
+}
+
+void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)
+{
+	switch (aRasterizerState)
+	{
+	case eRasterizerState::BackfaceCulling:
+		myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)];
+		break;
+	case eRasterizerState::NoFaceCulling:
+		myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)];
+		break;
+	case eRasterizerState::Wireframe:
+		myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::Wireframe)];
+		break;
+	case eRasterizerState::WireframeNoCulling:
+		myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)];
+		break;
+	default:
+		break;
+	}
 }
 
 void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
@@ -353,6 +368,11 @@ std::shared_ptr<Shader> GraphicsEngine::GetShader(const char* aPSFile, const cha
 	return nullptr;
 }
 
+std::shared_ptr<Camera> GraphicsEngine::GetCamera()
+{
+	return myCamera;
+}
+
 ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
 {
 	return myDevice;
@@ -368,24 +388,19 @@ ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetImGuiShaderResourceView()
 	return myImGuiImageRenderTarget->shaderResourceView;
 }
 
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetWaterShaderResourceView()
+ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetWaterShaderResourceView()
 {
 	return myWaterReflectionRenderTarget->shaderResourceView;
-}
-
-std::shared_ptr<Camera> GraphicsEngine::GetCamera()
-{
-	return myCamera;
-}
-
-SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
-{
-	return myDirectionLightData->direction;
 }
 
 SimpleUtilities::Vector4f GraphicsEngine::GetDirectionalLightColor() const
 {
 	return myDirectionLightData->color;
+}
+
+SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
+{
+	return myDirectionLightData->direction;
 }
 
 SimpleUtilities::Vector3f GraphicsEngine::GetSkyColor() const
@@ -396,6 +411,19 @@ SimpleUtilities::Vector3f GraphicsEngine::GetSkyColor() const
 SimpleUtilities::Vector3f GraphicsEngine::GetGroundColor() const
 {
 	return myAmbientLightData->groundColor;
+}
+
+void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
+{
+	D3D11_VIEWPORT viewport = { 0 };
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+	viewport.Width = static_cast<float> (aWidth);
+	viewport.Height = static_cast<float> (aHeight);
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+
+	myContext->RSSetViewports(1, &viewport);
 }
 
 bool GraphicsEngine::IsVSyncActive() const
@@ -473,31 +501,44 @@ bool GraphicsEngine::CreateWaterRenderTarget(const int aWidth, const int aHeight
 	return true;
 }
 
-bool GraphicsEngine::CreateFrontFaceCullingRasterizerState()
+bool GraphicsEngine::CreateRasterizerStates()
 {
+	HRESULT result = S_OK;
+
 	D3D11_RASTERIZER_DESC rasterizerDesc = {};
+	rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	rasterizerDesc.DepthClipEnable = true;
 
-	rasterizerDesc.CullMode = D3D11_CULL_FRONT;
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-
-	const HRESULT result = myDevice->CreateRasterizerState(&rasterizerDesc, &myFrontFaceCullingRasterizerState);
+	result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::Wireframe)]);
 	if (FAILED(result))
 		return false;
 
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
+
+	result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)]);
+	if (FAILED(result))
+		return false;
+
+	rasterizerDesc = {};
+	rasterizerDesc.AntialiasedLineEnable = false;
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
+	rasterizerDesc.DepthBias = 0;
+	rasterizerDesc.DepthBiasClamp = 0.0f;
+	rasterizerDesc.DepthClipEnable = true;
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.FrontCounterClockwise = false;
+	rasterizerDesc.MultisampleEnable = true;
+	rasterizerDesc.ScissorEnable = false;
+	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+
+	result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)]);
+	if (FAILED(result))
+		return false;
+
+	myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = nullptr;
+
 	return true;
-}
-
-void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
-{
-	D3D11_VIEWPORT viewport = { 0 };
-	viewport.TopLeftX = 0.0f;
-	viewport.TopLeftY = 0.0f;
-	viewport.Width = static_cast<float> (aWidth);
-	viewport.Height = static_cast<float> (aHeight);
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-
-	myContext->RSSetViewports(1, &viewport);
 }
 
 bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight)

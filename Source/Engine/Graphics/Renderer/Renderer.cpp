@@ -34,7 +34,7 @@ void Renderer::Render(const ModelInstance* const aModelInstance) const
 	for (const auto& texture : aModelInstance->myTextures)
 	{
 		texture->Bind(context, texture->GetSlot());
-	}
+	}	
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
@@ -47,6 +47,38 @@ void Renderer::Render(const ModelInstance* const aModelInstance) const
 
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
+
+//void Renderer::RenderPlane(PlaneReflection* aModelInstance)
+//{
+//	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
+//
+//	SimpleUtilities::Matrix4x4f mirror = SimpleUtilities::Matrix4x4f::Identity();
+//	mirror(2, 2) = -1;
+//	mirror(4, 2) = (-2.0f * SimpleGlobal::GetGraphicsEngine()->GetCamera()->GetPosition().y * aModelInstance->myPlaneReflection->GetPosition().y * 2.0f);
+//
+//	ObjectBufferData objectBuffer = {};
+//	objectBuffer.modelToWorldMatrix = mirror * aModelInstance->myPlaneReflection->GetMatrix();
+//
+//	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
+//	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+//
+//	aModelInstance->myPlaneReflection->myShader->SetShader(context.Get());
+//
+//	aModelInstance->myShaderResourceView.Reset();
+//	aModelInstance->myShaderResourceView = nullptr;
+//	aModelInstance->myShaderResourceView = SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView();
+//
+//	context->PSSetShaderResources(0, 1, aModelInstance->myShaderResourceView.GetAddressOf());
+//
+//	UINT stride = sizeof(Vertex);
+//	UINT offset = 0;
+//
+//	context->IASetVertexBuffers(0, 1, aModelInstance->myPlaneReflection->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+//	context->IASetIndexBuffer(aModelInstance->myPlaneReflection->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+//	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//
+//	context->DrawIndexed(static_cast<UINT>(aModelInstance->myPlaneReflection->myMesh->myMeshData.myIndices.size()), 0, 0);
+//}
 
 std::vector<ModelInstance*> Renderer::GetAllModelInstances()
 {
