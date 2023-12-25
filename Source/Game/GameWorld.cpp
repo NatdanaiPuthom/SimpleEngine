@@ -29,6 +29,12 @@ void GameWorld::Init()
 	}
 
 	{
+		std::unique_ptr<ModelInstance> directionalLight = std::move(modelFactory->CreateDirectionalLightModel());
+		directionalLight->SetPosition({ 8,6,10 });
+		myModelInstances.push_back(std::move(directionalLight));
+	}
+
+	{
 		std::unique_ptr<ModelInstance> plane = std::move(modelFactory->CreatePlaneModel());
 		plane->SetScale({ 10,10,10 });
 		plane->SetPosition({ 9.0f, 0.0f, 5.0f });
@@ -47,8 +53,6 @@ void GameWorld::Init()
 		myModelInstances.push_back(std::move(skyBox));
 	}
 
-	myDirectionalLight = std::move(modelFactory->CreateDirectionalLightModel());
-	myDirectionalLight->SetPosition({ 8,6,10 });
 
 	{ //TO-DO: Fix better way to send data to ImGui
 		std::vector<ModelInstance*> modelBuffer;
@@ -56,8 +60,6 @@ void GameWorld::Init()
 		{
 			modelBuffer.push_back(model.get());
 		}
-
-		modelBuffer.push_back(myDirectionalLight.get());
 
 		SimpleGlobal::GetRenderer()->SetModelBuffer(modelBuffer);
 	}
@@ -86,17 +88,14 @@ void GameWorld::Render()
 
 		//Directional Light test
 		SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
-		myDirectionalLight->SetRotation(directionalLight);
+		myModelInstances[2]->SetRotation(directionalLight);
 	}
 
 	Renderer* renderer = SimpleGlobal::GetRenderer();
-
 	for (const auto& model : myModelInstances)
 	{
 		renderer->Render(model.get());
 	}
-
-	renderer->Render(myDirectionalLight.get());
 }
 
 void GameWorld::RenderImGui()

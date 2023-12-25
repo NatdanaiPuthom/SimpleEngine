@@ -14,6 +14,7 @@ namespace SimpleGlobal
 	
 	SimpleUtilities::Vector2ui GetResolution();
 	SimpleUtilities::Vector2ui GetWindowSize();
+
 	double GetTotalTime();
 	float GetDeltaTime();
 	int GetDrawCalls();
