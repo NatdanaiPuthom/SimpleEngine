@@ -91,6 +91,7 @@ public:
 	void SetSkyColor(const SimpleUtilities::Vector3f& aColor);
 	void SetGroundColor(const SimpleUtilities::Vector3f& aColor);
 	void SetVSync(const bool aShouldTurnOn);
+	void SetFPSLevelCap(const unsigned int aCapLevel);
 	void SetToBackBuffer();
 	void SetToImGuiBuffer();
 	void SetToWaterReflectionBuffer();
@@ -111,6 +112,8 @@ public:
 	SimpleUtilities::Vector4f GetDirectionalLightColor() const;
 	SimpleUtilities::Vector3f GetSkyColor() const;
 	SimpleUtilities::Vector3f GetGroundColor() const;
+
+	unsigned int GetFPSLevelCap() const;
 private:
 	void CreateViewport(const int aWidth, const int aHeight);
 	bool CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight);
@@ -168,5 +171,6 @@ private:
 	std::unique_ptr<ModelFactory> myModelFactory;
 
 	float myColor[4];
+	unsigned int myFPSLevelCap;
 	bool myVSync;
 };

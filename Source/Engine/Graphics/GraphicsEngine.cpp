@@ -19,6 +19,7 @@ GraphicsEngine::GraphicsEngine()
 	, myImGuiImageRenderTarget(std::make_unique<RenderTarget>())
 	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
+	, myFPSLevelCap(0)
 {
 	myDirectionLightData->direction.x = 0;
 	myDirectionLightData->direction.y = -1;
@@ -136,7 +137,7 @@ void GraphicsEngine::LoadSettingsFromJson()
 	const nlohmann::json json = nlohmann::json::parse(file);
 	file.close();
 
-	myVSync = json["game_settings"]["vsync"];
+	SetVSync(json["game_settings"]["vsync"]);
 }
 
 void GraphicsEngine::LoadTextures()
@@ -246,7 +247,7 @@ const bool GraphicsEngine::BeginFrame()
 
 void GraphicsEngine::EndFrame()
 {
-	mySwapChain->Present(myVSync, 0);
+	mySwapChain->Present(myFPSLevelCap, 0);
 }
 
 void GraphicsEngine::SetToBackBuffer()
@@ -306,6 +307,20 @@ void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)
 void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
 {
 	myVSync = aShouldTurnOn;
+
+	if (myVSync)
+		myFPSLevelCap = 1;
+	else
+		myFPSLevelCap = 0;
+}
+
+void GraphicsEngine::SetFPSLevelCap(const unsigned int aCapLevel)
+{
+	if (aCapLevel > 4)
+		myFPSLevelCap = 4;
+
+	if (myVSync == false)
+		myFPSLevelCap = aCapLevel;
 }
 
 void GraphicsEngine::SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection)
@@ -411,6 +426,11 @@ SimpleUtilities::Vector3f GraphicsEngine::GetSkyColor() const
 SimpleUtilities::Vector3f GraphicsEngine::GetGroundColor() const
 {
 	return myAmbientLightData->groundColor;
+}
+
+unsigned int GraphicsEngine::GetFPSLevelCap() const
+{
+	return myFPSLevelCap;
 }
 
 void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
