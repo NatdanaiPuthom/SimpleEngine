@@ -12,7 +12,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 Engine::Engine()
 	: myInput(nullptr)
-	, myImGuiInterface(std::make_unique<ImGuiEngine>())
+	, myImGuiEngine(std::make_unique<ImGuiEngine>())
 {
 }
 
@@ -47,7 +47,7 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	myTimer = std::make_unique<SimpleUtilities::Timer>();
 	myInput = &SimpleUtilities::InputManager::GetInstance();
 
-	myImGuiInterface->Init();
+	myImGuiEngine->Init();
 }
 
 void Engine::LoadSettingsFromJson()
@@ -123,7 +123,7 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 
 bool Engine::BeginFrame()
 {
-	myImGuiInterface->BeginFrame();
+	myImGuiEngine->BeginFrame();
 
 	SimpleGlobalEngineImpl::UpdateFPSCounter();
 	SimpleGlobalEngineImpl::ResetDrawCalls();
@@ -136,7 +136,7 @@ bool Engine::BeginFrame()
 
 void Engine::EndFrame()
 {
-	myImGuiInterface->EndFrame();
+	myImGuiEngine->EndFrame();
 	myGraphicsEngine->EndFrame();
 }
 

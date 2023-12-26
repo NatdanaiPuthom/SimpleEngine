@@ -1,5 +1,6 @@
 #include "Engine/stdafx.h"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
+#include "Engine/Graphics/Model/PlaneReflection.h"
 
 Renderer::Renderer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
@@ -48,37 +49,33 @@ void Renderer::Render(const ModelInstance* const aModelInstance) const
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
 
-//void Renderer::RenderPlane(PlaneReflection* aModelInstance)
-//{
-//	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
-//
-//	SimpleUtilities::Matrix4x4f mirror = SimpleUtilities::Matrix4x4f::Identity();
-//	mirror(2, 2) = -1;
-//	mirror(4, 2) = (-2.0f * SimpleGlobal::GetGraphicsEngine()->GetCamera()->GetPosition().y * aModelInstance->myPlaneReflection->GetPosition().y * 2.0f);
-//
-//	ObjectBufferData objectBuffer = {};
-//	objectBuffer.modelToWorldMatrix = mirror * aModelInstance->myPlaneReflection->GetMatrix();
-//
-//	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-//	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
-//
-//	aModelInstance->myPlaneReflection->myShader->SetShader(context.Get());
-//
-//	aModelInstance->myShaderResourceView.Reset();
-//	aModelInstance->myShaderResourceView = nullptr;
-//	aModelInstance->myShaderResourceView = SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView();
-//
-//	context->PSSetShaderResources(0, 1, aModelInstance->myShaderResourceView.GetAddressOf());
-//
-//	UINT stride = sizeof(Vertex);
-//	UINT offset = 0;
-//
-//	context->IASetVertexBuffers(0, 1, aModelInstance->myPlaneReflection->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-//	context->IASetIndexBuffer(aModelInstance->myPlaneReflection->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-//	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//
-//	context->DrawIndexed(static_cast<UINT>(aModelInstance->myPlaneReflection->myMesh->myMeshData.myIndices.size()), 0, 0);
-//}
+void Renderer::RenderPlane(PlaneReflection* aPlaneReflection)
+{
+	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
+
+	ObjectBufferData objectBuffer = {};
+	objectBuffer.modelToWorldMatrix = aPlaneReflection->myModelInstance->GetMatrix();
+
+	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
+	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+
+	aPlaneReflection->myModelInstance->myShader->SetShader(context.Get());
+
+	aPlaneReflection->myShaderResourceView.Reset();
+	aPlaneReflection->myShaderResourceView = nullptr;
+	aPlaneReflection->myShaderResourceView = SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView();
+
+	context->PSSetShaderResources(0, 1, aPlaneReflection->myShaderResourceView.GetAddressOf());
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+
+	context->IASetVertexBuffers(0, 1, aPlaneReflection->myModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+	context->IASetIndexBuffer(aPlaneReflection->myModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	context->DrawIndexed(static_cast<UINT>(aPlaneReflection->myModelInstance->myMesh->myMeshData.myIndices.size()), 0, 0);
+}
 
 std::vector<ModelInstance*> Renderer::GetAllModelInstances()
 {

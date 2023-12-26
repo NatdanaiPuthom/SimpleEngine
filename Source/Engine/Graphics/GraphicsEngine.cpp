@@ -1,6 +1,4 @@
 #include "Engine/stdafx.h"
-#include "Engine/global.hpp"
-#include "Graphics/Camera/Camera.hpp"
 #include <External/json.h>
 
 #ifdef _DEBUG
@@ -9,6 +7,7 @@
 
 GraphicsEngine::GraphicsEngine()
 	: myCamera(std::make_shared<Camera>())
+	, myViewPort(std::make_shared<D3D11_VIEWPORT>())
 	, myCameraBuffer(std::make_unique<ConstantBuffer>())
 	, myTimeBuffer(std::make_unique<ConstantBuffer>())
 	, myDirectionLightBuffer(std::make_unique<ConstantBuffer>())
@@ -53,9 +52,6 @@ const bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, H
 	if (!CreateSamplerState())
 		return false;
 
-	if (!CreateRenderTargetForImGuiImage(aWindowSize.x, aWindowSize.y))
-		return false;
-
 	if (!CreateCameraBuffer())
 		return false;
 
@@ -68,10 +64,13 @@ const bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, H
 	if (!CreateAmbientLightBuffer())
 		return false;
 
-	if (!CreateWaterRenderTarget(aWindowSize.x, aWindowSize.y))
+	if (!CreateRasterizerStates())
 		return false;
 
-	if (!CreateRasterizerStates())
+	if (!CreateRenderTargetForImGuiImage(aWindowSize.x, aWindowSize.y))
+		return false;
+
+	if (!CreateWaterRenderTarget(aWindowSize.x, aWindowSize.y))
 		return false;
 
 	LoadSettingsFromJson();
@@ -438,15 +437,17 @@ unsigned int GraphicsEngine::GetFPSLevelCap() const
 
 void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
 {
-	D3D11_VIEWPORT viewport = { 0 };
-	viewport.TopLeftX = 0.0f;
-	viewport.TopLeftY = 0.0f;
-	viewport.Width = static_cast<float> (aWidth);
-	viewport.Height = static_cast<float> (aHeight);
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
+	std::shared_ptr<D3D11_VIEWPORT> viewport = std::make_shared<D3D11_VIEWPORT>();
 
-	myContext->RSSetViewports(1, &viewport);
+	viewport->TopLeftX = 0.0f;
+	viewport->TopLeftY = 0.0f;
+	viewport->Width = static_cast<float> (aWidth);
+	viewport->Height = static_cast<float> (aHeight);
+	viewport->MinDepth = 0.0f;
+	viewport->MaxDepth = 1.0f;
+
+	myViewPort = viewport;
+	myContext->RSSetViewports(1, myViewPort.get());
 }
 
 bool GraphicsEngine::IsVSyncActive() const

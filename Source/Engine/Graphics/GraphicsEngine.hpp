@@ -156,6 +156,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> myRasterizerState;
 
 	std::shared_ptr<Camera> myCamera;
+	std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
 	std::unique_ptr<ConstantBuffer> myCameraBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeBuffer;

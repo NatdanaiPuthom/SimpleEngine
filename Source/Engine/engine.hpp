@@ -33,7 +33,7 @@ private:
 	std::unique_ptr<GraphicsEngine> myGraphicsEngine;
 	std::unique_ptr<SimpleUtilities::Timer> myTimer;
 	std::unique_ptr<HWND> myHWND;
-	std::unique_ptr<ImGuiEngine> myImGuiInterface;
+	std::unique_ptr<ImGuiEngine> myImGuiEngine;
 
 #ifdef _DEBUG
 	Console myConsole;
