@@ -82,7 +82,6 @@ public:
 	const bool BeginFrame();
 	void EndFrame();
 
-
 	const bool AddTexture(const char* aFilePath, const unsigned int aSlot = 0);
 	const bool AddShader(const char* aPSFile, const char* aVSFile);
 
@@ -111,8 +110,8 @@ public:
 	std::shared_ptr<Shader> GetDefaultShader();
 	std::shared_ptr<Shader> GetShader(const char* aPSFile, const char* aVSFile);
 
-	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 	SimpleUtilities::Vector4f GetDirectionalLightColor() const;
+	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
 	SimpleUtilities::Vector3f GetSkyColor() const;
 	SimpleUtilities::Vector3f GetGroundColor() const;
 
