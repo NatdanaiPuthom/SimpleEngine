@@ -74,14 +74,11 @@ void GameWorld::Init()
 
 void GameWorld::Update()
 {
-	while (SimpleGlobal::GetGameIsRunning())
+	/*while (SimpleGlobal::GetGameIsRunning())
 	{
-	}
-}
+	}*/
 
-void GameWorld::Render()
-{
-	{ //Test //Also move to Update() later
+	{ //Test
 		//Pyramid
 		SimpleUtilities::Vector3f pyramidRotation = myModelInstances[0]->GetRotation();
 		pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
@@ -97,7 +94,10 @@ void GameWorld::Render()
 		SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
 		myModelInstances[2]->SetRotation(directionalLight);
 	}
+}
 
+void GameWorld::Render()
+{
 	Renderer* renderer = SimpleGlobal::GetRenderer();
 	for (const auto& model : myModelInstances)
 	{
@@ -113,4 +113,13 @@ void GameWorld::RenderImGui()
 void GameWorld::RenderReflection()
 {
 	SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModelInstance.get());
+}
+
+void GameWorld::RenderUpSideDown()
+{
+	Renderer* renderer = SimpleGlobal::GetRenderer();
+	for (const auto& model : myModelInstances)
+	{
+		renderer->RenderEverythingUpSideDown(model.get());
+	}
 }

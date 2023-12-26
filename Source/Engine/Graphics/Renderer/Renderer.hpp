@@ -10,6 +10,7 @@ public:
 	~Renderer();
 
 	void Render(const ModelInstance* const aModelInstance) const;
+	void RenderEverythingUpSideDown(const ModelInstance* const aModelInstance) const;
 	void RenderPlaneReflection(const ModelInstance* const aModelInstance) const;
 public:
 	void SetModelBuffer(std::vector<ModelInstance*>& aModelBuffer);
