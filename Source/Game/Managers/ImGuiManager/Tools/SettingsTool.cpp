@@ -99,7 +99,7 @@ void SettingsTool::Draw()
 
 		{ //RasterizeState
 			ImGui::SetNextItemWidth(200);
-			std::array<const char*, static_cast<int>(eRasterizerState::Count)> rasterizerStates;
+			std::array<const char*, static_cast<int>(eRasterizerState::Count)> rasterizerStates = {};
 			rasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = "BackfaceCulling";
 			rasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)] = "NoFaceCulling";
 			rasterizerStates[static_cast<int>(eRasterizerState::Wireframe)] = "Wireframe";
