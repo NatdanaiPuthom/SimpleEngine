@@ -38,6 +38,7 @@ void GameWorld::Init()
 
 	{
 		std::unique_ptr<ModelInstance> plane = std::move(modelFactory->CreatePlaneModel());
+		plane->SetPosition({ -1.0f, 0, -1.0f });
 		myModelInstances.push_back(std::move(plane));
 	}
 
