@@ -82,6 +82,8 @@ public:
 	const bool BeginFrame();
 	void EndFrame();
 
+	void Resize();
+
 	const bool AddTexture(const char* aFilePath, const unsigned int aSlot = 0);
 	const bool AddShader(const char* aPSFile, const char* aVSFile);
 

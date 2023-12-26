@@ -74,6 +74,8 @@ void GameWorld::Init()
 	}
 
 	myPlaneReflection = std::make_unique<PlaneReflection>();
+
+	SimpleGlobal::GetGraphicsEngine()->Resize();
 }
 
 void GameWorld::Update()

@@ -1,5 +1,6 @@
 #include "Engine/stdafx.h"
 #include <External/json.h>
+#include <External/imgui.h>
 
 #ifdef _DEBUG
 #define REPORT_DX_WARNINGS
@@ -247,6 +248,64 @@ const bool GraphicsEngine::BeginFrame()
 void GraphicsEngine::EndFrame()
 {
 	mySwapChain->Present(myFPSLevelCap, 0);
+}
+
+void GraphicsEngine::Resize()
+{
+	const unsigned int newWidth = 800;
+	const unsigned int newHeight = 600;
+
+	RECT wr = {};
+	wr.left = 0;
+	wr.right = newWidth + wr.left;
+	wr.top = 0;
+	wr.bottom = newHeight + wr.top;
+
+	AdjustWindowRect(&wr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
+
+	const unsigned int width = wr.right - wr.left;
+	const unsigned int height = wr.bottom - wr.top;
+
+	SetWindowPos(SimpleGlobal::GetHWND(), nullptr, 0, 0, width, height,  SWP_NOZORDER);
+
+	myBackBuffer->Release();
+	HRESULT result = mySwapChain->ResizeBuffers(0, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	if (FAILED(result))
+		assert(false && "failed");
+
+	ID3D11Texture2D* pBackBuffer = nullptr;
+	mySwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+	myDevice->CreateRenderTargetView(pBackBuffer, NULL, myBackBuffer.GetAddressOf());
+	pBackBuffer->Release();
+
+	myDepthBuffer->Release();
+
+	ComPtr<ID3D11Texture2D> pDepthStencil;
+	D3D11_TEXTURE2D_DESC descDepth = {};
+	descDepth.Width = newWidth;
+	descDepth.Height = newHeight;
+	descDepth.MipLevels = 1u;
+	descDepth.ArraySize = 1u;
+	descDepth.Format = DXGI_FORMAT_D32_FLOAT;
+	descDepth.SampleDesc.Count = 1u;
+	descDepth.SampleDesc.Quality = 0u;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+	result = myDevice->CreateTexture2D(&descDepth, nullptr, &pDepthStencil);
+	if (FAILED(result))
+		assert(false && "failed");
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0u;
+
+	result = myDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, myDepthBuffer.GetAddressOf());
+	if (FAILED(result))
+		assert(false && "failed");
+
+	CreateViewport(newWidth, newHeight);
 }
 
 void GraphicsEngine::SetToBackBuffer()

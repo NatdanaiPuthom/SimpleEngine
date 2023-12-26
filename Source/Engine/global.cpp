@@ -61,6 +61,11 @@ void SimpleGlobalRendererImpl::IncreaseDrawCall()
 
 namespace SimpleGlobal
 {
+	Engine* GetEngine()
+	{
+		return localEngine;
+	}
+
 	GraphicsEngine* GetGraphicsEngine()
 	{
 		return localEngine->GetGraphicsEngine();
