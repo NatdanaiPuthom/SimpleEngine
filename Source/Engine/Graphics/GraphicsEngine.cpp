@@ -299,6 +299,9 @@ void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)
 	case eRasterizerState::WireframeNoCulling:
 		myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)];
 		break;
+	case eRasterizerState::FrontFaceCulling:
+		myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)];
+		break;
 	default:
 		break;
 	}
@@ -553,6 +556,13 @@ bool GraphicsEngine::CreateRasterizerStates()
 	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 
 	result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)]);
+	if (FAILED(result))
+		return false;
+
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+
+	result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)]);
 	if (FAILED(result))
 		return false;
 

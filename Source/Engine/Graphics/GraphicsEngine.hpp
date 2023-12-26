@@ -25,6 +25,7 @@ enum class eRasterizerState
 	NoFaceCulling,
 	Wireframe,
 	WireframeNoCulling,
+	FrontFaceCulling,
 	Count
 };
 
