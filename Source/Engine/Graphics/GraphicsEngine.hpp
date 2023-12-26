@@ -161,10 +161,10 @@ private:
 	std::shared_ptr<Camera> myCamera;
 	std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
-	std::unique_ptr<ConstantBuffer> myCameraBuffer;
-	std::unique_ptr<ConstantBuffer> myTimeBuffer;
-	std::unique_ptr<ConstantBuffer> myDirectionLightBuffer;
-	std::unique_ptr<ConstantBuffer> myAmbientLightBuffer;
+	std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
+	std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
+	std::unique_ptr<ConstantBuffer> myDirectionLightConstantBuffer;
+	std::unique_ptr<ConstantBuffer> myAmbientLightConstantBuffer;
 
 	std::unique_ptr<DirectionalLightBufferData> myDirectionLightData;
 	std::unique_ptr<AmbientLightBufferData> myAmbientLightData;

@@ -31,7 +31,7 @@ using Microsoft::WRL::ComPtr;
 
 #include "Engine/engine.hpp"
 #include "Engine/global.hpp"
-#include "Engine/Graphics/Buffers/ConstantBuffer.hpp"
+#include "Engine/Graphics/ConstantBuffers/ConstantBuffer.hpp"
 #include "Engine/Graphics/GraphicsEngine.hpp"
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Engine/Graphics/Model/Mesh.hpp"

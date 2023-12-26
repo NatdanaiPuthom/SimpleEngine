@@ -9,10 +9,10 @@
 GraphicsEngine::GraphicsEngine()
 	: myCamera(std::make_shared<Camera>())
 	, myViewPort(std::make_shared<D3D11_VIEWPORT>())
-	, myCameraBuffer(std::make_unique<ConstantBuffer>())
-	, myTimeBuffer(std::make_unique<ConstantBuffer>())
-	, myDirectionLightBuffer(std::make_unique<ConstantBuffer>())
-	, myAmbientLightBuffer(std::make_unique<ConstantBuffer>())
+	, myCameraConstantBuffer(std::make_unique<ConstantBuffer>())
+	, myTimeConstantBuffer(std::make_unique<ConstantBuffer>())
+	, myDirectionLightConstantBuffer(std::make_unique<ConstantBuffer>())
+	, myAmbientLightConstantBuffer(std::make_unique<ConstantBuffer>())
 	, myDirectionLightData(std::make_unique<DirectionalLightBufferData>())
 	, myAmbientLightData(std::make_unique<AmbientLightBufferData>())
 	, myWaterReflectionRenderTarget(std::make_unique<RenderTarget>())
@@ -93,15 +93,15 @@ void GraphicsEngine::Update()
 		frameBuffer.worldToClipMatrix = myCamera->GetWorldToClipMatrix();
 		frameBuffer.cameraPosition = myCamera->GetPosition();
 		frameBuffer.resolution = SimpleGlobal::GetResolution();
-		myCameraBuffer->Bind(0);
-		myCameraBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
+		myCameraConstantBuffer->Bind(0);
+		myCameraConstantBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
 	}
 
 	{
 		TimeBufferData timeBuffer = {};
 		timeBuffer.time = static_cast<float>(SimpleGlobal::GetTotalTime());
-		myTimeBuffer->Bind(2);
-		myTimeBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
+		myTimeConstantBuffer->Bind(2);
+		myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 	}
 
 	{
@@ -111,8 +111,8 @@ void GraphicsEngine::Update()
 
 		directionLightBuffer.color = myDirectionLightData->color;
 
-		myDirectionLightBuffer->Bind(3);
-		myDirectionLightBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);
+		myDirectionLightConstantBuffer->Bind(3);
+		myDirectionLightConstantBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);
 	}
 
 	{
@@ -120,8 +120,8 @@ void GraphicsEngine::Update()
 		ambientLightBuffer.skyColor = myAmbientLightData->skyColor;
 		ambientLightBuffer.groundColor = myAmbientLightData->groundColor;
 
-		myAmbientLightBuffer->Bind(4);
-		myAmbientLightBuffer->Update(sizeof(AmbientLightBufferData), &ambientLightBuffer);
+		myAmbientLightConstantBuffer->Bind(4);
+		myAmbientLightConstantBuffer->Update(sizeof(AmbientLightBufferData), &ambientLightBuffer);
 	}
 
 	myCamera->Update(SimpleGlobal::GetDeltaTime());
@@ -798,7 +798,7 @@ bool GraphicsEngine::CreateCameraBuffer()
 	cameraBuffer.worldToClipMatrix = myCamera->GetModelToWorldMatrix().GetFastInverse() * myCamera->GetProjectionMatrix();
 	cameraBuffer.cameraPosition = SimpleUtilities::Vector3f{ 0.0f,0.0f,0.0f };
 
-	if (!myCameraBuffer->Init(this, sizeof(FrameBufferData), &cameraBuffer))
+	if (!myCameraConstantBuffer->Init(this, sizeof(FrameBufferData), &cameraBuffer))
 		return false;
 
 	return true;
@@ -810,7 +810,7 @@ bool GraphicsEngine::CreateTimeBuffer()
 
 	timeBuffer.time = 0.0f;
 
-	if (!myTimeBuffer->Init(this, sizeof(TimeBufferData), &timeBuffer))
+	if (!myTimeConstantBuffer->Init(this, sizeof(TimeBufferData), &timeBuffer))
 		return false;
 
 	return true;
@@ -823,7 +823,7 @@ bool GraphicsEngine::CreateDirectionalLightBuffer()
 	directionLightBuffer.direction = SimpleUtilities::Vector3f(0, -1, 0);
 	directionLightBuffer.color = SimpleUtilities::Vector4f(0, 0, 0, 0);
 
-	if (!myDirectionLightBuffer->Init(this, sizeof(DirectionalLightBufferData), &directionLightBuffer))
+	if (!myDirectionLightConstantBuffer->Init(this, sizeof(DirectionalLightBufferData), &directionLightBuffer))
 		return false;
 
 	return true;
@@ -836,7 +836,7 @@ bool GraphicsEngine::CreateAmbientLightBuffer()
 	ambientLightBuffer.groundColor = SimpleUtilities::Vector3f(1, 1, 1);
 	ambientLightBuffer.skyColor = SimpleUtilities::Vector3f(1, 1, 1);
 
-	if (!myAmbientLightBuffer->Init(this, sizeof(AmbientLightBufferData), &ambientLightBuffer))
+	if (!myAmbientLightConstantBuffer->Init(this, sizeof(AmbientLightBufferData), &ambientLightBuffer))
 		return false;
 
 	return true;
