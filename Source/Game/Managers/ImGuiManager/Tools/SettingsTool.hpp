@@ -9,6 +9,8 @@ public:
 private:
 	void UpdateAndFetchCurrentMonitorResolution();
 private:
+	std::vector<SimpleUtilities::Vector2ui> myWindowSizes;
+
 	SimpleUtilities::Vector2ui myMonitorResolution;
 
 	int mySelectedResolution;

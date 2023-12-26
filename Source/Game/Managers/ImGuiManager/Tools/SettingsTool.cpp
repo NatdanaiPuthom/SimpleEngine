@@ -8,6 +8,17 @@ SettingsTool::SettingsTool()
 	, mySelectedRasterizerState(0)
 {
 	UpdateAndFetchCurrentMonitorResolution();
+
+	myWindowSizes.push_back(SimpleUtilities::Vector2ui(800, 600));
+	myWindowSizes.push_back(SimpleUtilities::Vector2ui(1280, 720));
+	myWindowSizes.push_back(SimpleUtilities::Vector2ui(1600, 900));
+	myWindowSizes.push_back(SimpleUtilities::Vector2ui(1920, 1080));
+
+	if (myWindowSizes.back().x < myMonitorResolution.x &&
+		myWindowSizes.back().y < myMonitorResolution.y)
+	{
+		myWindowSizes.push_back(myMonitorResolution);
+	}
 }
 
 void SettingsTool::Draw()
@@ -119,27 +130,32 @@ void SettingsTool::Draw()
 
 		{ //Window Sizes	
 			ImGui::SetNextItemWidth(200);
-			std::vector<SimpleUtilities::Vector2ui> windowSizes =
+		
+			std::vector<std::string> windowSizeAsString;
+			for (const auto& size : myWindowSizes)
 			{
-				SimpleUtilities::Vector2ui(800, 600),
-				SimpleUtilities::Vector2ui(1280, 720),
-				SimpleUtilities::Vector2ui(1600, 900),
-				SimpleUtilities::Vector2ui(1920, 1080),
-			};
+				const std::string string = std::to_string(size.x) + "x" + std::to_string(size.y);
+				windowSizeAsString.push_back(string);
+			}
 
-			const char* windowSizeTexts[] = { "800x600", "1280x720", "1600x900", "1920x1080" };
-			if (ImGui::Combo("WindowSize", &mySelectedWindowSize, windowSizeTexts, static_cast<int>(windowSizes.size())))
+			std::vector<const char*> windowSizeAsChar;
+			for (const std::string& string : windowSizeAsString)
+			{
+				windowSizeAsChar.push_back(string.c_str());
+			}
+
+			if (ImGui::Combo("WindowSize", &mySelectedWindowSize, windowSizeAsChar.data(), static_cast<int>(myWindowSizes.size())))
 			{
 				UpdateAndFetchCurrentMonitorResolution();
 
-				if (windowSizes[mySelectedWindowSize].x == myMonitorResolution.x &&
-					windowSizes[mySelectedWindowSize].y == myMonitorResolution.y)
+				if (myWindowSizes[mySelectedWindowSize].x == myMonitorResolution.x &&
+					myWindowSizes[mySelectedWindowSize].y == myMonitorResolution.y)
 				{
 					SimpleGlobal::SetWindowSize(myMonitorResolution, true);
 				}
 				else
 				{
-					SimpleGlobal::SetWindowSize(windowSizes[mySelectedWindowSize]);
+					SimpleGlobal::SetWindowSize(myWindowSizes[mySelectedWindowSize]);
 				}
 			}
 		}
