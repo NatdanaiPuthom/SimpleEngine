@@ -515,7 +515,7 @@ MeshData ShapeCreator3000::CreateSphere()
 			vertex.position.w = 1.0f;
 
 			vertex.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-			vertex.uv = SU::Vector2f(1.0f - (theta / (2.0f * globalPi)), 1.0f - phi / globalPi);
+			vertex.uv = SU::Vector2f((4.0f + theta) / (2.0f * globalPi), 1.0f - phi / globalPi);
 
 			vertices.push_back(vertex);
 		}
