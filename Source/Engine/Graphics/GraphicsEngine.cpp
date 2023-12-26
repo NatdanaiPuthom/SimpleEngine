@@ -300,40 +300,15 @@ void GraphicsEngine::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize
 	pBackBuffer->Release();
 
 	myDepthBuffer->Release();
-
-	ComPtr<ID3D11Texture2D> pDepthStencil;
-	D3D11_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = newWidth;
-	descDepth.Height = newHeight;
-	descDepth.MipLevels = 1u;
-	descDepth.ArraySize = 1u;
-	descDepth.Format = DXGI_FORMAT_D32_FLOAT;
-	descDepth.SampleDesc.Count = 1u;
-	descDepth.SampleDesc.Quality = 0u;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-	result = myDevice->CreateTexture2D(&descDepth, nullptr, &pDepthStencil);
-	if (FAILED(result))
-		assert(false && "Failed to create Texture2D");
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0u;
-
-	result = myDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, myDepthBuffer.GetAddressOf());
-	if (FAILED(result))
-		assert(false && "Failed to re-create DepthStencilView");
+	if (!CreateDepthBuffer(newWidth, newHeight))
+		assert(false && "Failed to re-create DepthBuffer");
 
 	CreateViewport(newWidth, newHeight);
 
 	if (!CreateWaterRenderTarget(newWidth, newHeight))
-		if (FAILED(result))
 			assert(false && "Failed to re-create WaterReflectionRenderTarget");
 
 	if (!CreateRenderTargetForImGuiImage(newWidth, newHeight))
-		if (FAILED(result))
 			assert(false && "Failed to re-create ImGuiImageRenderTarget");
 
 	SetToBackBuffer();
@@ -677,7 +652,6 @@ bool GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, cons
 	swapChainDesc.BufferCount = 2;
 	swapChainDesc.BufferDesc.Width = aWidth;
 	swapChainDesc.BufferDesc.Height = aHeight;
-	//swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; //TO-DO: I don't know but everything is extra bright
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -751,22 +725,32 @@ bool GraphicsEngine::CreateFrameBuffer()
 
 bool GraphicsEngine::CreateDepthBuffer(const int aWidth, const int aHeight)
 {
-	ComPtr<ID3D11Texture2D> depthBufferTexture;
-	D3D11_TEXTURE2D_DESC depthBufferDesc = { 0 };
-	depthBufferDesc.Height = aHeight;
-	depthBufferDesc.Width = aWidth;
-	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthBufferDesc.SampleDesc.Count = 1;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	D3D11_TEXTURE2D_DESC descDepth = {};
+	descDepth.Width = aWidth;
+	descDepth.Height = aHeight;
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Format = DXGI_FORMAT_D32_FLOAT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-	HRESULT result = myDevice->CreateTexture2D(&depthBufferDesc, nullptr, &depthBufferTexture);
-	if (FAILED(result))
-		return false;
+	ComPtr<ID3D11Texture2D> pDepthStencil;
+	HRESULT result = myDevice->CreateTexture2D(&descDepth, nullptr, &pDepthStencil);
 
-	result = myDevice->CreateDepthStencilView(depthBufferTexture.Get(), nullptr, &myDepthBuffer);
 	if (FAILED(result))
-		return false;
+		assert(false && "Failed to create Texture2D");
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0;
+	descDSV.Flags = 0;
+
+	result = myDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, myDepthBuffer.GetAddressOf());
+	if (FAILED(result))
+		assert(false && "Failed to create DepthStencilView");
 
 	return true;
 }
