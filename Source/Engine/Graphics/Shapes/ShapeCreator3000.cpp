@@ -171,7 +171,7 @@ MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f& aSize)
 	northEast.position = east_East.position;
 	northEast.uv = SU::Vector2f(1.0f, 1.0f);
 
-	Vertex southEast; 
+	Vertex southEast;
 	southEast.position = south_East.position;
 	southEast.uv = SU::Vector2f(1.0f, 0.0f);
 
@@ -460,7 +460,7 @@ MeshData ShapeCreator3000::CreatePlane()
 	Vertex southWest;
 	southWest.position = SU::Vector4f(-1.0f, 0.0f, -1.0f, 1.0f);
 	southWest.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-	southWest.uv = SU::Vector2f(0.0f,0.0f);
+	southWest.uv = SU::Vector2f(0.0f, 0.0f);
 
 	Vertex southEast;
 	southEast.position = SU::Vector4f(1.0f, 0.0f, -1.0f, 1.0f);
@@ -487,6 +487,60 @@ MeshData ShapeCreator3000::CreatePlane()
 		0, 2, 3,
 		0, 3, 1
 	};
+
+	return MeshData(vertices, indices);
+}
+
+MeshData ShapeCreator3000::CreateSphere()
+{
+	//Dear Savior ChatGPT, I have absolutely no clue how this calculation work at all so don't ask
+
+	const float radius = 1.0f;
+	const int slices = 20;
+	const int stacks = 20;
+
+	std::vector<Vertex> vertices;
+
+	for (int i = 0; i <= stacks; ++i)
+	{
+		float phi = static_cast<float>(i) / stacks * globalPi;
+		for (int j = 0; j <= slices; ++j)
+		{
+			float theta = static_cast<float>(j) * 2.0f * globalPi / slices;
+
+			Vertex vertex;
+			vertex.position.x = radius * std::sin(phi) * std::cos(theta);
+			vertex.position.y = radius * std::cos(phi);
+			vertex.position.z = radius * std::sin(phi) * std::sin(theta);
+			vertex.position.w = 1.0f;
+
+			vertex.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+			vertex.uv = SU::Vector2f(1.0f - (theta / (2.0f * globalPi)), 1.0f - phi / globalPi);
+
+			vertices.push_back(vertex);
+		}
+	}
+
+	std::vector<unsigned int> indices;
+
+	for (int i = 0; i < stacks; ++i)
+	{
+		for (int j = 0; j < slices; ++j)
+		{
+			int v1 = i * (slices + 1) + j;
+			int v2 = v1 + 1;
+			int v3 = (i + 1) * (slices + 1) + j;
+			int v4 = v3 + 1;
+
+			indices.push_back(v2);
+			indices.push_back(v3);
+			indices.push_back(v1);
+
+			indices.push_back(v4);
+			indices.push_back(v3);
+			indices.push_back(v2);
+		}
+	}
 
 	return MeshData(vertices, indices);
 }

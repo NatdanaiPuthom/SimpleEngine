@@ -11,6 +11,7 @@ ModelFactory::ModelFactory()
 	MeshData skyboxData = ShapeCreator3000::CreateSkyBox(SimpleUtilities::Vector3f(100, 100, 100));
 	MeshData directionalLightData = ShapeCreator3000::CreateDirectionalLight();
 	MeshData terrainData = ShapeCreator3000::CreateTerrain();
+	MeshData sphereData = ShapeCreator3000::CreateSphere();
 
 	std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
 	std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
@@ -18,6 +19,7 @@ ModelFactory::ModelFactory()
 	std::unique_ptr<Mesh> skyboxMesh = std::make_unique<Mesh>();
 	std::unique_ptr<Mesh> directionalLight = std::make_unique<Mesh>();
 	std::unique_ptr<Mesh> terrainMesh = std::make_unique<Mesh>();
+	std::unique_ptr<Mesh> sphereMesh = std::make_unique<Mesh>();
 
 	if (!cube->Init(cubeData))
 		assert(false && "Failed to create Cube");
@@ -37,12 +39,16 @@ ModelFactory::ModelFactory()
 	if (!terrainMesh->Init(terrainData))
 		assert(false && "Failed to create Terrain");
 
+	if (!sphereMesh->Init(sphereData))
+		assert(false && "Failed to create Sphere");
+
 	AddMesh("Cube", std::move(cube));
 	AddMesh("Pyramid", std::move(pyramid));
 	AddMesh("Plane", std::move(plane));
 	AddMesh("Skybox", std::move(skyboxMesh));
 	AddMesh("DirectionalLight", std::move(directionalLight));
 	AddMesh("Terrain", std::move(terrainMesh));
+	AddMesh("Sphere", std::move(sphereMesh));
 }
 
 ModelFactory::~ModelFactory()
@@ -150,4 +156,16 @@ std::unique_ptr<ModelInstance> ModelFactory::CreatePyramidModel()
 	pyramid->SetName("Pyramid");
 
 	return std::move(pyramid);
+}
+
+std::unique_ptr<ModelInstance> ModelFactory::CreateSphereModel()
+{
+	std::unique_ptr<ModelInstance> sphere = std::make_unique<ModelInstance>();
+
+	sphere->Init(GetMesh("Sphere"));
+	sphere->SetScale({ 1,1,1 });
+	sphere->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
+	sphere->SetName("Sphere");
+
+	return std::move(sphere);
 }

@@ -20,4 +20,5 @@ public:
 	static MeshData CreateSkyBox(const SimpleUtilities::Vector3f& aSize = { 100.0f, 100.0f, 100.0f });
 	static MeshData CreateDirectionalLight();
 	static MeshData CreatePlane();
+	static MeshData CreateSphere();
 };

@@ -53,6 +53,12 @@ void GameWorld::Init()
 		myModelInstances.push_back(std::move(skyBox));
 	}
 
+	{
+		std::unique_ptr<ModelInstance> sphere = std::move(modelFactory->CreateSphereModel());
+		sphere->SetPosition({ 2,3,7 });
+		myModelInstances.push_back(std::move(sphere));
+	}
+
 	{ //TO-DO: Fix better way to send data to ImGui
 		std::vector<ModelInstance*> modelBuffer;
 		for (auto& model : myModelInstances)

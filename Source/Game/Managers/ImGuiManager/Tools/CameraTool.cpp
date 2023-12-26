@@ -30,10 +30,10 @@ void CameraTool::Draw()
 		ImGui::Dummy(ImVec2(106, 0));
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100.0f);
-		float fov = graphicsEngine->GetCamera()->GetFoV() * SimpleUtilities::GetRadToDeg();
+		float fov = graphicsEngine->GetCamera()->GetFoV() * globalRadToDeg;
 		if (ImGui::SliderFloat("FoV", &fov, 0.0f, 180.00f, "%0.2f"))
 		{
-			fov *= SimpleUtilities::GetDegToRad();
+			fov *= globalDegToRad;
 			graphicsEngine->GetCamera()->SetFoV(fov);
 		}
 

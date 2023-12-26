@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/SimpleUtilities/Utility.hpp"
 
 namespace SimpleUtilities
 {
@@ -7,9 +8,6 @@ namespace SimpleUtilities
 
 	template<typename T>
 	class Vector4;
-
-	static float GetRadToDeg();
-	static float GetDegToRad();
 
 	template <typename T>
 	class Matrix4x4
@@ -299,7 +297,7 @@ namespace SimpleUtilities
 	template<typename T>
 	inline void Matrix4x4<T>::SetLocalRotation(const SimpleUtilities::Vector3<T>& aRotationInDegree)
 	{
-		const SimpleUtilities::Vector3<T> rad = aRotationInDegree * GetDegToRad();
+		const SimpleUtilities::Vector3<T> rad = aRotationInDegree * globalDegToRad;
 		const SimpleUtilities::Vector3<T> scale = GetScale();
 
 		SimpleUtilities::Matrix4x4<T> rotationMatrix = SimpleUtilities::Matrix4x4<T>::Identity();

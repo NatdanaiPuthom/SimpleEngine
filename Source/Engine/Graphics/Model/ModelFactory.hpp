@@ -19,6 +19,7 @@ public:
 	std::unique_ptr<ModelInstance> CreatePlaneModel();
 	std::unique_ptr<ModelInstance> CreateCubeModel();
 	std::unique_ptr<ModelInstance> CreatePyramidModel();
+	std::unique_ptr<ModelInstance> CreateSphereModel();
 private:
 	std::unordered_map<std::string, std::unique_ptr<Mesh>> myMeshes;
 };

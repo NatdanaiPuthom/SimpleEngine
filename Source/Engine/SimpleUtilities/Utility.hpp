@@ -28,16 +28,6 @@ namespace SimpleUtilities
 		return outputPath;
 	}
 
-	static inline float GetRadToDeg()
-	{
-		return globalRadToDeg;
-	}
-
-	static inline float GetDegToRad()
-	{
-		return globalDegToRad;
-	}
-
 	template<typename T>
 	static inline T Clamp(const T aValue, const T aMin, const T aMax)
 	{
