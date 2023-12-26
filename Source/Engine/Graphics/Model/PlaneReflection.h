@@ -9,5 +9,4 @@ public:
 	~PlaneReflection();
 
 	std::unique_ptr<ModelInstance> myModelInstance;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myShaderResourceView;
 };

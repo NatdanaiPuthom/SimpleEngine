@@ -2,6 +2,7 @@
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Game/GameWorld.hpp"
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
+#include "Engine/Graphics/Model/PlaneReflection.h"
 
 GameWorld::GameWorld()
 	: myImGuiManager(std::make_unique<ImGuiManager>())
@@ -71,6 +72,8 @@ void GameWorld::Init()
 		camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 	}
+
+	myPlaneReflection = std::make_unique<PlaneReflection>();
 }
 
 void GameWorld::Update()
@@ -109,4 +112,9 @@ void GameWorld::Render()
 void GameWorld::RenderImGui()
 {
 	myImGuiManager->Render();
+}
+
+void GameWorld::RenderReflection()
+{
+	SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModelInstance.get());
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 class ImGuiManager;
+class PlaneReflection;
 
 class GameWorld final
 {
@@ -12,7 +13,10 @@ public:
 	void Update();
 	void Render();
 	void RenderImGui();
+	void RenderReflection();
 private:
 	std::unique_ptr<ImGuiManager> myImGuiManager;
 	std::vector<std::unique_ptr<ModelInstance>> myModelInstances;
+
+	std::unique_ptr<PlaneReflection> myPlaneReflection;
 };

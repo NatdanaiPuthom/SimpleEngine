@@ -48,6 +48,31 @@ void Renderer::Render(const ModelInstance* const aModelInstance) const
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
 
+void Renderer::RenderPlaneReflection(const ModelInstance* const aModelInstance) const
+{
+	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
+
+	ObjectBufferData objectBuffer = {};
+	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix();
+
+	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
+	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+
+	aModelInstance->myShader->SetShader(context.Get());
+
+	//TO-DO: Fix the warnings, give a lot of warnings
+	//SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(0, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView().GetAddressOf());
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+
+	context->IASetVertexBuffers(0, 1, aModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+	context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.myIndices.size()), 0, 0);
+}
+
 std::vector<ModelInstance*> Renderer::GetAllModelInstances()
 {
 	return myModelBuffer;
