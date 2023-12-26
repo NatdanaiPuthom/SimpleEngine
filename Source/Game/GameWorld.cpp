@@ -19,7 +19,7 @@ void GameWorld::Init()
 
 	{
 		std::unique_ptr<ModelInstance> pyramid = std::move(modelFactory->CreatePyramidModel());
-		pyramid->SetPosition({ -8.0f, 2.0f, 3.0f });
+		pyramid->SetPosition({ 7.0f, 2.0f, 3.0f });
 		myModelInstances.push_back(std::move(pyramid));
 	}
 
@@ -80,10 +80,10 @@ void GameWorld::Update()
 
 	{ //Test
 		//Pyramid
-		SimpleUtilities::Vector3f pyramidRotation = myModelInstances[0]->GetRotation();
+		/*SimpleUtilities::Vector3f pyramidRotation = myModelInstances[0]->GetRotation();
 		pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
 		pyramidRotation.z += 10 * SimpleGlobal::GetDeltaTime();
-		myModelInstances[0]->SetRotation(pyramidRotation);
+		myModelInstances[0]->SetRotation(pyramidRotation);*/
 
 		//Cube
 		SimpleUtilities::Vector3f cubeRotation = myModelInstances[1]->GetRotation();

@@ -349,7 +349,7 @@ void GraphicsEngine::SetToWaterReflectionBuffer()
 	myContext->OMSetRenderTargets(1, myWaterReflectionRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
 	myContext->ClearRenderTargetView(myWaterReflectionRenderTarget->renderTargetView.Get(), myClearColor);
 
-	myContext->RSSetState(myRasterizerState.Get());
+	myContext->RSSetState(myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)].Get());
 }
 
 void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)

@@ -53,12 +53,11 @@ void Renderer::RenderEverythingUpSideDown(const ModelInstance* const aModelInsta
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 	auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
 
-	//SimpleUtilities::Matrix4x4f mirror = SimpleUtilities::Matrix4x4f::Identity();
-	//mirror(2, 2) = -1.0f;
-	//mirror(4, 2) = (-2.0f * camera->GetPosition().y + aModelInstance->myTransform.GetPosition().y * 2.0f);
+	SimpleUtilities::Matrix4x4f mirror = SimpleUtilities::Matrix4x4f::Identity();
+	mirror(2, 2) = -1.0f;
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix();
+	objectBuffer.modelToWorldMatrix = mirror * aModelInstance->GetMatrix();
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
@@ -87,7 +86,7 @@ void Renderer::RenderPlaneReflection(const ModelInstance* const aModelInstance) 
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix() ;
+	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix();
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);

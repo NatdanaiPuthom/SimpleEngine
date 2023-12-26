@@ -58,15 +58,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		{
 			gameWorld.Update();
 
-			engine.GetGraphicsEngine()->SetToWaterReflectionBuffer();
-			gameWorld.RenderUpSideDown();
+			/*engine.GetGraphicsEngine()->SetToWaterReflectionBuffer();
+			gameWorld.RenderUpSideDown();*/
 
 			engine.GetGraphicsEngine()->SetToImGuiBuffer();
 			gameWorld.Render();
 
 			engine.GetGraphicsEngine()->SetToBackBuffer();
 			gameWorld.Render();
-			gameWorld.RenderReflection();
+			//gameWorld.RenderReflection();
 			gameWorld.RenderImGui();
 
 			engine.EndFrame();;
