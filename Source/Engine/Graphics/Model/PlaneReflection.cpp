@@ -7,7 +7,7 @@ PlaneReflection::PlaneReflection()
 	myModelInstance->ClearTextures();
 	myModelInstance->SetName("Reflection");
 	myModelInstance->SetScale({ 5,5,5 });
-	myModelInstance->SetPosition({ 10,0,0 });
+	myModelInstance->SetPosition({ 10,-1,-5 });
 }
 
 PlaneReflection::~PlaneReflection()

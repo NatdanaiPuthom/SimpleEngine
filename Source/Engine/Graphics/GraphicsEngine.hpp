@@ -58,10 +58,10 @@ struct alignas(16) DirectionalLightBufferData final
 
 struct alignas(16) AmbientLightBufferData final
 {
-	SimpleUtilities::Vector3f skyColor;
+	SimpleUtilities::Vector3f skyColor = SimpleUtilities::Vector3f(1.0f, 1.0f, 1.0f);
 	const float padding1 = -1.0f;
 
-	SimpleUtilities::Vector3f groundColor;
+	SimpleUtilities::Vector3f groundColor = SimpleUtilities::Vector3f(1.0f, 1.0f, 1.0f);;
 	const float padding2 = -1.0f;
 };
 
@@ -175,7 +175,7 @@ private:
 	std::unique_ptr<Renderer> myRenderer;
 	std::unique_ptr<ModelFactory> myModelFactory;
 
-	float myColor[4];
+	float myClearColor[4];
 	unsigned int myFPSLevelCap;
 	bool myVSync;
 };

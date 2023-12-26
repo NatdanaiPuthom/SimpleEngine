@@ -17,17 +17,13 @@ GraphicsEngine::GraphicsEngine()
 	, myAmbientLightData(std::make_unique<AmbientLightBufferData>())
 	, myWaterReflectionRenderTarget(std::make_unique<RenderTarget>())
 	, myImGuiImageRenderTarget(std::make_unique<RenderTarget>())
-	, myColor{ 0.0f, 0.25f, 0.50f, 1.0f }
+	, myClearColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
 	, myFPSLevelCap(0)
 {
 	myDirectionLightData->direction.x = 0;
 	myDirectionLightData->direction.y = -1;
 	myDirectionLightData->direction.z = 0;
-	myDirectionLightData->color = { 0,0,0, 1 };
-
-	myAmbientLightData->skyColor = { 1,1,1 };
-	myAmbientLightData->groundColor = { 1,1,1 };
 }
 
 GraphicsEngine::~GraphicsEngine()
@@ -323,7 +319,7 @@ void GraphicsEngine::SetToBackBuffer()
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
-	myContext->ClearRenderTargetView(myBackBuffer.Get(), myColor);
+	myContext->ClearRenderTargetView(myBackBuffer.Get(), myClearColor);
 
 	myContext->RSSetState(myRasterizerState.Get());
 }
@@ -337,7 +333,7 @@ void GraphicsEngine::SetToImGuiBuffer()
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	myContext->OMSetRenderTargets(1, myImGuiImageRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
-	myContext->ClearRenderTargetView(myImGuiImageRenderTarget->renderTargetView.Get(), myColor);
+	myContext->ClearRenderTargetView(myImGuiImageRenderTarget->renderTargetView.Get(), myClearColor);
 
 	myContext->RSSetState(myRasterizerState.Get());
 }
@@ -351,7 +347,7 @@ void GraphicsEngine::SetToWaterReflectionBuffer()
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	myContext->OMSetRenderTargets(1, myWaterReflectionRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
-	myContext->ClearRenderTargetView(myWaterReflectionRenderTarget->renderTargetView.Get(), myColor);
+	myContext->ClearRenderTargetView(myWaterReflectionRenderTarget->renderTargetView.Get(), myClearColor);
 
 	myContext->RSSetState(myRasterizerState.Get());
 }
