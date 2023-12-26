@@ -3,10 +3,11 @@
 #include "Game/Managers/ImGuiManager/Tools/SettingsTool.hpp"
 
 SettingsTool::SettingsTool()
-	: mySelectedWindowSize(0)
+	: mySelectedWindowSize(1)
 	, mySelectedResolution(1)
 	, mySelectedRasterizerState(0)
 {
+	UpdateAndFetchCurrentMonitorResolution();
 }
 
 void SettingsTool::Draw()
@@ -118,16 +119,41 @@ void SettingsTool::Draw()
 
 		{ //Window Sizes	
 			ImGui::SetNextItemWidth(200);
-			std::vector<const char*> windowSizes;
-
-			const std::string size1 = std::to_string(SimpleGlobal::GetWindowSize().x) + "x" + std::to_string(SimpleGlobal::GetWindowSize().y);
-			windowSizes.push_back(size1.c_str());
-
-			if (ImGui::Combo("WindowSize", &mySelectedWindowSize, windowSizes.data(), static_cast<int>(windowSizes.size())))
+			std::vector<SimpleUtilities::Vector2ui> windowSizes =
 			{
-				//TO-DO: Implement change window size
+				SimpleUtilities::Vector2ui(800, 600),
+				SimpleUtilities::Vector2ui(1280, 720),
+				SimpleUtilities::Vector2ui(1600, 900),
+				SimpleUtilities::Vector2ui(1920, 1080),
+			};
+
+			const char* windowSizeTexts[] = { "800x600", "1280x720", "1600x900", "1920x1080" };
+			if (ImGui::Combo("WindowSize", &mySelectedWindowSize, windowSizeTexts, static_cast<int>(windowSizes.size())))
+			{
+				UpdateAndFetchCurrentMonitorResolution();
+
+				if (windowSizes[mySelectedWindowSize].x == myMonitorResolution.x &&
+					windowSizes[mySelectedWindowSize].y == myMonitorResolution.y)
+				{
+					SimpleGlobal::SetWindowSize(myMonitorResolution, true);
+				}
+				else
+				{
+					SimpleGlobal::SetWindowSize(windowSizes[mySelectedWindowSize]);
+				}
 			}
 		}
 	}
 	ImGui::End();
+}
+
+void SettingsTool::UpdateAndFetchCurrentMonitorResolution()
+{
+	HMONITOR hMonitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY);
+
+	MONITORINFOEX monitorInfo = { sizeof(MONITORINFOEX) };
+	GetMonitorInfo(hMonitor, &monitorInfo);
+
+	myMonitorResolution.x = static_cast<unsigned int>(monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left);
+	myMonitorResolution.y = static_cast<unsigned int>(monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top);
 }

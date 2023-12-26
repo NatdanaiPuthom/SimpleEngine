@@ -98,7 +98,7 @@ public:
 	void SetToImGuiBuffer();
 	void SetToWaterReflectionBuffer();
 	void SetRasterizerState(const eRasterizerState aRasterizerState);
-	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize);
+	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize, const bool aSetFullScreen);
 public:
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();

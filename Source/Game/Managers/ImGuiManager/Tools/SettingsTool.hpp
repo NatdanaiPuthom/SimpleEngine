@@ -7,6 +7,10 @@ public:
 
 	virtual void Draw() override;
 private:
+	void UpdateAndFetchCurrentMonitorResolution();
+private:
+	SimpleUtilities::Vector2ui myMonitorResolution;
+
 	int mySelectedResolution;
 	int mySelectedWindowSize;
 	int mySelectedRasterizerState;

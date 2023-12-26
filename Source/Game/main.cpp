@@ -64,8 +64,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 			engine.GetGraphicsEngine()->SetToBackBuffer();
 			gameWorld.Render();
-			gameWorld.RenderImGui();
 			gameWorld.RenderReflection();
+			gameWorld.RenderImGui();
 
 			engine.EndFrame();;
 		}

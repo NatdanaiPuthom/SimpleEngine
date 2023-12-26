@@ -23,5 +23,5 @@ namespace SimpleGlobal
 
 	void SetGameIsRunning(const bool aShouldRun);
 	void SetResolution(const SimpleUtilities::Vector2ui& aResolution);
-	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize);
+	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize, const bool aSetFullScreen = false);
 }

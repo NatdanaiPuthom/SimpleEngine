@@ -137,9 +137,9 @@ namespace SimpleGlobal
 		localEngine->GetGraphicsEngine()->GetCamera()->UpdateResolution();
 	}
 
-	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize)
+	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize, const bool aSetFullScreen)
 	{
 		localWindowSize = aWindowSize;
-		localEngine->GetGraphicsEngine()->SetWindowSize(localWindowSize);
+		localEngine->GetGraphicsEngine()->SetWindowSize(localWindowSize, aSetFullScreen);
 	}
 }

@@ -250,10 +250,21 @@ void GraphicsEngine::EndFrame()
 	mySwapChain->Present(myFPSLevelCap, 0);
 }
 
-void GraphicsEngine::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize)
+void GraphicsEngine::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize, const bool aSetFullScreen)
 {
 	const unsigned int newWidth = aWindowSize.x;
 	const unsigned int newHeight = aWindowSize.y;
+
+	DWORD dwStyle = GetWindowLong(SimpleGlobal::GetHWND(), GWL_STYLE);
+	if (aSetFullScreen)
+	{
+		dwStyle &= ~WS_OVERLAPPEDWINDOW;
+		dwStyle |= WS_POPUP;
+	}
+	else {
+		dwStyle &= ~WS_POPUP;
+		dwStyle |= WS_OVERLAPPEDWINDOW;
+	}
 
 	RECT wr = {};
 	wr.left = 0;
@@ -263,10 +274,17 @@ void GraphicsEngine::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize
 
 	AdjustWindowRect(&wr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
 
-	const unsigned int width = wr.right - wr.left;
-	const unsigned int height = wr.bottom - wr.top;
+	unsigned int width = wr.right - wr.left;
+	unsigned int height = wr.bottom - wr.top;
 
-	SetWindowPos(SimpleGlobal::GetHWND(), nullptr, 0, 0, width, height,  SWP_NOZORDER);
+	if (aSetFullScreen)
+	{
+		width = newWidth;
+		height = newHeight;
+	}
+
+	SetWindowLong(SimpleGlobal::GetHWND(), GWL_STYLE, dwStyle);
+	SetWindowPos(SimpleGlobal::GetHWND(), nullptr, 0, 0, width, height, SWP_NOZORDER);
 
 	myBackBuffer->Release();
 	HRESULT result = mySwapChain->ResizeBuffers(2, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
@@ -307,13 +325,11 @@ void GraphicsEngine::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize
 
 	CreateViewport(newWidth, newHeight);
 
-	myWaterReflectionRenderTarget->renderTargetView->Release();
-	if(!CreateWaterRenderTarget(newWidth, newHeight))
+	if (!CreateWaterRenderTarget(newWidth, newHeight))
 		if (FAILED(result))
 			assert(false && "Failed to re-create WaterReflectionRenderTarget");
 
-	myImGuiImageRenderTarget->renderTargetView->Release();
-	if(!CreateRenderTargetForImGuiImage(newWidth, newHeight))
+	if (!CreateRenderTargetForImGuiImage(newWidth, newHeight))
 		if (FAILED(result))
 			assert(false && "Failed to re-create ImGuiImageRenderTarget");
 }
@@ -578,7 +594,7 @@ bool GraphicsEngine::CreateWaterRenderTarget(const int aWidth, const int aHeight
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 
-	ID3D11Texture2D* texture;
+	ID3D11Texture2D* texture = nullptr;
 
 	HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
 	if (FAILED(result))
