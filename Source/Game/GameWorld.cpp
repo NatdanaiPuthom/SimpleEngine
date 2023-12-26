@@ -71,8 +71,6 @@ void GameWorld::Init()
 		camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 	}
-
-	myPlaneReflection = std::make_unique<PlaneReflection>();
 }
 
 void GameWorld::Update()
@@ -106,8 +104,6 @@ void GameWorld::Render()
 	{
 		renderer->Render(model.get());
 	}
-
-	renderer->RenderPlane(myPlaneReflection.get());
 }
 
 void GameWorld::RenderImGui()

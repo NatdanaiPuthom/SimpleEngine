@@ -1,5 +1,4 @@
 #pragma once
-#include "Engine/Graphics/Model/PlaneReflection.h"
 
 class ImGuiManager;
 
@@ -16,6 +15,4 @@ public:
 private:
 	std::unique_ptr<ImGuiManager> myImGuiManager;
 	std::vector<std::unique_ptr<ModelInstance>> myModelInstances;
-
-	std::unique_ptr<PlaneReflection> myPlaneReflection;
 };

@@ -1,6 +1,5 @@
 #include "Engine/stdafx.h"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
-#include "Engine/Graphics/Model/PlaneReflection.h"
 
 Renderer::Renderer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
@@ -47,34 +46,6 @@ void Renderer::Render(const ModelInstance* const aModelInstance) const
 	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.myIndices.size()), 0, 0);
 
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
-}
-
-void Renderer::RenderPlane(PlaneReflection* aPlaneReflection)
-{
-	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
-
-	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = aPlaneReflection->myModelInstance->GetMatrix();
-
-	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
-
-	aPlaneReflection->myModelInstance->myShader->SetShader(context.Get());
-
-	aPlaneReflection->myShaderResourceView.Reset();
-	aPlaneReflection->myShaderResourceView = nullptr;
-	aPlaneReflection->myShaderResourceView = SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView();
-
-	context->PSSetShaderResources(0, 1, aPlaneReflection->myShaderResourceView.GetAddressOf());
-
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-
-	context->IASetVertexBuffers(0, 1, aPlaneReflection->myModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-	context->IASetIndexBuffer(aPlaneReflection->myModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	context->DrawIndexed(static_cast<UINT>(aPlaneReflection->myModelInstance->myMesh->myMeshData.myIndices.size()), 0, 0);
 }
 
 std::vector<ModelInstance*> Renderer::GetAllModelInstances()
