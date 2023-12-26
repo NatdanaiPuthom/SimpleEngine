@@ -82,7 +82,6 @@ public:
 	const bool BeginFrame();
 	void EndFrame();
 
-	void Resize();
 
 	const bool AddTexture(const char* aFilePath, const unsigned int aSlot = 0);
 	const bool AddShader(const char* aPSFile, const char* aVSFile);
@@ -99,6 +98,7 @@ public:
 	void SetToImGuiBuffer();
 	void SetToWaterReflectionBuffer();
 	void SetRasterizerState(const eRasterizerState aRasterizerState);
+	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize);
 public:
 	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();

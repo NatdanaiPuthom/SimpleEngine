@@ -102,18 +102,17 @@ void SettingsTool::Draw()
 
 		{ //Resolutions
 			ImGui::SetNextItemWidth(200.0f);
-			std::vector<SimpleUtilities::Vector2i> resolutions =
+			std::vector<SimpleUtilities::Vector2ui> resolutions =
 			{
-				SimpleUtilities::Vector2i(800, 600),
-				SimpleUtilities::Vector2i(1280, 720),
-				SimpleUtilities::Vector2i(1920, 1080),
+				SimpleUtilities::Vector2ui(800, 600),
+				SimpleUtilities::Vector2ui(1280, 720),
+				SimpleUtilities::Vector2ui(1920, 1080),
 			};
 
 			const char* resolutionText[] = { "800x600", "1280x720", "1920x1080" };
 			if (ImGui::Combo("Resolution", &mySelectedResolution, resolutionText, 3))
 			{
-				SimpleUtilities::Vector2f resolution(static_cast<float>(resolutions[mySelectedResolution].x), static_cast<float>(resolutions[mySelectedResolution].y));
-				graphicsEngine->GetCamera()->SetResolution(resolution);
+				SimpleGlobal::SetResolution(resolutions[mySelectedResolution]);
 			}
 		}
 

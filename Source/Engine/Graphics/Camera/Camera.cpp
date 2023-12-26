@@ -1,8 +1,7 @@
 #include "Engine/stdafx.h"
 
-Camera::Camera(const SimpleUtilities::Vector2f& aResolution, const float aFoV, const float aNearPlane, const float aFarPlane)
-	: myResolution(aResolution)
-	, myFoV(aFoV)
+Camera::Camera(const float aFoV, const float aNearPlane, const float aFarPlane)
+	: myFoV(aFoV)
 	, myFarPlane(aFarPlane)
 	, myNearPlane(aNearPlane)
 	, myMoveSpeed(10)
@@ -155,7 +154,10 @@ SimpleUtilities::Vector4f Camera::CameraToProjectionSpace(const SimpleUtilities:
 
 SimpleUtilities::Vector2f Camera::ProjectionToPixel(const SimpleUtilities::Vector4f& aVector) const
 {
-	return SimpleUtilities::Vector2f(aVector.x * myResolution.x / 2.0f + myResolution.x / 2.0f, aVector.y * myResolution.y / 2.0f + myResolution.y / 2.0f);
+	const SimpleUtilities::Vector2ui resolutionUI(SimpleGlobal::GetResolution());
+	const SimpleUtilities::Vector2f resolution(static_cast<float>(resolutionUI.x), static_cast<float>(resolutionUI.y));
+
+	return SimpleUtilities::Vector2f(aVector.x * resolution.x / 2.0f + resolution.x / 2.0f, aVector.y * resolution.y / 2.0f + resolution.y / 2.0f);
 }
 
 SimpleUtilities::Matrix4x4f Camera::GetWorldToClipMatrix()
@@ -166,8 +168,11 @@ SimpleUtilities::Matrix4x4f Camera::GetWorldToClipMatrix()
 
 void Camera::CreateProjectionMatrix()
 {
+	const SimpleUtilities::Vector2ui resolutionUI(SimpleGlobal::GetResolution());
+	const SimpleUtilities::Vector2f resolution(static_cast<float>(resolutionUI.x), static_cast<float>(resolutionUI.y));
+
 	myProjectionMatrix(1, 1) = 1 / tan(myFoV / 2);
-	myProjectionMatrix(2, 2) = (myResolution.x / myResolution.y) * (1 / tan(myFoV / 2));
+	myProjectionMatrix(2, 2) = (resolution.x / resolution.y) * (1 / tan(myFoV / 2));
 	myProjectionMatrix(3, 3) = myFarPlane / (myFarPlane - myNearPlane);
 	myProjectionMatrix(3, 4) = 1;
 	myProjectionMatrix(4, 3) = -myNearPlane * myFarPlane / (myFarPlane - myNearPlane);
@@ -194,11 +199,10 @@ void Camera::UpdateCameraVectors()
 	myUp.Normalize();
 }
 
-void Camera::SetCameraValues(const SimpleUtilities::Vector3f& aPosition, const SimpleUtilities::Vector2f& aResolution, const float aNearPlane, const float aFoV)
+void Camera::SetCameraValues(const SimpleUtilities::Vector3f& aPosition, const float aNearPlane, const float aFoV)
 {
 	SetPosition(aPosition);
 
-	myResolution = aResolution;
 	myNearPlane = aNearPlane;
 	myFoV = aFoV;
 
@@ -216,10 +220,8 @@ void Camera::SetRotation(const SimpleUtilities::Vector3f aRotationInDegree)
 	myTransform.SetRotation(aRotationInDegree);
 }
 
-void Camera::SetResolution(const SimpleUtilities::Vector2f& aResolution)
+void Camera::UpdateResolution()
 {
-	myResolution = aResolution;
-
 	CreateProjectionMatrix();
 }
 
@@ -329,9 +331,4 @@ SimpleUtilities::Vector3f Camera::GetUp() const
 SimpleUtilities::Vector3f Camera::GetRight() const
 {
 	return myRight;
-}
-
-SimpleUtilities::Vector2f Camera::GetResolution() const
-{
-	return myResolution;
 }

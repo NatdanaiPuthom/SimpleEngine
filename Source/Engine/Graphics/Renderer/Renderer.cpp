@@ -52,6 +52,12 @@ void Renderer::RenderPlaneReflection(const ModelInstance* const aModelInstance) 
 {
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
+	auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
+
+	SimpleUtilities::Matrix4x4f mirror = SimpleUtilities::Matrix4x4f::Identity();
+	mirror(2, 2) = -1.0f;
+	mirror(4,2) = (-2.0f * camera->GetPosition().y + aModelInstance->myTransform.GetPosition().y * 2.0f);
+
 	ObjectBufferData objectBuffer = {};
 	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix();
 
@@ -60,8 +66,7 @@ void Renderer::RenderPlaneReflection(const ModelInstance* const aModelInstance) 
 
 	aModelInstance->myShader->SetShader(context.Get());
 
-	//TO-DO: Fix the warnings, give a lot of warnings
-	//SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(0, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView().GetAddressOf());
+	SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(0, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView().GetAddressOf());
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;

@@ -26,6 +26,16 @@ void SimpleGlobalEngineImpl::SetEngine(Engine* aEngine)
 	localEngine = aEngine;
 }
 
+void SimpleGlobalEngineImpl::SetResolution(const SimpleUtilities::Vector2ui& aResolution)
+{
+	localResolution = aResolution;
+}
+
+void SimpleGlobalEngineImpl::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize)
+{
+	localWindowSize = aWindowSize;
+}
+
 void SimpleGlobalEngineImpl::UpdateFPSCounter()
 {
 	localTime += localEngine->GetDeltaTime();
@@ -61,11 +71,6 @@ void SimpleGlobalRendererImpl::IncreaseDrawCall()
 
 namespace SimpleGlobal
 {
-	Engine* GetEngine()
-	{
-		return localEngine;
-	}
-
 	GraphicsEngine* GetGraphicsEngine()
 	{
 		return localEngine->GetGraphicsEngine();
@@ -129,10 +134,12 @@ namespace SimpleGlobal
 	void SetResolution(const SimpleUtilities::Vector2ui& aResolution)
 	{
 		localResolution = aResolution;
+		localEngine->GetGraphicsEngine()->GetCamera()->UpdateResolution();
 	}
 
 	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize)
 	{
 		localWindowSize = aWindowSize;
+		localEngine->GetGraphicsEngine()->SetWindowSize(localWindowSize);
 	}
 }

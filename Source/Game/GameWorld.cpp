@@ -53,7 +53,6 @@ void GameWorld::Init()
 		myModelInstances.push_back(std::move(skyBox));
 	}
 
-
 	{ //TO-DO: Fix better way to send data to ImGui
 		std::vector<ModelInstance*> modelBuffer;
 		for (auto& model : myModelInstances)
@@ -66,16 +65,11 @@ void GameWorld::Init()
 
 	{
 		auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
-
-		const SimpleUtilities::Vector2ui resolution = SimpleGlobal::GetResolution();
-		camera->SetResolution(SimpleUtilities::Vector2f{ static_cast<float>(resolution.x), static_cast<float>(resolution.y) });
 		camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 	}
 
 	myPlaneReflection = std::make_unique<PlaneReflection>();
-
-	SimpleGlobal::GetGraphicsEngine()->Resize();
 }
 
 void GameWorld::Update()

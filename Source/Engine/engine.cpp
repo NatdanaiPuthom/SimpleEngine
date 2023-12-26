@@ -70,8 +70,8 @@ void Engine::LoadSettingsFromJson()
 	resolution.x = resolutionJson["x"];
 	resolution.y = resolutionJson["y"];
 
-	SimpleGlobal::SetResolution(resolution);
-	SimpleGlobal::SetWindowSize(windowSize);
+	SimpleGlobalEngineImpl::SetResolution(resolution);
+	SimpleGlobalEngineImpl::SetWindowSize(windowSize);
 }
 
 std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)

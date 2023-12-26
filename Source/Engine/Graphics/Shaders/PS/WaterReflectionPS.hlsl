@@ -77,8 +77,8 @@ PixelOutput main(PixelInputType aInput)
  //   return output;
     
     PixelOutput output;
-    float2 flippedUV = float2(aInput.uv.x, 1.0 - aInput.uv.y);
-    output.color = aDefaultTexture.Sample(aSampler, flippedUV);
+    
+    output.color = aDefaultTexture.Sample(aSampler, aInput.uv);
     
     return output;
 }

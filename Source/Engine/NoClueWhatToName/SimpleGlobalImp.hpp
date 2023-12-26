@@ -14,6 +14,9 @@ private:
 	SimpleGlobalEngineImpl();
 
 	static void SetEngine(Engine* aEngine);
+	static void SetResolution(const SimpleUtilities::Vector2ui& aResolution);
+	static void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize);
+
 	static void UpdateFPSCounter();
 	static void ResetDrawCalls();
 };

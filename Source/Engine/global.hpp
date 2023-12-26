@@ -3,11 +3,9 @@
 class GraphicsEngine;
 class Renderer;
 class ModelFactory;
-class Engine;
 
 namespace SimpleGlobal
 {
-	Engine* GetEngine();
 	GraphicsEngine* GetGraphicsEngine();
 	Renderer* GetRenderer();
 	ModelFactory* GetModelFactory();

@@ -250,10 +250,10 @@ void GraphicsEngine::EndFrame()
 	mySwapChain->Present(myFPSLevelCap, 0);
 }
 
-void GraphicsEngine::Resize()
+void GraphicsEngine::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize)
 {
-	const unsigned int newWidth = 800;
-	const unsigned int newHeight = 600;
+	const unsigned int newWidth = aWindowSize.x;
+	const unsigned int newHeight = aWindowSize.y;
 
 	RECT wr = {};
 	wr.left = 0;
@@ -269,9 +269,9 @@ void GraphicsEngine::Resize()
 	SetWindowPos(SimpleGlobal::GetHWND(), nullptr, 0, 0, width, height,  SWP_NOZORDER);
 
 	myBackBuffer->Release();
-	HRESULT result = mySwapChain->ResizeBuffers(0, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	HRESULT result = mySwapChain->ResizeBuffers(2, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 	if (FAILED(result))
-		assert(false && "failed");
+		assert(false && "Failed to re-size Buffers");
 
 	ID3D11Texture2D* pBackBuffer = nullptr;
 	mySwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
@@ -294,7 +294,7 @@ void GraphicsEngine::Resize()
 
 	result = myDevice->CreateTexture2D(&descDepth, nullptr, &pDepthStencil);
 	if (FAILED(result))
-		assert(false && "failed");
+		assert(false && "Failed to create Texture2D");
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
 	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
@@ -303,9 +303,19 @@ void GraphicsEngine::Resize()
 
 	result = myDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, myDepthBuffer.GetAddressOf());
 	if (FAILED(result))
-		assert(false && "failed");
+		assert(false && "Failed to re-create DepthStencilView");
 
 	CreateViewport(newWidth, newHeight);
+
+	myWaterReflectionRenderTarget->renderTargetView->Release();
+	if(!CreateWaterRenderTarget(newWidth, newHeight))
+		if (FAILED(result))
+			assert(false && "Failed to re-create WaterReflectionRenderTarget");
+
+	myImGuiImageRenderTarget->renderTargetView->Release();
+	if(!CreateRenderTargetForImGuiImage(newWidth, newHeight))
+		if (FAILED(result))
+			assert(false && "Failed to re-create ImGuiImageRenderTarget");
 }
 
 void GraphicsEngine::SetToBackBuffer()
@@ -332,6 +342,9 @@ void GraphicsEngine::SetToImGuiBuffer()
 
 void GraphicsEngine::SetToWaterReflectionBuffer()
 {
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	myContext->PSSetShaderResources(0, 1, &nullSRV);
+
 	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
