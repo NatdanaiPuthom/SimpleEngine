@@ -332,6 +332,8 @@ void GraphicsEngine::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize
 	if (!CreateRenderTargetForImGuiImage(newWidth, newHeight))
 		if (FAILED(result))
 			assert(false && "Failed to re-create ImGuiImageRenderTarget");
+
+	SetToBackBuffer();
 }
 
 void GraphicsEngine::SetToBackBuffer()

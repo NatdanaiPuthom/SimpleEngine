@@ -146,16 +146,22 @@ void SettingsTool::Draw()
 
 			if (ImGui::Combo("WindowSize", &mySelectedWindowSize, windowSizeAsChar.data(), static_cast<int>(myWindowSizes.size())))
 			{
-				UpdateAndFetchCurrentMonitorResolution();
+				const auto currentWindowSize = SimpleGlobal::GetWindowSize();
 
-				if (myWindowSizes[mySelectedWindowSize].x == myMonitorResolution.x &&
-					myWindowSizes[mySelectedWindowSize].y == myMonitorResolution.y)
+				if (currentWindowSize.x != myWindowSizes[mySelectedWindowSize].x &&
+					currentWindowSize.y != myWindowSizes[mySelectedWindowSize].y)
 				{
-					SimpleGlobal::SetWindowSize(myMonitorResolution, true);
-				}
-				else
-				{
-					SimpleGlobal::SetWindowSize(myWindowSizes[mySelectedWindowSize]);
+					UpdateAndFetchCurrentMonitorResolution();
+
+					if (myWindowSizes[mySelectedWindowSize].x == myMonitorResolution.x &&
+						myWindowSizes[mySelectedWindowSize].y == myMonitorResolution.y)
+					{
+						SimpleGlobal::SetWindowSize(myMonitorResolution, true);
+					}
+					else
+					{
+						SimpleGlobal::SetWindowSize(myWindowSizes[mySelectedWindowSize]);
+					}
 				}
 			}
 		}
