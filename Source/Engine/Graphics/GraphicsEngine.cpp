@@ -42,6 +42,9 @@ const bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, H
 	if (!CreateDepthBuffer(aWindowSize.x, aWindowSize.y))
 		return false;
 
+	if (!CreateDepthStencilState())
+		return false;
+
 	if (!CreateBackBuffer())
 		return false;
 
@@ -338,6 +341,9 @@ void GraphicsEngine::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize
 
 void GraphicsEngine::SetToBackBuffer()
 {
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	myContext->PSSetShaderResources(0, 1, &nullSRV);
+
 	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -349,6 +355,9 @@ void GraphicsEngine::SetToBackBuffer()
 
 void GraphicsEngine::SetToImGuiBuffer()
 {
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	myContext->PSSetShaderResources(0, 1, &nullSRV);
+
 	myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 	myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -759,12 +768,19 @@ bool GraphicsEngine::CreateDepthBuffer(const int aWidth, const int aHeight)
 	if (FAILED(result))
 		return false;
 
+	return true;
+}
+
+bool GraphicsEngine::CreateDepthStencilState()
+{
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+
 	depthStencilDesc.DepthEnable = true;
 	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
-	result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilState.GetAddressOf());
+	const HRESULT result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilState.GetAddressOf());
+
 	if (FAILED(result))
 		return false;
 

@@ -121,6 +121,7 @@ private:
 	void CreateViewport(const int aWidth, const int aHeight);
 	bool CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight);
 	bool CreateDepthBuffer(const int aWidth, const int aHeight);
+	bool CreateDepthStencilState();
 	bool CreateBackBuffer();
 	bool CreateFrameBuffer();
 	bool CreateSamplerState();
