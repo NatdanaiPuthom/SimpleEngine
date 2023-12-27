@@ -1,5 +1,5 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Game/Managers/LevelManager/DefaultScene.hpp"
+#include "Game/Managers/LevelManager/Scenes/DefaultScene.hpp"
 
 DefaultScene::DefaultScene()
 {

@@ -38,6 +38,7 @@ void DebugTool::Draw()
 		}
 
 		ImGui::SetNextItemWidth(200);
+		myActiveScene = SimpleWorld::GetActiveSceneIndex();
 		if (ImGui::Combo("Scene", &myActiveScene, sceneIndexChar.data(), static_cast<int>(sceneIndexChar.size())))
 		{
 			SimpleWorld::SetActiveScene(mySceneIndexes[myActiveScene]);
@@ -61,6 +62,4 @@ void DebugTool::LoadDataFromJson()
 	{
 		mySceneIndexes.push_back(index["id"]);
 	}
-
-	myActiveScene = json["activeScene"];
 }

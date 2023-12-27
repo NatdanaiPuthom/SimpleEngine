@@ -1,35 +1,18 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Engine/Graphics/Camera/Camera.hpp"
 #include "Engine/Graphics/Model/PlaneReflection.h"
-#include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
 #include "Game/GameWorld.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
-#include "Game/Managers/LevelManager/DefaultScene.hpp"
-#include "Game/Managers/LevelManager/Spotlights.hpp"
+#include "Game/Managers/LevelManager/LevelManager.hpp"
+
 
 GameWorld::GameWorld()
 	: myImGuiManager(std::make_unique<ImGuiManager>())
+	, myLevelManager(std::make_unique<LevelManager>())
 {
 	SimpleWorldGameWorldImpl::SetGameWorld(this);
 
 	myPlaneReflection = std::make_unique<PlaneReflection>();
-
-	{
-		std::shared_ptr<DefaultScene> defaultScene = std::make_shared<DefaultScene>();
-		defaultScene->Init();
-
-		myScenes.emplace(0, defaultScene);
-	}
-
-	{
-		std::shared_ptr<SpotlightScene> spotlightScene = std::make_shared<SpotlightScene>();
-		spotlightScene->Init();
-
-		myScenes.emplace(1, spotlightScene);
-	}
-
-	SimpleWorld::SetActiveScene(0);
 }
 
 GameWorld::~GameWorld()
@@ -38,11 +21,7 @@ GameWorld::~GameWorld()
 
 void GameWorld::Init()
 {
-	{
-		auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
-		camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
-		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
-	}
+	myLevelManager->Init();
 }
 
 void GameWorld::Update()
@@ -51,25 +30,12 @@ void GameWorld::Update()
 	{
 	}*/
 
-	myActiveScene->Update();
+	myLevelManager->Update();
 }
 
 void GameWorld::Render()
 {
-	Renderer* renderer = SimpleGlobal::GetRenderer();
-
-	for (const auto& model : myActiveScene->myModelInstances)
-	{
-		renderer->Render(model);
-	}
-
-	if (renderer->IsDebugModeOn())
-	{
-		for (const auto& model : myActiveScene->myModelInstances)
-		{
-			renderer->RenderBoundingBox(model);
-		}
-	}
+	myLevelManager->Render();
 }
 
 void GameWorld::RenderImGui()
@@ -91,12 +57,3 @@ void GameWorld::RenderUpSideDown()
 	}*/
 }
 
-void GameWorld::SetActiveScene(const int aSceneIndex)
-{
-	myActiveScene = myScenes.at(aSceneIndex);
-}
-
-std::shared_ptr<Scene> GameWorld::GetActiveScene()
-{
-	return myActiveScene;
-}

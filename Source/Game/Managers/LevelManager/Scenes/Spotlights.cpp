@@ -1,5 +1,5 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Game/Managers/LevelManager/Spotlights.hpp"
+#include "Game/Managers/LevelManager/Scenes/Spotlights.hpp"
 
 SpotlightScene::SpotlightScene()
 {

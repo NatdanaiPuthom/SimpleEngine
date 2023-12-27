@@ -2,10 +2,12 @@
 #include "Game/world.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 #include "Game/GameWorld.hpp"
+#include "Game/Managers/LevelManager/LevelManager.hpp"
 
 namespace
 {
 	GameWorld* localGameWorld = nullptr;
+	LevelManager* localLevelManager = nullptr;
 
 	int localActiveSceneIndex = 0;
 }
@@ -15,10 +17,15 @@ void SimpleWorldGameWorldImpl::SetGameWorld(GameWorld* aGameWorld)
 	localGameWorld = aGameWorld;
 }
 
+void SimpleWorldLevelManagerImpl::SetLevelManager(LevelManager* aLevelManager)
+{
+	localLevelManager = aLevelManager;
+}
+
 void SimpleWorld::SetActiveScene(const int aSceneIndex)
 {
 	localActiveSceneIndex = aSceneIndex;
-	localGameWorld->SetActiveScene(localActiveSceneIndex);
+	localLevelManager->SetActiveScene(localActiveSceneIndex);
 }
 
 int SimpleWorld::GetActiveSceneIndex()
@@ -28,5 +35,5 @@ int SimpleWorld::GetActiveSceneIndex()
 
 std::shared_ptr<Scene> SimpleWorld::GetActiveScene()
 {
-	return localGameWorld->GetActiveScene();
+	return localLevelManager->GetActiveScene();
 }
