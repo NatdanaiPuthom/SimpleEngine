@@ -21,6 +21,11 @@ void SimpleWorld::SetActiveScene(const int aSceneIndex)
 	localGameWorld->SetActiveScene(localActiveSceneIndex);
 }
 
+int SimpleWorld::GetActiveSceneIndex()
+{
+	return localActiveSceneIndex;
+}
+
 std::shared_ptr<Scene> SimpleWorld::GetActiveScene()
 {
 	return localGameWorld->GetActiveScene();

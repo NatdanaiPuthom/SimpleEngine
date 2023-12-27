@@ -19,7 +19,8 @@ workspace "SimpleEngine"
 	defines { -- Create Global Macro For Strings
 		'SIMPLE_IMGUI_FILENAME="' .."imgui.ini" .. '"',
 		'SIMPLE_SETTINGS_FILENAME="' .. "settings.json" .. '"',
-		'SIMPLE_PROFILER_FILENAME="' .. "Profilers/profiler_data.prof" .. '"'
+		'SIMPLE_PROFILER_FILENAME="' .. "Profilers/profiler_data.prof" .. '"',
+		'SIMPLE_LEVELS_FILENAME="' .. "levels.json" .. '"'
 	}
 
 	configurations {

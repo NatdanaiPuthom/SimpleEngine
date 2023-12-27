@@ -6,6 +6,7 @@
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
 #include "Game/Managers/LevelManager/DefaultScene.hpp"
+#include "Game/Managers/LevelManager/Spotlights.hpp"
 
 GameWorld::GameWorld()
 	: myImGuiManager(std::make_unique<ImGuiManager>())
@@ -19,6 +20,13 @@ GameWorld::GameWorld()
 		defaultScene->Init();
 
 		myScenes.emplace(0, defaultScene);
+	}
+
+	{
+		std::shared_ptr<SpotlightScene> spotlightScene = std::make_shared<SpotlightScene>();
+		spotlightScene->Init();
+
+		myScenes.emplace(1, spotlightScene);
 	}
 
 	SimpleWorld::SetActiveScene(0);
