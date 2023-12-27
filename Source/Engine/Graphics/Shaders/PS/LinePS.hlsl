@@ -4,7 +4,7 @@ PixelOutput main(PixelInputType aInput)
 {
     PixelOutput output;
     
-    output.color = float4(0, 1, 0, 1);
+    output.color = aInput.color;
     
     return output;
 }

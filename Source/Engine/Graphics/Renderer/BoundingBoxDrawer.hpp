@@ -10,6 +10,8 @@ public:
 	~BoundingBoxDrawer();
 
 	void Render(const std::shared_ptr<const ModelInstance> aModelInstance);
+public:
+	void SetLineColor(const SimpleUtilities::Vector4f& aColor);
 private:
 	std::vector<Vertex> myVertices;
 	std::vector<unsigned int> myIndices;
@@ -19,4 +21,6 @@ private:
 
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 	std::shared_ptr<Shader> myShader;
+
+	SimpleUtilities::Vector4f myColor;
 };
