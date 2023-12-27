@@ -8,11 +8,8 @@ class ModelFactory;
 
 class SimpleGlobalEngineImpl final
 {
-private:
 	friend class Engine;
-
-	SimpleGlobalEngineImpl();
-
+private:
 	static void SetEngine(Engine* aEngine);
 	static void SetResolution(const SimpleUtilities::Vector2ui& aResolution);
 	static void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize);
@@ -23,17 +20,15 @@ private:
 
 class SimpleGlobalRendererImpl final
 {
-private:
 	friend class Renderer;
-	SimpleGlobalRendererImpl();
-
+private:
 	static void IncreaseDrawCall();
 	static void SetRenderer(Renderer* aRenderer);
 };
 
 class SimpleGlobalModelFactoryImpl final
 {
-private:
 	friend class ModelFactory;
+private:
 	static void SetModelFactory(ModelFactory* aModelFactory);
 };

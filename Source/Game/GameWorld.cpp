@@ -1,12 +1,26 @@
 #include "Game/stdafx.h"
 #include "Engine/Graphics/Camera/Camera.hpp"
-#include "Game/GameWorld.hpp"
-#include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
 #include "Engine/Graphics/Model/PlaneReflection.h"
+#include "Game/GameWorld.hpp"
+#include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
+#include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
+#include "Game/Managers/LevelManager/DefaultScene.hpp"
 
 GameWorld::GameWorld()
 	: myImGuiManager(std::make_unique<ImGuiManager>())
 {
+	SimpleWorldGameWorldImpl::SetGameWorld(this);
+
+	myPlaneReflection = std::make_unique<PlaneReflection>();
+
+	{
+		std::shared_ptr<DefaultScene> defaultScene = std::make_shared<DefaultScene>();
+		defaultScene->Init();
+
+		myScenes.emplace(0, defaultScene);
+	}
+
+	SimpleWorld::SetActiveScene(0);
 }
 
 GameWorld::~GameWorld()
@@ -15,68 +29,12 @@ GameWorld::~GameWorld()
 
 void GameWorld::Init()
 {
-	ModelFactory* modelFactory = SimpleGlobal::GetModelFactory();
-
-	{
-		std::unique_ptr<ModelInstance> pyramid = std::move(modelFactory->CreatePyramidModel());
-		pyramid->SetPosition({ 7.0f, 2.0f, 3.0f });
-		myModelInstances.push_back(std::move(pyramid));
-	}
-
-	{
-		std::unique_ptr<ModelInstance> cube = std::move(modelFactory->CreateCubeModel());
-		cube->SetScale({ 5,5,5 });
-		cube->SetPosition({ -7.0f, 2.0f, 10.0f });
-		myModelInstances.push_back(std::move(cube));
-	}
-
-	{
-		std::unique_ptr<ModelInstance> directionalLight = std::move(modelFactory->CreateDirectionalLightModel());
-		directionalLight->SetPosition({ 8,6,10 });
-		myModelInstances.push_back(std::move(directionalLight));
-	}
-
-	{
-		std::unique_ptr<ModelInstance> plane = std::move(modelFactory->CreatePlaneModel());
-		plane->SetPosition({ -1.0f, 0, -1.0f });
-		myModelInstances.push_back(std::move(plane));
-	}
-
-	{
-		std::unique_ptr<ModelInstance> terrain = std::move(modelFactory->CreateTerrainModel());
-		terrain->SetPosition({ -3.0f, 0.0f, 0.0f });
-		myModelInstances.push_back(std::move(terrain));
-	}
-
-	{
-		std::unique_ptr<ModelInstance> skyBox = std::move(modelFactory->CreateSkyBoxModel());
-		skyBox->SetPosition({ 0.0f, 0.0f, 20.0f });
-		myModelInstances.push_back(std::move(skyBox));
-	}
-
-	{
-		std::unique_ptr<ModelInstance> sphere = std::move(modelFactory->CreateSphereModel());
-		sphere->SetPosition({ 2,3,7 });
-		myModelInstances.push_back(std::move(sphere));
-	}
-
-	{ //TO-DO: Fix better way to send data to ImGui
-		std::vector<ModelInstance*> modelBuffer;
-		for (auto& model : myModelInstances)
-		{
-			modelBuffer.push_back(model.get());
-		}
-
-		SimpleGlobal::GetRenderer()->SetModelBuffer(modelBuffer);
-	}
-
 	{
 		auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
 		camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 	}
 
-	myPlaneReflection = std::make_unique<PlaneReflection>();
 }
 
 void GameWorld::Update()
@@ -85,28 +43,13 @@ void GameWorld::Update()
 	{
 	}*/
 
-	{ //Test
-		//Pyramid
-		/*SimpleUtilities::Vector3f pyramidRotation = myModelInstances[0]->GetRotation();
-		pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
-		pyramidRotation.z += 10 * SimpleGlobal::GetDeltaTime();
-		myModelInstances[0]->SetRotation(pyramidRotation);*/
-
-		//Cube
-		SimpleUtilities::Vector3f cubeRotation = myModelInstances[1]->GetRotation();
-		cubeRotation.x += 10.0f * SimpleGlobal::GetDeltaTime();
-		myModelInstances[1]->SetRotation(cubeRotation);
-
-		//Directional Light test
-		SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
-		myModelInstances[2]->SetRotation(directionalLight);
-	}
+	myActiveScene->Update();
 }
 
 void GameWorld::Render()
 {
 	Renderer* renderer = SimpleGlobal::GetRenderer();
-	for (const auto& model : myModelInstances)
+	for (const auto& model : myActiveScene->myModelInstances)
 	{
 		renderer->Render(model.get());
 	}
@@ -119,14 +62,24 @@ void GameWorld::RenderImGui()
 
 void GameWorld::RenderReflection()
 {
-	SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModelInstance.get());
+	//SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModelInstance.get());
 }
 
 void GameWorld::RenderUpSideDown()
 {
-	Renderer* renderer = SimpleGlobal::GetRenderer();
+	/*Renderer* renderer = SimpleGlobal::GetRenderer();
 	for (const auto& model : myModelInstances)
 	{
 		renderer->RenderEverythingUpSideDown(model.get());
-	}
+	}*/
+}
+
+void GameWorld::SetActiveScene(const int aSceneIndex)
+{
+	myActiveScene = myScenes.at(aSceneIndex);
+}
+
+std::shared_ptr<Scene> GameWorld::GetActiveScene()
+{
+	return myActiveScene;
 }

@@ -8,7 +8,7 @@
 #include "Game/Managers/ImGuiManager/Tools/SceneTool.hpp"
 #include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
 
-ImGuiManager::ImGuiManager() 
+ImGuiManager::ImGuiManager()
 {
 	AddTool(std::move(std::make_unique<CameraTool>()));
 	AddTool(std::move(std::make_unique<SettingsTool>()));

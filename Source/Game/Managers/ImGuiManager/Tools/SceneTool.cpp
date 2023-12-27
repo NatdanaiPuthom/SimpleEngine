@@ -9,10 +9,10 @@ void SceneTool::Draw()
 {
 	GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 
-	if (ImGui::Begin("Scene"))
+	if (ImGui::Begin("Test"))
 	{
 		ImVec2 size(1280, 720);
-		const ImTextureID textureID = graphicsEngine->GetWaterShaderResourceView().Get();
+		const ImTextureID textureID = graphicsEngine->GetImGuiShaderResourceView().Get();
 		ImGui::Image(textureID, size);
 	}
 	ImGui::End();

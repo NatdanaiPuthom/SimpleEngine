@@ -2,6 +2,7 @@
 
 class ImGuiManager;
 class PlaneReflection;
+class Scene;
 
 class GameWorld final
 {
@@ -14,12 +15,16 @@ public:
 	void Render();
 
 	void RenderImGui();
-
 	void RenderReflection();
 	void RenderUpSideDown();
+public:
+	void SetActiveScene(const int aSceneIndex);
+public:
+	std::shared_ptr<Scene> GetActiveScene();
 private:
-	std::unique_ptr<ImGuiManager> myImGuiManager;
-	std::vector<std::unique_ptr<ModelInstance>> myModelInstances;
+	std::shared_ptr<Scene> myActiveScene;
+	std::unordered_map<int, std::shared_ptr<Scene>> myScenes;
 
+	std::unique_ptr<ImGuiManager> myImGuiManager;
 	std::unique_ptr<PlaneReflection> myPlaneReflection;
 };

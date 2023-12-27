@@ -1,7 +1,7 @@
 #include "Game/stdafx.h"
 #include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
 
-MeshTool::MeshTool() 
+MeshTool::MeshTool()
 {
 }
 
@@ -9,10 +9,10 @@ void MeshTool::Draw()
 {
 	if (ImGui::Begin("Meshes"))
 	{
-		std::vector<ModelInstance*> modelInstances = SimpleGlobal::GetRenderer()->GetAllModelInstances();
-		std::vector<std::string> modelNames;
+		auto& modelInstances = SimpleWorld::GetActiveScene()->myModelInstances;
 
-		for (const ModelInstance* model : modelInstances)
+		std::vector<std::string> modelNames;
+		for (const auto& model : modelInstances)
 		{
 			modelNames.push_back(model->GetName());
 		}

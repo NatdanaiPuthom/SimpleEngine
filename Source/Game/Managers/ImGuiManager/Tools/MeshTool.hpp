@@ -1,6 +1,6 @@
 #pragma once
 
-class Renderer;
+class GameWorld;
 
 class MeshTool final : public ToolInterface
 {

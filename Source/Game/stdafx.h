@@ -34,7 +34,9 @@
 #include "Engine/Graphics/Model/ModelFactory.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
 
-#include "Game/Managers/ImGuiManager/ToolInterface.hpp"
+#include "Game/world.hpp"
+#include "Game/Managers/LevelManager/Template/Scene.hpp"
+#include "Game/Managers/ImGuiManager/Template/ToolInterface.hpp"
 
 #include <External/profiler.h>
 #include <External/imgui.h>
