@@ -17,6 +17,9 @@ public:
 	void RenderPlaneReflection(const ModelInstance* const aModelInstance) const;
 public:
 	void SetModelBuffer(std::vector<ModelInstance*>& aModelBuffer);
+	void SetDebugMode(const bool aSetDebugMode);
+public:
+	bool IsDebugModeOn() const;
 	std::vector<ModelInstance*> GetAllModelInstances();
 private:
 	const bool CreateObjectBuffer();
@@ -24,4 +27,6 @@ private:
 	std::vector<ModelInstance*> myModelBuffer;
 	std::unique_ptr<BoundingBoxDrawer> myBoundingBoxDrawer;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
+
+	bool myDebugMode;
 };

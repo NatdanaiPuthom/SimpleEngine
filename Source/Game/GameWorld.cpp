@@ -49,10 +49,18 @@ void GameWorld::Update()
 void GameWorld::Render()
 {
 	Renderer* renderer = SimpleGlobal::GetRenderer();
+
 	for (const auto& model : myActiveScene->myModelInstances)
 	{
 		renderer->Render(model);
-		renderer->RenderBoundingBox(model);
+	}
+
+	if (renderer->IsDebugModeOn())
+	{
+		for (const auto& model : myActiveScene->myModelInstances)
+		{
+			renderer->RenderBoundingBox(model);
+		}
 	}
 }
 

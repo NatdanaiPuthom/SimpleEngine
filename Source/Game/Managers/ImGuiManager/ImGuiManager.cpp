@@ -7,6 +7,7 @@
 #include "Game/Managers/ImGuiManager/Tools/LightTool.hpp"
 #include "Game/Managers/ImGuiManager/Tools/SceneTool.hpp"
 #include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
+#include "Game/Managers/ImGuiManager/Tools/Debug.hpp"
 
 ImGuiManager::ImGuiManager()
 {
@@ -15,6 +16,7 @@ ImGuiManager::ImGuiManager()
 	AddTool(std::move(std::make_unique<LightTool>()));
 	AddTool(std::move(std::make_unique<SceneTool>()));
 	AddTool(std::move(std::make_unique<MeshTool>()));
+	AddTool(std::move(std::make_unique<DebugTool>()));
 }
 
 ImGuiManager::~ImGuiManager()

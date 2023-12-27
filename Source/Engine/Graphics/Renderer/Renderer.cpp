@@ -6,6 +6,7 @@
 Renderer::Renderer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myBoundingBoxDrawer(std::make_unique<BoundingBoxDrawer>())
+	, myDebugMode(false)
 {
 	SimpleGlobalRendererImpl::SetRenderer(this);
 
@@ -20,6 +21,11 @@ Renderer::~Renderer()
 void Renderer::SetModelBuffer(std::vector<ModelInstance*>& aModelBuffer)
 {
 	myModelBuffer = aModelBuffer;
+}
+
+void Renderer::SetDebugMode(const bool aSetDebugMode)
+{
+	myDebugMode = aSetDebugMode;
 }
 
 void Renderer::Render(const std::shared_ptr<const ModelInstance> aModelInstance) const
@@ -113,6 +119,11 @@ void Renderer::RenderPlaneReflection(const ModelInstance* const aModelInstance) 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.myIndices.size()), 0, 0);
+}
+
+bool Renderer::IsDebugModeOn() const
+{
+	return myDebugMode;
 }
 
 std::vector<ModelInstance*> Renderer::GetAllModelInstances()
