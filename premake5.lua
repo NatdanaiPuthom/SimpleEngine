@@ -41,6 +41,7 @@ workspace "SimpleEngine"
 
 	filter "configurations:Simple"
 		defines { "_SIMPLE" }
+		symbols "Off"
 		optimize "Speed"
 		runtime "Release"
 

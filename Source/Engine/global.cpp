@@ -21,20 +21,6 @@ namespace
 	bool localGameIsRunning = true;
 }
 
-void SimpleGlobalEngineImpl::SetEngine(Engine* aEngine)
-{
-	localEngine = aEngine;
-}
-
-void SimpleGlobalEngineImpl::SetResolution(const SimpleUtilities::Vector2ui& aResolution)
-{
-	localResolution = aResolution;
-}
-
-void SimpleGlobalEngineImpl::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize)
-{
-	localWindowSize = aWindowSize;
-}
 
 void SimpleGlobalEngineImpl::UpdateFPSCounter()
 {
@@ -54,9 +40,14 @@ void SimpleGlobalEngineImpl::ResetDrawCalls()
 	localDrawCalls = 0;
 }
 
-void SimpleGlobalModelFactoryImpl::SetModelFactory(ModelFactory* aModelFactory)
+void SimpleGlobalRendererImpl::IncreaseDrawCall()
 {
-	localModelFactory = aModelFactory;
+	++localDrawCalls;
+}
+
+void SimpleGlobalEngineImpl::SetEngine(Engine* aEngine)
+{
+	localEngine = aEngine;
 }
 
 void SimpleGlobalRendererImpl::SetRenderer(Renderer* aRenderer)
@@ -64,9 +55,19 @@ void SimpleGlobalRendererImpl::SetRenderer(Renderer* aRenderer)
 	localRenderer = aRenderer;
 }
 
-void SimpleGlobalRendererImpl::IncreaseDrawCall()
+void SimpleGlobalModelFactoryImpl::SetModelFactory(ModelFactory* aModelFactory)
 {
-	++localDrawCalls;
+	localModelFactory = aModelFactory;
+}
+
+void SimpleGlobalEngineImpl::SetResolution(const SimpleUtilities::Vector2ui& aResolution)
+{
+	localResolution = aResolution;
+}
+
+void SimpleGlobalEngineImpl::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize)
+{
+	localWindowSize = aWindowSize;
 }
 
 namespace SimpleGlobal
@@ -141,5 +142,10 @@ namespace SimpleGlobal
 	{
 		localWindowSize = aWindowSize;
 		localEngine->GetGraphicsEngine()->SetWindowSize(localWindowSize, aSetFullScreen);
+	}
+
+	void SetBoundingBoxLineColor(const SimpleUtilities::Vector3f& aColor)
+	{
+		localRenderer->SetBoundingBoxLineColor(aColor);
 	}
 }

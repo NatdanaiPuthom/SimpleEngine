@@ -1,7 +1,7 @@
 #pragma once
 
-class Shader;
 class Mesh;
+class Shader;
 class Texture;
 
 class ModelInstance final

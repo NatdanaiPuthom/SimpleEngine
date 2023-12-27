@@ -2,6 +2,10 @@
 
 class ConstantBuffer;
 class ModelInstance;
+class Shader;
+
+struct ID3D11Buffer;
+struct MeshData;
 
 class BoundingBoxDrawer final
 {
@@ -13,8 +17,7 @@ public:
 public:
 	void SetLineColor(const SimpleUtilities::Vector4f& aColor);
 private:
-	std::vector<Vertex> myVertices;
-	std::vector<unsigned int> myIndices;
+	MeshData myMeshData;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;
@@ -22,5 +25,5 @@ private:
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 	std::shared_ptr<Shader> myShader;
 
-	SimpleUtilities::Vector4f myColor;
+	SimpleUtilities::Vector4f myLineColor;
 };

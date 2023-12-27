@@ -1,5 +1,4 @@
 #include "Engine/Precomplier/stdafx.h"
-#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
 #include <External/tga/Uppgift5/uppgift05_helper.h>
 
 namespace SU = SimpleUtilities;

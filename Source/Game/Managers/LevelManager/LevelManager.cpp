@@ -42,7 +42,7 @@ void LevelManager::Render()
 
 	for (const auto& model : myActiveScene->myModelInstances)
 	{
-		renderer->Render(model);
+		renderer->RenderModel(model);
 	}
 
 	if (renderer->IsDebugModeOn())

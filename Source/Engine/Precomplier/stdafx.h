@@ -30,14 +30,16 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/Input/InputManager.hpp"
 
 #include "Engine/engine.hpp"
-#include "Engine/global.hpp"
-#include "Engine/Graphics/ConstantBuffers/ConstantBuffer.hpp"
 #include "Engine/Graphics/GraphicsEngine.hpp"
+
+#include "Engine/Graphics/ConstantBuffers/ConstantBuffer.hpp"
+#include "Engine/Graphics/Shaders/Shader.hpp"
+#include "Engine/Graphics/Texture/Texture.hpp"
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Engine/Graphics/Model/Mesh.hpp"
+#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
 #include "Engine/Graphics/Model/ModelInstance.hpp"
 #include "Engine/Graphics/Model/ModelFactory.hpp"
-#include "Engine/Graphics/Shaders/Shader.hpp"
-#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
-#include "Engine/Graphics/Texture/Texture.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
+
+#include "Engine/global.hpp"

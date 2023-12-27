@@ -2,11 +2,13 @@
 #include <External/json.h>
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
+#include "Engine/Graphics/Renderer/LineDrawer.hpp"
 
 
 Renderer::Renderer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myBoundingBoxDrawer(std::make_unique<BoundingBoxDrawer>())
+	, myLineDrawer(std::make_unique<LineDrawer>())
 	, myDebugMode(false)
 {
 	SimpleGlobalRendererImpl::SetRenderer(this);
@@ -20,17 +22,7 @@ Renderer::~Renderer()
 {
 }
 
-void Renderer::SetModelBuffer(std::vector<ModelInstance*>& aModelBuffer)
-{
-	myModelBuffer = aModelBuffer;
-}
-
-void Renderer::SetDebugMode(const bool aSetDebugMode)
-{
-	myDebugMode = aSetDebugMode;
-}
-
-void Renderer::Render(const std::shared_ptr<const ModelInstance> aModelInstance) const
+void Renderer::RenderModel(const std::shared_ptr<const ModelInstance> aModelInstance) const
 {
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
@@ -54,7 +46,14 @@ void Renderer::Render(const std::shared_ptr<const ModelInstance> aModelInstance)
 	context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.myIndices.size()), 0, 0);
+	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
+
+	SimpleGlobalRendererImpl::IncreaseDrawCall();
+}
+
+void Renderer::RenderLine(const Drawer::Line& aLine)
+{
+	myLineDrawer->Render(aLine);
 
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
@@ -94,7 +93,7 @@ void Renderer::RenderEverythingUpSideDown(const ModelInstance* const aModelInsta
 	context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.myIndices.size()), 0, 0);
+	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
 
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
@@ -120,12 +119,27 @@ void Renderer::RenderPlaneReflection(const ModelInstance* const aModelInstance) 
 	context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.myIndices.size()), 0, 0);
+	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
 }
 
 bool Renderer::IsDebugModeOn() const
 {
 	return myDebugMode;
+}
+
+void Renderer::SetModelBuffer(std::vector<ModelInstance*>& aModelBuffer)
+{
+	myModelBuffer = aModelBuffer;
+}
+
+void Renderer::SetDebugMode(const bool aSetDebugMode)
+{
+	myDebugMode = aSetDebugMode;
+}
+
+void Renderer::SetBoundingBoxLineColor(const SimpleUtilities::Vector3f& aColor)
+{
+	myBoundingBoxDrawer->SetLineColor(SimpleUtilities::Vector4f(aColor.x, aColor.y, aColor.z, 1));
 }
 
 std::vector<ModelInstance*> Renderer::GetAllModelInstances()

@@ -39,7 +39,7 @@ void DebugTool::Draw()
 
 		ImGui::SetNextItemWidth(200);
 		myActiveScene = SimpleWorld::GetActiveSceneIndex();
-		if (ImGui::Combo("Scene", &myActiveScene, sceneIndexChar.data(), static_cast<int>(sceneIndexChar.size())))
+		if (ImGui::Combo("Active Scene", &myActiveScene, sceneIndexChar.data(), static_cast<int>(sceneIndexChar.size())))
 		{
 			SimpleWorld::SetActiveScene(mySceneIndexes[myActiveScene]);
 		}

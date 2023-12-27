@@ -16,8 +16,8 @@ struct Vertex final
 
 struct MeshData final
 {
-	std::vector<Vertex> myVertices;
-	std::vector<unsigned int> myIndices;
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
 };
 
 struct BoundingBox final

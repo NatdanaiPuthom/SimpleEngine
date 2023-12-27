@@ -1,15 +1,15 @@
 #include "Engine/Precomplier/stdafx.h"
-#include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
-#include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
+#include "Engine/Graphics/Renderer/LineDrawer.hpp"
 
-BoundingBoxDrawer::BoundingBoxDrawer()
+LineDrawer::LineDrawer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
-	, myLineColor(0,1,0,1)
 {
 	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("Shaders/LinePS.cso", "Shaders/DefaultVS.cso");
 
-	myMeshData.vertices.reserve(24);
-	myMeshData.vertices.resize(24, Vertex{});
+	myMeshData.vertices.reserve(2);
+	myMeshData.vertices.resize(2, Vertex{});
+
+	myMeshData.vertices[0].position = { 0.0f,0.0f,0.0f,1.0f };
 
 	for (unsigned int i = 0; i < myMeshData.vertices.size(); ++i)
 	{
@@ -60,69 +60,30 @@ BoundingBoxDrawer::BoundingBoxDrawer()
 	myObjectBuffer->SetSlot(1);
 }
 
-BoundingBoxDrawer::~BoundingBoxDrawer()
+LineDrawer::~LineDrawer()
 {
 }
 
-void BoundingBoxDrawer::Render(const std::shared_ptr<const ModelInstance> aModelInstance)
+void LineDrawer::Render(const Drawer::Line& aLine)
 {
-	const SimpleUtilities::Vector3f minPoint = aModelInstance->myMesh->myBoundingBox.min;
-	const SimpleUtilities::Vector3f  maxPoint = aModelInstance->myMesh->myBoundingBox.max;
+	Vertex targetPos;
+	targetPos.position = { aLine.endPosition.x,aLine.endPosition.y, aLine.endPosition.z, 1.0f };
 
-	Vertex down_SouthWest;
-	down_SouthWest.position = { minPoint.x, minPoint.y, minPoint.z, 1 };
-	Vertex down_SouthEast;
-	down_SouthEast.position = { maxPoint.x, minPoint.y, minPoint.z, 1 };
-	Vertex up_SouthWest;
-	up_SouthWest.position = { minPoint.x, maxPoint.y, minPoint.z, 1 };
-	Vertex up_SouthEast;
-	up_SouthEast.position = { maxPoint.x, maxPoint.y, minPoint.z, 1 };
-	Vertex down_NorthWest;
-	down_NorthWest.position = { minPoint.x, minPoint.y, maxPoint.z, 1 };
-	Vertex down_NorthEast;
-	down_NorthEast.position = { maxPoint.x, minPoint.y, maxPoint.z, 1 };
-	Vertex up_NorthWest;
-	up_NorthWest.position = { minPoint.x, maxPoint.y, maxPoint.z, 1 };
-	Vertex up_NorthEast;
-	up_NorthEast.position = { maxPoint.x, maxPoint.y, maxPoint.z, 1 };
-
-	myMeshData.vertices[0] = down_SouthWest;
-	myMeshData.vertices[1] = down_SouthEast;
-	myMeshData.vertices[2] = down_SouthEast;
-	myMeshData.vertices[3] = up_SouthEast;
-	myMeshData.vertices[4] = up_SouthEast;
-	myMeshData.vertices[5] = up_SouthWest;
-	myMeshData.vertices[6] = up_SouthWest;
-	myMeshData.vertices[7] = down_SouthWest;
-
-	myMeshData.vertices[8] = down_NorthWest;
-	myMeshData.vertices[9] = down_NorthEast;
-	myMeshData.vertices[10] = down_NorthEast;
-	myMeshData.vertices[11] = up_NorthEast;
-	myMeshData.vertices[12] = up_NorthEast;
-	myMeshData.vertices[13] = up_NorthWest;
-	myMeshData.vertices[14] = up_NorthWest;
-	myMeshData.vertices[15] = down_NorthWest;
-
-	myMeshData.vertices[16] = down_SouthWest;
-	myMeshData.vertices[17] = down_NorthWest;
-	myMeshData.vertices[18] = down_SouthEast;
-	myMeshData.vertices[19] = down_NorthEast;
-	myMeshData.vertices[20] = up_SouthWest;
-	myMeshData.vertices[21] = up_NorthWest;
-	myMeshData.vertices[22] = up_SouthEast;
-	myMeshData.vertices[23] = up_NorthEast;
+	myMeshData.vertices[1] = targetPos;
 
 	for (auto& vertice : myMeshData.vertices)
 	{
-		vertice.color = myLineColor;
+		vertice.color = aLine.color;
 	}
 
 	auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
-	context->UpdateSubresource(myVertexBuffer.Get(), 0, nullptr, myMeshData.vertices.data(),0, 0);
+	context->UpdateSubresource(myVertexBuffer.Get(), 0, nullptr, myMeshData.vertices.data(), 0, 0);
+
+	SimpleUtilities::Matrix4x4f matrix = SimpleUtilities::Matrix4x4f::Identity();
+	matrix.SetPosition(aLine.startPosition);
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix();
+	objectBuffer.modelToWorldMatrix = matrix;
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
@@ -138,9 +99,4 @@ void BoundingBoxDrawer::Render(const std::shared_ptr<const ModelInstance> aModel
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 	context->DrawIndexed(static_cast<UINT>(myMeshData.vertices.size()), 0, 0);
-}
-
-void BoundingBoxDrawer::SetLineColor(const SimpleUtilities::Vector4f& aColor)
-{
-	myLineColor = aColor;
 }
