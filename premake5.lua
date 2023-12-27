@@ -53,8 +53,8 @@ workspace "SimpleEngine"
 		dependson { "External" }
 		links {"External", "d3d11"}
 
-		pchheader "Engine/stdafx.h" -- Precomplier header to reduce common files from begin unnessesary complied multiple times
-		pchsource "Source/Engine/stdafx.cpp"
+		pchheader "Engine/Precomplier/stdafx.h" -- Precomplier header to reduce common files from begin unnessesary complied multiple times
+		pchsource "Source/Engine/Precomplier/stdafx.cpp"
 
 		shadermodel("5.0")
 		shaderoptions({"/WX"})

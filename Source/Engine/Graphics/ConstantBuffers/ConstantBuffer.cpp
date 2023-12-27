@@ -1,4 +1,4 @@
-#include "Engine/stdafx.h"
+#include "Engine/Precomplier/stdafx.h"
 
 ConstantBuffer::ConstantBuffer()
 	: myGraphicsEngine(nullptr)

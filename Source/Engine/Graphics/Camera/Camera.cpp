@@ -1,4 +1,4 @@
-#include "Engine/stdafx.h"
+#include "Engine/Precomplier/stdafx.h"
 
 Camera::Camera(const float aFoV, const float aNearPlane, const float aFarPlane)
 	: myFoV(aFoV)
