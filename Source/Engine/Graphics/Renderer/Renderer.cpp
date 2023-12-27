@@ -1,8 +1,11 @@
 #include "Engine/Precomplier/stdafx.h"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
+#include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
+
 
 Renderer::Renderer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
+	, myBoundingBoxDrawer(std::make_unique<BoundingBoxDrawer>())
 {
 	SimpleGlobalRendererImpl::SetRenderer(this);
 
@@ -19,7 +22,7 @@ void Renderer::SetModelBuffer(std::vector<ModelInstance*>& aModelBuffer)
 	myModelBuffer = aModelBuffer;
 }
 
-void Renderer::Render(const ModelInstance* const aModelInstance) const
+void Renderer::Render(const std::shared_ptr<const ModelInstance> aModelInstance) const
 {
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
@@ -44,6 +47,13 @@ void Renderer::Render(const ModelInstance* const aModelInstance) const
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.myIndices.size()), 0, 0);
+
+	SimpleGlobalRendererImpl::IncreaseDrawCall();
+}
+
+void Renderer::RenderBoundingBox(const std::shared_ptr<const ModelInstance> aModelInstance) const
+{
+	myBoundingBoxDrawer->Render(aModelInstance);
 
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }

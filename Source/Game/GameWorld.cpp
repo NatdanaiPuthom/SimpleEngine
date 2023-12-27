@@ -35,13 +35,6 @@ void GameWorld::Init()
 		camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 	}
-
-	for (auto& model : myActiveScene->myModelInstances)
-	{
-		std::unique_ptr<BoundingBoxDrawer> lineDrawer = std::make_unique<BoundingBoxDrawer>();
-		lineDrawer->Init(model);
-		myLineDrawers.push_back(std::move(lineDrawer));
-	}
 }
 
 void GameWorld::Update()
@@ -58,12 +51,8 @@ void GameWorld::Render()
 	Renderer* renderer = SimpleGlobal::GetRenderer();
 	for (const auto& model : myActiveScene->myModelInstances)
 	{
-		renderer->Render(model.get());
-	}
-
-	for (auto& line : myLineDrawers)
-	{
-		line->Render();
+		renderer->Render(model);
+		renderer->RenderBoundingBox(model);
 	}
 }
 

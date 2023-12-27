@@ -3,7 +3,6 @@
 class ImGuiManager;
 class PlaneReflection;
 class Scene;
-class BoundingBoxDrawer;
 
 class GameWorld final
 {
@@ -28,6 +27,4 @@ private:
 
 	std::unique_ptr<ImGuiManager> myImGuiManager;
 	std::unique_ptr<PlaneReflection> myPlaneReflection;
-
-	std::vector<std::unique_ptr<BoundingBoxDrawer>> myLineDrawers;
 };

@@ -1,65 +1,14 @@
 #include "Engine/Precomplier/stdafx.h"
 #include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
+#include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 
 BoundingBoxDrawer::BoundingBoxDrawer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 {
 	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("Shaders/LinePS.cso", "Shaders/DefaultVS.cso");
-}
 
-BoundingBoxDrawer::~BoundingBoxDrawer()
-{
-}
-
-bool BoundingBoxDrawer::Init(std::shared_ptr<ModelInstance> aModelInstance)
-{
-	SimpleUtilities::Vector3f minPoint = aModelInstance->myMesh->myBoundingBox.min;
-	SimpleUtilities::Vector3f  maxPoint = aModelInstance->myMesh->myBoundingBox.max;
-	myMatrix = aModelInstance->GetMatrix();
-
-	Vertex vertex1;
-	vertex1.position = { minPoint.x, minPoint.y, minPoint.z, 1 };
-	Vertex vertex2;
-	vertex2.position = { maxPoint.x, minPoint.y, minPoint.z, 1 };
-	Vertex vertex3;
-	vertex3.position = { minPoint.x, maxPoint.y, minPoint.z, 1 };
-	Vertex vertex4;
-	vertex4.position = { maxPoint.x, maxPoint.y, minPoint.z, 1 };
-	Vertex vertex5;
-	vertex5.position = { minPoint.x, minPoint.y, maxPoint.z, 1 };
-	Vertex vertex6;
-	vertex6.position = { maxPoint.x, minPoint.y, maxPoint.z, 1 };
-	Vertex vertex7;
-	vertex7.position = { minPoint.x, maxPoint.y, maxPoint.z, 1 };
-	Vertex vertex8;
-	vertex8.position = { maxPoint.x, maxPoint.y, maxPoint.z, 1 };
-
-	myVertices.push_back(vertex1);
-	myVertices.push_back(vertex2);
-	myVertices.push_back(vertex2);
-	myVertices.push_back(vertex4);
-	myVertices.push_back(vertex4);
-	myVertices.push_back(vertex3);
-	myVertices.push_back(vertex3);
-	myVertices.push_back(vertex1);
-
-	myVertices.push_back(vertex5);
-	myVertices.push_back(vertex6);
-	myVertices.push_back(vertex6);
-	myVertices.push_back(vertex8);
-	myVertices.push_back(vertex8);
-	myVertices.push_back(vertex7);
-	myVertices.push_back(vertex7);
-	myVertices.push_back(vertex5);
-
-	myVertices.push_back(vertex1);
-	myVertices.push_back(vertex5);
-	myVertices.push_back(vertex2);
-	myVertices.push_back(vertex6);
-	myVertices.push_back(vertex3);
-	myVertices.push_back(vertex7);
-	myVertices.push_back(vertex4);
-	myVertices.push_back(vertex8);
+	myVertices.reserve(24);
+	myVertices.resize(24, Vertex{});
 
 	for (unsigned int i = 0; i < myVertices.size(); ++i)
 	{
@@ -80,8 +29,9 @@ bool BoundingBoxDrawer::Init(std::shared_ptr<ModelInstance> aModelInstance)
 	vertexData.SysMemSlicePitch = 0;
 
 	HRESULT result = SimpleGlobal::GetGraphicsEngine()->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &myVertexBuffer);
+
 	if (FAILED(result))
-		return false;
+		assert(false && "failed to create VertexBuffer");
 
 	D3D11_BUFFER_DESC indexBufferDesc = {};
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -97,30 +47,82 @@ bool BoundingBoxDrawer::Init(std::shared_ptr<ModelInstance> aModelInstance)
 	indexData.SysMemSlicePitch = 0;
 
 	result = SimpleGlobal::GetGraphicsEngine()->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &myIndexBuffer);
+
 	if (FAILED(result))
-		return false;
+		assert(false && "failed to create IndexBuffer");
 
 	ObjectBufferData objectBuffer;
+
 	if (!myObjectBuffer->Init(SimpleGlobal::GetGraphicsEngine(), sizeof(ObjectBufferData), &objectBuffer))
-		return false;
+		assert(false && "failed to create ObjectBuffer");
 
 	myObjectBuffer->SetSlot(1);
-
-	return true;
 }
 
-void BoundingBoxDrawer::Render()
+BoundingBoxDrawer::~BoundingBoxDrawer()
 {
+}
+
+void BoundingBoxDrawer::Render(const std::shared_ptr<const ModelInstance> aModelInstance)
+{
+	const SimpleUtilities::Vector3f minPoint = aModelInstance->myMesh->myBoundingBox.min;
+	const SimpleUtilities::Vector3f  maxPoint = aModelInstance->myMesh->myBoundingBox.max;
+
+	Vertex vertex1;
+	vertex1.position = { minPoint.x, minPoint.y, minPoint.z, 1 };
+	Vertex vertex2;
+	vertex2.position = { maxPoint.x, minPoint.y, minPoint.z, 1 };
+	Vertex vertex3;
+	vertex3.position = { minPoint.x, maxPoint.y, minPoint.z, 1 };
+	Vertex vertex4;
+	vertex4.position = { maxPoint.x, maxPoint.y, minPoint.z, 1 };
+	Vertex vertex5;
+	vertex5.position = { minPoint.x, minPoint.y, maxPoint.z, 1 };
+	Vertex vertex6;
+	vertex6.position = { maxPoint.x, minPoint.y, maxPoint.z, 1 };
+	Vertex vertex7;
+	vertex7.position = { minPoint.x, maxPoint.y, maxPoint.z, 1 };
+	Vertex vertex8;
+	vertex8.position = { maxPoint.x, maxPoint.y, maxPoint.z, 1 };
+
+	myVertices[0] = vertex1;
+	myVertices[1] = vertex2;
+	myVertices[2] = vertex2;
+	myVertices[3] = vertex4;
+	myVertices[4] = vertex4;
+	myVertices[5] = vertex3;
+	myVertices[6] = vertex3;
+	myVertices[7] = vertex1;
+
+	myVertices[8] = vertex5;
+	myVertices[9] = vertex6;
+	myVertices[10] = vertex6;
+	myVertices[11] = vertex8;
+	myVertices[12] = vertex8;
+	myVertices[13] = vertex7;
+	myVertices[14] = vertex7;
+	myVertices[15] = vertex5;
+
+	myVertices[16] = vertex1;
+	myVertices[17] = vertex5;
+	myVertices[18] = vertex2;
+	myVertices[19] = vertex6;
+	myVertices[20] = vertex3;
+	myVertices[21] = vertex7;
+	myVertices[22] = vertex4;
+	myVertices[23] = vertex8;
+
+	auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
+	context->UpdateSubresource(myVertexBuffer.Get(), 0, nullptr, myVertices.data(),0, 0);
+
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = myMatrix;
+	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix();
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
-
-	auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
 	myShader->SetShader(context.Get());
 

@@ -2,6 +2,7 @@
 
 class ModelInstance;
 class ConstantBuffer;
+class BoundingBoxDrawer;
 
 class Renderer final
 {
@@ -9,7 +10,9 @@ public:
 	Renderer();
 	~Renderer();
 
-	void Render(const ModelInstance* const aModelInstance) const;
+	void Render(const std::shared_ptr<const ModelInstance> aModelInstance) const;
+	void RenderBoundingBox(const std::shared_ptr<const ModelInstance> aModelInstance) const;
+
 	void RenderEverythingUpSideDown(const ModelInstance* const aModelInstance) const;
 	void RenderPlaneReflection(const ModelInstance* const aModelInstance) const;
 public:
@@ -19,5 +22,6 @@ private:
 	const bool CreateObjectBuffer();
 private:
 	std::vector<ModelInstance*> myModelBuffer;
+	std::unique_ptr<BoundingBoxDrawer> myBoundingBoxDrawer;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 };
