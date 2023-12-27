@@ -185,6 +185,9 @@ void GraphicsEngine::LoadShaders()
 	if (!AddShader("Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso"))
 		assert(false && "Failed to add Shader");
 
+	if (!AddShader("Shaders/LinePS.cso", "Shaders/DefaultVS.cso"))
+		assert(false && "Failed to add Shader");
+
 	{ //TGA Uppgift
 		if (!AddShader("Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
 			assert(false && "Failed to add Shader");

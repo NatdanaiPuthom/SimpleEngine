@@ -1,6 +1,7 @@
 #include "Game/Precomplier/stdafx.h"
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Engine/Graphics/Model/PlaneReflection.h"
+#include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
 #include "Game/GameWorld.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
@@ -35,6 +36,12 @@ void GameWorld::Init()
 		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 	}
 
+	for (auto& model : myActiveScene->myModelInstances)
+	{
+		std::unique_ptr<BoundingBoxDrawer> lineDrawer = std::make_unique<BoundingBoxDrawer>();
+		lineDrawer->Init(model);
+		myLineDrawers.push_back(std::move(lineDrawer));
+	}
 }
 
 void GameWorld::Update()
@@ -52,6 +59,11 @@ void GameWorld::Render()
 	for (const auto& model : myActiveScene->myModelInstances)
 	{
 		renderer->Render(model.get());
+	}
+
+	for (auto& line : myLineDrawers)
+	{
+		line->Render();
 	}
 }
 

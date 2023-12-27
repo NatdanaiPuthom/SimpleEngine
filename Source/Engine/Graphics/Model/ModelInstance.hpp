@@ -7,6 +7,7 @@ class Texture;
 class ModelInstance final
 {
 	friend class Renderer;
+	friend class BoundingBoxDrawer;
 public:
 	ModelInstance();
 	~ModelInstance();

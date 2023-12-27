@@ -29,6 +29,7 @@ struct BoundingBox
 class Mesh final
 {
 	friend class Renderer;
+	friend class BoundingBoxDrawer;
 public:
 	Mesh();
 	~Mesh();
