@@ -1,4 +1,5 @@
 #include "Engine/Precomplier/stdafx.h"
+#include <External/json.h>
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
 
@@ -9,6 +10,7 @@ Renderer::Renderer()
 	, myDebugMode(false)
 {
 	SimpleGlobalRendererImpl::SetRenderer(this);
+	LoadSettingsFromJson();
 
 	if (!CreateObjectBuffer())
 		assert(false && "Failed to create ObjectBuffer");
@@ -141,4 +143,16 @@ const bool Renderer::CreateObjectBuffer()
 	myObjectBuffer->SetSlot(1);
 
 	return true;
+}
+
+void Renderer::LoadSettingsFromJson()
+{
+	const std::string filename = SimpleUtilities::GetPath(SIMPLE_SETTINGS_FILENAME);
+	std::ifstream file(filename);
+	assert(file.is_open() && "Failed To Open File");
+
+	const nlohmann::json json = nlohmann::json::parse(file);
+	file.close();
+
+	SetDebugMode(json["game_settings"]["debugMode"]);
 }

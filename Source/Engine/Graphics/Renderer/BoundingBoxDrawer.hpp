@@ -3,7 +3,7 @@
 class ConstantBuffer;
 class ModelInstance;
 
-class BoundingBoxDrawer
+class BoundingBoxDrawer final
 {
 public:
 	BoundingBoxDrawer();

@@ -1,6 +1,6 @@
 #pragma once
 
-class DebugTool : public ToolInterface
+class DebugTool final : public ToolInterface
 {
 public:
 	DebugTool();

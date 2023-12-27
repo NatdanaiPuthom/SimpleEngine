@@ -3,7 +3,7 @@
 struct ID3D11Buffer;
 struct ID3D11Device;
 
-struct Vertex
+struct Vertex final
 {
 	SimpleUtilities::Vector4f position = { 0,0,0,0 };
 	SimpleUtilities::Vector4f color = { 1,1,1,1 };
@@ -14,13 +14,13 @@ struct Vertex
 	float clip = 0.0f;
 };
 
-struct MeshData
+struct MeshData final
 {
 	std::vector<Vertex> myVertices;
 	std::vector<unsigned int> myIndices;
 };
 
-struct BoundingBox
+struct BoundingBox final
 {
 	SimpleUtilities::Vector3f min;
 	SimpleUtilities::Vector3f max;

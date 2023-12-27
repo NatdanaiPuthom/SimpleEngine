@@ -23,6 +23,7 @@ public:
 	std::vector<ModelInstance*> GetAllModelInstances();
 private:
 	const bool CreateObjectBuffer();
+	void LoadSettingsFromJson();
 private:
 	std::vector<ModelInstance*> myModelBuffer;
 	std::unique_ptr<BoundingBoxDrawer> myBoundingBoxDrawer;
