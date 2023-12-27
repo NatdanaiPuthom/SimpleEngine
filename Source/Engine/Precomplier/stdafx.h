@@ -26,6 +26,7 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/SimpleUtilities/Transform.hpp"
 #include "Engine/SimpleUtilities/HashStuff.h"
+#include "Engine/SimpleUtilities/Ray.hpp"
 
 #include "Engine/Input/InputManager.hpp"
 

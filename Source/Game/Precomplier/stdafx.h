@@ -27,6 +27,7 @@
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/SimpleUtilities/Transform.hpp"
 #include "Engine/SimpleUtilities/HashStuff.h"
+#include "Engine/SimpleUtilities/Ray.hpp"
 
 #include "Engine/engine.hpp"
 #include "Engine/Graphics/GraphicsEngine.hpp"
@@ -35,6 +36,7 @@
 #include "Game/world.hpp"
 
 #include "Engine/Input/InputManager.hpp"
+#include "Engine/Graphics/Model/Mesh.hpp"
 #include "Engine/Graphics/Model/ModelInstance.hpp"
 #include "Engine/Graphics/Model/ModelFactory.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"

@@ -67,8 +67,18 @@ LineDrawer::~LineDrawer()
 void LineDrawer::Render(const Drawer::Line& aLine)
 {
 	Vertex targetPos;
-	targetPos.position = { aLine.endPosition.x,aLine.endPosition.y, aLine.endPosition.z, 1.0f };
+	targetPos.position.x = aLine.endPosition.x;
+	targetPos.position.y = aLine.endPosition.y;
+	targetPos.position.z = aLine.endPosition.z;
+	targetPos.position.w = 1.0f;
 
+	Vertex startPos;
+	startPos.position.x = aLine.startPosition.x;
+	startPos.position.y = aLine.startPosition.y;
+	startPos.position.z = aLine.startPosition.z;
+	startPos.position.w = 1.0f;
+
+	myMeshData.vertices[0] = startPos;
 	myMeshData.vertices[1] = targetPos;
 
 	for (auto& vertice : myMeshData.vertices)

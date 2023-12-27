@@ -1,5 +1,6 @@
 #include "Game/Precomplier/stdafx.h"
 #include "Engine/Graphics/Model/PlaneReflection.h"
+#include "Engine/Graphics/Renderer/LineDrawer.hpp"
 #include "Game/GameWorld.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
@@ -9,10 +10,15 @@
 GameWorld::GameWorld()
 	: myImGuiManager(std::make_unique<ImGuiManager>())
 	, myLevelManager(std::make_unique<LevelManager>())
+	, myLine(std::make_unique<Drawer::Line>())
 {
 	SimpleWorldGameWorldImpl::SetGameWorld(this);
 
 	myPlaneReflection = std::make_unique<PlaneReflection>();
+
+	myLine->color = { 1,0,0, 1 };
+	myLine->startPosition = { 1,0,-1 };
+	myLine->endPosition = { 10,5,-1 };
 }
 
 GameWorld::~GameWorld()
@@ -36,6 +42,7 @@ void GameWorld::Update()
 void GameWorld::Render()
 {
 	myLevelManager->Render();
+	SimpleGlobal::GetRenderer()->RenderLine(*myLine);
 }
 
 void GameWorld::RenderImGui()
