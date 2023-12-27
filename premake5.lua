@@ -88,8 +88,8 @@ workspace "SimpleEngine"
 		libdirs{"Lib", "DLL"}
 		links { "Engine", "easy_profiler.lib", "easy_profiler.dll"}
 
-		pchheader "Game/stdafx.h"
-		pchsource "Source/Game/stdafx.cpp"
+		pchheader "Game/Precomplier/stdafx.h"
+		pchsource "Source/Game/Precomplier/stdafx.cpp"
 
         postbuildcommands { -- Copy DLL to Bin
             "{COPY} %{wks.location}/DLL/easy_profiler.dll %{cfg.targetdir}"

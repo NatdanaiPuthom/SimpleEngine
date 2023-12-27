@@ -1,4 +1,4 @@
-#include "Game/stdafx.h"
+#include "Game/Precomplier/stdafx.h"
 #include "Game/Managers/ImGuiManager/Tools/LightTool.hpp"
 
 LightTool::LightTool()
