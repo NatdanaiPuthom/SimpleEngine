@@ -109,4 +109,30 @@ namespace SimpleUtilities
 			(aVectorA.x * aVectorB.y) - (aVectorA.y * aVectorB.x)
 		};
 	}
+
+	template<typename T>
+	static inline void Swap(T& aFirstValue, T& aSecondValue)
+	{
+		const T swap = aFirstValue;
+		aFirstValue = aSecondValue;
+		aSecondValue = swap;
+	}
+
+	template<typename T>
+	static inline T GetMax(const T& aFirstValue, const T& aSecondValue)
+	{
+		if (aFirstValue < aSecondValue)
+			return aSecondValue;
+
+		return aFirstValue;
+	}
+
+	template<typename T>
+	static inline T GetMin(const T& aFirstValue, const T& aSecondValue)
+	{
+		if (aFirstValue < aSecondValue)
+			return aFirstValue;
+
+		return aSecondValue;
+	}
 }

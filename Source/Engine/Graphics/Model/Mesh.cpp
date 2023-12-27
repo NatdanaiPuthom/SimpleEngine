@@ -12,6 +12,8 @@ const bool Mesh::Init(const MeshData& aMeshData)
 {
 	myMeshData = aMeshData;
 
+	CreateBoundingBox();
+
 	auto device = SimpleGlobal::GetGraphicsEngine()->GetDevice();
 
 	if (!CreateVertexBuffer(device))
@@ -65,4 +67,28 @@ bool Mesh::CreateIndexBuffer(ComPtr<ID3D11Device> aDevice)
 		return false;
 
 	return true;
+}
+
+void Mesh::CreateBoundingBox()
+{
+	BoundingBox boundingBox;
+
+	if (myMeshData.myVertices.empty())
+		assert(false && "MeshData has no vertices");
+
+	boundingBox.min = myMeshData.myVertices[0].position.AsVector3();
+	boundingBox.max = myMeshData.myVertices[0].position.AsVector3();
+
+	for (const auto& vertex : myMeshData.myVertices)
+	{
+		boundingBox.min.x = SimpleUtilities::GetMin(boundingBox.min.x, vertex.position.x);
+		boundingBox.min.y = SimpleUtilities::GetMin(boundingBox.min.y, vertex.position.y);
+		boundingBox.min.z = SimpleUtilities::GetMin(boundingBox.min.z, vertex.position.z);
+
+		boundingBox.max.x = SimpleUtilities::GetMax(boundingBox.max.x, vertex.position.x);
+		boundingBox.max.y = SimpleUtilities::GetMax(boundingBox.max.y, vertex.position.y);
+		boundingBox.max.z = SimpleUtilities::GetMax(boundingBox.max.z, vertex.position.z);
+	}
+
+	myBoundingBox = boundingBox;
 }

@@ -20,6 +20,12 @@ struct MeshData
 	std::vector<unsigned int> myIndices;
 };
 
+struct BoundingBox
+{
+	SimpleUtilities::Vector3f min;
+	SimpleUtilities::Vector3f max;
+};
+
 class Mesh final
 {
 	friend class Renderer;
@@ -31,8 +37,11 @@ public:
 private:
 	bool CreateVertexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
 	bool CreateIndexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
+	void CreateBoundingBox();
 private:
 	MeshData myMeshData;
+	BoundingBox myBoundingBox;
+
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;
 };
