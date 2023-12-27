@@ -12,11 +12,11 @@
 ImGuiManager::ImGuiManager()
 {
 	AddTool(std::move(std::make_unique<CameraTool>()));
-	AddTool(std::move(std::make_unique<SettingsTool>()));
 	AddTool(std::move(std::make_unique<LightTool>()));
 	AddTool(std::move(std::make_unique<SceneTool>()));
 	AddTool(std::move(std::make_unique<MeshTool>()));
 	AddTool(std::move(std::make_unique<DebugTool>()));
+	AddTool(std::move(std::make_unique<SettingsTool>()));
 }
 
 ImGuiManager::~ImGuiManager()
