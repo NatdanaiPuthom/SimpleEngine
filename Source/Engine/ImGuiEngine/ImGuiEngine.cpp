@@ -1,10 +1,6 @@
 #include "Engine/Precomplier/stdafx.h"
 #include "Engine/ImGuiEngine/ImGuiEngine.hpp"
 
-#include <External/dearimgui/imgui/imgui.h>
-#include <External/dearimgui/imgui/imgui_impl_win32.h>
-#include <External/dearimgui/imgui/imgui_impl_dx11.h>
-#include <External/dearimgui/imnodes/imnodes.h>
 
 ImGuiEngine::ImGuiEngine()
 {

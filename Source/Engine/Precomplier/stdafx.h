@@ -28,6 +28,7 @@ using Microsoft::WRL::ComPtr;
 #include <External/dearimgui/imgui/imgui.h>
 #include <External/dearimgui/imgui/imgui_impl_dx11.h>
 #include <External/dearimgui/imgui/imgui_impl_win32.h>
+#include <External/dearimgui/imnodes/imnodes.h>
 #include <External/nlohmann/json.hpp>
 #include <External/profiler.h>
 
@@ -47,6 +48,7 @@ using Microsoft::WRL::ComPtr;
 
 #include "Engine/Console/Console.hpp"
 #include "Engine/Input/InputManager.hpp"
+#include "Engine/Graphics/Camera/Camera.hpp"
 
 #include "Engine/engine.hpp"
 #include "Engine/Graphics/GraphicsEngine.hpp"
@@ -54,9 +56,7 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/Graphics/ConstantBuffers/ConstantBuffer.hpp"
 #include "Engine/Graphics/Shaders/Shader.hpp"
 #include "Engine/Graphics/Texture/Texture.hpp"
-#include "Engine/Graphics/Camera/Camera.hpp"
 #include "Engine/Graphics/Model/Mesh.hpp"
-#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
 #include "Engine/Graphics/Model/ModelInstance.hpp"
 #include "Engine/Graphics/Model/ModelFactory.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"

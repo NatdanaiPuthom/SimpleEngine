@@ -67,8 +67,8 @@ struct alignas(16) AmbientLightBufferData final
 
 struct RenderTarget final
 {
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceView;
+	ComPtr<ID3D11RenderTargetView> renderTargetView;
+	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 };
 
 class GraphicsEngine final
@@ -99,10 +99,10 @@ public:
 	void SetRasterizerState(const eRasterizerState aRasterizerState);
 	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize, const bool aSetFullScreen);
 public:
-	Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetImGuiShaderResourceView();
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
+	ComPtr<ID3D11Device> GetDevice();
+	ComPtr<ID3D11DeviceContext> GetContext();
+	ComPtr<ID3D11ShaderResourceView> GetImGuiShaderResourceView();
+	ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
 
 	std::shared_ptr<Camera> GetCamera();
 	std::shared_ptr<Texture> GetTexture(const char* aFilePath);
@@ -140,22 +140,22 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<Texture>> myLoadedTextures;
 	std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<Shader>, SimpleHash::PairHash, SimpleHash::PairEqual> myLoadedShaders;
 
-	std::array<Microsoft::WRL::ComPtr<ID3D11RasterizerState>, static_cast<int>(eRasterizerState::Count)> myRasterizerStates;
+	std::array<ComPtr<ID3D11RasterizerState>, static_cast<int>(eRasterizerState::Count)> myRasterizerStates;
 
-	Microsoft::WRL::ComPtr<ID3D11Device> myDevice;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext> myContext;
-	Microsoft::WRL::ComPtr<IDXGISwapChain> mySwapChain;
+	ComPtr<ID3D11Device> myDevice;
+	ComPtr<ID3D11DeviceContext> myContext;
+	ComPtr<IDXGISwapChain> mySwapChain;
 
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> myBackBuffer;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> myDepthBuffer;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> myDepthStencilState;
+	ComPtr<ID3D11RenderTargetView> myBackBuffer;
+	ComPtr<ID3D11DepthStencilView> myDepthBuffer;
+	ComPtr<ID3D11DepthStencilState> myDepthStencilState;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer> myFrameBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> myObjectBuffer;
+	ComPtr<ID3D11Buffer> myFrameBuffer;
+	ComPtr<ID3D11Buffer> myObjectBuffer;
 
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> mySamplerState;
+	ComPtr<ID3D11SamplerState> mySamplerState;
 
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState> myRasterizerState;
+	ComPtr<ID3D11RasterizerState> myRasterizerState;
 
 	std::shared_ptr<Camera> myCamera;
 	std::shared_ptr<const D3D11_VIEWPORT> myViewPort;

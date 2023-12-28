@@ -140,7 +140,7 @@ const bool Renderer::CreateObjectBuffer()
 {
 	ObjectBufferData objectBuffer;
 
-	if (!myObjectBuffer->Init(SimpleGlobal::GetGraphicsEngine(), sizeof(ObjectBufferData), &objectBuffer))
+	if (!myObjectBuffer->Init(sizeof(ObjectBufferData), &objectBuffer))
 		return false;
 
 	myObjectBuffer->SetSlot(1);

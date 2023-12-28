@@ -1,20 +1,16 @@
 #include "Engine/Precomplier/stdafx.h"
 
 ConstantBuffer::ConstantBuffer()
-	: myGraphicsEngine(nullptr)
-	, mySlot(100)
+	 : mySlot(100)
 {
 }
 
 ConstantBuffer::~ConstantBuffer()
 {
-	myGraphicsEngine = nullptr;
 }
 
-bool ConstantBuffer::Init(GraphicsEngine* aGraphicsEngine, unsigned int aSize, void* aData)
+bool ConstantBuffer::Init(const unsigned int aSize, void* aData)
 {
-	myGraphicsEngine = aGraphicsEngine;
-
 	if (aSize == 0 || aData == nullptr)
 		return false;
 
@@ -24,7 +20,7 @@ bool ConstantBuffer::Init(GraphicsEngine* aGraphicsEngine, unsigned int aSize, v
 	bufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bufferDescription.ByteWidth = aSize;
 
-	HRESULT result = myGraphicsEngine->GetDevice()->CreateBuffer(&bufferDescription, nullptr, &myBuffer);
+	HRESULT result = SimpleGlobal::GetGraphicsEngine()->GetDevice()->CreateBuffer(&bufferDescription, nullptr, &myBuffer);
 	if (FAILED(result))
 		return false;
 
@@ -34,15 +30,15 @@ bool ConstantBuffer::Init(GraphicsEngine* aGraphicsEngine, unsigned int aSize, v
 void ConstantBuffer::Update(unsigned int aSize, void* aData)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
-	myGraphicsEngine->GetContext()->Map(myBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
+	SimpleGlobal::GetGraphicsEngine()->GetContext()->Map(myBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
 	memcpy(mappedBuffer.pData, aData, aSize);
-	myGraphicsEngine->GetContext()->Unmap(myBuffer.Get(), 0);
+	SimpleGlobal::GetGraphicsEngine()->GetContext()->Unmap(myBuffer.Get(), 0);
 }
 
 void ConstantBuffer::Bind(const int aSlot)
 {
-	myGraphicsEngine->GetContext()->VSSetConstantBuffers(aSlot, 1, myBuffer.GetAddressOf());
-	myGraphicsEngine->GetContext()->PSSetConstantBuffers(aSlot, 1, myBuffer.GetAddressOf());
+	SimpleGlobal::GetGraphicsEngine()->GetContext()->VSSetConstantBuffers(aSlot, 1, myBuffer.GetAddressOf());
+	SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetConstantBuffers(aSlot, 1, myBuffer.GetAddressOf());
 }
 
 void ConstantBuffer::SetSlot(const unsigned int aSlot)

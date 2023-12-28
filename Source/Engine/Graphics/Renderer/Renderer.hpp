@@ -22,18 +22,17 @@ public:
 
 	void RenderEverythingUpSideDown(const ModelInstance* const aModelInstance) const;
 	void RenderPlaneReflection(const ModelInstance* const aModelInstance) const;
+
+	bool IsDebugModeOn() const;
 public:
 	void SetDebugMode(const bool aSetDebugMode);
 	void SetBoundingBoxLineColor(const SimpleUtilities::Vector3f& aColor);
-public:
-	bool IsDebugModeOn() const;
 private:
 	const bool CreateObjectBuffer();
 	void LoadSettingsFromJson();
 private:
 	std::unique_ptr<BoundingBoxDrawer> myBoundingBoxDrawer;
 	std::unique_ptr<LineDrawer> myLineDrawer;
-
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 
 	bool myDebugMode;

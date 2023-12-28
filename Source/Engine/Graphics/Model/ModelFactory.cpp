@@ -1,4 +1,5 @@
 #include "Engine/Precomplier/stdafx.h"
+#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 
 ModelFactory::ModelFactory()

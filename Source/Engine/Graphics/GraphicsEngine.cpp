@@ -800,7 +800,7 @@ bool GraphicsEngine::CreateCameraBuffer()
 	cameraBuffer.worldToClipMatrix = myCamera->GetModelToWorldMatrix().GetFastInverse() * myCamera->GetProjectionMatrix();
 	cameraBuffer.cameraPosition = SimpleUtilities::Vector3f{ 0.0f,0.0f,0.0f };
 
-	if (!myCameraConstantBuffer->Init(this, sizeof(FrameBufferData), &cameraBuffer))
+	if (!myCameraConstantBuffer->Init(sizeof(FrameBufferData), &cameraBuffer))
 		return false;
 
 	return true;
@@ -812,7 +812,7 @@ bool GraphicsEngine::CreateTimeBuffer()
 
 	timeBuffer.time = 0.0f;
 
-	if (!myTimeConstantBuffer->Init(this, sizeof(TimeBufferData), &timeBuffer))
+	if (!myTimeConstantBuffer->Init(sizeof(TimeBufferData), &timeBuffer))
 		return false;
 
 	return true;
@@ -825,7 +825,7 @@ bool GraphicsEngine::CreateDirectionalLightBuffer()
 	directionLightBuffer.direction = SimpleUtilities::Vector3f(0, -1, 0);
 	directionLightBuffer.color = SimpleUtilities::Vector4f(0, 0, 0, 0);
 
-	if (!myDirectionLightConstantBuffer->Init(this, sizeof(DirectionalLightBufferData), &directionLightBuffer))
+	if (!myDirectionLightConstantBuffer->Init(sizeof(DirectionalLightBufferData), &directionLightBuffer))
 		return false;
 
 	return true;
@@ -838,7 +838,7 @@ bool GraphicsEngine::CreateAmbientLightBuffer()
 	ambientLightBuffer.groundColor = SimpleUtilities::Vector3f(1, 1, 1);
 	ambientLightBuffer.skyColor = SimpleUtilities::Vector3f(1, 1, 1);
 
-	if (!myAmbientLightConstantBuffer->Init(this, sizeof(AmbientLightBufferData), &ambientLightBuffer))
+	if (!myAmbientLightConstantBuffer->Init(sizeof(AmbientLightBufferData), &ambientLightBuffer))
 		return false;
 
 	return true;

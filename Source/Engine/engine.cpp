@@ -6,14 +6,12 @@
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 Engine::Engine()
-	: myInput(nullptr)
-	, myImGuiEngine(std::make_unique<ImGuiEngine>())
+	: myImGuiEngine(std::make_unique<ImGuiEngine>())
 {
 }
 
 Engine::~Engine()
 {
-	myInput = nullptr;
 }
 
 void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
@@ -40,7 +38,6 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	assert(success && "Failed To Init Graphics Engine");
 
 	myTimer = std::make_unique<SimpleUtilities::Timer>();
-	myInput = &SimpleUtilities::InputManager::GetInstance();
 
 	myImGuiEngine->Init();
 }
@@ -124,7 +121,7 @@ bool Engine::BeginFrame()
 	SimpleGlobalEngineImpl::ResetDrawCalls();
 
 	myTimer->Update();
-	myInput->Update();
+	SimpleUtilities::InputManager::GetInstance().Update();
 
 	return myGraphicsEngine->BeginFrame();
 }
