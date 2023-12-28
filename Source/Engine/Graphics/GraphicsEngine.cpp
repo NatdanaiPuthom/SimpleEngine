@@ -797,7 +797,7 @@ bool GraphicsEngine::CreateCameraBuffer()
 {
 	FrameBufferData cameraBuffer;
 
-	cameraBuffer.worldToClipMatrix = myCamera->GetModelToWorldMatrix().GetFastInverse() * myCamera->GetProjectionMatrix();
+	cameraBuffer.worldToClipMatrix = SimpleUtilities::Matrix4x4f::GetInverse(myCamera->GetModelToWorldMatrix()) * myCamera->GetProjectionMatrix();
 	cameraBuffer.cameraPosition = SimpleUtilities::Vector3f{ 0.0f,0.0f,0.0f };
 
 	if (!myCameraConstantBuffer->Init(sizeof(FrameBufferData), &cameraBuffer))

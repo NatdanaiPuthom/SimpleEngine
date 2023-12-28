@@ -35,6 +35,7 @@ public:
 	~Mesh();
 
 	const bool Init(const MeshData& aMeshData);
+	const BoundingBox GetBoundingBox() const;
 private:
 	bool CreateVertexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
 	bool CreateIndexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);

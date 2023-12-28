@@ -85,6 +85,11 @@ void ModelInstance::SetName(const std::string& aName)
 	myName = aName;
 }
 
+const Mesh* const ModelInstance::GetMesh() const
+{
+	return myMesh;
+}
+
 SimpleUtilities::Matrix4x4f ModelInstance::GetMatrix() const
 {
 	return myTransform.GetMatrix();

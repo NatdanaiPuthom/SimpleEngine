@@ -140,7 +140,7 @@ void Camera::Update(const float aDeltaTime)
 
 SimpleUtilities::Vector4f Camera::WorldToCameraSpace(const SimpleUtilities::Vector4f& aVector) const
 {
-	return SimpleUtilities::Matrix4x4f::GetFastInverse(myTransform.GetMatrix()) * aVector;
+	return SimpleUtilities::Matrix4x4f::GetInverse(myTransform.GetMatrix()) * aVector;
 }
 
 SimpleUtilities::Vector4f Camera::CameraToProjectionSpace(const SimpleUtilities::Vector4f& aVector) const
@@ -162,7 +162,7 @@ SimpleUtilities::Vector2f Camera::ProjectionToPixel(const SimpleUtilities::Vecto
 
 SimpleUtilities::Matrix4x4f Camera::GetWorldToClipMatrix()
 {
-	const SimpleUtilities::Matrix4x4f clipMatrix = myTransform.GetMatrix().GetFastInverse() * myProjectionMatrix;
+	const SimpleUtilities::Matrix4x4f clipMatrix = SimpleUtilities::Matrix4x4f::GetInverse(myTransform.GetMatrix()) * myProjectionMatrix;
 	return clipMatrix;
 }
 

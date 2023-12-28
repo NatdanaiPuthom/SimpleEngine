@@ -25,6 +25,11 @@ const bool Mesh::Init(const MeshData& aMeshData)
 	return true;
 }
 
+const BoundingBox Mesh::GetBoundingBox() const
+{
+	return myBoundingBox;
+}
+
 bool Mesh::CreateVertexBuffer(ComPtr<ID3D11Device> aDevice)
 {
 	D3D11_BUFFER_DESC vertexBufferDesc = {};
