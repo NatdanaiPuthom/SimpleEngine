@@ -4,7 +4,7 @@
 
 BoundingBoxDrawer::BoundingBoxDrawer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
-	, myLineColor(0,1,0,1)
+	, myLineColor(1,1,0,1)
 {
 	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("Shaders/LinePS.cso", "Shaders/DefaultVS.cso");
 

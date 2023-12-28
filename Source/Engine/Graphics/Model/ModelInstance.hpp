@@ -4,6 +4,8 @@ class Mesh;
 class Shader;
 class Texture;
 
+struct BoundingBox;
+
 class ModelInstance final
 {
 	friend class Renderer;
@@ -24,7 +26,7 @@ public:
 	void SetScale(const SimpleUtilities::Vector3f& aScale);
 	void SetName(const std::string& aName);
 
-	const Mesh* const GetMesh() const;
+	const BoundingBox GetBoundingBox() const;
 	SimpleUtilities::Matrix4x4f GetMatrix() const;
 	SimpleUtilities::Vector3f GetPosition() const;
 	SimpleUtilities::Vector3f GetRotation() const;

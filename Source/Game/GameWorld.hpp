@@ -22,10 +22,5 @@ private:
 	std::unique_ptr<PlaneReflection> myPlaneReflection;
 	std::unique_ptr<LevelManager> myLevelManager;
 
-	std::unique_ptr<Drawer::Line> myLine;
-	std::unique_ptr<Drawer::Line> myLine2;
-	std::unique_ptr<Drawer::Line> myLine3;
-
-	SimpleUtilities::Ray myRay;
-
+	std::unique_ptr<Drawer::Line> myRaycastLine;
 };

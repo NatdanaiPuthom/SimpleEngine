@@ -85,9 +85,9 @@ void ModelInstance::SetName(const std::string& aName)
 	myName = aName;
 }
 
-const Mesh* const ModelInstance::GetMesh() const
+const BoundingBox ModelInstance::GetBoundingBox() const
 {
-	return myMesh;
+	return myMesh->GetBoundingBox();
 }
 
 SimpleUtilities::Matrix4x4f ModelInstance::GetMatrix() const

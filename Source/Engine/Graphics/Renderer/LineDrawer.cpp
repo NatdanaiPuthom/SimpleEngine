@@ -67,33 +67,26 @@ LineDrawer::~LineDrawer()
 
 void LineDrawer::Render(const Drawer::Line& aLine)
 {
-	Vertex targetPos;
-	targetPos.position.x = aLine.endPosition.x;
-	targetPos.position.y = aLine.endPosition.y;
-	targetPos.position.z = aLine.endPosition.z;
-	targetPos.position.w = 1.0f;
+	myMeshData->vertices[0].position.x = aLine.startPosition.x;
+	myMeshData->vertices[0].position.y = aLine.startPosition.y;
+	myMeshData->vertices[0].position.z = aLine.startPosition.z;
+	myMeshData->vertices[0].position.w = 1.0f;
 
-	Vertex startPos;
-	startPos.position.x = aLine.startPosition.x;
-	startPos.position.y = aLine.startPosition.y;
-	startPos.position.z = aLine.startPosition.z;
-	startPos.position.w = 1.0f;
+	myMeshData->vertices[1].position.x = aLine.endPosition.x;
+	myMeshData->vertices[1].position.y = aLine.endPosition.y;
+	myMeshData->vertices[1].position.z = aLine.endPosition.z;
+	myMeshData->vertices[1].position.w = 1.0f;
 
-	myMeshData->vertices[0] = startPos;
-	myMeshData->vertices[1] = targetPos;
-
-	for (auto& vertice : myMeshData->vertices)
+	for (auto& vertex : myMeshData->vertices)
 	{
-		vertice.color = aLine.color;
+		vertex.color = aLine.color;
 	}
 
 	auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 	context->UpdateSubresource(myVertexBuffer.Get(), 0, nullptr, myMeshData->vertices.data(), 0, 0);
 
-	SimpleUtilities::Matrix4x4f matrix = SimpleUtilities::Matrix4x4f::Identity();
-
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = matrix;
+	objectBuffer.modelToWorldMatrix = SimpleUtilities::Matrix4x4f::Identity();
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
