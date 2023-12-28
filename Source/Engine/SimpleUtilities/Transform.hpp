@@ -1,13 +1,9 @@
 #pragma once
+#include "Engine/SimpleUtilities/Vector3.hpp"
+#include "Engine/SimpleUtilities/Matrix4x4.hpp"
 
 namespace SimpleUtilities
 {
-	template<typename T>
-	class Vector3;
-
-	template<typename T>
-	class Matrix4x4;
-
 	class Transform final
 	{
 	public:

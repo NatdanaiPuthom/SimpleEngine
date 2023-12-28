@@ -1,17 +1,15 @@
 #pragma once
+#include <string>
+#include <Windows.h>
+#include "Engine/SimpleUtilities/Vector2.hpp"
+#include "Engine/SimpleUtilities/Vector3.hpp"
 
-constexpr float globalPi = 3.141592f; //Highest Precision For Floating Point
+constexpr float globalPi = 3.141592f;
 constexpr float globalDegToRad = globalPi / 180.0f;
 constexpr float globalRadToDeg = (180.0f / globalPi);
 
 namespace SimpleUtilities
 {
-	template<class T>
-	class Vector2;
-
-	template<class T>
-	class Vector3;
-
 	static inline std::wstring ToWString(const std::string& aString)
 	{
 		return std::wstring(aString.begin(), aString.end());

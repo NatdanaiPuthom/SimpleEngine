@@ -1,27 +1,19 @@
 #pragma once
 #include "Engine/SimpleUtilities/Utility.hpp"
-#include "SimpleUtilities/Vector3.hpp"
+#include "SimpleUtilities/AABB.hpp"
 #include "SimpleUtilities/Plane.hpp"
 #include "SimpleUtilities/Ray.hpp"
-#include "SimpleUtilities/AABB.hpp"
 
 namespace SimpleUtilities
 {
-	template <typename T>
-	static bool IntersectionPlaneRay(const Plane<T>& aPlane, const Ray<T>& aRay, Vector3<T>& aOutIntersectionPoint);
-
-	template <typename T>
-	static bool IntersectionAABBRay(const AABB3D& aAABB, const Ray<T>& aRay, Vector3<T>& aOutIntersectionPoint);
-
-	template<typename T>
-	inline bool IntersectionPlaneRay(const Plane<T>& aPlane, const Ray<T>& aRay, Vector3<T>& aOutIntersectionPoint)
+	static bool IntersectionPlaneRay(const Plane& aPlane, const Ray& aRay, Vector3f& aOutIntersectionPoint)
 	{
-		const T epsilon = static_cast<T>(0.0001);
+		const float epsilon = 0.0001f;
 
-		T maxDistance = FLT_MAX;
-		Vector3<T> noIntersection = aRay.GetOrigin() + aRay.GetDirection() * maxDistance; //There's no intersection so we set value to infinite distance along the ray's direction
+		float maxDistance = FLT_MAX;
+		Vector3f noIntersection = aRay.GetOrigin() + aRay.GetDirection() * maxDistance; //There's no intersection so we set value to infinite distance along the ray's direction
 
-		T projectionOnPlaneNormal = SimpleUtilities::Dot(aPlane.GetNormal(), (aRay.GetOrigin()- aPlane.GetPosition()));
+		float projectionOnPlaneNormal = SimpleUtilities::Dot(aPlane.GetNormal(), (aRay.GetOrigin() - aPlane.GetPosition()));
 
 		if (std::abs(projectionOnPlaneNormal) < epsilon)
 		{
@@ -29,7 +21,7 @@ namespace SimpleUtilities
 			return true;
 		}
 
-		T denom = SimpleUtilities::Dot(aRay.GetDirection(), aPlane.GetNormal());
+		float denom = SimpleUtilities::Dot(aRay.GetDirection(), aPlane.GetNormal());
 
 		if (std::abs(denom) < epsilon)
 		{
@@ -37,7 +29,7 @@ namespace SimpleUtilities
 			return false;
 		}
 
-		T intersectionDistance = -projectionOnPlaneNormal / denom;
+		float intersectionDistance = -projectionOnPlaneNormal / denom;
 
 		if (intersectionDistance < 0)
 		{
@@ -51,8 +43,7 @@ namespace SimpleUtilities
 		}
 	}
 
-	template<typename T>
-	inline bool IntersectionAABBRay(const AABB3D& aAABB, const Ray<T>& aRay, Vector3<T>& aOutIntersectionPoint)
+	static inline bool IntersectionAABBRay(const AABB3D& aAABB, const Ray& aRay, Vector3f& aOutIntersectionPoint)
 	{
 		if (aAABB.IsInside(aRay.GetOrigin()))
 		{
@@ -60,18 +51,18 @@ namespace SimpleUtilities
 			return true;
 		}
 
-		Plane<T> planes[6] =
+		const Plane planes[6] =
 		{
-			Plane<T>(aAABB.GetMin(), Vector3<T>(-1, 0, 0)),
-			Plane<T>(aAABB.GetMin(), Vector3<T>(0, -1, 0)),
-			Plane<T>(aAABB.GetMin(), Vector3<T>(0, 0, -1)),
-			Plane<T>(aAABB.GetMax(), Vector3<T>(1, 0, 0)),
-			Plane<T>(aAABB.GetMax(), Vector3<T>(0, 1, 0)),
-			Plane<T>(aAABB.GetMax(), Vector3<T>(0, 0, 1))
+			Plane(aAABB.GetMin(), Vector3f(-1, 0, 0)),
+			Plane(aAABB.GetMin(), Vector3f(0, -1, 0)),
+			Plane(aAABB.GetMin(), Vector3f(0, 0, -1)),
+			Plane(aAABB.GetMax(), Vector3f(1, 0, 0)),
+			Plane(aAABB.GetMax(), Vector3f(0, 1, 0)),
+			Plane(aAABB.GetMax(), Vector3f(0, 0, 1))
 		};
 
 		float intersectionDistance = FLT_MAX;
-		Vector3<T> closestIntersectionPoint;
+		Vector3f closestIntersectionPoint;
 
 		for (int i = 0; i < 6; i++)
 		{
@@ -79,7 +70,7 @@ namespace SimpleUtilities
 			{
 				if (aAABB.IsInside(aOutIntersectionPoint))
 				{
-					Vector3<T> distance = aOutIntersectionPoint - aRay.GetOrigin();
+					const Vector3f distance = aOutIntersectionPoint - aRay.GetOrigin();
 
 					if (distance.Length() < intersectionDistance)
 					{

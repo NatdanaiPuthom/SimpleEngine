@@ -24,6 +24,6 @@ private:
 
 	std::unique_ptr<Drawer::Line> myLine;
 
-	SimpleUtilities::Ray<float> myRay;
+	SimpleUtilities::Ray myRay;
 
 };

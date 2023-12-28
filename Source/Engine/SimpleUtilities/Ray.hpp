@@ -1,72 +1,61 @@
 #pragma once
+#include "Engine/SimpleUtilities/Vector3.hpp"
 
 namespace SimpleUtilities
 {
-	template<typename T>
-	class Vector3;
-
-	template <typename T>
-	class Ray
+	class Ray final
 	{
 	public:
 		Ray();
-		Ray(const Ray<T>& aRay);
-		Ray(const Vector3<T>& aOrigin, const Vector3<T>& aDirection);
+		Ray(const Ray& aRay);
+		Ray(const Vector3f& aOrigin, const Vector3f& aDirection);
 
-		void InitWith2Points(const Vector3<T>& aOrigin, const Vector3<T>& aPoint);
-		void InitWithOriginAndDirection(const Vector3<T>& aOrigin, const Vector3<T>& aDirection);
-		Vector3<T> GetInverseDirection() const;
-		Vector3<T> GetOrigin() const;
-		Vector3<T> GetDirection() const;
+		void InitWith2Points(const Vector3f& aOrigin, const Vector3f& aPoint);
+		void InitWithOriginAndDirection(const Vector3f& aOrigin, const Vector3f& aDirection);
+		Vector3f GetInverseDirection() const;
+		Vector3f GetOrigin() const;
+		Vector3f GetDirection() const;
 	private:
-		Vector3<T> myOrigin;
-		Vector3<T> myDirection;
+		Vector3f myOrigin;
+		Vector3f myDirection;
 	};
 
-	template<typename T>
-	inline Ray<T>::Ray() : myOrigin(Vector3<T>()), myDirection(Vector3<T>())
+	inline Ray::Ray() : myOrigin(Vector3f()), myDirection(Vector3f())
 	{
 	}
 
-	template<typename T>
-	inline Ray<T>::Ray(const Ray<T>& aRay) : myOrigin(aRay.myOrigin), myDirection(aRay.myDirection)
+	inline Ray::Ray(const Ray& aRay) : myOrigin(aRay.myOrigin), myDirection(aRay.myDirection)
 	{
 	}
 
-	template<typename T>
-	inline Ray<T>::Ray(const Vector3<T>& aOrigin, const Vector3<T>& aDirection) : myOrigin(aOrigin), myDirection(aDirection)
+	inline Ray::Ray(const Vector3f& aOrigin, const Vector3f& aDirection) : myOrigin(aOrigin), myDirection(aDirection)
 	{
 	}
 
-	template<typename T>
-	inline void Ray<T>::InitWith2Points(const Vector3<T>& aOrigin, const Vector3<T>& aPoint)
+	inline void Ray::InitWith2Points(const Vector3f& aOrigin, const Vector3f& aPoint)
 	{
 		myDirection = aOrigin - aPoint;
 		myOrigin = aOrigin;
 	}
 
-	template<typename T>
-	inline void Ray<T>::InitWithOriginAndDirection(const Vector3<T>& aOrigin, const Vector3<T>& aDirection)
+	inline void Ray::InitWithOriginAndDirection(const Vector3f& aOrigin, const Vector3f& aDirection)
 	{
 		myOrigin = aOrigin;
 		myDirection = aDirection;
 	}
 
-	template<typename T>
-	inline Vector3<T> Ray<T>::GetOrigin() const
+	inline Vector3f Ray::GetOrigin() const
 	{
 		return myOrigin;
 	}
 
-	template<typename T>
-	inline Vector3<T> Ray<T>::GetDirection() const
+	inline Vector3f Ray::GetDirection() const
 	{
 		return myDirection;
 	}
 
-	template<typename T>
-	inline Vector3<T> Ray<T>::GetInverseDirection() const
+	inline Vector3f Ray::GetInverseDirection() const
 	{
-		return Vector3<T>(1 / myDirection.x, 1 / myDirection.y, 1 / myDirection.z);
+		return Vector3f(1.0f / myDirection.x, 1.0f / myDirection.y, 1.0f / myDirection.z);
 	}
 }

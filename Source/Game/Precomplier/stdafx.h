@@ -31,16 +31,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-
 #include "Engine/SimpleUtilities/Vector2.hpp"
 #include "Engine/SimpleUtilities/Vector3.hpp"
 #include "Engine/SimpleUtilities/Vector4.hpp"
-
-#include "Engine/SimpleUtilities/Matrix4x4.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/SimpleUtilities/Matrix4x4.hpp"
 #include "Engine/SimpleUtilities/Transform.hpp"
 #include "Engine/SimpleUtilities/HashStuff.hpp"
 #include "Engine/SimpleUtilities/Ray.hpp"
+
+
 #include "Engine/SimpleUtilities/Plane.hpp"
 #include "Engine/SimpleUtilities/AABB.hpp"
 #include "Engine/SimpleUtilities/Intersection.hpp"
