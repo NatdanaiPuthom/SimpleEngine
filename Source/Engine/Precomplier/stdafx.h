@@ -25,8 +25,11 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/SimpleUtilities/Matrix4x4.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/SimpleUtilities/Transform.hpp"
-#include "Engine/SimpleUtilities/HashStuff.h"
+#include "Engine/SimpleUtilities/HashStuff.hpp"
+#include "Engine/SimpleUtilities/Plane.hpp"
 #include "Engine/SimpleUtilities/Ray.hpp"
+#include "Engine/SimpleUtilities/AABB.hpp"
+#include "Engine/SimpleUtilities/Intersection.hpp"
 
 #include "Engine/Input/InputManager.hpp"
 

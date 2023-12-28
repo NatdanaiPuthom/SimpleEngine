@@ -37,9 +37,14 @@ namespace SimpleUtilities
 
 		static Matrix4x4<T> Transpose(const Matrix4x4<T>& aMatrixToTranspose);
 
+		static Matrix4x4<T> GetInverse(Matrix4x4<T> aMatrixToInverse);
 		static Matrix4x4<T> GetFastInverse(const Matrix4x4<T>& aTransform);
 		Matrix4x4<T> GetFastInverse();
 
+	private:
+		static void SwapRows(SimpleUtilities::Matrix4x4<T>& aMatrix, const int aRow1, const int aRow2);
+		static void ScaleRow(SimpleUtilities::Matrix4x4<T>& aMatrix, const int aRow, const T aFactor);
+		static void AddScaledRow(SimpleUtilities::Matrix4x4<T>& aMatrix, const int aRow1, const int aRow2, const T aFactor);
 	private:
 		T myMatrix[4][4];
 	};
@@ -541,8 +546,73 @@ namespace SimpleUtilities
 	}
 
 	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::GetInverse(Matrix4x4<T> aMatrixToInverse)
+	{
+		Matrix4x4<T> inverse = Matrix4x4<T>::Identity();
+
+		for (int i = 0; i < 4; ++i)
+		{
+			int pivotRow = i + 1;
+
+			while (pivotRow < 4 && aMatrixToInverse(pivotRow, i + 1) == 0)
+			{
+				++pivotRow;
+			}
+
+			if (pivotRow == 4 + 1)
+				assert(false && "Matrix is singular, no unique inverse.");
+
+			SwapRows(aMatrixToInverse, i + 1, pivotRow);
+			SwapRows(inverse, i + 1, pivotRow);
+
+			float pivotElement = aMatrixToInverse(i + 1, i + 1);
+			ScaleRow(aMatrixToInverse, i + 1, 1 / pivotElement);
+			ScaleRow(inverse, i + 1, 1 / pivotElement);
+
+			for (int j = 0; j < 4; ++j)
+			{
+				if (j != i)
+				{
+					float factor = -aMatrixToInverse(j + 1, i + 1);
+					AddScaledRow(aMatrixToInverse, j + 1, i + 1, factor);
+					AddScaledRow(inverse, j + 1, i + 1, factor);
+				}
+			}
+		}
+
+		return inverse;
+	}
+
+	template<typename T>
 	inline Matrix4x4<T> Matrix4x4<T>::GetFastInverse()
 	{
 		return GetFastInverse(*this);
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::SwapRows(SimpleUtilities::Matrix4x4<T>& aMatrix, const int aRow1, const int aRow2)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			SimpleUtilities::Swap(aMatrix(aRow1, i + 1), aMatrix(aRow2, i + 1));
+		}
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::ScaleRow(SimpleUtilities::Matrix4x4<T>& aMatrix, const int aRow, const T aFactor)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			aMatrix(aRow, i + 1) *= aFactor;
+		}
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::AddScaledRow(SimpleUtilities::Matrix4x4<T>& aMatrix, const int aRow1, const int aRow2, const T aFactor)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			aMatrix(aRow1, i + 1) += aFactor * aMatrix(aRow2, i + 1);
+		}
 	}
 }

@@ -23,4 +23,7 @@ private:
 	std::unique_ptr<LevelManager> myLevelManager;
 
 	std::unique_ptr<Drawer::Line> myLine;
+
+	SimpleUtilities::Ray<float> myRay;
+
 };

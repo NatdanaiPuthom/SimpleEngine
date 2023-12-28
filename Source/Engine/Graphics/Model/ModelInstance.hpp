@@ -33,8 +33,8 @@ private:
 	std::vector<std::shared_ptr<Texture>> myTextures;
 	std::string myName;
 
-	std::shared_ptr<Shader> myShader;
 	Mesh* myMesh;
+	std::shared_ptr<Shader> myShader;
 
 	SimpleUtilities::Transform myTransform;
 };
