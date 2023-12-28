@@ -1,14 +1,11 @@
 #pragma once
+#include <string>
+#include "Engine/SimpleUtilities/Vector3.hpp"
+#include "Engine/SimpleUtilities/Vector4.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
 
 namespace SimpleUtilities
 {
-	template<typename T>
-	class Vector3;
-
-	template<typename T>
-	class Vector4;
-
 	template <typename T>
 	class Matrix4x4
 	{
@@ -63,6 +60,8 @@ namespace SimpleUtilities
 	template <typename T> Vector4<T> operator*(const Matrix4x4<T>& aMatrix, const Vector4<T>& aVector);
 
 	template <typename T> bool operator==(const Matrix4x4<T>& aMatrixA, const Matrix4x4<T>& aMatrixB);
+
+	template <class T> std::ostream& operator<<(std::ostream& aOS, const Matrix4x4<T>& aMatrix);
 
 	template<typename T>
 	inline T& Matrix4x4<T>::operator()(const int aRow, const int aColumn)
@@ -614,5 +613,31 @@ namespace SimpleUtilities
 		{
 			aMatrix(aRow1, i + 1) += aFactor * aMatrix(aRow2, i + 1);
 		}
+	}
+
+	template <class T>
+	std::ostream& operator<<(std::ostream& aOS, const Matrix4x4<T>& aMatrix)
+	{
+		float max = 1;
+
+		for (int row = 1; row <= 4; ++row)
+		{
+			for (int column = 1; column <= 4; ++column)
+			{
+				max = SimpleUtilities::GetMax(max, static_cast<float>(aMatrix(row, column)));
+			}
+		}
+
+		const std::string maxString = std::to_string(max);
+		const size_t characterLength = maxString.length() + 1;
+		const size_t totalLength = characterLength * 4 + 2;
+
+		return aOS
+			<< " " << std::string(totalLength, '-') << std::endl
+			<< "| " << std::setw(characterLength) << aMatrix(1, 1) << std::setw(characterLength) << aMatrix(1, 2) << std::setw(characterLength) << aMatrix(1, 3) << std::setw(characterLength) << aMatrix(1, 4) << " |" << std::endl
+			<< "| " << std::setw(characterLength) << aMatrix(2, 1) << std::setw(characterLength) << aMatrix(2, 2) << std::setw(characterLength) << aMatrix(2, 3) << std::setw(characterLength) << aMatrix(2, 4) << " |" << std::endl
+			<< "| " << std::setw(characterLength) << aMatrix(3, 1) << std::setw(characterLength) << aMatrix(3, 2) << std::setw(characterLength) << aMatrix(3, 3) << std::setw(characterLength) << aMatrix(3, 4) << " |" << std::endl
+			<< "| " << std::setw(characterLength) << aMatrix(4, 1) << std::setw(characterLength) << aMatrix(4, 2) << std::setw(characterLength) << aMatrix(4, 3) << std::setw(characterLength) << aMatrix(4, 4) << " |" << std::endl
+			<< " " << std::string(totalLength, '-') << std::endl;
 	}
 }
