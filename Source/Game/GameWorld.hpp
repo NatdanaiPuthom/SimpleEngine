@@ -3,6 +3,7 @@
 class ImGuiManager;
 class PlaneReflection;
 class LevelManager;
+class RaycastManager;
 
 class GameWorld final
 {
@@ -21,6 +22,5 @@ private:
 	std::unique_ptr<ImGuiManager> myImGuiManager;
 	std::unique_ptr<PlaneReflection> myPlaneReflection;
 	std::unique_ptr<LevelManager> myLevelManager;
-
-	std::unique_ptr<Drawer::Line> myRaycastLine;
+	std::unique_ptr<RaycastManager> myRaycastManager;
 };
