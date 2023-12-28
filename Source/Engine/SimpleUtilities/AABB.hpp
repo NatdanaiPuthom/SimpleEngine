@@ -1,10 +1,8 @@
 #pragma once
+#include "Engine/SimpleUtilities/Vector3.hpp"
 
 namespace SimpleUtilities
 {
-	template<typename T>
-	class Vector3;
-
 	class AABB3D
 	{
 	public:

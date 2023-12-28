@@ -39,13 +39,12 @@
 #include "Engine/SimpleUtilities/Transform.hpp"
 #include "Engine/SimpleUtilities/HashStuff.hpp"
 #include "Engine/SimpleUtilities/Ray.hpp"
-
-
 #include "Engine/SimpleUtilities/Plane.hpp"
 #include "Engine/SimpleUtilities/AABB.hpp"
 #include "Engine/SimpleUtilities/Intersection.hpp"
 
 #include "Engine/Console/Console.hpp"
+
 #include "Engine/engine.hpp"
 #include "Engine/Graphics/GraphicsEngine.hpp"
 
@@ -58,7 +57,11 @@
 #include "Engine/Graphics/Model/ModelFactory.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
 
+///////////////////////////////////////////////////////////////////////////////////
+
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
 #include "Game/Managers/ImGuiManager/Template/ToolInterface.hpp"
+
+///////////////////////////////////////////////////////////////////////////////////
 
 namespace SU = SimpleUtilities;

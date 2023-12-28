@@ -30,9 +30,11 @@ using Microsoft::WRL::ComPtr;
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-#include "Engine/SimpleUtilities/Vector.hpp"
-#include "Engine/SimpleUtilities/Matrix4x4.hpp"
+#include "Engine/SimpleUtilities/Vector2.hpp"
+#include "Engine/SimpleUtilities/Vector3.hpp"
+#include "Engine/SimpleUtilities/Vector4.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/SimpleUtilities/Matrix4x4.hpp"
 #include "Engine/SimpleUtilities/Transform.hpp"
 #include "Engine/SimpleUtilities/HashStuff.hpp"
 #include "Engine/SimpleUtilities/Plane.hpp"
@@ -57,3 +59,5 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/Graphics/Renderer/Renderer.hpp"
 
 #include "Engine/global.hpp"
+
+namespace SU = SimpleUtilities;
