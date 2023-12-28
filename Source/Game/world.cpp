@@ -14,11 +14,17 @@ namespace
 
 void SimpleWorldGameWorldImpl::SetGameWorld(GameWorld* aGameWorld)
 {
+	if (localGameWorld != nullptr)
+		assert(false && "localGameWorld is already set. Is this a mistake?");
+
 	localGameWorld = aGameWorld;
 }
 
 void SimpleWorldLevelManagerImpl::SetLevelManager(LevelManager* aLevelManager)
 {
+	if (localLevelManager != nullptr)
+		assert(false && "localLevelManager is already set. Is this a mistake?");
+
 	localLevelManager = aLevelManager;
 }
 

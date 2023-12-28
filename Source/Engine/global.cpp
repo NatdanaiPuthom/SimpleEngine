@@ -48,7 +48,7 @@ void SimpleGlobalRendererImpl::IncreaseDrawCall()
 void SimpleGlobalEngineImpl::SetEngine(Engine* aEngine)
 {
 	if (localEngine != nullptr)
-		assert(false && "localEngine is already initialized");
+		assert(false && "localEngine is already set. Is this a mistake?");
 
 	localEngine = aEngine;
 }
@@ -56,7 +56,7 @@ void SimpleGlobalEngineImpl::SetEngine(Engine* aEngine)
 void SimpleGlobalRendererImpl::SetRenderer(Renderer* aRenderer)
 {
 	if (localRenderer != nullptr)
-		assert(false && "localRenderer is already initialized");
+		assert(false && "localRenderer is already set. Is this a mistake?");
 
 	localRenderer = aRenderer;
 }
@@ -64,7 +64,7 @@ void SimpleGlobalRendererImpl::SetRenderer(Renderer* aRenderer)
 void SimpleGlobalModelFactoryImpl::SetModelFactory(ModelFactory* aModelFactory)
 {
 	if (localModelFactory != nullptr)
-		assert(false && "localModelFactory is already initialized");
+		assert(false && "localModelFactory is already set. Is this a mistake?");
 
 	localModelFactory = aModelFactory;
 }
