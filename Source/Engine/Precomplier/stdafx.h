@@ -25,6 +25,9 @@ using Microsoft::WRL::ComPtr;
 #include <unordered_map>
 #include <vector>
 
+#include <External/dearimgui/imgui/imgui.h>
+#include <External/dearimgui/imgui/imgui_impl_dx11.h>
+#include <External/dearimgui/imgui/imgui_impl_win32.h>
 #include <External/nlohmann/json.hpp>
 #include <External/profiler.h>
 

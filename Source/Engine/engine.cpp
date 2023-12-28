@@ -2,11 +2,6 @@
 #include "Engine/SimpleUtilities/Timer.hpp"
 #include "Engine/ImGuiEngine/ImGuiEngine.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
-#include <External/json.h>
-
-#ifdef _DEBUG
-#include "Engine/Console/Console.hpp"
-#endif
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -30,7 +25,7 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	myHWND = SetupMainWindow(hInstance, windowSize.x, windowSize.y);
 	assert(myHWND && "Failed To Create Window");
 
-#ifdef _DEBUG
+#ifndef _SIMPLE
 	myConsole.Init();
 #endif
 

@@ -35,7 +35,5 @@ private:
 	std::unique_ptr<HWND> myHWND;
 	std::unique_ptr<ImGuiEngine> myImGuiEngine;
 
-#ifdef _DEBUG
 	Console myConsole;
-#endif
 };

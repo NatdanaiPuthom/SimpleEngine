@@ -1,5 +1,6 @@
 #pragma once
 #include <bitset>
+#include <Windows.h>
 
 namespace SimpleUtilities
 {

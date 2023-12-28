@@ -1,5 +1,4 @@
 #include "Engine/Precomplier/stdafx.h"
-#include <External/json.h>
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
 #include "Engine/Graphics/Renderer/LineDrawer.hpp"
