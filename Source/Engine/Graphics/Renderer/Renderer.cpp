@@ -127,11 +127,6 @@ bool Renderer::IsDebugModeOn() const
 	return myDebugMode;
 }
 
-void Renderer::SetModelBuffer(std::vector<ModelInstance*>& aModelBuffer)
-{
-	myModelBuffer = aModelBuffer;
-}
-
 void Renderer::SetDebugMode(const bool aSetDebugMode)
 {
 	myDebugMode = aSetDebugMode;
@@ -140,11 +135,6 @@ void Renderer::SetDebugMode(const bool aSetDebugMode)
 void Renderer::SetBoundingBoxLineColor(const SimpleUtilities::Vector3f& aColor)
 {
 	myBoundingBoxDrawer->SetLineColor(SimpleUtilities::Vector4f(aColor.x, aColor.y, aColor.z, 1));
-}
-
-std::vector<ModelInstance*> Renderer::GetAllModelInstances()
-{
-	return myModelBuffer;
 }
 
 const bool Renderer::CreateObjectBuffer()
