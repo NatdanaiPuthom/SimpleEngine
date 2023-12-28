@@ -106,7 +106,7 @@ void GameWorld::Update()
 		}
 		else
 		{
-			SimpleGlobal::SetBoundingBoxLineColor({ 0,1,0 });
+			SimpleGlobal::SetBoundingBoxLineColor({ 1,1,0 });
 		}
 
 	}
