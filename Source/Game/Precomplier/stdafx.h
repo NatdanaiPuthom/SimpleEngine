@@ -1,26 +1,35 @@
 #pragma once
-//TO-DO: Fix a way to not need to have these
+#pragma message("---------Never give up on your dreams!---------------")
+
+#if !defined(WIN32_LEAN_AND_MEAN)
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#define NOMINMAX
+
 #include <Windows.h>
 #include <wrl/client.h>
 #include <d3d11.h>
 
-#ifndef _SIMPLE
-#include "Engine/Console/Console.hpp"
-#endif
 ///////////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
-#include <cassert>
 #include <algorithm>
 #include <array>
-#include <string>
-#include <vector>
+#include <cassert>
+#include <fstream>
+#include <iostream>
 #include <memory>
+#include <string>
 #include <unordered_map>
-#include <thread>
+#include <vector>
 
+#include <External/dearimgui/imgui/imgui.h>
+#include <External/dearimgui/imgui/imgui_impl_dx11.h>
+#include <External/dearimgui/imgui/imgui_impl_win32.h>
+#include <External/nlohmann/json.hpp>
 #include <External/profiler.h>
-#include <External/imgui.h>
+
+///////////////////////////////////////////////////////////////////////////////////
 
 #include "Engine/SimpleUtilities/Vector.hpp"
 #include "Engine/SimpleUtilities/Matrix4x4.hpp"
@@ -32,6 +41,7 @@
 #include "Engine/SimpleUtilities/AABB.hpp"
 #include "Engine/SimpleUtilities/Intersection.hpp"
 
+#include "Engine/Console/Console.hpp"
 #include "Engine/engine.hpp"
 #include "Engine/Graphics/GraphicsEngine.hpp"
 

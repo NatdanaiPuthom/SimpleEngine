@@ -1,25 +1,34 @@
 #pragma once
+#pragma message("---------Never give up on your dreams!---------------")
+
+#if !defined(WIN32_LEAN_AND_MEAN)
 #define WIN32_LEAN_AND_MEAN
+#endif
+
 #define NOMINMAX
+
 #include <Windows.h>
 #include <wrl/client.h>
 #include <d3d11.h>
+
 using Microsoft::WRL::ComPtr;
 
-#include <iostream>
-#include <cassert>
+///////////////////////////////////////////////////////////////////////////////////
+
 #include <algorithm>
 #include <array>
+#include <cassert>
+#include <fstream>
+#include <iostream>
 #include <memory>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
-#ifndef _SIMPLE
-#include "Engine/Console/Console.hpp"
-#endif
-
+#include <External/nlohmann/json.hpp>
 #include <External/profiler.h>
+
+///////////////////////////////////////////////////////////////////////////////////
 
 #include "Engine/SimpleUtilities/Vector.hpp"
 #include "Engine/SimpleUtilities/Matrix4x4.hpp"
@@ -31,6 +40,7 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/SimpleUtilities/AABB.hpp"
 #include "Engine/SimpleUtilities/Intersection.hpp"
 
+#include "Engine/Console/Console.hpp"
 #include "Engine/Input/InputManager.hpp"
 
 #include "Engine/engine.hpp"
