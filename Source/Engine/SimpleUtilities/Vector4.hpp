@@ -1,10 +1,9 @@
 #pragma once
+#include <iostream>
+#include "Engine/SimpleUtilities/Vector3.hpp"
 
 namespace SimpleUtilities
 {
-	template<class T>
-	class Vector3;
-
 	template <class T>
 	class Vector4
 	{
@@ -50,6 +49,8 @@ namespace SimpleUtilities
 	template <class T> void operator-=(Vector4<T>& aVectorA, const Vector4<T>& aVectorB);
 	template <class T> void operator*=(Vector4<T>& aVector, const T& aScalar);
 	template <class T> void operator/=(Vector4<T>& aVector, const T& aScalar);
+
+	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector4<T>& aVector);
 
 	template<class T>
 	inline Vector4<T>::Vector4() : Vector4(0, 0, 0, 0)
@@ -198,5 +199,11 @@ namespace SimpleUtilities
 		aVector.y *= inverse;
 		aVector.z *= inverse;
 		aVector.w *= inverse;
+	}
+
+	template <class T>
+	std::ostream& operator<<(std::ostream& aOS, const Vector4<T>& aVector)
+	{
+		return aOS << "{X: " << aVector.x << " Y: " << aVector.y << " Z: " << aVector.z << " W: " << aVector.w << "}";
 	}
 }

@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+#include "Engine/SimpleUtilities/Vector2.hpp"
 
 namespace SimpleUtilities
 {
@@ -18,6 +20,7 @@ namespace SimpleUtilities
 
 		Vector3<T>& operator=(const Vector3<T>& aVector2) = default;
 
+		Vector2<T> AsVector2() const;
 		Vector3<T> GetNormalized() const;
 
 		T LengthSqr() const;
@@ -47,6 +50,8 @@ namespace SimpleUtilities
 	template <class T> void operator*=(Vector3<T>& aVector, const T& aScalar);
 	template <class T> void operator/=(Vector3<T>& aVector, const T& aScalar);
 
+	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector3<T>& aVector);
+
 	template<class T>
 	inline Vector3<T>::Vector3() : Vector3(0, 0, 0)
 	{
@@ -55,6 +60,12 @@ namespace SimpleUtilities
 	template<class T>
 	inline Vector3<T>::Vector3(const T& aX, const T& aY, const T& aZ) : x(aX), y(aY), z(aZ)
 	{
+	}
+
+	template<class T>
+	inline Vector2<T> Vector3<T>::AsVector2() const
+	{
+		return Vector2<T>(x, y);
 	}
 
 	template<class T>
@@ -190,5 +201,11 @@ namespace SimpleUtilities
 		vector.z = aVector0.z * aVector1.z;
 
 		return vector;
+	}
+
+	template <class T>
+	std::ostream& operator<<(std::ostream& aOS, const Vector3<T>& aVector)
+	{
+		return aOS << "{X: " << aVector.x << " Y: " << aVector.y << " Z: " << aVector.z << "}";
 	}
 }
