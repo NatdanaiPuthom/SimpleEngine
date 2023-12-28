@@ -1,10 +1,8 @@
 #pragma once
+#include "Engine/Graphics/Model/Mesh.hpp"
 
-class Mesh;
 class Shader;
 class Texture;
-
-struct BoundingBox;
 
 class ModelInstance final
 {

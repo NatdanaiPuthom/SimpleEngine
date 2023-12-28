@@ -3,7 +3,6 @@
 #include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
 #include "Engine/Graphics/Renderer/LineDrawer.hpp"
 
-
 Renderer::Renderer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myBoundingBoxDrawer(std::make_unique<BoundingBoxDrawer>())

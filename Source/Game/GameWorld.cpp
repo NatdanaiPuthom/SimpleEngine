@@ -6,8 +6,6 @@
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Engine/Graphics/Camera/Camera.hpp"
-#include "Engine/Graphics/Model/Mesh.hpp"
-
 
 GameWorld::GameWorld()
 	: myImGuiManager(std::make_unique<ImGuiManager>())
@@ -94,7 +92,7 @@ void GameWorld::Update()
 
 			if (test->GetName() != "SkyBox")
 			{
-				if (SimpleUtilities::IntersectionAABBRay(aabb, ray, intersectPoint))
+				if (SU::IntersectionAABBRay(aabb, ray, intersectPoint))
 				{
 					hit = true;
 					std::cout << test->GetName() << std::endl;
