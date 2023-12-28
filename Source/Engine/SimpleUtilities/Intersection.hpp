@@ -8,14 +8,14 @@ namespace SimpleUtilities
 {
 	static bool IntersectionPlaneRay(const Plane& aPlane, const Ray& aRay, Vector3f& aOutIntersectionPoint)
 	{
-		const float epsilon = 0.0001f;
+		const float epsilonValue = std::numeric_limits<float>::epsilon();;
 
 		float maxDistance = FLT_MAX;
 		Vector3f noIntersection = aRay.GetOrigin() + aRay.GetDirection() * maxDistance; //There's no intersection so we set value to infinite distance along the ray's direction
 
 		float projectionOnPlaneNormal = SimpleUtilities::Dot(aPlane.GetNormal(), (aRay.GetOrigin() - aPlane.GetPosition()));
 
-		if (std::abs(projectionOnPlaneNormal) < epsilon)
+		if (std::abs(projectionOnPlaneNormal) < epsilonValue)
 		{
 			aOutIntersectionPoint = aRay.GetOrigin();
 			return true;
@@ -23,7 +23,7 @@ namespace SimpleUtilities
 
 		float denom = SimpleUtilities::Dot(aRay.GetDirection(), aPlane.GetNormal());
 
-		if (std::abs(denom) < epsilon)
+		if (std::abs(denom) < epsilonValue)
 		{
 			aOutIntersectionPoint = noIntersection;
 			return false;
@@ -43,50 +43,61 @@ namespace SimpleUtilities
 		}
 	}
 
-	static inline bool IntersectionAABBRay(const AABB3D& aAABB, const Ray& aRay, Vector3f& aOutIntersectionPoint)
+	static inline bool IntersectionAABB3DRay(const AABB3D& aAABB, const Ray& aRay, Vector3f& aOutIntersectionPoint)
 	{
-		if (aAABB.IsInside(aRay.GetOrigin()))
+		const SimpleUtilities::Vector3f& rayOrigin = aRay.GetOrigin();
+		const SimpleUtilities::Vector3f& rayDirection = aRay.GetDirection();
+
+		const SimpleUtilities::Vector3f& min = aAABB.GetMin();
+		const SimpleUtilities::Vector3f& max = aAABB.GetMax();
+
+		float txMin = (min.x - rayOrigin.x) / rayDirection.x;
+		float txMax = (max.x - rayOrigin.x) / rayDirection.x;
+
+		if (txMin > txMax)
 		{
-			aOutIntersectionPoint = aRay.GetOrigin();
-			return true;
+			SimpleUtilities::Swap(txMin, txMax);
 		}
 
-		const Plane planes[6] =
+		float tyMin = (min.y - rayOrigin.y) / rayDirection.y;
+		float tyMax = (max.y - rayOrigin.y) / rayDirection.y;
+
+		if (tyMin > tyMax)
 		{
-			Plane(aAABB.GetMin(), Vector3f(-1, 0, 0)),
-			Plane(aAABB.GetMin(), Vector3f(0, -1, 0)),
-			Plane(aAABB.GetMin(), Vector3f(0, 0, -1)),
-			Plane(aAABB.GetMax(), Vector3f(1, 0, 0)),
-			Plane(aAABB.GetMax(), Vector3f(0, 1, 0)),
-			Plane(aAABB.GetMax(), Vector3f(0, 0, 1))
-		};
-
-		float intersectionDistance = FLT_MAX;
-		Vector3f closestIntersectionPoint;
-
-		for (int i = 0; i < 6; i++)
-		{
-			if (IntersectionPlaneRay(planes[i], aRay, aOutIntersectionPoint))
-			{
-				if (aAABB.IsInside(aOutIntersectionPoint))
-				{
-					const Vector3f distance = aOutIntersectionPoint - aRay.GetOrigin();
-
-					if (distance.Length() < intersectionDistance)
-					{
-						intersectionDistance = static_cast<float>(distance.Length());
-						closestIntersectionPoint = aOutIntersectionPoint;
-					}
-				}
-			}
+			SimpleUtilities::Swap(tyMin, tyMax);
 		}
 
-		if (intersectionDistance == FLT_MAX)
-		{
+		if ((txMin > tyMax) || (tyMin > txMax))
 			return false;
+
+		if (tyMin > txMin)
+		{
+			txMin = tyMin;
 		}
 
-		aOutIntersectionPoint = closestIntersectionPoint;
+		if (tyMax < txMax)
+		{
+			txMax = tyMax;
+		}
+
+		float tzMin = (min.z - rayOrigin.z) / rayDirection.z;
+		float tzMax = (max.z - rayOrigin.z) / rayDirection.z;
+
+		if (tzMin > tzMax)
+		{
+			SimpleUtilities::Swap(tzMin, tzMax);
+		}
+
+		if ((txMin > tzMax) || (tzMin > txMax))
+			return false;
+
+		const float tMin = SimpleUtilities::GetMax(SimpleUtilities::GetMax(txMin, tyMin), tzMin);
+		if (tMin < 0.0f)
+			return false;
+
+		const SimpleUtilities::Vector3f intersectionPoint = rayOrigin + tMin * rayDirection;
+		aOutIntersectionPoint = intersectionPoint;
+
 		return true;
 	}
 }
