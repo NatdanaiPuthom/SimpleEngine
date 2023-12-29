@@ -114,10 +114,9 @@ void RaycastManager::CheckAABB3DCollision()
 		SU::AABB3D aabb3d;
 		aabb3d.InitWithMinAndMax(minHomogeneous.AsVector3(), maxHomogeneous.AsVector3());
 
-		SU::Vector3f intersectionPoint;
-		if (SU::IntersectionAABB3DRay(aabb3d, ray, intersectionPoint))
+		if (SU::IntersectionAABB3DRay(aabb3d, ray, closetHitPoint))
 		{
-			const float distance = SU::Distance(ray.GetOrigin(), intersectionPoint);
+			const float distance = SU::Distance(ray.GetOrigin(), closetHitPoint);
 
 			if (distance < closetDistance)
 			{
@@ -149,6 +148,9 @@ void RaycastManager::MoveObject()
 	const auto worldMatrix = model->GetMatrix();
 
 	auto position = model->GetPosition();
+	float x = position.x;
+	float y = position.y;
+	float z = position.z;
 
 	SU::Vector4f minHomogeneous(min.x, min.y, min.z, 1.0f);
 	SU::Vector4f maxHomogeneous(max.x, max.y, max.z, 1.0f);
@@ -162,15 +164,26 @@ void RaycastManager::MoveObject()
 	const SU::Ray ray = GetScreenPointToRay(SU::InputManager::GetInstance().GetMousePosition());
 
 	SU::Vector3f intersectionPoint;
-	if (SU::IntersectionAABB3DRay(aabb3d, ray, intersectionPoint))
-	{
+	bool hit = SU::IntersectionAABB3DRay(aabb3d, ray, intersectionPoint);
 
-		position.x += intersectionPoint.x - position.x;
-		position.z += intersectionPoint.z - position.z;
+	if (SimpleUtilities::InputManager::GetInstance().IsHold(VK_CONTROL))
+	{
+		y += mouseDelta.y * 0.02f;
+	}
+	else if (hit)
+	{
+		x += intersectionPoint.x - x;
+		z += intersectionPoint.z - z;
 	}
 
-	position.y += mouseDelta.y * 0.01f;
+	if (SU::Distance(SU::Vector2f(model->GetPosition().x, model->GetPosition().z), SU::Vector2f(x, z)) > 0.1f)
+	{
+		position.x = x;
+		position.z = z;
+	}
+
+	position.y = y;
 
 	model->SetPosition(position);
-	myDebugSphere->position = position;
+	myDebugSphere->position = intersectionPoint;
 }
