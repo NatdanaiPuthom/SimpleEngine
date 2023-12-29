@@ -33,21 +33,21 @@ void MeshTool::Draw()
 		ImGui::Dummy(ImVec2(0, 10));
 		ImGui::SetNextItemWidth(400);
 		SimpleUtilities::Vector3f position = modelInstances[selectedMeshIndex]->GetPosition();
-		if (ImGui::SliderFloat3("Position", &position.x, -10.0f, 20.0f))
+		if (ImGui::DragFloat3("Position", &position.x, 0.1f))
 		{
 			modelInstances[selectedMeshIndex]->SetPosition(position);
 		}
 
 		ImGui::SetNextItemWidth(400);
 		SimpleUtilities::Vector3f rotation = modelInstances[selectedMeshIndex]->GetRotation();
-		if (ImGui::SliderFloat3("Rotation", &rotation.x, 0.0f, 360.0f))
+		if (ImGui::DragFloat3("Rotation", &rotation.x, 1.0f, 0.0f, 360.0f, "%.3f"))
 		{
 			modelInstances[selectedMeshIndex]->SetRotation(rotation);
 		}
 
 		ImGui::SetNextItemWidth(400);
 		SimpleUtilities::Vector3f scale = modelInstances[selectedMeshIndex]->GetScale();
-		if (ImGui::SliderFloat3("Scale", &scale.x, 1.0f, 20.0f))
+		if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, 0.001f, 100.0f, "%0.3f"))
 		{
 			modelInstances[selectedMeshIndex]->SetScale(scale);
 		}
