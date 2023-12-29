@@ -4,7 +4,6 @@
 
 BoundingBoxDrawer::BoundingBoxDrawer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
-	, myLineColor(1,1,0,1)
 {
 	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("Shaders/LinePS.cso", "Shaders/DefaultVS.cso");
 
@@ -115,7 +114,7 @@ void BoundingBoxDrawer::Render(const std::shared_ptr<const ModelInstance> aModel
 
 	for (auto& vertice : myMeshData.vertices)
 	{
-		vertice.color = myLineColor;
+		vertice.color = aModelInstance->GetBoundingBox().color;
 	}
 
 	auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
@@ -138,9 +137,4 @@ void BoundingBoxDrawer::Render(const std::shared_ptr<const ModelInstance> aModel
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 	context->DrawIndexed(static_cast<UINT>(myMeshData.vertices.size()), 0, 0);
-}
-
-void BoundingBoxDrawer::SetLineColor(const SimpleUtilities::Vector4f& aColor)
-{
-	myLineColor = aColor;
 }

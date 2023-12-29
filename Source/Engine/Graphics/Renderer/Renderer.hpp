@@ -29,7 +29,6 @@ public:
 	bool IsDebugModeOn() const;
 public:
 	void SetDebugMode(const bool aSetDebugMode);
-	void SetBoundingBoxLineColor(const SimpleUtilities::Vector3f& aColor);
 private:
 	const bool CreateObjectBuffer();
 	void LoadSettingsFromJson();

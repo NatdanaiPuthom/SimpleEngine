@@ -22,6 +22,7 @@ struct MeshData final
 
 struct BoundingBox final
 {
+	SimpleUtilities::Vector4f color = { 1.0f, 1.0f, 0.0f, 1.0f };
 	SimpleUtilities::Vector3f min;
 	SimpleUtilities::Vector3f max;
 };
@@ -35,6 +36,7 @@ public:
 	~Mesh();
 
 	const bool Init(const MeshData& aMeshData);
+	void SetBoundingBoxLineColor(const SimpleUtilities::Vector4f& aColor);
 	const BoundingBox GetBoundingBox() const;
 private:
 	bool CreateVertexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);

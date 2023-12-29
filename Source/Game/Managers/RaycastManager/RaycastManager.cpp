@@ -26,7 +26,6 @@ void RaycastManager::Update()
 	{
 		if (mySelectedModelIndex >= 0 && myTimer >= mySelectDelay)
 		{
-			SimpleGlobal::SetBoundingBoxLineColor({ 1,0,0 });
 			MoveObject();
 		}
 		else
@@ -37,16 +36,25 @@ void RaycastManager::Update()
 	}
 	else
 	{
+		if (mySelectedModelIndex >= 0)
+		{
+			auto& model = SimpleWorld::GetActiveScene()->myModelInstances[mySelectedModelIndex];
+			model->SetBoundingBoxLineColor({ 1.0f,1.0f,0.0f , 1.0f });
+		}
+
 		mySelectedModelIndex = -1;
 		myTimer = 0;
-		SimpleGlobal::SetBoundingBoxLineColor({ 1,1,0 });
 	}
 }
 
 void RaycastManager::Render()
 {
 	SimpleGlobal::GetRenderer()->RenderLine(*myRaycastLine);
-	SimpleGlobal::GetRenderer()->RenderSphere(*myDebugSphere);
+
+	if (mySelectedModelIndex >= 0)
+	{
+		SimpleGlobal::GetRenderer()->RenderSphere(*myDebugSphere);
+	}
 }
 
 SimpleUtilities::Ray RaycastManager::GetScreenPointToRay(const SimpleUtilities::Vector2f& aPosition)
@@ -127,19 +135,20 @@ void RaycastManager::CheckAABB3DCollision()
 	else
 	{
 		mySelectedModelIndex = -1;
-		SimpleGlobal::SetBoundingBoxLineColor({ 1,1,0 });
 	}
 }
 
 void RaycastManager::MoveObject()
 {
 	auto& model = SimpleWorld::GetActiveScene()->myModelInstances[mySelectedModelIndex];
-	auto mouseDelta = SimpleUtilities::InputManager::GetInstance().GetMouseDelta();
-	auto position = model->GetPosition();
+	model->SetBoundingBoxLineColor({ 1.0f,0.0f,0.0f , 1.0f });
 
+	const auto mouseDelta = SimpleUtilities::InputManager::GetInstance().GetMouseDelta();
 	const auto min = model->GetBoundingBox().min;
 	const auto max = model->GetBoundingBox().max;
 	const auto worldMatrix = model->GetMatrix();
+
+	auto position = model->GetPosition();
 
 	SU::Vector4f minHomogeneous(min.x, min.y, min.z, 1.0f);
 	SU::Vector4f maxHomogeneous(max.x, max.y, max.z, 1.0f);

@@ -137,11 +137,6 @@ void Renderer::SetDebugMode(const bool aSetDebugMode)
 	myDebugMode = aSetDebugMode;
 }
 
-void Renderer::SetBoundingBoxLineColor(const SimpleUtilities::Vector3f& aColor)
-{
-	myBoundingBoxDrawer->SetLineColor(SimpleUtilities::Vector4f(aColor.x, aColor.y, aColor.z, 1));
-}
-
 const bool Renderer::CreateObjectBuffer()
 {
 	ObjectBufferData objectBuffer;

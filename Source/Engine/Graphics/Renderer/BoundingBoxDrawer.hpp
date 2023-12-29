@@ -14,8 +14,6 @@ public:
 	~BoundingBoxDrawer();
 
 	void Render(const std::shared_ptr<const ModelInstance> aModelInstance);
-public:
-	void SetLineColor(const SimpleUtilities::Vector4f& aColor);
 private:
 	MeshData myMeshData;
 
@@ -24,6 +22,4 @@ private:
 
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
 	std::shared_ptr<Shader> myShader;
-
-	SimpleUtilities::Vector4f myLineColor;
 };

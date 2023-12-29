@@ -23,6 +23,7 @@ public:
 	void SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree);
 	void SetScale(const SimpleUtilities::Vector3f& aScale);
 	void SetName(const std::string& aName);
+	void SetBoundingBoxLineColor(const SimpleUtilities::Vector4f& aColor);
 
 	const BoundingBox GetBoundingBox() const;
 	SimpleUtilities::Matrix4x4f GetMatrix() const;

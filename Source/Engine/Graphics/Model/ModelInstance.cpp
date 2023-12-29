@@ -85,6 +85,11 @@ void ModelInstance::SetName(const std::string& aName)
 	myName = aName;
 }
 
+void ModelInstance::SetBoundingBoxLineColor(const SimpleUtilities::Vector4f& aColor)
+{
+	myMesh->SetBoundingBoxLineColor(aColor);
+}
+
 const BoundingBox ModelInstance::GetBoundingBox() const
 {
 	return myMesh->GetBoundingBox();

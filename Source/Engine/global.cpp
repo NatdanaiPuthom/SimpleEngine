@@ -152,9 +152,4 @@ namespace SimpleGlobal
 		localWindowSize = aWindowSize;
 		localEngine->GetGraphicsEngine()->SetWindowSize(localWindowSize, aSetFullScreen);
 	}
-
-	void SetBoundingBoxLineColor(const SimpleUtilities::Vector3f& aColor)
-	{
-		localRenderer->SetBoundingBoxLineColor(aColor);
-	}
 }
