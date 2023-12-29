@@ -51,14 +51,14 @@ void GameWorld::RenderImGui()
 
 void GameWorld::RenderReflection()
 {
-	//SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModelInstance.get());
+	SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModelInstance.get());
 }
 
 void GameWorld::RenderUpSideDown()
 {
-	/*Renderer* renderer = SimpleGlobal::GetRenderer();
-	for (const auto& model : myModelInstances)
+	Renderer* renderer = SimpleGlobal::GetRenderer();
+	for (const auto& model : SimpleWorld::GetActiveScene()->myModelInstances)
 	{
 		renderer->RenderEverythingUpSideDown(model.get());
-	}*/
+	}
 }
