@@ -11,10 +11,19 @@ void LightTool::Draw()
 
 	if (ImGui::Begin("Lights"))
 	{
+		auto& directionalLight = SimpleWorld::GetActiveScene()->myDirectionalLight;
+
 		if (ImGui::BeginTabBar("Light Tab Bar"))
 		{
 			if (ImGui::BeginTabItem("Directional Light"))
 			{
+				ImGui::SetNextItemWidth(400.0f);
+				SU::Vector3f position = directionalLight->myDirectionalLight->GetPosition();
+				if (ImGui::DragFloat3("Position", &position.x, 0.1f))
+				{
+					directionalLight->myDirectionalLight->SetPosition(position);
+				}
+
 				ImGui::SetNextItemWidth(400.0f);
 				SimpleUtilities::Vector3f direction = graphicsEngine->GetDirectionalLightDirection();
 				if (ImGui::SliderFloat3("Direction", &direction.x, -1.0f, 1.0f, "%.03f"))
@@ -28,6 +37,7 @@ void LightTool::Draw()
 				{
 					graphicsEngine->SetDirectionalLightColor(color);
 				}
+
 				ImGui::SameLine();
 				ImGui::SetNextItemWidth(100.0f);
 				if (ImGui::SliderFloat("Intensity", &color.w, 0.0f, 10.f, "%.03f"))

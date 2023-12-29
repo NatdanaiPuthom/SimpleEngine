@@ -34,6 +34,7 @@ void LevelManager::Init()
 void LevelManager::Update()
 {
 	myActiveScene->Update();
+	myActiveScene->myDirectionalLight->Update();
 }
 
 void LevelManager::Render()
@@ -52,6 +53,8 @@ void LevelManager::Render()
 			renderer->RenderBoundingBox(model);
 		}
 	}
+
+	myActiveScene->myDirectionalLight->Render();
 }
 
 void LevelManager::SetActiveScene(const int aSceneIndex)

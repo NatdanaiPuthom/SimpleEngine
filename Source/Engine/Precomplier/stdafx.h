@@ -59,6 +59,8 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/Graphics/Model/Mesh.hpp"
 #include "Engine/Graphics/Model/ModelInstance.hpp"
 #include "Engine/Graphics/Model/ModelFactory.hpp"
+#include "Engine/Graphics/Model/DirectionalLightVisual.hpp"
+#include "Engine/Graphics/Renderer/LineDrawer.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
 
 #include "Engine/global.hpp"

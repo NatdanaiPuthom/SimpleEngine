@@ -23,12 +23,6 @@ void DefaultScene::Init()
 	}
 
 	{
-		std::shared_ptr<ModelInstance> directionalLight = std::move(modelFactory->CreateDirectionalLightModel());
-		directionalLight->SetPosition({ 8,6,10 });
-		myModelInstances.push_back(std::move(directionalLight));
-	}
-
-	{
 		std::shared_ptr<ModelInstance> sphere = std::move(modelFactory->CreateSphereModel());
 		sphere->SetPosition({ 2,3,7 });
 		myModelInstances.push_back(std::move(sphere));
@@ -46,11 +40,11 @@ void DefaultScene::Init()
 		myModelInstances.push_back(std::move(terrain));
 	}
 
-	{
+	/*{
 		std::shared_ptr<ModelInstance> skyBox = std::move(modelFactory->CreateSkyBoxModel());
 		skyBox->SetPosition({ 0.0f, 0.0f, 20.0f });
 		myModelInstances.push_back(std::move(skyBox));
-	}
+	}*/
 }
 
 void DefaultScene::Update()
