@@ -1,4 +1,5 @@
 #pragma once
+#include <limits>
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "SimpleUtilities/AABB.hpp"
 #include "SimpleUtilities/Plane.hpp"
@@ -8,7 +9,7 @@ namespace SimpleUtilities
 {
 	static bool IntersectionPlaneRay(const Plane& aPlane, const Ray& aRay, Vector3f& aOutIntersectionPoint)
 	{
-		const float epsilonValue = std::numeric_limits<float>::epsilon();;
+		constexpr float epsilonValue = std::numeric_limits<float>::epsilon();;
 
 		float maxDistance = FLT_MAX;
 		Vector3f noIntersection = aRay.GetOrigin() + aRay.GetDirection() * maxDistance; //There's no intersection so we set value to infinite distance along the ray's direction

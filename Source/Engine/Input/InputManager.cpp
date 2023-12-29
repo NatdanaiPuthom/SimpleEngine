@@ -47,6 +47,8 @@ namespace SimpleUtilities
 		myCurrentMousePosition = myTentativeMousePosition;
 
 		myMouseDelta = myTentativeMouseDelta;
+		myMouseDelta.y *= -1; //Windows have y = 0 at top :(
+
 		myTentativeMouseDelta = { 0, 0 };
 
 		if (myKeyState.any())

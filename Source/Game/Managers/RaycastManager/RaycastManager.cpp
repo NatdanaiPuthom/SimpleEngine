@@ -13,7 +13,7 @@ RaycastManager::RaycastManager()
 	myRaycastLine->startPosition = { 0,0,0 };
 	myRaycastLine->endPosition = { 0,0,0 };
 
-	myDebugSphere->radius = 0.5f;
+	myDebugSphere->radius = 0.2f;
 }
 
 RaycastManager::~RaycastManager()
@@ -134,8 +134,8 @@ void RaycastManager::CheckAABB3DCollision()
 void RaycastManager::MoveObject()
 {
 	auto& model = SimpleWorld::GetActiveScene()->myModelInstances[mySelectedModelIndex];
-
-	myDebugSphere->position = model->GetPosition();
+	auto mouseDelta = SimpleUtilities::InputManager::GetInstance().GetMouseDelta();
+	auto position = model->GetPosition();
 
 	const auto min = model->GetBoundingBox().min;
 	const auto max = model->GetBoundingBox().max;
@@ -153,17 +153,15 @@ void RaycastManager::MoveObject()
 	const SU::Ray ray = GetScreenPointToRay(SU::InputManager::GetInstance().GetMousePosition());
 
 	SU::Vector3f intersectionPoint;
-
 	if (SU::IntersectionAABB3DRay(aabb3d, ray, intersectionPoint))
 	{
-		auto pos = model->GetPosition();
 
-		pos.x = intersectionPoint.x;
-		pos.z = intersectionPoint.z;
-
-		pos.x += intersectionPoint.x - pos.x;
-		pos.z += intersectionPoint.z - pos.z;
-
-		model->SetPosition(pos);
+		position.x += intersectionPoint.x - position.x;
+		position.z += intersectionPoint.z - position.z;
 	}
+
+	position.y += mouseDelta.y * 0.01f;
+
+	model->SetPosition(position);
+	myDebugSphere->position = position;
 }

@@ -118,7 +118,7 @@ void Camera::Update(const float aDeltaTime)
 			SimpleUtilities::Vector2f mouseDelta = myInput->GetMouseDelta();
 			mouseDelta *= myRotateSpeed * 0.0015f;
 
-			targetRotation.x += mouseDelta.y;
+			targetRotation.x += -mouseDelta.y; //I don't know why flip
 			targetRotation.y += mouseDelta.x;
 		}
 		else
