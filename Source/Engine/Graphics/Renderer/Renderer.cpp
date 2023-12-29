@@ -2,11 +2,13 @@
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
 #include "Engine/Graphics/Renderer/LineDrawer.hpp"
+#include "Engine/Graphics/Renderer/SphereDrawer.hpp"
 
 Renderer::Renderer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myBoundingBoxDrawer(std::make_unique<BoundingBoxDrawer>())
 	, myLineDrawer(std::make_unique<LineDrawer>())
+	, mySphereDrawer(std::make_unique<SphereDrawer>())
 	, myDebugMode(false)
 {
 	SimpleGlobalRendererImpl::SetRenderer(this);
@@ -54,6 +56,11 @@ void Renderer::RenderLine(const Drawer::Line& aLine)
 	myLineDrawer->Render(aLine);
 
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
+}
+
+void Renderer::RenderSphere(const Drawer::Sphere& aSphere)
+{
+	mySphereDrawer->Render(aSphere);
 }
 
 void Renderer::RenderBoundingBox(const std::shared_ptr<const ModelInstance> aModelInstance) const

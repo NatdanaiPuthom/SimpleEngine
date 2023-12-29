@@ -491,27 +491,23 @@ MeshData ShapeCreator3000::CreatePlane()
 	return MeshData(vertices, indices);
 }
 
-MeshData ShapeCreator3000::CreateSphere()
+MeshData ShapeCreator3000::CreateSphere(const float aRadius, const int aSlices, const int aStacks)
 {
 	//Dear Savior ChatGPT, I have absolutely no clue how this calculation work at all so don't ask
 
-	const float radius = 1.0f;
-	const int slices = 20;
-	const int stacks = 20;
-
 	std::vector<Vertex> vertices;
 
-	for (int i = 0; i <= stacks; ++i)
+	for (int i = 0; i <= aStacks; ++i)
 	{
-		float phi = static_cast<float>(i) / stacks * globalPi;
-		for (int j = 0; j <= slices; ++j)
+		float phi = static_cast<float>(i) / aStacks * globalPi;
+		for (int j = 0; j <= aSlices; ++j)
 		{
-			float theta = static_cast<float>(j) * 2.0f * globalPi / slices;
+			float theta = static_cast<float>(j) * 2.0f * globalPi / aSlices;
 
 			Vertex vertex;
-			vertex.position.x = radius * std::sin(phi) * std::cos(theta);
-			vertex.position.y = radius * std::cos(phi);
-			vertex.position.z = radius * std::sin(phi) * std::sin(theta);
+			vertex.position.x = aRadius * std::sin(phi) * std::cos(theta);
+			vertex.position.y = aRadius * std::cos(phi);
+			vertex.position.z = aRadius * std::sin(phi) * std::sin(theta);
 			vertex.position.w = 1.0f;
 
 			vertex.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -523,13 +519,13 @@ MeshData ShapeCreator3000::CreateSphere()
 
 	std::vector<unsigned int> indices;
 
-	for (int i = 0; i < stacks; ++i)
+	for (int i = 0; i < aStacks; ++i)
 	{
-		for (int j = 0; j < slices; ++j)
+		for (int j = 0; j < aSlices; ++j)
 		{
-			int v1 = i * (slices + 1) + j;
+			int v1 = i * (aSlices + 1) + j;
 			int v2 = v1 + 1;
-			int v3 = (i + 1) * (slices + 1) + j;
+			int v3 = (i + 1) * (aSlices + 1) + j;
 			int v4 = v3 + 1;
 
 			indices.push_back(v2);

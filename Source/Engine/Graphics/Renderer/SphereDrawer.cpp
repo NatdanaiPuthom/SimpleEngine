@@ -1,20 +1,21 @@
 #include "Engine/Precomplier/stdafx.h"
-#include "Engine/Graphics/Renderer/LineDrawer.hpp"
+#include "Engine/Graphics/Renderer/SphereDrawer.hpp"
+#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
 
-LineDrawer::LineDrawer()
+SphereDrawer::SphereDrawer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myMeshData(std::make_unique<MeshData>())
 {
 	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("Shaders/LinePS.cso", "Shaders/DefaultVS.cso");
 
-	myMeshData->vertices.reserve(2);
-	myMeshData->vertices.resize(2, Vertex{});
+	MeshData sphereData = ShapeCreator3000::CreateSphere(1.0f, 10, 10);
 
-	myMeshData->vertices[0].position = { 0.0f,0.0f,0.0f,1.0f };
+	myMeshData->vertices = sphereData.vertices;
+	myMeshData->indices = sphereData.indices;
 
-	for (unsigned int i = 0; i < myMeshData->vertices.size(); ++i)
+	for (auto& vertex : myMeshData->vertices)
 	{
-		myMeshData->indices.push_back(i);
+		vertex.color = { 1,1,0,1 };
 	}
 
 	D3D11_BUFFER_DESC vertexBufferDesc = {};
@@ -61,32 +62,26 @@ LineDrawer::LineDrawer()
 	myObjectBuffer->SetSlot(1);
 }
 
-LineDrawer::~LineDrawer()
+SphereDrawer::~SphereDrawer()
 {
 }
 
-void LineDrawer::Render(const Drawer::Line& aLine)
+void SphereDrawer::Render(const Drawer::Sphere& aSphere)
 {
-	myMeshData->vertices[0].position.x = aLine.startPosition.x;
-	myMeshData->vertices[0].position.y = aLine.startPosition.y;
-	myMeshData->vertices[0].position.z = aLine.startPosition.z;
-	myMeshData->vertices[0].position.w = 1.0f;
-
-	myMeshData->vertices[1].position.x = aLine.endPosition.x;
-	myMeshData->vertices[1].position.y = aLine.endPosition.y;
-	myMeshData->vertices[1].position.z = aLine.endPosition.z;
-	myMeshData->vertices[1].position.w = 1.0f;
-
 	for (auto& vertex : myMeshData->vertices)
 	{
-		vertex.color = aLine.color;
+		vertex.color = aSphere.color;
 	}
 
 	auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 	context->UpdateSubresource(myVertexBuffer.Get(), 0, nullptr, myMeshData->vertices.data(), 0, 0);
 
+	SU::Matrix4x4f matrix = SimpleUtilities::Matrix4x4f::Identity();
+	matrix.SetScale({ aSphere.radius, aSphere.radius,aSphere.radius });
+	matrix.SetPosition(aSphere.position);
+
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = SimpleUtilities::Matrix4x4f::Identity();
+	objectBuffer.modelToWorldMatrix = matrix;
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
@@ -99,7 +94,7 @@ void LineDrawer::Render(const Drawer::Line& aLine)
 	context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 
 	context->DrawIndexed(static_cast<UINT>(myMeshData->indices.size()), 0, 0);
 }

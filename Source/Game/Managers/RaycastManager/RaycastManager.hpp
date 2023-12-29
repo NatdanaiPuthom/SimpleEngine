@@ -3,6 +3,7 @@
 namespace Drawer
 {
 	struct Line;
+	struct Sphere;
 }
 
 class RaycastManager final
@@ -20,6 +21,8 @@ private:
 	void MoveObject();
 private:
 	std::unique_ptr<Drawer::Line> myRaycastLine;
+	std::unique_ptr<Drawer::Sphere> myDebugSphere;
+
 	const float mySelectDelay;
 	float myTimer;
 	int mySelectedModelIndex;

@@ -4,6 +4,7 @@
 
 RaycastManager::RaycastManager()
 	: myRaycastLine(std::make_unique<Drawer::Line>())
+	, myDebugSphere(std::make_unique<Drawer::Sphere>())
 	, mySelectedModelIndex(-1)
 	, mySelectDelay(0.1f)
 	, myTimer(0.0f)
@@ -11,6 +12,8 @@ RaycastManager::RaycastManager()
 	myRaycastLine->color = { 1,0,0, 1 };
 	myRaycastLine->startPosition = { 0,0,0 };
 	myRaycastLine->endPosition = { 0,0,0 };
+
+	myDebugSphere->radius = 0.5f;
 }
 
 RaycastManager::~RaycastManager()
@@ -43,6 +46,7 @@ void RaycastManager::Update()
 void RaycastManager::Render()
 {
 	SimpleGlobal::GetRenderer()->RenderLine(*myRaycastLine);
+	SimpleGlobal::GetRenderer()->RenderSphere(*myDebugSphere);
 }
 
 SimpleUtilities::Ray RaycastManager::GetScreenPointToRay(const SimpleUtilities::Vector2f& aPosition)
@@ -118,6 +122,7 @@ void RaycastManager::CheckAABB3DCollision()
 	if (hitIndex >= 0)
 	{
 		mySelectedModelIndex = hitIndex;
+		myDebugSphere->position = models[mySelectedModelIndex]->GetPosition();
 	}
 	else
 	{
@@ -129,6 +134,8 @@ void RaycastManager::CheckAABB3DCollision()
 void RaycastManager::MoveObject()
 {
 	auto& model = SimpleWorld::GetActiveScene()->myModelInstances[mySelectedModelIndex];
+
+	myDebugSphere->position = model->GetPosition();
 
 	const auto min = model->GetBoundingBox().min;
 	const auto max = model->GetBoundingBox().max;
@@ -159,5 +166,4 @@ void RaycastManager::MoveObject()
 
 		model->SetPosition(pos);
 	}
-
 }
