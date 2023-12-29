@@ -19,36 +19,24 @@ RaycastManager::~RaycastManager()
 
 void RaycastManager::Update()
 {
-	if (mySelectedModelIndex >= 0)
-	{
-		myTimer += SimpleGlobal::GetDeltaTime();
-	}
-	else
-	{
-		myTimer = 0;
-	}
-
 	if (SimpleUtilities::InputManager::GetInstance().IsHold(VK_LBUTTON))
 	{
-		CheckAABB3DCollision();
+		if (mySelectedModelIndex >= 0 && myTimer >= mySelectDelay)
+		{
+			SimpleGlobal::SetBoundingBoxLineColor({ 1,0,0 });
+			MoveObject();
+		}
+		else
+		{
+			CheckAABB3DCollision();
+			myTimer += SimpleGlobal::GetDeltaTime();
+		}
 	}
 	else
 	{
 		mySelectedModelIndex = -1;
+		myTimer = 0;
 		SimpleGlobal::SetBoundingBoxLineColor({ 1,1,0 });
-	}
-
-	if (mySelectedModelIndex >= 0 && myTimer >= mySelectDelay)
-	{
-		SimpleGlobal::SetBoundingBoxLineColor({ 1,0,0 });
-	}
-
-	if (mySelectedModelIndex >= 0)
-	{
-		const auto& model = SimpleWorld::GetActiveScene()->myModelInstances[mySelectedModelIndex];
-		std::cout << "Selected: " << model->GetName() << std::endl;
-
-		MoveObject();
 	}
 }
 
@@ -57,7 +45,7 @@ void RaycastManager::Render()
 	SimpleGlobal::GetRenderer()->RenderLine(*myRaycastLine);
 }
 
-SimpleUtilities::Ray RaycastManager::GetMouseRay()
+SimpleUtilities::Ray RaycastManager::GetScreenPointToRay(const SimpleUtilities::Vector2f& aPosition)
 {
 	const auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
 
@@ -65,10 +53,9 @@ SimpleUtilities::Ray RaycastManager::GetMouseRay()
 	const SU::Matrix4x4f viewMatrix = camera->GetViewMatrix();
 
 	const SU::Vector2f resolution = SU::Vector2f(static_cast<float>(SimpleGlobal::GetResolution().x), static_cast<float>(SimpleGlobal::GetResolution().y));
-	const SU::Vector2f mousePos = SU::InputManager::GetInstance().GetMousePosition();
 
-	const float x = (2.0f * mousePos.x) / resolution.x - 1.0f;
-	const float y = (1.0f - (2.0f * mousePos.y) / resolution.y) * -1.0f;
+	const float x = (2.0f * aPosition.x) / resolution.x - 1.0f;
+	const float y = (1.0f - (2.0f * aPosition.y) / resolution.y) * -1.0f;
 
 	SU::Vector4f clipCoords = { x, y, -1.0f, 1.0f };
 
@@ -93,7 +80,7 @@ SimpleUtilities::Ray RaycastManager::GetMouseRay()
 
 void RaycastManager::CheckAABB3DCollision()
 {
-	SU::Ray ray = GetMouseRay();
+	SU::Ray ray = GetScreenPointToRay(SU::InputManager::GetInstance().GetMousePosition());
 
 	const auto& models = SimpleWorld::GetActiveScene()->myModelInstances;
 	SU::Vector3f closetHitPoint;
@@ -156,19 +143,12 @@ void RaycastManager::MoveObject()
 	SU::AABB3D aabb3d;
 	aabb3d.InitWithMinAndMax(minHomogeneous.AsVector3(), maxHomogeneous.AsVector3());
 
-	const SU::Ray ray = GetMouseRay();
+	const SU::Ray ray = GetScreenPointToRay(SU::InputManager::GetInstance().GetMousePosition());
 
 	SU::Vector3f intersectionPoint;
 
 	if (SU::IntersectionAABB3DRay(aabb3d, ray, intersectionPoint))
 	{
-		SU::Vector3f middlePoint;
-		middlePoint.x = (minHomogeneous.x + maxHomogeneous.x) / 2.0f;
-		middlePoint.y = (minHomogeneous.y + maxHomogeneous.y) / 2.0f;
-		middlePoint.z = (minHomogeneous.z + maxHomogeneous.z) / 2.0f;
-		model->SetPosition(middlePoint);
-
-
 		auto pos = model->GetPosition();
 
 		pos.x = intersectionPoint.x;

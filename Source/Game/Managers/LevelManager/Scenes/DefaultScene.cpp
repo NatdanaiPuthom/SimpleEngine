@@ -57,23 +57,23 @@ void DefaultScene::Update()
 {
 	{
 		//Pyramid
-		//SimpleUtilities::Vector3f pyramidRotation = myModelInstances[0]->GetRotation();
-		//pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
-		//pyramidRotation.z += 10 * SimpleGlobal::GetDeltaTime();
-		//myModelInstances[0]->SetRotation(pyramidRotation);
+		SimpleUtilities::Vector3f pyramidRotation = myModelInstances[0]->GetRotation();
+		pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
+		pyramidRotation.z += 10 * SimpleGlobal::GetDeltaTime();
+		myModelInstances[0]->SetRotation(pyramidRotation);
 
-		////Cube
-		//SimpleUtilities::Vector3f cubeRotation = myModelInstances[1]->GetRotation();
-		//cubeRotation.x += 10.0f * SimpleGlobal::GetDeltaTime();
-		//myModelInstances[1]->SetRotation(cubeRotation);
+		//Cube
+		SimpleUtilities::Vector3f cubeRotation = myModelInstances[1]->GetRotation();
+		cubeRotation.x += 10.0f * SimpleGlobal::GetDeltaTime();
+		myModelInstances[1]->SetRotation(cubeRotation);
 
-		////Directional Light test
-		//SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
-		//myModelInstances[2]->SetRotation(directionalLight);
+		//Directional Light test
+		SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
+		myModelInstances[2]->SetRotation(directionalLight);
 
-		////Sphere
-		//SimpleUtilities::Vector3f sphereRotation = myModelInstances[3]->GetRotation();
-		//sphereRotation.y += -40 * SimpleGlobal::GetDeltaTime();
-		//myModelInstances[3]->SetRotation(sphereRotation);
+		//Sphere
+		SimpleUtilities::Vector3f sphereRotation = myModelInstances[3]->GetRotation();
+		sphereRotation.y += -40 * SimpleGlobal::GetDeltaTime();
+		myModelInstances[3]->SetRotation(sphereRotation);
 	}
 }

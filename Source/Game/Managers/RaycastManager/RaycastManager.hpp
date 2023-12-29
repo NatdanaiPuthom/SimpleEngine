@@ -14,7 +14,7 @@ public:
 	void Update();
 	void Render();
 
-	SimpleUtilities::Ray GetMouseRay();
+	SimpleUtilities::Ray GetScreenPointToRay(const SimpleUtilities::Vector2f& aPosition);
 private:
 	void CheckAABB3DCollision();
 	void MoveObject();
