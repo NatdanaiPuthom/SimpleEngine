@@ -56,9 +56,23 @@ void GameWorld::RenderReflection()
 
 void GameWorld::RenderUpSideDown()
 {
+	auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
+
+	const SU::Vector3f oldCamPosition = camera->GetPosition();
+	const SU::Vector3f oldCamRotation = camera->GetRotation();
+	const SU::Vector3f newCamRotation = SimpleUtilities::Vector3f(-oldCamRotation.x, oldCamRotation.y, oldCamRotation.z);
+
+	const float distFromWater = oldCamPosition.y - -1.0f;
+
+	camera->SetPosition(oldCamPosition - SimpleUtilities::Vector3f(0.0f, distFromWater * 2.0f, 0.0f));
+	camera->SetRotation(newCamRotation);
+
 	Renderer* renderer = SimpleGlobal::GetRenderer();
 	for (const auto& model : SimpleWorld::GetActiveScene()->myModelInstances)
 	{
 		renderer->RenderEverythingUpSideDown(model.get());
 	}
+
+	camera->SetRotation(oldCamRotation);
+	camera->SetPosition(oldCamPosition);
 }
