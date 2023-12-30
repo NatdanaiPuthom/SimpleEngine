@@ -494,7 +494,6 @@ MeshData ShapeCreator3000::CreatePlane()
 MeshData ShapeCreator3000::CreateSphere(const float aRadius, const int aSlices, const int aStacks)
 {
 	//Dear Savior ChatGPT, I have absolutely no clue how this calculation work at all so don't ask
-
 	std::vector<Vertex> vertices;
 
 	for (int i = 0; i <= aStacks; ++i)

@@ -16,8 +16,8 @@ class ShapeCreator3000 final
 public:
 	static MeshData CreateTerrain(const Simple::TerrainData& aTerrainData = Simple::TerrainData{});
 	static MeshData CreatePyramid(const SimpleUtilities::Vector3f& aSize = { 1.0f , 1.0f, 1.0f });
-	static MeshData CreateCube(const SimpleUtilities::Vector3f& aSize = { 0.5f, 0.5f , 0.5f });
-	static MeshData CreateSkyBox(const SimpleUtilities::Vector3f& aSize = { 100.0f, 100.0f, 100.0f });
+	static MeshData CreateCube(const SimpleUtilities::Vector3f& aSize = { 1.0f, 1.0f , 1.0f });
+	static MeshData CreateSkyBox(const SimpleUtilities::Vector3f& aSize = { 1000.0f, 1000.0f, 1000.0f });
 	static MeshData CreateDirectionalLight();
 	static MeshData CreatePlane();
 	static MeshData CreateSphere(const float aRadius = 1.0f, const int aSlices = 20, const int aStacks = 20);

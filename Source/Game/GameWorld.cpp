@@ -51,7 +51,7 @@ void GameWorld::RenderImGui()
 
 void GameWorld::RenderReflection()
 {
-	SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModelInstance.get());
+	SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModel.get());
 }
 
 void GameWorld::RenderUpSideDown()
