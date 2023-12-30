@@ -24,6 +24,11 @@ void CameraTool::Draw()
 			graphicsEngine->GetCamera()->SetMoveSpeed(speed);
 		}
 
+		ImGui::SameLine();
+		ImGui::Dummy(ImVec2(100, 0));
+		ImGui::SameLine();
+		ImGui::Text("Click and Hold to select the object. Move object using mouse");
+
 		ImGui::Text("FreeFly      - TAB");
 
 		ImGui::SameLine();
@@ -36,6 +41,11 @@ void CameraTool::Draw()
 			fov *= globalDegToRad;
 			graphicsEngine->GetCamera()->SetFoV(fov);
 		}
+
+		ImGui::SameLine();
+		ImGui::Dummy(ImVec2(144, 0));
+		ImGui::SameLine();
+		ImGui::Text("While object is selected, hold CTRL to move object up/down.");
 
 		ImGui::Text("Speedx3      - Hold Shift");
 		ImGui::Text("Fly Up       - SPACE");
