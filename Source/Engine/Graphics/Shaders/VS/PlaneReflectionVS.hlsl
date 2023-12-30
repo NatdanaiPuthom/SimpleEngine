@@ -8,7 +8,7 @@ PixelInputType main(VertexInputType aInput)
     float clipStorage = modelWorld._44;
 
     float4x4 modelToWorldReal = modelWorld;
-    modelToWorldReal._44 = 2.0f;
+    modelToWorldReal._44 = 1.0f;
 
     float4 vertexWorldPos = mul(modelToWorldReal, vertexObjectPos);
     float4 vertexClipPos = mul(worldToClipMatrix, vertexWorldPos);
