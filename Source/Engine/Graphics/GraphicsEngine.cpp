@@ -21,7 +21,7 @@ GraphicsEngine::GraphicsEngine()
 	, myFPSLevelCap(0)
 {
 	myDirectionLightData->direction.x = 0;
-	myDirectionLightData->direction.y = 0;
+	myDirectionLightData->direction.y = -1;
 	myDirectionLightData->direction.z = 0;
 }
 
@@ -193,7 +193,7 @@ void GraphicsEngine::LoadShaders()
 		if (!AddShader("Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/WaterReflectionPS.cso", "Shaders/DefaultVS.cso"))
+		if (!AddShader("Shaders/WaterReflectionPS.cso", "Shaders/PlaneReflectionVS.cso"))
 			assert(false && "Failed to add Shader");
 	}
 }
@@ -303,10 +303,10 @@ void GraphicsEngine::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize
 	CreateViewport(newWidth, newHeight);
 
 	if (!CreateWaterRenderTarget(newWidth, newHeight))
-			assert(false && "Failed to re-create WaterReflectionRenderTarget");
+		assert(false && "Failed to re-create WaterReflectionRenderTarget");
 
 	if (!CreateRenderTargetForImGuiImage(newWidth, newHeight))
-			assert(false && "Failed to re-create ImGuiImageRenderTarget");
+		assert(false && "Failed to re-create ImGuiImageRenderTarget");
 
 	SetToBackBuffer();
 }
@@ -452,6 +452,11 @@ std::shared_ptr<Shader> GraphicsEngine::GetShader(const char* aPSFile, const cha
 
 	if (shader != myLoadedShaders.end())
 		return shader->second;
+	else if (shader == myLoadedShaders.end())
+	{
+		if (!AddShader(aPSFile, aVSFile))
+			assert(false && "Unable to create Shader");
+	}
 
 	return nullptr;
 }

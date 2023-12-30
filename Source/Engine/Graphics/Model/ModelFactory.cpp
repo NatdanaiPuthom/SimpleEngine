@@ -127,7 +127,7 @@ std::unique_ptr<ModelInstance> ModelFactory::CreatePlaneModel()
 	std::unique_ptr<ModelInstance> plane = std::make_unique<ModelInstance>();
 
 	plane->Init(GetMesh("Plane"));
-	plane->SetShader("Shaders/WaterReflectionPS.cso", "Shaders/DefaultVS.cso");
+	plane->SetShader("Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso");
 	plane->SetScale({ 1,1,1 });
 	plane->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 	plane->SetName("Plane");
@@ -169,4 +169,17 @@ std::unique_ptr<ModelInstance> ModelFactory::CreateSphereModel()
 	sphere->SetName("Sphere");
 
 	return std::move(sphere);
+}
+
+std::unique_ptr<ModelInstance> ModelFactory::CreatePlaneReflection()
+{
+	std::unique_ptr<ModelInstance> plane = std::make_unique<ModelInstance>();
+
+	plane->Init(GetMesh("PlaneReflection"));
+	plane->SetShader("Shaders/WaterReflectionPS.cso", "Shaders/PlaneReflectionVS.cso");
+	plane->SetScale({ 1,1,1 });
+	plane->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
+	plane->SetName("PlaneReflection");
+
+	return std::move(plane);
 }
