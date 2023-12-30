@@ -175,7 +175,7 @@ std::unique_ptr<ModelInstance> ModelFactory::CreatePlaneReflection()
 {
 	std::unique_ptr<ModelInstance> plane = std::make_unique<ModelInstance>();
 
-	plane->Init(GetMesh("PlaneReflection"));
+	plane->Init(GetMesh("Plane"));
 	plane->SetShader("Shaders/WaterReflectionPS.cso", "Shaders/PlaneReflectionVS.cso");
 	plane->SetScale({ 1,1,1 });
 	plane->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
