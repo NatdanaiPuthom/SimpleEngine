@@ -98,7 +98,7 @@ void GraphicsEngine::Update()
 
 	{
 		TimeBufferData timeBuffer = {};
-		timeBuffer.time = static_cast<float>(SimpleGlobal::GetTotalTime());
+		timeBuffer.totalTime = static_cast<float>(SimpleGlobal::GetTotalTime());
 		myTimeConstantBuffer->Bind(2);
 		myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 	}
@@ -814,7 +814,7 @@ bool GraphicsEngine::CreateTimeBuffer()
 {
 	TimeBufferData timeBuffer;
 
-	timeBuffer.time = 0.0f;
+	timeBuffer.totalTime = 0.0f;
 
 	if (!myTimeConstantBuffer->Init(sizeof(TimeBufferData), &timeBuffer))
 		return false;

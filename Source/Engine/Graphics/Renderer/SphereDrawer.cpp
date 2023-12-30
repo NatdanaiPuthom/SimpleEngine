@@ -81,7 +81,7 @@ void SphereDrawer::Render(const Drawer::Sphere& aSphere)
 	matrix.SetPosition(aSphere.position);
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = matrix;
+	objectBuffer.modelWorldMatrix = matrix;
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);

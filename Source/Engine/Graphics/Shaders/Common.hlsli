@@ -7,31 +7,37 @@ cbuffer FrameBuffer : register(b0)
 {
     float4x4 worldToClipMatrix;
     float3 cameraPosition;
+    
     uint2 resolution;
     float2 resolutionPadding;
 }
 
 cbuffer ObjectBuffer : register(b1)
 {
-    float4x4 modelToWorld;
+    float4x4 modelWorld;
 }
 
 cbuffer TimeBuffer : register(b2)
 {
-    float elapsedTime;
+    float totalTime;
+    float3 paddingTotalTime;
 }
 
 cbuffer DirectionLightBuffer : register(b3)
 {
     float3 directionLightDirection;
     float directionLightDirectionPadding;
+    
     float4 directionalLightColor;
 }
 
 cbuffer AmbientLightBuffer : register(b4)
 {
     float3 skyColor;
+    float paddingSkyColor;
+    
     float3 groundColor;
+    float paddingGroundColor;
 }
 
 struct PixelOutput

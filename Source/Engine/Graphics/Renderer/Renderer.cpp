@@ -27,7 +27,7 @@ void Renderer::RenderModel(const std::shared_ptr<const ModelInstance> aModelInst
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix();
+	objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix();
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
@@ -80,8 +80,8 @@ void Renderer::RenderEverythingUpSideDown(const ModelInstance* const aModelInsta
 	mirror(4, 2) = -2.0f;
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix() * mirror;
-	objectBuffer.modelToWorldMatrix(4, 4) = 2.0f; // hack to indicate that the model is upside down
+	objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix() * mirror;
+	objectBuffer.modelWorldMatrix(4, 4) = 2.0f; // hack to indicate that the model is upside down
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
@@ -110,7 +110,7 @@ void Renderer::RenderPlaneReflection(const ModelInstance* const aModelInstance) 
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix();
+	objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix();
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);

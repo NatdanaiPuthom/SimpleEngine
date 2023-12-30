@@ -41,12 +41,12 @@ struct alignas(16) FrameBufferData final
 
 struct alignas(16) ObjectBufferData final
 {
-	SimpleUtilities::Matrix4x4f modelToWorldMatrix;
+	SimpleUtilities::Matrix4x4f modelWorldMatrix;
 };
 
 struct alignas(16) TimeBufferData final
 {
-	float time = 0;
+	float totalTime = 0;
 	const float padding[3] = { -1 };
 };
 

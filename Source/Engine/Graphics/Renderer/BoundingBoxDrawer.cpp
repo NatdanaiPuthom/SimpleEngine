@@ -121,7 +121,7 @@ void BoundingBoxDrawer::Render(const std::shared_ptr<const ModelInstance> aModel
 	context->UpdateSubresource(myVertexBuffer.Get(), 0, nullptr, myMeshData.vertices.data(),0, 0);
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = aModelInstance->GetMatrix();
+	objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix();
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);

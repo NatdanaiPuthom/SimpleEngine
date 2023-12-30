@@ -5,9 +5,9 @@ PixelInputType main(VertexInputType aInput)
     PixelInputType output;
     
     float4 vertexObjectPos = aInput.position;
-    float clipStorage = modelToWorld._44;
+    float clipStorage = modelWorld._44;
 
-    float4x4 modelToWorldReal = modelToWorld;
+    float4x4 modelToWorldReal = modelWorld;
     modelToWorldReal._44 = 2.0f;
 
     float4 vertexWorldPos = mul(modelToWorldReal, vertexObjectPos);

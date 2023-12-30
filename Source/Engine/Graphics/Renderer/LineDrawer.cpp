@@ -86,7 +86,7 @@ void LineDrawer::Render(const Drawer::Line& aLine)
 	context->UpdateSubresource(myVertexBuffer.Get(), 0, nullptr, myMeshData->vertices.data(), 0, 0);
 
 	ObjectBufferData objectBuffer = {};
-	objectBuffer.modelToWorldMatrix = SimpleUtilities::Matrix4x4f::Identity();
+	objectBuffer.modelWorldMatrix = SimpleUtilities::Matrix4x4f::Identity();
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
