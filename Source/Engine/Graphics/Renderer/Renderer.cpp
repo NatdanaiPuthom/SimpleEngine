@@ -81,7 +81,6 @@ void Renderer::RenderEverythingUpSideDown(const ModelInstance* const aModelInsta
 
 	ObjectBufferData objectBuffer = {};
 	objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix() * mirror;
-	objectBuffer.modelWorldMatrix(4, 4) = 2.0f; // hack to indicate that the model is upside down
 
 	myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 	myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
