@@ -55,7 +55,7 @@ void ModelInstance::SetShader(const char* aPSShaderFile, const char* aVSShaderFi
 
 	if (myShader == nullptr)
 	{
-		if (SimpleGlobal::GetGraphicsEngine()->AddShader(aPSShaderFile, aVSShaderFile))
+		if (!SimpleGlobal::GetGraphicsEngine()->AddShader(aPSShaderFile, aVSShaderFile))
 			assert(false && "Failed to add Shader to the bank");
 
 		myShader = SimpleGlobal::GetGraphicsEngine()->GetShader(aPSShaderFile, aVSShaderFile);

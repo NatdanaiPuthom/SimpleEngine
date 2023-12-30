@@ -41,6 +41,13 @@ void DefaultScene::Init()
 		myModelInstances.push_back(std::move(terrain));
 	}
 
+	{
+		std::shared_ptr<ModelInstance> cube = std::move(modelFactory->CreateCubeModel());
+		cube->SetShader("Shaders/DefaultColorfulPS.cso", "Shaders/DefaultVS.cso");
+		cube->SetPosition({ -5.0f, 0.5f, 0.0f });
+		myModelInstances.push_back(std::move(cube));
+	}
+
 	/*{
 		std::shared_ptr<ModelInstance> skyBox = std::move(modelFactory->CreateSkyBoxModel());
 		skyBox->SetPosition({ 0.0f, 0.0f, 20.0f });
