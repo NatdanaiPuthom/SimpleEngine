@@ -33,8 +33,10 @@ struct alignas(16) FrameBufferData final
 {
 	SimpleUtilities::Matrix4x4f worldToClipMatrix;
 	SimpleUtilities::Vector3f cameraPosition;
+	float paddingCameraPos;
+
 	SimpleUtilities::Vector2ui resolution;
-	float padding[3] = { -1.0f };
+	float paddingResolution[2] = { -1.0f };
 };
 
 struct alignas(16) ObjectBufferData final
