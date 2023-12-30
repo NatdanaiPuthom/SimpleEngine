@@ -6,6 +6,7 @@ SettingsTool::SettingsTool()
 	: mySelectedWindowSize(1)
 	, mySelectedResolution(1)
 	, mySelectedRasterizerState(0)
+	, myConsoleIsOpen(true)
 {
 	UpdateAndFetchCurrentMonitorResolution();
 
@@ -163,6 +164,16 @@ void SettingsTool::Draw()
 						SimpleGlobal::SetWindowSize(myWindowSizes[mySelectedWindowSize]);
 					}
 				}
+			}
+
+			if (ImGui::Checkbox("Show Console", &myConsoleIsOpen))
+			{
+				HWND consoleWindow = GetConsoleWindow();
+
+				if (myConsoleIsOpen)
+					ShowWindow(consoleWindow, SW_SHOW);
+				else
+					ShowWindow(consoleWindow, SW_HIDE);
 			}
 		}
 	}

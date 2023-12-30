@@ -16,4 +16,5 @@ private:
 	int mySelectedResolution;
 	int mySelectedWindowSize;
 	int mySelectedRasterizerState;
+	bool myConsoleIsOpen;
 };
