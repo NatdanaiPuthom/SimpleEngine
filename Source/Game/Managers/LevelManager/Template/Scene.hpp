@@ -9,6 +9,7 @@ public:
 	Scene()
 	{
 		myDirectionalLight = std::make_unique<DirectionalLightVisual>();
+		myModelInstances.push_back(myDirectionalLight->myModel);
 	}
 
 	virtual ~Scene() = default;
