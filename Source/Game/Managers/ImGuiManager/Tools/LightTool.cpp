@@ -18,10 +18,10 @@ void LightTool::Draw()
 			if (ImGui::BeginTabItem("Directional Light"))
 			{
 				ImGui::SetNextItemWidth(400.0f);
-				SU::Vector3f position = directionalLight->myDirectionalLight->GetPosition();
+				SU::Vector3f position = directionalLight->myModel->GetPosition();
 				if (ImGui::DragFloat3("Position", &position.x, 0.1f))
 				{
-					directionalLight->myDirectionalLight->SetPosition(position);
+					directionalLight->myModel->SetPosition(position);
 				}
 
 				ImGui::SetNextItemWidth(400.0f);

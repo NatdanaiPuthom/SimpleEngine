@@ -3,31 +3,31 @@
 
 DirectionalLightVisual::DirectionalLightVisual()
 	: myLine(std::make_unique<Drawer::Line>())
-	, myLineDistance(10.0f)
+	, myLineDistance(5.0f)
 {
 	ModelFactory* modelFactory = SimpleGlobal::GetModelFactory();
 
 	std::shared_ptr<ModelInstance> directionalLight = std::move(modelFactory->CreateDirectionalLightModel());
-	myDirectionalLight = directionalLight;
+	myModel = directionalLight;
 
-	myLine->startPosition = myDirectionalLight->GetPosition();
+	myLine->startPosition = myModel->GetPosition();
 	myLine->endPosition = myLine->startPosition;
-	myLine->endPosition += myDirectionalLight->GetMatrix().GetForward()* myLineDistance;
+	myLine->endPosition += myModel->GetMatrix().GetForward()* myLineDistance;
 	myLine->color = { 1,1,0,1 };
 }
 
 void DirectionalLightVisual::Update() const
 {
-	myLine->startPosition = myDirectionalLight->GetPosition();
+	myLine->startPosition = myModel->GetPosition();
 	myLine->endPosition = myLine->startPosition;
-	myLine->endPosition += myDirectionalLight->GetMatrix().GetForward() * myLineDistance;
+	myLine->endPosition += myModel->GetMatrix().GetForward() * myLineDistance;
 }
 
 void DirectionalLightVisual::Render() const
 {
 	auto renderer = SimpleGlobal::GetRenderer();
 
-	renderer->RenderModel(myDirectionalLight);
-	renderer->RenderBoundingBox(myDirectionalLight);
+	renderer->RenderModel(myModel);
+	renderer->RenderBoundingBox(myModel);
 	renderer->RenderLine(*myLine);
 }

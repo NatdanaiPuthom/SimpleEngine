@@ -3,6 +3,7 @@
 
 DefaultScene::DefaultScene()
 {
+	myDirectionalLight->myModel->SetPosition({ 8, 5, 5 });
 }
 
 void DefaultScene::Init()

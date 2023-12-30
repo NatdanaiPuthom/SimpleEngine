@@ -16,6 +16,6 @@ public:
 	void Render() const;
 
 	std::unique_ptr<Drawer::Line> myLine;
-	std::shared_ptr<ModelInstance> myDirectionalLight;
+	std::shared_ptr<ModelInstance> myModel;
 	float myLineDistance;
 };
