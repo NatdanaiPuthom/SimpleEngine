@@ -107,7 +107,6 @@ void GraphicsEngine::Update()
 		DirectionalLightBufferData directionLightBuffer = {};
 		directionLightBuffer.direction = myDirectionLightData->direction;
 		directionLightBuffer.direction.Normalize();
-
 		directionLightBuffer.color = myDirectionLightData->color;
 
 		myDirectionLightConstantBuffer->Bind(3);
