@@ -3,11 +3,11 @@
 
 PlaneReflection::PlaneReflection()
 {
-	myModelInstance = std::move(SimpleGlobal::GetModelFactory()->CreatePlaneModel());
-	myModelInstance->ClearTextures();
-	myModelInstance->SetName("Reflection");
-	myModelInstance->SetScale({ 25,1,25 });
-	myModelInstance->SetPosition({ 5,-1,5 });
+	myModel = std::move(SimpleGlobal::GetModelFactory()->CreatePlaneModel());
+	myModel->ClearTextures();
+	myModel->SetName("Reflection");
+	myModel->SetScale({ 25,1,25 });
+	myModel->SetPosition({ 5,-1,5 });
 }
 
 PlaneReflection::~PlaneReflection()

@@ -8,5 +8,5 @@ public:
 	PlaneReflection();
 	~PlaneReflection();
 
-	std::unique_ptr<ModelInstance> myModelInstance;
+	std::unique_ptr<ModelInstance> myModel;
 };
