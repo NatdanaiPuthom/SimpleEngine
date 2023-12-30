@@ -21,7 +21,7 @@ GraphicsEngine::GraphicsEngine()
 	, myFPSLevelCap(0)
 {
 	myDirectionLightData->direction.x = 0;
-	myDirectionLightData->direction.y = -1;
+	myDirectionLightData->direction.y = 0;
 	myDirectionLightData->direction.z = 0;
 }
 
