@@ -18,7 +18,7 @@ void DefaultScene::Init()
 
 	{
 		std::shared_ptr<ModelInstance> cube = std::move(modelFactory->CreateCubeModel());
-		cube->SetScale({ 5,5,5 });
+		cube->SetScale({ 2,2,2 });
 		cube->SetPosition({ -7.0f, 2.0f, 10.0f });
 		myModelInstances.push_back(std::move(cube));
 	}
