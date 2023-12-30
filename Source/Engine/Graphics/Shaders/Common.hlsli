@@ -7,8 +7,8 @@ cbuffer FrameBuffer : register(b0)
 {
     float4x4 worldToClipMatrix;
     float3 cameraPosition;
-    int2 resolution;
-    float3 resolutionPadding;
+    uint2 resolution;
+    float2 resolutionPadding;
 }
 
 cbuffer ObjectBuffer : register(b1)
