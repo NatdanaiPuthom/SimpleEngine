@@ -20,14 +20,10 @@ void DirectionalLightVisual::Update() const
 {
 	myLine->startPosition = myModel->GetPosition();
 	myLine->endPosition = myLine->startPosition;
+
+	auto graphicsEngine = SimpleGlobal::GetGraphicsEngine();
+	const SU::Vector3f direction = graphicsEngine->GetDirectionalLightDirection() * 180.0f;
+	myModel->SetRotation(direction);
+
 	myLine->endPosition += myModel->GetMatrix().GetForward() * myLineDistance;
-}
-
-void DirectionalLightVisual::Render() const
-{
-	auto renderer = SimpleGlobal::GetRenderer();
-
-	renderer->RenderModel(myModel);
-	renderer->RenderBoundingBox(myModel);
-	renderer->RenderLine(*myLine);
 }

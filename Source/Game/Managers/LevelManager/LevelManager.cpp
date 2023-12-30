@@ -34,25 +34,11 @@ void LevelManager::Init()
 void LevelManager::Update()
 {
 	myActiveScene->Update();
-	myActiveScene->myDirectionalLight->Update();
 }
 
 void LevelManager::Render()
 {
-	Renderer* renderer = SimpleGlobal::GetRenderer();
-
-	for (const auto& model : myActiveScene->myModelInstances)
-	{
-		renderer->RenderModel(model);
-	}
-
-	if (renderer->IsDebugModeOn())
-	{
-		for (const auto& model : myActiveScene->myModelInstances)
-		{
-			renderer->RenderBoundingBox(model);
-		}
-	}
+	myActiveScene->Render();
 }
 
 void LevelManager::SetActiveScene(const int aSceneIndex)

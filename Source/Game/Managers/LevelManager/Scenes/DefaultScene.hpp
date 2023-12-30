@@ -6,6 +6,6 @@ public:
 	DefaultScene();
 	~DefaultScene() override = default;
 
-	virtual void Init() override;
-	virtual void Update() override;
+	 void Init() override;
+	 void Update() override;
 };

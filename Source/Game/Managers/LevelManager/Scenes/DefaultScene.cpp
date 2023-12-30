@@ -3,7 +3,7 @@
 
 DefaultScene::DefaultScene()
 {
-	myDirectionalLight->myModel->SetPosition({ 8, 5, 5 });
+	myDirectionalLight->myModel->SetPosition({ 10, 6, 8 });
 }
 
 void DefaultScene::Init()
@@ -12,8 +12,17 @@ void DefaultScene::Init()
 
 	{
 		std::shared_ptr<ModelInstance> pyramid = std::move(modelFactory->CreatePyramidModel());
-		pyramid->SetPosition({ 7.0f, 2.0f, 3.0f });
+		pyramid->SetPosition({ 7.0f, 5.0f, 3.0f });
 		myModelInstances.push_back(std::move(pyramid));
+	}
+
+	{
+		std::shared_ptr<ModelInstance> cube = std::move(modelFactory->CreateCubeModel());
+		cube->ClearTextures();
+		cube->AddTexture("Assets/Textures/Hamster.dds");
+		cube->SetName("Hamster");
+		cube->SetPosition({-5,3,0});
+		myModelInstances.push_back(std::move(cube));
 	}
 
 	{
@@ -25,13 +34,16 @@ void DefaultScene::Init()
 
 	{
 		std::shared_ptr<ModelInstance> sphere = std::move(modelFactory->CreateSphereModel());
-		sphere->SetPosition({ 2,3,7 });
+		sphere->SetPosition({ 2,5,7 });
 		myModelInstances.push_back(std::move(sphere));
 	}
 
 	{
 		std::shared_ptr<ModelInstance> plane = std::move(modelFactory->CreatePlaneModel());
-		plane->SetPosition({ -1.0f, 0, -1.0f });
+		plane->SetPosition({ -1.0f, 0, -2.0f });
+		plane->SetName("Cat");
+		plane->ClearTextures();
+		plane->AddTexture("Assets/Textures/Cat-scared.dds");
 		myModelInstances.push_back(std::move(plane));
 	}
 
@@ -57,25 +69,5 @@ void DefaultScene::Init()
 
 void DefaultScene::Update()
 {
-	{
-		////Pyramid
-		//SimpleUtilities::Vector3f pyramidRotation = myModelInstances[0]->GetRotation();
-		//pyramidRotation.y += -10 * SimpleGlobal::GetDeltaTime();
-		//pyramidRotation.z += 10 * SimpleGlobal::GetDeltaTime();
-		//myModelInstances[0]->SetRotation(pyramidRotation);
-
-		////Cube
-		//SimpleUtilities::Vector3f cubeRotation = myModelInstances[1]->GetRotation();
-		//cubeRotation.x += 10.0f * SimpleGlobal::GetDeltaTime();
-		//myModelInstances[1]->SetRotation(cubeRotation);
-
-		////Directional Light test
-		//SimpleUtilities::Vector3f directionalLight = SimpleGlobal::GetGraphicsEngine()->GetDirectionalLightDirection() * 180.0f;
-		//myModelInstances[2]->SetRotation(directionalLight);
-
-		////Sphere
-		//SimpleUtilities::Vector3f sphereRotation = myModelInstances[3]->GetRotation();
-		//sphereRotation.y += -40 * SimpleGlobal::GetDeltaTime();
-		//myModelInstances[3]->SetRotation(sphereRotation);
-	}
+	Scene::Update();
 }

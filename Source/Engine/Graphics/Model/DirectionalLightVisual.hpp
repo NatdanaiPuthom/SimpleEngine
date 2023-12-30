@@ -7,13 +7,12 @@ namespace Drawer
 
 class ModelInstance;
 
-class DirectionalLightVisual
+class DirectionalLightVisual final
 {
 public:
 	DirectionalLightVisual();
 
 	void Update() const;
-	void Render() const;
 
 	std::unique_ptr<Drawer::Line> myLine;
 	std::shared_ptr<ModelInstance> myModel;

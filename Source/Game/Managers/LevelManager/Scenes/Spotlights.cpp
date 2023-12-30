@@ -37,7 +37,9 @@ void SpotlightScene::Init()
 
 void SpotlightScene::Update()
 {
-	for (size_t i = 1; i < myModelInstances.size(); ++i)
+	Scene::Update();
+
+	for (size_t i = 2; i < myModelInstances.size(); ++i)
 	{
 		SimpleUtilities::Vector3f newRotation = myModelInstances[i]->GetRotation();
 		newRotation.y += 40 * SimpleGlobal::GetDeltaTime();
