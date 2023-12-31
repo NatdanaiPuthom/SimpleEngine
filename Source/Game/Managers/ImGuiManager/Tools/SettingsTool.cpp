@@ -1,5 +1,4 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Engine/Graphics/Camera/Camera.hpp"
 #include "Game/Managers/ImGuiManager/Tools/SettingsTool.hpp"
 
 SettingsTool::SettingsTool()
@@ -24,159 +23,35 @@ SettingsTool::SettingsTool()
 
 void SettingsTool::Draw()
 {
-	GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
-
 	if (ImGui::Begin("Settings"))
 	{
-		std::string fps = "FPS: " + std::to_string(SimpleGlobal::GetFPS());
-		ImGui::Text(fps.c_str());
+		GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 
-		{ //VSync
+		ShowFPS();
+
+		{
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(50, 0));
 			ImGui::SameLine();
 
-			bool vsync = graphicsEngine->IsVSyncActive();
-			if (ImGui::Checkbox("VSync", &vsync))
-			{
-				graphicsEngine->SetVSync(vsync);
-			}
+			ToggleVSync(graphicsEngine);
 		}
 
-		{ //DrawCalls
+		{
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(50, 0));
 			ImGui::SameLine();
 
-			std::string drawCalls = "DrawCalls: " + std::to_string(SimpleGlobal::GetDrawCalls());
-			ImGui::Text(drawCalls.c_str());
+			ShowDrawCalls();
 		}
 
-		{ //FPS Cap
-			int monitorUpdateFrequency = 0;
-
-			{
-				HDC hdc = GetDC(0);
-				DEVMODE devMode;
-				devMode.dmSize = sizeof(DEVMODE);
-				EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &devMode);
-
-				monitorUpdateFrequency = static_cast<int>(devMode.dmDisplayFrequency);
-				ReleaseDC(0, hdc);
-			}
-
-			std::vector<std::string> fpsCapAsString;
-			fpsCapAsString.reserve(5);
-			fpsCapAsString.push_back("Uncapped");
-			fpsCapAsString.push_back(std::to_string(monitorUpdateFrequency));
-			fpsCapAsString.push_back(std::to_string(monitorUpdateFrequency / 2));
-			fpsCapAsString.push_back(std::to_string(monitorUpdateFrequency / 3));
-			fpsCapAsString.push_back(std::to_string(monitorUpdateFrequency / 4));
-
-			std::vector<const char*> fpsCapAsConstChar;
-			fpsCapAsConstChar.reserve(5);
-			for (const std::string& fpsString : fpsCapAsString)
-			{
-				fpsCapAsConstChar.push_back(fpsString.c_str());
-			}
-
-			int selectedFPSLevelCap = graphicsEngine->GetFPSLevelCap();
-			if (selectedFPSLevelCap == 1)
-			{
-				ImGui::Text("FPS Capped: %s", fpsCapAsConstChar[selectedFPSLevelCap]);
-			}
-			else
-			{
-				ImGui::SetNextItemWidth(200);
-				if (ImGui::Combo("FPS Cap", &selectedFPSLevelCap, fpsCapAsConstChar.data(), static_cast<int>(fpsCapAsConstChar.size())))
-				{
-					if (selectedFPSLevelCap == 1)
-						graphicsEngine->SetVSync(true);
-					else
-						graphicsEngine->SetFPSLevelCap(selectedFPSLevelCap);
-				}
-			}
-		}
-
-		{ //RasterizeState
-			ImGui::SetNextItemWidth(200);
-			std::array<const char*, static_cast<int>(eRasterizerState::Count)> rasterizerStates = {};
-			rasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = "BackfaceCulling";
-			rasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)] = "NoFaceCulling";
-			rasterizerStates[static_cast<int>(eRasterizerState::Wireframe)] = "Wireframe";
-			rasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)] = "WireframeNoCulling";
-			rasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)] = "FrontFaceCulling";
-
-			if (ImGui::Combo("RasterizerState", &mySelectedRasterizerState, rasterizerStates.data(), static_cast<int>(rasterizerStates.size())))
-			{
-				SimpleGlobal::GetGraphicsEngine()->SetRasterizerState(static_cast<eRasterizerState>(mySelectedRasterizerState));
-			}
-		}
-
-		{ //Resolutions
-			ImGui::SetNextItemWidth(200.0f);
-			std::vector<SimpleUtilities::Vector2ui> resolutions =
-			{
-				SimpleUtilities::Vector2ui(800, 600),
-				SimpleUtilities::Vector2ui(1280, 720),
-				SimpleUtilities::Vector2ui(1920, 1080),
-			};
-
-			const char* resolutionText[] = { "800x600", "1280x720", "1920x1080" };
-			if (ImGui::Combo("Resolution", &mySelectedResolution, resolutionText, 3))
-			{
-				SimpleGlobal::SetResolution(resolutions[mySelectedResolution]);
-			}
-		}
-
-		{ //Window Sizes	
-			ImGui::SetNextItemWidth(200);
-		
-			std::vector<std::string> windowSizeAsString;
-			for (const auto& size : myWindowSizes)
-			{
-				const std::string string = std::to_string(size.x) + "x" + std::to_string(size.y);
-				windowSizeAsString.push_back(string);
-			}
-
-			std::vector<const char*> windowSizeAsChar;
-			for (const std::string& string : windowSizeAsString)
-			{
-				windowSizeAsChar.push_back(string.c_str());
-			}
-
-			if (ImGui::Combo("WindowSize", &mySelectedWindowSize, windowSizeAsChar.data(), static_cast<int>(myWindowSizes.size())))
-			{
-				const auto currentWindowSize = SimpleGlobal::GetWindowSize();
-
-				if (currentWindowSize.x != myWindowSizes[mySelectedWindowSize].x &&
-					currentWindowSize.y != myWindowSizes[mySelectedWindowSize].y)
-				{
-					UpdateAndFetchCurrentMonitorResolution();
-
-					if (myWindowSizes[mySelectedWindowSize].x == myMonitorResolution.x &&
-						myWindowSizes[mySelectedWindowSize].y == myMonitorResolution.y)
-					{
-						SimpleGlobal::SetWindowSize(myMonitorResolution, true);
-					}
-					else
-					{
-						SimpleGlobal::SetWindowSize(myWindowSizes[mySelectedWindowSize]);
-					}
-				}
-			}
-
-			if (ImGui::Checkbox("Show Console", &myConsoleIsOpen))
-			{
-				HWND consoleWindow = GetConsoleWindow();
-
-				if (myConsoleIsOpen)
-					ShowWindow(consoleWindow, SW_SHOW);
-				else
-					ShowWindow(consoleWindow, SW_HIDE);
-			}
-		}
+		AdjustFPSCap(graphicsEngine);
+		AdjustRasterizerState();
+		AdjustResolution();
+		AdjustWindowSize();
+		ToggleConsole();
 	}
+
 	ImGui::End();
 }
 
@@ -189,4 +64,161 @@ void SettingsTool::UpdateAndFetchCurrentMonitorResolution()
 
 	myMonitorResolution.x = static_cast<unsigned int>(monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left);
 	myMonitorResolution.y = static_cast<unsigned int>(monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top);
+}
+
+void SettingsTool::ToggleConsole()
+{
+	if (ImGui::Checkbox("Show Console", &myConsoleIsOpen))
+	{
+		HWND consoleWindow = GetConsoleWindow();
+
+		if (myConsoleIsOpen)
+			ShowWindow(consoleWindow, SW_SHOW);
+		else
+			ShowWindow(consoleWindow, SW_HIDE);
+	}
+}
+
+void SettingsTool::ToggleVSync(GraphicsEngine* aGraphicsEngine)
+{
+	bool vsync = aGraphicsEngine->IsVSyncActive();
+
+	if (ImGui::Checkbox("VSync", &vsync))
+	{
+		aGraphicsEngine->SetVSync(vsync);
+	}
+}
+
+void SettingsTool::ShowDrawCalls()
+{
+	std::string drawCalls = "DrawCalls: " + std::to_string(SimpleGlobal::GetDrawCalls());
+	ImGui::Text(drawCalls.c_str());
+}
+
+void SettingsTool::ShowFPS()
+{
+	std::string fps = "FPS: " + std::to_string(SimpleGlobal::GetFPS());
+	ImGui::Text(fps.c_str());
+}
+
+void SettingsTool::AdjustWindowSize()
+{
+	ImGui::SetNextItemWidth(200);
+
+	std::vector<std::string> windowSizeAsString;
+	for (const auto& size : myWindowSizes)
+	{
+		const std::string string = std::to_string(size.x) + "x" + std::to_string(size.y);
+		windowSizeAsString.push_back(string);
+	}
+
+	std::vector<const char*> windowSizeAsChar;
+	for (const std::string& string : windowSizeAsString)
+	{
+		windowSizeAsChar.push_back(string.c_str());
+	}
+
+	if (ImGui::Combo("WindowSize", &mySelectedWindowSize, windowSizeAsChar.data(), static_cast<int>(myWindowSizes.size())))
+	{
+		const auto currentWindowSize = SimpleGlobal::GetWindowSize();
+
+		if (currentWindowSize.x != myWindowSizes[mySelectedWindowSize].x &&
+			currentWindowSize.y != myWindowSizes[mySelectedWindowSize].y)
+		{
+			UpdateAndFetchCurrentMonitorResolution();
+
+			if (myWindowSizes[mySelectedWindowSize].x == myMonitorResolution.x &&
+				myWindowSizes[mySelectedWindowSize].y == myMonitorResolution.y)
+			{
+				SimpleGlobal::SetWindowSize(myMonitorResolution, true);
+			}
+			else
+			{
+				SimpleGlobal::SetWindowSize(myWindowSizes[mySelectedWindowSize]);
+			}
+		}
+	}
+}
+
+void SettingsTool::AdjustResolution()
+{
+	ImGui::SetNextItemWidth(200.0f);
+
+	std::vector<SimpleUtilities::Vector2ui> resolutions =
+	{
+		SimpleUtilities::Vector2ui(800, 600),
+		SimpleUtilities::Vector2ui(1280, 720),
+		SimpleUtilities::Vector2ui(1920, 1080),
+	};
+
+	const char* resolutionText[] = { "800x600", "1280x720", "1920x1080" };
+	if (ImGui::Combo("Resolution", &mySelectedResolution, resolutionText, 3))
+	{
+		SimpleGlobal::SetResolution(resolutions[mySelectedResolution]);
+	}
+}
+
+void SettingsTool::AdjustRasterizerState()
+{
+	ImGui::SetNextItemWidth(200);
+
+	std::array<const char*, static_cast<int>(eRasterizerState::Count)> rasterizerStates = {};
+	rasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = "BackfaceCulling";
+	rasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)] = "NoFaceCulling";
+	rasterizerStates[static_cast<int>(eRasterizerState::Wireframe)] = "Wireframe";
+	rasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)] = "WireframeNoCulling";
+	rasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)] = "FrontFaceCulling";
+
+	if (ImGui::Combo("RasterizerState", &mySelectedRasterizerState, rasterizerStates.data(), static_cast<int>(rasterizerStates.size())))
+	{
+		SimpleGlobal::GetGraphicsEngine()->SetRasterizerState(static_cast<eRasterizerState>(mySelectedRasterizerState));
+	}
+}
+
+void SettingsTool::AdjustFPSCap(GraphicsEngine* aGraphicsEngine)
+{
+	int monitorUpdateFrequency = 0;
+
+	{
+		HDC hdc = GetDC(0);
+		DEVMODE devMode;
+		devMode.dmSize = sizeof(DEVMODE);
+		EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &devMode);
+
+		monitorUpdateFrequency = static_cast<int>(devMode.dmDisplayFrequency);
+		ReleaseDC(0, hdc);
+	}
+
+	std::vector<std::string> fpsCapAsString;
+	fpsCapAsString.reserve(5);
+	fpsCapAsString.push_back("Uncapped");
+	fpsCapAsString.push_back(std::to_string(monitorUpdateFrequency));
+	fpsCapAsString.push_back(std::to_string(monitorUpdateFrequency / 2));
+	fpsCapAsString.push_back(std::to_string(monitorUpdateFrequency / 3));
+	fpsCapAsString.push_back(std::to_string(monitorUpdateFrequency / 4));
+
+	std::vector<const char*> fpsCapAsConstChar;
+	fpsCapAsConstChar.reserve(5);
+	for (const std::string& fpsString : fpsCapAsString)
+	{
+		fpsCapAsConstChar.push_back(fpsString.c_str());
+	}
+
+	int selectedFPSLevelCap = aGraphicsEngine->GetFPSLevelCap();
+	if (selectedFPSLevelCap == 1)
+	{
+		ImGui::Text("FPS Capped: %s", fpsCapAsConstChar[selectedFPSLevelCap]);
+	}
+	else
+	{
+		ImGui::SetNextItemWidth(200);
+
+		if (ImGui::Combo("FPS Cap", &selectedFPSLevelCap, fpsCapAsConstChar.data(), static_cast<int>(fpsCapAsConstChar.size())))
+		{
+			if (selectedFPSLevelCap == 1)
+				aGraphicsEngine->SetVSync(true);
+			else
+				aGraphicsEngine->SetFPSLevelCap(selectedFPSLevelCap);
+		}
+	}
 }
