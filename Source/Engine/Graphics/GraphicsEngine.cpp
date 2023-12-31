@@ -106,6 +106,21 @@ void GraphicsEngine::Update()
 		lightBufferData.directionalLightColor = myLightBufferData->directionalLightColor;
 		lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
 
+		lightBufferData.numberOfPointlights = 1;
+
+		{//Test
+			myLightBufferData->pointLights[0].position = { -5.0f, 4.0f, 0.0f,1.0f };
+			myLightBufferData->pointLights[0].color = { 1.0f, 0.0f, 0.0f,1.0f };
+			myLightBufferData->pointLights[0].range = 100.0f;
+		}
+
+		for (unsigned int i = 0; i < lightBufferData.numberOfPointlights; i++)
+		{
+			lightBufferData.pointLights[i].position = myLightBufferData->pointLights[i].position;
+			lightBufferData.pointLights[i].color = myLightBufferData->pointLights[i].color;
+			lightBufferData.pointLights[i].range = myLightBufferData->pointLights[i].range;
+		}
+
 		myLightBuffer->Bind(3);
 		myLightBuffer->Update(sizeof(LightBufferData), &lightBufferData);
 	}
@@ -400,12 +415,12 @@ void GraphicsEngine::SetDirectionalLightColor(const SimpleUtilities::Vector4f& a
 	myLightBufferData->directionalLightColor = aColor;
 }
 
-void GraphicsEngine::SetSkyColor(const SimpleUtilities::Vector3f& aColor)
+void GraphicsEngine::SetSkyColor(const SimpleUtilities::Vector4f& aColor)
 {
 	myLightBufferData->skyColor = aColor;
 }
 
-void GraphicsEngine::SetGroundColor(const SimpleUtilities::Vector3f& aColor)
+void GraphicsEngine::SetGroundColor(const SimpleUtilities::Vector4f& aColor)
 {
 	myLightBufferData->groundColor = aColor;
 }
@@ -490,12 +505,12 @@ SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
 	return myLightBufferData->directionalLightDirection;
 }
 
-SimpleUtilities::Vector3f GraphicsEngine::GetSkyColor() const
+SimpleUtilities::Vector4f GraphicsEngine::GetSkyColor() const
 {
 	return myLightBufferData->skyColor;
 }
 
-SimpleUtilities::Vector3f GraphicsEngine::GetGroundColor() const
+SimpleUtilities::Vector4f GraphicsEngine::GetGroundColor() const
 {
 	return myLightBufferData->groundColor;
 }
@@ -820,8 +835,8 @@ bool GraphicsEngine::CreateLightBuffer()
 {
 	LightBufferData lightBufferData;
 
-	lightBufferData.groundColor = SU::Vector3f(1.0f, 1.0f, 1.0f);
-	lightBufferData.skyColor = SU::Vector3f(1.0f, 1.0f, 1.0f);
+	lightBufferData.skyColor = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+	lightBufferData.groundColor = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 	lightBufferData.directionalLightColor = SimpleUtilities::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	lightBufferData.directionalLightDirection = SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f);

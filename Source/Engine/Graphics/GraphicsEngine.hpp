@@ -52,16 +52,24 @@ struct alignas(16) TimeBufferData final
 
 struct alignas(16) LightBufferData final
 {
-	SimpleUtilities::Vector3f skyColor = SimpleUtilities::Vector3f(1.0f, 1.0f, 1.0f);
-	const float paddingSkyColor = -1.0f;
-
-	SimpleUtilities::Vector3f groundColor = SimpleUtilities::Vector3f(1.0f, 1.0f, 1.0f);;
-	const float paddingGroundColor = -1.0f;
+	SimpleUtilities::Vector4f skyColor = SimpleUtilities::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+	SimpleUtilities::Vector4f groundColor = SimpleUtilities::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 	SimpleUtilities::Vector3f directionalLightDirection;
 	const float paddingDirectionalLightDirection = -1.0f;
 
 	SimpleUtilities::Vector4f directionalLightColor = SimpleUtilities::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+	struct PointLightData
+	{
+		SimpleUtilities::Vector4f position;
+		SimpleUtilities::Vector4f color = SimpleUtilities::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+		float range = 0.0f;
+		const float padding[3] = { -1.0f };
+	} pointLights[8];
+
+	unsigned int numberOfPointlights = 0;
+	const float paddingPointlightData[3] = { -1.0f };
 };
 
 struct RenderTarget final
@@ -88,8 +96,8 @@ public:
 public:
 	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection);
 	void SetDirectionalLightColor(const SimpleUtilities::Vector4f& aColor);
-	void SetSkyColor(const SimpleUtilities::Vector3f& aColor);
-	void SetGroundColor(const SimpleUtilities::Vector3f& aColor);
+	void SetSkyColor(const SimpleUtilities::Vector4f& aColor);
+	void SetGroundColor(const SimpleUtilities::Vector4f& aColor);
 	void SetVSync(const bool aShouldTurnOn);
 	void SetFPSLevelCap(const unsigned int aCapLevel);
 	void SetToBackBuffer();
@@ -111,8 +119,8 @@ public:
 
 	SimpleUtilities::Vector4f GetDirectionalLightColor() const;
 	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
-	SimpleUtilities::Vector3f GetSkyColor() const;
-	SimpleUtilities::Vector3f GetGroundColor() const;
+	SimpleUtilities::Vector4f GetSkyColor() const;
+	SimpleUtilities::Vector4f GetGroundColor() const;
 
 	unsigned int GetFPSLevelCap() const;
 private:

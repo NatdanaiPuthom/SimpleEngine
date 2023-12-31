@@ -39,6 +39,8 @@ void LightTool::Draw()
 				}
 
 				ImGui::SameLine();
+				ImGui::Dummy(ImVec2(50, 0));
+				ImGui::SameLine();
 				ImGui::SetNextItemWidth(100.0f);
 				if (ImGui::SliderFloat("Intensity", &color.w, 0.0f, 10.f, "%.03f"))
 				{
@@ -51,15 +53,15 @@ void LightTool::Draw()
 			if (ImGui::BeginTabItem("Ambient Light"))
 			{
 				ImGui::SetNextItemWidth(400.0f);
-				SimpleUtilities::Vector3f skyColor = graphicsEngine->GetSkyColor();
-				if (ImGui::SliderFloat3("SkyColor", &skyColor.x, 0.0f, 1.0f, "%0.3f"))
+				SimpleUtilities::Vector4f skyColor = graphicsEngine->GetSkyColor();
+				if (ImGui::SliderFloat4("SkyColor", &skyColor.x, 0.0f, 1.0f, "%0.3f"))
 				{
 					graphicsEngine->SetSkyColor(skyColor);
 				}
 
 				ImGui::SetNextItemWidth(400.0f);
-				SimpleUtilities::Vector3f groundColor = graphicsEngine->GetGroundColor();
-				if (ImGui::SliderFloat3("GroundColor", &groundColor.x, 0.0f, 1.0f, "%0.3f"))
+				SimpleUtilities::Vector4f groundColor = graphicsEngine->GetGroundColor();
+				if (ImGui::SliderFloat4("GroundColor", &groundColor.x, 0.0f, 1.0f, "%0.3f"))
 				{
 					graphicsEngine->SetGroundColor(groundColor);
 				}
