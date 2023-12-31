@@ -10,6 +10,7 @@ DirectionalLightVisual::DirectionalLightVisual()
 	std::shared_ptr<ModelInstance> directionalLight = std::move(modelFactory->CreateCubeModel());
 	directionalLight->ClearTextures();
 	directionalLight->AddTexture("Assets/Textures/Sun.dds");
+	directionalLight->SetName("Directional Light");
 	myModel = directionalLight;
 
 	myLine->startPosition = myModel->GetPosition();
