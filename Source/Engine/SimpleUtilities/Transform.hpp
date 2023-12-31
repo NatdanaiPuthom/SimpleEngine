@@ -11,6 +11,7 @@ namespace SimpleUtilities
 		Transform(const Vector3f& aPosition, const Vector3f& aRotation, const Vector3f& aScale);
 		~Transform();
 
+		void LookAt(const Vector3f& aTargetPoint);
 		void SetPosition(const Vector3f& aPosition);
 		void SetRotation(const Vector3f& aRotationInDegree);
 		void SetScale(const Vector3f& aScale);
@@ -45,6 +46,11 @@ namespace SimpleUtilities
 
 	inline Transform::~Transform()
 	{
+	}
+
+	inline void Transform::LookAt(const Vector3f& aTargetPoint)
+	{
+		myMatrix.LookAt(aTargetPoint);
 	}
 
 	inline void Transform::SetPosition(const Vector3f& aPosition)

@@ -49,6 +49,11 @@ void ModelInstance::ClearTextures()
 	myTextures.clear();
 }
 
+void ModelInstance::LookAt(const SimpleUtilities::Vector3f& aTargetPoint)
+{
+	myTransform.LookAt(aTargetPoint);
+}
+
 void ModelInstance::SetShader(const char* aPSShaderFile, const char* aVSShaderFile)
 {
 	myShader = nullptr;

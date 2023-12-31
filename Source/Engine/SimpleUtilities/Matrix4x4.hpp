@@ -17,6 +17,7 @@ namespace SimpleUtilities
 		const T& operator()(const int aRow, const int aColumn) const;
 		void operator=(const Matrix4x4<T>& aMatrix);
 
+		void LookAt(const Vector3<T>& aTargetPoint);
 		void SetPosition(const Vector3<T>& aPosition);
 		void SetLocalRotation(const Vector3<T>& aRotationInDegree);
 		void SetScale(const Vector3<T>& aScale);
@@ -288,6 +289,33 @@ namespace SimpleUtilities
 		myMatrix[3][1] = aMatrix(4, 2);
 		myMatrix[3][2] = aMatrix(4, 3);
 		myMatrix[3][3] = aMatrix(4, 4);
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::LookAt(const Vector3<T>& aTargetPoint)
+	{
+		const Vector3<T> position = GetPosition();
+
+		Vector3<T> forward = (aTargetPoint - position);
+		forward.Normalize();
+
+		Vector3<T> right = SimpleUtilities::Cross({ 0,1,0 }, forward);
+		right.Normalize();
+
+		Vector3<T> newUp = SimpleUtilities::Cross(forward, right);
+		newUp.Normalize();
+
+		myMatrix[0][0] = right.x;
+		myMatrix[0][1] = right.y;
+		myMatrix[0][2] = right.z;
+
+		myMatrix[1][0] = newUp.x;
+		myMatrix[1][1] = newUp.y;
+		myMatrix[1][2] = newUp.z;
+
+		myMatrix[2][0] = forward.x;
+		myMatrix[2][1] = forward.y;
+		myMatrix[2][2] = forward.z;
 	}
 
 	template<typename T>

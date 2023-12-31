@@ -18,6 +18,7 @@ public:
 	void AddTexture(const char* aFilePath);
 	void ClearTextures();
 public:
+	void LookAt(const SimpleUtilities::Vector3f& aTargetPoint);
 	void SetShader(const char* aPSShaderFile, const char* aVSShaderFile);
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
 	void SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree);
