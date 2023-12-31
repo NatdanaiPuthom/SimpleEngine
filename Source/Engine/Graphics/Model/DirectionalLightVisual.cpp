@@ -7,7 +7,9 @@ DirectionalLightVisual::DirectionalLightVisual()
 {
 	ModelFactory* modelFactory = SimpleGlobal::GetModelFactory();
 
-	std::shared_ptr<ModelInstance> directionalLight = std::move(modelFactory->CreateDirectionalLightModel());
+	std::shared_ptr<ModelInstance> directionalLight = std::move(modelFactory->CreateCubeModel());
+	directionalLight->ClearTextures();
+	directionalLight->AddTexture("Assets/Textures/Sun.dds");
 	myModel = directionalLight;
 
 	myLine->startPosition = myModel->GetPosition();
@@ -23,7 +25,6 @@ void DirectionalLightVisual::Update() const
 
 	auto graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 	const SU::Vector3f direction = graphicsEngine->GetDirectionalLightDirection() * 180.0f;
-	//myModel->SetRotation(direction);
 	myModel->LookAt(direction);
 
 	myLine->endPosition += direction.GetNormalized() * myLineDistance;

@@ -10,7 +10,6 @@ ModelFactory::ModelFactory()
 	MeshData pyramidData = ShapeCreator3000::CreatePyramid();
 	MeshData planeData = ShapeCreator3000::CreatePlane();
 	MeshData skyboxData = ShapeCreator3000::CreateSkyBox(SimpleUtilities::Vector3f(100, 100, 100));
-	MeshData directionalLightData = ShapeCreator3000::CreateDirectionalLight();
 	MeshData terrainData = ShapeCreator3000::CreateTerrain();
 	MeshData sphereData = ShapeCreator3000::CreateSphere();
 
@@ -33,9 +32,6 @@ ModelFactory::ModelFactory()
 
 	if (!skyboxMesh->Init(skyboxData))
 		assert(false && "Failed to create SkyBox");
-
-	if (!directionalLight->Init(directionalLightData))
-		assert(false && "Failed to create Directional Light");
 
 	if (!terrainMesh->Init(terrainData))
 		assert(false && "Failed to create Terrain");

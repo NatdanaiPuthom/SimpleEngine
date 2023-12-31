@@ -18,7 +18,6 @@ public:
 	static MeshData CreatePyramid(const SimpleUtilities::Vector3f& aSize = { 1.0f , 1.0f, 1.0f });
 	static MeshData CreateCube(const SimpleUtilities::Vector3f& aSize = { 1.0f, 1.0f , 1.0f });
 	static MeshData CreateSkyBox(const SimpleUtilities::Vector3f& aSize = { 1000.0f, 1000.0f, 1000.0f });
-	static MeshData CreateDirectionalLight();
 	static MeshData CreatePlane();
 	static MeshData CreateSphere(const float aRadius = 1.0f, const int aSlices = 20, const int aStacks = 20);
 };

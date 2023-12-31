@@ -3,7 +3,8 @@
 
 DefaultScene::DefaultScene()
 {
-	myDirectionalLight->myModel->SetPosition({ -5, 6, 0 });
+	myDirectionalLight->myModel->SetPosition({ 0.0f, 7.0f, -5.0f });
+	SimpleGlobal::GetGraphicsEngine()->SetDirectionalLightDirection({ -1.0f, -1.0f, 1.0f });
 }
 
 void DefaultScene::Init()
