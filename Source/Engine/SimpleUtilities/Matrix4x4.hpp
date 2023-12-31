@@ -294,6 +294,8 @@ namespace SimpleUtilities
 	template<typename T>
 	inline void Matrix4x4<T>::LookAt(const Vector3<T>& aTargetPoint)
 	{
+		//TO-DO: Fix so it work with scaling and also show rotation values
+
 		const Vector3<T> position = GetPosition();
 
 		Vector3<T> forward = (aTargetPoint - position);
