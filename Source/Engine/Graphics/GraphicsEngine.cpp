@@ -10,19 +10,17 @@ GraphicsEngine::GraphicsEngine()
 	, myViewPort(std::make_shared<D3D11_VIEWPORT>())
 	, myCameraConstantBuffer(std::make_unique<ConstantBuffer>())
 	, myTimeConstantBuffer(std::make_unique<ConstantBuffer>())
-	, myDirectionLightConstantBuffer(std::make_unique<ConstantBuffer>())
-	, myAmbientLightConstantBuffer(std::make_unique<ConstantBuffer>())
-	, myDirectionLightData(std::make_unique<DirectionalLightBufferData>())
-	, myAmbientLightData(std::make_unique<AmbientLightBufferData>())
+	, myLightBuffer(std::make_unique<ConstantBuffer>())
+	, myLightBufferData(std::make_unique<LightBufferData>())
 	, myWaterReflectionRenderTarget(std::make_unique<RenderTarget>())
 	, myImGuiImageRenderTarget(std::make_unique<RenderTarget>())
 	, myClearColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 	, myVSync(true)
 	, myFPSLevelCap(0)
 {
-	myDirectionLightData->direction.x = 0;
-	myDirectionLightData->direction.y = -1;
-	myDirectionLightData->direction.z = 0;
+	myLightBufferData->directionalLightDirection.x = 0.0f;
+	myLightBufferData->directionalLightDirection.x = -1.0f;
+	myLightBufferData->directionalLightDirection.x = 0.0f;
 }
 
 GraphicsEngine::~GraphicsEngine()
@@ -57,10 +55,7 @@ const bool GraphicsEngine::Init(const SimpleUtilities::Vector2ui& aWindowSize, H
 	if (!CreateTimeBuffer())
 		return false;
 
-	if (!CreateDirectionalLightBuffer())
-		return false;
-
-	if (!CreateAmbientLightBuffer())
+	if (!CreateLightBuffer())
 		return false;
 
 	if (!CreateRasterizerStates())
@@ -104,22 +99,15 @@ void GraphicsEngine::Update()
 	}
 
 	{
-		DirectionalLightBufferData directionLightBuffer = {};
-		directionLightBuffer.direction = myDirectionLightData->direction;
-		directionLightBuffer.direction.Normalize();
-		directionLightBuffer.color = myDirectionLightData->color;
+		LightBufferData lightBufferData;
+		lightBufferData.groundColor = myLightBufferData->groundColor;
+		lightBufferData.skyColor = myLightBufferData->skyColor;
 
-		myDirectionLightConstantBuffer->Bind(3);
-		myDirectionLightConstantBuffer->Update(sizeof(DirectionalLightBufferData), &directionLightBuffer);
-	}
+		lightBufferData.directionalLightColor = myLightBufferData->directionalLightColor;
+		lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
 
-	{
-		AmbientLightBufferData ambientLightBuffer = {};
-		ambientLightBuffer.skyColor = myAmbientLightData->skyColor;
-		ambientLightBuffer.groundColor = myAmbientLightData->groundColor;
-
-		myAmbientLightConstantBuffer->Bind(4);
-		myAmbientLightConstantBuffer->Update(sizeof(AmbientLightBufferData), &ambientLightBuffer);
+		myLightBuffer->Bind(3);
+		myLightBuffer->Update(sizeof(LightBufferData), &lightBufferData);
 	}
 
 	myCamera->Update(SimpleGlobal::GetDeltaTime());
@@ -404,22 +392,22 @@ void GraphicsEngine::SetFPSLevelCap(const unsigned int aCapLevel)
 
 void GraphicsEngine::SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection)
 {
-	myDirectionLightData->direction = aDirection;
+	myLightBufferData->directionalLightDirection = aDirection;
 }
 
 void GraphicsEngine::SetDirectionalLightColor(const SimpleUtilities::Vector4f& aColor)
 {
-	myDirectionLightData->color = aColor;
+	myLightBufferData->directionalLightColor = aColor;
 }
 
 void GraphicsEngine::SetSkyColor(const SimpleUtilities::Vector3f& aColor)
 {
-	myAmbientLightData->skyColor = aColor;
+	myLightBufferData->skyColor = aColor;
 }
 
 void GraphicsEngine::SetGroundColor(const SimpleUtilities::Vector3f& aColor)
 {
-	myAmbientLightData->groundColor = aColor;
+	myLightBufferData->groundColor = aColor;
 }
 
 std::shared_ptr<Texture> GraphicsEngine::GetTexture(const char* aFilePath)
@@ -494,22 +482,22 @@ ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetWaterShaderResourceView()
 
 SimpleUtilities::Vector4f GraphicsEngine::GetDirectionalLightColor() const
 {
-	return myDirectionLightData->color;
+	return myLightBufferData->directionalLightColor;
 }
 
 SimpleUtilities::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
 {
-	return myDirectionLightData->direction;
+	return myLightBufferData->directionalLightDirection;
 }
 
 SimpleUtilities::Vector3f GraphicsEngine::GetSkyColor() const
 {
-	return myAmbientLightData->skyColor;
+	return myLightBufferData->skyColor;
 }
 
 SimpleUtilities::Vector3f GraphicsEngine::GetGroundColor() const
 {
-	return myAmbientLightData->groundColor;
+	return myLightBufferData->groundColor;
 }
 
 unsigned int GraphicsEngine::GetFPSLevelCap() const
@@ -828,27 +816,18 @@ bool GraphicsEngine::CreateTimeBuffer()
 	return true;
 }
 
-bool GraphicsEngine::CreateDirectionalLightBuffer()
+bool GraphicsEngine::CreateLightBuffer()
 {
-	DirectionalLightBufferData directionLightBuffer;
+	LightBufferData lightBufferData;
 
-	directionLightBuffer.direction = SimpleUtilities::Vector3f(0, -1, 0);
-	directionLightBuffer.color = SimpleUtilities::Vector4f(0, 0, 0, 0);
+	lightBufferData.groundColor = SU::Vector3f(1.0f, 1.0f, 1.0f);
+	lightBufferData.skyColor = SU::Vector3f(1.0f, 1.0f, 1.0f);
 
-	if (!myDirectionLightConstantBuffer->Init(sizeof(DirectionalLightBufferData), &directionLightBuffer))
-		return false;
+	lightBufferData.directionalLightColor = SimpleUtilities::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+	lightBufferData.directionalLightDirection = SimpleUtilities::Vector3f(0.0f, 0.0f, 0.0f);
 
-	return true;
-}
 
-bool GraphicsEngine::CreateAmbientLightBuffer()
-{
-	AmbientLightBufferData ambientLightBuffer;
-
-	ambientLightBuffer.groundColor = SimpleUtilities::Vector3f(1, 1, 1);
-	ambientLightBuffer.skyColor = SimpleUtilities::Vector3f(1, 1, 1);
-
-	if (!myAmbientLightConstantBuffer->Init(sizeof(AmbientLightBufferData), &ambientLightBuffer))
+	if (!myLightBuffer->Init(sizeof(LightBufferData), &lightBufferData))
 		return false;
 
 	return true;

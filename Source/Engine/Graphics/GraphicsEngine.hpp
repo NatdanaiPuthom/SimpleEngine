@@ -50,21 +50,18 @@ struct alignas(16) TimeBufferData final
 	const float padding[3] = { -1 };
 };
 
-struct alignas(16) DirectionalLightBufferData final
-{
-	SimpleUtilities::Vector3f direction;
-	const float padding1 = -1.0f;
-
-	SimpleUtilities::Vector4f color = SimpleUtilities::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-};
-
-struct alignas(16) AmbientLightBufferData final
+struct alignas(16) LightBufferData final
 {
 	SimpleUtilities::Vector3f skyColor = SimpleUtilities::Vector3f(1.0f, 1.0f, 1.0f);
-	const float padding1 = -1.0f;
+	const float paddingSkyColor = -1.0f;
 
 	SimpleUtilities::Vector3f groundColor = SimpleUtilities::Vector3f(1.0f, 1.0f, 1.0f);;
-	const float padding2 = -1.0f;
+	const float paddingGroundColor = -1.0f;
+
+	SimpleUtilities::Vector3f directionalLightDirection;
+	const float paddingDirectionalLightDirection = -1.0f;
+
+	SimpleUtilities::Vector4f directionalLightColor = SimpleUtilities::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 };
 
 struct RenderTarget final
@@ -128,8 +125,7 @@ private:
 	bool CreateSamplerState();
 	bool CreateCameraBuffer();
 	bool CreateTimeBuffer();
-	bool CreateDirectionalLightBuffer();
-	bool CreateAmbientLightBuffer();
+	bool CreateLightBuffer();
 	bool CreateRenderTargetForImGuiImage(const int aWidth, const int aHeight);
 	bool CreateWaterRenderTarget(const int aWidth, const int aHeight);
 	bool CreateRasterizerStates();
@@ -164,11 +160,9 @@ private:
 
 	std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
 	std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
-	std::unique_ptr<ConstantBuffer> myDirectionLightConstantBuffer;
-	std::unique_ptr<ConstantBuffer> myAmbientLightConstantBuffer;
+	std::unique_ptr<ConstantBuffer> myLightBuffer;
 
-	std::unique_ptr<DirectionalLightBufferData> myDirectionLightData;
-	std::unique_ptr<AmbientLightBufferData> myAmbientLightData;
+	std::unique_ptr<LightBufferData> myLightBufferData;
 
 	std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
 	std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;

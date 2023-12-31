@@ -23,22 +23,19 @@ cbuffer TimeBuffer : register(b2)
     float3 paddingTotalTime;
 }
 
-cbuffer DirectionLightBuffer : register(b3)
-{
-    float3 directionLightDirection;
-    float directionLightDirectionPadding;
-    
-    float4 directionalLightColor;
-}
-
-cbuffer AmbientLightBuffer : register(b4)
+cbuffer LightBuffer : register(b3)
 {
     float3 skyColor;
     float paddingSkyColor;
     
     float3 groundColor;
     float paddingGroundColor;
-}
+    
+    float3 directionLightDirection;
+    float paddingDirectionalLightDirection;
+    
+    float4 directionalLightColor;
+};
 
 struct PixelOutput
 {
