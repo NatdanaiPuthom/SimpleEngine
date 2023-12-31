@@ -7,7 +7,7 @@ PixelOutput main(PixelInputType aInput)
     float lightIntensity = saturate(dot(normalize(aInput.normal), normalize(-directionLightDirection)));
     
     float4 color = aInput.color * aDefaultTexture.Sample(aSampler, aInput.uv);
-    output.color = color * lightIntensity;
+    output.color = color * lightIntensity * directionalLightColor * directionalLightColor.a;
     output.color.a = 1.0f;
     
     return output;

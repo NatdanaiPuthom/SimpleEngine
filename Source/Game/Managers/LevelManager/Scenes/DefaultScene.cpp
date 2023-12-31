@@ -3,7 +3,7 @@
 
 DefaultScene::DefaultScene()
 {
-	myDirectionalLight->myModel->SetPosition({ 10, 6, 8 });
+	myDirectionalLight->myModel->SetPosition({ -5, 6, 0 });
 }
 
 void DefaultScene::Init()
@@ -72,9 +72,4 @@ void DefaultScene::Init()
 void DefaultScene::Update()
 {
 	Scene::Update();
-
-	auto& pyramid = myModelInstances[1];
-	auto& hamster = myModelInstances[2];
-
-	pyramid->LookAt(hamster->GetPosition());
 }
