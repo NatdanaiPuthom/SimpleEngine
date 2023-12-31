@@ -111,6 +111,8 @@ MeshData ShapeCreator3000::CreateTerrain(const Simple::TerrainData& aTerrainData
 
 MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f& aSize)
 {
+	SU::Vector3f normal;
+
 	Vertex south_West;
 	south_West.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1);
 	south_West.uv = SU::Vector2f(0.0f, 0.0f);
@@ -123,6 +125,11 @@ MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f& aSize)
 	south_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
 	south_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
+	normal = CalcualtePyramidNormal(south_West.position.AsVector3(), south_Top.position.AsVector3(), south_East.position.AsVector3());
+	south_West.normal = normal;
+	south_East.normal = normal;
+	south_Top.normal = normal;
+
 	Vertex east_West;
 	east_West.position = SU::Vector4f(aSize.x, -aSize.y, -aSize.z, 1);
 	east_West.uv = SU::Vector2f(0.0f, 0.0f);
@@ -133,7 +140,12 @@ MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f& aSize)
 
 	Vertex east_Top;
 	east_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
-	east_Top.uv = SU::Vector2f(0.6f, 1.0f);
+	east_Top.uv = SU::Vector2f(0.6f, 1.0f);	east_Top.normal = { 1.0f, 0.0f, 0.0f };
+
+	normal = CalcualtePyramidNormal(east_West.position.AsVector3(), east_Top.position.AsVector3(), east_East.position.AsVector3());
+	east_West.normal = normal;
+	east_East.normal = normal;
+	east_Top.normal = normal;
 
 	Vertex north_West;
 	north_West.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1);
@@ -147,6 +159,11 @@ MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f& aSize)
 	north_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
 	north_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
+	normal = CalcualtePyramidNormal(north_East.position.AsVector3(), north_Top.position.AsVector3(), north_West.position.AsVector3());
+	north_West.normal = normal;
+	north_East.normal = normal;
+	north_Top.normal = normal;
+
 	Vertex west_West;
 	west_West.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1);
 	west_West.uv = SU::Vector2f(0.0f, 0.0f);
@@ -159,21 +176,30 @@ MeshData ShapeCreator3000::CreatePyramid(const SimpleUtilities::Vector3f& aSize)
 	west_Top.position = SU::Vector4f(0.0f, aSize.y, 0.0f, 1);
 	west_Top.uv = SU::Vector2f(0.6f, 1.0f);
 
+	normal = CalcualtePyramidNormal(west_West.position.AsVector3(), west_Top.position.AsVector3(), west_East.position.AsVector3());
+	west_West.normal = normal;
+	west_East.normal = normal;
+	west_Top.normal = normal;
+
 	Vertex southWest;
 	southWest.position = south_West.position;
 	southWest.uv = SU::Vector2f(0.0f, 0.0f);
+	southWest.normal = { 0.0f, -1.0f, 0.0f };
 
 	Vertex northWest;
 	northWest.position = west_West.position;
 	northWest.uv = SU::Vector2f(0.0f, 1.0f);
+	northWest.normal = { 0.0f, -1.0f, 0.0f };
 
 	Vertex northEast;
 	northEast.position = east_East.position;
 	northEast.uv = SU::Vector2f(1.0f, 1.0f);
+	northEast.normal = { 0.0f, -1.0f, 0.0f };
 
 	Vertex southEast;
 	southEast.position = south_East.position;
 	southEast.uv = SU::Vector2f(1.0f, 0.0f);
+	southEast.normal = { 0.0f, -1.0f, 0.0f };
 
 	std::vector<Vertex> vertices =
 	{
@@ -439,6 +465,15 @@ MeshData ShapeCreator3000::CreateSphere(const float aRadius, const int aSlices, 
 	}
 
 	return MeshData(vertices, indices);
+}
+
+SimpleUtilities::Vector3f ShapeCreator3000::CalcualtePyramidNormal(const SimpleUtilities::Vector3f& aVertexA, const SimpleUtilities::Vector3f& aVertexB, const SimpleUtilities::Vector3f& aVertexC)
+{
+	const SU::Vector3f BA = aVertexB - aVertexA;
+	const SU::Vector3f CB = aVertexC - aVertexB;
+	const SU::Vector3f normal = SU::Cross(BA, CB).GetNormalized();
+
+	return normal;
 }
 
 MeshData ShapeCreator3000::CreateSkyBox(const SU::Vector3f& aSize)

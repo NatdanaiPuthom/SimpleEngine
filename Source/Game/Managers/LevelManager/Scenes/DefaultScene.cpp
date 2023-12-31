@@ -46,6 +46,7 @@ void DefaultScene::Init()
 		plane->SetName("Cat");
 		plane->ClearTextures();
 		plane->AddTexture("Assets/Textures/Cat-scared.dds");
+		plane->SetShader("Shaders/DefaultPBRPS.cso", "Shaders/DefaultVS.cso");
 		myModelInstances.push_back(std::move(plane));
 	}
 
@@ -61,6 +62,15 @@ void DefaultScene::Init()
 		cube->SetName("Colorful");
 		cube->SetPosition({ -5.0f, 0.5f, 0.0f });
 		myModelInstances.push_back(std::move(cube));
+	}
+
+	{
+		std::shared_ptr<ModelInstance> pyramid = std::move(modelFactory->CreatePyramidModel());
+		pyramid->SetPosition({ -10.0f, 3.0f, -0.0f });
+		pyramid->ClearTextures();
+		pyramid->AddTexture("Assets/Textures/DefaultTexture.dds");
+		pyramid->SetShader("Shaders/DefaultPBRPS.cso", "Shaders/DefaultVS.cso");
+		myModelInstances.push_back(std::move(pyramid));
 	}
 
 	/*{
