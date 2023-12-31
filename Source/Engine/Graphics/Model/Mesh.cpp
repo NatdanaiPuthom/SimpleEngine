@@ -25,12 +25,7 @@ const bool Mesh::Init(const MeshData& aMeshData)
 	return true;
 }
 
-void Mesh::SetBoundingBoxLineColor(const SimpleUtilities::Vector4f& aColor)
-{
-	myBoundingBox.color = aColor;
-}
-
-const BoundingBox Mesh::GetBoundingBox() const
+const BoundingBox& Mesh::GetBoundingBox() const
 {
 	return myBoundingBox;
 }

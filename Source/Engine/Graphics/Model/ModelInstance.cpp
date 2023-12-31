@@ -3,6 +3,7 @@
 ModelInstance::ModelInstance()
 	: myMesh(nullptr)
 	, myName("Unnamed")
+	, myBoundingBoxColor(1.0f, 1.0f, 0.0f , 1.0f)
 {
 	myShader = SimpleGlobal::GetGraphicsEngine()->GetDefaultShader();
 }
@@ -87,12 +88,17 @@ void ModelInstance::SetName(const std::string& aName)
 
 void ModelInstance::SetBoundingBoxLineColor(const SimpleUtilities::Vector4f& aColor)
 {
-	myMesh->SetBoundingBoxLineColor(aColor);
+	myBoundingBoxColor = aColor;
 }
 
-const BoundingBox ModelInstance::GetBoundingBox() const
+const BoundingBox& ModelInstance::GetBoundingBox() const
 {
 	return myMesh->GetBoundingBox();
+}
+
+SimpleUtilities::Vector4f ModelInstance::GetBoundingBoxLineColor() const
+{
+	return myBoundingBoxColor;
 }
 
 SimpleUtilities::Matrix4x4f ModelInstance::GetMatrix() const

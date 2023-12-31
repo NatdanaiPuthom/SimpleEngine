@@ -114,7 +114,7 @@ void BoundingBoxDrawer::Render(const std::shared_ptr<const ModelInstance> aModel
 
 	for (auto& vertice : myMeshData.vertices)
 	{
-		vertice.color = aModelInstance->GetBoundingBox().color;
+		vertice.color = aModelInstance->GetBoundingBoxLineColor();
 	}
 
 	auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();

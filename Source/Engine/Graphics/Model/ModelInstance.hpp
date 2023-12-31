@@ -25,7 +25,8 @@ public:
 	void SetName(const std::string& aName);
 	void SetBoundingBoxLineColor(const SimpleUtilities::Vector4f& aColor);
 
-	const BoundingBox GetBoundingBox() const;
+	const BoundingBox& GetBoundingBox() const;
+	SimpleUtilities::Vector4f GetBoundingBoxLineColor() const;
 	SimpleUtilities::Matrix4x4f GetMatrix() const;
 	SimpleUtilities::Vector3f GetPosition() const;
 	SimpleUtilities::Vector3f GetRotation() const;
@@ -34,9 +35,9 @@ public:
 private:
 	std::vector<std::shared_ptr<Texture>> myTextures;
 	std::string myName;
-
 	Mesh* myMesh;
 	std::shared_ptr<Shader> myShader;
 
 	SimpleUtilities::Transform myTransform;
+	SimpleUtilities::Vector4f myBoundingBoxColor;
 };

@@ -5,12 +5,7 @@ PixelInputType main(VertexInputType aInput)
     PixelInputType output;
     
     float4 vertexObjectPos = aInput.position;
-    float clipStorage = modelWorld._44;
-
-    float4x4 modelToWorldReal = modelWorld;
-    modelToWorldReal._44 = 1.0f;
-
-    float4 vertexWorldPos = mul(modelToWorldReal, vertexObjectPos);
+    float4 vertexWorldPos = mul(modelWorld, vertexObjectPos);
     float4 vertexClipPos = mul(worldToClipMatrix, vertexWorldPos);
     
     output.position = vertexClipPos;
@@ -24,13 +19,9 @@ PixelInputType main(VertexInputType aInput)
     output.clip = aInput.clip;
     output.color = aInput.color;
     
-    bool mirrored = clipStorage > 1.5f; //this means we are rendering to the water reflection texture
-    if (mirrored) //water position is -1.0 y
-    {
-        float waterY = -1.0f;
-        float vertexWaterDistance = vertexWorldPos.y - waterY;
-        output.clip = -vertexWaterDistance;
-    }
+    float waterY = -1.0f;
+    float vertexWaterDistance = vertexWorldPos.y - waterY;
+    output.clip = vertexWaterDistance;
     
     return output;
 }

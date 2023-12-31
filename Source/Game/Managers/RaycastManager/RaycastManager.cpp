@@ -38,8 +38,7 @@ void RaycastManager::Update()
 	{
 		if (mySelectedModelIndex >= 0)
 		{
-			auto& model = SimpleWorld::GetActiveScene()->myModelInstances[mySelectedModelIndex];
-			model->SetBoundingBoxLineColor({ 1.0f,1.0f,0.0f , 1.0f });
+			SimpleWorld::GetActiveScene()->myModelInstances[mySelectedModelIndex]->SetBoundingBoxLineColor({ 1.0f,1.0f,0.0f , 1.0f });
 		}
 
 		mySelectedModelIndex = -1;
@@ -140,7 +139,6 @@ void RaycastManager::CheckAABB3DCollision()
 void RaycastManager::MoveObject()
 {
 	auto& model = SimpleWorld::GetActiveScene()->myModelInstances[mySelectedModelIndex];
-	model->SetBoundingBoxLineColor({ 1.0f,0.0f,0.0f , 1.0f });
 
 	const auto mouseDelta = SimpleUtilities::InputManager::GetInstance().GetMouseDelta();
 	const auto min = model->GetBoundingBox().min;
@@ -186,4 +184,5 @@ void RaycastManager::MoveObject()
 
 	model->SetPosition(position);
 	myDebugSphere->position = intersectionPoint;
+	model->SetBoundingBoxLineColor({ 1.0f,0.0f,0.0f , 1.0f });
 }
