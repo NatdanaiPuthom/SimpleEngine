@@ -206,98 +206,122 @@ MeshData ShapeCreator3000::CreateCube(const SimpleUtilities::Vector3f& aSize)
 	Vertex north_bottomLeft;
 	north_bottomLeft.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
 	north_bottomLeft.uv = SU::Vector2f(0, 0);
+	north_bottomLeft.normal = { 0.0f, 0.0f, 1.0f };
 
 	Vertex north_bottomRight;
 	north_bottomRight.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1.0f);
 	north_bottomRight.uv = SU::Vector2f(1, 0);
+	north_bottomRight.normal = { 0.0f, 0.0f, 1.0f };
 
 	Vertex north_topLeft;
 	north_topLeft.position = SU::Vector4f(aSize.x, aSize.y, aSize.z, 1.0f);
 	north_topLeft.uv = SU::Vector2f(0, 1);
+	north_topLeft.normal = { 0.0f, 0.0f, 1.0f };
 
 	Vertex north_topRight;
 	north_topRight.position = SU::Vector4f(-aSize.x, aSize.y, aSize.z, 1.0f);
 	north_topRight.uv = SU::Vector2f(1, 1);
+	north_topRight.normal = { 0.0f, 0.0f, 1.0f };
 
 	Vertex west_bottomLeft;
 	west_bottomLeft.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1.0f);
 	west_bottomLeft.uv = SU::Vector2f(0, 0);
+	west_bottomLeft.normal = { -1.0f, 0.0f, 0.0f };
 
 	Vertex west_bottomRight;
 	west_bottomRight.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1.0f);
 	west_bottomRight.uv = SU::Vector2f(1, 0);
+	west_bottomRight.normal = { -1.0f, 0.0f, 0.0f };
 
 	Vertex west_topLeft;
 	west_topLeft.position = SU::Vector4f(-aSize.x, aSize.y, aSize.z, 1.0f);
 	west_topLeft.uv = SU::Vector2f(0, 1);
+	west_topLeft.normal = { -1.0f, 0.0f, 0.0f };
 
 	Vertex west_topRight;
 	west_topRight.position = SU::Vector4f(-aSize.x, aSize.y, -aSize.z, 1.0f);
 	west_topRight.uv = SU::Vector2f(1, 1);
+	west_topRight.normal = { -1.0f, 0.0f, 0.0f };
 
 	Vertex south_bottomLeft;
 	south_bottomLeft.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1.0f);
 	south_bottomLeft.uv = SU::Vector2f(0, 0);
+	south_bottomLeft.normal = { 0.0f, 0.0f, -1.0f };
 
 	Vertex south_bottomRight;
 	south_bottomRight.position = SU::Vector4f(aSize.x, -aSize.y, -aSize.z, 1.0f);
 	south_bottomRight.uv = SU::Vector2f(1, 0);
+	south_bottomRight.normal = { 0.0f, 0.0f, -1.0f };
 
 	Vertex south_topLeft;
 	south_topLeft.position = SU::Vector4f(-aSize.x, aSize.y, -aSize.z, 1.0f);
 	south_topLeft.uv = SU::Vector2f(0, 1);
+	south_topLeft.normal = { 0.0f, 0.0f, -1.0f };
 
 	Vertex south_topRight;
 	south_topRight.position = SU::Vector4f(aSize.x, aSize.y, -aSize.z, 1.0f);
 	south_topRight.uv = SU::Vector2f(1, 1);
+	south_topRight.normal = { 0.0f, 0.0f, -1.0f };
 
 	Vertex east_bottomLeft;
 	east_bottomLeft.position = SU::Vector4f(aSize.x, -aSize.y, -aSize.z, 1.0f);
 	east_bottomLeft.uv = SU::Vector2f(0, 0);
+	east_bottomLeft.normal = { 1.0f, 0.0f, 0.0f };
 
 	Vertex east_bottomRight;
 	east_bottomRight.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
 	east_bottomRight.uv = SU::Vector2f(1, 0);
+	east_bottomRight.normal = { 1.0f, 0.0f, 0.0f };
 
 	Vertex east_topLeft;
 	east_topLeft.position = SU::Vector4f(aSize.x, aSize.y, -aSize.z, 1.0f);
 	east_topLeft.uv = SU::Vector2f(0, 1);
+	east_topLeft.normal = { 1.0f, 0.0f, 0.0f };
 
 	Vertex east_topRight;
 	east_topRight.position = SU::Vector4f(aSize.x, aSize.y, aSize.z, 1.0f);
 	east_topRight.uv = SU::Vector2f(1, 1);
+	east_topRight.normal = { 1.0f, 0.0f, 0.0f };
 
 	Vertex up_bottomLeft;
 	up_bottomLeft.position = SU::Vector4f(aSize.x, aSize.y, aSize.z, 1.0f);
 	up_bottomLeft.uv = SU::Vector2f(0, 0);
+	up_bottomLeft.normal = { 0.0f, 1.0f, 0.0f };
 
 	Vertex up_bottomRight;
 	up_bottomRight.position = SU::Vector4f(-aSize.x, aSize.y, aSize.z, 1.0f);
 	up_bottomRight.uv = SU::Vector2f(1, 0);
+	up_bottomRight.normal = { 0.0f, 1.0f, 0.0f };
 
 	Vertex up_topLeft;
 	up_topLeft.position = SU::Vector4f(aSize.x, aSize.y, -aSize.z, 1.0f);
 	up_topLeft.uv = SU::Vector2f(0, 1);
+	up_topLeft.normal = { 0.0f, 1.0f, 0.0f };
 
 	Vertex up_topRight;
 	up_topRight.position = SU::Vector4f(-aSize.x, aSize.y, -aSize.z, 1.0f);
 	up_topRight.uv = SU::Vector2f(1, 1);
+	up_topRight.normal = { 0.0f, 1.0f, 0.0f };
 
 	Vertex down_bottomLeft;
 	down_bottomLeft.position = SU::Vector4f(-aSize.x, -aSize.y, aSize.z, 1.0f);
 	down_bottomLeft.uv = SU::Vector2f(0, 0);
+	down_bottomLeft.normal = { 0.0f, -1.0f, 0.0f };
 
 	Vertex down_bottomRight;
 	down_bottomRight.position = SU::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
 	down_bottomRight.uv = SU::Vector2f(1, 0);
+	down_bottomRight.normal = { 0.0f, -1.0f, 0.0f };
 
 	Vertex down_topLeft;
 	down_topLeft.position = SU::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1.0f);
 	down_topLeft.uv = SU::Vector2f(0, 1);
+	down_topLeft.normal = { 0.0f, -1.0f, 0.0f };
 
 	Vertex down_topRight;
 	down_topRight.position = SU::Vector4f(aSize.x, -aSize.y, -aSize.z, 1.0f);
 	down_topRight.uv = SU::Vector2f(1, 1);
+	down_topRight.normal = { 0.0f, -1.0f, 0.0f };
 
 	std::vector<Vertex> vertices =
 	{
@@ -461,21 +485,25 @@ MeshData ShapeCreator3000::CreatePlane()
 	southWest.position = SU::Vector4f(-1.0f, 0.0f, -1.0f, 1.0f);
 	southWest.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	southWest.uv = SU::Vector2f(0.0f, 0.0f);
+	southWest.normal = { 0.0f,1.0f,0.0f };
 
 	Vertex southEast;
 	southEast.position = SU::Vector4f(1.0f, 0.0f, -1.0f, 1.0f);
 	southEast.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	southEast.uv = SU::Vector2f(1.0f, 0.0f);
+	southEast.normal = { 0.0f,1.0f,0.0f };
 
 	Vertex northWest;
 	northWest.position = SU::Vector4f(-1.0f, 0.0f, 1.0f, 1.0f);
 	northWest.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	northWest.uv = SU::Vector2f(0.0f, 1.0f);
+	northWest.normal = { 0.0f,1.0f,0.0f };
 
 	Vertex northEast;
 	northEast.position = SU::Vector4f(1.0f, 0.0f, 1.0f, 1.0f);
 	northEast.color = SU::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	northEast.uv = SU::Vector2f(1.0f, 1.0f);
+	northEast.normal = { 0.0f,1.0f,0.0f };
 
 	std::vector<Vertex> vertices =
 	{

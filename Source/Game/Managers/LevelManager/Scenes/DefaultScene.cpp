@@ -22,6 +22,7 @@ void DefaultScene::Init()
 		cube->AddTexture("Assets/Textures/Hamster.dds");
 		cube->SetName("Hamster");
 		cube->SetPosition({-5,3,0});
+		cube->SetShader("Shaders/DefaultPBRPS.cso", "Shaders/DefaultVS.cso");
 		myModelInstances.push_back(std::move(cube));
 	}
 
@@ -56,6 +57,7 @@ void DefaultScene::Init()
 	{
 		std::shared_ptr<ModelInstance> cube = std::move(modelFactory->CreateCubeModel());
 		cube->SetShader("Shaders/DefaultColorfulPS.cso", "Shaders/DefaultVS.cso");
+		cube->SetName("Colorful");
 		cube->SetPosition({ -5.0f, 0.5f, 0.0f });
 		myModelInstances.push_back(std::move(cube));
 	}
@@ -70,4 +72,9 @@ void DefaultScene::Init()
 void DefaultScene::Update()
 {
 	Scene::Update();
+
+	auto& pyramid = myModelInstances[1];
+	auto& hamster = myModelInstances[2];
+
+	pyramid->LookAt(hamster->GetPosition());
 }

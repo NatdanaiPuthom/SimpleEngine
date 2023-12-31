@@ -23,7 +23,8 @@ void DirectionalLightVisual::Update() const
 
 	auto graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 	const SU::Vector3f direction = graphicsEngine->GetDirectionalLightDirection() * 180.0f;
-	myModel->SetRotation(direction);
+	//myModel->SetRotation(direction);
+	myModel->LookAt(direction);
 
-	myLine->endPosition += myModel->GetMatrix().GetForward() * myLineDistance;
+	myLine->endPosition += direction.GetNormalized() * myLineDistance;
 }
