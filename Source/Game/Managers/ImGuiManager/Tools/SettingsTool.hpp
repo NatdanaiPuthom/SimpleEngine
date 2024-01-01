@@ -13,6 +13,7 @@ private:
 private:
 	void ToggleConsole();
 	void ToggleVSync(GraphicsEngine* aGraphicsEngine);
+	void ToggleMusic();
 	void AdjustWindowSize();
 	void AdjustResolution();
 	void AdjustRasterizerState();

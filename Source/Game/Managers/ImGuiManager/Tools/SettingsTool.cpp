@@ -50,6 +50,7 @@ void SettingsTool::Draw()
 		AdjustResolution();
 		AdjustWindowSize();
 		ToggleConsole();
+		ToggleMusic();
 	}
 
 	ImGui::End();
@@ -86,6 +87,17 @@ void SettingsTool::ToggleVSync(GraphicsEngine* aGraphicsEngine)
 	if (ImGui::Checkbox("VSync", &vsync))
 	{
 		aGraphicsEngine->SetVSync(vsync);
+	}
+}
+
+void SettingsTool::ToggleMusic()
+{
+	auto audioManager = SimpleGlobal::GetAudioManager();
+
+	bool musicOn = audioManager->IsMusicMuted();
+	if (ImGui::Checkbox("Mute Music", &musicOn))
+	{
+		audioManager->ToggleMuteMusic();
 	}
 }
 
