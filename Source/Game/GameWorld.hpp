@@ -20,7 +20,8 @@ public:
 	void RenderUpSideDown();
 private:
 	std::unique_ptr<ImGuiManager> myImGuiManager;
-	std::unique_ptr<PlaneReflection> myPlaneReflection;
 	std::unique_ptr<LevelManager> myLevelManager;
 	std::unique_ptr<RaycastManager> myRaycastManager;
+
+	std::unique_ptr<PlaneReflection> myPlaneReflection;
 };

@@ -48,7 +48,7 @@ using Microsoft::WRL::ComPtr;
 
 #include "Engine/Console/Console.hpp"
 #include "Engine/Input/InputManager.hpp"
-#include "Engine/Sound/AudioManager.h"
+#include "Engine/Sound/AudioManager.hpp"
 
 #include "Engine/engine.hpp"
 #include "Engine/Graphics/GraphicsEngine.hpp"
@@ -58,7 +58,7 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/Graphics/Model/ModelFactory.hpp"
 #include "Engine/Graphics/Renderer/LineDrawer.hpp"
 #include "Engine/Graphics/Renderer/SphereDrawer.hpp"
-#include "Engine/Graphics/Model/DirectionalLightVisual.hpp"
+#include "Engine/Graphics/Model/Special/DirectionalLightVisual.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
 
 #include "Engine/global.hpp"

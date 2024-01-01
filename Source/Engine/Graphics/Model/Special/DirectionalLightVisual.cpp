@@ -1,5 +1,5 @@
 #include "Engine/Precomplier/stdafx.h"
-#include "Engine/Graphics/Model/DirectionalLightVisual.hpp"
+#include "Engine/Graphics/Model/Special/DirectionalLightVisual.hpp"
 
 DirectionalLightVisual::DirectionalLightVisual()
 	: myLine(std::make_unique<Drawer::Line>())

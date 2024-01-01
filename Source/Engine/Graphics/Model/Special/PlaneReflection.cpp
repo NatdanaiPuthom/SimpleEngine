@@ -1,5 +1,5 @@
 #include "Engine/Precomplier/stdafx.h"
-#include "Engine/Graphics/Model/PlaneReflection.h"
+#include "Engine/Graphics/Model/Special/PlaneReflection.h"
 
 PlaneReflection::PlaneReflection()
 {
@@ -10,4 +10,9 @@ PlaneReflection::PlaneReflection()
 
 PlaneReflection::~PlaneReflection()
 {
+}
+
+void PlaneReflection::Update()
+{
+	myHeight = myModel->GetPosition().y;
 }
