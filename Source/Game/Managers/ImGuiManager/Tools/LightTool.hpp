@@ -1,9 +1,12 @@
 #pragma once
 
-class LightTool final : public ToolInterface
+namespace Tool
 {
-public:
-	LightTool();
+	class Light final : public Simple::ToolInterface
+	{
+	public:
+		Light();
 
-	virtual void Draw() override;
-};
+		virtual void Draw() override;
+	};
+}

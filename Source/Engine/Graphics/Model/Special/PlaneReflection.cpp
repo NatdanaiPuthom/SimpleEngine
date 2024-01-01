@@ -1,18 +1,20 @@
 #include "Engine/Precomplier/stdafx.h"
 #include "Engine/Graphics/Model/Special/PlaneReflection.h"
-
-PlaneReflection::PlaneReflection()
+namespace Simple
 {
-	myModel = std::move(SimpleGlobal::GetModelFactory()->CreatePlaneReflection());
-	myModel->SetScale({ 25,1,25 });
-	myModel->SetPosition({ 5,-1,5 });
-}
+	PlaneReflection::PlaneReflection()
+	{
+		myModel = std::move(SimpleGlobal::GetModelFactory()->CreatePlaneReflection());
+		myModel->SetScale({ 25,1,25 });
+		myModel->SetPosition({ 5,-1,5 });
+	}
 
-PlaneReflection::~PlaneReflection()
-{
-}
+	PlaneReflection::~PlaneReflection()
+	{
+	}
 
-void PlaneReflection::Update()
-{
-	myHeight = myModel->GetPosition().y;
+	void PlaneReflection::Update()
+	{
+		myHeight = myModel->GetPosition().y;
+	}
 }

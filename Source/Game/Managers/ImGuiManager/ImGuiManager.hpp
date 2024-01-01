@@ -1,15 +1,21 @@
 #pragma once
 
-class ToolInterface;
-
-class ImGuiManager final
+namespace Simple
 {
-public:
-	ImGuiManager();
-	~ImGuiManager();
+	class ToolInterface;
+}
 
-	void AddTool(std::unique_ptr<ToolInterface> aTool);
-	void Render();
-private:
-	std::vector<std::unique_ptr<ToolInterface>> myTools;
-};
+namespace Simple
+{
+	class ImGuiManager final
+	{
+	public:
+		ImGuiManager();
+		~ImGuiManager();
+
+		void AddTool(std::unique_ptr<Simple::ToolInterface> aTool);
+		void Render();
+	private:
+		std::vector<std::unique_ptr<Simple::ToolInterface>> myTools;
+	};
+}

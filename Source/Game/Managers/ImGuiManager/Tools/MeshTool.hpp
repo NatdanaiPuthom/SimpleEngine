@@ -1,11 +1,12 @@
 #pragma once
 
-class GameWorld;
-
-class MeshTool final : public ToolInterface
+namespace Tool
 {
-public:
-	MeshTool();
+	class Mesh final : public Simple::ToolInterface
+	{
+	public:
+		Mesh();
 
-	virtual void Draw() override;
-};
+		virtual void Draw() override;
+	};
+}

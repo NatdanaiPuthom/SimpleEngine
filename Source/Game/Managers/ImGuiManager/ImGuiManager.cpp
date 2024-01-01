@@ -9,29 +9,32 @@
 #include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
 #include "Game/Managers/ImGuiManager/Tools/Debug.hpp"
 
-ImGuiManager::ImGuiManager()
+namespace Simple
 {
-	AddTool(std::move(std::make_unique<LightTool>()));
-	AddTool(std::move(std::make_unique<SceneTool>()));
-	AddTool(std::move(std::make_unique<MeshTool>()));
-	AddTool(std::move(std::make_unique<DebugTool>()));
-	AddTool(std::move(std::make_unique<SettingsTool>()));
-	AddTool(std::move(std::make_unique<CameraTool>()));
-}
-
-ImGuiManager::~ImGuiManager()
-{
-}
-
-void ImGuiManager::AddTool(std::unique_ptr<ToolInterface> aTool)
-{
-	myTools.push_back(std::move(aTool));
-}
-
-void ImGuiManager::Render()
-{
-	for (const std::unique_ptr<ToolInterface>& tool : myTools)
+	ImGuiManager::ImGuiManager()
 	{
-		tool->Draw();
+		AddTool(std::move(std::make_unique<Tool::Light>()));
+		AddTool(std::move(std::make_unique<Tool::Scene>()));
+		AddTool(std::move(std::make_unique<Tool::Mesh>()));
+		AddTool(std::move(std::make_unique<Tool::Debug>()));
+		AddTool(std::move(std::make_unique<Tool::Settings>()));
+		AddTool(std::move(std::make_unique<Tool::Camera>()));
+	}
+
+	ImGuiManager::~ImGuiManager()
+	{
+	}
+
+	void ImGuiManager::AddTool(std::unique_ptr<Simple::ToolInterface> aTool)
+	{
+		myTools.push_back(std::move(aTool));
+	}
+
+	void ImGuiManager::Render()
+	{
+		for (const std::unique_ptr<ToolInterface>& tool : myTools)
+		{
+			tool->Draw();
+		}
 	}
 }

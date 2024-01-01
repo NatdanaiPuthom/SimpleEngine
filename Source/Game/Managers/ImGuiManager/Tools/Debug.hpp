@@ -1,15 +1,18 @@
 #pragma once
 
-class DebugTool final : public ToolInterface
+namespace Tool
 {
-public:
-	DebugTool();
-	virtual ~DebugTool() override;
+	class Debug final : public Simple::ToolInterface
+	{
+	public:
+		Debug();
+		virtual ~Debug() override;
 
-	virtual void Draw() override;
-private:
-	void LoadDataFromJson();
-private:
-	std::vector<int> mySceneIndexes;
-	int myActiveScene;
-};
+		virtual void Draw() override;
+	private:
+		void LoadDataFromJson();
+	private:
+		std::vector<int> mySceneIndexes;
+		int myActiveScene;
+	};
+}

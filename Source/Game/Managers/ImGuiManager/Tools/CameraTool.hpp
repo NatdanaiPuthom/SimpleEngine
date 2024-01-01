@@ -1,9 +1,12 @@
 #pragma once
 
-class CameraTool final : public ToolInterface
+namespace Tool
 {
-public:
-	CameraTool();
+	class Camera final : public Simple::ToolInterface
+	{
+	public:
+		Camera();
 
-	virtual void Draw() override;
-};
+		virtual void Draw() override;
+	};
+}

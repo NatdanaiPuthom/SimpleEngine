@@ -1,9 +1,12 @@
 #pragma once
 
-class SceneTool final : public ToolInterface
+namespace Tool
 {
-public:
-	SceneTool();
+	class Scene final : public Simple::ToolInterface
+	{
+	public:
+		Scene();
 
-	virtual void Draw() override;
-};
+		virtual void Draw() override;
+	};
+}

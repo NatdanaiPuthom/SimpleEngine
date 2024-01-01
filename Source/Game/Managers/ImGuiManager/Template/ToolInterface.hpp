@@ -1,10 +1,13 @@
 #pragma once
 
-class ToolInterface
+namespace Simple
 {
-public:
-	virtual ~ToolInterface() = default;
+	class ToolInterface
+	{
+	public:
+		virtual ~ToolInterface() = default;
 
-	virtual void Init() {};
-	virtual void Draw() = 0;
-};
+		virtual void Init() {};
+		virtual void Draw() = 0;
+	};
+}

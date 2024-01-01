@@ -1,12 +1,12 @@
 #pragma once
 
-class ImGuiManager;
-class PlaneReflection;
-class RaycastManager;
 
 namespace Simple
 {
+	class ImGuiManager;
 	class LevelManager;
+	class RaycastManager;
+	class PlaneReflection;
 }
 
 namespace Simple
@@ -25,10 +25,10 @@ namespace Simple
 		void RenderReflection();
 		void RenderUpSideDown();
 	private:
-		std::unique_ptr<ImGuiManager> myImGuiManager;
+		std::unique_ptr<Simple::ImGuiManager> myImGuiManager;
 		std::unique_ptr<Simple::LevelManager> myLevelManager;
-		std::unique_ptr<RaycastManager> myRaycastManager;
+		std::unique_ptr<Simple::RaycastManager> myRaycastManager;
 
-		std::unique_ptr<PlaneReflection> myPlaneReflection;
+		std::unique_ptr<Simple::PlaneReflection> myPlaneReflection;
 	};
 }

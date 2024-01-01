@@ -2,14 +2,17 @@
 
 class Model;
 
-class PlaneReflection
+namespace Simple
 {
-public:
-	PlaneReflection();
-	~PlaneReflection();
+	class PlaneReflection
+	{
+	public:
+		PlaneReflection();
+		~PlaneReflection();
 
-	void Update();
+		void Update();
 
-	std::unique_ptr<Model> myModel;
-	float myHeight;
-};
+		std::unique_ptr<Model> myModel;
+		float myHeight;
+	};
+}
