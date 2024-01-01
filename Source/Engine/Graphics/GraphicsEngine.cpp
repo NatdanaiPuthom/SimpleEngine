@@ -142,41 +142,41 @@ void GraphicsEngine::LoadSettingsFromJson()
 
 void GraphicsEngine::LoadTextures()
 {
-	if (!AddTexture("Assets/Textures/DefaultTexture.dds", 0))
+	if (!AddTexture("DefaultTexture.dds", 0))
 		assert(false && "Failed to add Texture");
 
-	if (!AddTexture("Assets/Textures/Cat.dds", 0))
+	if (!AddTexture("Cat.dds", 0))
 		assert(false && "Failed to add Texture");
 
 	{ //TGA Uppgift
-		if (!AddTexture("Assets/tga/Uppgift6/Grass_c.dds", 1))
+		if (!AddTexture("TGA/Uppgift6/Grass_c.dds", 1))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets/tga/Uppgift6/Rock_c.dds", 2))
+		if (!AddTexture("TGA/Uppgift6/Rock_c.dds", 2))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets/tga/Uppgift6/Snow_c.dds", 3))
+		if (!AddTexture("TGA/Uppgift6/Snow_c.dds", 3))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets/tga/Uppgift6/Grass_n.dds", 4))
+		if (!AddTexture("TGA/Uppgift6/Grass_n.dds", 4))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets/tga/Uppgift6/Rock_n.dds", 5))
+		if (!AddTexture("TGA/Uppgift6/Rock_n.dds", 5))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets/tga/Uppgift6/Snow_n.dds", 6))
+		if (!AddTexture("TGA/Uppgift6/Snow_n.dds", 6))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets/tga/Uppgift7/Grass_m.dds", 7))
+		if (!AddTexture("TGA/Uppgift7/Grass_m.dds", 7))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets/tga/Uppgift7/Rock_m.dds", 8))
+		if (!AddTexture("TGA/Uppgift7/Rock_m.dds", 8))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets/tga/Uppgift7/Snow_m.dds", 9))
+		if (!AddTexture("TGA/Uppgift7/Snow_m.dds", 9))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets/tga/Uppgift7/cubemap.dds", 14))
+		if (!AddTexture("TGA/Uppgift7/cubemap.dds", 14))
 			assert(false && "Failed to add Texture");
 	}
 }
@@ -207,16 +207,16 @@ void GraphicsEngine::LoadShaders()
 	}
 }
 
-const bool GraphicsEngine::AddTexture(const char* aFilePath, const unsigned int aSlot)
+const bool GraphicsEngine::AddTexture(const char* aFileName, const unsigned int aSlot)
 {
 	std::shared_ptr<Texture> texture = std::make_shared<Texture>();
 
-	if (!texture->LoadDDS(aFilePath))
+	if (!texture->LoadDDS(aFileName))
 		return false;
 
 	texture->SetSlot(aSlot);
 
-	myLoadedTextures.emplace(aFilePath, texture);
+	myLoadedTextures.emplace(aFileName, texture);
 
 	return true;
 }

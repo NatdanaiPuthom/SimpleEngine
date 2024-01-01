@@ -21,7 +21,8 @@ workspace "SimpleEngine"
 		'SIMPLE_SETTINGS_FILENAME="' .. "settings.json" .. '"',
 		'SIMPLE_PROFILER_FILENAME="' .. "Profilers/profiler_data.prof" .. '"',
 		'SIMPLE_LEVELS_FILENAME="' .. "levels.json" .. '"',
-		'SIMPLE_SOUND_DIR="' .. "Assets/Sounds/" .. '"'
+		'SIMPLE_SOUND_DIR="' .. "Assets/Sounds/" .. '"',
+		'SIMPLE_TEXTURES_DIR="' .. "Assets/Textures/" .. '"'
 	}
 
 	configurations {

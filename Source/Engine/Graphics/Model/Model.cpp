@@ -17,7 +17,7 @@ Model::~Model()
 void Model::Init(const Mesh* const aMesh)
 {
 	myMesh = aMesh;
-	AddTexture("Assets/Textures/DefaultTexture.dds");
+	AddTexture("DefaultTexture.dds");
 }
 
 void Model::Init(const Mesh* const aMesh, const char* aTexturePath)

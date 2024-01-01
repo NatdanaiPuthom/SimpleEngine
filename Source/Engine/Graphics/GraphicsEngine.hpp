@@ -92,7 +92,7 @@ public:
 	const bool BeginFrame();
 	void EndFrame();
 
-	const bool AddTexture(const char* aFilePath, const unsigned int aSlot = 0);
+	const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 	const bool AddShader(const char* aPSFile, const char* aVSFile);
 
 	bool IsVSyncActive() const;

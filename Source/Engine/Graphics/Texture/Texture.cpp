@@ -29,9 +29,9 @@ unsigned int Texture::GetSlot() const
 	return mySlot;
 }
 
-bool Texture::LoadDDS(const char* aFilePath)
+bool Texture::LoadDDS(const char* aFileName)
 {
-	const std::string texturePath = SimpleUtilities::GetPath(aFilePath);
+	const std::string texturePath = SimpleUtilities::GetPath(SIMPLE_TEXTURES_DIR) + aFileName;
 	const std::wstring texturePathW = SimpleUtilities::ToWString(texturePath);
 
 	const HRESULT result = DirectX::CreateDDSTextureFromFile(SimpleGlobal::GetGraphicsEngine()->GetDevice().Get(), SimpleGlobal::GetGraphicsEngine()->GetContext().Get(), texturePathW.c_str(), NULL, &myShaderResourceView);
@@ -41,11 +41,11 @@ bool Texture::LoadDDS(const char* aFilePath)
 	return true;
 }
 
-bool Texture::LoadNonDDS(const char* aFilePath)
+bool Texture::LoadNonDDS(const char* aFileName)
 {
 	int width, height, channels;
-	auto fileName = SimpleUtilities::GetPath(aFilePath);
-	unsigned char* img = stbi_load(fileName.c_str(), &width, &height, &channels, 0);
+	const std::string texturePath = SimpleUtilities::GetPath(SIMPLE_TEXTURES_DIR) + aFileName;
+	unsigned char* img = stbi_load(texturePath.c_str(), &width, &height, &channels, 0);
 
 	if (img == nullptr)
 		return false;

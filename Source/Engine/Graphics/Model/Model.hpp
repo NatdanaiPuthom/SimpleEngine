@@ -15,6 +15,7 @@ public:
 	void Init(const Mesh* const aMesh);
 	void Init(const Mesh* const aMesh, const char* aTexturePath);
 
+	//FilePath starts at Bin/Assets/Textures/
 	void AddTexture(const char* aFilePath);
 	void ClearTextures();
 public:

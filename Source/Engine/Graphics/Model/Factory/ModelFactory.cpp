@@ -75,15 +75,15 @@ std::unique_ptr<Model> ModelFactory::CreateTerrainModel()
 	terrainModel->ClearTextures();
 	terrainModel->SetShader("Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso");
 
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Grass_c.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Rock_c.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Snow_c.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Grass_n.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Rock_n.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift6/Snow_n.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift7/Grass_m.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift7/Rock_m.dds");
-	terrainModel->AddTexture("Assets/tga/Uppgift7/Snow_m.dds");
+	terrainModel->AddTexture("TGA/Uppgift6/Grass_c.dds");
+	terrainModel->AddTexture("TGA/Uppgift6/Rock_c.dds");
+	terrainModel->AddTexture("TGA/Uppgift6/Snow_c.dds");
+	terrainModel->AddTexture("TGA/Uppgift6/Grass_n.dds");
+	terrainModel->AddTexture("TGA/Uppgift6/Rock_n.dds");
+	terrainModel->AddTexture("TGA/Uppgift6/Snow_n.dds");
+	terrainModel->AddTexture("TGA/Uppgift7/Grass_m.dds");
+	terrainModel->AddTexture("TGA/Uppgift7/Rock_m.dds");
+	terrainModel->AddTexture("TGA/Uppgift7/Snow_m.dds");
 
 	terrainModel->SetScale({ 1,1,1 });
 	terrainModel->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
@@ -96,7 +96,7 @@ std::unique_ptr<Model> ModelFactory::CreateSkyBoxModel()
 {
 	std::unique_ptr<Model> skyBoxModel = std::make_unique<Model>();
 
-	skyBoxModel->Init(GetMesh("Skybox"), "Assets/tga/Uppgift7/cubemap.dds");
+	skyBoxModel->Init(GetMesh("Skybox"), "TGA/Uppgift7/cubemap.dds");
 	skyBoxModel->SetShader("Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso");
 	skyBoxModel->SetScale({ 1,1,1 });
 	skyBoxModel->SetPosition({ 0,0,0 });
@@ -147,7 +147,7 @@ std::unique_ptr<Model> ModelFactory::CreatePyramidModel()
 {
 	std::unique_ptr<Model> pyramid = std::make_unique<Model>();
 
-	pyramid->Init(GetMesh("Pyramid"), "Assets/Textures/Cat.dds");
+	pyramid->Init(GetMesh("Pyramid"), "Cat.dds");
 	pyramid->SetScale({ 1,1,1 });
 	pyramid->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 	pyramid->SetName("Pyramid");
