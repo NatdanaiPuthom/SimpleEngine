@@ -5,9 +5,9 @@
 namespace Simple
 {
 	class Engine;
+	class Renderer;
 }
 
-class Renderer;
 class ModelFactory;
 class AudioManager;
 
@@ -25,10 +25,10 @@ private:
 
 class SimpleGlobalRendererImpl final
 {
-	friend class Renderer;
+	friend class Simple::Renderer;
 private:
 	static void IncreaseDrawCall();
-	static void SetRenderer(Renderer* aRenderer);
+	static void SetRenderer(Simple::Renderer* aRenderer);
 };
 
 class SimpleGlobalModelFactoryImpl final

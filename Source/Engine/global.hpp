@@ -12,7 +12,7 @@ class AudioManager;
 namespace SimpleGlobal
 {
 	Simple::GraphicsEngine* GetGraphicsEngine();
-	Renderer* GetRenderer();
+	Simple::Renderer* GetRenderer();
 	ModelFactory* GetModelFactory();
 	AudioManager* GetAudioManager();
 

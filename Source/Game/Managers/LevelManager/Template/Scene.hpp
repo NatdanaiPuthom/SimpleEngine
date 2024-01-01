@@ -23,7 +23,7 @@ public:
 
 	virtual void Render()
 	{
-		Renderer* renderer = SimpleGlobal::GetRenderer();
+		Simple::Renderer* renderer = SimpleGlobal::GetRenderer();
 
 		for (const auto& model : myModels)
 		{

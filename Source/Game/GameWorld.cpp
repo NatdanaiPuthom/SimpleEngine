@@ -67,7 +67,7 @@ void GameWorld::RenderUpSideDown()
 	camera->SetPosition(oldCamPosition - SimpleUtilities::Vector3f(0.0f, distFromWater, 0.0f));
 	camera->SetRotation(newCamRotation);
 
-	Renderer* renderer = SimpleGlobal::GetRenderer();
+	Simple::Renderer* renderer = SimpleGlobal::GetRenderer();
 	for (const auto& model : SimpleWorld::GetActiveScene()->myModels)
 	{
 		renderer->RenderEverythingUpSideDown(model.get());

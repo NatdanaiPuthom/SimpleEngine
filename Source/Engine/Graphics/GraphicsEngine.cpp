@@ -74,7 +74,7 @@ namespace Simple
 		LoadShaders();
 		SetRasterizerState(eRasterizerState::BackfaceCulling);
 
-		myRenderer = std::make_unique<Renderer>();
+		myRenderer = std::make_unique<Simple::Renderer>();
 		myModelFactory = std::make_unique<ModelFactory>();
 
 		myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());

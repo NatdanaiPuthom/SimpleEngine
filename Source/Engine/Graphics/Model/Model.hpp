@@ -6,7 +6,7 @@ class Texture;
 
 class Model final
 {
-	friend class Renderer;
+	friend class Simple::Renderer;
 	friend class BoundingBoxDrawer;
 public:
 	Model();

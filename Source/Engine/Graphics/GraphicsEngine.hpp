@@ -16,8 +16,12 @@ class Camera;
 class ConstantBuffer;
 class Texture;
 class Shader;
-class Renderer;
 class ModelFactory;
+
+namespace Simple
+{
+	class Renderer;
+}
 
 enum class eRasterizerState
 {
@@ -180,7 +184,7 @@ namespace Simple
 		std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
 		std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
 
-		std::unique_ptr<Renderer> myRenderer;
+		std::unique_ptr<Simple::Renderer> myRenderer;
 		std::unique_ptr<ModelFactory> myModelFactory;
 
 		float myClearColor[4];

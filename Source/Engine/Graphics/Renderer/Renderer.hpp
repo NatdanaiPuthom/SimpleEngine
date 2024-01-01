@@ -12,31 +12,34 @@ namespace Drawer
 	struct Sphere;
 }
 
-class Renderer final
+namespace Simple
 {
-public:
-	Renderer();
-	~Renderer();
+	class Renderer final
+	{
+	public:
+		Renderer();
+		~Renderer();
 
-	void RenderModel(const std::shared_ptr<const Model> aModelInstance) const;
-	void RenderLine(const Drawer::Line& aLine);
-	void RenderSphere(const Drawer::Sphere& aSphere);
-	void RenderBoundingBox(const std::shared_ptr<const Model> aModelInstance) const;
+		void RenderModel(const std::shared_ptr<const Model> aModelInstance) const;
+		void RenderLine(const Drawer::Line& aLine);
+		void RenderSphere(const Drawer::Sphere& aSphere);
+		void RenderBoundingBox(const std::shared_ptr<const Model> aModelInstance) const;
 
-	void RenderEverythingUpSideDown(const Model* const aModelInstance) const;
-	void RenderPlaneReflection(const Model* const aModelInstance) const;
+		void RenderEverythingUpSideDown(const Model* const aModelInstance) const;
+		void RenderPlaneReflection(const Model* const aModelInstance) const;
 
-	bool IsDebugModeOn() const;
-public:
-	void SetDebugMode(const bool aSetDebugMode);
-private:
-	const bool CreateObjectBuffer();
-	void LoadSettingsFromJson();
-private:
-	std::unique_ptr<BoundingBoxDrawer> myBoundingBoxDrawer;
-	std::unique_ptr<LineDrawer> myLineDrawer;
-	std::unique_ptr<SphereDrawer> mySphereDrawer;
-	std::unique_ptr<ConstantBuffer> myObjectBuffer;
+		bool IsDebugModeOn() const;
+	public:
+		void SetDebugMode(const bool aSetDebugMode);
+	private:
+		const bool CreateObjectBuffer();
+		void LoadSettingsFromJson();
+	private:
+		std::unique_ptr<BoundingBoxDrawer> myBoundingBoxDrawer;
+		std::unique_ptr<LineDrawer> myLineDrawer;
+		std::unique_ptr<SphereDrawer> mySphereDrawer;
+		std::unique_ptr<ConstantBuffer> myObjectBuffer;
 
-	bool myDebugMode;
-};
+		bool myDebugMode;
+	};
+}
