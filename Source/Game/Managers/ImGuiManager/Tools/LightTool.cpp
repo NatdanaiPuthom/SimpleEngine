@@ -7,7 +7,7 @@ LightTool::LightTool()
 
 void LightTool::Draw()
 {
-	GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
+	Simple::GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 
 	if (ImGui::Begin("Lights"))
 	{

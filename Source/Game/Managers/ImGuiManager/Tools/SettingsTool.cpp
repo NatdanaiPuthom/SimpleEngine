@@ -25,7 +25,7 @@ void SettingsTool::Draw()
 {
 	if (ImGui::Begin("Settings"))
 	{
-		GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
+		Simple::GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 
 		ShowFPS();
 
@@ -80,7 +80,7 @@ void SettingsTool::ToggleConsole()
 	}
 }
 
-void SettingsTool::ToggleVSync(GraphicsEngine* aGraphicsEngine)
+void SettingsTool::ToggleVSync(Simple::GraphicsEngine* aGraphicsEngine)
 {
 	bool vsync = aGraphicsEngine->IsVSyncActive();
 
@@ -187,7 +187,7 @@ void SettingsTool::AdjustRasterizerState()
 	}
 }
 
-void SettingsTool::AdjustFPSCap(GraphicsEngine* aGraphicsEngine)
+void SettingsTool::AdjustFPSCap(Simple::GraphicsEngine* aGraphicsEngine)
 {
 	int monitorUpdateFrequency = 0;
 

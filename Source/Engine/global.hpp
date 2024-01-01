@@ -1,19 +1,23 @@
 #pragma once
 
-class GraphicsEngine;
+namespace Simple
+{
+	class GraphicsEngine;
+}
+
 class Renderer;
 class ModelFactory;
 class AudioManager;
 
 namespace SimpleGlobal
 {
-	GraphicsEngine* GetGraphicsEngine();
+	Simple::GraphicsEngine* GetGraphicsEngine();
 	Renderer* GetRenderer();
 	ModelFactory* GetModelFactory();
 	AudioManager* GetAudioManager();
 
 	HWND& GetHWND();
-	
+
 	SimpleUtilities::Vector2ui GetResolution();
 	SimpleUtilities::Vector2ui GetWindowSize();
 

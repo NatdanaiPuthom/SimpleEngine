@@ -81,107 +81,110 @@ struct RenderTarget final
 	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 };
 
-class GraphicsEngine final
+namespace Simple
 {
-public:
-	GraphicsEngine();
-	~GraphicsEngine();
+	class GraphicsEngine final
+	{
+	public:
+		GraphicsEngine();
+		~GraphicsEngine();
 
-	const bool Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& aWindowHandle);
+		const bool Init(const SimpleUtilities::Vector2ui& aWindowSize, HWND& aWindowHandle);
 
-	const bool BeginFrame();
-	void EndFrame();
+		const bool BeginFrame();
+		void EndFrame();
 
-	const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
-	const bool AddShader(const char* aPSFile, const char* aVSFile);
+		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
+		const bool AddShader(const char* aPSFile, const char* aVSFile);
 
-	bool IsVSyncActive() const;
-public:
-	void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection);
-	void SetDirectionalLightColor(const SimpleUtilities::Vector4f& aColor);
-	void SetSkyColor(const SimpleUtilities::Vector4f& aColor);
-	void SetGroundColor(const SimpleUtilities::Vector4f& aColor);
-	void SetVSync(const bool aShouldTurnOn);
-	void SetFPSLevelCap(const unsigned int aCapLevel);
-	void SetToBackBuffer();
-	void SetToImGuiBuffer();
-	void SetToWaterReflectionBuffer();
-	void SetRasterizerState(const eRasterizerState aRasterizerState);
-	void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize, const bool aSetFullScreen);
-public:
-	ComPtr<ID3D11Device> GetDevice();
-	ComPtr<ID3D11DeviceContext> GetContext();
-	ComPtr<ID3D11ShaderResourceView> GetImGuiShaderResourceView();
-	ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
+		bool IsVSyncActive() const;
+	public:
+		void SetDirectionalLightDirection(const SimpleUtilities::Vector3f& aDirection);
+		void SetDirectionalLightColor(const SimpleUtilities::Vector4f& aColor);
+		void SetSkyColor(const SimpleUtilities::Vector4f& aColor);
+		void SetGroundColor(const SimpleUtilities::Vector4f& aColor);
+		void SetVSync(const bool aShouldTurnOn);
+		void SetFPSLevelCap(const unsigned int aCapLevel);
+		void SetToBackBuffer();
+		void SetToImGuiBuffer();
+		void SetToWaterReflectionBuffer();
+		void SetRasterizerState(const eRasterizerState aRasterizerState);
+		void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize, const bool aSetFullScreen);
+	public:
+		ComPtr<ID3D11Device> GetDevice();
+		ComPtr<ID3D11DeviceContext> GetContext();
+		ComPtr<ID3D11ShaderResourceView> GetImGuiShaderResourceView();
+		ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
 
-	std::shared_ptr<Camera> GetCamera();
-	std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
-	std::shared_ptr<const Texture> GetDefaultTexture();
-	std::shared_ptr<const Shader> GetDefaultShader();
-	std::shared_ptr<const Shader> GetShader(const char* aPSFile, const char* aVSFile);
+		std::shared_ptr<Camera> GetCamera();
+		std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
+		std::shared_ptr<const Texture> GetDefaultTexture();
+		std::shared_ptr<const Shader> GetDefaultShader();
+		std::shared_ptr<const Shader> GetShader(const char* aPSFile, const char* aVSFile);
 
-	SimpleUtilities::Vector4f GetDirectionalLightColor() const;
-	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
-	SimpleUtilities::Vector4f GetSkyColor() const;
-	SimpleUtilities::Vector4f GetGroundColor() const;
+		SimpleUtilities::Vector4f GetDirectionalLightColor() const;
+		SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
+		SimpleUtilities::Vector4f GetSkyColor() const;
+		SimpleUtilities::Vector4f GetGroundColor() const;
 
-	unsigned int GetFPSLevelCap() const;
-private:
-	void CreateViewport(const int aWidth, const int aHeight);
-	bool CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight);
-	bool CreateDepthBuffer(const int aWidth, const int aHeight);
-	bool CreateDepthStencilState();
-	bool CreateBackBuffer();
-	bool CreateFrameBuffer();
-	bool CreateSamplerState();
-	bool CreateCameraBuffer();
-	bool CreateTimeBuffer();
-	bool CreateLightBuffer();
-	bool CreateRenderTargetForImGuiImage(const int aWidth, const int aHeight);
-	bool CreateWaterRenderTarget(const int aWidth, const int aHeight);
-	bool CreateRasterizerStates();
-private:
-	void Update();
-	void LoadSettingsFromJson();
-	void LoadTextures();
-	void LoadShaders();
-private:
-	std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
-	std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleHash::PairHash, SimpleHash::PairEqual> myLoadedShaders;
+		unsigned int GetFPSLevelCap() const;
+	private:
+		void CreateViewport(const int aWidth, const int aHeight);
+		bool CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight);
+		bool CreateDepthBuffer(const int aWidth, const int aHeight);
+		bool CreateDepthStencilState();
+		bool CreateBackBuffer();
+		bool CreateFrameBuffer();
+		bool CreateSamplerState();
+		bool CreateCameraBuffer();
+		bool CreateTimeBuffer();
+		bool CreateLightBuffer();
+		bool CreateRenderTargetForImGuiImage(const int aWidth, const int aHeight);
+		bool CreateWaterRenderTarget(const int aWidth, const int aHeight);
+		bool CreateRasterizerStates();
+	private:
+		void Update();
+		void LoadSettingsFromJson();
+		void LoadTextures();
+		void LoadShaders();
+	private:
+		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
+		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleHash::PairHash, SimpleHash::PairEqual> myLoadedShaders;
 
-	std::array<ComPtr<ID3D11RasterizerState>, static_cast<int>(eRasterizerState::Count)> myRasterizerStates;
+		std::array<ComPtr<ID3D11RasterizerState>, static_cast<int>(eRasterizerState::Count)> myRasterizerStates;
 
-	ComPtr<ID3D11Device> myDevice;
-	ComPtr<ID3D11DeviceContext> myContext;
-	ComPtr<IDXGISwapChain> mySwapChain;
+		ComPtr<ID3D11Device> myDevice;
+		ComPtr<ID3D11DeviceContext> myContext;
+		ComPtr<IDXGISwapChain> mySwapChain;
 
-	ComPtr<ID3D11RenderTargetView> myBackBuffer;
-	ComPtr<ID3D11DepthStencilView> myDepthBuffer;
-	ComPtr<ID3D11DepthStencilState> myDepthStencilState;
+		ComPtr<ID3D11RenderTargetView> myBackBuffer;
+		ComPtr<ID3D11DepthStencilView> myDepthBuffer;
+		ComPtr<ID3D11DepthStencilState> myDepthStencilState;
 
-	ComPtr<ID3D11Buffer> myFrameBuffer;
-	ComPtr<ID3D11Buffer> myObjectBuffer;
+		ComPtr<ID3D11Buffer> myFrameBuffer;
+		ComPtr<ID3D11Buffer> myObjectBuffer;
 
-	ComPtr<ID3D11SamplerState> mySamplerState;
+		ComPtr<ID3D11SamplerState> mySamplerState;
 
-	ComPtr<ID3D11RasterizerState> myRasterizerState;
+		ComPtr<ID3D11RasterizerState> myRasterizerState;
 
-	std::shared_ptr<Camera> myCamera;
-	std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
+		std::shared_ptr<Camera> myCamera;
+		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
-	std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
-	std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
-	std::unique_ptr<ConstantBuffer> myLightBuffer;
+		std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myLightBuffer;
 
-	std::unique_ptr<LightBufferData> myLightBufferData;
+		std::unique_ptr<LightBufferData> myLightBufferData;
 
-	std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
-	std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
+		std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
+		std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
 
-	std::unique_ptr<Renderer> myRenderer;
-	std::unique_ptr<ModelFactory> myModelFactory;
+		std::unique_ptr<Renderer> myRenderer;
+		std::unique_ptr<ModelFactory> myModelFactory;
 
-	float myClearColor[4];
-	unsigned int myFPSLevelCap;
-	bool myVSync;
-};
+		float myClearColor[4];
+		unsigned int myFPSLevelCap;
+		bool myVSync;
+	};
+}

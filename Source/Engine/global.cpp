@@ -90,7 +90,7 @@ void SimpleGlobalEngineImpl::SetWindowSize(const SimpleUtilities::Vector2ui& aWi
 
 namespace SimpleGlobal
 {
-	GraphicsEngine* GetGraphicsEngine()
+	Simple::GraphicsEngine* GetGraphicsEngine()
 	{
 		return localEngine->GetGraphicsEngine();
 	}

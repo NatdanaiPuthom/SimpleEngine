@@ -12,12 +12,12 @@ private:
 	void ShowFPS();
 private:
 	void ToggleConsole();
-	void ToggleVSync(GraphicsEngine* aGraphicsEngine);
+	void ToggleVSync(Simple::GraphicsEngine* aGraphicsEngine);
 	void ToggleMusic();
 	void AdjustWindowSize();
 	void AdjustResolution();
 	void AdjustRasterizerState();
-	void AdjustFPSCap(GraphicsEngine* aGraphicsEngine);
+	void AdjustFPSCap(Simple::GraphicsEngine* aGraphicsEngine);
 private:
 	void UpdateAndFetchCurrentMonitorResolution();
 private:
