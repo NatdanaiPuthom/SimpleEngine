@@ -36,7 +36,7 @@ namespace Simple
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		aModelInstance->myShader->SetShader(context.Get());
+		aModelInstance->myShader->UseThisShader(context.Get());
 
 		for (const auto& texture : aModelInstance->myTextures)
 		{
@@ -110,7 +110,7 @@ namespace Simple
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		aModelInstance->myShader->SetShader(context.Get());
+		aModelInstance->myShader->UseThisShader(context.Get());
 
 		SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(0, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView().GetAddressOf());
 
@@ -175,8 +175,10 @@ namespace Simple
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
+		aModelInstance->myShader->UseThisShader(context.Get());
+
 		auto mirrorShader = SimpleGlobal::GetGraphicsEngine()->GetShader("DefaultPS.cso", "PlaneReflectionVS.cso");
-		mirrorShader->SetShader(context.Get());
+		mirrorShader->UseThisVertexShader(context);
 
 		for (const auto& texture : aModelInstance->myTextures)
 		{

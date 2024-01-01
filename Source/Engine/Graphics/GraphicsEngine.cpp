@@ -200,9 +200,6 @@ namespace Simple
 			assert(false && "Failed to add Shader");
 
 		{ //TGA Uppgift
-			if (!AddShader("TerrainPS.cso", "TerrainVS.cso"))
-				assert(false && "Failed to add Shader");
-
 			if (!AddShader("TerrainPS.cso", "DefaultVS.cso"))
 				assert(false && "Failed to add Shader");
 

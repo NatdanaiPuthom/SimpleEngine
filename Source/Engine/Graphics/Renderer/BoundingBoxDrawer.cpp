@@ -129,7 +129,7 @@ void BoundingBoxDrawer::Render(const std::shared_ptr<const Model> aModelInstance
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	myShader->SetShader(context.Get());
+	myShader->UseThisShader(context.Get());
 
 	context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);

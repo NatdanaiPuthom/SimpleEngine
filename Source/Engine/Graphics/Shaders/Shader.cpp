@@ -53,9 +53,21 @@ const bool Shader::Init(ComPtr<ID3D11Device>& aDevice, const std::string& aPSFil
 	return true;
 }
 
-void Shader::SetShader(ID3D11DeviceContext* aContext) const
+void Shader::UseThisShader(ID3D11DeviceContext* aContext) const
 {
 	aContext->VSSetShader(myVertexShader.Get(), nullptr, 0);
 	aContext->PSSetShader(myPixelShader.Get(), nullptr, 0);
+	aContext->IASetInputLayout(myInputLayout.Get());
+}
+
+void Shader::UseThisPixelShader(ComPtr<ID3D11DeviceContext> aContext) const
+{
+	aContext->PSSetShader(myPixelShader.Get(), nullptr, 0);
+	aContext->IASetInputLayout(myInputLayout.Get());
+}
+
+void Shader::UseThisVertexShader(ComPtr<ID3D11DeviceContext> aContext) const
+{
+	aContext->VSSetShader(myVertexShader.Get(), nullptr, 0);
 	aContext->IASetInputLayout(myInputLayout.Get());
 }
