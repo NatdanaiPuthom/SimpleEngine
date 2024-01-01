@@ -5,7 +5,7 @@ LineDrawer::LineDrawer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 	, myMeshData(std::make_unique<MeshData>())
 {
-	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("Shaders/LinePS.cso", "Shaders/DefaultVS.cso");
+	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("LinePS.cso", "DefaultVS.cso");
 
 	myMeshData->vertices.reserve(2);
 	myMeshData->vertices.resize(2, Vertex{});

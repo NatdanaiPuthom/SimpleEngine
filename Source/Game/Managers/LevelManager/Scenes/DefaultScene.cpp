@@ -23,7 +23,7 @@ void DefaultScene::Init()
 		cube->AddTexture("Hamster.dds");
 		cube->SetName("Hamster");
 		cube->SetPosition({-5,3,0});
-		cube->SetShader("Shaders/DefaultPBRPS.cso", "Shaders/DefaultVS.cso");
+		cube->SetShader("DefaultPBRPS.cso", "DefaultVS.cso");
 		myModels.push_back(std::move(cube));
 	}
 
@@ -46,7 +46,7 @@ void DefaultScene::Init()
 		plane->SetName("Cat");
 		plane->ClearTextures();
 		plane->AddTexture("Cat-scared.dds");
-		plane->SetShader("Shaders/DefaultPBRPS.cso", "Shaders/DefaultVS.cso");
+		plane->SetShader("DefaultPBRPS.cso", "DefaultVS.cso");
 		myModels.push_back(std::move(plane));
 	}
 
@@ -58,7 +58,7 @@ void DefaultScene::Init()
 
 	{
 		std::shared_ptr<Model> cube = std::move(modelFactory->CreateCubeModel());
-		cube->SetShader("Shaders/DefaultColorfulPS.cso", "Shaders/DefaultVS.cso");
+		cube->SetShader("DefaultColorfulPS.cso", "DefaultVS.cso");
 		cube->SetName("Colorful");
 		cube->SetPosition({ -5.0f, 0.5f, 0.0f });
 		myModels.push_back(std::move(cube));
@@ -69,7 +69,7 @@ void DefaultScene::Init()
 		pyramid->SetPosition({ -10.0f, 3.0f, -0.0f });
 		pyramid->ClearTextures();
 		pyramid->AddTexture("DefaultTexture.dds");
-		pyramid->SetShader("Shaders/DefaultPBRPS.cso", "Shaders/DefaultVS.cso");
+		pyramid->SetShader("DefaultPBRPS.cso", "DefaultVS.cso");
 		myModels.push_back(std::move(pyramid));
 	}
 

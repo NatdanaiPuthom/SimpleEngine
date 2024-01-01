@@ -20,6 +20,8 @@ public:
 	void ClearTextures();
 public:
 	void LookAt(const SimpleUtilities::Vector3f& aTargetPoint);
+
+	//FilePath starts at  Bin/Shaders/
 	void SetShader(const char* aPSShaderFile, const char* aVSShaderFile);
 	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
 	void SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree);

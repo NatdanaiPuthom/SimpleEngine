@@ -73,7 +73,7 @@ std::unique_ptr<Model> ModelFactory::CreateTerrainModel()
 
 	terrainModel->Init(GetMesh("Terrain"));
 	terrainModel->ClearTextures();
-	terrainModel->SetShader("Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso");
+	terrainModel->SetShader("TerrainPS.cso", "TerrainVS.cso");
 
 	terrainModel->AddTexture("TGA/Uppgift6/Grass_c.dds");
 	terrainModel->AddTexture("TGA/Uppgift6/Rock_c.dds");
@@ -97,7 +97,7 @@ std::unique_ptr<Model> ModelFactory::CreateSkyBoxModel()
 	std::unique_ptr<Model> skyBoxModel = std::make_unique<Model>();
 
 	skyBoxModel->Init(GetMesh("Skybox"), "TGA/Uppgift7/cubemap.dds");
-	skyBoxModel->SetShader("Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso");
+	skyBoxModel->SetShader("SkyBoxPS.cso", "SkyBoxVS.cso");
 	skyBoxModel->SetScale({ 1,1,1 });
 	skyBoxModel->SetPosition({ 0,0,0 });
 	skyBoxModel->SetName("SkyBox");
@@ -123,7 +123,7 @@ std::unique_ptr<Model> ModelFactory::CreatePlaneModel()
 	std::unique_ptr<Model> plane = std::make_unique<Model>();
 
 	plane->Init(GetMesh("Plane"));
-	plane->SetShader("Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso");
+	plane->SetShader("DefaultPS.cso", "DefaultVS.cso");
 	plane->SetScale({ 1,1,1 });
 	plane->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 	plane->SetName("Plane");
@@ -172,7 +172,7 @@ std::unique_ptr<Model> ModelFactory::CreatePlaneReflection()
 	std::unique_ptr<Model> plane = std::make_unique<Model>();
 
 	plane->Init(GetMesh("Plane"));
-	plane->SetShader("Shaders/WaterReflectionPS.cso", "Shaders/PlaneReflectionVS.cso");
+	plane->SetShader("WaterReflectionPS.cso", "PlaneReflectionVS.cso");
 	plane->SetScale({ 1,1,1 });
 	plane->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 	plane->SetName("PlaneReflection");

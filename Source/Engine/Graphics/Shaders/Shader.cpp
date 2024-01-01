@@ -17,7 +17,8 @@ const bool Shader::Init(ComPtr<ID3D11Device>& aDevice, const std::string& aPSFil
 	std::ifstream vsFile;
 	std::ifstream psFile;
 
-	vsFile.open(SimpleUtilities::GetPath(aVSFileName.c_str()), std::ios::binary);
+	const std::string vsFilepath = SimpleUtilities::GetPath(SIMPLE_SHADERS_DIR) + aVSFileName;
+	vsFile.open(vsFilepath.c_str(), std::ios::binary);
 	vsData = { std::istreambuf_iterator<char>(vsFile), std::istreambuf_iterator<char>() };
 	vsFile.close();
 
@@ -25,7 +26,8 @@ const bool Shader::Init(ComPtr<ID3D11Device>& aDevice, const std::string& aPSFil
 	if (FAILED(result))
 		return false;
 
-	psFile.open(SimpleUtilities::GetPath(aPSFileName.c_str()), std::ios::binary);
+	const std::string psFilepath = SimpleUtilities::GetPath(SIMPLE_SHADERS_DIR) + aPSFileName;
+	psFile.open(psFilepath.c_str(), std::ios::binary);
 	psData = { std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>() };
 	psFile.close();
 

@@ -183,26 +183,26 @@ void GraphicsEngine::LoadTextures()
 
 void GraphicsEngine::LoadShaders()
 {
-	if (!AddShader("Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso"))
+	if (!AddShader("DefaultPS.cso", "DefaultVS.cso"))
 		assert(false && "Failed to add Shader");
 
-	if (!AddShader("Shaders/DefaultColorfulPS.cso", "Shaders/DefaultVS.cso"))
+	if (!AddShader("DefaultColorfulPS.cso", "DefaultVS.cso"))
 		assert(false && "Failed to add Shader");
 
-	if (!AddShader("Shaders/LinePS.cso", "Shaders/DefaultVS.cso"))
+	if (!AddShader("LinePS.cso", "DefaultVS.cso"))
 		assert(false && "Failed to add Shader");
 
-	if (!AddShader("Shaders/DefaultPBRPS.cso", "Shaders/DefaultVS.cso"))
+	if (!AddShader("DefaultPBRPS.cso", "DefaultVS.cso"))
 		assert(false && "Failed to add Shader");
 
 	{ //TGA Uppgift
-		if (!AddShader("Shaders/TerrainPS.cso", "Shaders/TerrainVS.cso"))
+		if (!AddShader("TerrainPS.cso", "TerrainVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/SkyBoxPS.cso", "Shaders/SkyBoxVS.cso"))
+		if (!AddShader("SkyBoxPS.cso", "SkyBoxVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/WaterReflectionPS.cso", "Shaders/PlaneReflectionVS.cso"))
+		if (!AddShader("WaterReflectionPS.cso", "PlaneReflectionVS.cso"))
 			assert(false && "Failed to add Shader");
 	}
 }
@@ -437,7 +437,7 @@ std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const char* aFilePath)
 
 std::shared_ptr<const Texture> GraphicsEngine::GetDefaultTexture()
 {
-	auto texture = GetTexture("Assets/Textures/DefaultTexture.dds");
+	auto texture = GetTexture("DefaultTexture.dds");
 
 	if (texture != nullptr)
 		return texture;
@@ -447,7 +447,7 @@ std::shared_ptr<const Texture> GraphicsEngine::GetDefaultTexture()
 
 std::shared_ptr<const Shader> GraphicsEngine::GetDefaultShader()
 {
-	auto defaultShader = GetShader("Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso");
+	auto defaultShader = GetShader("DefaultPS.cso", "DefaultVS.cso");
 
 	if (defaultShader != nullptr)
 		return defaultShader;

@@ -5,7 +5,7 @@
 BoundingBoxDrawer::BoundingBoxDrawer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
 {
-	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("Shaders/LinePS.cso", "Shaders/DefaultVS.cso");
+	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("LinePS.cso", "DefaultVS.cso");
 
 	myMeshData.vertices.reserve(24);
 	myMeshData.vertices.resize(24, Vertex{});
