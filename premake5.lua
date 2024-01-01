@@ -20,7 +20,8 @@ workspace "SimpleEngine"
 		'SIMPLE_IMGUI_FILENAME="' .."imgui.ini" .. '"',
 		'SIMPLE_SETTINGS_FILENAME="' .. "settings.json" .. '"',
 		'SIMPLE_PROFILER_FILENAME="' .. "Profilers/profiler_data.prof" .. '"',
-		'SIMPLE_LEVELS_FILENAME="' .. "levels.json" .. '"'
+		'SIMPLE_LEVELS_FILENAME="' .. "levels.json" .. '"',
+		'SIMPLE_SOUND_DIR="' .. "Assets/Sounds/" .. '"'
 	}
 
 	configurations {
@@ -116,18 +117,8 @@ workspace "SimpleEngine"
 
 		links {
 			"easy_profiler.lib", 
-			"easy_profiler.dll"
+			"easy_profiler.dll",
 		}
-
-		filter "configurations: Debug"
-			links {
-		
-			}
-
-		filter "configurations: Release"
-		links {
-		
-			}
 
 	project "Game"
 		kind "WindowedApp"
@@ -137,7 +128,25 @@ workspace "SimpleEngine"
 		pchheader "Game/Precomplier/stdafx.h"
 		pchsource "Source/Game/Precomplier/stdafx.cpp"
 		dependson { "Engine" }
-		links { "Engine"}
+	
+		 postbuildcommands { -- Copy DLL to Bin
+            "{COPY} %{wks.location}/DLL/easy_profiler.dll %{cfg.targetdir}",
+            "{COPY} %{wks.location}/DLL/fmod.dll %{cfg.targetdir}",
+            "{COPY} %{wks.location}/DLL/fmodL.dll %{cfg.targetdir}",
+            "{COPY} %{wks.location}/DLL/fmodstudio.dll %{cfg.targetdir}",
+            "{COPY} %{wks.location}/DLL/fmodstudioL.dll %{cfg.targetdir}"
+        }
+
+		libdirs {
+			"Lib", 
+			"Lib/Debug/",
+			"DLL"
+		}
+
+		links {
+			"Engine", 
+			"SoundEngine-FMod.lib"
+		}
 
 		files {
 			"Source/Game/**.h", 
@@ -153,6 +162,7 @@ workspace "SimpleEngine"
 			"Source/External/"
 		}
 
-        postbuildcommands { -- Copy DLL to Bin
-            "{COPY} %{wks.location}/DLL/easy_profiler.dll %{cfg.targetdir}"
-        }
+		filter "configurations:Debug"
+			links {
+				"SoundEngine-FMod_Debug.lib"
+			}
