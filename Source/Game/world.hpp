@@ -1,6 +1,10 @@
 #pragma once
 
-class Scene;
+namespace Simple
+{
+	class Scene;
+}
+
 class Model;
 
 namespace SimpleWorld
@@ -9,7 +13,7 @@ namespace SimpleWorld
 	void SetWaterHeight(const float aHeight);
 	void SetWaterPlane(std::shared_ptr<Model> aWaterPlane);
 
-	std::shared_ptr<Scene> GetActiveScene();
+	std::shared_ptr<Simple::Scene> GetActiveScene();
 	std::shared_ptr<Model> GetWaterPlane();
 
 	float GetWaterHeight();

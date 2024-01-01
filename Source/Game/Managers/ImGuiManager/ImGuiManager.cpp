@@ -2,11 +2,11 @@
 #include "Engine/Graphics/Renderer/Renderer.hpp"
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
-#include "Game/Managers/ImGuiManager/Tools/CameraTool.hpp"
-#include "Game/Managers/ImGuiManager/Tools/SettingsTool.hpp"
-#include "Game/Managers/ImGuiManager/Tools/LightTool.hpp"
-#include "Game/Managers/ImGuiManager/Tools/SceneTool.hpp"
-#include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
+#include "Game/Managers/ImGuiManager/Tools/Camera.hpp"
+#include "Game/Managers/ImGuiManager/Tools/Settings.hpp"
+#include "Game/Managers/ImGuiManager/Tools/Light.hpp"
+#include "Game/Managers/ImGuiManager/Tools/Scene.hpp"
+#include "Game/Managers/ImGuiManager/Tools/Mesh.hpp"
 #include "Game/Managers/ImGuiManager/Tools/Debug.hpp"
 
 namespace Simple
@@ -32,7 +32,7 @@ namespace Simple
 
 	void ImGuiManager::Render()
 	{
-		for (const std::unique_ptr<ToolInterface>& tool : myTools)
+		for (const std::unique_ptr<Simple::ToolInterface>& tool : myTools)
 		{
 			tool->Draw();
 		}

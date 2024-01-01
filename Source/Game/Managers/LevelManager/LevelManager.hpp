@@ -1,6 +1,9 @@
 #pragma once
 
-class Scene;
+namespace Simple
+{
+	class Scene;
+}
 
 namespace Simple
 {
@@ -16,9 +19,9 @@ namespace Simple
 	public:
 		void SetActiveScene(const int aSceneIndex);
 	public:
-		std::shared_ptr<Scene> GetActiveScene();
+		std::shared_ptr<Simple::Scene> GetActiveScene();
 	private:
-		std::shared_ptr<Scene> myActiveScene;
-		std::unordered_map<int, std::shared_ptr<Scene>> myScenes;
+		std::shared_ptr<Simple::Scene> myActiveScene;
+		std::unordered_map<int, std::shared_ptr<Simple::Scene>> myScenes;
 	};
 }

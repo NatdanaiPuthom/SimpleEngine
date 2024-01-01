@@ -1,11 +1,14 @@
 #pragma once
 
-class SpotlightScene final : public Scene
+namespace Scenes
 {
-public:
-	SpotlightScene();
-	~SpotlightScene() override = default;
+	class Spotlight final : public Simple::Scene
+	{
+	public:
+		Spotlight();
+		~Spotlight() override = default;
 
-	virtual void Init() override;
-	virtual void Update() override;
-};
+		virtual void Init() override;
+		virtual void Update() override;
+	};
+}

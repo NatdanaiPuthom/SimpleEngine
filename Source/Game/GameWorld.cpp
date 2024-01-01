@@ -9,13 +9,13 @@
 namespace Simple
 {
 	GameWorld::GameWorld()
-		: myImGuiManager(std::make_unique<ImGuiManager>())
-		, myLevelManager(std::make_unique<LevelManager>())
-		, myRaycastManager(std::make_unique<RaycastManager>())
+		: myImGuiManager(std::make_unique<Simple::ImGuiManager>())
+		, myLevelManager(std::make_unique<Simple::LevelManager>())
+		, myRaycastManager(std::make_unique<Simple::RaycastManager>())
 	{
 		Impl::SimpleWorldGameWorld::SetGameWorld(this);
 
-		myPlaneReflection = std::make_unique<PlaneReflection>();
+		myPlaneReflection = std::make_unique<Simple::PlaneReflection>();
 		SimpleWorld::SetWaterPlane(myPlaneReflection->myModel);
 	}
 

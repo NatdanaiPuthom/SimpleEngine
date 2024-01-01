@@ -1,7 +1,7 @@
 #include "Game/Precomplier/stdafx.h"
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
-#include "Game/Managers/LevelManager/Scenes/DefaultScene.hpp"
+#include "Game/Managers/LevelManager/Scenes/Default.hpp"
 #include "Game/Managers/LevelManager/Scenes/Spotlights.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
@@ -22,11 +22,11 @@ namespace Simple
 		camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 
-		std::shared_ptr<DefaultScene> defaultScene = std::make_shared<DefaultScene>();
+		std::shared_ptr<Scenes::Default> defaultScene = std::make_shared<Scenes::Default>();
 		defaultScene->Init();
 		myScenes.emplace(0, defaultScene);
 
-		std::shared_ptr<SpotlightScene> spotlightScene = std::make_shared<SpotlightScene>();
+		std::shared_ptr<Scenes::Spotlight> spotlightScene = std::make_shared<Scenes::Spotlight>();
 		spotlightScene->Init();
 		myScenes.emplace(1, spotlightScene);
 
@@ -48,7 +48,7 @@ namespace Simple
 		myActiveScene = myScenes.at(aSceneIndex);
 	}
 
-	std::shared_ptr<Scene> LevelManager::GetActiveScene()
+	std::shared_ptr<Simple::Scene> LevelManager::GetActiveScene()
 	{
 		return myActiveScene;
 	}

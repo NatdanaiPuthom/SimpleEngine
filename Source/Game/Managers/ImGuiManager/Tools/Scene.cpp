@@ -1,5 +1,5 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Game/Managers/ImGuiManager/Tools/SceneTool.hpp"
+#include "Game/Managers/ImGuiManager/Tools/Scene.hpp"
 
 namespace Tool
 {

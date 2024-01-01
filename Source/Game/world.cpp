@@ -58,7 +58,7 @@ int SimpleWorld::GetActiveSceneIndex()
 	return localActiveSceneIndex;
 }
 
-std::shared_ptr<Scene> SimpleWorld::GetActiveScene()
+std::shared_ptr<Simple::Scene> SimpleWorld::GetActiveScene()
 {
 	return localLevelManager->GetActiveScene();
 }

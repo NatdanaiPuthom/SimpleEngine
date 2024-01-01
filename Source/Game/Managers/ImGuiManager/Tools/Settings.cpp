@@ -1,5 +1,5 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Game/Managers/ImGuiManager/Tools/SettingsTool.hpp"
+#include "Game/Managers/ImGuiManager/Tools/Settings.hpp"
 
 namespace Tool
 {

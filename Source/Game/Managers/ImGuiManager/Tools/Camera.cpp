@@ -1,6 +1,6 @@
 #include "Game/Precomplier/stdafx.h"
 #include "Engine/Graphics/Camera/Camera.hpp"
-#include "Game/Managers/ImGuiManager/Tools/CameraTool.hpp"
+#include "Game/Managers/ImGuiManager/Tools/Camera.hpp"
 
 namespace Tool
 {
