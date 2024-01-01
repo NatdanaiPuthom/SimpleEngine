@@ -22,7 +22,7 @@ Renderer::~Renderer()
 {
 }
 
-void Renderer::RenderModel(const std::shared_ptr<const ModelInstance> aModelInstance) const
+void Renderer::RenderModel(const std::shared_ptr<const Model> aModelInstance) const
 {
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
@@ -65,14 +65,14 @@ void Renderer::RenderSphere(const Drawer::Sphere& aSphere)
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
 
-void Renderer::RenderBoundingBox(const std::shared_ptr<const ModelInstance> aModelInstance) const
+void Renderer::RenderBoundingBox(const std::shared_ptr<const Model> aModelInstance) const
 {
 	myBoundingBoxDrawer->Render(aModelInstance);
 
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
 
-void Renderer::RenderEverythingUpSideDown(const ModelInstance* const aModelInstance) const
+void Renderer::RenderEverythingUpSideDown(const Model* const aModelInstance) const
 {
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
@@ -106,7 +106,7 @@ void Renderer::RenderEverythingUpSideDown(const ModelInstance* const aModelInsta
 	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
 
-void Renderer::RenderPlaneReflection(const ModelInstance* const aModelInstance) const
+void Renderer::RenderPlaneReflection(const Model* const aModelInstance) const
 {
 	const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 

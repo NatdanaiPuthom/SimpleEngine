@@ -4,13 +4,13 @@
 class Shader;
 class Texture;
 
-class ModelInstance final
+class Model final
 {
 	friend class Renderer;
 	friend class BoundingBoxDrawer;
 public:
-	ModelInstance();
-	~ModelInstance();
+	Model();
+	~Model();
 
 	void Init(const Mesh* const aMesh);
 	void Init(const Mesh* const aMesh, const char* aTexturePath);

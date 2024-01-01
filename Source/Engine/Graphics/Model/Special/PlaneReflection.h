@@ -1,6 +1,6 @@
 #pragma once
 
-class ModelInstance;
+class Model;
 
 class PlaneReflection
 {
@@ -10,6 +10,6 @@ public:
 
 	void Update();
 
-	std::unique_ptr<ModelInstance> myModel;
+	std::unique_ptr<Model> myModel;
 	float myHeight;
 };

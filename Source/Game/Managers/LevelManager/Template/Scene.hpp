@@ -1,6 +1,6 @@
 #pragma once
 
-class ModelInstance;
+class Model;
 class DirectionalLightVisual;
 
 class Scene
@@ -9,7 +9,7 @@ public:
 	Scene()
 	{
 		myDirectionalLight = std::make_unique<DirectionalLightVisual>();
-		myModelInstances.push_back(myDirectionalLight->myModel);
+		myModels.push_back(myDirectionalLight->myModel);
 	}
 
 	virtual ~Scene() = default;
@@ -25,14 +25,14 @@ public:
 	{
 		Renderer* renderer = SimpleGlobal::GetRenderer();
 
-		for (const auto& model : myModelInstances)
+		for (const auto& model : myModels)
 		{
 			renderer->RenderModel(model);
 		}
 
 		if (renderer->IsDebugModeOn())
 		{
-			for (const auto& model : myModelInstances)
+			for (const auto& model : myModels)
 			{
 				renderer->RenderBoundingBox(model);
 			}
@@ -41,6 +41,6 @@ public:
 		}
 	};
 
-	std::vector<std::shared_ptr<ModelInstance>> myModelInstances;
+	std::vector<std::shared_ptr<Model>> myModels;
 	std::unique_ptr<DirectionalLightVisual> myDirectionalLight;
 };

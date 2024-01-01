@@ -5,7 +5,7 @@ namespace Drawer
 	struct Line;
 }
 
-class ModelInstance;
+class Model;
 
 class DirectionalLightVisual final
 {
@@ -15,6 +15,6 @@ public:
 	void Update() const;
 
 	std::unique_ptr<Drawer::Line> myLine;
-	std::shared_ptr<ModelInstance> myModel;
+	std::shared_ptr<Model> myModel;
 	float myLineDistance;
 };

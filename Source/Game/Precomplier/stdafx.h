@@ -54,7 +54,7 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/Graphics/GraphicsEngine.hpp"
 
 #include "Engine/Graphics/Camera/Camera.hpp"
-#include "Engine/Graphics/Model/ModelInstance.hpp"
+#include "Engine/Graphics/Model/Model.hpp"
 #include "Engine/Graphics/Model/ModelFactory.hpp"
 #include "Engine/Graphics/Renderer/LineDrawer.hpp"
 #include "Engine/Graphics/Renderer/SphereDrawer.hpp"

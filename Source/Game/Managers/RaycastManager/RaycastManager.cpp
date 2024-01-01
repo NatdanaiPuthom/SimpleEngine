@@ -38,7 +38,7 @@ void RaycastManager::Update()
 	{
 		if (mySelectedModelIndex >= 0)
 		{
-			SimpleWorld::GetActiveScene()->myModelInstances[mySelectedModelIndex]->SetBoundingBoxLineColor({ 1.0f,1.0f,0.0f , 1.0f });
+			SimpleWorld::GetActiveScene()->myModels[mySelectedModelIndex]->SetBoundingBoxLineColor({ 1.0f,1.0f,0.0f , 1.0f });
 		}
 
 		mySelectedModelIndex = -1;
@@ -93,7 +93,7 @@ void RaycastManager::CheckAABB3DCollision()
 {
 	SU::Ray ray = GetScreenPointToRay(SU::InputManager::GetInstance().GetMousePosition());
 
-	const auto& models = SimpleWorld::GetActiveScene()->myModelInstances;
+	const auto& models = SimpleWorld::GetActiveScene()->myModels;
 	SU::Vector3f closetHitPoint;
 	float closetDistance = FLT_MAX;
 	int hitIndex = -1;
@@ -138,7 +138,7 @@ void RaycastManager::CheckAABB3DCollision()
 
 void RaycastManager::MoveObject()
 {
-	auto& model = SimpleWorld::GetActiveScene()->myModelInstances[mySelectedModelIndex];
+	auto& model = SimpleWorld::GetActiveScene()->myModels[mySelectedModelIndex];
 
 	const auto mouseDelta = SimpleUtilities::InputManager::GetInstance().GetMouseDelta();
 	const auto min = model->GetBoundingBox().min;

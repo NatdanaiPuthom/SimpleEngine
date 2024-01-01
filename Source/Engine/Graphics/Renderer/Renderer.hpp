@@ -1,6 +1,6 @@
 #pragma once
 
-class ModelInstance;
+class Model;
 class ConstantBuffer;
 class BoundingBoxDrawer;
 class LineDrawer;
@@ -18,13 +18,13 @@ public:
 	Renderer();
 	~Renderer();
 
-	void RenderModel(const std::shared_ptr<const ModelInstance> aModelInstance) const;
+	void RenderModel(const std::shared_ptr<const Model> aModelInstance) const;
 	void RenderLine(const Drawer::Line& aLine);
 	void RenderSphere(const Drawer::Sphere& aSphere);
-	void RenderBoundingBox(const std::shared_ptr<const ModelInstance> aModelInstance) const;
+	void RenderBoundingBox(const std::shared_ptr<const Model> aModelInstance) const;
 
-	void RenderEverythingUpSideDown(const ModelInstance* const aModelInstance) const;
-	void RenderPlaneReflection(const ModelInstance* const aModelInstance) const;
+	void RenderEverythingUpSideDown(const Model* const aModelInstance) const;
+	void RenderPlaneReflection(const Model* const aModelInstance) const;
 
 	bool IsDebugModeOn() const;
 public:

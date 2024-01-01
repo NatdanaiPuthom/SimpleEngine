@@ -9,7 +9,7 @@ void MeshTool::Draw()
 {
 	if (ImGui::Begin("Meshes"))
 	{
-		auto& modelInstances = SimpleWorld::GetActiveScene()->myModelInstances;
+		auto& modelInstances = SimpleWorld::GetActiveScene()->myModels;
 
 		std::vector<std::string> modelNames;
 		for (const auto& model : modelInstances)

@@ -1,6 +1,6 @@
 #include "Engine/Precomplier/stdafx.h"
 
-ModelInstance::ModelInstance()
+Model::Model()
 	: myMesh(nullptr)
 	, myName("Unnamed")
 	, myBoundingBoxColor(1.0f, 1.0f, 0.0f , 1.0f)
@@ -8,25 +8,25 @@ ModelInstance::ModelInstance()
 	myShader = SimpleGlobal::GetGraphicsEngine()->GetDefaultShader();
 }
 
-ModelInstance::~ModelInstance()
+Model::~Model()
 {
 	myMesh = nullptr;
 	myShader = nullptr;
 }
 
-void ModelInstance::Init(const Mesh* const aMesh)
+void Model::Init(const Mesh* const aMesh)
 {
 	myMesh = aMesh;
 	AddTexture("Assets/Textures/DefaultTexture.dds");
 }
 
-void ModelInstance::Init(const Mesh* const aMesh, const char* aTexturePath)
+void Model::Init(const Mesh* const aMesh, const char* aTexturePath)
 {
 	myMesh = aMesh;
 	AddTexture(aTexturePath);
 }
 
-void ModelInstance::AddTexture(const char* aFilePath)
+void Model::AddTexture(const char* aFilePath)
 {
 	std::shared_ptr<const Texture> texture = SimpleGlobal::GetGraphicsEngine()->GetTexture(aFilePath);
 
@@ -44,17 +44,17 @@ void ModelInstance::AddTexture(const char* aFilePath)
 	myTextures.push_back(texture);
 }
 
-void ModelInstance::ClearTextures()
+void Model::ClearTextures()
 {
 	myTextures.clear();
 }
 
-void ModelInstance::LookAt(const SimpleUtilities::Vector3f& aTargetPoint)
+void Model::LookAt(const SimpleUtilities::Vector3f& aTargetPoint)
 {
 	myTransform.LookAt(aTargetPoint);
 }
 
-void ModelInstance::SetShader(const char* aPSShaderFile, const char* aVSShaderFile)
+void Model::SetShader(const char* aPSShaderFile, const char* aVSShaderFile)
 {
 	myShader = nullptr;
 	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader(aPSShaderFile, aVSShaderFile);
@@ -71,62 +71,62 @@ void ModelInstance::SetShader(const char* aPSShaderFile, const char* aVSShaderFi
 	}
 }
 
-void ModelInstance::SetPosition(const SimpleUtilities::Vector3f& aPosition)
+void Model::SetPosition(const SimpleUtilities::Vector3f& aPosition)
 {
 	myTransform.SetPosition(aPosition);
 }
 
-void ModelInstance::SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree)
+void Model::SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree)
 {
 	myTransform.SetRotation(aRotationInDegree);
 }
 
-void ModelInstance::SetScale(const SimpleUtilities::Vector3f& aScale)
+void Model::SetScale(const SimpleUtilities::Vector3f& aScale)
 {
 	myTransform.SetScale(aScale);
 }
 
-void ModelInstance::SetName(const std::string& aName)
+void Model::SetName(const std::string& aName)
 {
 	myName = aName;
 }
 
-void ModelInstance::SetBoundingBoxLineColor(const SimpleUtilities::Vector4f& aColor)
+void Model::SetBoundingBoxLineColor(const SimpleUtilities::Vector4f& aColor)
 {
 	myBoundingBoxColor = aColor;
 }
 
-const BoundingBox& ModelInstance::GetBoundingBox() const
+const BoundingBox& Model::GetBoundingBox() const
 {
 	return myMesh->GetBoundingBox();
 }
 
-SimpleUtilities::Vector4f ModelInstance::GetBoundingBoxLineColor() const
+SimpleUtilities::Vector4f Model::GetBoundingBoxLineColor() const
 {
 	return myBoundingBoxColor;
 }
 
-SimpleUtilities::Matrix4x4f ModelInstance::GetMatrix() const
+SimpleUtilities::Matrix4x4f Model::GetMatrix() const
 {
 	return myTransform.GetMatrix();
 }
 
-SimpleUtilities::Vector3f ModelInstance::GetPosition() const
+SimpleUtilities::Vector3f Model::GetPosition() const
 {
 	return myTransform.GetPosition();
 }
 
-SimpleUtilities::Vector3f ModelInstance::GetRotation() const
+SimpleUtilities::Vector3f Model::GetRotation() const
 {
 	return myTransform.GetRotation();
 }
 
-SimpleUtilities::Vector3f ModelInstance::GetScale() const
+SimpleUtilities::Vector3f Model::GetScale() const
 {
 	return myTransform.GetScale();
 }
 
-std::string ModelInstance::GetName() const
+std::string Model::GetName() const
 {
 	return myName;
 }
