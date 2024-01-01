@@ -46,7 +46,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
 
-		Engine engine;
+		Simple::Engine engine;
 		engine.Init(hInstance, nCmdShow);
 
 		GameWorld gameWorld;

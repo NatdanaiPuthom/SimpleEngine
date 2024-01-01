@@ -6,7 +6,7 @@ namespace
 	SimpleUtilities::Vector2ui localResolution = { 800, 600 };
 	SimpleUtilities::Vector2ui localWindowSize = { 800, 600 };
 
-	Engine* localEngine = nullptr;
+	Simple::Engine* localEngine = nullptr;
 	Renderer* localRenderer = nullptr;
 	ModelFactory* localModelFactory = nullptr;
 	AudioManager* localAudioManager = nullptr;
@@ -46,7 +46,7 @@ void SimpleGlobalRendererImpl::IncreaseDrawCall()
 	++localDrawCalls;
 }
 
-void SimpleGlobalEngineImpl::SetEngine(Engine* aEngine)
+void SimpleGlobalEngineImpl::SetEngine(Simple::Engine* aEngine)
 {
 	if (localEngine != nullptr)
 		assert(false && "localEngine is already set. Is this call a mistake?");

@@ -2,16 +2,20 @@
 
 //Only For global.cpp
 
-class Engine;
+namespace Simple
+{
+	class Engine;
+}
+
 class Renderer;
 class ModelFactory;
 class AudioManager;
 
 class SimpleGlobalEngineImpl final
 {
-	friend class Engine;
+	friend class Simple::Engine;
 private:
-	static void SetEngine(Engine* aEngine);
+	static void SetEngine(Simple::Engine* aEngine);
 	static void SetResolution(const SimpleUtilities::Vector2ui& aResolution);
 	static void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize);
 

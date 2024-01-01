@@ -16,8 +16,6 @@ RaycastManager::RaycastManager()
 
 	myDebugSphere->radius = 0.2f;
 	myDebugSphere->color = { 1.0f, 0.0f, 0.0f, 0.0f };
-
-
 }
 
 RaycastManager::~RaycastManager()
