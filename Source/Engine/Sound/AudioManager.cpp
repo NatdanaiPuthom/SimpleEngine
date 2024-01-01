@@ -1,39 +1,34 @@
 #include "Engine/Precomplier/stdafx.h"
 #include "Engine/Sound/AudioManager.h"
+#include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 
 AudioManager::AudioManager()
+	: myMusicVolume(1.0f)
+	, mySFXVolume(1.0f)
+	, mySFXVolumeMute(0)
+	, myMusicMuted(false)
+	, mySFXMuted(false)
 {
-	myMusicVolume = 1.0f;
-	mySFXVolume = 1.0f;
-	mySFXVolumeMute = 0;
-
-	myMusicMuted = false;
-	mySFXMuted = false;
+	SimpleGlobalAudioManagerImpl::SetAudioManager(this);
 }
 
 AudioManager::~AudioManager()
 {
-
-}
-
-void AudioManager::Destroy()
-{
 	SoundEngine::Release();
-
-	myMusicChannels.clear();
-	mySFXChannels.clear();
 }
 
 void AudioManager::Init()
 {
-	std::string root = SimpleUtilities::GetPath(SIMPLE_SOUND_DIR);
+	const std::string root = SimpleUtilities::GetPath(SIMPLE_SOUND_DIR);
+
 	if (!SoundEngine::Init(root))
 		assert(false && "Failed to init SoundEngine");
 
-	{ 
-		SoundEngine::LoadSoundFile("StardewValley.mp3", false, false, true);	
-		PlayMusic("StardewValley.mp3");
-	}
+	if (!SoundEngine::LoadSoundFile("StardewValley.mp3", false, false, true))
+		assert(false && "Failed to load music file");
+
+	PlayMusic("StardewValley.mp3");
+	SetMusicVolume(0.1f);	
 }
 
 void AudioManager::Update()
@@ -87,29 +82,23 @@ void AudioManager::StopAllMusic()
 	}
 }
 
-void AudioManager::SetMusicVolume(float aVolume)
+void AudioManager::SetMusicVolume(const float aVolume)
 {
-	if (aVolume <= 1.0f && aVolume >= 0)
-	{
-		myMusicVolume = aVolume;
+	myMusicVolume = SU::Clamp(aVolume, 0.0f, 1.0f);
 
-		for (size_t i = 0; i < myMusicChannels.size(); i++)
-		{
-			SoundEngine::SetVolume(static_cast<int>(myMusicChannels[i].myChannelIndex), myMusicVolume);
-		}
+	for (size_t i = 0; i < myMusicChannels.size(); i++)
+	{
+		SoundEngine::SetVolume(static_cast<int>(myMusicChannels[i].myChannelIndex), myMusicVolume);
 	}
 }
 
-void AudioManager::SetSFXVolume(float aVolume)
+void AudioManager::SetSFXVolume(const float aVolume)
 {
-	if (aVolume <= 1.0f && aVolume >= 0)
-	{
-		mySFXVolume = aVolume;
+	mySFXVolume = SU::Clamp(aVolume, 0.0f, 1.0f);
 
-		for (size_t i = 0; i < mySFXChannels.size(); i++)
-		{
-			SoundEngine::SetVolume(static_cast<int>(mySFXChannels[i].myChannelIndex), mySFXVolume);
-		}
+	for (size_t i = 0; i < mySFXChannels.size(); i++)
+	{
+		SoundEngine::SetVolume(static_cast<int>(mySFXChannels[i].myChannelIndex), mySFXVolume);
 	}
 }
 

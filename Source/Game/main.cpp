@@ -3,7 +3,6 @@
 #include "Engine/engine.hpp"
 #include "Engine/MemoryTracker/MemoryTracker.h"
 #include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
-#include "Engine/Sound/AudioManager.h"
 #include "Game/GameWorld.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -53,8 +52,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		GameWorld gameWorld;
 		gameWorld.Init();
 
-		AudioManager::GetInstance().Init();
-
 		//std::thread logicThread(&GameWorld::Update, std::ref(gameWorld));
 
 		while (engine.BeginFrame())
@@ -86,8 +83,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!
 	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here before StopMemoryTrackingAndPrint function!
-	AudioManager::GetInstance().Destroy();
-	AudioManager::GetInstance().~AudioManager();
 	SimpleTracker::StopMemoryTrackingAndPrint();
 
 	return 0;

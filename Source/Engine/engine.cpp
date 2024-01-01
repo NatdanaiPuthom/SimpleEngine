@@ -38,8 +38,10 @@ void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	assert(success && "Failed To Init Graphics Engine");
 
 	myTimer = std::make_unique<SimpleUtilities::Timer>();
+	myAudioManager = std::make_unique<AudioManager>();
 
 	myImGuiEngine->Init();
+	myAudioManager->Init();
 }
 
 void Engine::LoadSettingsFromJson()
@@ -99,7 +101,7 @@ std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aW
 	std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 	*hwnd = CreateWindow(
 		L"Natdanai",
-		L"SimpleEngine v8.15",
+		L"SimpleEngine v8.16",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -121,6 +123,8 @@ bool Engine::BeginFrame()
 	SimpleGlobalEngineImpl::ResetDrawCalls();
 
 	myTimer->Update();
+	myAudioManager->Update();
+
 	SimpleUtilities::InputManager::GetInstance().Update();
 
 	return myGraphicsEngine->BeginFrame();

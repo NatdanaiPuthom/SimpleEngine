@@ -4,26 +4,11 @@
 class AudioManager
 {
 public:
-	//Remember to call destructor for all singletons before main calling return 0
-	static AudioManager& GetInstance()
-	{
-		static AudioManager myInstance;
-		return myInstance;
-	}
-
+	AudioManager();
 	~AudioManager();
-
-	// Delete copy constructor and copy assignment operator
-	AudioManager(const AudioManager&) = delete;
-	AudioManager& operator=(const AudioManager&) = delete;
-
-	// Default move constructor and move assignment operator
-	AudioManager(AudioManager&&) = default;
-	AudioManager& operator=(AudioManager&&) = default;
 
 	void Init();
 	void Update();
-	void Destroy();
 
 	void PlayMusic(const std::string aFileName);
 	void StopMusic(const std::string aFileName);
@@ -33,21 +18,17 @@ public:
 
 	void StopAllMusic();
 
-	//Range: 0 - 1f.
-	void SetMusicVolume(float aVolume);
-	void SetSFXVolume(float aVolume);
+	void SetMusicVolume(const float aVolume);
+	void SetSFXVolume(const float aVolume);
 
 	const std::string& GetCurrentMusicName();
 
 	void ToggleMuteMusic();
 	void ToggleMuteSFX();
 
-public:
 	bool IsMusicMuted() const;
 	bool IsSFXMuted() const;
 private:
-	AudioManager();
-
 	struct Channel
 	{
 		Channel(std::string aFileName, size_t aChannelIndex) : myChannelName(aFileName), myChannelIndex(aChannelIndex) {}
@@ -65,6 +46,4 @@ private:
 
 	bool myMusicMuted;
 	bool mySFXMuted;
-
-	friend class OptionsState;
 };

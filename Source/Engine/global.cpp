@@ -9,6 +9,7 @@ namespace
 	Engine* localEngine = nullptr;
 	Renderer* localRenderer = nullptr;
 	ModelFactory* localModelFactory = nullptr;
+	AudioManager* localAudioManager = nullptr;
 
 	const float localUpdatePeriodically = 0.5f;
 
@@ -48,7 +49,7 @@ void SimpleGlobalRendererImpl::IncreaseDrawCall()
 void SimpleGlobalEngineImpl::SetEngine(Engine* aEngine)
 {
 	if (localEngine != nullptr)
-		assert(false && "localEngine is already set. Is this a mistake?");
+		assert(false && "localEngine is already set. Is this call a mistake?");
 
 	localEngine = aEngine;
 }
@@ -56,7 +57,7 @@ void SimpleGlobalEngineImpl::SetEngine(Engine* aEngine)
 void SimpleGlobalRendererImpl::SetRenderer(Renderer* aRenderer)
 {
 	if (localRenderer != nullptr)
-		assert(false && "localRenderer is already set. Is this a mistake?");
+		assert(false && "localRenderer is already set. Is this call a mistake?");
 
 	localRenderer = aRenderer;
 }
@@ -64,9 +65,17 @@ void SimpleGlobalRendererImpl::SetRenderer(Renderer* aRenderer)
 void SimpleGlobalModelFactoryImpl::SetModelFactory(ModelFactory* aModelFactory)
 {
 	if (localModelFactory != nullptr)
-		assert(false && "localModelFactory is already set. Is this a mistake?");
+		assert(false && "localModelFactory is already set. Is this call a mistake?");
 
 	localModelFactory = aModelFactory;
+}
+
+void SimpleGlobalAudioManagerImpl::SetAudioManager(AudioManager* aAudioManager)
+{
+	if (localAudioManager != nullptr)
+		assert(false && "AudioManager is already set. Is this call a mistake?");
+
+	localAudioManager = aAudioManager;
 }
 
 void SimpleGlobalEngineImpl::SetResolution(const SimpleUtilities::Vector2ui& aResolution)
@@ -94,6 +103,11 @@ namespace SimpleGlobal
 	ModelFactory* GetModelFactory()
 	{
 		return localModelFactory;
+	}
+
+	AudioManager* GetAudioManager()
+	{
+		return localAudioManager;
 	}
 
 	HWND& GetHWND()

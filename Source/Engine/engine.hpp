@@ -7,6 +7,7 @@ namespace SimpleUtilities
 
 class ImGuiEngine;
 class GraphicsEngine;
+class AudioManager;
 
 class Engine final
 {
@@ -30,6 +31,7 @@ private:
 	std::unique_ptr<SimpleUtilities::Timer> myTimer;
 	std::unique_ptr<GraphicsEngine> myGraphicsEngine;
 	std::unique_ptr<ImGuiEngine> myImGuiEngine;
+	std::unique_ptr<AudioManager> myAudioManager;
 
 	Console myConsole;
 };

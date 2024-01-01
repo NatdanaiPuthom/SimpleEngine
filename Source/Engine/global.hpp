@@ -3,12 +3,14 @@
 class GraphicsEngine;
 class Renderer;
 class ModelFactory;
+class AudioManager;
 
 namespace SimpleGlobal
 {
 	GraphicsEngine* GetGraphicsEngine();
 	Renderer* GetRenderer();
 	ModelFactory* GetModelFactory();
+	AudioManager* GetAudioManager();
 
 	HWND& GetHWND();
 	

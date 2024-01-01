@@ -48,6 +48,7 @@ using Microsoft::WRL::ComPtr;
 
 #include "Engine/Console/Console.hpp"
 #include "Engine/Input/InputManager.hpp"
+#include "Engine/Sound/AudioManager.h"
 
 #include "Engine/engine.hpp"
 #include "Engine/Graphics/GraphicsEngine.hpp"

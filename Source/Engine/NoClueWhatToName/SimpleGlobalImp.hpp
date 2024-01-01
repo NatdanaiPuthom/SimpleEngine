@@ -5,6 +5,7 @@
 class Engine;
 class Renderer;
 class ModelFactory;
+class AudioManager;
 
 class SimpleGlobalEngineImpl final
 {
@@ -31,4 +32,11 @@ class SimpleGlobalModelFactoryImpl final
 	friend class ModelFactory;
 private:
 	static void SetModelFactory(ModelFactory* aModelFactory);
+};
+
+class SimpleGlobalAudioManagerImpl final
+{
+	friend class AudioManager;
+private:
+	static void SetAudioManager(AudioManager* aAudioManager);
 };
