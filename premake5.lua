@@ -129,7 +129,7 @@ workspace "SimpleEngine"
 		pchsource "Source/Game/Precomplier/stdafx.cpp"
 		dependson { "Engine" }
 	
-		 postbuildcommands { -- Copy DLL to Bin
+		 postbuildcommands { -- Copy DLLs to Bin
             "{COPY} %{wks.location}/DLL/easy_profiler.dll %{cfg.targetdir}",
             "{COPY} %{wks.location}/DLL/fmod.dll %{cfg.targetdir}",
             "{COPY} %{wks.location}/DLL/fmodL.dll %{cfg.targetdir}",
@@ -144,8 +144,7 @@ workspace "SimpleEngine"
 		}
 
 		links {
-			"Engine", 
-			"SoundEngine-FMod.lib"
+			"Engine"
 		}
 
 		files {
@@ -165,4 +164,14 @@ workspace "SimpleEngine"
 		filter "configurations:Debug"
 			links {
 				"SoundEngine-FMod_Debug.lib"
+			}
+
+		filter "configurations:Release"
+			links {
+				"SoundEngine-FMod.lib"
+			}
+
+		filter "configurations:Simple"
+			links {
+				"SoundEngine-FMod.lib"
 			}
