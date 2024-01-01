@@ -1,23 +1,23 @@
 #pragma once
 
+#if !defined(WIN32_LEAN_AND_MEAN)
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#define NOMINMAX
+
+#include <Windows.h>
+#include <wrl/client.h>
+#include <d3d11.h>
+
+using Microsoft::WRL::ComPtr;
+
 class Camera;
 class ConstantBuffer;
 class Texture;
 class Shader;
 class Renderer;
 class ModelFactory;
-
-struct ID3D11Device;
-struct ID3D11DeviceContext;
-struct IDXGISwapChain;
-struct ID3D11RenderTargetView;
-struct ID3D11DepthStencilView;
-struct ID3D11DepthStencilState;
-struct ID3D11Buffer;
-struct ID3D11SamplerState;
-struct ID3D11Texture2D;
-struct ID3D11ShaderResourceView;
-struct ID3D11RasterizerState;
 
 enum class eRasterizerState
 {
