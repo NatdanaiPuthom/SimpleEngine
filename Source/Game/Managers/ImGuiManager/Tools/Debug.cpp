@@ -82,7 +82,7 @@ namespace Tool
 
 		int selectedWaterIndex = 0;
 		ImGui::SetNextItemWidth(200);
-		if (ImGui::Combo("Meshes", &selectedWaterIndex, names.data(), static_cast<int>(names.size())))
+		if (ImGui::Combo("Plane", &selectedWaterIndex, names.data(), static_cast<int>(names.size())))
 		{
 		}
 
