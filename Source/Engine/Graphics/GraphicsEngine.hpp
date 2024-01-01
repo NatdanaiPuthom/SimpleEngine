@@ -1,12 +1,4 @@
 #pragma once
-
-#if !defined(WIN32_LEAN_AND_MEAN)
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#define NOMINMAX
-
-#include <Windows.h>
 #include <wrl/client.h>
 #include <d3d11.h>
 
