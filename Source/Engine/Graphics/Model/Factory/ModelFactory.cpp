@@ -75,7 +75,7 @@ namespace Simple
 
 		terrainModel->Init(GetMesh("Terrain"));
 		terrainModel->ClearTextures();
-		terrainModel->SetShader("TerrainPS.cso", "TerrainVS.cso");
+		terrainModel->SetShader("TerrainPS.cso", "DefaultVS.cso");
 
 		terrainModel->AddTexture("TGA/Uppgift6/Grass_c.dds");
 		terrainModel->AddTexture("TGA/Uppgift6/Rock_c.dds");

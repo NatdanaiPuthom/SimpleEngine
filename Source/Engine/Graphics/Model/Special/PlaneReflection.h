@@ -12,7 +12,7 @@ namespace Simple
 
 		void Update();
 
-		std::unique_ptr<Model> myModel;
+		std::shared_ptr<Model> myModel;
 		float myHeight;
 	};
 }

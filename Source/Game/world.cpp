@@ -3,12 +3,16 @@
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 #include "Game/GameWorld.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
+#include "Game/Managers/LevelManager/Template/Scene.hpp"
 
 namespace
 {
 	Simple::GameWorld* localGameWorld = nullptr;
 	Simple::LevelManager* localLevelManager = nullptr;
 
+	std::shared_ptr<Model> localWaterPlane = nullptr;
+
+	float localWaterHeight = 0;
 	int localActiveSceneIndex = 0;
 }
 
@@ -34,6 +38,21 @@ void SimpleWorld::SetActiveScene(const int aSceneIndex)
 	localLevelManager->SetActiveScene(localActiveSceneIndex);
 }
 
+void SimpleWorld::SetWaterHeight(const float aHeight)
+{
+	localWaterHeight = aHeight;
+}
+
+void SimpleWorld::SetWaterPlane(std::shared_ptr<Model> aWaterPlane)
+{
+	localWaterPlane = aWaterPlane;
+}
+
+float SimpleWorld::GetWaterHeight()
+{
+	return localWaterHeight;
+}
+
 int SimpleWorld::GetActiveSceneIndex()
 {
 	return localActiveSceneIndex;
@@ -42,4 +61,9 @@ int SimpleWorld::GetActiveSceneIndex()
 std::shared_ptr<Scene> SimpleWorld::GetActiveScene()
 {
 	return localLevelManager->GetActiveScene();
+}
+
+std::shared_ptr<Model> SimpleWorld::GetWaterPlane()
+{
+	return localWaterPlane;
 }

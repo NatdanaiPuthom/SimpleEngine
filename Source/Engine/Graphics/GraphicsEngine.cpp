@@ -1,5 +1,6 @@
 #include "Engine/Precomplier/stdafx.h"
 #include <External/imgui.h>
+#include <Game/world.hpp>
 
 #ifdef _DEBUG
 #define REPORT_DX_WARNINGS
@@ -89,6 +90,7 @@ namespace Simple
 			frameBuffer.worldToClipMatrix = myCamera->GetWorldToClipMatrix();
 			frameBuffer.cameraPosition = myCamera->GetPosition();
 			frameBuffer.resolution = SimpleGlobal::GetResolution();
+			frameBuffer.waterHeight = SimpleWorld::GetWaterHeight();
 			myCameraConstantBuffer->Bind(0);
 			myCameraConstantBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
 		}
@@ -201,10 +203,16 @@ namespace Simple
 			if (!AddShader("TerrainPS.cso", "TerrainVS.cso"))
 				assert(false && "Failed to add Shader");
 
+			if (!AddShader("TerrainPS.cso", "DefaultVS.cso"))
+				assert(false && "Failed to add Shader");
+
 			if (!AddShader("SkyBoxPS.cso", "SkyBoxVS.cso"))
 				assert(false && "Failed to add Shader");
 
 			if (!AddShader("WaterReflectionPS.cso", "PlaneReflectionVS.cso"))
+				assert(false && "Failed to add Shader");
+
+			if (!AddShader("DefaultPS.cso", "PlaneReflectionVS.cso"))
 				assert(false && "Failed to add Shader");
 		}
 	}
@@ -467,6 +475,8 @@ namespace Simple
 		{
 			if (!AddShader(aPSFile, aVSFile))
 				assert(false && "Unable to create Shader");
+			else
+				return shader->second;
 		}
 
 		return nullptr;

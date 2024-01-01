@@ -3,6 +3,8 @@
 #include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
 #include "Engine/Graphics/Renderer/LineDrawer.hpp"
 #include "Engine/Graphics/Renderer/SphereDrawer.hpp"
+#include "Game/world.hpp"
+#include "Game/Managers/LevelManager/Template/Scene.hpp"
 
 namespace Simple
 {
@@ -74,38 +76,28 @@ namespace Simple
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderEverythingUpSideDown(const Model* const aModelInstance) const
+	void Renderer::RenderEverythingUpSideDown() const
 	{
-		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
+		auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
 
-		SimpleUtilities::Matrix4x4f mirror = SimpleUtilities::Matrix4x4f::Identity();
+		const SU::Vector3f oldCamPosition = camera->GetPosition();
+		const SU::Vector3f oldCamRotation = camera->GetRotation();
+		const SU::Vector3f newCamRotation = SimpleUtilities::Vector3f(oldCamRotation.x, -oldCamRotation.y, oldCamRotation.z);
 
-		mirror(2, 2) = -1.0f;
-		mirror(4, 2) = -2.0f;
+		const float waterHeight = SimpleWorld::GetWaterHeight();
+		const float distFromWater = 2.0f * (oldCamPosition.y - waterHeight);
 
-		ObjectBufferData objectBuffer = {};
-		objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix() * mirror;
+		camera->SetPosition(oldCamPosition - SimpleUtilities::Vector3f(0.0f, distFromWater, 0.0f));
+		camera->SetRotation(newCamRotation);
 
-		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
-
-		aModelInstance->myShader->SetShader(context.Get());
-
-		for (const auto& texture : aModelInstance->myTextures)
+		Simple::Renderer* renderer = SimpleGlobal::GetRenderer();
+		for (const auto& model : SimpleWorld::GetActiveScene()->myModels)
 		{
-			texture->Bind(context, texture->GetSlot());
+			renderer->RenderUpSideDown(model.get());
 		}
 
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-
-		context->IASetVertexBuffers(0, 1, aModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
-
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		camera->SetRotation(oldCamRotation);
+		camera->SetPosition(oldCamPosition);
 	}
 
 	void Renderer::RenderPlaneReflection(const Model* const aModelInstance) const
@@ -166,5 +158,40 @@ namespace Simple
 		file.close();
 
 		SetDebugMode(json["game_settings"]["debugMode"]);
+	}
+
+	void Renderer::RenderUpSideDown(const Model* const aModelInstance) const
+	{
+		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
+
+		SimpleUtilities::Matrix4x4f mirror = SimpleUtilities::Matrix4x4f::Identity();
+
+		mirror(2, 2) = -1.0f;
+		mirror(4, 2) = -2.0f;
+
+		ObjectBufferData objectBuffer = {};
+		objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix() * mirror;
+
+		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
+		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+
+		auto mirrorShader = SimpleGlobal::GetGraphicsEngine()->GetShader("DefaultPS.cso", "PlaneReflectionVS.cso");
+		mirrorShader->SetShader(context.Get());
+
+		for (const auto& texture : aModelInstance->myTextures)
+		{
+			texture->Bind(context, texture->GetSlot());
+		}
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+
+		context->IASetVertexBuffers(0, 1, aModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 }

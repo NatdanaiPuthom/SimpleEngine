@@ -19,9 +19,8 @@ PixelInputType main(VertexInputType aInput)
     output.clip = aInput.clip;
     output.color = aInput.color;
     
-    float waterY = -1.0f;
-    float vertexWaterDistance = vertexWorldPos.y - waterY;
-    output.clip = vertexWaterDistance;
+    float vertexWaterDistance = vertexWorldPos.y - waterHeight;
+    output.clip = -vertexWaterDistance;
     
     return output;
 }
