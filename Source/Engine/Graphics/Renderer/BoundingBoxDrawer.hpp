@@ -21,5 +21,5 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;
 
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
-	std::shared_ptr<Shader> myShader;
+	std::shared_ptr<const Shader> myShader;
 };

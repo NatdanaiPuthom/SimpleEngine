@@ -28,7 +28,7 @@ void ModelInstance::Init(const Mesh* const aMesh, const char* aTexturePath)
 
 void ModelInstance::AddTexture(const char* aFilePath)
 {
-	std::shared_ptr<Texture> texture = SimpleGlobal::GetGraphicsEngine()->GetTexture(aFilePath);
+	std::shared_ptr<const Texture> texture = SimpleGlobal::GetGraphicsEngine()->GetTexture(aFilePath);
 
 	if (texture == nullptr)
 	{

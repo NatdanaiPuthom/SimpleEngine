@@ -10,7 +10,7 @@ public:
 	Texture();
 	~Texture();
 
-	void Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot);
+	void Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot) const;
 	bool LoadDDS(const char* aFilePath);
 	bool LoadNonDDS(const char* aFilePath);
 public:

@@ -34,10 +34,10 @@ public:
 	SimpleUtilities::Vector3f GetScale() const;
 	std::string GetName() const;
 private:
-	std::vector<std::shared_ptr<Texture>> myTextures;
+	std::vector<std::shared_ptr<const Texture>> myTextures;
 	std::string myName;
 	const Mesh* myMesh;
-	std::shared_ptr<Shader> myShader;
+	std::shared_ptr<const Shader> myShader;
 
 	SimpleUtilities::Transform myTransform;
 	SimpleUtilities::Vector4f myBoundingBoxColor;

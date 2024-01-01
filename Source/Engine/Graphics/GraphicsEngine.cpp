@@ -425,7 +425,7 @@ void GraphicsEngine::SetGroundColor(const SimpleUtilities::Vector4f& aColor)
 	myLightBufferData->groundColor = aColor;
 }
 
-std::shared_ptr<Texture> GraphicsEngine::GetTexture(const char* aFilePath)
+std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const char* aFilePath)
 {
 	auto it = myLoadedTextures.find(aFilePath);
 
@@ -435,7 +435,7 @@ std::shared_ptr<Texture> GraphicsEngine::GetTexture(const char* aFilePath)
 	return nullptr;
 }
 
-std::shared_ptr<Texture> GraphicsEngine::GetDefaultTexture()
+std::shared_ptr<const Texture> GraphicsEngine::GetDefaultTexture()
 {
 	auto texture = GetTexture("Assets/Textures/DefaultTexture.dds");
 
@@ -445,7 +445,7 @@ std::shared_ptr<Texture> GraphicsEngine::GetDefaultTexture()
 	return nullptr;
 }
 
-std::shared_ptr<Shader> GraphicsEngine::GetDefaultShader()
+std::shared_ptr<const Shader> GraphicsEngine::GetDefaultShader()
 {
 	auto defaultShader = GetShader("Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso");
 
@@ -455,7 +455,7 @@ std::shared_ptr<Shader> GraphicsEngine::GetDefaultShader()
 	return nullptr;
 }
 
-std::shared_ptr<Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
+std::shared_ptr<const Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
 {
 	auto shader = myLoadedShaders.find({ aPSFile, aVSFile });
 

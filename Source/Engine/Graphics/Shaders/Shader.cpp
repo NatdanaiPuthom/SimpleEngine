@@ -51,7 +51,7 @@ const bool Shader::Init(ComPtr<ID3D11Device>& aDevice, const std::string& aPSFil
 	return true;
 }
 
-void Shader::SetShader(ID3D11DeviceContext* aContext)
+void Shader::SetShader(ID3D11DeviceContext* aContext) const
 {
 	aContext->VSSetShader(myVertexShader.Get(), nullptr, 0);
 	aContext->PSSetShader(myPixelShader.Get(), nullptr, 0);

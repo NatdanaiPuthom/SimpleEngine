@@ -29,5 +29,5 @@ private:
 
 	std::unique_ptr<MeshData> myMeshData;
 	std::unique_ptr<ConstantBuffer> myObjectBuffer;
-	std::shared_ptr<Shader> myShader;
+	std::shared_ptr<const  Shader> myShader;
 };

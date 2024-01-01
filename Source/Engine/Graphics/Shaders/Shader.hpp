@@ -7,7 +7,7 @@ public:
 	~Shader();
 
 	const bool Init(ComPtr<ID3D11Device>& aDevice, const std::string& aPSFileName, const std::string& aVSFileName);
-	void SetShader(ID3D11DeviceContext* aContext);
+	void SetShader(ID3D11DeviceContext* aContext) const;
 private:
 	ComPtr<ID3D11VertexShader> myVertexShader;
 	ComPtr<ID3D11PixelShader> myPixelShader;

@@ -14,7 +14,7 @@ Texture::~Texture()
 	myShaderResourceView.Reset();
 }
 
-void Texture::Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot)
+void Texture::Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot) const
 {
 	aContext->PSSetShaderResources(aSlot, 1, myShaderResourceView.GetAddressOf());
 }

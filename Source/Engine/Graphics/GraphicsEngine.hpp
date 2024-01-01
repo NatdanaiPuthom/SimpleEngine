@@ -112,10 +112,10 @@ public:
 	ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
 
 	std::shared_ptr<Camera> GetCamera();
-	std::shared_ptr<Texture> GetTexture(const char* aFilePath);
-	std::shared_ptr<Texture> GetDefaultTexture();
-	std::shared_ptr<Shader> GetDefaultShader();
-	std::shared_ptr<Shader> GetShader(const char* aPSFile, const char* aVSFile);
+	std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
+	std::shared_ptr<const Texture> GetDefaultTexture();
+	std::shared_ptr<const Shader> GetDefaultShader();
+	std::shared_ptr<const Shader> GetShader(const char* aPSFile, const char* aVSFile);
 
 	SimpleUtilities::Vector4f GetDirectionalLightColor() const;
 	SimpleUtilities::Vector3f GetDirectionalLightDirection() const;
@@ -143,8 +143,8 @@ private:
 	void LoadTextures();
 	void LoadShaders();
 private:
-	std::unordered_map<std::string, std::shared_ptr<Texture>> myLoadedTextures;
-	std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<Shader>, SimpleHash::PairHash, SimpleHash::PairEqual> myLoadedShaders;
+	std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
+	std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleHash::PairHash, SimpleHash::PairEqual> myLoadedShaders;
 
 	std::array<ComPtr<ID3D11RasterizerState>, static_cast<int>(eRasterizerState::Count)> myRasterizerStates;
 
