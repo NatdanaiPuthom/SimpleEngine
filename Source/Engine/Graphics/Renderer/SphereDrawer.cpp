@@ -1,6 +1,6 @@
 #include "Engine/Precomplier/stdafx.h"
 #include "Engine/Graphics/Renderer/SphereDrawer.hpp"
-#include "Engine/Graphics/Shapes/ShapeCreator3000.hpp"
+#include "Engine/Graphics/Model/Factory/ShapeCreator3000.hpp"
 
 SphereDrawer::SphereDrawer()
 	: myObjectBuffer(std::make_unique<ConstantBuffer>())
