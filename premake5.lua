@@ -94,11 +94,13 @@ workspace "SimpleEngine"
 		targetdir "Lib"
 		targetname("%{prj.name}_%{cfg.buildcfg}")
 
-		includedirs {"Source/",
-		"Source/External/", 
-		"Source/External/dearimgui",
-		"Source/External/dearimgui/imgui/", 
-		"Source/External/dearimgui/freetype/"
+		includedirs {
+			"Source/",
+			"Source/External/", 
+			"Source/External/dearimgui",
+			"Source/External/dearimgui/imgui/", 
+			"Source/External/dearimgui/freetype/",
+			"Source/External/FMOD/"
 		}
 
 		files {
@@ -116,6 +118,16 @@ workspace "SimpleEngine"
 			"easy_profiler.lib", 
 			"easy_profiler.dll"
 		}
+
+		filter "configurations: Debug"
+			links {
+		
+			}
+
+		filter "configurations: Release"
+		links {
+		
+			}
 
 	project "Game"
 		kind "WindowedApp"
