@@ -61,6 +61,8 @@ void Renderer::RenderLine(const Drawer::Line& aLine)
 void Renderer::RenderSphere(const Drawer::Sphere& aSphere)
 {
 	mySphereDrawer->Render(aSphere);
+
+	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
 
 void Renderer::RenderBoundingBox(const std::shared_ptr<const ModelInstance> aModelInstance) const
@@ -126,6 +128,8 @@ void Renderer::RenderPlaneReflection(const ModelInstance* const aModelInstance) 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
+
+	SimpleGlobalRendererImpl::IncreaseDrawCall();
 }
 
 bool Renderer::IsDebugModeOn() const
