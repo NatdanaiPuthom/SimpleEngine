@@ -10,6 +10,9 @@ cbuffer FrameBuffer : register(b0)
     
     uint2 resolution;
     float2 resolutionPadding;
+    
+    float waterHeight;
+    float3 paddingWaterHeight;
 }
 
 cbuffer ObjectBuffer : register(b1)

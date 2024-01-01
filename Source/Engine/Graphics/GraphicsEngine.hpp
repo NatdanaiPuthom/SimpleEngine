@@ -37,6 +37,9 @@ struct alignas(16) FrameBufferData final
 
 	SimpleUtilities::Vector2ui resolution;
 	float paddingResolution[2] = { -1.0f };
+
+	float waterHeight;
+	float paddingWaterHeight[3];
 };
 
 struct alignas(16) ObjectBufferData final
