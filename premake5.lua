@@ -47,19 +47,36 @@ workspace "SimpleEngine"
 
 	project "Engine"
 		kind "StaticLib"
+		location "Source/Engine"
 		targetdir "Lib"
 		targetname("%{prj.name}_%{cfg.buildcfg}")
-		location "Source/Engine"
-		includedirs{"Source/" , "Source/Engine/", "Source/Engine/Graphics/", "Source/External/"} -- Included "Source/" so that we do not need "../../Engine/Graphics/Test.h" and instead can do "Engine/Graphics/Test.h"
-		files {"Source/Engine/**.h", "Source/Engine/**.hpp", "Source/Engine/**.cpp","Source/Engine/Graphics/Shaders/**.hlsl" , "Source/Engine/Graphics/Shaders/**.hlsli"} -- Files that shown in Visual Studio's Solution
 		dependson { "External" }
-		links {"External", "d3d11"}
 
-		pchheader "Engine/Precomplier/stdafx.h" -- Precomplier header to reduce common files from begin unnessesary complied multiple times
+		pchheader "Engine/Precomplier/stdafx.h"
 		pchsource "Source/Engine/Precomplier/stdafx.cpp"
 
 		shadermodel("5.0")
 		shaderoptions({"/WX"})
+
+		links {
+			"External", 
+			"d3d11"
+		}
+
+		includedirs { -- Included "Source/" so that we do not need "../../Engine/Graphics/Test.h" and instead can do "Engine/Graphics/Test.h"
+			"Source/" ,
+			"Source/Engine/", 
+			"Source/Engine/Graphics/", 
+			"Source/External/"
+		} 
+
+		files { -- Files that shown in Visual Studio's Solution
+			"Source/Engine/**.h", 
+			"Source/Engine/**.hpp", 
+			"Source/Engine/**.cpp",
+			"Source/Engine/Graphics/Shaders/**.hlsl", 
+			"Source/Engine/Graphics/Shaders/**.hlsli"
+		} 
 		
 		filter("files:**.hlsl")
 			 local output_dir = path.join(shader_dir, "%{file.basename}.cso")
@@ -73,25 +90,56 @@ workspace "SimpleEngine"
 
 	project "External"
 		kind "StaticLib"
+		location "Source/External"
 		targetdir "Lib"
 		targetname("%{prj.name}_%{cfg.buildcfg}")
-		location "Source/External"
-		includedirs{"Source/","Source/External/", "Source/External/dearimgui","Source/External/dearimgui/imgui/", "Source/External/dearimgui/freetype/"}
-		files {"Source/External/**.h", "Source/External/**.cpp", "Source/External/**.hpp" }
+
+		includedirs {"Source/",
+		"Source/External/", 
+		"Source/External/dearimgui",
+		"Source/External/dearimgui/imgui/", 
+		"Source/External/dearimgui/freetype/"
+		}
+
+		files {
+			"Source/External/**.h", 
+			"Source/External/**.cpp",
+			"Source/External/**.hpp" 
+		}
+
+		libdirs {
+			"Lib", 
+			"DLL"
+		}
+
+		links {
+			"easy_profiler.lib", 
+			"easy_profiler.dll"
+		}
 
 	project "Game"
 		kind "WindowedApp"
+		location "Source/Game"
 		targetdir "Bin"
 		targetname "SimpleEngine_%{cfg.buildcfg}"
-		location "Source/Game"
-		includedirs{ "Source/", "Source/Engine/" ,"Source/Game/", "Source/External/"}
-		files {"Source/Game/**.h", "Source/Game/**.hpp", "Source/Game/**.cpp", "Source/Game/Resources/**.rc"}
-		dependson { "Engine" }
-		libdirs{"Lib", "DLL"}
-		links { "Engine", "easy_profiler.lib", "easy_profiler.dll"}
-
 		pchheader "Game/Precomplier/stdafx.h"
 		pchsource "Source/Game/Precomplier/stdafx.cpp"
+		dependson { "Engine" }
+		links { "Engine"}
+
+		files {
+			"Source/Game/**.h", 
+			"Source/Game/**.hpp", 
+			"Source/Game/**.cpp", 
+			"Source/Game/Resources/**.rc"
+		}
+
+		includedirs { 
+			"Source/",
+			"Source/Engine/" ,
+			"Source/Game/",
+			"Source/External/"
+		}
 
         postbuildcommands { -- Copy DLL to Bin
             "{COPY} %{wks.location}/DLL/easy_profiler.dll %{cfg.targetdir}"
