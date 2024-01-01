@@ -8,12 +8,16 @@ RaycastManager::RaycastManager()
 	, mySelectedModelIndex(-1)
 	, mySelectDelay(0.1f)
 	, myTimer(0.0f)
+	, myShouldRenderDebugSphere(false)
 {
 	myRaycastLine->color = { 1,0,0, 1 };
 	myRaycastLine->startPosition = { 0,0,0 };
 	myRaycastLine->endPosition = { 0,0,0 };
 
 	myDebugSphere->radius = 0.2f;
+	myDebugSphere->color = { 1.0f, 0.0f, 0.0f, 0.0f };
+
+
 }
 
 RaycastManager::~RaycastManager()
@@ -50,7 +54,7 @@ void RaycastManager::Render()
 {
 	SimpleGlobal::GetRenderer()->RenderLine(*myRaycastLine);
 
-	if (mySelectedModelIndex >= 0)
+	if (myShouldRenderDebugSphere)
 	{
 		SimpleGlobal::GetRenderer()->RenderSphere(*myDebugSphere);
 	}
@@ -82,7 +86,7 @@ SimpleUtilities::Ray RaycastManager::GetScreenPointToRay(const SimpleUtilities::
 	mouseRay.Normalize();
 
 	myRaycastLine->startPosition = camera->GetPosition();
-	myRaycastLine->startPosition.x += 0.5f;
+	myRaycastLine->startPosition.x += 0.05f;
 	myRaycastLine->endPosition = myRaycastLine->startPosition + mouseRay * 10000.0f;
 
 	SU::Ray ray(camera->GetPosition(), mouseRay);
@@ -121,6 +125,8 @@ void RaycastManager::CheckAABB3DCollision()
 			{
 				closetDistance = distance;
 				hitIndex = i;
+				myDebugSphere->position = closetHitPoint;
+				myShouldRenderDebugSphere = true;
 			}
 		}
 	}
@@ -128,11 +134,11 @@ void RaycastManager::CheckAABB3DCollision()
 	if (hitIndex >= 0)
 	{
 		mySelectedModelIndex = hitIndex;
-		myDebugSphere->position = models[mySelectedModelIndex]->GetPosition();
 	}
 	else
 	{
 		mySelectedModelIndex = -1;
+		myShouldRenderDebugSphere = false;
 	}
 }
 

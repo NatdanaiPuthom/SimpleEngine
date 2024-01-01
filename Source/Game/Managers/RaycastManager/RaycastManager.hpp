@@ -26,4 +26,5 @@ private:
 	const float mySelectDelay;
 	float myTimer;
 	int mySelectedModelIndex;
+	bool myShouldRenderDebugSphere;
 };
