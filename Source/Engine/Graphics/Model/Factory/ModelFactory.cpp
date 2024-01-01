@@ -6,7 +6,7 @@ namespace Simple
 {
 	ModelFactory::ModelFactory()
 	{
-		SimpleGlobalModelFactoryImpl::SetModelFactory(this);
+		Impl::SimpleGlobalModelFactory::SetModelFactory(this);
 
 		MeshData cubeData = ShapeCreator3000::CreateCube();
 		MeshData pyramidData = ShapeCreator3000::CreatePyramid();

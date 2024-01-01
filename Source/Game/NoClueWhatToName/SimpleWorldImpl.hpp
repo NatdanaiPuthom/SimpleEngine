@@ -6,16 +6,19 @@ namespace Simple
 	class LevelManager;
 }
 
-class SimpleWorldGameWorldImpl final
+namespace Impl
 {
-	friend class Simple::GameWorld;
-private:
-	static void SetGameWorld(Simple::GameWorld* aGameWorld);
-};
+	class SimpleWorldGameWorld final
+	{
+		friend class Simple::GameWorld;
+	private:
+		static void SetGameWorld(Simple::GameWorld* aGameWorld);
+	};
 
-class SimpleWorldLevelManagerImpl final
-{
-	friend class Simple::LevelManager;
-private:
-	static void SetLevelManager(Simple::LevelManager* aLevelManager);
-};
+	class SimpleWorldLevelManager final
+	{
+		friend class Simple::LevelManager;
+	private:
+		static void SetLevelManager(Simple::LevelManager* aLevelManager);
+	};
+}

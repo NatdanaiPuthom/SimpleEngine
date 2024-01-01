@@ -13,7 +13,7 @@ namespace Simple
 		, myLevelManager(std::make_unique<LevelManager>())
 		, myRaycastManager(std::make_unique<RaycastManager>())
 	{
-		SimpleWorldGameWorldImpl::SetGameWorld(this);
+		Impl::SimpleWorldGameWorld::SetGameWorld(this);
 
 		myPlaneReflection = std::make_unique<PlaneReflection>();
 	}

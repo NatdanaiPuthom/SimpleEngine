@@ -153,7 +153,7 @@ namespace Simple
 		void LoadShaders();
 	private:
 		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
-		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleHash::PairHash, SimpleHash::PairEqual> myLoadedShaders;
+		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
 
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<int>(eRasterizerState::Count)> myRasterizerStates;
 

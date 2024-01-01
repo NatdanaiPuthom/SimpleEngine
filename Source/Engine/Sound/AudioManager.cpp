@@ -11,7 +11,7 @@ namespace Simple
 		, myMusicMuted(false)
 		, mySFXMuted(false)
 	{
-		SimpleGlobalAudioManagerImpl::SetAudioManager(this);
+		Impl::SimpleGlobalAudioManager::SetAudioManager(this);
 	}
 
 	AudioManager::~AudioManager()

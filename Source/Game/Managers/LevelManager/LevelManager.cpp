@@ -9,7 +9,7 @@ namespace Simple
 {
 	LevelManager::LevelManager()
 	{
-		SimpleWorldLevelManagerImpl::SetLevelManager(this);
+		Impl::SimpleWorldLevelManager::SetLevelManager(this);
 	}
 
 	LevelManager::~LevelManager()

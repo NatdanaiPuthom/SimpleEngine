@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 
-namespace SimpleHash
+namespace SimpleUtilities
 {
 	struct PairHash
 	{

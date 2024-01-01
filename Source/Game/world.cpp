@@ -12,7 +12,7 @@ namespace
 	int localActiveSceneIndex = 0;
 }
 
-void SimpleWorldGameWorldImpl::SetGameWorld(Simple::GameWorld* aGameWorld)
+void Impl::SimpleWorldGameWorld::SetGameWorld(Simple::GameWorld* aGameWorld)
 {
 	if (localGameWorld != nullptr)
 		assert(false && "localGameWorld is already set. Is this a mistake?");
@@ -20,7 +20,7 @@ void SimpleWorldGameWorldImpl::SetGameWorld(Simple::GameWorld* aGameWorld)
 	localGameWorld = aGameWorld;
 }
 
-void SimpleWorldLevelManagerImpl::SetLevelManager(Simple::LevelManager* aLevelManager)
+void Impl::SimpleWorldLevelManager::SetLevelManager(Simple::LevelManager* aLevelManager)
 {
 	if (localLevelManager != nullptr)
 		assert(false && "localLevelManager is already set. Is this a mistake?");

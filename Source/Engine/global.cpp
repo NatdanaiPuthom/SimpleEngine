@@ -23,7 +23,7 @@ namespace
 }
 
 
-void SimpleGlobalEngineImpl::UpdateFPSCounter()
+void Impl::SimpleGlobalEngine::UpdateFPSCounter()
 {
 	localTime += localEngine->GetDeltaTime();
 	++localFrames;
@@ -36,17 +36,17 @@ void SimpleGlobalEngineImpl::UpdateFPSCounter()
 	}
 }
 
-void SimpleGlobalEngineImpl::ResetDrawCalls()
+void Impl::SimpleGlobalEngine::ResetDrawCalls()
 {
 	localDrawCalls = 0;
 }
 
-void SimpleGlobalRendererImpl::IncreaseDrawCall()
+void Impl::SimpleGlobalRenderer::IncreaseDrawCall()
 {
 	++localDrawCalls;
 }
 
-void SimpleGlobalEngineImpl::SetEngine(Simple::Engine* aEngine)
+void Impl::SimpleGlobalEngine::SetEngine(Simple::Engine* aEngine)
 {
 	if (localEngine != nullptr)
 		assert(false && "localEngine is already set. Is this call a mistake?");
@@ -54,7 +54,7 @@ void SimpleGlobalEngineImpl::SetEngine(Simple::Engine* aEngine)
 	localEngine = aEngine;
 }
 
-void SimpleGlobalRendererImpl::SetRenderer(Simple::Renderer* aRenderer)
+void Impl::SimpleGlobalRenderer::SetRenderer(Simple::Renderer* aRenderer)
 {
 	if (localRenderer != nullptr)
 		assert(false && "localRenderer is already set. Is this call a mistake?");
@@ -62,7 +62,7 @@ void SimpleGlobalRendererImpl::SetRenderer(Simple::Renderer* aRenderer)
 	localRenderer = aRenderer;
 }
 
-void SimpleGlobalModelFactoryImpl::SetModelFactory(Simple::ModelFactory* aModelFactory)
+void Impl::SimpleGlobalModelFactory::SetModelFactory(Simple::ModelFactory* aModelFactory)
 {
 	if (localModelFactory != nullptr)
 		assert(false && "localModelFactory is already set. Is this call a mistake?");
@@ -70,7 +70,7 @@ void SimpleGlobalModelFactoryImpl::SetModelFactory(Simple::ModelFactory* aModelF
 	localModelFactory = aModelFactory;
 }
 
-void SimpleGlobalAudioManagerImpl::SetAudioManager(Simple::AudioManager* aAudioManager)
+void Impl::SimpleGlobalAudioManager::SetAudioManager(Simple::AudioManager* aAudioManager)
 {
 	if (localAudioManager != nullptr)
 		assert(false && "AudioManager is already set. Is this call a mistake?");
@@ -78,12 +78,12 @@ void SimpleGlobalAudioManagerImpl::SetAudioManager(Simple::AudioManager* aAudioM
 	localAudioManager = aAudioManager;
 }
 
-void SimpleGlobalEngineImpl::SetResolution(const SimpleUtilities::Vector2ui& aResolution)
+void Impl::SimpleGlobalEngine::SetResolution(const SimpleUtilities::Vector2ui& aResolution)
 {
 	localResolution = aResolution;
 }
 
-void SimpleGlobalEngineImpl::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize)
+void Impl::SimpleGlobalEngine::SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize)
 {
 	localWindowSize = aWindowSize;
 }

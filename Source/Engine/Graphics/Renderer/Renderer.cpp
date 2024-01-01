@@ -13,7 +13,7 @@ namespace Simple
 		, mySphereDrawer(std::make_unique<SphereDrawer>())
 		, myDebugMode(false)
 	{
-		SimpleGlobalRendererImpl::SetRenderer(this);
+		Impl::SimpleGlobalRenderer::SetRenderer(this);
 		LoadSettingsFromJson();
 
 		if (!CreateObjectBuffer())
@@ -50,28 +50,28 @@ namespace Simple
 
 		context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
 
-		SimpleGlobalRendererImpl::IncreaseDrawCall();
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
 	void Renderer::RenderLine(const Drawer::Line& aLine)
 	{
 		myLineDrawer->Render(aLine);
 
-		SimpleGlobalRendererImpl::IncreaseDrawCall();
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
 	void Renderer::RenderSphere(const Drawer::Sphere& aSphere)
 	{
 		mySphereDrawer->Render(aSphere);
 
-		SimpleGlobalRendererImpl::IncreaseDrawCall();
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
 	void Renderer::RenderBoundingBox(const std::shared_ptr<const Model> aModelInstance) const
 	{
 		myBoundingBoxDrawer->Render(aModelInstance);
 
-		SimpleGlobalRendererImpl::IncreaseDrawCall();
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
 	void Renderer::RenderEverythingUpSideDown(const Model* const aModelInstance) const
@@ -105,7 +105,7 @@ namespace Simple
 
 		context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
 
-		SimpleGlobalRendererImpl::IncreaseDrawCall();
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
 	void Renderer::RenderPlaneReflection(const Model* const aModelInstance) const
@@ -131,7 +131,7 @@ namespace Simple
 
 		context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
 
-		SimpleGlobalRendererImpl::IncreaseDrawCall();
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
 	bool Renderer::IsDebugModeOn() const

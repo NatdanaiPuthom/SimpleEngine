@@ -33,7 +33,7 @@ namespace Simple
 		UpdateWindow(*myHWND);
 
 		SimpleUtilities::InputManager::GetInstance().SetHWND(*myHWND);
-		SimpleGlobalEngineImpl::SetEngine(this);
+		Impl::SimpleGlobalEngine::SetEngine(this);
 
 		myGraphicsEngine = std::make_unique<GraphicsEngine>();
 		const bool success = myGraphicsEngine->Init(windowSize, *myHWND);
@@ -66,8 +66,8 @@ namespace Simple
 		resolution.x = resolutionJson["x"];
 		resolution.y = resolutionJson["y"];
 
-		SimpleGlobalEngineImpl::SetResolution(resolution);
-		SimpleGlobalEngineImpl::SetWindowSize(windowSize);
+		Impl::SimpleGlobalEngine::SetResolution(resolution);
+		Impl::SimpleGlobalEngine::SetWindowSize(windowSize);
 	}
 
 	std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)
@@ -121,8 +121,8 @@ namespace Simple
 	{
 		myImGuiEngine->BeginFrame();
 
-		SimpleGlobalEngineImpl::UpdateFPSCounter();
-		SimpleGlobalEngineImpl::ResetDrawCalls();
+		Impl::SimpleGlobalEngine::UpdateFPSCounter();
+		Impl::SimpleGlobalEngine::ResetDrawCalls();
 
 		myTimer->Update();
 		myAudioManager->Update();
