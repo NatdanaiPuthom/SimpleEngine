@@ -5,7 +5,7 @@ DirectionalLightVisual::DirectionalLightVisual()
 	: myLine(std::make_unique<Drawer::Line>())
 	, myLineDistance(5.0f)
 {
-	ModelFactory* modelFactory = SimpleGlobal::GetModelFactory();
+	Simple::ModelFactory* modelFactory = SimpleGlobal::GetModelFactory();
 
 	std::shared_ptr<Model> directionalLight = std::move(modelFactory->CreateCubeModel());
 	directionalLight->ClearTextures();

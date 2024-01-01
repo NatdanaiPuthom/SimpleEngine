@@ -8,8 +8,8 @@ namespace
 
 	Simple::Engine* localEngine = nullptr;
 	Simple::Renderer* localRenderer = nullptr;
-	ModelFactory* localModelFactory = nullptr;
-	AudioManager* localAudioManager = nullptr;
+	Simple::ModelFactory* localModelFactory = nullptr;
+	Simple::AudioManager* localAudioManager = nullptr;
 
 	const float localUpdatePeriodically = 0.5f;
 
@@ -62,7 +62,7 @@ void SimpleGlobalRendererImpl::SetRenderer(Simple::Renderer* aRenderer)
 	localRenderer = aRenderer;
 }
 
-void SimpleGlobalModelFactoryImpl::SetModelFactory(ModelFactory* aModelFactory)
+void SimpleGlobalModelFactoryImpl::SetModelFactory(Simple::ModelFactory* aModelFactory)
 {
 	if (localModelFactory != nullptr)
 		assert(false && "localModelFactory is already set. Is this call a mistake?");
@@ -70,7 +70,7 @@ void SimpleGlobalModelFactoryImpl::SetModelFactory(ModelFactory* aModelFactory)
 	localModelFactory = aModelFactory;
 }
 
-void SimpleGlobalAudioManagerImpl::SetAudioManager(AudioManager* aAudioManager)
+void SimpleGlobalAudioManagerImpl::SetAudioManager(Simple::AudioManager* aAudioManager)
 {
 	if (localAudioManager != nullptr)
 		assert(false && "AudioManager is already set. Is this call a mistake?");
@@ -100,12 +100,12 @@ namespace SimpleGlobal
 		return localRenderer;
 	}
 
-	ModelFactory* GetModelFactory()
+	Simple::ModelFactory* GetModelFactory()
 	{
 		return localModelFactory;
 	}
 
-	AudioManager* GetAudioManager()
+	Simple::AudioManager* GetAudioManager()
 	{
 		return localAudioManager;
 	}

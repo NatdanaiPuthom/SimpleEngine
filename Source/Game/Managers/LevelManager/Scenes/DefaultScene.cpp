@@ -9,7 +9,7 @@ DefaultScene::DefaultScene()
 
 void DefaultScene::Init()
 {
-	ModelFactory* modelFactory = SimpleGlobal::GetModelFactory();
+	Simple::ModelFactory* modelFactory = SimpleGlobal::GetModelFactory();
 
 	{
 		std::shared_ptr<Model> pyramid = std::move(modelFactory->CreatePyramidModel());

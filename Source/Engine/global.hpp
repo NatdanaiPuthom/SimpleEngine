@@ -3,18 +3,17 @@
 namespace Simple
 {
 	class GraphicsEngine;
+	class Renderer;
+	class ModelFactory;
+	class AudioManager;
 }
-
-class Renderer;
-class ModelFactory;
-class AudioManager;
 
 namespace SimpleGlobal
 {
 	Simple::GraphicsEngine* GetGraphicsEngine();
 	Simple::Renderer* GetRenderer();
-	ModelFactory* GetModelFactory();
-	AudioManager* GetAudioManager();
+	Simple::ModelFactory* GetModelFactory();
+	Simple::AudioManager* GetAudioManager();
 
 	HWND& GetHWND();
 

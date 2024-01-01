@@ -16,11 +16,11 @@ class Camera;
 class ConstantBuffer;
 class Texture;
 class Shader;
-class ModelFactory;
 
 namespace Simple
 {
 	class Renderer;
+	class ModelFactory;
 }
 
 enum class eRasterizerState
@@ -185,7 +185,7 @@ namespace Simple
 		std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
 
 		std::unique_ptr<Simple::Renderer> myRenderer;
-		std::unique_ptr<ModelFactory> myModelFactory;
+		std::unique_ptr<Simple::ModelFactory> myModelFactory;
 
 		float myClearColor[4];
 		unsigned int myFPSLevelCap;
