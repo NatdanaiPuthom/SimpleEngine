@@ -52,12 +52,12 @@ ModelFactory::~ModelFactory()
 {
 }
 
-void ModelFactory::AddMesh(const char* aName, std::unique_ptr<Mesh> aMesh)
+void ModelFactory::AddMesh(const char* aName, std::unique_ptr<const Mesh> aMesh)
 {
 	myMeshes.emplace(aName, std::move(aMesh));
 }
 
-Mesh* ModelFactory::GetMesh(const char* aMeshName)
+const Mesh* ModelFactory::GetMesh(const char* aMeshName)
 {
 	auto mesh = myMeshes.find(aMeshName);
 

@@ -14,13 +14,13 @@ ModelInstance::~ModelInstance()
 	myShader = nullptr;
 }
 
-void ModelInstance::Init(Mesh* aMesh)
+void ModelInstance::Init(const Mesh* const aMesh)
 {
 	myMesh = aMesh;
 	AddTexture("Assets/Textures/DefaultTexture.dds");
 }
 
-void ModelInstance::Init(Mesh* aMesh, const char* aTexturePath)
+void ModelInstance::Init(const Mesh* const aMesh, const char* aTexturePath)
 {
 	myMesh = aMesh;
 	AddTexture(aTexturePath);

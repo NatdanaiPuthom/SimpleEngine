@@ -12,8 +12,8 @@ public:
 	ModelInstance();
 	~ModelInstance();
 
-	void Init(Mesh* aMesh);
-	void Init(Mesh* aMesh, const char* aTexturePath);
+	void Init(const Mesh* const aMesh);
+	void Init(const Mesh* const aMesh, const char* aTexturePath);
 
 	void AddTexture(const char* aFilePath);
 	void ClearTextures();
@@ -36,7 +36,7 @@ public:
 private:
 	std::vector<std::shared_ptr<Texture>> myTextures;
 	std::string myName;
-	Mesh* myMesh;
+	const Mesh* myMesh;
 	std::shared_ptr<Shader> myShader;
 
 	SimpleUtilities::Transform myTransform;
