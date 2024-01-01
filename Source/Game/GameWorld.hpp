@@ -2,26 +2,33 @@
 
 class ImGuiManager;
 class PlaneReflection;
-class LevelManager;
 class RaycastManager;
 
-class GameWorld final
+namespace Simple
 {
-public:
-	GameWorld();
-	~GameWorld();
+	class LevelManager;
+}
 
-	void Init();
-	void Update();
-	void Render();
+namespace Simple
+{
+	class GameWorld final
+	{
+	public:
+		GameWorld();
+		~GameWorld();
 
-	void RenderImGui();
-	void RenderReflection();
-	void RenderUpSideDown();
-private:
-	std::unique_ptr<ImGuiManager> myImGuiManager;
-	std::unique_ptr<LevelManager> myLevelManager;
-	std::unique_ptr<RaycastManager> myRaycastManager;
+		void Init();
+		void Update();
+		void Render();
 
-	std::unique_ptr<PlaneReflection> myPlaneReflection;
-};
+		void RenderImGui();
+		void RenderReflection();
+		void RenderUpSideDown();
+	private:
+		std::unique_ptr<ImGuiManager> myImGuiManager;
+		std::unique_ptr<Simple::LevelManager> myLevelManager;
+		std::unique_ptr<RaycastManager> myRaycastManager;
+
+		std::unique_ptr<PlaneReflection> myPlaneReflection;
+	};
+}

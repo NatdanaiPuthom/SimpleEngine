@@ -67,3 +67,4 @@ using Microsoft::WRL::ComPtr;
 #include "Engine/global.hpp"
 
 namespace SU = SimpleUtilities;
+namespace S = Simple;

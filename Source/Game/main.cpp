@@ -49,7 +49,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		Simple::Engine engine;
 		engine.Init(hInstance, nCmdShow);
 
-		GameWorld gameWorld;
+		Simple::GameWorld gameWorld;
 		gameWorld.Init();
 
 		//std::thread logicThread(&GameWorld::Update, std::ref(gameWorld));

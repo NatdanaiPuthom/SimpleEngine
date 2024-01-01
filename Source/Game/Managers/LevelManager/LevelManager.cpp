@@ -5,48 +5,51 @@
 #include "Game/Managers/LevelManager/Scenes/Spotlights.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
-LevelManager::LevelManager()
+namespace Simple
 {
-	SimpleWorldLevelManagerImpl::SetLevelManager(this);
-}
+	LevelManager::LevelManager()
+	{
+		SimpleWorldLevelManagerImpl::SetLevelManager(this);
+	}
 
-LevelManager::~LevelManager()
-{
-}
+	LevelManager::~LevelManager()
+	{
+	}
 
-void LevelManager::Init()
-{
-	auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
-	camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
-	camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
+	void LevelManager::Init()
+	{
+		auto camera = SimpleGlobal::GetGraphicsEngine()->GetCamera();
+		camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
+		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 
-	std::shared_ptr<DefaultScene> defaultScene = std::make_shared<DefaultScene>();
-	defaultScene->Init();
-	myScenes.emplace(0, defaultScene);
+		std::shared_ptr<DefaultScene> defaultScene = std::make_shared<DefaultScene>();
+		defaultScene->Init();
+		myScenes.emplace(0, defaultScene);
 
-	std::shared_ptr<SpotlightScene> spotlightScene = std::make_shared<SpotlightScene>();
-	spotlightScene->Init();
-	myScenes.emplace(1, spotlightScene);
+		std::shared_ptr<SpotlightScene> spotlightScene = std::make_shared<SpotlightScene>();
+		spotlightScene->Init();
+		myScenes.emplace(1, spotlightScene);
 
-	SimpleWorld::SetActiveScene(SimpleWorld::GetActiveSceneIndex());
-}
+		SimpleWorld::SetActiveScene(SimpleWorld::GetActiveSceneIndex());
+	}
 
-void LevelManager::Update()
-{
-	myActiveScene->Update();
-}
+	void LevelManager::Update()
+	{
+		myActiveScene->Update();
+	}
 
-void LevelManager::Render()
-{
-	myActiveScene->Render();
-}
+	void LevelManager::Render()
+	{
+		myActiveScene->Render();
+	}
 
-void LevelManager::SetActiveScene(const int aSceneIndex)
-{
-	myActiveScene = myScenes.at(aSceneIndex);
-}
+	void LevelManager::SetActiveScene(const int aSceneIndex)
+	{
+		myActiveScene = myScenes.at(aSceneIndex);
+	}
 
-std::shared_ptr<Scene> LevelManager::GetActiveScene()
-{
-	return myActiveScene;
+	std::shared_ptr<Scene> LevelManager::GetActiveScene()
+	{
+		return myActiveScene;
+	}
 }

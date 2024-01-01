@@ -1,18 +1,21 @@
 #pragma once
 
-class GameWorld;
-class LevelManager;
+namespace Simple
+{
+	class GameWorld;
+	class LevelManager;
+}
 
 class SimpleWorldGameWorldImpl final
 {
-	friend class GameWorld;
+	friend class Simple::GameWorld;
 private:
-	static void SetGameWorld(GameWorld* aGameWorld);
+	static void SetGameWorld(Simple::GameWorld* aGameWorld);
 };
 
 class SimpleWorldLevelManagerImpl final
 {
-	friend class LevelManager;
+	friend class Simple::LevelManager;
 private:
-	static void SetLevelManager(LevelManager* aLevelManager);
+	static void SetLevelManager(Simple::LevelManager* aLevelManager);
 };
