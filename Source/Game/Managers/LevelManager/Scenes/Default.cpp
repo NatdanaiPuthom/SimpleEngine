@@ -6,7 +6,7 @@ namespace Scenes
 	Default::Default()
 	{
 		myDirectionalLight->myModel->SetPosition({ 0.0f, 7.0f, -5.0f });
-		SimpleGlobal::GetGraphicsEngine()->SetDirectionalLightDirection({ -1.0f, -1.0f, 1.0f });
+		SimpleGlobal::GetGraphicsEngine()->SetDirectionalLightDirection({ -0.123f, 0.053f, 1.0f });
 	}
 
 	void Default::Init()
@@ -54,7 +54,7 @@ namespace Scenes
 
 		{
 			std::shared_ptr<Simple::Model> terrain = std::move(modelFactory->CreateTerrainModel());
-			terrain->SetPosition({ -3.0f, 0.0f, 0.0f });
+			terrain->SetPosition({ -3.0f, -0.6f, 0.0f });
 			myModels.push_back(std::move(terrain));
 		}
 

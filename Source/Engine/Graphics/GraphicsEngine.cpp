@@ -123,7 +123,7 @@ namespace Simple
 			lightBufferData.directionalLightColor = myLightBufferData->directionalLightColor;
 			lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
 
-			lightBufferData.numberOfPointlights = 1;
+			lightBufferData.numberOfPointlights = 0;
 
 			{//Test
 				myLightBufferData->pointLights[0].position = { -5.0f, 4.0f, 0.0f,1.0f };
