@@ -30,7 +30,7 @@ namespace Simple
 
 	void Model::AddTexture(const char* aFilePath)
 	{
-		std::shared_ptr<const Texture> texture = SimpleGlobal::GetGraphicsEngine()->GetTexture(aFilePath);
+		std::shared_ptr<const Simple::Texture> texture = SimpleGlobal::GetGraphicsEngine()->GetTexture(aFilePath);
 
 		if (texture == nullptr)
 		{

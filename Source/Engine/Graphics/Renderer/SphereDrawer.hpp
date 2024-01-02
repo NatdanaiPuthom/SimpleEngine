@@ -20,18 +20,21 @@ namespace Drawer
 	};
 }
 
-class SphereDrawer final
+namespace Simple
 {
-public:
-	SphereDrawer();
-	~SphereDrawer();
+	class SphereDrawer final
+	{
+	public:
+		SphereDrawer();
+		~SphereDrawer();
 
-	void Render(const Drawer::Sphere& aSphere);
-private:
-	ComPtr<ID3D11Buffer> myVertexBuffer;
-	ComPtr<ID3D11Buffer> myIndexBuffer;
+		void Render(const Drawer::Sphere& aSphere);
+	private:
+		ComPtr<ID3D11Buffer> myVertexBuffer;
+		ComPtr<ID3D11Buffer> myIndexBuffer;
 
-	std::unique_ptr<MeshData> myMeshData;
-	std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
-	std::shared_ptr<const  Shader> myShader;
-};
+		std::unique_ptr<MeshData> myMeshData;
+		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
+		std::shared_ptr<const  Shader> myShader;
+	};
+}

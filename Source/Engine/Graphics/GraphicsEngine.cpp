@@ -224,7 +224,7 @@ namespace Simple
 
 	const bool GraphicsEngine::AddTexture(const char* aFileName, const unsigned int aSlot)
 	{
-		std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+		std::shared_ptr<Simple::Texture> texture = std::make_shared<Simple::Texture>();
 
 		if (!texture->LoadDDS(aFileName))
 			return false;
@@ -444,7 +444,7 @@ namespace Simple
 		myLightBufferData->groundColor = aColor;
 	}
 
-	std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const char* aFilePath)
+	std::shared_ptr<const Simple::Texture> GraphicsEngine::GetTexture(const char* aFilePath)
 	{
 		auto it = myLoadedTextures.find(aFilePath);
 
@@ -454,7 +454,7 @@ namespace Simple
 		return nullptr;
 	}
 
-	std::shared_ptr<const Texture> GraphicsEngine::GetDefaultTexture()
+	std::shared_ptr<const Simple::Texture> GraphicsEngine::GetDefaultTexture()
 	{
 		auto texture = GetTexture("DefaultTexture.dds");
 
@@ -464,7 +464,7 @@ namespace Simple
 		return nullptr;
 	}
 
-	std::shared_ptr<const Shader> GraphicsEngine::GetDefaultShader()
+	std::shared_ptr<const Simple::Shader> GraphicsEngine::GetDefaultShader()
 	{
 		auto defaultShader = GetShader("DefaultPS.cso", "DefaultVS.cso");
 
@@ -474,7 +474,7 @@ namespace Simple
 		return nullptr;
 	}
 
-	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
+	std::shared_ptr<const Simple::Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
 	{
 		auto shader = myLoadedShaders.find({ aPSFile, aVSFile });
 

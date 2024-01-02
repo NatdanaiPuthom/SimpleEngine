@@ -1,7 +1,5 @@
 #pragma once
 
-class LineDrawer;
-class SphereDrawer;
 
 namespace Drawer
 {
@@ -14,6 +12,8 @@ namespace Simple
 	class ConstantBuffer;
 	class Model;
 	class BoundingBoxDrawer;
+	class SphereDrawer;
+	class LineDrawer;
 }
 
 namespace Simple
@@ -43,8 +43,8 @@ namespace Simple
 		void RenderRefraction(const std::shared_ptr<const Simple::Model> aModel) const;
 	private:
 		std::unique_ptr<Simple::BoundingBoxDrawer> myBoundingBoxDrawer;
-		std::unique_ptr<LineDrawer> myLineDrawer;
-		std::unique_ptr<SphereDrawer> mySphereDrawer;
+		std::unique_ptr<Simple::LineDrawer> myLineDrawer;
+		std::unique_ptr<Simple::SphereDrawer> mySphereDrawer;
 		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
 
 		bool myDebugMode;

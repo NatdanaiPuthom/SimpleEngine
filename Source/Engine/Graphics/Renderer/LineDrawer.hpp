@@ -20,18 +20,21 @@ namespace Drawer
 	};
 }
 
-class LineDrawer final
+namespace Simple
 {
-public:
-	LineDrawer();
-	~LineDrawer();
+	class LineDrawer final
+	{
+	public:
+		LineDrawer();
+		~LineDrawer();
 
-	void Render(const Drawer::Line& aLine);
-private:
-	ComPtr<ID3D11Buffer> myVertexBuffer;
-	ComPtr<ID3D11Buffer> myIndexBuffer;
+		void Render(const Drawer::Line& aLine);
+	private:
+		ComPtr<ID3D11Buffer> myVertexBuffer;
+		ComPtr<ID3D11Buffer> myIndexBuffer;
 
-	std::unique_ptr<MeshData> myMeshData;
-	std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
-	std::shared_ptr<const Shader> myShader;
-};
+		std::unique_ptr<MeshData> myMeshData;
+		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
+		std::shared_ptr<const Shader> myShader;
+	};
+}
