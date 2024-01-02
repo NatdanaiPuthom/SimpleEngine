@@ -1,6 +1,9 @@
 #pragma once
 
-class Model;
+namespace Simple
+{
+	class Model;
+}
 
 namespace Simple
 {
@@ -12,7 +15,7 @@ namespace Simple
 
 		void Update();
 
-		std::shared_ptr<Model> myModel;
+		std::shared_ptr<Simple::Model> myModel;
 		float myHeight;
 	};
 }

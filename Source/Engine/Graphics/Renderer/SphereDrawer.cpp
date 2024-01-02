@@ -8,7 +8,7 @@ SphereDrawer::SphereDrawer()
 {
 	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("LinePS.cso", "DefaultVS.cso");
 
-	MeshData sphereData = ShapeCreator3000::CreateSphere(1.0f, 10, 10);
+	MeshData sphereData = Simple::ShapeCreator3000::CreateSphere(1.0f, 10, 10);
 
 	myMeshData->vertices = sphereData.vertices;
 	myMeshData->indices = sphereData.indices;

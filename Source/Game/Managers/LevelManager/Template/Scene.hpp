@@ -1,10 +1,9 @@
 #pragma once
 
-class DirectionalLightVisual;
-
 namespace Simple
 {
 	class Model;
+	class DirectionalLightVisual;
 }
 
 namespace Simple
@@ -14,7 +13,7 @@ namespace Simple
 	public:
 		Scene()
 		{
-			myDirectionalLight = std::make_unique<DirectionalLightVisual>();
+			myDirectionalLight = std::make_unique<Simple::DirectionalLightVisual>();
 			myModels.push_back(myDirectionalLight->myModel);
 		}
 
@@ -48,6 +47,6 @@ namespace Simple
 		};
 
 		std::vector<std::shared_ptr<Simple::Model>> myModels;
-		std::unique_ptr<DirectionalLightVisual> myDirectionalLight;
+		std::unique_ptr<Simple::DirectionalLightVisual> myDirectionalLight;
 	};
 }

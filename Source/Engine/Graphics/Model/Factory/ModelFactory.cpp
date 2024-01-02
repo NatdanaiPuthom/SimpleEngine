@@ -8,12 +8,12 @@ namespace Simple
 	{
 		Impl::SimpleGlobalModelFactory::SetModelFactory(this);
 
-		MeshData cubeData = ShapeCreator3000::CreateCube();
-		MeshData pyramidData = ShapeCreator3000::CreatePyramid();
-		MeshData planeData = ShapeCreator3000::CreatePlane();
-		MeshData skyboxData = ShapeCreator3000::CreateSkyBox(SimpleUtilities::Vector3f(100, 100, 100));
-		MeshData terrainData = ShapeCreator3000::CreateTerrain();
-		MeshData sphereData = ShapeCreator3000::CreateSphere();
+		MeshData cubeData = Simple::ShapeCreator3000::CreateCube();
+		MeshData pyramidData = Simple::ShapeCreator3000::CreatePyramid();
+		MeshData planeData = Simple::ShapeCreator3000::CreatePlane();
+		MeshData skyboxData = Simple::ShapeCreator3000::CreateSkyBox(SimpleUtilities::Vector3f(100, 100, 100));
+		MeshData terrainData = Simple::ShapeCreator3000::CreateTerrain();
+		MeshData sphereData = Simple::ShapeCreator3000::CreateSphere();
 
 		std::unique_ptr<Simple::Mesh> cube = std::make_unique<Simple::Mesh>();
 		std::unique_ptr<Simple::Mesh> pyramid = std::make_unique<Simple::Mesh>();
