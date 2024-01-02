@@ -1,29 +1,32 @@
 #pragma once
 
-namespace Simple
-{
-	class Model;
-}
-
-class ConstantBuffer;
 class Shader;
 
 struct ID3D11Buffer;
 struct MeshData;
 
-class BoundingBoxDrawer final
+namespace Simple
 {
-public:
-	BoundingBoxDrawer();
-	~BoundingBoxDrawer();
+	class ConstantBuffer;
+	class Model;
+}
 
-	void Render(const std::shared_ptr<const Simple::Model> aModelInstance);
-private:
-	MeshData myMeshData;
+namespace Simple
+{
+	class BoundingBoxDrawer final
+	{
+	public:
+		BoundingBoxDrawer();
+		~BoundingBoxDrawer();
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;
+		void Render(const std::shared_ptr<const Simple::Model> aModelInstance);
+	private:
+		MeshData myMeshData;
 
-	std::unique_ptr<ConstantBuffer> myObjectBuffer;
-	std::shared_ptr<const Shader> myShader;
-};
+		Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;
+
+		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
+		std::shared_ptr<const Shader> myShader;
+	};
+}

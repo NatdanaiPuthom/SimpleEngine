@@ -3,6 +3,12 @@
 struct ID3D11Buffer;
 struct ID3D11Device;
 
+namespace Simple
+{
+	class BoundingBoxDrawer;
+	class Renderer;
+}
+
 struct Vertex final
 {
 	SimpleUtilities::Vector4f position = { 0,0,0,0 };
@@ -26,24 +32,27 @@ struct BoundingBox final
 	SimpleUtilities::Vector3f max;
 };
 
-class Mesh final
+namespace Simple
 {
-	friend class Simple::Renderer;
-	friend class BoundingBoxDrawer;
-public:
-	Mesh();
-	~Mesh();
+	class Mesh final
+	{
+		friend class Simple::Renderer;
+		friend class Simple::BoundingBoxDrawer;
+	public:
+		Mesh();
+		~Mesh();
 
-	const bool Init(const MeshData& aMeshData);
-	const BoundingBox& GetBoundingBox() const;
-private:
-	bool CreateVertexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
-	bool CreateIndexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
-	void CreateBoundingBox();
-private:
-	MeshData myMeshData;
-	BoundingBox myBoundingBox;
+		const bool Init(const MeshData& aMeshData);
+		const BoundingBox& GetBoundingBox() const;
+	private:
+		bool CreateVertexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
+		bool CreateIndexBuffer(Microsoft::WRL::ComPtr<ID3D11Device> aDevice);
+		void CreateBoundingBox();
+	private:
+		MeshData myMeshData;
+		BoundingBox myBoundingBox;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;
-};
+		Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;
+	};
+}

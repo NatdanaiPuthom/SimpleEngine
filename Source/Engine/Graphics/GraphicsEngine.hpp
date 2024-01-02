@@ -4,13 +4,13 @@
 
 using Microsoft::WRL::ComPtr;
 
-class Camera;
-class ConstantBuffer;
 class Texture;
 class Shader;
 
 namespace Simple
 {
+	class ConstantBuffer;
+	class Camera;
 	class Renderer;
 	class ModelFactory;
 }
@@ -119,7 +119,7 @@ namespace Simple
 		ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
 		ComPtr<ID3D11ShaderResourceView> GetWaterRefractionShaderResourceView();
 
-		std::shared_ptr<Camera> GetCamera();
+		std::shared_ptr<Simple::Camera> GetCamera();
 		std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
 		std::shared_ptr<const Texture> GetDefaultTexture();
 		std::shared_ptr<const Shader> GetDefaultShader();
@@ -172,12 +172,12 @@ namespace Simple
 
 		ComPtr<ID3D11RasterizerState> myRasterizerState;
 
-		std::shared_ptr<Camera> myCamera;
+		std::shared_ptr<Simple::Camera> myCamera;
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
-		std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
-		std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
-		std::unique_ptr<ConstantBuffer> myLightBuffer;
+		std::unique_ptr<Simple::ConstantBuffer> myCameraConstantBuffer;
+		std::unique_ptr<Simple::ConstantBuffer> myTimeConstantBuffer;
+		std::unique_ptr<Simple::ConstantBuffer> myLightBuffer;
 
 		std::unique_ptr<LightBufferData> myLightBufferData;
 

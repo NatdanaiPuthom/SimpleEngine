@@ -8,7 +8,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 namespace Simple
 {
 	Engine::Engine()
-		: myImGuiEngine(std::make_unique<ImGuiEngine>())
+		: myImGuiEngine(std::make_unique<Simple::ImGuiEngine>())
 	{
 	}
 

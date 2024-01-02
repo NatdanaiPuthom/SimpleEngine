@@ -15,13 +15,13 @@ namespace Simple
 		MeshData terrainData = ShapeCreator3000::CreateTerrain();
 		MeshData sphereData = ShapeCreator3000::CreateSphere();
 
-		std::unique_ptr<Mesh> cube = std::make_unique<Mesh>();
-		std::unique_ptr<Mesh> pyramid = std::make_unique<Mesh>();
-		std::unique_ptr<Mesh> plane = std::make_unique<Mesh>();
-		std::unique_ptr<Mesh> skyboxMesh = std::make_unique<Mesh>();
-		std::unique_ptr<Mesh> directionalLight = std::make_unique<Mesh>();
-		std::unique_ptr<Mesh> terrainMesh = std::make_unique<Mesh>();
-		std::unique_ptr<Mesh> sphereMesh = std::make_unique<Mesh>();
+		std::unique_ptr<Simple::Mesh> cube = std::make_unique<Simple::Mesh>();
+		std::unique_ptr<Simple::Mesh> pyramid = std::make_unique<Simple::Mesh>();
+		std::unique_ptr<Simple::Mesh> plane = std::make_unique<Simple::Mesh>();
+		std::unique_ptr<Simple::Mesh> skyboxMesh = std::make_unique<Simple::Mesh>();
+		std::unique_ptr<Simple::Mesh> directionalLight = std::make_unique<Simple::Mesh>();
+		std::unique_ptr<Simple::Mesh> terrainMesh = std::make_unique<Simple::Mesh>();
+		std::unique_ptr<Simple::Mesh> sphereMesh = std::make_unique<Simple::Mesh>();
 
 		if (!cube->Init(cubeData))
 			assert(false && "Failed to create Cube");
@@ -54,12 +54,12 @@ namespace Simple
 	{
 	}
 
-	void ModelFactory::AddMesh(const char* aName, std::unique_ptr<const Mesh> aMesh)
+	void ModelFactory::AddMesh(const char* aName, std::unique_ptr<const Simple::Mesh> aMesh)
 	{
 		myMeshes.emplace(aName, std::move(aMesh));
 	}
 
-	const Mesh* ModelFactory::GetMesh(const char* aMeshName)
+	const Simple::Mesh* ModelFactory::GetMesh(const char* aMeshName)
 	{
 		auto mesh = myMeshes.find(aMeshName);
 

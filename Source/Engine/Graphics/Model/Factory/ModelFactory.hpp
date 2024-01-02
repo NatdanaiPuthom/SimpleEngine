@@ -11,8 +11,8 @@ namespace Simple
 		ModelFactory();
 		~ModelFactory();
 
-		void AddMesh(const char* aName, std::unique_ptr<const Mesh> aMesh);
-		const Mesh* GetMesh(const char* aMeshName);
+		void AddMesh(const char* aName, std::unique_ptr<const Simple::Mesh> aMesh);
+		const Simple::Mesh* GetMesh(const char* aMeshName);
 
 	public:
 		std::unique_ptr<Model> CreateTerrainModel();
@@ -24,6 +24,6 @@ namespace Simple
 		std::unique_ptr<Model> CreateSphereModel();
 		std::unique_ptr<Model> CreatePlaneReflection();
 	private:
-		std::unordered_map<std::string, const std::unique_ptr<const Mesh>> myMeshes;
+		std::unordered_map<std::string, const std::unique_ptr<const Simple::Mesh>> myMeshes;
 	};
 }

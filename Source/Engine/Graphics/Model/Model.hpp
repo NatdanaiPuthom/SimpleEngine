@@ -9,13 +9,13 @@ namespace Simple
 	class Model final
 	{
 		friend class Simple::Renderer;
-		friend class BoundingBoxDrawer;
+		friend class Simple::BoundingBoxDrawer;
 	public:
 		Model();
 		~Model();
 
-		void Init(const Mesh* const aMesh);
-		void Init(const Mesh* const aMesh, const char* aTexturePath);
+		void Init(const Simple::Mesh* const aMesh);
+		void Init(const Simple::Mesh* const aMesh, const char* aTexturePath);
 
 		//FilePath starts at Bin/Assets/Textures/
 		void AddTexture(const char* aFilePath);
@@ -41,7 +41,7 @@ namespace Simple
 	private:
 		std::vector<std::shared_ptr<const Texture>> myTextures;
 		std::string myName;
-		const Mesh* myMesh;
+		const Simple::Mesh* myMesh;
 		std::shared_ptr<const Shader> myShader;
 
 		SimpleUtilities::Transform myTransform;

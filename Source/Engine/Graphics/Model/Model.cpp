@@ -16,13 +16,13 @@ namespace Simple
 		myShader = nullptr;
 	}
 
-	void Model::Init(const Mesh* const aMesh)
+	void Model::Init(const Simple::Mesh* const aMesh)
 	{
 		myMesh = aMesh;
 		AddTexture("DefaultTexture.dds");
 	}
 
-	void Model::Init(const Mesh* const aMesh, const char* aTexturePath)
+	void Model::Init(const Simple::Mesh* const aMesh, const char* aTexturePath)
 	{
 		myMesh = aMesh;
 		AddTexture(aTexturePath);

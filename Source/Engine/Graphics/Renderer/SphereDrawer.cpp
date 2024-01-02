@@ -3,7 +3,7 @@
 #include "Engine/Graphics/Model/Factory/ShapeCreator3000.hpp"
 
 SphereDrawer::SphereDrawer()
-	: myObjectBuffer(std::make_unique<ConstantBuffer>())
+	: myObjectBuffer(std::make_unique<Simple::ConstantBuffer>())
 	, myMeshData(std::make_unique<MeshData>())
 {
 	myShader = SimpleGlobal::GetGraphicsEngine()->GetShader("LinePS.cso", "DefaultVS.cso");

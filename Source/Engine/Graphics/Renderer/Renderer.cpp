@@ -9,8 +9,8 @@
 namespace Simple
 {
 	Renderer::Renderer()
-		: myObjectBuffer(std::make_unique<ConstantBuffer>())
-		, myBoundingBoxDrawer(std::make_unique<BoundingBoxDrawer>())
+		: myObjectBuffer(std::make_unique<Simple::ConstantBuffer>())
+		, myBoundingBoxDrawer(std::make_unique<Simple::BoundingBoxDrawer>())
 		, myLineDrawer(std::make_unique<LineDrawer>())
 		, mySphereDrawer(std::make_unique<SphereDrawer>())
 		, myDebugMode(false)

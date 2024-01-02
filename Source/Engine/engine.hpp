@@ -8,10 +8,9 @@ namespace SimpleUtilities
 namespace Simple
 {
 	class GraphicsEngine;
+	class ImGuiEngine;
+	class AudioManager;
 }
-
-class ImGuiEngine;
-class AudioManager;
 
 namespace Simple
 {
@@ -36,9 +35,9 @@ namespace Simple
 		std::unique_ptr<HWND> myHWND;
 		std::unique_ptr<SimpleUtilities::Timer> myTimer;
 		std::unique_ptr<Simple::GraphicsEngine> myGraphicsEngine;
-		std::unique_ptr<ImGuiEngine> myImGuiEngine;
+		std::unique_ptr<Simple::ImGuiEngine> myImGuiEngine;
 		std::unique_ptr<AudioManager> myAudioManager;
 
-		Console myConsole;
+		Simple::Console myConsole;
 	};
 }

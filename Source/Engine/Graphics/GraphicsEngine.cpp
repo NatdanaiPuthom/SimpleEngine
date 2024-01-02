@@ -9,7 +9,7 @@
 namespace Simple
 {
 	GraphicsEngine::GraphicsEngine()
-		: myCamera(std::make_shared<Camera>())
+		: myCamera(std::make_shared<Simple::Camera>())
 		, myViewPort(std::make_shared<D3D11_VIEWPORT>())
 		, myCameraConstantBuffer(std::make_unique<ConstantBuffer>())
 		, myTimeConstantBuffer(std::make_unique<ConstantBuffer>())
@@ -491,7 +491,7 @@ namespace Simple
 		return nullptr;
 	}
 
-	std::shared_ptr<Camera> GraphicsEngine::GetCamera()
+	std::shared_ptr<Simple::Camera> GraphicsEngine::GetCamera()
 	{
 		return myCamera;
 	}
