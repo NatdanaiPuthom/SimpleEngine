@@ -55,10 +55,16 @@ namespace Simple
 	void GameWorld::RenderReflection()
 	{
 		SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModel.get());
+		//SimpleGlobal::GetRenderer()->Test(myPlaneReflection->myModel.get());
 	}
 
 	void GameWorld::RenderEverythingUpSideDown()
 	{
 		SimpleGlobal::GetRenderer()->RenderEverythingUpSideDown();
+	}
+
+	void GameWorld::RenderRefraction()
+	{
+		SimpleGlobal::GetRenderer()->RenderRefraction();
 	}
 }

@@ -61,6 +61,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 			engine.GetGraphicsEngine()->SetToWaterReflectionBuffer();
 			gameWorld.RenderEverythingUpSideDown();
 
+			engine.GetGraphicsEngine()->SetToWaterRefractionRenderTarget();
+			gameWorld.RenderRefraction();
+
 			engine.GetGraphicsEngine()->SetToBackBuffer();
 			gameWorld.Render();
 			gameWorld.RenderReflection();

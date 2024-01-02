@@ -86,6 +86,8 @@ namespace Simple
 		assert(wcex.hIcon != NULL && "Failed to load icon");
 		assert(wcex.hIconSm != NULL && "Failed to load small icon");
 
+		wcex.style &= ~CS_DROPSHADOW;
+
 		if (!RegisterClassExW(&wcex))
 		{
 			MessageBox(NULL, L"Failed to register window class", L"Error", MB_ICONERROR);

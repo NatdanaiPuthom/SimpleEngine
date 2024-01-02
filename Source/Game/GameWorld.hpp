@@ -24,6 +24,7 @@ namespace Simple
 		void RenderImGui();
 		void RenderReflection();
 		void RenderEverythingUpSideDown();
+		void RenderRefraction();
 	private:
 		std::unique_ptr<Simple::ImGuiManager> myImGuiManager;
 		std::unique_ptr<Simple::LevelManager> myLevelManager;

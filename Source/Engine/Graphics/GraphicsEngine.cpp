@@ -16,6 +16,7 @@ namespace Simple
 		, myLightBuffer(std::make_unique<ConstantBuffer>())
 		, myLightBufferData(std::make_unique<LightBufferData>())
 		, myWaterReflectionRenderTarget(std::make_unique<RenderTarget>())
+		, myWaterRefractionRenderTarget(std::make_unique<RenderTarget>())
 		, myImGuiImageRenderTarget(std::make_unique<RenderTarget>())
 		, myClearColor{ 0.0f, 0.25f, 0.50f, 1.0f }
 		, myVSync(true)
@@ -69,6 +70,10 @@ namespace Simple
 
 		if (!CreateWaterRenderTarget(aWindowSize.x, aWindowSize.y))
 			return false;
+
+		if (!CreateWaterRefractionRenderTarget(aWindowSize.x, aWindowSize.y))
+			return false;
+
 
 		LoadSettingsFromJson();
 		LoadTextures();
@@ -211,6 +216,12 @@ namespace Simple
 
 			if (!AddShader("DefaultPS.cso", "PlaneReflectionVS.cso"))
 				assert(false && "Failed to add Shader");
+
+			if (!AddShader("DefaultPS.cso", "RefractionVS.cso"))
+				assert(false && "Failed to add Shader");
+
+			if (!AddShader("WaterReflectionPS.cso", "DefaultVS.cso"))
+				assert(false && "Failed to add Shader");
 		}
 	}
 
@@ -324,6 +335,9 @@ namespace Simple
 		if (!CreateRenderTargetForImGuiImage(newWidth, newHeight))
 			assert(false && "Failed to re-create ImGuiImageRenderTarget");
 
+		if (!CreateWaterRefractionRenderTarget(newWidth, newHeight))
+			assert(false && "Failed to re-create WaterRefraction RenderTarget");
+
 		SetToBackBuffer();
 	}
 
@@ -367,6 +381,20 @@ namespace Simple
 		myContext->ClearRenderTargetView(myWaterReflectionRenderTarget->renderTargetView.Get(), myClearColor);
 
 		myContext->RSSetState(myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)].Get());
+	}
+
+	void GraphicsEngine::SetToWaterRefractionRenderTarget()
+	{
+		ID3D11ShaderResourceView* nullSRV = nullptr;
+		myContext->PSSetShaderResources(0, 1, &nullSRV);
+
+		myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
+		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+		myContext->OMSetRenderTargets(1, myWaterRefractionRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
+		myContext->ClearRenderTargetView(myWaterRefractionRenderTarget->renderTargetView.Get(), myClearColor);
+
+		myContext->RSSetState(myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)].Get());
 	}
 
 	void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)
@@ -504,6 +532,11 @@ namespace Simple
 		return myWaterReflectionRenderTarget->shaderResourceView;
 	}
 
+	ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetWaterRefractionShaderResourceView()
+	{
+		return myWaterRefractionRenderTarget->shaderResourceView;
+	}
+
 	SimpleUtilities::Vector4f GraphicsEngine::GetDirectionalLightColor() const
 	{
 		return myLightBufferData->directionalLightColor;
@@ -611,6 +644,41 @@ namespace Simple
 			return false;
 
 		result = myDevice->CreateRenderTargetView(texture, nullptr, &myWaterReflectionRenderTarget->renderTargetView);
+		if (FAILED(result))
+			return false;
+
+		texture->Release();
+
+		return true;
+	}
+
+	bool GraphicsEngine::CreateWaterRefractionRenderTarget(const int aWidth, const int aHeight)
+	{
+		D3D11_TEXTURE2D_DESC desc = { 0 };
+
+		desc.Width = aWidth;
+		desc.Height = aHeight;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+
+		ID3D11Texture2D* texture = nullptr;
+
+		HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
+		if (FAILED(result))
+			return false;
+
+		result = myDevice->CreateShaderResourceView(texture, nullptr, &myWaterRefractionRenderTarget->shaderResourceView);
+		if (FAILED(result))
+			return false;
+
+		result = myDevice->CreateRenderTargetView(texture, nullptr, &myWaterRefractionRenderTarget->renderTargetView);
 		if (FAILED(result))
 			return false;
 

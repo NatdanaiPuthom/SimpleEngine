@@ -14,7 +14,7 @@ namespace Tool
 		if (ImGui::Begin("Mirror Scene"))
 		{
 			ImVec2 size(1280, 720);
-			const ImTextureID textureID = graphicsEngine->GetWaterShaderResourceView().Get();
+			const ImTextureID textureID = graphicsEngine->GetWaterRefractionShaderResourceView().Get();
 			ImGui::Image(textureID, size);
 		}
 		ImGui::End();

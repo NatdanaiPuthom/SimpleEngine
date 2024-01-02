@@ -104,6 +104,7 @@ namespace Simple
 		void SetToBackBuffer();
 		void SetToImGuiBuffer();
 		void SetToWaterReflectionBuffer();
+		void SetToWaterRefractionRenderTarget();
 		void SetRasterizerState(const eRasterizerState aRasterizerState);
 		void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize, const bool aSetFullScreen);
 	public:
@@ -111,6 +112,7 @@ namespace Simple
 		ComPtr<ID3D11DeviceContext> GetContext();
 		ComPtr<ID3D11ShaderResourceView> GetImGuiShaderResourceView();
 		ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
+		ComPtr<ID3D11ShaderResourceView> GetWaterRefractionShaderResourceView();
 
 		std::shared_ptr<Camera> GetCamera();
 		std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
@@ -137,6 +139,7 @@ namespace Simple
 		bool CreateLightBuffer();
 		bool CreateRenderTargetForImGuiImage(const int aWidth, const int aHeight);
 		bool CreateWaterRenderTarget(const int aWidth, const int aHeight);
+		bool CreateWaterRefractionRenderTarget(const int aWidth, const int aHeight);
 		bool CreateRasterizerStates();
 	private:
 		void Update();
@@ -174,6 +177,7 @@ namespace Simple
 		std::unique_ptr<LightBufferData> myLightBufferData;
 
 		std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
+		std::unique_ptr<RenderTarget> myWaterRefractionRenderTarget;
 		std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
 
 		std::unique_ptr<Simple::Renderer> myRenderer;

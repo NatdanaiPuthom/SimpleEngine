@@ -27,6 +27,8 @@ namespace Simple
 
 		void RenderEverythingUpSideDown() const;
 		void RenderPlaneReflection(const Model* const aModelInstance) const;
+		void Test(const Model* const aModelInstance) const;
+		void RenderRefraction() const;
 
 		bool IsDebugModeOn() const;
 	public:
@@ -35,6 +37,7 @@ namespace Simple
 		const bool CreateObjectBuffer();
 		void LoadSettingsFromJson();
 		void RenderUpSideDown(const Model* const aModelInstance) const;
+		void RenderRefraction(const std::shared_ptr<const Model> aModelInstance) const;
 	private:
 		std::unique_ptr<BoundingBoxDrawer> myBoundingBoxDrawer;
 		std::unique_ptr<LineDrawer> myLineDrawer;

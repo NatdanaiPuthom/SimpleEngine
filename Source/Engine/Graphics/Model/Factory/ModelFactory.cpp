@@ -174,7 +174,7 @@ namespace Simple
 		std::unique_ptr<Model> plane = std::make_unique<Model>();
 
 		plane->Init(GetMesh("Plane"));
-		plane->SetShader("WaterReflectionPS.cso", "PlaneReflectionVS.cso");
+		plane->SetShader("WaterReflectionPS.cso", "DefaultVS.cso");
 		plane->SetScale({ 1,1,1 });
 		plane->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
 		plane->SetName("PlaneReflection");
