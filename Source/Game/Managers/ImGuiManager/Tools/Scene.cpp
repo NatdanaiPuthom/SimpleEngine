@@ -11,9 +11,11 @@ namespace Tool
 	{
 		Simple::GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 
-		if (ImGui::Begin("Render Test"))
+		ImVec2 size(1280, 720);
+		ImGui::SetNextWindowSize(size);
+		bool test = true;
+		if (ImGui::Begin("Render Test", &test, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoResize))
 		{
-			ImVec2 size(1280, 720);
 			const ImTextureID textureID = graphicsEngine->GetWaterRefractionShaderResourceView().Get();
 			ImGui::Image(textureID, size);
 		}
