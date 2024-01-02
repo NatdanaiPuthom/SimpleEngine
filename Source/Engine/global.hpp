@@ -3,17 +3,22 @@
 namespace Simple
 {
 	class GraphicsEngine;
-	class Renderer;
 	class ModelFactory;
 	class AudioManager;
+}
+
+namespace Drawer
+{
+	class Renderer;
 }
 
 namespace SimpleGlobal
 {
 	Simple::GraphicsEngine* GetGraphicsEngine();
-	Simple::Renderer* GetRenderer();
 	Simple::ModelFactory* GetModelFactory();
 	Simple::AudioManager* GetAudioManager();
+
+	Drawer::Renderer* GetRenderer();
 
 	HWND& GetHWND();
 

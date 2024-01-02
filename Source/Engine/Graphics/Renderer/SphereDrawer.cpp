@@ -2,7 +2,7 @@
 #include "Engine/Graphics/Renderer/SphereDrawer.hpp"
 #include "Engine/Graphics/Model/Factory/ShapeCreator3000.hpp"
 
-namespace Simple
+namespace Drawer
 {
 	SphereDrawer::SphereDrawer()
 		: myObjectBuffer(std::make_unique<Simple::ConstantBuffer>())

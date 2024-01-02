@@ -1,15 +1,23 @@
 #pragma once
 #include "Engine/Graphics/Model/Mesh.hpp"
 
-class Shader;
-class Texture;
+namespace Simple
+{
+	class Shader;
+	class Texture;
+}
+
+namespace Drawer
+{
+	class Renderer;
+}
 
 namespace Simple
 {
 	class Model final
 	{
-		friend class Simple::Renderer;
-		friend class Simple::BoundingBoxDrawer;
+		friend class Drawer::Renderer;
+		friend class Drawer::BoundingBoxDrawer;
 	public:
 		Model();
 		~Model();
@@ -39,10 +47,10 @@ namespace Simple
 		SimpleUtilities::Vector3f GetScale() const;
 		std::string GetName() const;
 	private:
-		std::vector<std::shared_ptr<const Texture>> myTextures;
+		std::vector<std::shared_ptr<const Simple::Texture>> myTextures;
 		std::string myName;
 		const Simple::Mesh* myMesh;
-		std::shared_ptr<const Shader> myShader;
+		std::shared_ptr<const Simple::Shader> myShader;
 
 		SimpleUtilities::Transform myTransform;
 		SimpleUtilities::Vector4f myBoundingBoxColor;

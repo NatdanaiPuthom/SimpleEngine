@@ -6,13 +6,13 @@
 #include "Game/world.hpp"
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
 
-namespace Simple
+namespace Drawer
 {
 	Renderer::Renderer()
 		: myObjectBuffer(std::make_unique<Simple::ConstantBuffer>())
-		, myBoundingBoxDrawer(std::make_unique<Simple::BoundingBoxDrawer>())
-		, myLineDrawer(std::make_unique<LineDrawer>())
-		, mySphereDrawer(std::make_unique<SphereDrawer>())
+		, myBoundingBoxDrawer(std::make_unique<Drawer::BoundingBoxDrawer>())
+		, myLineDrawer(std::make_unique<Drawer::LineDrawer>())
+		, mySphereDrawer(std::make_unique<Drawer::SphereDrawer>())
 		, myDebugMode(false)
 	{
 		Impl::SimpleGlobalRenderer::SetRenderer(this);
@@ -90,7 +90,7 @@ namespace Simple
 		camera->SetPosition(oldCamPosition - SimpleUtilities::Vector3f(0.0f, distFromWater, 0.0f));
 		camera->SetRotation(newCamRotation);
 
-		Simple::Renderer* renderer = SimpleGlobal::GetRenderer();
+		Drawer::Renderer* renderer = SimpleGlobal::GetRenderer();
 		for (const auto& model : SimpleWorld::GetActiveScene()->myModels)
 		{
 			renderer->RenderUpSideDown(model);
@@ -129,7 +129,7 @@ namespace Simple
 
 	void Renderer::RenderRefraction() const
 	{
-		Simple::Renderer* renderer = SimpleGlobal::GetRenderer();
+		Drawer::Renderer* renderer = SimpleGlobal::GetRenderer();
 
 		for (const auto& model : SimpleWorld::GetActiveScene()->myModels)
 		{

@@ -28,7 +28,7 @@ namespace Simple
 
 		virtual void Render()
 		{
-			Simple::Renderer* renderer = SimpleGlobal::GetRenderer();
+			Drawer::Renderer* renderer = SimpleGlobal::GetRenderer();
 
 			for (const auto& model : myModels)
 			{

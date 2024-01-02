@@ -1,12 +1,11 @@
 #pragma once
 
-class Shader;
-
 struct ID3D11Buffer;
 struct MeshData;
 
 namespace Simple
 {
+	class Shader;
 	class ConstantBuffer;
 }
 
@@ -20,7 +19,7 @@ namespace Drawer
 	};
 }
 
-namespace Simple
+namespace Drawer
 {
 	class SphereDrawer final
 	{
@@ -35,6 +34,6 @@ namespace Simple
 
 		std::unique_ptr<MeshData> myMeshData;
 		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
-		std::shared_ptr<const  Shader> myShader;
+		std::shared_ptr<const  Simple::Shader> myShader;
 	};
 }

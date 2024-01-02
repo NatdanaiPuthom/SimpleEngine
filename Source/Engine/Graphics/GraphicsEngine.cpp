@@ -11,9 +11,9 @@ namespace Simple
 	GraphicsEngine::GraphicsEngine()
 		: myCamera(std::make_shared<Simple::Camera>())
 		, myViewPort(std::make_shared<D3D11_VIEWPORT>())
-		, myCameraConstantBuffer(std::make_unique<ConstantBuffer>())
-		, myTimeConstantBuffer(std::make_unique<ConstantBuffer>())
-		, myLightBuffer(std::make_unique<ConstantBuffer>())
+		, myCameraConstantBuffer(std::make_unique<Simple::ConstantBuffer>())
+		, myTimeConstantBuffer(std::make_unique<Simple::ConstantBuffer>())
+		, myLightBuffer(std::make_unique<Simple::ConstantBuffer>())
 		, myLightBufferData(std::make_unique<LightBufferData>())
 		, myWaterReflectionRenderTarget(std::make_unique<RenderTarget>())
 		, myWaterRefractionRenderTarget(std::make_unique<RenderTarget>())
@@ -80,7 +80,7 @@ namespace Simple
 		LoadShaders();
 		SetRasterizerState(eRasterizerState::BackfaceCulling);
 
-		myRenderer = std::make_unique<Simple::Renderer>();
+		myRenderer = std::make_unique<Drawer::Renderer>();
 		myModelFactory = std::make_unique<Simple::ModelFactory>();
 
 		myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());

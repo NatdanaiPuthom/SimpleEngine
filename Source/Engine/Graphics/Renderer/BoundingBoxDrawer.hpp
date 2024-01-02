@@ -1,17 +1,17 @@
 #pragma once
 
-class Shader;
 
 struct ID3D11Buffer;
 struct MeshData;
 
 namespace Simple
 {
+	class Shader;
 	class ConstantBuffer;
 	class Model;
 }
 
-namespace Simple
+namespace Drawer
 {
 	class BoundingBoxDrawer final
 	{
@@ -27,6 +27,6 @@ namespace Simple
 		Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;
 
 		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
-		std::shared_ptr<const Shader> myShader;
+		std::shared_ptr<const Simple::Shader> myShader;
 	};
 }

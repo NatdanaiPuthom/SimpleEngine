@@ -7,9 +7,10 @@ namespace
 	SimpleUtilities::Vector2ui localWindowSize = { 800, 600 };
 
 	Simple::Engine* localEngine = nullptr;
-	Simple::Renderer* localRenderer = nullptr;
 	Simple::ModelFactory* localModelFactory = nullptr;
 	Simple::AudioManager* localAudioManager = nullptr;
+
+	Drawer::Renderer* localRenderer = nullptr;
 
 	const float localUpdatePeriodically = 0.5f;
 
@@ -54,7 +55,7 @@ void Impl::SimpleGlobalEngine::SetEngine(Simple::Engine* aEngine)
 	localEngine = aEngine;
 }
 
-void Impl::SimpleGlobalRenderer::SetRenderer(Simple::Renderer* aRenderer)
+void Impl::SimpleGlobalRenderer::SetRenderer(Drawer::Renderer* aRenderer)
 {
 	if (localRenderer != nullptr)
 		assert(false && "localRenderer is already set. Is this call a mistake?");
@@ -95,7 +96,7 @@ namespace SimpleGlobal
 		return localEngine->GetGraphicsEngine();
 	}
 
-	Simple::Renderer* GetRenderer()
+	Drawer::Renderer* GetRenderer()
 	{
 		return localRenderer;
 	}

@@ -3,7 +3,7 @@
 struct ID3D11Buffer;
 struct ID3D11Device;
 
-namespace Simple
+namespace Drawer
 {
 	class BoundingBoxDrawer;
 	class Renderer;
@@ -36,8 +36,8 @@ namespace Simple
 {
 	class Mesh final
 	{
-		friend class Simple::Renderer;
-		friend class Simple::BoundingBoxDrawer;
+		friend class Drawer::Renderer;
+		friend class Drawer::BoundingBoxDrawer;
 	public:
 		Mesh();
 		~Mesh();

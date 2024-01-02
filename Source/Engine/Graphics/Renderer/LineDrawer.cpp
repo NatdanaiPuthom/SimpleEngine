@@ -1,7 +1,7 @@
 #include "Engine/Precomplier/stdafx.h"
 #include "Engine/Graphics/Renderer/LineDrawer.hpp"
 
-namespace Simple
+namespace Drawer
 {
 	LineDrawer::LineDrawer()
 		: myObjectBuffer(std::make_unique<Simple::ConstantBuffer>())

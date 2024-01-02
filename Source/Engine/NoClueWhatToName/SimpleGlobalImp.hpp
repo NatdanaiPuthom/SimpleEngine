@@ -5,9 +5,13 @@
 namespace Simple
 {
 	class Engine;
-	class Renderer;
 	class ModelFactory;
 	class AudioManager;
+}
+
+namespace Drawer
+{
+	class Renderer;
 }
 
 namespace Impl
@@ -26,10 +30,10 @@ namespace Impl
 
 	class SimpleGlobalRenderer final
 	{
-		friend class Simple::Renderer;
+		friend class Drawer::Renderer;
 	private:
 		static void IncreaseDrawCall();
-		static void SetRenderer(Simple::Renderer* aRenderer);
+		static void SetRenderer(Drawer::Renderer* aRenderer);
 	};
 
 	class SimpleGlobalModelFactory final

@@ -4,12 +4,16 @@
 
 using Microsoft::WRL::ComPtr;
 
+namespace Drawer
+{
+	class Renderer;
+}
+
 namespace Simple
 {
 	class Shader;
 	class ConstantBuffer;
 	class Camera;
-	class Renderer;
 	class ModelFactory;
 	class Texture;
 }
@@ -184,8 +188,9 @@ namespace Simple
 		std::unique_ptr<RenderTarget> myWaterRefractionRenderTarget;
 		std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
 
-		std::unique_ptr<Simple::Renderer> myRenderer;
 		std::unique_ptr<Simple::ModelFactory> myModelFactory;
+
+		std::unique_ptr<Drawer::Renderer> myRenderer;
 
 		float myClearColor[4];
 		unsigned int myFPSLevelCap;

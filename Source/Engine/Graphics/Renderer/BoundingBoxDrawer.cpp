@@ -2,7 +2,7 @@
 #include "Engine/Graphics/Renderer/BoundingBoxDrawer.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 
-namespace Simple
+namespace Drawer
 {
 	BoundingBoxDrawer::BoundingBoxDrawer()
 		: myObjectBuffer(std::make_unique<Simple::ConstantBuffer>())

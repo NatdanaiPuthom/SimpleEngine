@@ -1,22 +1,22 @@
 #pragma once
 
-
 namespace Drawer
 {
 	struct Line;
 	struct Sphere;
+
+	class BoundingBoxDrawer;
+	class LineDrawer;
+	class SphereDrawer;
 }
 
 namespace Simple
 {
 	class ConstantBuffer;
 	class Model;
-	class BoundingBoxDrawer;
-	class SphereDrawer;
-	class LineDrawer;
 }
 
-namespace Simple
+namespace Drawer
 {
 	class Renderer final
 	{
@@ -42,9 +42,9 @@ namespace Simple
 		void RenderUpSideDown(const std::shared_ptr<const Simple::Model> aModel) const;
 		void RenderRefraction(const std::shared_ptr<const Simple::Model> aModel) const;
 	private:
-		std::unique_ptr<Simple::BoundingBoxDrawer> myBoundingBoxDrawer;
-		std::unique_ptr<Simple::LineDrawer> myLineDrawer;
-		std::unique_ptr<Simple::SphereDrawer> mySphereDrawer;
+		std::unique_ptr<Drawer::BoundingBoxDrawer> myBoundingBoxDrawer;
+		std::unique_ptr<Drawer::LineDrawer> myLineDrawer;
+		std::unique_ptr<Drawer::SphereDrawer> mySphereDrawer;
 		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
 
 		bool myDebugMode;
