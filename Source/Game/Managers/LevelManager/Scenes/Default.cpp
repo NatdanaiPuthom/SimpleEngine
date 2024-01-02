@@ -85,5 +85,17 @@ namespace Scenes
 	void Default::Update()
 	{
 		Simple::Scene::Update();
+
+		auto camPosition = SimpleGlobal::GetGraphicsEngine()->GetCamera()->GetPosition();
+		camPosition.x += 5.0f;
+		myModels[2]->LookAt(camPosition);
+
+		auto rotation = myModels[1]->GetRotation();
+		rotation.y += 10 * SimpleGlobal::GetDeltaTime();
+		myModels[1]->SetRotation(rotation);
+
+		rotation = myModels[4]->GetRotation();
+		rotation.y -= 40 * SimpleGlobal::GetDeltaTime();
+		myModels[4]->SetRotation(rotation);
 	}
 }
