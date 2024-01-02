@@ -12,11 +12,17 @@ PixelOutput main(PixelInputType aInput)
     
     float4 reflectColor = aDefaultTexture.Sample(aSampler, uv);
     float4 refractColor = aRefractionTexture.Sample(aSampler, uv);
-
-    output.color = lerp(reflectColor, refractColor, 0.5f);
-    output.color.b += 0.15f; // so we can see the difference between the reflection and the original texture
-
-    output.color *= aInput.color;
+    float4 finalColor = lerp(reflectColor, refractColor, 0.5f);
+    
+    float3 toEye = normalize(cameraPosition.xyz - aInput.worldPosition.xyz);
+    float3 fresnel = Fresnel_Schlick(
+        float3(0.75f, 0.75f, 0.75f),
+        float3(0.0f, 1.0f, 0.0f),
+        toEye
+    );
+    
+    output.color.rgb = fresnel * finalColor.xyz;
+    output.color.a = 1.0f;
 
     return output;
 }

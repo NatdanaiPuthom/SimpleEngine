@@ -26,19 +26,19 @@ namespace Simple
 	{
 	}
 
-	void Renderer::RenderModel(const std::shared_ptr<const Model> aModelInstance) const
+	void Renderer::RenderModel(const std::shared_ptr<const Model> aModel) const
 	{
 		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
 		ObjectBufferData objectBuffer = {};
-		objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix();
+		objectBuffer.modelWorldMatrix = aModel->GetMatrix();
 
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		aModelInstance->myShader->UseThisShader(context.Get());
+		aModel->myShader->UseThisShader(context.Get());
 
-		for (const auto& texture : aModelInstance->myTextures)
+		for (const auto& texture : aModel->myTextures)
 		{
 			texture->Bind(context, texture->GetSlot());
 		}
@@ -46,11 +46,11 @@ namespace Simple
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 
-		context->IASetVertexBuffers(0, 1, aModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aModel->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
+		context->DrawIndexed(static_cast<UINT>(aModel->myMesh->myMeshData.indices.size()), 0, 0);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
@@ -69,9 +69,9 @@ namespace Simple
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderBoundingBox(const std::shared_ptr<const Model> aModelInstance) const
+	void Renderer::RenderBoundingBox(const std::shared_ptr<const Model> aModel) const
 	{
-		myBoundingBoxDrawer->Render(aModelInstance);
+		myBoundingBoxDrawer->Render(aModel);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
@@ -93,24 +93,24 @@ namespace Simple
 		Simple::Renderer* renderer = SimpleGlobal::GetRenderer();
 		for (const auto& model : SimpleWorld::GetActiveScene()->myModels)
 		{
-			renderer->RenderUpSideDown(model.get());
+			renderer->RenderUpSideDown(model);
 		}
 
 		camera->SetRotation(oldCamRotation);
 		camera->SetPosition(oldCamPosition);
 	}
 
-	void Renderer::RenderPlaneReflection(const Model* const aModelInstance) const
+	void Renderer::RenderPlaneReflection(const std::shared_ptr<const Model> aModel) const
 	{
 		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
 		ObjectBufferData objectBuffer = {};
-		objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix();
+		objectBuffer.modelWorldMatrix = aModel->GetMatrix();
 
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		aModelInstance->myShader->UseThisShader(context.Get());
+		aModel->myShader->UseThisShader(context.Get());
 
 		SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(0, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView().GetAddressOf());
 		SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(1, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterRefractionShaderResourceView().GetAddressOf());
@@ -118,11 +118,11 @@ namespace Simple
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 
-		context->IASetVertexBuffers(0, 1, aModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aModel->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
+		context->DrawIndexed(static_cast<UINT>(aModel->myMesh->myMeshData.indices.size()), 0, 0);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
@@ -171,7 +171,7 @@ namespace Simple
 		SetDebugMode(json["game_settings"]["debugMode"]);
 	}
 
-	void Renderer::RenderUpSideDown(const Model* const aModelInstance) const
+	void Renderer::RenderUpSideDown(const std::shared_ptr<const Model> aModel) const
 	{
 		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
@@ -181,17 +181,17 @@ namespace Simple
 		mirror(4, 2) = -2.0f;
 
 		ObjectBufferData objectBuffer = {};
-		objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix() * mirror;
+		objectBuffer.modelWorldMatrix = aModel->GetMatrix() * mirror;
 
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		aModelInstance->myShader->UseThisShader(context.Get());
+		aModel->myShader->UseThisShader(context.Get());
 
 		auto mirrorShader = SimpleGlobal::GetGraphicsEngine()->GetShader("DefaultPS.cso", "PlaneReflectionVS.cso");
 		mirrorShader->UseThisVertexShader(context);
 
-		for (const auto& texture : aModelInstance->myTextures)
+		for (const auto& texture : aModel->myTextures)
 		{
 			texture->Bind(context, texture->GetSlot());
 		}
@@ -199,31 +199,31 @@ namespace Simple
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 
-		context->IASetVertexBuffers(0, 1, aModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aModel->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
+		context->DrawIndexed(static_cast<UINT>(aModel->myMesh->myMeshData.indices.size()), 0, 0);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderRefraction(const std::shared_ptr<const Model> aModelInstance) const
+	void Renderer::RenderRefraction(const std::shared_ptr<const Model> aModel) const
 	{
 		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
 		ObjectBufferData objectBuffer = {};
-		objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix();
+		objectBuffer.modelWorldMatrix = aModel->GetMatrix();
 
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		aModelInstance->myShader->UseThisShader(context.Get());
+		aModel->myShader->UseThisShader(context.Get());
 
 		auto refractionShader = SimpleGlobal::GetGraphicsEngine()->GetShader("DefaultPS.cso", "PlaneReflectionVS.cso");
 		refractionShader->UseThisVertexShader(context);
 
-		for (const auto& texture : aModelInstance->myTextures)
+		for (const auto& texture : aModel->myTextures)
 		{
 			texture->Bind(context, texture->GetSlot());
 		}
@@ -231,11 +231,11 @@ namespace Simple
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 
-		context->IASetVertexBuffers(0, 1, aModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aModel->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
+		context->DrawIndexed(static_cast<UINT>(aModel->myMesh->myMeshData.indices.size()), 0, 0);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}

@@ -16,11 +16,12 @@ namespace Simple
 		Impl::SimpleWorldGameWorld::SetGameWorld(this);
 
 		myPlaneReflection = std::make_unique<Simple::PlaneReflection>();
-		SimpleWorld::SetWaterPlane(myPlaneReflection->myModel);
+		SimpleWorld::SetWaterPlane(myPlaneReflection.get());
 	}
 
 	GameWorld::~GameWorld()
 	{
+		SimpleWorld::SetWaterPlane(nullptr);
 	}
 
 	void GameWorld::Init()
@@ -54,7 +55,7 @@ namespace Simple
 
 	void GameWorld::RenderReflection()
 	{
-		SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModel.get());
+		SimpleGlobal::GetRenderer()->RenderPlaneReflection(myPlaneReflection->myModel);
 	}
 
 	void GameWorld::RenderEverythingUpSideDown()

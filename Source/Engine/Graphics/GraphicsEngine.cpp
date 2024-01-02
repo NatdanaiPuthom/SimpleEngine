@@ -335,63 +335,50 @@ namespace Simple
 		if (!CreateWaterRefractionRenderTarget(newWidth, newHeight))
 			assert(false && "Failed to re-create WaterRefraction RenderTarget");
 
-		SetToBackBuffer();
+		SetRenderTarget(eRenderTarget::Backbuffer);
 	}
 
-	void GraphicsEngine::SetToBackBuffer()
+	void GraphicsEngine::SetRenderTarget(eRenderTarget aRenderTarget)
 	{
+		ComPtr<ID3D11RenderTargetView> renderTarget = nullptr;
+		ComPtr<ID3D11RasterizerState> rasterizerState = nullptr;
+
+		switch (aRenderTarget)
+		{
+		case eRenderTarget::Backbuffer:
+			renderTarget = myBackBuffer;
+			break;
+		case eRenderTarget::ImGui:
+			renderTarget = myImGuiImageRenderTarget->renderTargetView;
+			rasterizerState = myRasterizerState.Get();
+			break;
+		case eRenderTarget::WaterReflection:
+			renderTarget = myWaterReflectionRenderTarget->renderTargetView;
+			rasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)].Get();
+			break;
+		case eRenderTarget::WaterRefraction:
+			renderTarget = myWaterRefractionRenderTarget->renderTargetView;
+			rasterizerState = myRasterizerState.Get();
+			break;
+		default:
+			renderTarget = myBackBuffer;
+			rasterizerState = myRasterizerState.Get();
+			break;
+		}
+
 		ID3D11ShaderResourceView* nullSRV = nullptr;
 		myContext->PSSetShaderResources(0, 1, &nullSRV);
 
 		myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-		myContext->OMSetRenderTargets(1, myBackBuffer.GetAddressOf(), myDepthBuffer.Get());
-		myContext->ClearRenderTargetView(myBackBuffer.Get(), myClearColor);
+		myContext->OMSetRenderTargets(1, renderTarget.GetAddressOf(), myDepthBuffer.Get());
+		myContext->ClearRenderTargetView(renderTarget.Get(), myClearColor);
 
-		myContext->RSSetState(myRasterizerState.Get());
-	}
+		myContext->RSSetState(rasterizerState.Get());
 
-	void GraphicsEngine::SetToImGuiBuffer()
-	{
-		ID3D11ShaderResourceView* nullSRV = nullptr;
-		myContext->PSSetShaderResources(0, 1, &nullSRV);
-
-		myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
-		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-		myContext->OMSetRenderTargets(1, myImGuiImageRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
-		myContext->ClearRenderTargetView(myImGuiImageRenderTarget->renderTargetView.Get(), myClearColor);
-
-		myContext->RSSetState(myRasterizerState.Get());
-	}
-
-	void GraphicsEngine::SetToWaterReflectionBuffer()
-	{
-		ID3D11ShaderResourceView* nullSRV = nullptr;
-		myContext->PSSetShaderResources(0, 1, &nullSRV);
-
-		myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
-		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-		myContext->OMSetRenderTargets(1, myWaterReflectionRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
-		myContext->ClearRenderTargetView(myWaterReflectionRenderTarget->renderTargetView.Get(), myClearColor);
-
-		myContext->RSSetState(myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)].Get());
-	}
-
-	void GraphicsEngine::SetToWaterRefractionRenderTarget()
-	{
-		ID3D11ShaderResourceView* nullSRV = nullptr;
-		myContext->PSSetShaderResources(0, 1, &nullSRV);
-
-		myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
-		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-		myContext->OMSetRenderTargets(1, myWaterRefractionRenderTarget->renderTargetView.GetAddressOf(), myDepthBuffer.Get());
-		myContext->ClearRenderTargetView(myWaterRefractionRenderTarget->renderTargetView.Get(), myClearColor);
-
-		myContext->RSSetState(myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)].Get());
+		renderTarget = nullptr;
+		rasterizerState = nullptr;
 	}
 
 	void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)

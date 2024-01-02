@@ -9,8 +9,7 @@ namespace
 {
 	Simple::GameWorld* localGameWorld = nullptr;
 	Simple::LevelManager* localLevelManager = nullptr;
-
-	std::shared_ptr<Model> localWaterPlane = nullptr;
+	Simple::PlaneReflection* localWaterPlane = nullptr;
 
 	float localWaterHeight = 0;
 	int localActiveSceneIndex = 0;
@@ -43,7 +42,7 @@ void SimpleWorld::SetWaterHeight(const float aHeight)
 	localWaterHeight = aHeight;
 }
 
-void SimpleWorld::SetWaterPlane(std::shared_ptr<Model> aWaterPlane)
+void SimpleWorld::SetWaterPlane(Simple::PlaneReflection* aWaterPlane)
 {
 	localWaterPlane = aWaterPlane;
 }
@@ -63,7 +62,7 @@ std::shared_ptr<Simple::Scene> SimpleWorld::GetActiveScene()
 	return localLevelManager->GetActiveScene();
 }
 
-std::shared_ptr<Model> SimpleWorld::GetWaterPlane()
+Simple::PlaneReflection* SimpleWorld::GetWaterPlane()
 {
 	return localWaterPlane;
 }

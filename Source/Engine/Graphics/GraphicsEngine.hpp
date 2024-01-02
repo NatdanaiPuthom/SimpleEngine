@@ -25,6 +25,14 @@ enum class eRasterizerState
 	Count
 };
 
+enum class eRenderTarget
+{
+	Backbuffer,
+	ImGui,
+	WaterReflection,
+	WaterRefraction,
+};
+
 struct alignas(16) FrameBufferData final
 {
 	SimpleUtilities::Matrix4x4f worldToClipMatrix;
@@ -101,12 +109,9 @@ namespace Simple
 		void SetGroundColor(const SimpleUtilities::Vector4f& aColor);
 		void SetVSync(const bool aShouldTurnOn);
 		void SetFPSLevelCap(const unsigned int aCapLevel);
-		void SetToBackBuffer();
-		void SetToImGuiBuffer();
-		void SetToWaterReflectionBuffer();
-		void SetToWaterRefractionRenderTarget();
 		void SetRasterizerState(const eRasterizerState aRasterizerState);
 		void SetWindowSize(const SimpleUtilities::Vector2ui& aWindowSize, const bool aSetFullScreen);
+		void SetRenderTarget(eRenderTarget aRenderTarget);
 	public:
 		ComPtr<ID3D11Device> GetDevice();
 		ComPtr<ID3D11DeviceContext> GetContext();

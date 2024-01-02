@@ -69,7 +69,7 @@ namespace Tool
 
 	void Debug::WaterPlane()
 	{
-		auto waterPlane = SimpleWorld::GetWaterPlane();
+		auto& waterPlane = SimpleWorld::GetWaterPlane()->myModel;
 
 		std::vector<std::string> modelNames;
 		modelNames.push_back(waterPlane->GetName());

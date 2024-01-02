@@ -41,10 +41,11 @@
 
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Engine/Graphics/Model/Model.hpp"
+#include "Engine/Graphics/Model/Special/PlaneReflection.h"
+#include "Engine/Graphics/Model/Special/DirectionalLightVisual.hpp"
 #include "Engine/Graphics/Model/Factory/ModelFactory.hpp"
 #include "Engine/Graphics/Renderer/LineDrawer.hpp"
 #include "Engine/Graphics/Renderer/SphereDrawer.hpp"
-#include "Engine/Graphics/Model/Special/DirectionalLightVisual.hpp"
 #include "Engine/Graphics/Renderer/Renderer.hpp"
 
 #include "Engine/global.hpp"
