@@ -52,11 +52,14 @@ namespace Simple
 
 	void RaycastManager::Render()
 	{
-		SimpleGlobal::GetRenderer()->RenderLine(*myRaycastLine);
-
-		if (myShouldRenderDebugSphere)
+		if (SimpleGlobal::GetRenderer()->IsDebugModeOn())
 		{
-			SimpleGlobal::GetRenderer()->RenderSphere(*myDebugSphere);
+			SimpleGlobal::GetRenderer()->RenderLine(*myRaycastLine);
+
+			if (myShouldRenderDebugSphere)
+			{
+				SimpleGlobal::GetRenderer()->RenderSphere(*myDebugSphere);
+			}
 		}
 	}
 
