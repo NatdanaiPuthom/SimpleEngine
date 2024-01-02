@@ -1,5 +1,6 @@
 #include "Engine/Precomplier/stdafx.h"
 #include <External/imgui.h>
+#include <cmath>
 #include <Game/world.hpp>
 
 #ifdef _DEBUG
@@ -25,6 +26,8 @@ namespace Simple
 		myLightBufferData->directionalLightDirection.x = 0.0f;
 		myLightBufferData->directionalLightDirection.x = -1.0f;
 		myLightBufferData->directionalLightDirection.x = 0.0f;
+
+		myWaterMoveFactor = 0.0f;
 	}
 
 	GraphicsEngine::~GraphicsEngine()
@@ -96,6 +99,11 @@ namespace Simple
 			frameBuffer.cameraPosition = myCamera->GetPosition();
 			frameBuffer.resolution = SimpleGlobal::GetResolution();
 			frameBuffer.waterHeight = SimpleWorld::GetWaterHeight();
+
+			myWaterMoveFactor += 0.01f * SimpleGlobal::GetDeltaTime();
+			myWaterMoveFactor = std::fmod(myWaterMoveFactor, 1.0f);
+			frameBuffer.waterMoveFactor = myWaterMoveFactor;
+
 			myCameraConstantBuffer->Bind(0);
 			myCameraConstantBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
 		}
@@ -188,10 +196,7 @@ namespace Simple
 			if (!AddTexture("TGA/Uppgift7/cubemap.dds", 14))
 				assert(false && "Failed to add Texture");
 
-			if (!AddTexture("TGA/Uppgift8/eric_wave1_n.dds", 2))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift8/eric_wave2_n.dds", 3))
+			if (!AddTexture("TGA/Uppgift8/test.dds", 2))
 				assert(false && "Failed to add Texture");
 		}
 	}

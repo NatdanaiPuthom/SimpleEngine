@@ -40,13 +40,16 @@ struct alignas(16) FrameBufferData final
 {
 	SimpleUtilities::Matrix4x4f worldToClipMatrix;
 	SimpleUtilities::Vector3f cameraPosition;
-	float paddingCameraPos;
+	const float paddingCameraPos = -1.0f;
 
 	SimpleUtilities::Vector2ui resolution;
-	float paddingResolution[2] = { -1.0f };
+	const float paddingResolution[2] = { -1.0f };
 
 	float waterHeight;
-	float paddingWaterHeight[3];
+	const float paddingWaterHeight[3] = { -1.0f };
+
+	float waterMoveFactor = 0.0f;
+	const float paddingWaterMoveFactor[3] = { -1.0f };
 };
 
 struct alignas(16) ObjectBufferData final
@@ -191,6 +194,8 @@ namespace Simple
 		std::unique_ptr<Simple::ModelFactory> myModelFactory;
 
 		std::unique_ptr<Drawer::Renderer> myRenderer;
+
+		float myWaterMoveFactor;
 
 		float myClearColor[4];
 		unsigned int myFPSLevelCap;

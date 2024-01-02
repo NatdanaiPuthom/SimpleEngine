@@ -13,6 +13,9 @@ cbuffer FrameBuffer : register(b0)
     
     float waterHeight;
     float3 paddingWaterHeight;
+    
+    float waterMoveFactor;
+    float3 paddingWaterMoveFactor;
 }
 
 cbuffer ObjectBuffer : register(b1)

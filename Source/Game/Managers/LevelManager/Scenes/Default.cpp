@@ -76,9 +76,9 @@ namespace Scenes
 		}
 
 		/*{
-			std::shared_ptr<ModelInstance> skyBox = std::move(modelFactory->CreateSkyBoxModel());
+			std::shared_ptr<Simple::Model> skyBox = std::move(modelFactory->CreateSkyBoxModel());
 			skyBox->SetPosition({ 0.0f, 0.0f, 20.0f });
-			myModelInstances.push_back(std::move(skyBox));
+			myModels.push_back(std::move(skyBox));
 		}*/
 	}
 

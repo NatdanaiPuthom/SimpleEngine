@@ -115,10 +115,8 @@ namespace Drawer
 		SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(0, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView().GetAddressOf());
 		SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(1, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterRefractionShaderResourceView().GetAddressOf());
 
-		auto wave = SimpleGlobal::GetGraphicsEngine()->GetTexture("TGA/Uppgift8/eric_wave1_n.dds");
-		auto wave2 = SimpleGlobal::GetGraphicsEngine()->GetTexture("TGA/Uppgift8/eric_wave2_n.dds");
+		auto wave = SimpleGlobal::GetGraphicsEngine()->GetTexture("TGA/Uppgift8/test.dds");
 		wave->Bind(context, wave->GetSlot());
-		wave2->Bind(context, wave2->GetSlot());
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
