@@ -217,9 +217,6 @@ namespace Simple
 			if (!AddShader("DefaultPS.cso", "PlaneReflectionVS.cso"))
 				assert(false && "Failed to add Shader");
 
-			if (!AddShader("DefaultPS.cso", "RefractionVS.cso"))
-				assert(false && "Failed to add Shader");
-
 			if (!AddShader("WaterReflectionPS.cso", "DefaultVS.cso"))
 				assert(false && "Failed to add Shader");
 		}

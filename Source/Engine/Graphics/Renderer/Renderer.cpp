@@ -212,10 +212,8 @@ namespace Simple
 	{
 		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
-		SimpleUtilities::Matrix4x4f matrix = SimpleUtilities::Matrix4x4f::Identity();
-
 		ObjectBufferData objectBuffer = {};
-		objectBuffer.modelWorldMatrix = matrix;
+		objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix();
 
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
