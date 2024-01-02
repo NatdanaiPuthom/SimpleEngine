@@ -14,7 +14,7 @@ namespace Scenes
 		Simple::ModelFactory* modelFactory = SimpleGlobal::GetModelFactory();
 
 		{
-			std::shared_ptr<Model> terrain = std::move(modelFactory->CreateTerrainModel());
+			std::shared_ptr<Simple::Model> terrain = std::move(modelFactory->CreateTerrainModel());
 			terrain->SetPosition({ -5.0f, 0.0f, 0.0f });
 			terrain->SetScale({ 3,2,3 });
 			myModels.push_back(std::move(terrain));
@@ -26,7 +26,7 @@ namespace Scenes
 		{
 			for (size_t y = 0; y < 10; ++y)
 			{
-				std::shared_ptr<Model> sphere = std::move(modelFactory->CreateSphereModel());
+				std::shared_ptr<Simple::Model> sphere = std::move(modelFactory->CreateSphereModel());
 				sphere->SetPosition(position);
 				sphere->SetName("Sphere" + std::to_string(index));
 				myModels.push_back(sphere);

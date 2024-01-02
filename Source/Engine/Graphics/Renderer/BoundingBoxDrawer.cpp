@@ -63,7 +63,7 @@ BoundingBoxDrawer::~BoundingBoxDrawer()
 {
 }
 
-void BoundingBoxDrawer::Render(const std::shared_ptr<const Model> aModelInstance)
+void BoundingBoxDrawer::Render(const std::shared_ptr<const Simple::Model> aModelInstance)
 {
 	const SimpleUtilities::Vector3f minPoint = aModelInstance->myMesh->myBoundingBox.min;
 	const SimpleUtilities::Vector3f  maxPoint = aModelInstance->myMesh->myBoundingBox.max;

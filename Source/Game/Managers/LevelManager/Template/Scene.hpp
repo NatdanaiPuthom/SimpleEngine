@@ -1,7 +1,11 @@
 #pragma once
 
-class Model;
 class DirectionalLightVisual;
+
+namespace Simple
+{
+	class Model;
+}
 
 namespace Simple
 {
@@ -43,7 +47,7 @@ namespace Simple
 			}
 		};
 
-		std::vector<std::shared_ptr<Model>> myModels;
+		std::vector<std::shared_ptr<Simple::Model>> myModels;
 		std::unique_ptr<DirectionalLightVisual> myDirectionalLight;
 	};
 }

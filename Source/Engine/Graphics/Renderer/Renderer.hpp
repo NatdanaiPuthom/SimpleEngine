@@ -20,13 +20,13 @@ namespace Simple
 		Renderer();
 		~Renderer();
 
-		void RenderModel(const std::shared_ptr<const Model> aModel) const;
+		void RenderModel(const std::shared_ptr<const Simple::Model> aModel) const;
 		void RenderLine(const Drawer::Line& aLine);
 		void RenderSphere(const Drawer::Sphere& aSphere);
-		void RenderBoundingBox(const std::shared_ptr<const Model> aModel) const;
+		void RenderBoundingBox(const std::shared_ptr<const Simple::Model> aModel) const;
 
 		void RenderEverythingUpSideDown() const;
-		void RenderPlaneReflection(const std::shared_ptr<const Model> aModel) const;
+		void RenderPlaneReflection(const std::shared_ptr<const Simple::Model> aModel) const;
 		void RenderRefraction() const;
 
 		bool IsDebugModeOn() const;
@@ -35,8 +35,8 @@ namespace Simple
 	private:
 		const bool CreateObjectBuffer();
 		void LoadSettingsFromJson();
-		void RenderUpSideDown(const std::shared_ptr<const Model> aModel) const;
-		void RenderRefraction(const std::shared_ptr<const Model> aModel) const;
+		void RenderUpSideDown(const std::shared_ptr<const Simple::Model> aModel) const;
+		void RenderRefraction(const std::shared_ptr<const Simple::Model> aModel) const;
 	private:
 		std::unique_ptr<BoundingBoxDrawer> myBoundingBoxDrawer;
 		std::unique_ptr<LineDrawer> myLineDrawer;

@@ -26,7 +26,7 @@ namespace Simple
 	{
 	}
 
-	void Renderer::RenderModel(const std::shared_ptr<const Model> aModel) const
+	void Renderer::RenderModel(const std::shared_ptr<const Simple::Model> aModel) const
 	{
 		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
@@ -69,7 +69,7 @@ namespace Simple
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderBoundingBox(const std::shared_ptr<const Model> aModel) const
+	void Renderer::RenderBoundingBox(const std::shared_ptr<const Simple::Model> aModel) const
 	{
 		myBoundingBoxDrawer->Render(aModel);
 
@@ -100,7 +100,7 @@ namespace Simple
 		camera->SetPosition(oldCamPosition);
 	}
 
-	void Renderer::RenderPlaneReflection(const std::shared_ptr<const Model> aModel) const
+	void Renderer::RenderPlaneReflection(const std::shared_ptr<const Simple::Model> aModel) const
 	{
 		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
@@ -171,7 +171,7 @@ namespace Simple
 		SetDebugMode(json["game_settings"]["debugMode"]);
 	}
 
-	void Renderer::RenderUpSideDown(const std::shared_ptr<const Model> aModel) const
+	void Renderer::RenderUpSideDown(const std::shared_ptr<const Simple::Model> aModel) const
 	{
 		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 
@@ -208,7 +208,7 @@ namespace Simple
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderRefraction(const std::shared_ptr<const Model> aModel) const
+	void Renderer::RenderRefraction(const std::shared_ptr<const Simple::Model> aModel) const
 	{
 		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
 

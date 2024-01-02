@@ -4,44 +4,47 @@
 class Shader;
 class Texture;
 
-class Model final
+namespace Simple
 {
-	friend class Simple::Renderer;
-	friend class BoundingBoxDrawer;
-public:
-	Model();
-	~Model();
+	class Model final
+	{
+		friend class Simple::Renderer;
+		friend class BoundingBoxDrawer;
+	public:
+		Model();
+		~Model();
 
-	void Init(const Mesh* const aMesh);
-	void Init(const Mesh* const aMesh, const char* aTexturePath);
+		void Init(const Mesh* const aMesh);
+		void Init(const Mesh* const aMesh, const char* aTexturePath);
 
-	//FilePath starts at Bin/Assets/Textures/
-	void AddTexture(const char* aFilePath);
-	void ClearTextures();
-public:
-	void LookAt(const SimpleUtilities::Vector3f& aTargetPoint);
+		//FilePath starts at Bin/Assets/Textures/
+		void AddTexture(const char* aFilePath);
+		void ClearTextures();
+	public:
+		void LookAt(const SimpleUtilities::Vector3f& aTargetPoint);
 
-	//FilePath starts at  Bin/Shaders/
-	void SetShader(const char* aPSShaderFile, const char* aVSShaderFile);
-	void SetPosition(const SimpleUtilities::Vector3f& aPosition);
-	void SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree);
-	void SetScale(const SimpleUtilities::Vector3f& aScale);
-	void SetName(const std::string& aName);
-	void SetBoundingBoxLineColor(const SimpleUtilities::Vector4f& aColor);
+		//FilePath starts at  Bin/Shaders/
+		void SetShader(const char* aPSShaderFile, const char* aVSShaderFile);
+		void SetPosition(const SimpleUtilities::Vector3f& aPosition);
+		void SetRotation(const SimpleUtilities::Vector3f& aRotationInDegree);
+		void SetScale(const SimpleUtilities::Vector3f& aScale);
+		void SetName(const std::string& aName);
+		void SetBoundingBoxLineColor(const SimpleUtilities::Vector4f& aColor);
 
-	const BoundingBox& GetBoundingBox() const;
-	SimpleUtilities::Vector4f GetBoundingBoxLineColor() const;
-	SimpleUtilities::Matrix4x4f GetMatrix() const;
-	SimpleUtilities::Vector3f GetPosition() const;
-	SimpleUtilities::Vector3f GetRotation() const;
-	SimpleUtilities::Vector3f GetScale() const;
-	std::string GetName() const;
-private:
-	std::vector<std::shared_ptr<const Texture>> myTextures;
-	std::string myName;
-	const Mesh* myMesh;
-	std::shared_ptr<const Shader> myShader;
+		const BoundingBox& GetBoundingBox() const;
+		SimpleUtilities::Vector4f GetBoundingBoxLineColor() const;
+		SimpleUtilities::Matrix4x4f GetMatrix() const;
+		SimpleUtilities::Vector3f GetPosition() const;
+		SimpleUtilities::Vector3f GetRotation() const;
+		SimpleUtilities::Vector3f GetScale() const;
+		std::string GetName() const;
+	private:
+		std::vector<std::shared_ptr<const Texture>> myTextures;
+		std::string myName;
+		const Mesh* myMesh;
+		std::shared_ptr<const Shader> myShader;
 
-	SimpleUtilities::Transform myTransform;
-	SimpleUtilities::Vector4f myBoundingBoxColor;
-};
+		SimpleUtilities::Transform myTransform;
+		SimpleUtilities::Vector4f myBoundingBoxColor;
+	};
+}

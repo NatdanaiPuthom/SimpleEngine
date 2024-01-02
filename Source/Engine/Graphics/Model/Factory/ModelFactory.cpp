@@ -69,9 +69,9 @@ namespace Simple
 		return nullptr;
 	}
 
-	std::unique_ptr<Model> ModelFactory::CreateTerrainModel()
+	std::unique_ptr<Simple::Model> ModelFactory::CreateTerrainModel()
 	{
-		std::unique_ptr<Model> terrainModel = std::make_unique<Model>();
+		std::unique_ptr<Simple::Model> terrainModel = std::make_unique<Model>();
 
 		terrainModel->Init(GetMesh("Terrain"));
 		terrainModel->ClearTextures();
@@ -94,9 +94,9 @@ namespace Simple
 		return std::move(terrainModel);
 	}
 
-	std::unique_ptr<Model> ModelFactory::CreateSkyBoxModel()
+	std::unique_ptr<Simple::Model> ModelFactory::CreateSkyBoxModel()
 	{
-		std::unique_ptr<Model> skyBoxModel = std::make_unique<Model>();
+		std::unique_ptr<Simple::Model> skyBoxModel = std::make_unique<Simple::Model>();
 
 		skyBoxModel->Init(GetMesh("Skybox"), "TGA/Uppgift7/cubemap.dds");
 		skyBoxModel->SetShader("SkyBoxPS.cso", "SkyBoxVS.cso");
@@ -107,11 +107,11 @@ namespace Simple
 		return std::move(skyBoxModel);
 	}
 
-	std::unique_ptr<Model> ModelFactory::CreateDirectionalLightModel()
+	std::unique_ptr<Simple::Model> ModelFactory::CreateDirectionalLightModel()
 	{
-		std::unique_ptr<Model> directionalLight = std::make_unique<Model>();
+		std::unique_ptr<Simple::Model> directionalLight = std::make_unique<Simple::Model>();
 
-		directionalLight = std::make_unique<Model>();
+		directionalLight = std::make_unique<Simple::Model>();
 		directionalLight->Init(GetMesh("DirectionalLight"));
 		directionalLight->SetScale({ 1,1,1 });
 		directionalLight->SetPosition(SimpleUtilities::Vector3f(0, 0, 0));
@@ -120,9 +120,9 @@ namespace Simple
 		return std::move(directionalLight);
 	}
 
-	std::unique_ptr<Model> ModelFactory::CreatePlaneModel()
+	std::unique_ptr<Simple::Model> ModelFactory::CreatePlaneModel()
 	{
-		std::unique_ptr<Model> plane = std::make_unique<Model>();
+		std::unique_ptr<Simple::Model> plane = std::make_unique<Simple::Model>();
 
 		plane->Init(GetMesh("Plane"));
 		plane->SetShader("DefaultPS.cso", "DefaultVS.cso");
@@ -133,9 +133,9 @@ namespace Simple
 		return std::move(plane);
 	}
 
-	std::unique_ptr<Model> ModelFactory::CreateCubeModel()
+	std::unique_ptr<Simple::Model> ModelFactory::CreateCubeModel()
 	{
-		std::unique_ptr<Model> cube = std::make_unique<Model>();
+		std::unique_ptr<Simple::Model> cube = std::make_unique<Simple::Model>();
 
 		cube->Init(GetMesh("Cube"));
 		cube->SetScale({ 1,1,1 });
@@ -145,9 +145,9 @@ namespace Simple
 		return std::move(cube);
 	}
 
-	std::unique_ptr<Model> ModelFactory::CreatePyramidModel()
+	std::unique_ptr<Simple::Model> ModelFactory::CreatePyramidModel()
 	{
-		std::unique_ptr<Model> pyramid = std::make_unique<Model>();
+		std::unique_ptr<Simple::Model> pyramid = std::make_unique<Simple::Model>();
 
 		pyramid->Init(GetMesh("Pyramid"), "Cat.dds");
 		pyramid->SetScale({ 1,1,1 });
@@ -157,9 +157,9 @@ namespace Simple
 		return std::move(pyramid);
 	}
 
-	std::unique_ptr<Model> ModelFactory::CreateSphereModel()
+	std::unique_ptr<Simple::Model> ModelFactory::CreateSphereModel()
 	{
-		std::unique_ptr<Model> sphere = std::make_unique<Model>();
+		std::unique_ptr<Simple::Model> sphere = std::make_unique<Simple::Model>();
 
 		sphere->Init(GetMesh("Sphere"));
 		sphere->SetScale({ 1,1,1 });
@@ -169,9 +169,9 @@ namespace Simple
 		return std::move(sphere);
 	}
 
-	std::unique_ptr<Model> ModelFactory::CreatePlaneReflection()
+	std::unique_ptr<Simple::Model> ModelFactory::CreatePlaneReflection()
 	{
-		std::unique_ptr<Model> plane = std::make_unique<Model>();
+		std::unique_ptr<Simple::Model> plane = std::make_unique<Simple::Model>();
 
 		plane->Init(GetMesh("Plane"));
 		plane->SetShader("WaterReflectionPS.cso", "DefaultVS.cso");

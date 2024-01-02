@@ -1,7 +1,11 @@
 #pragma once
 
+namespace Simple
+{
+	class Model;
+}
+
 class ConstantBuffer;
-class Model;
 class Shader;
 
 struct ID3D11Buffer;
@@ -13,7 +17,7 @@ public:
 	BoundingBoxDrawer();
 	~BoundingBoxDrawer();
 
-	void Render(const std::shared_ptr<const Model> aModelInstance);
+	void Render(const std::shared_ptr<const Simple::Model> aModelInstance);
 private:
 	MeshData myMeshData;
 
