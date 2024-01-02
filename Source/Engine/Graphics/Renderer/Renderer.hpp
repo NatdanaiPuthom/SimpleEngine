@@ -33,8 +33,8 @@ namespace Drawer
 		void RenderPlaneReflection(const std::shared_ptr<const Simple::Model> aModel) const;
 		void RenderRefraction() const;
 
-		bool IsDebugModeOn() const;
 	public:
+		bool IsDebugModeOn() const;
 		void SetDebugMode(const bool aSetDebugMode);
 	private:
 		const bool CreateObjectBuffer();

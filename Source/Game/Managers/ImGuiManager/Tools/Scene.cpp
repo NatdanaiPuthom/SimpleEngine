@@ -11,7 +11,7 @@ namespace Tool
 	{
 		Simple::GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 
-		if (ImGui::Begin("Mirror Scene"))
+		if (ImGui::Begin("Render Test"))
 		{
 			ImVec2 size(1280, 720);
 			const ImTextureID textureID = graphicsEngine->GetWaterRefractionShaderResourceView().Get();
