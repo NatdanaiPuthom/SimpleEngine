@@ -27,7 +27,6 @@ namespace Simple
 
 		void RenderEverythingUpSideDown() const;
 		void RenderPlaneReflection(const Model* const aModelInstance) const;
-		void Test(const Model* const aModelInstance) const;
 		void RenderRefraction() const;
 
 		bool IsDebugModeOn() const;

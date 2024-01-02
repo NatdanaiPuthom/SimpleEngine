@@ -127,32 +127,6 @@ namespace Simple
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::Test(const Model* const aModelInstance) const
-	{
-		const auto context = SimpleGlobal::GetGraphicsEngine()->GetContext();
-
-		ObjectBufferData objectBuffer = {};
-		objectBuffer.modelWorldMatrix = aModelInstance->GetMatrix();
-
-		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
-
-		aModelInstance->myShader->UseThisShader(context.Get());
-
-		SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(0, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterRefractionShaderResourceView().GetAddressOf());
-
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-
-		context->IASetVertexBuffers(0, 1, aModelInstance->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aModelInstance->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		context->DrawIndexed(static_cast<UINT>(aModelInstance->myMesh->myMeshData.indices.size()), 0, 0);
-
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
-	}
-
 	void Renderer::RenderRefraction() const
 	{
 		Simple::Renderer* renderer = SimpleGlobal::GetRenderer();
@@ -248,7 +222,7 @@ namespace Simple
 
 		aModelInstance->myShader->UseThisShader(context.Get());
 
-		auto refractionShader = SimpleGlobal::GetGraphicsEngine()->GetShader("DefaultPS.cso", "RefractionVS.cso");
+		auto refractionShader = SimpleGlobal::GetGraphicsEngine()->GetShader("DefaultPS.cso", "PlaneReflectionVS.cso");
 		refractionShader->UseThisVertexShader(context);
 
 		for (const auto& texture : aModelInstance->myTextures)
