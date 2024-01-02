@@ -31,7 +31,6 @@ namespace Simple
 
 		PlayMusic("StardewValley.mp3");
 		SetMusicVolume(0.1f);
-		ToggleMuteMusic();
 	}
 
 	void AudioManager::Update()
