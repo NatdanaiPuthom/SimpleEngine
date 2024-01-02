@@ -187,6 +187,12 @@ namespace Simple
 
 			if (!AddTexture("TGA/Uppgift7/cubemap.dds", 14))
 				assert(false && "Failed to add Texture");
+
+			if (!AddTexture("TGA/Uppgift8/eric_wave1_n.dds", 2))
+				assert(false && "Failed to add Texture");
+
+			if (!AddTexture("TGA/Uppgift8/eric_wave2_n.dds", 3))
+				assert(false && "Failed to add Texture");
 		}
 	}
 
