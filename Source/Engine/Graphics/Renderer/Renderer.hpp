@@ -42,11 +42,11 @@ namespace Drawer
 		void RenderUpSideDown(const std::shared_ptr<const Simple::Model> aModel) const;
 		void RenderRefraction(const std::shared_ptr<const Simple::Model> aModel) const;
 	private:
-		std::unique_ptr<Drawer::BoundingBoxDrawer>		myBoundingBoxDrawer;
-		std::unique_ptr<Drawer::LineDrawer>				myLineDrawer;
-		std::unique_ptr<Drawer::SphereDrawer>			mySphereDrawer;
-		std::unique_ptr<Simple::ConstantBuffer>			myObjectBuffer;
+		std::unique_ptr<Drawer::BoundingBoxDrawer> myBoundingBoxDrawer;
+		std::unique_ptr<Drawer::LineDrawer> myLineDrawer;
+		std::unique_ptr<Drawer::SphereDrawer> mySphereDrawer;
+		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
 
-		bool											myDebugMode;
+		bool myDebugMode;
 	};
 }
