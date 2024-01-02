@@ -47,15 +47,10 @@ FOR %%a IN ("%sourcedir%\*") DO (
     if not defined keepFile DEL "%%a"
 )
 
-endlocal
-
-cd ..
-
-setlocal enabledelayedexpansion
 
 SET "sourcedir=Lib"
 SET "keepdir=Debug"
-SET "keepfile=easy_profiler.dll SoundEngine-FMod.lib SoundEngine-FMod.pdb"
+SET "keepfile=easy_profiler.lib SoundEngine-FMod.lib SoundEngine-FMod.pdb"
 
 FOR /d %%a IN ("%sourcedir%\*") DO (
     set "folderName=%%~nxa"
@@ -76,5 +71,7 @@ FOR %%a IN ("%sourcedir%\*") DO (
 )
 
 endlocal
+
+cd ..
 
 set /p DUMMY=Project cleaned, press any key to exit.
