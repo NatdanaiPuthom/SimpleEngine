@@ -18,7 +18,7 @@ namespace SimpleUtilities
 		Vector3<T>(const T& aX, const T& aY, const T& aZ);
 		Vector3<T>(const Vector3<T>& aVector) = default;
 
-		Vector3<T>& operator=(const Vector3<T>& aVector2) = default;
+		Vector3<T>& operator=(const Vector3<T>& aVector) = default;
 
 		Vector2<T> AsVector2() const;
 		Vector3<T> GetNormalized() const;
@@ -41,8 +41,6 @@ namespace SimpleUtilities
 	template <class T> Vector3<T> operator*(const Vector3<T>& aVector0, const Vector3<T>& aVector1);
 
 	template <class T> Vector3<T> operator/(const Vector3<T>& aVector, const T& aScalar);
-	template <class T> Vector3<T> operator/(const Vector3<T>& aVector, const int& aScalar);
-	template <class T> Vector3<T> operator/(const Vector3<T>& aVector, const float& aScalar);
 	template <class T> Vector3<T> operator/(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
 
 	template <class T> void operator+=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
@@ -139,18 +137,6 @@ namespace SimpleUtilities
 	Vector3<T> operator/(const Vector3<T>& aVector, const T& aScalar)
 	{
 		return aVector * (1 / aScalar);
-	}
-
-	template<class T>
-	Vector3<T> operator/(const Vector3<T>& aVector, const int& aScalar)
-	{
-		return { aVector.x / static_cast<T>(aScalar), aVector.y / static_cast<T>(aScalar), aVector.z / static_cast<T> (aScalar) };
-	}
-
-	template<class T>
-	Vector3<T> operator/(const Vector3<T>& aVector, const float& aScalar)
-	{
-		return { aVector.x / static_cast<T>(aScalar), aVector.y / static_cast<T>(aScalar), aVector.z / static_cast<T>(aScalar) };
 	}
 
 	template<class T>
