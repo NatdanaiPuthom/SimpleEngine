@@ -32,16 +32,16 @@ namespace Simple
 		myCurrentMesh = data.first;
 		myCurrentNodes = data.second;
 
-		//myLines.clear();
+		myNavmeshLines.clear();
+		myConnectionLines.clear();
 
 		auto adjustedVertex = [&](int index) -> SimpleUtilities::Vector3f {
 			const auto& vertex = myCurrentMesh.myVertices[index];
 			return SimpleUtilities::Vector3f(vertex.x, vertex.y + 0.0001f, vertex.z);
 			};
 
-		/*const Vector4 color(0, 1, 0, 1);
-		D3DAPI::Line line = { };
-		line.color = color;*/
+		Drawer::Line line;
+		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
 		for (size_t nodeIndex = 0; nodeIndex < myCurrentMesh.myIndices.size(); nodeIndex += 3)
 		{
@@ -52,15 +52,15 @@ namespace Simple
 				adjustedVertex(myCurrentMesh.myIndices[nodeIndex + 2])
 			};
 
-			/*for (int i = 0; i < 3; ++i)
+			for (int i = 0; i < 3; ++i)
 			{
-				line.start = vertices[i];
-				line.end = vertices[(i + 1) % 3];
-				myLines.push_back(line);
-			}*/
+				line.startPosition = vertices[i];
+				line.endPosition = vertices[(i + 1) % 3];
+				myNavmeshLines.push_back(line);
+			}
 		}
 
-		//line.color = { 1,1,1,1 };
+		line.color = { 1,1,1,1 };
 
 		for (size_t nodeIndex = 0; nodeIndex < myCurrentNodes.size(); ++nodeIndex)
 		{
@@ -74,9 +74,9 @@ namespace Simple
 					const Node& connectedNode = myCurrentNodes[connectionIndex];
 					const SimpleUtilities::Vector3f connectedNodeCenter(connectedNode.myCenter.x, connectedNode.myCenter.y + 0.0001f, connectedNode.myCenter.z);
 
-					//line.start = currentNodeCenter;
-					//line.end = connectedNodeCenter;
-					//myConnectionLines.push_back(line);
+					line.startPosition = currentNodeCenter;
+					line.endPosition = connectedNodeCenter;
+					myConnectionLines.push_back(line);
 				}
 			}
 		}
@@ -84,10 +84,18 @@ namespace Simple
 
 	void Navmesh::RenderNavmesh()
 	{
+		for (const auto& line : myNavmeshLines)
+		{
+			SimpleGlobal::GetRenderer()->RenderLine(line);
+		}
 	}
 
 	void Navmesh::RenderConnections()
 	{
+		for (const auto& line : myConnectionLines)
+		{
+			SimpleGlobal::GetRenderer()->RenderLine(line);
+		}
 	}
 
 	std::vector<Simple::Node>& Navmesh::GetNodes()

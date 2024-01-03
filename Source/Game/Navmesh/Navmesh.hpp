@@ -70,6 +70,8 @@ namespace Simple
 	private:
 		std::unordered_map<std::string, std::pair<Simple::NavmeshData, std::vector<Simple::Node>>> myNavmeshData;
 		std::vector<Simple::Node> myCurrentNodes;
+		std::vector<Drawer::Line> myNavmeshLines;
+		std::vector<Drawer::Line> myConnectionLines;
 
 		Simple::NavmeshData myCurrentMesh;
 	};
