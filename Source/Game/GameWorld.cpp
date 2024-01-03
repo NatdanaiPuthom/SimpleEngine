@@ -9,8 +9,8 @@
 namespace Simple
 {
 	GameWorld::GameWorld()
-		: myImGuiManager(std::make_unique<Simple::ImGuiManager>())
-		, myLevelManager(std::make_unique<Simple::LevelManager>())
+		: myLevelManager(std::make_unique<Simple::LevelManager>())
+		, myImGuiManager(std::make_unique<Simple::ImGuiManager>())
 		, myRaycastManager(std::make_unique<Simple::RaycastManager>())
 	{
 		Impl::SimpleWorldGameWorld::SetGameWorld(this);

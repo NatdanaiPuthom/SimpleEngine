@@ -3,12 +3,16 @@
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/LevelManager/Scenes/Default.hpp"
 #include "Game/Managers/LevelManager/Scenes/Spotlights.hpp"
+#include "Game/Managers/LevelManager/Scenes/NavmeshSceneTest.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
 namespace Simple
 {
 	LevelManager::LevelManager()
+		: myActiveScene(0)
 	{
+		LoadSettingsFromJson();
+
 		Impl::SimpleWorldLevelManager::SetLevelManager(this);
 	}
 
@@ -30,7 +34,11 @@ namespace Simple
 		spotlightScene->Init();
 		myScenes.emplace(1, spotlightScene);
 
-		SimpleWorld::SetActiveScene(SimpleWorld::GetActiveSceneIndex());
+		std::shared_ptr<Scenes::NavmeshSceneTest> navmeshTest = std::make_shared<Scenes::NavmeshSceneTest>();
+		navmeshTest->Init();
+		myScenes.emplace(2, navmeshTest);
+
+		SetActiveScene(myActiveSceneIndex);
 	}
 
 	void LevelManager::Update()
@@ -45,11 +53,29 @@ namespace Simple
 
 	void LevelManager::SetActiveScene(const int aSceneIndex)
 	{
-		myActiveScene = myScenes.at(aSceneIndex);
+		myActiveSceneIndex = aSceneIndex;
+		myActiveScene = myScenes.at(myActiveSceneIndex);
 	}
 
 	std::shared_ptr<Simple::Scene> LevelManager::GetActiveScene()
 	{
 		return myActiveScene;
+	}
+
+	int LevelManager::GetActiveSceneIndex() const
+	{
+		return myActiveSceneIndex;
+	}
+
+	void LevelManager::LoadSettingsFromJson()
+	{
+		const std::string filename = SimpleUtilities::GetPath(SIMPLE_LEVELS_FILENAME);
+		std::ifstream file(filename);
+		assert(file.is_open() && "Failed To Open File");
+
+		const nlohmann::json json = nlohmann::json::parse(file);
+		file.close();
+
+		myActiveSceneIndex = json["activeScene"];
 	}
 }

@@ -1,11 +1,14 @@
 {
-  "activeScene": 1,
+  "activeScene": 2,
   "scenes": [
     {
       "id": 0
     },
     {
       "id": 1
+    },
+    {
+      "id": 2
     }
   ]
 }

@@ -23,7 +23,8 @@ workspace "SimpleEngine"
 		'SIMPLE_LEVELS_FILENAME="' .. "levels.json" .. '"',
 		'SIMPLE_SOUND_DIR="' .. "Assets/Sounds/" .. '"',
 		'SIMPLE_TEXTURES_DIR="' .. "Assets/Textures/" .. '"',
-		'SIMPLE_SHADERS_DIR="' .. "Shaders/" .. '"'
+		'SIMPLE_SHADERS_DIR="' .. "Shaders/" .. '"',
+		'SIMPLE_NAVMESH_DIR="' .. "Assets/Navmesh/" .. '"'
 	}
 
 	configurations {

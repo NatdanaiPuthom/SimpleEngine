@@ -12,7 +12,6 @@ namespace
 	Simple::PlaneReflection* localWaterPlane = nullptr;
 
 	float localWaterHeight = 0;
-	int localActiveSceneIndex = 0;
 }
 
 void Impl::SimpleWorldGameWorld::SetGameWorld(Simple::GameWorld* aGameWorld)
@@ -33,8 +32,7 @@ void Impl::SimpleWorldLevelManager::SetLevelManager(Simple::LevelManager* aLevel
 
 void SimpleWorld::SetActiveScene(const int aSceneIndex)
 {
-	localActiveSceneIndex = aSceneIndex;
-	localLevelManager->SetActiveScene(localActiveSceneIndex);
+	localLevelManager->SetActiveScene(aSceneIndex);
 }
 
 void SimpleWorld::SetWaterHeight(const float aHeight)
@@ -54,7 +52,7 @@ float SimpleWorld::GetWaterHeight()
 
 int SimpleWorld::GetActiveSceneIndex()
 {
-	return localActiveSceneIndex;
+	return localLevelManager->GetActiveSceneIndex();
 }
 
 std::shared_ptr<Simple::Scene> SimpleWorld::GetActiveScene()

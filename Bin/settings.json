@@ -9,6 +9,6 @@
       "y": 720
     },
     "vsync": true,
-    "debugMode":  false
+    "debugMode":  true
   }
 }
