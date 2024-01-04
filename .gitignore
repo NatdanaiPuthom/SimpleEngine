@@ -414,8 +414,6 @@ FodyWeavers.xsd
 [Bb]in/Shaders/
 [Bb]in/Profilers/
 [Bb]in/imgui.ini
-!/[Bb]in/Assets/*.obj
-!/[Bb]in/Assets/Navmesh/
-#![Bb]in/settings.json
+!/[Bb]in/Assets/Navhmesh/*.obj
 
 ########################################################################################
