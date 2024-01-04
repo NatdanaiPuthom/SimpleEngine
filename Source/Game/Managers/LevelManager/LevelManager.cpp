@@ -1,7 +1,7 @@
 #include "Game/Precomplier/stdafx.h"
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
-#include "Game/Managers/LevelManager/Scenes/Default.hpp"
+#include "Game/Managers/LevelManager/Scenes/DefaultScene.hpp"
 #include "Game/Managers/LevelManager/Scenes/Spotlights.hpp"
 #include "Game/Managers/LevelManager/Scenes/NavmeshSceneTest.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
@@ -26,7 +26,7 @@ namespace Simple
 		camera->SetRotation(SimpleUtilities::Vector3f(50, 0, 0));
 		camera->SetPosition(SimpleUtilities::Vector3f(10, 15, -12));
 
-		std::shared_ptr<Scenes::Default> defaultScene = std::make_shared<Scenes::Default>();
+		std::shared_ptr<Scenes::DefaultScene> defaultScene = std::make_shared<Scenes::DefaultScene>();
 		defaultScene->Init();
 		myScenes.emplace(0, defaultScene);
 

@@ -7,11 +7,11 @@ namespace Simple
 
 namespace Scenes
 {
-	class Default final : public Simple::Scene
+	class DefaultScene final : public Simple::Scene
 	{
 	public:
-		Default();
-		~Default() override;
+		DefaultScene();
+		~DefaultScene() override;
 
 		void Init() override;
 		void Update() override;

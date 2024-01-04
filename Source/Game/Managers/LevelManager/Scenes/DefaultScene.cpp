@@ -1,21 +1,21 @@
 #include "Game/Precomplier/stdafx.h"
 #include "Engine/Graphics/Model/Special/PlaneReflection.h"
-#include "Game/Managers/LevelManager/Scenes/Default.hpp"
+#include "Game/Managers/LevelManager/Scenes/DefaultScene.hpp"
 
 namespace Scenes
 {
-	Default::Default()
+	DefaultScene::DefaultScene()
 	{
 		myDirectionalLight->myModel->SetPosition({ 0.0f, 7.0f, -5.0f });
 		SimpleGlobal::GetGraphicsEngine()->SetDirectionalLightDirection({ -0.123f, 0.053f, 1.0f });
 	}
 
-	Default::~Default()
+	DefaultScene::~DefaultScene()
 	{
 		SimpleWorld::SetWaterPlane(nullptr);
 	}
 
-	void Default::Init()
+	void DefaultScene::Init()
 	{
 		myPlaneReflection = std::make_unique<Simple::PlaneReflection>();
 		SimpleWorld::SetWaterPlane(myPlaneReflection.get());
@@ -91,7 +91,7 @@ namespace Scenes
 		}
 	}
 
-	void Default::Update()
+	void DefaultScene::Update()
 	{
 		Simple::Scene::Update();
 		myPlaneReflection->Update();
@@ -109,7 +109,7 @@ namespace Scenes
 		myModels[4]->SetRotation(rotation);
 	}
 
-	void Default::Render()
+	void DefaultScene::Render()
 	{
 		Scene::Render();
 
