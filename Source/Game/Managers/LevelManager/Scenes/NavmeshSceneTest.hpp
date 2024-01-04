@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/Navmesh/Navmesh.hpp"
+#include "Game/Navmesh/Pathfinder.hpp"
 
 namespace Scenes
 {
@@ -14,5 +15,6 @@ namespace Scenes
 		void Render() override;
 	private:
 		Simple::Navmesh myNavmesh;
+		Simple::Pathfinder myPathFinder;
 	};
 }

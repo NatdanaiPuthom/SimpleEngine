@@ -10,7 +10,12 @@ namespace Simple
 
 	struct Node
 	{
-		bool operator==(const Node& aNode)
+		bool operator==(const Simple::Node& aNode)
+		{
+			return (memcmp(this, &aNode, sizeof(*this)) == 0) ? true : false;
+		}
+
+		bool isEqual(const Simple::Node& aNode) const
 		{
 			return (memcmp(this, &aNode, sizeof(*this)) == 0) ? true : false;
 		}
@@ -27,7 +32,7 @@ namespace Simple
 				h = FLT_MAX;
 			}
 
-			Node* myParent = nullptr;
+			Simple::Node* myParent = nullptr;
 
 			float f = FLT_MAX;
 			float g = FLT_MAX;

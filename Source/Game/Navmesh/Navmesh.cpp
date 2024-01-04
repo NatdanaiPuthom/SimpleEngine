@@ -84,17 +84,21 @@ namespace Simple
 
 	void Navmesh::RenderNavmesh()
 	{
+		auto renderer = SimpleGlobal::GetRenderer();
+
 		for (const auto& line : myNavmeshLines)
 		{
-			SimpleGlobal::GetRenderer()->RenderLine(line);
+			renderer->RenderLine(line);
 		}
 	}
 
 	void Navmesh::RenderConnections()
 	{
+		auto renderer = SimpleGlobal::GetRenderer();
+
 		for (const auto& line : myConnectionLines)
 		{
-			SimpleGlobal::GetRenderer()->RenderLine(line);
+			renderer->RenderLine(line);
 		}
 	}
 

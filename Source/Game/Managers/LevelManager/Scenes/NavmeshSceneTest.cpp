@@ -12,6 +12,7 @@ Scenes::NavmeshSceneTest::~NavmeshSceneTest()
 void Scenes::NavmeshSceneTest::Init()
 {
 	myNavmesh.Init("natdanaitestscene.obj");
+	myPathFinder.SetNavmesh(&myNavmesh);
 }
 
 void Scenes::NavmeshSceneTest::Update()
