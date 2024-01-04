@@ -5,6 +5,7 @@
 namespace Simple
 {
 	Pathfinder::Pathfinder()
+		: myNavmesh(nullptr)
 	{
 	}
 
