@@ -32,6 +32,7 @@ PixelOutput main(PixelInputType aInput)
     float4 finalColor = lerp(reflectColor, refractColor, refractiveFactor);
     
     output.color.rgb =  finalColor.xyz;
+    output.color.b += 0.15f;
     output.color.a = 1.0f;
 
     return output;

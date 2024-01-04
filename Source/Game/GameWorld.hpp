@@ -7,7 +7,6 @@ namespace Simple
 	class LevelManager;
 	class RaycastManager;
 	class EventManager;
-	class PlaneReflection;
 }
 
 namespace Simple
@@ -23,15 +22,10 @@ namespace Simple
 		void Render();
 
 		void RenderImGui();
-		void RenderReflection();
-		void RenderEverythingUpSideDown();
-		void RenderRefraction();
 	private:
 		std::unique_ptr<Simple::ImGuiManager> myImGuiManager;
 		std::unique_ptr<Simple::LevelManager> myLevelManager;
 		std::unique_ptr<Simple::RaycastManager> myRaycastManager;
 		std::unique_ptr<Simple::EventManager> myEventManager;
-
-		std::unique_ptr<Simple::PlaneReflection> myPlaneReflection;
 	};
 }

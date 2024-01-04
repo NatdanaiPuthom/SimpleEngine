@@ -1,4 +1,5 @@
 #include "Game/Precomplier/stdafx.h"
+#include "Engine/Graphics/Model/Special/PlaneReflection.h"
 #include "Game/Managers/LevelManager/Scenes/Default.hpp"
 
 namespace Scenes
@@ -9,8 +10,16 @@ namespace Scenes
 		SimpleGlobal::GetGraphicsEngine()->SetDirectionalLightDirection({ -0.123f, 0.053f, 1.0f });
 	}
 
+	Default::~Default()
+	{
+		SimpleWorld::SetWaterPlane(nullptr);
+	}
+
 	void Default::Init()
 	{
+		myPlaneReflection = std::make_unique<Simple::PlaneReflection>();
+		SimpleWorld::SetWaterPlane(myPlaneReflection.get());
+
 		Simple::ModelFactory* modelFactory = SimpleGlobal::GetModelFactory();
 
 		{
@@ -75,16 +84,17 @@ namespace Scenes
 			myModels.push_back(std::move(pyramid));
 		}
 
-		/*{
+		{
 			std::shared_ptr<Simple::Model> skyBox = std::move(modelFactory->CreateSkyBoxModel());
 			skyBox->SetPosition({ 0.0f, 0.0f, 20.0f });
 			myModels.push_back(std::move(skyBox));
-		}*/
+		}
 	}
 
 	void Default::Update()
 	{
 		Simple::Scene::Update();
+		myPlaneReflection->Update();
 
 		auto camPosition = SimpleGlobal::GetGraphicsEngine()->GetCamera()->GetPosition();
 		camPosition.x += 5.0f;
@@ -97,5 +107,12 @@ namespace Scenes
 		rotation = myModels[4]->GetRotation();
 		rotation.y -= 40 * SimpleGlobal::GetDeltaTime();
 		myModels[4]->SetRotation(rotation);
+	}
+
+	void Default::Render()
+	{
+		Scene::Render();
+
+		SimpleGlobal::GetRenderer()->RenderPlaneReflection(SimpleWorld::GetWaterPlane()->myModel);
 	}
 }

@@ -29,7 +29,7 @@ void Scenes::NavmeshSceneTest::Render()
 	myPathFinder.RenderFunnelPath();
 
 	auto navmesh = SimpleWorld::GetNavmesh();
-	//navmesh->RenderConnections();
+	navmesh->RenderConnections();
 	navmesh->RenderNavmesh();
 }
 
