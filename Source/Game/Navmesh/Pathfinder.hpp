@@ -20,6 +20,8 @@ namespace Simple
 		void ClearPaths();
 	public:
 		void SetNavmesh(Simple::Navmesh* aNavmeshData);
+		void SetStartPosition(const SimpleUtilities::Vector3f& aStartPosition);
+		void SetTargetPosition(const SimpleUtilities::Vector3f& aTargetPosition);
 	public:
 		const std::vector<SimpleUtilities::Vector3f>& GetFunnelPath() const;
 		const std::vector<SimpleUtilities::Vector3f>& GetAStarPath() const;

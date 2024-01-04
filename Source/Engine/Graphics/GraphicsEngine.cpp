@@ -19,7 +19,7 @@ namespace Simple
 		, myWaterReflectionRenderTarget(std::make_unique<RenderTarget>())
 		, myWaterRefractionRenderTarget(std::make_unique<RenderTarget>())
 		, myImGuiImageRenderTarget(std::make_unique<RenderTarget>())
-		, myClearColor{ 0.0f, 0.25f, 0.50f, 1.0f }
+		, myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
 		, myFPSLevelCap(0)
 	{

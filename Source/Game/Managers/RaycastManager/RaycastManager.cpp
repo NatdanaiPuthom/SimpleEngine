@@ -55,7 +55,7 @@ namespace Simple
 			myTimer = 0;
 		}
 
-		if (SimpleUtilities::InputManager::GetInstance().IsPressed(VK_LBUTTON))
+		if (SimpleUtilities::InputManager::GetInstance().IsPressed(VK_LBUTTON) || SimpleUtilities::InputManager::GetInstance().IsPressed(VK_RBUTTON))
 		{
 			CheckRayNavmesh();
 		}
@@ -200,7 +200,15 @@ namespace Simple
 		{
 			Simple::Message<eEvent> raycast;
 
-			raycast.myType = Simple::eEvent::Raycast;
+			auto& input = SimpleUtilities::InputManager::GetInstance();
+
+			if (input.IsPressed(VK_LBUTTON) == true && input.IsPressed(VK_RBUTTON) == false)
+				raycast.myType = Simple::eEvent::Raycast_LMB;
+			else if (input.IsPressed(VK_RBUTTON) == true && input.IsPressed(VK_LBUTTON) == false)
+				raycast.myType = Simple::eEvent::Raycast_RMB;
+			else
+				return;
+
 			raycast.myData = closetPoint;
 
 			SimpleWorld::GetEventmanager()->GetPostMaster().NotifyObservers(raycast);

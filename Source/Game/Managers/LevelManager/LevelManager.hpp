@@ -1,6 +1,5 @@
 #pragma once
 #include "Game/Navmesh/Navmesh.hpp"
-#include "Game/Navmesh/Pathfinder.hpp"
 
 namespace Simple
 {
@@ -30,9 +29,7 @@ namespace Simple
 	private:
 		std::shared_ptr<Simple::Scene> myActiveScene;
 		std::unordered_map<int, std::shared_ptr<Simple::Scene>> myScenes;
-
 		Simple::Navmesh myNavmesh;
-		Simple::Pathfinder myPathFinder;
 
 		int myActiveSceneIndex;
 	};

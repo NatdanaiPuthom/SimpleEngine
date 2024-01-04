@@ -166,9 +166,6 @@ namespace Simple
 
 	void Pathfinder::RenderFunnelPath() const
 	{
-		if (myLines.size() <= 0)
-			return;
-
 		auto renderer = SimpleGlobal::GetRenderer();
 
 		for (const auto& line : myLines)
@@ -188,14 +185,14 @@ namespace Simple
 		Drawer::Line startLine;
 		startLine.startPosition = myStartPosition;
 		startLine.endPosition = startPositionEnd;
+		startLine.color = { 1.0f, 1.0f, 0.0f, 1.0f };
 
 		Drawer::Line endLine;
 		endLine.startPosition = myTargetPosition;
 		endLine.endPosition = targetPositionEnd;
-
+		endLine.color = { 1.0f, 1.0f, 0.0f, 1.0f };
 
 		auto renderer = SimpleGlobal::GetRenderer();
-
 		renderer->RenderLine(startLine);
 		renderer->RenderLine(endLine);
 	}
@@ -203,6 +200,16 @@ namespace Simple
 	void Pathfinder::SetNavmesh(Simple::Navmesh* aNavmeshData)
 	{
 		myNavmesh = aNavmeshData;
+	}
+
+	void Pathfinder::SetStartPosition(const SimpleUtilities::Vector3f& aStartPosition)
+	{
+		myStartPosition = aStartPosition;
+	}
+
+	void Pathfinder::SetTargetPosition(const SimpleUtilities::Vector3f& aTargetPosition)
+	{
+		myTargetPosition = aTargetPosition;
 	}
 
 	void Pathfinder::ClearPaths()
@@ -563,7 +570,7 @@ namespace Simple
 	{
 		myLines.clear();
 
-		const float offset = 0.001f;
+		const float offset = 0.1f;
 
 		if (myPathFunnel.empty())
 			return;
@@ -579,7 +586,7 @@ namespace Simple
 			Drawer::Line line;
 			line.startPosition = start;
 			line.endPosition = end;
-			line.color = { 0.0f, 1.0f, 1.0f, 1.0f };
+			line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 			myLines.push_back(line);
 		}

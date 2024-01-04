@@ -7,7 +7,8 @@ namespace Simple
 {
 	enum class eEvent
 	{
-		Raycast
+		Raycast_LMB,
+		Raycast_RMB
 	};
 
 	template<typename MessageType>

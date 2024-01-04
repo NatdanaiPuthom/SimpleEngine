@@ -40,8 +40,7 @@ namespace Simple
 
 		SetActiveScene(myActiveSceneIndex);
 
-		myNavmesh.Init("natdanaitestscene.obj");
-		myPathFinder.SetNavmesh(&myNavmesh);
+		myNavmesh.Init("Intro_To_Boss.obj");
 	}
 
 	void LevelManager::Update()
@@ -52,9 +51,6 @@ namespace Simple
 	void LevelManager::Render()
 	{
 		myActiveScene->Render();
-
-		myNavmesh.RenderNavmesh();
-		myNavmesh.RenderConnections();
 	}
 
 	void LevelManager::SetActiveScene(const int aSceneIndex)
