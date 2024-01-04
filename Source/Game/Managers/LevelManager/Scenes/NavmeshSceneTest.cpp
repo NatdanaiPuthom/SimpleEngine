@@ -11,7 +11,7 @@ Scenes::NavmeshSceneTest::~NavmeshSceneTest()
 
 void Scenes::NavmeshSceneTest::Init()
 {
-	myNavmesh.Init("natdanaitestscene.obj");
+	myNavmesh.Init("Intro To Boss.obj");
 	myPathFinder.SetNavmesh(&myNavmesh);
 }
 
