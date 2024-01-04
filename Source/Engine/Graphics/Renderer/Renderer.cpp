@@ -112,8 +112,8 @@ namespace Drawer
 
 		aModel->myShader->UseThisShader(context.Get());
 
-		SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(0, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView().GetAddressOf());
-		SimpleGlobal::GetGraphicsEngine()->GetContext()->PSSetShaderResources(1, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterRefractionShaderResourceView().GetAddressOf());
+		context->PSSetShaderResources(0, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterShaderResourceView().GetAddressOf());
+		context->PSSetShaderResources(1, 1, SimpleGlobal::GetGraphicsEngine()->GetWaterRefractionShaderResourceView().GetAddressOf());
 
 		auto wave = SimpleGlobal::GetGraphicsEngine()->GetTexture("TGA/Uppgift8/test.dds");
 		wave->Bind(context, wave->GetSlot());
@@ -126,6 +126,10 @@ namespace Drawer
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		context->DrawIndexed(static_cast<UINT>(aModel->myMesh->myMeshData.indices.size()), 0, 0);
+
+		ID3D11ShaderResourceView* nullSRV = nullptr;
+		context->PSSetShaderResources(0, 1, &nullSRV);
+		context->PSSetShaderResources(1, 1, &nullSRV);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
