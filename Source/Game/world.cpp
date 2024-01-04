@@ -79,3 +79,8 @@ Simple::EventManager* SimpleWorld::GetEventmanager()
 {
 	return localEventManager;
 }
+
+Simple::Navmesh* SimpleWorld::GetNavmesh()
+{
+	return &localLevelManager->GetNavmesh();
+}

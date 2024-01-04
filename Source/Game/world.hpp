@@ -5,6 +5,7 @@ namespace Simple
 	class Scene;
 	class PlaneReflection;
 	class EventManager;
+	class Navmesh;
 }
 
 namespace SimpleWorld
@@ -15,6 +16,7 @@ namespace SimpleWorld
 
 	Simple::PlaneReflection* GetWaterPlane();
 	Simple::EventManager* GetEventmanager();
+	Simple::Navmesh* GetNavmesh();
 
 	std::shared_ptr<Simple::Scene> GetActiveScene();
 

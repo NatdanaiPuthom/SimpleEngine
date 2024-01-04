@@ -21,6 +21,7 @@ namespace Simple
 		SimpleUtilities::Ray GetScreenPointToRay(const SimpleUtilities::Vector2f& aPosition);
 	private:
 		void CheckAABB3DCollision();
+		void CheckRayNavmesh();
 		void MoveObject();
 		void ReceiveMessage(const Simple::Message<eEvent>& aMessage) override;
 	private:

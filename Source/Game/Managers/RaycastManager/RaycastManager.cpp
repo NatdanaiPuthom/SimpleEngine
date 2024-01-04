@@ -1,6 +1,7 @@
 #include "Game/Precomplier/stdafx.h"
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Game/Managers/RaycastManager/RaycastManager.hpp"
+#include "Game/Navmesh/Navmesh.hpp"
 
 namespace Simple
 {
@@ -18,7 +19,7 @@ namespace Simple
 
 		myDebugSphere->radius = 0.2f;
 		myDebugSphere->color = { 1.0f, 0.0f, 0.0f, 0.0f };
-		
+
 	}
 
 	RaycastManager::~RaycastManager()
@@ -157,6 +158,48 @@ namespace Simple
 		{
 			mySelectedModelIndex = -1;
 			myShouldRenderDebugSphere = false;
+		}
+	}
+
+	void RaycastManager::CheckRayNavmesh()
+	{
+		SU::Ray ray = GetScreenPointToRay(SimpleUtilities::InputManager::GetInstance().GetMousePosition());
+		SU::Vector3 closetPoint(FLT_MAX, FLT_MAX, FLT_MAX);
+
+		auto navmesh = SimpleWorld::GetNavmesh();
+
+		const auto& vertices = navmesh->GetNavmesh();
+		const auto& nodes = navmesh->GetNodes();
+		bool hasHit = false;
+
+		for (const Simple::Node& node : nodes)
+		{
+			SU::Vector3f intersectionPoint;
+
+			if (SU::IntersectionPlaneRay(node.myPlane, ray, intersectionPoint))
+			{
+				hasHit = true;
+
+				//Check if Intersection Point is Inside This Triangle
+				const SU::Vector3f v1 = vertices.myVertices[node.myIndices[0]];
+				const SU::Vector3f v2 = vertices.myVertices[node.myIndices[1]];
+				const SU::Vector3f v3 = vertices.myVertices[node.myIndices[2]];
+
+				const float d = (v2.z - v3.z) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.z - v3.z);
+				const float w1 = ((v2.z - v3.z) * (intersectionPoint.x - v3.x) + (v3.x - v2.x) * (intersectionPoint.z - v3.z)) / d;
+				const float w2 = ((v3.z - v1.z) * (intersectionPoint.x - v3.x) + (v1.x - v3.x) * (intersectionPoint.z - v3.z)) / d;
+				const float w3 = 1.0f - w1 - w2;
+
+				const bool inside = w1 >= 0 && w2 >= 0 && w3 >= 0;
+
+				if (inside)
+				{
+					if (intersectionPoint.y > closetPoint.y)
+					{
+						closetPoint = intersectionPoint;
+					}
+				}
+			}
 		}
 	}
 

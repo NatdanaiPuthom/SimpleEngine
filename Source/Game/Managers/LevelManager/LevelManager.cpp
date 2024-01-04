@@ -39,6 +39,9 @@ namespace Simple
 		myScenes.emplace(2, navmeshTest);
 
 		SetActiveScene(myActiveSceneIndex);
+
+		myNavmesh.Init("natdanaitestscene.obj");
+		myPathFinder.SetNavmesh(&myNavmesh);
 	}
 
 	void LevelManager::Update()
@@ -49,12 +52,20 @@ namespace Simple
 	void LevelManager::Render()
 	{
 		myActiveScene->Render();
+
+		myNavmesh.RenderNavmesh();
+		myNavmesh.RenderConnections();
 	}
 
 	void LevelManager::SetActiveScene(const int aSceneIndex)
 	{
 		myActiveSceneIndex = aSceneIndex;
 		myActiveScene = myScenes.at(myActiveSceneIndex);
+	}
+
+	Simple::Navmesh& LevelManager::GetNavmesh()
+	{
+		return myNavmesh;
 	}
 
 	std::shared_ptr<Simple::Scene> LevelManager::GetActiveScene()
