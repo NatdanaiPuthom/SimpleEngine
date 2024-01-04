@@ -9,39 +9,21 @@ namespace SimpleUtilities
 {
 	static bool IntersectionPlaneRay(const Plane& aPlane, const Ray& aRay, Vector3f& aOutIntersectionPoint)
 	{
-		constexpr float epsilonValue = std::numeric_limits<float>::epsilon();;
+		const float dotProduct = SimpleUtilities::Dot(aPlane.GetNormal(), aRay.GetDirection());
 
-		float maxDistance = FLT_MAX;
-		Vector3f noIntersection = aRay.GetOrigin() + aRay.GetDirection() * maxDistance; //There's no intersection so we set value to infinite distance along the ray's direction
-
-		float projectionOnPlaneNormal = SimpleUtilities::Dot(aPlane.GetNormal(), (aRay.GetOrigin() - aPlane.GetPosition()));
-
-		if (std::abs(projectionOnPlaneNormal) < epsilonValue)
+		if (dotProduct != 0.0f)
 		{
-			aOutIntersectionPoint = aRay.GetOrigin();
-			return true;
+			const SimpleUtilities::Vector3f g = aPlane.GetPosition() - aRay.GetOrigin();
+			const float t = SimpleUtilities::Dot(g, aPlane.GetNormal()) / dotProduct;
+
+			if (t >= 0)
+			{
+				aOutIntersectionPoint = aRay.GetOrigin() + t * aRay.GetDirection();
+				return true;
+			}
 		}
 
-		float denom = SimpleUtilities::Dot(aRay.GetDirection(), aPlane.GetNormal());
-
-		if (std::abs(denom) < epsilonValue)
-		{
-			aOutIntersectionPoint = noIntersection;
-			return false;
-		}
-
-		float intersectionDistance = -projectionOnPlaneNormal / denom;
-
-		if (intersectionDistance < 0)
-		{
-			aOutIntersectionPoint = noIntersection;
-			return false;
-		}
-		else
-		{
-			aOutIntersectionPoint = aRay.GetOrigin() + aRay.GetDirection() * intersectionDistance;
-			return true;
-		}
+		return false;
 	}
 
 	static inline bool IntersectionAABB3DRay(const AABB3D& aAABB, const Ray& aRay, Vector3f& aOutIntersectionPoint)

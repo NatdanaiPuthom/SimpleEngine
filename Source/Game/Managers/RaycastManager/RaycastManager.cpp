@@ -28,7 +28,6 @@ namespace Simple
 
 	void RaycastManager::Init()
 	{
-		SimpleWorld::GetEventmanager()->GetPostMaster().AddObserver(this, eEvent::Raycast);
 	}
 
 	void RaycastManager::Update()
@@ -58,11 +57,7 @@ namespace Simple
 
 		if (SimpleUtilities::InputManager::GetInstance().IsPressed(VK_LBUTTON))
 		{
-			Simple::Message<eEvent> raycast;
-			raycast.myType = Simple::eEvent::Raycast;
-			raycast.myData = 10;
-
-			SimpleWorld::GetEventmanager()->GetPostMaster().NotifyObservers(raycast);
+			CheckRayNavmesh();
 		}
 	}
 
@@ -164,22 +159,19 @@ namespace Simple
 	void RaycastManager::CheckRayNavmesh()
 	{
 		SU::Ray ray = GetScreenPointToRay(SimpleUtilities::InputManager::GetInstance().GetMousePosition());
-		SU::Vector3 closetPoint(FLT_MAX, FLT_MAX, FLT_MAX);
+		SU::Vector3f intersectionPoint;
+		SU::Vector3 closetPoint(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+		bool hasHit = false;
 
-		auto navmesh = SimpleWorld::GetNavmesh();
-
+		Simple::Navmesh* navmesh = SimpleWorld::GetNavmesh();
 		const auto& vertices = navmesh->GetNavmesh();
 		const auto& nodes = navmesh->GetNodes();
-		bool hasHit = false;
 
 		for (const Simple::Node& node : nodes)
 		{
-			SU::Vector3f intersectionPoint;
 
 			if (SU::IntersectionPlaneRay(node.myPlane, ray, intersectionPoint))
 			{
-				hasHit = true;
-
 				//Check if Intersection Point is Inside This Triangle
 				const SU::Vector3f v1 = vertices.myVertices[node.myIndices[0]];
 				const SU::Vector3f v2 = vertices.myVertices[node.myIndices[1]];
@@ -194,12 +186,24 @@ namespace Simple
 
 				if (inside)
 				{
+					hasHit = true;
+
 					if (intersectionPoint.y > closetPoint.y)
 					{
 						closetPoint = intersectionPoint;
 					}
 				}
 			}
+		}
+
+		if (hasHit)
+		{
+			Simple::Message<eEvent> raycast;
+
+			raycast.myType = Simple::eEvent::Raycast;
+			raycast.myData = closetPoint;
+
+			SimpleWorld::GetEventmanager()->GetPostMaster().NotifyObservers(raycast);
 		}
 	}
 
@@ -252,17 +256,5 @@ namespace Simple
 		model->SetPosition(position);
 		myDebugSphere->position = intersectionPoint;
 		model->SetBoundingBoxLineColor({ 1.0f,0.0f,0.0f , 1.0f });
-	}
-
-	void RaycastManager::ReceiveMessage(const Simple::Message<eEvent>& aMessage)
-	{
-		switch (aMessage.myType)
-		{
-		case eEvent::Raycast:
-			std::cout << "hello world" << std::endl;
-			break;
-		default:
-			break;
-		}
 	}
 }

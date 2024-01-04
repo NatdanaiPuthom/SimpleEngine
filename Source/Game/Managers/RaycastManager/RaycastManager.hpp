@@ -8,7 +8,7 @@ namespace Drawer
 
 namespace Simple
 {
-	class RaycastManager final : public Observer<eEvent>
+	class RaycastManager final
 	{
 	public:
 		RaycastManager();
@@ -23,7 +23,6 @@ namespace Simple
 		void CheckAABB3DCollision();
 		void CheckRayNavmesh();
 		void MoveObject();
-		void ReceiveMessage(const Simple::Message<eEvent>& aMessage) override;
 	private:
 		std::unique_ptr<Drawer::Line> myRaycastLine;
 		std::unique_ptr<Drawer::Sphere> myDebugSphere;
