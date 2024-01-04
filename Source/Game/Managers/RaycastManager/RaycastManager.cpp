@@ -18,10 +18,16 @@ namespace Simple
 
 		myDebugSphere->radius = 0.2f;
 		myDebugSphere->color = { 1.0f, 0.0f, 0.0f, 0.0f };
+		
 	}
 
 	RaycastManager::~RaycastManager()
 	{
+	}
+
+	void RaycastManager::Init()
+	{
+		SimpleWorld::GetEventmanager()->GetPostMaster().AddObserver(this, eEvent::Raycast);
 	}
 
 	void RaycastManager::Update()
@@ -47,6 +53,15 @@ namespace Simple
 
 			mySelectedModelIndex = -1;
 			myTimer = 0;
+		}
+
+		if (SimpleUtilities::InputManager::GetInstance().IsPressed(VK_LBUTTON))
+		{
+			Simple::Message<eEvent> raycast;
+			raycast.myType = Simple::eEvent::Raycast;
+			raycast.myData = 10;
+
+			SimpleWorld::GetEventmanager()->GetPostMaster().NotifyObservers(raycast);
 		}
 	}
 
@@ -194,5 +209,17 @@ namespace Simple
 		model->SetPosition(position);
 		myDebugSphere->position = intersectionPoint;
 		model->SetBoundingBoxLineColor({ 1.0f,0.0f,0.0f , 1.0f });
+	}
+
+	void RaycastManager::ReceiveMessage(const Simple::Message<eEvent>& aMessage)
+	{
+		switch (aMessage.myType)
+		{
+		case eEvent::Raycast:
+			std::cout << "hello world" << std::endl;
+			break;
+		default:
+			break;
+		}
 	}
 }

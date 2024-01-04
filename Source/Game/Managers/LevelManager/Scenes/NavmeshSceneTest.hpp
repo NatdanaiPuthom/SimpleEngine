@@ -17,5 +17,6 @@ namespace Scenes
 	private:
 		Simple::Navmesh myNavmesh;
 		Simple::Pathfinder myPathFinder;
+		Simple::PostMaster<Simple::eEvent> myPostMaster;
 	};
 }

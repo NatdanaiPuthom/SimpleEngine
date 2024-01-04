@@ -5,6 +5,7 @@
 #include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/RaycastManager/RaycastManager.hpp"
+#include "Game/Managers/EventManager/EventManager.hpp"
 
 namespace Simple
 {
@@ -12,6 +13,7 @@ namespace Simple
 		: myLevelManager(std::make_unique<Simple::LevelManager>())
 		, myImGuiManager(std::make_unique<Simple::ImGuiManager>())
 		, myRaycastManager(std::make_unique<Simple::RaycastManager>())
+		, myEventManager(std::make_unique<Simple::EventManager>())
 	{
 		Impl::SimpleWorldGameWorld::SetGameWorld(this);
 
@@ -27,6 +29,7 @@ namespace Simple
 	void GameWorld::Init()
 	{
 		myLevelManager->Init();
+		myRaycastManager->Init();
 	}
 
 	void GameWorld::Update()

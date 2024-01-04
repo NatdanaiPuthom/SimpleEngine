@@ -57,6 +57,8 @@
 #include "Game/Managers/ImGuiManager/Template/ToolInterface.hpp"
 #include "Game/PostMaster/PostMaster.hpp"
 
+#include "Game/Managers/EventManager/EventManager.hpp"
+
 ///////////////////////////////////////////////////////////////////////////////////
 
 namespace SU = SimpleUtilities;

@@ -5,6 +5,11 @@
 
 namespace Simple
 {
+	enum class eEvent
+	{
+		Raycast
+	};
+
 	template<typename MessageType>
 	struct Message
 	{
@@ -68,7 +73,7 @@ namespace Simple
 	{
 		for (Simple::Observer<MessageType>* observers : myObservers.at(aMessage.myType))
 		{
-			observers->ReciveMessage(aMessage);
+			observers->ReceiveMessage(aMessage);
 		}
 	}
 }

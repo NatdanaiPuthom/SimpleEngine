@@ -3,12 +3,14 @@
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 #include "Game/GameWorld.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
+#include "Game/Managers/EventManager/EventManager.hpp"
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
 
 namespace
 {
 	Simple::GameWorld* localGameWorld = nullptr;
 	Simple::LevelManager* localLevelManager = nullptr;
+	Simple::EventManager* localEventManager = nullptr;
 	Simple::PlaneReflection* localWaterPlane = nullptr;
 
 	float localWaterHeight = 0;
@@ -20,6 +22,14 @@ void Impl::SimpleWorldGameWorld::SetGameWorld(Simple::GameWorld* aGameWorld)
 		assert(false && "localGameWorld is already set. Is this a mistake?");
 
 	localGameWorld = aGameWorld;
+}
+
+void Impl::SimpleWorldEventManager::SetEventManager(Simple::EventManager* aLevelManager)
+{
+	if (localEventManager != nullptr)
+		assert(false && "localEventManager is already set. Is this a mistake?");
+
+	localEventManager = aLevelManager;
 }
 
 void Impl::SimpleWorldLevelManager::SetLevelManager(Simple::LevelManager* aLevelManager)
@@ -63,4 +73,9 @@ std::shared_ptr<Simple::Scene> SimpleWorld::GetActiveScene()
 Simple::PlaneReflection* SimpleWorld::GetWaterPlane()
 {
 	return localWaterPlane;
+}
+
+Simple::EventManager* SimpleWorld::GetEventmanager()
+{
+	return localEventManager;
 }

@@ -4,6 +4,7 @@ namespace Simple
 {
 	class Scene;
 	class PlaneReflection;
+	class EventManager;
 }
 
 namespace SimpleWorld
@@ -13,6 +14,7 @@ namespace SimpleWorld
 	void SetWaterPlane(Simple::PlaneReflection* aWaterPlane);
 
 	Simple::PlaneReflection* GetWaterPlane();
+	Simple::EventManager* GetEventmanager();
 
 	std::shared_ptr<Simple::Scene> GetActiveScene();
 

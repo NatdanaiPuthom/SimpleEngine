@@ -6,6 +6,7 @@ namespace Simple
 	class ImGuiManager;
 	class LevelManager;
 	class RaycastManager;
+	class EventManager;
 	class PlaneReflection;
 }
 
@@ -29,6 +30,7 @@ namespace Simple
 		std::unique_ptr<Simple::ImGuiManager> myImGuiManager;
 		std::unique_ptr<Simple::LevelManager> myLevelManager;
 		std::unique_ptr<Simple::RaycastManager> myRaycastManager;
+		std::unique_ptr<Simple::EventManager> myEventManager;
 
 		std::unique_ptr<Simple::PlaneReflection> myPlaneReflection;
 	};
