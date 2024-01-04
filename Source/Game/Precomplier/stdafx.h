@@ -55,6 +55,7 @@
 
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
 #include "Game/Managers/ImGuiManager/Template/ToolInterface.hpp"
+#include "Game/PostMaster/PostMaster.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////
 

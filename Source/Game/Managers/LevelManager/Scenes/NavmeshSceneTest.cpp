@@ -23,6 +23,4 @@ void Scenes::NavmeshSceneTest::Render()
 {
 	myNavmesh.RenderNavmesh();
 	myNavmesh.RenderConnections();
-
-	//myPathFinder.CanIWalkHerePlusDistance
 }

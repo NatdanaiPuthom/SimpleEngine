@@ -13,6 +13,7 @@ namespace Scenes
 		void Init() override;
 		void Update() override;
 		void Render() override;
+	
 	private:
 		Simple::Navmesh myNavmesh;
 		Simple::Pathfinder myPathFinder;
