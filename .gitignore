@@ -69,11 +69,12 @@ ScaffoldingReadMe.txt
 StyleCopReport.xml
 
 # Files built by Visual Studio
+# the "/" magic
 *_i.c
 *_p.c
 *_h.h
 *.ilk
-*.obj
+/*.obj
 *.iobj
 *.pch
 *.pdb
@@ -409,9 +410,12 @@ FodyWeavers.xsd
 [Ll]ocal
 [Tt]emp
 [Ll]ib
-[Bb]in/*
-Bin/imgui.ini
-![Bb]in/Assets/
+[Bb]in/*.dll
+[Bb]in/Shaders/
+[Bb]in/Profilers/
+[Bb]in/imgui.ini
+!/[Bb]in/Assets/*.obj
+!/[Bb]in/Assets/Navmesh/
 #![Bb]in/settings.json
 
 ########################################################################################
