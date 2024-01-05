@@ -21,7 +21,7 @@ namespace Simple
 	void ImGuiEngine::Init()
 	{
 		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
+		ImGui::CreateContext();	
 		ImGui::StyleColorsDark();
 
 		ImGuiIO& io = ImGui::GetIO();

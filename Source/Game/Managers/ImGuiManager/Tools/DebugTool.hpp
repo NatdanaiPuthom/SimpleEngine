@@ -11,7 +11,6 @@ namespace Tool
 		virtual void Draw() override;
 	private:
 		void LoadDataFromJson();
-		void WaterPlane();
 	private:
 		std::vector<int> mySceneIndexes;
 		int myActiveScene;

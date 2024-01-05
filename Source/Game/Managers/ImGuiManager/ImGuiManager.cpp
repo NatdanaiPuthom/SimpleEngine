@@ -8,6 +8,8 @@
 #include "Game/Managers/ImGuiManager/Tools/SceneTool.hpp"
 #include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
 #include "Game/Managers/ImGuiManager/Tools/DebugTool.hpp"
+#include "Game/Managers/ImGuiManager/Tools/PlaneReflectionTool.hpp"
+#include "Game/Managers/ImGuiManager/Menu/MainMenuBar.hpp"
 
 namespace Simple
 {
@@ -18,6 +20,8 @@ namespace Simple
 		AddTool(std::move(std::make_unique<Tool::MeshTool>()));
 		AddTool(std::move(std::make_unique<Tool::DebugTool>()));
 		AddTool(std::move(std::make_unique<Tool::SettingsTool>()));
+		AddTool(std::move(std::make_unique<Tool::PlaneReflectionTool>()));
+		AddTool(std::move(std::make_unique<Tool::MainMenuBar>()));
 		AddTool(std::move(std::make_unique<Tool::CameraTool>()));
 	}
 
