@@ -9,43 +9,6 @@ namespace Simple
 	{
 	}
 
-	void Pathfinder::CalculatePath(Simple::Navmesh& aNavmeshData, const SU::Vector3f& aStartPosition, const SU::Vector3f& aTargetPosition)
-	{
-		const int startNodeIndex = aNavmeshData.GetNodeIndexFromPoint(aStartPosition);
-		const int targetNodeIndex = aNavmeshData.GetNodeIndexFromPoint(aTargetPosition);
-
-		if (startNodeIndex < 0 || targetNodeIndex < 0)
-		{
-			myStartPosition = aStartPosition;
-			myTargetPosition = aStartPosition;
-			myPathAStar.clear();
-			myPathFunnel.clear();
-			myLines.clear();
-			return;
-		}
-
-		std::vector<Simple::Node>& nodes = aNavmeshData.GetNodes();
-		Simple::Node* startNode = aNavmeshData.GetNode(aStartPosition);
-		Simple::Node* targetNode = aNavmeshData.GetNode(aTargetPosition);
-
-		myStartPosition = aStartPosition;
-		myTargetPosition = aTargetPosition;
-		const SU::Vector3 vertice0 = aNavmeshData.GetNavmesh().myVertices[targetNode->myIndices[0]];
-		myTargetPosition.y = CalculateHeight(aTargetPosition, targetNode->myPlane.GetNormal(), vertice0);
-
-		if (startNode == targetNode)
-		{
-			myPathFunnel.clear();
-			myPathFunnel.push_back(myTargetPosition);
-			CreateLines();
-			return;
-		}
-
-		CalculateAStarPath(nodes, startNode, targetNode);
-		CalculateFunnelPath(aNavmeshData);
-		CreateLines();
-	}
-
 	void Pathfinder::CalculatePath(const SU::Vector3f& aStartPosition, const SU::Vector3f& aTargetPosition)
 	{
 		assert(myNavmesh && "Navmesh pointer is null");
@@ -180,44 +143,34 @@ namespace Simple
 		SU::Vector3f startPositionEnd = myStartPosition;
 		SU::Vector3 targetPositionEnd = myTargetPosition;
 
-		startPositionEnd.y += 10.0f;
-		targetPositionEnd.y += 10.0f;
+		startPositionEnd.y += 100.0f;
+		targetPositionEnd.y += 100.0f;
 
 		Drawer::Line startLine;
 		startLine.startPosition = myStartPosition;
 		startLine.endPosition = startPositionEnd;
-		startLine.color = { 1.0f, 1.0f, 0.0f, 1.0f };
+		startLine.color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
 		Drawer::Line endLine;
 		endLine.startPosition = myTargetPosition;
 		endLine.endPosition = targetPositionEnd;
-		endLine.color = { 1.0f, 1.0f, 0.0f, 1.0f };
+		endLine.color = { 0.0f, 1.0f, 1.0f, 1.0f };
+		
+		Drawer::Sphere startSphere;
+		startSphere.position = myStartPosition;
+		startSphere.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+		startSphere.radius = 0.1f;
+
+		Drawer::Sphere endSphere;
+		endSphere.position = myTargetPosition;
+		endSphere.color = { 0.0f, 1.0f, 1.0f, 1.0f };
+		endSphere.radius = 0.1f;
 
 		auto renderer = SimpleGlobal::GetRenderer();
 		renderer->RenderLine(startLine);
 		renderer->RenderLine(endLine);
-	}
-
-	void Pathfinder::SetNavmesh(Simple::Navmesh* aNavmeshData)
-	{
-		myNavmesh = aNavmeshData;
-	}
-
-	void Pathfinder::SetStartPosition(const SimpleUtilities::Vector3f& aStartPosition)
-	{
-		myStartPosition = aStartPosition;
-	}
-
-	void Pathfinder::SetTargetPosition(const SimpleUtilities::Vector3f& aTargetPosition)
-	{
-		myTargetPosition = aTargetPosition;
-	}
-
-	void Pathfinder::ClearPaths()
-	{
-		myPathAStar.clear();
-		myPathFunnel.clear();
-		myLines.clear();
+		renderer->RenderSphere(startSphere);
+		renderer->RenderSphere(endSphere);
 	}
 
 	void Pathfinder::RenderAStarPath() const
@@ -245,6 +198,28 @@ namespace Simple
 
 			renderer->RenderLine(line);
 		}
+	}
+
+	void Pathfinder::SetNavmesh(Simple::Navmesh* aNavmeshData)
+	{
+		myNavmesh = aNavmeshData;
+	}
+
+	void Pathfinder::SetStartPosition(const SimpleUtilities::Vector3f& aStartPosition)
+	{
+		myStartPosition = aStartPosition;
+	}
+
+	void Pathfinder::SetTargetPosition(const SimpleUtilities::Vector3f& aTargetPosition)
+	{
+		myTargetPosition = aTargetPosition;
+	}
+
+	void Pathfinder::ClearPaths()
+	{
+		myPathAStar.clear();
+		myPathFunnel.clear();
+		myLines.clear();
 	}
 
 	const std::vector<SU::Vector3f>& Pathfinder::GetFunnelPath() const
