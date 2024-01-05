@@ -5,6 +5,8 @@ namespace Simple
 	struct NavmeshData
 	{
 		std::vector<SimpleUtilities::Vector3f> myVertices;
+		std::vector<SimpleUtilities::Vector3f> myOffsetVertices;
+		std::vector<std::pair<SimpleUtilities::Vector3f, SimpleUtilities::Vector3f>> offsetLines; //Debug purposes
 		std::vector<int> myIndices;
 	};
 
@@ -72,11 +74,14 @@ namespace Simple
 	private:
 		void CreateNodes();
 		void CalculateConnections();
+		void CalculateOffset();
+		bool IsWall(const size_t aNodeIndex, const int aVertexIndex1, const int aVertexIndex2) const;
 	private:
 		std::unordered_map<std::string, std::pair<Simple::NavmeshData, std::vector<Simple::Node>>> myNavmeshData;
 		std::vector<Simple::Node> myCurrentNodes;
 		std::vector<Drawer::Line> myNavmeshLines;
 		std::vector<Drawer::Line> myConnectionLines;
+		std::vector<Drawer::Line> myOffsetLines;
 
 		Simple::NavmeshData myCurrentMesh;
 	};

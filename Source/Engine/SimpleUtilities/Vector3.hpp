@@ -21,6 +21,7 @@ namespace SimpleUtilities
 		Vector3<T>& operator=(const Vector3<T>& aVector) = default;
 
 		Vector2<T> AsVector2() const;
+		Vector2<T> AsVector2XZ() const;
 		Vector3<T> GetNormalized() const;
 
 		T LengthSqr() const;
@@ -64,6 +65,12 @@ namespace SimpleUtilities
 	inline Vector2<T> Vector3<T>::AsVector2() const
 	{
 		return Vector2<T>(x, y);
+	}
+
+	template<class T>
+	inline Vector2<T> Vector3<T>::AsVector2XZ() const
+	{
+		return Vector2<T>(x, z);
 	}
 
 	template<class T>

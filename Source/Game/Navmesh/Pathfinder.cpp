@@ -316,7 +316,7 @@ namespace Simple
 
 					if (angle < 0)
 					{
-						apex = vertices[right.front().vertexIndex];
+						apex = aNavmeshData.GetNavmesh().myOffsetVertices[right.front().vertexIndex];
 						i = right.front().portalIndex;
 
 						wayPoints.push_back(apex);
@@ -335,7 +335,7 @@ namespace Simple
 
 					if (angle < 0)
 					{
-						apex = vertices[portals.back().right.vertexIndex];
+						apex = aNavmeshData.GetNavmesh().myOffsetVertices[portals.back().right.vertexIndex];
 						i = portals.back().right.portalIndex;
 
 						wayPoints.push_back(apex);
@@ -355,7 +355,7 @@ namespace Simple
 
 					if (angle < 0)
 					{
-						apex = vertices[left.front().vertexIndex];
+						apex = aNavmeshData.GetNavmesh().myOffsetVertices[left.front().vertexIndex];
 						i = left.front().portalIndex;
 
 						wayPoints.push_back(apex);
@@ -372,7 +372,7 @@ namespace Simple
 
 					if (angle < 0)
 					{
-						apex = vertices[portals.back().left.vertexIndex];
+						apex = aNavmeshData.GetNavmesh().myOffsetVertices[portals.back().left.vertexIndex];
 						i = portals.back().left.portalIndex;
 
 						wayPoints.push_back(apex);
@@ -556,10 +556,10 @@ namespace Simple
 		line.startPosition.y += offset;
 		line.endPosition = myPathFunnel[0];
 		line.endPosition.y += offset;
-		line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		line.color = { 1.0f, 1.0f, 0.0f, 1.0f };
 
 		myLines.push_back(line);
-
+			
 		for (size_t i = 0; i < myPathFunnel.size() - 1; ++i)
 		{
 			SU::Vector3f start = myPathFunnel[i];

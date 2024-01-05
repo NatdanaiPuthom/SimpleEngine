@@ -19,6 +19,7 @@ namespace Simple
 
 		CreateNodes();
 		CalculateConnections();
+		CalculateOffset();
 
 		myNavmeshData.emplace(std::string(aObjFile), std::make_pair(myCurrentMesh, myCurrentNodes));
 
@@ -34,10 +35,11 @@ namespace Simple
 
 		myNavmeshLines.clear();
 		myConnectionLines.clear();
+		myOffsetLines.clear();
 
 		auto adjustedVertex = [&](int index) -> SimpleUtilities::Vector3f {
 			const auto& vertex = myCurrentMesh.myVertices[index];
-			return SimpleUtilities::Vector3f(vertex.x, vertex.y + 0.0001f, vertex.z);
+			return SimpleUtilities::Vector3f(vertex.x, vertex.y, vertex.z);
 			};
 
 		Drawer::Line line;
@@ -45,7 +47,7 @@ namespace Simple
 
 		for (size_t nodeIndex = 0; nodeIndex < myCurrentMesh.myIndices.size(); nodeIndex += 3)
 		{
-			const SimpleUtilities::Vector3f vertices[] = 
+			const SimpleUtilities::Vector3f vertices[] =
 			{
 				adjustedVertex(myCurrentMesh.myIndices[nodeIndex + 0]),
 				adjustedVertex(myCurrentMesh.myIndices[nodeIndex + 1]),
@@ -80,6 +82,38 @@ namespace Simple
 				}
 			}
 		}
+
+		for (size_t nodeIndex = 0; nodeIndex < myCurrentNodes.size(); ++nodeIndex)
+		{
+			const Node& currentNode = myCurrentNodes[nodeIndex];
+			const SimpleUtilities::Vector3f currentNodeCenter(currentNode.myCenter.x, currentNode.myCenter.y, currentNode.myCenter.z);
+
+			for (int connectionIndex : currentNode.myConnections)
+			{
+				if (connectionIndex != -1)
+				{
+					const Node& connectedNode = myCurrentNodes[connectionIndex];
+					const SimpleUtilities::Vector3f connectedNodeCenter(connectedNode.myCenter.x, connectedNode.myCenter.y + 0.0001f, connectedNode.myCenter.z);
+
+					line.startPosition = currentNodeCenter;
+					line.endPosition = connectedNodeCenter;
+					myConnectionLines.push_back(line);
+				}
+			}
+		}
+
+		line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+		for (const auto& wall : myCurrentMesh.offsetLines)
+		{
+			line.startPosition = wall.first;
+			line.endPosition = wall.second;
+
+			line.startPosition.y += 0.2f;
+			line.endPosition.y += 0.2f;
+
+			myOffsetLines.push_back(line);
+		}
 	}
 
 	void Navmesh::RenderNavmesh()
@@ -87,6 +121,11 @@ namespace Simple
 		auto renderer = SimpleGlobal::GetRenderer();
 
 		for (const auto& line : myNavmeshLines)
+		{
+			renderer->RenderLine(line);
+		}
+
+		for (const auto& line : myOffsetLines)
 		{
 			renderer->RenderLine(line);
 		}
@@ -192,7 +231,6 @@ namespace Simple
 		return -1;
 	}
 
-
 	void Navmesh::CreateNodes()
 	{
 		for (int nodeIndex = 0; nodeIndex < myCurrentMesh.myIndices.size(); nodeIndex += 3)
@@ -259,6 +297,106 @@ namespace Simple
 			}
 		}
 
+	}
+
+	void Navmesh::CalculateOffset()
+	{
+		std::vector<std::pair<int, int>> walls;
+
+		for (size_t nodeIndex = 0; nodeIndex < myCurrentNodes.size(); ++nodeIndex)
+		{
+			const int vertexIndex1 = myCurrentNodes[nodeIndex].myIndices[0];
+			const int vertexIndex2 = myCurrentNodes[nodeIndex].myIndices[1];
+			const int vertexIndex3 = myCurrentNodes[nodeIndex].myIndices[2];
+
+			if (IsWall(nodeIndex, vertexIndex1, vertexIndex2))
+			{
+				walls.push_back({ vertexIndex1, vertexIndex2 });
+			}
+
+			if (IsWall(nodeIndex, vertexIndex2, vertexIndex3))
+			{
+				walls.push_back({ vertexIndex2, vertexIndex3 });
+			}
+
+			if (IsWall(nodeIndex, vertexIndex3, vertexIndex1))
+			{
+				walls.push_back({ vertexIndex3, vertexIndex1 });
+			}
+		}
+
+		for (size_t i = 0; i < walls.size(); ++i)
+		{
+			bool connectionExists = false;
+
+			for (size_t j = 0; j < walls.size(); ++j)
+			{
+				if (walls[i].first == walls[j].second)
+				{
+					connectionExists = true;
+					break;
+				}
+			}
+			if (!connectionExists)
+			{
+				assert(false);
+			}
+		}
+
+		myCurrentMesh.myOffsetVertices.resize(myCurrentMesh.myVertices.size());
+
+		for (const std::pair<int, int>& wall1 : walls)
+		{
+			const int leftVertex = wall1.second;
+			const int currentVertex = wall1.first;
+
+			int rightVertex = -1;
+
+			for (const std::pair<int, int>& wall2 : walls)
+			{
+				if (currentVertex == wall2.second)
+				{
+					rightVertex = wall2.first;
+					break;
+				}
+			}
+			const SU::Vector2f leftVector = (myCurrentMesh.myVertices[leftVertex] - myCurrentMesh.myVertices[currentVertex]).AsVector2XZ().GetNormalized();
+			const SU::Vector2f rightVector = (myCurrentMesh.myVertices[rightVertex] - myCurrentMesh.myVertices[currentVertex]).AsVector2XZ().GetNormalized();
+
+			const SU::Vector2f offsetDirection = (leftVector + rightVector).GetNormalized();
+			const SU::Vector2f offsetPosition = myCurrentMesh.myVertices[currentVertex].AsVector2XZ() - offsetDirection * 0.1f;
+			const SU::Vector3f offsetVertice = { offsetPosition.x, 0.0f, offsetPosition.y };
+
+			myCurrentMesh.myOffsetVertices[currentVertex] = offsetVertice;
+		}
+
+		for (const auto& wall : walls)
+		{
+			const SU::Vector3f offsetStart = myCurrentMesh.myOffsetVertices[wall.first];
+			const SU::Vector3f offsetEnd = myCurrentMesh.myOffsetVertices[wall.second];
+
+			myCurrentMesh.offsetLines.push_back(std::make_pair(offsetStart, offsetEnd));
+		}
+	}
+
+	bool Navmesh::IsWall(const size_t aNodeIndex, const int aVertexIndex1, const int aVertexIndex2) const
+	{
+		for (int i = 0; i < myCurrentNodes[aNodeIndex].myConnections.size(); ++i)
+		{
+			const int neighbourIndex = myCurrentNodes[aNodeIndex].myConnections[i];
+
+			if (neighbourIndex == -1)
+				continue;
+
+			if ((aVertexIndex1 == myCurrentNodes[neighbourIndex].myIndices[0] && aVertexIndex2 == myCurrentNodes[neighbourIndex].myIndices[2]) ||
+				(aVertexIndex1 == myCurrentNodes[neighbourIndex].myIndices[2] && aVertexIndex2 == myCurrentNodes[neighbourIndex].myIndices[1]) ||
+				(aVertexIndex1 == myCurrentNodes[neighbourIndex].myIndices[1] && aVertexIndex2 == myCurrentNodes[neighbourIndex].myIndices[0]))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	Simple::NavmeshData Simple::Navmesh::LoadNavmesh(const char* aObjFile)
