@@ -2,11 +2,11 @@
 
 namespace Tool
 {
-	class Debug final : public Simple::ToolInterface
+	class DebugTool final : public Simple::ToolInterface
 	{
 	public:
-		Debug();
-		virtual ~Debug() override;
+		DebugTool();
+		virtual ~DebugTool() override;
 
 		virtual void Draw() override;
 	private:

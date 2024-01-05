@@ -1,14 +1,14 @@
 #include "Game/Precomplier/stdafx.h"
 #include "Engine/Graphics/Camera/Camera.hpp"
-#include "Game/Managers/ImGuiManager/Tools/Camera.hpp"
+#include "Game/Managers/ImGuiManager/Tools/CameraTool.hpp"
 
 namespace Tool
 {
-	Camera::Camera()
+	CameraTool::CameraTool()
 	{
 	}
 
-	void Camera::Draw()
+	void CameraTool::Draw()
 	{
 		if (ImGui::Begin("Camera Controls"))
 		{
@@ -49,7 +49,7 @@ namespace Tool
 			ImGui::Text("Speedx5      - Hold Shift");
 
 			ImGui::SameLine();
-			ImGui::Dummy(ImVec2(106, 0));
+			ImGui::Dummy(ImVec2(58, 0));
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(100.0f);
 			float fov = graphicsEngine->GetCamera()->GetFoV() * globalRadToDeg;

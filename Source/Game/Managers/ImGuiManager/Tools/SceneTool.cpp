@@ -1,13 +1,13 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Game/Managers/ImGuiManager/Tools/Scene.hpp"
+#include "Game/Managers/ImGuiManager/Tools/SceneTool.hpp"
 
 namespace Tool
 {
-	Scene::Scene()
+	SceneTool::SceneTool()
 	{
 	}
 
-	void Scene::Draw()
+	void SceneTool::Draw()
 	{
 		Simple::GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 

@@ -1,18 +1,18 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Game/Managers/ImGuiManager/Tools/Debug.hpp"
+#include "Game/Managers/ImGuiManager/Tools/DebugTool.hpp"
 
 namespace Tool
 {
-	Debug::Debug()
+	DebugTool::DebugTool()
 	{
 		LoadDataFromJson();
 	}
 
-	Debug::~Debug()
+	DebugTool::~DebugTool()
 	{
 	}
 
-	void Debug::Draw()
+	void DebugTool::Draw()
 	{
 		if (ImGui::Begin("Debug"))
 		{
@@ -50,7 +50,7 @@ namespace Tool
 		ImGui::End();
 	}
 
-	void Debug::LoadDataFromJson()
+	void DebugTool::LoadDataFromJson()
 	{
 		const std::string filename = SimpleUtilities::GetPath(SIMPLE_LEVELS_FILENAME);
 		std::ifstream file(filename);
@@ -67,7 +67,7 @@ namespace Tool
 		}
 	}
 
-	void Debug::WaterPlane()
+	void DebugTool::WaterPlane()
 	{
 		auto& waterPlane = SimpleWorld::GetWaterPlane()->myModel;
 

@@ -1,13 +1,13 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Game/Managers/ImGuiManager/Tools/Mesh.hpp"
+#include "Game/Managers/ImGuiManager/Tools/MeshTool.hpp"
 
 namespace Tool
 {
-	Mesh::Mesh()
+	MeshTool::MeshTool()
 	{
 	}
 
-	void Mesh::Draw()
+	void MeshTool::Draw()
 	{
 		if (ImGui::Begin("Meshes"))
 		{

@@ -1,9 +1,9 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Game/Managers/ImGuiManager/Tools/Settings.hpp"
+#include "Game/Managers/ImGuiManager/Tools/SettingsTool.hpp"
 
 namespace Tool
 {
-	Settings::Settings()
+	SettingsTool::SettingsTool()
 		: mySelectedWindowSize(1)
 		, mySelectedResolution(1)
 		, mySelectedRasterizerState(0)
@@ -23,7 +23,7 @@ namespace Tool
 		}
 	}
 
-	void Settings::Draw()
+	void SettingsTool::Draw()
 	{
 		if (ImGui::Begin("Settings"))
 		{
@@ -58,7 +58,7 @@ namespace Tool
 		ImGui::End();
 	}
 
-	void Settings::UpdateAndFetchCurrentMonitorResolution()
+	void SettingsTool::UpdateAndFetchCurrentMonitorResolution()
 	{
 		HMONITOR hMonitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY);
 
@@ -69,7 +69,7 @@ namespace Tool
 		myMonitorResolution.y = static_cast<unsigned int>(monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top);
 	}
 
-	void Settings::ToggleConsole()
+	void SettingsTool::ToggleConsole()
 	{
 		if (ImGui::Checkbox("Show Console", &myConsoleIsOpen))
 		{
@@ -82,7 +82,7 @@ namespace Tool
 		}
 	}
 
-	void Settings::ToggleVSync(Simple::GraphicsEngine* aGraphicsEngine)
+	void SettingsTool::ToggleVSync(Simple::GraphicsEngine* aGraphicsEngine)
 	{
 		bool vsync = aGraphicsEngine->IsVSyncActive();
 
@@ -92,7 +92,7 @@ namespace Tool
 		}
 	}
 
-	void Settings::ToggleMusic()
+	void SettingsTool::ToggleMusic()
 	{
 		auto audioManager = SimpleGlobal::GetAudioManager();
 
@@ -103,19 +103,19 @@ namespace Tool
 		}
 	}
 
-	void Settings::ShowDrawCalls()
+	void SettingsTool::ShowDrawCalls()
 	{
 		std::string drawCalls = "DrawCalls: " + std::to_string(SimpleGlobal::GetDrawCalls());
 		ImGui::Text(drawCalls.c_str());
 	}
 
-	void Settings::ShowFPS()
+	void SettingsTool::ShowFPS()
 	{
 		std::string fps = "FPS: " + std::to_string(SimpleGlobal::GetFPS());
 		ImGui::Text(fps.c_str());
 	}
 
-	void Settings::AdjustWindowSize()
+	void SettingsTool::AdjustWindowSize()
 	{
 		ImGui::SetNextItemWidth(200);
 
@@ -154,7 +154,7 @@ namespace Tool
 		}
 	}
 
-	void Settings::AdjustResolution()
+	void SettingsTool::AdjustResolution()
 	{
 		ImGui::SetNextItemWidth(200.0f);
 
@@ -172,7 +172,7 @@ namespace Tool
 		}
 	}
 
-	void Settings::AdjustRasterizerState()
+	void SettingsTool::AdjustRasterizerState()
 	{
 		ImGui::SetNextItemWidth(200);
 
@@ -189,7 +189,7 @@ namespace Tool
 		}
 	}
 
-	void Settings::AdjustFPSCap(Simple::GraphicsEngine* aGraphicsEngine)
+	void SettingsTool::AdjustFPSCap(Simple::GraphicsEngine* aGraphicsEngine)
 	{
 		int monitorUpdateFrequency = 0;
 

@@ -2,10 +2,10 @@
 
 namespace Tool
 {
-	class Camera final : public Simple::ToolInterface
+	class CameraTool final : public Simple::ToolInterface
 	{
 	public:
-		Camera();
+		CameraTool();
 
 		virtual void Draw() override;
 	};

@@ -2,10 +2,10 @@
 
 namespace Tool
 {
-	class Mesh final : public Simple::ToolInterface
+	class MeshTool final : public Simple::ToolInterface
 	{
 	public:
-		Mesh();
+		MeshTool();
 
 		virtual void Draw() override;
 	};

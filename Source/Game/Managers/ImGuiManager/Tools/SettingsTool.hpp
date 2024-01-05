@@ -2,10 +2,10 @@
 
 namespace Tool
 {
-	class Settings final : public Simple::ToolInterface
+	class SettingsTool final : public Simple::ToolInterface
 	{
 	public:
-		Settings();
+		SettingsTool();
 
 		virtual void Draw() override;
 

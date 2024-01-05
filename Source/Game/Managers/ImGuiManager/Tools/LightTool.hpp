@@ -2,10 +2,10 @@
 
 namespace Tool
 {
-	class Scene final : public Simple::ToolInterface
+	class LightTool final : public Simple::ToolInterface
 	{
 	public:
-		Scene();
+		LightTool();
 
 		virtual void Draw() override;
 	};

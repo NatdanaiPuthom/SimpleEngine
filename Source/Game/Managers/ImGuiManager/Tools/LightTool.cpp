@@ -1,13 +1,13 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Game/Managers/ImGuiManager/Tools/Light.hpp"
+#include "Game/Managers/ImGuiManager/Tools/LightTool.hpp"
 
 namespace Tool
 {
-	Light::Light()
+	LightTool::LightTool()
 	{
 	}
 
-	void Light::Draw()
+	void LightTool::Draw()
 	{
 		Simple::GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 
