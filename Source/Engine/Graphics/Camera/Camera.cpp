@@ -31,7 +31,7 @@ namespace Simple
 
 			if (myInput->IsHold(VK_SHIFT))
 			{
-				speed *= 3.0f;
+				speed *= 5.0f;
 			}
 
 			if (myInput->IsPressed(VK_TAB))
@@ -288,6 +288,11 @@ namespace Simple
 		viewMatrix(4, 4) = 1.0f;
 
 		return viewMatrix;
+	}
+
+	float Camera::GetRotationSpeed() const
+	{
+		return myRotateSpeed;
 	}
 
 	SimpleUtilities::Vector3f Camera::GetPosition() const

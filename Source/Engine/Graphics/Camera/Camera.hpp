@@ -35,6 +35,7 @@ namespace Simple
 		SimpleUtilities::Vector3f GetUp() const;
 		SimpleUtilities::Vector3f GetRight() const;
 
+		float GetRotationSpeed() const;
 		float GetMoveSpeed() const;
 		float GetNearPlane() const;
 		float GetFarPlane() const;

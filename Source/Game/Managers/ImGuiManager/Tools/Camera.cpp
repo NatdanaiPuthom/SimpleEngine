@@ -10,10 +10,9 @@ namespace Tool
 
 	void Camera::Draw()
 	{
-		Simple::GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
-
-		if (ImGui::Begin("Camera Controls")) //TO-DO: Move All ImGui stuff to it's own place
+		if (ImGui::Begin("Camera Controls"))
 		{
+			Simple::GraphicsEngine* graphicsEngine = SimpleGlobal::GetGraphicsEngine();
 			ImGui::Text("Movements    - WASD");
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(100, 0));
@@ -32,6 +31,22 @@ namespace Tool
 			ImGui::Text("Click and Hold to select the object. Move object using mouse");
 
 			ImGui::Text("FreeFly      - TAB");
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2(107, 0));
+			ImGui::SameLine();
+			ImGui::SetNextItemWidth(100.0f);
+			float rotationSpeed = graphicsEngine->GetCamera()->GetRotationSpeed();
+			if (ImGui::SliderFloat("Camera Rotate Speed", &rotationSpeed, 0.01f, 300.0f, "%0.3f"))
+			{
+				graphicsEngine->GetCamera()->SetRotateSpeed(rotationSpeed);
+			}
+
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2(30, 0));
+			ImGui::SameLine();
+			ImGui::Text("While object is selected, hold CTRL to move object up/down.");
+
+			ImGui::Text("Speedx5      - Hold Shift");
 
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(106, 0));
@@ -44,12 +59,6 @@ namespace Tool
 				graphicsEngine->GetCamera()->SetFoV(fov);
 			}
 
-			ImGui::SameLine();
-			ImGui::Dummy(ImVec2(144, 0));
-			ImGui::SameLine();
-			ImGui::Text("While object is selected, hold CTRL to move object up/down.");
-
-			ImGui::Text("Speedx3      - Hold Shift");
 			ImGui::Text("Fly Up       - SPACE");
 			ImGui::Text("Fly Down     - Hold Ctrl + SPACE");
 			ImGui::Text("Rotate Left  - E");
