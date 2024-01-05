@@ -155,7 +155,7 @@ namespace Simple
 		endLine.startPosition = myTargetPosition;
 		endLine.endPosition = targetPositionEnd;
 		endLine.color = { 0.0f, 1.0f, 1.0f, 1.0f };
-		
+
 		Drawer::Sphere startSphere;
 		startSphere.position = myStartPosition;
 		startSphere.color = { 0.0f, 1.0f, 0.0f, 1.0f };
@@ -551,6 +551,15 @@ namespace Simple
 		if (myPathFunnel.empty())
 			return;
 
+		Drawer::Line line;
+		line.startPosition = myStartPosition;
+		line.startPosition.y += offset;
+		line.endPosition = myPathFunnel[0];
+		line.endPosition.y += offset;
+		line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+		myLines.push_back(line);
+
 		for (size_t i = 0; i < myPathFunnel.size() - 1; ++i)
 		{
 			SU::Vector3f start = myPathFunnel[i];
@@ -559,10 +568,8 @@ namespace Simple
 			start.y += offset;
 			end.y += offset;
 
-			Drawer::Line line;
 			line.startPosition = start;
 			line.endPosition = end;
-			line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 			myLines.push_back(line);
 		}
