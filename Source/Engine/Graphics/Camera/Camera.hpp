@@ -5,7 +5,7 @@ namespace Simple
 	class Camera final
 	{
 	public:
-		Camera(const float aFoV = 1.57075f, const float aNearPlane = 0.1f, const float aFarPlane = 1000.0f);
+		Camera(const float aFoV = 1.57075f, const float aNearPlane = 0.1f, const float aFarPlane = 10000.0f);
 		~Camera() = default;
 
 		void Update(const float aDeltaTime);
