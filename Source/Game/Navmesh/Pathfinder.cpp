@@ -98,14 +98,17 @@ namespace Simple
 
 				Simple::Node* neighbour = &aNodes[currentNode->myConnections[i]];
 
-				const float distance = CalculateEuclideanDistance(neighbour->myCenter, currentNode->myCenter);
+				//const float distance = CalculateEuclideanDistance(neighbour->myCenter, currentNode->myCenter);
+				std::pair<int, int> edgeIndices = myNavmesh->GetEdgeBetweenNodes(neighbour, currentNode);
+				SU::Vector3f pos = SU::Lerp(myNavmesh->GetNavmesh().myVertices[edgeIndices.first], myNavmesh->GetNavmesh().myVertices[edgeIndices.second], 0.5f);
+				const float distance = CalculateEuclideanDistance(pos, currentNode->myCenter);
 
-				if (currentNode->myData.g + distance < neighbour->myData.g)
+					if (currentNode->myData.g + distance < neighbour->myData.g)
 				{
 					neighbour->myData.myParent = currentNode;
 					neighbour->myData.g = currentNode->myData.g + distance;
 					neighbour->myData.h = CalculateEuclideanDistance(neighbour->myCenter, aTargetNode->myCenter);
-					neighbour->myData.f = neighbour->myData.g + neighbour->myData.h;
+						neighbour->myData.f = neighbour->myData.g + neighbour->myData.h;
 
 					openList.push(neighbour);
 				}
@@ -244,7 +247,7 @@ namespace Simple
 		else if (myAStarNodes.size() < 2)
 			return;
 
-		const std::vector<SU::Vector3f> vertices = aNavmeshData.GetNavmesh().myVertices;
+		const std::vector<SU::Vector3f>& vertices = aNavmeshData.GetNavmesh().myVertices;
 		std::vector<SU::Vector3f> wayPoints;
 
 		SU::Vector3f apex;
@@ -321,6 +324,7 @@ namespace Simple
 						i = rightSaved.front().portalIndex + 1ull;
 
 						wayPoints.push_back(navmeshOffset[rightSaved.front().vertexIndex]);
+						//wayPoints.push_back(apex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -340,6 +344,7 @@ namespace Simple
 						i = portals.back().right.portalIndex;
 
 						wayPoints.push_back(navmeshOffset[portals.back().right.vertexIndex]);
+						//wayPoints.push_back(apex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -360,6 +365,7 @@ namespace Simple
 						i = leftSaved.front().portalIndex + 1ull;
 
 						wayPoints.push_back(navmeshOffset[leftSaved.front().vertexIndex]);
+						//wayPoints.push_back(apex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -378,6 +384,7 @@ namespace Simple
 						i = portals.back().left.portalIndex;
 
 						wayPoints.push_back(navmeshOffset[portals.back().left.vertexIndex]);
+						//wayPoints.push_back(apex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -430,6 +437,7 @@ namespace Simple
 					}
 					i = nextPortal;
 					wayPoints.push_back(navmeshOffset[leftt.vertexIndex]);
+					//wayPoints.push_back(apex);
 
 					break;
 				}
@@ -447,6 +455,7 @@ namespace Simple
 					}
 					i = nextPortal;
 					wayPoints.push_back(navmeshOffset[rightt.vertexIndex]);
+					//wayPoints.push_back(apex);
 					break;
 				}
 				}

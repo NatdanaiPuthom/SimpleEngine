@@ -231,6 +231,46 @@ namespace Simple
 		return -1;
 	}
 
+	std::pair<int, int> Navmesh::GetEdgeBetweenNodes(Simple::Node* aNode1, Simple::Node* aNode2) const
+	{
+		std::pair<int, int> edge(-1, -1);
+
+		for (int i = 0; i < 3; ++i)
+		{
+			const int node1Index1 = aNode1->myIndices[i];
+			const int node1Index2 = aNode1->myIndices[(i + 1) % 3];
+
+			const int node2Index1 = aNode2->myIndices[i];
+			const int node2Index2 = aNode2->myIndices[(i + 1) % 3];
+			const int node2Index3 = aNode2->myIndices[(i + 2) % 3];
+
+
+			if (node1Index1 == node2Index2 && node1Index2 == node2Index1)
+			{
+				edge.first = node1Index1;
+				edge.second = node1Index2;
+				break;
+			}
+
+			if (node1Index1 == node2Index3 && node1Index2 == node2Index2)
+			{
+				edge.first = node1Index1;
+				edge.second = node1Index2;
+				break;
+			}
+
+			if (node1Index1 == node2Index1 && node1Index2 == node2Index3)
+			{
+				edge.first = node1Index1;
+				edge.second = node1Index2;
+				break;
+			}
+		}
+
+		
+		return edge;
+	}
+
 	void Navmesh::CreateNodes()
 	{
 		for (int nodeIndex = 0; nodeIndex < myCurrentMesh.myIndices.size(); nodeIndex += 3)
@@ -344,6 +384,11 @@ namespace Simple
 		}
 
 		myCurrentMesh.myOffsetVertices.resize(myCurrentMesh.myVertices.size());
+
+		for (size_t i = 0; i < myCurrentMesh.myOffsetVertices.size(); i++)
+		{
+			myCurrentMesh.myOffsetVertices[i] = myCurrentMesh.myVertices[i];
+		}
 
 		for (const std::pair<int, int>& wall1 : walls)
 		{

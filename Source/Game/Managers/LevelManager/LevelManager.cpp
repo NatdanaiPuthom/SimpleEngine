@@ -40,7 +40,7 @@ namespace Simple
 
 		SetActiveScene(myActiveSceneIndex);
 
-		myNavmesh.Init("Intro_To_Boss.obj");
+		myNavmesh.Init("Intro To Boss.obj");
 	}
 
 	void LevelManager::Update()

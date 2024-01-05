@@ -71,6 +71,7 @@ namespace Simple
 		Simple::Node* GetNode(const int aIndex);
 		std::vector<Simple::Node>& GetNodes();
 		int GetNodeIndexFromPoint(const SimpleUtilities::Vector3f& aPoint) const;
+		std::pair<int, int> GetEdgeBetweenNodes(Simple::Node* aNode1, Simple::Node* aNode2) const;
 	private:
 		void CreateNodes();
 		void CalculateConnections();
