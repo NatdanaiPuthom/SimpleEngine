@@ -8,7 +8,6 @@ namespace Simple
 	public:
 		Pathfinder();
 
-		void CalculatePath(Simple::Navmesh& aNavmeshData, const SimpleUtilities::Vector3f& aStartPosition, const SimpleUtilities::Vector3f& aTargetPosition);
 		void CalculatePath(const SimpleUtilities::Vector3f& aStartPosition, const SimpleUtilities::Vector3f& aTargetPosition);
 		bool CanIWalkhere(const SimpleUtilities::Vector3f& aPosition);
 
