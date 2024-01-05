@@ -316,10 +316,11 @@ namespace Simple
 
 					if (angle < 0)
 					{
-						apex = aNavmeshData.GetNavmesh().myOffsetVertices[right.front().vertexIndex];
+						apex = vertices[right.front().vertexIndex];
 						i = right.front().portalIndex;
 
-						wayPoints.push_back(apex);
+						const auto& offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[right.front().vertexIndex];
+						wayPoints.push_back(offsetApex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -335,10 +336,11 @@ namespace Simple
 
 					if (angle < 0)
 					{
-						apex = aNavmeshData.GetNavmesh().myOffsetVertices[portals.back().right.vertexIndex];
+						apex = vertices[portals.back().right.vertexIndex];
 						i = portals.back().right.portalIndex;
 
-						wayPoints.push_back(apex);
+						const SU::Vector3f offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[portals.back().right.vertexIndex];
+						wayPoints.push_back(offsetApex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -355,10 +357,11 @@ namespace Simple
 
 					if (angle < 0)
 					{
-						apex = aNavmeshData.GetNavmesh().myOffsetVertices[left.front().vertexIndex];
+						apex = vertices[left.front().vertexIndex];
 						i = left.front().portalIndex;
 
-						wayPoints.push_back(apex);
+						const SU::Vector3f offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[left.front().vertexIndex];
+						wayPoints.push_back(offsetApex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -372,10 +375,11 @@ namespace Simple
 
 					if (angle < 0)
 					{
-						apex = aNavmeshData.GetNavmesh().myOffsetVertices[portals.back().left.vertexIndex];
+						apex = vertices[portals.back().left.vertexIndex];
 						i = portals.back().left.portalIndex;
 
-						wayPoints.push_back(apex);
+						const SU::Vector3f offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[portals.back().left.vertexIndex];
+						wayPoints.push_back(offsetApex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -413,19 +417,23 @@ namespace Simple
 
 			if (nextAngle < 0)
 			{
+				SU::Vector3f offsetApex;
+
 				switch (portals[i].mover)
 				{
 				case eMover::Right:
 					apex = vertices[leftt.vertexIndex];
+					offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[leftt.vertexIndex];
 					i = leftt.portalIndex;
 					break;
 				case eMover::Left:
 					apex = vertices[rightt.vertexIndex];
+					offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[rightt.vertexIndex];
 					i = rightt.portalIndex;
 					break;
 				}
 
-				wayPoints.push_back(apex);
+				wayPoints.push_back(offsetApex);
 
 				currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
