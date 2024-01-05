@@ -365,7 +365,7 @@ namespace Simple
 
 			const SU::Vector2f offsetDirection = (leftVector + rightVector).GetNormalized();
 			const SU::Vector2f offsetPosition = myCurrentMesh.myVertices[currentVertex].AsVector2XZ() - offsetDirection * 0.1f;
-			const SU::Vector3f offsetVertice = { offsetPosition.x, 0.0f, offsetPosition.y };
+			const SU::Vector3f offsetVertice = { offsetPosition.x, myCurrentMesh.myVertices[currentVertex].y, offsetPosition.y };
 
 			myCurrentMesh.myOffsetVertices[currentVertex] = offsetVertice;
 		}
