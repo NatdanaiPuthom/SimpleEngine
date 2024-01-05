@@ -2,11 +2,11 @@
 
 namespace Scenes
 {
-	class Spotlight final : public Simple::Scene
+	class SpotlightScene final : public Simple::Scene
 	{
 	public:
-		Spotlight();
-		~Spotlight() override = default;
+		SpotlightScene();
+		~SpotlightScene() override = default;
 
 		virtual void Init() override;
 		virtual void Update() override;

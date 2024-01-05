@@ -2,7 +2,7 @@
 #include "Engine/Graphics/Camera/Camera.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/LevelManager/Scenes/DefaultScene.hpp"
-#include "Game/Managers/LevelManager/Scenes/Spotlights.hpp"
+#include "Game/Managers/LevelManager/Scenes/SpotlightScene.hpp"
 #include "Game/Managers/LevelManager/Scenes/NavmeshSceneTest.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
@@ -30,7 +30,7 @@ namespace Simple
 		defaultScene->Init();
 		myScenes.emplace(0, defaultScene);
 
-		std::shared_ptr<Scenes::Spotlight> spotlightScene = std::make_shared<Scenes::Spotlight>();
+		std::shared_ptr<Scenes::SpotlightScene> spotlightScene = std::make_shared<Scenes::SpotlightScene>();
 		spotlightScene->Init();
 		myScenes.emplace(1, spotlightScene);
 

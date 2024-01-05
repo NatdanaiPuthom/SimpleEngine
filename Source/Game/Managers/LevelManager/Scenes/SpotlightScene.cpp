@@ -1,13 +1,13 @@
 #include "Game/Precomplier/stdafx.h"
-#include "Game/Managers/LevelManager/Scenes/Spotlights.hpp"
+#include "Game/Managers/LevelManager/Scenes/SpotlightScene.hpp"
 
 namespace Scenes
 {
-	Spotlight::Spotlight()
+	SpotlightScene::SpotlightScene()
 	{
 	}
 
-	void Spotlight::Init()
+	void SpotlightScene::Init()
 	{
 		myDirectionalLight->myModel->SetPosition({ 0.0f, 10.0f, 0.0f });
 
@@ -39,7 +39,7 @@ namespace Scenes
 		}
 	}
 
-	void Spotlight::Update()
+	void SpotlightScene::Update()
 	{
 		Scene::Update();
 
