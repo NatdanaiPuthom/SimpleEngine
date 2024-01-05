@@ -300,8 +300,10 @@ namespace Simple
 
 		float currentAngle = CalculateAngle(vertices[portals[0].left.vertexIndex] - apex, vertices[portals[0].right.vertexIndex] - apex);
 
-		std::vector<FunnelPoint> left;
-		std::vector<FunnelPoint> right;
+		std::vector<FunnelPoint> leftSaved;
+		std::vector<FunnelPoint> rightSaved;
+
+		const auto& navmeshOffset = aNavmeshData.GetNavmesh().myOffsetVertices;
 
 		for (size_t i = 1; i <= portals.size(); ++i)
 		{
@@ -309,23 +311,21 @@ namespace Simple
 			{
 				SU::Vector3f endVector = myTargetPosition - apex;
 
-
-				if (!right.empty())
+				if (!rightSaved.empty())
 				{
-					float angle = CalculateAngle(endVector, vertices[right.front().vertexIndex] - apex);
+					float angle = CalculateAngle(endVector, vertices[rightSaved.front().vertexIndex] - apex);
 
 					if (angle < 0)
 					{
-						apex = vertices[right.front().vertexIndex];
-						i = right.front().portalIndex;
+						apex = vertices[rightSaved.front().vertexIndex];
+						i = rightSaved.front().portalIndex + 1ull;
 
-						const auto& offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[right.front().vertexIndex];
-						wayPoints.push_back(offsetApex);
+						wayPoints.push_back(navmeshOffset[rightSaved.front().vertexIndex]);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
-						right.clear();
-						left.clear();
+						rightSaved.clear();
+						leftSaved.clear();
 
 						continue;
 					}
@@ -339,34 +339,33 @@ namespace Simple
 						apex = vertices[portals.back().right.vertexIndex];
 						i = portals.back().right.portalIndex;
 
-						const SU::Vector3f offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[portals.back().right.vertexIndex];
-						wayPoints.push_back(offsetApex);
+						wayPoints.push_back(navmeshOffset[portals.back().right.vertexIndex]);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
-						right.clear();
-						left.clear();
+						rightSaved.clear();
+						leftSaved.clear();
 
 						continue;
 					}
 				}
 
-				if (!left.empty())
+				if (!leftSaved.empty())
 				{
-					float angle = CalculateAngle(vertices[left.front().vertexIndex] - apex, endVector);
+					float angle = CalculateAngle(vertices[leftSaved.front().vertexIndex] - apex, endVector);
 
 					if (angle < 0)
 					{
-						apex = vertices[left.front().vertexIndex];
-						i = left.front().portalIndex;
+						apex = vertices[leftSaved.front().vertexIndex];
+						i = leftSaved.front().portalIndex + 1ull;
 
-						const SU::Vector3f offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[left.front().vertexIndex];
-						wayPoints.push_back(offsetApex);
+						wayPoints.push_back(navmeshOffset[leftSaved.front().vertexIndex]);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
-						right.clear();
-						left.clear();
+
+						rightSaved.clear();
+						leftSaved.clear();
 					}
 				}
 				else
@@ -378,13 +377,12 @@ namespace Simple
 						apex = vertices[portals.back().left.vertexIndex];
 						i = portals.back().left.portalIndex;
 
-						const SU::Vector3f offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[portals.back().left.vertexIndex];
-						wayPoints.push_back(offsetApex);
+						wayPoints.push_back(navmeshOffset[portals.back().left.vertexIndex]);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
-						right.clear();
-						left.clear();
+						rightSaved.clear();
+						leftSaved.clear();
 					}
 				}
 
@@ -394,14 +392,13 @@ namespace Simple
 				continue;
 			}
 
-			float nextAngle = -1;
 			FunnelPoint leftt = portals[i].left;
 			FunnelPoint rightt = portals[i].right;
 
-			if (left.size() > 0)
-				leftt = left.front();
-			if (right.size() > 0)
-				rightt = right.front();
+			if (leftSaved.size() > 0)
+				leftt = leftSaved.front();
+			if (rightSaved.size() > 0)
+				rightt = rightSaved.front();
 
 			switch (portals[i].mover)
 			{
@@ -413,43 +410,63 @@ namespace Simple
 				break;
 			}
 
-			nextAngle = CalculateAngle(vertices[leftt.vertexIndex] - apex, vertices[rightt.vertexIndex] - apex);
+			const float nextAngle = CalculateAngle(vertices[leftt.vertexIndex] - apex, vertices[rightt.vertexIndex] - apex);
 
 			if (nextAngle < 0)
 			{
-				SU::Vector3f offsetApex;
-
 				switch (portals[i].mover)
 				{
 				case eMover::Right:
+				{
 					apex = vertices[leftt.vertexIndex];
-					offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[leftt.vertexIndex];
-					i = leftt.portalIndex;
-					break;
-				case eMover::Left:
-					apex = vertices[rightt.vertexIndex];
-					offsetApex = aNavmeshData.GetNavmesh().myOffsetVertices[rightt.vertexIndex];
-					i = rightt.portalIndex;
+					size_t nextPortal = leftt.portalIndex;
+					for (size_t j = leftt.portalIndex + 1ull; j < portals.size(); ++j)
+					{
+						if (portals[j].left.vertexIndex != leftt.vertexIndex)
+						{
+							nextPortal = j;
+							break;
+						}
+					}
+					i = nextPortal;
+					wayPoints.push_back(navmeshOffset[leftt.vertexIndex]);
+
 					break;
 				}
+				case eMover::Left:
+				{
+					apex = vertices[rightt.vertexIndex];
+					size_t nextPortal = leftt.portalIndex;
+					for (size_t j = rightt.portalIndex + 1ull; j < portals.size(); ++j)
+					{
+						if (portals[j].right.vertexIndex != rightt.vertexIndex)
+						{
+							nextPortal = j;
+							break;
+						}
+					}
+					i = nextPortal;
+					wayPoints.push_back(navmeshOffset[rightt.vertexIndex]);
+					break;
+				}
+				}
 
-				wayPoints.push_back(offsetApex);
 
 				currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
 
-				right.clear();
-				left.clear();
+				rightSaved.clear();
+				leftSaved.clear();
 			}
 			else if (nextAngle > currentAngle)
 			{
 				switch (portals[i].mover)
 				{
 				case eMover::Right:
-					right.push_back(portals[i - 1].right);
+					rightSaved.push_back(portals[i - 1].right);
 					break;
 				case eMover::Left:
-					left.push_back(portals[i - 1].left);
+					leftSaved.push_back(portals[i - 1].left);
 					break;
 				}
 			}
@@ -458,10 +475,10 @@ namespace Simple
 				switch (portals[i].mover)
 				{
 				case eMover::Right:
-					right.clear();
+					rightSaved.clear();
 					break;
 				case eMover::Left:
-					left.clear();
+					leftSaved.clear();
 					break;
 				}
 
@@ -567,7 +584,7 @@ namespace Simple
 		line.color = { 1.0f, 1.0f, 0.0f, 1.0f };
 
 		myLines.push_back(line);
-			
+
 		for (size_t i = 0; i < myPathFunnel.size() - 1; ++i)
 		{
 			SU::Vector3f start = myPathFunnel[i];
