@@ -125,20 +125,20 @@ namespace Simple
 			renderer->RenderLine(line);
 		}
 
-		for (const auto& line : myOffsetLines)
+		/*for (const auto& line : myOffsetLines)
 		{
 			renderer->RenderLine(line);
-		}
+		}*/
 	}
 
 	void Navmesh::RenderConnections()
 	{
-		auto renderer = SimpleGlobal::GetRenderer();
+		/*auto renderer = SimpleGlobal::GetRenderer();
 
 		for (const auto& line : myConnectionLines)
 		{
 			renderer->RenderLine(line);
-		}
+		}*/
 	}
 
 	std::vector<Simple::Node>& Navmesh::GetNodes()
@@ -244,7 +244,6 @@ namespace Simple
 			const int node2Index2 = aNode2->myIndices[(i + 1) % 3];
 			const int node2Index3 = aNode2->myIndices[(i + 2) % 3];
 
-
 			if (node1Index1 == node2Index2 && node1Index2 == node2Index1)
 			{
 				edge.first = node1Index1;
@@ -267,7 +266,6 @@ namespace Simple
 			}
 		}
 
-		
 		return edge;
 	}
 
