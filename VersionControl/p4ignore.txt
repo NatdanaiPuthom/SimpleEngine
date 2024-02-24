@@ -1,0 +1,16 @@
+.vs/
+
+*.suo
+*.vcxproj
+*.vcxproj.filters
+*.sln
+*.pdb
+*.cso
+*.exe
+
+Local
+Temp
+Dependencies/SimpleLib
+
+Bin/
+!Bin/Assets
