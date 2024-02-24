@@ -1,0 +1,22 @@
+
+############### Natdanai Modify 2023 ##########################
+
+.vs/
+
+*.suo
+*.vcxproj
+*.vcxproj.filters
+*.sln
+*.pdb
+
+[Ll]ocal
+[Tt]emp
+
+[Bb]in/*.dll
+[Bb]in/*.exe
+
+[Bb]in/Shaders
+[Bb]in/Profilers
+[Dd]ependencies/SimpleLib
+
+[Bb]in/imgui.ini
