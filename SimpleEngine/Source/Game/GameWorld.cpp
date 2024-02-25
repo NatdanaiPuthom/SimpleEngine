@@ -5,7 +5,6 @@
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/RaycastManager/RaycastManager.hpp"
 #include "Game/Managers/EventManager/EventManager.hpp"
-#include "functional"
 
 namespace Simple
 {
