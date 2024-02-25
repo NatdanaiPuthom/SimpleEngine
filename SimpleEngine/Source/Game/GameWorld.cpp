@@ -29,6 +29,15 @@ namespace Simple
 		myImGuiManager->Init();
 		myLevelManager->Init();
 		myRaycastManager->Init();
+
+		myAnimationTest.model = Global::GetModelFactory()->LoadMeshFBX("Assets/Models/SimpleCube_WithArm.fbx");
+		myAnimationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("Assets/Models/A_SimpleCube_WithArm_Idle.fbx");
+
+		myAnimationTest.model.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
+
+		myAnimationTest.animationPlayer.Init(myAnimationTest.animation, myAnimationTest.model);
+		myAnimationTest.animationPlayer.SetIsLooping(true);
+		myAnimationTest.animationPlayer.Play();
 	}
 
 	void GameWorld::Update()
@@ -54,6 +63,10 @@ namespace Simple
 
 		myLevelManager->Render();
 		myRaycastManager->Render();
+
+		myAnimationTest.animationPlayer.Update();
+		myAnimationTest.model.SetPose(myAnimationTest.animationPlayer.myLocalSpacePose);
+		Global::GetRenderer()->RenderModel(myAnimationTest.model);
 
 		myImGuiManager->Render();
 	}

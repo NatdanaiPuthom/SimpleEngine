@@ -61,7 +61,7 @@ namespace Simple
 		AddMesh("Sphere", std::move(sphereMesh));
 	}
 
-	Model ModelFactory::LoadFBX(const char* aFileName)
+	Model ModelFactory::LoadMeshFBX(const char* aFileName)
 	{
 		Simple::Model model;
 		const Simple::Mesh* mesh = GetMesh(aFileName);

@@ -1,5 +1,12 @@
 #pragma once
 
+struct NatdanaiAnimationTest
+{
+	Simple::Model model;
+	Simple::Animation animation;
+	Simple::AnimationPlayer animationPlayer;
+};
+
 namespace Simple
 {
 	class ImGuiManager;
@@ -30,6 +37,8 @@ namespace Simple
 		std::unique_ptr<Simple::LevelManager> myLevelManager;
 		std::unique_ptr<Simple::RaycastManager> myRaycastManager;
 		std::unique_ptr<Simple::EventManager> myEventManager;
+
+		NatdanaiAnimationTest myAnimationTest;
 
 		float myFixedUpdateTimer;
 		const float myFixedUpdateFreqency;

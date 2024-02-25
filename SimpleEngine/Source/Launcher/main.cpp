@@ -6,9 +6,6 @@
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
 #include <External/imgui.h>
-#include <External/TheGameAssembly/FBXImporter/source/Importer.h>
-
-#include "Graphics/Animation/Animation.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -73,27 +70,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		gameWorld.Init();
 		PROFILER_END();
 
-		Simple::Model natdanaiTest = Global::GetModelFactory()->LoadFBX("Assets/Models/SimpleCube_WithArm.fbx");
-		natdanaiTest.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
-
-		Simple::Animation animation = Global::GetModelFactory()->LoadAnimationFBX("Assets/Models/A_SimpleCube_WithArm_Idle_2.fbx");
-
-		Simple::AnimationPlayer animationPlayer;
-		animationPlayer.Init(animation, natdanaiTest);
-		animationPlayer.SetIsLooping(true);
-		animationPlayer.Play();
-
 		while (graphicsEngine.BeginFrame())
 		{
 			PROFILER_FUNCTION("MainLoop");
 
 			engine.Update();
+			gameWorld.Update();
 
-			animationPlayer.Update();
-			natdanaiTest.SetPose(animationPlayer.myLocalSpacePose);
-
-			Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::Backbuffer);
-			Global::GetRenderer()->RenderModel(natdanaiTest);
+			gameWorld.Render();
 
 			graphicsEngine.EndFrame();;
 		}
