@@ -20,3 +20,5 @@
 [Dd]ependencies/SimpleLib
 
 [Bb]in/imgui.ini
+[Bb]in/levels.json
+[Bb]in/settings.json

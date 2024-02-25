@@ -138,8 +138,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		{
 			PROFILER_FUNCTION("MainLoop");
 			engine.Update();
+
 			//gameWorld.Update();
 			//gameWorld.Render();
+
 			Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::Backbuffer);
 			Global::GetRenderer()->RenderModel(pyramid);
 
