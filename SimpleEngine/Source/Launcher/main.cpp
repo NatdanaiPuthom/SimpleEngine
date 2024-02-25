@@ -74,62 +74,62 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		PROFILER_END();
 
 		Simple::Model natdanaiTest = Global::GetModelFactory()->LoadFBX("Assets/Models/SimpleCube_WithArm.fbx");
-		//natdanaiTest.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
+		natdanaiTest.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
 
-		//TGA::FBX::Animation tgaAnimation;
-		//TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_SimpleCube_WithArm_Idle.fbx"), tgaAnimation);
+		TGA::FBX::Animation tgaAnimation;
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_SimpleCube_WithArm_Idle.fbx"), tgaAnimation);
 
-		//Simple::Animation animation;
-		//animation.name = tgaAnimation.Name;
-		//animation.length = tgaAnimation.Length;
-		//animation.framesPerSecond = tgaAnimation.FramesPerSecond;
-		//animation.duration = static_cast<float>(tgaAnimation.Duration);
-		//animation.frames.resize(tgaAnimation.Frames.size());
+		Simple::Animation animation;
+		animation.name = tgaAnimation.Name;
+		animation.length = tgaAnimation.Length;
+		animation.framesPerSecond = tgaAnimation.FramesPerSecond;
+		animation.duration = static_cast<float>(tgaAnimation.Duration);
+		animation.frames.resize(tgaAnimation.Frames.size());
 
-		//for (size_t i = 0; i < tgaAnimation.Frames.size(); ++i)
-		//{
-		//	animation.frames[i].localTransforms.reserve(tgaAnimation.Frames[i].LocalTransforms.size());
+		for (size_t i = 0; i < tgaAnimation.Frames.size(); ++i)
+		{
+			animation.frames[i].localTransforms.reserve(tgaAnimation.Frames[i].LocalTransforms.size());
 
-		//	for (const auto& [boneName, boneTransform] : tgaAnimation.Frames[i].LocalTransforms)
-		//	{
-		//		Math::Matrix4x4f localMatrix;
+			for (const auto& [boneName, boneTransform] : tgaAnimation.Frames[i].LocalTransforms)
+			{
+				Math::Matrix4x4f localMatrix;
 
-		//		localMatrix(1, 1) = boneTransform.m11;
-		//		localMatrix(1, 2) = boneTransform.m12;
-		//		localMatrix(1, 3) = boneTransform.m13;
-		//		localMatrix(1, 4) = boneTransform.m14;
+				localMatrix(1, 1) = boneTransform.m11;
+				localMatrix(1, 2) = boneTransform.m12;
+				localMatrix(1, 3) = boneTransform.m13;
+				localMatrix(1, 4) = boneTransform.m14;
 
-		//		localMatrix(2, 1) = boneTransform.m21;
-		//		localMatrix(2, 2) = boneTransform.m22;
-		//		localMatrix(2, 3) = boneTransform.m23;
-		//		localMatrix(2, 4) = boneTransform.m24;
+				localMatrix(2, 1) = boneTransform.m21;
+				localMatrix(2, 2) = boneTransform.m22;
+				localMatrix(2, 3) = boneTransform.m23;
+				localMatrix(2, 4) = boneTransform.m24;
 
-		//		localMatrix(3, 1) = boneTransform.m31;
-		//		localMatrix(3, 2) = boneTransform.m32;
-		//		localMatrix(3, 3) = boneTransform.m33;
-		//		localMatrix(3, 4) = boneTransform.m34;
+				localMatrix(3, 1) = boneTransform.m31;
+				localMatrix(3, 2) = boneTransform.m32;
+				localMatrix(3, 3) = boneTransform.m33;
+				localMatrix(3, 4) = boneTransform.m34;
 
-		//		localMatrix(4, 1) = boneTransform.m41;
-		//		localMatrix(4, 2) = boneTransform.m42;
-		//		localMatrix(4, 3) = boneTransform.m43;
-		//		localMatrix(4, 4) = boneTransform.m44;
+				localMatrix(4, 1) = boneTransform.m41;
+				localMatrix(4, 2) = boneTransform.m42;
+				localMatrix(4, 3) = boneTransform.m43;
+				localMatrix(4, 4) = boneTransform.m44;
 
-		//		localMatrix = Math::Matrix4x4f::Transpose(localMatrix);
+				localMatrix = Math::Matrix4x4f::Transpose(localMatrix);
 
-		//		Math::Transform transform;
-		//		transform.SetScale(localMatrix.GetScale());
-		//		transform.SetRotation(localMatrix.GetRotation()); //I WILL FIX DECOMPOSE MATRIX I AM TRYING
-		//		transform.SetPosition(localMatrix.GetPosition());
+				Math::Transform transform;
+				transform.SetScale(localMatrix.GetScale());
+				transform.SetRotation(localMatrix.GetRotation()); //I WILL FIX DECOMPOSE MATRIX I AM TRYING
+				transform.SetPosition(localMatrix.GetPosition());
 
-		//		animation.frames[i].localTransforms.emplace(boneName, transform);
-		//		animation.frames[i].localMatrix.emplace(boneName, localMatrix);
-		//	}
-		//}
+				animation.frames[i].localTransforms.emplace(boneName, transform);
+				animation.frames[i].localMatrix.emplace(boneName, localMatrix);
+			}
+		}
 
-		//Simple::AnimationPlayer animationPlayer;
-		//animationPlayer.Init(animation, natdanaiTest);
-		//animationPlayer.SetIsLooping(true);
-		//animationPlayer.Play();
+		Simple::AnimationPlayer animationPlayer;
+		animationPlayer.Init(animation, natdanaiTest);
+		animationPlayer.SetIsLooping(true);
+		animationPlayer.Play();
 
 		while (graphicsEngine.BeginFrame())
 		{
@@ -137,8 +137,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 			engine.Update();
 
-			//animationPlayer.Update();
-			//natdanaiTest.SetPose(animationPlayer.myLocalSpacePose);
+			animationPlayer.Update();
+			natdanaiTest.SetPose(animationPlayer.myLocalSpacePose);
 
 			Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::Backbuffer);
 			Global::GetRenderer()->RenderModel(natdanaiTest);
