@@ -74,10 +74,9 @@ void Simple::AnimationPlayer::Update()
 
 		const Skeleton* skeleton = &myModel->myMesh->mySkeleton;
 
-		for (size_t i = 0; i < skeleton->myJoints.size(); i++)
+		for (size_t i = 0; i < skeleton->myJoints.size() - 1; i++)
 		{
-			const auto& currentFrameJointXform = myAnimation->frames[frame].localTransforms.find(skeleton->myJoints[i].myName)._Ptr->_Myval.second;
-
+			const Math::Transform& currentFrameJointXform = myAnimation->frames[frame].localTransforms.find(skeleton->myJoints[i].myName)._Ptr->_Myval.second;
 			Math::Matrix4x4f jointXform = currentFrameJointXform.GetMatrix();
 
 			if (myIsInterpolating)

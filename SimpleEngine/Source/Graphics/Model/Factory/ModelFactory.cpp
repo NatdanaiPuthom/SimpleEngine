@@ -118,6 +118,7 @@ namespace Simple
 			for (size_t i = 0; i < aTGAMesh.Skeleton.Bones.size(); ++i)
 			{
 				Math::Matrix4x4f bindPoseInverseTranspose;
+
 				bindPoseInverseTranspose(1, 1) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m11;
 				bindPoseInverseTranspose(1, 2) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m12;
 				bindPoseInverseTranspose(1, 3) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m13;

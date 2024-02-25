@@ -77,7 +77,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		natdanaiTest.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
 
 		TGA::FBX::Animation tgaAnimation;
-		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_SimpleCube_WithArm_Idle.fbx"), tgaAnimation);
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_SimpleCube_WithArm_Idle_2.fbx"), tgaAnimation);
 
 		Simple::Animation animation;
 		animation.name = tgaAnimation.Name;
@@ -114,7 +114,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 				localMatrix(4, 3) = boneTransform.m43;
 				localMatrix(4, 4) = boneTransform.m44;
 
-				localMatrix = Math::Matrix4x4f::Transpose(localMatrix);
 
 				Math::Transform transform;
 				transform.SetScale(localMatrix.GetScale());
@@ -122,6 +121,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 				transform.SetPosition(localMatrix.GetPosition());
 
 				animation.frames[i].localTransforms.emplace(boneName, transform);
+
+				localMatrix = Math::Matrix4x4f::Transpose(localMatrix); //No clue but it looks slightly better with this
 				animation.frames[i].localMatrix.emplace(boneName, localMatrix);
 			}
 		}
@@ -142,7 +143,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 			Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::Backbuffer);
 			Global::GetRenderer()->RenderModel(natdanaiTest);
-			//natdanaiTest.myMesh->mySkeleton.RenderSkeletonLines();
 
 			graphicsEngine.EndFrame();;
 		}
