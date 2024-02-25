@@ -74,88 +74,77 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		PROFILER_END();
 
 		TGA::FBX::Animation tgaAnimation;
-		TGA::FBX::FbxImportStatus status2 = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_Plopp_Idle.fbx"), tgaAnimation);
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_SimpleCube_Idle.fbx"), tgaAnimation);
 
-		TGA::FBX::Animation tgaAnimation3;
-		TGA::FBX::FbxImportStatus status3 = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_NatdanaiTest.fbx"), tgaAnimation3);
+		//Simple::Animation animation;
+		//animation.name = tgaAnimation.Name;
+		//animation.length = tgaAnimation.Length;
+		//animation.framesPerSecond = tgaAnimation.FramesPerSecond;
+		//animation.duration = static_cast<float>(tgaAnimation.Duration);
+		//animation.frames.resize(tgaAnimation.Frames.size());
 
-		Simple::Animation animation;
-		animation.name = tgaAnimation.Name;
-		animation.length = tgaAnimation.Length;
-		animation.framesPerSecond = tgaAnimation.FramesPerSecond;
-		animation.duration = static_cast<float>(tgaAnimation.Duration);
-		animation.frames.resize(tgaAnimation.Frames.size());
+		//for (size_t i = 0; i < tgaAnimation.Frames.size(); ++i)
+		//{
+		//	animation.frames[i].localTransforms.reserve(tgaAnimation.Frames[i].LocalTransforms.size());
 
-		for (size_t i = 0; i < tgaAnimation.Frames.size(); ++i)
-		{
-			animation.frames[i].localTransforms.reserve(tgaAnimation.Frames[i].LocalTransforms.size());
+		//	for (const auto& [boneName, boneTransform] : tgaAnimation.Frames[i].LocalTransforms)
+		//	{
+		//		Math::Matrix4x4f localMatrix;
 
-			for (const auto& [boneName, boneTransform] : tgaAnimation.Frames[i].LocalTransforms)
-			{
-				Math::Matrix4x4f localMatrix;
+		//		localMatrix(1, 1) = boneTransform.m11;
+		//		localMatrix(1, 2) = boneTransform.m12;
+		//		localMatrix(1, 3) = boneTransform.m13;
+		//		localMatrix(1, 4) = boneTransform.m14;
 
-				localMatrix(1, 1) = boneTransform.m11;
-				localMatrix(1, 2) = boneTransform.m12;
-				localMatrix(1, 3) = boneTransform.m13;
-				localMatrix(1, 4) = boneTransform.m14;
+		//		localMatrix(2, 1) = boneTransform.m21;
+		//		localMatrix(2, 2) = boneTransform.m22;
+		//		localMatrix(2, 3) = boneTransform.m23;
+		//		localMatrix(2, 4) = boneTransform.m24;
 
-				localMatrix(2, 1) = boneTransform.m21;
-				localMatrix(2, 2) = boneTransform.m22;
-				localMatrix(2, 3) = boneTransform.m23;
-				localMatrix(2, 4) = boneTransform.m24;
+		//		localMatrix(3, 1) = boneTransform.m31;
+		//		localMatrix(3, 2) = boneTransform.m32;
+		//		localMatrix(3, 3) = boneTransform.m33;
+		//		localMatrix(3, 4) = boneTransform.m34;
 
-				localMatrix(3, 1) = boneTransform.m31;
-				localMatrix(3, 2) = boneTransform.m32;
-				localMatrix(3, 3) = boneTransform.m33;
-				localMatrix(3, 4) = boneTransform.m34;
+		//		localMatrix(4, 1) = boneTransform.m41;
+		//		localMatrix(4, 2) = boneTransform.m42;
+		//		localMatrix(4, 3) = boneTransform.m43;
+		//		localMatrix(4, 4) = boneTransform.m44;
 
-				localMatrix(4, 1) = boneTransform.m41;
-				localMatrix(4, 2) = boneTransform.m42;
-				localMatrix(4, 3) = boneTransform.m43;
-				localMatrix(4, 4) = boneTransform.m44;
+		//		Math::Transform transform;
+		//		transform.SetScale(localMatrix.GetScale());
+		//		transform.SetRotation(localMatrix.GetRotation()); //I WILL FIX DECOMPOSE MATRIX I AM TRYING
+		//		transform.SetPosition(localMatrix.GetPosition());
 
-				Math::Transform transform;
-				transform.SetScale(localMatrix.GetScale());
-				transform.SetRotation(localMatrix.GetRotation()); //I WILL FIX DECOMPOSE MATRIX I AM TRYING
-				transform.SetPosition(localMatrix.GetPosition());
-
-				animation.frames[i].localTransforms.emplace(boneName, transform);
-			}
-		}
+		//		animation.frames[i].localTransforms.emplace(boneName, transform);
+		//	}
+		//}
 
 
-		Simple::Model model3 = Global::GetModelFactory()->LoadFBX("Assets/Models/SK_Plopp.fbx");
+	/*	Simple::Model model3 = Global::GetModelFactory()->LoadFBX("Assets/Models/NatdanaiTest-Rigged.fbx");
 		model3.SetPosition({ 6.0f,0.0f,0.0f });
 		model3.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
-		model3.ClearTextures();
-		model3.AddTexture("Plopp.dds");
-		
+
 		Simple::AnimationPlayer animationPlayer;
 		animationPlayer.Init(animation, model3);
 		animationPlayer.SetIsLooping(true);
-		animationPlayer.Play();
+		animationPlayer.Play();*/
 
-		std::shared_ptr<Simple::Model> pyramid = Global::GetModelFactory()->CreatePyramidModel();
-		pyramid->SetPosition({ -6,0,0 });
-
-		Simple::Model natdanaiTest = Global::GetModelFactory()->LoadFBX("Assets/Models/NatdanaiTest-Rigged.fbx");
+		Simple::Model natdanaiTest = Global::GetModelFactory()->LoadFBX("Assets/Models/SimpleCube.fbx");
 
 		while (graphicsEngine.BeginFrame())
 		{
 			PROFILER_FUNCTION("MainLoop");
+
 			engine.Update();
 
-			//gameWorld.Update();
-			//gameWorld.Render();
+		/*	animationPlayer.Update();
+			model3.SetPose(animationPlayer.myLocalSpacePose);*/
 
 			Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::Backbuffer);
-			Global::GetRenderer()->RenderModel(pyramid);
-			Global::GetRenderer()->RenderModel(natdanaiTest);
 
-			animationPlayer.Update();
-			model3.SetPose(animationPlayer.myLocalSpacePose);
-	
-			Global::GetRenderer()->RenderModel(model3);
+			Global::GetRenderer()->RenderModel(natdanaiTest);
+			//Global::GetRenderer()->RenderModel(model3);
 
 			graphicsEngine.EndFrame();;
 		}
