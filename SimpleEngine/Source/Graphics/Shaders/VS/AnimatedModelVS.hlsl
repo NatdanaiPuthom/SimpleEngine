@@ -28,7 +28,7 @@ PixelInputType main(VertexInputType aInput)
     fWeight = aInput.weights.w;
     skinnedPosition += fWeight + mul(bones[iBone], position);
     
-    float4 vertexObjectPos = aInput.position;
+    float4 vertexObjectPos = skinnedPosition;
     float4 vertexWorldPos = mul(modelWorld, vertexObjectPos);
     float4 vertexClipPos = mul(worldToClipMatrix, vertexWorldPos);
     

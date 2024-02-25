@@ -24,8 +24,6 @@ namespace Simple
 	public:
 		const std::vector<Math::Vector3f>& GetFunnelPath() const;
 		const std::vector<Math::Vector3f>& GetAStarPath() const;
-		const std::vector<Simple::Node*>& GetAStarNodes() const;
-		const std::vector<Simple::Node*>& GetFunnelNodes() const;
 	private:
 		float CalculateEuclideanDistance(const Math::Vector3f& aStartPosition, const Math::Vector3f& aTargetPosition) const;
 		float CalculateAngle(Math::Vector3f aPointA, Math::Vector3f aPointB) const;
@@ -37,7 +35,6 @@ namespace Simple
 		void CreateLines();
 	private:
 		std::vector<Simple::Node*> myAStarNodes;
-		std::vector<Simple::Node*> myFunnelNodes;
 		std::vector<Drawer::Line> myLines;
 		std::vector<Math::Vector3f> myPathAStar;
 		std::vector<Math::Vector3f> myPathFunnel;

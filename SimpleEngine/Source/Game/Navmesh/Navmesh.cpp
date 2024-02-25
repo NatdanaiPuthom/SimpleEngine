@@ -130,7 +130,7 @@ namespace Simple
 		renderer->RenderLineInstance(myConnectionLines);
 	}
 
-	std::vector<Simple::Node>& Navmesh::GetAllNodes()
+	std::vector<Simple::Node>& Navmesh::GetNodes()
 	{
 		return myCurrentNodes;
 	}
@@ -423,40 +423,28 @@ namespace Simple
 		while (meshLoader.eof() == false)
 		{
 			std::string reader;
-
-			meshLoader >> reader; //read whole string and storage in "reader" variable until space, tab, newline
+			meshLoader >> reader;
 
 			if (reader == "v")
 			{
 				float x, y, z;
+				meshLoader >> x;
+				meshLoader >> y;
+				meshLoader >> z;
 
-				meshLoader >> x >> y >> z;
-
-				mesh.myVertices.push_back({ x, y, z });
+				mesh.myVertices.push_back({ x, y,z });
 			}
 			else if (reader == "f")
 			{
-				std::string faceIndices;
-				std::getline(meshLoader, faceIndices);
+				int index1, index2, index3;
 
-				std::istringstream iss(faceIndices);
-				std::string indexString;
+				meshLoader >> index1;
+				meshLoader >> index2;
+				meshLoader >> index3;
 
-				while (iss >> indexString)
-				{
-					// Extract the first part before the '/'
-					size_t pos = indexString.find('/');
-
-					if (pos != std::string::npos)
-					{
-						std::string index = indexString.substr(0, pos);
-						mesh.myIndices.push_back(std::stoi(index) - 1); // Adjusting to zero-based indexing
-					}
-					else
-					{
-						mesh.myIndices.push_back(std::stoi(indexString) - 1); // Adjusting to zero-based indexing
-					}
-				}
+				mesh.myIndices.push_back(index1 - 1);
+				mesh.myIndices.push_back(index2 - 1);
+				mesh.myIndices.push_back(index3 - 1);
 			}
 		}
 

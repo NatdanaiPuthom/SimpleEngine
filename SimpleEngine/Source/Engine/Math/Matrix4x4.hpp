@@ -34,14 +34,15 @@ namespace Math
 		Vector3<T> GetUp() const;
 		Vector3<T> GetRight() const;
 		Vector3<T> GetForward() const;
+		Vector3<T> GetRotation() const;
 
 		static Matrix4x4<T> Identity();
 		static Matrix4x4<T> CreateRotationAroundX(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundY(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundZ(const T aAngleInRadians);
-		static Matrix4x4<T> CreateTranslationMatrix(const Matrix4x4<T>& aMatrix);
-		static Matrix4x4<T> CreateRotationMatrix(const Matrix4x4<T>& aMatrix);
-		static Matrix4x4<T> CreateScaleMatrix(const Matrix4x4<T>& aMatrix);
+		static Matrix4x4<T> CreateRotationMatrix(const Matrix4x4<T>& aMatrix); //????
+		static Matrix4x4<T> CreateTranslationMatrix(const Vector3<T>& aTranslation);
+		static Matrix4x4<T> CreateScaleMatrix(const Vector3<T>& aScale);
 
 		static Matrix4x4<T> Transpose(const Matrix4x4<T>& aMatrixToTranspose);
 
@@ -433,7 +434,7 @@ namespace Math
 	{
 		const Vector3<T> rad = aRotationInDegree * globalDegToRad;
 
-		const Matrix4x4<T> scaleMatrix = Matrix4x4<T>::CreateScaleMatrix(*this);
+		const Matrix4x4<T> scaleMatrix = Matrix4x4<T>::CreateScaleMatrix(this->GetScale());
 		Matrix4x4<T> rotationMatrix = Matrix4x4<T>::Identity();
 
 		rotationMatrix *= Matrix4x4<T>::CreateRotationAroundX(rad.x);
@@ -526,6 +527,53 @@ namespace Math
 	inline Vector3<T> Matrix4x4<T>::GetForward() const
 	{
 		return Vector3<T>(myMatrix[2][0], myMatrix[2][1], myMatrix[2][2]);
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetRotation() const
+	{
+		Vector3<T> forward;
+		Vector3<T> right;
+		Vector3<T> up;
+
+		forward.x = myMatrix[2][0];
+		forward.y = myMatrix[2][1];
+		forward.z = myMatrix[2][2];
+		forward.Normalize();
+
+		right.x = myMatrix[0][0];
+		right.y = myMatrix[0][1];
+		right.z = myMatrix[0][2];
+		right.Normalize();
+
+		up.x = myMatrix[1][0];
+		up.y = myMatrix[1][1];
+		up.z = myMatrix[1][2];
+		up.Normalize();
+
+		Vector3<T> rotation;
+		rotation.x = atan2(-forward.y, sqrt(forward.x * forward.x + forward.z * forward.z));
+		rotation.y = atan2(forward.x, forward.z);
+		rotation.z = atan2(right.y, up.y);
+
+		Vector3<T> rotationInDegree = rotation * (180.0f / 3.141592f);
+
+		if (rotationInDegree.x < 0.0f)
+			rotationInDegree.x += 360.0f;
+		else if (rotationInDegree.x > 360.0f)
+			rotationInDegree.x -= 360.0f;
+
+		if (rotationInDegree.y < 0.0f)
+			rotationInDegree.y += 360.0f;
+		else if (rotationInDegree.y > 360.0f)
+			rotationInDegree.y -= 360.0f;
+
+		if (rotationInDegree.z < 0.0f)
+			rotationInDegree.z += 360.0f;
+		else if (rotationInDegree.z > 360.0f)
+			rotationInDegree.z -= 360.0f;
+
+		return rotationInDegree;
 	}
 
 	template<typename T>
@@ -628,13 +676,13 @@ namespace Math
 	}
 
 	template<typename T>
-	inline Matrix4x4<T> Matrix4x4<T>::CreateTranslationMatrix(const Matrix4x4<T>& aMatrix)
+	inline Matrix4x4<T> Matrix4x4<T>::CreateTranslationMatrix(const Vector3<T>& aTranslation)
 	{
 		Matrix4x4<T> result = Matrix4x4<T>::Identity();
 
-		result(4, 1) = aMatrix(4, 1);
-		result(4, 2) = aMatrix(4, 2);
-		result(4, 3) = aMatrix(4, 3);
+		result(4, 1) = aTranslation.x;
+		result(4, 2) = aTranslation.y;
+		result(4, 3) = aTranslation.z;
 
 		return result;
 	}
@@ -662,13 +710,13 @@ namespace Math
 	}
 
 	template<typename T>
-	inline Matrix4x4<T> Matrix4x4<T>::CreateScaleMatrix(const Matrix4x4<T>& aMatrix)
+	inline Matrix4x4<T> Matrix4x4<T>::CreateScaleMatrix(const Vector3<T>& aScale)
 	{
 		Matrix4x4<T> result = Matrix4x4<T>::Identity();
 
-		result(1, 1) = aMatrix.GetRight().Length();
-		result(2, 2) = aMatrix.GetUp().Length();
-		result(3, 3) = aMatrix.GetForward().Length();
+		result(1, 1) = aScale.x;
+		result(2, 2) = aScale.y;
+		result(3, 3) = aScale.z;
 
 		return result;
 	}

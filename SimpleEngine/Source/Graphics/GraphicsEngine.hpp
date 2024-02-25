@@ -90,6 +90,11 @@ struct alignas(16) LightBufferData final
 	const float paddingPointlightData[3] = { -1.0f };
 };
 
+struct alignas(16) BonesBufferData
+{
+	Math::Matrix4x4f bonesTransform[64];
+};
+
 struct RenderTarget final
 {
 	ComPtr<ID3D11RenderTargetView> renderTargetView;
@@ -164,6 +169,7 @@ namespace Simple
 		void CreateWaterRenderTarget(const int aWidth, const int aHeight);
 		void CreateWaterRefractionRenderTarget(const int aWidth, const int aHeight);
 		void CreateRasterizerStates();
+		void CreateBonesBuffer();
 	private:
 		void PrepareFrame();
 		void LoadSettingsFromJson();
@@ -195,6 +201,7 @@ namespace Simple
 		std::unique_ptr<Simple::ConstantBuffer> myCameraConstantBuffer;
 		std::unique_ptr<Simple::ConstantBuffer> myTimeConstantBuffer;
 		std::unique_ptr<Simple::ConstantBuffer> myLightConstantBuffer;
+		std::unique_ptr<Simple::ConstantBuffer> myBonesConstantBuffer;
 
 		std::unique_ptr<LightBufferData> myLightBufferData;
 

@@ -42,6 +42,7 @@ namespace Drawer
 		void SetDebugMode(const bool aSetDebugMode);
 	private:
 		const bool CreateObjectBuffer();
+		const bool CreateBoneBuffer();
 		void LoadSettingsFromJson();
 		void RenderUpSideDown(const std::shared_ptr<const Simple::Model> aModel) const;
 		void RenderRefraction(const std::shared_ptr<const Simple::Model> aModel) const;
@@ -50,7 +51,9 @@ namespace Drawer
 		std::unique_ptr<Drawer::LineDrawer> myLineDrawer;
 		std::unique_ptr<Drawer::SphereDrawer> mySphereDrawer;
 		std::unique_ptr<Drawer::SpriteDrawer> mySpriteDrawer;
+
 		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
+		std::unique_ptr<Simple::ConstantBuffer> myBoneBuffer;
 
 		bool myDebugMode;
 	};

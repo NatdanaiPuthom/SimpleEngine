@@ -165,7 +165,7 @@ namespace Simple
 
 		Simple::Navmesh* navmesh = SimpleWorld::GetNavmesh();
 		const auto& vertices = navmesh->GetNavmesh();
-		const auto& nodes = navmesh->GetAllNodes();
+		const auto& nodes = navmesh->GetNodes();
 
 		for (const Simple::Node& node : nodes)
 		{

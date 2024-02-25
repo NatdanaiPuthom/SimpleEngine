@@ -34,6 +34,7 @@ namespace Simple
 		myCameraConstantBuffer = std::make_unique<Simple::ConstantBuffer>();
 		myTimeConstantBuffer = std::make_unique<Simple::ConstantBuffer>();
 		myLightConstantBuffer = std::make_unique<Simple::ConstantBuffer>();
+		myBonesConstantBuffer = std::make_unique<Simple::ConstantBuffer>();
 
 		myLightBufferData = std::make_unique<LightBufferData>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
@@ -66,6 +67,7 @@ namespace Simple
 		CreateRenderTargetForImGuiImage(aWindowSize.x, aWindowSize.y);
 		CreateWaterRenderTarget(aWindowSize.x, aWindowSize.y);
 		CreateWaterRefractionRenderTarget(aWindowSize.x, aWindowSize.y);
+		CreateBonesBuffer();
 
 		LoadSettingsFromJson();
 		PreloadTextures();
@@ -80,6 +82,11 @@ namespace Simple
 
 		SetRasterizerState(eRasterizerState::BackfaceCulling);
 		myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
+
+		myCameraConstantBuffer->SetSlot(0);
+		myTimeConstantBuffer->SetSlot(2);
+		myLightConstantBuffer->SetSlot(3);
+		myBonesConstantBuffer->SetSlot(5);
 
 		return true;
 	}
@@ -97,14 +104,14 @@ namespace Simple
 			myWaterMoveFactor = std::fmod(myWaterMoveFactor, 1.0f);
 			frameBuffer.waterMoveFactor = myWaterMoveFactor;
 
-			myCameraConstantBuffer->Bind(0);
+			myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
 			myCameraConstantBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
 		}
 
 		{
 			TimeBufferData timeBuffer = {};
 			timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
-			myTimeConstantBuffer->Bind(2);
+			myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
 			myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 		}
 
@@ -131,7 +138,7 @@ namespace Simple
 				lightBufferData.pointLights[i].range = myLightBufferData->pointLights[i].range;
 			}
 
-			myLightConstantBuffer->Bind(3);
+			myLightConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
 			myLightConstantBuffer->Update(sizeof(LightBufferData), &lightBufferData);
 		}
 	}
@@ -207,6 +214,9 @@ namespace Simple
 			assert(false && "Failed to add Shader");	
 
 		if (!AddShader("DefaultPBRPS.cso", "DefaultVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("DefaultPS.cso", "AnimatedModelVS.cso"))
 			assert(false && "Failed to add Shader");
 
 		{ //TGA Uppgift
@@ -733,6 +743,14 @@ namespace Simple
 		assert(SUCCEEDED(result) && "Failed to create RasterizerState: FrontFaceCulling");
 
 		myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = nullptr;
+	}
+
+	void GraphicsEngine::CreateBonesBuffer()
+	{
+		BonesBufferData bonesBufferData;
+
+		if (!myBonesConstantBuffer->Init(sizeof(BonesBufferData), &bonesBufferData))
+			assert(false && "Failed to create BoneConstantBuffer");
 	}
 
 	void GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight)

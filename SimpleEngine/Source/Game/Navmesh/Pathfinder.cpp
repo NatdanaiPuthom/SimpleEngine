@@ -21,11 +21,13 @@ namespace Simple
 		{
 			myStartPosition = aStartPosition;
 			myTargetPosition = aStartPosition;
-			ClearPaths();
+			myPathAStar.clear();
+			myPathFunnel.clear();
+			myLines.clear();
 			return;
 		}
 
-		std::vector<Simple::Node>& nodes = myNavmesh->GetAllNodes();
+		std::vector<Simple::Node>& nodes = myNavmesh->GetNodes();
 		Simple::Node* startNode = myNavmesh->GetNode(aStartPosition);
 		Simple::Node* targetNode = myNavmesh->GetNode(aTargetPosition);
 
@@ -97,6 +99,7 @@ namespace Simple
 
 				Simple::Node* neighbour = &aNodes[currentNode->myConnections[i]];
 
+				//const float distance = CalculateEuclideanDistance(neighbour->myCenter, currentNode->myCenter);
 				std::pair<int, int> edgeIndices = myNavmesh->GetEdgeBetweenNodes(neighbour, currentNode);
 				Math::Vector3f pos = Math::Lerp(myNavmesh->GetNavmesh().myVertices[edgeIndices.first], myNavmesh->GetNavmesh().myVertices[edgeIndices.second], 0.5f);
 				const float distance = CalculateEuclideanDistance(pos, currentNode->myCenter);
@@ -222,8 +225,6 @@ namespace Simple
 	{
 		myPathAStar.clear();
 		myPathFunnel.clear();
-		myFunnelNodes.clear();
-		myAStarNodes.clear();
 		myLines.clear();
 	}
 
@@ -237,25 +238,13 @@ namespace Simple
 		return myPathAStar;
 	}
 
-	const std::vector<Simple::Node*>& Pathfinder::GetAStarNodes() const
-	{
-		return myAStarNodes;
-	}
-
-	const std::vector<Simple::Node*>& Pathfinder::GetFunnelNodes() const
-	{
-		return myFunnelNodes;
-	}
-
 	void Pathfinder::CalculateFunnelPath(const Simple::Navmesh& aNavmeshData)
 	{
 		myPathFunnel.clear();
-		myFunnelNodes.clear();
 
 		if (myAStarNodes.size() == 2)
 		{
 			myPathFunnel.push_back(myTargetPosition);
-			myFunnelNodes.push_back(myNavmesh->GetNode(myTargetPosition));
 			return;
 		}
 		else if (myAStarNodes.size() < 2)
@@ -338,6 +327,7 @@ namespace Simple
 						i = rightSaved.front().portalIndex + 1ull;
 
 						wayPoints.push_back(navmeshOffset[rightSaved.front().vertexIndex]);
+						//wayPoints.push_back(apex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -357,6 +347,7 @@ namespace Simple
 						i = portals.back().right.portalIndex;
 
 						wayPoints.push_back(navmeshOffset[portals.back().right.vertexIndex]);
+						//wayPoints.push_back(apex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -377,6 +368,7 @@ namespace Simple
 						i = leftSaved.front().portalIndex + 1ull;
 
 						wayPoints.push_back(navmeshOffset[leftSaved.front().vertexIndex]);
+						//wayPoints.push_back(apex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -395,6 +387,7 @@ namespace Simple
 						i = portals.back().left.portalIndex;
 
 						wayPoints.push_back(navmeshOffset[portals.back().left.vertexIndex]);
+						//wayPoints.push_back(apex);
 
 						currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
 
@@ -445,9 +438,9 @@ namespace Simple
 							break;
 						}
 					}
-
 					i = nextPortal;
 					wayPoints.push_back(navmeshOffset[leftt.vertexIndex]);
+					//wayPoints.push_back(apex);
 
 					break;
 				}
@@ -463,14 +456,16 @@ namespace Simple
 							break;
 						}
 					}
-
 					i = nextPortal;
 					wayPoints.push_back(navmeshOffset[rightt.vertexIndex]);
+					//wayPoints.push_back(apex);
 					break;
 				}
 				}
 
+
 				currentAngle = CalculateAngle(vertices[portals[i].left.vertexIndex] - apex, vertices[portals[i].right.vertexIndex] - apex);
+
 
 				rightSaved.clear();
 				leftSaved.clear();
@@ -511,11 +506,6 @@ namespace Simple
 		}
 
 		myPathFunnel = wayPoints;
-
-		for (const auto p : wayPoints)
-		{
-			myFunnelNodes.push_back(myNavmesh->GetNode(p));
-		}
 	}
 
 	float Pathfinder::CalculateEuclideanDistance(const Math::Vector3f& aStartPosition, const Math::Vector3f& aTargetPosition) const

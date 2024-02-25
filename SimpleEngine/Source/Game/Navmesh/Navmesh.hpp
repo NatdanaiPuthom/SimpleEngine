@@ -11,7 +11,7 @@ namespace Simple
 	{
 		std::vector<Math::Vector3f> myVertices;
 		std::vector<Math::Vector3f> myOffsetVertices;
-		std::vector<std::pair<Math::Vector3f, Math::Vector3f>> offsetLines;
+		std::vector<std::pair<Math::Vector3f, Math::Vector3f>> offsetLines; //Debug purposes
 		std::vector<int> myIndices;
 	};
 
@@ -67,14 +67,14 @@ namespace Simple
 		void RenderConnections() const;
 
 		Simple::NavmeshData LoadNavmesh(const char* aObjFile);
-	public:
+
 		void SetNavmesh(const char* aObjFile);
 	public:
 		const std::array<Math::Vector3f, 3> GetVertices(const Simple::Node* aNode, const Simple::NavmeshData& aMesh) const;
 		const Simple::NavmeshData& GetNavmesh() const;
 		Simple::Node* GetNode(const Math::Vector3f& aPoint);
 		Simple::Node* GetNode(const int aIndex);
-		std::vector<Simple::Node>& GetAllNodes();
+		std::vector<Simple::Node>& GetNodes();
 		int GetNodeIndexFromPoint(const Math::Vector3f& aPoint) const;
 		std::pair<int, int> GetEdgeBetweenNodes(Simple::Node* aNode1, Simple::Node* aNode2) const;
 	private:
@@ -84,7 +84,6 @@ namespace Simple
 		bool IsWall(const size_t aNodeIndex, const int aVertexIndex1, const int aVertexIndex2) const;
 	private:
 		std::unordered_map<std::string, std::pair<Simple::NavmeshData, std::vector<Simple::Node>>> myNavmeshData;
-
 		std::vector<Simple::Node> myCurrentNodes;
 		std::vector<Drawer::Line> myNavmeshLines;
 		std::vector<Drawer::Line> myConnectionLines;

@@ -45,7 +45,7 @@ namespace Simple
 
 		SetActiveScene(myActiveSceneIndex);
 
-		myNavmesh.Init("navMesh_v1.obj");
+		myNavmesh.Init("Level 1.obj");
 	}
 
 	void LevelManager::Update()

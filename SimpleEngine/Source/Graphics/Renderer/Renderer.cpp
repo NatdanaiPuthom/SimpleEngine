@@ -27,6 +27,8 @@ namespace Drawer
 	void Renderer::Init()
 	{
 		myObjectBuffer = std::make_unique<ConstantBuffer>();
+		myBoneBuffer = std::make_unique<ConstantBuffer>();
+
 		myBoundingBoxDrawer = std::make_unique<Drawer::BoundingBoxDrawer>();
 		myLineDrawer = std::make_unique<Drawer::LineDrawer>();
 		mySphereDrawer = std::make_unique<Drawer::SphereDrawer>();
@@ -37,7 +39,13 @@ namespace Drawer
 		if (!CreateObjectBuffer())
 			assert(false && "Failed to create ObjectBuffer");
 
+		if (!CreateBoneBuffer())
+			assert(false && "Failed to create ObjectBuffer");
+
 		myBoundingBoxDrawer->Init();
+
+		myObjectBuffer->SetSlot(1);
+		myBoneBuffer->SetSlot(5);
 	}
 
 	void Renderer::RenderModel(const std::shared_ptr<const Model> aModel) const
@@ -78,6 +86,16 @@ namespace Drawer
 
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+
+		BonesBufferData boneBufferData = {};
+		
+		for (size_t i = 0; i < 64; ++i)
+		{
+			boneBufferData.bonesTransform[i] = aModel.myBoneTransforms[i];
+		}
+
+		myBoneBuffer->Bind(myBoneBuffer->GetSlot());
+		myBoneBuffer->Update(sizeof(BonesBufferData), &boneBufferData);
 
 		aModel.myShader->UseThisShader(context.Get());
 
@@ -299,7 +317,15 @@ namespace Drawer
 		if (!myObjectBuffer->Init(sizeof(ObjectBufferData), &objectBuffer))
 			return false;
 
-		myObjectBuffer->SetSlot(1);
+		return true;
+	}
+
+	const bool Renderer::CreateBoneBuffer()
+	{
+		BonesBufferData boneBufferData;
+
+		if (!myBoneBuffer->Init(sizeof(BonesBufferData), &boneBufferData))
+			return false;
 
 		return true;
 	}

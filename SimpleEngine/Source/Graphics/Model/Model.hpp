@@ -25,6 +25,8 @@ namespace Simple
 		friend class Drawer::Renderer;
 		friend class Drawer::BoundingBoxDrawer;
 	public:
+		const Simple::Mesh* myMesh;
+
 		Model();
 		~Model();
 
@@ -63,7 +65,6 @@ namespace Simple
 	private:
 		std::vector<std::shared_ptr<const Simple::Texture>> myTextures;
 		std::string myName;
-		const Simple::Mesh* myMesh;
 		std::shared_ptr<const Simple::Shader> myShader;
 
 		Math::Transform myTransform;
