@@ -1,6 +1,7 @@
 #pragma once
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Model/Model.hpp"
+#include "Graphics/Animation/Animation.hpp"
 #include <unordered_map>
 #include <string>
 #include <memory>
@@ -24,6 +25,7 @@ namespace Simple
 		void Init();
 
 		Model LoadFBX(const char* aFileName);
+		Animation LoadAnimationFBX(const char* aFileName);
 	public:
 		std::unique_ptr<Simple::Model> CreateTerrainModel();
 		std::unique_ptr<Simple::Model> CreateSkyBoxModel();

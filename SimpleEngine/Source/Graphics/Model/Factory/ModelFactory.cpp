@@ -93,6 +93,62 @@ namespace Simple
 		return model;
 	}
 
+	Animation ModelFactory::LoadAnimationFBX(const char* aFileName)
+	{
+		TGA::FBX::Animation tgaAnimation;
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath(aFileName), tgaAnimation);
+
+		Simple::Animation animation;
+		animation.name = tgaAnimation.Name;
+		animation.length = tgaAnimation.Length;
+		animation.framesPerSecond = tgaAnimation.FramesPerSecond;
+		animation.duration = static_cast<float>(tgaAnimation.Duration);
+		animation.frames.resize(tgaAnimation.Frames.size());
+
+		for (size_t i = 0; i < tgaAnimation.Frames.size(); ++i)
+		{
+			animation.frames[i].localTransforms.reserve(tgaAnimation.Frames[i].LocalTransforms.size());
+
+			for (const auto& [boneName, boneTransform] : tgaAnimation.Frames[i].LocalTransforms)
+			{
+				Math::Matrix4x4f localMatrix;
+
+				localMatrix(1, 1) = boneTransform.m11;
+				localMatrix(1, 2) = boneTransform.m12;
+				localMatrix(1, 3) = boneTransform.m13;
+				localMatrix(1, 4) = boneTransform.m14;
+
+				localMatrix(2, 1) = boneTransform.m21;
+				localMatrix(2, 2) = boneTransform.m22;
+				localMatrix(2, 3) = boneTransform.m23;
+				localMatrix(2, 4) = boneTransform.m24;
+
+				localMatrix(3, 1) = boneTransform.m31;
+				localMatrix(3, 2) = boneTransform.m32;
+				localMatrix(3, 3) = boneTransform.m33;
+				localMatrix(3, 4) = boneTransform.m34;
+
+				localMatrix(4, 1) = boneTransform.m41;
+				localMatrix(4, 2) = boneTransform.m42;
+				localMatrix(4, 3) = boneTransform.m43;
+				localMatrix(4, 4) = boneTransform.m44;
+
+
+				Math::Transform transform;
+				transform.SetScale(localMatrix.GetScale());
+				transform.SetRotation(localMatrix.GetRotation()); //I WILL FIX DECOMPOSE MATRIX I AM TRYING
+				transform.SetPosition(localMatrix.GetPosition());
+
+				animation.frames[i].localTransforms.emplace(boneName, transform);
+
+				localMatrix = Math::Matrix4x4f::Transpose(localMatrix); //No clue but it looks slightly better with this
+				animation.frames[i].localMatrix.emplace(boneName, localMatrix);
+			}
+		}
+
+		return animation;
+	}
+
 	void ModelFactory::AddMesh(const char* aName, std::unique_ptr<const Simple::Mesh> aMesh)
 	{
 		myMeshes.emplace(aName, std::move(aMesh));
