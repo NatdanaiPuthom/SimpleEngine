@@ -38,7 +38,7 @@ void Simple::AnimationPlayer::Update()
 {
 	if (myState == eAnimationState::Playing)
 	{
-		myTime += Global::GetDeltaTime() * 0.05f;
+		myTime += Global::GetDeltaTime();
 
 		if (myTime >= myAnimation->duration)
 		{
@@ -77,6 +77,7 @@ void Simple::AnimationPlayer::Update()
 		for (size_t i = 0; i < skeleton->myJoints.size(); i++)
 		{
 			const auto& currentFrameJointXform = myAnimation->frames[frame].localTransforms.find(skeleton->myJoints[i].myName)._Ptr->_Myval.second;
+
 			Math::Matrix4x4f jointXform = currentFrameJointXform.GetMatrix();
 
 			if (myIsInterpolating)
@@ -93,7 +94,8 @@ void Simple::AnimationPlayer::Update()
 				jointXform = Math::Matrix4x4f::CreateScaleMatrix(S) * rotationMatrix * Math::Matrix4x4f::CreateTranslationMatrix(T);
 			}
 
-			Math::Matrix4x4f Result = jointXform;
+			//Math::Matrix4x4f Result = myAnimation->frames[nextFrame].localTransforms.find(skeleton->myJoints[i].myName)._Ptr->_Myval.second.GetMatrix();
+			Math::Matrix4x4f Result = myAnimation->frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
 			myLocalSpacePose.jointTransforms[i] = Result;
 		}
 

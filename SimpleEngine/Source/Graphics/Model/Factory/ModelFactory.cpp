@@ -88,7 +88,7 @@ namespace Simple
 			if (mesh == nullptr)
 				assert(false && "Failed to GetMesh from bank");
 		}
-	
+
 		model.Init(mesh);
 		return model;
 	}
@@ -140,8 +140,8 @@ namespace Simple
 
 				Simple::Joint joint;
 
-				joint.myBindPoseInverse = Math::Matrix4x4f::Transpose(bindPoseInverseTranspose);
-				joint.myBindPoseInverse =bindPoseInverseTranspose;
+				//joint.myBindPoseInverse = Math::Matrix4x4f::Transpose(bindPoseInverseTranspose); //TGA Did Tranpose but when I do it everything become weird
+				joint.myBindPoseInverse = bindPoseInverseTranspose;
 				joint.myName = aTGAMesh.Skeleton.Bones[i].Name;
 				joint.myParent = aTGAMesh.Skeleton.Bones[i].ParentIdx;
 				joint.myChildren = aTGAMesh.Skeleton.Bones[i].Children;

@@ -28,6 +28,7 @@ namespace Simple
 		struct Frame
 		{
 			std::unordered_map<std::string, Math::Transform> localTransforms;
+			std::unordered_map<std::string, Math::Matrix4x4f> localMatrix;
 		};
 
 		std::vector<Frame> frames;

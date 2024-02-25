@@ -73,8 +73,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		gameWorld.Init();
 		PROFILER_END();
 
-		TGA::FBX::Animation tgaAnimation;
-		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_SimpleCube_Idle.fbx"), tgaAnimation);
+		Simple::Model natdanaiTest = Global::GetModelFactory()->LoadFBX("Assets/Models/SimpleCube_WithArm.fbx");
+		//natdanaiTest.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
+
+		//TGA::FBX::Animation tgaAnimation;
+		//TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_SimpleCube_WithArm_Idle.fbx"), tgaAnimation);
 
 		//Simple::Animation animation;
 		//animation.name = tgaAnimation.Name;
@@ -111,26 +114,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		//		localMatrix(4, 3) = boneTransform.m43;
 		//		localMatrix(4, 4) = boneTransform.m44;
 
+		//		localMatrix = Math::Matrix4x4f::Transpose(localMatrix);
+
 		//		Math::Transform transform;
 		//		transform.SetScale(localMatrix.GetScale());
 		//		transform.SetRotation(localMatrix.GetRotation()); //I WILL FIX DECOMPOSE MATRIX I AM TRYING
 		//		transform.SetPosition(localMatrix.GetPosition());
 
 		//		animation.frames[i].localTransforms.emplace(boneName, transform);
+		//		animation.frames[i].localMatrix.emplace(boneName, localMatrix);
 		//	}
 		//}
 
-
-	/*	Simple::Model model3 = Global::GetModelFactory()->LoadFBX("Assets/Models/NatdanaiTest-Rigged.fbx");
-		model3.SetPosition({ 6.0f,0.0f,0.0f });
-		model3.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
-
-		Simple::AnimationPlayer animationPlayer;
-		animationPlayer.Init(animation, model3);
-		animationPlayer.SetIsLooping(true);
-		animationPlayer.Play();*/
-
-		Simple::Model natdanaiTest = Global::GetModelFactory()->LoadFBX("Assets/Models/SimpleCube.fbx");
+		//Simple::AnimationPlayer animationPlayer;
+		//animationPlayer.Init(animation, natdanaiTest);
+		//animationPlayer.SetIsLooping(true);
+		//animationPlayer.Play();
 
 		while (graphicsEngine.BeginFrame())
 		{
@@ -138,13 +137,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 			engine.Update();
 
-		/*	animationPlayer.Update();
-			model3.SetPose(animationPlayer.myLocalSpacePose);*/
+			//animationPlayer.Update();
+			//natdanaiTest.SetPose(animationPlayer.myLocalSpacePose);
 
 			Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::Backbuffer);
-
 			Global::GetRenderer()->RenderModel(natdanaiTest);
-			//Global::GetRenderer()->RenderModel(model3);
+			//natdanaiTest.myMesh->mySkeleton.RenderSkeletonLines();
 
 			graphicsEngine.EndFrame();;
 		}
