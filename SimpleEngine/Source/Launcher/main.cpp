@@ -74,7 +74,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		PROFILER_END();
 
 		TGA::FBX::Animation tgaAnimation;
-		TGA::FBX::FbxImportStatus status2 = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/Plopp_Idle.fbx"), tgaAnimation);
+		TGA::FBX::FbxImportStatus status2 = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_Plopp_Idle.fbx"), tgaAnimation);
 
 		Simple::Animation animation;
 		animation.name = tgaAnimation.Name;
@@ -122,6 +122,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 
 		Simple::Model model3 = Global::GetModelFactory()->LoadFBX("Assets/Models/SK_Plopp.fbx");
+		model3.SetPosition({ 6.0f,0.0f,0.0f });
 		model3.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
 		model3.ClearTextures();
 		model3.AddTexture("Plopp.dds");
@@ -132,7 +133,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		animationPlayer.Play();
 
 		std::shared_ptr<Simple::Model> pyramid = Global::GetModelFactory()->CreatePyramidModel();
-		pyramid->SetPosition({ -2,0,0 });
+		pyramid->SetPosition({ -6,0,0 });
+
+		Simple::Model natdanaiTest = Global::GetModelFactory()->LoadFBX("Assets/Models/NatdanaiTest.fbx");
 
 		while (graphicsEngine.BeginFrame())
 		{
@@ -144,8 +147,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 			Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::Backbuffer);
 			Global::GetRenderer()->RenderModel(pyramid);
+			Global::GetRenderer()->RenderModel(natdanaiTest);
 
-			//animationPlayer.Update();
+			animationPlayer.Update();
 			model3.SetPose(animationPlayer.myLocalSpacePose);
 	
 			Global::GetRenderer()->RenderModel(model3);
