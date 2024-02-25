@@ -19,6 +19,8 @@ namespace Simple
 		void Update(const float aDeltaTime);
 		void UpdateResolution();
 
+		void InactiveFreeFly();
+
 		Math::Vector4f WorldToCameraSpace(const Math::Vector4f& aVector) const;
 		Math::Vector4f CameraToProjectionSpace(const Math::Vector4f& aVector) const;
 		Math::Vector2f ProjectionToPixel(const Math::Vector4f& aVector) const;
@@ -48,6 +50,8 @@ namespace Simple
 		float GetNearPlane() const;
 		float GetFarPlane() const;
 		float GetFoV() const;
+
+		bool IsFreeFlyActive() const;
 	private:
 		void CreateProjectionMatrix();
 		void UpdateCameraVectors();

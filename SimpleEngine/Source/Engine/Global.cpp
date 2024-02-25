@@ -1,7 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include "Engine/Engine.hpp"
-#include <atomic>
 
 namespace
 {
@@ -18,8 +17,6 @@ namespace
 	int localFramesPerSecond = 0;
 	int localFrames = 0;
 	int localDrawCalls = 0;
-
-	std::atomic<bool> localGameIsRunning = true;
 }
 
 namespace Impl
@@ -124,16 +121,6 @@ namespace Global
 	int GetFPS()
 	{
 		return localFramesPerSecond;
-	}
-
-	bool GetGameIsRunning()
-	{
-		return localGameIsRunning;
-	}
-
-	void SetGameIsRunning(const bool aShouldRun)
-	{
-		localGameIsRunning = aShouldRun;
 	}
 
 	void SetResolution(const Math::Vector2ui& aResolution)

@@ -21,10 +21,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
-		Global::SetGameIsRunning(false);
 		break;
 	case WM_ACTIVATE:
-		SimpleUtilities::InputManager::GetInstance().ResetKeyStates();
+		if (LOWORD(wParam) == WA_INACTIVE)
+		{
+			SimpleUtilities::InputManager::GetInstance().ResetKeyStates();
+
+			if (SimpleUtilities::InputManager::GetInstance().GetMouseIsHidden() && Global::GetGraphicsEngine()->GetCurrentCamera()->IsFreeFlyActive())
+			{
+				Global::GetGraphicsEngine()->GetCurrentCamera()->InactiveFreeFly();
+			}
+		}
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -75,6 +82,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 			PROFILER_FUNCTION("MainLoop");
 
 			engine.Update();
+
+			if (graphicsEngine.GetCurrentCamera() == graphicsEngine.GetDefaultCamera())
+			{
+				graphicsEngine.GetDefaultCamera()->Update(engine.GetDeltaTime());
+			}
+	
 			gameWorld.Update();
 
 			gameWorld.Render();

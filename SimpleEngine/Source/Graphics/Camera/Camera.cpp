@@ -236,6 +236,13 @@ namespace Simple
 		CreateProjectionMatrix();
 	}
 
+	void Camera::InactiveFreeFly()
+	{
+		myInput->ShowMouse();
+		myInput->ReleaseMouse();
+		myFreeFly = false;
+	}
+
 	void Camera::SetNearPlane(const float aNearPlane)
 	{
 		myNearPlane = aNearPlane;
@@ -332,6 +339,11 @@ namespace Simple
 	float Camera::GetFoV() const
 	{
 		return myFoV;
+	}
+
+	bool Camera::IsFreeFlyActive() const
+	{
+		return myFreeFly;
 	}
 
 	Math::Vector3f Camera::GetForward() const

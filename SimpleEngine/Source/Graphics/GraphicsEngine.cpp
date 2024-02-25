@@ -211,7 +211,7 @@ namespace Simple
 			assert(false && "Failed to add Shader");
 
 		if (!AddShader("LinePS.cso", "DefaultVS.cso"))
-			assert(false && "Failed to add Shader");	
+			assert(false && "Failed to add Shader");
 
 		if (!AddShader("DefaultPBRPS.cso", "DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
@@ -284,8 +284,6 @@ namespace Simple
 
 		myImGuiEngine->BeginFrame();
 		PrepareFrame();
-
-		myCurrentCamera->Update(Global::GetDeltaTime());
 
 		return true;
 	}
