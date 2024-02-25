@@ -76,6 +76,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		TGA::FBX::Animation tgaAnimation;
 		TGA::FBX::FbxImportStatus status2 = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_Plopp_Idle.fbx"), tgaAnimation);
 
+		TGA::FBX::Animation tgaAnimation3;
+		TGA::FBX::FbxImportStatus status3 = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath("Assets/Models/A_NatdanaiTest.fbx"), tgaAnimation3);
+
 		Simple::Animation animation;
 		animation.name = tgaAnimation.Name;
 		animation.length = tgaAnimation.Length;
@@ -135,7 +138,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		std::shared_ptr<Simple::Model> pyramid = Global::GetModelFactory()->CreatePyramidModel();
 		pyramid->SetPosition({ -6,0,0 });
 
-		Simple::Model natdanaiTest = Global::GetModelFactory()->LoadFBX("Assets/Models/NatdanaiTest.fbx");
+		Simple::Model natdanaiTest = Global::GetModelFactory()->LoadFBX("Assets/Models/NatdanaiTest-Rigged.fbx");
 
 		while (graphicsEngine.BeginFrame())
 		{
