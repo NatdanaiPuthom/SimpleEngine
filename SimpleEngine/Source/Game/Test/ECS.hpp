@@ -4,6 +4,7 @@
 #include <typeindex>
 #include <vector>
 #include <cstring>
+#include <string>
 #include <unordered_map>
 
 namespace Simple
@@ -97,43 +98,72 @@ namespace Simple
 	};
 }
 
-class Entity
+namespace Simple
 {
-	using ComponentID = std::type_index;
-	using ComponentIndex = std::size_t;
-public:
-	template<typename ComponentType>
-	inline void AddComponent(const ComponentType& aComponent)
+	class Entity
 	{
-		myComponents[typeid(ComponentType)] = World::GetComponentManager()->AddComponent<ComponentType>(aComponent);
-	}
-
-	template<typename ComponentType>
-	inline ComponentType* GetComponent()
-	{
-		auto it = myComponents.find(typeid(ComponentType));
-
-		if (it != myComponents.end())
+		using ComponentID = std::type_index;
+		using ComponentIndex = std::size_t;
+	public:
+		template<typename ComponentType>
+		inline void AddComponent(const ComponentType& aComponent)
 		{
-			return reinterpret_cast<ComponentType*>(it->second);
+			myComponents[typeid(ComponentType)] = World::GetComponentManager()->AddComponent<ComponentType>(aComponent);
 		}
-		else
-		{
-			return nullptr;
-		}
-	}
 
-	template<typename ComponentType>
-	inline void RemoveComponent()
-	{
-		auto it = myComponents.find(typeid(ComponentType));
-
-		if (it != myComponents.end())
+		template<typename ComponentType>
+		inline ComponentType* GetComponent()
 		{
-			World::GetComponentManager()->RemoveComponent<ComponentType>(it->second.first);
-			myComponents.erase(it);
+			auto it = myComponents.find(typeid(ComponentType));
+
+			if (it != myComponents.end())
+			{
+				return reinterpret_cast<ComponentType*>(it->second);
+			}
+			else
+			{
+				return nullptr;
+			}
 		}
-	}
-private:
-	std::unordered_map<ComponentID, std::pair<ComponentIndex, void*>> myComponents;
-};
+
+		template<typename ComponentType>
+		inline std::string GetComponentNameAsString()
+		{
+			std::string componentName;
+
+			const auto it = myComponents.find(typeid(ComponentType));
+
+			if (it != myComponents.end())
+			{
+				const std::string fullName = typeid(ComponentType).name();
+				const std::size_t startPos = fullName.find(" ") + 1;
+				const std::size_t endPos = fullName.find(" ", startPos);
+
+				componentName = fullName.substr(startPos, endPos - startPos);
+
+				const std::size_t namespacePos = componentName.find("::");
+
+				if (namespacePos != std::string::npos)
+				{
+					componentName = componentName.substr(namespacePos + 2);
+				}
+			}
+
+			return componentName;
+		}
+
+		template<typename ComponentType>
+		inline void RemoveComponent()
+		{
+			auto it = myComponents.find(typeid(ComponentType));
+
+			if (it != myComponents.end())
+			{
+				World::GetComponentManager()->RemoveComponent<ComponentType>(it->second.first);
+				myComponents.erase(it);
+			}
+		}
+	private:
+		std::unordered_map<ComponentID, std::pair<ComponentIndex, void*>> myComponents;
+	};
+}

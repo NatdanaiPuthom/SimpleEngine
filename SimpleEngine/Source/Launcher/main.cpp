@@ -86,8 +86,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 		Simple::ComponentManager componentManager;
 		componentManager.SetWorldPointerToThis();
-		
-		Entity entity;
+
+		Simple::Entity entity;
 		entity.AddComponent(HelloWorld());
 		entity.RemoveComponent<HelloWorld>();
 
