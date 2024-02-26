@@ -7,6 +7,8 @@
 #include "Game/GameWorld.hpp"
 #include <External/imgui.h>
 
+#include "Game/Test/ECS.hpp"
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -39,6 +41,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
+struct HelloWorld
+{
+	int a = 5;
+};
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
 {
@@ -77,6 +84,39 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		gameWorld.Init();
 		PROFILER_END();
 
+
+		ComponentManager componentManager;
+
+
+		HelloWorld hello;
+		for (size_t i = 0; i < 1000000; ++i)
+		{
+			hello.a = static_cast<int>(i);
+			componentManager.AddComponent(hello);
+		}
+
+		PROFILER_BEGIN("Fetch All Components");
+		auto& a = componentManager.GetAllComponentsOfType<HelloWorld>();
+		PROFILER_END();
+
+		PROFILER_BEGIN("Loop Components");
+		for (size_t i = 0; i < a.size(); ++i)
+		{
+			int test = a[i].a;
+			test;
+		}
+		PROFILER_END();
+
+		std::vector<int> b(1000000, 0);
+		PROFILER_BEGIN("Loop Vector");
+		for (size_t i = 0; i < b.size(); ++i)
+		{
+			int test = b[i];
+			test;
+		}
+		PROFILER_END();
+
+
 		while (graphicsEngine.BeginFrame())
 		{
 			PROFILER_FUNCTION("MainLoop");
@@ -87,7 +127,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 			{
 				graphicsEngine.GetDefaultCamera()->Update(engine.GetDeltaTime());
 			}
-	
+
 			gameWorld.Update();
 
 			gameWorld.Render();
