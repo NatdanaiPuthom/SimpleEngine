@@ -9,7 +9,7 @@
 
 namespace Simple
 {
-	class ComponentManager
+	class ComponentManager final
 	{
 		using ComponentID = std::type_index;
 		using ComponentCount = std::size_t;
@@ -24,7 +24,7 @@ namespace Simple
 		};
 
 		template<typename ComponentType>
-		inline std::pair<std::size_t, ComponentType*> AddComponent(const ComponentType& aComponent)
+		inline std::size_t AddComponent(const ComponentType& aComponent)
 		{
 			auto it = myComponents.find(typeid(aComponent));
 
@@ -56,7 +56,7 @@ namespace Simple
 			}
 
 			const ComponentCount& count = myComponents[typeid(aComponent)].first - 1;
-			return std::make_pair(static_cast<std::size_t>(count), GetComponent<ComponentType>(static_cast<std::size_t>(count)));
+			return count;
 		}
 
 		template<typename ComponentType>
@@ -100,7 +100,7 @@ namespace Simple
 
 namespace Simple
 {
-	class Entity
+	class Entity final
 	{
 		using ComponentID = std::type_index;
 		using ComponentIndex = std::size_t;
@@ -118,7 +118,7 @@ namespace Simple
 
 			if (it != myComponents.end())
 			{
-				return reinterpret_cast<ComponentType*>(it->second);
+				return World::GetComponentManager()->GetComponent<ComponentType>(it->second);
 			}
 			else
 			{
@@ -159,11 +159,25 @@ namespace Simple
 
 			if (it != myComponents.end())
 			{
-				World::GetComponentManager()->RemoveComponent<ComponentType>(it->second.first);
+				World::GetComponentManager()->RemoveComponent<ComponentType>(it->second);
 				myComponents.erase(it);
 			}
 		}
 	private:
-		std::unordered_map<ComponentID, std::pair<ComponentIndex, void*>> myComponents;
+		std::unordered_map<ComponentID, ComponentIndex> myComponents;
+	};
+}
+
+namespace Simple
+{
+	class System
+	{
+	public:
+		virtual void Update() = 0;
+		virtual void Render() = 0;
+
+		virtual void EarlyUpdate() {};
+		virtual void FixedUpdate() {};
+		virtual void LateUpdate() {};
 	};
 }

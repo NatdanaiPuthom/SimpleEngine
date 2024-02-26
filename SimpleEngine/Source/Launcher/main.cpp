@@ -47,6 +47,25 @@ struct HelloWorld
 	int a = 5;
 };
 
+namespace Simple
+{
+	class PlayerSystem final : private System
+	{
+	public:
+		void Update() override
+		{
+			for (std::size_t i = 0; i < myEntities.size(); ++i)
+			{
+				std::cout << myEntities[i].GetComponent<HelloWorld>()->a << std::endl;
+			}
+		};
+
+		void Render() override {};
+
+		std::vector<Entity> myEntities;
+	};
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
 {
 	SimpleTracker::MemoryTrackingSettings memoryTrackerSettings = {};
@@ -89,7 +108,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 		Simple::Entity entity;
 		entity.AddComponent(HelloWorld());
-		entity.RemoveComponent<HelloWorld>();
+		std::cout << entity.GetComponent<HelloWorld>()->a;
+
+
+		//Simple::PlayerSystem playerSystem;
+		//playerSystem.myEntities.push_back(entity);
+		//playerSystem.Update();
+
+		//std::cout << componentManager.GetAllComponentsOfType<HelloWorld>().size() << std::endl;
+
 
 		while (graphicsEngine.BeginFrame())
 		{
