@@ -67,13 +67,27 @@ namespace Simple
 			if (joint.myParent == -1)
 				continue;
 
-			//const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(aLocalPose.jointTransforms[index]);
-			//const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(aLocalPose.jointTransforms[joint.myParent]);
+			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
+			const Math::Matrix4x4 boneWorldTransformNext = pose.jointTransforms[joint.myParent] * modelTransform;
 
-			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(pose.jointTransforms[index]) * modelTransform;
-			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(pose.jointTransforms[joint.myParent]) * modelTransform;
+			if (index == 3)
+			{
+				Drawer::Line line;
+				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+				line.startPosition = boneWorldTransform.GetPosition();
+				line.endPosition = { 10.0f, line.startPosition.y, 0.0f };
+				lines.push_back(line);
+			}
 
 			Drawer::Line line;
+
+			if (index % 3 == 0)
+				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+			else if (index % 3 == 1)
+				line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+			else if (index % 3 == 2)
+				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+
 			line.startPosition = boneWorldTransform.GetPosition();
 			line.endPosition = boneWorldTransformNext.GetPosition();
 			lines.push_back(line);
@@ -99,7 +113,7 @@ namespace Simple
 		myAnimationTest.model.SetPose(myAnimationTest.animationPlayer.myLocalSpacePose);
 
 		RenderSkeletonLines(myAnimationTest.model, myAnimationTest.animationPlayer.myLocalSpacePose);
-	//Global::GetRenderer()->RenderModel(myAnimationTest.model);
+		Global::GetRenderer()->RenderModel(myAnimationTest.model);
 
 		myImGuiManager->Render();
 	}
