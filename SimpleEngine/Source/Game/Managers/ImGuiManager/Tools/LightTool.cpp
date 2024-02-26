@@ -13,7 +13,7 @@ namespace Tool
 
 		if (ImGui::Begin("Lights"))
 		{
-			auto& directionalLight = SimpleWorld::GetActiveScene()->myDirectionalLight;
+			auto& directionalLight = World::GetActiveScene()->myDirectionalLight;
 
 			if (ImGui::BeginTabBar("Light Tab Bar"))
 			{

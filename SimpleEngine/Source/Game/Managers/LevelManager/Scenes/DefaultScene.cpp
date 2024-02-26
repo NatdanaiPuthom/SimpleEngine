@@ -12,13 +12,13 @@ namespace Scenes
 
 	DefaultScene::~DefaultScene()
 	{
-		SimpleWorld::SetWaterPlane(nullptr);
+		World::SetWaterPlane(nullptr);
 	}
 
 	void DefaultScene::Init()
 	{
 		myPlaneReflection = std::make_unique<Simple::PlaneReflection>();
-		SimpleWorld::SetWaterPlane(myPlaneReflection.get());
+		World::SetWaterPlane(myPlaneReflection.get());
 
 		Simple::ModelFactory* modelFactory = Global::GetModelFactory();
 
@@ -113,6 +113,6 @@ namespace Scenes
 	{
 		Scene::Render();
 
-		Global::GetRenderer()->RenderPlaneReflection(SimpleWorld::GetWaterPlane()->myModel);
+		Global::GetRenderer()->RenderPlaneReflection(World::GetWaterPlane()->myModel);
 	}
 }

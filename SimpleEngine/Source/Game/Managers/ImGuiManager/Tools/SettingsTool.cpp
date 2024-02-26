@@ -230,10 +230,10 @@ namespace Tool
 		}
 
 		ImGui::SetNextItemWidth(200);
-		myActiveScene = SimpleWorld::GetActiveSceneIndex();
+		myActiveScene = World::GetActiveSceneIndex();
 		if (ImGui::Combo("Active Scene", &myActiveScene, sceneNameChar.data(), static_cast<int>(sceneNameChar.size())))
 		{
-			SimpleWorld::SetActiveScene(mySceneIndexes[myActiveScene]);
+			World::SetActiveScene(mySceneIndexes[myActiveScene]);
 		}
 	}
 

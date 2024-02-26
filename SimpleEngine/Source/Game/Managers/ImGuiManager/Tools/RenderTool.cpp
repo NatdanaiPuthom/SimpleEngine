@@ -32,7 +32,7 @@ namespace Tool
 	{
 		if (ImGui::Begin("Water Reflection"))
 		{
-			auto& waterPlane = SimpleWorld::GetWaterPlane()->myModel;
+			auto& waterPlane = World::GetWaterPlane()->myModel;
 
 			std::vector<std::string> modelNames;
 			modelNames.push_back(waterPlane->GetName());

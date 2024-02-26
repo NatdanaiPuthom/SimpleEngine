@@ -41,47 +41,47 @@ void Impl::SimpleWorldLevelManager::SetLevelManager(Simple::LevelManager* aLevel
 	localLevelManager = aLevelManager;
 }
 
-void SimpleWorld::SetActiveScene(const int aSceneIndex)
+void World::SetActiveScene(const int aSceneIndex)
 {
 	localLevelManager->SetActiveScene(aSceneIndex);
 }
 
-void SimpleWorld::SetWaterHeight(const float aHeight)
+void World::SetWaterHeight(const float aHeight)
 {
 	localWaterHeight = aHeight;
 }
 
-void SimpleWorld::SetWaterPlane(Simple::PlaneReflection* aWaterPlane)
+void World::SetWaterPlane(Simple::PlaneReflection* aWaterPlane)
 {
 	localWaterPlane = aWaterPlane;
 }
 
-float SimpleWorld::GetWaterHeight()
+float World::GetWaterHeight()
 {
 	return localWaterHeight;
 }
 
-int SimpleWorld::GetActiveSceneIndex()
+int World::GetActiveSceneIndex()
 {
 	return localLevelManager->GetActiveSceneIndex();
 }
 
-std::shared_ptr<Simple::Scene> SimpleWorld::GetActiveScene()
+std::shared_ptr<Simple::Scene> World::GetActiveScene()
 {
 	return localLevelManager->GetActiveScene();
 }
 
-Simple::PlaneReflection* SimpleWorld::GetWaterPlane()
+Simple::PlaneReflection* World::GetWaterPlane()
 {
 	return localWaterPlane;
 }
 
-Simple::EventManager* SimpleWorld::GetEventmanager()
+Simple::EventManager* World::GetEventmanager()
 {
 	return localEventManager;
 }
 
-Simple::Navmesh* SimpleWorld::GetNavmesh()
+Simple::Navmesh* World::GetNavmesh()
 {
 	return &localLevelManager->GetNavmesh();
 }

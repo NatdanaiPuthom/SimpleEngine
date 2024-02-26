@@ -176,14 +176,14 @@ namespace Drawer
 		const Math::Vector3f oldCamRotation = camera->GetRotation();
 		const Math::Vector3f newCamRotation = Math::Vector3f(oldCamRotation.x, -oldCamRotation.y, oldCamRotation.z);
 
-		const float waterHeight = SimpleWorld::GetWaterHeight();
+		const float waterHeight = World::GetWaterHeight();
 		const float distFromWater = 2.0f * (oldCamPosition.y - waterHeight);
 
 		camera->SetPosition(oldCamPosition - Math::Vector3f(0.0f, distFromWater, 0.0f));
 		camera->SetRotation(newCamRotation);
 
 		Drawer::Renderer* renderer = Global::GetRenderer();
-		for (const auto& model : SimpleWorld::GetActiveScene()->myModels)
+		for (const auto& model : World::GetActiveScene()->myModels)
 		{
 			renderer->RenderUpSideDown(model);
 		}
@@ -230,7 +230,7 @@ namespace Drawer
 	{
 		Drawer::Renderer* renderer = Global::GetRenderer();
 
-		for (const auto& model : SimpleWorld::GetActiveScene()->myModels)
+		for (const auto& model : World::GetActiveScene()->myModels)
 		{
 			renderer->RenderRefraction(model);
 		}

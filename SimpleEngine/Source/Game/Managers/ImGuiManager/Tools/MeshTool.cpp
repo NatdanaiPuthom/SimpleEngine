@@ -11,7 +11,7 @@ namespace Tool
 	{
 		if (ImGui::Begin("Meshes"))
 		{
-			auto& modelInstances = SimpleWorld::GetActiveScene()->myModels;
+			auto& modelInstances = World::GetActiveScene()->myModels;
 
 			std::vector<std::string> modelNames;
 			for (const auto& model : modelInstances)

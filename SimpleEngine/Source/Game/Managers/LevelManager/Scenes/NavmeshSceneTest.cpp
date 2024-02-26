@@ -11,10 +11,10 @@ Scenes::NavmeshSceneTest::~NavmeshSceneTest()
 
 void Scenes::NavmeshSceneTest::Init()
 {
-	SimpleWorld::GetEventmanager()->GetPostMaster().AddObserver(this, Simple::eEvent::Raycast_LMB);
-	SimpleWorld::GetEventmanager()->GetPostMaster().AddObserver(this, Simple::eEvent::Raycast_RMB);
+	World::GetEventmanager()->GetPostMaster().AddObserver(this, Simple::eEvent::Raycast_LMB);
+	World::GetEventmanager()->GetPostMaster().AddObserver(this, Simple::eEvent::Raycast_RMB);
 
-	auto navmesh = SimpleWorld::GetNavmesh();
+	auto navmesh = World::GetNavmesh();
 	myPathFinder.SetNavmesh(navmesh);
 }
 
@@ -31,7 +31,7 @@ void Scenes::NavmeshSceneTest::Render()
 	myPathFinder.RenderAStarPath();
 	myPathFinder.RenderFunnelPath();
 
-	auto navmesh = SimpleWorld::GetNavmesh();
+	auto navmesh = World::GetNavmesh();
 	navmesh->RenderConnections();
 	navmesh->RenderNavmesh();
 }

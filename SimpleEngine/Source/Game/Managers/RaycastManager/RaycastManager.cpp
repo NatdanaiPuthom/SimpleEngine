@@ -48,7 +48,7 @@ namespace Simple
 		{
 			if (mySelectedModelIndex >= 0)
 			{
-				SimpleWorld::GetActiveScene()->myModels[mySelectedModelIndex]->SetBoundingBoxLineColor({ 1.0f,1.0f,0.0f , 1.0f });
+				World::GetActiveScene()->myModels[mySelectedModelIndex]->SetBoundingBoxLineColor({ 1.0f,1.0f,0.0f , 1.0f });
 			}
 
 			mySelectedModelIndex = -1;
@@ -111,7 +111,7 @@ namespace Simple
 	{
 		SU::Ray ray = GetScreenPointToRay(SU::InputManager::GetInstance().GetMousePosition());
 
-		const auto& models = SimpleWorld::GetActiveScene()->myModels;
+		const auto& models = World::GetActiveScene()->myModels;
 		Math::Vector3f closetHitPoint;
 		float closetDistance = FLT_MAX;
 		int hitIndex = -1;
@@ -163,7 +163,7 @@ namespace Simple
 		Math::Vector3 closetPoint(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 		bool hasHit = false;
 
-		Simple::Navmesh* navmesh = SimpleWorld::GetNavmesh();
+		Simple::Navmesh* navmesh = World::GetNavmesh();
 		const auto& vertices = navmesh->GetNavmesh();
 		const auto& nodes = navmesh->GetNodes();
 
@@ -211,13 +211,13 @@ namespace Simple
 
 			raycast.myData = closetPoint;
 
-			SimpleWorld::GetEventmanager()->GetPostMaster().NotifyObservers(raycast);
+			World::GetEventmanager()->GetPostMaster().NotifyObservers(raycast);
 		}
 	}
 
 	void RaycastManager::MoveObject()
 	{
-		auto& model = SimpleWorld::GetActiveScene()->myModels[mySelectedModelIndex];
+		auto& model = World::GetActiveScene()->myModels[mySelectedModelIndex];
 
 		const auto mouseDelta = SimpleUtilities::InputManager::GetInstance().GetMouseDelta();
 		const auto min = model->GetBoundingBox().min;

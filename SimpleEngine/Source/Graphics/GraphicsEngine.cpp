@@ -98,7 +98,7 @@ namespace Simple
 			frameBuffer.worldToClipMatrix = myCurrentCamera->GetWorldToClipMatrix();
 			frameBuffer.cameraPosition = myCurrentCamera->GetPosition();
 			frameBuffer.resolution = Global::GetResolution();
-			frameBuffer.waterHeight = SimpleWorld::GetWaterHeight();
+			frameBuffer.waterHeight = World::GetWaterHeight();
 
 			myWaterMoveFactor += 0.01f * Global::GetDeltaTime();
 			myWaterMoveFactor = std::fmod(myWaterMoveFactor, 1.0f);

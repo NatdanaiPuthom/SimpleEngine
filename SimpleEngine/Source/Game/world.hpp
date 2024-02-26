@@ -5,7 +5,7 @@
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
 #include <memory>
 
-namespace SimpleWorld
+namespace World
 {
 	void SetActiveScene(const int aSceneIndex);
 	void SetWaterHeight(const float aHeight);

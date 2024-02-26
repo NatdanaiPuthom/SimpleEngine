@@ -23,6 +23,6 @@ namespace Simple
 	void PlaneReflection::Update()
 	{
 		myHeight = myModel->GetPosition().y;
-		SimpleWorld::SetWaterHeight(myHeight);
+		World::SetWaterHeight(myHeight);
 	}
 }
