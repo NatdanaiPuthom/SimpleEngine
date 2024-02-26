@@ -4,6 +4,31 @@
 #include <cstring>
 #include <unordered_map>
 
+class ComponentManager;
+
+class Entity
+{
+	friend class ComponentManager;
+public:
+
+	template<typename ComponentType>
+	inline ComponentType* GetComponent()
+	{
+		auto it = myComponents.find(typeid(ComponentType));
+
+		if (it != myComponents.end()) 
+		{
+			return reinterpret_cast<ComponentType*>(it->second);
+		}
+		else 
+		{
+			return nullptr;
+		}
+	}
+private:
+	std::unordered_map<std::type_index, void*> myComponents;
+};
+
 class ComponentManager
 {
 	using ComponentCount = std::size_t;
@@ -26,10 +51,10 @@ public:
 	}
 
 	template<typename ComponentType>
-	inline void AddComponent(const ComponentType& aComponent);
+	inline void AddComponent(const ComponentType& aComponent, Entity& aEntity);
 
 	template<typename ComponentType>
-	inline ComponentType& GetComponent(const int aIndex);
+	inline ComponentType* GetComponent(const int aIndex);
 
 	template<typename ComponentType>
 	inline std::vector<ComponentType>& GetAllComponentsOfType();
@@ -38,7 +63,7 @@ private:
 };
 
 template<typename ComponentType>
-inline void ComponentManager::AddComponent(const ComponentType& aComponent)
+inline void ComponentManager::AddComponent(const ComponentType& aComponent, Entity& aEntity)
 {
 	auto it = myComponents.find(typeid(aComponent));
 
@@ -54,6 +79,9 @@ inline void ComponentManager::AddComponent(const ComponentType& aComponent)
 
 		std::memcpy(&component[count * sizeof(ComponentType)], &aComponent, sizeof(ComponentType));
 		++count;
+
+		char* componentPointer = &myComponents[typeid(ComponentType)].second[(count - 1) * sizeof(ComponentType)];
+		aEntity.myComponents[typeid(aComponent)] = reinterpret_cast<ComponentType*>(componentPointer);
 	}
 	else
 	{
@@ -67,14 +95,17 @@ inline void ComponentManager::AddComponent(const ComponentType& aComponent)
 
 		std::memcpy(&component[count * sizeof(ComponentType)], &aComponent, sizeof(ComponentType));
 		++count;
+
+		char* componentPointer = &myComponents[typeid(ComponentType)].second[(count -1 ) * sizeof(ComponentType)];
+		aEntity.myComponents[typeid(aComponent)] = reinterpret_cast<ComponentType*>(componentPointer);
 	}
 }
 
 template<typename ComponentType>
-inline ComponentType& ComponentManager::GetComponent(const int aIndex)
+inline ComponentType* ComponentManager::GetComponent(const int aIndex)
 {
 	char* componentPointer = &myComponents[typeid(ComponentType)].second[aIndex * sizeof(ComponentType)];
-	return *reinterpret_cast<ComponentType*>(componentPointer);
+	return reinterpret_cast<ComponentType*>(componentPointer);
 }
 
 template<typename ComponentType>
@@ -85,7 +116,7 @@ inline std::vector<ComponentType>& ComponentManager::GetAllComponentsOfType()
 	const ComponentCount componentCount = myComponents[typeid(ComponentType)].first;
 	const std::size_t elementCount = componentBytes.size() / sizeof(ComponentType);
 
-	if (elementCount != componentCount) //This important
+	if (elementCount != componentCount)
 	{
 		componentBytes.resize(componentCount * sizeof(ComponentType));
 	}
