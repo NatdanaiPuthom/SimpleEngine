@@ -230,3 +230,46 @@ namespace Simple
 		std::unordered_map<std::type_index, System*> mySystemPointer;
 	};
 }
+
+struct HelloWorld
+{
+	int a = 5;
+};
+
+namespace Simple
+{
+	class PlayerSystem final : public System
+	{
+	public:
+		void Update() override
+		{
+			for (std::size_t i = 0; i < myEntities.size(); ++i)
+			{
+				std::cout << myEntities[i].GetComponent<HelloWorld>()->a << std::endl;
+			}
+		};
+
+		void Render() override {};
+
+		std::vector<Simple::Entity> myEntities;
+	};
+}
+
+//Simple::ComponentManager componentManager;
+//Simple::SystemManager systemManager;
+//componentManager.SetWorldPointerToThis();
+//systemManager.AddSystem(std::move(std::make_unique<Simple::PlayerSystem>()));
+//auto playerSystem = systemManager.GetSystem<Simple::PlayerSystem>();
+//
+//for (size_t i = 0; i < 10; ++i)
+//{
+//	HelloWorld hello;
+//	hello.a = static_cast<int>(i);
+//
+//	Simple::Entity entity;
+//	entity.AddComponent(hello);
+//
+//	playerSystem->myEntities.push_back(entity);
+//}
+//
+//systemManager.Update();

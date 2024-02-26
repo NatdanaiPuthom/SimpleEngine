@@ -7,8 +7,6 @@
 #include "Game/GameWorld.hpp"
 #include <External/imgui.h>
 
-#include "Game/Test/ECS.hpp"
-
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -40,30 +38,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 
 	return 0;
-}
-
-struct HelloWorld
-{
-	int a = 5;
-};
-
-namespace Simple
-{
-	class PlayerSystem final : public System
-	{
-	public:
-		void Update() override
-		{
-			for (std::size_t i = 0; i < myEntities.size(); ++i)
-			{
-				std::cout << myEntities[i].GetComponent<HelloWorld>()->a << std::endl;
-			}
-		};
-
-		void Render() override {};
-
-		std::vector<Entity> myEntities;
-	};
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
@@ -102,25 +76,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		Simple::GameWorld gameWorld;
 		gameWorld.Init();
 		PROFILER_END();
-
-		Simple::ComponentManager componentManager;
-		Simple::SystemManager systemManager;
-		componentManager.SetWorldPointerToThis();
-		systemManager.AddSystem(std::move(std::make_unique<Simple::PlayerSystem>()));
-		auto playerSystem = systemManager.GetSystem<Simple::PlayerSystem>();
-	
-		for (size_t i = 0; i < 10; ++i)
-		{
-			HelloWorld hello;
-			hello.a = static_cast<int>(i);
-
-			Simple::Entity entity;
-			entity.AddComponent(hello);
-
-			playerSystem->myEntities.push_back(entity);
-		}
-
-		systemManager.Update();
 
 		while (graphicsEngine.BeginFrame())
 		{
