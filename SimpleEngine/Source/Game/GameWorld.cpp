@@ -70,15 +70,6 @@ namespace Simple
 			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
 			const Math::Matrix4x4 boneWorldTransformNext = pose.jointTransforms[joint.myParent] * modelTransform;
 
-			if (index == 3)
-			{
-				Drawer::Line line;
-				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-				line.startPosition = boneWorldTransform.GetPosition();
-				line.endPosition = { 10.0f, line.startPosition.y, 0.0f };
-				lines.push_back(line);
-			}
-
 			Drawer::Line line;
 
 			if (index % 3 == 0)
