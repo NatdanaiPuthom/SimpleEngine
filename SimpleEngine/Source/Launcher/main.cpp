@@ -104,11 +104,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		PROFILER_END();
 
 		Simple::ComponentManager componentManager;
+		Simple::SystemManager systemManager;
 		componentManager.SetWorldPointerToThis();
-
-
-		std::unique_ptr<Simple::PlayerSystem> playerSystem = std::make_unique<Simple::PlayerSystem>();
-
+		systemManager.AddSystem(std::move(std::make_unique<Simple::PlayerSystem>()));
+		auto playerSystem = systemManager.GetSystem<Simple::PlayerSystem>();
+	
 		for (size_t i = 0; i < 10; ++i)
 		{
 			HelloWorld hello;
@@ -120,24 +120,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 			playerSystem->myEntities.push_back(entity);
 		}
 
-		std::vector<std::unique_ptr<Simple::System>> systems;
-		systems.push_back(std::move(playerSystem));
-
-		for (auto& s : systems)
-		{
-			s->EarlyUpdate();
-			s->FixedUpdate();
-			s->Update();
-			s->LateUpdate();
-			s->Render();
-		}
-
-		//Simple::PlayerSystem playerSystem;
-		//playerSystem.myEntities.push_back(entity);
-		//playerSystem.Update();
-
-		//std::cout << componentManager.GetAllComponentsOfType<HelloWorld>().size() << std::endl;
-
+		systemManager.Update();
 
 		while (graphicsEngine.BeginFrame())
 		{

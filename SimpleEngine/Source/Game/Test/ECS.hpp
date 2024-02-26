@@ -182,4 +182,51 @@ namespace Simple
 		virtual void FixedUpdate() {};
 		virtual void LateUpdate() {};
 	};
+
+	class SystemManager final
+	{
+	public:
+		inline void AddSystem(std::unique_ptr<System> aSystem)
+		{
+			mySystems.push_back(std::move(aSystem));
+			mySystemPointer[typeid(*mySystems.back())] = mySystems.back().get();
+		}
+
+		template<typename SystemType>
+		inline SystemType* GetSystem()
+		{
+			auto it = mySystemPointer.find(typeid(SystemType));
+
+			if (it != mySystemPointer.end())
+			{
+				return dynamic_cast<SystemType*>(it->second);
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+
+		inline void Update()
+		{
+			for (auto& system : mySystems)
+			{
+				system->EarlyUpdate();
+				system->FixedUpdate();
+				system->Update();
+				system->LateUpdate();
+			}
+		}
+
+		inline void Render()
+		{
+			for (auto& system : mySystems)
+			{
+				system->Render();
+			}
+		}
+	private:
+		std::vector<std::unique_ptr<System>> mySystems;
+		std::unordered_map<std::type_index, System*> mySystemPointer;
+	};
 }
