@@ -84,14 +84,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		gameWorld.Init();
 		PROFILER_END();
 
-
 		Simple::ComponentManager componentManager;
 		componentManager.SetWorldPointerToThis();
 		
 		Entity entity;
 		entity.AddComponent(HelloWorld());
-		entity.RemoveComponentt<HelloWorld>();
-
+		entity.RemoveComponent<HelloWorld>();
 
 		while (graphicsEngine.BeginFrame())
 		{

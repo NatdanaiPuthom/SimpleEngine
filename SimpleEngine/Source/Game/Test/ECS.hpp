@@ -124,13 +124,14 @@ public:
 	}
 
 	template<typename ComponentType>
-	inline void RemoveComponentt()
+	inline void RemoveComponent()
 	{
 		auto it = myComponents.find(typeid(ComponentType));
 
 		if (it != myComponents.end())
 		{
-			//World::GetComponentManager()->RemoveComponent<ComponentType>(it->first);
+			World::GetComponentManager()->RemoveComponent<ComponentType>(it->second.first);
+			myComponents.erase(it);
 		}
 	}
 private:
