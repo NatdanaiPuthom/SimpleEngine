@@ -4,15 +4,26 @@
 #include <cstring>
 #include <unordered_map>
 
-using ComponentCount = std::size_t;
-using Components = std::vector<char>;
-using ComponentID = std::type_index;
-
 class ComponentManager
 {
+	using ComponentCount = std::size_t;
+	using Components = std::vector<char>;
+	using ComponentID = std::type_index;
 public:
 	ComponentManager();
 	~ComponentManager();
+
+	template<typename ComponentType>
+	inline void RemoveComponent(const int aIndex)
+	{
+		ComponentCount& count = myComponents[typeid(ComponentType)].first;
+		Components& components = myComponents[typeid(ComponentType)].second;
+
+		ComponentType* componentPointer = reinterpret_cast<ComponentType*>(&components[aIndex * sizeof(ComponentType)]);
+		componentPointer->~ComponentType();
+
+		--count;
+	}
 
 	template<typename ComponentType>
 	inline void AddComponent(const ComponentType& aComponent);
