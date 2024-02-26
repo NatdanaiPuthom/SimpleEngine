@@ -5,6 +5,7 @@ namespace Simple
 	class GameWorld;
 	class LevelManager;
 	class EventManager;
+	class ComponentManager;
 }
 
 namespace Impl
@@ -28,5 +29,12 @@ namespace Impl
 		friend class Simple::EventManager;
 	private:
 		static void SetEventManager(Simple::EventManager* aLevelManager);
+	};
+
+	class SimpleWorldComponentManager final
+	{
+		friend class Simple::ComponentManager;
+	private:
+		static void SetComponentManager(Simple::ComponentManager* aComponentManager);
 	};
 }

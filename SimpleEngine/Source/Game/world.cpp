@@ -5,6 +5,7 @@
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/EventManager/EventManager.hpp"
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
+#include "Game/Test/ECS.hpp"
 #include <cassert>
 
 namespace
@@ -13,6 +14,7 @@ namespace
 	Simple::LevelManager* localLevelManager = nullptr;
 	Simple::EventManager* localEventManager = nullptr;
 	Simple::PlaneReflection* localWaterPlane = nullptr;
+	Simple::ComponentManager* localComponentManager = nullptr;
 
 	float localWaterHeight = 0;
 }
@@ -39,6 +41,11 @@ void Impl::SimpleWorldLevelManager::SetLevelManager(Simple::LevelManager* aLevel
 		assert(false && "localLevelManager is already set. Is this a mistake?");
 
 	localLevelManager = aLevelManager;
+}
+
+void Impl::SimpleWorldComponentManager::SetComponentManager(Simple::ComponentManager* aComponentManager)
+{
+	localComponentManager = aComponentManager;
 }
 
 void World::SetActiveScene(const int aSceneIndex)
@@ -84,4 +91,9 @@ Simple::EventManager* World::GetEventmanager()
 Simple::Navmesh* World::GetNavmesh()
 {
 	return &localLevelManager->GetNavmesh();
+}
+
+Simple::ComponentManager* World::GetComponentManager()
+{
+	return localComponentManager;
 }

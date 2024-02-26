@@ -5,6 +5,11 @@
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
 #include <memory>
 
+namespace Simple
+{
+	class ComponentManager;
+}
+
 namespace World
 {
 	void SetActiveScene(const int aSceneIndex);
@@ -14,6 +19,7 @@ namespace World
 	Simple::PlaneReflection* GetWaterPlane();
 	Simple::EventManager* GetEventmanager();
 	Simple::Navmesh* GetNavmesh();
+	Simple::ComponentManager* GetComponentManager();
 
 	std::shared_ptr<Simple::Scene> GetActiveScene();
 
