@@ -16,10 +16,10 @@ namespace Scenes
 
 		{
 			std::shared_ptr<Simple::Model> plane = std::move(modelFactory->CreatePlaneModel());
-			plane->SetPosition({ 0.0f, 0.0f, 0.0f });
+			plane->SetPosition({ 0.0f, -3.0f, 0.0f });
 			plane->SetScale({ 100,1,100 });
 			plane->SetShader("DefaultPBRPS.cso", "DefaultVS.cso");
-			myModels.push_back(std::move(plane));
+			//myModels.push_back(std::move(plane));
 		}
 
 		{

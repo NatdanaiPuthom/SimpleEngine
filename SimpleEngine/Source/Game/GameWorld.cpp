@@ -50,6 +50,38 @@ namespace Simple
 		LateUpdate();
 	}
 
+	void RenderSkeletonLines(const Simple::Model& aModel, const Simple::LocalSpacePose& aLocalPose)
+	{
+		std::vector<Drawer::Line> lines;
+		lines.reserve(aLocalPose.count);
+
+		Simple::ModelSpacePose pose;
+		aModel.myMesh->mySkeleton.ConvertPoseToModelSpace(aLocalPose, pose);
+
+		const Math::Matrix4x4f modelTransform = aModel.GetMatrix();
+
+		for (size_t index = 0; index < aLocalPose.count; ++index)
+		{
+			Simple::Joint joint = aModel.myMesh->mySkeleton.myJoints[index];
+
+			if (joint.myParent == -1)
+				continue;
+
+			//const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(aLocalPose.jointTransforms[index]);
+			//const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(aLocalPose.jointTransforms[joint.myParent]);
+
+			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(pose.jointTransforms[index]) * modelTransform;
+			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(pose.jointTransforms[joint.myParent]) * modelTransform;
+
+			Drawer::Line line;
+			line.startPosition = boneWorldTransform.GetPosition();
+			line.endPosition = boneWorldTransformNext.GetPosition();
+			lines.push_back(line);
+		}
+
+		Global::GetRenderer()->RenderLineInstance(lines);
+	}
+
 	void GameWorld::Render()
 	{
 		Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::WaterReflection);
@@ -65,7 +97,9 @@ namespace Simple
 
 		myAnimationTest.animationPlayer.Update();
 		myAnimationTest.model.SetPose(myAnimationTest.animationPlayer.myLocalSpacePose);
-		Global::GetRenderer()->RenderModel(myAnimationTest.model);
+
+		RenderSkeletonLines(myAnimationTest.model, myAnimationTest.animationPlayer.myLocalSpacePose);
+	//Global::GetRenderer()->RenderModel(myAnimationTest.model);
 
 		myImGuiManager->Render();
 	}
