@@ -28,9 +28,10 @@ namespace Simple
 		inline ComponentIndex AddComponent(const ComponentType& aComponent)
 		{
 			const ComponentID componentID = typeid(ComponentType);
-			ComponentVector& component = myComponents[componentID].second;
 
 			auto it = myComponents.find(componentID);
+
+			ComponentVector& component = myComponents[componentID].second;
 
 			if (it != myComponents.end())
 			{
@@ -87,11 +88,11 @@ namespace Simple
 
 			--count;
 
-			myComponents[typeid(ComponentType)].push_back(aIndex);
+			myAvaliableSlot[typeIndex].push_back(aIndex);
 		}
 
 		template<typename ComponentType>
-		inline ComponentType* GetComponent(const std::size_t aIndex)
+		inline ComponentType* GetComponent(const ComponentIndex aIndex)
 		{
 			char* componentPointer = &myComponents[typeid(ComponentType)].second[aIndex * sizeof(ComponentType)];
 			return reinterpret_cast<ComponentType*>(componentPointer);
