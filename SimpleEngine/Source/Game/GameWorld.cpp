@@ -30,10 +30,12 @@ namespace Simple
 		myRaycastManager->Init();
 
 		myAnimationTest.model = Global::GetModelFactory()->LoadMeshFBX("Assets/Models/SM_wizard.fbx");
-		myAnimationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("Assets/Models/wizard_idle.fbx");
+		myAnimationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("Assets/Models/A_Wizard_Falling.fbx");
 
 		myAnimationTest.model.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
 		myAnimationTest.model.SetScale(0.01f);
+		myAnimationTest.model.ClearTextures();
+		myAnimationTest.model.AddTexture("SM_Wizard_c.dds");
 
 		myAnimationTest.animationPlayer.Init(myAnimationTest.animation, myAnimationTest.model);
 		myAnimationTest.animationPlayer.SetIsLooping(true);
