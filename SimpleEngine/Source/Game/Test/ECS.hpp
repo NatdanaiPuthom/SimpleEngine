@@ -13,7 +13,8 @@ namespace Simple
 	{
 		using ComponentID = std::type_index;
 		using ComponentCount = std::size_t;
-		using Components = std::vector<char>;
+		using ComponentIndex = std::size_t;
+		using ComponentVector = std::vector<char>;
 	public:
 		ComponentManager() {};
 		~ComponentManager() {};
@@ -24,16 +25,31 @@ namespace Simple
 		};
 
 		template<typename ComponentType>
-		inline std::size_t AddComponent(const ComponentType& aComponent)
+		inline ComponentIndex AddComponent(const ComponentType& aComponent)
 		{
-			auto it = myComponents.find(typeid(aComponent));
+			const ComponentID componentID = typeid(ComponentType);
+			ComponentVector& component = myComponents[componentID].second;
+
+			auto it = myComponents.find(componentID);
 
 			if (it != myComponents.end())
 			{
-				ComponentCount& count = myComponents[typeid(aComponent)].first;
-				Components& component = myComponents[typeid(aComponent)].second;
+				ComponentCount& count = myComponents[componentID].first;
+		
+				std::vector<ComponentIndex>& slots = myAvaliableSlot[componentID];
 
-				if (component.size() <= count * sizeof(aComponent))
+				if (slots.size() > 0)
+				{
+					const ComponentIndex avaliableIndex = slots.back();
+					slots.pop_back();
+
+					std::memcpy(&component[avaliableIndex * sizeof(ComponentType)], &aComponent, sizeof(ComponentType));
+					count++;
+
+					return avaliableIndex;
+				}
+
+				if (component.size() <= count * sizeof(ComponentType))
 				{
 					component.resize((count * 2) * sizeof(ComponentType));
 				}
@@ -43,10 +59,9 @@ namespace Simple
 			}
 			else
 			{
-				ComponentCount& count = myComponents[typeid(aComponent)].first;
-				Components& component = myComponents[typeid(aComponent)].second;
+				ComponentCount& count = myComponents[componentID].first;
 
-				if (component.size() <= count * sizeof(aComponent))
+				if (component.size() <= count * sizeof(ComponentType))
 				{
 					component.resize((count + 1) * sizeof(ComponentType));
 				}
@@ -55,20 +70,24 @@ namespace Simple
 				++count;
 			}
 
-			const ComponentCount& count = myComponents[typeid(aComponent)].first - 1;
+			const ComponentCount& count = myComponents[componentID].first - 1;
 			return count;
 		}
 
 		template<typename ComponentType>
-		inline void RemoveComponent(const std::size_t aIndex)
+		inline void RemoveComponent(const ComponentIndex aIndex)
 		{
-			ComponentCount& count = myComponents[typeid(ComponentType)].first;
-			Components& components = myComponents[typeid(ComponentType)].second;
+			const ComponentID typeIndex = typeid(ComponentType);
+
+			ComponentCount& count = myComponents[typeIndex].first;
+			ComponentVector& components = myComponents[typeIndex].second;
 
 			ComponentType* componentPointer = reinterpret_cast<ComponentType*>(&components[aIndex * sizeof(ComponentType)]);
 			componentPointer->~ComponentType();
 
 			--count;
+
+			myComponents[typeid(ComponentType)].push_back(aIndex);
 		}
 
 		template<typename ComponentType>
@@ -81,12 +100,14 @@ namespace Simple
 		template<typename ComponentType>
 		inline std::vector<ComponentType>& GetAllComponentsOfType()
 		{
-			Components& componentBytes = myComponents[typeid(ComponentType)].second;
+			const ComponentID typeIndex = typeid(ComponentType);
 
-			const ComponentCount componentCount = myComponents[typeid(ComponentType)].first;
+			ComponentVector& componentBytes = myComponents[typeIndex].second;
+
+			const ComponentCount componentCount = myComponents[typeIndex].first;
 			const std::size_t elementCount = componentBytes.size() / sizeof(ComponentType);
 
-			if (elementCount != componentCount)
+			if (elementCount != componentCount) //I still don't know why they wouldn't be same size will study further in future
 			{
 				componentBytes.resize(componentCount * sizeof(ComponentType));
 			}
@@ -94,7 +115,8 @@ namespace Simple
 			return reinterpret_cast<std::vector<ComponentType>&>(componentBytes);
 		}
 	private:
-		std::unordered_map<ComponentID, std::pair<ComponentCount, Components>> myComponents;
+		std::unordered_map<ComponentID, std::pair<ComponentCount, ComponentVector>> myComponents;
+		std::unordered_map<ComponentID, std::vector<ComponentIndex>> myAvaliableSlot;
 	};
 }
 
