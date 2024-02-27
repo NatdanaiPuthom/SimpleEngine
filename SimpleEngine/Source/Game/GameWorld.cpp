@@ -29,10 +29,11 @@ namespace Simple
 		myLevelManager->Init();
 		myRaycastManager->Init();
 
-		myAnimationTest.model = Global::GetModelFactory()->LoadMeshFBX("Assets/Models/SimpleCube_WithArm.fbx");
-		myAnimationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("Assets/Models/A_SimpleCube_WithArm_Idle.fbx");
+		myAnimationTest.model = Global::GetModelFactory()->LoadMeshFBX("Assets/Models/SM_wizard.fbx");
+		myAnimationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("Assets/Models/wizard_idle.fbx");
 
 		myAnimationTest.model.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
+		myAnimationTest.model.SetScale(0.01f);
 
 		myAnimationTest.animationPlayer.Init(myAnimationTest.animation, myAnimationTest.model);
 		myAnimationTest.animationPlayer.SetIsLooping(true);

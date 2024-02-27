@@ -59,7 +59,7 @@ void Simple::AnimationPlayer::Update()
 		const float frameRate = 1.0f / myFPS;
 		const float result = myTime / frameRate;
 		const size_t frame = static_cast<size_t>(std::floor(result));
-		const float delta = result - static_cast<float>(frame);
+		//const float delta = result - static_cast<float>(frame); //This is use for Lerping & Blend
 
 		size_t nextFrame = frame + 1;
 
@@ -76,12 +76,14 @@ void Simple::AnimationPlayer::Update()
 
 		for (size_t i = 0; i < skeleton->myJoints.size() - 1; i++)
 		{
-			const Math::Transform& currentFrameJointXform = myAnimation->frames[frame].localTransforms.find(skeleton->myJoints[i].myName)._Ptr->_Myval.second;
+			const Math::Transform& currentFrameJointXform = myAnimation->frames[frame].localTransforms.find(skeleton->myJoints[i].myName)->second;
 			Math::Matrix4x4f jointXform = currentFrameJointXform.GetMatrix();
 
-			if (myIsInterpolating)
+			//I need to switch to Quaternion and have some calcuation correct before I can blend animations
+
+			/*if (myIsInterpolating)
 			{
-				const Math::Transform& nextFrameJointXform = myAnimation->frames[nextFrame].localTransforms.find(skeleton->myJoints[i].myName)._Ptr->_Myval.second;
+				const Math::Transform& nextFrameJointXform = myAnimation->frames[nextFrame].localTransforms.find(skeleton->myJoints[i].myName)->second;
 
 				const Math::Vector3f T = Math::Lerp(currentFrameJointXform.GetPosition(), nextFrameJointXform.GetPosition(), delta);
 				const Math::Vector3f R = Math::Lerp(currentFrameJointXform.GetRotation(), nextFrameJointXform.GetRotation(), delta);
@@ -91,10 +93,9 @@ void Simple::AnimationPlayer::Update()
 				rotationMatrix.SetLocalRotation(R);
 
 				jointXform = Math::Matrix4x4f::CreateScaleMatrix(S) * rotationMatrix * Math::Matrix4x4f::CreateTranslationMatrix(T);
-			}
+			}*/
 
-			//Math::Matrix4x4f Result = myAnimation->frames[nextFrame].localTransforms.find(skeleton->myJoints[i].myName)._Ptr->_Myval.second.GetMatrix();
-			Math::Matrix4x4f Result = myAnimation->frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
+			const Math::Matrix4x4f Result = myAnimation->frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
 			myLocalSpacePose.jointTransforms[i] = Result;
 		}
 
