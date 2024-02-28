@@ -53,18 +53,6 @@ namespace Simple
 		myTextures.clear();
 	}
 
-	void Model::SetPose(const LocalSpacePose& aPose)
-	{
-		ModelSpacePose modelSpacePose;
-		myMesh->mySkeleton.ConvertPoseToModelSpace(aPose, modelSpacePose);
-		SetPose(modelSpacePose);
-	}
-
-	void Model::SetPose(const ModelSpacePose& aPose)
-	{
-		myMesh->mySkeleton.ApplyBindPoseInverse(aPose, myBoneTransforms);
-	}
-
 	void Model::LookAt(const Math::Vector3f& aTargetPoint)
 	{
 		myTransform.LookAt(aTargetPoint);

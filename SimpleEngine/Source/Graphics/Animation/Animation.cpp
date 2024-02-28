@@ -17,7 +17,7 @@ Simple::AnimationPlayer::~AnimationPlayer()
 {
 }
 
-void Simple::AnimationPlayer::Init(Animation& aAnimation, Model& aModel)
+void Simple::AnimationPlayer::Init(Animation& aAnimation, AnimatedModel& aModel)
 {
 	myAnimation = &aAnimation;
 	myModel = &aModel;

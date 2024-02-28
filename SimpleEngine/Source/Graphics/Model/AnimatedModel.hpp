@@ -20,13 +20,15 @@ namespace Drawer
 
 namespace Simple
 {
-	class Model final
+	class AnimatedModel final
 	{
 		friend class Drawer::Renderer;
 		friend class Drawer::BoundingBoxDrawer;
 	public:
-		Model();
-		~Model();
+		const Simple::Mesh* myMesh;
+
+		AnimatedModel();
+		~AnimatedModel();
 
 		void Init(const Simple::Mesh* const aMesh);
 		void Init(const Simple::Mesh* const aMesh, const char* aTexturePath);
@@ -34,6 +36,9 @@ namespace Simple
 		//FilePath starts at Bin/Assets/Textures/
 		void AddTexture(const char* aFilePath);
 		void ClearTextures();
+
+		void SetPose(const LocalSpacePose& aPose);
+		void SetPose(const ModelSpacePose& aPose);
 	public:
 		void LookAt(const Math::Vector3f& aTargetPoint);
 
@@ -46,7 +51,7 @@ namespace Simple
 		void SetName(const std::string& aName);
 		void SetBoundingBoxLineColor(const Math::Vector4f& aColor);
 
-		const BoundingBox3D& GetBoundingBox() const;
+		const Simple::BoundingBox3D& GetBoundingBox() const;
 		Math::Vector4f GetBoundingBoxLineColor() const;
 		Math::Matrix4x4f GetMatrix() const;
 		Math::Vector3f GetPosition() const;
@@ -58,9 +63,9 @@ namespace Simple
 		std::string myName;
 		std::shared_ptr<const Simple::Shader> myShader;
 
-		const Simple::Mesh* myMesh;
-
 		Math::Transform myTransform;
 		Math::Vector4f myBoundingBoxColor;
+
+		Math::Matrix4x4f myBoneTransforms[SIMPLE_MAX_BONES];
 	};
 }

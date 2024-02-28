@@ -80,7 +80,65 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
+	void Renderer::RenderModel(const std::shared_ptr<const Simple::AnimatedModel> aModel) const
+	{
+		const auto context = Global::GetGraphicsEngine()->GetContext();
+
+		ObjectBufferData objectBuffer = {};
+		objectBuffer.modelWorldMatrix = aModel->GetMatrix();
+
+		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
+		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+
+		aModel->myShader->BindThisShader(context.Get());
+
+		for (const auto& texture : aModel->myTextures)
+		{
+			texture->Bind(context, texture->GetSlot());
+		}
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+
+		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aModel->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		context->DrawIndexed(static_cast<UINT>(aModel->myMesh->myMeshData.indices.size()), 0, 0);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
 	void Renderer::RenderModel(const Model& aModel) const
+	{
+		const auto context = Global::GetGraphicsEngine()->GetContext();
+
+		ObjectBufferData objectBuffer = {};
+		objectBuffer.modelWorldMatrix = aModel.GetMatrix();
+
+		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
+		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+
+		aModel.myShader->BindThisShader(context.Get());
+
+		for (const auto& texture : aModel.myTextures)
+		{
+			texture->Bind(context, texture->GetSlot());
+		}
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+
+		context->IASetVertexBuffers(0, 1, aModel.myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aModel.myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		context->DrawIndexed(static_cast<UINT>(aModel.myMesh->myMeshData.indices.size()), 0, 0);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
+	void Renderer::RenderModel(const Simple::AnimatedModel& aModel) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
@@ -140,7 +198,7 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderAnimatedSkeletonLines(const Simple::Model& aModel, const Simple::LocalSpacePose& aLocalPose)
+	void Renderer::RenderAnimatedSkeletonLines(const Simple::AnimatedModel& aModel, const Simple::LocalSpacePose& aLocalPose)
 	{
 		myAnimatedSkeletonLines.resize(aLocalPose.count);
 
@@ -176,7 +234,7 @@ namespace Drawer
 		Global::GetRenderer()->RenderLineInstance(myAnimatedSkeletonLines);
 	}
 
-	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::Model> aModel, const Simple::LocalSpacePose& aLocalPose)
+	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::LocalSpacePose& aLocalPose)
 	{
 		myAnimatedSkeletonLines.resize(aLocalPose.count);
 
@@ -212,7 +270,7 @@ namespace Drawer
 		Global::GetRenderer()->RenderLineInstance(myAnimatedSkeletonLines);
 	}
 
-	void Renderer::RenderStaticSkeletonLines(const Simple::Model& aModel)
+	void Renderer::RenderStaticSkeletonLines(const Simple::AnimatedModel& aModel)
 	{
 		const std::vector<Simple::Joint>& joints = aModel.myMesh->mySkeleton.myJoints;
 		const Math::Vector3f scale = aModel.GetScale();
@@ -246,7 +304,7 @@ namespace Drawer
 		Global::GetRenderer()->RenderLineInstance(myStaticSkeletonLines);
 	}
 
-	void Renderer::RenderStaticSkeletonLines(const std::shared_ptr<const Simple::Model> aModel)
+	void Renderer::RenderStaticSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel)
 	{
 		const std::vector<Simple::Joint>& joints = aModel->myMesh->mySkeleton.myJoints;
 		const Math::Vector3f scale = aModel->GetScale();
@@ -281,6 +339,27 @@ namespace Drawer
 	}
 
 	void Renderer::RenderBoundingBox(const std::shared_ptr<const Model> aModel) const
+	{
+		myBoundingBoxDrawer->Render(aModel);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
+	void Renderer::RenderBoundingBox(const std::shared_ptr<const Simple::AnimatedModel> aModel) const
+	{
+		myBoundingBoxDrawer->Render(aModel);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
+	void Renderer::RenderBoundingBox(const Simple::Model& aModel) const
+	{
+		myBoundingBoxDrawer->Render(aModel);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
+	void Renderer::RenderBoundingBox(const Simple::AnimatedModel& aModel) const
 	{
 		myBoundingBoxDrawer->Render(aModel);
 

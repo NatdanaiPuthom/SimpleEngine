@@ -8,7 +8,7 @@
 
 namespace Simple
 {
-	class Model;
+	class AnimatedModel;
 }
 
 enum class eAnimationState
@@ -48,14 +48,14 @@ namespace Simple
 		AnimationPlayer();
 		~AnimationPlayer();
 
-		void Init(Animation& aAnimation, Model& aModel);
+		void Init(Animation& aAnimation, AnimatedModel& aModel);
 		void Update();
 
 		void Play();
 		void SetIsLooping(const bool aShouldLoop);
 	private:
 		Animation* myAnimation;
-		Model* myModel;
+		AnimatedModel* myModel;
 
 		eAnimationState myState;
 

@@ -61,7 +61,7 @@ namespace Simple
 		AddMesh("Sphere", std::move(sphereMesh));
 	}
 
-	Model ModelFactory::LoadMeshFBX(const char* aFileName)
+	Model ModelFactory::LoadStaticModel(const char* aFileName)
 	{
 		Simple::Model model;
 		const Simple::Mesh* mesh = GetMesh(aFileName);
@@ -91,6 +91,39 @@ namespace Simple
 
 		model.Init(mesh);
 		return model;
+	}
+
+	AnimatedModel ModelFactory::LoadAnimatedModel(const char* aFileName)
+	{
+		Simple::AnimatedModel animatedModel;
+		const Simple::Mesh* mesh = GetMesh(aFileName);
+
+		if (mesh == nullptr)
+		{
+			TGA::FBX::Mesh tgaMesh;
+			TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(SimpleUtilities::GetAbsolutePath(aFileName), tgaMesh);
+			assert(status && "Failed to LoadMesh from FBXImporter");
+
+			Simple::MeshData meshData;
+			Simple::Skeleton skeletonData;
+
+			LoadMeshData(meshData, tgaMesh);
+			LoadSkeletonData(skeletonData, tgaMesh);
+
+			std::unique_ptr<Simple::Mesh> newMesh = std::make_unique<Simple::Mesh>();
+
+			newMesh->Init(meshData);
+			newMesh->mySkeleton = skeletonData;
+
+			AddMesh(aFileName, std::move(newMesh));
+			mesh = GetMesh(aFileName);
+
+			if (mesh == nullptr)
+				assert(false && "Failed to GetMesh from bank");
+		}
+
+		animatedModel.Init(mesh);
+		return animatedModel;
 	}
 
 	Animation ModelFactory::LoadAnimationFBX(const char* aFileName)

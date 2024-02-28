@@ -8,6 +8,7 @@ namespace Simple
 	class Shader;
 	class ConstantBuffer;
 	class Model;
+	class AnimatedModel;
 }
 
 namespace Drawer
@@ -21,6 +22,10 @@ namespace Drawer
 		void Init();
 
 		void Render(const std::shared_ptr<const Simple::Model> aModelInstance);
+		void Render(const std::shared_ptr<const Simple::AnimatedModel> aModelInstance);
+		void Render(const Simple::Model& aModelInstance);
+		void Render(const Simple::AnimatedModel& aModelInstance);
+
 		void Render(const Simple::BoundingBox2D& aBoundingBox2D);
 	private:
 		void InitMeshData2D();

@@ -4,6 +4,7 @@
 #include "Graphics/Renderer/Drawer/SphereDrawer.hpp"
 #include "Graphics/Renderer/Drawer/SpriteDrawer.hpp"
 #include "Graphics/Model/Model.hpp"
+#include "Graphics/Model/AnimatedModel.hpp"
 
 #include <memory>
 #include <vector>
@@ -24,17 +25,23 @@ namespace Drawer
 		void Init();
 
 		void RenderModel(const std::shared_ptr<const Simple::Model> aModel) const;
+		void RenderModel(const std::shared_ptr<const Simple::AnimatedModel> aModel) const;
 		void RenderModel(const Simple::Model& aModel) const;
+		void RenderModel(const Simple::AnimatedModel& aModel) const;
+
 		void RenderBoundingBox(const std::shared_ptr<const Simple::Model> aModel) const;
+		void RenderBoundingBox(const std::shared_ptr<const Simple::AnimatedModel> aModel) const;
+		void RenderBoundingBox(const Simple::Model& aModel) const;
+		void RenderBoundingBox(const Simple::AnimatedModel& aModel) const;
 
 		void RenderLine(const Drawer::Line& aLine);
 		void RenderSphere(const Drawer::Sphere& aSphere);
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
 
-		void RenderAnimatedSkeletonLines(const Simple::Model& aModel, const Simple::LocalSpacePose& aLocalPose);
-		void RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::Model> aModel, const Simple::LocalSpacePose& aLocalPose);
-		void RenderStaticSkeletonLines(const Simple::Model& aModel);
-		void RenderStaticSkeletonLines(const std::shared_ptr<const Simple::Model> aModel);
+		void RenderAnimatedSkeletonLines(const Simple::AnimatedModel& aModel, const Simple::LocalSpacePose& aLocalPose);
+		void RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::LocalSpacePose& aLocalPose);
+		void RenderStaticSkeletonLines(const Simple::AnimatedModel& aModel);
+		void RenderStaticSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel);
 
 		void RenderLineInstance(const std::vector<Drawer::Line> aLines);
 

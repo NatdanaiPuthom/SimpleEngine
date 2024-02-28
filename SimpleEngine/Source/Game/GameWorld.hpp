@@ -2,7 +2,7 @@
 
 struct NatdanaiAnimationTest
 {
-	Simple::Model model;
+	Simple::AnimatedModel animatedModel;
 	Simple::Animation animation;
 	Simple::AnimationPlayer animationPlayer;
 };
