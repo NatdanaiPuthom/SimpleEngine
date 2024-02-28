@@ -31,6 +31,11 @@ namespace Drawer
 		void RenderSphere(const Drawer::Sphere& aSphere);
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
 
+		void RenderAnimatedSkeletonLines(const Simple::Model& aModel, const Simple::LocalSpacePose& aLocalPose);
+		void RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::Model> aModel, const Simple::LocalSpacePose& aLocalPose);
+		void RenderStaticSkeletonLines(const Simple::Model& aModel);
+		void RenderStaticSkeletonLines(const std::shared_ptr<const Simple::Model> aModel);
+
 		void RenderLineInstance(const std::vector<Drawer::Line> aLines);
 
 		void RenderEverythingUpSideDown() const;
@@ -47,6 +52,9 @@ namespace Drawer
 		void RenderUpSideDown(const std::shared_ptr<const Simple::Model> aModel) const;
 		void RenderRefraction(const std::shared_ptr<const Simple::Model> aModel) const;
 	private:
+		std::vector<Drawer::Line> myAnimatedSkeletonLines;
+		std::vector<Drawer::Line> myStaticSkeletonLines;
+
 		std::unique_ptr<Drawer::BoundingBoxDrawer> myBoundingBoxDrawer;
 		std::unique_ptr<Drawer::LineDrawer> myLineDrawer;
 		std::unique_ptr<Drawer::SphereDrawer> mySphereDrawer;

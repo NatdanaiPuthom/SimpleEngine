@@ -4,17 +4,19 @@
 #include <vector>
 #include <unordered_map>
 
+#define SIMPLE_MAX_BONES 64
+
 namespace Simple
 {
 	struct LocalSpacePose
 	{
-		Math::Matrix4x4f jointTransforms[64];
+		Math::Matrix4x4f jointTransforms[SIMPLE_MAX_BONES];
 		size_t count;
 	};
 
 	struct ModelSpacePose
 	{
-		Math::Matrix4x4f jointTransforms[64];
+		Math::Matrix4x4f jointTransforms[SIMPLE_MAX_BONES];
 		size_t count;
 	};
 
@@ -61,8 +63,6 @@ namespace Simple
 
 		void ConvertPoseToModelSpace(const LocalSpacePose& aInPose, ModelSpacePose& aOutPose) const;
 		void ApplyBindPoseInverse(const ModelSpacePose& aInPose, Math::Matrix4x4f* aOutMatrix) const;
-
-		void RenderSkeletonLines() const; //Quick test
 	private:
 		void ConvertPoseToModelSpace(const LocalSpacePose& aInPose, ModelSpacePose& aOutPose, unsigned aBoneID, const Math::Matrix4x4f& aParentTransform) const;
 	};

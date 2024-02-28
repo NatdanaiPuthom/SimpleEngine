@@ -26,6 +26,9 @@ namespace Drawer
 
 	void Renderer::Init()
 	{
+		myAnimatedSkeletonLines.reserve(SIMPLE_MAX_BONES);
+		myStaticSkeletonLines.reserve(SIMPLE_MAX_BONES);
+
 		myObjectBuffer = std::make_unique<ConstantBuffer>();
 		myBoneBuffer = std::make_unique<ConstantBuffer>();
 
@@ -58,7 +61,7 @@ namespace Drawer
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		aModel->myShader->UseThisShader(context.Get());
+		aModel->myShader->BindThisShader(context.Get());
 
 		for (const auto& texture : aModel->myTextures)
 		{
@@ -88,8 +91,8 @@ namespace Drawer
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
 		BonesBufferData boneBufferData = {};
-		
-		for (size_t i = 0; i < 64; ++i)
+
+		for (size_t i = 0; i < SIMPLE_MAX_BONES; ++i)
 		{
 			boneBufferData.bonesTransform[i] = aModel.myBoneTransforms[i];
 		}
@@ -97,7 +100,7 @@ namespace Drawer
 		myBoneBuffer->Bind(myBoneBuffer->GetSlot());
 		myBoneBuffer->Update(sizeof(BonesBufferData), &boneBufferData);
 
-		aModel.myShader->UseThisShader(context.Get());
+		aModel.myShader->BindThisShader(context.Get());
 
 		for (const auto& texture : aModel.myTextures)
 		{
@@ -135,6 +138,146 @@ namespace Drawer
 		mySpriteDrawer->Render(aSprite);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
+	void Renderer::RenderAnimatedSkeletonLines(const Simple::Model& aModel, const Simple::LocalSpacePose& aLocalPose)
+	{
+		myAnimatedSkeletonLines.resize(aLocalPose.count);
+
+		Simple::ModelSpacePose pose;
+		aModel.myMesh->mySkeleton.ConvertPoseToModelSpace(aLocalPose, pose);
+
+		const Math::Matrix4x4f modelTransform = aModel.GetMatrix();
+
+		for (size_t index = 0; index < aLocalPose.count; ++index)
+		{
+			Simple::Joint joint = aModel.myMesh->mySkeleton.myJoints[index];
+
+			if (joint.myParent == -1)
+				continue;
+
+			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
+			const Math::Matrix4x4 boneWorldTransformNext = pose.jointTransforms[joint.myParent] * modelTransform;
+
+			Drawer::Line line;
+
+			if (index % 3 == 0)
+				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+			else if (index % 3 == 1)
+				line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+			else if (index % 3 == 2)
+				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+
+			line.startPosition = boneWorldTransform.GetPosition();
+			line.endPosition = boneWorldTransformNext.GetPosition();
+			myAnimatedSkeletonLines.push_back(line);
+		}
+
+		Global::GetRenderer()->RenderLineInstance(myAnimatedSkeletonLines);
+	}
+
+	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::Model> aModel, const Simple::LocalSpacePose& aLocalPose)
+	{
+		myAnimatedSkeletonLines.resize(aLocalPose.count);
+
+		Simple::ModelSpacePose pose;
+		aModel->myMesh->mySkeleton.ConvertPoseToModelSpace(aLocalPose, pose);
+
+		const Math::Matrix4x4f modelTransform = aModel->GetMatrix();
+
+		for (size_t index = 0; index < aLocalPose.count; ++index)
+		{
+			Simple::Joint joint = aModel->myMesh->mySkeleton.myJoints[index];
+
+			if (joint.myParent == -1)
+				continue;
+
+			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
+			const Math::Matrix4x4 boneWorldTransformNext = pose.jointTransforms[joint.myParent] * modelTransform;
+
+			Drawer::Line line;
+
+			if (index % 3 == 0)
+				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+			else if (index % 3 == 1)
+				line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+			else if (index % 3 == 2)
+				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+
+			line.startPosition = boneWorldTransform.GetPosition();
+			line.endPosition = boneWorldTransformNext.GetPosition();
+			myAnimatedSkeletonLines.push_back(line);
+		}
+
+		Global::GetRenderer()->RenderLineInstance(myAnimatedSkeletonLines);
+	}
+
+	void Renderer::RenderStaticSkeletonLines(const Simple::Model& aModel)
+	{
+		const std::vector<Simple::Joint>& joints = aModel.myMesh->mySkeleton.myJoints;
+		const Math::Vector3f scale = aModel.GetScale();
+
+		myStaticSkeletonLines.resize(joints.size());
+
+		for (size_t index = 0; index < joints.size(); ++index)
+		{
+			Simple::Joint joint = joints[index];
+
+			if (joint.myParent == -1)
+				continue;
+
+			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joints[index].myBindPoseInverse);
+			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(joints[joint.myParent].myBindPoseInverse);
+
+			Drawer::Line line;
+
+			if (index % 3 == 0)
+				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+			else if (index % 3 == 1)
+				line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+			else if (index % 3 == 2)
+				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+
+			line.startPosition = boneWorldTransform.GetPosition() * scale;
+			line.endPosition = boneWorldTransformNext.GetPosition() * scale;
+			myStaticSkeletonLines.push_back(line);
+		}
+
+		Global::GetRenderer()->RenderLineInstance(myStaticSkeletonLines);
+	}
+
+	void Renderer::RenderStaticSkeletonLines(const std::shared_ptr<const Simple::Model> aModel)
+	{
+		const std::vector<Simple::Joint>& joints = aModel->myMesh->mySkeleton.myJoints;
+		const Math::Vector3f scale = aModel->GetScale();
+
+		myStaticSkeletonLines.resize(joints.size());
+
+		for (size_t index = 0; index < joints.size(); ++index)
+		{
+			Simple::Joint joint = joints[index];
+
+			if (joint.myParent == -1)
+				continue;
+
+			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joints[index].myBindPoseInverse);
+			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(joints[joint.myParent].myBindPoseInverse);
+
+			Drawer::Line line;
+
+			if (index % 3 == 0)
+				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+			else if (index % 3 == 1)
+				line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+			else if (index % 3 == 2)
+				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+
+			line.startPosition = boneWorldTransform.GetPosition() * scale;
+			line.endPosition = boneWorldTransformNext.GetPosition() * scale;
+			myStaticSkeletonLines.push_back(line);
+		}
+
+		Global::GetRenderer()->RenderLineInstance(myStaticSkeletonLines);
 	}
 
 	void Renderer::RenderBoundingBox(const std::shared_ptr<const Model> aModel) const
@@ -202,7 +345,7 @@ namespace Drawer
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		aModel->myShader->UseThisShader(context.Get());
+		aModel->myShader->BindThisShader(context.Get());
 
 		context->PSSetShaderResources(0, 1, Global::GetGraphicsEngine()->GetWaterShaderResourceView().GetAddressOf());
 		context->PSSetShaderResources(1, 1, Global::GetGraphicsEngine()->GetWaterRefractionShaderResourceView().GetAddressOf());
@@ -251,10 +394,10 @@ namespace Drawer
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		aModel->myShader->UseThisShader(context.Get());
+		aModel->myShader->BindThisShader(context.Get());
 
 		auto mirrorShader = Global::GetGraphicsEngine()->GetShader("DefaultPS.cso", "PlaneReflectionVS.cso");
-		mirrorShader->UseThisVertexShader(context);
+		mirrorShader->BindOnlyThisVertexShader(context);
 
 		for (const auto& texture : aModel->myTextures)
 		{
@@ -283,10 +426,10 @@ namespace Drawer
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
-		aModel->myShader->UseThisShader(context.Get());
+		aModel->myShader->BindThisShader(context.Get());
 
 		auto refractionShader = Global::GetGraphicsEngine()->GetShader("DefaultPS.cso", "PlaneReflectionVS.cso");
-		refractionShader->UseThisVertexShader(context);
+		refractionShader->BindOnlyThisVertexShader(context);
 
 		for (const auto& texture : aModel->myTextures)
 		{

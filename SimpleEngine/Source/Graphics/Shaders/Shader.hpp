@@ -20,9 +20,9 @@ namespace Simple
 
 		const bool Init(ComPtr<ID3D11Device>& aDevice, const std::string& aPSFileName, const std::string& aVSFileName);
 
-		void UseThisShader(ID3D11DeviceContext* aContext) const;
-		void UseThisPixelShader(ComPtr<ID3D11DeviceContext> aContext) const;
-		void UseThisVertexShader(ComPtr<ID3D11DeviceContext> aContext) const;
+		void BindThisShader(ID3D11DeviceContext* aContext) const;
+		void BindOnlyThisPixelShader(ComPtr<ID3D11DeviceContext> aContext) const;
+		void BindOnlyThisVertexShader(ComPtr<ID3D11DeviceContext> aContext) const;
 	private:
 		ComPtr<ID3D11VertexShader> myVertexShader;
 		ComPtr<ID3D11PixelShader> myPixelShader;

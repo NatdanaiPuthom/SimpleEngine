@@ -61,20 +61,20 @@ namespace Simple
 		return true;
 	}
 
-	void Shader::UseThisShader(ID3D11DeviceContext* aContext) const
+	void Shader::BindThisShader(ID3D11DeviceContext* aContext) const
 	{
 		aContext->VSSetShader(myVertexShader.Get(), nullptr, 0);
 		aContext->PSSetShader(myPixelShader.Get(), nullptr, 0);
 		aContext->IASetInputLayout(myInputLayout.Get());
 	}
 
-	void Shader::UseThisPixelShader(ComPtr<ID3D11DeviceContext> aContext) const
+	void Shader::BindOnlyThisPixelShader(ComPtr<ID3D11DeviceContext> aContext) const
 	{
 		aContext->PSSetShader(myPixelShader.Get(), nullptr, 0);
 		aContext->IASetInputLayout(myInputLayout.Get());
 	}
 
-	void Shader::UseThisVertexShader(ComPtr<ID3D11DeviceContext> aContext) const
+	void Shader::BindOnlyThisVertexShader(ComPtr<ID3D11DeviceContext> aContext) const
 	{
 		aContext->VSSetShader(myVertexShader.Get(), nullptr, 0);
 		aContext->IASetInputLayout(myInputLayout.Get());

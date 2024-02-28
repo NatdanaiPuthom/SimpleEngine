@@ -103,11 +103,13 @@ namespace Simple
 		myLevelManager->Render();
 		myRaycastManager->Render();
 
-		myAnimationTest.animationPlayer.Update();
-		myAnimationTest.model.SetPose(myAnimationTest.animationPlayer.myLocalSpacePose);
+		//myAnimationTest.animationPlayer.Update();
+		//myAnimationTest.model.SetPose(myAnimationTest.animationPlayer.myLocalSpacePose);
 
-		RenderSkeletonLines(myAnimationTest.model, myAnimationTest.animationPlayer.myLocalSpacePose);
-		Global::GetRenderer()->RenderModel(myAnimationTest.model);
+		//Global::GetRenderer()->RenderAnimatedSkeletonLines(myAnimationTest.model, myAnimationTest.animationPlayer.myLocalSpacePose);
+		//Global::GetRenderer()->RenderModel(myAnimationTest.model);
+
+		Global::GetRenderer()->RenderStaticSkeletonLines(myAnimationTest.model);
 
 		myImGuiManager->Render();
 	}

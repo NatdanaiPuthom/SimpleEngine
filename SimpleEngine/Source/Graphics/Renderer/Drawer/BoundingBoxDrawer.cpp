@@ -155,7 +155,7 @@ namespace Drawer
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 
-		myShader3D->UseThisShader(context.Get());
+		myShader3D->BindThisShader(context.Get());
 
 		context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
 		context->IASetIndexBuffer(myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);

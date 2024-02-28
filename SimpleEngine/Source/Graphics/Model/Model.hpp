@@ -37,12 +37,8 @@ namespace Simple
 		void AddTexture(const char* aFilePath);
 		void ClearTextures();
 
-
-
 		void SetPose(const LocalSpacePose& aPose);
 		void SetPose(const ModelSpacePose& aPose);
-
-
 	public:
 		void LookAt(const Math::Vector3f& aTargetPoint);
 
@@ -70,6 +66,6 @@ namespace Simple
 		Math::Transform myTransform;
 		Math::Vector4f myBoundingBoxColor;
 
-		Math::Matrix4x4f myBoneTransforms[64];
+		Math::Matrix4x4f myBoneTransforms[SIMPLE_MAX_BONES];
 	};
 }

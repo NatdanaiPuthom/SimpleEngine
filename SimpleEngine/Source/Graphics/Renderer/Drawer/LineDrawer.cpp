@@ -53,7 +53,7 @@ namespace Drawer
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 
-		myShader->UseThisShader(context.Get());
+		myShader->BindThisShader(context.Get());
 
 		context->IASetVertexBuffers(0, 1, myData->vertexBuffer.GetAddressOf(), &stride, &offset);
 		context->IASetIndexBuffer(myData->indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
@@ -100,7 +100,7 @@ namespace Drawer
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 
-		myShader->UseThisShader(context.Get());
+		myShader->BindThisShader(context.Get());
 
 		context->IASetVertexBuffers(0, 1, myInstanceData->vertexBuffer.GetAddressOf(), &stride, &offset);
 		context->IASetIndexBuffer(myInstanceData->indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);

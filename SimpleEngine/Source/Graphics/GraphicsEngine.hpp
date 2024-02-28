@@ -92,7 +92,7 @@ struct alignas(16) LightBufferData final
 
 struct alignas(16) BonesBufferData
 {
-	Math::Matrix4x4f bonesTransform[64];
+	Math::Matrix4x4f bonesTransform[SIMPLE_MAX_BONES];
 };
 
 struct RenderTarget final

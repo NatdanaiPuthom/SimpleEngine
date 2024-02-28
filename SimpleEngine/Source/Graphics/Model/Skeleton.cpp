@@ -1,6 +1,5 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "Graphics/Model/Skeleton.hpp"
-#include "Global.hpp"
 
 namespace Simple
 {
@@ -56,29 +55,5 @@ namespace Simple
 		{
 			ConvertPoseToModelSpace(aInPose, aOutPose, joint.myChildren[childIndex], aOutPose.jointTransforms[aBoneID]);
 		}
-	}
-
-	void Skeleton::RenderSkeletonLines() const
-	{
-		std::vector<Drawer::Line> lines;
-		lines.reserve(myJoints.size());
-
-		for (size_t index = 0; index < myJoints.size(); ++index)
-		{
-			Simple::Joint joint = myJoints[index];
-
-			if (joint.myParent == -1)
-				continue;
-
-			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(myJoints[index].myBindPoseInverse);
-			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(myJoints[joint.myParent].myBindPoseInverse);
-
-			Drawer::Line line;
-			line.startPosition = boneWorldTransform.GetPosition();
-			line.endPosition = boneWorldTransformNext.GetPosition();
-			lines.push_back(line);
-		}
-
-		Global::GetRenderer()->RenderLineInstance(lines);
 	}
 }

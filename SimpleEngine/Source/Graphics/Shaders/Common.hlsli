@@ -1,4 +1,6 @@
 
+#define SIMPLE_MAX_BONES 64
+
 SamplerState aSampler : register(s0);
 Texture2D aDefaultTexture : register(t0);
 TextureCube aCubeMap : register(t14);
@@ -53,7 +55,7 @@ cbuffer LightBuffer : register(b3)
 
 cbuffer BoneBuffer : register(b5)
 {
-    float4x4 bones[64];
+    float4x4 bones[SIMPLE_MAX_BONES];
 }
 
 struct PixelOutput
