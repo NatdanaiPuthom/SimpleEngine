@@ -136,12 +136,12 @@ namespace Simple
 
 				Math::Transform transform;
 				transform.SetScale(localMatrix.GetScale());
-				transform.SetRotation(localMatrix.GetRotation()); //I WILL FIX DECOMPOSE MATRIX I AM TRYING
+				transform.SetRotation(localMatrix.GetRotation()); //THIS SHIT NO WORK. I PROMISE I WILL FIX. I WILL FIX DECOMPOSE MATRIX I AM TRYING
 				transform.SetPosition(localMatrix.GetPosition());
 
 				animation.frames[i].localTransforms.emplace(boneName, transform);
 
-				localMatrix = Math::Matrix4x4f::Transpose(localMatrix); //No clue but it looks slightly better with this
+				localMatrix = Math::Matrix4x4f::Transpose(localMatrix); //Important
 				animation.frames[i].localMatrix.emplace(boneName, localMatrix);
 			}
 		}
