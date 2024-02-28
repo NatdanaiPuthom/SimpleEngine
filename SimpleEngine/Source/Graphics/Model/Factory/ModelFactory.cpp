@@ -73,14 +73,11 @@ namespace Simple
 			assert(status && "Failed to LoadMesh from FBXImporter");
 
 			Simple::MeshData meshData;
-			Simple::Skeleton skeletonData;
 
 			LoadMeshData(meshData, tgaMesh);
-			LoadSkeletonData(skeletonData, tgaMesh);
 
 			std::unique_ptr<Simple::Mesh> newMesh = std::make_unique<Simple::Mesh>();
 			newMesh->Init(meshData);
-			newMesh->mySkeleton = skeletonData; //TO-DO: Re-structure where it should be. If the Mesh class should hold it or Model class
 
 			AddMesh(aFileName, std::move(newMesh));
 			mesh = GetMesh(aFileName);
@@ -113,7 +110,7 @@ namespace Simple
 			std::unique_ptr<Simple::Mesh> newMesh = std::make_unique<Simple::Mesh>();
 
 			newMesh->Init(meshData);
-			newMesh->mySkeleton = skeletonData;
+			animatedModel.GetSkeleton() = skeletonData;
 
 			AddMesh(aFileName, std::move(newMesh));
 			mesh = GetMesh(aFileName);

@@ -1,6 +1,5 @@
 #pragma once
 #include "Engine/SimpleUtilities/Bounds.hpp"
-#include "Graphics/Model/Skeleton.hpp"
 
 struct ID3D11Buffer;
 struct ID3D11Device;
@@ -37,8 +36,6 @@ namespace Simple
 		friend class Drawer::Renderer;
 		friend class Drawer::BoundingBoxDrawer;
 	public:
-		Skeleton mySkeleton;
-
 		Mesh();
 		~Mesh();
 

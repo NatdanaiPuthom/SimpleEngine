@@ -4,6 +4,7 @@
 #include "Engine/Math/Matrix4x4.hpp"
 #include "Engine/Math/Transform.hpp"
 #include "Graphics/Model/Mesh.hpp"
+#include "Graphics/Model/Skeleton.hpp"
 #include <memory>
 #include <string>
 
@@ -25,7 +26,6 @@ namespace Simple
 		friend class Drawer::Renderer;
 		friend class Drawer::BoundingBoxDrawer;
 	public:
-		const Simple::Mesh* myMesh;
 
 		AnimatedModel();
 		~AnimatedModel();
@@ -58,14 +58,21 @@ namespace Simple
 		Math::Vector3f GetRotation() const;
 		Math::Vector3f GetScale() const;
 		std::string GetName() const;
+
+		Skeleton& GetSkeleton();
+		const Skeleton& GetSkeleton() const;
 	private:
+		Math::Matrix4x4f myBoneTransforms[SIMPLE_MAX_BONES];
+		Skeleton mySkeleton;
+
 		std::vector<std::shared_ptr<const Simple::Texture>> myTextures;
+
 		std::string myName;
+
 		std::shared_ptr<const Simple::Shader> myShader;
+		const Simple::Mesh* myMesh;
 
 		Math::Transform myTransform;
 		Math::Vector4f myBoundingBoxColor;
-
-		Math::Matrix4x4f myBoneTransforms[SIMPLE_MAX_BONES];
 	};
 }

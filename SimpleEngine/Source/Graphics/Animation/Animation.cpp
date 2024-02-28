@@ -72,7 +72,7 @@ void Simple::AnimationPlayer::Update()
 			nextFrame = 0;
 		}
 
-		const Skeleton* skeleton = &myModel->myMesh->mySkeleton;
+		const Skeleton* skeleton = &myModel->GetSkeleton();
 
 		for (size_t i = 0; i < skeleton->myJoints.size() - 1; i++)
 		{

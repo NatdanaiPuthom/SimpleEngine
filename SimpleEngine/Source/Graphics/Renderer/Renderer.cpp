@@ -203,13 +203,15 @@ namespace Drawer
 		myAnimatedSkeletonLines.resize(aLocalPose.count);
 
 		Simple::ModelSpacePose pose;
-		aModel.myMesh->mySkeleton.ConvertPoseToModelSpace(aLocalPose, pose);
+
+		const Simple::Skeleton& skeleton = aModel.GetSkeleton();
+		aModel.GetSkeleton().ConvertPoseToModelSpace(aLocalPose, pose);
 
 		const Math::Matrix4x4f modelTransform = aModel.GetMatrix();
 
 		for (size_t index = 0; index < aLocalPose.count; ++index)
 		{
-			Simple::Joint joint = aModel.myMesh->mySkeleton.myJoints[index];
+			Simple::Joint joint = skeleton.myJoints[index];
 
 			if (joint.myParent == -1)
 				continue;
@@ -239,13 +241,14 @@ namespace Drawer
 		myAnimatedSkeletonLines.resize(aLocalPose.count);
 
 		Simple::ModelSpacePose pose;
-		aModel->myMesh->mySkeleton.ConvertPoseToModelSpace(aLocalPose, pose);
+		const Simple::Skeleton& skeleton = aModel->GetSkeleton();
+		skeleton.ConvertPoseToModelSpace(aLocalPose, pose);
 
 		const Math::Matrix4x4f modelTransform = aModel->GetMatrix();
 
 		for (size_t index = 0; index < aLocalPose.count; ++index)
 		{
-			Simple::Joint joint = aModel->myMesh->mySkeleton.myJoints[index];
+			Simple::Joint joint = skeleton.myJoints[index];
 
 			if (joint.myParent == -1)
 				continue;
@@ -272,7 +275,7 @@ namespace Drawer
 
 	void Renderer::RenderStaticSkeletonLines(const Simple::AnimatedModel& aModel)
 	{
-		const std::vector<Simple::Joint>& joints = aModel.myMesh->mySkeleton.myJoints;
+		const std::vector<Simple::Joint>& joints = aModel.GetSkeleton().myJoints;
 		const Math::Vector3f scale = aModel.GetScale();
 
 		myStaticSkeletonLines.resize(joints.size());
@@ -306,7 +309,7 @@ namespace Drawer
 
 	void Renderer::RenderStaticSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel)
 	{
-		const std::vector<Simple::Joint>& joints = aModel->myMesh->mySkeleton.myJoints;
+		const std::vector<Simple::Joint>& joints = aModel->GetSkeleton().myJoints;
 		const Math::Vector3f scale = aModel->GetScale();
 
 		myStaticSkeletonLines.resize(joints.size());
