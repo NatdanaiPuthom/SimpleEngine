@@ -101,4 +101,62 @@ void Simple::AnimationPlayer::Update()
 
 		myLocalSpacePose.count = skeleton.myJoints.size();
 	}
+
+	myModel->SetPose(myLocalSpacePose);
+}
+
+bool Simple::AnimationPlayer::UpdateThreaded(AnimatedModel& aModel, Animation& aAnimation)
+{
+	if (myState == eAnimationState::Playing)
+	{
+		myTime += Global::GetDeltaTime();
+
+		if (myTime >= aAnimation.duration)
+		{
+			if (myIsLooping)
+			{
+				while (myTime >= aAnimation.duration)
+				{
+					myTime -= aAnimation.duration;
+				}
+			}
+			else
+			{
+				myTime = aAnimation.duration;
+				myState = eAnimationState::Finished;
+			}
+		}
+
+		const float frameRate = 1.0f / myFPS;
+		const float result = myTime / frameRate;
+		const size_t frame = static_cast<size_t>(std::floor(result));
+
+		size_t nextFrame = frame + 1;
+
+		if (myState == eAnimationState::Finished)
+		{
+			nextFrame = frame;
+		}
+		else if (nextFrame > aAnimation.length)
+		{
+			nextFrame = 0;
+		}
+
+		const Skeleton& skeleton = aModel.GetSkeleton();
+
+		for (size_t i = 0; i < skeleton.myJoints.size() - 1; i++)
+		{
+			const Math::Transform& currentFrameJointXform = aAnimation.frames[frame].localTransforms.find(skeleton.myJoints[i].myName)->second;
+			Math::Matrix4x4f jointXform = currentFrameJointXform.GetMatrix();
+
+			const Math::Matrix4x4f Result = aAnimation.frames[nextFrame].localMatrix.find(skeleton.myJoints[i].myName)->second;
+			myLocalSpacePose.jointTransforms[i] = Result;
+		}
+
+		myLocalSpacePose.count = skeleton.myJoints.size();
+	}
+
+	aModel.SetPose(myLocalSpacePose);
+
+	return true;
 }
