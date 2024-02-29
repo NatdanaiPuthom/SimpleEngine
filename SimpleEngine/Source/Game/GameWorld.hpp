@@ -20,6 +20,7 @@ namespace Simple
 	class GameWorld final
 	{
 	public:
+
 		GameWorld();
 		~GameWorld();
 
