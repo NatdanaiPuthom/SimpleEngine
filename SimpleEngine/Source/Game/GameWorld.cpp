@@ -71,7 +71,7 @@ namespace Simple
 
 		Global::GetRenderer()->RenderAnimatedSkeletonLines(myAnimationTest.animatedModel, myAnimationTest.animationPlayer.myLocalSpacePose);
 		Global::GetRenderer()->RenderModel(myAnimationTest.animatedModel);
-		Global::GetRenderer()->RenderStaticSkeletonLines(myAnimationTest.animatedModel);
+		Global::GetRenderer()->RenderBoundingBox(myAnimationTest.animatedModel);
 
 		myImGuiManager->Render();
 	}
