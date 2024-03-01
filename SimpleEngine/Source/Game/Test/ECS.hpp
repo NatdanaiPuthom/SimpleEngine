@@ -7,6 +7,16 @@
 #include <string>
 #include <unordered_map>
 
+//ECS third-variant test
+
+//TO-DO
+// 1. Deallocate properly.
+//   - new, shared, unique
+//   - inheritances
+// 
+// 2. Add and GetComponent
+//
+
 namespace Simple
 {
 	class ComponentManager final
@@ -17,7 +27,11 @@ namespace Simple
 		using ComponentVector = std::vector<char>;
 	public:
 		ComponentManager() {};
-		~ComponentManager() {};
+
+		~ComponentManager() 
+		{
+
+		};
 
 		void SetWorldPointerToThis()
 		{

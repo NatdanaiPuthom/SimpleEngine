@@ -1,12 +1,5 @@
 #pragma once
-#include "Engine/Threadpool/ThreadPool.hpp"
-
-struct NatdanaiAnimationTest
-{
-	Simple::AnimatedModel animatedModel;
-	Simple::Animation animation;
-	Simple::AnimationPlayer animationPlayer;
-};
+#include "Game/Test/AnimationThreading.hpp"
 
 namespace Simple
 {
@@ -21,10 +14,6 @@ namespace Simple
 	class GameWorld final
 	{
 	public:
-		ThreadPool myThreadPool;
-		std::vector< NatdanaiAnimationTest> myThreadTest;
-		std::vector<std::future<bool>> myFutureResults;
-
 		GameWorld();
 		~GameWorld();
 
@@ -42,6 +31,8 @@ namespace Simple
 		std::unique_ptr<Simple::LevelManager> myLevelManager;
 		std::unique_ptr<Simple::RaycastManager> myRaycastManager;
 		std::unique_ptr<Simple::EventManager> myEventManager;
+
+		AnimationThreadTest myAnimationThreadTest;
 
 		float myFixedUpdateTimer;
 		const float myFixedUpdateFreqency;
