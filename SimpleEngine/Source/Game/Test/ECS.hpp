@@ -7,14 +7,17 @@
 #include <string>
 #include <unordered_map>
 
-//ECS third-variant test
+//ECS-variant 3rd-version test
 
 //TO-DO
 // 1. Deallocate properly.
 //   - new, shared, unique
 //   - inheritances
+//   - pointers
 // 
-// 2. Add and GetComponent
+// 2. Add and GetComponent fixes
+// 
+// 3. Fix dependency for global when Entity calls ComponentManager
 //
 
 namespace Simple
@@ -25,13 +28,45 @@ namespace Simple
 		using ComponentCount = std::size_t;
 		using ComponentIndex = std::size_t;
 		using ComponentVector = std::vector<char>;
+		using Destructor = void (*)(void*);
 	public:
 		ComponentManager() {};
 
 		~ComponentManager() 
 		{
+			for (auto& [key, value] : myComponents)
+			{
+				const std::size_t elementCount = value.first;
 
+				std::vector<char>& components = value.second;
+
+				const std::size_t size = components.size() / elementCount;
+
+				for (size_t i = 0; i < elementCount; ++i)
+				{
+					const std::size_t offset = i * size;
+
+					Destroy(key, &components[offset]);
+				}
+			}
 		};
+
+		template<typename ComponentType>
+		void RegisterDestructor()
+		{
+			myDestructors[typeid(ComponentType)] = [](void* pointer)
+				{
+					static_cast<ComponentType*>(pointer)->~ComponentType();
+				};
+		}
+
+		void Destroy(ComponentID aComponentID, void* aPointer)
+		{
+			if (myDestructors.find(aComponentID) != myDestructors.end())
+			{
+				myDestructors[aComponentID](aPointer);
+			}
+		}
 
 		void SetWorldPointerToThis()
 		{
@@ -41,6 +76,8 @@ namespace Simple
 		template<typename ComponentType>
 		inline ComponentIndex AddComponent(const ComponentType& aComponent)
 		{
+			RegisterDestructor<ComponentType>();
+
 			const ComponentID componentID = typeid(ComponentType);
 
 			auto it = myComponents.find(componentID);
@@ -132,6 +169,7 @@ namespace Simple
 	private:
 		std::unordered_map<ComponentID, std::pair<ComponentCount, ComponentVector>> myComponents;
 		std::unordered_map<ComponentID, std::vector<ComponentIndex>> myAvaliableSlot;
+		std::unordered_map<ComponentID, Destructor> myDestructors;
 	};
 }
 
@@ -268,15 +306,15 @@ namespace Simple
 	};
 }
 
-struct HelloWorld
-{
-	int a = 5;
-};
-
 namespace Simple
 {
 	class PlayerSystem final : public System
 	{
+		struct HelloWorld
+		{
+			int a = 5;
+		};
+
 	public:
 		void Update() override
 		{
@@ -310,3 +348,31 @@ namespace Simple
 //}
 //
 //systemManager.Update();
+
+
+//struct Hello
+//{
+//	int* a;
+//	std::shared_ptr<int> b;
+//
+//	~Hello()
+//	{
+//		delete a;
+//		a = nullptr;
+//		//b = nullptr;
+//	}
+//};
+//
+//struct Test : public Hello
+//{
+//
+//};
+//
+//auto index = comp.AddComponent(Test());
+//auto hello = comp.GetComponent<Test>(index);
+//
+//hello->a = new int(10);
+//hello->b = std::make_shared<int>(20);
+//
+//std::cout << *hello->a << std::endl;
+//std::cout << *hello->b << std::endl;

@@ -14,8 +14,6 @@ namespace Simple
 
 	Model::~Model()
 	{
-		myMesh = nullptr;
-		myShader = nullptr;
 	}
 
 	void Model::Init(const Simple::Mesh* const aMesh)
