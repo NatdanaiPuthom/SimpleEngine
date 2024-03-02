@@ -1,49 +1,52 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "Graphics/Lights/Light.hpp"
 
-Simple::Light::Light(const Math::Transform& aTransform, const Math::Vector4f& aColor, const float aIntensity)
-	: myTransform(aTransform)
-	, myColor(aColor)
-	, myIntensity(aIntensity)
+namespace Simple
 {
-}
+	Light::Light(const Math::Transform& aTransform, const Math::Vector4f& aColor, const float aIntensity)
+		: myTransform(aTransform)
+		, myColor(aColor)
+		, myIntensity(aIntensity)
+	{
+	}
 
-void Simple::Light::SetTransform(const Math::Transform& aNewTransform)
-{
-	myTransform = aNewTransform;
-}
+	void Light::SetTransform(const Math::Transform& aTransform)
+	{
+		myTransform = aTransform;
+	}
 
-void Simple::Light::SetPosition(const Math::Vector3f& aNewPosition)
-{
-	myTransform.SetPosition(aNewPosition);
-}
+	void Light::SetPosition(const Math::Vector3f& aPosition)
+	{
+		myTransform.SetPosition(aPosition);
+	}
 
-void Simple::Light::SetRotation(const Math::Vector3f& aNewRotation)
-{
-	myTransform.SetRotation(aNewRotation);
-}
+	void Light::SetRotation(const Math::Vector3f& aRotation)
+	{
+		myTransform.SetRotation(aRotation);
+	}
 
-void Simple::Light::SetColor(const Math::Vector4f& aNewColor)
-{
-	myColor = aNewColor;
-}
+	void Light::SetColor(const Math::Vector4f& aColor)
+	{
+		myColor = aColor;
+	}
 
-void Simple::Light::SetIntensity(const float aNewIntensity)
-{
-	myIntensity = aNewIntensity;
-}
+	void Light::SetIntensity(const float aIntensity)
+	{
+		myIntensity = aIntensity;
+	}
 
-Math::Transform Simple::Light::GetTransform() const
-{
-	return myTransform;
-}
+	Math::Transform Light::GetTransform() const
+	{
+		return myTransform;
+	}
 
-Math::Vector4f Simple::Light::GetColor() const
-{
-	return myColor;
-}
+	Math::Vector4f Light::GetColor() const
+	{
+		return myColor;
+	}
 
-float Simple::Light::GetIntensity() const
-{
-	return  myIntensity;
+	float Light::GetIntensity() const
+	{
+		return  myIntensity;
+	}
 }

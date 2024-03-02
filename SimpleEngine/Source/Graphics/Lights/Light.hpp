@@ -11,11 +11,11 @@ namespace Simple
 		Light(const Math::Transform& aTransform, const Math::Vector4f& aColor, const float aIntensity);
 		virtual ~Light() = default;
 	public:
-		void SetTransform(const Math::Transform& aNewTransform);
-		void SetPosition(const Math::Vector3f& aNewPosition);
-		void SetRotation(const Math::Vector3f& aNewRotation);
-		void SetColor(const Math::Vector4f& aNewColor);
-		void SetIntensity(const float aNewIntensity);
+		void SetTransform(const Math::Transform& aTransform);
+		void SetPosition(const Math::Vector3f& aPosition);
+		void SetRotation(const Math::Vector3f& aRotation);
+		void SetColor(const Math::Vector4f& aColor);
+		void SetIntensity(const float aIntensity);
 	public:
 		Math::Transform GetTransform() const;
 		Math::Vector4f GetColor() const;
