@@ -306,12 +306,14 @@ namespace Simple
 		const unsigned int newHeight = aWindowSize.y;
 
 		DWORD dwStyle = GetWindowLong(Global::GetEngineHWND(), GWL_STYLE);
+
 		if (aSetFullScreen)
 		{
 			dwStyle &= ~WS_OVERLAPPEDWINDOW;
 			dwStyle |= WS_POPUP;
 		}
-		else {
+		else 
+		{
 			dwStyle &= ~WS_POPUP;
 			dwStyle |= WS_OVERLAPPEDWINDOW;
 		}
