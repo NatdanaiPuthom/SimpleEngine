@@ -41,7 +41,7 @@ namespace Math
 		, myScale(aScale)
 	{
 		myMatrix.SetPosition(myPosition);
-		myMatrix.SetLocalRotation(myRotation);
+		myMatrix.SetWorldRotation(myRotation);
 		myMatrix.SetScale(myScale);
 	}
 
@@ -73,7 +73,7 @@ namespace Math
 		if (myRotation.z < 0.0f) myRotation.z += 360.0f;
 		else if (myRotation.z > 360.0f) myRotation.z -= 360.0f;
 
-		myMatrix.SetLocalRotation(myRotation);
+		myMatrix.SetWorldRotation(myRotation);
 	}
 
 	inline void Transform::SetScale(const Vector3f& aScale)

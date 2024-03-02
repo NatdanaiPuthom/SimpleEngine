@@ -8,7 +8,7 @@
 
 namespace Math
 {
-	template <typename T>
+	template <typename T = float>
 	class Matrix4x4
 	{
 	public:
@@ -19,11 +19,11 @@ namespace Math
 		const T& operator()(const int aRow, const int aColumn) const;
 		void operator=(const Matrix4x4<T>& aMatrix);
 
-		void DecomposeMatrix(Vector3<T>& aPosition, Vector3<T>& aRotation, Vector3<T>& aScale);
+		void DecomposeMatrix(Vector3<T>& aPosition, Vector3<T>& aRotation, Vector3<T>& aScale); //This is incorrect. Will have to wait for Quaternion to be implemented
 
 		void LookAt(const Vector3<T>& aTargetPoint);
 		void SetPosition(const Vector3<T>& aPosition);
-		void SetLocalRotation(const Vector3<T>& aRotationInDegree);
+		void SetWorldRotation(const Vector3<T>& aRotationInDegree);
 		void SetScale(const Vector3<T>& aScale);
 		void SetForward(const Vector3<T>& aForward);
 		void SetRight(const Vector3<T>& aRight);
@@ -34,13 +34,13 @@ namespace Math
 		Vector3<T> GetUp() const;
 		Vector3<T> GetRight() const;
 		Vector3<T> GetForward() const;
-		Vector3<T> GetRotation() const;
+		Vector3<T> GetRotation() const; //This is not correct. Will try with Quaternion in future
 
 		static Matrix4x4<T> Identity();
 		static Matrix4x4<T> CreateRotationAroundX(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundY(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundZ(const T aAngleInRadians);
-		static Matrix4x4<T> CreateRotationMatrix(const Matrix4x4<T>& aMatrix); //????
+		static Matrix4x4<T> CreateRotationMatrix(const Matrix4x4<T>& aMatrix);
 		static Matrix4x4<T> CreateTranslationMatrix(const Vector3<T>& aTranslation);
 		static Matrix4x4<T> CreateScaleMatrix(const Vector3<T>& aScale);
 
@@ -430,7 +430,7 @@ namespace Math
 
 	//TO-DO: This does not work as intended but it is good enough for now will continue one day
 	template<typename T>
-	inline void Matrix4x4<T>::SetLocalRotation(const Vector3<T>& aRotationInDegree)
+	inline void Matrix4x4<T>::SetWorldRotation(const Vector3<T>& aRotationInDegree)
 	{
 		const Vector3<T> rad = aRotationInDegree * globalDegToRad;
 
