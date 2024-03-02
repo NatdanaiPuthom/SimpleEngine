@@ -58,20 +58,17 @@ namespace Simple
 		Math::Vector3f GetRotation() const;
 		Math::Vector3f GetScale() const;
 		std::string GetName() const;
-
 		const Skeleton* GetSkeleton() const;
 	private:
 		Math::Matrix4x4f myBoneTransforms[SIMPLE_MAX_BONES];
-
-		std::vector<std::shared_ptr<const Texture>> myTextures;
-
-		std::string myName;
+		Math::Transform myTransform;
+		Math::Vector4f myBoundingBoxColor;
 
 		std::shared_ptr<const Shader> myShader;
 		const Mesh* myMesh;
 		const Skeleton* mySkeleton;
 
-		Math::Transform myTransform;
-		Math::Vector4f myBoundingBoxColor;
+		std::vector<std::shared_ptr<const Texture>> myTextures;
+		std::string myName;
 	};
 }

@@ -7,6 +7,7 @@
 namespace Simple
 {
 	ModelFactory::ModelFactory()
+		: myIsCachingInProgress(false)
 	{
 	}
 
@@ -169,16 +170,30 @@ namespace Simple
 
 	void ModelFactory::AddMesh(const char* aName, std::unique_ptr<const Simple::Mesh> aMesh)
 	{
+		myIsCachingInProgress = true;
+		myFBXLoaderMutex.lock();
+
 		myMeshes.emplace(aName, std::move(aMesh));
+
+		myIsCachingInProgress = false;
+		myFBXLoaderMutex.unlock();
 	}
 
 	void ModelFactory::AddSkeleton(const char* aName, std::unique_ptr<const Simple::Skeleton> aSkeleton)
 	{
+		myIsCachingInProgress = true;
+		myFBXLoaderMutex.lock();
+
 		mySkeletons.emplace(aName, std::move(aSkeleton));
+
+		myIsCachingInProgress = false;
+		myFBXLoaderMutex.unlock();
 	}
 
-	const Simple::Mesh* ModelFactory::GetMesh(const char* aMeshName)
+	const Simple::Mesh* ModelFactory::GetMesh(const char* aMeshName) const
 	{
+		while (myIsCachingInProgress == true) {}
+
 		auto mesh = myMeshes.find(aMeshName);
 
 		if (mesh != myMeshes.end())
@@ -187,8 +202,10 @@ namespace Simple
 		return nullptr;
 	}
 
-	const Simple::Skeleton* Simple::ModelFactory::GetSkeleton(const char* aName)
+	const Simple::Skeleton* Simple::ModelFactory::GetSkeleton(const char* aName) const
 	{
+		while (myIsCachingInProgress == true) {}
+
 		auto mesh = mySkeletons.find(aName);
 
 		if (mesh != mySkeletons.end())
