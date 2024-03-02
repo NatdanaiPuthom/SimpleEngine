@@ -20,7 +20,8 @@ namespace Simple
 		AnimationThreadTest(const size_t aSize = 16) 
 			: myModelSize(aSize)
 		{
-
+			myThreadTest.resize(aSize);
+			myFutureResults.resize(aSize);
 		};
 
 		~AnimationThreadTest() = default;
@@ -28,22 +29,28 @@ namespace Simple
 		inline void Init()
 		{
 			NatdanaiAnimationTest animationTest;
-			animationTest.animatedModel = Global::GetModelFactory()->LoadAnimatedModel("Assets/Models/SM_wizard.fbx");
+			PROFILER_BEGIN("Load animatedmodel");
+			animationTest.animatedModel = Global::GetModelFactory()->LoadAnimatedModelFBX("Assets/Models/SM_wizard.fbx");
+			PROFILER_END();
+
+			PROFILER_BEGIN("Load animation");
 			animationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("Assets/Models/A_Wizard_Falling.fbx");
+			PROFILER_END();
 
 			animationTest.animatedModel.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
 			animationTest.animatedModel.SetScale(0.01f);
 			animationTest.animatedModel.ClearTextures();
 			animationTest.animatedModel.AddTexture("SM_Wizard_c.dds");
 
-			animationTest.animationPlayer.Init(animationTest.animation, animationTest.animatedModel);
-			animationTest.animationPlayer.SetIsLooping(true);
-			animationTest.animationPlayer.Play();
-
+			PROFILER_BEGIN("Init models");
 			for (size_t i = 0; i < myModelSize; ++i)
 			{
-				myThreadTest.push_back(animationTest);
+				myThreadTest[i] = animationTest;
+				myThreadTest[i].animationPlayer.Init(myThreadTest[i].animation, myThreadTest[i].animatedModel);
+				myThreadTest[i].animationPlayer.SetIsLooping(true);
+				myThreadTest[i].animationPlayer.Play();
 			}
+			PROFILER_END();
 
 			constexpr float spacing = 5.0f;
 			const size_t numRows = static_cast<size_t>(std::sqrt(myThreadTest.size()));
@@ -56,8 +63,6 @@ namespace Simple
 				const Math::Vector3f pos(x, 0.0f, z);
 				myThreadTest[i].animatedModel.SetPosition(pos);
 			}
-
-			myFutureResults.resize(myThreadTest.size());
 		}
 
 		inline void Update()

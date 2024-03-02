@@ -25,8 +25,8 @@ namespace Simple
 
 		void Init();
 
-		Model LoadStaticModel(const char* aFileName);
-		AnimatedModel LoadAnimatedModel(const char* aFileName);
+		Model LoadStaticModelFBX(const char* aFileName);
+		AnimatedModel LoadAnimatedModelFBX(const char* aFileName);
 		Animation LoadAnimationFBX(const char* aFileName);
 	public:
 		std::unique_ptr<Simple::Model> CreateTerrainModel();

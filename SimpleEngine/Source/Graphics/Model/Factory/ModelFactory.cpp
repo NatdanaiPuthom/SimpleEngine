@@ -61,7 +61,7 @@ namespace Simple
 		AddMesh("Sphere", std::move(sphereMesh));
 	}
 
-	Model ModelFactory::LoadStaticModel(const char* aFileName)
+	Model ModelFactory::LoadStaticModelFBX(const char* aFileName)
 	{
 		Simple::Model model;
 		const Simple::Mesh* mesh = GetMesh(aFileName);
@@ -90,7 +90,7 @@ namespace Simple
 		return model;
 	}
 
-	AnimatedModel ModelFactory::LoadAnimatedModel(const char* aFileName)
+	AnimatedModel ModelFactory::LoadAnimatedModelFBX(const char* aFileName)
 	{
 		Simple::AnimatedModel animatedModel;
 		const Simple::Mesh* mesh = GetMesh(aFileName);
