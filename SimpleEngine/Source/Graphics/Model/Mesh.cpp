@@ -85,8 +85,8 @@ namespace Simple
 		if (myMeshData.vertices.empty())
 			assert(false && "MeshData has no vertices");
 
-		boundingBox.min = myMeshData.vertices[0].position.AsVector3();
-		boundingBox.max = myMeshData.vertices[0].position.AsVector3();
+		boundingBox.min = myMeshData.vertices[0].position.AsVector3XYZ();
+		boundingBox.max = myMeshData.vertices[0].position.AsVector3XYZ();
 
 		for (const auto& vertex : myMeshData.vertices)
 		{

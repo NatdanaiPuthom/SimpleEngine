@@ -98,8 +98,8 @@ namespace Simple
 					east = index;
 				}
 
-				Math::Vector3f tangentVertical = vertices[north].position.AsVector3() - vertices[south].position.AsVector3();
-				Math::Vector3f tangentHorizontal = vertices[west].position.AsVector3() - vertices[east].position.AsVector3();
+				Math::Vector3f tangentVertical = vertices[north].position.AsVector3XYZ() - vertices[south].position.AsVector3XYZ();
+				Math::Vector3f tangentHorizontal = vertices[west].position.AsVector3XYZ() - vertices[east].position.AsVector3XYZ();
 				Math::Vector3f normal = Math::Cross(tangentHorizontal, tangentVertical).GetNormalized();
 
 				vertices[index].normal = normal;
@@ -127,7 +127,7 @@ namespace Simple
 		south_Top.position = Math::Vector4f(0.0f, aSize.y, 0.0f, 1);
 		south_Top.uv = Math::Vector2f(0.6f, 1.0f);
 
-		normal = CalcualtePyramidNormal(south_West.position.AsVector3(), south_Top.position.AsVector3(), south_East.position.AsVector3());
+		normal = CalcualtePyramidNormal(south_West.position.AsVector3XYZ(), south_Top.position.AsVector3XYZ(), south_East.position.AsVector3XYZ());
 		south_West.normal = normal;
 		south_East.normal = normal;
 		south_Top.normal = normal;
@@ -144,7 +144,7 @@ namespace Simple
 		east_Top.position = Math::Vector4f(0.0f, aSize.y, 0.0f, 1);
 		east_Top.uv = Math::Vector2f(0.6f, 1.0f);	east_Top.normal = { 1.0f, 0.0f, 0.0f };
 
-		normal = CalcualtePyramidNormal(east_West.position.AsVector3(), east_Top.position.AsVector3(), east_East.position.AsVector3());
+		normal = CalcualtePyramidNormal(east_West.position.AsVector3XYZ(), east_Top.position.AsVector3XYZ(), east_East.position.AsVector3XYZ());
 		east_West.normal = normal;
 		east_East.normal = normal;
 		east_Top.normal = normal;
@@ -161,7 +161,7 @@ namespace Simple
 		north_Top.position = Math::Vector4f(0.0f, aSize.y, 0.0f, 1);
 		north_Top.uv = Math::Vector2f(0.6f, 1.0f);
 
-		normal = CalcualtePyramidNormal(north_East.position.AsVector3(), north_Top.position.AsVector3(), north_West.position.AsVector3());
+		normal = CalcualtePyramidNormal(north_East.position.AsVector3XYZ(), north_Top.position.AsVector3XYZ(), north_West.position.AsVector3XYZ());
 		north_West.normal = normal;
 		north_East.normal = normal;
 		north_Top.normal = normal;
@@ -178,7 +178,7 @@ namespace Simple
 		west_Top.position = Math::Vector4f(0.0f, aSize.y, 0.0f, 1);
 		west_Top.uv = Math::Vector2f(0.6f, 1.0f);
 
-		normal = CalcualtePyramidNormal(west_West.position.AsVector3(), west_Top.position.AsVector3(), west_East.position.AsVector3());
+		normal = CalcualtePyramidNormal(west_West.position.AsVector3XYZ(), west_Top.position.AsVector3XYZ(), west_East.position.AsVector3XYZ());
 		west_West.normal = normal;
 		west_East.normal = normal;
 		west_Top.normal = normal;

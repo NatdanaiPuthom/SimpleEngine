@@ -129,7 +129,7 @@ namespace Simple
 			maxHomogeneous = worldMatrix * maxHomogeneous;
 
 			SU::AABB3D aabb3d;
-			aabb3d.InitWithMinAndMax(minHomogeneous.AsVector3(), maxHomogeneous.AsVector3());
+			aabb3d.InitWithMinAndMax(minHomogeneous.AsVector3XYZ(), maxHomogeneous.AsVector3XYZ());
 
 			if (Math::IntersectionAABB3DRay(aabb3d, ray, closetHitPoint))
 			{
@@ -236,7 +236,7 @@ namespace Simple
 		maxHomogeneous = worldMatrix * maxHomogeneous;
 
 		SU::AABB3D aabb3d;
-		aabb3d.InitWithMinAndMax(minHomogeneous.AsVector3(), maxHomogeneous.AsVector3());
+		aabb3d.InitWithMinAndMax(minHomogeneous.AsVector3XYZ(), maxHomogeneous.AsVector3XYZ());
 
 		const SU::Ray ray = GetScreenPointToRay(SU::InputManager::GetInstance().GetMousePosition());
 

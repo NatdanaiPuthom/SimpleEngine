@@ -3,7 +3,7 @@
 
 namespace Math
 {
-	template <class T>
+	template <class T = float>
 	class Vector2
 	{
 	public:

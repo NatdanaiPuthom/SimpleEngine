@@ -4,8 +4,8 @@
 
 namespace Math
 {
-	template <class T>
-	class Vector3
+	template <class T = float>
+	class Vector3 final
 	{
 	public:
 		T x;
@@ -20,7 +20,7 @@ namespace Math
 
 		Vector3<T>& operator=(const Vector3<T>& aVector) = default;
 
-		Vector2<T> AsVector2() const;
+		Vector2<T> AsVector2XY() const;
 		Vector2<T> AsVector2XZ() const;
 
 		Vector3<T> GetNormalized() const;
@@ -31,8 +31,8 @@ namespace Math
 		void Normalize();
 	};
 
-	typedef Vector3<float> Vector3f;
 	typedef Vector3<int> Vector3i;
+	typedef Vector3<float> Vector3f;
 	typedef Vector3<unsigned int> Vector3ui;
 
 	template <class T> Vector3<T> operator+(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
@@ -63,7 +63,7 @@ namespace Math
 	}
 
 	template<class T>
-	inline Vector2<T> Vector3<T>::AsVector2() const
+	inline Vector2<T> Vector3<T>::AsVector2XY() const
 	{
 		return Vector2<T>(x, y);
 	}
