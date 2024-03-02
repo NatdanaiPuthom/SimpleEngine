@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
+#include <mutex>
 
 namespace TGA
 {
@@ -39,10 +40,17 @@ namespace Simple
 		std::unique_ptr<Simple::Model> CreatePlaneReflection();
 	private:
 		void AddMesh(const char* aName, std::unique_ptr<const Simple::Mesh> aMesh);
+		void AddSkeleton(const char* aName, std::unique_ptr<const Simple::Skeleton> aSkeleton);
 		const Simple::Mesh* GetMesh(const char* aMeshName);
+		const Simple::Skeleton* GetSkeleton(const char* aName);
 		void LoadMeshData(Simple::MeshData& aMeshData, const TGA::FBX::Mesh& aTGAMesh) const;
 		void LoadSkeletonData(Simple::Skeleton& aSkeletonData, const TGA::FBX::Mesh& aTGAMesh) const;
+		void LoadAndCacheMesh(const char* aFileName);
+		void LoadAndCacheMesh(const char* aFileName, TGA::FBX::Mesh& aTGAMesh);
+		void LoadAndCacheSkeleton(const char* aFileName, TGA::FBX::Mesh& aTGAMesh);
 	private:
 		std::unordered_map<std::string, const std::unique_ptr<const Simple::Mesh>> myMeshes;
+		std::unordered_map<std::string, const std::unique_ptr<const Simple::Skeleton>> mySkeletons;
+		std::mutex myFBXLoaderMutex;
 	};
 }

@@ -68,18 +68,8 @@ namespace Simple
 
 		if (mesh == nullptr)
 		{
-			TGA::FBX::Mesh tgaMesh;
-			TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(SimpleUtilities::GetAbsolutePath(aFileName), tgaMesh);
-			assert(status && "Failed to LoadMesh from FBXImporter");
+			LoadAndCacheMesh(aFileName);
 
-			Simple::MeshData meshData;
-
-			LoadMeshData(meshData, tgaMesh);
-
-			std::unique_ptr<Simple::Mesh> newMesh = std::make_unique<Simple::Mesh>();
-			newMesh->Init(meshData);
-
-			AddMesh(aFileName, std::move(newMesh));
 			mesh = GetMesh(aFileName);
 
 			if (mesh == nullptr)
@@ -93,33 +83,31 @@ namespace Simple
 	AnimatedModel ModelFactory::LoadAnimatedModelFBX(const char* aFileName)
 	{
 		Simple::AnimatedModel animatedModel;
+
 		const Simple::Mesh* mesh = GetMesh(aFileName);
+		const Simple::Skeleton* skeleton = GetSkeleton(aFileName);
+
+		TGA::FBX::Mesh tgaMesh;
 
 		if (mesh == nullptr)
 		{
-			TGA::FBX::Mesh tgaMesh;
-			TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(SimpleUtilities::GetAbsolutePath(aFileName), tgaMesh);
-			assert(status && "Failed to LoadMesh from FBXImporter");
+			LoadAndCacheMesh(aFileName, tgaMesh);
 
-			Simple::MeshData meshData;
-			Simple::Skeleton skeletonData;
-
-			LoadMeshData(meshData, tgaMesh);
-			LoadSkeletonData(skeletonData, tgaMesh);
-
-			std::unique_ptr<Simple::Mesh> newMesh = std::make_unique<Simple::Mesh>();
-
-			newMesh->Init(meshData);
-			animatedModel.GetSkeleton() = skeletonData;
-
-			AddMesh(aFileName, std::move(newMesh));
 			mesh = GetMesh(aFileName);
-
 			if (mesh == nullptr)
 				assert(false && "Failed to GetMesh from bank");
 		}
 
-		animatedModel.Init(mesh);
+		if (skeleton == nullptr)
+		{
+			LoadAndCacheSkeleton(aFileName, tgaMesh);
+
+			skeleton = GetSkeleton(aFileName);
+			if (skeleton == nullptr)
+				assert(false && "Failed to GetSkeleton from bank");
+		}
+
+		animatedModel.Init(mesh,skeleton);
 		return animatedModel;
 	}
 
@@ -184,6 +172,11 @@ namespace Simple
 		myMeshes.emplace(aName, std::move(aMesh));
 	}
 
+	void ModelFactory::AddSkeleton(const char* aName, std::unique_ptr<const Simple::Skeleton> aSkeleton)
+	{
+		mySkeletons.emplace(aName, std::move(aSkeleton));
+	}
+
 	const Simple::Mesh* ModelFactory::GetMesh(const char* aMeshName)
 	{
 		auto mesh = myMeshes.find(aMeshName);
@@ -194,12 +187,22 @@ namespace Simple
 		return nullptr;
 	}
 
+	const Simple::Skeleton* Simple::ModelFactory::GetSkeleton(const char* aName)
+	{
+		auto mesh = mySkeletons.find(aName);
+
+		if (mesh != mySkeletons.end())
+			return mesh->second.get();
+
+		return nullptr;
+	}
+
 	void ModelFactory::LoadSkeletonData(Simple::Skeleton& aSkeletonData, const TGA::FBX::Mesh& aTGAMesh) const
 	{
 		if (aTGAMesh.Skeleton.GetRoot())
 		{
-			aSkeletonData.myJoints.reserve(aTGAMesh.Skeleton.Bones.size());
-			aSkeletonData.myJointNames.reserve(aSkeletonData.myJoints.size());
+			aSkeletonData.myJoints.resize(aTGAMesh.Skeleton.Bones.size());
+			aSkeletonData.myJointNames.resize(aSkeletonData.myJoints.size());
 
 			for (size_t i = 0; i < aTGAMesh.Skeleton.Bones.size(); ++i)
 			{
@@ -227,17 +230,57 @@ namespace Simple
 
 				Simple::Joint joint;
 
-				//joint.myBindPoseInverse = Math::Matrix4x4f::Transpose(bindPoseInverseTranspose); //TGA Did Tranpose but when I do it everything become weird
+				//joint.myBindPoseInverse = Math::Matrix4x4f::Transpose(bindPoseInverseTranspose); //TGA Did Tranpose but apparently models loaded here is already in same matrix type?
 				joint.myBindPoseInverse = bindPoseInverseTranspose;
 				joint.myName = aTGAMesh.Skeleton.Bones[i].Name;
 				joint.myParent = aTGAMesh.Skeleton.Bones[i].ParentIdx;
 				joint.myChildren = aTGAMesh.Skeleton.Bones[i].Children;
 
 				aSkeletonData.myJointNameToIndex.insert({ joint.myName, i });
-				aSkeletonData.myJointNames.push_back(joint.myName);
-				aSkeletonData.myJoints.push_back(joint);
+				aSkeletonData.myJointNames[i] = joint.myName;
+				aSkeletonData.myJoints[i] = joint;
 			}
 		}
+	}
+
+	void ModelFactory::LoadAndCacheMesh(const char* aFileName)
+	{
+		TGA::FBX::Mesh tgaMesh;
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(SimpleUtilities::GetAbsolutePath(aFileName), tgaMesh);
+		assert(status && "Failed to LoadMesh from FBXImporter");
+
+		Simple::MeshData meshData;
+
+		LoadMeshData(meshData, tgaMesh);
+
+		std::unique_ptr<Simple::Mesh> newMesh = std::make_unique<Simple::Mesh>();
+		newMesh->Init(meshData);
+
+		AddMesh(aFileName, std::move(newMesh));
+	}
+
+	void ModelFactory::LoadAndCacheMesh(const char* aFileName, TGA::FBX::Mesh& aTGAMesh)
+	{
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(SimpleUtilities::GetAbsolutePath(aFileName), aTGAMesh);
+		assert(status && "Failed to LoadMesh from FBXImporter");
+
+		Simple::MeshData meshData;
+
+		LoadMeshData(meshData, aTGAMesh);
+
+		std::unique_ptr<Simple::Mesh> newMesh = std::make_unique<Simple::Mesh>();
+		newMesh->Init(meshData);
+
+		AddMesh(aFileName, std::move(newMesh));
+	}
+
+	void ModelFactory::LoadAndCacheSkeleton(const char* aFileName, TGA::FBX::Mesh& aTGAMesh)
+	{
+		std::unique_ptr<Simple::Skeleton> skeletonData = std::make_unique<Simple::Skeleton>();
+
+		LoadSkeletonData(*skeletonData.get(), aTGAMesh);
+
+		AddSkeleton(aFileName, std::move(skeletonData));
 	}
 
 	void ModelFactory::LoadMeshData(Simple::MeshData& aMeshData, const TGA::FBX::Mesh& aTGAMesh) const

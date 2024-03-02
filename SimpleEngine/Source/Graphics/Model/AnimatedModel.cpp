@@ -6,6 +6,7 @@ namespace Simple
 {
 	AnimatedModel::AnimatedModel()
 		: myMesh(nullptr)
+		, mySkeleton(nullptr)
 		, myName("Unnamed")
 		, myBoundingBoxColor(1.0f, 1.0f, 0.0f, 1.0f)
 	{
@@ -18,15 +19,17 @@ namespace Simple
 		myShader = nullptr;
 	}
 
-	void AnimatedModel::Init(const Simple::Mesh* const aMesh)
+	void AnimatedModel::Init(const Simple::Mesh* const aMesh, const Skeleton* const aSkeleton)
 	{
 		myMesh = aMesh;
+		mySkeleton = aSkeleton;
 		AddTexture("DefaultTexture.dds");
 	}
 
-	void AnimatedModel::Init(const Simple::Mesh* const aMesh, const char* aTexturePath)
+	void AnimatedModel::Init(const Simple::Mesh* const aMesh, const Skeleton* const aSkeleton, const char* aTexturePath)
 	{
 		myMesh = aMesh;
+		mySkeleton = aSkeleton;
 		AddTexture(aTexturePath);
 	}
 
@@ -56,13 +59,13 @@ namespace Simple
 	void AnimatedModel::SetPose(const LocalSpacePose& aPose)
 	{
 		ModelSpacePose modelSpacePose;
-		mySkeleton.ConvertPoseToModelSpace(aPose, modelSpacePose);
+		mySkeleton->ConvertPoseToModelSpace(aPose, modelSpacePose);
 		SetPose(modelSpacePose);
 	}
 
 	void AnimatedModel::SetPose(const ModelSpacePose& aPose)
 	{
-		mySkeleton.ApplyBindPoseInverse(aPose, myBoneTransforms);
+		mySkeleton->ApplyBindPoseInverse(aPose, myBoneTransforms);
 	}
 
 	void AnimatedModel::LookAt(const Math::Vector3f& aTargetPoint)
@@ -152,12 +155,7 @@ namespace Simple
 		return myName;
 	}
 
-	Skeleton& Simple::AnimatedModel::GetSkeleton()
-	{
-		return mySkeleton;
-	}
-
-	const Skeleton& AnimatedModel::GetSkeleton() const
+	const Skeleton* AnimatedModel::GetSkeleton() const
 	{
 		return mySkeleton;
 	}

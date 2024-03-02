@@ -72,11 +72,11 @@ void Simple::AnimationPlayer::Update()
 			nextFrame = 0;
 		}
 
-		const Skeleton& skeleton = myModel->GetSkeleton();
+		const Skeleton* skeleton = myModel->GetSkeleton();
 
-		for (size_t i = 0; i < skeleton.myJoints.size() - 1; i++)
+		for (size_t i = 0; i < skeleton->myJoints.size() - 1; i++)
 		{
-			const Math::Transform& currentFrameJointXform = myAnimation->frames[frame].localTransforms.find(skeleton.myJoints[i].myName)->second;
+			const Math::Transform& currentFrameJointXform = myAnimation->frames[frame].localTransforms.find(skeleton->myJoints[i].myName)->second;
 			Math::Matrix4x4f jointXform = currentFrameJointXform.GetMatrix();
 
 			//I need to switch to Quaternion and have some calcuation correct before I can blend animations
@@ -95,11 +95,11 @@ void Simple::AnimationPlayer::Update()
 				jointXform = Math::Matrix4x4f::CreateScaleMatrix(S) * rotationMatrix * Math::Matrix4x4f::CreateTranslationMatrix(T);
 			}*/
 
-			const Math::Matrix4x4f Result = myAnimation->frames[nextFrame].localMatrix.find(skeleton.myJoints[i].myName)->second;
+			const Math::Matrix4x4f Result = myAnimation->frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
 			myLocalSpacePose.jointTransforms[i] = Result;
 		}
 
-		myLocalSpacePose.count = skeleton.myJoints.size();
+		myLocalSpacePose.count = skeleton->myJoints.size();
 	}
 
 	myModel->SetPose(myLocalSpacePose);
@@ -142,18 +142,18 @@ bool Simple::AnimationPlayer::UpdateThreaded(AnimatedModel& aModel, Animation& a
 			nextFrame = 0;
 		}
 
-		const Skeleton& skeleton = aModel.GetSkeleton();
+		const Skeleton* skeleton = aModel.GetSkeleton();
 
-		for (size_t i = 0; i < skeleton.myJoints.size() - 1; i++)
+		for (size_t i = 0; i < skeleton->myJoints.size() - 1; i++)
 		{
-			const Math::Transform& currentFrameJointXform = aAnimation.frames[frame].localTransforms.find(skeleton.myJoints[i].myName)->second;
+			const Math::Transform& currentFrameJointXform = aAnimation.frames[frame].localTransforms.find(skeleton->myJoints[i].myName)->second;
 			Math::Matrix4x4f jointXform = currentFrameJointXform.GetMatrix();
 
-			const Math::Matrix4x4f Result = aAnimation.frames[nextFrame].localMatrix.find(skeleton.myJoints[i].myName)->second;
+			const Math::Matrix4x4f Result = aAnimation.frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
 			myLocalSpacePose.jointTransforms[i] = Result;
 		}
 
-		myLocalSpacePose.count = skeleton.myJoints.size();
+		myLocalSpacePose.count = skeleton->myJoints.size();
 	}
 
 	aModel.SetPose(myLocalSpacePose);
