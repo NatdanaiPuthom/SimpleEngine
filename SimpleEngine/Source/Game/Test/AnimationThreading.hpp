@@ -30,17 +30,17 @@ namespace Simple
 		{
 			NatdanaiAnimationTest animationTest;
 			PROFILER_BEGIN("Load animatedmodel");
-			animationTest.animatedModel = Global::GetModelFactory()->LoadAnimatedModelFBX("Assets/Models/SM_wizard.fbx");
+			animationTest.animatedModel = Global::GetModelFactory()->LoadAnimatedModelFBX("Assets/Models/Test/SM_wizard.fbx");
 			PROFILER_END();
 
 			PROFILER_BEGIN("Load animation");
-			animationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("Assets/Models/A_Wizard_Falling.fbx");
+			animationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("Assets/Models/Test/A_Wizard_Falling.fbx");
 			PROFILER_END();
 
 			animationTest.animatedModel.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
 			animationTest.animatedModel.SetScale(0.01f);
 			animationTest.animatedModel.ClearTextures();
-			animationTest.animatedModel.AddTexture("SM_Wizard_c.dds");
+			animationTest.animatedModel.AddTexture("Models/SM_Wizard_c.dds");
 
 			PROFILER_BEGIN("Init models");
 			for (size_t i = 0; i < myModelSize; ++i)
