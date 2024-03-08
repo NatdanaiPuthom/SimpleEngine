@@ -3,14 +3,22 @@
 
 namespace Simple
 {
-	ThreadPool::ThreadPool() : myShouldStop(false), myTasksInProgress(0)
+	ThreadPool::ThreadPool(const size_t aSize) 
+		: myShouldStop(false)
+		, myTasksInProgress(0)
 	{
 		const size_t numberOfMainThreads = 2;
 		const size_t avaliableThreads = std::thread::hardware_concurrency();
-		const size_t useableThreads = avaliableThreads - numberOfMainThreads;
 
-		const int stopSingleCoreUsers = static_cast<int>(avaliableThreads - numberOfMainThreads);
-		assert(stopSingleCoreUsers > 0 && "Do Something About Single Core User");
+		size_t useableThreads = aSize;
+
+		if (useableThreads == 0)
+		{
+			useableThreads = avaliableThreads - numberOfMainThreads; //Avoid unnessary context switching overhead due to more threads than there are hardware threads
+		}
+
+		assert((useableThreads < 12 && useableThreads > 0) && "Attempting to create more than 12 threads. Is this a mistake? If not, increase this value");
+		assert(useableThreads > 0 && "There are no avaliable thread to reserve");
 
 		myWorkers.reserve(useableThreads);
 
@@ -24,13 +32,21 @@ namespace Simple
 
 						{
 							std::unique_lock<std::mutex> lock(myQueueMutex);
-							myCondition.wait(lock, [this] { return myShouldStop || !myTaskQueue.empty(); });
+							myCondition.wait(lock, [this] { return myShouldStop || !myTaskQueue.empty() || !myPriorityQueue.empty(); });
 
-							if (myShouldStop && myTaskQueue.empty())
+							if (myShouldStop && myTaskQueue.empty() && myPriorityQueue.empty())
 								return;
 
-							task = std::move(myTaskQueue.front());
-							myTaskQueue.pop();
+							if (myPriorityQueue.empty() == false)
+							{
+								task = myPriorityQueue.top().second;
+								myPriorityQueue.pop();
+							}
+							else
+							{
+								task = std::move(myTaskQueue.front());
+								myTaskQueue.pop();
+							}
 						}
 
 						myQueueSize--;
@@ -52,6 +68,12 @@ namespace Simple
 			while (!myTaskQueue.empty())
 			{
 				myTaskQueue.pop();
+				myQueueSize--;
+			}
+
+			while (!myPriorityQueue.empty())
+			{
+				myPriorityQueue.pop();
 				myQueueSize--;
 			}
 		}
