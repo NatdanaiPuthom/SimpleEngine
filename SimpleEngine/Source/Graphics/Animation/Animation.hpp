@@ -34,10 +34,10 @@ namespace Simple
 		std::vector<Frame> frames;
 		std::string name;
 
-		float duration;
-		float framesPerSecond;
+		float duration = 0.0f;
+		float framesPerSecond = 0.0f;
 		
-		unsigned int length;
+		unsigned int length = 0;
 	};
 
 	class AnimationPlayer
