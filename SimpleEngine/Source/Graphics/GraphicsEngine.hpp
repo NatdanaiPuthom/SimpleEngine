@@ -111,7 +111,7 @@ namespace Simple
 
 		const bool Init(const Math::Vector2ui& aWindowSize, HWND& aWindowHandle);
 
-		const bool BeginFrame();
+		void BeginFrame();
 		void EndFrame();
 
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);

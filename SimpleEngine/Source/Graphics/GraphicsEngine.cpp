@@ -266,7 +266,7 @@ namespace Simple
 		return true;
 	}
 
-	const bool GraphicsEngine::BeginFrame()
+	void GraphicsEngine::BeginFrame()
 	{
 		MSG msg = { 0 };
 
@@ -276,7 +276,10 @@ namespace Simple
 			DispatchMessage(&msg);
 
 			if (msg.message == WM_QUIT)
-				return false;
+			{
+				Global::SetGameShouldClose(true);
+				break;
+			}
 		}
 
 		Impl::SimpleGlobalGraphics::UpdateFPSCounter();
@@ -284,8 +287,6 @@ namespace Simple
 
 		myImGuiEngine->BeginFrame();
 		PrepareFrame();
-
-		return true;
 	}
 
 	void GraphicsEngine::EndFrame()

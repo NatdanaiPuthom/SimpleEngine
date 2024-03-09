@@ -20,7 +20,7 @@ namespace Global
 	int GetFPS();
 	bool GetGameIsRunning();
 
-	void SetGameIsRunning(const bool aShouldRun);
+	void SetGameShouldClose(const bool aShouldClose);
 	void SetResolution(const Math::Vector2ui& aResolution);
 	void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen = false);
 }
