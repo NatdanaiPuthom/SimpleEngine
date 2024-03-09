@@ -122,7 +122,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		location (dirs.Local) -- I only know that this is for where vcxproj, vcxproj.filter and vcxproj.user will be generated
 		targetdir (dirs.SimpleLib) -- Location of where the build will be. Example -> C:\Users\panda\Desktop\SimpleEngine\Lib
 		targetname("%{prj.name}_%{cfg.buildcfg}") -- Name of the Build plus Active Configuration type. Example -> "Engine_Debug"
-		dependson { "External" } -- Ensure that "External" is built before this project
+		-- dependson { "External" } -- Ensure that "External" is built before this project
 		flags { "FatalWarnings" }
 
 		pchheader "Engine/Precomplied/EnginePch.hpp" -- Force all Source (.cpp) files in this project to include "Engine/Precomplier/stdafx.h"
@@ -146,7 +146,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		links { -- Linking these Libraries during build
-			"External"
+			--"External"
 		}
 			
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		location (dirs.Local)
 		targetdir (dirs.SimpleLib)
 		targetname("%{prj.name}_%{cfg.buildcfg}") 
-		dependson { "Engine" }
+		-- dependson { "Engine" }
 		flags { "FatalWarnings" }
 
 		pchheader "Graphics/Precomplied/GraphicsPch.hpp" -- Force all Source (.cpp) files in this project to include "Engine/Precomplier/stdafx.h"
@@ -178,7 +178,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		links {
-			"Engine",
+			--"Engine",
 			"d3d11"
 		}
 
@@ -203,7 +203,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		location (dirs.Local)
 		targetdir (dirs.SimpleLib)
 		targetname("%{prj.name}_%{cfg.buildcfg}") 
-		dependson { "Graphics" }
+		-- dependson { "Graphics" }
 		flags { "FatalWarnings" }
 
 		pchheader "Game/Precomplied/GamePch.hpp"
@@ -227,7 +227,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		links {
-			"Graphics"
+			--"Graphics"
 		}
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -237,8 +237,14 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		location (dirs.Local)
 		targetdir (dirs.Bin)
 		targetname "SimpleEngine_%{cfg.buildcfg}"
-		dependson { "Game" }
 		flags { "FatalWarnings" }
+
+		dependson {
+			"External", 
+			"Engine", 
+			"GraphicsEngine",
+			"Game"  
+		}
 	
 		files {
 			"Source/Launcher/**.h", 
@@ -264,7 +270,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		links {
-			"Game"
+			"External", "Engine", "Graphics", "Game"
 		}
 
 		filter "configurations:Debug"
