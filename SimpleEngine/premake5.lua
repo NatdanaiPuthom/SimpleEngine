@@ -239,12 +239,12 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		targetname "SimpleEngine_%{cfg.buildcfg}"
 		flags { "FatalWarnings" }
 
-		dependson {
-			"External", 
-			"Engine", 
-			"GraphicsEngine",
-			"Game"  
-		}
+		--dependson {
+		--	"External", 
+		--	"Engine", 
+		--	"GraphicsEngine",
+		--	"Game"  
+		--}
 	
 		files {
 			"Source/Launcher/**.h", 
