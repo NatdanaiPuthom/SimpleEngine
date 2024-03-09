@@ -32,6 +32,13 @@
 #pragma message("---------Never give up on your dreams!---------------")
 
 #include "Graphics/ConstantBuffer/ConstantBuffer.hpp"
+#include "Graphics/Shaders/Shader.hpp"
+#include "Graphics/Texture/Texture.hpp"
+#include "Graphics/Model/Mesh.hpp"
+#include "Graphics/Camera/Camera.hpp"
+#include "Graphics/Model/Model.hpp"
+#include "Graphics/Model/Skeleton.hpp"
+#include "Graphics/Model/AnimatedModel.hpp"
 
 #pragma message("---------Never give up on your dreams!---------------")
 

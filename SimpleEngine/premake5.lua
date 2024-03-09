@@ -46,17 +46,18 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	filter "configurations:Debug" -- Global Configurations Settings
 		defines { "_DEBUG" }
 		symbols "On"
+		optimize "Off"
 		runtime "Debug"
 
 	filter "configurations:Release"
 		defines { "_RELEASE" }
-		optimize "On"
+		optimize "Speed"
 		runtime "Release"
 
 	filter "configurations:Simple"
 		defines { "_SIMPLE" }
 		symbols "Off"
-		optimize "Speed"
+		optimize "Full"
 		runtime "Release"
 
 	filter "system:windows"
