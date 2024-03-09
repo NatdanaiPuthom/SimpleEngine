@@ -80,7 +80,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		while (Global::GetGameIsRunning())
 		{
 			PROFILER_FUNCTION("MainLoop");
-
 			graphicsEngine.BeginFrame();
 
 			engine.Update();

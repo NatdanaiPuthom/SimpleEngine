@@ -128,12 +128,12 @@ namespace Global
 
 	bool GetGameIsRunning()
 	{
-		return !localShouldClose;
+		return !localShouldClose.load();
 	}
 
 	void SetGameShouldClose(const bool aShouldClose)
 	{
-		localShouldClose = aShouldClose;
+		localShouldClose.store(aShouldClose);
 	}
 
 	void SetResolution(const Math::Vector2ui& aResolution)
