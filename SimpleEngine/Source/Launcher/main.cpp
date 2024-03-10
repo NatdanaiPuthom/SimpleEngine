@@ -97,7 +97,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	Simple::EasyProfilerOutput();
 
-	AudioManager::GetInstance().Destroy();
 	AudioManager::GetInstance().~AudioManager();
 
 	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!

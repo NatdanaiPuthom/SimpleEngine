@@ -16,12 +16,7 @@ AudioManager::AudioManager()
 
 AudioManager::~AudioManager()
 {
-}
-
-void AudioManager::Destroy()
-{
 	SoundEngine::Release();
-
 	mySFXChannels.clear();
 	myMusicChannels.clear();
 }

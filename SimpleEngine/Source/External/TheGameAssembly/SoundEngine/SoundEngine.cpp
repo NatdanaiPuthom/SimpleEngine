@@ -5,10 +5,14 @@
 #include "SoundEngineImpl.hpp"
 
 int SoundEngine::ListenerHandle::GetId() const
-{ return myId; }
+{
+	return myId;
+}
 
 bool SoundEngine::ListenerHandle::IsValid() const
-{ return myId != -1; }
+{
+	return myId != -1;
+}
 
 SoundEngine::ListenerHandle SoundEngine::Listener::Handle() const
 {
@@ -29,7 +33,11 @@ bool SoundEngine::Init(const std::string& aRootPath)
 
 void SoundEngine::Release()
 {
-	delete myImpl;
+	if (myImpl != nullptr)
+	{
+		delete myImpl;
+		myImpl = nullptr;
+	}
 }
 
 void SoundEngine::Update()
@@ -58,7 +66,7 @@ bool SoundEngine::RestartSound(size_t aChannelNumber)
 }
 
 size_t SoundEngine::PlaySoundAtLocation(const std::string& aFileName, const float aVolume,
-                                          std::array<float, 3> aPosition)
+	std::array<float, 3> aPosition)
 {
 	return myImpl->PlaySoundAtLocation(aFileName, aVolume, aPosition);
 }
@@ -85,7 +93,7 @@ unsigned int SoundEngine::GetEvents(std::vector<std::string>& outEventList)
 
 SoundEventInstanceHandle SoundEngine::CreateEventInstance(unsigned anEventId)
 {
-	if(myEventAccelMap.find(anEventId) != myEventAccelMap.end())
+	if (myEventAccelMap.find(anEventId) != myEventAccelMap.end())
 	{
 		return myImpl->CreateEventInstance(myEventAccelMap[anEventId]);
 	}
@@ -130,7 +138,7 @@ bool SoundEngine::PlayEventOneShot(const std::string& anEventName)
 
 bool SoundEngine::RegisterEvent(const std::string& anEventName, unsigned anEventId)
 {
-	if(myEventAccelMap.find(anEventId) == myEventAccelMap.end())
+	if (myEventAccelMap.find(anEventId) == myEventAccelMap.end())
 	{
 		myEventAccelMap[anEventId] = anEventName;
 		return true;
@@ -146,7 +154,7 @@ SoundEventInstanceHandle SoundEngine::CreateEventInstance(const std::string& anE
 
 bool SoundEngine::PlayEventOneShot(unsigned anEventId)
 {
-	if(myEventAccelMap.find(anEventId) != myEventAccelMap.end())
+	if (myEventAccelMap.find(anEventId) != myEventAccelMap.end())
 	{
 		return myImpl->PlayEventOneShot(myEventAccelMap[anEventId]);
 	}
@@ -240,8 +248,8 @@ bool SoundEngine::SetEventListenerMask(const SoundEventInstanceHandle& anEventIn
 }
 
 bool SoundEngine::SetEvent3DParameters(const SoundEventInstanceHandle& anEventInstanceHandle,
-                                       std::array<float, 3> aPosition, std::array<float, 3> aVelocity, std::array<float, 3> aForwardVector, std::array<float,
-                                       3> aUpVector)
+	std::array<float, 3> aPosition, std::array<float, 3> aVelocity, std::array<float, 3> aForwardVector, std::array<float,
+	3> aUpVector)
 {
 	return myImpl->SetEvent3DParameters(anEventInstanceHandle, aPosition, aVelocity, aForwardVector, aUpVector);
 }
@@ -259,7 +267,7 @@ bool SoundEngine::SetEventReverbLevel(const SoundEventInstanceHandle& anEventIns
 SoundEngine::ListenerHandle SoundEngine::GetNextFreeListener()
 {
 	const int numListeners = myImpl->GetNumListeners(); // We always have at least one listener.
-	if(numListeners < 8)
+	if (numListeners < 8)
 	{
 		Listener newListener;
 		newListener.FmodId = numListeners;
@@ -281,13 +289,13 @@ bool SoundEngine::OverrideOtherListeners(ListenerHandle aHandle)
 
 bool SoundEngine::RemoveListener(ListenerHandle aHandle)
 {
-	if(aHandle.IsValid())
+	if (aHandle.IsValid())
 	{
 		const auto listener = myListeners.find(aHandle.GetId());
-		if(listener != myListeners.end())
+		if (listener != myListeners.end())
 		{
 			return myImpl->RemoveListener(listener->second.FmodId);
-		}		
+		}
 	}
 
 	return false;
@@ -296,15 +304,15 @@ bool SoundEngine::RemoveListener(ListenerHandle aHandle)
 bool SoundEngine::SetListenerPosition(ListenerHandle aHandle, std::array<float, 3> aPosition)
 {
 	std::cout << "Is handle valid: " << aHandle.IsValid() << std::endl;
-	if(aHandle.IsValid())
+	if (aHandle.IsValid())
 	{
 		Listener& listener = myListeners[aHandle.GetId()];
 		std::cout << "Listener FMODID " << listener.FmodId << " Number of listeners: " << myImpl->GetNumListeners() - 1 << std::endl;
-		if(listener.FmodId > myImpl->GetNumListeners() - 1)
+		if (listener.FmodId > myImpl->GetNumListeners() - 1)
 			return false;
 
 		std::array<float, 3> pos, vel, fwd, up;
-		if(myImpl->GetListenerTransform(listener.FmodId, pos, vel, fwd, up))
+		if (myImpl->GetListenerTransform(listener.FmodId, pos, vel, fwd, up))
 		{
 			myImpl->SetListenerTransform(listener.FmodId, aPosition, vel, fwd, up);
 			std::cout << "Listener " << listener.FmodId << " Pos " << aPosition[0] << std::endl;
@@ -319,10 +327,10 @@ bool SoundEngine::SetListenerTransform(ListenerHandle aHandle, const std::array<
 	const std::array<float, 3> aVelocity, const std::array<float, 3> aForwardVector,
 	const std::array<float, 3> aUpVector)
 {
-	if(aHandle.IsValid())
+	if (aHandle.IsValid())
 	{
 		const Listener& listener = myListeners[aHandle.GetId()];
-		if(listener.FmodId > myImpl->GetNumListeners() - 1)
+		if (listener.FmodId > myImpl->GetNumListeners() - 1)
 			return false;
 
 		return myImpl->SetListenerTransform(listener.FmodId, aPosition, aVelocity, aForwardVector, aUpVector);
@@ -333,14 +341,14 @@ bool SoundEngine::SetListenerTransform(ListenerHandle aHandle, const std::array<
 
 bool SoundEngine::SetListenerTransform(ListenerHandle aHandle, const std::array<float, 16> aTransform, const std::array<float, 3> aVelocity)
 {
-	if(aHandle.IsValid())
+	if (aHandle.IsValid())
 	{
 		const Listener& listener = myListeners[aHandle.GetId()];
-		if(listener.FmodId > myImpl->GetNumListeners() - 1)
+		if (listener.FmodId > myImpl->GetNumListeners() - 1)
 			return false;
 
 		// We need to extract position, up and forward.
-		const std::array<float, 3> position = {aTransform[12], aTransform[13], aTransform[14]};
+		const std::array<float, 3> position = { aTransform[12], aTransform[13], aTransform[14] };
 
 		std::array<float, 16> rot = aTransform;
 
@@ -350,8 +358,8 @@ bool SoundEngine::SetListenerTransform(ListenerHandle aHandle, const std::array<
 		rot[14] = 0;
 
 		// Extract Up and Forward vectors.
-		std::array<float, 4> forward = {0, 0, 1, 1};
-		std::array<float, 4> up = {0, 1, 0, 1};
+		std::array<float, 4> forward = { 0, 0, 1, 1 };
+		std::array<float, 4> up = { 0, 1, 0, 1 };
 
 		forward[0] = (rot[0] * forward[0]) + (rot[4] * forward[1]) + (rot[8] * forward[2]) + (rot[12] * forward[3]);
 		forward[1] = (rot[1] * forward[0]) + (rot[5] * forward[1]) + (rot[9] * forward[2]) + (rot[13] * forward[3]);
@@ -363,8 +371,8 @@ bool SoundEngine::SetListenerTransform(ListenerHandle aHandle, const std::array<
 		up[2] = (rot[2] * up[0]) + (rot[6] * up[1]) + (rot[10] * up[2]) + (rot[14] * up[3]);
 		up[3] = (rot[3] * up[0]) + (rot[7] * up[1]) + (rot[11] * up[2]) + (rot[15] * up[3]);
 
-		const std::array<float, 3> forward3Axis = {forward[0], forward[1], forward[2]};
-		const std::array<float, 3> up3Axis = {up[0], up[1], up[2]};
+		const std::array<float, 3> forward3Axis = { forward[0], forward[1], forward[2] };
+		const std::array<float, 3> up3Axis = { up[0], up[1], up[2] };
 
 		return myImpl->SetListenerTransform(listener.FmodId, position, aVelocity, forward3Axis, up3Axis);
 	}
