@@ -81,14 +81,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 		includedirs {
 			"Source/",
-			"Source/External/", 
-			"Source/External/dearimgui",
-			"Source/External/dearimgui/imgui/", 
-			"Source/External/dearimgui/freetype/",
-			"Source/External/TheGameAssembly/",
-			"Source/External/TheGameAssembly/FBXImporter/",
-			"Source/External/TheGameAssembly/FBXImporter/Source",
-			"Source/External/TheGameAssembly/FBXImporter/FBXSDK/"
+			"Source/External/**"
 		}
 
 		files {
