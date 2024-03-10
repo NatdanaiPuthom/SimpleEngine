@@ -100,22 +100,23 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 				dirs.Lib
 			}
 
+		links {
+			"Lib/Common/easy_profiler"
+			}
+
 		filter "configurations:Debug" 
 			links { 
-				"Lib/Debug/libfbxsdk",
-				"easy_profiler"
+				"Lib/Debug/libfbxsdk"	
 			}
 			
 		filter "configurations:Release" 
 			links { 
-				"Lib/Release/libfbxsdk",
-				"easy_profiler"
+				"Lib/Release/libfbxsdk"
 			}
 
 		filter "configurations:Simple" 
 			links { 
-				"Lib/Release/libfbxsdk",
-				"easy_profiler"
+				"Lib/Release/libfbxsdk"
 			}	
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -273,27 +274,28 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		links {
-			"External", "Engine", "Graphics", "Game"
+			"External", 
+			"Engine", 
+			"Graphics", 
+			"Game"
 		}
 
 		postbuildcommands {
-			"{COPY} %{wks.location}/Dependencies/Settings/* " .. settings_dir
+			"{COPY} %{wks.location}/Dependencies/Settings/* " .. settings_dir,
+			"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}"
 		}
 
 		filter "configurations:Debug"
 			postbuildcommands {
-				"{COPY} %{wks.location}/Dependencies/DLL/Debug/*.dll %{cfg.targetdir}",
-				"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}"
+				"{COPY} %{wks.location}/Dependencies/DLL/Debug/*.dll %{cfg.targetdir}"
 			}
 
 		filter "configurations:Release"
 			postbuildcommands {
-				"{COPY} %{wks.location}/Dependencies/DLL/Release/*.dll %{cfg.targetdir}",
-				"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}"
+				"{COPY} %{wks.location}/Dependencies/DLL/Release/*.dll %{cfg.targetdir}"
 			}
 
 		filter "configurations:Simple"
 			postbuildcommands {
-				"{COPY} %{wks.location}/Dependencies/DLL/Release/*.dll %{cfg.targetdir}",
-				"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}"
+				"{COPY} %{wks.location}/Dependencies/DLL/Release/*.dll %{cfg.targetdir}"
 			}
