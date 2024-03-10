@@ -36,7 +36,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		'SIMPLE_LEVELS_FILENAME="' .. "Settings/levels.json" .. '"',
 		'SIMPLE_TEXTURES_DIR="' .. "Assets/Textures/" .. '"',
 		'SIMPLE_SHADERS_DIR="' .. "Shaders/" .. '"',
-		'SIMPLE_NAVMESH_DIR="' .. "Assets/Navmesh/" .. '"'
+		'SIMPLE_NAVMESH_DIR="' .. "Assets/Navmesh/" .. '"',
+		'SIMPLE_AUDIO_DIR="' .. "Assets/Audio/" .. '"',
 	}
 
 	configurations { -- Create Configurations For This WorkSpace
@@ -106,7 +107,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 		filter "configurations:Debug" 
 			links { 
-				"Lib/Debug/libfbxsdk"	
+				"Lib/Debug/libfbxsdk"
 			}
 			
 		filter "configurations:Release" 
