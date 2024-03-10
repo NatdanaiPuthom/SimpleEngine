@@ -54,23 +54,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
-
-		PROFILER_BEGIN("Constructor");
+		PROFILER_BEGIN("Engine initialize");
 		Simple::Engine engine;
 		Simple::GraphicsEngine graphicsEngine;
-		PROFILER_END();
 
-		PROFILER_BEGIN("SetGlobalPointers");
 		engine.SetGlobalPointerToThis();
 		graphicsEngine.SetGlobalGraphicsEngineToThis();
-		PROFILER_END();
 
-		PROFILER_BEGIN("Inits");
 		engine.Init(hInstance, nCmdShow);
 		graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
-		PROFILER_END();
 
 		SimpleUtilities::InputManager::GetInstance().SetHWND(Global::GetEngineHWND());
+		PROFILER_END();
 
 		PROFILER_BEGIN("GameWorld");
 		Simple::GameWorld gameWorld;
@@ -79,21 +74,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 		while (Global::GetGameIsRunning())
 		{
-			PROFILER_FUNCTION("MainLoop");
+			PROFILER_BEGIN("Frame Time");
 			graphicsEngine.BeginFrame();
 
 			engine.Update();
-
-			if (graphicsEngine.GetCurrentCamera() == graphicsEngine.GetDefaultCamera())
-			{
-				graphicsEngine.GetDefaultCamera()->Update(engine.GetDeltaTime());
-			}
+			graphicsEngine.GetDefaultCamera()->Update(engine.GetDeltaTime()); //For now only 1 Camera
 
 			gameWorld.Update();
-
 			gameWorld.Render();
 
 			graphicsEngine.EndFrame();
+			PROFILER_END()
 		}
 	}
 
