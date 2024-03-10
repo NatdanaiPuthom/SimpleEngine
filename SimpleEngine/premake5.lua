@@ -13,10 +13,12 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	local bin_dir = path.join(_SCRIPT_DIR, "Bin/") -- Returns absolute path to where this premake file is plus "Bin/" example -> C:\Users\panda\Desktop\SimpleEngine\Bin\
 	local shader_dir = path.join(_SCRIPT_DIR, "Bin/Shaders/") 
 	local profiler_dir = path.join(_SCRIPT_DIR, "Bin/Profilers/")
+	local settings_dir = path.join(_SCRIPT_DIR, "Bin/Settings/")
 
 	os.mkdir(bin_dir)  -- Create these folders on call "generate_project.bat" (current .bat file name)
 	os.mkdir(shader_dir)
 	os.mkdir(profiler_dir)
+	os.mkdir(settings_dir)
 	
 	dirs = {} -- Absolute path to specific folder
 	dirs["root"]           = os.realpath("/")
@@ -28,10 +30,10 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	dirs["SimpleLib"]      = os.realpath("Dependencies/SimpleLib/")
 
 	defines { -- Create Global Macro For Strings
-		'SIMPLE_IMGUI_FILENAME="' .."imgui.ini" .. '"', -- In Visual Studio "SIMPLE_IMGUI_FILENAME" will be equal to const char* "imgui.ini"
-		'SIMPLE_SETTINGS_FILENAME="' .. "settings.json" .. '"',
+		'SIMPLE_IMGUI_FILENAME="' .."Settings/imgui.ini" .. '"', -- In Visual Studio "SIMPLE_IMGUI_FILENAME" will be equal to const char* "imgui.ini"
+		'SIMPLE_SETTINGS_FILENAME="' .. "Settings/settings.json" .. '"',
 		'SIMPLE_PROFILER_FILENAME="' .. "Profilers/profiler_data.prof" .. '"',
-		'SIMPLE_LEVELS_FILENAME="' .. "levels.json" .. '"',
+		'SIMPLE_LEVELS_FILENAME="' .. "Settings/levels.json" .. '"',
 		'SIMPLE_TEXTURES_DIR="' .. "Assets/Textures/" .. '"',
 		'SIMPLE_SHADERS_DIR="' .. "Shaders/" .. '"',
 		'SIMPLE_NAVMESH_DIR="' .. "Assets/Navmesh/" .. '"'
@@ -274,23 +276,24 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"External", "Engine", "Graphics", "Game"
 		}
 
+		postbuildcommands {
+			"{COPY} %{wks.location}/Dependencies/Settings/* " .. settings_dir
+		}
+
 		filter "configurations:Debug"
 			postbuildcommands {
 				"{COPY} %{wks.location}/Dependencies/DLL/Debug/*.dll %{cfg.targetdir}",
-				"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}",
-				"{COPY} %{wks.location}/Dependencies/Settings/* %{cfg.targetdir}"
+				"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}"
 			}
 
 		filter "configurations:Release"
 			postbuildcommands {
 				"{COPY} %{wks.location}/Dependencies/DLL/Release/*.dll %{cfg.targetdir}",
-				"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}",
-				"{COPY} %{wks.location}/Dependencies/Settings/* %{cfg.targetdir}"
+				"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}"
 			}
 
 		filter "configurations:Simple"
 			postbuildcommands {
 				"{COPY} %{wks.location}/Dependencies/DLL/Release/*.dll %{cfg.targetdir}",
-				"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}",
-				"{COPY} %{wks.location}/Dependencies/Settings/* %{cfg.targetdir}"
+				"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}"
 			}

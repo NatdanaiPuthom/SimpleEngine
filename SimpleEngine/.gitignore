@@ -17,8 +17,6 @@
 
 [Bb]in/Shaders
 [Bb]in/Profilers
-[Dd]ependencies/SimpleLib
+[Bb]in/Settings
 
-[Bb]in/imgui.ini
-[Bb]in/levels.json
-[Bb]in/settings.json
+[Dd]ependencies/SimpleLib
