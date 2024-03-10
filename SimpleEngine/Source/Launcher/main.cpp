@@ -6,6 +6,7 @@
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
 #include <External/imgui.h>
+#include "Engine/Audio/AudioManager.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -71,6 +72,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		Simple::GameWorld gameWorld;
 		gameWorld.Init();
 		PROFILER_END();
+
+		AudioManager::GetInstance().Init();
+		AudioManager::GetInstance().PlayMusic("StardewValley.mp3");
 
 		while (Global::GetGameIsRunning())
 		{

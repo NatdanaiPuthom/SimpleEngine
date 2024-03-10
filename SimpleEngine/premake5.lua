@@ -81,6 +81,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 		includedirs {
 			"Source/",
+			"Source/External/",
 			"Source/External/**"
 		}
 
@@ -100,7 +101,9 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 		filter "configurations:Debug" 
 			links { 
-				"Lib/Debug/libfbxsdk"
+				"Lib/Debug/libfbxsdk",
+				"Lib/Debug/fmodL_vc",
+				"Lib/Debug/fmodstudioL_vc"
 			}
 			
 		filter "configurations:Release" 
