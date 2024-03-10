@@ -82,7 +82,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		includedirs {
 			"Source/",
 			"Source/External/",
-			"Source/External/**"
+			"Source/External/**",
 		}
 
 		files {
@@ -137,7 +137,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/" ,
 			"Source/Engine/", 
 			"Source/Engine/Graphics/", 
-			"Source/External/"
+			"Source/External/",
+			"Source/External/**",
 		} 
 
 			files { -- Files that shown in Visual Studio's Solution

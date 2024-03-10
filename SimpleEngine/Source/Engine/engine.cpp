@@ -3,6 +3,7 @@
 #include "Engine/SimpleUtilities/Timer.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include "Engine/Input/InputManager.hpp"
+#include "Engine/Audio/AudioManager.h"
 #include <External/nlohmann/json.hpp>
 #include <fstream>
 
@@ -119,6 +120,7 @@ namespace Simple
 	{
 		myTimer->Update();
 		SimpleUtilities::InputManager::GetInstance().Update();
+		AudioManager::GetInstance().Update();
 	}
 
 	float Engine::GetDeltaTime() const

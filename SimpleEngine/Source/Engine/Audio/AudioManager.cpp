@@ -1,6 +1,7 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/Audio/AudioManager.h"
 #include <External/TheGameAssembly/SoundEngine/SoundEngine.h>
+#include <External/TheGameAssembly/SoundEngine/SoundEngineImpl.hpp>
 
 AudioManager::AudioManager() 
 {
@@ -20,6 +21,7 @@ AudioManager::~AudioManager()
 void AudioManager::Destroy()
 {
 	SoundEngine::Release();
+
 	mySFXChannels.clear();
 	myMusicChannels.clear();
 }
@@ -92,6 +94,7 @@ void AudioManager::StopMusic(const std::string aFileName)
 		if (myMusicChannels[i].myChannelName == aFileName)
 		{
 			SoundEngine::StopSound(myMusicChannels[i].myChannelIndex);
+			myMusicChannels.erase(myMusicChannels.begin() + i);
 		}
 	}
 }
@@ -135,4 +138,14 @@ void AudioManager::ChangeMusicVolume(const float aVolume)
 void AudioManager::Update()
 {
 	SoundEngine::Update();
+
+	auto soundEngine = SoundEngine::GetImpl();
+
+	for (size_t i = 0; i < myMusicChannels.size(); ++i)
+	{
+		if (soundEngine->IsPlaying(myMusicChannels[i].myChannelIndex) == false)
+		{
+			myMusicChannels.erase(myMusicChannels.begin() + i);
+		}
+	}
 }

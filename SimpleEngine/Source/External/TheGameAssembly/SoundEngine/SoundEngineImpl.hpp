@@ -164,6 +164,13 @@ public:
 		myFModStudioPtr->release();
 	}
 
+	bool IsPlaying(const size_t aChannelIndex)
+	{
+		bool isActive = false;
+		myChannels.at(aChannelIndex)->isPlaying(&isActive);
+		return isActive;
+	}
+
 	void Update()
 	{
 		assert(isInitialized && "SoundEngine::Init has not been called!");
