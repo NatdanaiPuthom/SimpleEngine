@@ -109,15 +109,15 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		filter "configurations:Release" 
 			links { 
 				"Lib/Release/libfbxsdk",
-				"Lib/Debug/fmod_vc",
-				"Lib/Debug/fmodstudio_vc"
+				"Lib/Release/fmod_vc",
+				"Lib/Release/fmodstudio_vc"
 			}
 
 		filter "configurations:Simple" 
 			links { 
 				"Lib/Release/libfbxsdk",
-				"Lib/Debug/fmod_vc",
-				"Lib/Debug/fmodstudio_vc"
+				"Lib/Release/fmod_vc",
+				"Lib/Release/fmodstudio_vc"
 			}	
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
