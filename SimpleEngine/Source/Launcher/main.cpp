@@ -82,7 +82,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 			graphicsEngine.BeginFrame();
 
 			engine.Update();
-			graphicsEngine.GetDefaultCamera()->Update(engine.GetDeltaTime()); //For now only 1 Camera
+			graphicsEngine.GetDefaultCamera()->Update(engine.GetDeltaTime()); //For now only 1 Camera (v9.18.0)
 
 			gameWorld.Update();
 			gameWorld.Render();
