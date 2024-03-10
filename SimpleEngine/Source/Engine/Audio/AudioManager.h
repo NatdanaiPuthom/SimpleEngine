@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 struct Channel
 {
@@ -20,7 +21,6 @@ public:
 	}
 
 	~AudioManager();
-	void Destroy();
 
 	// Delete copy constructor and copy assignment operator
 	AudioManager(const AudioManager&) = delete;
