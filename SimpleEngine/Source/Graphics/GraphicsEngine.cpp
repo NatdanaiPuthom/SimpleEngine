@@ -291,7 +291,10 @@ namespace Simple
 
 	void GraphicsEngine::EndFrame()
 	{
-		myImGuiEngine->EndFrame();
+		if (Global::GetGameIsRunning())
+		{
+			myImGuiEngine->EndFrame();
+		}
 
 		mySwapChain->Present(myFPSLevelCap, 0);
 	}
@@ -313,7 +316,7 @@ namespace Simple
 			dwStyle &= ~WS_OVERLAPPEDWINDOW;
 			dwStyle |= WS_POPUP;
 		}
-		else 
+		else
 		{
 			dwStyle &= ~WS_POPUP;
 			dwStyle |= WS_OVERLAPPEDWINDOW;
