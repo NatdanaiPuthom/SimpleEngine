@@ -27,7 +27,7 @@ void AudioManager::Init()
 	SoundEngine::Init(SU::GetAbsolutePath(SIMPLE_AUDIO_DIR));
 
 	//Music
-	SoundEngine::LoadSoundFile("StardewValley.mp3", false, false, true);
+	//SoundEngine::LoadSoundFile("StardewValley.mp3", false, false, true);
 
 	//SFX
 	//SoundEngine::LoadSoundFile("Player/climb.ogg");
@@ -102,7 +102,7 @@ void AudioManager::StopAllMusic()
 	}
 }
 
-float AudioManager::GetSFXVolume()
+float AudioManager::GetSFXVolume() const
 {
 	return mySFXVolume;
 }
@@ -110,13 +110,14 @@ float AudioManager::GetSFXVolume()
 void AudioManager::ChangeSFXVolume(const float aVolume)
 {
 	mySFXVolume = aVolume;
+
 	for (size_t i = 0; i < mySFXChannels.size(); i++)
 	{
 		SoundEngine::SetVolume(static_cast<int>(mySFXChannels[i].myChannelIndex), mySFXVolume);
 	}
 }
 
-float AudioManager::GetMusicVolume()
+float AudioManager::GetMusicVolume() const
 {
 	return myMusicVolume;
 }
@@ -124,6 +125,7 @@ float AudioManager::GetMusicVolume()
 void AudioManager::ChangeMusicVolume(const float aVolume)
 {
 	myMusicVolume = aVolume;
+
 	for (size_t i = 0; i < myMusicChannels.size(); i++)
 	{
 		SoundEngine::SetVolume(static_cast<int>(myMusicChannels[i].myChannelIndex), myMusicVolume);
@@ -134,7 +136,7 @@ void AudioManager::Update()
 {
 	SoundEngine::Update();
 
-	auto soundEngine = SoundEngine::GetImpl();
+	const auto soundEngine = SoundEngine::GetImpl();
 
 	for (size_t i = 0; i < myMusicChannels.size(); ++i)
 	{

@@ -40,11 +40,11 @@ public:
 	void StopSound(std::string aFileName);
 
 	//Range: 0 - 1f.
-	float GetMusicVolume();
+	float GetMusicVolume() const;
 	void ChangeMusicVolume(float aVolume);
 
 	//Range: 0 - 1f.
-	float GetSFXVolume();
+	float GetSFXVolume() const;
 	void ChangeSFXVolume(float aVolume);
 
 	void StopMusic(std::string aFileName);
