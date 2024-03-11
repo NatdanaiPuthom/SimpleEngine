@@ -12,8 +12,12 @@ Scenes::NavmeshSceneTest::~NavmeshSceneTest()
 void Scenes::NavmeshSceneTest::OnEnter()
 {
 	auto camera = Global::GetGraphicsEngine()->GetDefaultCamera();
-	camera->SetRotation(Math::Vector3f(40, -140, 0));
-	camera->SetPosition(Math::Vector3f(20, 60, 20));
+	camera->SetRotation(Math::Vector3(40.0f, -140.0f, 0.0f));
+	camera->SetPosition(Math::Vector3(20.0f, 60.0f, 20.0f));
+
+	myDirectionalLight->myModel->SetPosition({ 20.0f, 6.0f, 2.0f });
+	myDirectionalLight->myModel->SetRotation({ 0.0f, 0.0f, 0.0f });
+	Global::GetGraphicsEngine()->SetDirectionalLightDirection({ 0.0f, 0.0f, 1.0f });
 }
 
 void Scenes::NavmeshSceneTest::Init()
@@ -29,15 +33,27 @@ void Scenes::NavmeshSceneTest::Init()
 void Scenes::NavmeshSceneTest::Update()
 {
 	Scene::Update();
+
+	if (myPathFinder.GetAStarPath().size() > 0 && myPathFinder.GetFunnelPath().size() > 0)
+	{
+		myShouldRenderPathfinder = true;
+	}
+	else
+	{
+		myShouldRenderPathfinder = false;
+	}
 }
 
 void Scenes::NavmeshSceneTest::Render()
 {
 	Scene::Render();
 
-	myPathFinder.RenderStartEndPosition();
-	myPathFinder.RenderAStarPath();
-	myPathFinder.RenderFunnelPath();
+	if (myShouldRenderPathfinder == true)
+	{
+		myPathFinder.RenderStartEndPosition();
+		myPathFinder.RenderAStarPath();
+		myPathFinder.RenderFunnelPath();
+	}
 
 	auto navmesh = World::GetNavmesh();
 	navmesh->RenderConnections();

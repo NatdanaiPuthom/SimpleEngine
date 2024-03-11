@@ -50,6 +50,9 @@ namespace Simple
 				}
 
 				renderer->RenderLine(*myDirectionalLight->myLine);
+				renderer->RenderLine(*myDirectionalLight->myLineAxis[0]);
+				renderer->RenderLine(*myDirectionalLight->myLineAxis[1]);
+				renderer->RenderLine(*myDirectionalLight->myLineAxis[2]);
 			}
 		};
 

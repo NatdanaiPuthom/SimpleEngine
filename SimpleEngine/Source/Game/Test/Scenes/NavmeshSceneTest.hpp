@@ -20,5 +20,7 @@ namespace Scenes
 		Simple::Pathfinder myPathFinder;
 		Math::Vector3f myStartPosition;
 		Math::Vector3f myEndPosition;
+
+		bool myShouldRenderPathfinder;
 	};
 }

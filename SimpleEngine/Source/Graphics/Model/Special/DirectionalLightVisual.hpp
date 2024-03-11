@@ -8,11 +8,15 @@ namespace Simple
 	{
 	public:
 		DirectionalLightVisual();
+		~DirectionalLightVisual();
 
 		void Update() const;
+		void UpdateAxisLines() const;
 
 		std::unique_ptr<Drawer::Line> myLine;
 		std::shared_ptr<Simple::Model> myModel;
 		float myLineDistance;
+
+		std::vector<std::unique_ptr<Drawer::Line>> myLineAxis;
 	};
 }
