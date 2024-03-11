@@ -15,6 +15,8 @@ Tool::MainMenuBar::~MainMenuBar()
 
 void Tool::MainMenuBar::Init()
 {
+	LoadSettingsFromJson();
+
 	mySettingsTool = std::make_unique<Tool::SettingsTool>();
 	myCameraTool = std::make_unique<Tool::CameraTool>();
 
@@ -50,4 +52,19 @@ void Tool::MainMenuBar::DrawTools()
 	{
 		myCameraTool->Draw();
 	}
+}
+
+void Tool::MainMenuBar::LoadSettingsFromJson()
+{
+	const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_EDITOR_SETTINGS_FILENAME);
+	std::ifstream file(filename);
+	assert(file.is_open() && "Failed To Open File");
+
+	const nlohmann::json json = nlohmann::json::parse(file);
+	file.close();
+
+	const nlohmann::json settings = json["editor_settings"];
+
+	mySettingToolActive = settings["setting_tool"]["active"];
+	myCameraToolActive = settings["camera_tool"]["active"];
 }

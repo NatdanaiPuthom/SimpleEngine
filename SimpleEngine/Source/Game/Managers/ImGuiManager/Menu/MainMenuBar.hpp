@@ -15,6 +15,7 @@ namespace Tool
 		void Draw() override;
 	private:
 		void DrawTools();
+		void LoadSettingsFromJson();
 	private:
 		std::unique_ptr<SettingsTool> mySettingsTool;
 		std::unique_ptr<CameraTool> myCameraTool;
