@@ -65,13 +65,15 @@ namespace Simple
 	Model ModelFactory::LoadStaticModelFBX(const char* aFileName)
 	{
 		Simple::Model model;
-		const Simple::Mesh* mesh = GetMesh(aFileName);
+
+		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_MODELS_DIR) + aFileName;
+		const Simple::Mesh* mesh = GetMesh(path.c_str());
 
 		if (mesh == nullptr)
 		{
-			LoadAndCacheMesh(aFileName);
+			LoadAndCacheMesh(path);
 
-			mesh = GetMesh(aFileName);
+			mesh = GetMesh(path.c_str());
 
 			if (mesh == nullptr)
 				assert(false && "Failed to GetMesh from bank");
@@ -85,25 +87,26 @@ namespace Simple
 	{
 		Simple::AnimatedModel animatedModel;
 
-		const Simple::Mesh* mesh = GetMesh(aFileName);
-		const Simple::Skeleton* skeleton = GetSkeleton(aFileName);
+		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_MODELS_DIR) + aFileName;
+		const Simple::Mesh* mesh = GetMesh(path.c_str());
+		const Simple::Skeleton* skeleton = GetSkeleton(path.c_str());
 
 		TGA::FBX::Mesh tgaMesh;
 
 		if (mesh == nullptr)
 		{
-			LoadAndCacheMesh(aFileName, tgaMesh);
+			LoadAndCacheMesh(path, tgaMesh);
 
-			mesh = GetMesh(aFileName);
+			mesh = GetMesh(path.c_str());
 			if (mesh == nullptr)
 				assert(false && "Failed to GetMesh from bank");
 		}
 
 		if (skeleton == nullptr)
 		{
-			LoadAndCacheSkeleton(aFileName, tgaMesh);
+			LoadAndCacheSkeleton(path, tgaMesh);
 
-			skeleton = GetSkeleton(aFileName);
+			skeleton = GetSkeleton(path.c_str());
 			if (skeleton == nullptr)
 				assert(false && "Failed to GetSkeleton from bank");
 		}
@@ -114,8 +117,10 @@ namespace Simple
 
 	Animation ModelFactory::LoadAnimationFBX(const char* aFileName)
 	{
+		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_MODELS_DIR) + aFileName;
+
 		TGA::FBX::Animation tgaAnimation;
-		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::GetAbsolutePath(aFileName), tgaAnimation);
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(path, tgaAnimation);
 
 		Simple::Animation animation;
 		animation.name = tgaAnimation.Name;
@@ -168,7 +173,7 @@ namespace Simple
 		return animation;
 	}
 
-	void ModelFactory::AddMesh(const char* aName, std::unique_ptr<const Simple::Mesh> aMesh)
+	void ModelFactory::AddMesh(const std::string& aName, std::unique_ptr<const Simple::Mesh> aMesh)
 	{
 		myIsCachingInProgress = true;
 		myFBXLoaderMutex.lock();
@@ -179,7 +184,7 @@ namespace Simple
 		myFBXLoaderMutex.unlock();
 	}
 
-	void ModelFactory::AddSkeleton(const char* aName, std::unique_ptr<const Simple::Skeleton> aSkeleton)
+	void ModelFactory::AddSkeleton(const std::string& aName, std::unique_ptr<const Simple::Skeleton> aSkeleton)
 	{
 		myIsCachingInProgress = true;
 		myFBXLoaderMutex.lock();
@@ -260,10 +265,10 @@ namespace Simple
 		}
 	}
 
-	void ModelFactory::LoadAndCacheMesh(const char* aFileName)
+	void ModelFactory::LoadAndCacheMesh(const std::string& aFileName)
 	{
 		TGA::FBX::Mesh tgaMesh;
-		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(SimpleUtilities::GetAbsolutePath(aFileName), tgaMesh);
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aFileName, tgaMesh);
 		assert(status && "Failed to LoadMesh from FBXImporter");
 
 		Simple::MeshData meshData;
@@ -276,9 +281,9 @@ namespace Simple
 		AddMesh(aFileName, std::move(newMesh));
 	}
 
-	void ModelFactory::LoadAndCacheMesh(const char* aFileName, TGA::FBX::Mesh& aTGAMesh)
+	void ModelFactory::LoadAndCacheMesh(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh)
 	{
-		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(SimpleUtilities::GetAbsolutePath(aFileName), aTGAMesh);
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aFileName, aTGAMesh);
 		assert(status && "Failed to LoadMesh from FBXImporter");
 
 		Simple::MeshData meshData;
@@ -291,7 +296,7 @@ namespace Simple
 		AddMesh(aFileName, std::move(newMesh));
 	}
 
-	void ModelFactory::LoadAndCacheSkeleton(const char* aFileName, TGA::FBX::Mesh& aTGAMesh)
+	void ModelFactory::LoadAndCacheSkeleton(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh)
 	{
 		std::unique_ptr<Simple::Skeleton> skeletonData = std::make_unique<Simple::Skeleton>();
 

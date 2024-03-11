@@ -50,7 +50,7 @@ namespace Simple
 
 		void Init(Animation& aAnimation, AnimatedModel& aModel);
 		void Update();
-		bool UpdateThreaded(AnimatedModel& aModel, Animation& aAnimation);
+		bool UpdateForThreadedTest(AnimatedModel& aModel, Animation& aAnimation);
 
 		void Play();
 		void SetIsLooping(const bool aShouldLoop);

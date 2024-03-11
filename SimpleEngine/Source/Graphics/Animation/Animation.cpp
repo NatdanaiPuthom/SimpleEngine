@@ -100,12 +100,11 @@ void Simple::AnimationPlayer::Update()
 		}
 
 		myLocalSpacePose.count = skeleton->myJoints.size();
+		myModel->SetPose(myLocalSpacePose);
 	}
-
-	myModel->SetPose(myLocalSpacePose);
 }
 
-bool Simple::AnimationPlayer::UpdateThreaded(AnimatedModel& aModel, Animation& aAnimation)
+bool Simple::AnimationPlayer::UpdateForThreadedTest(AnimatedModel& aModel, Animation& aAnimation)
 {
 	if (myState == eAnimationState::Playing)
 	{

@@ -27,8 +27,13 @@ namespace Simple
 
 		void Init();
 
+		//FilePath starts at Bin/Assets/Models/
 		Model LoadStaticModelFBX(const char* aFileName);
+
+		//FilePath starts at Bin/Assets/Models/
 		AnimatedModel LoadAnimatedModelFBX(const char* aFileName);
+
+		//FilePath starts at Bin/Assets/Models/Animations/
 		Animation LoadAnimationFBX(const char* aFileName);
 	public:
 		std::unique_ptr<Simple::Model> CreateTerrainModel();
@@ -40,15 +45,15 @@ namespace Simple
 		std::unique_ptr<Simple::Model> CreateSphereModel();
 		std::unique_ptr<Simple::Model> CreatePlaneReflection();
 	private:
-		void AddMesh(const char* aName, std::unique_ptr<const Simple::Mesh> aMesh);
-		void AddSkeleton(const char* aName, std::unique_ptr<const Simple::Skeleton> aSkeleton);
+		void AddMesh(const std::string& aName, std::unique_ptr<const Simple::Mesh> aMesh);
+		void AddSkeleton(const std::string& aName, std::unique_ptr<const Simple::Skeleton> aSkeleton);
 		const Simple::Mesh* GetMesh(const char* aMeshName) const;
 		const Simple::Skeleton* GetSkeleton(const char* aName) const;
 		void LoadMeshData(Simple::MeshData& aMeshData, const TGA::FBX::Mesh& aTGAMesh) const;
 		void LoadSkeletonData(Simple::Skeleton& aSkeletonData, const TGA::FBX::Mesh& aTGAMesh) const;
-		void LoadAndCacheMesh(const char* aFileName);
-		void LoadAndCacheMesh(const char* aFileName, TGA::FBX::Mesh& aTGAMesh);
-		void LoadAndCacheSkeleton(const char* aFileName, TGA::FBX::Mesh& aTGAMesh);
+		void LoadAndCacheMesh(const std::string& aFileName);
+		void LoadAndCacheMesh(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh);
+		void LoadAndCacheSkeleton(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh);
 	private:
 		std::mutex myFBXLoaderMutex;
 		std::atomic<bool> myIsCachingInProgress;

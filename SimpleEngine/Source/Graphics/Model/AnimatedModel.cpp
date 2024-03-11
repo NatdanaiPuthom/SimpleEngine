@@ -10,13 +10,14 @@ namespace Simple
 		, myName("Unnamed")
 		, myBoundingBoxColor(1.0f, 1.0f, 0.0f, 1.0f)
 	{
-		myShader = Global::GetGraphicsEngine()->GetDefaultShader();
+		myShader = Global::GetGraphicsEngine()->GetShader("DefaultPS.cso", "AnimatedModelVS.cso");
 	}
 
 	AnimatedModel::~AnimatedModel()
 	{
-		myMesh = nullptr;
 		myShader = nullptr;
+		myMesh = nullptr;
+		mySkeleton = nullptr;
 	}
 
 	void AnimatedModel::Init(const Simple::Mesh* const aMesh, const Skeleton* const aSkeleton)

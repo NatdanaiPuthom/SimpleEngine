@@ -30,11 +30,11 @@ namespace Simple
 		{
 			NatdanaiAnimationTest animationTest;
 			PROFILER_BEGIN("Load animatedmodel");
-			animationTest.animatedModel = Global::GetModelFactory()->LoadAnimatedModelFBX("Assets/Models/Test/SM_wizard.fbx");
+			animationTest.animatedModel = Global::GetModelFactory()->LoadAnimatedModelFBX("Test/SM_wizard.fbx");
 			PROFILER_END();
 
 			PROFILER_BEGIN("Load animation");
-			animationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("Assets/Models/Test/A_Wizard_Falling.fbx");
+			animationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("A_Wizard_Falling.fbx");
 			PROFILER_END();
 
 			animationTest.animatedModel.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
@@ -69,7 +69,7 @@ namespace Simple
 		{
 			for (size_t i = 0; i < myThreadTest.size(); ++i)
 			{
-				std::future<bool> result = myThreadPool.AddTask(&AnimationPlayer::UpdateThreaded, std::ref(myThreadTest[i].animationPlayer), std::ref(myThreadTest[i].animatedModel), std::ref(myThreadTest[i].animation));
+				std::future<bool> result = myThreadPool.AddTask(&AnimationPlayer::UpdateForThreadedTest, std::ref(myThreadTest[i].animationPlayer), std::ref(myThreadTest[i].animatedModel), std::ref(myThreadTest[i].animation));
 				myFutureResults[i] = std::move(result);
 			}
 
