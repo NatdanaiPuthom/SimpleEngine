@@ -10,7 +10,7 @@ namespace Tool
 
 	void CameraTool::Draw()
 	{
-		if (ImGui::Begin("Camera Controls"))
+		if (ImGui::Begin("Freefly Camera"))
 		{
 			Simple::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 			ImGui::Text("Movements    - WASD");

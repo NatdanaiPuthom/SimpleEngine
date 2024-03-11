@@ -1,5 +1,5 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Managers/LevelManager/Scenes/NavmeshSceneTest.hpp"
+#include "Game/Test/Scenes/NavmeshSceneTest.hpp"
 
 Scenes::NavmeshSceneTest::NavmeshSceneTest()
 {
@@ -9,12 +9,20 @@ Scenes::NavmeshSceneTest::~NavmeshSceneTest()
 {
 }
 
+void Scenes::NavmeshSceneTest::OnEnter()
+{
+	auto camera = Global::GetGraphicsEngine()->GetDefaultCamera();
+	camera->SetRotation(Math::Vector3f(40, -140, 0));
+	camera->SetPosition(Math::Vector3f(20, 60, 20));
+}
+
 void Scenes::NavmeshSceneTest::Init()
 {
 	World::GetEventmanager()->GetPostMaster().AddObserver(this, Simple::eEvent::Raycast_LMB);
 	World::GetEventmanager()->GetPostMaster().AddObserver(this, Simple::eEvent::Raycast_RMB);
 
 	auto navmesh = World::GetNavmesh();
+	navmesh->Init("Level 1.obj");
 	myPathFinder.SetNavmesh(navmesh);
 }
 

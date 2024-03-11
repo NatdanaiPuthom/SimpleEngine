@@ -1,5 +1,4 @@
 #pragma once
-#include "Game/Test/AnimationThreading.hpp"
 
 namespace Simple
 {
@@ -31,8 +30,6 @@ namespace Simple
 		std::unique_ptr<Simple::LevelManager> myLevelManager;
 		std::unique_ptr<Simple::RaycastManager> myRaycastManager;
 		std::unique_ptr<Simple::EventManager> myEventManager;
-
-		AnimationThreadTest myAnimationThreadTest;
 
 		float myFixedUpdateTimer;
 		const float myFixedUpdateFreqency;

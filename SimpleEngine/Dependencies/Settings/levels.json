@@ -1,21 +1,13 @@
 {
-  "activeScene": 1,
+  "activeScene": 0,
   "scenes": [
     {
-      "name":  "Water Reflection Test",
+      "name":  "Default",
       "id": 0
     },
     {
-      "name": "Spotlights Test",
+      "name": "NavmeshTest",
       "id": 1
-    },
-    {
-      "name": "Navmesh Test",
-      "id": 2
-    },
-    {
-      "name": "Sprite Test",
-      "id": 3
     }
   ]
 }

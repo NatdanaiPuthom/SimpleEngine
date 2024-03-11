@@ -1,9 +1,5 @@
 #pragma once
-
-namespace Simple
-{
-	class PlaneReflection;
-}
+#include "Game/Managers/LevelManager/Template/Scene.hpp"
 
 namespace Scenes
 {
@@ -13,10 +9,10 @@ namespace Scenes
 		DefaultScene();
 		~DefaultScene() override;
 
+		void OnEnter() override;
+
 		void Init() override;
 		void Update() override;
 		void Render() override;
-	private:
-		std::unique_ptr<Simple::PlaneReflection> myPlaneReflection;
 	};
 }

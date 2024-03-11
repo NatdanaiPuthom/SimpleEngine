@@ -31,7 +31,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 	defines { -- Create Global Macro For Strings
 		'SIMPLE_IMGUI_FILENAME="' .."Settings/imgui.ini" .. '"', -- In Visual Studio "SIMPLE_IMGUI_FILENAME" will be equal to const char* "imgui.ini"
-		'SIMPLE_SETTINGS_FILENAME="' .. "Settings/settings.json" .. '"',
+		'SIMPLE_SETTINGS_FILENAME="' .. "Settings/game_settings.json" .. '"',
 		'SIMPLE_PROFILER_FILENAME="' .. "Profilers/profiler_data.prof" .. '"',
 		'SIMPLE_LEVELS_FILENAME="' .. "Settings/levels.json" .. '"',
 		'SIMPLE_TEXTURES_DIR="' .. "Assets/Textures/" .. '"',

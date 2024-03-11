@@ -9,6 +9,8 @@ namespace Scenes
 		NavmeshSceneTest();
 		~NavmeshSceneTest();
 
+		void OnEnter() override;
+
 		void Init() override;
 		void Update() override;
 		void Render() override;

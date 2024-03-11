@@ -2,9 +2,7 @@
 #include "Graphics/Camera/Camera.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/LevelManager/Scenes/DefaultScene.hpp"
-#include "Game/Managers/LevelManager/Scenes/SpotlightScene.hpp"
-#include "Game/Managers/LevelManager/Scenes/NavmeshSceneTest.hpp"
-#include "Game/Managers/LevelManager/Scenes/SpriteTest.hpp"
+#include "Game/Test/Scenes/NavmeshSceneTest.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
 namespace Simple
@@ -23,29 +21,15 @@ namespace Simple
 
 	void LevelManager::Init()
 	{
-		auto camera = Global::GetGraphicsEngine()->GetCurrentCamera();
-		camera->SetRotation(Math::Vector3f(50, 0, 0));
-		camera->SetPosition(Math::Vector3f(10, 15, -12));
-
 		std::shared_ptr<Scenes::DefaultScene> defaultScene = std::make_shared<Scenes::DefaultScene>();
 		defaultScene->Init();
 		myScenes.emplace(0, defaultScene);
 
-		std::shared_ptr<Scenes::SpotlightScene> spotlightScene = std::make_shared<Scenes::SpotlightScene>();
-		spotlightScene->Init();
-		myScenes.emplace(1, spotlightScene);
-
 		std::shared_ptr<Scenes::NavmeshSceneTest> navmeshTest = std::make_shared<Scenes::NavmeshSceneTest>();
 		navmeshTest->Init();
-		myScenes.emplace(2, navmeshTest);
-
-		std::shared_ptr<Scenes::SpriteTestScene> spriteTest = std::make_shared<Scenes::SpriteTestScene>();
-		spriteTest->Init();
-		myScenes.emplace(3, spriteTest);
+		myScenes.emplace(1, navmeshTest);
 
 		SetActiveScene(myActiveSceneIndex);
-
-		myNavmesh.Init("Level 1.obj");
 	}
 
 	void LevelManager::Update()
@@ -60,8 +44,14 @@ namespace Simple
 
 	void LevelManager::SetActiveScene(const int aSceneIndex)
 	{
+		if (myActiveScene != nullptr)
+		{
+			myActiveScene->OnExit();
+		}
+
 		myActiveSceneIndex = aSceneIndex;
 		myActiveScene = myScenes.at(myActiveSceneIndex);
+		myActiveScene->OnEnter();
 	}
 
 	Simple::Navmesh& LevelManager::GetNavmesh()

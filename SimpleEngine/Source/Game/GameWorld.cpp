@@ -28,8 +28,6 @@ namespace Simple
 		myImGuiManager->Init();
 		myLevelManager->Init();
 		myRaycastManager->Init();
-
-		myAnimationThreadTest.Init();
 	}
 
 	void GameWorld::Update()
@@ -56,8 +54,6 @@ namespace Simple
 		myLevelManager->Render();
 		myRaycastManager->Render();
 
-		myAnimationThreadTest.Render(); //Test
-
 		myImGuiManager->Render();
 	}
 
@@ -65,8 +61,6 @@ namespace Simple
 	{
 		myLevelManager->Update();
 		myRaycastManager->Update();
-
-		myAnimationThreadTest.Update(); //Test
 	}
 
 	void GameWorld::EarlyUpdate()

@@ -23,6 +23,9 @@ namespace Simple
 
 		virtual ~Scene() = default;
 
+		virtual void OnEnter() {};
+		virtual void OnExit() {};
+
 		virtual void Init() {};
 
 		virtual void Update()

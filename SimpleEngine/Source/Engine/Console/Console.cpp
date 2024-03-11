@@ -31,7 +31,7 @@ namespace Simple
 		setbuf(stdout, NULL);
 		setbuf(stderr, NULL);
 
-		SetConsoleTitle(L"Simple Makes Every Thing Easy");
+		SetConsoleTitle(L"Simple makes thing easier");
 #pragma warning( pop )
 	}
 }

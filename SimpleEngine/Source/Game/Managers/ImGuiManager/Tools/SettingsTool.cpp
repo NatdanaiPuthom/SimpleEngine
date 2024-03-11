@@ -7,7 +7,7 @@ namespace Tool
 		: mySelectedWindowSize(1)
 		, mySelectedResolution(1)
 		, mySelectedRasterizerState(0)
-		, myActiveScene(0)
+		, myActiveSceneIndex(0)
 		, myConsoleIsOpen(true)
 	{
 	}
@@ -57,8 +57,12 @@ namespace Tool
 			AdjustRasterizerState();
 			AdjustResolution();
 			AdjustWindowSize();
+
+			ImGui::Dummy(ImVec2(0, 20));
 			ToggleConsole();
 			ToggleRenderBoundingBox();
+
+			ImGui::Dummy(ImVec2(0, 20));
 			AdjustActiveScene();
 		}
 
@@ -87,9 +91,11 @@ namespace Tool
 
 		const nlohmann::json& scenesIndexes = json["scenes"];
 
-		for (const auto& index : scenesIndexes)
+		myScenes.resize(scenesIndexes.size());
+		for (size_t i = 0; i < scenesIndexes.size(); ++i)
 		{
-			mySceneIndexes.push_back(index["id"]);
+			const std::string name = scenesIndexes[i]["name"];
+			myScenes[static_cast<size_t>(scenesIndexes[i]["id"])] = name;
 		}
 	}
 
@@ -215,25 +221,19 @@ namespace Tool
 
 	void SettingsTool::AdjustActiveScene()
 	{
-		std::vector<std::string> sceneIndexStrings;
-		sceneIndexStrings.reserve(mySceneIndexes.size());
-		sceneIndexStrings.push_back(std::to_string(0) + std::string(" Water Reflection Test"));
-		sceneIndexStrings.push_back(std::to_string(1) + std::string(" Spotlights Test"));
-		sceneIndexStrings.push_back(std::to_string(2) + std::string(" Navmesh Test"));
-		sceneIndexStrings.push_back(std::to_string(3) + std::string(" Sprite Test"));
-
 		std::vector<const char*> sceneNameChar;
-		sceneNameChar.reserve(mySceneIndexes.size());
-		for (const std::string& indexString : sceneIndexStrings)
+		sceneNameChar.reserve(myScenes.size());
+
+		for (size_t i = 0; i < myScenes.size(); ++i)
 		{
-			sceneNameChar.push_back(indexString.c_str());
+			sceneNameChar.push_back(myScenes[i].c_str());
 		}
 
 		ImGui::SetNextItemWidth(200);
-		myActiveScene = World::GetActiveSceneIndex();
-		if (ImGui::Combo("Active Scene", &myActiveScene, sceneNameChar.data(), static_cast<int>(sceneNameChar.size())))
+		myActiveSceneIndex = World::GetActiveSceneIndex();
+		if (ImGui::Combo("Active Scene", &myActiveSceneIndex, sceneNameChar.data(), static_cast<int>(sceneNameChar.size())))
 		{
-			World::SetActiveScene(mySceneIndexes[myActiveScene]);
+			World::SetActiveScene(myActiveSceneIndex);
 		}
 	}
 

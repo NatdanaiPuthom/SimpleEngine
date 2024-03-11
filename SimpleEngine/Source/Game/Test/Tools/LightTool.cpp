@@ -1,5 +1,5 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Managers/ImGuiManager/Tools/LightTool.hpp"
+#include "Game/Test/Tools/LightTool.hpp"
 
 namespace Tool
 {

@@ -3,6 +3,8 @@
 #include <vector>
 #include <unordered_map>
 
+//TO-DO: Rework AudioManager (v9.18.0)
+
 struct Channel
 {
 	Channel(std::string aFileName, size_t aChannelIndex) : myChannelName(aFileName), myChannelIndex(aChannelIndex) {}

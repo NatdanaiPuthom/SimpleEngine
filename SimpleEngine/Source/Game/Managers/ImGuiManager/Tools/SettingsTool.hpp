@@ -25,16 +25,16 @@ namespace Tool
 		void UpdateAndFetchCurrentMonitorResolution();
 		void LoadDataFromJson();
 	private:
-		std::vector<Math::Vector2ui> myWindowSizes;
-		std::vector<int> mySceneIndexes;
-
 		Math::Vector2ui myMonitorResolution;
 
-		int myActiveScene;
+		int myActiveSceneIndex;
 		int mySelectedResolution;
 		int mySelectedWindowSize;
 		int mySelectedRasterizerState;
 
 		bool myConsoleIsOpen;
+
+		std::vector<Math::Vector2ui> myWindowSizes;
+		std::vector<std::string> myScenes;
 	};
 }

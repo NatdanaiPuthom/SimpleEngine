@@ -1,5 +1,5 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Managers/LevelManager/Scenes/SpotlightScene.hpp"
+#include "Game/Test/Scenes/SpotlightSceneTest.hpp"
 
 namespace Scenes
 {
