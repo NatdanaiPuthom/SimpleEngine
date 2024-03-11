@@ -8,10 +8,10 @@ namespace SimpleUtilities
 	InputManager::InputManager()
 		: myMouseIsHidden(false)
 		, myAKeyIsPressed(false)
-		, myTentativeMousePosition(0,0)
-		, myCurrentMousePosition(0,0)
-		, myPreviousMousePosition(0,0)
-		, myMouseDelta(0,0)
+		, myTentativeMousePosition(0, 0)
+		, myCurrentMousePosition(0, 0)
+		, myPreviousMousePosition(0, 0)
+		, myMouseDelta(0, 0)
 	{
 		myOwnerHWND = GetActiveWindow();
 

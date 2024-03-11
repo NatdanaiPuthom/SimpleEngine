@@ -12,6 +12,7 @@ namespace Simple
 		, myMoveSpeed(10)
 		, myRotateSpeed(90)
 		, myFreeFly(false)
+		, myDebugCameraActive(false)
 		, myInput(nullptr)
 	{
 	}
@@ -27,7 +28,27 @@ namespace Simple
 
 	void Camera::Update(const float aDeltaTime)
 	{
-		if (myInput->GetAKeyIsPressed() || myFreeFly)
+		const HWND& hwnd = Global::GetEngineHWND();
+
+		if (GetForegroundWindow() != hwnd)
+		{
+			if (myInput->GetMouseIsHidden())
+			{
+				myInput->ShowMouse();
+				myInput->ReleaseMouse();
+			}
+
+			myFreeFly = false;
+			myDebugCameraActive = false;
+			return;
+		}
+
+		if (myInput->IsPressed(VK_TAB) == true)
+		{
+			myDebugCameraActive = !myDebugCameraActive;
+		}
+
+		if (myDebugCameraActive == true && myInput->GetAKeyIsPressed() || myFreeFly)
 		{
 			const Math::Vector3f currentPosition = GetPosition();
 			const Math::Vector3f currentRotation = GetRotation();
@@ -111,7 +132,6 @@ namespace Simple
 				targetPosition.y += direction * speed * myUp.y * aDeltaTime;
 			}
 
-			HWND& hwnd = Global::GetEngineHWND();
 			if (myFreeFly && GetForegroundWindow() == hwnd)
 			{
 				if (!myInput->GetMouseIsHidden())

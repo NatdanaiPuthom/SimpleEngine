@@ -74,5 +74,6 @@ namespace Simple
 		float myRotateSpeed;
 
 		bool myFreeFly;
+		bool myDebugCameraActive;
 	};
 }
