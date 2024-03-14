@@ -30,9 +30,17 @@ namespace Simple
 		myLevelManager->Init();
 		myRaycastManager->Init();
 
-		Math::Quaternion quaternion;
+		Math::Matrix4x4 matrix;
 
-		std::cout << quaternion.GetRight();
+		Math::Vector3 position;
+		Math::Quaternion quaternion;
+		Math::Vector3 scale;
+
+		matrix.BetterDecomposeMatrix(position, quaternion, scale);
+
+		std::cout << "pos: " << position << std::endl;
+		std::cout << "rot: " << quaternion << std::endl;
+		std::cout << "scale: " << scale << std::endl;
 	}
 
 	void GameWorld::Update()

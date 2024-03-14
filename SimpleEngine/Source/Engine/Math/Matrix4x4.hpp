@@ -22,7 +22,7 @@ namespace Math
 		void operator=(const Matrix4x4<T>& aMatrix);
 
 		void DecomposeMatrix(Vector3<T>& aPosition, Vector3<T>& aRotation, Vector3<T>& aScale); //This is incorrect. Will have to wait for Quaternion to be implemented
-		void BetterDecomposeMatrix(Vector3<T> aPosition, Quaternion<T>& aRotation, Vector3<T> aScale) const;
+		void BetterDecomposeMatrix(Vector3<T>& aPosition, Quaternion<T>& aRotation, Vector3<T>& aScale) const;
 
 		void LookAt(const Vector3<T>& aTargetPoint);
 		void SetPosition(const Vector3<T>& aPosition);
@@ -395,7 +395,7 @@ namespace Math
 	}
 
 	template<typename T>
-	inline void Matrix4x4<T>::BetterDecomposeMatrix(Vector3<T> aPosition, Quaternion<T>& aRotation, Vector3<T> aScale) const
+	inline void Matrix4x4<T>::BetterDecomposeMatrix(Vector3<T>& aPosition, Quaternion<T>& aRotation, Vector3<T>& aScale) const
 	{
 		DirectX::XMVECTOR s;
 		DirectX::XMVECTOR r;
