@@ -31,6 +31,7 @@ namespace Simple
 		myRaycastManager->Init();
 
 		Math::Matrix4x4 matrix;
+		matrix.SetWorldRotation({ 45,60,90 });
 
 		Math::Vector3 position;
 		Math::Quaternion quaternion;
@@ -38,9 +39,10 @@ namespace Simple
 
 		matrix.BetterDecomposeMatrix(position, quaternion, scale);
 
-		std::cout << "pos: " << position << std::endl;
-		std::cout << "rot: " << quaternion << std::endl;
-		std::cout << "scale: " << scale << std::endl;
+		std::cout << quaternion.GetEulerAngleInDegree();
+		//std::cout << "pos: " << position << std::endl;
+			//std::cout << "rot: " << quaternion * Math::globalRadToDeg<< std::endl;
+			//std::cout << "scale: " << scale << std::endl;
 	}
 
 	void GameWorld::Update()

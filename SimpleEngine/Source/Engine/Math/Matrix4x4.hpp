@@ -409,6 +409,7 @@ namespace Math
 	}
 
 	//TO-DO: Fix so it work with scaling and also show rotation values and rotate correct
+	//NOTE(v9.19.1) : Did I fixed this?
 	template<typename T>
 	inline void Matrix4x4<T>::LookAt(const Vector3<T>& aTargetPoint)
 	{

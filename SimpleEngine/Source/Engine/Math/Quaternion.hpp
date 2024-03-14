@@ -38,6 +38,8 @@ namespace Math
 		inline Vector3<T> GetForward() const;
 		inline Vector3<T> GetRight() const;
 		inline Vector3<T> GetUp() const;
+		inline Vector3<T> GetEulerAngleInRadian() const;
+		inline Vector3<T> GetEulerAngleInDegree() const;
 
 		inline static Vector3<T> RotateVectorByQuaternion(const Quaternion<T>& aQuaternion, const Vector3<T>& aVectorToRotate);
 		inline static Quaternion<T> Lerp(const Quaternion<T>& aQuaternionA, const Quaternion<T>& aQuaternionB, const T& aDelta);
@@ -296,6 +298,41 @@ namespace Math
 	{
 		const Vector3<T> up(0.0f, 1.0f, 0.0f);
 		return Quaternion<T>::RotateVectorByQuaternion(*this, up);
+	}
+
+	template<typename T>
+	inline Vector3<T> Quaternion<T>::GetEulerAngleInRadian() const
+	{
+		//Z-axis rotation
+		const T sinr = T(2.0) * (w * x + y * z);
+		const T cosr = T(1.0f) - T(2.0) * (x * x + y * y);
+		const T pitch = atan2(sinr, cosr);
+
+		//X-axis rotation
+		const T sinp = T(2.0) * (w * y - z * x);
+		T yaw = T(0.0);
+
+		if (abs(sinp) >= T(1))
+		{
+			yaw = std::copysign(Math::globalPi * T(0.5), sinp);
+		}
+		else
+		{
+			yaw = asin(sinp);
+		}
+
+		//Y-axis rotation
+		const T siny = T(2.0) * (w * z + x * y);
+		const T cosy = T(1.0) - T(2.0) * (y * y + z * z);
+		const T roll = atan2(siny, cosy);
+
+		return Vector3<T>(pitch, yaw, roll); //I may call them wrong cuz I am confused by pitch yaw roll but it's {x y z}-axis and I do not want to confuse with this class xyz
+	}
+
+	template<typename T>
+	inline Vector3<T> Quaternion<T>::GetEulerAngleInDegree() const
+	{
+		return GetEulerAngleInRadian() * Math::globalRadToDeg;
 	}
 
 	template<typename T>
