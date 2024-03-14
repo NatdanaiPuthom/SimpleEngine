@@ -24,29 +24,19 @@ namespace Scenes
 	void Scenes::DefaultScene::Init()
 	{
 		myFloor = Global::GetModelFactory()->LoadStaticModelFBX("StaticModels/Simple_Floor_10x10.fbx");
-
-		myPlayer.myModel = Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SM_Wizard.fbx");
-		myPlayer.myModel.SetScale(0.01f);
-		myPlayer.myModel.ClearTextures();
-		myPlayer.myModel.AddTexture("Models/SM_Wizard_c.dds");
-
-		myPlayer.myAnimation = Global::GetModelFactory()->LoadAnimationFBX("Animations/A_Wizard_Idle.fbx");
-
-		myPlayer.myAnimationPlayer.Init(myPlayer.myAnimation, myPlayer.myModel);
-		myPlayer.myAnimationPlayer.SetIsLooping(true);
-		myPlayer.myAnimationPlayer.Play();
+		myPlayer.Init();
 	}
 
 	void Scenes::DefaultScene::Update()
 	{
 		Scene::Update();
-		myPlayer.myAnimationPlayer.Update();
+		myPlayer.Update();
 	}
 
 	void Scenes::DefaultScene::Render()
 	{
 		Scene::Render();
 		Global::GetRenderer()->RenderModel(myFloor);
-		Global::GetRenderer()->RenderModel(myPlayer.myModel);
+		myPlayer.Render();
 	}
 }

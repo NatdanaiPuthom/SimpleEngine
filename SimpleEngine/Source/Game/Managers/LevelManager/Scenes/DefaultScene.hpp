@@ -1,13 +1,6 @@
 #pragma once
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
-
-class Player
-{
-public:
-	Simple::AnimatedModel myModel;
-	Simple::AnimationPlayer myAnimationPlayer;
-	Simple::Animation myAnimation;
-};
+#include "Game/Player/Player.hpp"
 
 namespace Scenes
 {

@@ -90,12 +90,12 @@ void Simple::AnimationPlayer::Update()
 			currentMatrix.DecomposeMatrix(currentPosition, currentQuaternion, currentScale);
 			nextMatrix.DecomposeMatrix(nextPosition, nextQuaternion, nextScale);
 
-			const Math::Vector3f T = Math::Lerp(currentPosition, nextPosition, delta);
-			const Math::Quaternionf R = Math::Quaternionf::Slerp(currentQuaternion, nextQuaternion, delta);
-			const Math::Vector3f S = Math::Lerp(currentScale, nextScale, delta);
+			const Math::Vector3f translation = Math::Lerp(currentPosition, nextPosition, delta);
+			const Math::Quaternionf rotation = Math::Quaternionf::Slerp(currentQuaternion, nextQuaternion, delta);
+			const Math::Vector3f scale = Math::Lerp(currentScale, nextScale, delta);
 
-			const Math::Matrix4x4f Result = Math::Matrix4x4f::CreateScaleMatrix(S) * R.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(T);
-			myLocalSpacePose.jointTransforms[i] = Result;
+			const Math::Matrix4x4f lerpedMatrix = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
+			myLocalSpacePose.jointTransforms[i] = lerpedMatrix;
 		}
 
 		myLocalSpacePose.count = skeleton->myJoints.size();
