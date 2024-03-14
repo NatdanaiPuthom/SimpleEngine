@@ -5,6 +5,7 @@
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/RaycastManager/RaycastManager.hpp"
 #include "Game/Managers/EventManager/EventManager.hpp"
+#include "Engine/Math/Quaternion.hpp"
 
 namespace Simple
 {
@@ -28,6 +29,10 @@ namespace Simple
 		myImGuiManager->Init();
 		myLevelManager->Init();
 		myRaycastManager->Init();
+
+		Math::Quaternion quaternion;
+
+		std::cout << quaternion.GetRight();
 	}
 
 	void GameWorld::Update()

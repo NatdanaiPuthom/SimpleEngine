@@ -24,9 +24,11 @@ namespace Math
 		Vector2<T> AsVector2XZ() const;
 
 		Vector3<T> GetNormalized() const;
+		Vector3<T> Cross(const Vector3<T>& aVector) const;
 
 		T LengthSqr() const;
 		T Length() const;
+		T Dot(const Vector3<T>& aVector) const;
 
 		void Normalize();
 	};
@@ -90,6 +92,17 @@ namespace Math
 	}
 
 	template<class T>
+	inline Vector3<T> Vector3<T>::Cross(const Vector3<T>& aVector) const
+	{
+		return
+		{
+			(y * aVector.z) - (z * aVector.y),
+			(z * aVector.x) - (x * aVector.z),
+			(x * aVector.y) - (y * aVector.x)
+		};
+	}
+
+	template<class T>
 	inline void Vector3<T>::Normalize()
 	{
 		const T magnitude = (x * x) + (y * y) + (z * z);
@@ -115,6 +128,12 @@ namespace Math
 	inline T Vector3<T>::Length() const
 	{
 		return static_cast<T> (sqrt((x * x) + (y * y) + (z * z)));
+	}
+
+	template<class T>
+	inline T Vector3<T>::Dot(const Vector3<T>& aVector) const
+	{
+		return (x * aVector.x) + (y * aVector.y) + (z * aVector.z);
 	}
 
 	template<class T>

@@ -1,10 +1,12 @@
 #pragma once
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Vector4.hpp"
+#include "Engine/Math/Quaternion.hpp"
 #include "Engine/Math/Math.hpp"
 #include <string>
 #include <cassert>
 #include <iomanip>
+#include <DirectXMath.h>
 
 namespace Math
 {
@@ -20,6 +22,7 @@ namespace Math
 		void operator=(const Matrix4x4<T>& aMatrix);
 
 		void DecomposeMatrix(Vector3<T>& aPosition, Vector3<T>& aRotation, Vector3<T>& aScale); //This is incorrect. Will have to wait for Quaternion to be implemented
+		void BetterDecomposeMatrix(Vector3<T> aPosition, Quaternion<T>& aRotation, Vector3<T> aScale) const;
 
 		void LookAt(const Vector3<T>& aTargetPoint);
 		void SetPosition(const Vector3<T>& aPosition);
@@ -389,6 +392,20 @@ namespace Math
 		aRotation.x = x;
 		aRotation.y = y;
 		aRotation.z = z;
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::BetterDecomposeMatrix(Vector3<T> aPosition, Quaternion<T>& aRotation, Vector3<T> aScale) const
+	{
+		DirectX::XMVECTOR s;
+		DirectX::XMVECTOR r;
+		DirectX::XMVECTOR t;
+		DirectX::FXMMATRIX m = *reinterpret_cast<DirectX::FXMMATRIX*>(this);
+		DirectX::XMMatrixDecompose(&s, &r, &t, m);
+
+		aScale = { s.m128_f32[0], s.m128_f32[1], s.m128_f32[2] };
+		aRotation = { r.m128_f32[3], r.m128_f32[0], r.m128_f32[1], r.m128_f32[2] };
+		aPosition = { t.m128_f32[0], t.m128_f32[1], t.m128_f32[2] };
 	}
 
 	//TO-DO: Fix so it work with scaling and also show rotation values and rotate correct
@@ -849,6 +866,7 @@ namespace Math
 		const size_t totalLength = characterLength * 4 + 2;
 
 		return aOS
+			<< std::endl
 			<< " " << std::string(totalLength, '-') << std::endl
 			<< "| " << std::setw(characterLength) << aMatrix(1, 1) << std::setw(characterLength) << aMatrix(1, 2) << std::setw(characterLength) << aMatrix(1, 3) << std::setw(characterLength) << aMatrix(1, 4) << " |" << std::endl
 			<< "| " << std::setw(characterLength) << aMatrix(2, 1) << std::setw(characterLength) << aMatrix(2, 2) << std::setw(characterLength) << aMatrix(2, 3) << std::setw(characterLength) << aMatrix(2, 4) << " |" << std::endl
