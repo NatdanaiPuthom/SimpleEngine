@@ -36,7 +36,8 @@ namespace Math
 		Vector3<T> GetUp() const;
 		Vector3<T> GetRight() const;
 		Vector3<T> GetForward() const;
-		Vector3<T> GetRotation() const;
+		Vector3<T> GetEulerRotationInDegree() const;
+		Vector3<T> GetEulerRotationInRadian() const;
 
 		static Matrix4x4<T> Identity();
 		static Matrix4x4<T> CreateRotationAroundX(const T aAngleInRadians);
@@ -458,7 +459,7 @@ namespace Math
 	}
 
 	template<typename T>
-	inline Vector3<T> Matrix4x4<T>::GetRotation() const
+	inline Vector3<T> Matrix4x4<T>::GetEulerRotationInDegree() const
 	{
 		Vector3<T> position;
 		Quaternion<T> quaternion;
@@ -467,6 +468,18 @@ namespace Math
 		DecomposeMatrix(position, quaternion, scale);
 
 		return quaternion.GetEulerAngleInDegree();
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetEulerRotationInRadian() const
+	{
+		Vector3<T> position;
+		Quaternion<T> quaternion;
+		Vector3<T> scale;
+
+		DecomposeMatrix(position, quaternion, scale);
+
+		return quaternion.GetEulerAngleInRadian();
 	}
 
 	template<typename T>

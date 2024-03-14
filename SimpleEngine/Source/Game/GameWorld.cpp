@@ -29,11 +29,6 @@ namespace Simple
 		myImGuiManager->Init();
 		myLevelManager->Init();
 		myRaycastManager->Init();
-
-		Math::Matrix4x4 matrix;
-		matrix.SetWorldRotation({ 45,60,90 });
-
-		std::cout << matrix.GetRotation();
 	}
 
 	void GameWorld::Update()

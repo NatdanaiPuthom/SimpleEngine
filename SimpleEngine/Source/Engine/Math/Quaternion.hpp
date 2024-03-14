@@ -263,18 +263,17 @@ namespace Math
 		const T qwy(w * y);
 		const T qwz(w * z);
 
-		//TO-DO: Check if this is row or col major, I may have fucked up
 		result(1, 1) = T(1) - T(2) * (qyy + qzz);
-		result(2, 1) = T(2) * (qxy + qwz);
-		result(3, 1) = T(2) * (qxz - qwy);
+		result(1, 2) = T(2) * (qxy + qwz);
+		result(1, 3) = T(2) * (qxz - qwy);
 
-		result(1, 2) = T(2) * (qxy - qwz);
+		result(2, 1) = T(2) * (qxy - qwz);
 		result(2, 2) = T(1) - T(2) * (qxx + qzz);
-		result(3, 2) = T(2) * (qyz + qwx);
+		result(2, 3) = T(2) * (qyz + qwx);
 
-		result(1, 3) = T(2) * (qxz + qwy);
-		result(2, 3) = T(2) * (qyz - qwx);
-		result(3, 3) = T(1) - T(2) * (qxx * qyy);
+		result(3, 1) = T(2) * (qxz + qwy);
+		result(3, 2) = T(2) * (qyz - qwx);
+		result(3, 3) = T(1) - T(2) * (qxx + qyy);
 
 		return result;
 	}

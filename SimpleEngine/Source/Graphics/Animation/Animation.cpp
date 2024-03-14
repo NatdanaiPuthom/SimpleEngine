@@ -8,7 +8,6 @@ Simple::AnimationPlayer::AnimationPlayer()
 	, myTime(0.0f)
 	, myFPS(0.0f)
 	, myIsLooping(false)
-	, myIsInterpolating(true)
 	, myState(eAnimationState::NoAnimation)
 {
 }
@@ -59,7 +58,7 @@ void Simple::AnimationPlayer::Update()
 		const float frameRate = 1.0f / myFPS;
 		const float result = myTime / frameRate;
 		const size_t frame = static_cast<size_t>(std::floor(result));
-		//const float delta = result - static_cast<float>(frame); //This is use for Lerping & Blend
+		const float delta = result - static_cast<float>(frame); //This is use for Lerping & Blend
 
 		size_t nextFrame = frame + 1;
 
@@ -76,26 +75,26 @@ void Simple::AnimationPlayer::Update()
 
 		for (size_t i = 0; i < skeleton->myJoints.size() - 1; i++)
 		{
-			const Math::Transform& currentFrameJointXform = myAnimation->frames[frame].localTransforms.find(skeleton->myJoints[i].myName)->second;
-			Math::Matrix4x4f jointXform = currentFrameJointXform.GetMatrix();
+			const Math::Matrix4x4f currentMatrix = myAnimation->frames[frame].localMatrix.find(skeleton->myJoints[i].myName)->second;
+			const Math::Matrix4x4f nextMatrix = myAnimation->frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
 
-			//I need to switch to Quaternion and have some calcuation correct before I can blend animations
+			Math::Vector3f currentPosition;
+			Math::Vector3f nextPosition;
 
-			/*if (myIsInterpolating)
-			{
-				const Math::Transform& nextFrameJointXform = myAnimation->frames[nextFrame].localTransforms.find(skeleton->myJoints[i].myName)->second;
+			Math::Quaternionf currentQuaternion;
+			Math::Quaternionf nextQuaternion;
 
-				const Math::Vector3f T = Math::Lerp(currentFrameJointXform.GetPosition(), nextFrameJointXform.GetPosition(), delta);
-				const Math::Vector3f R = Math::Lerp(currentFrameJointXform.GetRotation(), nextFrameJointXform.GetRotation(), delta);
-				const Math::Vector3f S = Math::Lerp(currentFrameJointXform.GetScale(), nextFrameJointXform.GetScale(), delta);
+			Math::Vector3f currentScale;
+			Math::Vector3f nextScale;
 
-				Math::Matrix4x4f rotationMatrix;
-				rotationMatrix.SetLocalRotation(R);
+			currentMatrix.DecomposeMatrix(currentPosition, currentQuaternion, currentScale);
+			nextMatrix.DecomposeMatrix(nextPosition, nextQuaternion, nextScale);
 
-				jointXform = Math::Matrix4x4f::CreateScaleMatrix(S) * rotationMatrix * Math::Matrix4x4f::CreateTranslationMatrix(T);
-			}*/
+			const Math::Vector3f T = Math::Lerp(currentPosition, nextPosition, delta);
+			const Math::Quaternionf R = Math::Quaternionf::Slerp(currentQuaternion, nextQuaternion, delta);
+			const Math::Vector3f S = Math::Lerp(currentScale, nextScale, delta);
 
-			const Math::Matrix4x4f Result = myAnimation->frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
+			const Math::Matrix4x4f Result = Math::Matrix4x4f::CreateScaleMatrix(S) * R.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(T);
 			myLocalSpacePose.jointTransforms[i] = Result;
 		}
 
@@ -145,9 +144,6 @@ bool Simple::AnimationPlayer::UpdateForThreadedTest(AnimatedModel& aModel, Anima
 
 		for (size_t i = 0; i < skeleton->myJoints.size() - 1; i++)
 		{
-			const Math::Transform& currentFrameJointXform = aAnimation.frames[frame].localTransforms.find(skeleton->myJoints[i].myName)->second;
-			Math::Matrix4x4f jointXform = currentFrameJointXform.GetMatrix();
-
 			const Math::Matrix4x4f Result = aAnimation.frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
 			myLocalSpacePose.jointTransforms[i] = Result;
 		}

@@ -8,12 +8,14 @@
 
 namespace Simple
 {
+	//Relative parent's joint
 	struct LocalSpacePose
 	{
 		Math::Matrix4x4f jointTransforms[SIMPLE_MAX_BONES];
 		size_t count;
 	};
 
+	//Relative model's coordinate
 	struct ModelSpacePose
 	{
 		Math::Matrix4x4f jointTransforms[SIMPLE_MAX_BONES];

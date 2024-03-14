@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Matrix4x4.hpp"
+#include "Engine/Math/Quaternion.hpp"
 
 namespace Math
 {

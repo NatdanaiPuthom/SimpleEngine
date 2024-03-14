@@ -131,8 +131,6 @@ namespace Simple
 
 		for (size_t i = 0; i < tgaAnimation.Frames.size(); ++i)
 		{
-			animation.frames[i].localTransforms.reserve(tgaAnimation.Frames[i].LocalTransforms.size());
-
 			for (const auto& [boneName, boneTransform] : tgaAnimation.Frames[i].LocalTransforms)
 			{
 				Math::Matrix4x4f localMatrix;
@@ -157,15 +155,7 @@ namespace Simple
 				localMatrix(4, 3) = boneTransform.m43;
 				localMatrix(4, 4) = boneTransform.m44;
 
-
-				Math::Transform transform;
-				transform.SetScale(localMatrix.GetScale());
-				transform.SetRotation(localMatrix.GetRotation()); //THIS SHIT NO WORK. I PROMISE I WILL FIX. I WILL FIX DECOMPOSE MATRIX I AM TRYING
-				transform.SetPosition(localMatrix.GetPosition());
-
-				animation.frames[i].localTransforms.emplace(boneName, transform);
-
-				localMatrix = Math::Matrix4x4f::Transpose(localMatrix); //Important
+				localMatrix = Math::Matrix4x4f::Transpose(localMatrix); //Very important
 				animation.frames[i].localMatrix.emplace(boneName, localMatrix);
 			}
 		}
