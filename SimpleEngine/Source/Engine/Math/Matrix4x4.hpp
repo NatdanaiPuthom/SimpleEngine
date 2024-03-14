@@ -21,10 +21,9 @@ namespace Math
 		const T& operator()(const int aRow, const int aColumn) const;
 		void operator=(const Matrix4x4<T>& aMatrix);
 
-		void DecomposeMatrix(Vector3<T>& aPosition, Vector3<T>& aRotation, Vector3<T>& aScale); //This is incorrect. Will have to wait for Quaternion to be implemented
-		void BetterDecomposeMatrix(Vector3<T>& aPosition, Quaternion<T>& aRotation, Vector3<T>& aScale) const;
-
+		void DecomposeMatrix(Vector3<T>& aPosition, Quaternion<T>& aRotation, Vector3<T>& aScale) const;
 		void LookAt(const Vector3<T>& aTargetPoint);
+
 		void SetPosition(const Vector3<T>& aPosition);
 		void SetWorldRotation(const Vector3<T>& aRotationInDegree);
 		void SetScale(const Vector3<T>& aScale);
@@ -37,7 +36,7 @@ namespace Math
 		Vector3<T> GetUp() const;
 		Vector3<T> GetRight() const;
 		Vector3<T> GetForward() const;
-		Vector3<T> GetRotation() const; //This is not correct. Will try with Quaternion in future
+		Vector3<T> GetRotation() const;
 
 		static Matrix4x4<T> Identity();
 		static Matrix4x4<T> CreateRotationAroundX(const T aAngleInRadians);
@@ -305,97 +304,8 @@ namespace Math
 		myMatrix[3][3] = aMatrix(4, 4);
 	}
 
-	//TO-DO: This does not work at all LOL, will continue one day
 	template<typename T>
-	inline void Matrix4x4<T>::DecomposeMatrix(Vector3<T>& aPosition, Vector3<T>& aRotation, Vector3<T>& aScale)
-	{
-		aPosition.x = myMatrix[3][0];
-		aPosition.y = myMatrix[3][1];
-		aPosition.z = myMatrix[3][2];
-
-		aScale.x = std::sqrt(myMatrix[0][0] * myMatrix[0][0] + myMatrix[1][0] * myMatrix[1][0] + myMatrix[2][0] * myMatrix[2][0]);
-		aScale.y = std::sqrt(myMatrix[0][1] * myMatrix[0][1] + myMatrix[1][1] * myMatrix[1][1] + myMatrix[2][1] * myMatrix[2][1]);
-		aScale.z = std::sqrt(myMatrix[0][2] * myMatrix[0][2] + myMatrix[1][2] * myMatrix[1][2] + myMatrix[2][2] * myMatrix[2][2]);
-
-		const float det = myMatrix[0][0] * (myMatrix[1][1] * myMatrix[2][2] - myMatrix[1][2] * myMatrix[2][1])
-			- myMatrix[0][1] * (myMatrix[1][0] * myMatrix[2][2] - myMatrix[1][2] * myMatrix[2][0])
-			+ myMatrix[0][2] * (myMatrix[1][0] * myMatrix[2][1] - myMatrix[1][1] * myMatrix[2][0]);
-
-		if (det < 0.0f)
-		{
-			aScale.x = -aScale.x;
-		}
-
-		constexpr float EPSILON = 1e-6f;
-
-		float x = 0;
-		float y = 0;
-		float z = 0;
-		float w = 1.0f;
-
-		if (det > EPSILON * EPSILON)
-		{
-			const Vector3<T> xAxis = { myMatrix[0][0] / aScale.x, myMatrix[0][1] / aScale.x, myMatrix[0][2] / aScale.x };
-			const Vector3<T> yAxis = { myMatrix[1][0] / aScale.y, myMatrix[1][1] / aScale.y, myMatrix[1][2] / aScale.y };
-			const Vector3<T> zAxis = { myMatrix[2][0] / aScale.z, myMatrix[2][1] / aScale.z, myMatrix[2][2] / aScale.z };
-
-			const float trace = xAxis.x + yAxis.y + zAxis.z;
-
-			if (trace > 0.0f)
-			{
-				const float s = 0.5f / std::sqrt(trace + 1.0f);
-
-				x = (yAxis.z - zAxis.y) * s;
-				y = (zAxis.x - xAxis.z) * s;
-				z = (xAxis.y - yAxis.x) * s;
-				w = 0.25f / s;
-			}
-			else
-			{
-				if (xAxis.x > yAxis.y && xAxis.x > zAxis.z)
-				{
-					const float s = 2.0f * std::sqrt(1.0f + xAxis.x - yAxis.y - zAxis.z);
-
-					x = 0.25f * s;
-					y = (yAxis.x + xAxis.y) / s;
-					z = (zAxis.x + xAxis.z) / s;
-					w = (yAxis.z - zAxis.y) / s;
-				}
-				else if (yAxis.y > zAxis.z)
-				{
-					const float s = 2.0f * std::sqrt(1.0f + yAxis.y - xAxis.x - zAxis.z);
-
-					x = (yAxis.x + xAxis.y) / s;
-					y = 0.25f * s;
-					z = (zAxis.y + yAxis.z) / s;
-					w = (zAxis.x - xAxis.z) / s;
-				}
-				else
-				{
-					const float s = 2.0f * std::sqrt(1.0f + zAxis.z - xAxis.x - yAxis.y);
-
-					x = (zAxis.x + xAxis.z) / s;
-					y = (zAxis.y + yAxis.z) / s;
-					z = 0.25f * s;
-					w = (xAxis.y - yAxis.x) / s;
-				}
-			}
-		}
-
-		const float length = std::sqrt(x * x + y * y + z * z + w * w);
-
-		x /= length;
-		y /= length;
-		z /= length;
-		w /= length;
-
-		aRotation.x = x;
-		aRotation.y = y;
-		aRotation.z = z;
-	}
-
-	template<typename T>
-	inline void Matrix4x4<T>::BetterDecomposeMatrix(Vector3<T>& aPosition, Quaternion<T>& aRotation, Vector3<T>& aScale) const
+	inline void Matrix4x4<T>::DecomposeMatrix(Vector3<T>& aPosition, Quaternion<T>& aRotation, Vector3<T>& aScale) const
 	{
 		DirectX::XMVECTOR s;
 		DirectX::XMVECTOR r;
@@ -409,7 +319,7 @@ namespace Math
 	}
 
 	//TO-DO: Fix so it work with scaling and also show rotation values and rotate correct
-	//NOTE(v9.19.1) : Did I fixed this?
+	//NOTE(v9.19.1) : Did I fixed the issue with scale changes when rotation the objects?
 	template<typename T>
 	inline void Matrix4x4<T>::LookAt(const Vector3<T>& aTargetPoint)
 	{
@@ -550,48 +460,13 @@ namespace Math
 	template<typename T>
 	inline Vector3<T> Matrix4x4<T>::GetRotation() const
 	{
-		Vector3<T> forward;
-		Vector3<T> right;
-		Vector3<T> up;
+		Vector3<T> position;
+		Quaternion<T> quaternion;
+		Vector3<T> scale;
 
-		forward.x = myMatrix[2][0];
-		forward.y = myMatrix[2][1];
-		forward.z = myMatrix[2][2];
-		forward.Normalize();
+		DecomposeMatrix(position, quaternion, scale);
 
-		right.x = myMatrix[0][0];
-		right.y = myMatrix[0][1];
-		right.z = myMatrix[0][2];
-		right.Normalize();
-
-		up.x = myMatrix[1][0];
-		up.y = myMatrix[1][1];
-		up.z = myMatrix[1][2];
-		up.Normalize();
-
-		Vector3<T> rotation;
-		rotation.x = atan2(-forward.y, sqrt(forward.x * forward.x + forward.z * forward.z));
-		rotation.y = atan2(forward.x, forward.z);
-		rotation.z = atan2(right.y, up.y);
-
-		Vector3<T> rotationInDegree = rotation * (180.0f / 3.141592f);
-
-		if (rotationInDegree.x < 0.0f)
-			rotationInDegree.x += 360.0f;
-		else if (rotationInDegree.x > 360.0f)
-			rotationInDegree.x -= 360.0f;
-
-		if (rotationInDegree.y < 0.0f)
-			rotationInDegree.y += 360.0f;
-		else if (rotationInDegree.y > 360.0f)
-			rotationInDegree.y -= 360.0f;
-
-		if (rotationInDegree.z < 0.0f)
-			rotationInDegree.z += 360.0f;
-		else if (rotationInDegree.z > 360.0f)
-			rotationInDegree.z -= 360.0f;
-
-		return rotationInDegree;
+		return quaternion.GetEulerAngleInDegree();
 	}
 
 	template<typename T>
@@ -755,6 +630,7 @@ namespace Math
 		return transposed;
 	}
 
+	//Only works for objects with constant Scale = {1 , 1 , 1}
 	template<typename T>
 	inline Matrix4x4<T> Matrix4x4<T>::GetFastInverse(const Matrix4x4<T>& aTransform)
 	{
@@ -779,7 +655,7 @@ namespace Math
 	}
 
 	template<typename T>
-	inline Matrix4x4<T> Matrix4x4<T>::GetInverse(Matrix4x4<T> aMatrixToInverse) //Dear Savior ChatGPT, no clue how it work compared to GetFastInverse but the returned value seem to be correct using Matrix Calculator on internet
+	inline Matrix4x4<T> Matrix4x4<T>::GetInverse(Matrix4x4<T> aMatrixToInverse) //Dear Savior ChatGPT, value seem to be correct for most common cases so far (v9.19.1)
 	{
 		Matrix4x4<T> inverse = Matrix4x4<T>::Identity();
 

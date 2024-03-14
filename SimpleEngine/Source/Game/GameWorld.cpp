@@ -33,16 +33,7 @@ namespace Simple
 		Math::Matrix4x4 matrix;
 		matrix.SetWorldRotation({ 45,60,90 });
 
-		Math::Vector3 position;
-		Math::Quaternion quaternion;
-		Math::Vector3 scale;
-
-		matrix.BetterDecomposeMatrix(position, quaternion, scale);
-
-		std::cout << quaternion.GetEulerAngleInDegree();
-		//std::cout << "pos: " << position << std::endl;
-			//std::cout << "rot: " << quaternion * Math::globalRadToDeg<< std::endl;
-			//std::cout << "scale: " << scale << std::endl;
+		std::cout << matrix.GetRotation();
 	}
 
 	void GameWorld::Update()
