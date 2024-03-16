@@ -14,6 +14,8 @@ namespace SimpleUtilities
 		void Reset();
 
 		float GetDeltaTime() const;
+		float GetTotalMinutes() const;
+		float GetTotalHours() const;
 		double GetTotalTime() const;
 	private:
 		std::chrono::high_resolution_clock::time_point myStartTime;
@@ -51,6 +53,16 @@ namespace SimpleUtilities
 	float Timer::GetDeltaTime() const
 	{
 		return myDeltaTime;
+	}
+
+	inline float Timer::GetTotalMinutes() const
+	{
+		return (static_cast<float>(myTotalTime) / 60.0f);
+	}
+
+	inline float Timer::GetTotalHours() const
+	{
+		return (GetTotalMinutes() / 60.0f);
 	}
 
 	double Timer::GetTotalTime() const

@@ -5,92 +5,89 @@
 #include "Graphics/Animation/Animation.hpp"
 #include <vector>
 
+//NOTE(v9.21.0): No more thread as the new way of updating animations and setpose is faster. Will try to optimize more in future
+
 namespace Simple
 {
-	struct NatdanaiAnimationTest
-	{
-		Simple::AnimatedModel animatedModel;
-		Simple::Animation animation;
-		Simple::AnimationPlayer animationPlayer;
-	};
-
 	class AnimationThreadTest final
 	{
 	public:
-		AnimationThreadTest(const size_t aSize = 16) 
+		AnimationThreadTest(const size_t aSize = 200)
 			: myModelSize(aSize)
 		{
-			myThreadTest.resize(aSize);
-			myFutureResults.resize(aSize);
+			myAnimatedModels.resize(aSize);
 		};
 
 		~AnimationThreadTest() = default;
 
 		inline void Init()
 		{
-			NatdanaiAnimationTest animationTest;
-			PROFILER_BEGIN("Load animatedmodel");
-			animationTest.animatedModel = Global::GetModelFactory()->LoadAnimatedModelFBX("Test/SM_wizard.fbx");
-			PROFILER_END();
+			PROFILER_BEGIN("Load animatedmodels");
+			Simple::AnimatedModel animatedModel;
+			animatedModel = Global::GetModelFactory()->LoadAnimatedModelFBX("Test/SM_wizard.fbx");
+			animatedModel.SetScale(0.01f);
+			animatedModel.ClearTextures();
+			animatedModel.AddTexture("Models/SM_Wizard_c.dds");
 
-			PROFILER_BEGIN("Load animation");
-			animationTest.animation = Global::GetModelFactory()->LoadAnimationFBX("A_Wizard_Falling.fbx");
-			PROFILER_END();
-
-			animationTest.animatedModel.SetShader("DefaultPS.cso", "AnimatedModelVS.cso");
-			animationTest.animatedModel.SetScale(0.01f);
-			animationTest.animatedModel.ClearTextures();
-			animationTest.animatedModel.AddTexture("Models/SM_Wizard_c.dds");
-
-			PROFILER_BEGIN("Init models");
 			for (size_t i = 0; i < myModelSize; ++i)
 			{
-				myThreadTest[i] = animationTest;
-				myThreadTest[i].animationPlayer.Init(myThreadTest[i].animation, myThreadTest[i].animatedModel);
-				myThreadTest[i].animationPlayer.SetIsLooping(true);
-				myThreadTest[i].animationPlayer.Play();
+				myAnimatedModels[i] = animatedModel;
 			}
 			PROFILER_END();
 
+
+			PROFILER_BEGIN("Load animation");
+			myAnimation = Global::GetModelFactory()->LoadAnimationFBX("Test/A_Wizard_Walk.fbx");
+			myAnimationPlayer.Init(myAnimation, myAnimatedModels[0]);
+			myAnimationPlayer.SetIsLooping(true);
+			myAnimationPlayer.Play();
+			PROFILER_END();
+
 			constexpr float spacing = 5.0f;
-			const size_t numRows = static_cast<size_t>(std::sqrt(myThreadTest.size()));
+			const size_t numRows = static_cast<size_t>(std::sqrt(myModelSize));
 			const size_t numCols = numRows;
 
-			for (size_t i = 0; i < myThreadTest.size(); ++i)
+			for (size_t i = 0; i < myModelSize; ++i)
 			{
 				const float x = spacing * static_cast<float>((i % numCols));
 				const float z = spacing * static_cast<float>((i / numRows));
 				const Math::Vector3f pos(x, 0.0f, z);
-				myThreadTest[i].animatedModel.SetPosition(pos);
+				myAnimatedModels[i].SetPosition(pos);
 			}
 		}
 
 		inline void Update()
 		{
-			for (size_t i = 0; i < myThreadTest.size(); ++i)
+			PROFILER_BEGIN("Animations Update")
+
+			PROFILER_BEGIN("Lerp Animation");
+			myAnimationPlayer.LerpCurrentAnimation();
+			PROFILER_END();
+
+			for (size_t i = 0; i < myModelSize; ++i)
 			{
-				std::future<bool> result = myThreadPool.AddTask(&AnimationPlayer::UpdateForThreadedTest, std::ref(myThreadTest[i].animationPlayer), std::ref(myThreadTest[i].animatedModel), std::ref(myThreadTest[i].animation));
-				myFutureResults[i] = std::move(result);
+				PROFILER_BEGIN("SetPose");
+				myAnimatedModels[i].SetPose(myAnimationPlayer.myLocalSpacePose);
+				PROFILER_END();
 			}
 
-			for (auto& future : myFutureResults)
-			{
-				future.get();
-			}
+			PROFILER_END();
 		}
 
 		inline void Render()
 		{
-			for (size_t i = 0; i < myThreadTest.size(); ++i)
+			for (size_t i = 0; i < myModelSize; ++i)
 			{
-				Global::GetRenderer()->RenderModel(myThreadTest[i].animatedModel);
+				Global::GetRenderer()->RenderModel(myAnimatedModels[i]);
 			}
 		}
 
 	private:
-		std::vector<NatdanaiAnimationTest> myThreadTest;
-		std::vector<std::future<bool>> myFutureResults;
-		ThreadPool myThreadPool;
+		Simple::AnimationPlayer myAnimationPlayer;
+		Simple::Animation myAnimation;
+
 		const size_t myModelSize;
+
+		std::vector<Simple::AnimatedModel> myAnimatedModels;
 	};
 }

@@ -33,7 +33,7 @@ namespace Simple
 		//FilePath starts at Bin/Assets/Models/
 		AnimatedModel LoadAnimatedModelFBX(const char* aFileName);
 
-		//FilePath starts at Bin/Assets/Models/Animations/
+		//FilePath starts at Bin/Assets/Models/
 		Animation LoadAnimationFBX(const char* aFileName);
 	public:
 		std::unique_ptr<Simple::Model> CreateTerrainModel();

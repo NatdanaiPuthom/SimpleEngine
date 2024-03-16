@@ -14,9 +14,7 @@ namespace Simple
 enum class eAnimationState
 {
 	NoAnimation,
-	NotStarted,
 	Playing,
-	Stopped,
 	Paused,
 	Finished
 };
@@ -48,11 +46,19 @@ namespace Simple
 		~AnimationPlayer();
 
 		void Init(Animation& aAnimation, AnimatedModel& aModel);
+
+		//Will lerp active animation and setpose directly
 		void Update();
-		bool UpdateForThreadedTest(AnimatedModel& aModel, Animation& aAnimation);
+
+		//Will only lerp active animation and store the pose
+		void LerpCurrentAnimation();
 
 		void Play();
+		void Pause();
+		void Stop();
 		void SetIsLooping(const bool aShouldLoop);
+
+		eAnimationState GetAnimationState() const;
 	private:
 		Animation* myAnimation;
 		AnimatedModel* myModel;
