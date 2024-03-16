@@ -12,6 +12,8 @@ namespace SimpleUtilities
 		, myCurrentMousePosition(0, 0)
 		, myPreviousMousePosition(0, 0)
 		, myMouseDelta(0, 0)
+		, myMouseWheelDelta(0)
+		, myTentativeMouseWheelDelta(0)
 	{
 		myOwnerHWND = GetActiveWindow();
 
@@ -51,7 +53,21 @@ namespace SimpleUtilities
 		myMouseDelta = myTentativeMouseDelta;
 		myMouseDelta.y *= -1; //Windows have y = 0 at top :(
 
+		if (myTentativeMouseWheelDelta < 0)
+		{
+			myMouseWheelDelta = -1;
+		}
+		else if (myTentativeMouseWheelDelta > 0)
+		{
+			myMouseWheelDelta = 1;
+		}
+		else
+		{
+			myMouseWheelDelta = 0;
+		}
+
 		myTentativeMouseDelta = { 0, 0 };
+		myTentativeMouseWheelDelta = 0;
 
 		if (myKeyState.any())
 		{
@@ -268,6 +284,11 @@ namespace SimpleUtilities
 		return "";
 	}
 
+	int InputManager::GetMouseWheelDelta() const
+	{
+		return myMouseWheelDelta;
+	}
+
 	bool InputManager::GetAKeyIsPressed() const
 	{
 		return myAKeyIsPressed;
@@ -289,7 +310,7 @@ namespace SimpleUtilities
 #define HID_USAGE_GENERIC_MOUSE        ((USHORT) 0x02)
 #endif
 
-		RAWINPUTDEVICE Rid[1];
+		RAWINPUTDEVICE Rid[1] = {};
 		Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
 		Rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
 		Rid[0].dwFlags = RIDEV_INPUTSINK;
@@ -314,6 +335,9 @@ namespace SimpleUtilities
 			myTentativeMousePosition.y = yPos;
 		}
 		break;
+		case WM_MOUSEWHEEL:
+			myTentativeMouseWheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+			break;
 		case WM_INPUT:
 		{
 			UINT dwSize = sizeof(RAWINPUT);

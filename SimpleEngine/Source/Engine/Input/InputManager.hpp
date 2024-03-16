@@ -42,6 +42,7 @@ namespace SimpleUtilities
 		Math::Vector2f GetMouseDelta() const;
 		Math::Vector2f GetMousePosition() const;
 		std::string GetKeyAsString() const;
+		int GetMouseWheelDelta() const;
 		bool GetAKeyIsPressed() const;
 		bool GetMouseIsHidden() const;
 	public:
@@ -61,6 +62,9 @@ namespace SimpleUtilities
 
 		Math::Vector2i myTentativeMouseDelta;
 		Math::Vector2i myMouseDelta;
+
+		int myMouseWheelDelta;
+		int myTentativeMouseWheelDelta;
 
 		bool myMouseIsHidden;
 		bool myAKeyIsPressed;

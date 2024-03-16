@@ -76,6 +76,9 @@ namespace Simple
 				}
 			}
 
+			const int mouseWheelDelta = myInput->GetMouseWheelDelta();
+			myMoveSpeed += mouseWheelDelta;
+
 			if (myInput->IsKeyHeld('W'))
 			{
 				forward = myForward * speed * aDeltaTime;
