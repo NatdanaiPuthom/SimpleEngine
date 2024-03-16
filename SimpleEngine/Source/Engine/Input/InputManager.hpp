@@ -23,6 +23,8 @@ namespace SimpleUtilities
 		InputManager(InputManager&&) = default;
 		InputManager& operator=(InputManager&&) = default;
 
+		void AppendKeyAsString(std::string& aString, const int aCharactersLimit = 30) const;
+
 		bool UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam);
 		void Update();
 
@@ -39,7 +41,6 @@ namespace SimpleUtilities
 	public:
 		Math::Vector2f GetMouseDelta() const;
 		Math::Vector2f GetMousePosition() const;
-		std::string GetKeyAsString(std::string& aString, const int aCharactersLimit = 30) const;
 		std::string GetKeyAsString() const;
 		bool GetAKeyIsPressed() const;
 		bool GetMouseIsHidden() const;

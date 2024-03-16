@@ -63,20 +63,19 @@ namespace SimpleUtilities
 		}
 	}
 
-	std::string InputManager::GetKeyAsString(std::string& aString, const int aCharactersLimit) const
+	void InputManager::AppendKeyAsString(std::string& aString, const int aCharactersLimit) const
 	{
-		if (this->IsKeyPressed(0x08) && aString.length() > 0)
+		if (this->IsKeyPressed(0x08) && aString.length() > 0) //Back-slash
 		{
 			aString.pop_back();
-			return "";
 		}
 
 		if (aString.length() > aCharactersLimit)
 		{
-			return "";
+			return;
 		}
 
-		return this->GetKeyAsString();
+		aString += this->GetKeyAsString();
 	}
 
 	std::string InputManager::GetKeyAsString() const
