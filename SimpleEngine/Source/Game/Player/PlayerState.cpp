@@ -1,7 +1,9 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Player/PlayerState.hpp"
+#include "Game/Player/Player.hpp"
 
-PlayerState::PlayerState()
+PlayerState::PlayerState(Player* aPlayer) 
+	: myPlayer(aPlayer)
 {
 }
 

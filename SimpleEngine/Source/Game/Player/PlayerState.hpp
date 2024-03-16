@@ -1,5 +1,7 @@
 #pragma once
 
+class Player;
+
 constexpr enum class ePlayerState : size_t
 {
 	Idle,
@@ -7,15 +9,23 @@ constexpr enum class ePlayerState : size_t
 	Count
 };
 
-constexpr size_t Cast(const ePlayerState aState)
+constexpr enum class ePlayerAnimation : size_t
 {
-	return static_cast<size_t>(aState);
+	Idle,
+	Walk,
+	Count
+};
+
+template<typename T>
+constexpr inline size_t Cast(const T aValue)
+{
+	return static_cast<size_t>(aValue);
 }
 
 class PlayerState
 {
 public:
-	PlayerState();
+	PlayerState(Player* aPlayer);
 	virtual ~PlayerState() = default;
 
 	virtual void OnStateEnter();
@@ -24,4 +34,6 @@ public:
 	virtual void Init();
 	virtual void Update();
 	virtual void Render();
+protected:
+	Player* myPlayer;
 };

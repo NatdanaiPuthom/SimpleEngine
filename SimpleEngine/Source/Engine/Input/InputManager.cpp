@@ -20,22 +20,22 @@ namespace SimpleUtilities
 		myKeyPreviousState = { 0 };
 	}
 
-	bool InputManager::IsPressed(const int aKeyCode) const
+	bool InputManager::IsKeyPressed(const int aKeyCode) const
 	{
 		return myKeyState[aKeyCode] && !myKeyPreviousState[aKeyCode];
 	}
 
-	bool InputManager::IsHold(const int aKeyCode) const
+	bool InputManager::IsKeyHeld(const int aKeyCode) const
 	{
 		return myKeyState[aKeyCode] && myKeyPreviousState[aKeyCode];
 	}
 
-	bool InputManager::IsReleased(const int aKeyCode) const
+	bool InputManager::IsKeyReleased(const int aKeyCode) const
 	{
 		return !myKeyState[aKeyCode] && myKeyPreviousState[aKeyCode];
 	}
 
-	bool InputManager::IsDown(const int aKeyCode) const
+	bool InputManager::IsKeyDown(const int aKeyCode) const
 	{
 		return myKeyState[aKeyCode];
 	}
@@ -65,7 +65,7 @@ namespace SimpleUtilities
 
 	std::string InputManager::GetKeyAsString(std::string& aString, const int aCharactersLimit) const
 	{
-		if (this->IsPressed(0x08) && aString.length() > 0)
+		if (this->IsKeyPressed(0x08) && aString.length() > 0)
 		{
 			aString.pop_back();
 			return "";
@@ -81,187 +81,187 @@ namespace SimpleUtilities
 
 	std::string InputManager::GetKeyAsString() const
 	{
-		if (this->IsPressed(0x30))
+		if (this->IsKeyPressed(0x30))
 		{
 			return "0";
 		}
 
-		if (this->IsPressed(0x31))
+		if (this->IsKeyPressed(0x31))
 		{
 			return "1";
 		}
 
-		if (this->IsPressed(0x32))
+		if (this->IsKeyPressed(0x32))
 		{
 			return "2";
 		}
 
-		if (this->IsPressed(0x33))
+		if (this->IsKeyPressed(0x33))
 		{
 			return "3";
 		}
 
-		if (this->IsPressed(0x34))
+		if (this->IsKeyPressed(0x34))
 		{
 			return "4";
 		}
 
-		if (this->IsPressed(0x35))
+		if (this->IsKeyPressed(0x35))
 		{
 			return "5";
 		}
 
-		if (this->IsPressed(0x36))
+		if (this->IsKeyPressed(0x36))
 		{
 			return "6";
 		}
 
-		if (this->IsPressed(0x37))
+		if (this->IsKeyPressed(0x37))
 		{
 			return "7";
 		}
 
-		if (this->IsPressed(0x38))
+		if (this->IsKeyPressed(0x38))
 		{
 			return "8";
 		}
 
-		if (this->IsPressed(0x39))
+		if (this->IsKeyPressed(0x39))
 		{
 			return "9";
 		}
 
-		if (this->IsPressed(0x41))
+		if (this->IsKeyPressed(0x41))
 		{
 			return "A";
 		}
 
-		if (this->IsPressed(0x42))
+		if (this->IsKeyPressed(0x42))
 		{
 			return "B";
 		}
 
-		if (this->IsPressed(0x43))
+		if (this->IsKeyPressed(0x43))
 		{
 			return "C";
 		}
 
-		if (this->IsPressed(0x44))
+		if (this->IsKeyPressed(0x44))
 		{
 			return "D";
 		}
 
-		if (this->IsPressed(0x45))
+		if (this->IsKeyPressed(0x45))
 		{
 			return "E";
 		}
 
-		if (this->IsPressed(0x46))
+		if (this->IsKeyPressed(0x46))
 		{
 			return "F";
 		}
 
-		if (this->IsPressed(0x47))
+		if (this->IsKeyPressed(0x47))
 		{
 			return "G";
 		}
 
-		if (this->IsPressed(0x48))
+		if (this->IsKeyPressed(0x48))
 		{
 			return "H";
 		}
 
-		if (this->IsPressed(0x49))
+		if (this->IsKeyPressed(0x49))
 		{
 			return "I";
 		}
 
-		if (this->IsPressed(0x4A))
+		if (this->IsKeyPressed(0x4A))
 		{
 			return "J";
 		}
 
-		if (this->IsPressed(0x4B))
+		if (this->IsKeyPressed(0x4B))
 		{
 			return "K";
 		}
 
-		if (this->IsPressed(0x4C))
+		if (this->IsKeyPressed(0x4C))
 		{
 			return "L";
 		}
 
-		if (this->IsPressed(0x4D))
+		if (this->IsKeyPressed(0x4D))
 		{
 			return "M";
 		}
 
-		if (this->IsPressed(0x4E))
+		if (this->IsKeyPressed(0x4E))
 		{
 			return "N";
 		}
 
-		if (this->IsPressed(0x4F))
+		if (this->IsKeyPressed(0x4F))
 		{
 			return "O";
 		}
 
-		if (this->IsPressed(0x50))
+		if (this->IsKeyPressed(0x50))
 		{
 			return "P";
 		}
 
-		if (this->IsPressed(0x51))
+		if (this->IsKeyPressed(0x51))
 		{
 			return "Q";
 		}
 
-		if (this->IsPressed(0x52))
+		if (this->IsKeyPressed(0x52))
 		{
 			return "R";
 		}
 
-		if (this->IsPressed(0x53))
+		if (this->IsKeyPressed(0x53))
 		{
 			return "S";
 		}
 
-		if (this->IsPressed(0x54))
+		if (this->IsKeyPressed(0x54))
 		{
 			return "T";
 		}
 
-		if (this->IsPressed(0x55))
+		if (this->IsKeyPressed(0x55))
 		{
 			return "U";
 		}
 
-		if (this->IsPressed(0x56))
+		if (this->IsKeyPressed(0x56))
 		{
 			return "V";
 		}
 
-		if (this->IsPressed(0x57))
+		if (this->IsKeyPressed(0x57))
 		{
 			return "W";
 		}
 
-		if (this->IsPressed(0x58))
+		if (this->IsKeyPressed(0x58))
 		{
 			return "X";
 		}
 
-		if (this->IsPressed(0x59))
+		if (this->IsKeyPressed(0x59))
 		{
 			return "Y";
 		}
 
-		if (this->IsPressed(0x5A))
+		if (this->IsKeyPressed(0x5A))
 		{
 			return "Z";
 		}
 
-		if (this->IsPressed(VK_SPACE))
+		if (this->IsKeyPressed(VK_SPACE))
 		{
 			return " ";
 		}

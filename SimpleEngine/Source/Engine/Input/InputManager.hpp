@@ -26,10 +26,10 @@ namespace SimpleUtilities
 		bool UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam);
 		void Update();
 
-		bool IsDown(const int aKeyCode) const;
-		bool IsPressed(const int aKeyCode) const;
-		bool IsHold(const int aKeyCode) const;
-		bool IsReleased(const int aKeyCode) const;
+		bool IsKeyDown(const int aKeyCode) const;
+		bool IsKeyReleased(const int aKeyCode) const;
+		bool IsKeyPressed(const int aKeyCode) const;
+		bool IsKeyHeld(const int aKeyCode) const;
 
 		void ShowMouse();
 		void HideMouse();

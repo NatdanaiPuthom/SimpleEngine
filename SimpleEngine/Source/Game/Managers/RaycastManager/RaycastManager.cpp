@@ -32,7 +32,7 @@ namespace Simple
 
 	void RaycastManager::Update()
 	{
-		if (SimpleUtilities::InputManager::GetInstance().IsHold(VK_LBUTTON))
+		if (SimpleUtilities::InputManager::GetInstance().IsKeyHeld(VK_LBUTTON))
 		{
 			if (mySelectedModelIndex >= 0 && myTimer >= mySelectDelay)
 			{
@@ -55,7 +55,7 @@ namespace Simple
 			myTimer = 0;
 		}
 
-		if (SimpleUtilities::InputManager::GetInstance().IsPressed(VK_LBUTTON) || SimpleUtilities::InputManager::GetInstance().IsPressed(VK_RBUTTON))
+		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_LBUTTON) || SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_RBUTTON))
 		{
 			CheckRayNavmesh();
 		}
@@ -202,9 +202,9 @@ namespace Simple
 
 			auto& input = SimpleUtilities::InputManager::GetInstance();
 
-			if (input.IsPressed(VK_LBUTTON) == true && input.IsPressed(VK_RBUTTON) == false)
+			if (input.IsKeyPressed(VK_LBUTTON) == true && input.IsKeyPressed(VK_RBUTTON) == false)
 				raycast.myType = Simple::eEvent::Raycast_LMB;
-			else if (input.IsPressed(VK_RBUTTON) == true && input.IsPressed(VK_LBUTTON) == false)
+			else if (input.IsKeyPressed(VK_RBUTTON) == true && input.IsKeyPressed(VK_LBUTTON) == false)
 				raycast.myType = Simple::eEvent::Raycast_RMB;
 			else
 				return;
@@ -243,7 +243,7 @@ namespace Simple
 		Math::Vector3f intersectionPoint;
 		bool hit = Math::IntersectionAABB3DRay(aabb3d, ray, intersectionPoint);
 
-		if (SimpleUtilities::InputManager::GetInstance().IsHold(VK_CONTROL))
+		if (SimpleUtilities::InputManager::GetInstance().IsKeyHeld(VK_CONTROL))
 		{
 			y += mouseDelta.y * 0.02f;
 		}

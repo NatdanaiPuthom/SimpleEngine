@@ -43,7 +43,7 @@ namespace Simple
 			return;
 		}
 
-		if (myInput->IsPressed(VK_TAB) == true)
+		if (myInput->IsKeyPressed(VK_TAB) == true)
 		{
 			myDebugCameraActive = !myDebugCameraActive;
 		}
@@ -59,12 +59,12 @@ namespace Simple
 
 			float speed = myMoveSpeed;
 
-			if (myInput->IsHold(VK_SHIFT))
+			if (myInput->IsKeyHeld(VK_SHIFT))
 			{
 				speed *= 5.0f;
 			}
 
-			if (myInput->IsPressed(VK_TAB))
+			if (myInput->IsKeyPressed(VK_TAB))
 			{
 				if (!myFreeFly)
 				{
@@ -76,58 +76,58 @@ namespace Simple
 				}
 			}
 
-			if (myInput->IsHold('W'))
+			if (myInput->IsKeyHeld('W'))
 			{
 				forward = myForward * speed * aDeltaTime;
 				targetPosition += forward;
 			}
 
-			if (myInput->IsHold('S'))
+			if (myInput->IsKeyHeld('S'))
 			{
 				forward = -1.0f * myForward * speed * aDeltaTime;
 				targetPosition += forward;
 			}
 
-			if (myInput->IsHold('A'))
+			if (myInput->IsKeyHeld('A'))
 			{
 				forward = -1.0f * myRight * speed * aDeltaTime;
 				targetPosition += forward;
 			}
 
-			if (myInput->IsHold('D'))
+			if (myInput->IsKeyHeld('D'))
 			{
 				forward = myRight * speed * aDeltaTime;
 				targetPosition += forward;
 			}
 
-			if (myInput->IsHold('Q'))
+			if (myInput->IsKeyHeld('Q'))
 			{
 				targetRotation.y -= myRotateSpeed * aDeltaTime;
 			}
 
-			if (myInput->IsHold('E'))
+			if (myInput->IsKeyHeld('E'))
 			{
 				targetRotation.y += myRotateSpeed * aDeltaTime;
 			}
 
-			if (myInput->IsHold('Z'))
+			if (myInput->IsKeyHeld('Z'))
 			{
 				targetRotation.x -= myRotateSpeed * aDeltaTime;
 			}
 
-			if (myInput->IsHold('C'))
+			if (myInput->IsKeyHeld('C'))
 			{
 				targetRotation.x += myRotateSpeed * aDeltaTime;
 			}
 
 			float direction = 1.0f;
 
-			if (myInput->IsHold(VK_CONTROL))
+			if (myInput->IsKeyHeld(VK_CONTROL))
 			{
 				direction = -1.0f;
 			}
 
-			if (myInput->IsHold(VK_SPACE))
+			if (myInput->IsKeyHeld(VK_SPACE))
 			{
 				targetPosition.y += direction * speed * myUp.y * aDeltaTime;
 			}
