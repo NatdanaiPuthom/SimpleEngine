@@ -106,19 +106,19 @@ namespace Simple
 
 			const Skeleton* skeleton = myModel->GetSkeleton();
 
+			Math::Vector3f currentPosition;
+			Math::Vector3f nextPosition;
+
+			Math::Quaternionf currentQuaternion;
+			Math::Quaternionf nextQuaternion;
+
+			Math::Vector3f currentScale;
+			Math::Vector3f nextScale;
+
 			for (size_t i = 0; i < skeleton->myJoints.size() - 1; i++)
 			{
 				const Math::Matrix4x4f currentMatrix = myAnimation->frames[frame].localMatrix.find(skeleton->myJoints[i].myName)->second;
 				const Math::Matrix4x4f nextMatrix = myAnimation->frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
-
-				Math::Vector3f currentPosition;
-				Math::Vector3f nextPosition;
-
-				Math::Quaternionf currentQuaternion;
-				Math::Quaternionf nextQuaternion;
-
-				Math::Vector3f currentScale;
-				Math::Vector3f nextScale;
 
 				currentMatrix.DecomposeMatrix(currentPosition, currentQuaternion, currentScale);
 				nextMatrix.DecomposeMatrix(nextPosition, nextQuaternion, nextScale);
