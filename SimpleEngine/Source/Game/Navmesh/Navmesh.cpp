@@ -130,19 +130,19 @@ namespace Simple
 		renderer->RenderLineInstance(myConnectionLines);
 	}
 
-	std::vector<Simple::Node>& Navmesh::GetNodes()
+	std::vector<Node>& Navmesh::GetNodes()
 	{
 		return myCurrentNodes;
 	}
 
-	Simple::Node* Navmesh::GetNode(const Math::Vector3f& aPoint)
+	Node* Navmesh::GetNode(const Math::Vector3f& aPoint)
 	{
 		const int index = GetNodeIndexFromPoint(aPoint);
 
 		return GetNode(index);
 	}
 
-	Simple::Node* Navmesh::GetNode(const int aIndex)
+	Node* Navmesh::GetNode(const int aIndex)
 	{
 		if (aIndex < 0 || aIndex > static_cast<int>(myCurrentNodes.size() - 1))
 			assert(true && "Invalid Node Index");
@@ -150,7 +150,7 @@ namespace Simple
 		return &myCurrentNodes[aIndex];;
 	}
 
-	const std::array<Math::Vector3f, 3> Navmesh::GetVertices(const Simple::Node* aNode, const Simple::NavmeshData& aMesh) const
+	const std::array<Math::Vector3f, 3> Navmesh::GetVertices(const Node* aNode, const Simple::NavmeshData& aMesh) const
 	{
 		std::array<Math::Vector3f, 3> vertices;
 
@@ -196,7 +196,7 @@ namespace Simple
 		return -1;
 	}
 
-	std::pair<int, int> Navmesh::GetEdgeBetweenNodes(Simple::Node* aNode1, Simple::Node* aNode2) const
+	std::pair<int, int> Navmesh::GetEdgeBetweenNodes(Node* aNode1, Node* aNode2) const
 	{
 		std::pair<int, int> edge(-1, -1);
 
@@ -407,7 +407,63 @@ namespace Simple
 		return true;
 	}
 
-	Simple::NavmeshData Simple::Navmesh::LoadNavmesh(const char* aObjFile)
+	NavmeshData Navmesh::LoadNavmesh(const char* aObjFile)
+	{
+		const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SIMPLE_NAVMESH_DIR);
+		const std::string fileName = absolutePath + std::string(aObjFile);
+
+		std::ifstream meshLoader;
+		meshLoader.open(fileName, std::ios_base::in);
+
+		if (!meshLoader.is_open())
+			assert(false && "Failed to open navmesh obj file");
+
+		NavmeshData mesh;
+
+		while (meshLoader.eof() == false)
+		{
+			std::string reader;
+
+			meshLoader >> reader; //read whole string and storage in "reader" variable until space, tab, newline
+
+			if (reader == "v")
+			{
+				float x, y, z;
+
+				meshLoader >> x >> y >> z;
+
+				mesh.myVertices.push_back({ x, y, z });
+			}
+			else if (reader == "f")
+			{
+				std::string faceIndices;
+				std::getline(meshLoader, faceIndices);
+
+				std::istringstream iss(faceIndices);
+				std::string indexString;
+
+				while (iss >> indexString)
+				{
+					// Extract the first part before the '/'
+					size_t pos = indexString.find('/');
+
+					if (pos != std::string::npos)
+					{
+						std::string index = indexString.substr(0, pos);
+						mesh.myIndices.push_back(std::stoi(index) - 1); // Adjusting to zero-based indexing
+					}
+					else
+					{
+						mesh.myIndices.push_back(std::stoi(indexString) - 1); // Adjusting to zero-based indexing
+					}
+				}
+			}
+		}
+
+		return mesh;
+	}
+
+	/*Simple::NavmeshData Simple::Navmesh::LoadNavmesh(const char* aObjFile)  //NOTE(v9.21.0) : Older version, cannot read from Blender obj
 	{
 		const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SIMPLE_NAVMESH_DIR);
 		const std::string fileName = absolutePath + std::string(aObjFile);
@@ -449,5 +505,5 @@ namespace Simple
 		}
 
 		return mesh;
-	}
+	}*/
 }
