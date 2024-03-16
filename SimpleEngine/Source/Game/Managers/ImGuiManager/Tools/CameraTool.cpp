@@ -28,7 +28,7 @@ namespace Tool
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(100, 0));
 			ImGui::SameLine();
-			ImGui::Text("Click and Hold to select the object. Move object using mouse");
+			ImGui::Text("Click and Hold to select the scene object. Move object using mouse");
 
 			ImGui::Text("FreeFly      - TAB");
 			ImGui::SameLine();
@@ -65,6 +65,7 @@ namespace Tool
 			ImGui::Text("Rotate Right - Q");
 			ImGui::Text("Rotate Up    - C");
 			ImGui::Text("Rotate Down  - Z");
+			ImGui::Text("Movespeed    - Scroll");
 		}
 		ImGui::End();
 	}
