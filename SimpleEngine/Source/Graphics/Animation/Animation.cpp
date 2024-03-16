@@ -50,6 +50,22 @@ namespace Simple
 		}
 	}
 
+	void AnimationPlayer::UpdateMultipleModels(std::vector<Simple::AnimatedModel*>& aModelContainer)
+	{
+		if (myState == eAnimationState::Playing)
+		{
+			LerpCurrentAnimation();
+
+			ModelSpacePose modelSpacePose;
+			aModelContainer[0]->GetSkeleton()->ConvertPoseToModelSpace(myLocalSpacePose, modelSpacePose);
+
+			for (auto& model : aModelContainer)
+			{
+				model->SetPose(modelSpacePose);
+			}
+		}
+	}
+
 	void AnimationPlayer::LerpCurrentAnimation()
 	{
 		if (myState == eAnimationState::Playing)

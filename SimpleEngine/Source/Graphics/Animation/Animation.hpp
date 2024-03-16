@@ -50,7 +50,10 @@ namespace Simple
 		//Will lerp active animation and setpose directly
 		void Update();
 
-		//Will only lerp active animation and store the pose
+		//Update and SetPose of multiple models and animation of same kind
+		void UpdateMultipleModels(std::vector<Simple::AnimatedModel*>& aModelContainer);
+
+		//Lerp active animation and store the pose
 		void LerpCurrentAnimation();
 
 		void Play();

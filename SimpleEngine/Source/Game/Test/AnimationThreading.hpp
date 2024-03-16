@@ -58,19 +58,17 @@ namespace Simple
 
 		inline void Update()
 		{
-			PROFILER_BEGIN("Animations Update")
-
-			PROFILER_BEGIN("Lerp Animation");
-			myAnimationPlayer.LerpCurrentAnimation();
-			PROFILER_END();
-
+			PROFILER_BEGIN("Push model pointers");
+			std::vector<Simple::AnimatedModel*> models(myModelSize, nullptr);
 			for (size_t i = 0; i < myModelSize; ++i)
 			{
-				PROFILER_BEGIN("SetPose");
-				myAnimatedModels[i].SetPose(myAnimationPlayer.myLocalSpacePose);
-				PROFILER_END();
+				models[i] = &myAnimatedModels[i];
 			}
+			PROFILER_END();
 
+
+			PROFILER_BEGIN("Animations Update");
+			myAnimationPlayer.UpdateMultipleModels(models);
 			PROFILER_END();
 		}
 
