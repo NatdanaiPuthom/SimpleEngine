@@ -39,7 +39,13 @@ namespace Simple
 	void AnimationPlayer::Stop()
 	{
 		myState = eAnimationState::Finished;
-		myTime = 0;
+		myTime = 0.0f;
+	}
+
+	void AnimationPlayer::Restart()
+	{
+		myTime = 0.0f;
+		myState = eAnimationState::Playing;
 	}
 
 	void AnimationPlayer::Update()

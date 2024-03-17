@@ -59,6 +59,7 @@ namespace Simple
 		void Play();
 		void Pause();
 		void Stop();
+		void Restart();
 		void SetIsLooping(const bool aShouldLoop);
 
 		eAnimationState GetAnimationState() const;
