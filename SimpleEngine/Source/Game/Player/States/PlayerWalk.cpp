@@ -26,6 +26,10 @@ void PlayerWalk::Init()
 
 void PlayerWalk::Update()
 {
+	if (SU::InputManager::GetInstance().IsKeyPressed(VK_LEFT))
+	{
+		myPlayer->SetState(ePlayerState::Idle);
+	}
 }
 
 void PlayerWalk::Render()

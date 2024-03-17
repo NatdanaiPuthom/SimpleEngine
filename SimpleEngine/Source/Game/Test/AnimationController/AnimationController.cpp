@@ -20,6 +20,8 @@ namespace Simple
 
 	void AnimationController::Init(AnimatedModel* aAnimatedModel, Animation* aAnimation, const bool aShouldLoop)
 	{
+		myTimer = 0.0f;
+
 		myAnimatedModel = aAnimatedModel;
 		myCurrentAnimation = aAnimation;
 
@@ -71,8 +73,14 @@ namespace Simple
 			if (t >= 1.0f)
 			{
 				myIsInterpolating = false;
+				const unsigned int currentFrame = myTargetAnimationPlayer.GetCurrentFrame();
+
 				myCurrentAnimation = myTargetAnimation;
+
 				myCurrentAnimationPlayer.Init(*myCurrentAnimation, *myAnimatedModel);
+				myCurrentAnimationPlayer.SetCurrentFrame(currentFrame);
+
+				myAnimatedModel->SetPose(myCurrentAnimationPlayer.myLocalSpacePose);
 			}
 		}
 		else
@@ -88,9 +96,9 @@ namespace Simple
 			return;
 		}
 
-		myDuration = myCurrentAnimation->duration - myCurrentAnimationPlayer.GetTime();
+		myDuration = myCurrentAnimation->duration -  myCurrentAnimationPlayer.GetTime();
 
-		if (aDuration > myDuration)
+		if (aDuration >= 0.0f)
 		{
 			myDuration = aDuration;
 		}
@@ -101,6 +109,7 @@ namespace Simple
 		myTargetAnimationPlayer.SetIsLooping(aShouldLoop);
 		myTargetAnimationPlayer.Restart();
 
+		myTimer = 0.0f;
 		myIsInterpolating = true;
 	}
 }

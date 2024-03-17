@@ -13,6 +13,7 @@ PlayerIdle::~PlayerIdle()
 
 void PlayerIdle::OnStateEnter()
 {
+	myPlayer->SetAnimation(ePlayerAnimation::Idle, true);
 }
 
 void PlayerIdle::OnStateExit()
