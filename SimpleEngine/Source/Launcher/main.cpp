@@ -56,6 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
+
 		PROFILER_BEGIN("Engine initialize");
 		Simple::Engine engine;
 		Simple::GraphicsEngine graphicsEngine;
@@ -89,7 +90,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 			gameWorld.Update();
 
 			gameWorld.Render();
+
+#ifndef _SIMPLE
 			editor.Render();
+#endif
 
 			graphicsEngine.EndFrame();
 			PROFILER_END()
