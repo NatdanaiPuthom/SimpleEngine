@@ -31,6 +31,8 @@ namespace Math
 		T Dot(const Vector3<T>& aVector) const;
 
 		void Normalize();
+
+		static Vector3<T> Zero();
 	};
 
 	typedef Vector3<int> Vector3i;
@@ -51,6 +53,8 @@ namespace Math
 	template <class T> void operator-=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
 	template <class T> void operator*=(Vector3<T>& aVector, const T& aScalar);
 	template <class T> void operator/=(Vector3<T>& aVector, const T& aScalar);
+
+	template <class T> bool operator==(Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
 
 	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector3<T>& aVector);
 
@@ -116,6 +120,12 @@ namespace Math
 		x *= normalize;
 		y *= normalize;
 		z *= normalize;
+	}
+
+	template<class T>
+	inline Vector3<T> Vector3<T>::Zero()
+	{
+		return Vector3<T>(0, 0, 0);
 	}
 
 	template<class T>
@@ -214,6 +224,12 @@ namespace Math
 		vector.z = aVector0.z * aVector1.z;
 
 		return vector;
+	}
+
+	template<class T>
+	bool operator==(Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
+	{
+		return aVectorA.x == aVectorB.x && aVectorA.y == aVectorB.y && aVectorA.z == aVectorB.z;
 	}
 
 	template <class T>
