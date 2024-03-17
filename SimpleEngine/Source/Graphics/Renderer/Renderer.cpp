@@ -90,6 +90,16 @@ namespace Drawer
 		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
+		BonesBufferData boneBufferData = {};
+
+		for (size_t i = 0; i < SIMPLE_MAX_BONES; ++i)
+		{
+			boneBufferData.bonesTransform[i] = aModel->myBoneTransforms[i];
+		}
+
+		myBoneBuffer->Bind(myBoneBuffer->GetSlot());
+		myBoneBuffer->Update(sizeof(BonesBufferData), &boneBufferData);
+
 		aModel->myShader->BindThisShader(context.Get());
 
 		for (const auto& texture : aModel->myTextures)
