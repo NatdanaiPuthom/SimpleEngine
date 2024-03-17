@@ -36,7 +36,11 @@ namespace Scenes
 	void Scenes::DefaultScene::Render()
 	{
 		Scene::Render();
-		Global::GetRenderer()->RenderModel(myFloor);
+
+		auto renderer = Global::GetRenderer();
+
 		myPlayer.Render();
+		renderer->RenderModel(myFloor);
+		renderer->RenderBoundingBox(myFloor);
 	}
 }

@@ -39,7 +39,10 @@ void Player::Update()
 void Player::Render()
 {
 	myCurrentState->Render();
-	Global::GetRenderer()->RenderModel(myAnimatedModel);
+
+	auto renderer = Global::GetRenderer();
+	renderer->RenderModel(myAnimatedModel);
+	renderer->RenderBoundingBox(myAnimatedModel);
 }
 
 void Player::SetState(const ePlayerState aState)
