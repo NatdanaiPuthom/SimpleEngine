@@ -58,11 +58,7 @@ void Player::SetState(const ePlayerState aState)
 
 void Player::SetAnimation(const ePlayerAnimation aAnimation, const bool aShouldLoop)
 {
-	aAnimation;
-	aShouldLoop;
-	/*myAnimationPlayer.Init(*myAnimations[Cast(aAnimation)], myAnimatedModel);
-	myAnimationPlayer.SetIsLooping(aShouldLoop);
-	myAnimationPlayer.Play();*/
+	myAnimationController->ChangeAnimation(myAnimations[Cast(aAnimation)].get(), aShouldLoop);
 }
 
 void Player::LoadModel()

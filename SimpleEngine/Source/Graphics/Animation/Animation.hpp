@@ -64,6 +64,7 @@ namespace Simple
 		void SetIsLooping(const bool aShouldLoop);
 		void SetCurrentFrame(const unsigned int aCurrentFrame);
 
+		const LocalSpacePose GetLocalSpacePose() const;
 		eAnimationState GetAnimationState() const;
 		float GetTime() const;
 		unsigned int GetCurrentFrame() const;

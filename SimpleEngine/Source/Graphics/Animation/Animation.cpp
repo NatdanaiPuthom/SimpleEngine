@@ -152,6 +152,11 @@ namespace Simple
 		myTime = aCurrentFrame / myFPS;
 	}
 
+	const LocalSpacePose AnimationPlayer::GetLocalSpacePose() const
+	{
+		return myLocalSpacePose;
+	}
+
 	eAnimationState AnimationPlayer::GetAnimationState() const
 	{
 		return myState;

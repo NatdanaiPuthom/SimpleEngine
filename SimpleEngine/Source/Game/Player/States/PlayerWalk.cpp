@@ -13,7 +13,7 @@ PlayerWalk::~PlayerWalk()
 
 void PlayerWalk::OnStateEnter()
 {
-	//myPlayer->SetAnimationState(ePlayerAnimation::Walk, true);
+	myPlayer->SetAnimation(ePlayerAnimation::Walk, true);
 }
 
 void PlayerWalk::OnStateExit()
