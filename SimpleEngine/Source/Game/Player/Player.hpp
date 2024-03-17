@@ -1,7 +1,11 @@
 #pragma once
-#include "Game/Player/PlayerState.hpp"
 
 class PlayerState;
+
+namespace Simple
+{
+	class AnimationController;
+}
 
 class Player final
 {
@@ -14,15 +18,15 @@ public:
 	void Render();
 
 	void SetState(const ePlayerState aState);
-	void SetAnimationState(const ePlayerAnimation aAnimation, const bool aShouldLoop = false);
+	void SetAnimation(const ePlayerAnimation aAnimation, const bool aShouldLoop = false);
 private:
 	void LoadModel();
+private:
 
 	std::shared_ptr<PlayerState> myCurrentState;
+	std::shared_ptr<Simple::AnimatedModel> myAnimatedModel;
+	std::unique_ptr<Simple::AnimationController> myAnimationController;
 
-	Simple::AnimatedModel myModel;
-	Simple::AnimationPlayer myAnimationPlayer;
-
-	std::array<std::shared_ptr<Simple::Animation>, static_cast<size_t>(ePlayerAnimation::Count)> myAnimation;
+	std::array<std::shared_ptr<Simple::Animation>, static_cast<size_t>(ePlayerAnimation::Count)> myAnimations;
 	std::array<std::shared_ptr<PlayerState>, static_cast<size_t>(ePlayerState::Count)> myStates;
 };

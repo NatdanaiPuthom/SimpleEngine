@@ -23,6 +23,7 @@ namespace Simple
 		myAnimation = &aAnimation;
 		myModel = &aModel;
 		myFPS = aAnimation.framesPerSecond;
+		myTime = 0.0f;
 	}
 
 	void AnimationPlayer::Play()

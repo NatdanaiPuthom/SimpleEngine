@@ -1,17 +1,26 @@
 #pragma once
 
-class AnimationController final
+namespace Simple
 {
-public:
-	AnimationController();
-	~AnimationController();
-private:
-	
-	Simple::AnimationPlayer myAnimationPlayer;
-	Simple::Animation* myCurrentAnimation;
-	Simple::Animation* myTargetAnimation;
+	class AnimationController final
+	{
+	public:
+		AnimationController();
+		~AnimationController();
 
-	float myTimer;
-	float myDuration;
-	bool myIsInterpolating;
-};
+		void Init(AnimatedModel* aAnimatedModel, Animation* aAnimation, const bool aShouldLoop = false);
+		void Update();
+		void ChangeAnimation(Animation* aTargetAnimation);
+	private:
+		Animation* myCurrentAnimation;
+		Animation* myTargetAnimation;
+		AnimatedModel* myAnimatedModel;
+
+		AnimationPlayer myCurrentAnimationPlayer;
+		AnimationPlayer myTargetAnimationPlayer;
+
+		float myTimer;
+		float myDuration;
+		bool myIsInterpolating;
+	};
+}
