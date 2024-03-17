@@ -306,8 +306,8 @@ namespace Simple
 
 	void GraphicsEngine::SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen)
 	{
-		const unsigned int newWidth = aWindowSize.x;
-		const unsigned int newHeight = aWindowSize.y;
+		unsigned int newWidth = aWindowSize.x;
+		unsigned int newHeight = aWindowSize.y;
 
 		DWORD dwStyle = GetWindowLong(Global::GetEngineHWND(), GWL_STYLE);
 
@@ -335,8 +335,16 @@ namespace Simple
 
 		if (aSetFullScreen)
 		{
-			width = newWidth;
-			height = newHeight;
+			HMONITOR hMonitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY);
+
+			MONITORINFOEX monitorInfo = { sizeof(MONITORINFOEX) };
+			GetMonitorInfo(hMonitor, &monitorInfo);
+
+			width = static_cast<unsigned int>(monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left);
+			height = static_cast<unsigned int>(monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top);
+
+			newWidth = width;
+			newHeight = height;
 		}
 
 		SetWindowLong(Global::GetEngineHWND(), GWL_STYLE, dwStyle);
@@ -361,6 +369,8 @@ namespace Simple
 		CreateWaterRefractionRenderTarget(newWidth, newHeight);
 
 		SetRenderTarget(eRenderTarget::Backbuffer);
+
+		Global::SetResolution({ newWidth, newHeight });
 	}
 
 	void GraphicsEngine::SetRenderTarget(eRenderTarget aRenderTarget)

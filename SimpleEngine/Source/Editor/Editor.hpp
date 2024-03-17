@@ -14,6 +14,7 @@ namespace Simple
 		~Editor();
 
 		void Init();
+		void Update();
 		void Render();
 
 		void AddTool(std::unique_ptr<Simple::ToolInterface> aTool);

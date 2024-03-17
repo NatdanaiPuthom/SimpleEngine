@@ -20,7 +20,13 @@ namespace Global
 	int GetFPS();
 	bool GetGameIsRunning();
 
+	bool IsFullScreen();
+
 	void SetGameShouldClose(const bool aShouldClose);
+
+	//Not sure if this will do anything, only change Camera resolution
 	void SetResolution(const Math::Vector2ui& aResolution);
+
+	//WindowSize also change Resolution to fit
 	void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen = false);
 }

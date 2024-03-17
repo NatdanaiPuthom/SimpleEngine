@@ -19,6 +19,7 @@ namespace
 	int localFrames = 0;
 	int localDrawCalls = 0;
 
+	bool localIsFullScreen = false;
 	std::atomic<bool> localShouldClose = false;
 }
 
@@ -131,6 +132,11 @@ namespace Global
 		return !localShouldClose.load();
 	}
 
+	bool IsFullScreen()
+	{
+		return localIsFullScreen;
+	}
+
 	void SetGameShouldClose(const bool aShouldClose)
 	{
 		localShouldClose.store(aShouldClose);
@@ -145,6 +151,10 @@ namespace Global
 	void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen)
 	{
 		localWindowSize = aWindowSize;
+		localResolution = aWindowSize;
+
+		localIsFullScreen = aSetFullScreen;
+
 		localGraphicsEngine->SetWindowSize(localWindowSize, aSetFullScreen);
 	}
 }

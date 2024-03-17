@@ -127,7 +127,10 @@ namespace Simple
 		void SetVSync(const bool aShouldTurnOn);
 		void SetFPSLevelCap(const unsigned int aCapLevel);
 		void SetRasterizerState(const eRasterizerState aRasterizerState);
+
+		//Call Global::SetWindowSize() instead
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
+
 		void SetRenderTarget(eRenderTarget aRenderTarget);
 		void SetCamera(std::shared_ptr<Simple::Camera> aCamera);
 		void SetToDefaultCamera();

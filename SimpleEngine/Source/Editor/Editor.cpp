@@ -22,6 +22,21 @@ namespace Simple
 		}
 	}
 
+	void Editor::Update()
+	{
+		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_F5))
+		{
+			if (Global::IsFullScreen())
+			{
+				Global::SetWindowSize({ 1280, 720 }, false);
+			}
+			else
+			{
+				Global::SetWindowSize({ 0, 0 }, true);
+			}
+		}
+	}
+
 	void Editor::Render()
 	{
 		for (const std::unique_ptr<Simple::ToolInterface>& tool : myTools)
