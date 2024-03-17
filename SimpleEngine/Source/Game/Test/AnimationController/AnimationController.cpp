@@ -33,17 +33,25 @@ namespace Simple
 		myCurrentAnimationPlayer.Update();
 	}
 
-	void AnimationController::ChangeAnimation(Animation* aTargetAnimation)
+	void AnimationController::ChangeAnimation(Animation* aTargetAnimation, const bool aShouldLoop, const float aDuration)
 	{
 		if (myTargetAnimation == aTargetAnimation)
 		{
 			return;
 		}
 
+		myDuration = myCurrentAnimation->duration - myCurrentAnimationPlayer.GetTime();
+
+		if (aDuration > myDuration)
+		{
+			myDuration = aDuration;
+		}
+
 		myTargetAnimation = aTargetAnimation;
 
 		myTargetAnimationPlayer.Init(*myTargetAnimation, *myAnimatedModel);
-		myTargetAnimationPlayer.Play();
+		myTargetAnimationPlayer.SetIsLooping(aShouldLoop);
+		myTargetAnimationPlayer.Restart();
 
 		myIsInterpolating = true;
 	}

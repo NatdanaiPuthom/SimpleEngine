@@ -147,8 +147,27 @@ namespace Simple
 		myIsLooping = aShouldLoop;
 	}
 
+	void AnimationPlayer::SetCurrentFrame(const unsigned int aCurrentFrame)
+	{
+		myTime = aCurrentFrame / myFPS;
+	}
+
 	eAnimationState AnimationPlayer::GetAnimationState() const
 	{
 		return myState;
+	}
+
+	float AnimationPlayer::GetTime() const
+	{
+		return myTime;
+	}
+
+	unsigned int AnimationPlayer::GetCurrentFrame() const
+	{
+		const float frameRate = 1.0f / myFPS;
+		const float result = myTime / frameRate;
+		const unsigned int currentFrame = static_cast<unsigned int>(std::floor(result));
+
+		return currentFrame;
 	}
 }

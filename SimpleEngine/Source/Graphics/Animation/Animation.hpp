@@ -60,9 +60,13 @@ namespace Simple
 		void Pause();
 		void Stop();
 		void Restart();
+
 		void SetIsLooping(const bool aShouldLoop);
+		void SetCurrentFrame(const unsigned int aCurrentFrame);
 
 		eAnimationState GetAnimationState() const;
+		float GetTime() const;
+		unsigned int GetCurrentFrame() const;
 	private:
 		Animation* myAnimation;
 		AnimatedModel* myModel;
