@@ -3,7 +3,6 @@
 
 namespace Simple
 {
-
 	AnimationController::AnimationController()
 		: myIsInterpolating(false)
 		, myDuration(0.0f)

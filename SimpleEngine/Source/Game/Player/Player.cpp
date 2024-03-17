@@ -61,6 +61,41 @@ void Player::SetAnimation(const ePlayerAnimation aAnimation, const bool aShouldL
 	myAnimationController->ChangeAnimation(myAnimations[Cast(aAnimation)].get(), aShouldLoop, aDuration);
 }
 
+void Player::SetVelocity(const Math::Vector3f& aVelocity)
+{
+	myVelocity = aVelocity;
+}
+
+void Player::SetPosition(const Math::Vector3f& aPosition)
+{
+	myAnimatedModel->SetPosition(aPosition);
+}
+
+void Player::SetRotation(const Math::Vector3f& aRotation)
+{
+	myAnimatedModel->SetRotation(aRotation);
+}
+
+void Player::LookAt(const Math::Vector3f& aTargetPoint)
+{
+	myAnimatedModel->LookAt(aTargetPoint);
+}
+
+Math::Vector3f Player::GetVelocity() const
+{
+	return myVelocity;
+}
+
+Math::Vector3f Player::GetPosition() const
+{
+	return myAnimatedModel->GetPosition();
+}
+
+Math::Vector3f Player::GetRotation() const
+{
+	return myAnimatedModel->GetRotation();
+}
+
 void Player::LoadModel()
 {
 	myAnimatedModel = std::make_shared<Simple::AnimatedModel>(Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SM_Wizard.fbx"));
