@@ -164,7 +164,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		location (dirs.Local)
 		targetdir (dirs.SimpleLib)
 		targetname("%{prj.name}_%{cfg.buildcfg}") 
-		-- dependson { "Engine" }
 		flags { "FatalWarnings" }
 
 		pchheader "Graphics/Precomplied/GraphicsPch.hpp" -- Force all Source (.cpp) files in this project to include "Engine/Precomplier/stdafx.h"
@@ -186,8 +185,29 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		links {
-			--"Engine",
 			"d3d11"
+		}
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	project "Shader"
+		kind "StaticLib"
+		location (dirs.Local)
+		targetdir (dirs.SimpleLib)
+		targetname ("%{prj.name}_%{cfg.buildcfg}")
+		flags { "FatalWarnings" }
+
+		files {
+			"Source/Shader/**.h",
+			"Source/Shader/**.hpp",
+			"Source/Shader/**.cpp",
+			"Source/Shader/**.hlsl",
+			"Source/Shader/**.hlsli",
+		}
+
+		includedirs {
+			"Source/",
+			"Source/Shader/"
 		}
 
 		shadermodel("5.0")
@@ -197,12 +217,11 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			local output_dir = path.join(shader_dir, "%{file.basename}.cso") -- Absolute path and name of the files. Example -> C:\Users\panda\Desktop\SimpleEngine\Bin\Shaders\DefaultPS.cso
 			shaderobjectfileoutput(output_dir) -- Create .cso files at this location
 
-		filter("files:Source/Graphics/Shaders/PS/**.hlsl")
+		filter("files:Source/Shader/PixelShader/**.hlsl")
 			shadertype("Pixel") -- Set all .hlsl shadertype in this folder to "Pixel"
 
-		filter("files:Source/Graphics/Shaders/VS/**.hlsl")
+		filter("files:Source/Shader/VertexShader/**.hlsl")
 			shadertype("Vertex")  -- Set all .hlsl shadertype in this folder to "Vertex"
-	
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -211,7 +230,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		location (dirs.Local)
 		targetdir (dirs.SimpleLib)
 		targetname("%{prj.name}_%{cfg.buildcfg}") 
-		-- dependson { "Graphics" }
 		flags { "FatalWarnings" }
 
 		pchheader "Game/Precomplied/GamePch.hpp"
@@ -235,7 +253,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		links {
-			--"Graphics"
 		}
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -315,6 +332,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"External", 
 			"Engine", 
 			"Graphics", 
+			"Shader",
 			"Game",
 			"Editor"
 		}
