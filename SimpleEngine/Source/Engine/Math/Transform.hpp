@@ -18,7 +18,7 @@ namespace Math
 		void SetScale(const Vector3f& aScale);
 		void SetScale(const float aScale);
 
-		Matrix4x4f GetMatrix() const; 
+		Matrix4x4f GetMatrix() const;
 
 		Vector3f GetPosition() const;
 		Vector3f GetRotation() const;
@@ -32,7 +32,7 @@ namespace Math
 	};
 
 	inline Transform::Transform()
-		: myScale(1,1,1)
+		: myScale(1, 1, 1)
 	{
 	}
 
@@ -53,6 +53,7 @@ namespace Math
 	inline void Transform::LookAt(const Vector3f& aTargetPoint)
 	{
 		myMatrix.LookAt(aTargetPoint);
+		myRotation = myMatrix.GetEulerRotationInDegree();
 	}
 
 	inline void Transform::SetPosition(const Vector3f& aPosition)
@@ -85,7 +86,7 @@ namespace Math
 
 	inline void Transform::SetScale(const float aScale)
 	{
-		myScale = {aScale, aScale, aScale};
+		myScale = { aScale, aScale, aScale };
 		myMatrix.SetScale(myScale);
 	}
 
