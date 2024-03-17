@@ -1,7 +1,7 @@
-#include "Game/Precomplied/GamePch.hpp"
-#include "Game/Managers/ImGuiManager/Menu/MainMenuBar.hpp"
-#include "Game/Managers/ImGuiManager/Tools/SettingsTool.hpp"
-#include "Game/Managers/ImGuiManager/Tools/CameraTool.hpp"
+#include "Editor/Precomplied/EditorPch.hpp"
+#include "Editor/Menu/MainMenuBar.hpp"
+#include "Editor/Tools/SettingsTool.hpp"
+#include "Editor/Tools/CameraTool.hpp"
 
 Tool::MainMenuBar::MainMenuBar()
 	: mySettingToolActive(false)

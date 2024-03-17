@@ -1,6 +1,6 @@
-#include "Game/Precomplied/GamePch.hpp"
+#include "Editor/Precomplied/EditorPch.hpp"
+#include "Editor/Tools/CameraTool.hpp"
 #include "Graphics/Camera/Camera.hpp"
-#include "Game/Managers/ImGuiManager/Tools/CameraTool.hpp"
 
 namespace Tool
 {

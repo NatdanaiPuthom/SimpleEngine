@@ -1,7 +1,6 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/GameWorld.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
-#include "Game/Managers/ImGuiManager/ImGuiManager.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/RaycastManager/RaycastManager.hpp"
 #include "Game/Managers/EventManager/EventManager.hpp"
@@ -11,7 +10,6 @@ namespace Simple
 {
 	GameWorld::GameWorld()
 		: myLevelManager(std::make_unique<Simple::LevelManager>())
-		, myImGuiManager(std::make_unique<Simple::ImGuiManager>())
 		, myRaycastManager(std::make_unique<Simple::RaycastManager>())
 		, myEventManager(std::make_unique<Simple::EventManager>())
 		, myFixedUpdateTimer(0.0f)
@@ -26,7 +24,6 @@ namespace Simple
 
 	void GameWorld::Init()
 	{
-		myImGuiManager->Init();
 		myLevelManager->Init();
 		myRaycastManager->Init();
 	}
@@ -54,8 +51,6 @@ namespace Simple
 
 		myLevelManager->Render();
 		myRaycastManager->Render();
-
-		myImGuiManager->Render();
 	}
 
 	void GameWorld::NormalUpdate()

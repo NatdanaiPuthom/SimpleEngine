@@ -6,6 +6,7 @@
 #include "Engine/Global.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
+#include "Editor/Editor.hpp"
 #include <External/imgui.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -58,12 +59,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		PROFILER_BEGIN("Engine initialize");
 		Simple::Engine engine;
 		Simple::GraphicsEngine graphicsEngine;
+		Simple::Editor editor;
 
 		engine.SetGlobalPointerToThis();
 		graphicsEngine.SetGlobalGraphicsEngineToThis();
 
 		engine.Init(hInstance, nCmdShow);
 		graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
+		editor.Init();
 		AudioManager::GetInstance().Init();
 
 		SimpleUtilities::InputManager::GetInstance().SetHWND(Global::GetEngineHWND());
@@ -86,6 +89,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 			gameWorld.Update();
 
 			gameWorld.Render();
+			editor.Render();
 
 			graphicsEngine.EndFrame();
 			PROFILER_END()

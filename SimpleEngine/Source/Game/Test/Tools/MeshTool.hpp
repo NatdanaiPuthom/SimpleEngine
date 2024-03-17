@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/Template/ToolInterface.hpp"
 
 namespace Tool
 {

@@ -1,5 +1,5 @@
-#include "Game/Precomplied/GamePch.hpp"
-#include "Game/Managers/ImGuiManager/Tools/SettingsTool.hpp"
+#include "Editor/Precomplied/EditorPch.hpp"
+#include "Editor/Tools/SettingsTool.hpp"
 
 namespace Tool
 {

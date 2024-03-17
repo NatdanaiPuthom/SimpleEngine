@@ -240,6 +240,40 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+	project "Editor"
+		kind "StaticLib"
+		location (dirs.Local)
+		targetdir (dirs.SimpleLib)
+		targetname("%{prj.name}_%{cfg.buildcfg}")
+		flags { "FatalWarnings"}
+
+		pchheader "Editor/Precomplied/EditorPch.hpp"
+		pchsource "Source/Editor/Precomplied/EditorPch.cpp"
+
+		files {
+			"Source/Editor/**.h",
+			"Source/Editor/**.hpp",
+			"Source/Editor/**.cpp"
+		}
+
+		includedirs {
+			"Source/",
+			"Source/External/",
+			"Source/External/**",
+			"Source/Engine/",
+			"Source/Game/"
+		}
+
+		libdirs {
+			dirs.lib
+		}
+
+		links {
+
+		}
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 	project "Launcher"
 		kind "WindowedApp"
 		location (dirs.Local)
@@ -281,7 +315,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"External", 
 			"Engine", 
 			"Graphics", 
-			"Game"
+			"Game",
+			"Editor"
 		}
 
 		postbuildcommands {

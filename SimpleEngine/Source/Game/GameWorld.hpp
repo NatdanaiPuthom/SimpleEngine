@@ -2,7 +2,6 @@
 
 namespace Simple
 {
-	class ImGuiManager;
 	class LevelManager;
 	class RaycastManager;
 	class EventManager;
@@ -26,7 +25,6 @@ namespace Simple
 		void LateUpdate();
 		void FixedUpdate();
 	private:
-		std::unique_ptr<Simple::ImGuiManager> myImGuiManager;
 		std::unique_ptr<Simple::LevelManager> myLevelManager;
 		std::unique_ptr<Simple::RaycastManager> myRaycastManager;
 		std::unique_ptr<Simple::EventManager> myEventManager;

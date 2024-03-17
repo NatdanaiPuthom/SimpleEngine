@@ -7,11 +7,11 @@ namespace Simple
 
 namespace Simple
 {
-	class ImGuiManager final
+	class Editor final
 	{
 	public:
-		ImGuiManager();
-		~ImGuiManager();
+		Editor();
+		~Editor();
 
 		void Init();
 		void Render();
