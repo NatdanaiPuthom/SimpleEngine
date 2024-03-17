@@ -18,7 +18,7 @@ public:
 	void Render();
 
 	void SetState(const ePlayerState aState);
-	void SetAnimation(const ePlayerAnimation aAnimation, const bool aShouldLoop = false);
+	void SetAnimation(const ePlayerAnimation aAnimation, const bool aShouldLoop = false, const float aDuration = -1.0f);
 private:
 	void LoadModel();
 private:

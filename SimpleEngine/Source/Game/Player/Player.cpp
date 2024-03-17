@@ -56,9 +56,9 @@ void Player::SetState(const ePlayerState aState)
 	myCurrentState->OnStateEnter();
 }
 
-void Player::SetAnimation(const ePlayerAnimation aAnimation, const bool aShouldLoop)
+void Player::SetAnimation(const ePlayerAnimation aAnimation, const bool aShouldLoop, const float aDuration)
 {
-	myAnimationController->ChangeAnimation(myAnimations[Cast(aAnimation)].get(), aShouldLoop);
+	myAnimationController->ChangeAnimation(myAnimations[Cast(aAnimation)].get(), aShouldLoop, aDuration);
 }
 
 void Player::LoadModel()
