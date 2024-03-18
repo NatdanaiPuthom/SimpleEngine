@@ -1,5 +1,5 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Test/AnimationController/AnimationController.hpp"
+#include "Game/AnimationController/AnimationController.hpp"
 
 namespace Simple
 {

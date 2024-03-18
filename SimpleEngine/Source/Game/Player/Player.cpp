@@ -3,7 +3,7 @@
 #include "Game/Player/PlayerState.hpp"
 #include "Game/Player/States/PlayerIdle.hpp"
 #include "Game/Player/States/PlayerWalk.hpp"
-#include "Game/Test/AnimationController/AnimationController.hpp"
+#include "Game/AnimationController/AnimationController.hpp"
 
 Player::Player()
 {
