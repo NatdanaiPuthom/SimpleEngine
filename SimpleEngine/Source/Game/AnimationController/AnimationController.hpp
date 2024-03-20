@@ -14,6 +14,7 @@ namespace Simple
 
 	public:
 		const AnimationPlayer& GetCurrentAnimationPlayer() const;
+		AnimationPlayer& GetCurrentAnimationPlayer();
 
 	private:
 		Animation* myCurrentAnimation;

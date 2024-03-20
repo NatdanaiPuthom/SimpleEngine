@@ -116,4 +116,9 @@ namespace Simple
 	{
 		return myCurrentAnimationPlayer;
 	}
+
+	AnimationPlayer& AnimationController::GetCurrentAnimationPlayer()
+	{
+		return myCurrentAnimationPlayer;
+	}
 }
