@@ -41,6 +41,6 @@ namespace Scenes
 
 		myPlayer.Render();
 		renderer->RenderModel(myFloor);
-		renderer->RenderBoundingBox(myFloor);
+		//renderer->RenderBoundingBox(myFloor);
 	}
 }

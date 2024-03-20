@@ -41,8 +41,8 @@ void Player::Render()
 	myCurrentState->Render();
 
 	auto renderer = Global::GetRenderer();
-	renderer->RenderModel(myAnimatedModel);
-	renderer->RenderBoundingBox(myAnimatedModel);
+	//renderer->RenderModel(myAnimatedModel);
+	renderer->RenderAnimatedSkeletonLines(myAnimatedModel, myAnimationController->GetCurrentAnimationPlayer().GetLocalSpacePose());
 }
 
 void Player::SetState(const ePlayerState aState)
