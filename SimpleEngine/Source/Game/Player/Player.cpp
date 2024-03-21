@@ -33,7 +33,13 @@ void Player::Init()
 void Player::Update()
 {
 	myCurrentState->Update();
-	myAnimationController->Update();
+
+	static bool a = true;
+	if (a)
+	{
+		a = false;
+	}
+		myAnimationController->Update();
 }
 
 void Player::Render()
@@ -41,8 +47,9 @@ void Player::Render()
 	myCurrentState->Render();
 
 	auto renderer = Global::GetRenderer();
-	renderer->RenderModel(myAnimatedModel);
-	renderer->RenderBoundingBox(myAnimatedModel);
+	//renderer->RenderModel(myAnimatedModel);
+	renderer->RenderAnimatedSkeletonLines(myAnimatedModel, myAnimationController->GetCurrentAnimationPlayer().GetLocalSpacePose());
+	myInverseKinematics.Render(myAnimatedModel, myAnimationController->GetCurrentAnimationPlayer().myLocalSpacePose);
 }
 
 void Player::SetState(const ePlayerState aState)

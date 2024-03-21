@@ -243,6 +243,13 @@ namespace Drawer
 
 		const Math::Matrix4x4f modelTransform = aModel.GetMatrix();
 
+		Drawer::Sphere sphere;
+		sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		sphere.radius = 0.01f;
+
+		Drawer::Line line;
+		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
 		for (size_t index = 0; index < aLocalPose.count; ++index)
 		{
 			Simple::Joint joint = skeleton->myJoints[index];
@@ -253,18 +260,15 @@ namespace Drawer
 			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
 			const Math::Matrix4x4 boneWorldTransformNext = pose.jointTransforms[joint.myParent] * modelTransform;
 
-			Drawer::Line line;
-
-			if (index % 3 == 0)
-				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-			else if (index % 3 == 1)
-				line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
-			else if (index % 3 == 2)
-				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-
 			line.startPosition = boneWorldTransform.GetPosition();
 			line.endPosition = boneWorldTransformNext.GetPosition();
 			myAnimatedSkeletonLines.push_back(line);
+
+			if (joint.myName.find("Jnt"))
+			{
+				sphere.position = boneWorldTransform.GetPosition();
+				mySphereDrawer->Render(sphere);
+			}
 		}
 
 		Global::GetRenderer()->RenderLine(myAnimatedSkeletonLines);
@@ -280,6 +284,13 @@ namespace Drawer
 
 		const Math::Matrix4x4f modelTransform = aModel->GetMatrix();
 
+		Drawer::Sphere sphere;
+		sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		sphere.radius = 0.01f;
+
+		Drawer::Line line;
+		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
 		for (size_t index = 0; index < aLocalPose.count; ++index)
 		{
 			Simple::Joint joint = skeleton->myJoints[index];
@@ -290,18 +301,15 @@ namespace Drawer
 			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
 			const Math::Matrix4x4 boneWorldTransformNext = pose.jointTransforms[joint.myParent] * modelTransform;
 
-			Drawer::Line line;
-
-			if (index % 3 == 0)
-				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-			else if (index % 3 == 1)
-				line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
-			else if (index % 3 == 2)
-				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-
 			line.startPosition = boneWorldTransform.GetPosition();
 			line.endPosition = boneWorldTransformNext.GetPosition();
 			myAnimatedSkeletonLines.push_back(line);
+
+			if (joint.myName.find("Jnt"))
+			{
+				sphere.position = boneWorldTransform.GetPosition();
+				mySphereDrawer->Render(sphere);
+			}
 		}
 
 		Global::GetRenderer()->RenderLine(myAnimatedSkeletonLines);

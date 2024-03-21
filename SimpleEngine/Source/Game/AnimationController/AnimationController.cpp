@@ -111,4 +111,14 @@ namespace Simple
 		myTimer = 0.0f;
 		myIsInterpolating = true;
 	}
+
+	const AnimationPlayer& AnimationController::GetCurrentAnimationPlayer() const
+	{
+		return myCurrentAnimationPlayer;
+	}
+
+	AnimationPlayer& AnimationController::GetCurrentAnimationPlayer()
+	{
+		return myCurrentAnimationPlayer;
+	}
 }

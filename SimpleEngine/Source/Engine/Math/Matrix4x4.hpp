@@ -26,6 +26,7 @@ namespace Math
 
 		void SetPosition(const Vector3<T>& aPosition);
 		void SetWorldRotation(const Vector3<T>& aRotationInDegree);
+		void SetLocalRotation(const Vector3<T>& aRotationInDegree);
 		void SetScale(const Vector3<T>& aScale);
 		void SetForward(const Vector3<T>& aForward);
 		void SetRight(const Vector3<T>& aRight);
@@ -360,6 +361,36 @@ namespace Math
 	//TO-DO: This does not work as intended but it is good enough for now will continue one day
 	template<typename T>
 	inline void Matrix4x4<T>::SetWorldRotation(const Vector3<T>& aRotationInDegree)
+	{
+		const Vector3<T> rad = aRotationInDegree * globalDegToRad;
+
+		const Matrix4x4<T> scaleMatrix = Matrix4x4<T>::CreateScaleMatrix(this->GetScale());
+		Matrix4x4<T> rotationMatrix = Matrix4x4<T>::Identity();
+
+		rotationMatrix *= Matrix4x4<T>::CreateRotationAroundX(rad.x);
+		rotationMatrix *= Matrix4x4<T>::CreateRotationAroundY(rad.y);
+		rotationMatrix *= Matrix4x4<T>::CreateRotationAroundZ(rad.z);
+
+		const Matrix4x4<T> newRotationMatrix = scaleMatrix * rotationMatrix;
+
+		myMatrix[0][0] = newRotationMatrix(1, 1);
+		myMatrix[0][1] = newRotationMatrix(1, 2);
+		myMatrix[0][2] = newRotationMatrix(1, 3);
+		myMatrix[0][3] = newRotationMatrix(1, 4);
+
+		myMatrix[1][0] = newRotationMatrix(2, 1);
+		myMatrix[1][1] = newRotationMatrix(2, 2);
+		myMatrix[1][2] = newRotationMatrix(2, 3);
+		myMatrix[1][3] = newRotationMatrix(2, 4);
+
+		myMatrix[2][0] = newRotationMatrix(3, 1);
+		myMatrix[2][1] = newRotationMatrix(3, 2);
+		myMatrix[2][2] = newRotationMatrix(3, 3);
+		myMatrix[2][3] = newRotationMatrix(3, 4);
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::SetLocalRotation(const Vector3<T>& aRotationInDegree)
 	{
 		const Vector3<T> rad = aRotationInDegree * globalDegToRad;
 
@@ -752,7 +783,7 @@ namespace Math
 		}
 
 		const std::string maxString = std::to_string(max);
-		const size_t characterLength = maxString.length() + 1;
+		const size_t characterLength = maxString.length() + 5;
 		const size_t totalLength = characterLength * 4 + 2;
 
 		return aOS

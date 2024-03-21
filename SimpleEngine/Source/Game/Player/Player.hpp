@@ -1,4 +1,5 @@
 #pragma once
+#include "Game/Test/IK/InverseKinematics.hpp"
 
 class PlayerState;
 
@@ -39,4 +40,11 @@ private:
 
 	std::array<std::shared_ptr<Simple::Animation>, static_cast<size_t>(ePlayerAnimation::Count)> myAnimations;
 	std::array<std::shared_ptr<PlayerState>, static_cast<size_t>(ePlayerState::Count)> myStates;
+
+
+
+
+
+
+	Test::InverseKinematics myInverseKinematics;
 };
