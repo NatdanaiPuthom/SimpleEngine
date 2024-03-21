@@ -581,6 +581,7 @@ namespace Drawer
 	void Renderer::LoadSettingsFromJson()
 	{
 		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_GAME_SETTINGS_FILENAME);
+
 		std::ifstream file(filename);
 		assert(file.is_open() && "Failed To Open File");
 

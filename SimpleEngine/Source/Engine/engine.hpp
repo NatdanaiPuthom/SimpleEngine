@@ -28,6 +28,7 @@ namespace Simple
 	private:
 		std::unique_ptr<HWND> SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
 		void LoadSettingsFromJson();
+		void CheckAndCopySettingsFiles();
 	private:
 		std::unique_ptr<HWND> myHWND;
 		std::unique_ptr<SimpleUtilities::Timer> myTimer;

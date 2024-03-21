@@ -72,6 +72,7 @@ namespace Simple
 	void LevelManager::LoadSettingsFromJson()
 	{
 		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_LEVELS_FILENAME);
+
 		std::ifstream file(filename);
 		assert(file.is_open() && "Failed To Open File");
 

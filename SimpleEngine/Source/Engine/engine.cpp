@@ -6,6 +6,7 @@
 #include "Engine/Audio/AudioManager.h"
 #include <External/nlohmann/json.hpp>
 #include <fstream>
+#include <filesystem>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -19,7 +20,7 @@ namespace Simple
 	{
 	}
 
-	void Engine::SetGlobalPointerToThis() 
+	void Engine::SetGlobalPointerToThis()
 	{
 		Impl::SimpleGlobalEngine::SetEngine(this);
 	}
@@ -28,6 +29,7 @@ namespace Simple
 	{
 		myTimer = std::make_unique<SimpleUtilities::Timer>();
 
+		CheckAndCopySettingsFiles();
 		LoadSettingsFromJson();
 
 		const Math::Vector2ui windowSize = Global::GetWindowSize();
@@ -46,6 +48,7 @@ namespace Simple
 	void Engine::LoadSettingsFromJson()
 	{
 		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_GAME_SETTINGS_FILENAME);
+
 		std::ifstream file(filename);
 		assert(file.is_open() && "Failed To Open File");
 
@@ -65,6 +68,46 @@ namespace Simple
 
 		Impl::SimpleGlobalEngine::SetResolution(resolution);
 		Impl::SimpleGlobalEngine::SetWindowSize(windowSize);
+	}
+
+	void Engine::CheckAndCopySettingsFiles()
+	{
+		const std::string binSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS);
+		const std::string dependenciesSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS);
+
+		std::vector<std::string> binSettingsFileNames;
+		std::vector<std::string> dependenciesSettingsFileNames;
+
+		for (const auto& entry : std::filesystem::directory_iterator(binSettings))
+		{
+			if (std::filesystem::is_regular_file(entry.path()))
+			{
+				binSettingsFileNames.push_back(entry.path().filename().string());
+			}
+		}
+
+		for (const auto& entry : std::filesystem::directory_iterator(dependenciesSettings))
+		{
+			if (std::filesystem::is_regular_file(entry.path()))
+			{
+				dependenciesSettingsFileNames.push_back(entry.path().filename().string());
+			}
+		}
+
+		std::vector<std::string> missingFileNames;
+
+		std::sort(dependenciesSettingsFileNames.begin(), dependenciesSettingsFileNames.end());
+		std::sort(binSettingsFileNames.begin(), binSettingsFileNames.end());
+		std::set_difference(dependenciesSettingsFileNames.begin(), dependenciesSettingsFileNames.end(), binSettingsFileNames.begin(), binSettingsFileNames.end(), std::inserter(missingFileNames, missingFileNames.begin()));
+
+		for (auto& name : missingFileNames)
+		{
+			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS) + name;
+			const std::string destination = SimpleUtilities::GetAbsolutePath("Settings/") + name;
+			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
+
+			std::cout << "Copied: " << name << std::endl;
+		}
 	}
 
 	std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)

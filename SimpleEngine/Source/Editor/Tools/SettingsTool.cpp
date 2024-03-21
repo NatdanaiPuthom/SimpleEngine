@@ -83,6 +83,7 @@ namespace Tool
 	void SettingsTool::LoadDataFromJson()
 	{
 		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_LEVELS_FILENAME);
+
 		std::ifstream file(filename);
 		assert(file.is_open() && "Failed To Open File");
 
@@ -254,7 +255,7 @@ namespace Tool
 		std::vector<std::string> fpsCapAsString;
 		fpsCapAsString.reserve(5);
 		fpsCapAsString.push_back("Uncapped");
-		
+
 		for (int i = 1; i <= 4; ++i)
 		{
 			const int hz = monitorUpdateFrequency / i;

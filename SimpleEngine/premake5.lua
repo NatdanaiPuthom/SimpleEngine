@@ -30,7 +30,11 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	dirs["SimpleLib"]      = os.realpath("Dependencies/SimpleLib/")
 
 	defines { -- Create Global Macro For Strings
-		'SIMPLE_IMGUI_FILENAME="' .."Settings/imgui.ini" .. '"', -- In Visual Studio "SIMPLE_IMGUI_FILENAME" will be equal to const char* "imgui.ini"
+		'SIMPLE_ROOT="' .."../" .. '"',
+		'SIMPLE_DEPENDENCIES="' .."../Dependencies/" .. '"',
+		'SIMPLE_BIN_SETTINGS="' .."Settings/" .. '"',
+		'SIMPLE_SOURCE_SETTINGS="' .."../Dependencies/Settings/" .. '"',
+		'SIMPLE_IMGUI_SETTINGS_FILENAME="' .."Settings/imgui.ini" .. '"', -- In Visual Studio "SIMPLE_IMGUI_FILENAME" will be equal to const char* "imgui.ini"
 		'SIMPLE_GAME_SETTINGS_FILENAME="' .. "Settings/game_settings.json" .. '"',
 		'SIMPLE_EDITOR_SETTINGS_FILENAME="' .. "Settings/editor_settings.json" .. '"',
 		'SIMPLE_PROFILER_FILENAME="' .. "Profilers/profiler_data.prof" .. '"',
@@ -338,7 +342,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		postbuildcommands {
-			"{COPY} %{wks.location}/Dependencies/Settings/* " .. settings_dir,
+			--"{COPY} %{wks.location}/Dependencies/Settings/* " .. settings_dir,
 			"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}"
 		}
 
