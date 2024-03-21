@@ -145,7 +145,7 @@ namespace Simple
 
 	void GraphicsEngine::LoadSettingsFromJson()
 	{
-		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_GAME_SETTINGS_FILENAME);
+		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME);
 
 		std::ifstream file(filename);
 		assert(file.is_open() && "Failed To Open File");

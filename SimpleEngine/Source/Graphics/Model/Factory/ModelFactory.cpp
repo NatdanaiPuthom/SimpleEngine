@@ -66,7 +66,7 @@ namespace Simple
 	{
 		Simple::Model model;
 
-		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_MODELS_DIR) + aFileName;
+		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
 		const Simple::Mesh* mesh = GetMesh(path.c_str());
 
 		if (mesh == nullptr)
@@ -87,7 +87,7 @@ namespace Simple
 	{
 		Simple::AnimatedModel animatedModel;
 
-		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_MODELS_DIR) + aFileName;
+		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
 		const Simple::Mesh* mesh = GetMesh(path.c_str());
 		const Simple::Skeleton* skeleton = GetSkeleton(path.c_str());
 
@@ -117,7 +117,7 @@ namespace Simple
 
 	Animation ModelFactory::LoadAnimationFBX(const char* aFileName)
 	{
-		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_MODELS_DIR) + aFileName;
+		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
 
 		TGA::FBX::Animation tgaAnimation;
 		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(path, tgaAnimation);

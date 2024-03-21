@@ -56,7 +56,7 @@ void Tool::MainMenuBar::DrawTools()
 
 void Tool::MainMenuBar::LoadSettingsFromJson()
 {
-	const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_EDITOR_SETTINGS_FILENAME);
+	const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR);
 
 	std::ifstream file(filename);
 	assert(file.is_open() && "Failed To Open File");

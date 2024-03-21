@@ -38,7 +38,7 @@ namespace Simple
 
 	bool Texture::LoadDDS(const char* aFileName)
 	{
-		const std::string texturePath = SimpleUtilities::GetAbsolutePath(SIMPLE_TEXTURES_DIR) + aFileName;
+		const std::string texturePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_TEXTURES) + aFileName;
 		const std::wstring texturePathW = SimpleUtilities::ToWString(texturePath);
 
 		const HRESULT result = DirectX::CreateDDSTextureFromFile(Global::GetGraphicsEngine()->GetDevice().Get(), Global::GetGraphicsEngine()->GetContext().Get(), texturePathW.c_str(), NULL, &myShaderResourceView);
@@ -51,7 +51,7 @@ namespace Simple
 	bool Texture::LoadNonDDS(const char* aFileName)
 	{
 		int width, height, channels;
-		const std::string texturePath = SimpleUtilities::GetAbsolutePath(SIMPLE_TEXTURES_DIR) + aFileName;
+		const std::string texturePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_TEXTURES) + aFileName;
 		unsigned char* img = stbi_load(texturePath.c_str(), &width, &height, &channels, 0);
 
 		if (img == nullptr)

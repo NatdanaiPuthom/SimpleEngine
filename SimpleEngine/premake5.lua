@@ -32,18 +32,22 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	defines { -- Create Global Macro For Strings
 		'SIMPLE_ROOT="' .."../" .. '"',
 		'SIMPLE_DEPENDENCIES="' .."../Dependencies/" .. '"',
+
 		'SIMPLE_BIN_SETTINGS="' .."Settings/" .. '"',
 		'SIMPLE_SOURCE_SETTINGS="' .."../Dependencies/Settings/" .. '"',
-		'SIMPLE_IMGUI_SETTINGS_FILENAME="' .."Settings/imgui.ini" .. '"', -- In Visual Studio "SIMPLE_IMGUI_FILENAME" will be equal to const char* "imgui.ini"
-		'SIMPLE_GAME_SETTINGS_FILENAME="' .. "Settings/game_settings.json" .. '"',
-		'SIMPLE_EDITOR_SETTINGS_FILENAME="' .. "Settings/editor_settings.json" .. '"',
+
+		'SIMPLE_SETTINGS_IMGUI="' .."Settings/imgui.ini" .. '"',
+		'SIMPLE_SETTINGS_GAME="' .. "Settings/game_settings.json" .. '"',
+		'SIMPLE_SETTINGS_EDITOR="' .. "Settings/editor_settings.json" .. '"',
+		'SIMPLE_SETTINGS_LEVELS="' .. "Settings/levels.json" .. '"',
+
 		'SIMPLE_PROFILER_FILENAME="' .. "Profilers/profiler_data.prof" .. '"',
-		'SIMPLE_LEVELS_FILENAME="' .. "Settings/levels.json" .. '"',
-		'SIMPLE_TEXTURES_DIR="' .. "Assets/Textures/" .. '"',
-		'SIMPLE_SHADERS_DIR="' .. "Shaders/" .. '"',
-		'SIMPLE_NAVMESH_DIR="' .. "Assets/Navmesh/" .. '"',
-		'SIMPLE_AUDIO_DIR="' .. "Assets/Audio/" .. '"',
-		'SIMPLE_MODELS_DIR="' .. "Assets/Models/" .. '"'
+
+		'SIMPLE_DIR_TEXTURES="' .. "Assets/Textures/" .. '"',
+		'SIMPLE_DIR_SHADERS="' .. "Shaders/" .. '"',
+		'SIMPLE_DIR_NAVMESH="' .. "Assets/Navmesh/" .. '"',
+		'SIMPLE_DIR_AUDIO="' .. "Assets/Audio/" .. '"',
+		'SIMPLE_DIR_MODELS="' .. "Assets/Models/" .. '"'
 	}
 
 	configurations { -- Create Configurations For This WorkSpace

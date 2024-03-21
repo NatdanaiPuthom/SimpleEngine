@@ -14,7 +14,7 @@ namespace Simple
 
 	ImGuiEngine::~ImGuiEngine()
 	{
-		const std::string output = SimpleUtilities::GetAbsolutePath(SIMPLE_IMGUI_SETTINGS_FILENAME);
+		const std::string output = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_IMGUI);
 		ImGui::SaveIniSettingsToDisk(output.c_str());
 
 		ImGui_ImplDX11_Shutdown();
@@ -39,7 +39,7 @@ namespace Simple
 		io.IniFilename = nullptr;
 		io.LogFilename = nullptr;
 
-		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_IMGUI_SETTINGS_FILENAME);
+		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_IMGUI);
 		ImGui::LoadIniSettingsFromDisk(filename.c_str());
 
 		ImGui_ImplWin32_Init(Global::GetEngineHWND());

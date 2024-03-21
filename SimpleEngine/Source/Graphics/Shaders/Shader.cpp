@@ -23,7 +23,7 @@ namespace Simple
 		std::ifstream vsFile;
 		std::ifstream psFile;
 
-		const std::string vsFilepath = SimpleUtilities::GetAbsolutePath(SIMPLE_SHADERS_DIR) + aVSFileName;
+		const std::string vsFilepath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SHADERS) + aVSFileName;
 		vsFile.open(vsFilepath.c_str(), std::ios::binary);
 		vsData = { std::istreambuf_iterator<char>(vsFile), std::istreambuf_iterator<char>() };
 		vsFile.close();
@@ -32,7 +32,7 @@ namespace Simple
 		if (FAILED(result))
 			return false;
 
-		const std::string psFilepath = SimpleUtilities::GetAbsolutePath(SIMPLE_SHADERS_DIR) + aPSFileName;
+		const std::string psFilepath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SHADERS) + aPSFileName;
 		psFile.open(psFilepath.c_str(), std::ios::binary);
 		psData = { std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>() };
 		psFile.close();
