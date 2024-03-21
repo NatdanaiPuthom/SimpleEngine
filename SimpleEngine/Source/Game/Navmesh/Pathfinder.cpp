@@ -135,7 +135,7 @@ namespace Simple
 	void Pathfinder::RenderFunnelPath() const
 	{
 		auto renderer = Global::GetRenderer();
-		renderer->RenderLineInstance(myLines);
+		renderer->RenderLine(myLines);
 	}
 
 	void Pathfinder::RenderStartEndPosition() const
@@ -203,7 +203,7 @@ namespace Simple
 		}
 
 		auto renderer = Global::GetRenderer();
-		renderer->RenderLineInstance(lines);
+		renderer->RenderLine(lines);
 	}
 
 	void Pathfinder::SetNavmesh(Simple::Navmesh* aNavmeshData)

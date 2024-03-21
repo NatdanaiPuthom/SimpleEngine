@@ -194,6 +194,30 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
+	void Renderer::RenderLine(const std::vector<Drawer::Line> aLines)
+	{
+		const size_t sizeLimit = myLineDrawer->GetInstanceSizeLimit();
+
+		if (aLines.size() * 2 < sizeLimit)
+		{
+			myLineDrawer->RenderInstance(aLines);
+
+			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		}
+		else
+		{
+			std::vector<std::vector<Drawer::Line>> lineSplit = Math::SplitVector(aLines, sizeLimit / 2);
+
+			while (lineSplit.empty() == false)
+			{
+				myLineDrawer->RenderInstance(aLines);
+				lineSplit.erase(lineSplit.begin());
+
+				Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+			}
+		}
+	}
+
 	void Renderer::RenderSphere(const Drawer::Sphere& aSphere)
 	{
 		mySphereDrawer->Render(aSphere);
@@ -243,7 +267,7 @@ namespace Drawer
 			myAnimatedSkeletonLines.push_back(line);
 		}
 
-		Global::GetRenderer()->RenderLineInstance(myAnimatedSkeletonLines);
+		Global::GetRenderer()->RenderLine(myAnimatedSkeletonLines);
 	}
 
 	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::LocalSpacePose& aLocalPose)
@@ -280,7 +304,7 @@ namespace Drawer
 			myAnimatedSkeletonLines.push_back(line);
 		}
 
-		Global::GetRenderer()->RenderLineInstance(myAnimatedSkeletonLines);
+		Global::GetRenderer()->RenderLine(myAnimatedSkeletonLines);
 	}
 
 	void Renderer::RenderStaticSkeletonLines(const Simple::AnimatedModel& aModel)
@@ -314,7 +338,7 @@ namespace Drawer
 			myStaticSkeletonLines.push_back(line);
 		}
 
-		Global::GetRenderer()->RenderLineInstance(myStaticSkeletonLines);
+		Global::GetRenderer()->RenderLine(myStaticSkeletonLines);
 	}
 
 	void Renderer::RenderStaticSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel)
@@ -348,7 +372,7 @@ namespace Drawer
 			myStaticSkeletonLines.push_back(line);
 		}
 
-		Global::GetRenderer()->RenderLineInstance(myStaticSkeletonLines);
+		Global::GetRenderer()->RenderLine(myStaticSkeletonLines);
 	}
 
 	void Renderer::RenderBoundingBox(const std::shared_ptr<const Model> aModel) const
@@ -377,30 +401,6 @@ namespace Drawer
 		myBoundingBoxDrawer->Render(aModel);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
-	}
-
-	void Renderer::RenderLineInstance(const std::vector<Drawer::Line> aLines)
-	{
-		const size_t sizeLimit = myLineDrawer->GetInstanceSizeLimit();
-
-		if (aLines.size() * 2 < sizeLimit)
-		{
-			myLineDrawer->RenderInstance(aLines);
-
-			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
-		}
-		else
-		{
-			std::vector<std::vector<Drawer::Line>> lineSplit = Math::SplitVector(aLines, sizeLimit / 2);
-
-			while (lineSplit.empty() == false)
-			{
-				myLineDrawer->RenderInstance(aLines);
-				lineSplit.erase(lineSplit.begin());
-
-				Impl::SimpleGlobalRenderer::IncreaseDrawCall();
-			}
-		}
 	}
 
 	void Renderer::RenderEverythingUpSideDown() const

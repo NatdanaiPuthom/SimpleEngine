@@ -24,6 +24,7 @@ namespace Scenes
 	void Scenes::DefaultScene::Init()
 	{
 		myFloor = Global::GetModelFactory()->LoadStaticModelFBX("StaticModels/Simple_Floor_10x10.fbx");
+		myFloor.SetPosition({ 0.0f,-1.0f, 0.0f });
 		myPlayer.Init();
 	}
 
@@ -37,10 +38,10 @@ namespace Scenes
 	{
 		Scene::Render();
 
-		auto renderer = Global::GetRenderer();
+		//auto renderer = Global::GetRenderer();
 
 		myPlayer.Render();
-		renderer->RenderModel(myFloor);
-		renderer->RenderBoundingBox(myFloor);
+		//renderer->RenderModel(myFloor);
+		//renderer->RenderBoundingBox(myFloor);
 	}
 }
