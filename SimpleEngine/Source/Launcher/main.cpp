@@ -9,8 +9,6 @@
 #include "Editor/Editor.hpp"
 #include <External/imgui.h>
 
-#include "Game/Test/Grid/Grid.hpp"
-
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -80,9 +78,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		gameWorld.Init();
 		PROFILER_END();
 
-		Grid grid;
-		grid.Init(2, 10, 10);
-
 		while (Global::GetGameIsRunning())
 		{
 			PROFILER_BEGIN("Frame Time");
@@ -95,7 +90,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 			gameWorld.Update();
 
 			gameWorld.Render();
-			grid.Render();
 
 #ifndef _SIMPLE
 			editor.Update();
