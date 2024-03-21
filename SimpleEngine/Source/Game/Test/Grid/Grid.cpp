@@ -54,21 +54,7 @@ void Grid::Init(const size_t aCellSize, const size_t aRowAmount, const size_t aC
 
 void Grid::Render()
 {
-	const auto renderer = Global::GetRenderer();
-
-	std::vector<Drawer::Line> lines;
-	lines.reserve(myRowAmount * myColAmount);
-
-	for (size_t x = 0; x < myRowAmount; ++x)
-	{
-		for (size_t z = 0; z < myColAmount; ++z)
-		{
-			lines.push_back(myCells[x][z].line);
-		}
-	}
-
-	renderer->RenderLine(lines);
-	renderer->RenderLine(myLines);
+	Global::GetRenderer()->RenderLine(myLines);
 }
 
 Cell* Grid::GetCellByPosition(Math::Vector2f aPosition)
