@@ -27,6 +27,10 @@ namespace Simple
 
 	void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	{
+#ifndef _SIMPLE
+		myConsole.Init();
+#endif
+
 		myTimer = std::make_unique<SimpleUtilities::Timer>();
 
 		CheckAndCopySettingsFiles();
@@ -36,10 +40,6 @@ namespace Simple
 
 		myHWND = SetupMainWindow(hInstance, windowSize.x, windowSize.y);
 		assert(myHWND && "Failed To Create Window");
-
-#ifndef _SIMPLE
-		myConsole.Init();
-#endif
 
 		ShowWindow(*myHWND, nCmdShow);
 		UpdateWindow(*myHWND);
@@ -103,7 +103,7 @@ namespace Simple
 		for (auto& name : missingFileNames)
 		{
 			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS) + name;
-			const std::string destination = SimpleUtilities::GetAbsolutePath("Settings/") + name;
+			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS) + name;
 			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
 
 			std::cout << "Copied: " << name << std::endl;
