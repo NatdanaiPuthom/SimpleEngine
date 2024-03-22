@@ -65,4 +65,10 @@ namespace Simple
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
+
+	void ImGuiEngine::Save()
+	{
+		const std::string output = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_IMGUI);
+		ImGui::SaveIniSettingsToDisk(output.c_str());
+	}
 }

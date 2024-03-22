@@ -267,7 +267,7 @@ namespace Simple
 		return true;
 	}
 
-	void GraphicsEngine::BeginFrame()
+	bool GraphicsEngine::BeginFrame()
 	{
 		MSG msg = { 0 };
 
@@ -279,7 +279,7 @@ namespace Simple
 			if (msg.message == WM_QUIT)
 			{
 				Global::SetGameShouldClose(true);
-				break;
+				return false;
 			}
 		}
 
@@ -288,15 +288,13 @@ namespace Simple
 
 		myImGuiEngine->BeginFrame();
 		PrepareFrame();
+
+		return true;
 	}
 
 	void GraphicsEngine::EndFrame()
 	{
-		if (Global::GetGameIsRunning())
-		{
-			myImGuiEngine->EndFrame();
-		}
-
+		myImGuiEngine->EndFrame();
 		mySwapChain->Present(myFPSLevelCap, 0);
 	}
 

@@ -11,5 +11,6 @@ namespace Simple
 		void Init();
 		void BeginFrame();
 		void EndFrame();
+		void Save();
 	};
 }

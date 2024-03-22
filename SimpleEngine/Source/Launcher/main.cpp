@@ -78,11 +78,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		gameWorld.Init();
 		PROFILER_END();
 
-		while (Global::GetGameIsRunning())
+		while (graphicsEngine.BeginFrame() == true)
 		{
 			PROFILER_BEGIN("Frame Time");
-
-			graphicsEngine.BeginFrame();
 
 			engine.Update();
 			graphicsEngine.GetDefaultCamera()->Update(engine.GetDeltaTime()); //For now only 1 Camera (v9.18.0)
