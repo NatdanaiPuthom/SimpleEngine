@@ -5,10 +5,6 @@ Grid::Grid()
 	: myCellSize(0)
 	, myRowAmount(0)
 	, myColAmount(0)
-	, myStartX(0)
-	, myStartY(0)
-	, myEndX(0)
-	, myEndY(0)
 {
 }
 
@@ -18,6 +14,9 @@ Grid::~Grid()
 
 void Grid::Init(const size_t aCellSize, const size_t aRowAmount, const size_t aColAmount, const float aGridHeight, const eGridRotate aGridRotation)
 {
+	myCells.clear();
+	myLines.clear();
+
 	myCellSize = aCellSize;
 	myRowAmount = aRowAmount;
 	myColAmount = aColAmount;

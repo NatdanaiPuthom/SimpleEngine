@@ -2,6 +2,7 @@
 #include "Game/Test/Scenes/NavmeshSceneTest.hpp"
 
 Scenes::NavmeshSceneTest::NavmeshSceneTest()
+	: myShouldRenderPathfinder(false)
 {
 }
 
@@ -29,7 +30,7 @@ void Scenes::NavmeshSceneTest::Init()
 	navmesh->Init("Level 1.obj");
 	myPathFinder.SetNavmesh(navmesh);
 
-	myGrid.Init(10, 100, 100, -50.0f, eGridRotate::Inverse_X | eGridRotate::Inverse_Z);
+	myGrid.Init(10, 100, 100);
 }
 
 void Scenes::NavmeshSceneTest::Update()
@@ -48,6 +49,73 @@ void Scenes::NavmeshSceneTest::Update()
 
 void Scenes::NavmeshSceneTest::Render()
 {
+	if (ImGui::Begin("Grid"))
+	{
+		static int height = 0;
+		static int cellSize = static_cast<int>(myGrid.myCellSize);
+		static int gridSize = static_cast<int>(myGrid.myRowAmount);
+		static bool inverse_x = false;
+		static bool inverse_z = false;
+		static bool changed = false;
+		static eGridRotate rotate = eGridRotate::None;
+
+		if (ImGui::DragInt("CellSize", &cellSize, 1.0f, 1))
+		{
+			if (cellSize > 0)
+			{
+				myGrid.myCellSize = cellSize;
+				changed = true;
+			}
+			else
+			{
+				cellSize = 0;
+				myGrid.myCellSize = cellSize;
+				changed = true;
+			}
+		}
+
+		if (ImGui::DragInt("GridSize", &gridSize, 1.0f, 1))
+		{
+			if (gridSize > 0)
+			{
+				myGrid.myRowAmount = gridSize;
+				myGrid.myColAmount = gridSize;
+				changed = true;
+			}
+			else
+			{
+				gridSize = 0;
+				myGrid.myRowAmount = gridSize;
+				myGrid.myColAmount = gridSize;
+				changed = true;
+			}
+		}
+
+		if (ImGui::DragInt("Height", &height, 1.0f, 0))
+		{
+			changed = true;
+		}
+
+		if (ImGui::Checkbox("Inverse_X", &inverse_x))
+		{
+			rotate = eGridRotate::Inverse_X;
+			changed = true;
+		}
+
+		if (ImGui::Checkbox("Inverse_Z", &inverse_z))
+		{
+			rotate = eGridRotate::Inverse_Z;
+			changed = true;
+		}
+
+		if (changed)
+		{
+			myGrid.Init(myGrid.myCellSize, myGrid.myRowAmount, myGrid.myColAmount, static_cast<float>(height), rotate);
+			changed = false;
+		}
+	}
+	ImGui::End();
+
 	Scene::Render();
 
 	if (myShouldRenderPathfinder == true)

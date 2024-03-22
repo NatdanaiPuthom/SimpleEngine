@@ -21,6 +21,10 @@ constexpr eGridRotate operator|(const eGridRotate lhs, const eGridRotate rhs)
 class Grid
 {
 public:
+	size_t myCellSize;
+	size_t myRowAmount;
+	size_t myColAmount;
+public:
 	Grid();
 	~Grid();
 
@@ -29,15 +33,6 @@ public:
 public:
 	Cell* GetCellByPosition(Math::Vector2f aPosition);
 private:
-	size_t myCellSize;
-	size_t myRowAmount;
-	size_t myColAmount;
-
-	size_t myStartX;
-	size_t myStartY;
-	size_t myEndX;
-	size_t myEndY;
-
 	std::vector<std::vector<Cell>> myCells;
 	std::vector<Drawer::Line> myLines;
 };
