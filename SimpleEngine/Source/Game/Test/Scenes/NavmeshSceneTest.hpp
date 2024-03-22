@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/Navmesh/Pathfinder.hpp"
+#include "Game/Test/Grid/Grid.hpp"
 
 namespace Scenes
 {
@@ -22,5 +23,7 @@ namespace Scenes
 		Math::Vector3f myEndPosition;
 
 		bool myShouldRenderPathfinder;
+
+		Grid myGrid;
 	};
 }

@@ -28,6 +28,8 @@ void Scenes::NavmeshSceneTest::Init()
 	auto navmesh = World::GetNavmesh();
 	navmesh->Init("Level 1.obj");
 	myPathFinder.SetNavmesh(navmesh);
+
+	myGrid.Init(10, 100, 100, -50.0f, eGridRotate::Inverse_X | eGridRotate::Inverse_Z);
 }
 
 void Scenes::NavmeshSceneTest::Update()
@@ -58,6 +60,8 @@ void Scenes::NavmeshSceneTest::Render()
 	auto navmesh = World::GetNavmesh();
 	navmesh->RenderConnections();
 	navmesh->RenderNavmesh();
+
+	myGrid.Render();
 }
 
 void Scenes::NavmeshSceneTest::ReceiveMessage(const Simple::Message<Simple::eEvent>& aMessage)

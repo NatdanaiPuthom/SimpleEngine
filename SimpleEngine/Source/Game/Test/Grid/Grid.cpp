@@ -16,7 +16,7 @@ Grid::~Grid()
 {
 }
 
-void Grid::Init(const size_t aCellSize, const size_t aRowAmount, const size_t aColAmount)
+void Grid::Init(const size_t aCellSize, const size_t aRowAmount, const size_t aColAmount, const float aGridHeight, const eGridRotate aGridRotation)
 {
 	myCellSize = aCellSize;
 	myRowAmount = aRowAmount;
@@ -27,8 +27,26 @@ void Grid::Init(const size_t aCellSize, const size_t aRowAmount, const size_t aC
 	for (size_t i = 0; i <= myRowAmount; ++i)
 	{
 		Drawer::Line line;
-		line.startPosition = { 0, 0,  static_cast<float>(i * myCellSize) };
-		line.endPosition = { static_cast<float>(myCellSize * myRowAmount), 0, static_cast<float>(i * myCellSize) };
+		line.startPosition = { 0, aGridHeight,  static_cast<float>(i * myCellSize) };
+		line.endPosition = { static_cast<float>(myCellSize * myRowAmount), aGridHeight, static_cast<float>(i * myCellSize) };
+
+		if (aGridRotation == eGridRotate::Inverse_X)
+		{
+			line.startPosition.x *= -1.0f;
+			line.endPosition.x *= -1.0f;
+		}
+		else if (aGridRotation == eGridRotate::Inverse_Z)
+		{
+			line.startPosition.z *= -1.0f;
+			line.endPosition.z *= -1.0f;
+		}
+		else if (aGridRotation == (eGridRotate::Inverse_X | eGridRotate::Inverse_Z))
+		{
+			line.startPosition.x *= -1.0f;
+			line.endPosition.x *= -1.0f;
+			line.startPosition.z *= -1.0f;
+			line.endPosition.z *= -1.0f;
+		}
 
 		myLines.push_back(line);
 	}
@@ -36,12 +54,31 @@ void Grid::Init(const size_t aCellSize, const size_t aRowAmount, const size_t aC
 	for (size_t i = 0; i <= myColAmount; ++i)
 	{
 		Drawer::Line line;
-		line.startPosition = { static_cast<float>(i * myCellSize), 0, 0 };
-		line.endPosition = { static_cast<float>(i * myCellSize), 0, static_cast<float>(myCellSize * myColAmount) };
+		line.startPosition = { static_cast<float>(i * myCellSize), aGridHeight, 0 };
+		line.endPosition = { static_cast<float>(i * myCellSize), aGridHeight, static_cast<float>(myCellSize * myColAmount) };
+
+		if (aGridRotation == eGridRotate::Inverse_X)
+		{
+			line.startPosition.x *= -1.0f;
+			line.endPosition.x *= -1.0f;
+		}
+		else if (aGridRotation == eGridRotate::Inverse_Z)
+		{
+			line.startPosition.z *= -1.0f;
+			line.endPosition.z *= -1.0f;
+		}
+		else if (aGridRotation == (eGridRotate::Inverse_X | eGridRotate::Inverse_Z))
+		{
+			line.startPosition.x *= -1.0f;
+			line.endPosition.x *= -1.0f;
+			line.startPosition.z *= -1.0f;
+			line.endPosition.z *= -1.0f;
+		}
 
 		myLines.push_back(line);
 	}
 
+	
 	for (size_t x = 0; x < myRowAmount; ++x)
 	{
 		for (size_t z = 0; z < myColAmount; ++z)
