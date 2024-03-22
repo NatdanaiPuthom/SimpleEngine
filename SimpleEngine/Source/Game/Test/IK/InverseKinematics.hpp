@@ -12,5 +12,10 @@ namespace Test
 
 		Math::Vector3f myKnee;
 		Math::Vector3f myFoot;
+
+		std::vector<Drawer::Line> myLines;
+
+	private:
+		void Test();
 	};
 }

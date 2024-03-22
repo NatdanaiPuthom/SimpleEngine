@@ -2,14 +2,14 @@
 
 class Player;
 
-constexpr enum class ePlayerState : size_t
+ enum class ePlayerState : size_t
 {
 	Idle,
 	Walk,
 	Count
 };
 
-constexpr enum class ePlayerAnimation : size_t
+ enum class ePlayerAnimation : size_t
 {
 	Idle,
 	Walk,
