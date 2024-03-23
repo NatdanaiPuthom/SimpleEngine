@@ -46,6 +46,7 @@ namespace Simple
 		UpdateWindow(*myHWND);
 
 		myCustomCursor = LoadCursorFromFile(L"Assets/Icon/Cell_Phone.cur");
+		assert(myCustomCursor && "Failed to load Custom Cursor");
 	}
 
 	void Engine::LoadSettingsFromJson()
