@@ -4,6 +4,10 @@
 
 namespace Test
 {
+	static Simple::Joint shoulder;
+	static Simple::Joint elbow;
+	static Simple::Joint wrist;
+
 	static double CalculateTheta0(double l0, double l1, double m, double E_angle)
 	{
 		return acos((pow(l0, 2) - pow(l1, 2) + m) / (2 * l0 * sqrt(m))) + E_angle;
@@ -16,6 +20,9 @@ namespace Test
 
 	InverseKinematics::InverseKinematics()
 	{
+		shoulder.myBindPoseInverse.SetPosition({ 0.0f, 1.0f, 0.0f });
+		elbow.myBindPoseInverse.SetPosition({ 1.0f, 0.0f, 0.0f });
+		wrist.myBindPoseInverse.SetPosition({ 0.0f, -1.0f, 0.0f });
 	}
 
 	InverseKinematics::~InverseKinematics()
@@ -24,78 +31,82 @@ namespace Test
 
 	void InverseKinematics::Render(std::shared_ptr< Simple::AnimatedModel> aModel, Simple::LocalSpacePose& aLocalPose)
 	{
-		auto hipPosition = aLocalPose.jointTransforms[39].GetPosition();
-		auto kneePosition = aLocalPose.jointTransforms[40].GetPosition();
-		auto footPosition = aLocalPose.jointTransforms[41].GetPosition();
+		aModel;
+		aLocalPose;
 
-		if (ImGui::Begin("Skeletons"))
-		{
-			if (ImGui::DragFloat3("Hip", &hipPosition.x, 0.1f, -180.0f, 180.0f))
+		/*	auto hipPosition = aLocalPose.jointTransforms[39].GetPosition();
+			auto kneePosition = aLocalPose.jointTransforms[40].GetPosition();
+			auto footPosition = aLocalPose.jointTransforms[41].GetPosition();
+
+			if (ImGui::Begin("Skeletons"))
 			{
-				aLocalPose.jointTransforms[39].SetPosition(hipPosition);
-				aModel->SetPose(aLocalPose);
+				if (ImGui::DragFloat3("Hip", &hipPosition.x, 0.1f, -180.0f, 180.0f))
+				{
+					aLocalPose.jointTransforms[39].SetPosition(hipPosition);
+					aModel->SetPose(aLocalPose);
+				}
+
+				if (ImGui::DragFloat3("Knee", &kneePosition.x, 0.1f, -180.0f, 180.0f))
+				{
+					aLocalPose.jointTransforms[40].SetPosition(kneePosition);
+					aModel->SetPose(aLocalPose);
+				}
+
+				if (ImGui::DragFloat3("Foot", &footPosition.x, 0.1f, -180.0f, 180.0f))
+				{
+					aLocalPose.jointTransforms[41].SetPosition(footPosition);
+					aModel->SetPose(aLocalPose);
+				}
+			}
+			ImGui::End();
+
+			auto renderer = Global::GetRenderer();
+
+			Simple::ModelSpacePose pose;
+			const Simple::Skeleton* skeleton = aModel->GetSkeleton();
+			skeleton->ConvertPoseToModelSpace(aLocalPose, pose);
+
+			const Math::Matrix4x4f modelTransform = aModel->GetMatrix();
+
+			const Math::Matrix4x4 hip = pose.jointTransforms[39] * modelTransform;
+			const Math::Matrix4x4 knee = pose.jointTransforms[40] * modelTransform;
+			const Math::Matrix4x4 fot = pose.jointTransforms[41] * modelTransform;
+
+			{
+				Drawer::Line line;
+				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+				line.startPosition = knee.GetPosition();
+				line.endPosition = line.startPosition;
+				line.endPosition.y -= 0.1f;
+
+				renderer->RenderLine(line);
 			}
 
-			if (ImGui::DragFloat3("Knee", &kneePosition.x, 0.1f, -180.0f, 180.0f))
 			{
-				aLocalPose.jointTransforms[40].SetPosition(kneePosition);
-				aModel->SetPose(aLocalPose);
+				Drawer::Line line;
+				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+				line.startPosition = fot.GetPosition();
+				line.endPosition = line.startPosition;
+				line.endPosition.y -= 0.1f;
+
+				renderer->RenderLine(line);
 			}
 
-			if (ImGui::DragFloat3("Foot", &footPosition.x, 0.1f, -180.0f, 180.0f))
 			{
-				aLocalPose.jointTransforms[41].SetPosition(footPosition);
-				aModel->SetPose(aLocalPose);
+				Drawer::Line line;
+				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+				line.startPosition = hip.GetPosition();
+				line.endPosition = line.startPosition;
+				line.endPosition.y -= 0.1f;
+
+				renderer->RenderLine(line);
 			}
-		}
-		ImGui::End();
 
-		auto renderer = Global::GetRenderer();
+			renderer->RenderAnimatedSkeletonLines(aModel, aLocalPose);
+			renderer->RenderLine(myLines);*/
 
-		Simple::ModelSpacePose pose;
-		const Simple::Skeleton* skeleton = aModel->GetSkeleton();
-		skeleton->ConvertPoseToModelSpace(aLocalPose, pose);
-
-		const Math::Matrix4x4f modelTransform = aModel->GetMatrix();
-
-		const Math::Matrix4x4 hip = pose.jointTransforms[39] * modelTransform;
-		const Math::Matrix4x4 knee = pose.jointTransforms[40] * modelTransform;
-		const Math::Matrix4x4 fot = pose.jointTransforms[41] * modelTransform;
-
-		{
-			Drawer::Line line;
-			line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-			line.startPosition = knee.GetPosition();
-			line.endPosition = line.startPosition;
-			line.endPosition.y -= 0.1f;
-
-			renderer->RenderLine(line);
-		}
-
-		{
-			Drawer::Line line;
-			line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-			line.startPosition = fot.GetPosition();
-			line.endPosition = line.startPosition;
-			line.endPosition.y -= 0.1f;
-
-			renderer->RenderLine(line);
-		}
-
-		{
-			Drawer::Line line;
-			line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-			line.startPosition = hip.GetPosition();
-			line.endPosition = line.startPosition;
-			line.endPosition.y -= 0.1f;
-
-			renderer->RenderLine(line);
-		}
-
-		renderer->RenderAnimatedSkeletonLines(aModel, aLocalPose);
-		renderer->RenderLine(myLines);
-
-		Test();
+			//Test();
+		Arm();
 	}
 
 	void InverseKinematics::Test()
@@ -167,6 +178,37 @@ namespace Test
 
 		sphere.color = { 0.0f, 0.0f, 1.0f, 1.0f };
 		sphere.position = { static_cast<float>(S1_x), static_cast<float>(S1_y), 0.0f };
+		renderer->RenderSphere(sphere);
+	}
+
+	void InverseKinematics::Arm()
+	{
+		auto renderer = Global::GetRenderer();
+
+		Drawer::Line shoulderToElbow;
+		shoulderToElbow.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		shoulderToElbow.startPosition = shoulder.myBindPoseInverse.GetPosition();
+		shoulderToElbow.endPosition = elbow.myBindPoseInverse.GetPosition();
+
+		Drawer::Line elbowToWrist;
+		elbowToWrist.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+		elbowToWrist.startPosition = shoulderToElbow.endPosition;
+		elbowToWrist.endPosition = wrist.myBindPoseInverse.GetPosition();
+
+		renderer->RenderLine(shoulderToElbow);
+		renderer->RenderLine(elbowToWrist);
+
+		Drawer::Sphere sphere;
+		sphere.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+		sphere.radius = 0.05f;
+
+		sphere.position = shoulder.myBindPoseInverse.GetPosition();
+		renderer->RenderSphere(sphere);
+
+		sphere.position = elbow.myBindPoseInverse.GetPosition();
+		renderer->RenderSphere(sphere);
+
+		sphere.position = wrist.myBindPoseInverse.GetPosition();
 		renderer->RenderSphere(sphere);
 	}
 }
