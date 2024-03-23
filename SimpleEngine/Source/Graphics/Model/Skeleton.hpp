@@ -25,10 +25,10 @@ namespace Simple
 	class Joint final
 	{
 	public:
-		std::vector<unsigned int> myChildren;
 		Math::Matrix4x4f myBindPoseInverse;
 		std::string myName;
 		int myParent;
+		std::vector<unsigned int> myChildren;
 	public:
 		Joint();
 		~Joint();
@@ -47,11 +47,10 @@ namespace Simple
 	class Skeleton final
 	{
 	public:
-		std::vector<Joint> myJoints;
-		std::vector<std::string> myJointNames;
-		std::unordered_map<std::string, size_t> myJointNameToIndex;
-		std::unordered_map<std::wstring, size_t> myAnimationNameToIndex;
 		std::string myName;
+		std::unordered_map<std::string, size_t> myJointNameToIndex;
+		std::vector<std::string> myJointNames;
+		std::vector<Joint> myJoints;
 	public:
 		Skeleton();
 		~Skeleton();
