@@ -23,6 +23,7 @@ namespace Simple
 		void SetGlobalPointerToThis();
 	public:
 		HWND& GetEngineHWND();
+		HCURSOR& GetCustomCursor();
 		double GetTotalTime() const;
 		float GetDeltaTime() const;
 	private:
@@ -32,6 +33,8 @@ namespace Simple
 	private:
 		std::unique_ptr<HWND> myHWND;
 		std::unique_ptr<SimpleUtilities::Timer> myTimer;
+
+		HCURSOR myCustomCursor;
 
 		Simple::Console myConsole;
 	};

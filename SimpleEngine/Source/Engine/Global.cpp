@@ -97,6 +97,11 @@ namespace Global
 		return localEngine->GetEngineHWND();
 	}
 
+	HCURSOR& GetCustomCursor()
+	{
+		return localEngine->GetCustomCursor();
+	}
+
 	Math::Vector2ui GetResolution()
 	{
 		return localResolution;

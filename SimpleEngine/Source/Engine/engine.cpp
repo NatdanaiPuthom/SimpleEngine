@@ -13,6 +13,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 namespace Simple
 {
 	Engine::Engine()
+		: myCustomCursor(nullptr)
 	{
 	}
 
@@ -43,6 +44,8 @@ namespace Simple
 
 		ShowWindow(*myHWND, nCmdShow);
 		UpdateWindow(*myHWND);
+
+		myCustomCursor = LoadCursorFromFile(L"Assets/Icon/Cell_Phone.cur");
 	}
 
 	void Engine::LoadSettingsFromJson()
@@ -123,6 +126,7 @@ namespace Simple
 		wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 		wcex.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 
+		assert(wcex.hCursor && "Failed to load cursor");
 		assert(wcex.hIcon != NULL && "Failed to load icon");
 		assert(wcex.hIconSm != NULL && "Failed to load small icon");
 
@@ -145,7 +149,7 @@ namespace Simple
 		std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 		*hwnd = CreateWindow(
 			L"Natdanai",
-			L"SimpleEngine v9.23.4",
+			L"SimpleEngine v9.23.5",
 			WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
@@ -179,5 +183,10 @@ namespace Simple
 	HWND& Engine::GetEngineHWND()
 	{
 		return *myHWND;
+	}
+
+	HCURSOR& Engine::GetCustomCursor()
+	{
+		return myCustomCursor;
 	}
 }
