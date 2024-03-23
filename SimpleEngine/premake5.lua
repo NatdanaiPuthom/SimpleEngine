@@ -7,6 +7,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	architecture "x64" -- 64-bit architecture
 	language "C++" -- Global language across all Projects in this workspace
 	cppdialect "C++20" -- Global C++ Version
+	cdialect "C17"
 	warnings "Extra" -- Global Highest Warning Level
 	objdir "Temp" -- Location for garbage created by Visual Studio
 
