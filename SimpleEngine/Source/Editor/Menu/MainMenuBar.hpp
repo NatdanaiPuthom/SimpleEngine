@@ -20,6 +20,7 @@ namespace Tool
 		std::unique_ptr<SettingsTool> mySettingsTool;
 		std::unique_ptr<CameraTool> myCameraTool;
 
+		bool myDebugMenuActive;
 		bool mySettingToolActive;
 		bool myCameraToolActive;
 	};

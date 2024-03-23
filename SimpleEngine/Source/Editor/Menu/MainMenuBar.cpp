@@ -6,6 +6,7 @@
 Tool::MainMenuBar::MainMenuBar()
 	: mySettingToolActive(false)
 	, myCameraToolActive(false)
+	, myDebugMenuActive(false)
 {
 }
 
@@ -43,6 +44,11 @@ void Tool::MainMenuBar::Draw()
 
 void Tool::MainMenuBar::DrawTools()
 {
+	if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_F1))
+	{
+		mySettingToolActive = !mySettingToolActive;
+	}
+
 	if (mySettingToolActive)
 	{
 		mySettingsTool->Draw();
