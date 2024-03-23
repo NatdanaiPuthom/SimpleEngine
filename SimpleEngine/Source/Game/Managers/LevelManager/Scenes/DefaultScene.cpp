@@ -17,14 +17,14 @@ namespace Scenes
 		camera->SetRotation(Math::Vector3f(50, 0, 0));
 		camera->SetPosition(Math::Vector3f(10, 15, -12));
 
-		myDirectionalLight->myModel->SetPosition({ 0.0f, 10.0f, 1.0f });
-		Global::GetGraphicsEngine()->SetDirectionalLightDirection({ 0.0f, -1.0f, 0.0f });
+		myDirectionalLight->myModel->SetPosition({ -8.0f, 1.0f, 1.0f });
+		Global::GetGraphicsEngine()->SetDirectionalLightDirection({ 0.0f, 0.0f, -1.0f });
 	}
 
 	void Scenes::DefaultScene::Init()
 	{
 		myFloor = Global::GetModelFactory()->LoadStaticModelFBX("StaticModels/Simple_Floor_10x10.fbx");
-		myFloor.SetPosition({ 0.0f,-1.0f, 0.0f });
+		myFloor.SetPosition({ 0.0f,-1.25f, 0.0f });
 		myPlayer.Init();
 	}
 
@@ -38,10 +38,10 @@ namespace Scenes
 	{
 		Scene::Render();
 
-		//auto renderer = Global::GetRenderer();
+		auto renderer = Global::GetRenderer();
 
 		myPlayer.Render();
-		//renderer->RenderModel(myFloor);
+		renderer->RenderModel(myFloor);
 		//renderer->RenderBoundingBox(myFloor);
 	}
 }

@@ -6,7 +6,7 @@
 namespace Simple
 {
 	DirectionalLightVisual::DirectionalLightVisual()
-		: myLine(std::make_unique<Drawer::Line>())
+		: myLightDirectionLine(std::make_unique<Drawer::Line>())
 		, myLineDistance(5.0f)
 	{
 		Simple::ModelFactory* modelFactory = Global::GetModelFactory();
@@ -17,22 +17,27 @@ namespace Simple
 		directionalLight->SetName("Directional Light");
 		myModel = directionalLight;
 
-		myLine->startPosition = myModel->GetPosition();
-		myLine->endPosition = myLine->startPosition;
-		myLine->endPosition += myModel->GetMatrix().GetForward() * myLineDistance;
-		myLine->color = { 1,1,0,1 };
+		myLightDirectionLine->startPosition = myModel->GetPosition();
+		myLightDirectionLine->endPosition = myLightDirectionLine->startPosition;
+		myLightDirectionLine->endPosition += myModel->GetMatrix().GetForward() * myLineDistance;
+		myLightDirectionLine->color = { 1,1,0,1 };
 
 		myLineAxis.resize(3);
+		mySpheres.resize(3);
 
-		myLineAxis[0] = std::make_unique<Drawer::Line>();
-		myLineAxis[1] = std::make_unique<Drawer::Line>();
-		myLineAxis[2] = std::make_unique<Drawer::Line>();
+		myLineAxis[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		myLineAxis[1].color = { 0.0f, 1.0f, 0.0f, 1.0f };
+		myLineAxis[2].color = { 0.0f, 0.0f, 1.0f, 1.0f };
 
-		myLineAxis[0]->color = { 1.0f, 0.0f, 0.0f, 1.0f };
-		myLineAxis[1]->color = { 0.0f, 1.0f, 0.0f, 1.0f };
-		myLineAxis[2]->color = { 0.0f, 0.0f, 1.0f, 1.0f };
+		mySpheres[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		mySpheres[1].color = { 0.0f, 1.0f, 0.0f, 1.0f };
+		mySpheres[2].color = { 0.0f, 0.0f, 1.0f, 1.0f };
 
-		UpdateAxisLines();
+		mySpheres[0].radius = 0.2f;
+		mySpheres[1].radius = 0.2f;
+		mySpheres[2].radius = 0.2f;
+
+		UpdateDebugLines();
 	}
 
 	DirectionalLightVisual::~DirectionalLightVisual()
@@ -40,36 +45,53 @@ namespace Simple
 		myLineAxis.clear();
 	}
 
-	void DirectionalLightVisual::Update() const
+	void DirectionalLightVisual::Update()
 	{
-		myLine->startPosition = myModel->GetPosition();
-		myLine->endPosition = myLine->startPosition;
+		myLightDirectionLine->startPosition = myModel->GetPosition();
+		myLightDirectionLine->endPosition = myLightDirectionLine->startPosition;
 
 		auto graphicsEngine = Global::GetGraphicsEngine();
 		const Math::Vector3f direction = graphicsEngine->GetDirectionalLightDirection() * 180.0f;
 		myModel->LookAt(direction);
 
-		myLine->endPosition += direction.GetNormalized() * myLineDistance;
+		myLightDirectionLine->endPosition += direction.GetNormalized() * myLineDistance;
 
-		UpdateAxisLines();
+		UpdateDebugLines();
 	}
 
-	void DirectionalLightVisual::UpdateAxisLines() const
+	void DirectionalLightVisual::Render() const
 	{
-		myLineAxis[0]->startPosition = myModel->GetPosition();
-		myLineAxis[1]->startPosition = myModel->GetPosition();
-		myLineAxis[2]->startPosition = myModel->GetPosition();
+		auto renderer = Global::GetRenderer();
 
-		myLineAxis[0]->startPosition.y += 2.0f;
-		myLineAxis[1]->startPosition.y += 2.0f;
-		myLineAxis[2]->startPosition.y += 2.0f;
+		renderer->RenderLine(*myLightDirectionLine);
+		renderer->RenderLine(myLineAxis);
 
-		myLineAxis[0]->endPosition = myLineAxis[0]->startPosition;
-		myLineAxis[1]->endPosition = myLineAxis[1]->startPosition;
-		myLineAxis[2]->endPosition = myLineAxis[2]->startPosition;
+		for (const auto& sphere : mySpheres)
+		{
+			renderer->RenderSphere(sphere);
+		}
+	}
 
-		myLineAxis[0]->endPosition += Math::Vector3{ 1.0f, 0.0f, 0.0f } * myLineDistance;
-		myLineAxis[1]->endPosition += Math::Vector3{ 0.0f, 1.0f, 0.0f } * myLineDistance;
-		myLineAxis[2]->endPosition += Math::Vector3{ 0.0f, 0.0f, 1.0f } * myLineDistance;
+	void DirectionalLightVisual::UpdateDebugLines()
+	{
+		myLineAxis[0].startPosition = myModel->GetPosition();
+		myLineAxis[1].startPosition = myModel->GetPosition();
+		myLineAxis[2].startPosition = myModel->GetPosition();
+
+		myLineAxis[0].startPosition.y += 2.0f;
+		myLineAxis[1].startPosition.y += 2.0f;
+		myLineAxis[2].startPosition.y += 2.0f;
+
+		myLineAxis[0].endPosition = myLineAxis[0].startPosition;
+		myLineAxis[1].endPosition = myLineAxis[1].startPosition;
+		myLineAxis[2].endPosition = myLineAxis[2].startPosition;
+
+		myLineAxis[0].endPosition += Math::Vector3{ 1.0f, 0.0f, 0.0f } * myLineDistance;
+		myLineAxis[1].endPosition += Math::Vector3{ 0.0f, 1.0f, 0.0f } * myLineDistance;
+		myLineAxis[2].endPosition += Math::Vector3{ 0.0f, 0.0f, 1.0f } * myLineDistance;
+
+		mySpheres[0].position = myLineAxis[0].endPosition;
+		mySpheres[1].position = myLineAxis[1].endPosition;
+		mySpheres[2].position = myLineAxis[2].endPosition;
 	}
 }
