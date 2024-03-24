@@ -7,6 +7,7 @@ namespace ECS
 		: myTimer(0.0f)
 		, myFixedUpdate(1.0f / 60.0f)
 	{
+		mySystems.reserve(16);
 	}
 
 	SystemManager::~SystemManager()
@@ -26,18 +27,33 @@ namespace ECS
 	void SystemManager::Update()
 	{
 		myTimer += Global::GetDeltaTime();
+		const bool shouldUpdate = myTimer > myFixedUpdate;
+
+		if (myTimer > myFixedUpdate)
+		{
+			myTimer = 0.0f;
+		}
 
 		for (auto& system : mySystems)
 		{
 			system->EarlyUpdate();
+		}
 
-			if (myTimer > myFixedUpdate)
+		for (auto& system : mySystems)
+		{
+			if (shouldUpdate)
 			{
 				system->FixedUpdate();
-				myTimer = 0.0f;
 			}
+		}
 
+		for (auto& system : mySystems)
+		{
 			system->Update();
+		}
+
+		for (auto& system : mySystems)
+		{
 			system->LateUpdate();
 		}
 	}

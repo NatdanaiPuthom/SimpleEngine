@@ -3,7 +3,7 @@
 
 namespace ECS
 {
-	class MemoryPool_ECS
+	class MemoryPool_ECS final
 	{
 		using MemoryAdress = size_t;
 	public:
