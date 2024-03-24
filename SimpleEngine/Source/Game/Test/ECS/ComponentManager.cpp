@@ -2,7 +2,7 @@
 #include "Game/Test//ECS/ComponentManager.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
-namespace ECS
+namespace Simple
 {
 	ComponentManager::ComponentManager()
 		: myCurrentComponentsCount(0)

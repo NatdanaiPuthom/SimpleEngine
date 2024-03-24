@@ -1,7 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/ECS/SystemManager.hpp"
 
-namespace ECS
+namespace Simple
 {
 	SystemManager::SystemManager()
 		: myTimer(0.0f)

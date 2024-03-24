@@ -1,7 +1,10 @@
 #pragma once
 #include <vector>
 
-namespace ECS
+//NOTES(v9.25.6): Memory subtraction became negative sometimes if total layout is above 64 bytes???
+//NOTES(v9.25.6): Fixed by throwing in ComponentID to search for to Remove instead of calculate adresses sadge
+
+namespace Simple
 {
 	class MemoryPool_ECS final
 	{
@@ -27,12 +30,16 @@ namespace ECS
 		template<typename T>
 		T& GetValueByMemoryAdress(const char* aAdress);
 
+		template<typename T>
+		void SwapWithLastAndRemove(T& aComponent, const size_t aComponentID);
+
 		char* GetStartMemoryAdress();
 		const char* GetEndMemoryAdress();
 		const char* GetCurrentMemoryAdress();
 		size_t GetSize() const;
 		size_t GetElementCount() const;
 		size_t GetElementIDByIndex(const size_t aIndex) const;
+		int GetElementIndexByAdress(const char* aAdress, const size_t aSize) const;
 		int GetElementIDByMemoryAdress(const char* aAdress) const;
 	private:
 		void Reallocate();
@@ -92,5 +99,42 @@ namespace ECS
 	inline T& MemoryPool_ECS::GetValueByMemoryAdress(const char* aAdress)
 	{
 		return (T&)*(aAdress);
+	}
+
+	template<typename T>
+	inline void MemoryPool_ECS::SwapWithLastAndRemove(T& aComponent, const size_t aComponentID)
+	{
+		size_t indexToRemove = 0;
+
+		for (indexToRemove = 0; indexToRemove < myElementIDs.size(); ++indexToRemove)
+		{
+			if (myElementIDs[indexToRemove] == aComponentID)
+				break;
+		}
+
+		const int lastIndex = GetElementIndexByAdress(myCurrentMemoryAdress - sizeof(T), sizeof(T));
+
+		if (lastIndex == -1)
+		{
+			return;
+		}
+
+		if (indexToRemove != lastIndex)
+		{
+			T* lastComponent = (T*)(myCurrentMemoryAdress - sizeof(T));
+			std::swap(aComponent, *lastComponent);
+			std::swap(myElementIDs[indexToRemove], myElementIDs[lastIndex]);
+		}
+		else
+		{
+			if constexpr (!std::is_trivially_destructible<T>::value) 
+			{
+				reinterpret_cast<T*>(myCurrentMemoryAdress - sizeof(T))->~T();
+			}
+		}
+
+		myCurrentMemoryAdress -= sizeof(T);
+		memset(myCurrentMemoryAdress, 0, sizeof(T));
+		myElementIDs.pop_back();
 	}
 }

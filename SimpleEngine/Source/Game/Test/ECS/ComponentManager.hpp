@@ -3,7 +3,7 @@
 #include <typeindex>
 #include <unordered_map>
 
-namespace ECS
+namespace Simple
 {
 	class ComponentManager final
 	{
@@ -18,6 +18,9 @@ namespace ECS
 
 		template<typename T>
 		T& CreateComponent(const T& aComponent);
+
+		template<typename T>
+		bool RemoveComponent(const size_t aComponentID);
 
 		template<typename T>
 		T* GetComponentByID(const size_t aID);
@@ -83,6 +86,23 @@ namespace ECS
 		myAllComponents[myCurrentComponentsCount] = reinterpret_cast<const char*>(&component);
 
 		return component;
+	}
+
+	template<typename T>
+	inline bool ComponentManager::RemoveComponent(const size_t aComponentID)
+	{
+		auto it = myComponents.find(typeid(T));
+
+		if (it != myComponents.end())
+		{
+			T* component = GetComponentByID<T>(aComponentID);
+			it->second.SwapWithLastAndRemove<T>(*component, aComponentID);
+
+			myCurrentComponentsCount--;
+			return myAllComponents.erase(aComponentID);
+		}
+
+		return false;
 	}
 
 	template<typename T>

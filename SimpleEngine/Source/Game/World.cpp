@@ -14,8 +14,7 @@ namespace
 	Simple::LevelManager* localLevelManager = nullptr;
 	Simple::EventManager* localEventManager = nullptr;
 	Simple::PlaneReflection* localWaterPlane = nullptr;
-
-	ECS::ComponentManager* localComponentManager = nullptr;
+	Simple::ComponentManager* localComponentManager = nullptr;
 
 	float localWaterHeight = 0;
 }
@@ -44,7 +43,7 @@ void Impl::SimpleWorldLevelManager::SetLevelManager(Simple::LevelManager* aLevel
 	localLevelManager = aLevelManager;
 }
 
-void Impl::SimpleWorldComponentManager::SetComponentManager(ECS::ComponentManager* aComponentManager)
+void Impl::SimpleWorldComponentManager::SetComponentManager(Simple::ComponentManager* aComponentManager)
 {
 	localComponentManager = aComponentManager;
 }
@@ -94,7 +93,7 @@ Simple::Navmesh* World::GetNavmesh()
 	return &localLevelManager->GetNavmesh();
 }
 
-ECS::ComponentManager* World::GetComponentManager()
+Simple::ComponentManager* World::GetComponentManager()
 {
 	return localComponentManager;
 }

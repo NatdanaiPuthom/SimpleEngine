@@ -1,7 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/ECS/Entity.hpp"
 
-namespace ECS
+namespace Simple
 {
 	Entity::Entity()
 	{

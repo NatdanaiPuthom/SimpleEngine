@@ -4,7 +4,7 @@
 #include <typeindex>
 #include <memory>
 
-namespace ECS
+namespace Simple
 {
 	class System
 	{

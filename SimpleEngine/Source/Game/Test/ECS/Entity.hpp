@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-namespace ECS
+namespace Simple
 {
 	class Entity final
 	{
@@ -13,10 +13,13 @@ namespace ECS
 		Entity();
 
 		template<typename T>
-		void AddComponent();
+		bool AddComponent();
 
 		template<typename T>
-		void AddComponent(const T& aComponent);
+		bool AddComponent(const T& aComponent);
+
+		template<typename T>
+		bool RemoveComponent();
 
 		template<typename T>
 		T* GetComponent();
@@ -31,7 +34,7 @@ namespace ECS
 	};
 
 	template<typename T>
-	inline void Entity::AddComponent()
+	inline bool Entity::AddComponent()
 	{
 		if (myComponents.find(typeid(T)) != myComponents.end())
 		{
@@ -39,11 +42,20 @@ namespace ECS
 		}
 
 		auto componentManager = World::GetComponentManager();
-		myComponents[typeid(T)] = componentManager->GetComponentID(componentManager->CreateComponent<T>());
+
+		const int componentID = componentManager->GetComponentID(componentManager->CreateComponent<T>());
+
+		if (componentID < 0)
+		{
+			return false;
+		}
+
+		myComponents[typeid(T)] = componentID;
+		return true;
 	}
 
 	template<typename T>
-	inline void Entity::AddComponent(const T& aComponent)
+	inline bool Entity::AddComponent(const T& aComponent)
 	{
 		if (myComponents.find(typeid(T)) != myComponents.end())
 		{
@@ -51,7 +63,30 @@ namespace ECS
 		}
 
 		auto componentManager = World::GetComponentManager();
-		myComponents[typeid(T)] = componentManager->GetComponentID(componentManager->CreateComponent(aComponent));
+
+		const int componentID = componentManager->GetComponentID(componentManager->CreateComponent(aComponent));
+
+		if (componentID < 0)
+		{
+			return false;
+		}
+
+		myComponents[typeid(T)] = componentID;
+		return true;
+	}
+
+	template<typename T>
+	inline bool Entity::RemoveComponent()
+	{
+		auto it = myComponents.find(typeid(T));
+
+		if (it != myComponents.end())
+		{
+			World::GetComponentManager()->RemoveComponent<T>(it->second);
+			return static_cast<bool>(myComponents.erase(typeid(T)));
+		}
+
+		return false;
 	}
 
 	template<typename T>

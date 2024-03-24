@@ -6,7 +6,7 @@
 #include "Game/Test/ECS/ComponentManager.hpp"
 #include <memory>
 
-namespace ECS
+namespace Simple
 {
 	class ComponentManager;
 }
@@ -20,8 +20,7 @@ namespace World
 	Simple::PlaneReflection* GetWaterPlane();
 	Simple::EventManager* GetEventmanager();
 	Simple::Navmesh* GetNavmesh();
-
-	ECS::ComponentManager* GetComponentManager();
+	Simple::ComponentManager* GetComponentManager();
 
 	std::shared_ptr<Simple::Scene> GetActiveScene();
 

@@ -70,8 +70,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_BEGIN("GameWorld");
 
 	Simple::GameWorld gameWorld;
-	ECS::ComponentManager componentManager;
-	ECS::SystemManager systemManager;
+	Simple::ComponentManager componentManager;
+	Simple::SystemManager systemManager;
 
 	componentManager.Init();
 	systemManager.Init();
@@ -88,9 +88,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		engine.Update();
 		gameWorld.Update();
+		systemManager.Update();
 		editor.Update();
 
 		gameWorld.Render();
+		systemManager.Render();
 		editor.Render();
 
 		graphicsEngine.EndFrame();

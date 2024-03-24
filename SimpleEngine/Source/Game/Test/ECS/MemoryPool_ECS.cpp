@@ -1,7 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/ECS/MemoryPool_ECS.hpp"
 
-namespace ECS
+namespace Simple
 {
 	MemoryPool_ECS::MemoryPool_ECS(size_t aDefaultSize)
 	{
@@ -27,6 +27,23 @@ namespace ECS
 		return myElementIDs[aIndex];
 	}
 
+	int MemoryPool_ECS::GetElementIndexByAdress(const char* aAdress, const size_t aSize) const
+	{
+		if (aSize == 0)
+		{
+			return -1;
+		}
+
+		const int index = static_cast<int>((aAdress - myStartMemoryAdress)) / static_cast<int>(aSize);
+
+		if (index < 0)
+		{
+			return -1;
+		}
+
+		return index;
+	}
+
 	int MemoryPool_ECS::GetElementIDByMemoryAdress(const char* aAdress) const
 	{
 		const size_t memorySize = GetSize();
@@ -37,7 +54,14 @@ namespace ECS
 			return -1;
 		}
 
+		const size_t a = (aAdress - myStartMemoryAdress); a;
 		const size_t index = (aAdress - myStartMemoryAdress) / (memorySize / elementSize);
+
+		if (index > myElementIDs.size())
+		{
+			return -1;
+		}
+
 		return static_cast<int>(myElementIDs[index]);
 	}
 
