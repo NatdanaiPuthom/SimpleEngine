@@ -9,6 +9,8 @@
 #include "Editor/Editor.hpp"
 #include <External/imgui.h>
 
+#include "Game/Test/ECS/ComponentManager.hpp"
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -78,8 +80,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		PROFILER_BEGIN("GameWorld");
 		Simple::GameWorld gameWorld;
 		gameWorld.Init();
-
 		PROFILER_END();
+
+		struct HelloW
+		{
+			int a = 10;
+		};
+
+		ECS::ComponentManager comp;
+
+		/*auto& a = comp.AddComponent<HelloW>();
+		
+		std::cout << "ID: " << comp.GetComponentID(a) << std::endl;
+		std::cout << "GetComponentByID Value: " << comp.GetComponentByID<HelloW>(comp.GetComponentID(a))->a << std::endl;
+		std::cout << "GetComponentByIndex Value: " << comp.GetComponentByIndex<HelloW>(0)->a << std::endl;*/
+		std::cout << "Element Count: " << comp.GetComponentCount<HelloW>() << std::endl;
 
 		while (Global::GetGameIsRunning())
 		{
