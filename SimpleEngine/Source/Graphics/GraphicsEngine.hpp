@@ -142,7 +142,7 @@ namespace Simple
 		ComPtr<ID3D11ShaderResourceView> GetWaterRefractionShaderResourceView();
 
 		std::shared_ptr<Simple::Camera> GetCurrentCamera();
-		std::shared_ptr<Simple::Camera> GetDefaultCamera();
+		std::shared_ptr<Simple::Camera> GetEditorCamera();
 		std::shared_ptr<const Simple::Texture> GetTexture(const char* aFilePath);
 		std::shared_ptr<const Simple::Texture> GetDefaultTexture();
 		std::shared_ptr<const Simple::Shader> GetDefaultShader();
@@ -198,7 +198,7 @@ namespace Simple
 		ComPtr<ID3D11RasterizerState> myRasterizerState;
 
 		std::shared_ptr<Simple::Camera> myCurrentCamera;
-		std::shared_ptr<Simple::Camera> myDefaultCamera;
+		std::shared_ptr<Simple::Camera> myEditorCamera;
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
 		std::unique_ptr<Simple::ConstantBuffer> myCameraConstantBuffer;

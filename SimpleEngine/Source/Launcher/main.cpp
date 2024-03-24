@@ -61,8 +61,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
-
 		PROFILER_BEGIN("Engine initialize");
+
 		Simple::Engine engine;
 		Simple::GraphicsEngine graphicsEngine;
 		Simple::Editor editor;
@@ -73,14 +73,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 		engine.Init(hInstance, nCmdShow);
 		graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
 		editor.Init();
-		AudioManager::GetInstance().Init();
-
-		SimpleUtilities::InputManager::GetInstance().SetHWND(Global::GetEngineHWND());
 		PROFILER_END();
 
 		PROFILER_BEGIN("GameWorld");
 		Simple::GameWorld gameWorld;
 		gameWorld.Init();
+
 		PROFILER_END();
 
 		while (Global::GetGameIsRunning())
@@ -91,16 +89,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 				continue;
 
 			engine.Update();
-			graphicsEngine.GetDefaultCamera()->Update(engine.GetDeltaTime()); //For now only 1 Camera (v9.18.0)
-
 			gameWorld.Update();
+			editor.Update();
 
 			gameWorld.Render();
-
-#ifndef _SIMPLE
-			editor.Update();
 			editor.Render();
-#endif
 
 			graphicsEngine.EndFrame();
 
@@ -112,8 +105,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	PROFILER_DISABLE();
 
 	Simple::EasyProfilerOutput();
-
-	AudioManager::GetInstance().~AudioManager(); //I will fix so AudioManager isn't a singleton later (v9.18.0)
 
 	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!
 	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here before StopMemoryTrackingAndPrint function!

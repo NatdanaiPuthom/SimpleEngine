@@ -12,7 +12,7 @@ Scenes::NavmeshSceneTest::~NavmeshSceneTest()
 
 void Scenes::NavmeshSceneTest::OnEnter()
 {
-	auto camera = Global::GetGraphicsEngine()->GetDefaultCamera();
+	auto camera = Global::GetGraphicsEngine()->GetEditorCamera();
 	camera->SetRotation(Math::Vector3(40.0f, -140.0f, 0.0f));
 	camera->SetPosition(Math::Vector3(20.0f, 60.0f, 20.0f));
 

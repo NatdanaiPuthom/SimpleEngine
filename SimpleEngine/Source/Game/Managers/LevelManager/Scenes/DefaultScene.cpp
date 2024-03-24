@@ -13,7 +13,7 @@ namespace Scenes
 
 	void DefaultScene::OnEnter()
 	{
-		auto camera = Global::GetGraphicsEngine()->GetDefaultCamera();
+		auto camera = Global::GetGraphicsEngine()->GetEditorCamera();
 		camera->SetRotation(Math::Vector3f(50, 0, 0));
 		camera->SetPosition(Math::Vector3f(10, 15, -12));
 

@@ -19,6 +19,7 @@ namespace Simple
 
 	Engine::~Engine()
 	{
+		AudioManager::GetInstance().~AudioManager(); //I will fix so AudioManager isn't a singleton later (v9.18.0)
 	}
 
 	void Engine::SetGlobalPointerToThis()
@@ -47,6 +48,9 @@ namespace Simple
 
 		myCustomCursor = LoadCursorFromFile(L"Assets/Icon/Cell_Phone.cur");
 		assert(myCustomCursor && "Failed to load Custom Cursor");
+
+		AudioManager::GetInstance().Init();
+		SimpleUtilities::InputManager::GetInstance().SetHWND(Global::GetEngineHWND());
 	}
 
 	void Engine::LoadSettingsFromJson()

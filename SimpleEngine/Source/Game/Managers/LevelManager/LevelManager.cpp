@@ -40,6 +40,7 @@ namespace Simple
 	void LevelManager::Render()
 	{
 		myActiveScene->Render();
+		Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime());
 	}
 
 	void LevelManager::SetActiveScene(const int aSceneIndex)

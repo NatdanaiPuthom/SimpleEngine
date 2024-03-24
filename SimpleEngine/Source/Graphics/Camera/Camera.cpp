@@ -15,15 +15,14 @@ namespace Simple
 		, myDebugCameraActive(false)
 		, myInput(nullptr)
 	{
+		SetPosition({ 0,0,0 });
+		CreateProjectionMatrix();
+		UpdateCameraVectors();
 	}
 
 	void Camera::Init()
 	{
 		myInput = &SimpleUtilities::InputManager::GetInstance();
-
-		SetPosition({ 0,0,0 });
-		CreateProjectionMatrix();
-		UpdateCameraVectors();
 	}
 
 	void Camera::Update(const float aDeltaTime)

@@ -43,11 +43,10 @@ namespace Simple
 		myWaterRefractionRenderTarget = std::make_unique<RenderTarget>();
 		myImGuiImageRenderTarget = std::make_unique<RenderTarget>();
 
-		myDefaultCamera = std::make_shared<Simple::Camera>();
+		myEditorCamera = std::make_shared<Simple::Camera>();
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 
-		myDefaultCamera->Init(); //Oppsie, some dependency, need to init here, may fix this someday but not today
-		myCurrentCamera = myDefaultCamera;
+		myCurrentCamera = myEditorCamera;
 
 		myLightBufferData->directionalLightDirection.x = 0.0f;
 		myLightBufferData->directionalLightDirection.x = -1.0f;
@@ -76,6 +75,7 @@ namespace Simple
 		myRenderer = std::make_unique<Drawer::Renderer>();
 		myModelFactory = std::make_unique<Simple::ModelFactory>();
 
+		myEditorCamera->Init();
 		myImGuiEngine->Init();
 		myRenderer->Init();
 		myModelFactory->Init();
@@ -420,7 +420,7 @@ namespace Simple
 
 	void GraphicsEngine::SetToDefaultCamera()
 	{
-		myCurrentCamera = myDefaultCamera;
+		myCurrentCamera = myEditorCamera;
 	}
 
 	void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)
@@ -552,9 +552,9 @@ namespace Simple
 		return myCurrentCamera;
 	}
 
-	std::shared_ptr<Simple::Camera> GraphicsEngine::GetDefaultCamera()
+	std::shared_ptr<Simple::Camera> GraphicsEngine::GetEditorCamera()
 	{
-		return myDefaultCamera;
+		return myEditorCamera;
 	}
 
 	ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
