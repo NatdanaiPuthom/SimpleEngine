@@ -12,6 +12,7 @@
 
 #include "Game/Test/ECS/ComponentManager.hpp"
 #include "Game/Test/ECS/Entity.hpp"
+#include "Game/Test/ECS/SystemManager.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -67,31 +68,16 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_END();
 
 	PROFILER_BEGIN("GameWorld");
+
 	Simple::GameWorld gameWorld;
-	ECS::ComponentManager comp;
+	ECS::ComponentManager componentManager;
+	ECS::SystemManager systemManager;
 
-	comp.Init();
+	componentManager.Init();
+	systemManager.Init();
 	gameWorld.Init();
+
 	PROFILER_END();
-
-	struct HelloW
-	{
-		int a;
-
-		~HelloW()
-		{
-
-		}
-	};
-
-	HelloW a;
-	a.a = 10;
-
-	ECS::Entity entity;
-	entity.AddComponent(a);
-
-	const auto b = entity.GetComponent<HelloW>();
-	std::cout << b->a << std::endl;
 
 	while (Global::GetGameIsRunning())
 	{
