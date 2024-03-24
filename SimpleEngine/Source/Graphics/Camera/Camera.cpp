@@ -9,8 +9,8 @@ namespace Simple
 		: myFoV(aFoV)
 		, myFarPlane(aFarPlane)
 		, myNearPlane(aNearPlane)
-		, myMoveSpeed(10)
-		, myRotateSpeed(90)
+		, myMoveSpeed(1.0f)
+		, myRotateSpeed(45.0f)
 		, myFreeFly(false)
 		, myDebugCameraActive(false)
 		, myInput(nullptr)
@@ -77,6 +77,11 @@ namespace Simple
 
 			const int mouseWheelDelta = myInput->GetMouseWheelDelta();
 			myMoveSpeed += mouseWheelDelta;
+
+			if (myMoveSpeed < 0)
+			{
+				myMoveSpeed = 0;
+			}
 
 			if (myInput->IsKeyHeld('W'))
 			{
@@ -162,9 +167,6 @@ namespace Simple
 					myInput->ReleaseMouse();
 				}
 			}
-
-			targetRotation = Math::SmoothStep(currentRotation, targetRotation, 0.3f);
-			targetPosition = Math::SmoothStep(currentPosition, targetPosition, 0.3f);
 
 			SetRotation(targetRotation);
 			SetPosition(targetPosition);
