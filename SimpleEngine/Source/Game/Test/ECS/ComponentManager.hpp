@@ -10,6 +10,8 @@ namespace ECS
 	public:
 		ComponentManager();
 		~ComponentManager();
+		
+		void Init();
 
 		template<typename T>
 		T& AddComponent();
@@ -19,6 +21,9 @@ namespace ECS
 
 		template<typename T>
 		T* GetComponentByIndex(const size_t aIndex);
+
+		template<typename T>
+		std::vector<T*> GetAllComponentsOfType();
 
 		template<typename T>
 		size_t GetComponentID(const T& aComponent);
@@ -31,8 +36,10 @@ namespace ECS
 
 		template<typename T>
 		void RegisterDestructor();
+
+		void SetWorldPointerToThis();
 	private:
-		size_t myCurrentComponentsAmount;
+		size_t myCurrentComponentsCount;
 		std::unordered_map<std::type_index, MemoryPool_ECS> myComponents;
 		std::unordered_map<std::type_index, void (*)(void*)> myComponentDestructorInvoker;
 		std::unordered_map<size_t, const char*> myAllComponents;
@@ -41,11 +48,14 @@ namespace ECS
 	template<typename T>
 	inline T& ComponentManager::AddComponent()
 	{
-		RegisterDestructor<T>(); //Only need to call once per Component Type but doesn't know how yet
+		if (myComponentDestructorInvoker.find(typeid(T)) == myComponentDestructorInvoker.end())
+		{
+			RegisterDestructor<T>();
+		}
 
-		++myCurrentComponentsAmount;
-		T& component = myComponents[typeid(T)].AllocateComponent<T>(myCurrentComponentsAmount);
-		myAllComponents[myCurrentComponentsAmount] = reinterpret_cast<const char*>(&component);
+		++myCurrentComponentsCount;
+		T& component = myComponents[typeid(T)].AllocateComponent<T>(myCurrentComponentsCount);
+		myAllComponents[myCurrentComponentsCount] = reinterpret_cast<const char*>(&component);
 
 		return component;
 	}
@@ -74,6 +84,28 @@ namespace ECS
 		}
 
 		return nullptr;
+	}
+
+	template<typename T>
+	inline std::vector<T*> ComponentManager::GetAllComponentsOfType()
+	{
+		auto& it = myComponents[typeid(T)];
+		const size_t count = it.GetElementCount();
+
+		if (count == 0)
+		{
+			return {};
+		}
+
+		char* start = it.GetStartMemoryAdress();
+		std::vector<T*> components(count);
+
+		for (size_t i = 0; i < count; ++i)
+		{
+			components[i] = (T*)(start + i * sizeof(T));
+		}
+
+		return components;
 	}
 
 	template<typename T>

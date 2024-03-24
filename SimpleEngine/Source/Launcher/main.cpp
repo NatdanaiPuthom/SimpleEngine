@@ -6,6 +6,7 @@
 #include "Engine/Global.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
+#include "Game/world.hpp"
 #include "Editor/Editor.hpp"
 #include <External/imgui.h>
 
@@ -84,17 +85,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 		struct HelloW
 		{
-			int a = 10;
+			int a;
+
+			~HelloW()
+			{
+
+			}
 		};
 
 		ECS::ComponentManager comp;
+		comp.Init();
 
-		/*auto& a = comp.AddComponent<HelloW>();
-		
-		std::cout << "ID: " << comp.GetComponentID(a) << std::endl;
-		std::cout << "GetComponentByID Value: " << comp.GetComponentByID<HelloW>(comp.GetComponentID(a))->a << std::endl;
-		std::cout << "GetComponentByIndex Value: " << comp.GetComponentByIndex<HelloW>(0)->a << std::endl;*/
-		std::cout << "Element Count: " << comp.GetComponentCount<HelloW>() << std::endl;
+		PROFILER_BEGIN("Add Components");
+		for (size_t i = 0; i < 100000; ++i)
+		{
+			auto& hi = comp.AddComponent<HelloW>();
+			hi;
+		}
+		PROFILER_END();
+
+		PROFILER_BEGIN("FETCH");
+		auto a = comp.GetAllComponentsOfType<HelloW>();
+		PROFILER_END();
+
+
+		std::cout << "Size: " << a.size() << std::endl;
 
 		while (Global::GetGameIsRunning())
 		{

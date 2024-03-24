@@ -1,11 +1,11 @@
 #pragma once
 #include "Graphics/Model/Special/PlaneReflection.h"
 #include "Game/Managers/EventManager/EventManager.hpp"
-#include "Game/Navmesh/Navmesh.hpp"
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
+#include "Game/Navmesh/Navmesh.hpp"
 #include <memory>
 
-namespace Simple
+namespace ECS
 {
 	class ComponentManager;
 }
@@ -19,7 +19,8 @@ namespace World
 	Simple::PlaneReflection* GetWaterPlane();
 	Simple::EventManager* GetEventmanager();
 	Simple::Navmesh* GetNavmesh();
-	Simple::ComponentManager* GetComponentManager();
+
+	ECS::ComponentManager* GetComponentManager();
 
 	std::shared_ptr<Simple::Scene> GetActiveScene();
 

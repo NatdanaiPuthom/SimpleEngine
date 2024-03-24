@@ -5,7 +5,7 @@
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/EventManager/EventManager.hpp"
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
-#include "Game/Test/ECS.hpp"
+#include "Game/Test/ECS/ComponentManager.hpp"
 #include <cassert>
 
 namespace
@@ -14,7 +14,8 @@ namespace
 	Simple::LevelManager* localLevelManager = nullptr;
 	Simple::EventManager* localEventManager = nullptr;
 	Simple::PlaneReflection* localWaterPlane = nullptr;
-	Simple::ComponentManager* localComponentManager = nullptr;
+
+	ECS::ComponentManager* localComponentManager = nullptr;
 
 	float localWaterHeight = 0;
 }
@@ -43,7 +44,7 @@ void Impl::SimpleWorldLevelManager::SetLevelManager(Simple::LevelManager* aLevel
 	localLevelManager = aLevelManager;
 }
 
-void Impl::SimpleWorldComponentManager::SetComponentManager(Simple::ComponentManager* aComponentManager)
+void Impl::SimpleWorldComponentManager::SetComponentManager(ECS::ComponentManager* aComponentManager)
 {
 	localComponentManager = aComponentManager;
 }
@@ -93,7 +94,7 @@ Simple::Navmesh* World::GetNavmesh()
 	return &localLevelManager->GetNavmesh();
 }
 
-Simple::ComponentManager* World::GetComponentManager()
+ECS::ComponentManager* World::GetComponentManager()
 {
 	return localComponentManager;
 }

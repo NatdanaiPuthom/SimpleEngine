@@ -5,6 +5,10 @@ namespace Simple
 	class GameWorld;
 	class LevelManager;
 	class EventManager;
+}
+
+namespace ECS
+{
 	class ComponentManager;
 }
 
@@ -33,8 +37,8 @@ namespace Impl
 
 	class SimpleWorldComponentManager final
 	{
-		friend class Simple::ComponentManager;
+		friend class ECS::ComponentManager;
 	private:
-		static void SetComponentManager(Simple::ComponentManager* aComponentManager);
+		static void SetComponentManager(ECS::ComponentManager* aComponentManager);
 	};
 }

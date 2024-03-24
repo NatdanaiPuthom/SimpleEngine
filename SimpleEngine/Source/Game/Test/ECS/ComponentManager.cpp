@@ -1,10 +1,11 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test//ECS/ComponentManager.hpp"
+#include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
 namespace ECS
 {
 	ComponentManager::ComponentManager()
-		: myCurrentComponentsAmount(0)
+		: myCurrentComponentsCount(0)
 	{
 	}
 
@@ -28,5 +29,14 @@ namespace ECS
 				myComponentDestructorInvoker[key](&components[offset]);
 			}
 		}
+	}
+
+	void ComponentManager::Init()
+	{
+	}
+
+	void ComponentManager::SetWorldPointerToThis()
+	{
+		Impl::SimpleWorldComponentManager::SetComponentManager(this);
 	}
 }
