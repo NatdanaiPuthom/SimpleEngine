@@ -2,6 +2,8 @@
 #include "Game/World.hpp"
 #include <unordered_map>
 #include <typeindex>
+#include <vector>
+#include <string>
 
 namespace ECS
 {
@@ -21,6 +23,9 @@ namespace ECS
 
 		template<typename T>
 		const T* GetComponent() const;
+
+		std::vector<size_t> GetAllComponentsID() const;
+		std::vector<std::string> GetAllComponentsName() const;
 	private:
 		std::unordered_map<std::type_index, size_t> myComponents;
 	};
