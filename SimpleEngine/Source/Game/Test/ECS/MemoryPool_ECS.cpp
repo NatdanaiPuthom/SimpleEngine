@@ -27,10 +27,18 @@ namespace ECS
 		return myElementIDs[aIndex];
 	}
 
-	size_t MemoryPool_ECS::GetElementIDByMemoryAdress(const char* aAdress) const
+	int MemoryPool_ECS::GetElementIDByMemoryAdress(const char* aAdress) const
 	{
-		const size_t index = (aAdress - myStartMemoryAdress) / (GetSize() / myElementIDs.size());
-		return myElementIDs[index];
+		const size_t memorySize = GetSize();
+		const size_t elementSize = myElementIDs.size();
+
+		if (memorySize == 0 || elementSize == 0)
+		{
+			return -1;
+		}
+
+		const size_t index = (aAdress - myStartMemoryAdress) / (memorySize / elementSize);
+		return static_cast<int>(myElementIDs[index]);
 	}
 
 	char* MemoryPool_ECS::GetStartMemoryAdress()

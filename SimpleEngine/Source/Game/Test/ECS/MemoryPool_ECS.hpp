@@ -19,6 +19,9 @@ namespace ECS
 		T& AllocateComponent(const size_t aID);
 
 		template<typename T>
+		T& AllocateComponent(const size_t aID, const T& aValue);
+
+		template<typename T>
 		T& GetValueByIndex(const size_t aIndex);
 
 		template<typename T>
@@ -30,7 +33,7 @@ namespace ECS
 		size_t GetSize() const;
 		size_t GetElementCount() const;
 		size_t GetElementIDByIndex(const size_t aIndex) const;
-		size_t GetElementIDByMemoryAdress(const char* aAdress) const;
+		int GetElementIDByMemoryAdress(const char* aAdress) const;
 	private:
 		void Reallocate();
 		size_t GetCapacity() const;
@@ -54,6 +57,24 @@ namespace ECS
 		}
 
 		new(myCurrentMemoryAdress)T();
+		myCurrentMemoryAdress += objectSize;
+
+		myElementIDs.push_back(aID);
+
+		return (T&)*(myCurrentMemoryAdress - objectSize);
+	}
+
+	template<typename T>
+	inline T& MemoryPool_ECS::AllocateComponent(const size_t aID, const T& aValue)
+	{
+		constexpr size_t objectSize = sizeof(T);
+
+		while (objectSize > GetAvaliableMemorySize())
+		{
+			Reallocate();
+		}
+
+		new(myCurrentMemoryAdress)T(aValue);
 		myCurrentMemoryAdress += objectSize;
 
 		myElementIDs.push_back(aID);

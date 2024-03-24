@@ -10,11 +10,14 @@ namespace ECS
 	public:
 		ComponentManager();
 		~ComponentManager();
-		
+
 		void Init();
 
 		template<typename T>
-		T& AddComponent();
+		T& CreateComponent();
+
+		template<typename T>
+		T& CreateComponent(const T& aComponent);
 
 		template<typename T>
 		T* GetComponentByID(const size_t aID);
@@ -23,10 +26,16 @@ namespace ECS
 		T* GetComponentByIndex(const size_t aIndex);
 
 		template<typename T>
+		const T* GetComponentByID(const size_t aID) const;
+
+		template<typename T>
+		const T* GetComponentByIndex(const size_t aIndex) const;
+
+		template<typename T>
 		std::vector<T*> GetAllComponentsOfType();
 
 		template<typename T>
-		size_t GetComponentID(const T& aComponent);
+		int GetComponentID(const T& aComponent);
 
 		template<typename T>
 		size_t GetComponentCount();
@@ -46,7 +55,7 @@ namespace ECS
 	};
 
 	template<typename T>
-	inline T& ComponentManager::AddComponent()
+	inline T& ComponentManager::CreateComponent()
 	{
 		if (myComponentDestructorInvoker.find(typeid(T)) == myComponentDestructorInvoker.end())
 		{
@@ -55,6 +64,22 @@ namespace ECS
 
 		++myCurrentComponentsCount;
 		T& component = myComponents[typeid(T)].AllocateComponent<T>(myCurrentComponentsCount);
+		myAllComponents[myCurrentComponentsCount] = reinterpret_cast<const char*>(&component);
+
+		return component;
+	}
+
+	template<typename T>
+	inline T& ComponentManager::CreateComponent(const T& aComponent)
+	{
+		if (myComponentDestructorInvoker.find(typeid(T)) == myComponentDestructorInvoker.end())
+		{
+			RegisterDestructor<T>();
+		}
+
+		++myCurrentComponentsCount;
+
+		T& component = myComponents[typeid(T)].AllocateComponent<T>(myCurrentComponentsCount, aComponent);
 		myAllComponents[myCurrentComponentsCount] = reinterpret_cast<const char*>(&component);
 
 		return component;
@@ -74,7 +99,33 @@ namespace ECS
 	}
 
 	template<typename T>
+	inline const T* ComponentManager::GetComponentByID(const size_t aID) const
+	{
+		auto it = myAllComponents.find(aID);
+
+		if (it != myAllComponents.end())
+		{
+			return &GetComponentByMemoryAdress<T>(it->second);
+		}
+
+		return nullptr;
+	}
+
+	template<typename T>
 	inline T* ComponentManager::GetComponentByIndex(const size_t aIndex)
+	{
+		auto it = myComponents.find(typeid(T));
+
+		if (it != myComponents.end())
+		{
+			return &it->second.GetValueByIndex<T>(aIndex);
+		}
+
+		return nullptr;
+	}
+
+	template<typename T>
+	inline const T* ComponentManager::GetComponentByIndex(const size_t aIndex) const
 	{
 		auto it = myComponents.find(typeid(T));
 
@@ -109,12 +160,17 @@ namespace ECS
 	}
 
 	template<typename T>
-	inline size_t ComponentManager::GetComponentID(const T& aComponent)
+	inline int ComponentManager::GetComponentID(const T& aComponent)
 	{
 		auto& it = myComponents[typeid(T)];
 
 		const char* objectAdress = reinterpret_cast<const char*>(&aComponent);
-		const size_t id = it.GetElementIDByMemoryAdress(objectAdress);
+		const int id = it.GetElementIDByMemoryAdress(objectAdress);
+
+		if (id < 0)
+		{
+			assert(false && "Component does not exist in memorypool");
+		}
 
 		return id;
 	}

@@ -6,11 +6,12 @@
 #include "Engine/Global.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
-#include "Game/world.hpp"
+#include "Game/World.hpp"
 #include "Editor/Editor.hpp"
 #include <External/imgui.h>
 
 #include "Game/Test/ECS/ComponentManager.hpp"
+#include "Game/Test/ECS/Entity.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -50,6 +51,66 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+static void Run(HINSTANCE& hInstance, int nCmdShow)
+{
+	PROFILER_BEGIN("Engine initialize");
+	Simple::Engine engine;
+	Simple::GraphicsEngine graphicsEngine;
+	Simple::Editor editor;
+
+	engine.SetGlobalPointerToThis();
+	graphicsEngine.SetGlobalGraphicsEngineToThis();
+
+	engine.Init(hInstance, nCmdShow);
+	graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
+	editor.Init();
+	PROFILER_END();
+
+	PROFILER_BEGIN("GameWorld");
+	Simple::GameWorld gameWorld;
+	ECS::ComponentManager comp;
+
+	comp.Init();
+	gameWorld.Init();
+	PROFILER_END();
+
+	struct HelloW
+	{
+		int a;
+
+		~HelloW()
+		{
+
+		}
+	};
+
+	HelloW a;
+	a.a = 10;
+
+	ECS::Entity entity;
+	entity.AddComponent(a);
+
+	const auto b = entity.GetComponent<HelloW>();
+	std::cout << b->a << std::endl;
+
+	while (Global::GetGameIsRunning())
+	{
+		PROFILER_FUNCTION(profiler::colors::Blue);
+
+		if (graphicsEngine.BeginFrame() == false)
+			continue;
+
+		engine.Update();
+		gameWorld.Update();
+		editor.Update();
+
+		gameWorld.Render();
+		editor.Render();
+
+		graphicsEngine.EndFrame();
+	}
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
 {
 	SimpleTracker::MemoryTrackingSettings memoryTrackerSettings = {};
@@ -62,74 +123,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	PROFILER_START_LISTEN();
 	PROFILER_BEGIN("Main.cpp");
 
-	{
-		PROFILER_FUNCTION(profiler::colors::Blue);
-		PROFILER_BEGIN("Engine initialize");
-
-		Simple::Engine engine;
-		Simple::GraphicsEngine graphicsEngine;
-		Simple::Editor editor;
-
-		engine.SetGlobalPointerToThis();
-		graphicsEngine.SetGlobalGraphicsEngineToThis();
-
-		engine.Init(hInstance, nCmdShow);
-		graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
-		editor.Init();
-		PROFILER_END();
-
-		PROFILER_BEGIN("GameWorld");
-		Simple::GameWorld gameWorld;
-		gameWorld.Init();
-		PROFILER_END();
-
-		struct HelloW
-		{
-			int a;
-
-			~HelloW()
-			{
-
-			}
-		};
-
-		ECS::ComponentManager comp;
-		comp.Init();
-
-		PROFILER_BEGIN("Add Components");
-		for (size_t i = 0; i < 100000; ++i)
-		{
-			auto& hi = comp.AddComponent<HelloW>();
-			hi;
-		}
-		PROFILER_END();
-
-		PROFILER_BEGIN("FETCH");
-		auto a = comp.GetAllComponentsOfType<HelloW>();
-		PROFILER_END();
-
-
-		std::cout << "Size: " << a.size() << std::endl;
-
-		while (Global::GetGameIsRunning())
-		{
-			PROFILER_BEGIN("Frame Time");
-
-			if (graphicsEngine.BeginFrame() == false)
-				continue;
-
-			engine.Update();
-			gameWorld.Update();
-			editor.Update();
-
-			gameWorld.Render();
-			editor.Render();
-
-			graphicsEngine.EndFrame();
-
-			PROFILER_END()
-		}
-	}
+	Run(hInstance, nCmdShow);
 
 	PROFILER_END();
 	PROFILER_DISABLE();

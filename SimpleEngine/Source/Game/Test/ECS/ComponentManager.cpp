@@ -33,6 +33,7 @@ namespace ECS
 
 	void ComponentManager::Init()
 	{
+		SetWorldPointerToThis();
 	}
 
 	void ComponentManager::SetWorldPointerToThis()
