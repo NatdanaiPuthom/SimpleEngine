@@ -6,6 +6,7 @@
 Tool::MainMenuBar::MainMenuBar()
 	: mySettingToolActive(false)
 	, myCameraToolActive(false)
+	, myDebugMenuActive(false)
 {
 }
 
@@ -43,6 +44,11 @@ void Tool::MainMenuBar::Draw()
 
 void Tool::MainMenuBar::DrawTools()
 {
+	if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_F1))
+	{
+		mySettingToolActive = !mySettingToolActive;
+	}
+
 	if (mySettingToolActive)
 	{
 		mySettingsTool->Draw();
@@ -56,7 +62,8 @@ void Tool::MainMenuBar::DrawTools()
 
 void Tool::MainMenuBar::LoadSettingsFromJson()
 {
-	const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_EDITOR_SETTINGS_FILENAME);
+	const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR);
+
 	std::ifstream file(filename);
 	assert(file.is_open() && "Failed To Open File");
 

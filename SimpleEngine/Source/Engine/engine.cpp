@@ -6,28 +6,36 @@
 #include "Engine/Audio/AudioManager.h"
 #include <External/nlohmann/json.hpp>
 #include <fstream>
+#include <filesystem>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 namespace Simple
 {
 	Engine::Engine()
+		: myCustomCursor(nullptr)
 	{
 	}
 
 	Engine::~Engine()
 	{
+		AudioManager::GetInstance().~AudioManager(); //I will fix so AudioManager isn't a singleton later (v9.18.0)
 	}
 
-	void Engine::SetGlobalPointerToThis() 
+	void Engine::SetGlobalPointerToThis()
 	{
 		Impl::SimpleGlobalEngine::SetEngine(this);
 	}
 
 	void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	{
+#ifndef _SIMPLE
+		myConsole.Init();
+#endif
+
 		myTimer = std::make_unique<SimpleUtilities::Timer>();
 
+		CheckAndCopySettingsFiles();
 		LoadSettingsFromJson();
 
 		const Math::Vector2ui windowSize = Global::GetWindowSize();
@@ -35,17 +43,20 @@ namespace Simple
 		myHWND = SetupMainWindow(hInstance, windowSize.x, windowSize.y);
 		assert(myHWND && "Failed To Create Window");
 
-#ifndef _SIMPLE
-		myConsole.Init();
-#endif
-
 		ShowWindow(*myHWND, nCmdShow);
 		UpdateWindow(*myHWND);
+
+		myCustomCursor = LoadCursorFromFile(L"Assets/Icon/Cell_Phone.cur");
+		assert(myCustomCursor && "Failed to load Custom Cursor");
+
+		AudioManager::GetInstance().Init();
+		SimpleUtilities::InputManager::GetInstance().SetHWND(Global::GetEngineHWND());
 	}
 
 	void Engine::LoadSettingsFromJson()
 	{
-		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_GAME_SETTINGS_FILENAME);
+		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME);
+
 		std::ifstream file(filename);
 		assert(file.is_open() && "Failed To Open File");
 
@@ -67,6 +78,46 @@ namespace Simple
 		Impl::SimpleGlobalEngine::SetWindowSize(windowSize);
 	}
 
+	void Engine::CheckAndCopySettingsFiles()
+	{
+		const std::string binSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS);
+		const std::string dependenciesSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS);
+
+		std::vector<std::string> binSettingsFileNames;
+		std::vector<std::string> dependenciesSettingsFileNames;
+
+		for (const auto& entry : std::filesystem::directory_iterator(binSettings))
+		{
+			if (std::filesystem::is_regular_file(entry.path()))
+			{
+				binSettingsFileNames.push_back(entry.path().filename().string());
+			}
+		}
+
+		for (const auto& entry : std::filesystem::directory_iterator(dependenciesSettings))
+		{
+			if (std::filesystem::is_regular_file(entry.path()))
+			{
+				dependenciesSettingsFileNames.push_back(entry.path().filename().string());
+			}
+		}
+
+		std::vector<std::string> missingFileNames;
+
+		std::sort(dependenciesSettingsFileNames.begin(), dependenciesSettingsFileNames.end());
+		std::sort(binSettingsFileNames.begin(), binSettingsFileNames.end());
+		std::set_difference(dependenciesSettingsFileNames.begin(), dependenciesSettingsFileNames.end(), binSettingsFileNames.begin(), binSettingsFileNames.end(), std::inserter(missingFileNames, missingFileNames.begin()));
+
+		for (auto& name : missingFileNames)
+		{
+			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS) + name;
+			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS) + name;
+			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
+
+			std::cout << "Copied: " << name << std::endl;
+		}
+	}
+
 	std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)
 	{
 		WNDCLASSEXW wcex = {};
@@ -80,6 +131,7 @@ namespace Simple
 		wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 		wcex.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 
+		assert(wcex.hCursor && "Failed to load cursor");
 		assert(wcex.hIcon != NULL && "Failed to load icon");
 		assert(wcex.hIconSm != NULL && "Failed to load small icon");
 
@@ -102,7 +154,7 @@ namespace Simple
 		std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 		*hwnd = CreateWindow(
 			L"Natdanai",
-			L"SimpleEngine v9.22.3",
+			L"SimpleEngine v9.26.6",
 			WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
@@ -136,5 +188,10 @@ namespace Simple
 	HWND& Engine::GetEngineHWND()
 	{
 		return *myHWND;
+	}
+
+	HCURSOR& Engine::GetCustomCursor()
+	{
+		return myCustomCursor;
 	}
 }

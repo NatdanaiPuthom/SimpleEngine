@@ -6,21 +6,31 @@
 #include "Engine/Global.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
+#include "Game/World.hpp"
 #include "Editor/Editor.hpp"
 #include <External/imgui.h>
+
+#include "Game/Test/ECS/ComponentManager.hpp"
+#include "Game/Test/ECS/Entity.hpp"
+#include "Game/Test/ECS/SystemManager.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+#ifndef _SIMPLE
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
 		return 0;
+#endif
 
 	if (SimpleUtilities::InputManager::GetInstance().UpdateEvents(message, wParam, lParam))
 		return 0;
 
 	switch (message)
 	{
+	case WM_SETCURSOR:
+		::SetCursor(Global::GetCustomCursor());
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
@@ -42,6 +52,53 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+static void Run(HINSTANCE& hInstance, int nCmdShow)
+{
+	PROFILER_BEGIN("Engine initialize");
+	Simple::Engine engine;
+	Simple::GraphicsEngine graphicsEngine;
+	Simple::Editor editor;
+
+	engine.SetGlobalPointerToThis();
+	graphicsEngine.SetGlobalGraphicsEngineToThis();
+
+	engine.Init(hInstance, nCmdShow);
+	graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
+	editor.Init();
+	PROFILER_END();
+
+	PROFILER_BEGIN("GameWorld");
+
+	Simple::GameWorld gameWorld;
+	Simple::ComponentManager componentManager;
+	Simple::SystemManager systemManager;
+
+	componentManager.Init();
+	systemManager.Init();
+	gameWorld.Init();
+
+	PROFILER_END();
+
+	while (Global::GetGameIsRunning())
+	{
+		PROFILER_FUNCTION(profiler::colors::Blue);
+
+		if (graphicsEngine.BeginFrame() == false)
+			continue;
+
+		engine.Update();
+		gameWorld.Update();
+		systemManager.Update();
+		editor.Update();
+
+		gameWorld.Render();
+		systemManager.Render();
+		editor.Render();
+
+		graphicsEngine.EndFrame();
+	}
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
 {
 	SimpleTracker::MemoryTrackingSettings memoryTrackerSettings = {};
@@ -54,60 +111,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	PROFILER_START_LISTEN();
 	PROFILER_BEGIN("Main.cpp");
 
-	{
-		PROFILER_FUNCTION(profiler::colors::Blue);
-
-		PROFILER_BEGIN("Engine initialize");
-		Simple::Engine engine;
-		Simple::GraphicsEngine graphicsEngine;
-		Simple::Editor editor;
-
-		engine.SetGlobalPointerToThis();
-		graphicsEngine.SetGlobalGraphicsEngineToThis();
-
-		engine.Init(hInstance, nCmdShow);
-		graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
-		editor.Init();
-		AudioManager::GetInstance().Init();
-
-		SimpleUtilities::InputManager::GetInstance().SetHWND(Global::GetEngineHWND());
-		PROFILER_END();
-
-		PROFILER_BEGIN("GameWorld");
-		Simple::GameWorld gameWorld;
-		gameWorld.Init();
-		PROFILER_END();
-
-		while (Global::GetGameIsRunning())
-		{
-			PROFILER_BEGIN("Frame Time");
-
-			graphicsEngine.BeginFrame();
-
-			engine.Update();
-			graphicsEngine.GetDefaultCamera()->Update(engine.GetDeltaTime()); //For now only 1 Camera (v9.18.0)
-
-			gameWorld.Update();
-
-			gameWorld.Render();
-
-#ifndef _SIMPLE
-			editor.Update();
-			editor.Render();
-#endif
-
-			graphicsEngine.EndFrame();
-
-			PROFILER_END()
-		}
-	}
+	Run(hInstance, nCmdShow);
 
 	PROFILER_END();
 	PROFILER_DISABLE();
 
 	Simple::EasyProfilerOutput();
-
-	AudioManager::GetInstance().~AudioManager(); //I will fix so AudioManager isn't a singleton later (v9.18.0)
 
 	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!
 	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here before StopMemoryTrackingAndPrint function!

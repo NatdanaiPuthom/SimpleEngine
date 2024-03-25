@@ -120,14 +120,14 @@ namespace Simple
 	{
 		auto renderer = Global::GetRenderer();
 
-		renderer->RenderLineInstance(myNavmeshLines);
-		renderer->RenderLineInstance(myOffsetLines);
+		renderer->RenderLine(myNavmeshLines);
+		renderer->RenderLine(myOffsetLines);
 	}
 
 	void Navmesh::RenderConnections() const
 	{
 		auto renderer = Global::GetRenderer();
-		renderer->RenderLineInstance(myConnectionLines);
+		renderer->RenderLine(myConnectionLines);
 	}
 
 	std::vector<Node>& Navmesh::GetNodes()
@@ -409,7 +409,7 @@ namespace Simple
 
 	NavmeshData Navmesh::LoadNavmesh(const char* aObjFile)
 	{
-		const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SIMPLE_NAVMESH_DIR);
+		const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_NAVMESH);
 		const std::string fileName = absolutePath + std::string(aObjFile);
 
 		std::ifstream meshLoader;
@@ -465,7 +465,7 @@ namespace Simple
 
 	/*Simple::NavmeshData Simple::Navmesh::LoadNavmesh(const char* aObjFile)  //NOTE(v9.21.0) : Older version, cannot read from Blender obj
 	{
-		const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SIMPLE_NAVMESH_DIR);
+		const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_NAVMESH);
 		const std::string fileName = absolutePath + std::string(aObjFile);
 
 		std::ifstream meshLoader;

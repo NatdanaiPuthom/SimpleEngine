@@ -8,13 +8,14 @@
 
 namespace Simple
 {
+#ifndef _SIMPLE
 	ImGuiEngine::ImGuiEngine()
 	{
 	}
 
 	ImGuiEngine::~ImGuiEngine()
 	{
-		const std::string output = SimpleUtilities::GetAbsolutePath(SIMPLE_IMGUI_FILENAME);
+		const std::string output = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_IMGUI);
 		ImGui::SaveIniSettingsToDisk(output.c_str());
 
 		ImGui_ImplDX11_Shutdown();
@@ -28,7 +29,7 @@ namespace Simple
 	{
 		IMGUI_CHECKVERSION();
 
-		ImGui::CreateContext();	
+		ImGui::CreateContext();
 		ImNodes::CreateContext();
 
 		ImGui::StyleColorsDark();
@@ -36,11 +37,12 @@ namespace Simple
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 		io.IniFilename = nullptr;
 		io.LogFilename = nullptr;
 
-		const std::string output = SimpleUtilities::GetAbsolutePath(SIMPLE_IMGUI_FILENAME);
-		ImGui::LoadIniSettingsFromDisk(output.c_str());
+		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_IMGUI);
+		ImGui::LoadIniSettingsFromDisk(filename.c_str());
 
 		ImGui_ImplWin32_Init(Global::GetEngineHWND());
 		ImGui_ImplDX11_Init(Global::GetGraphicsEngine()->GetDevice().Get(), Global::GetGraphicsEngine()->GetContext().Get());
@@ -65,4 +67,19 @@ namespace Simple
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
+
+	void ImGuiEngine::Save()
+	{
+		const std::string output = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_IMGUI);
+		ImGui::SaveIniSettingsToDisk(output.c_str());
+	}
+#else
+	ImGuiEngine::ImGuiEngine() {}
+	ImGuiEngine::~ImGuiEngine() {}
+
+	void ImGuiEngine::Init() {}
+	void ImGuiEngine::BeginFrame() {}
+	void ImGuiEngine::EndFrame() {}
+	void ImGuiEngine::Save() {}
+#endif
 }

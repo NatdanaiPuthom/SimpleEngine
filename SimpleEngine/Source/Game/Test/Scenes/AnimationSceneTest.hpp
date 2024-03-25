@@ -1,6 +1,6 @@
 #pragma once
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
-#include "Game/Test/AnimationThreading.hpp"
+#include "Game/Test/Animations/AnimationThreading.hpp"
 
 namespace Scenes
 {

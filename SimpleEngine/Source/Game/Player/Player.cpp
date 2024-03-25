@@ -28,27 +28,19 @@ void Player::Init()
 	myAnimationController->Init(myAnimatedModel.get(), myAnimations[Cast(ePlayerAnimation::Idle)].get(), true);
 
 	myCurrentState = myStates[Cast(ePlayerState::Idle)];
+
+	myAnimationController->Update();
 }
 
 void Player::Update()
 {
 	myCurrentState->Update();
-
-	static bool a = true;
-	if (a)
-	{
-		a = false;
-	}
-		myAnimationController->Update();
 }
 
 void Player::Render()
 {
 	myCurrentState->Render();
 
-	auto renderer = Global::GetRenderer();
-	//renderer->RenderModel(myAnimatedModel);
-	renderer->RenderAnimatedSkeletonLines(myAnimatedModel, myAnimationController->GetCurrentAnimationPlayer().GetLocalSpacePose());
 	myInverseKinematics.Render(myAnimatedModel, myAnimationController->GetCurrentAnimationPlayer().myLocalSpacePose);
 }
 

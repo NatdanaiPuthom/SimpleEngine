@@ -24,7 +24,7 @@ AudioManager::~AudioManager()
 void AudioManager::Init()
 {
 	//Dont touch
-	SoundEngine::Init(SU::GetAbsolutePath(SIMPLE_AUDIO_DIR));
+	SoundEngine::Init(SU::GetAbsolutePath(SIMPLE_DIR_AUDIO));
 
 	//Music
 	//SoundEngine::LoadSoundFile("StardewValley.mp3", false, false, true);

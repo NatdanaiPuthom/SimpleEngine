@@ -35,6 +35,8 @@ namespace Drawer
 		void RenderBoundingBox(const Simple::AnimatedModel& aModel) const;
 
 		void RenderLine(const Drawer::Line& aLine);
+		void RenderLine(const std::vector<Drawer::Line> aLines);
+
 		void RenderSphere(const Drawer::Sphere& aSphere);
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
 
@@ -42,8 +44,6 @@ namespace Drawer
 		void RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::LocalSpacePose& aLocalPose);
 		void RenderStaticSkeletonLines(const Simple::AnimatedModel& aModel);
 		void RenderStaticSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel);
-
-		void RenderLineInstance(const std::vector<Drawer::Line> aLines);
 
 		void RenderEverythingUpSideDown() const;
 		void RenderPlaneReflection(const std::shared_ptr<const Simple::Model> aModel) const;

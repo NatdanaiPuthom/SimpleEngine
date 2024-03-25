@@ -3,6 +3,7 @@
 #include <typeindex>
 
 //TO-DO(v9.22.3): Deallocate new operator withing MemoryPool adresses such as Allocate<int*> = new int
+//NOTE(v9.24.5): Maybe not needed
 
 using Deleter = void(*)(void*);
 using DataType = std::type_index;
@@ -81,11 +82,6 @@ private:
 template<typename T>
 inline size_t MemoryPool::Allocate()
 {
-	if (std::is_pointer_v<T>)
-	{
-		assert(false && "Allocate of pointer type is not allowed."); //Until I know how to deallocate memory
-	}
-
 	constexpr size_t objectSize = sizeof(T);
 
 	while (objectSize > GetAvaliableMemorySize())
@@ -133,7 +129,6 @@ inline T& MemoryPool::GetValue(const size_t aIndex)
 	if (typeid(T) != myObjects[aIndex].type)
 	{
 		assert(false && "Incorrect data type");
-		//throw std::runtime_error("Incorrect data type");
 	}
 
 	return (T&)*GetAdress(myObjects[aIndex].id);
@@ -145,7 +140,6 @@ inline const T& MemoryPool::GetValue(const size_t aIndex) const
 	if (typeid(T) != myObjects[aIndex].type)
 	{
 		assert(false && "Incorrect data type");
-		//throw std::runtime_error("Incorrect data type");
 	}
 
 	return (const T&)*GetAdress(myObjects[aIndex].id);
@@ -157,7 +151,6 @@ inline T MemoryPool::GetValue(const size_t aIndex) const
 	if (typeid(T) != myObjects[aIndex].type)
 	{
 		assert(false && "Incorrect data type");
-		//throw std::runtime_error("Incorrect data type");
 	}
 
 	T value = {};

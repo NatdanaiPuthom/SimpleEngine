@@ -66,7 +66,7 @@ namespace Simple
 	{
 		Simple::Model model;
 
-		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_MODELS_DIR) + aFileName;
+		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
 		const Simple::Mesh* mesh = GetMesh(path.c_str());
 
 		if (mesh == nullptr)
@@ -87,7 +87,7 @@ namespace Simple
 	{
 		Simple::AnimatedModel animatedModel;
 
-		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_MODELS_DIR) + aFileName;
+		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
 		const Simple::Mesh* mesh = GetMesh(path.c_str());
 		const Simple::Skeleton* skeleton = GetSkeleton(path.c_str());
 
@@ -117,7 +117,7 @@ namespace Simple
 
 	Animation ModelFactory::LoadAnimationFBX(const char* aFileName)
 	{
-		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_MODELS_DIR) + aFileName;
+		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
 
 		TGA::FBX::Animation tgaAnimation;
 		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(path, tgaAnimation);
@@ -218,32 +218,31 @@ namespace Simple
 
 			for (size_t i = 0; i < aTGAMesh.Skeleton.Bones.size(); ++i)
 			{
-				Math::Matrix4x4f bindPoseInverseTranspose;
+				Math::Matrix4x4f bindPoseInverse;
 
-				bindPoseInverseTranspose(1, 1) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m11;
-				bindPoseInverseTranspose(1, 2) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m12;
-				bindPoseInverseTranspose(1, 3) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m13;
-				bindPoseInverseTranspose(1, 4) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m14;
+				bindPoseInverse(1, 1) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m11;
+				bindPoseInverse(1, 2) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m12;
+				bindPoseInverse(1, 3) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m13;
+				bindPoseInverse(1, 4) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m14;
 
-				bindPoseInverseTranspose(2, 1) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m21;
-				bindPoseInverseTranspose(2, 2) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m22;
-				bindPoseInverseTranspose(2, 3) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m23;
-				bindPoseInverseTranspose(2, 4) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m24;
+				bindPoseInverse(2, 1) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m21;
+				bindPoseInverse(2, 2) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m22;
+				bindPoseInverse(2, 3) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m23;
+				bindPoseInverse(2, 4) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m24;
 
-				bindPoseInverseTranspose(3, 1) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m31;
-				bindPoseInverseTranspose(3, 2) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m32;
-				bindPoseInverseTranspose(3, 3) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m33;
-				bindPoseInverseTranspose(3, 4) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m34;
+				bindPoseInverse(3, 1) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m31;
+				bindPoseInverse(3, 2) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m32;
+				bindPoseInverse(3, 3) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m33;
+				bindPoseInverse(3, 4) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m34;
 
-				bindPoseInverseTranspose(4, 1) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m41;
-				bindPoseInverseTranspose(4, 2) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m42;
-				bindPoseInverseTranspose(4, 3) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m43;
-				bindPoseInverseTranspose(4, 4) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m44;
+				bindPoseInverse(4, 1) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m41;
+				bindPoseInverse(4, 2) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m42;
+				bindPoseInverse(4, 3) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m43;
+				bindPoseInverse(4, 4) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m44;
 
 				Simple::Joint joint;
 
-				//joint.myBindPoseInverse = Math::Matrix4x4f::Transpose(bindPoseInverseTranspose); //TGA Did Tranpose but apparently models loaded here is already in same matrix type?
-				joint.myBindPoseInverse = bindPoseInverseTranspose;
+				joint.myBindPoseInverse = bindPoseInverse;
 				joint.myName = aTGAMesh.Skeleton.Bones[i].Name;
 				joint.myParent = aTGAMesh.Skeleton.Bones[i].ParentIdx;
 				joint.myChildren = aTGAMesh.Skeleton.Bones[i].Children;

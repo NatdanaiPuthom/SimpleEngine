@@ -15,6 +15,10 @@ namespace Simple
 	class Scene
 	{
 	public:
+		std::vector<std::shared_ptr<Simple::Model>> myModels;
+		std::unique_ptr<Simple::DirectionalLightVisual> myDirectionalLight;
+
+	public:
 		Scene()
 		{
 			myDirectionalLight = std::make_unique<Simple::DirectionalLightVisual>();
@@ -49,14 +53,8 @@ namespace Simple
 					renderer->RenderBoundingBox(model);
 				}
 
-				renderer->RenderLine(*myDirectionalLight->myLine);
-				renderer->RenderLine(*myDirectionalLight->myLineAxis[0]);
-				renderer->RenderLine(*myDirectionalLight->myLineAxis[1]);
-				renderer->RenderLine(*myDirectionalLight->myLineAxis[2]);
+				myDirectionalLight->Render();
 			}
 		};
-
-		std::vector<std::shared_ptr<Simple::Model>> myModels;
-		std::unique_ptr<Simple::DirectionalLightVisual> myDirectionalLight;
 	};
 }

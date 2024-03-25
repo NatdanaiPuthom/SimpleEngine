@@ -20,7 +20,7 @@ namespace Tool
 			ImGui::SetNextItemWidth(100.0f);
 
 			float speed = graphicsEngine->GetCurrentCamera()->GetMoveSpeed();
-			if (ImGui::SliderFloat("MoveSpeed", &speed, 0, 100, "%0.2f"))
+			if (ImGui::DragFloat("MoveSpeed", &speed, 0.1f, 0.0f, 100.0f))
 			{
 				graphicsEngine->GetCurrentCamera()->SetMoveSpeed(speed);
 			}
@@ -36,7 +36,7 @@ namespace Tool
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(100.0f);
 			float rotationSpeed = graphicsEngine->GetCurrentCamera()->GetRotationSpeed();
-			if (ImGui::SliderFloat("Camera Rotate Speed", &rotationSpeed, 0.01f, 300.0f, "%0.3f"))
+			if (ImGui::DragFloat("Camera Rotate Speed", &rotationSpeed, 0.01f, 0.0f, 180.0f))
 			{
 				graphicsEngine->GetCurrentCamera()->SetRotateSpeed(rotationSpeed);
 			}
