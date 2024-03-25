@@ -20,7 +20,7 @@ namespace Simple
 
 			const std::size_t size = value.GetSize() / count;
 
-			char* components = value.GetStartMemoryAdress();
+			char* components = value.GetStartMemoryAddress();
 
 			for (size_t i = 0; i < count; ++i)
 			{

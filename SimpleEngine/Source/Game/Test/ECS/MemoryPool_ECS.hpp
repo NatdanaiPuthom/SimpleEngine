@@ -1,9 +1,6 @@
 #pragma once
 #include <vector>
 
-//NOTES(v9.25.6): Memory subtraction became negative sometimes if total layout is above 64 bytes???
-//NOTES(v9.25.6): Fixed by throwing in ComponentID to search for to Remove instead of calculate adresses sadge
-
 namespace Simple
 {
 	class MemoryPool_ECS final
@@ -28,27 +25,27 @@ namespace Simple
 		T& GetValueByIndex(const size_t aIndex);
 
 		template<typename T>
-		T& GetValueByMemoryAdress(const char* aAdress);
+		T& GetValueByMemoryAddress(const char* aAddress);
 
 		template<typename T>
 		void SwapWithLastAndRemove(T& aComponent, const size_t aComponentID);
 
-		char* GetStartMemoryAdress();
-		const char* GetEndMemoryAdress();
-		const char* GetCurrentMemoryAdress();
+		char* GetStartMemoryAddress();
+		const char* GetEndMemoryAddress();
+		const char* GetCurrentMemoryAddress();
 		size_t GetSize() const;
 		size_t GetElementCount() const;
 		size_t GetElementIDByIndex(const size_t aIndex) const;
-		int GetElementIndexByAdress(const char* aAdress, const size_t aSize) const;
-		int GetElementIDByMemoryAdress(const char* aAdress) const;
+		int GetElementIndexByMemoryAddress(const char* aAddress, const size_t aSize) const;
+		int GetElementIDByMemoryAddress(const char* aAddress) const;
 	private:
 		void Reallocate();
 		size_t GetCapacity() const;
-		size_t GetAvaliableMemorySize() const;
+		size_t GetAvailableMemorySize() const;
 	private:
-		char* myStartMemoryAdress;
-		char* myEndMemoryAdress;
-		char* myCurrentMemoryAdress;
+		char* myStartMemoryAddress;
+		char* myEndMemoryAddress;
+		char* myCurrentMemoryAddress;
 
 		std::vector<size_t> myElementIDs;
 	};
@@ -58,17 +55,17 @@ namespace Simple
 	{
 		constexpr size_t objectSize = sizeof(T);
 
-		while (objectSize > GetAvaliableMemorySize())
+		while (objectSize > GetAvailableMemorySize())
 		{
 			Reallocate();
 		}
 
-		new(myCurrentMemoryAdress)T();
-		myCurrentMemoryAdress += objectSize;
+		new(myCurrentMemoryAddress)T();
+		myCurrentMemoryAddress += objectSize;
 
 		myElementIDs.push_back(aID);
 
-		return (T&)*(myCurrentMemoryAdress - objectSize);
+		return (T&)*(myCurrentMemoryAddress - objectSize);
 	}
 
 	template<typename T>
@@ -76,29 +73,29 @@ namespace Simple
 	{
 		constexpr size_t objectSize = sizeof(T);
 
-		while (objectSize > GetAvaliableMemorySize())
+		while (objectSize > GetAvailableMemorySize())
 		{
 			Reallocate();
 		}
 
-		new(myCurrentMemoryAdress)T(aValue);
-		myCurrentMemoryAdress += objectSize;
+		new(myCurrentMemoryAddress)T(aValue);
+		myCurrentMemoryAddress += objectSize;
 
 		myElementIDs.push_back(aID);
 
-		return (T&)*(myCurrentMemoryAdress - objectSize);
+		return (T&)*(myCurrentMemoryAddress - objectSize);
 	}
 
 	template<typename T>
 	inline T& MemoryPool_ECS::GetValueByIndex(const size_t aIndex)
 	{
-		return (T&)*(myStartMemoryAdress + aIndex * sizeof(T));
+		return (T&)*(myStartMemoryAddress + aIndex * sizeof(T));
 	}
 
 	template<typename T>
-	inline T& MemoryPool_ECS::GetValueByMemoryAdress(const char* aAdress)
+	inline T& MemoryPool_ECS::GetValueByMemoryAddress(const char* aAddress)
 	{
-		return (T&)*(aAdress);
+		return (T&)*(aAddress);
 	}
 
 	template<typename T>
@@ -112,7 +109,7 @@ namespace Simple
 				break;
 		}
 
-		const int lastIndex = GetElementIndexByAdress(myCurrentMemoryAdress - sizeof(T), sizeof(T));
+		const int lastIndex = GetElementIndexByMemoryAddress(myCurrentMemoryAddress - sizeof(T), sizeof(T));
 
 		if (lastIndex == -1)
 		{
@@ -121,7 +118,7 @@ namespace Simple
 
 		if (indexToRemove != lastIndex)
 		{
-			T* lastComponent = (T*)(myCurrentMemoryAdress - sizeof(T));
+			T* lastComponent = (T*)(myCurrentMemoryAddress - sizeof(T));
 			std::swap(aComponent, *lastComponent);
 			std::swap(myElementIDs[indexToRemove], myElementIDs[lastIndex]);
 		}
@@ -129,12 +126,12 @@ namespace Simple
 		{
 			if constexpr (!std::is_trivially_destructible<T>::value) 
 			{
-				reinterpret_cast<T*>(myCurrentMemoryAdress - sizeof(T))->~T();
+				reinterpret_cast<T*>(myCurrentMemoryAddress - sizeof(T))->~T();
 			}
 		}
 
-		myCurrentMemoryAdress -= sizeof(T);
-		memset(myCurrentMemoryAdress, 0, sizeof(T));
+		myCurrentMemoryAddress -= sizeof(T);
+		memset(myCurrentMemoryAddress, 0, sizeof(T));
 		myElementIDs.pop_back();
 	}
 }

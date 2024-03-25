@@ -5,21 +5,21 @@ namespace Simple
 {
 	MemoryPool_ECS::MemoryPool_ECS(size_t aDefaultSize)
 	{
-		myStartMemoryAdress = new char[aDefaultSize];
-		myEndMemoryAdress = myStartMemoryAdress + sizeof(char) * aDefaultSize;
-		myCurrentMemoryAdress = myStartMemoryAdress;
+		myStartMemoryAddress = new char[aDefaultSize];
+		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;
+		myCurrentMemoryAddress = myStartMemoryAddress;
 
 		myElementIDs.reserve(aDefaultSize);
 	}
 
 	MemoryPool_ECS::~MemoryPool_ECS()
 	{
-		delete[] myStartMemoryAdress;
+		delete[] myStartMemoryAddress;
 	}
 
 	size_t MemoryPool_ECS::GetSize() const
 	{
-		return myCurrentMemoryAdress - myStartMemoryAdress;
+		return myCurrentMemoryAddress - myStartMemoryAddress;
 	}
 
 	size_t MemoryPool_ECS::GetElementIDByIndex(const size_t aIndex) const
@@ -27,14 +27,14 @@ namespace Simple
 		return myElementIDs[aIndex];
 	}
 
-	int MemoryPool_ECS::GetElementIndexByAdress(const char* aAdress, const size_t aSize) const
+	int MemoryPool_ECS::GetElementIndexByMemoryAddress(const char* aAdress, const size_t aSize) const
 	{
 		if (aSize == 0)
 		{
 			return -1;
 		}
 
-		const int index = static_cast<int>((aAdress - myStartMemoryAdress)) / static_cast<int>(aSize);
+		const int index = static_cast<int>((aAdress - myStartMemoryAddress)) / static_cast<int>(aSize);
 
 		if (index < 0)
 		{
@@ -44,7 +44,7 @@ namespace Simple
 		return index;
 	}
 
-	int MemoryPool_ECS::GetElementIDByMemoryAdress(const char* aAdress) const
+	int MemoryPool_ECS::GetElementIDByMemoryAddress(const char* aAdress) const
 	{
 		const size_t memorySize = GetSize();
 		const size_t elementSize = myElementIDs.size();
@@ -54,8 +54,8 @@ namespace Simple
 			return -1;
 		}
 
-		const size_t a = (aAdress - myStartMemoryAdress); a;
-		const size_t index = (aAdress - myStartMemoryAdress) / (memorySize / elementSize);
+		const size_t a = (aAdress - myStartMemoryAddress); a;
+		const size_t index = (aAdress - myStartMemoryAddress) / (memorySize / elementSize);
 
 		if (index > myElementIDs.size())
 		{
@@ -65,19 +65,19 @@ namespace Simple
 		return static_cast<int>(myElementIDs[index]);
 	}
 
-	char* MemoryPool_ECS::GetStartMemoryAdress()
+	char* MemoryPool_ECS::GetStartMemoryAddress()
 	{
-		return myStartMemoryAdress;
+		return myStartMemoryAddress;
 	}
 
-	const char* MemoryPool_ECS::GetEndMemoryAdress()
+	const char* MemoryPool_ECS::GetEndMemoryAddress()
 	{
-		return myEndMemoryAdress;
+		return myEndMemoryAddress;
 	}
 
-	const char* MemoryPool_ECS::GetCurrentMemoryAdress()
+	const char* MemoryPool_ECS::GetCurrentMemoryAddress()
 	{
-		return myCurrentMemoryAdress;
+		return myCurrentMemoryAddress;
 	}
 
 	size_t MemoryPool_ECS::GetElementCount() const
@@ -87,27 +87,27 @@ namespace Simple
 
 	size_t MemoryPool_ECS::GetCapacity() const
 	{
-		return myEndMemoryAdress - myStartMemoryAdress;
+		return myEndMemoryAddress - myStartMemoryAddress;
 	}
 
-	size_t MemoryPool_ECS::GetAvaliableMemorySize() const
+	size_t MemoryPool_ECS::GetAvailableMemorySize() const
 	{
-		return myEndMemoryAdress - myCurrentMemoryAdress;
+		return myEndMemoryAddress - myCurrentMemoryAddress;
 	}
 
 	void MemoryPool_ECS::Reallocate()
 	{
-		char* oldMemoryArray = myStartMemoryAdress;
+		char* oldMemoryArray = myStartMemoryAddress;
 
 		const size_t oldMemoryCapacity = GetCapacity();
 		const size_t currentMemorySize = GetSize();
 		const size_t newMemoryCapacity = oldMemoryCapacity * 2;
 
-		myStartMemoryAdress = new char[newMemoryCapacity];
-		std::memcpy(myStartMemoryAdress, oldMemoryArray, oldMemoryCapacity);
+		myStartMemoryAddress = new char[newMemoryCapacity];
+		std::memcpy(myStartMemoryAddress, oldMemoryArray, oldMemoryCapacity);
 		delete[] oldMemoryArray;
 
-		myCurrentMemoryAdress = myStartMemoryAdress + currentMemorySize;
-		myEndMemoryAdress = myStartMemoryAdress + newMemoryCapacity;
+		myCurrentMemoryAddress = myStartMemoryAddress + currentMemorySize;
+		myEndMemoryAddress = myStartMemoryAddress + newMemoryCapacity;
 	}
 }

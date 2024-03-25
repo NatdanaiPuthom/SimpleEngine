@@ -54,7 +54,7 @@ namespace Simple
 		size_t myCurrentComponentsCount;
 		std::unordered_map<std::type_index, MemoryPool_ECS> myComponents;
 		std::unordered_map<std::type_index, void (*)(void*)> myComponentDestructorInvoker;
-		std::unordered_map<size_t, const char*> myAllComponents;
+		std::unordered_map<size_t, const char*> myAllComponents; //TO-DO(v9.26.6): Remove or fix as when MemoryPool is re-allocating this will point to old adress
 	};
 
 	template<typename T>
@@ -168,7 +168,7 @@ namespace Simple
 			return {};
 		}
 
-		char* start = it.GetStartMemoryAdress();
+		char* start = it.GetStartMemoryAddress();
 		std::vector<T*> components(count);
 
 		for (size_t i = 0; i < count; ++i)
@@ -185,7 +185,7 @@ namespace Simple
 		auto& it = myComponents[typeid(T)];
 
 		const char* objectAdress = reinterpret_cast<const char*>(&aComponent);
-		const int id = it.GetElementIDByMemoryAdress(objectAdress);
+		const int id = it.GetElementIDByMemoryAddress(objectAdress);
 
 		if (id < 0)
 		{
