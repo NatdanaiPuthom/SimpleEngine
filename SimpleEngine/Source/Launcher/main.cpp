@@ -68,7 +68,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_END();
 
 	PROFILER_BEGIN("GameWorld");
-
 	Simple::GameWorld gameWorld;
 	Simple::ComponentManager componentManager;
 	Simple::SystemManager systemManager;
@@ -76,7 +75,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	componentManager.Init();
 	systemManager.Init();
 	gameWorld.Init();
-
 	PROFILER_END();
 
 	while (Global::GetGameIsRunning())
