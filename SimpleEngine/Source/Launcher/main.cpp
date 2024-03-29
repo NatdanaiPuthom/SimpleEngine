@@ -77,6 +77,24 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
+	struct HelloW
+	{
+		int a = 0;
+		int b = 0;
+		int c = 0;
+		int d = 0;
+		int e = 0;
+	};
+
+	HelloW test;
+
+	Simple::Entity a;
+	a.AddComponent<HelloW>(test);
+
+	Simple::Entity b;
+	b.AddComponent<HelloW>();
+	
+
 	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);

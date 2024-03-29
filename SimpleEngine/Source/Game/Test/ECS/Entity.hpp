@@ -43,14 +43,8 @@ namespace Simple
 
 		auto componentManager = World::GetComponentManager();
 
-		const int componentID = componentManager->GetComponentID(componentManager->CreateComponent<T>());
+		myComponents[typeid(T)] = componentManager->CreateComponent<T>();
 
-		if (componentID < 0)
-		{
-			return false;
-		}
-
-		myComponents[typeid(T)] = componentID;
 		return true;
 	}
 
@@ -64,14 +58,8 @@ namespace Simple
 
 		auto componentManager = World::GetComponentManager();
 
-		const int componentID = componentManager->GetComponentID(componentManager->CreateComponent(aComponent));
+		myComponents[typeid(T)] = componentManager->CreateComponent<T>(aComponent);
 
-		if (componentID < 0)
-		{
-			return false;
-		}
-
-		myComponents[typeid(T)] = componentID;
 		return true;
 	}
 

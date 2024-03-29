@@ -24,7 +24,7 @@ namespace Scenes
 	void Scenes::DefaultScene::Init()
 	{
 		myFloor = Global::GetModelFactory()->LoadStaticModelFBX("StaticModels/Simple_Floor_10x10.fbx");
-		myFloor.SetPosition({ 0.0f,-1.25f, 0.0f });
+		myFloor.SetPosition({ 0.0f,-4.0f, 0.0f });
 		myPlayer.Init();
 	}
 

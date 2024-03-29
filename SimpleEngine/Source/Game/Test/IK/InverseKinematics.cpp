@@ -7,6 +7,7 @@ namespace Test
 	static Simple::Joint shoulder;
 	static Simple::Joint elbow;
 	static Simple::Joint wrist;
+	static Math::Vector3 target;
 
 	static double CalculateTheta0(double l0, double l1, double m, double E_angle)
 	{
@@ -20,9 +21,10 @@ namespace Test
 
 	InverseKinematics::InverseKinematics()
 	{
-		shoulder.myBindPoseInverse.SetPosition({ 0.0f, 1.0f, 0.0f });
-		elbow.myBindPoseInverse.SetPosition({ 1.0f, 0.0f, 0.0f });
-		wrist.myBindPoseInverse.SetPosition({ 0.0f, -1.0f, 0.0f });
+		shoulder.myBindPoseInverse.SetPosition({ 0.0f, 0.0f, 0.0f });
+		elbow.myBindPoseInverse.SetPosition({ 5.0f, 0.0f, 0.0f });
+		wrist.myBindPoseInverse.SetPosition({ 10.0f, 0.0f, 0.0f });
+		target = { 8.0f, 5.0f, 0.0f };
 	}
 
 	InverseKinematics::~InverseKinematics()
@@ -210,5 +212,25 @@ namespace Test
 
 		sphere.position = wrist.myBindPoseInverse.GetPosition();
 		renderer->RenderSphere(sphere);
+
+		for (int i = 0; i < 2; ++i)
+		{
+			Simple::Joint* currentJoint = (i == 0) ? &elbow : &shoulder;
+
+			Math::Vector3 toEndEffector = wrist.myBindPoseInverse.GetPosition() - currentJoint->myBindPoseInverse.GetPosition();
+			Math::Vector3 toTarget = target - currentJoint->myBindPoseInverse.GetPosition();
+
+			toEndEffector.Normalize();
+			toTarget.Normalize();
+
+			Math::Vector3 rotationAxis = Math::Cross(toEndEffector, toTarget);
+			rotationAxis.Normalize();
+
+			float cosTheta = Math::Dot(toEndEffector, toTarget);
+			float angle = acosf(cosTheta);
+
+			cosTheta;
+			angle;
+		}
 	}
 }

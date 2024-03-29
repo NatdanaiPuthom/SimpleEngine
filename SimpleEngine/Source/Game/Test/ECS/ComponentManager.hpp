@@ -2,6 +2,7 @@
 #include "Game/Test/ECS/MemoryPool_ECS.hpp"
 #include <typeindex>
 #include <unordered_map>
+#include <random>
 
 namespace Simple
 {
@@ -14,10 +15,10 @@ namespace Simple
 		void Init();
 
 		template<typename T>
-		T& CreateComponent();
+		size_t CreateComponent();
 
 		template<typename T>
-		T& CreateComponent(const T& aComponent);
+		size_t CreateComponent(const T& aComponent);
 
 		template<typename T>
 		bool RemoveComponent(const size_t aComponentID);
@@ -53,12 +54,12 @@ namespace Simple
 	private:
 		size_t myCurrentComponentsCount;
 		std::unordered_map<std::type_index, MemoryPool_ECS> myComponents;
-		std::unordered_map<std::type_index, void (*)(void*)> myComponentDestructorInvoker;
-		std::unordered_map<size_t, const char*> myAllComponents; //TO-DO(v9.26.6): Remove or fix as when MemoryPool is re-allocating this will point to old adress
+		std::unordered_map<std::type_index, void (*)(void*)> myComponentDestructorInvoker; 
+		std::unordered_map<size_t, const char*> myAllComponents;
 	};
 
 	template<typename T>
-	inline T& ComponentManager::CreateComponent()
+	inline size_t ComponentManager::CreateComponent()
 	{
 		if (myComponentDestructorInvoker.find(typeid(T)) == myComponentDestructorInvoker.end())
 		{
@@ -66,14 +67,21 @@ namespace Simple
 		}
 
 		++myCurrentComponentsCount;
-		T& component = myComponents[typeid(T)].AllocateComponent<T>(myCurrentComponentsCount);
-		myAllComponents[myCurrentComponentsCount] = reinterpret_cast<const char*>(&component);
 
-		return component;
+		std::random_device device;
+		std::mt19937 generator(device());
+		std::uniform_int_distribution<int> range(101, 9999);
+
+		const size_t componentID = myCurrentComponentsCount + range(generator);
+
+		T& component = myComponents[typeid(T)].AllocateComponent<T>(componentID, myAllComponents);
+		myAllComponents[componentID] = reinterpret_cast<const char*>(&component);
+
+		return componentID;
 	}
 
 	template<typename T>
-	inline T& ComponentManager::CreateComponent(const T& aComponent)
+	inline size_t ComponentManager::CreateComponent(const T& aComponent)
 	{
 		if (myComponentDestructorInvoker.find(typeid(T)) == myComponentDestructorInvoker.end())
 		{
@@ -82,10 +90,16 @@ namespace Simple
 
 		++myCurrentComponentsCount;
 
-		T& component = myComponents[typeid(T)].AllocateComponent<T>(myCurrentComponentsCount, aComponent);
-		myAllComponents[myCurrentComponentsCount] = reinterpret_cast<const char*>(&component);
+		std::random_device device;
+		std::mt19937 generator(device());
+		std::uniform_int_distribution<int> range(101, 9999);
 
-		return component;
+		const size_t componentID = myCurrentComponentsCount + range(generator);
+
+		T& component = myComponents[typeid(T)].AllocateComponent<T>(componentID, aComponent, myAllComponents);
+		myAllComponents[componentID] = reinterpret_cast<const char*>(&component);
+
+		return componentID;
 	}
 
 	template<typename T>
@@ -96,7 +110,8 @@ namespace Simple
 		if (it != myComponents.end())
 		{
 			T* component = GetComponentByID<T>(aComponentID);
-			it->second.SwapWithLastAndRemove<T>(*component, aComponentID);
+			const bool success = it->second.SwapWithLastAndRemove<T>(*component);
+			assert(success && "Failed to Remove Component");
 
 			myCurrentComponentsCount--;
 			return myAllComponents.erase(aComponentID);

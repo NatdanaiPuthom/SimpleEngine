@@ -54,7 +54,6 @@ namespace Simple
 			return -1;
 		}
 
-		const size_t a = (aAdress - myStartMemoryAddress); a;
 		const size_t index = (aAdress - myStartMemoryAddress) / (memorySize / elementSize);
 
 		if (index > myElementIDs.size())
@@ -63,6 +62,11 @@ namespace Simple
 		}
 
 		return static_cast<int>(myElementIDs[index]);
+	}
+
+	std::vector<size_t> MemoryPool_ECS::GetElementIDs() const
+	{
+		return myElementIDs;
 	}
 
 	char* MemoryPool_ECS::GetStartMemoryAddress()
