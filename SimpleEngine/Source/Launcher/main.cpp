@@ -10,9 +10,7 @@
 #include "Editor/Editor.hpp"
 #include <External/imgui.h>
 
-#include "Game/Test/ECS/ComponentManager.hpp"
-#include "Game/Test/ECS/Entity.hpp"
-#include "Game/Test/ECS/SystemManager.hpp"
+#include "Game/Test/ECS/ECS.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -57,6 +55,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_BEGIN("Engine initialize");
 	Simple::Engine engine;
 	Simple::GraphicsEngine graphicsEngine;
+	Simple::ECS ecs;
 	Simple::Editor editor;
 
 	engine.SetGlobalPointerToThis();
@@ -64,36 +63,14 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
+	ecs.Init();
 	editor.Init();
 	PROFILER_END();
 
 	PROFILER_BEGIN("GameWorld");
 	Simple::GameWorld gameWorld;
-	Simple::ComponentManager componentManager;
-	Simple::SystemManager systemManager;
-
-	componentManager.Init();
-	systemManager.Init();
 	gameWorld.Init();
 	PROFILER_END();
-
-	struct HelloW
-	{
-		int a = 0;
-		int b = 0;
-		int c = 0;
-		int d = 0;
-		int e = 0;
-	};
-
-	HelloW test;
-
-	Simple::Entity a;
-	a.AddComponent<HelloW>(test);
-
-	Simple::Entity b;
-	b.AddComponent<HelloW>();
-	
 
 	while (Global::GetGameIsRunning())
 	{
@@ -104,11 +81,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		engine.Update();
 		gameWorld.Update();
-		systemManager.Update();
+		ecs.Update();
 		editor.Update();
 
 		gameWorld.Render();
-		systemManager.Render();
+		ecs.Render();
 		editor.Render();
 
 		graphicsEngine.EndFrame();

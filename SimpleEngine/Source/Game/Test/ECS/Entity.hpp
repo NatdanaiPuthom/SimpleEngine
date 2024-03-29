@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+//NOTE(v9.26.6): AddComponent doesn't allow adding multiple components of same type for now, as it is easier debugging and testing. In future maybe only limiting to Transform and such special type
+
 namespace Simple
 {
 	class Entity final
@@ -17,6 +19,9 @@ namespace Simple
 
 		template<typename T>
 		bool AddComponent(const T& aComponent);
+
+		template<typename T>
+		bool AddComponent(const size_t aComponentID);
 
 		template<typename T>
 		bool RemoveComponent();
@@ -60,6 +65,28 @@ namespace Simple
 
 		myComponents[typeid(T)] = componentManager->CreateComponent<T>(aComponent);
 
+		return true;
+	}
+
+	template<typename T>
+	inline bool Entity::AddComponent(const size_t aComponentID)
+	{
+		if (myComponents.find(typeid(T)) != myComponents.end())
+		{
+			assert(false && "Trying to add multiple components of same type is not allowed");
+		}
+
+		auto componentManager = World::GetComponentManager();
+
+		const T* component = componentManager->GetComponentByID<T>(aComponentID);
+
+		if (component == nullptr)
+		{
+			return false;
+		}
+
+		myComponents[typeid(T)] = aComponentID;
+		
 		return true;
 	}
 
