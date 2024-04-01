@@ -108,7 +108,7 @@ namespace Test
 			renderer->RenderLine(myLines);*/
 
 			//Test();
-		Arm();
+		//Arm();
 	}
 
 	void InverseKinematics::Test()
@@ -213,7 +213,31 @@ namespace Test
 		sphere.position = wrist.myBindPoseInverse.GetPosition();
 		renderer->RenderSphere(sphere);
 
-		for (int i = 0; i < 2; ++i)
+
+		float d = Math::Distance(wrist.myBindPoseInverse.GetPosition(), shoulder.myBindPoseInverse.GetPosition());
+		float l = 5.0f;
+		float x = d / 2.0f;
+		float y = sqrtf(powf(l, 2) - powf(x, 2));
+		
+		/*std::cout << "Elbow To Wrist: " << Math::Distance(elbow.myBindPoseInverse.GetPosition(), wrist.myBindPoseInverse.GetPosition()) << std::endl;
+		std::cout << "Shoulder To Elbow: " << Math::Distance(shoulder.myBindPoseInverse.GetPosition(), elbow.myBindPoseInverse.GetPosition()) << std::endl;*/
+
+		Math::Vector3 pos = elbow.myBindPoseInverse.GetPosition();
+		pos.y = -y;
+		elbow.myBindPoseInverse.SetPosition(pos);
+
+		if (ImGui::Begin("Joints"))
+		{
+			Math::Vector3 wristPos = wrist.myBindPoseInverse.GetPosition();
+			if (ImGui::DragFloat3("Wrist", &wristPos.x, 0.1f, 0.0f, 100.0f))
+			{
+				wrist.myBindPoseInverse.SetPosition(wristPos);
+			}
+		}
+		ImGui::End();
+
+
+		/*for (int i = 0; i < 2; ++i)
 		{
 			Simple::Joint* currentJoint = (i == 0) ? &elbow : &shoulder;
 
@@ -231,6 +255,6 @@ namespace Test
 
 			cosTheta;
 			angle;
-		}
+		}*/
 	}
 }

@@ -17,6 +17,7 @@ namespace Scenes
 		void Render() override;
 	private:
 		Simple::Model myFloor;
+		Simple::AnimatedModel myHuman;
 		Player myPlayer;
 	};
 }
