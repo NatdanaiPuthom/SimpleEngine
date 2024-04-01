@@ -45,7 +45,7 @@ namespace Scenes
 
 		myPlayer.Render();
 		renderer->RenderModel(myFloor);
-		//renderer->RenderModel(myHuman);
+		renderer->RenderModel(myHuman);
 		renderer->RenderStaticSkeletonLines(myHuman);
 		//renderer->RenderBoundingBox(myFloor);
 	}
