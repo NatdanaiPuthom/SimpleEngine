@@ -26,7 +26,7 @@ namespace Scenes
 		myFloor = Global::GetModelFactory()->LoadStaticModelFBX("StaticModels/Simple_Floor_10x10.fbx");
 		myFloor.SetPosition({ 0.0f,-4.0f, 0.0f });
 
-		myHuman = Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/humanMiximo.fbx");
+		myHuman = Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SimpleHuman.fbx");
 
 		myPlayer.Init();
 	}

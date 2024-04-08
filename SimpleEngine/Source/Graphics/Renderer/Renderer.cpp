@@ -319,6 +319,7 @@ namespace Drawer
 	{
 		const std::vector<Simple::Joint>& joints = aModel.GetSkeleton()->myJoints;
 		const Math::Vector3f scale = aModel.GetScale();
+		const Math::Matrix4x4f modelTransform = aModel.GetMatrix();
 
 		myStaticSkeletonLines.resize(joints.size());
 
@@ -329,7 +330,7 @@ namespace Drawer
 			if (joint.myParent == -1)
 				continue;
 
-			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joints[index].myBindPoseInverse);
+			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joint.myBindPoseInverse);
 			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(joints[joint.myParent].myBindPoseInverse);
 
 			Drawer::Line line;

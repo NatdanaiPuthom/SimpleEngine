@@ -16,11 +16,13 @@ namespace Simple
 		void Render();
 
 		Entity& CreateEntity();
+
 	public:
 		size_t GetEntityID(Entity* aEntity);
 		Entity* GetEntity(const size_t aEntityID) const;
 		std::vector<Entity>& GetAllEntities();
 		const std::vector<Entity>& GetAllEntities() const;
+
 	private:
 		Simple::ComponentManager myComponentManager;
 		Simple::SystemManager mySystemManager;
