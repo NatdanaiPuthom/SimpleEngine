@@ -168,7 +168,7 @@ namespace Simple
 
 		for (size_t i = 0; i < count; ++i)
 		{
-			components[i] = (T*)(start + i * sizeof(T));
+			components[i] = reinterpret_cast<T*>(start + i * sizeof(T));
 		}
 
 		return components;

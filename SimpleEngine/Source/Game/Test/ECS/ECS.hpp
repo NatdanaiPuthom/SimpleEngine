@@ -20,12 +20,22 @@ namespace Simple
 	public:
 		size_t GetEntityID(Entity* aEntity);
 		Entity* GetEntity(const size_t aEntityID) const;
+
 		std::vector<Entity>& GetAllEntities();
 		const std::vector<Entity>& GetAllEntities() const;
+
+		template<typename T>
+		std::vector<T*> GetAllComponentsOfType();
 
 	private:
 		Simple::ComponentManager myComponentManager;
 		Simple::SystemManager mySystemManager;
 		Simple::EntityManager myEntityManager;
 	};
+
+	template<typename T>
+	inline std::vector<T*> ECS::GetAllComponentsOfType()
+	{
+		return myComponentManager.GetAllComponentsOfType<T>();
+	}
 }
