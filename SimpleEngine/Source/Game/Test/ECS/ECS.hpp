@@ -28,9 +28,9 @@ namespace Simple
 		std::vector<T*> GetAllComponentsOfType();
 
 	private:
-		Simple::ComponentManager myComponentManager;
-		Simple::SystemManager mySystemManager;
-		Simple::EntityManager myEntityManager;
+		ComponentManager myComponentManager;
+		SystemManager mySystemManager;
+		EntityManager myEntityManager;
 	};
 
 	template<typename T>

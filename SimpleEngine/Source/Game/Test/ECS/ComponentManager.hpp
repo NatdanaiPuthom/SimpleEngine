@@ -47,7 +47,7 @@ namespace Simple
 		template<typename T>
 		void RegisterDestructor();
 
-		void SetWorldPointerToThis();
+		void SetWorldPointerToThis(); //TO-DO(v9.27): Fix this spaghetti
 	private:
 		size_t myCurrentComponentsCount;
 		std::vector<size_t> myAvalibleComponentID;
