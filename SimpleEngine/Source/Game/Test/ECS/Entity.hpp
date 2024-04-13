@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/World.hpp"
+#include "Game/Test/ECS/Core/ECSNeedFix.hpp"
 #include <unordered_map>
 #include <typeindex>
 #include <vector>
@@ -14,13 +14,12 @@ namespace Simple
 	public:
 		Entity();
 
-		//Create new component
 		template<typename T>
-		bool AddComponent(const T& aComponent = T()); 
+		bool AddComponent(const T& aComponent = T());
 
-		//Add already existing component
+		//TO-DO(v9.27): Fix some ref count for when removing the component
 		template<typename T>
-		bool AddComponent(const size_t aComponentID); 
+		bool AddSharedComponent(const size_t aComponentID);
 
 		template<typename T>
 		bool RemoveComponent();
@@ -45,7 +44,7 @@ namespace Simple
 			assert(false && "Trying to add multiple components of same type is not allowed");
 		}
 
-		auto componentManager = World::GetComponentManager();
+		auto componentManager = Disgusting::GetComponentManager();
 
 		myComponents[typeid(T)] = componentManager->CreateComponent<T>(aComponent);
 
@@ -53,14 +52,14 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline bool Entity::AddComponent(const size_t aComponentID)
+	inline bool Entity::AddSharedComponent(const size_t aComponentID)
 	{
 		if (myComponents.find(typeid(T)) != myComponents.end())
 		{
 			assert(false && "Trying to add multiple components of same type is not allowed");
 		}
 
-		auto componentManager = World::GetComponentManager();
+		auto componentManager = Disgusting::GetComponentManager();
 
 		const T* component = componentManager->GetComponentByID<T>(aComponentID);
 
@@ -70,7 +69,7 @@ namespace Simple
 		}
 
 		myComponents[typeid(T)] = aComponentID;
-		
+
 		return true;
 	}
 
@@ -81,7 +80,7 @@ namespace Simple
 
 		if (it != myComponents.end())
 		{
-			World::GetComponentManager()->RemoveComponent<T>(it->second);
+			Disgusting::GetComponentManager()->RemoveComponent<T>(it->second);
 			return static_cast<bool>(myComponents.erase(typeid(T)));
 		}
 
@@ -91,14 +90,14 @@ namespace Simple
 	template<typename T>
 	inline T* Entity::GetComponent()
 	{
-		auto componentManager = World::GetComponentManager();
+		auto componentManager = Disgusting::GetComponentManager();
 		return componentManager->GetComponentByID<T>(myComponents[typeid(T)]);
 	}
 
 	template<typename T>
 	inline const T* Entity::GetComponent() const
 	{
-		auto componentManager = World::GetComponentManager();
+		auto componentManager = Disgusting::GetComponentManager();
 		return componentManager->GetComponentByID<T>(myComponents[typeid(T)]);;
 	}
 }

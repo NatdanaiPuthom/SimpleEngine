@@ -60,6 +60,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
+	ecs.SetGlobalECSPointerToThis();
 
 	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
@@ -71,7 +72,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	Simple::GameWorld gameWorld;
 	gameWorld.Init();
 	PROFILER_END();
-
 
 	while (Global::GetGameIsRunning())
 	{

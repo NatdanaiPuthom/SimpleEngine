@@ -2,7 +2,6 @@
 #include "Game/Test/ECS/MemoryPool_ECS.hpp"
 #include <typeindex>
 #include <unordered_map>
-#include <random>
 
 namespace Simple
 {
@@ -11,8 +10,6 @@ namespace Simple
 	public:
 		ComponentManager();
 		~ComponentManager();
-
-		void Init();
 
 		template<typename T>
 		size_t CreateComponent(const T& aComponent = T());
@@ -47,7 +44,6 @@ namespace Simple
 		template<typename T>
 		void RegisterDestructor();
 
-		void SetWorldPointerToThis(); //TO-DO(v9.27): Fix this spaghetti
 	private:
 		size_t myCurrentComponentsCount;
 		std::vector<size_t> myAvalibleComponentID;

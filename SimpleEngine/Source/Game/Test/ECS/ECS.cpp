@@ -1,5 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/ECS/ECS.hpp"
+#include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
+#include "Game/Test/ECS/Core/ECSNeedFix.hpp"
 
 namespace Simple
 {
@@ -13,7 +15,6 @@ namespace Simple
 
 	void ECS::Init()
 	{
-		myComponentManager.Init();
 		mySystemManager.Init();
 	}
 
@@ -42,6 +43,11 @@ namespace Simple
 		return myEntityManager.GetEntity(aEntityID);
 	}
 
+	Simple::ComponentManager* ECS::GetComponentManager()
+	{
+		return &myComponentManager;
+	}
+
 	std::vector<Entity>& ECS::GetAllEntities()
 	{
 		return myEntityManager.GetAllEntities();
@@ -50,5 +56,11 @@ namespace Simple
 	const std::vector<Entity>& ECS::GetAllEntities() const
 	{
 		return myEntityManager.GetAllEntities();
+	}
+
+	void ECS::SetGlobalECSPointerToThis()
+	{
+		Impl::SimpleWorldECS::SetECS(this);
+		Disgusting::DisgustingWorldComponentManager::SetComponentManager(&myComponentManager);
 	}
 }

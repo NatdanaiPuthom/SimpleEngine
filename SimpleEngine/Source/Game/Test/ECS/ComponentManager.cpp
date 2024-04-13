@@ -1,6 +1,5 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test//ECS/ComponentManager.hpp"
-#include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
 namespace Simple
 {
@@ -29,15 +28,5 @@ namespace Simple
 				myComponentDestructorInvoker[key](&components[offset]);
 			}
 		}
-	}
-
-	void ComponentManager::Init()
-	{
-		SetWorldPointerToThis();
-	}
-
-	void ComponentManager::SetWorldPointerToThis()
-	{
-		Impl::SimpleWorldComponentManager::SetComponentManager(this);
 	}
 }

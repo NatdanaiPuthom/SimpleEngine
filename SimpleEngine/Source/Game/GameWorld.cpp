@@ -1,10 +1,8 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/GameWorld.hpp"
-#include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/RaycastManager/RaycastManager.hpp"
 #include "Game/Managers/EventManager/EventManager.hpp"
-#include "Engine/Math/Quaternion.hpp"
 
 namespace Simple
 {
@@ -15,7 +13,6 @@ namespace Simple
 		, myFixedUpdateTimer(0.0f)
 		, myFixedUpdateFreqency(1.0f / 60.0f)
 	{
-		Impl::SimpleWorldGameWorld::SetGameWorld(this);
 	}
 
 	GameWorld::~GameWorld()

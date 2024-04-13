@@ -2,21 +2,14 @@
 
 namespace Simple
 {
-	class GameWorld;
 	class LevelManager;
 	class EventManager;
 	class ComponentManager;
+	class ECS;
 }
 
 namespace Impl
 {
-	class SimpleWorldGameWorld final
-	{
-		friend class Simple::GameWorld;
-	private:
-		static void SetGameWorld(Simple::GameWorld* aGameWorld);
-	};
-
 	class SimpleWorldLevelManager final
 	{
 		friend class Simple::LevelManager;
@@ -31,9 +24,19 @@ namespace Impl
 		static void SetEventManager(Simple::EventManager* aLevelManager);
 	};
 
-	class SimpleWorldComponentManager final
+	class SimpleWorldECS final
 	{
-		friend class Simple::ComponentManager;
+		friend class Simple::ECS;
+	private:
+		static void SetECS(Simple::ECS* aECS);
+	};
+}
+
+namespace Disgusting
+{
+	class DisgustingWorldComponentManager final
+	{
+		friend class Simple::ECS;
 	private:
 		static void SetComponentManager(Simple::ComponentManager* aComponentManager);
 	};
