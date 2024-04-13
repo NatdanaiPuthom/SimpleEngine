@@ -14,14 +14,13 @@ namespace Simple
 	public:
 		Entity();
 
+		//Create new component
 		template<typename T>
-		bool AddComponent();
+		bool AddComponent(const T& aComponent = T()); 
 
+		//Add already existing component
 		template<typename T>
-		bool AddComponent(const T& aComponent);
-
-		template<typename T>
-		bool AddComponent(const size_t aComponentID);
+		bool AddComponent(const size_t aComponentID); 
 
 		template<typename T>
 		bool RemoveComponent();
@@ -37,21 +36,6 @@ namespace Simple
 	private:
 		std::unordered_map<std::type_index, size_t> myComponents;
 	};
-
-	template<typename T>
-	inline bool Entity::AddComponent()
-	{
-		if (myComponents.find(typeid(T)) != myComponents.end())
-		{
-			assert(false && "Trying to add multiple components of same type is not allowed");
-		}
-
-		auto componentManager = World::GetComponentManager();
-
-		myComponents[typeid(T)] = componentManager->CreateComponent<T>();
-
-		return true;
-	}
 
 	template<typename T>
 	inline bool Entity::AddComponent(const T& aComponent)
