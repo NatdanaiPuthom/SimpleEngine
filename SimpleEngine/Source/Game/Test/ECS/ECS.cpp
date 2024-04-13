@@ -1,7 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/ECS/ECS.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
-#include "Game/Test/ECS/Core/ECSNeedFix.hpp"
+#include "Game/Test/ECS/Disgusting/ECSNeedFix.hpp"
 
 namespace Simple
 {

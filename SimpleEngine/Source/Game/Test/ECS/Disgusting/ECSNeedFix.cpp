@@ -1,4 +1,5 @@
 #include "Game/Precomplied/GamePch.hpp"
+#include "Game/Test/ECS/Disgusting/ECSNeedFix.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
 namespace Disgusting
