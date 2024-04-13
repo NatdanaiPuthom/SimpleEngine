@@ -1,5 +1,5 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Test/ECS/SystemManager.hpp"
+#include "Game/Test/ECS/Core/SystemManager.hpp"
 
 namespace Simple
 {

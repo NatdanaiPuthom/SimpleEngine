@@ -3,17 +3,17 @@
 
 namespace Simple
 {
-	class MemoryPool_ECS final
+	class MemoryPoolECS final
 	{
 		using MemoryAdress = size_t;
 	public:
-		MemoryPool_ECS(size_t aDefaultSize = 64);
-		~MemoryPool_ECS();
+		MemoryPoolECS(size_t aDefaultSize = 64);
+		~MemoryPoolECS();
 
-		MemoryPool_ECS(const MemoryPool_ECS&) = delete;
-		MemoryPool_ECS(MemoryPool_ECS&&) = delete;
-		MemoryPool_ECS& operator=(const MemoryPool_ECS&) = delete;
-		MemoryPool_ECS& operator=(MemoryPool_ECS&&) = delete;
+		MemoryPoolECS(const MemoryPoolECS&) = delete;
+		MemoryPoolECS(MemoryPoolECS&&) = delete;
+		MemoryPoolECS& operator=(const MemoryPoolECS&) = delete;
+		MemoryPoolECS& operator=(MemoryPoolECS&&) = delete;
 
 		template<typename T>
 		T& AllocateComponent(const size_t aID, std::unordered_map<size_t, const char*>& aAllComponentPointerMap);
@@ -52,7 +52,7 @@ namespace Simple
 	};
 
 	template<typename T>
-	inline T& MemoryPool_ECS::AllocateComponent(const size_t aID, std::unordered_map<size_t, const char*>& aAllComponentPointerMap)
+	inline T& MemoryPoolECS::AllocateComponent(const size_t aID, std::unordered_map<size_t, const char*>& aAllComponentPointerMap)
 	{
 		constexpr size_t objectSize = sizeof(T);
 		bool reallocated = false;
@@ -80,7 +80,7 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline T& MemoryPool_ECS::AllocateComponent(const size_t aID, const T& aValue, std::unordered_map<size_t, const char*>& aAllComponentPointerMap)
+	inline T& MemoryPoolECS::AllocateComponent(const size_t aID, const T& aValue, std::unordered_map<size_t, const char*>& aAllComponentPointerMap)
 	{
 		constexpr size_t objectSize = sizeof(T);
 		bool reallocated = false;
@@ -107,19 +107,19 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline T& MemoryPool_ECS::GetValueByIndex(const size_t aIndex)
+	inline T& MemoryPoolECS::GetValueByIndex(const size_t aIndex)
 	{
 		return (T&)*(myStartMemoryAddress + aIndex * sizeof(T));
 	}
 
 	template<typename T>
-	inline T& MemoryPool_ECS::GetValueByMemoryAddress(const char* aAddress)
+	inline T& MemoryPoolECS::GetValueByMemoryAddress(const char* aAddress)
 	{
 		return (T&)*(aAddress);
 	}
 
 	template<typename T>
-	inline bool MemoryPool_ECS::SwapWithLastAndRemove(T& aComponent)
+	inline bool MemoryPoolECS::SwapWithLastAndRemove(T& aComponent)
 	{
 		const char* componentAdress = reinterpret_cast<const char*>(&aComponent);
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/Test/ECS/ComponentManager.hpp"
+#include "Game/Test/ECS/Core/ComponentManager.hpp"
 
 //NOTE(v9.27): I have to figure another structure where ECS include EntityManager which includes Entity which include ECS. Circle dependency.
 //NOTE(v9.27): I do not want to forward declare as it would require places where ECS is begin used to be needed to include Entity.

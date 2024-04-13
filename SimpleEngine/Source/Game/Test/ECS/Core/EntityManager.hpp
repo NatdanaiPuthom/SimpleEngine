@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/Test/ECS/Entity.hpp"
+#include "Game/Test/ECS/Core/Entity.hpp"
 #include <vector>
 #include <unordered_map>
 

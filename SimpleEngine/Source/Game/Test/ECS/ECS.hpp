@@ -1,7 +1,7 @@
 #pragma once
-#include "Game/Test/ECS/ComponentManager.hpp"
-#include "Game/Test/ECS/SystemManager.hpp"
-#include "Game/Test/ECS/EntityManager.hpp"
+#include "Game/Test/ECS/Core/ComponentManager.hpp"
+#include "Game/Test/ECS/Core/SystemManager.hpp"
+#include "Game/Test/ECS/Core/EntityManager.hpp"
 
 namespace Simple
 {

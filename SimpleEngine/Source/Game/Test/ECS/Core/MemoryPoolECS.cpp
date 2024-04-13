@@ -1,9 +1,9 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Test/ECS/MemoryPool_ECS.hpp"
+#include "Game/Test/ECS/Core/MemoryPoolECS.hpp"
 
 namespace Simple
 {
-	MemoryPool_ECS::MemoryPool_ECS(size_t aDefaultSize)
+	MemoryPoolECS::MemoryPoolECS(size_t aDefaultSize)
 	{
 		myStartMemoryAddress = new char[aDefaultSize];
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;
@@ -12,22 +12,22 @@ namespace Simple
 		myElementIDs.reserve(aDefaultSize);
 	}
 
-	MemoryPool_ECS::~MemoryPool_ECS()
+	MemoryPoolECS::~MemoryPoolECS()
 	{
 		delete[] myStartMemoryAddress;
 	}
 
-	size_t MemoryPool_ECS::GetSize() const
+	size_t MemoryPoolECS::GetSize() const
 	{
 		return myCurrentMemoryAddress - myStartMemoryAddress;
 	}
 
-	size_t MemoryPool_ECS::GetElementIDByIndex(const size_t aIndex) const
+	size_t MemoryPoolECS::GetElementIDByIndex(const size_t aIndex) const
 	{
 		return myElementIDs[aIndex];
 	}
 
-	int MemoryPool_ECS::GetElementIndexByMemoryAddress(const char* aAdress, const size_t aSize) const
+	int MemoryPoolECS::GetElementIndexByMemoryAddress(const char* aAdress, const size_t aSize) const
 	{
 		if (aSize == 0)
 		{
@@ -44,7 +44,7 @@ namespace Simple
 		return index;
 	}
 
-	int MemoryPool_ECS::GetElementIDByMemoryAddress(const char* aAdress) const
+	int MemoryPoolECS::GetElementIDByMemoryAddress(const char* aAdress) const
 	{
 		const size_t memorySize = GetSize();
 		const size_t elementSize = myElementIDs.size();
@@ -64,42 +64,42 @@ namespace Simple
 		return static_cast<int>(myElementIDs[index]);
 	}
 
-	std::vector<size_t> MemoryPool_ECS::GetElementIDs() const
+	std::vector<size_t> MemoryPoolECS::GetElementIDs() const
 	{
 		return myElementIDs;
 	}
 
-	char* MemoryPool_ECS::GetStartMemoryAddress()
+	char* MemoryPoolECS::GetStartMemoryAddress()
 	{
 		return myStartMemoryAddress;
 	}
 
-	const char* MemoryPool_ECS::GetEndMemoryAddress()
+	const char* MemoryPoolECS::GetEndMemoryAddress()
 	{
 		return myEndMemoryAddress;
 	}
 
-	const char* MemoryPool_ECS::GetCurrentMemoryAddress()
+	const char* MemoryPoolECS::GetCurrentMemoryAddress()
 	{
 		return myCurrentMemoryAddress;
 	}
 
-	size_t MemoryPool_ECS::GetElementCount() const
+	size_t MemoryPoolECS::GetElementCount() const
 	{
 		return myElementIDs.size();
 	}
 
-	size_t MemoryPool_ECS::GetCapacity() const
+	size_t MemoryPoolECS::GetCapacity() const
 	{
 		return myEndMemoryAddress - myStartMemoryAddress;
 	}
 
-	size_t MemoryPool_ECS::GetAvailableMemorySize() const
+	size_t MemoryPoolECS::GetAvailableMemorySize() const
 	{
 		return myEndMemoryAddress - myCurrentMemoryAddress;
 	}
 
-	void MemoryPool_ECS::Reallocate()
+	void MemoryPoolECS::Reallocate()
 	{
 		char* oldMemoryArray = myStartMemoryAddress;
 

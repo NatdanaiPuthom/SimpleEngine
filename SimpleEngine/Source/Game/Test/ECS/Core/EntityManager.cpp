@@ -1,5 +1,5 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Test/ECS/EntityManager.hpp"
+#include "Game/Test/ECS/Core/EntityManager.hpp"
 
 namespace Simple
 {
