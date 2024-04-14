@@ -262,7 +262,8 @@ namespace Drawer
 
 			line.startPosition = boneWorldTransform.GetPosition();
 			line.endPosition = boneWorldTransformNext.GetPosition();
-			myAnimatedSkeletonLines.push_back(line);
+
+			myAnimatedSkeletonLines[index] = line;
 
 			if (joint.myName.find("Jnt"))
 			{
@@ -271,7 +272,7 @@ namespace Drawer
 			}
 		}
 
-		Global::GetRenderer()->RenderLine(myAnimatedSkeletonLines);
+		myLineDrawer->RenderInstance(myAnimatedSkeletonLines);
 	}
 
 	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::LocalSpacePose& aLocalPose)
@@ -303,7 +304,8 @@ namespace Drawer
 
 			line.startPosition = boneWorldTransform.GetPosition();
 			line.endPosition = boneWorldTransformNext.GetPosition();
-			myAnimatedSkeletonLines.push_back(line);
+
+			myAnimatedSkeletonLines[index] = line;
 
 			if (joint.myName.find("Jnt"))
 			{
@@ -312,26 +314,29 @@ namespace Drawer
 			}
 		}
 
-		Global::GetRenderer()->RenderLine(myAnimatedSkeletonLines);
+		myLineDrawer->RenderInstance(myAnimatedSkeletonLines);
 	}
 
 	void Renderer::RenderStaticSkeletonLines(const Simple::AnimatedModel& aModel)
 	{
 		const std::vector<Simple::Joint>& joints = aModel.GetSkeleton()->myJoints;
 		const Math::Vector3f scale = aModel.GetScale();
-		const Math::Matrix4x4f modelTransform = aModel.GetMatrix();
 
 		myStaticSkeletonLines.resize(joints.size());
+
+		Drawer::Line line;
+		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+		Drawer::Sphere sphere;
+		sphere.radius = 0.05f;
 
 		for (size_t index = 0; index < joints.size(); ++index)
 		{
 			Simple::Joint joint = joints[index];
+
 			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joint.myBindPoseInverse);
 
-			Drawer::Sphere sphere;
-
 			sphere.position = boneWorldTransform.GetPosition();
-			sphere.radius = 0.05f;
 
 			mySphereDrawer->Render(sphere);
 
@@ -340,8 +345,6 @@ namespace Drawer
 
 			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(joints[joint.myParent].myBindPoseInverse);
 
-			Drawer::Line line;
-			line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
 			line.startPosition = boneWorldTransform.GetPosition() * scale;
 			line.endPosition = boneWorldTransformNext.GetPosition() * scale;
 
@@ -358,31 +361,32 @@ namespace Drawer
 
 		myStaticSkeletonLines.resize(joints.size());
 
+		Drawer::Line line;
+		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+		Drawer::Sphere sphere;
+		sphere.radius = 0.05f;
+
 		for (size_t index = 0; index < joints.size(); ++index)
 		{
 			Simple::Joint joint = joints[index];
 
+			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joints[index].myBindPoseInverse);
+
+			sphere.position = boneWorldTransform.GetPosition();
+
 			if (joint.myParent == -1)
 				continue;
 
-			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joints[index].myBindPoseInverse);
 			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(joints[joint.myParent].myBindPoseInverse);
-
-			Drawer::Line line;
-
-			if (index % 3 == 0)
-				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-			else if (index % 3 == 1)
-				line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
-			else if (index % 3 == 2)
-				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
 
 			line.startPosition = boneWorldTransform.GetPosition() * scale;
 			line.endPosition = boneWorldTransformNext.GetPosition() * scale;
-			myStaticSkeletonLines.push_back(line);
+
+			myStaticSkeletonLines[index] = line;
 		}
 
-		Global::GetRenderer()->RenderLine(myStaticSkeletonLines);
+		myLineDrawer->RenderInstance(myStaticSkeletonLines);
 	}
 
 	void Renderer::RenderBoundingBox(const std::shared_ptr<const Model> aModel) const
@@ -427,10 +431,9 @@ namespace Drawer
 		camera->SetPosition(oldCamPosition - Math::Vector3f(0.0f, distFromWater, 0.0f));
 		camera->SetRotation(newCamRotation);
 
-		Drawer::Renderer* renderer = Global::GetRenderer();
 		for (const auto& model : World::GetActiveScene()->myModels)
 		{
-			renderer->RenderUpSideDown(model);
+			RenderUpSideDown(model);
 		}
 
 		camera->SetRotation(oldCamRotation);
@@ -473,11 +476,9 @@ namespace Drawer
 
 	void Renderer::RenderRefraction() const
 	{
-		Drawer::Renderer* renderer = Global::GetRenderer();
-
 		for (const auto& model : World::GetActiveScene()->myModels)
 		{
-			renderer->RenderRefraction(model);
+			RenderRefraction(model);
 		}
 	}
 
