@@ -26,9 +26,12 @@ namespace Scenes
 		myFloor = Global::GetModelFactory()->LoadStaticModelFBX("StaticModels/Simple_Floor_10x10.fbx");
 		myFloor.SetPosition({ 0.0f,-4.0f, 0.0f });
 
-		myHuman = Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SimpleHuman.fbx");
-
 		myPlayer.Init();
+
+		myTestModel = Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SimpleHuman.fbx");;
+		myTestAnimation = Global::GetModelFactory()->LoadAnimationFBX("Animations/SimpleHuman_Idle.fbx");
+		myTestAnimationPlayer.Init(myTestAnimation, myTestModel);
+		myTestAnimationPlayer.Play(true);
 	}
 
 	void Scenes::DefaultScene::Update()
@@ -43,10 +46,12 @@ namespace Scenes
 
 		auto renderer = Global::GetRenderer();
 
-		myPlayer.Render();
-		renderer->RenderModel(myFloor);
-		renderer->RenderModel(myHuman);
-		renderer->RenderStaticSkeletonLines(myHuman);
+		//myPlayer.Render();
+		//renderer->RenderModel(myFloor);
 		//renderer->RenderBoundingBox(myFloor);
+
+		myTestAnimationPlayer.Update();
+		renderer->RenderModel(myTestModel);
+		renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myLocalSpacePose);
 	}
 }
