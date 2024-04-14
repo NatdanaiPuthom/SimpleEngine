@@ -19,7 +19,7 @@ namespace Simple
 
 	Engine::~Engine()
 	{
-		AudioManager::GetInstance().~AudioManager(); //I will fix so AudioManager isn't a singleton later (v9.18.0)
+		AudioManager::GetInstance().~AudioManager(); //TO-DO(v9.18.0):I will fix so AudioManager isn't a singleton later
 	}
 
 	void Engine::SetGlobalPointerToThis()

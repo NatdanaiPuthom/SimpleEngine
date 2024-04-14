@@ -89,7 +89,7 @@ namespace Simple
 
 	bool Texture::InitNonDDS(ComPtr<ID3D11Device> aDevice, const unsigned char* aRGBAPixels, const int aWidth, const int aHeight)
 	{
-		//TO-DO: Fix so it works with mipmaps
+		//TO-DO(v4.0?): Fix so it works with mipmaps
 
 		ComPtr<ID3D11Texture2D> texture = nullptr;
 
