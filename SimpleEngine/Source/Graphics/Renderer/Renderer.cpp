@@ -326,28 +326,29 @@ namespace Drawer
 		for (size_t index = 0; index < joints.size(); ++index)
 		{
 			Simple::Joint joint = joints[index];
+			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joint.myBindPoseInverse);
+
+			Drawer::Sphere sphere;
+
+			sphere.position = boneWorldTransform.GetPosition();
+			sphere.radius = 0.05f;
+
+			mySphereDrawer->Render(sphere);
 
 			if (joint.myParent == -1)
 				continue;
 
-			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joint.myBindPoseInverse);
 			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(joints[joint.myParent].myBindPoseInverse);
 
 			Drawer::Line line;
-
-			if (index % 3 == 0)
-				line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-			else if (index % 3 == 1)
-				line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
-			else if (index % 3 == 2)
-				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-
+			line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
 			line.startPosition = boneWorldTransform.GetPosition() * scale;
 			line.endPosition = boneWorldTransformNext.GetPosition() * scale;
-			myStaticSkeletonLines.push_back(line);
+
+			myStaticSkeletonLines[index] = line;
 		}
 
-		Global::GetRenderer()->RenderLine(myStaticSkeletonLines);
+		myLineDrawer->RenderInstance(myStaticSkeletonLines);
 	}
 
 	void Renderer::RenderStaticSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel)
