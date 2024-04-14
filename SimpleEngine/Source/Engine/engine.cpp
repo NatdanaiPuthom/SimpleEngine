@@ -46,7 +46,7 @@ namespace Simple
 		ShowWindow(*myHWND, nCmdShow);
 		UpdateWindow(*myHWND);
 
-		myCustomCursor = LoadCursorFromFile(L"Assets/Icon/Cell_Phone.cur");
+		myCustomCursor = LoadCursorFromFile(L"Assets/Icon/Cat-scared.cur");
 		assert(myCustomCursor && "Failed to load Custom Cursor");
 
 		AudioManager::GetInstance().Init();
