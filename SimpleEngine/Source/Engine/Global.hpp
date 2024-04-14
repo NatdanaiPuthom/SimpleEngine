@@ -5,7 +5,8 @@
 
 namespace Global
 {
-	Simple::GraphicsEngine* GetGraphicsEngine();
+	//TO-DO(v9.27): Seperate nessesary stuff that needed from GraphicsEngine instead of using the GraphicsEngine pointer itself
+	Simple::GraphicsEngine* GetGraphicsEngine(); //NOTES(v9.27): Like Engine class, we should never have direct access to GraphicsEngine but will fix it one day... i hope
 	Simple::ModelFactory* GetModelFactory();
 	Drawer::Renderer* GetRenderer();
 
@@ -25,9 +26,9 @@ namespace Global
 
 	void SetGameShouldClose(const bool aShouldClose);
 
-	//Not sure if this will do anything, only change Camera resolution
+	//NOTE(v7.0?): Not sure if this will do anything, only change Camera resolution
 	void SetResolution(const Math::Vector2ui& aResolution);
 
-	//WindowSize also change Resolution to fit
+	//WindowSize also change Resolution to fit. TO-DO(v9.0?): Fix dragable window size after setting full screen and revert to windowed
 	void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen = false);
 }

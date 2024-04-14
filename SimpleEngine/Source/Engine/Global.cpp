@@ -156,8 +156,6 @@ namespace Global
 	void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen)
 	{
 		localWindowSize = aWindowSize;
-		localResolution = aWindowSize;
-
 		localIsFullScreen = aSetFullScreen;
 
 		localGraphicsEngine->SetWindowSize(localWindowSize, aSetFullScreen);
