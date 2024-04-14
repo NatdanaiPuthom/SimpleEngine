@@ -28,8 +28,8 @@ namespace Scenes
 
 		myPlayer.Init();
 
-		myTestModel = Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SimpleHuman.fbx");;
-		myTestAnimation = Global::GetModelFactory()->LoadAnimationFBX("Animations/SimpleHuman_Idle.fbx");
+		myTestModel = Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SimpleHuman3.fbx");;
+		myTestAnimation = Global::GetModelFactory()->LoadAnimationFBX("Animations/SimpleHuman3_Idle.fbx");
 		myTestAnimationPlayer.Init(myTestAnimation, myTestModel);
 		myTestAnimationPlayer.Play(true);
 	}
