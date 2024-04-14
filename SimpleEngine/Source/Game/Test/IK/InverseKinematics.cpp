@@ -1,260 +1,76 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Test/IK/InverseKinematics.hpp"
-#include <cmath>
 
 namespace Test
 {
-	static Simple::Joint shoulder;
-	static Simple::Joint elbow;
-	static Simple::Joint wrist;
-	static Math::Vector3 target;
-
-	static double CalculateTheta0(double l0, double l1, double m, double E_angle)
-	{
-		return acos((pow(l0, 2) - pow(l1, 2) + m) / (2 * l0 * sqrt(m))) + E_angle;
-	}
-
-	static double CalculateTheta1(double l0, double l1, double m)
-	{
-		return acos((pow(l0, 2) + pow(l1, 2) - m) / (2 * l0 * l1));
-	}
-
 	InverseKinematics::InverseKinematics()
 	{
-		shoulder.myBindPoseInverse.SetPosition({ 0.0f, 0.0f, 0.0f });
-		elbow.myBindPoseInverse.SetPosition({ 5.0f, 0.0f, 0.0f });
-		wrist.myBindPoseInverse.SetPosition({ 10.0f, 0.0f, 0.0f });
-		target = { 8.0f, 5.0f, 0.0f };
 	}
 
 	InverseKinematics::~InverseKinematics()
 	{
 	}
 
-	void InverseKinematics::Render(std::shared_ptr< Simple::AnimatedModel> aModel, Simple::LocalSpacePose& aLocalPose)
+	void InverseKinematics::Init()
 	{
-		aModel;
-		aLocalPose;
+		myTestModel = Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SimpleHuman3.fbx");;
+		myTestAnimation = Global::GetModelFactory()->LoadAnimationFBX("Animations/SimpleHuman3_Idle.fbx");
+		myTestAnimationPlayer.Init(myTestAnimation, myTestModel);
+		myTestAnimationPlayer.Play(true);
 
-		/*	auto hipPosition = aLocalPose.jointTransforms[39].GetPosition();
-			auto kneePosition = aLocalPose.jointTransforms[40].GetPosition();
-			auto footPosition = aLocalPose.jointTransforms[41].GetPosition();
-
-			if (ImGui::Begin("Skeletons"))
-			{
-				if (ImGui::DragFloat3("Hip", &hipPosition.x, 0.1f, -180.0f, 180.0f))
-				{
-					aLocalPose.jointTransforms[39].SetPosition(hipPosition);
-					aModel->SetPose(aLocalPose);
-				}
-
-				if (ImGui::DragFloat3("Knee", &kneePosition.x, 0.1f, -180.0f, 180.0f))
-				{
-					aLocalPose.jointTransforms[40].SetPosition(kneePosition);
-					aModel->SetPose(aLocalPose);
-				}
-
-				if (ImGui::DragFloat3("Foot", &footPosition.x, 0.1f, -180.0f, 180.0f))
-				{
-					aLocalPose.jointTransforms[41].SetPosition(footPosition);
-					aModel->SetPose(aLocalPose);
-				}
-			}
-			ImGui::End();
-
-			auto renderer = Global::GetRenderer();
-
-			Simple::ModelSpacePose pose;
-			const Simple::Skeleton* skeleton = aModel->GetSkeleton();
-			skeleton->ConvertPoseToModelSpace(aLocalPose, pose);
-
-			const Math::Matrix4x4f modelTransform = aModel->GetMatrix();
-
-			const Math::Matrix4x4 hip = pose.jointTransforms[39] * modelTransform;
-			const Math::Matrix4x4 knee = pose.jointTransforms[40] * modelTransform;
-			const Math::Matrix4x4 fot = pose.jointTransforms[41] * modelTransform;
-
-			{
-				Drawer::Line line;
-				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-				line.startPosition = knee.GetPosition();
-				line.endPosition = line.startPosition;
-				line.endPosition.y -= 0.1f;
-
-				renderer->RenderLine(line);
-			}
-
-			{
-				Drawer::Line line;
-				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-				line.startPosition = fot.GetPosition();
-				line.endPosition = line.startPosition;
-				line.endPosition.y -= 0.1f;
-
-				renderer->RenderLine(line);
-			}
-
-			{
-				Drawer::Line line;
-				line.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-				line.startPosition = hip.GetPosition();
-				line.endPosition = line.startPosition;
-				line.endPosition.y -= 0.1f;
-
-				renderer->RenderLine(line);
-			}
-
-			renderer->RenderAnimatedSkeletonLines(aModel, aLocalPose);
-			renderer->RenderLine(myLines);*/
-
-			//Test();
-		//Arm();
+		Global::GetGraphicsEngine()->SetRasterizerState(eRasterizerState::Wireframe);
 	}
 
-	void InverseKinematics::Test()
+	void InverseKinematics::Update()
 	{
-		auto renderer = Global::GetRenderer();
+		//myTestAnimationPlayer.Update();
+	}
 
-		static float l0 = 10.0f;
-		static float l1 = 10.0f;
-		static float E1 = 20.0f;
-		static float E2 = 2.0f;
-		static float B1 = 8.0f;
-		static float B2 = 15.0f;
+	void InverseKinematics::Render()
+	{
+		const std::vector<Simple::Joint>& joints = myTestModel.GetSkeleton()->myJoints;
 
-		if (ImGui::Begin("Test"))
+		Simple::Joint root;
+
+		for (const auto& joint : joints)
 		{
-			ImGui::DragFloat("l0", &l0);
-			ImGui::DragFloat("l1", &l1);
-			ImGui::DragFloat("E1", &E1);
-			ImGui::DragFloat("E2", &E2);
-			ImGui::DragFloat("B1", &B1);
-			ImGui::DragFloat("B2", &B2);
+			if (joint.myParent == -1)
+			{
+				root = joint;
+			}
 		}
-		ImGui::End();
-
-		// Intermediate calculations
-		float m = powf((E1 - B1), 2) + powf((E2 - B2), 2);
-		float E_angle = atan2f(E2 - B2, E1 - B1);
-		float d = Math::GetMax(fabsf(l0 - l1), Math::GetMin(l0 + l1, sqrtf(powf(E1 - B1, 2) + powf(E2 - B2, 2))));
-
-		// Calculate theta0
-		double theta0 = CalculateTheta0(l0, l1, m, E_angle);
-
-		// Calculate theta1
-		double theta1 = CalculateTheta1(l0, l1, m);
-
-		// Convert theta1 to degrees
-		//double theta_d = theta1 * 180 / Math::globalPi;
-
-		double SE_x = cos(E_angle) * d;
-		double SE_y = sin(E_angle) * d;
-		double S0_x = B1 + cos(theta0) * l0;
-		double S0_y = B2 + sin(theta0) * l0;
-		double S1_x = S0_x + cos(Math::globalPi - (-theta1 - theta0)) * l1;
-		double S1_y = S0_y + sin(Math::globalPi - (-theta1 - theta0)) * l1;
-
-		S1_y; S1_x; S0_y; S0_x;
-
-		Drawer::Line line;
-		line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-
-		line.startPosition = { static_cast<float>(SE_x), static_cast<float>(SE_y), 0.0f };
-		line.endPosition = { static_cast<float>(S0_x), static_cast<float>(S0_y), 0.0f };
-		renderer->RenderLine(line);
-
-		line.startPosition = { static_cast<float>(S0_x), static_cast<float>(S0_y), 0.0f };
-		line.endPosition = { static_cast<float>(S1_x), static_cast<float>(S1_y), 0.0f };;
-		renderer->RenderLine(line);
-
-		Drawer::Sphere sphere;
-		sphere.radius = 1.0f;
-
-		sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-		sphere.position = { static_cast<float>(SE_x), static_cast<float>(SE_y), 0.0f };
-		renderer->RenderSphere(sphere);
-
-		sphere.color = { 0.0f, 1.0f, 0.0f, 1.0f };
-		sphere.position = { static_cast<float>(S0_x), static_cast<float>(S0_y), 0.0f };
-		renderer->RenderSphere(sphere);
-
-		sphere.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-		sphere.position = { static_cast<float>(S1_x), static_cast<float>(S1_y), 0.0f };
-		renderer->RenderSphere(sphere);
-	}
-
-	void InverseKinematics::Arm()
-	{
-		auto renderer = Global::GetRenderer();
-
-		Drawer::Line shoulderToElbow;
-		shoulderToElbow.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-		shoulderToElbow.startPosition = shoulder.myBindPoseInverse.GetPosition();
-		shoulderToElbow.endPosition = elbow.myBindPoseInverse.GetPosition();
-
-		Drawer::Line elbowToWrist;
-		elbowToWrist.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-		elbowToWrist.startPosition = shoulderToElbow.endPosition;
-		elbowToWrist.endPosition = wrist.myBindPoseInverse.GetPosition();
-
-		renderer->RenderLine(shoulderToElbow);
-		renderer->RenderLine(elbowToWrist);
-
-		Drawer::Sphere sphere;
-		sphere.color = { 0.0f, 1.0f, 0.0f, 1.0f };
-		sphere.radius = 0.05f;
-
-		sphere.position = shoulder.myBindPoseInverse.GetPosition();
-		renderer->RenderSphere(sphere);
-
-		sphere.position = elbow.myBindPoseInverse.GetPosition();
-		renderer->RenderSphere(sphere);
-
-		sphere.position = wrist.myBindPoseInverse.GetPosition();
-		renderer->RenderSphere(sphere);
-
-
-		float d = Math::Distance(wrist.myBindPoseInverse.GetPosition(), shoulder.myBindPoseInverse.GetPosition());
-		float l = 5.0f;
-		float x = d / 2.0f;
-		float y = sqrtf(powf(l, 2) - powf(x, 2));
-		
-		/*std::cout << "Elbow To Wrist: " << Math::Distance(elbow.myBindPoseInverse.GetPosition(), wrist.myBindPoseInverse.GetPosition()) << std::endl;
-		std::cout << "Shoulder To Elbow: " << Math::Distance(shoulder.myBindPoseInverse.GetPosition(), elbow.myBindPoseInverse.GetPosition()) << std::endl;*/
-
-		Math::Vector3 pos = elbow.myBindPoseInverse.GetPosition();
-		pos.y = -y;
-		elbow.myBindPoseInverse.SetPosition(pos);
 
 		if (ImGui::Begin("Joints"))
 		{
-			Math::Vector3 wristPos = wrist.myBindPoseInverse.GetPosition();
-			if (ImGui::DragFloat3("Wrist", &wristPos.x, 0.1f, 0.0f, 100.0f))
-			{
-				wrist.myBindPoseInverse.SetPosition(wristPos);
-			}
+			DisplayName(joints, root);
 		}
 		ImGui::End();
 
 
-		/*for (int i = 0; i < 2; ++i)
+		const auto renderer = Global::GetRenderer();
+
+		renderer->RenderModel(myTestModel);
+		renderer->RenderStaticSkeletonLines(myTestModel);
+		//renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myLocalSpacePose);
+	}
+
+	void InverseKinematics::DisplayName(const std::vector<Simple::Joint>& aOriginalJoints, const Simple::Joint& aJoint)
+	{
+		if (aJoint.myChildren.empty())
 		{
-			Simple::Joint* currentJoint = (i == 0) ? &elbow : &shoulder;
+			ImGui::BulletText("%s", aJoint.myName.c_str());
+		}
+		else
+		{
+			if (ImGui::TreeNode(aJoint.myName.c_str()))
+			{
+				for (auto a : aJoint.myChildren)
+				{
+					DisplayName(aOriginalJoints, aOriginalJoints[a]);
+				}
 
-			Math::Vector3 toEndEffector = wrist.myBindPoseInverse.GetPosition() - currentJoint->myBindPoseInverse.GetPosition();
-			Math::Vector3 toTarget = target - currentJoint->myBindPoseInverse.GetPosition();
-
-			toEndEffector.Normalize();
-			toTarget.Normalize();
-
-			Math::Vector3 rotationAxis = Math::Cross(toEndEffector, toTarget);
-			rotationAxis.Normalize();
-
-			float cosTheta = Math::Dot(toEndEffector, toTarget);
-			float angle = acosf(cosTheta);
-
-			cosTheta;
-			angle;
-		}*/
+				ImGui::TreePop();
+			}
+		}
 	}
 }

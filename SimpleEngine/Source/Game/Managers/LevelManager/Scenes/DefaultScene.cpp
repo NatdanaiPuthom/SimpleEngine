@@ -14,8 +14,8 @@ namespace Scenes
 	void DefaultScene::OnEnter()
 	{
 		auto camera = Global::GetGraphicsEngine()->GetEditorCamera();
-		camera->SetRotation(Math::Vector3f(50, 0, 0));
-		camera->SetPosition(Math::Vector3f(10, 15, -12));
+		camera->SetRotation(Math::Vector3f(0, 0, 0));
+		camera->SetPosition(Math::Vector3f(-1, 4, -9));
 
 		myDirectionalLight->myModel->SetPosition({ -8.0f, 1.0f, 1.0f });
 		Global::GetGraphicsEngine()->SetDirectionalLightDirection({ 0.0f, 0.0f, -1.0f });
@@ -28,30 +28,26 @@ namespace Scenes
 
 		myPlayer.Init();
 
-		myTestModel = Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SimpleHuman3.fbx");;
-		myTestAnimation = Global::GetModelFactory()->LoadAnimationFBX("Animations/SimpleHuman3_Idle.fbx");
-		myTestAnimationPlayer.Init(myTestAnimation, myTestModel);
-		myTestAnimationPlayer.Play(true);
+		myIKTest.Init();
 	}
 
 	void Scenes::DefaultScene::Update()
 	{
 		Scene::Update();
 		myPlayer.Update();
+
+		myIKTest.Update();
 	}
 
 	void Scenes::DefaultScene::Render()
 	{
 		Scene::Render();
 
-		auto renderer = Global::GetRenderer();
+		myIKTest.Render();
 
 		//myPlayer.Render();
+		//auto renderer = Global::GetRenderer();
 		//renderer->RenderModel(myFloor);
 		//renderer->RenderBoundingBox(myFloor);
-
-		myTestAnimationPlayer.Update();
-		renderer->RenderModel(myTestModel);
-		renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myLocalSpacePose);
 	}
 }

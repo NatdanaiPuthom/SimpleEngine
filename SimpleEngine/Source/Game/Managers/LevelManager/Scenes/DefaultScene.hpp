@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
+#include "Game/Test/IK/InverseKinematics.hpp"
 #include "Game/Player/Player.hpp"
 
 namespace Scenes
@@ -16,12 +17,9 @@ namespace Scenes
 		void Update() override;
 		void Render() override;
 	private:
-		Simple::Model myFloor;
-
-		Simple::Animation myTestAnimation;
-		Simple::AnimatedModel myTestModel;
-		Simple::AnimationPlayer myTestAnimationPlayer;
-		
+		Simple::Model myFloor;	
 		Player myPlayer;
+
+		Test::InverseKinematics myIKTest;
 	};
 }

@@ -8,12 +8,17 @@ namespace Test
 		InverseKinematics();
 		~InverseKinematics();
 
-		void Render(std::shared_ptr< Simple::AnimatedModel> aModel, Simple::LocalSpacePose& aLocalPose);
+		void Init();
 
-		std::vector<Drawer::Line> myLines;
+		void Update();
+		void Render();
 
 	private:
-		void Test();
-		void Arm();
+		void DisplayName(const std::vector<Simple::Joint>& aOriginalJoints, const Simple::Joint& aJoint);
+
+	private:
+		Simple::Animation myTestAnimation;
+		Simple::AnimatedModel myTestModel;
+		Simple::AnimationPlayer myTestAnimationPlayer;
 	};
 }

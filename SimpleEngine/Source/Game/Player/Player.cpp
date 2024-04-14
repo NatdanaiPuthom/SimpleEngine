@@ -40,8 +40,6 @@ void Player::Update()
 void Player::Render()
 {
 	myCurrentState->Render();
-
-	myInverseKinematics.Render(myAnimatedModel, myAnimationController->GetCurrentAnimationPlayer().myLocalSpacePose);
 }
 
 void Player::SetState(const ePlayerState aState)
