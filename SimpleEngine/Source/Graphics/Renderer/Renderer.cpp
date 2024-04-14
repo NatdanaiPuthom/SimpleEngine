@@ -244,8 +244,7 @@ namespace Drawer
 		const Math::Matrix4x4f modelTransform = aModel.GetMatrix();
 
 		Drawer::Sphere sphere;
-		sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-		sphere.radius = 0.01f;
+		sphere.radius = 0.05f;
 
 		Drawer::Line line;
 		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
@@ -254,22 +253,21 @@ namespace Drawer
 		{
 			Simple::Joint joint = skeleton->myJoints[index];
 
+			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
+
+			sphere.position = boneWorldTransform.GetPosition();
+
+			mySphereDrawer->Render(sphere);
+
 			if (joint.myParent == -1)
 				continue;
 
-			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
 			const Math::Matrix4x4 boneWorldTransformNext = pose.jointTransforms[joint.myParent] * modelTransform;
 
 			line.startPosition = boneWorldTransform.GetPosition();
 			line.endPosition = boneWorldTransformNext.GetPosition();
 
 			myAnimatedSkeletonLines[index] = line;
-
-			if (joint.myName.find("Jnt"))
-			{
-				sphere.position = boneWorldTransform.GetPosition();
-				mySphereDrawer->Render(sphere);
-			}
 		}
 
 		myLineDrawer->RenderInstance(myAnimatedSkeletonLines);

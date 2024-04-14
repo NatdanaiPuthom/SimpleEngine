@@ -26,9 +26,10 @@ namespace Simple
 		myTime = 0.0f;
 	}
 
-	void AnimationPlayer::Play()
+	void AnimationPlayer::Play(const bool aShouldLoop)
 	{
 		myState = eAnimationState::Playing;
+		SetIsLooping(aShouldLoop);
 	}
 
 	void AnimationPlayer::Pause()
@@ -113,7 +114,7 @@ namespace Simple
 
 			const Skeleton* skeleton = myModel->GetSkeleton();
 
-			for (size_t i = 0; i < skeleton->myJoints.size() - 1; i++)
+			for (size_t i = 0; i < skeleton->myJoints.size(); i++)
 			{
 				const Math::Matrix4x4f currentMatrix = myAnimation->frames[frame].localMatrix.find(skeleton->myJoints[i].myName)->second;
 				const Math::Matrix4x4f nextMatrix = myAnimation->frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;

@@ -56,7 +56,7 @@ namespace Simple
 		//Lerp active animation and store the pose
 		void LerpCurrentAnimation();
 
-		void Play();
+		void Play(const bool aShouldLoop = false);
 		void Pause();
 		void Stop();
 		void Restart();
