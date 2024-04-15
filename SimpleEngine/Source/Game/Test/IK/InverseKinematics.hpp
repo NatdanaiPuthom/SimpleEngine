@@ -20,5 +20,7 @@ namespace Test
 		Simple::Animation myTestAnimation;
 		Simple::AnimatedModel myTestModel;
 		Simple::AnimationPlayer myTestAnimationPlayer;
+
+		const Simple::Joint* mySelectedJoint;
 	};
 }

@@ -4,6 +4,7 @@
 namespace Test
 {
 	InverseKinematics::InverseKinematics()
+		: mySelectedJoint(nullptr)
 	{
 	}
 
@@ -23,7 +24,7 @@ namespace Test
 
 	void InverseKinematics::Update()
 	{
-		//myTestAnimationPlayer.Update();
+		myTestAnimationPlayer.Update();
 
 		/*auto pos = myTestAnimationPlayer.myLocalSpacePose.jointTransforms[3].GetPosition();
 		pos.x += 0.1f * Global::GetDeltaTime();
@@ -37,7 +38,7 @@ namespace Test
 
 		Simple::Joint root;
 
-		for (const auto& joint : joints)
+		for (auto& joint : joints)
 		{
 			if (joint.myParent == -1)
 			{
@@ -56,25 +57,48 @@ namespace Test
 
 		renderer->RenderModel(myTestModel);
 		renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myLocalSpacePose);
+
+		if (mySelectedJoint != nullptr)
+		{
+
+		
+		/*Simple::Joint* test = const_cast<Simple::Joint*>(mySelectedJoint);
+
+		auto pos = mySelectedJoint->myBindPoseInverse.GetPosition();
+		pos.x += 1 * Global::GetDeltaTime();
+		test->myBindPoseInverse.SetPosition(pos);
+		myTestModel.SetPose(test)*/
+		}
 	}
 
 	void InverseKinematics::DisplayName(const std::vector<Simple::Joint>& aOriginalJoints, const Simple::Joint& aJoint)
 	{
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_AllowItemOverlap;
+
 		if (aJoint.myChildren.empty())
 		{
-			ImGui::BulletText("%s", aJoint.myName.c_str());
+			flags |= ImGuiTreeNodeFlags_Leaf;
 		}
-		else
-		{
-			if (ImGui::TreeNode(aJoint.myName.c_str()))
-			{
-				for (auto a : aJoint.myChildren)
-				{
-					DisplayName(aOriginalJoints, aOriginalJoints[a]);
-				}
 
-				ImGui::TreePop();
+		if (&aJoint == mySelectedJoint)
+		{
+			flags |= ImGuiTreeNodeFlags_Selected;
+		}
+
+		const bool open = ImGui::TreeNodeEx(aJoint.myName.c_str(), flags);
+
+		if (!ImGui::IsItemToggledOpen() && ImGui::IsItemClicked(ImGuiMouseButton_Left))
+		{
+			mySelectedJoint = &aJoint;
+		}
+
+		if (open)
+		{
+			for (auto a : aJoint.myChildren)
+			{
+				DisplayName(aOriginalJoints, aOriginalJoints[a]);
 			}
+			ImGui::TreePop();
 		}
 	}
 }
