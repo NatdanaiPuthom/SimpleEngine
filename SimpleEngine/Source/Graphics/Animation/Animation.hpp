@@ -69,6 +69,8 @@ namespace Simple
 		float GetTime() const;
 		unsigned int GetCurrentFrame() const;
 	private:
+		void InitPose();
+	private:
 		Animation* myAnimation;
 		AnimatedModel* myModel;
 

@@ -24,6 +24,8 @@ namespace Simple
 		myModel = &aModel;
 		myFPS = aAnimation.framesPerSecond;
 		myTime = 0.0f;
+
+		InitPose();
 	}
 
 	void AnimationPlayer::Play(const bool aShouldLoop)
@@ -175,5 +177,15 @@ namespace Simple
 		const unsigned int currentFrame = static_cast<unsigned int>(std::floor(result));
 
 		return currentFrame;
+	}
+
+	void AnimationPlayer::InitPose()
+	{
+		myState = eAnimationState::Playing;
+
+		LerpCurrentAnimation();
+		myModel->SetPose(myLocalSpacePose);
+
+		myState = eAnimationState::Finished;
 	}
 }
