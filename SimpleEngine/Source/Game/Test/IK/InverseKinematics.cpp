@@ -24,6 +24,11 @@ namespace Test
 	void InverseKinematics::Update()
 	{
 		//myTestAnimationPlayer.Update();
+
+		/*auto pos = myTestAnimationPlayer.myLocalSpacePose.jointTransforms[3].GetPosition();
+		pos.x += 0.1f * Global::GetDeltaTime();
+		myTestAnimationPlayer.myLocalSpacePose.jointTransforms[3].SetPosition(pos);
+		myTestModel.SetPose(myTestAnimationPlayer.myLocalSpacePose);*/
 	}
 
 	void InverseKinematics::Render()
@@ -50,8 +55,7 @@ namespace Test
 		const auto renderer = Global::GetRenderer();
 
 		renderer->RenderModel(myTestModel);
-		renderer->RenderStaticSkeletonLines(myTestModel);
-		//renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myLocalSpacePose);
+		renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myLocalSpacePose);
 	}
 
 	void InverseKinematics::DisplayName(const std::vector<Simple::Joint>& aOriginalJoints, const Simple::Joint& aJoint)
