@@ -40,7 +40,8 @@ namespace Simple
 	class AnimationPlayer
 	{
 	public:
-		LocalSpacePose myLocalSpacePose;
+		ModelSpacePose myLocalSpacePose;
+
 	public:
 		AnimationPlayer();
 		~AnimationPlayer();
@@ -64,17 +65,22 @@ namespace Simple
 		void SetIsLooping(const bool aShouldLoop);
 		void SetCurrentFrame(const unsigned int aCurrentFrame);
 
-		const LocalSpacePose GetLocalSpacePose() const;
+		const ModelSpacePose GetLocalSpacePose() const;
 		eAnimationState GetAnimationState() const;
 		float GetTime() const;
 		unsigned int GetCurrentFrame() const;
+
 	private:
 		void InitPose();
+		void CalculateFrame(size_t& aCurrentFrame, size_t& aNextFrame, float& aDelta);
+		void LerpAnimation(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta);
+		void UpdateTimer();
+
 	private:
+		eAnimationState myState;
+
 		Animation* myAnimation;
 		AnimatedModel* myModel;
-
-		eAnimationState myState;
 
 		float myTime;
 		float myFPS;

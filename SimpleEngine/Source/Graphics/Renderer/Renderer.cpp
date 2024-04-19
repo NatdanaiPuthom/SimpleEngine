@@ -232,14 +232,14 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderAnimatedSkeletonLines(const Simple::AnimatedModel& aModel, const Simple::LocalSpacePose& aLocalPose)
+	void Renderer::RenderAnimatedSkeletonLines(const Simple::AnimatedModel& aModel, const Simple::ModelSpacePose& aLocalPose)
 	{
 		myAnimatedSkeletonLines.resize(aLocalPose.count);
 
-		Simple::ModelSpacePose pose;
+		Simple::LocalSpacePose pose;
 
 		const Simple::Skeleton* skeleton = aModel.GetSkeleton();
-		skeleton->ConvertPoseToModelSpace(aLocalPose, pose);
+		skeleton->ConvertModelSpacePoseToLocalSpacePose(aLocalPose, pose);
 
 		const Math::Matrix4x4f modelTransform = aModel.GetMatrix();
 
@@ -273,13 +273,13 @@ namespace Drawer
 		myLineDrawer->RenderInstance(myAnimatedSkeletonLines);
 	}
 
-	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::LocalSpacePose& aLocalPose)
+	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::ModelSpacePose& aLocalPose)
 	{
 		myAnimatedSkeletonLines.resize(aLocalPose.count);
 
-		Simple::ModelSpacePose pose;
+		Simple::LocalSpacePose pose;
 		const Simple::Skeleton* skeleton = aModel->GetSkeleton();
-		skeleton->ConvertPoseToModelSpace(aLocalPose, pose);
+		skeleton->ConvertModelSpacePoseToLocalSpacePose(aLocalPose, pose);
 
 		const Math::Matrix4x4f modelTransform = aModel->GetMatrix();
 

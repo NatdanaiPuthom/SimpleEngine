@@ -40,8 +40,8 @@ namespace Drawer
 		void RenderSphere(const Drawer::Sphere& aSphere);
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
 
-		void RenderAnimatedSkeletonLines(const Simple::AnimatedModel& aModel, const Simple::LocalSpacePose& aLocalPose);
-		void RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::LocalSpacePose& aLocalPose);
+		void RenderAnimatedSkeletonLines(const Simple::AnimatedModel& aModel, const Simple::ModelSpacePose& aLocalPose);
+		void RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::ModelSpacePose& aLocalPose);
 		void RenderStaticSkeletonLines(const Simple::AnimatedModel& aModel);
 		void RenderStaticSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel);
 

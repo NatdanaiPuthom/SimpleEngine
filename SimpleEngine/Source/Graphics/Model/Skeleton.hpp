@@ -8,15 +8,15 @@
 
 namespace Simple
 {
-	//Relative parent's joint
-	struct LocalSpacePose
+	//Relative parent's coordinate
+	struct ModelSpacePose
 	{
 		Math::Matrix4x4f jointTransforms[SIMPLE_MAX_BONES];
 		size_t count;
 	};
 
 	//Relative model's coordinate
-	struct ModelSpacePose
+	struct LocalSpacePose
 	{
 		Math::Matrix4x4f jointTransforms[SIMPLE_MAX_BONES];
 		size_t count;
@@ -62,9 +62,9 @@ namespace Simple
 			return myJoints == aSkeleton.myJoints;
 		}
 
-		void ConvertPoseToModelSpace(const LocalSpacePose& aInPose, ModelSpacePose& aOutPose) const;
-		void ApplyBindPoseInverse(const ModelSpacePose& aInPose, Math::Matrix4x4f* aOutMatrix) const;
+		void ConvertModelSpacePoseToLocalSpacePose(const ModelSpacePose& aInPose, LocalSpacePose& aOutPose) const;
+		void ApplyBindPoseInverse(const LocalSpacePose& aInPose, Math::Matrix4x4f* aOutMatrix) const;
 	private:
-		void ConvertPoseToModelSpace(const LocalSpacePose& aInPose, ModelSpacePose& aOutPose, unsigned aBoneID, const Math::Matrix4x4f& aParentTransform) const;
+		void ConvertToLocalSpacePose(const ModelSpacePose& aInPose, LocalSpacePose& aOutPose, unsigned aBoneID, const Math::Matrix4x4f& aParentTransform) const;
 	};
 }

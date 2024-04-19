@@ -66,8 +66,8 @@ namespace Simple
 		{
 			LerpCurrentAnimation();
 
-			ModelSpacePose modelSpacePose;
-			aModelContainer[0]->GetSkeleton()->ConvertPoseToModelSpace(myLocalSpacePose, modelSpacePose);
+			LocalSpacePose modelSpacePose;
+			aModelContainer[0]->GetSkeleton()->ConvertModelSpacePoseToLocalSpacePose(myLocalSpacePose, modelSpacePose);
 
 			for (auto& model : aModelContainer)
 			{
@@ -80,68 +80,13 @@ namespace Simple
 	{
 		if (myState == eAnimationState::Playing)
 		{
-			myTime += Global::GetDeltaTime();
+			size_t currentFrame = 0;
+			size_t nextFrame = 0;
+			float delta = 0.0f;
 
-			if (myTime >= myAnimation->duration)
-			{
-				if (myIsLooping)
-				{
-					while (myTime >= myAnimation->duration)
-					{
-						myTime -= myAnimation->duration;
-					}
-				}
-				else
-				{
-					myTime = myAnimation->duration;
-					myState = eAnimationState::Finished;
-				}
-			}
-
-			const float frameRate = 1.0f / myFPS;
-			const float result = myTime / frameRate;
-			const size_t frame = static_cast<size_t>(std::floor(result));
-			const float delta = result - static_cast<float>(frame); //This is use for Lerping
-
-			size_t nextFrame = frame + 1;
-
-			if (myState == eAnimationState::Finished)
-			{
-				nextFrame = frame;
-			}
-			else if (nextFrame > myAnimation->length)
-			{
-				nextFrame = 0;
-			}
-
-			const Skeleton* skeleton = myModel->GetSkeleton();
-
-			for (size_t i = 0; i < skeleton->myJoints.size(); i++)
-			{
-				const Math::Matrix4x4f currentMatrix = myAnimation->frames[frame].localMatrix.find(skeleton->myJoints[i].myName)->second;
-				const Math::Matrix4x4f nextMatrix = myAnimation->frames[nextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
-
-				Math::Vector3f currentPosition;
-				Math::Vector3f nextPosition;
-
-				Math::Quaternionf currentQuaternion;
-				Math::Quaternionf nextQuaternion;
-
-				Math::Vector3f currentScale;
-				Math::Vector3f nextScale;
-
-				currentMatrix.DecomposeMatrix(currentPosition, currentQuaternion, currentScale);
-				nextMatrix.DecomposeMatrix(nextPosition, nextQuaternion, nextScale);
-
-				const Math::Vector3f translation = Math::Lerp(currentPosition, nextPosition, delta);
-				const Math::Quaternionf rotation = Math::Quaternionf::Slerp(currentQuaternion, nextQuaternion, delta);
-				const Math::Vector3f scale = Math::Lerp(currentScale, nextScale, delta);
-
-				const Math::Matrix4x4f lerpedMatrix = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
-				myLocalSpacePose.jointTransforms[i] = lerpedMatrix;
-			}
-
-			myLocalSpacePose.count = skeleton->myJoints.size();
+			UpdateTimer();
+			CalculateFrame(currentFrame, nextFrame, delta);
+			LerpAnimation(currentFrame, nextFrame, delta);
 		}
 	}
 
@@ -155,7 +100,7 @@ namespace Simple
 		myTime = aCurrentFrame / myFPS;
 	}
 
-	const LocalSpacePose AnimationPlayer::GetLocalSpacePose() const
+	const ModelSpacePose AnimationPlayer::GetLocalSpacePose() const
 	{
 		return myLocalSpacePose;
 	}
@@ -187,5 +132,81 @@ namespace Simple
 		myModel->SetPose(myLocalSpacePose);
 
 		myState = eAnimationState::Finished;
+	}
+
+	void AnimationPlayer::CalculateFrame(size_t& aCurrentFrame, size_t& aNextFrame, float& aDelta)
+	{
+		const float frameRate = 1.0f / myFPS;
+		const float result = myTime / frameRate;
+		const size_t currentFrame = static_cast<size_t>(std::floor(result));
+		const float delta = result - static_cast<float>(currentFrame); //This is use for Lerping
+
+		size_t nextFrame = currentFrame + 1;
+
+		if (myState == eAnimationState::Finished)
+		{
+			nextFrame = currentFrame;
+		}
+		else if (nextFrame > myAnimation->length)
+		{
+			nextFrame = 0;
+		}
+
+		aCurrentFrame = currentFrame;
+		aNextFrame = nextFrame;
+		aDelta = delta;
+	}
+
+	void AnimationPlayer::LerpAnimation(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta)
+	{
+		const Skeleton* skeleton = myModel->GetSkeleton();
+
+		for (size_t i = 0; i < skeleton->myJoints.size(); i++)
+		{
+			const Math::Matrix4x4f currentMatrix = myAnimation->frames[aCurrentFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
+			const Math::Matrix4x4f nextMatrix = myAnimation->frames[aNextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
+
+			Math::Vector3f currentPosition;
+			Math::Vector3f nextPosition;
+
+			Math::Quaternionf currentQuaternion;
+			Math::Quaternionf nextQuaternion;
+
+			Math::Vector3f currentScale;
+			Math::Vector3f nextScale;
+
+			currentMatrix.DecomposeMatrix(currentPosition, currentQuaternion, currentScale);
+			nextMatrix.DecomposeMatrix(nextPosition, nextQuaternion, nextScale);
+
+			const Math::Vector3f translation = Math::Lerp(currentPosition, nextPosition, aDelta);
+			const Math::Quaternionf rotation = Math::Quaternionf::Slerp(currentQuaternion, nextQuaternion, aDelta);
+			const Math::Vector3f scale = Math::Lerp(currentScale, nextScale, aDelta);
+
+			const Math::Matrix4x4f lerpedMatrix = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
+			myLocalSpacePose.jointTransforms[i] = lerpedMatrix;
+		}
+
+		myLocalSpacePose.count = skeleton->myJoints.size();
+	}
+
+	void AnimationPlayer::UpdateTimer()
+	{
+		myTime += Global::GetDeltaTime();
+
+		if (myTime >= myAnimation->duration)
+		{
+			if (myIsLooping)
+			{
+				while (myTime >= myAnimation->duration)
+				{
+					myTime -= myAnimation->duration;
+				}
+			}
+			else
+			{
+				myTime = myAnimation->duration;
+				myState = eAnimationState::Finished;
+			}
+		}
 	}
 }

@@ -30,13 +30,13 @@ namespace Simple
 		return &myJoints[0];
 	}
 
-	void Skeleton::ConvertPoseToModelSpace(const LocalSpacePose& aInPose, ModelSpacePose& aOutPose) const
+	void Skeleton::ConvertModelSpacePoseToLocalSpacePose(const ModelSpacePose& aInPose, LocalSpacePose& aOutPose) const
 	{
-		ConvertPoseToModelSpace(aInPose, aOutPose, 0, Math::Matrix4x4f::Identity());
+		ConvertToLocalSpacePose(aInPose, aOutPose, 0, Math::Matrix4x4f::Identity());
 		aOutPose.count = aInPose.count;
 	}
 
-	void Skeleton::ApplyBindPoseInverse(const ModelSpacePose& aInPose, Math::Matrix4x4f* aOutMatrix) const
+	void Skeleton::ApplyBindPoseInverse(const LocalSpacePose& aInPose, Math::Matrix4x4f* aOutMatrix) const
 	{
 		for (size_t i = 0; i < myJoints.size(); ++i)
 		{
@@ -45,7 +45,7 @@ namespace Simple
 		}
 	}
 
-	void Skeleton::ConvertPoseToModelSpace(const LocalSpacePose& aInPose, ModelSpacePose& aOutPose, unsigned aBoneID, const Math::Matrix4x4f& aParentTransform) const
+	void Skeleton::ConvertToLocalSpacePose(const ModelSpacePose& aInPose, LocalSpacePose& aOutPose, unsigned aBoneID, const Math::Matrix4x4f& aParentTransform) const
 	{
 		const Joint& joint = myJoints[aBoneID];
 
@@ -53,7 +53,7 @@ namespace Simple
 
 		for (size_t childIndex = 0; childIndex < joint.myChildren.size(); childIndex++)
 		{
-			ConvertPoseToModelSpace(aInPose, aOutPose, joint.myChildren[childIndex], aOutPose.jointTransforms[aBoneID]);
+			ConvertToLocalSpacePose(aInPose, aOutPose, joint.myChildren[childIndex], aOutPose.jointTransforms[aBoneID]);
 		}
 	}
 }

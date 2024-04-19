@@ -57,14 +57,14 @@ namespace Simple
 		myTextures.clear();
 	}
 
-	void AnimatedModel::SetPose(const LocalSpacePose& aPose)
+	void AnimatedModel::SetPose(const ModelSpacePose& aPose)
 	{
-		ModelSpacePose modelSpacePose;
-		mySkeleton->ConvertPoseToModelSpace(aPose, modelSpacePose);
+		LocalSpacePose modelSpacePose;
+		mySkeleton->ConvertModelSpacePoseToLocalSpacePose(aPose, modelSpacePose);
 		SetPose(modelSpacePose);
 	}
 
-	void AnimatedModel::SetPose(const ModelSpacePose& aPose)
+	void AnimatedModel::SetPose(const LocalSpacePose& aPose)
 	{
 		mySkeleton->ApplyBindPoseInverse(aPose, myBoneTransforms);
 	}

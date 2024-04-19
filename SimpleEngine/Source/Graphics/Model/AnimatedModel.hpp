@@ -37,8 +37,8 @@ namespace Simple
 		void AddTexture(const char* aFilePath);
 		void ClearTextures();
 
-		void SetPose(const LocalSpacePose& aPose);
 		void SetPose(const ModelSpacePose& aPose);
+		void SetPose(const LocalSpacePose& aPose);
 	public:
 		void LookAt(const Math::Vector3f& aTargetPoint);
 
