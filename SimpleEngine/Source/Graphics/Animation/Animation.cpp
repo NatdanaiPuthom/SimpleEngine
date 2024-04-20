@@ -56,7 +56,7 @@ namespace Simple
 		if (myState == eAnimationState::Playing)
 		{
 			LerpCurrentAnimation();
-			myModel->SetPose(myLocalSpacePose);
+			myModel->SetPose(myModelSpacePose);
 		}
 	}
 
@@ -67,7 +67,7 @@ namespace Simple
 			LerpCurrentAnimation();
 
 			LocalSpacePose modelSpacePose;
-			aModelContainer[0]->GetSkeleton()->ConvertModelSpacePoseToLocalSpacePose(myLocalSpacePose, modelSpacePose);
+			aModelContainer[0]->GetSkeleton()->ConvertModelSpacePoseToLocalSpacePose(myModelSpacePose, modelSpacePose);
 
 			for (auto& model : aModelContainer)
 			{
@@ -102,7 +102,7 @@ namespace Simple
 
 	const ModelSpacePose AnimationPlayer::GetLocalSpacePose() const
 	{
-		return myLocalSpacePose;
+		return myModelSpacePose;
 	}
 
 	eAnimationState AnimationPlayer::GetAnimationState() const
@@ -129,7 +129,7 @@ namespace Simple
 		myState = eAnimationState::Playing;
 
 		LerpCurrentAnimation();
-		myModel->SetPose(myLocalSpacePose);
+		myModel->SetPose(myModelSpacePose);
 
 		myState = eAnimationState::Finished;
 	}
@@ -183,10 +183,10 @@ namespace Simple
 			const Math::Vector3f scale = Math::Lerp(currentScale, nextScale, aDelta);
 
 			const Math::Matrix4x4f lerpedMatrix = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
-			myLocalSpacePose.jointTransforms[i] = lerpedMatrix;
+			myModelSpacePose.jointTransforms[i] = lerpedMatrix;
 		}
 
-		myLocalSpacePose.count = skeleton->myJoints.size();
+		myModelSpacePose.count = skeleton->myJoints.size();
 	}
 
 	void AnimationPlayer::UpdateTimer()

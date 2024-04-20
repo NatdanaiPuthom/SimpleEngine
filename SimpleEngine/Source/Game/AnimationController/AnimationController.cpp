@@ -63,11 +63,11 @@ namespace Simple
 				const Math::Vector3 scale = Math::Lerp(currentScale, targetScale, t);
 
 				const Math::Matrix4x4f Result = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
-				myCurrentAnimationPlayer.myLocalSpacePose.jointTransforms[i] = Result;
+				myCurrentAnimationPlayer.myModelSpacePose.jointTransforms[i] = Result;
 			}
 
-			myCurrentAnimationPlayer.myLocalSpacePose.count = skeleton->myJoints.size();
-			myAnimatedModel->SetPose(myCurrentAnimationPlayer.myLocalSpacePose);
+			myCurrentAnimationPlayer.myModelSpacePose.count = skeleton->myJoints.size();
+			myAnimatedModel->SetPose(myCurrentAnimationPlayer.myModelSpacePose);
 
 			if (t >= 1.0f)
 			{
@@ -79,7 +79,7 @@ namespace Simple
 				myCurrentAnimationPlayer.Init(*myCurrentAnimation, *myAnimatedModel);
 				myCurrentAnimationPlayer.SetCurrentFrame(currentFrame);
 
-				myAnimatedModel->SetPose(myCurrentAnimationPlayer.myLocalSpacePose);
+				myAnimatedModel->SetPose(myCurrentAnimationPlayer.myModelSpacePose);
 			}
 		}
 		else

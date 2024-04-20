@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
-#include <memory>
 
 namespace Simple
 {
@@ -40,7 +39,7 @@ namespace Simple
 	class AnimationPlayer
 	{
 	public:
-		ModelSpacePose myLocalSpacePose;
+		ModelSpacePose myModelSpacePose;
 
 	public:
 		AnimationPlayer();

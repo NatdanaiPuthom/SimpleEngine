@@ -133,30 +133,30 @@ namespace Simple
 		{
 			for (const auto& [boneName, boneTransform] : tgaAnimation.Frames[i].LocalTransforms)
 			{
-				Math::Matrix4x4f localMatrix;
+				Math::Matrix4x4f modelMatrix;
 
-				localMatrix(1, 1) = boneTransform.m11;
-				localMatrix(1, 2) = boneTransform.m12;
-				localMatrix(1, 3) = boneTransform.m13;
-				localMatrix(1, 4) = boneTransform.m14;
+				modelMatrix(1, 1) = boneTransform.m11;
+				modelMatrix(1, 2) = boneTransform.m12;
+				modelMatrix(1, 3) = boneTransform.m13;
+				modelMatrix(1, 4) = boneTransform.m14;
 
-				localMatrix(2, 1) = boneTransform.m21;
-				localMatrix(2, 2) = boneTransform.m22;
-				localMatrix(2, 3) = boneTransform.m23;
-				localMatrix(2, 4) = boneTransform.m24;
+				modelMatrix(2, 1) = boneTransform.m21;
+				modelMatrix(2, 2) = boneTransform.m22;
+				modelMatrix(2, 3) = boneTransform.m23;
+				modelMatrix(2, 4) = boneTransform.m24;
 
-				localMatrix(3, 1) = boneTransform.m31;
-				localMatrix(3, 2) = boneTransform.m32;
-				localMatrix(3, 3) = boneTransform.m33;
-				localMatrix(3, 4) = boneTransform.m34;
+				modelMatrix(3, 1) = boneTransform.m31;
+				modelMatrix(3, 2) = boneTransform.m32;
+				modelMatrix(3, 3) = boneTransform.m33;
+				modelMatrix(3, 4) = boneTransform.m34;
 
-				localMatrix(4, 1) = boneTransform.m41;
-				localMatrix(4, 2) = boneTransform.m42;
-				localMatrix(4, 3) = boneTransform.m43;
-				localMatrix(4, 4) = boneTransform.m44;
+				modelMatrix(4, 1) = boneTransform.m41;
+				modelMatrix(4, 2) = boneTransform.m42;
+				modelMatrix(4, 3) = boneTransform.m43;
+				modelMatrix(4, 4) = boneTransform.m44;
 
-				localMatrix = Math::Matrix4x4f::Transpose(localMatrix); //Very important
-				animation.frames[i].localMatrix.emplace(boneName, localMatrix);
+				modelMatrix = Math::Matrix4x4f::Transpose(modelMatrix); //Very important
+				animation.frames[i].localMatrix.emplace(boneName, modelMatrix);
 			}
 		}
 

@@ -56,7 +56,7 @@ namespace Test
 		const auto renderer = Global::GetRenderer();
 
 		renderer->RenderModel(myTestModel);
-		renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myLocalSpacePose);
+		renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myModelSpacePose);
 
 		if (mySelectedJoint != nullptr)
 		{
