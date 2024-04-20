@@ -59,6 +59,9 @@ namespace Simple
 		Math::Vector3f GetScale() const;
 		std::string GetName() const;
 		const Skeleton* GetSkeleton() const;
+
+		Skeleton& GetTestIKSkeleton();
+		const Skeleton& GetTestIKSkeleton() const;
 	private:
 		Math::Matrix4x4f myBoneTransforms[SIMPLE_MAX_BONES];
 		Math::Transform myTransform;
@@ -70,5 +73,7 @@ namespace Simple
 
 		std::vector<std::shared_ptr<const Texture>> myTextures;
 		std::string myName;
+
+		Skeleton myTestSkeletonForIK;
 	};
 }

@@ -82,7 +82,7 @@ namespace Simple
 		{
 			size_t currentFrame = 0;
 			size_t nextFrame = 0;
-			float delta = 0.0f;
+			float delta = 0.0f; //This is use for lerping
 
 			UpdateTimer();
 			CalculateFrame(currentFrame, nextFrame, delta);
@@ -139,7 +139,7 @@ namespace Simple
 		const float frameRate = 1.0f / myFPS;
 		const float result = myTime / frameRate;
 		const size_t currentFrame = static_cast<size_t>(std::floor(result));
-		const float delta = result - static_cast<float>(currentFrame); //This is use for Lerping
+		const float delta = result - static_cast<float>(currentFrame);
 
 		size_t nextFrame = currentFrame + 1;
 
@@ -160,11 +160,12 @@ namespace Simple
 	void AnimationPlayer::LerpAnimation(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta)
 	{
 		const Skeleton* skeleton = myModel->GetSkeleton();
+		myModelSpacePose.count = skeleton->myJoints.size();
 
-		for (size_t i = 0; i < skeleton->myJoints.size(); i++)
+		for (size_t i = 0; i < myModelSpacePose.count; i++)
 		{
-			const Math::Matrix4x4f currentMatrix = myAnimation->frames[aCurrentFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
-			const Math::Matrix4x4f nextMatrix = myAnimation->frames[aNextFrame].localMatrix.find(skeleton->myJoints[i].myName)->second;
+			const Math::Matrix4x4f currentMatrix = myAnimation->frames[aCurrentFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
+			const Math::Matrix4x4f nextMatrix = myAnimation->frames[aNextFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
 
 			Math::Vector3f currentPosition;
 			Math::Vector3f nextPosition;
@@ -185,8 +186,6 @@ namespace Simple
 			const Math::Matrix4x4f lerpedMatrix = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
 			myModelSpacePose.jointTransforms[i] = lerpedMatrix;
 		}
-
-		myModelSpacePose.count = skeleton->myJoints.size();
 	}
 
 	void AnimationPlayer::UpdateTimer()

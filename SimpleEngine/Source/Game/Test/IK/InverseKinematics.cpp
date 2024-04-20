@@ -24,7 +24,7 @@ namespace Test
 
 	void InverseKinematics::Update()
 	{
-		myTestAnimationPlayer.Update();
+		//myTestAnimationPlayer.Update();
 
 		/*auto pos = myTestAnimationPlayer.myLocalSpacePose.jointTransforms[3].GetPosition();
 		pos.x += 0.1f * Global::GetDeltaTime();
@@ -34,9 +34,26 @@ namespace Test
 
 	void InverseKinematics::Render()
 	{
-		const std::vector<Simple::Joint>& joints = myTestModel.GetSkeleton()->myJoints;
+		auto& skeleton = myTestModel.GetTestIKSkeleton();
 
-		Simple::Joint root;
+		Simple::ModelSpacePose modelSpacePose;
+		modelSpacePose.count = skeleton.myJoints.size();
+
+		for (size_t i = 0; i < modelSpacePose.count; ++i)
+		{
+			modelSpacePose.jointTransforms[i] = skeleton.myJoints[i].myBindPoseInverse;
+		}
+
+		/*const std::vector<Simple::Joint>& joints = myTestModel.GetSkeleton()->myJoints;
+
+
+		auto pos = a.myJoints[0].myBindPoseInverse.GetPosition();
+		pos.x += 5.0f * Global::GetDeltaTime();
+		a.myJoints[0].myBindPoseInverse.SetPosition(pos);
+
+		*/
+
+		/*Simple::Joint root;
 
 		for (auto& joint : joints)
 		{
@@ -50,25 +67,26 @@ namespace Test
 		{
 			DisplayName(joints, root);
 		}
-		ImGui::End();
+		ImGui::End();*/
 
 
 		const auto renderer = Global::GetRenderer();
 
 		renderer->RenderModel(myTestModel);
-		renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myModelSpacePose);
+		//renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myModelSpacePose);
+		renderer->RenderStaticSkeletonLines(myTestModel);
 
-		if (mySelectedJoint != nullptr)
-		{
+		//if (mySelectedJoint != nullptr)
+		//{
 
-		
-		/*Simple::Joint* test = const_cast<Simple::Joint*>(mySelectedJoint);
+		//
+		///*Simple::Joint* test = const_cast<Simple::Joint*>(mySelectedJoint);
 
-		auto pos = mySelectedJoint->myBindPoseInverse.GetPosition();
-		pos.x += 1 * Global::GetDeltaTime();
-		test->myBindPoseInverse.SetPosition(pos);
-		myTestModel.SetPose(test)*/
-		}
+		//auto pos = mySelectedJoint->myBindPoseInverse.GetPosition();
+		//pos.x += 1 * Global::GetDeltaTime();
+		//test->myBindPoseInverse.SetPosition(pos);
+		//myTestModel.SetPose(test)*/
+		//}
 	}
 
 	void InverseKinematics::DisplayName(const std::vector<Simple::Joint>& aOriginalJoints, const Simple::Joint& aJoint)

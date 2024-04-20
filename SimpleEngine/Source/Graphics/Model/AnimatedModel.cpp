@@ -24,6 +24,7 @@ namespace Simple
 	{
 		myMesh = aMesh;
 		mySkeleton = aSkeleton;
+		myTestSkeletonForIK = *aSkeleton;
 		AddTexture("DefaultTexture.dds");
 	}
 
@@ -31,6 +32,7 @@ namespace Simple
 	{
 		myMesh = aMesh;
 		mySkeleton = aSkeleton;
+		myTestSkeletonForIK = *aSkeleton;
 		AddTexture(aTexturePath);
 	}
 
@@ -59,9 +61,9 @@ namespace Simple
 
 	void AnimatedModel::SetPose(const ModelSpacePose& aPose)
 	{
-		LocalSpacePose modelSpacePose;
-		mySkeleton->ConvertModelSpacePoseToLocalSpacePose(aPose, modelSpacePose);
-		SetPose(modelSpacePose);
+		LocalSpacePose localSpacePose;
+		mySkeleton->ConvertModelSpacePoseToLocalSpacePose(aPose, localSpacePose);
+		SetPose(localSpacePose);
 	}
 
 	void AnimatedModel::SetPose(const LocalSpacePose& aPose)
@@ -159,5 +161,15 @@ namespace Simple
 	const Skeleton* AnimatedModel::GetSkeleton() const
 	{
 		return mySkeleton;
+	}
+
+	Skeleton& AnimatedModel::GetTestIKSkeleton()
+	{
+		return myTestSkeletonForIK;
+	}
+
+	const Skeleton& AnimatedModel::GetTestIKSkeleton() const
+	{
+		return myTestSkeletonForIK;
 	}
 }

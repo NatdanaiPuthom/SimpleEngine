@@ -53,7 +53,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	editor.Init();
 	PROFILER_END();
 
-	PROFILER_BEGIN("GameWorld");
+	PROFILER_BEGIN("GameWorld initialize");
 	Simple::GameWorld gameWorld;
 	gameWorld.Init();
 	PROFILER_END();

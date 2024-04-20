@@ -232,14 +232,14 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderAnimatedSkeletonLines(const Simple::AnimatedModel& aModel, const Simple::ModelSpacePose& aLocalPose)
+	void Renderer::RenderAnimatedSkeletonLines(const Simple::AnimatedModel& aModel, const Simple::ModelSpacePose& aModelSpacePose)
 	{
-		myAnimatedSkeletonLines.resize(aLocalPose.count);
+		myAnimatedSkeletonLines.resize(aModelSpacePose.count);
 
 		Simple::LocalSpacePose pose;
 
 		const Simple::Skeleton* skeleton = aModel.GetSkeleton();
-		skeleton->ConvertModelSpacePoseToLocalSpacePose(aLocalPose, pose);
+		skeleton->ConvertModelSpacePoseToLocalSpacePose(aModelSpacePose, pose);
 
 		const Math::Matrix4x4f modelTransform = aModel.GetMatrix();
 
@@ -249,7 +249,7 @@ namespace Drawer
 		Drawer::Line line;
 		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
-		for (size_t index = 0; index < aLocalPose.count; ++index)
+		for (size_t index = 0; index < aModelSpacePose.count; ++index)
 		{
 			Simple::Joint joint = skeleton->myJoints[index];
 
@@ -273,13 +273,13 @@ namespace Drawer
 		myLineDrawer->RenderInstance(myAnimatedSkeletonLines);
 	}
 
-	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::ModelSpacePose& aLocalPose)
+	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::ModelSpacePose& aModelSpacePose)
 	{
-		myAnimatedSkeletonLines.resize(aLocalPose.count);
+		myAnimatedSkeletonLines.resize(aModelSpacePose.count);
 
 		Simple::LocalSpacePose pose;
 		const Simple::Skeleton* skeleton = aModel->GetSkeleton();
-		skeleton->ConvertModelSpacePoseToLocalSpacePose(aLocalPose, pose);
+		skeleton->ConvertModelSpacePoseToLocalSpacePose(aModelSpacePose, pose);
 
 		const Math::Matrix4x4f modelTransform = aModel->GetMatrix();
 
@@ -290,7 +290,7 @@ namespace Drawer
 		Drawer::Line line;
 		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
-		for (size_t index = 0; index < aLocalPose.count; ++index)
+		for (size_t index = 0; index < aModelSpacePose.count; ++index)
 		{
 			Simple::Joint joint = skeleton->myJoints[index];
 

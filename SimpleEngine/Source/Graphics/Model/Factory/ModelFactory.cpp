@@ -156,7 +156,7 @@ namespace Simple
 				modelMatrix(4, 4) = boneTransform.m44;
 
 				modelMatrix = Math::Matrix4x4f::Transpose(modelMatrix); //Very important
-				animation.frames[i].localMatrix.emplace(boneName, modelMatrix);
+				animation.frames[i].jointNameToModelSpaceMatrix.emplace(boneName, modelMatrix);
 			}
 		}
 
