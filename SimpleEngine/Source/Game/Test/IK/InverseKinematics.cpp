@@ -57,15 +57,43 @@ namespace Test
 		}
 
 		Math::Vector3f jointPosition;
+		Math::Vector3f jointRotation;
+		Math::Vector3f jointScale;
+		std::string selectedJointName = "Selected: None";
 
 		if (mySelectedJoint != nullptr)
 		{
 			jointPosition = mySelectedJoint->myBindPoseInverse.GetPosition();
+			jointRotation = mySelectedJoint->myBindPoseInverse.GetEulerRotationInDegree();
+			jointScale = mySelectedJoint->myBindPoseInverse.GetScale();
+			selectedJointName = "Selected: " + mySelectedJoint->myName;
 		}
 
-		if (ImGui::DragFloat3("Test", &jointPosition.x, 0.1f))
+		ImGui::Dummy(ImVec2(0, 25));
+		ImGui::Text(selectedJointName.c_str());
+
+		if (ImGui::DragFloat3("Position", &jointPosition.x, 0.1f))
 		{
-			mySelectedJoint->myBindPoseInverse.SetPosition(jointPosition);
+			if (mySelectedJoint != nullptr)
+			{
+				mySelectedJoint->myBindPoseInverse.SetPosition(jointPosition);
+			}
+		}
+
+		if (ImGui::DragFloat3("Rotation", &jointRotation.x, 0.1f))
+		{
+			if (mySelectedJoint != nullptr)
+			{
+				mySelectedJoint->myBindPoseInverse.SetLocalRotation(jointRotation);
+			}
+		}
+
+		if (ImGui::DragFloat3("Scale", &jointScale.x, 0.1f))
+		{
+			if (mySelectedJoint != nullptr)
+			{
+				mySelectedJoint->myBindPoseInverse.SetScale(jointScale);
+			}
 		}
 
 		ImGui::End();
@@ -73,7 +101,7 @@ namespace Test
 
 	void InverseKinematics::DisplayName(std::vector<Simple::Joint>& aOriginalJoints, Simple::Joint& aJoint)
 	{
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_AllowItemOverlap;
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen;
 
 		if (aJoint.myChildren.empty())
 		{
