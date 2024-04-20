@@ -49,6 +49,8 @@ namespace Drawer
 		void RenderPlaneReflection(const std::shared_ptr<const Simple::Model> aModel) const;
 		void RenderRefraction() const;
 
+		void TestIKSkeletonLines(const Simple::AnimatedModel& aModel);
+
 	public:
 		bool IsDebugModeOn() const;
 		void SetDebugMode(const bool aSetDebugMode);

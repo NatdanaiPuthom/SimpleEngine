@@ -480,6 +480,43 @@ namespace Drawer
 		}
 	}
 
+	void Renderer::TestIKSkeletonLines(const Simple::AnimatedModel& aModel)
+	{
+		const std::vector<Simple::Joint>& joints = aModel.GetTestIKSkeleton().myJoints;
+		const Math::Vector3f scale = aModel.GetScale();
+
+		myStaticSkeletonLines.resize(joints.size());
+
+		Drawer::Line line;
+		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+		Drawer::Sphere sphere;
+		sphere.radius = 0.05f;
+
+		for (size_t index = 0; index < joints.size(); ++index)
+		{
+			Simple::Joint joint = joints[index];
+
+			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joint.myBindPoseInverse);
+
+			sphere.position = boneWorldTransform.GetPosition();
+
+			mySphereDrawer->Render(sphere);
+
+			if (joint.myParent == -1)
+				continue;
+
+			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(joints[joint.myParent].myBindPoseInverse);
+
+			line.startPosition = boneWorldTransform.GetPosition() * scale;
+			line.endPosition = boneWorldTransformNext.GetPosition() * scale;
+
+			myStaticSkeletonLines[index] = line;
+		}
+
+		myLineDrawer->RenderInstance(myStaticSkeletonLines);
+	}
+
 	void Renderer::RenderUpSideDown(const std::shared_ptr<const Model> aModel) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();

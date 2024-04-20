@@ -34,26 +34,8 @@ namespace Test
 
 	void InverseKinematics::Render()
 	{
-		auto& skeleton = myTestModel.GetTestIKSkeleton();
-
-		Simple::ModelSpacePose modelSpacePose;
-		modelSpacePose.count = skeleton.myJoints.size();
-
-		for (size_t i = 0; i < modelSpacePose.count; ++i)
-		{
-			modelSpacePose.jointTransforms[i] = skeleton.myJoints[i].myBindPoseInverse;
-		}
-
-		/*const std::vector<Simple::Joint>& joints = myTestModel.GetSkeleton()->myJoints;
-
-
-		auto pos = a.myJoints[0].myBindPoseInverse.GetPosition();
-		pos.x += 5.0f * Global::GetDeltaTime();
-		a.myJoints[0].myBindPoseInverse.SetPosition(pos);
-
-		*/
-
-		/*Simple::Joint root;
+		std::vector<Simple::Joint>& joints = myTestModel.GetTestIKSkeleton().myJoints;
+		Simple::Joint root;
 
 		for (auto& joint : joints)
 		{
@@ -67,26 +49,22 @@ namespace Test
 		{
 			DisplayName(joints, root);
 		}
-		ImGui::End();*/
-
+		ImGui::End();
 
 		const auto renderer = Global::GetRenderer();
 
 		renderer->RenderModel(myTestModel);
 		//renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myModelSpacePose);
-		renderer->RenderStaticSkeletonLines(myTestModel);
+		renderer->TestIKSkeletonLines(myTestModel);
 
-		//if (mySelectedJoint != nullptr)
-		//{
+		if (mySelectedJoint != nullptr)
+		{
+			Simple::Joint* test = const_cast<Simple::Joint*>(mySelectedJoint);
 
-		//
-		///*Simple::Joint* test = const_cast<Simple::Joint*>(mySelectedJoint);
-
-		//auto pos = mySelectedJoint->myBindPoseInverse.GetPosition();
-		//pos.x += 1 * Global::GetDeltaTime();
-		//test->myBindPoseInverse.SetPosition(pos);
-		//myTestModel.SetPose(test)*/
-		//}
+			auto pos = mySelectedJoint->myBindPoseInverse.GetPosition();
+			pos.x += 1 * Global::GetDeltaTime();
+			test->myBindPoseInverse.SetPosition(pos);
+		}
 	}
 
 	void InverseKinematics::DisplayName(const std::vector<Simple::Joint>& aOriginalJoints, const Simple::Joint& aJoint)
