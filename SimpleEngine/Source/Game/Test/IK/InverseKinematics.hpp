@@ -14,13 +14,13 @@ namespace Test
 		void Render();
 
 	private:
-		void DisplayName(const std::vector<Simple::Joint>& aOriginalJoints, const Simple::Joint& aJoint);
+		void DisplayName(std::vector<Simple::Joint>& aOriginalJoints, Simple::Joint& aJoint);
 
 	private:
 		Simple::Animation myTestAnimation;
 		Simple::AnimatedModel myTestModel;
 		Simple::AnimationPlayer myTestAnimationPlayer;
 
-		const Simple::Joint* mySelectedJoint;
+		Simple::Joint* mySelectedJoint;
 	};
 }

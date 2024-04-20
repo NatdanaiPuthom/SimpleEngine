@@ -34,6 +34,12 @@ namespace Test
 
 	void InverseKinematics::Render()
 	{
+		const auto renderer = Global::GetRenderer();
+
+		renderer->RenderModel(myTestModel);
+		//renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myModelSpacePose);
+		renderer->TestIKSkeletonLines(myTestModel);
+
 		std::vector<Simple::Joint>& joints = myTestModel.GetTestIKSkeleton().myJoints;
 		Simple::Joint root;
 
@@ -49,25 +55,23 @@ namespace Test
 		{
 			DisplayName(joints, root);
 		}
-		ImGui::End();
 
-		const auto renderer = Global::GetRenderer();
-
-		renderer->RenderModel(myTestModel);
-		//renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myModelSpacePose);
-		renderer->TestIKSkeletonLines(myTestModel);
+		Math::Vector3f jointPosition;
 
 		if (mySelectedJoint != nullptr)
 		{
-			Simple::Joint* test = const_cast<Simple::Joint*>(mySelectedJoint);
-
-			auto pos = mySelectedJoint->myBindPoseInverse.GetPosition();
-			pos.x += 1 * Global::GetDeltaTime();
-			test->myBindPoseInverse.SetPosition(pos);
+			jointPosition = mySelectedJoint->myBindPoseInverse.GetPosition();
 		}
+
+		if (ImGui::DragFloat3("Test", &jointPosition.x, 0.1f))
+		{
+			mySelectedJoint->myBindPoseInverse.SetPosition(jointPosition);
+		}
+
+		ImGui::End();
 	}
 
-	void InverseKinematics::DisplayName(const std::vector<Simple::Joint>& aOriginalJoints, const Simple::Joint& aJoint)
+	void InverseKinematics::DisplayName(std::vector<Simple::Joint>& aOriginalJoints, Simple::Joint& aJoint)
 	{
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_AllowItemOverlap;
 
@@ -90,9 +94,9 @@ namespace Test
 
 		if (open)
 		{
-			for (auto a : aJoint.myChildren)
+			for (auto child : aJoint.myChildren)
 			{
-				DisplayName(aOriginalJoints, aOriginalJoints[a]);
+				DisplayName(aOriginalJoints, aOriginalJoints[child]);
 			}
 			ImGui::TreePop();
 		}
