@@ -347,7 +347,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		postbuildcommands {
-			--"{COPY} %{wks.location}/Dependencies/Settings/* " .. settings_dir,
 			"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}"
 		}
 

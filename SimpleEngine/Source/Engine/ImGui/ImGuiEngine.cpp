@@ -8,7 +8,6 @@
 
 namespace Simple
 {
-#ifndef _SIMPLE
 	ImGuiEngine::ImGuiEngine()
 	{
 	}
@@ -62,8 +61,9 @@ namespace Simple
 	{
 		ImGui::Render();
 
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
+#ifndef _SIMPLE //Draw ImGui Windows
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); 
+#endif
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
@@ -73,13 +73,4 @@ namespace Simple
 		const std::string output = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_IMGUI);
 		ImGui::SaveIniSettingsToDisk(output.c_str());
 	}
-#else
-	ImGuiEngine::ImGuiEngine() {}
-	ImGuiEngine::~ImGuiEngine() {}
-
-	void ImGuiEngine::Init() {}
-	void ImGuiEngine::BeginFrame() {}
-	void ImGuiEngine::EndFrame() {}
-	void ImGuiEngine::Save() {}
-#endif
 }

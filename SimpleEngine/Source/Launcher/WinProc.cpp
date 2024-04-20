@@ -8,10 +8,8 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-#ifndef _SIMPLE
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
 		return 0;
-#endif
 
 	if (SimpleUtilities::InputManager::GetInstance().UpdateEvents(message, wParam, lParam))
 		return 0;
