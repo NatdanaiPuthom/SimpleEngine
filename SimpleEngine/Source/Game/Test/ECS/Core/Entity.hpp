@@ -13,6 +13,11 @@ namespace Simple
 	{
 	public:
 		Entity();
+		Entity(const std::string& aName);
+
+		~Entity() = default;
+
+		void SetName(const std::string& aName);
 
 		template<typename T>
 		bool AddComponent(const T& aComponent = T());
@@ -32,7 +37,9 @@ namespace Simple
 
 		std::vector<size_t> GetAllComponentsID() const;
 		std::vector<std::string> GetAllComponentsName() const;
+		const std::string& GetName() const;
 	private:
+		std::string myName;
 		std::unordered_map<std::type_index, size_t> myComponents;
 	};
 

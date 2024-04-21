@@ -5,6 +5,17 @@ namespace Simple
 {
 	Entity::Entity()
 	{
+		myName = "Entity";
+	}
+
+	Entity::Entity(const std::string& aName)
+	{
+		myName = aName;
+	}
+
+	void Entity::SetName(const std::string& aName)
+	{
+		myName = aName;
 	}
 
 	std::vector<size_t> Entity::GetAllComponentsID() const
@@ -41,5 +52,10 @@ namespace Simple
 		}
 
 		return componentNames;
+	}
+
+	const std::string& Entity::GetName() const
+	{
+		return myName;
 	}
 }
