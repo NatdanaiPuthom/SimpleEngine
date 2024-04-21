@@ -64,10 +64,10 @@ void Tool::MainMenuBar::DrawTools()
 	if (mySettingToolActive)
 	{
 		myHierarchyWindow->Draw();
-		myInspectorWindow->Draw();
 		myAssetWindow->Draw();
 		myCameraTool->Draw();
 		mySettingsTool->Draw();
+		myInspectorWindow->Draw();
 	}
 }
 
