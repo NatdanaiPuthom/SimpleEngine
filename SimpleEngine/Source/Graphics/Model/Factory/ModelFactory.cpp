@@ -6,6 +6,20 @@
 
 namespace Simple
 {
+	Mesh ModelFactory::LoadMeshTest(std::string aName)
+	{
+		TGA::FBX::Mesh tgaMesh;
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aName, tgaMesh);
+		assert(status && "Failed to LoadMesh from FBXImporter");
+
+		Simple::MeshData meshData;
+		LoadMeshData(meshData, tgaMesh);
+		Simple::Mesh mesh;
+		mesh.Init(meshData);
+
+		return mesh;
+	}
+
 	ModelFactory::ModelFactory()
 		: myIsCachingInProgress(false)
 	{

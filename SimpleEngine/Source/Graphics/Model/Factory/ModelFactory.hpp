@@ -22,6 +22,10 @@ namespace Simple
 	class ModelFactory final
 	{
 	public:
+
+		Mesh LoadMeshTest(std::string aName);
+		std::vector<Simple::Mesh> meshes;
+
 		ModelFactory();
 		~ModelFactory();
 

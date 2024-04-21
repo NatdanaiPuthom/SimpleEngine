@@ -7,6 +7,9 @@
 #include "Game/Test/ECS/ECS.hpp"
 #include "Editor/Editor.hpp"
 
+#include "Engine/Components/MeshComponent.hpp"
+#include "Engine/Components/TransformComponent.hpp"
+
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
@@ -58,6 +61,25 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
+	Simple::Entity& entity = ecs.CreateEntity();
+	entity.AddComponent<MeshComponent>();
+	entity.AddComponent<TransformComponent>();
+
+	for (size_t i = 0; i < 5; ++i)
+	{
+		Simple::Entity entity2 = ecs.CreateEntity();
+		entity2;
+	}
+
+	MeshComponent* meshComponent = entity.GetComponent<MeshComponent>();
+	TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
+
+	std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + "StaticModels/Simple_Floor_10x10.fbx";
+
+	meshComponent->mesh = new Simple::Mesh(Global::GetModelFactory()->LoadMeshTest(path));
+	meshComponent->shader = Global::GetGraphicsEngine()->GetDefaultShader().get();
+	meshComponent->texture = Global::GetGraphicsEngine()->GetTexture("DefaultTexture.dds").get();
+
 	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
@@ -74,6 +96,10 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		ecs.Render();
 		editor.Render();
 
+		Global::GetRenderer()->TestRender(transformComponent, meshComponent);
+	
 		graphicsEngine.EndFrame();
 	}
+
+	delete meshComponent->mesh;
 }

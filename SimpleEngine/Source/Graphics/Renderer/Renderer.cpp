@@ -11,9 +11,37 @@
 #include <fstream>
 #include <cassert>
 
+#include "Engine/Components/MeshComponent.hpp"
+#include "Engine/Components/TransformComponent.hpp"
+
 namespace Drawer
 {
 	using namespace Simple;
+
+	void Renderer::TestRender(TransformComponent* aTransformComponent, MeshComponent* aMeshComponent)
+	{
+		const auto context = Global::GetGraphicsEngine()->GetContext();
+
+		ObjectBufferData objectBuffer = {};
+		objectBuffer.modelWorldMatrix = aTransformComponent->transform.GetMatrix();
+
+		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
+		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+
+		aMeshComponent->shader->BindThisShader(context.Get());
+		aMeshComponent->texture->Bind(context, aMeshComponent->texture->GetSlot());
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+
+		context->IASetVertexBuffers(0, 1, aMeshComponent->mesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aMeshComponent->mesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		context->DrawIndexed(static_cast<UINT>(aMeshComponent->mesh->myMeshData.indices.size()), 0, 0);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
 
 	Renderer::Renderer()
 		: myDebugMode(false)

@@ -9,6 +9,9 @@
 #include <memory>
 #include <vector>
 
+struct MeshComponent;
+struct TransformComponent;
+
 namespace Simple
 {
 	class ConstantBuffer;
@@ -19,6 +22,9 @@ namespace Drawer
 	class Renderer final
 	{
 	public:
+
+		void TestRender(TransformComponent* aTransformComponent, MeshComponent* aMeshComponent);
+
 		Renderer();
 		~Renderer();
 
