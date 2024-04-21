@@ -43,7 +43,7 @@ namespace Scenes
 	{
 		Scene::Render();
 
-		myIKTest.Render();
+		//myIKTest.Render();
 
 		//myPlayer.Render();
 		//auto renderer = Global::GetRenderer();

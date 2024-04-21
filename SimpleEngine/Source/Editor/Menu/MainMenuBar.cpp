@@ -33,6 +33,11 @@ void Tool::MainMenuBar::Init()
 	myAssetWindow->Init();
 }
 
+void Tool::MainMenuBar::Update()
+{
+	myHierarchyWindow->Update();
+}
+
 void Tool::MainMenuBar::Draw()
 {
 	if (ImGui::BeginMainMenuBar())

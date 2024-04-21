@@ -15,8 +15,8 @@ namespace Simple
 	class Scene
 	{
 	public:
-		std::vector<std::shared_ptr<Simple::Model>> myModels;
 		std::unique_ptr<Simple::DirectionalLightVisual> myDirectionalLight;
+		std::vector<std::shared_ptr<Simple::Model>> myModels;
 
 	public:
 		Scene()

@@ -19,6 +19,7 @@ namespace Tool
 		~MainMenuBar();
 
 		void Init() override;
+		void Update() override;
 		void Draw() override;
 	private:
 		void DrawTools();

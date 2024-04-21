@@ -15,7 +15,7 @@ namespace Editor
 	{
 		if (ImGui::Begin("Assets"))
 		{
-			if (ImGui::BeginChild("child for drag drop"))
+			/*if (ImGui::BeginChild("child for drag drop"))
 			{
 								ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
 				ImGui::BeginChild(ImGui::GetID("assets"), { 0.0f, 0.0f }, false, ImGuiWindowFlags_MenuBar);
@@ -32,7 +32,7 @@ namespace Editor
 				ImGui::EndChild();
 				ImGui::PopStyleColor();
 			}
-				ImGui::EndChild();
+				ImGui::EndChild();*/
 		}
 		ImGui::End();
 	}

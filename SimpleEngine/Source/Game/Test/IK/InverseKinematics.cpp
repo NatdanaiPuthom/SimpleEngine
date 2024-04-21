@@ -19,7 +19,7 @@ namespace Test
 		myTestAnimationPlayer.Init(myTestAnimation, myTestModel);
 		myTestAnimationPlayer.Play(true);
 
-		Global::GetGraphicsEngine()->SetRasterizerState(eRasterizerState::Wireframe);
+		//Global::GetGraphicsEngine()->SetRasterizerState(eRasterizerState::Wireframe);
 	}
 
 	void InverseKinematics::Update()

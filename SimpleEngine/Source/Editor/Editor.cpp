@@ -39,6 +39,11 @@ namespace Simple
 				Global::SetWindowSize({ 0, 0 }, true);
 			}
 		}
+
+		for (const std::unique_ptr<Simple::ToolInterface>& tool : myTools)
+		{
+			tool->Update();
+		}
 	}
 
 	void Editor::Render()
