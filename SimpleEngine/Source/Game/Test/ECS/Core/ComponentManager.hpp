@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/Test/ECS/Core/MemoryPoolECS.hpp"
+#include "Game/Test/ECS/Core/MemoryPoolECSComponent.hpp"
 #include <typeindex>
 #include <unordered_map>
 
@@ -47,7 +47,7 @@ namespace Simple
 	private:
 		size_t myCurrentComponentsCount;
 		std::vector<size_t> myAvalibleComponentID;
-		std::unordered_map<std::type_index, MemoryPoolECS> myComponents;
+		std::unordered_map<std::type_index, MemoryPoolECSComponent> myComponents;
 		std::unordered_map<std::type_index, void (*)(void*)> myComponentDestructorInvoker; 
 		std::unordered_map<size_t, const char*> myAllComponents;
 	};
