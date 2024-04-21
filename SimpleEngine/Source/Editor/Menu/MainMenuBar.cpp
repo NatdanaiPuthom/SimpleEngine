@@ -2,10 +2,12 @@
 #include "Editor/Menu/MainMenuBar.hpp"
 #include "Editor/Tools/SettingsTool.hpp"
 #include "Editor/Tools/CameraTool.hpp"
+#include "Editor/Tools/InspectorWindow.hpp"
+#include "Editor/Tools/HierarchyWindow.hpp"
+#include "Editor/Tools/AssetWindow.hpp"
 
 Tool::MainMenuBar::MainMenuBar()
 	: mySettingToolActive(false)
-	, myCameraToolActive(false)
 	, myDebugMenuActive(false)
 {
 }
@@ -20,9 +22,15 @@ void Tool::MainMenuBar::Init()
 
 	mySettingsTool = std::make_unique<Tool::SettingsTool>();
 	myCameraTool = std::make_unique<Tool::CameraTool>();
+	myInspectorWindow = std::make_unique<Editor::InspectorWindow>();
+	myHierarchyWindow = std::make_unique<Editor::HierarchyWindow>();
+	myAssetWindow = std::make_unique<Editor::AssetWindow>();
 
 	mySettingsTool->Init();
 	myCameraTool->Init();
+	myInspectorWindow->Init();
+	myHierarchyWindow->Init();
+	myAssetWindow->Init();
 }
 
 void Tool::MainMenuBar::Draw()
@@ -31,8 +39,7 @@ void Tool::MainMenuBar::Draw()
 	{
 		if (ImGui::BeginMenu("Debug"))
 		{
-			ImGui::MenuItem("Settings", "", &mySettingToolActive);
-			ImGui::MenuItem("Camera", "", &myCameraToolActive);			
+			ImGui::MenuItem("Settings", "", &mySettingToolActive);	
 			ImGui::EndMenu();
 		}
 
@@ -51,12 +58,11 @@ void Tool::MainMenuBar::DrawTools()
 
 	if (mySettingToolActive)
 	{
-		mySettingsTool->Draw();
-	}
-
-	if (myCameraToolActive)
-	{
+		myHierarchyWindow->Draw();
+		myInspectorWindow->Draw();
+		myAssetWindow->Draw();
 		myCameraTool->Draw();
+		mySettingsTool->Draw();
 	}
 }
 
@@ -73,5 +79,4 @@ void Tool::MainMenuBar::LoadSettingsFromJson()
 	const nlohmann::json settings = json["editor_settings"];
 
 	mySettingToolActive = settings["setting_tool"]["active"];
-	myCameraToolActive = settings["camera_tool"]["active"];
 }
