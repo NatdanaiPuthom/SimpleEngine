@@ -2,7 +2,7 @@
 #include <vector>
 
 //TO-DO(v9.28.8): removing entities and more tests
-//NOTES(v9.28.8): should we 
+//NOTES(v9.28.8): should we return std::vector<Entity*> or std::vector<Entity*>& ?
 
 namespace Simple
 {
