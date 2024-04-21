@@ -29,7 +29,7 @@ namespace Editor
 				{
 					const bool isSelected = (selected == i);
 
-					if (ImGui::Selectable(entities[i].GetName().c_str(), isSelected))
+					if (ImGui::Selectable(entities[i]->GetName().c_str(), isSelected))
 					{
 						selected = i;
 					}
@@ -40,10 +40,9 @@ namespace Editor
 					}
 				}
 				ImGui::EndListBox();
-			}
-			
-			
+			}		
 		}
+
 		ImGui::End();
 	}
 }

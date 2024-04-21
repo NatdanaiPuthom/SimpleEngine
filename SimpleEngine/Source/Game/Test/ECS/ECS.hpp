@@ -24,8 +24,8 @@ namespace Simple
 
 		Simple::ComponentManager* GetComponentManager();
 
-		std::vector<Entity>& GetAllEntities();
-		const std::vector<Entity>& GetAllEntities() const;
+		std::vector<Entity*> GetAllEntities();
+		const std::vector<Entity*> GetAllEntities() const;
 
 		template<typename T>
 		std::vector<T*> GetAllComponentsOfType();

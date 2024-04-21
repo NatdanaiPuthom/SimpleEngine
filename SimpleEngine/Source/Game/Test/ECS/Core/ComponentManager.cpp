@@ -12,7 +12,7 @@ namespace Simple
 	{
 		for (auto& [key, value] : myComponents)
 		{
-			const std::size_t count = value.GetElementCount();
+			const std::size_t count = value.GetComponentCount();
 
 			if (count == 0)
 				continue;

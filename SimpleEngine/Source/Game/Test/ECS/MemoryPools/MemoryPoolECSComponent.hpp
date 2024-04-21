@@ -1,11 +1,11 @@
 #pragma once
 #include <vector>
+#include "unordered_map"
 
 namespace Simple
 {
 	class MemoryPoolECSComponent final
 	{
-		using MemoryAdress = size_t;
 	public:
 		MemoryPoolECSComponent(size_t aDefaultSize = 64);
 		~MemoryPoolECSComponent();
@@ -22,10 +22,10 @@ namespace Simple
 		T& AllocateComponent(const size_t aID, const T& aValue, std::unordered_map<size_t, const char*>& aAllComponentPointerMap);
 
 		template<typename T>
-		T& GetValueByIndex(const size_t aIndex);
+		T& GetComponentByIndex(const size_t aIndex);
 
 		template<typename T>
-		T& GetValueByMemoryAddress(const char* aAddress);
+		T& GetComponentByMemoryAddress(const char* aAddress);
 
 		template<typename T>
 		bool SwapWithLastAndRemove(T& aComponent);
@@ -34,11 +34,11 @@ namespace Simple
 		const char* GetEndMemoryAddress();
 		const char* GetCurrentMemoryAddress();
 		size_t GetSize() const;
-		size_t GetElementCount() const;
-		size_t GetElementIDByIndex(const size_t aIndex) const;
-		int GetElementIndexByMemoryAddress(const char* aAddress, const size_t aSize) const;
-		int GetElementIDByMemoryAddress(const char* aAddress) const;
-		std::vector<size_t> GetElementIDs() const;
+		size_t GetComponentCount() const;
+		size_t GetComponentIDByIndex(const size_t aIndex) const;
+		int GetComponentIndexByMemoryAddress(const char* aAddress, const size_t aSize) const;
+		int GetComponentIDByMemoryAddress(const char* aAddress) const;
+		std::vector<size_t> GetComponentIDs() const;
 	private:
 		void Reallocate();
 		size_t GetCapacity() const;
@@ -48,7 +48,7 @@ namespace Simple
 		char* myEndMemoryAddress;
 		char* myCurrentMemoryAddress;
 
-		std::vector<size_t> myElementIDs;
+		std::vector<size_t> myComponentIDs;
 	};
 
 	template<typename T>
@@ -66,13 +66,13 @@ namespace Simple
 		new(myCurrentMemoryAddress)T();
 		myCurrentMemoryAddress += objectSize;
 
-		myElementIDs.push_back(aID);
+		myComponentIDs.push_back(aID);
 
 		if (reallocated == true)
 		{
-			for (size_t i = 0; i < myElementIDs.size() - 1; ++i)
+			for (size_t i = 0; i < myComponentIDs.size() - 1; ++i)
 			{
-				aAllComponentPointerMap[myElementIDs[i]] = myStartMemoryAddress + i * sizeof(T);
+				aAllComponentPointerMap[myComponentIDs[i]] = myStartMemoryAddress + i * sizeof(T);
 			}
 		}
 
@@ -93,13 +93,13 @@ namespace Simple
 		new(myCurrentMemoryAddress)T(aValue);
 		myCurrentMemoryAddress += objectSize;
 
-		myElementIDs.push_back(aID);
+		myComponentIDs.push_back(aID);
 
 		if (reallocated == true)
 		{
-			for (size_t i = 0; i < myElementIDs.size() - 1; ++i)
+			for (size_t i = 0; i < myComponentIDs.size() - 1; ++i)
 			{
-				aAllComponentPointerMap[myElementIDs[i]] = myStartMemoryAddress + i * sizeof(T);
+				aAllComponentPointerMap[myComponentIDs[i]] = myStartMemoryAddress + i * sizeof(T);
 			}
 		}
 
@@ -107,13 +107,13 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline T& MemoryPoolECSComponent::GetValueByIndex(const size_t aIndex)
+	inline T& MemoryPoolECSComponent::GetComponentByIndex(const size_t aIndex)
 	{
 		return (T&)*(myStartMemoryAddress + aIndex * sizeof(T));
 	}
 
 	template<typename T>
-	inline T& MemoryPoolECSComponent::GetValueByMemoryAddress(const char* aAddress)
+	inline T& MemoryPoolECSComponent::GetComponentByMemoryAddress(const char* aAddress)
 	{
 		return (T&)*(aAddress);
 	}
@@ -123,8 +123,8 @@ namespace Simple
 	{
 		const char* componentAdress = reinterpret_cast<const char*>(&aComponent);
 
-		const int indexToRemove = GetElementIndexByMemoryAddress(componentAdress, sizeof(T));
-		const int lastIndex = GetElementIndexByMemoryAddress(myCurrentMemoryAddress - sizeof(T), sizeof(T));
+		const int indexToRemove = GetComponentIndexByMemoryAddress(componentAdress, sizeof(T));
+		const int lastIndex = GetComponentIndexByMemoryAddress(myCurrentMemoryAddress - sizeof(T), sizeof(T));
 
 		if (lastIndex == -1 ||indexToRemove == -1)
 		{
@@ -135,7 +135,7 @@ namespace Simple
 		{
 			T* lastComponent = (T*)(myCurrentMemoryAddress - sizeof(T));
 			std::swap(aComponent, *lastComponent);
-			std::swap(myElementIDs[indexToRemove], myElementIDs[lastIndex]);
+			std::swap(myComponentIDs[indexToRemove], myComponentIDs[lastIndex]);
 		}
 		else
 		{
@@ -147,7 +147,7 @@ namespace Simple
 
 		myCurrentMemoryAddress -= sizeof(T);
 		memset(myCurrentMemoryAddress, 0, sizeof(T));
-		myElementIDs.pop_back();
+		myComponentIDs.pop_back();
 
 		return true;
 	}

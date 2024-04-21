@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/Test/ECS/Core/MemoryPoolECSComponent.hpp"
+#include "Game/Test/ECS/MemoryPools/MemoryPoolECSComponent.hpp"
 #include <typeindex>
 #include <unordered_map>
 
@@ -129,7 +129,7 @@ namespace Simple
 
 		if (it != myComponents.end())
 		{
-			return &it->second.GetValueByIndex<T>(aIndex);
+			return &it->second.GetComponentByIndex<T>(aIndex);
 		}
 
 		return nullptr;
@@ -142,7 +142,7 @@ namespace Simple
 
 		if (it != myComponents.end())
 		{
-			return &it->second.GetValueByIndex<T>(aIndex);
+			return &it->second.GetComponentByIndex<T>(aIndex);
 		}
 
 		return nullptr;
@@ -152,7 +152,7 @@ namespace Simple
 	inline std::vector<T*> ComponentManager::GetAllComponentsOfType()
 	{
 		auto& it = myComponents[typeid(T)];
-		const size_t count = it.GetElementCount();
+		const size_t count = it.GetComponentCount();
 
 		if (count == 0)
 		{
@@ -176,7 +176,7 @@ namespace Simple
 		auto& it = myComponents[typeid(T)];
 
 		const char* objectAdress = reinterpret_cast<const char*>(&aComponent);
-		const int id = it.GetElementIDByMemoryAddress(objectAdress);
+		const int id = it.GetComponentIDByMemoryAddress(objectAdress);
 
 		if (id < 0)
 		{
@@ -189,7 +189,7 @@ namespace Simple
 	template<typename T>
 	inline size_t ComponentManager::GetComponentCount()
 	{
-		return myComponents[typeid(T)].GetElementCount();
+		return myComponents[typeid(T)].GetComponentCount();
 	}
 
 	template<typename T>

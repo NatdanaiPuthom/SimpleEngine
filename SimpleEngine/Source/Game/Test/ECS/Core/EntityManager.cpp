@@ -9,18 +9,25 @@ namespace Simple
 
 	EntityManager::~EntityManager()
 	{
+		const std::size_t count = myEntityPool.GetEntityCount();
+		char* entities = myEntityPool.GetStartMemoryAddress();
+
+		for (size_t i = 0; i < count; ++i)
+		{
+			const std::size_t offset = i * sizeof(Entity);
+			myEntityPool.GetEntityByMemoryAddress(entities + offset).~Entity();
+		}
 	}
 
 	Entity& EntityManager::CreateEntity()
 	{
-		myEntities.push_back(Simple::Entity());
+		Simple::Entity& entity = myEntityPool.AllocateEntity();
+		const size_t id = entity.GetID();
 
-		const size_t entityID = myEntities.size() - 1;
+		myEntityMapToPointer[id] = &entity;
+		myEntityMapToID[&entity] = id;
 
-		myEntityMapToPointer[entityID] = &myEntities[entityID];
-		myEntityMapToID[&myEntities.back()] = entityID;
-
-		return myEntities[entityID];
+		return entity;
 	}
 
 	Entity* EntityManager::GetEntity(const size_t aEntityID) const
@@ -56,13 +63,13 @@ namespace Simple
 		}
 	}
 
-	const std::vector<Entity>& EntityManager::GetAllEntities() const
+	const std::vector<Entity*> EntityManager::GetAllEntities() const
 	{
-		return myEntities;
+		return myEntityPool.GetAllEntities();
 	}
 
-	std::vector<Entity>& EntityManager::GetAllEntities()
+	std::vector<Entity*> EntityManager::GetAllEntities()
 	{
-		return myEntities;
+		return myEntityPool.GetAllEntities();
 	}
 }

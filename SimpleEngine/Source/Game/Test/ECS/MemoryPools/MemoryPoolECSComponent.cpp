@@ -1,5 +1,5 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Test/ECS/Core/MemoryPoolECSComponent.hpp"
+#include "Game/Test/ECS/MemoryPools/MemoryPoolECSComponent.hpp"
 
 namespace Simple
 {
@@ -8,8 +8,6 @@ namespace Simple
 		myStartMemoryAddress = new char[aDefaultSize];
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;
 		myCurrentMemoryAddress = myStartMemoryAddress;
-
-		myElementIDs.reserve(aDefaultSize);
 	}
 
 	MemoryPoolECSComponent::~MemoryPoolECSComponent()
@@ -22,19 +20,19 @@ namespace Simple
 		return myCurrentMemoryAddress - myStartMemoryAddress;
 	}
 
-	size_t MemoryPoolECSComponent::GetElementIDByIndex(const size_t aIndex) const
+	size_t MemoryPoolECSComponent::GetComponentIDByIndex(const size_t aIndex) const
 	{
-		return myElementIDs[aIndex];
+		return myComponentIDs[aIndex];
 	}
 
-	int MemoryPoolECSComponent::GetElementIndexByMemoryAddress(const char* aAdress, const size_t aSize) const
+	int MemoryPoolECSComponent::GetComponentIndexByMemoryAddress(const char* aAddress, const size_t aSize) const
 	{
 		if (aSize == 0)
 		{
 			return -1;
 		}
 
-		const int index = static_cast<int>((aAdress - myStartMemoryAddress)) / static_cast<int>(aSize);
+		const int index = static_cast<int>((aAddress - myStartMemoryAddress)) / static_cast<int>(aSize);
 
 		if (index < 0)
 		{
@@ -44,29 +42,29 @@ namespace Simple
 		return index;
 	}
 
-	int MemoryPoolECSComponent::GetElementIDByMemoryAddress(const char* aAdress) const
+	int MemoryPoolECSComponent::GetComponentIDByMemoryAddress(const char* aAddress) const
 	{
 		const size_t memorySize = GetSize();
-		const size_t elementSize = myElementIDs.size();
+		const size_t elementSize = myComponentIDs.size();
 
 		if (memorySize == 0 || elementSize == 0)
 		{
 			return -1;
 		}
 
-		const size_t index = (aAdress - myStartMemoryAddress) / (memorySize / elementSize);
+		const size_t index = (aAddress - myStartMemoryAddress) / (memorySize / elementSize);
 
-		if (index > myElementIDs.size())
+		if (index > myComponentIDs.size())
 		{
 			return -1;
 		}
 
-		return static_cast<int>(myElementIDs[index]);
+		return static_cast<int>(myComponentIDs[index]);
 	}
 
-	std::vector<size_t> MemoryPoolECSComponent::GetElementIDs() const
+	std::vector<size_t> MemoryPoolECSComponent::GetComponentIDs() const
 	{
-		return myElementIDs;
+		return myComponentIDs;
 	}
 
 	char* MemoryPoolECSComponent::GetStartMemoryAddress()
@@ -84,9 +82,9 @@ namespace Simple
 		return myCurrentMemoryAddress;
 	}
 
-	size_t MemoryPoolECSComponent::GetElementCount() const
+	size_t MemoryPoolECSComponent::GetComponentCount() const
 	{
-		return myElementIDs.size();
+		return myComponentIDs.size();
 	}
 
 	size_t MemoryPoolECSComponent::GetCapacity() const

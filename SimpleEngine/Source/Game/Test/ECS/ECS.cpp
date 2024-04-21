@@ -48,12 +48,12 @@ namespace Simple
 		return &myComponentManager;
 	}
 
-	std::vector<Entity>& ECS::GetAllEntities()
+	std::vector<Entity*> ECS::GetAllEntities()
 	{
 		return myEntityManager.GetAllEntities();
 	}
 
-	const std::vector<Entity>& ECS::GetAllEntities() const
+	const std::vector<Entity*> ECS::GetAllEntities() const
 	{
 		return myEntityManager.GetAllEntities();
 	}

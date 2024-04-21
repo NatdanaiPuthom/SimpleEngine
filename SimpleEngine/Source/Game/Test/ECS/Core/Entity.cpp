@@ -3,14 +3,10 @@
 
 namespace Simple
 {
-	Entity::Entity()
+	Entity::Entity(const size_t aID)
 	{
-		myName = "Entity";
-	}
-
-	Entity::Entity(const std::string& aName)
-	{
-		myName = aName;
+		myID = aID;
+		myName = "Entity " + std::to_string(myID);
 	}
 
 	void Entity::SetName(const std::string& aName)
@@ -57,5 +53,10 @@ namespace Simple
 	const std::string& Entity::GetName() const
 	{
 		return myName;
+	}
+
+	size_t Entity::GetID() const
+	{
+		return myID;
 	}
 }

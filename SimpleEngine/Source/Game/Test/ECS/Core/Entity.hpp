@@ -12,8 +12,7 @@ namespace Simple
 	class Entity final
 	{
 	public:
-		Entity();
-		Entity(const std::string& aName);
+		Entity(const size_t aID);
 
 		~Entity() = default;
 
@@ -38,7 +37,9 @@ namespace Simple
 		std::vector<size_t> GetAllComponentsID() const;
 		std::vector<std::string> GetAllComponentsName() const;
 		const std::string& GetName() const;
+		size_t GetID() const;
 	private:
+		size_t myID;
 		std::string myName;
 		std::unordered_map<std::type_index, size_t> myComponents;
 	};
