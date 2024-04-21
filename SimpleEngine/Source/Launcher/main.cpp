@@ -65,11 +65,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	entity.AddComponent<MeshComponent>();
 	entity.AddComponent<TransformComponent>();
 
-	for (size_t i = 0; i < 5; ++i)
+	/*for (size_t i = 0; i < 5; ++i)
 	{
 		Simple::Entity entity2 = ecs.CreateEntity();
 		entity2;
-	}
+	}*/
 
 	MeshComponent* meshComponent = entity.GetComponent<MeshComponent>();
 	TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
