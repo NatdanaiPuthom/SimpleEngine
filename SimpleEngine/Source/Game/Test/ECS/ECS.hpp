@@ -15,17 +15,17 @@ namespace Simple
 		void Update();
 		void Render();
 
-		Entity& CreateEntity();
+		Entity CreateEntity();
 
 		void SetGlobalECSPointerToThis();
 	public:
-		size_t GetEntityID(Entity* aEntity);
-		Entity* GetEntity(const size_t aEntityID) const;
+		size_t GetEntityID(EntityClass* aEntity);
+		EntityClass* GetEntity(const size_t aEntityID) const;
 
 		Simple::ComponentManager* GetComponentManager();
 
-		std::vector<Entity*> GetAllEntities();
-		const std::vector<Entity*> GetAllEntities() const;
+		std::vector<EntityClass*> GetAllEntities();
+		const std::vector<EntityClass*> GetAllEntities() const;
 
 		template<typename T>
 		std::vector<T*> GetAllComponentsOfType();

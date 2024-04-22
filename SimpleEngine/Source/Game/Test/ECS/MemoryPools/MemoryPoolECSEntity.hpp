@@ -6,7 +6,7 @@
 
 namespace Simple
 {
-	class Entity;
+	class EntityClass;
 }
 
 namespace Simple
@@ -22,10 +22,10 @@ namespace Simple
 		MemoryPoolECSEntity& operator=(const MemoryPoolECSEntity&) = delete;
 		MemoryPoolECSEntity& operator=(MemoryPoolECSEntity&&) = delete;
 
-		Entity& AllocateEntity();
+		EntityClass& AllocateEntity(std::unordered_map<size_t, Simple::EntityClass*>& aEntitiesMap);
 
-		Entity& GetEntityByIndex(const size_t aIndex);
-		Entity& GetEntityByMemoryAddress(const char* aAddress);
+		EntityClass& GetEntityByIndex(const size_t aIndex);
+		EntityClass& GetEntityByMemoryAddress(const char* aAddress);
 
 		size_t GetSize() const;
 		size_t GetEntityCount() const;
@@ -35,8 +35,8 @@ namespace Simple
 		int GetEntityIDByMemoryAddress(const char* aAddress) const;
 
 		std::vector<size_t> GetEntityIDs() const;
-		std::vector<Entity*> GetAllEntities();
-		const std::vector<Entity*> GetAllEntities() const;
+		std::vector<EntityClass*> GetAllEntities();
+		const std::vector<EntityClass*> GetAllEntities() const;
 
 		char* GetStartMemoryAddress();
 		const char* GetEndMemoryAddress();

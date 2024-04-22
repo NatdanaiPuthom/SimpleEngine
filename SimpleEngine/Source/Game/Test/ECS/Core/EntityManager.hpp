@@ -12,18 +12,18 @@ namespace Simple
 		EntityManager();
 		~EntityManager();
 
-		Entity& CreateEntity();
-		Entity* GetEntity(const size_t aEntityID) const;
-		size_t GetEntityID(Entity* aEntity);
+		Entity CreateEntity();
+		EntityClass* GetEntity(const size_t aEntityID) const;
+		size_t GetEntityID(EntityClass* aEntity);
 
-		std::vector<Entity*> GetAllEntities();
-		const std::vector<Entity*> GetAllEntities() const;
+		std::vector<EntityClass*> GetAllEntities();
+		const std::vector<EntityClass*> GetAllEntities() const;
 
 	private:
 
 	private:
 		MemoryPoolECSEntity myEntityPool;
-		std::unordered_map<size_t, Entity*> myEntityMapToPointer;
-		std::unordered_map<Entity*, size_t> myEntityMapToID;
+		std::unordered_map<size_t, EntityClass*> myEntityMapToPointer;
+		std::unordered_map<EntityClass*, size_t> myEntityMapToID;
 	};
 }

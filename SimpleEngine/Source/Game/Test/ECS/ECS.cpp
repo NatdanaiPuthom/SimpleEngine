@@ -28,17 +28,17 @@ namespace Simple
 		mySystemManager.Render();
 	}
 
-	Entity& ECS::CreateEntity()
+	Entity ECS::CreateEntity()
 	{
 		return myEntityManager.CreateEntity();
 	}
 
-	size_t ECS::GetEntityID(Entity* aEntity)
+	size_t ECS::GetEntityID(EntityClass* aEntity)
 	{
 		return myEntityManager.GetEntityID(aEntity);
 	}
 
-	Entity* ECS::GetEntity(const size_t aEntityID) const
+	EntityClass* ECS::GetEntity(const size_t aEntityID) const
 	{
 		return myEntityManager.GetEntity(aEntityID);
 	}
@@ -48,12 +48,12 @@ namespace Simple
 		return &myComponentManager;
 	}
 
-	std::vector<Entity*> ECS::GetAllEntities()
+	std::vector<EntityClass*> ECS::GetAllEntities()
 	{
 		return myEntityManager.GetAllEntities();
 	}
 
-	const std::vector<Entity*> ECS::GetAllEntities() const
+	const std::vector<EntityClass*> ECS::GetAllEntities() const
 	{
 		return myEntityManager.GetAllEntities();
 	}
