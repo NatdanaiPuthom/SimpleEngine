@@ -9,7 +9,7 @@ namespace Simple
 
 struct MeshComponent
 {
-	const Simple::Mesh* mesh;
+	Simple::Mesh mesh;
 	const Simple::Shader* shader;
 	const Simple::Texture* texture;
 };
