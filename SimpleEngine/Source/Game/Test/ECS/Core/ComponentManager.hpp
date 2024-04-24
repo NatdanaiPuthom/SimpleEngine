@@ -39,7 +39,7 @@ namespace Simple
 		size_t GetComponentCount();
 	private:
 		template<typename T>
-		T& GetComponentByMemoryAdress(const char* aAdress);
+		T* GetComponentByMemoryAdress(const char* aAdress);
 
 		template<typename T>
 		void RegisterDestructor();
@@ -70,8 +70,9 @@ namespace Simple
 			myAvalibleComponentID.pop_back();
 		}
 
-		T& component = myComponents[typeid(T)].AllocateComponent<T>(componentID, aComponent, myAllComponents);
-		myAllComponents[componentID] = reinterpret_cast<const char*>(&component);
+		T& component = myComponents[typeid(T)].AllocateComponent<T>(componentID, myAllComponents, aComponent);
+		component;
+		//myAllComponents[componentID] = reinterpret_cast<const char*>(&component);
 
 		return componentID;
 	}
@@ -103,7 +104,7 @@ namespace Simple
 
 		if (it != myAllComponents.end())
 		{
-			return &GetComponentByMemoryAdress<T>(it->second);
+			return GetComponentByMemoryAdress<T>(it->second);
 		}
 
 		return nullptr;
@@ -116,7 +117,7 @@ namespace Simple
 
 		if (it != myAllComponents.end())
 		{
-			return &GetComponentByMemoryAdress<T>(it->second);
+			return GetComponentByMemoryAdress<T>(it->second);
 		}
 
 		return nullptr;
@@ -193,9 +194,9 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline T& ComponentManager::GetComponentByMemoryAdress(const char* aAdress)
+	inline T* ComponentManager::GetComponentByMemoryAdress(const char* aAdress)
 	{
-		return (T&)*(aAdress);
+		return (T*)(aAdress);
 	}
 
 	template<typename T>
