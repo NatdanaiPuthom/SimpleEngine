@@ -98,7 +98,7 @@ namespace Simple
 	template<typename T>
 	inline T* EntityClass::GetComponent()
 	{
-		Simple::ComponentManager* componentManager = Disgusting::GetComponentManager();
+		auto componentManager = Disgusting::GetComponentManager();
 		return componentManager->GetComponentByID<T>(myComponents[typeid(T)]);
 	}
 

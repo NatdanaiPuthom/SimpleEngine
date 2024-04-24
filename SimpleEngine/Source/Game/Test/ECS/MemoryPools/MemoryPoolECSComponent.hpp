@@ -16,7 +16,10 @@ namespace Simple
 		MemoryPoolECSComponent& operator=(MemoryPoolECSComponent&&) = delete;
 
 		template<typename T>
-		T& AllocateComponent(const size_t aID, std::unordered_map<size_t, const char*>& aAllComponentPointerMap, const T& aValue = T{});
+		T& AllocateComponent(const size_t aID, std::unordered_map<size_t, const char*>& aAllComponentPointerMap);
+
+		template<typename T>
+		T& AllocateComponent(const size_t aID, const T& aValue, std::unordered_map<size_t, const char*>& aAllComponentPointerMap);
 
 		template<typename T>
 		T& GetComponentByIndex(const size_t aIndex);
@@ -49,7 +52,35 @@ namespace Simple
 	};
 
 	template<typename T>
-	inline T& MemoryPoolECSComponent::AllocateComponent(const size_t aID, std::unordered_map<size_t, const char*>& aAllComponentPointerMap, const T& aValue)
+	inline T& MemoryPoolECSComponent::AllocateComponent(const size_t aID, std::unordered_map<size_t, const char*>& aAllComponentPointerMap)
+	{
+		constexpr size_t objectSize = sizeof(T);
+		bool reallocated = false;
+
+		while (objectSize > GetAvailableMemorySize())
+		{
+			Reallocate();
+			reallocated = true;
+		}
+
+		new(myCurrentMemoryAddress)T();
+		myCurrentMemoryAddress += objectSize;
+
+		myComponentIDs.push_back(aID);
+
+		if (reallocated == true)
+		{
+			for (size_t i = 0; i < myComponentIDs.size() - 1; ++i)
+			{
+				aAllComponentPointerMap[myComponentIDs[i]] = myStartMemoryAddress + i * sizeof(T);
+			}
+		}
+
+		return (T&)*(myCurrentMemoryAddress - objectSize);
+	}
+
+	template<typename T>
+	inline T& MemoryPoolECSComponent::AllocateComponent(const size_t aID, const T& aValue, std::unordered_map<size_t, const char*>& aAllComponentPointerMap)
 	{
 		constexpr size_t objectSize = sizeof(T);
 		bool reallocated = false;
@@ -70,10 +101,6 @@ namespace Simple
 			{
 				aAllComponentPointerMap[myComponentIDs[i]] = myStartMemoryAddress + i * sizeof(T);
 			}
-		}
-		else
-		{
-			aAllComponentPointerMap[myComponentIDs.back()] = myStartMemoryAddress - objectSize;
 		}
 
 		return (T&)*(myCurrentMemoryAddress - objectSize);

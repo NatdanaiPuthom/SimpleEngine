@@ -10,7 +10,7 @@
 #include "Engine/Components/MeshComponent.hpp"
 #include "Engine/Components/TransformComponent.hpp"
 
-static void RunGameApplication(HINSTANCE& hInstance, int nCmdShow);
+static void Run(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
 {
@@ -24,7 +24,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	PROFILER_START_LISTEN();
 	PROFILER_BEGIN("Main.cpp");
 
-	RunGameApplication(hInstance, nCmdShow);
+	Run(hInstance, nCmdShow);
 
 	PROFILER_END();
 	PROFILER_DISABLE();
@@ -38,7 +38,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	return 0;
 }
 
-static void RunGameApplication(HINSTANCE& hInstance, int nCmdShow)
+static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
 	PROFILER_BEGIN("Engine initialize");
 	Simple::Engine engine;
@@ -62,29 +62,24 @@ static void RunGameApplication(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_END();
 
 	Simple::Entity entity = ecs.CreateEntity();
-	entity->AddComponent<TransformComponent>();
 	entity->AddComponent<MeshComponent>();
+	entity->AddComponent<TransformComponent>();
 
-	/*for (size_t i = 0; i < 1; ++i)
+	for (size_t i = 0; i < 1; ++i)
 	{
 		Simple::Entity entity2 = ecs.CreateEntity();
-		entity2;
 		entity2->AddComponent<TransformComponent>();
-	}*/
+	}
 
 	MeshComponent* meshComponent = entity->GetComponent<MeshComponent>();
 	TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
-
-	transformComponent->transform.SetPosition({ 0.0f, 0.0f,00.0f });
+	transformComponent->transform.SetPosition({ 10.0f, 10.0f,10.0f });
 	transformComponent->transform.SetRotation({ 0.0f, 0.0f,0.0f });
 	transformComponent->transform.SetScale(1.0f);
 
 	std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + "StaticModels/Simple_Floor_10x10.fbx";
 
-	Simple::Mesh aaaa = Global::GetModelFactory()->LoadMeshTest(path);
-	meshComponent->mesh = aaaa;
 	meshComponent->mesh = Global::GetModelFactory()->LoadMeshTest(path);
-
 	meshComponent->shader = Global::GetGraphicsEngine()->GetDefaultShader().get();
 	meshComponent->texture = Global::GetGraphicsEngine()->GetTexture("DefaultTexture.dds").get();
 
@@ -104,8 +99,7 @@ static void RunGameApplication(HINSTANCE& hInstance, int nCmdShow)
 		ecs.Render();
 		editor.Render();
 
-		TransformComponent* transformComponent2 = entity->GetComponent<TransformComponent>();
-		Global::GetRenderer()->TestRender(transformComponent2, meshComponent);
+		Global::GetRenderer()->TestRender(transformComponent, meshComponent);
 
 		graphicsEngine.EndFrame();
 	}
