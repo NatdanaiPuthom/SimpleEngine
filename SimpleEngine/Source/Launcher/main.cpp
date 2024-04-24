@@ -65,7 +65,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	entity->AddComponent<MeshComponent>();
 	entity->AddComponent<TransformComponent>();
 
-	for (size_t i = 0; i < 1; ++i)
+	for (size_t i = 0; i < 2; ++i)
 	{
 		Simple::Entity entity2 = ecs.CreateEntity();
 		entity2->AddComponent<TransformComponent>();
@@ -73,13 +73,12 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	MeshComponent* meshComponent = entity->GetComponent<MeshComponent>();
 	TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
-	transformComponent->transform.SetPosition({ 10.0f, 10.0f,10.0f });
-	transformComponent->transform.SetRotation({ 0.0f, 0.0f,0.0f });
+	transformComponent->transform.SetPosition({ 0.0f, 0.0f,0.0f });
 	transformComponent->transform.SetScale(1.0f);
 
 	std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + "StaticModels/Simple_Floor_10x10.fbx";
 
-	meshComponent->mesh = Global::GetModelFactory()->LoadMeshTest(path);
+	meshComponent->mesh = new Simple::Mesh(Global::GetModelFactory()->LoadMeshTest(path));
 	meshComponent->shader = Global::GetGraphicsEngine()->GetDefaultShader().get();
 	meshComponent->texture = Global::GetGraphicsEngine()->GetTexture("DefaultTexture.dds").get();
 
@@ -103,4 +102,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		graphicsEngine.EndFrame();
 	}
+
+	delete meshComponent->mesh;
 }
