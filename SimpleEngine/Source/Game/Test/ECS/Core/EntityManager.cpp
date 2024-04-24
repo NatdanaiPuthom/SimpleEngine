@@ -19,7 +19,7 @@ namespace Simple
 		}
 	}
 
-	EntityClass& EntityManager::CreateEntity()
+	Entity EntityManager::CreateEntity()
 	{
 		Simple::EntityClass& entity = myEntityPool.AllocateEntity();
 		const size_t id = entity.GetID();
@@ -27,7 +27,7 @@ namespace Simple
 		myEntityMapToPointer[id] = &entity;
 		myEntityMapToID[&entity] = id;
 
-		return entity;
+		return myEntityMapToPointer[id];
 	}
 
 	EntityClass* EntityManager::GetEntity(const size_t aEntityID) const

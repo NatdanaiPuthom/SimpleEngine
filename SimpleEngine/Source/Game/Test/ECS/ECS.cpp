@@ -28,7 +28,7 @@ namespace Simple
 		mySystemManager.Render();
 	}
 
-	EntityClass& ECS::CreateEntity()
+	Entity ECS::CreateEntity()
 	{
 		return myEntityManager.CreateEntity();
 	}

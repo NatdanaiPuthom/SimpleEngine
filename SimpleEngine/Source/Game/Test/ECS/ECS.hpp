@@ -15,7 +15,7 @@ namespace Simple
 		void Update();
 		void Render();
 
-		EntityClass& CreateEntity();
+		Entity CreateEntity();
 
 		void SetGlobalECSPointerToThis();
 	public:

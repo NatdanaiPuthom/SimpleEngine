@@ -12,7 +12,7 @@ namespace Simple
 		EntityManager();
 		~EntityManager();
 
-		EntityClass& CreateEntity();
+		Entity CreateEntity();
 		EntityClass* GetEntity(const size_t aEntityID) const;
 		size_t GetEntityID(EntityClass* aEntity);
 

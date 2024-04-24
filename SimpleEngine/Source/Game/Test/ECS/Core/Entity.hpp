@@ -109,3 +109,8 @@ namespace Simple
 		return componentManager->GetComponentByID<T>(myComponents[typeid(T)]);;
 	}
 }
+
+namespace Simple
+{
+	typedef EntityClass*& Entity;
+}
