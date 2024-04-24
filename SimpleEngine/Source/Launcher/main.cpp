@@ -61,13 +61,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	Simple::Entity& entity = ecs.CreateEntity();
+	Simple::EntityClass& entity = ecs.CreateEntity();
 	entity.AddComponent<MeshComponent>();
 	entity.AddComponent<TransformComponent>();
 
-	/*for (size_t i = 0; i < 5; ++i)
+	/*for (size_t i = 0; i < 1; ++i)
 	{
-		Simple::Entity entity2 = ecs.CreateEntity();
+		Simple::EntityClass entity2 = ecs.CreateEntity();
 		entity2;
 	}*/
 

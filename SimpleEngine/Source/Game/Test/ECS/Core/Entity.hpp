@@ -9,12 +9,12 @@
 
 namespace Simple
 {
-	class Entity final
+	class EntityClass final
 	{
 	public:
-		Entity(const size_t aID);
+		EntityClass(const size_t aID);
 
-		~Entity() = default;
+		~EntityClass() = default;
 
 		void SetName(const std::string& aName);
 
@@ -45,7 +45,7 @@ namespace Simple
 	};
 
 	template<typename T>
-	inline bool Entity::AddComponent(const T& aComponent)
+	inline bool EntityClass::AddComponent(const T& aComponent)
 	{
 		if (myComponents.find(typeid(T)) != myComponents.end())
 		{
@@ -60,7 +60,7 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline bool Entity::AddSharedComponent(const size_t aComponentID)
+	inline bool EntityClass::AddSharedComponent(const size_t aComponentID)
 	{
 		if (myComponents.find(typeid(T)) != myComponents.end())
 		{
@@ -82,7 +82,7 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline bool Entity::RemoveComponent()
+	inline bool EntityClass::RemoveComponent()
 	{
 		auto it = myComponents.find(typeid(T));
 
@@ -96,16 +96,16 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline T* Entity::GetComponent()
+	inline T* EntityClass::GetComponent()
 	{
-		auto componentManager = Disgusting::GetComponentManager();
+		Simple::ComponentManager* componentManager = Disgusting::GetComponentManager();
 		return componentManager->GetComponentByID<T>(myComponents[typeid(T)]);
 	}
 
 	template<typename T>
-	inline const T* Entity::GetComponent() const
+	inline const T* EntityClass::GetComponent() const
 	{
-		auto componentManager = Disgusting::GetComponentManager();
+		Simple::ComponentManager* componentManager = Disgusting::GetComponentManager();
 		return componentManager->GetComponentByID<T>(myComponents[typeid(T)]);;
 	}
 }

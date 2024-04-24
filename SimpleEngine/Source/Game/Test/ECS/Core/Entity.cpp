@@ -3,18 +3,18 @@
 
 namespace Simple
 {
-	Entity::Entity(const size_t aID)
+	EntityClass::EntityClass(const size_t aID)
 	{
 		myID = aID;
 		myName = "Entity " + std::to_string(myID);
 	}
 
-	void Entity::SetName(const std::string& aName)
+	void EntityClass::SetName(const std::string& aName)
 	{
 		myName = aName;
 	}
 
-	std::vector<size_t> Entity::GetAllComponentsID() const
+	std::vector<size_t> EntityClass::GetAllComponentsID() const
 	{
 		std::vector<size_t> componentIDs;
 		componentIDs.reserve(myComponents.size());
@@ -27,7 +27,7 @@ namespace Simple
 		return componentIDs;
 	}
 
-	std::vector<std::string> Entity::GetAllComponentsName() const
+	std::vector<std::string> EntityClass::GetAllComponentsName() const
 	{
 		std::vector<std::string> componentNames;
 		componentNames.reserve(myComponents.size());
@@ -50,12 +50,12 @@ namespace Simple
 		return componentNames;
 	}
 
-	const std::string& Entity::GetName() const
+	const std::string& EntityClass::GetName() const
 	{
 		return myName;
 	}
 
-	size_t Entity::GetID() const
+	size_t EntityClass::GetID() const
 	{
 		return myID;
 	}
