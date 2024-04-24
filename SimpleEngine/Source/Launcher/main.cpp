@@ -61,20 +61,18 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	Simple::Entity entity = ecs.CreateEntity();
-	entity->AddComponent<MeshComponent>();
-	entity->AddComponent<TransformComponent>();
+	Simple::Entity& entity = ecs.CreateEntity();
+	entity.AddComponent<MeshComponent>();
+	entity.AddComponent<TransformComponent>();
 
-	for (size_t i = 0; i < 2; ++i)
+	/*for (size_t i = 0; i < 5; ++i)
 	{
 		Simple::Entity entity2 = ecs.CreateEntity();
-		entity2->AddComponent<TransformComponent>();
-	}
+		entity2;
+	}*/
 
-	MeshComponent* meshComponent = entity->GetComponent<MeshComponent>();
-	TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
-	transformComponent->transform.SetPosition({ 0.0f, 0.0f,0.0f });
-	transformComponent->transform.SetScale(1.0f);
+	MeshComponent* meshComponent = entity.GetComponent<MeshComponent>();
+	TransformComponent* transformComponent = entity.GetComponent<TransformComponent>();
 
 	std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + "StaticModels/Simple_Floor_10x10.fbx";
 
@@ -99,7 +97,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		editor.Render();
 
 		Global::GetRenderer()->TestRender(transformComponent, meshComponent);
-
+	
 		graphicsEngine.EndFrame();
 	}
 

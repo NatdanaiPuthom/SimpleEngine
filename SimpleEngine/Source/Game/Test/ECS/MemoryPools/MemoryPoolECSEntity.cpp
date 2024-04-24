@@ -17,9 +17,9 @@ namespace Simple
 		delete[] myStartMemoryAddress;
 	}
 
-	EntityClass& MemoryPoolECSEntity::AllocateEntity(std::unordered_map<size_t, Simple::EntityClass*>& aEntitiesMap)
+	Entity& MemoryPoolECSEntity::AllocateEntity()
 	{
-		constexpr size_t objectSize = sizeof(EntityClass);
+		constexpr size_t objectSize = sizeof(Entity);
 		bool reallocated = false;
 
 		while (objectSize > GetAvailableMemorySize())
@@ -28,35 +28,23 @@ namespace Simple
 			reallocated = true;
 		}
 
-		new(myCurrentMemoryAddress)EntityClass(myCurrentID);
+		new(myCurrentMemoryAddress)Entity(myCurrentID);
 		myCurrentMemoryAddress += objectSize;
 
 		myEntityIDs.push_back(myCurrentID);
 		myCurrentID++;
 
-		if (reallocated == true)
-		{
-			for (size_t i = 0; i < myEntityIDs.size(); ++i)
-			{
-				aEntitiesMap[myEntityIDs[i]] = reinterpret_cast<Simple::EntityClass*>(myStartMemoryAddress + i * sizeof(Simple::EntityClass));
-			}
-		}
-		else
-		{
-			aEntitiesMap[myEntityIDs.back()] = reinterpret_cast<Simple::EntityClass*>(myCurrentMemoryAddress - objectSize);
-		}
-
-		return (EntityClass&)*(myCurrentMemoryAddress - objectSize);
+		return (Entity&)*(myCurrentMemoryAddress - objectSize);
 	}
 
-	EntityClass& MemoryPoolECSEntity::GetEntityByIndex(const size_t aIndex)
+	Entity& MemoryPoolECSEntity::GetEntityByIndex(const size_t aIndex)
 	{
-		return (EntityClass&)*(myStartMemoryAddress + aIndex * sizeof(EntityClass));
+		return (Entity&)*(myStartMemoryAddress + aIndex * sizeof(Entity));
 	}
 
-	EntityClass& MemoryPoolECSEntity::GetEntityByMemoryAddress(const char* aAddress)
+	Entity& MemoryPoolECSEntity::GetEntityByMemoryAddress(const char* aAddress)
 	{
-		return (EntityClass&)*(aAddress);
+		return (Entity&)*(aAddress);
 	}
 
 	char* MemoryPoolECSEntity::GetStartMemoryAddress()
@@ -79,7 +67,7 @@ namespace Simple
 		return myEntityIDs;
 	}
 
-	std::vector<EntityClass*> MemoryPoolECSEntity::GetAllEntities()
+	std::vector<Entity*> MemoryPoolECSEntity::GetAllEntities()
 	{
 		const size_t count = myEntityIDs.size();
 
@@ -88,17 +76,17 @@ namespace Simple
 			return {};
 		}
 
-		std::vector<EntityClass*> entities(count);
+		std::vector<Entity*> entities(count);
 
 		for (size_t i = 0; i < count; ++i)
 		{
-			entities[i] = reinterpret_cast<EntityClass*>(myStartMemoryAddress + i * sizeof(EntityClass));
+			entities[i] = reinterpret_cast<Entity*>(myStartMemoryAddress + i * sizeof(Entity));
 		}
 
 		return entities;
 	}
 
-	const std::vector<EntityClass*> MemoryPoolECSEntity::GetAllEntities() const
+	const std::vector<Entity*> MemoryPoolECSEntity::GetAllEntities() const
 	{
 		const size_t count = myEntityIDs.size();
 
@@ -107,11 +95,11 @@ namespace Simple
 			return {};
 		}
 
-		std::vector<EntityClass*> entities(count);
+		std::vector<Entity*> entities(count);
 
 		for (size_t i = 0; i < count; ++i)
 		{
-			entities[i] = reinterpret_cast<EntityClass*>(myStartMemoryAddress + i * sizeof(EntityClass));
+			entities[i] = reinterpret_cast<Entity*>(myStartMemoryAddress + i * sizeof(Entity));
 		}
 
 		return entities;
@@ -134,7 +122,7 @@ namespace Simple
 
 	int MemoryPoolECSEntity::GetEntityIndexByMemoryAddress(const char* aAddress) const
 	{
-		const int index = static_cast<int>((aAddress - myStartMemoryAddress)) / static_cast<int>(sizeof(EntityClass));
+		const int index = static_cast<int>((aAddress - myStartMemoryAddress)) / static_cast<int>(sizeof(Entity));
 
 		if (index < 0)
 		{
