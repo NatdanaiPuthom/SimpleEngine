@@ -17,7 +17,7 @@ namespace Simple
 		delete[] myStartMemoryAddress;
 	}
 
-	EntityClass& MemoryPoolECSEntity::AllocateEntity()
+	EntityClass& MemoryPoolECSEntity::AllocateEntity(std::unordered_map<size_t, EntityClass*>& aEntityClassMap)
 	{
 		constexpr size_t objectSize = sizeof(EntityClass);
 		bool reallocated = false;
@@ -34,7 +34,19 @@ namespace Simple
 		myEntityIDs.push_back(myCurrentID);
 		myCurrentID++;
 
-		return (EntityClass&)*(myCurrentMemoryAddress - objectSize);
+		if (reallocated == true)
+		{
+			for (size_t i = 0; i < myEntityIDs.size(); ++i)
+			{
+				aEntityClassMap[myEntityIDs[i]] = reinterpret_cast<EntityClass*>(myStartMemoryAddress + i * sizeof(EntityClass));
+			}
+		}
+		else
+		{
+			aEntityClassMap[myEntityIDs.back()] = reinterpret_cast<EntityClass*>(myCurrentMemoryAddress - objectSize);
+		}
+
+		return *reinterpret_cast<EntityClass*>(myCurrentMemoryAddress - objectSize);
 	}
 
 	EntityClass& MemoryPoolECSEntity::GetEntityByIndex(const size_t aIndex)

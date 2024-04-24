@@ -18,8 +18,8 @@ namespace Simple
 		Entity CreateEntity();
 
 		void SetGlobalECSPointerToThis();
+
 	public:
-		size_t GetEntityID(EntityClass* aEntity);
 		EntityClass* GetEntity(const size_t aEntityID) const;
 
 		Simple::ComponentManager* GetComponentManager();

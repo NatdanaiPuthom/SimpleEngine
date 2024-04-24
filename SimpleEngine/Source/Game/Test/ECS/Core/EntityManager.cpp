@@ -21,11 +21,8 @@ namespace Simple
 
 	Entity EntityManager::CreateEntity()
 	{
-		Simple::EntityClass& entity = myEntityPool.AllocateEntity();
+		Simple::EntityClass& entity = myEntityPool.AllocateEntity(myEntityMapToPointer);
 		const size_t id = entity.GetID();
-
-		myEntityMapToPointer[id] = &entity;
-		myEntityMapToID[&entity] = id;
 
 		return myEntityMapToPointer[id];
 	}
@@ -40,27 +37,6 @@ namespace Simple
 		}
 
 		return nullptr;
-	}
-
-	size_t EntityManager::GetEntityID(EntityClass* aEntity)
-	{
-		if (aEntity == nullptr)
-		{
-			assert(false && "Could not find Entity");
-			return static_cast<size_t>(-1);
-		}
-
-		auto it = myEntityMapToID.find(aEntity);
-
-		if (it != myEntityMapToID.end())
-		{
-			return myEntityMapToID[aEntity];
-		}
-		else
-		{
-			assert(false && "Could not find Entity");
-			return static_cast<size_t>(-1);
-		}
 	}
 
 	const std::vector<EntityClass*> EntityManager::GetAllEntities() const

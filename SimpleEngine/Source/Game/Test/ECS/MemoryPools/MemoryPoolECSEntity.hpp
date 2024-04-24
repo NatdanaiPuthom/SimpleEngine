@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <unordered_map>
 
 //TO-DO(v9.28.8): removing entities and more tests
 //NOTES(v9.28.8): should we return std::vector<Entity*> or std::vector<Entity*>& ?
@@ -22,7 +23,7 @@ namespace Simple
 		MemoryPoolECSEntity& operator=(const MemoryPoolECSEntity&) = delete;
 		MemoryPoolECSEntity& operator=(MemoryPoolECSEntity&&) = delete;
 
-		EntityClass& AllocateEntity();
+		EntityClass& AllocateEntity(std::unordered_map<size_t, EntityClass*>& aEntityClassMap);
 
 		EntityClass& GetEntityByIndex(const size_t aIndex);
 		EntityClass& GetEntityByMemoryAddress(const char* aAddress);

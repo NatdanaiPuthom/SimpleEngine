@@ -33,11 +33,6 @@ namespace Simple
 		return myEntityManager.CreateEntity();
 	}
 
-	size_t ECS::GetEntityID(EntityClass* aEntity)
-	{
-		return myEntityManager.GetEntityID(aEntity);
-	}
-
 	EntityClass* ECS::GetEntity(const size_t aEntityID) const
 	{
 		return myEntityManager.GetEntity(aEntityID);
