@@ -70,7 +70,7 @@ namespace Simple
 			myAvalibleComponentID.pop_back();
 		}
 
-		T& component = myComponents[typeid(T)].AllocateComponent<T>(componentID, aComponent, myAllComponents);
+		T& component = myComponents[typeid(T)].AllocateComponent<T>(componentID, myAllComponents, aComponent);
 		myAllComponents[componentID] = reinterpret_cast<const char*>(&component);
 
 		return componentID;
