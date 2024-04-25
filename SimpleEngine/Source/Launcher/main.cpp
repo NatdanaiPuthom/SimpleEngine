@@ -7,6 +7,7 @@
 #include "Editor/Editor.hpp"
 
 #include "Game/Test/ECS2/ComponentM.hpp"
+#include "Game/Test/ECS2/EntityM.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
@@ -79,6 +80,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	hello3->a = 30;
 
 	id1; id2; id3;
+
+	Simple::EntityM entityM;
+
+	Simple::EntityE& entity = entityM.CreateEntity();
+	entity;
 
 
 

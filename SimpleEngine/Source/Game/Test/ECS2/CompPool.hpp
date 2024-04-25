@@ -38,11 +38,6 @@ namespace Simple
 	{
 		bool reallocated = false;
 
-		size_t a = sizeof(T);
-		size_t b = GetAvailableMemorySpace();
-
-		a; b;
-
 		while (sizeof(T) > GetAvailableMemorySpace())
 		{
 			Reallocate();
