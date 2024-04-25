@@ -34,11 +34,11 @@ namespace Drawer
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 
-		context->IASetVertexBuffers(0, 1, aMeshComponent->mesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aMeshComponent->mesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetVertexBuffers(0, 1, aMeshComponent->mesh.myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aMeshComponent->mesh.myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		context->DrawIndexed(static_cast<UINT>(aMeshComponent->mesh->myMeshData.indices.size()), 0, 0);
+		context->DrawIndexed(static_cast<UINT>(aMeshComponent->mesh.myMeshData.indices.size()), 0, 0);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}

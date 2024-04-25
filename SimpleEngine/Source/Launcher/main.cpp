@@ -4,11 +4,9 @@
 #include "Engine/Global.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
-#include "Game/Test/ECS/ECS.hpp"
 #include "Editor/Editor.hpp"
 
-#include "Engine/Components/MeshComponent.hpp"
-#include "Engine/Components/TransformComponent.hpp"
+#include "Game/Test/ECS2/ComponentM.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
@@ -43,16 +41,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_BEGIN("Engine initialize");
 	Simple::Engine engine;
 	Simple::GraphicsEngine graphicsEngine;
-	Simple::ECS ecs;
 	Simple::Editor editor;
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
-	ecs.SetGlobalECSPointerToThis();
 
 	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
-	ecs.Init();
 	editor.Init();
 	PROFILER_END();
 
@@ -61,24 +56,31 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	Simple::Entity entity = ecs.CreateEntity();
-	entity->AddComponent<MeshComponent>();
-	entity->AddComponent<TransformComponent>();
-
-	for (size_t i = 0; i < 1; ++i)
+	struct HelloW
 	{
-		Simple::Entity entity2 = ecs.CreateEntity();
-		entity2;
-	}
+		int a;
+	};
 
-	MeshComponent* meshComponent = entity->GetComponent<MeshComponent>();
-	TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
+	HelloW he;
+	he.a = 9;
 
-	std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + "StaticModels/Simple_Floor_10x10.fbx";
+	Simple::ComponentM compM;
 
-	meshComponent->mesh = new Simple::Mesh(Global::GetModelFactory()->LoadMeshTest(path));
-	meshComponent->shader = Global::GetGraphicsEngine()->GetDefaultShader().get();
-	meshComponent->texture = Global::GetGraphicsEngine()->GetTexture("DefaultTexture.dds").get();
+	Simple::ComponentID id1 = compM.CreateComponent<HelloW>(he);
+	HelloW* hello1 = compM.GetComponentByComponentID<HelloW>(id1);
+	hello1->a = 10;
+
+	Simple::ComponentID id2 = compM.CreateComponent<HelloW>(he);
+	HelloW* hello2 = compM.GetComponentByComponentID<HelloW>(id2);
+	hello2->a = 20
+		;
+	Simple::ComponentID id3 = compM.CreateComponent<HelloW>(he);
+	HelloW* hello3 = compM.GetComponentByComponentID<HelloW>(id3);
+	hello3->a = 30;
+
+	id1; id2; id3;
+
+
 
 	while (Global::GetGameIsRunning())
 	{
@@ -89,17 +91,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		engine.Update();
 		gameWorld.Update();
-		ecs.Update();
 		editor.Update();
 
 		gameWorld.Render();
-		ecs.Render();
 		editor.Render();
-
-		Global::GetRenderer()->TestRender(transformComponent, meshComponent);
 	
 		graphicsEngine.EndFrame();
 	}
-
-	delete meshComponent->mesh;
 }

@@ -101,13 +101,6 @@ namespace Simple
 		Simple::ComponentManager* componentManager = Disgusting::GetComponentManager();
 		return componentManager->GetComponentByID<T>(myComponents[typeid(T)]);
 	}
-
-	template<typename T>
-	inline const T* EntityClass::GetComponent() const
-	{
-		Simple::ComponentManager* componentManager = Disgusting::GetComponentManager();
-		return componentManager->GetComponentByID<T>(myComponents[typeid(T)]);;
-	}
 }
 
 namespace Simple

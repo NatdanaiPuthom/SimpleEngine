@@ -110,19 +110,6 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline const T* ComponentManager::GetComponentByID(const size_t aID) const
-	{
-		auto it = myAllComponents.find(aID);
-
-		if (it != myAllComponents.end())
-		{
-			return &GetComponentByMemoryAdress<T>(it->second);
-		}
-
-		return nullptr;
-	}
-
-	template<typename T>
 	inline T* ComponentManager::GetComponentByIndex(const size_t aIndex)
 	{
 		auto it = myComponents.find(typeid(T));
