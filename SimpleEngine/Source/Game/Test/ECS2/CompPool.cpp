@@ -52,14 +52,7 @@ namespace Simple
 
 	size_t ComponentPool::GetAvailableMemorySpace() const
 	{
-		if (myCurrentMemoryAddress != myStartMemoryAddress)
-		{
-			return myCurrentMemoryAddress - myEndMemoryAddress;
-		}
-		else
-		{
-			return myEndMemoryAddress - myStartMemoryAddress;
-		}
+		return myEndMemoryAddress - myCurrentMemoryAddress;
 	}
 
 	char* ComponentPool::GetStartMemoryAddress()

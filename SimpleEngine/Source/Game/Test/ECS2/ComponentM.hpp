@@ -46,6 +46,7 @@ namespace Simple
 		return myCurrentComponentID;
 	}
 
+	//NOTE(v9.28.9): cannot cache this pointer as the address could change anytime. I tried but not smart enough today
 	template<typename T>
 	inline T* ComponentM::GetComponentByComponentID(const ComponentID aID)
 	{
@@ -53,7 +54,7 @@ namespace Simple
 
 		if (it != myAllComponents.end())
 		{
-			return reinterpret_cast<T*>(myAllComponents[aID]);
+			return reinterpret_cast<T*>(it->second);
 		}
 
 		return nullptr;
