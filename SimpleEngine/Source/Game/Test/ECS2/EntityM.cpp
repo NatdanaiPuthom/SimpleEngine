@@ -1,26 +1,21 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/ECS2/EntityM.hpp"
+#include "Game/Test/ECS2/EntityE.hpp"
 
 namespace Simple
 {
-	EntityM::EntityM()
+	EntityM::EntityM(ComponentM* aComponentManager)
+		: myComponentManager(aComponentManager)
 	{
 	}
 
 	EntityM::~EntityM()
 	{
+		myComponentManager = nullptr;
 	}
 
 	EntityE& EntityM::CreateEntity()
 	{
-		return myEntities.emplace_back(EntityE(2));
-	}
-
-
-
-
-	EntityE::EntityE(int b)
-		: a(b)
-	{
+		return myEntities.emplace_back(EntityE(2, this));
 	}
 }

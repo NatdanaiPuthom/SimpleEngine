@@ -8,6 +8,7 @@
 
 #include "Game/Test/ECS2/ComponentM.hpp"
 #include "Game/Test/ECS2/EntityM.hpp"
+#include "Game/Test/ECS2/EntityE.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
@@ -68,25 +69,36 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	Simple::ComponentM compM;
 
 	Simple::ComponentID id1 = compM.CreateComponent<HelloW>(he);
-	HelloW* hello1 = compM.GetComponentByComponentID<HelloW>(id1);
+	HelloW*& hello1 = compM.GetComponentByComponentID<HelloW>(id1);
 	hello1->a = 10;
+
+	hello1 = &he;
+	hello1->a = 20;
 
 	Simple::ComponentID id2 = compM.CreateComponent<HelloW>(he);
 	HelloW* hello2 = compM.GetComponentByComponentID<HelloW>(id2);
-	hello2->a = 20
-		;
-	Simple::ComponentID id3 = compM.CreateComponent<HelloW>(he);
-	HelloW* hello3 = compM.GetComponentByComponentID<HelloW>(id3);
-	hello3->a = 30;
+	hello2->a = 20;
 
-	id1; id2; id3;
+	HelloW*& hello3 = compM.GetComponentByComponentID<HelloW>(5);
 
-	Simple::EntityM entityM;
+	if (hello3 != nullptr)
+	{
+		std::cout << "not null" << std::endl;
+	}
+	else
+	{
+		std::cout << " null" << std::endl;
+	}
+
+	id1; id2;
+
+	Simple::EntityM entityM(&compM);
 
 	Simple::EntityE& entity = entityM.CreateEntity();
-	entity;
-
-
+	entity.AddComponent<HelloW>();
+	
+	HelloW*& comp = entity.GetComponent<HelloW>();
+	comp->a = 99;
 
 	while (Global::GetGameIsRunning())
 	{
