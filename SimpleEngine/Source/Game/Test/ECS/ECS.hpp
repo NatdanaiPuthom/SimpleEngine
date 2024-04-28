@@ -1,4 +1,5 @@
 #pragma once
+#include "Game/Test/ECS/Core/Entity.hpp"
 #include "Game/Test/ECS/Core/EntityManager.hpp"
 
 namespace Simple
@@ -9,7 +10,13 @@ namespace Simple
 		ECS();
 		~ECS();
 
+		ECS(const ECS&) = delete;
+		ECS(ECS&&) = delete;
+		ECS& operator=(const ECS&) = delete;
+		ECS& operator=(ECS&&) = delete;
+
 		void Init();
+		Entity*& CreateEntity();
 
 	private:
 		EntityManager myEntityManager;

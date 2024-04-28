@@ -13,17 +13,15 @@ namespace Simple
 
 namespace Simple
 {
+	using EntityID = size_t;
+
 	class EntityManager final
 	{
-		using EntityID = size_t;
 		using ComponentType = std::type_index;
-
 		friend class Simple::ECS;
 	public:
-		~EntityManager();
-
 		Entity*& CreateEntity();
-		
+
 		template<typename T>
 		void AddComponent(const size_t aEntityID);
 
@@ -32,6 +30,9 @@ namespace Simple
 
 	private:
 		EntityManager(ComponentManager* aComponentManager);
+		~EntityManager();
+
+		void Init(const size_t aEntityAmountToReserved = 8);
 	private:
 		static size_t myCurrentEntityID;
 		EntityPool myEntityPool;

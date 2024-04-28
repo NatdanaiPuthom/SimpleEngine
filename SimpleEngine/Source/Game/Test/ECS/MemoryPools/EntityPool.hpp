@@ -13,13 +13,15 @@ namespace Simple
 	{
 		using EntityID = size_t;
 	public:
-		EntityPool(const size_t aDefaultSize = 64);
+		EntityPool();
 		~EntityPool();
 
 		EntityPool(const EntityPool&) = delete;
 		EntityPool(EntityPool&&) = delete;
 		EntityPool& operator=(const EntityPool&) = delete;
 		EntityPool& operator=(EntityPool&&) = delete;
+
+		void Init(const size_t aEntityAmountToReserved);
 
 		char* CreateEntity(const EntityID aID, std::unordered_map<EntityID, char*>& aEntities, EntityManager* aEntityManager);
 

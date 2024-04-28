@@ -4,12 +4,12 @@
 
 namespace Simple
 {
-	EntityPool::EntityPool(const size_t aDefaultSize)
-		: padding("Believe")
+	EntityPool::EntityPool()
+		: myStartMemoryAddress(nullptr)
+		, myEndMemoryAddress(nullptr)
+		, myCurrentMemoryAddress(nullptr)
+		, padding("Believe")
 	{
-		myStartMemoryAddress = new char[aDefaultSize];
-		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;
-		myCurrentMemoryAddress = myStartMemoryAddress;
 	}
 
 	EntityPool::~EntityPool()
@@ -19,6 +19,14 @@ namespace Simple
 		myStartMemoryAddress = nullptr;
 		myEndMemoryAddress = nullptr;
 		myCurrentMemoryAddress = nullptr;
+	}
+
+	void EntityPool::Init(const size_t aEntityAmountToReserved)
+	{
+		const size_t size = aEntityAmountToReserved * sizeof(Entity);
+		myStartMemoryAddress = new char[size];
+		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * size;
+		myCurrentMemoryAddress = myStartMemoryAddress;
 	}
 
 	char* EntityPool::CreateEntity(const EntityID aID, std::unordered_map<EntityID, char*>& aEntities, EntityManager* aEntityManager)

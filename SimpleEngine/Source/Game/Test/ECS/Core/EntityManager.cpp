@@ -11,6 +11,11 @@ namespace Simple
 	{
 	}
 
+	void EntityManager::Init(const size_t aEntityAmountToReserved)
+	{
+		myEntityPool.Init(aEntityAmountToReserved);
+	}
+
 	EntityManager::~EntityManager()
 	{
 		myComponentManager = nullptr;

@@ -14,5 +14,12 @@ namespace Simple
 
 	void ECS::Init()
 	{
+		constexpr size_t entitiesToReserve = 8;
+		myEntityManager.Init(entitiesToReserve);
+	}
+
+	Entity*& ECS::CreateEntity()
+	{
+		return myEntityManager.CreateEntity();
 	}
 }

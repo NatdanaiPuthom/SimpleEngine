@@ -7,7 +7,7 @@ namespace Simple
 	class ComponentPool final
 	{
 	public:
-		ComponentPool(const size_t aDefaultSize = 2);
+		ComponentPool(const size_t aDefaultSize = 16);
 		~ComponentPool();
 
 		ComponentPool(const ComponentPool&) = delete;

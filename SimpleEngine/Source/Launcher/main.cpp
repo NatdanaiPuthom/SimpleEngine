@@ -6,6 +6,8 @@
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
 
+#include "Game/Test/ECS/ECS.hpp"
+
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
@@ -40,12 +42,14 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	Simple::Engine engine;
 	Simple::GraphicsEngine graphicsEngine;
 	Simple::Editor editor;
+	Simple::ECS ecs;
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
 
 	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
+	ecs.Init();
 	editor.Init();
 	PROFILER_END();
 
