@@ -4,6 +4,7 @@
 namespace Simple
 {
 	ComponentPool::ComponentPool(const size_t aDefaultSize)
+		: padding("Believe")
 	{
 		myStartMemoryAddress = new char[aDefaultSize];
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;

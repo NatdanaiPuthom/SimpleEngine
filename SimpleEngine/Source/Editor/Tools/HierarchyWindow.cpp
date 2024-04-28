@@ -21,7 +21,7 @@ namespace Editor
 
 		if (ImGui::Begin("Hierarchy"))
 		{
-			const auto& entities = World::GetECS()->GetAllEntities();
+			/*const auto& entities = World::GetECS()->GetAllEntities();
 
 			for (int i = 0; i < entities.size(); ++i)
 			{
@@ -40,7 +40,7 @@ namespace Editor
 					}
 				}
 				ImGui::EndListBox();
-			}		
+			}		*/
 		}
 
 		ImGui::End();

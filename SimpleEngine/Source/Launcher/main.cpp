@@ -90,14 +90,17 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		std::cout << " null" << std::endl;
 	}
 
-	id1; id2;
-
 	Simple::EntityM entityM(&compM);
 
-	Simple::EntityE& entity = entityM.CreateEntity();
-	entity.AddComponent<HelloW>();
+	Simple::EntityE*& entity = entityM.CreateEntity();
+	entity->AddComponent<HelloW>();
+
+	Simple::EntityE*& entity2 = entityM.CreateEntity(); entity2;
+	Simple::EntityE*& entity3 = entityM.CreateEntity(); entity3;
+	Simple::EntityE*& entity4 = entityM.CreateEntity(); entity4;
+	Simple::EntityE*& entity5 = entityM.CreateEntity(); entity5;
 	
-	HelloW*& comp = entity.GetComponent<HelloW>();
+	HelloW*& comp = entity->GetComponent<HelloW>();
 	comp->a = 99;
 
 	while (Global::GetGameIsRunning())

@@ -27,10 +27,11 @@ namespace Simple
 	private:
 		void Reallocate();
 	private:
+		char* myCurrentMemoryAddress;
 		char* myStartMemoryAddress;
 		char* myEndMemoryAddress;
-		char* myCurrentMemoryAddress;
 		std::vector<size_t> myComponentIDs;
+		const char padding[8];
 	};
 
 	template<typename T>

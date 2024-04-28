@@ -14,7 +14,7 @@ namespace Simple
 		myEntityManager = nullptr;
 	}
 
-	size_t EntityE::GetID() const
+	const size_t EntityE::GetID() const
 	{
 		return myID;
 	}

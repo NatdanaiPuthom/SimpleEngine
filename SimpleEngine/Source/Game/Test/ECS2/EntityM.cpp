@@ -4,6 +4,8 @@
 
 namespace Simple
 {
+	size_t EntityM::myCurrentEntityID = 0;
+
 	EntityM::EntityM(ComponentM* aComponentManager)
 		: myComponentManager(aComponentManager)
 	{
@@ -14,8 +16,11 @@ namespace Simple
 		myComponentManager = nullptr;
 	}
 
-	EntityE& EntityM::CreateEntity()
+	EntityE*& EntityM::CreateEntity()
 	{
-		return myEntities.emplace_back(EntityE(2, this));
+		myCurrentEntityID++;
+		myEntities[myCurrentEntityID] = myEntityPool.CreateEntity(myCurrentEntityID, myEntities, this);
+
+		return reinterpret_cast<EntityE*&>(myEntities[myCurrentEntityID]);
 	}
 }

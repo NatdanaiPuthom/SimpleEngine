@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/Test/ECS2/ComponentM.hpp"
+#include "Game/Test/ECS2/EntityP.hpp"
 #include <unordered_map>
 #include <typeindex>
 #include <vector>
@@ -11,13 +12,15 @@ namespace Simple
 
 namespace Simple
 {
-	class alignas(128) EntityM final
+	class EntityM final
 	{
+		using EntityID = size_t;
+		using ComponentType = std::type_index;
 	public:
 		EntityM(ComponentM* aComponentManager);
 		~EntityM();
 
-		EntityE& CreateEntity();
+		EntityE*& CreateEntity();
 		
 		template<typename T>
 		void AddComponent(const size_t aEntityID);
@@ -26,10 +29,11 @@ namespace Simple
 		T*& GetComponent(const size_t aEntityID);
 		
 	private:
-		std::unordered_map<size_t, std::unordered_map<std::type_index, ComponentID>> myEntityComponents;
-		std::vector<EntityE> myEntities;
+		static size_t myCurrentEntityID;
+		EntityP myEntityPool;
 		ComponentM* myComponentManager;
-		char padding[6];
+		std::unordered_map<EntityID, std::unordered_map<ComponentType, ComponentID>> myEntityComponents;
+		std::unordered_map<EntityID, char*> myEntities;
 	};
 
 	template<typename T>

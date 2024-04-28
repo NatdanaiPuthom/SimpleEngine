@@ -3,10 +3,16 @@
 
 namespace Simple
 {
+	class EntityP;
+}
+
+namespace Simple
+{
 	class EntityE final
 	{
+		friend class Simple::EntityM;
+		friend class Simple::EntityP;
 	public:
-		EntityE(const size_t aID, EntityM* aEntityManager);
 		~EntityE();
 
 		template<typename T>
@@ -15,8 +21,10 @@ namespace Simple
 		template<typename T>
 		inline T*& GetComponent();
 
-		size_t GetID() const;
+		const size_t GetID() const;
 
+	private:
+		EntityE(const size_t aID, EntityM* aEntityManager);
 	private:
 		const size_t myID;
 		EntityM* myEntityManager;
