@@ -1,18 +1,23 @@
 #pragma once
-#include "Game/Test/ECS2/CompPool.hpp"
+#include "Game/Test/ECS/MemoryPools/ComponentPool.hpp"
 #include <unordered_map>
 #include <typeindex>
+
+namespace Simple
+{
+	class ECS;
+}
 
 namespace Simple
 {
 	using ComponentID = size_t;
 	using ComponentType = std::type_index;
 
-	class ComponentM final
+	class ComponentManager final
 	{
+		friend class Simple::ECS;
 	public:
-		ComponentM();
-		~ComponentM();
+		~ComponentManager();
 
 		template<typename T>
 		ComponentID CreateComponent(const T& aComponent = T());
@@ -21,9 +26,10 @@ namespace Simple
 		T*& GetComponentByComponentID(const ComponentID aID);
 
 	private:
+		ComponentManager();
+
 		template<typename T>
 		void RegisterDestructor();
-
 	private:
 		inline static size_t myCurrentComponentID = 0;
 
@@ -33,7 +39,7 @@ namespace Simple
 	};
 
 	template<typename T>
-	inline ComponentID ComponentM::CreateComponent(const T& aComponent)
+	inline ComponentID ComponentManager::CreateComponent(const T& aComponent)
 	{
 		if (myComponentDestructorInvoker.find(typeid(T)) == myComponentDestructorInvoker.end())
 		{
@@ -47,7 +53,7 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline T*& ComponentM::GetComponentByComponentID(const ComponentID aID)
+	inline T*& ComponentManager::GetComponentByComponentID(const ComponentID aID)
 	{
 		auto it = myAllComponents.find(aID);
 
@@ -61,7 +67,7 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline void ComponentM::RegisterDestructor()
+	inline void ComponentManager::RegisterDestructor()
 	{
 		myComponentDestructorInvoker[typeid(T)] = [](void* aPointer)
 			{

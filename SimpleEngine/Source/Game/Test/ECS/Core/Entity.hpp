@@ -1,19 +1,19 @@
 #pragma once
-#include "Game/Test/ECS2/EntityM.hpp"
+#include "Game/Test/ECS/Core/EntityManager.hpp"
 
 namespace Simple
 {
-	class EntityP;
+	class EntityPool;
 }
 
 namespace Simple
 {
-	class EntityE final
+	class Entity final
 	{
-		friend class Simple::EntityM;
-		friend class Simple::EntityP;
+		friend class Simple::EntityManager;
+		friend class Simple::EntityPool;
 	public:
-		~EntityE();
+		~Entity();
 
 		template<typename T>
 		inline void AddComponent();
@@ -24,20 +24,20 @@ namespace Simple
 		const size_t GetID() const;
 
 	private:
-		EntityE(const size_t aID, EntityM* aEntityManager);
+		Entity(const size_t aID, EntityManager* aEntityManager);
 	private:
 		const size_t myID;
-		EntityM* myEntityManager;
+		EntityManager* myEntityManager;
 	};
 
 	template<typename T>
-	inline void EntityE::AddComponent()
+	inline void Entity::AddComponent()
 	{
 		myEntityManager->AddComponent<T>(myID);
 	}
 
 	template<typename T>
-	inline T*& EntityE::GetComponent()
+	inline T*& Entity::GetComponent()
 	{
 		return myEntityManager->GetComponent<T>(myID);
 	}

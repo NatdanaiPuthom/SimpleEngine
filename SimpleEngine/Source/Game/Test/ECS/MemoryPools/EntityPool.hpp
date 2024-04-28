@@ -3,25 +3,25 @@
 
 namespace Simple
 {
-	class EntityE;
-	class EntityM;
+	class Entity;
+	class EntityManager;
 }
 
 namespace Simple
 {
-	class EntityP final
+	class EntityPool final
 	{
 		using EntityID = size_t;
 	public:
-		EntityP(const size_t aDefaultSize = 64);
-		~EntityP();
+		EntityPool(const size_t aDefaultSize = 64);
+		~EntityPool();
 
-		EntityP(const EntityP&) = delete;
-		EntityP(EntityP&&) = delete;
-		EntityP& operator=(const EntityP&) = delete;
-		EntityP& operator=(EntityP&&) = delete;
+		EntityPool(const EntityPool&) = delete;
+		EntityPool(EntityPool&&) = delete;
+		EntityPool& operator=(const EntityPool&) = delete;
+		EntityPool& operator=(EntityPool&&) = delete;
 
-		char* CreateEntity(const EntityID aID, std::unordered_map<EntityID, char*>& aEntities, EntityM* aEntityManager);
+		char* CreateEntity(const EntityID aID, std::unordered_map<EntityID, char*>& aEntities, EntityManager* aEntityManager);
 
 		size_t GetCapacity() const;
 		size_t GetOccupiedMemorySpace() const;

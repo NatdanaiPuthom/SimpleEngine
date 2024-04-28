@@ -1,13 +1,13 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Test/ECS2/ComponentM.hpp"
+#include "Game/Test/ECS/Core/ComponentManager.hpp"
 
 namespace Simple
 {
-	ComponentM::ComponentM()
+	ComponentManager::ComponentManager()
 	{
 	}
 
-	ComponentM::~ComponentM()
+	ComponentManager::~ComponentManager()
 	{
 		for (auto& [componentType, componentPool] : myComponents)
 		{

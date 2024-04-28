@@ -1,20 +1,20 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Test/ECS2/EntityE.hpp"
+#include "Game/Test/ECS/Core/Entity.hpp"
 
 namespace Simple
 {
-	EntityE::EntityE(const size_t aID, EntityM* aEntityManager)
+	Entity::Entity(const size_t aID, EntityManager* aEntityManager)
 		: myEntityManager(aEntityManager)
 		, myID(aID)
 	{
 	}
 
-	EntityE::~EntityE()
+	Entity::~Entity()
 	{
 		myEntityManager = nullptr;
 	}
 
-	const size_t EntityE::GetID() const
+	const size_t Entity::GetID() const
 	{
 		return myID;
 	}

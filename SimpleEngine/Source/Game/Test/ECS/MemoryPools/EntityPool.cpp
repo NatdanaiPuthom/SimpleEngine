@@ -1,10 +1,10 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Test/ECS2/EntityP.hpp"
-#include "Game/Test/ECS2/EntityE.hpp"
+#include "Game/Test/ECS/MemoryPools/ComponentPool.hpp"
+#include "Game/Test/ECS/Core/Entity.hpp"
 
 namespace Simple
 {
-	EntityP::EntityP(const size_t aDefaultSize)
+	EntityPool::EntityPool(const size_t aDefaultSize)
 		: padding("Believe")
 	{
 		myStartMemoryAddress = new char[aDefaultSize];
@@ -12,7 +12,7 @@ namespace Simple
 		myCurrentMemoryAddress = myStartMemoryAddress;
 	}
 
-	EntityP::~EntityP()
+	EntityPool::~EntityPool()
 	{
 		delete[] myStartMemoryAddress;
 
@@ -21,11 +21,11 @@ namespace Simple
 		myCurrentMemoryAddress = nullptr;
 	}
 
-	char* EntityP::CreateEntity(const EntityID aID, std::unordered_map<EntityID, char*>& aEntities, EntityM* aEntityManager)
+	char* EntityPool::CreateEntity(const EntityID aID, std::unordered_map<EntityID, char*>& aEntities, EntityManager* aEntityManager)
 	{
 		bool shouldMoveEntitiesToNewAddress = false;
 
-		while (sizeof(EntityE) > GetAvaliableMemorySpace())
+		while (sizeof(Entity) > GetAvaliableMemorySpace())
 		{
 			Reallocate();
 			shouldMoveEntitiesToNewAddress = true;
@@ -35,43 +35,43 @@ namespace Simple
 		{
 			for (size_t i = 0; i < GetEntityCount(); ++i)
 			{
-				aEntities[myEntityIDs[i]] = myStartMemoryAddress + i * sizeof(EntityE);
+				aEntities[myEntityIDs[i]] = myStartMemoryAddress + i * sizeof(Entity);
 			}
 		}
 
-		new(myCurrentMemoryAddress)EntityE(aID, aEntityManager);
-		myCurrentMemoryAddress += sizeof(EntityE);
+		new(myCurrentMemoryAddress)Entity(aID, aEntityManager);
+		myCurrentMemoryAddress += sizeof(Entity);
 		myEntityIDs.push_back(aID);
 
-		return myCurrentMemoryAddress - sizeof(EntityE);
+		return myCurrentMemoryAddress - sizeof(Entity);
 	}
 
-	size_t EntityP::GetCapacity() const
+	size_t EntityPool::GetCapacity() const
 	{
 		return myEndMemoryAddress - myStartMemoryAddress;
 	}
 
-	size_t EntityP::GetOccupiedMemorySpace() const
+	size_t EntityPool::GetOccupiedMemorySpace() const
 	{
 		return myCurrentMemoryAddress - myStartMemoryAddress;
 	}
 
-	size_t EntityP::GetAvaliableMemorySpace() const
+	size_t EntityPool::GetAvaliableMemorySpace() const
 	{
 		return myEndMemoryAddress - myCurrentMemoryAddress;
 	}
 
-	size_t EntityP::GetEntityCount() const
+	size_t EntityPool::GetEntityCount() const
 	{
 		return myEntityIDs.size();
 	}
 
-	char* EntityP::GetStartMemoryAddress()
+	char* EntityPool::GetStartMemoryAddress()
 	{
 		return myStartMemoryAddress;
 	}
 
-	void EntityP::Reallocate()
+	void EntityPool::Reallocate()
 	{
 		char* oldMemoryArray = myStartMemoryAddress;
 

@@ -1,49 +1,53 @@
 #pragma once
-#include "Game/Test/ECS2/ComponentM.hpp"
-#include "Game/Test/ECS2/EntityP.hpp"
+#include "Game/Test/ECS/Core/ComponentManager.hpp"
+#include "Game/Test/ECS/MemoryPools/EntityPool.hpp"
 #include <unordered_map>
 #include <typeindex>
 #include <vector>
 
 namespace Simple
 {
-	class EntityE;
+	class Entity;
+	class ECS;
 }
 
 namespace Simple
 {
-	class EntityM final
+	class EntityManager final
 	{
 		using EntityID = size_t;
 		using ComponentType = std::type_index;
-	public:
-		EntityM(ComponentM* aComponentManager);
-		~EntityM();
 
-		EntityE*& CreateEntity();
+		friend class Simple::ECS;
+	public:
+		~EntityManager();
+
+		Entity*& CreateEntity();
 		
 		template<typename T>
 		void AddComponent(const size_t aEntityID);
 
 		template<typename T>
 		T*& GetComponent(const size_t aEntityID);
-		
+
+	private:
+		EntityManager(ComponentManager* aComponentManager);
 	private:
 		static size_t myCurrentEntityID;
-		EntityP myEntityPool;
-		ComponentM* myComponentManager;
+		EntityPool myEntityPool;
+		ComponentManager* myComponentManager;
 		std::unordered_map<EntityID, std::unordered_map<ComponentType, ComponentID>> myEntityComponents;
 		std::unordered_map<EntityID, char*> myEntities;
 	};
 
 	template<typename T>
-	inline void EntityM::AddComponent(const size_t aEntityID)
+	inline void EntityManager::AddComponent(const size_t aEntityID)
 	{
 		myEntityComponents[aEntityID][typeid(T)] = myComponentManager->CreateComponent<T>();
 	}
 
 	template<typename T>
-	inline T*& EntityM::GetComponent(const size_t aEntityID)
+	inline T*& EntityManager::GetComponent(const size_t aEntityID)
 	{
 		return myComponentManager->GetComponentByComponentID<T>(myEntityComponents[aEntityID][typeid(T)]);
 	}
