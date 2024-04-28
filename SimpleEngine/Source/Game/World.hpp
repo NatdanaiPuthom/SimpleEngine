@@ -3,6 +3,7 @@
 #include "Game/Managers/EventManager/EventManager.hpp"
 #include "Game/Managers/LevelManager/Template/Scene.hpp"
 #include "Game/Navmesh/Navmesh.hpp"
+#include "Game/Test/ECS/ECS.hpp"
 #include <memory>
 
 namespace World
@@ -14,6 +15,7 @@ namespace World
 	Simple::PlaneReflection* GetWaterPlane();
 	Simple::EventManager* GetEventmanager();
 	Simple::Navmesh* GetNavmesh();
+	Simple::ECS* GetECS();
 
 	std::shared_ptr<Simple::Scene> GetActiveScene();
 

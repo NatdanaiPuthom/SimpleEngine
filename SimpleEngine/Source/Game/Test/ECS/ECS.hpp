@@ -1,6 +1,7 @@
 #pragma once
 #include "Game/Test/ECS/Core/Entity.hpp"
 #include "Game/Test/ECS/Core/EntityManager.hpp"
+#include <vector>
 
 namespace Simple
 {
@@ -16,8 +17,13 @@ namespace Simple
 		ECS& operator=(ECS&&) = delete;
 
 		void Init();
+
 		Entity*& CreateEntity();
 
+		Entities GetAllEntities();
+
+	public:
+		void SetGlobalPointerToThis();
 	private:
 		EntityManager myEntityManager;
 		ComponentManager myComponentManager;

@@ -46,6 +46,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
+	ecs.SetGlobalPointerToThis();
 
 	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
@@ -57,6 +58,22 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	Simple::GameWorld gameWorld;
 	gameWorld.Init();
 	PROFILER_END();
+
+	ecs.CreateEntity();
+
+	Simple::Entities entities = ecs.GetAllEntities();
+
+	std::cout << "Size: " << entities.GetSize() << std::endl;
+	
+	Simple::Entity*& b = entities[0];
+
+	std::cout << "ID: " << b->GetID() << std::endl;
+	ecs.CreateEntity();
+	ecs.CreateEntity();
+	ecs.CreateEntity();
+	ecs.CreateEntity();
+	std::cout << "ID: " << b->GetID() << std::endl;
+
 
 	while (Global::GetGameIsRunning())
 	{
@@ -71,7 +88,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		gameWorld.Render();
 		editor.Render();
-	
+
 		graphicsEngine.EndFrame();
 	}
 }

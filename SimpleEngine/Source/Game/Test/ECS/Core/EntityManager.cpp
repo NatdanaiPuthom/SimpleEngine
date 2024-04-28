@@ -5,10 +5,11 @@
 namespace Simple
 {
 	size_t EntityManager::myCurrentEntityID = 0;
+	ComponentManager* EntityManager::myComponentManager = nullptr;
 
 	EntityManager::EntityManager(ComponentManager* aComponentManager)
-		: myComponentManager(aComponentManager)
 	{
+		myComponentManager = aComponentManager;;
 	}
 
 	void EntityManager::Init(const size_t aEntityAmountToReserved)
@@ -25,7 +26,13 @@ namespace Simple
 	{
 		myCurrentEntityID++;
 		myEntities[myCurrentEntityID] = myEntityPool.CreateEntity(myCurrentEntityID, myEntities, this);
+		myAllEntities.push_back(&myEntities[myCurrentEntityID]);
 
 		return reinterpret_cast<Entity*&>(myEntities[myCurrentEntityID]);
+	}
+
+	Entities EntityManager::GetAllEntities()
+	{
+		return Entities(myAllEntities);
 	}
 }

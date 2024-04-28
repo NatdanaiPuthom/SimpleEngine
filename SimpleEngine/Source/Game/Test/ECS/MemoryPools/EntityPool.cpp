@@ -79,6 +79,16 @@ namespace Simple
 		return myStartMemoryAddress;
 	}
 
+	char*& EntityPool::GetStartMemoryAddressRef()
+	{
+		return myStartMemoryAddress;
+	}
+
+	char*& EntityPool::GetCurrentMemoryAddressRef()
+	{
+		return myCurrentMemoryAddress;
+	}
+
 	void EntityPool::Reallocate()
 	{
 		char* oldMemoryArray = myStartMemoryAddress;

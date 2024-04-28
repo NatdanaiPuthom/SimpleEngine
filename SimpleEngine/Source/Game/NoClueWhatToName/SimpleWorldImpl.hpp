@@ -4,7 +4,7 @@ namespace Simple
 {
 	class LevelManager;
 	class EventManager;
-	class ComponentManager;
+	class ECS;
 }
 
 namespace Impl
@@ -21,5 +21,12 @@ namespace Impl
 		friend class Simple::EventManager;
 	private:
 		static void SetEventManager(Simple::EventManager* aLevelManager);
+	};
+
+	class SimpleWorldECS final
+	{
+		friend class Simple::ECS;
+	private:
+		static void SetECS(Simple::ECS* aECS);
 	};
 }

@@ -1,5 +1,6 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/ECS/ECS.hpp"
+#include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
 namespace Simple
 {
@@ -21,5 +22,15 @@ namespace Simple
 	Entity*& ECS::CreateEntity()
 	{
 		return myEntityManager.CreateEntity();
+	}
+
+	Entities ECS::GetAllEntities()
+	{
+		return myEntityManager.GetAllEntities();
+	}
+
+	void ECS::SetGlobalPointerToThis()
+	{
+		Impl::SimpleWorldECS::SetECS(this);
 	}
 }

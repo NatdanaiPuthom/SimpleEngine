@@ -1,6 +1,7 @@
 #pragma once
 #include "Game/Test/ECS/Core/ComponentManager.hpp"
 #include "Game/Test/ECS/MemoryPools/EntityPool.hpp"
+#include "Game/Test/ECS/Core/Entities.hpp"
 #include <unordered_map>
 #include <typeindex>
 #include <vector>
@@ -28,6 +29,8 @@ namespace Simple
 		template<typename T>
 		T*& GetComponent(const size_t aEntityID);
 
+		Entities GetAllEntities();
+
 	private:
 		EntityManager(ComponentManager* aComponentManager);
 		~EntityManager();
@@ -35,10 +38,11 @@ namespace Simple
 		void Init(const size_t aEntityAmountToReserved = 8);
 	private:
 		static size_t myCurrentEntityID;
+		static ComponentManager* myComponentManager;
 		EntityPool myEntityPool;
-		ComponentManager* myComponentManager;
 		std::unordered_map<EntityID, std::unordered_map<ComponentType, ComponentID>> myEntityComponents;
 		std::unordered_map<EntityID, char*> myEntities;
+		std::vector<char**> myAllEntities;
 	};
 
 	template<typename T>
