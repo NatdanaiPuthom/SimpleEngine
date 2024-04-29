@@ -1,6 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/ECS/Core/Entities.hpp"
 #include "Game/Test/ECS/Core/Entity.hpp"
+#include <cassert>
 
 namespace Simple
 {
@@ -19,6 +20,7 @@ namespace Simple
 
 		if (aIndex > size || size == 0)
 		{
+			assert(false && "Index out of range");
 			static IEntity* entityPointer = nullptr;
 			return std::ref(entityPointer);
 		}

@@ -3,5 +3,5 @@
 namespace Simple
 {
 	class IEntity;
-	using Entity = IEntity*&;
+	using Entity = IEntity*const&;
 }

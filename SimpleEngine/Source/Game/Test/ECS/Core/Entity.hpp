@@ -5,6 +5,7 @@
 namespace Simple
 {
 	class EntityPool;
+	class EntityManager;
 }
 
 namespace Simple
