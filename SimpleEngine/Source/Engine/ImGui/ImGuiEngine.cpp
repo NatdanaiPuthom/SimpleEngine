@@ -47,15 +47,16 @@ namespace Simple
 		ImGui_ImplDX11_Init(Global::GetGraphicsEngine()->GetDevice().Get(), Global::GetGraphicsEngine()->GetContext().Get());
 
 		ImVec4* colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_MenuBarBg] = ImVec4(0.40f, 0.40f, 0.40f, 1.0f);
-		colors[ImGuiCol_WindowBg] = ImVec4(0.40f, 0.40f, 0.40f, 1.0f);
-		colors[ImGuiCol_TitleBg] = ImVec4(0.60f, 0.60f, 0.60f, 1.0f);
+		colors[ImGuiCol_MenuBarBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
+		colors[ImGuiCol_WindowBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
+		colors[ImGuiCol_TitleBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
 		colors[ImGuiCol_TitleBgActive] = ImVec4(1.00f, 0.00f, 1.00f, 1.0f);
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.00f, 1.00f, 1.0f);
 		colors[ImGuiCol_ButtonHovered] = ImVec4(0.70f, 0.00f, 0.70f, 0.70f);
 		colors[ImGuiCol_HeaderHovered] = ImVec4(1.00f, 0.00f, 1.00f, 1.0f);
 		colors[ImGuiCol_TabActive] = ImVec4(0.80f, 0.00f, 0.80f, 0.90f);
 		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.40f, 0.40f, 0.40f, 0.90f);
+		colors[ImGuiCol_Border] = ImVec4(0.35f, 0.0f, 0.395f, 0.50f);
 	}
 
 	void ImGuiEngine::BeginFrame()
@@ -66,6 +67,8 @@ namespace Simple
 		ImGui::NewFrame();
 
 		ImGui::DockSpaceOverViewport(nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
+
+		ImGui::ShowStyleEditor();
 	}
 
 	void ImGuiEngine::EndFrame()

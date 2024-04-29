@@ -18,7 +18,6 @@ namespace Editor
 	void HierarchyWindow::Draw()
 	{
 		static int selected = -1;
-
 		if (ImGui::Begin("Hierarchy"))
 		{
 			Simple::Entities entities = World::GetECS()->GetAllEntities();
