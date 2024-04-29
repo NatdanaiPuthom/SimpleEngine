@@ -42,6 +42,11 @@ namespace Editor
 					ImGui::EndListBox();
 				}
 			}
+
+			if (selected != -1)
+			{
+				ImGui::Text(entities[selected]->GetName().c_str());
+			}
 		}
 
 		ImGui::End();
