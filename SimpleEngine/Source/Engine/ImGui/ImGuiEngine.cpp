@@ -67,8 +67,6 @@ namespace Simple
 		ImGui::NewFrame();
 
 		ImGui::DockSpaceOverViewport(nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
-
-		ImGui::ShowStyleEditor();
 	}
 
 	void ImGuiEngine::EndFrame()

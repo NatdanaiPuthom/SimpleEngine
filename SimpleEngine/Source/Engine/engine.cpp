@@ -154,7 +154,7 @@ namespace Simple
 		std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
 		*hwnd = CreateWindow(
 			L"Natdanai",
-			L"SimpleEngine v9.29.9 (Simple, it's just that easy)",
+			L"SimpleEngine v9.30.9 (Simple, it's just that easy)",
 			WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
