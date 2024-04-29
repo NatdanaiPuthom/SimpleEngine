@@ -59,20 +59,20 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	ecs.CreateEntity();
-
 	Simple::Entities entities = ecs.GetAllEntities();
-
 	std::cout << "Size: " << entities.GetSize() << std::endl;
-	
-	Simple::Entity b = entities[0];
+	ecs.CreateEntity();
+	std::cout << "Size: " << entities.GetSize() << std::endl;
 
-	std::cout << "ID: " << b->GetID() << std::endl;
+	Simple::Entity entity = entities[0];
+	
+
+	std::cout << "ID: " << entity->GetID() << std::endl;
 	ecs.CreateEntity();
 	ecs.CreateEntity();
 	ecs.CreateEntity();
 	ecs.CreateEntity();
-	std::cout << "ID: " << b->GetID() << std::endl;
+	std::cout << "ID: " << entity->GetID() << std::endl;
 
 
 	while (Global::GetGameIsRunning())
