@@ -13,17 +13,17 @@ namespace Simple
 	{
 	}
 
-	Entity*& Entities::operator[](const size_t aIndex)
+	IEntity*& Entities::operator[](const size_t aIndex)
 	{
 		const size_t size = GetSize();
 
 		if (aIndex > size || size == 0)
 		{
-			static Entity* entityPointer = nullptr;
+			static IEntity* entityPointer = nullptr;
 			return std::ref(entityPointer);
 		}
 
-		return reinterpret_cast<Entity*&>(*myAllEntities[aIndex]);
+		return reinterpret_cast<IEntity*&>(*myAllEntities[aIndex]);
 	}
 
 	size_t Entities::GetSize() const

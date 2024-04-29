@@ -3,18 +3,18 @@
 
 namespace Simple
 {
-	Entity::Entity(const size_t aID, EntityManager* aEntityManager)
+	IEntity::IEntity(const size_t aID, EntityManager* aEntityManager)
 		: myEntityManager(aEntityManager)
 		, myID(aID)
 	{
 	}
 
-	Entity::~Entity()
+	IEntity::~IEntity()
 	{
 		myEntityManager = nullptr;
 	}
 
-	const size_t Entity::GetID() const
+	const size_t IEntity::GetID() const
 	{
 		return myID;
 	}

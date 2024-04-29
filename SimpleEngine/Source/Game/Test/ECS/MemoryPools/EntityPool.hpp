@@ -3,7 +3,7 @@
 
 namespace Simple
 {
-	class Entity;
+	class IEntity;
 	class EntityManager;
 }
 

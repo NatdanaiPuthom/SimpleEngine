@@ -22,13 +22,13 @@ namespace Simple
 		myComponentManager = nullptr;
 	}
 
-	Entity*& EntityManager::CreateEntity()
+	IEntity*& EntityManager::CreateEntity()
 	{
 		myCurrentEntityID++;
 		myEntities[myCurrentEntityID] = myEntityPool.CreateEntity(myCurrentEntityID, myEntities, this);
 		myAllEntities.push_back(&myEntities[myCurrentEntityID]);
 
-		return reinterpret_cast<Entity*&>(myEntities[myCurrentEntityID]);
+		return reinterpret_cast<IEntity*&>(myEntities[myCurrentEntityID]);
 	}
 
 	Entities EntityManager::GetAllEntities()

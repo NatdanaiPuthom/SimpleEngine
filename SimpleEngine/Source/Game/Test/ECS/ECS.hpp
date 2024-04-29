@@ -18,7 +18,7 @@ namespace Simple
 
 		void Init();
 
-		Entity*& CreateEntity();
+		IEntity*& CreateEntity();
 
 		Entities GetAllEntities();
 

@@ -23,7 +23,7 @@ namespace Simple
 
 	void EntityPool::Init(const size_t aEntityAmountToReserved)
 	{
-		const size_t size = aEntityAmountToReserved * sizeof(Entity);
+		const size_t size = aEntityAmountToReserved * sizeof(IEntity);
 		myStartMemoryAddress = new char[size];
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * size;
 		myCurrentMemoryAddress = myStartMemoryAddress;
@@ -33,7 +33,7 @@ namespace Simple
 	{
 		bool shouldMoveEntitiesToNewAddress = false;
 
-		while (sizeof(Entity) > GetAvaliableMemorySpace())
+		while (sizeof(IEntity) > GetAvaliableMemorySpace())
 		{
 			Reallocate();
 			shouldMoveEntitiesToNewAddress = true;
@@ -43,15 +43,15 @@ namespace Simple
 		{
 			for (size_t i = 0; i < GetEntityCount(); ++i)
 			{
-				aEntities[myEntityIDs[i]] = myStartMemoryAddress + i * sizeof(Entity);
+				aEntities[myEntityIDs[i]] = myStartMemoryAddress + i * sizeof(IEntity);
 			}
 		}
 
-		new(myCurrentMemoryAddress)Entity(aID, aEntityManager);
-		myCurrentMemoryAddress += sizeof(Entity);
+		new(myCurrentMemoryAddress)IEntity(aID, aEntityManager);
+		myCurrentMemoryAddress += sizeof(IEntity);
 		myEntityIDs.push_back(aID);
 
-		return myCurrentMemoryAddress - sizeof(Entity);
+		return myCurrentMemoryAddress - sizeof(IEntity);
 	}
 
 	size_t EntityPool::GetCapacity() const

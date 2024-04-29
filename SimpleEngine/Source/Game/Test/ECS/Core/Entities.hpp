@@ -4,7 +4,7 @@
 
 namespace Simple
 {
-	class Entity;
+	class IEntity;
 }
 
 namespace Simple
@@ -15,7 +15,7 @@ namespace Simple
 		Entities(std::vector<char**>& aAllEntities);
 		~Entities();
 
-		Entity*& operator[](const size_t aIndex);
+		IEntity*& operator[](const size_t aIndex);
 
 		size_t GetSize() const;
 

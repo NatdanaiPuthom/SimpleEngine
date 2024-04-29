@@ -65,7 +65,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	std::cout << "Size: " << entities.GetSize() << std::endl;
 	
-	Simple::Entity*& b = entities[0];
+	Simple::Entity b = entities[0];
 
 	std::cout << "ID: " << b->GetID() << std::endl;
 	ecs.CreateEntity();

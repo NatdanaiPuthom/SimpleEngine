@@ -8,12 +8,12 @@ namespace Simple
 
 namespace Simple
 {
-	class Entity final
+	class IEntity final
 	{
 		friend class Simple::EntityManager;
 		friend class Simple::EntityPool;
 	public:
-		~Entity();
+		~IEntity();
 
 		template<typename T>
 		inline void AddComponent();
@@ -24,21 +24,23 @@ namespace Simple
 		const size_t GetID() const;
 
 	private:
-		Entity(const size_t aID, EntityManager* aEntityManager);
+		IEntity(const size_t aID, EntityManager* aEntityManager);
 	private:
 		const size_t myID;
 		EntityManager* myEntityManager;
 	};
 
 	template<typename T>
-	inline void Entity::AddComponent()
+	inline void IEntity::AddComponent()
 	{
 		myEntityManager->AddComponent<T>(myID);
 	}
 
 	template<typename T>
-	inline T*& Entity::GetComponent()
+	inline T*& IEntity::GetComponent()
 	{
 		return myEntityManager->GetComponent<T>(myID);
 	}
+
+	using Entity = IEntity*&;
 }

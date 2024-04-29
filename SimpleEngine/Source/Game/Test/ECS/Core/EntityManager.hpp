@@ -8,7 +8,7 @@
 
 namespace Simple
 {
-	class Entity;
+	class IEntity;
 	class ECS;
 }
 
@@ -21,7 +21,7 @@ namespace Simple
 		using ComponentType = std::type_index;
 		friend class Simple::ECS;
 	public:
-		Entity*& CreateEntity();
+		IEntity*& CreateEntity();
 
 		template<typename T>
 		void AddComponent(const size_t aEntityID);
