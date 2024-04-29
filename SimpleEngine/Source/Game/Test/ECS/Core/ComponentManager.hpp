@@ -36,6 +36,7 @@ namespace Simple
 		std::unordered_map<ComponentType, void(*)(void*)> myComponentDestructorInvoker;
 		std::unordered_map<ComponentType, ComponentPool> myComponents;
 		std::unordered_map<size_t, char*> myAllComponents;
+		const char padding[16];
 	};
 
 	template<typename T>

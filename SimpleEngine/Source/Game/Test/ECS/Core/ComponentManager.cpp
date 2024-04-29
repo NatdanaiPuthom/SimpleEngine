@@ -4,6 +4,7 @@
 namespace Simple
 {
 	ComponentManager::ComponentManager()
+		: padding("Never Give Up!!")
 	{
 	}
 
