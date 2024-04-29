@@ -25,7 +25,7 @@ namespace Simple
 			return std::ref(entityPointer);
 		}
 
-		return reinterpret_cast<IEntity*&>(*myAllEntities[aIndex]);
+		return reinterpret_cast<Entity>(*myAllEntities[aIndex]);
 	}
 
 	size_t Entities::GetSize() const

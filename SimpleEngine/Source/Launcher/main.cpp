@@ -60,6 +60,10 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_END();
 
 	ecs.CreateEntity();
+	ecs.CreateEntity();
+	ecs.CreateEntity();
+	ecs.CreateEntity();
+	ecs.CreateEntity();
 	Simple::Entities entities = ecs.GetAllEntities();
 	Simple::Entity entity = entities[0];
 

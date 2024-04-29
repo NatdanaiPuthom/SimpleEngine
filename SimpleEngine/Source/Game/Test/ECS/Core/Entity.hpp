@@ -1,6 +1,7 @@
 #pragma once
 #include "Game/Test/ECS/Core/EntityManager.hpp"
 #include "Game/Test/ECS/ECSInterface.hpp"
+#include <string>
 
 namespace Simple
 {
@@ -18,6 +19,8 @@ namespace Simple
 
 		~IEntity();
 
+		void SetName(const std::string& aName);
+
 		template<typename T>
 		inline void AddComponent();
 
@@ -25,12 +28,15 @@ namespace Simple
 		inline T*& GetComponent();
 
 		const size_t GetID() const;
+		const std::string& GetName() const;
 
 	private:
 		IEntity(const size_t aID, EntityManager* aEntityManager);
 	private:
 		const size_t myID;
 		EntityManager* myEntityManager;
+		std::string myName;
+		const char padding[8];
 	};
 
 	template<typename T>

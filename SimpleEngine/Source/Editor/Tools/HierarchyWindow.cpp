@@ -21,9 +21,9 @@ namespace Editor
 
 		if (ImGui::Begin("Hierarchy"))
 		{
-			/*const auto& entities = World::GetECS()->GetAllEntities();
+			Simple::Entities entities = World::GetECS()->GetAllEntities();
 
-			for (int i = 0; i < entities.size(); ++i)
+			for (int i = 0; i < entities.GetSize(); ++i)
 			{
 				if (ImGui::BeginListBox("##Entities"))
 				{
@@ -38,9 +38,10 @@ namespace Editor
 					{
 						ImGui::SetItemDefaultFocus();
 					}
+
+					ImGui::EndListBox();
 				}
-				ImGui::EndListBox();
-			}		*/
+			}
 		}
 
 		ImGui::End();
