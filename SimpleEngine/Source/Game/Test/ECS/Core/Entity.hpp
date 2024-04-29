@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/Test/ECS/Core/EntityManager.hpp"
+#include "Game/Test/ECS/ECSInterface.hpp"
 
 namespace Simple
 {
@@ -13,6 +14,7 @@ namespace Simple
 		friend class Simple::EntityManager;
 		friend class Simple::EntityPool;
 	public:
+
 		~IEntity();
 
 		template<typename T>
@@ -41,6 +43,4 @@ namespace Simple
 	{
 		return myEntityManager->GetComponent<T>(myID);
 	}
-
-	using Entity = IEntity*&;
 }

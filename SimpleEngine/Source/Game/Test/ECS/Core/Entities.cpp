@@ -13,7 +13,7 @@ namespace Simple
 	{
 	}
 
-	IEntity*& Entities::operator[](const size_t aIndex)
+	Entity Entities::operator[](const size_t aIndex)
 	{
 		const size_t size = GetSize();
 

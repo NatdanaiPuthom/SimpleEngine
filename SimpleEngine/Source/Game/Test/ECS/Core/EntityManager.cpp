@@ -22,7 +22,7 @@ namespace Simple
 		myComponentManager = nullptr;
 	}
 
-	IEntity*& EntityManager::CreateEntity()
+	Entity EntityManager::CreateEntity()
 	{
 		myCurrentEntityID++;
 		myEntities[myCurrentEntityID] = myEntityPool.CreateEntity(myCurrentEntityID, myEntities, this);

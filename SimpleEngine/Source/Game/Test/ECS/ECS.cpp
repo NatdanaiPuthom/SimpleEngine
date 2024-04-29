@@ -19,7 +19,7 @@ namespace Simple
 		myEntityManager.Init(entitiesToReserve);
 	}
 
-	IEntity*& ECS::CreateEntity()
+	Entity ECS::CreateEntity()
 	{
 		return myEntityManager.CreateEntity();
 	}

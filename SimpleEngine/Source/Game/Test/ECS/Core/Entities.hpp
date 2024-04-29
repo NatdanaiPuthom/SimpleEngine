@@ -1,11 +1,6 @@
 #pragma once
+#include "Game/Test/ECS/ECSInterface.hpp"
 #include <vector>
-#include <array>
-
-namespace Simple
-{
-	class IEntity;
-}
 
 namespace Simple
 {
@@ -15,12 +10,11 @@ namespace Simple
 		Entities(std::vector<char**>& aAllEntities);
 		~Entities();
 
-		IEntity*& operator[](const size_t aIndex);
+		Entity operator[](const size_t aIndex);
 
 		size_t GetSize() const;
 
 	private:
 		std::vector<char**>& myAllEntities;
-		std::array<int*, 5> value;
 	};
 }
