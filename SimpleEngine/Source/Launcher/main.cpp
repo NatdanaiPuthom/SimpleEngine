@@ -63,7 +63,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	ecs.CreateEntity();
 	ecs.CreateEntity();
 	ecs.CreateEntity();
-	ecs.CreateEntity();
+
 	Simple::Entities entities = ecs.GetAllEntities();
 	Simple::Entity entity = entities[0];
 

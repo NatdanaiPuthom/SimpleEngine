@@ -30,8 +30,6 @@ namespace Simple
 		size_t GetAvaliableMemorySpace() const;
 		size_t GetEntityCount() const;
 		char* GetStartMemoryAddress();
-		char*& GetStartMemoryAddressRef();
-		char*& GetCurrentMemoryAddressRef();
 
 	private:
 		void Reallocate();

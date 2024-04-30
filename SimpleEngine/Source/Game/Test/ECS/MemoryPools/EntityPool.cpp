@@ -14,6 +14,11 @@ namespace Simple
 
 	EntityPool::~EntityPool()
 	{
+		for (size_t i = 0; i < myEntityIDs.size(); ++i)
+		{
+			reinterpret_cast<IEntity*>(myStartMemoryAddress + i * sizeof(IEntity))->~IEntity();
+		}
+
 		delete[] myStartMemoryAddress;
 
 		myStartMemoryAddress = nullptr;
@@ -77,16 +82,6 @@ namespace Simple
 	char* EntityPool::GetStartMemoryAddress()
 	{
 		return myStartMemoryAddress;
-	}
-
-	char*& EntityPool::GetStartMemoryAddressRef()
-	{
-		return myStartMemoryAddress;
-	}
-
-	char*& EntityPool::GetCurrentMemoryAddressRef()
-	{
-		return myCurrentMemoryAddress;
 	}
 
 	void EntityPool::Reallocate()
