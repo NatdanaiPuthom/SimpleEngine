@@ -13,10 +13,10 @@ namespace Editor
 
 	void InspectorWindow::Draw()
 	{
-		if (ImGui::Begin("Inspector"))
+		/*if (ImGui::Begin("Inspector"))
 		{
 
 		}
-		ImGui::End();
+		ImGui::End();*/
 	}
 }

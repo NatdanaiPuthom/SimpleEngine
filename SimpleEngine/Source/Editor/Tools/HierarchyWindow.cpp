@@ -18,7 +18,7 @@ namespace Editor
 	void HierarchyWindow::Draw()
 	{
 		static int selected = -1;
-		if (ImGui::Begin("Hierarchy"))
+		if (ImGui::Begin("Hierarchy",0, ImGuiWindowFlags_None))
 		{
 			Simple::Entities entities = World::GetECS()->GetAllEntities();
 
@@ -68,6 +68,20 @@ namespace Editor
 			ImGui::PopStyleColor();
 		}
 
+		ImGui::End();
+
+		if (ImGui::Begin("Inspector"))
+		{
+			std::string searchComponent = "";
+			if (ImGui::InputTextWithHint("Search", "Example \"TransformComponent\"", &searchComponent[0], searchComponent.capacity() + 1))
+			{
+			}
+
+			if (ImGui::Button("Add Component"))
+			{
+
+			}
+		}
 		ImGui::End();
 	}
 }

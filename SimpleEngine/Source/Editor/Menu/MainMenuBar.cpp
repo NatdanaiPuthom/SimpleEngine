@@ -23,14 +23,14 @@ void Tool::MainMenuBar::Init()
 	mySettingsTool = std::make_unique<Tool::SettingsTool>();
 	myCameraTool = std::make_unique<Tool::CameraTool>();
 	myInspectorWindow = std::make_unique<Editor::InspectorWindow>();
-	myHierarchyWindow = std::make_unique<Editor::HierarchyWindow>();
 	myAssetWindow = std::make_unique<Editor::AssetWindow>();
+	myHierarchyWindow = std::make_unique<Editor::HierarchyWindow>();
 
 	mySettingsTool->Init();
 	myCameraTool->Init();
 	myInspectorWindow->Init();
-	myHierarchyWindow->Init();
 	myAssetWindow->Init();
+	myHierarchyWindow->Init();
 }
 
 void Tool::MainMenuBar::Update()
@@ -63,11 +63,11 @@ void Tool::MainMenuBar::DrawTools()
 
 	if (mySettingToolActive)
 	{
-		myHierarchyWindow->Draw();
 		myAssetWindow->Draw();
 		myCameraTool->Draw();
 		mySettingsTool->Draw();
 		myInspectorWindow->Draw();
+		myHierarchyWindow->Draw();
 	}
 }
 
