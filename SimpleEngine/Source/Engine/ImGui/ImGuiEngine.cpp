@@ -66,7 +66,7 @@ namespace Simple
 		colors[ImGuiCol_Button] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
 		colors[ImGuiCol_Header] = ImVec4(1.0f, 0.00f, 1.0f, 0.50f);
 		colors[ImGuiCol_Tab] = ImVec4(0.50f, 0.00f, 0.50f, 0.00f);
-		colors[ImGuiCol_TabHovered] = ImVec4(0.30f, 0.30f, 0.30f, 1.0f);
+		colors[ImGuiCol_TabHovered] = ImVec4(0.30f, 0.0f, 0.30f, 1.00f);
 		colors[ImGuiCol_TabActive] = ImVec4(0.3f, 0.0f, 0.3f, 0.60f);
 		colors[ImGuiCol_TabUnfocused] = ImVec4(0.35f, 0.35f, 0.35f, 0.0f);
 		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.6f, 0.0f, 0.6f, 0.50f);
@@ -81,8 +81,6 @@ namespace Simple
 		ImGui::NewFrame();
 
 		ImGui::DockSpaceOverViewport(nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
-
-		ImGui::ShowStyleEditor();
 	}
 
 	void ImGuiEngine::EndFrame()
