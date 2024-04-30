@@ -98,9 +98,8 @@ namespace Simple
 	{
 		ImGui::Render();
 
-#ifndef _SIMPLE //Draw ImGui Windows
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); 
-#endif
+
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
