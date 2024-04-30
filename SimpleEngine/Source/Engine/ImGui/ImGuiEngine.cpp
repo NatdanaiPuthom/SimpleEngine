@@ -65,11 +65,11 @@ namespace Simple
 		colors[ImGuiCol_SliderGrabActive] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
 		colors[ImGuiCol_Button] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
 		colors[ImGuiCol_Header] = ImVec4(1.0f, 0.00f, 1.0f, 0.50f);
-		colors[ImGuiCol_Tab] = ImVec4(0.40f, 0.00f, 0.39f, 0.50f);
-		colors[ImGuiCol_TabHovered] = ImVec4(0.40f, 0.0f, 1.0f, 1.0f);
-		colors[ImGuiCol_TabActive] = ImVec4(0.35f, 0.0f, 0.395f, 1.0f);
-		colors[ImGuiCol_TabUnfocused] = ImVec4(0.35f, 0.0f, 0.40f, 1.0f);
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+		colors[ImGuiCol_Tab] = ImVec4(0.50f, 0.00f, 0.50f, 0.00f);
+		colors[ImGuiCol_TabHovered] = ImVec4(0.30f, 0.30f, 0.30f, 1.0f);
+		colors[ImGuiCol_TabActive] = ImVec4(0.3f, 0.0f, 0.3f, 0.60f);
+		colors[ImGuiCol_TabUnfocused] = ImVec4(0.35f, 0.35f, 0.35f, 0.0f);
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.6f, 0.0f, 0.6f, 0.50f);
 		colors[ImGuiCol_DockingPreview] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 	}
 
