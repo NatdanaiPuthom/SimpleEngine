@@ -65,9 +65,9 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	ecs.CreateEntity();
 
 	Simple::Entities entities = ecs.GetAllEntities();
-	Simple::Entity entity = entities[0];
-
-	std::cout << "ID: " << entity->GetID() << std::endl;
+	entities[0]->SetName("Test");
+	entities[1]->SetName("Cube");
+	entities[2]->SetName("Grass");
 	
 	while (Global::GetGameIsRunning())
 	{
