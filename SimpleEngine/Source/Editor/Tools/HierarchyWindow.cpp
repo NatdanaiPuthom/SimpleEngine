@@ -22,6 +22,25 @@ namespace Editor
 		{
 			Simple::Entities entities = World::GetECS()->GetAllEntities();
 
+			std::string selectedEntityName = "Selected: None";
+
+			if (selected != -1)
+			{
+				selectedEntityName = "Selected: " + entities[selected]->GetName();
+				ImGui::Text(selectedEntityName.c_str());
+			}
+			else
+			{
+				ImGui::Text(selectedEntityName.c_str());
+			}
+
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.12f, 0.12f, 0.12f, 1.0f).Value);
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
+			ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+
+			ImGui::BeginChild("SceneEntities", ImVec2(0.0f, 0.0f), ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Border);
+
 			for (int i = 0; i < entities.GetSize(); ++i)
 			{
 				if (ImGui::BeginListBox("##Entities"))
@@ -42,17 +61,11 @@ namespace Editor
 				}
 			}
 
-			std::string selectedEntityName = "Selected: ";
-
-			if (selected != -1)
-			{
-				selectedEntityName = "Selected: " + entities[selected]->GetName();
-				ImGui::Text(selectedEntityName.c_str());
-			}
-			else
-			{
-				ImGui::Text(selectedEntityName.c_str());
-			}
+			ImGui::EndChild();
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
 		}
 
 		ImGui::End();
