@@ -42,9 +42,16 @@ namespace Editor
 				}
 			}
 
+			std::string selectedEntityName = "Selected: ";
+
 			if (selected != -1)
 			{
-				ImGui::Text(entities[selected]->GetName().c_str());
+				selectedEntityName = "Selected: " + entities[selected]->GetName();
+				ImGui::Text(selectedEntityName.c_str());
+			}
+			else
+			{
+				ImGui::Text(selectedEntityName.c_str());
 			}
 		}
 

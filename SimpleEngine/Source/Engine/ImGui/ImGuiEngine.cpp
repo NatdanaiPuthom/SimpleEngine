@@ -71,6 +71,17 @@ namespace Simple
 		colors[ImGuiCol_TabUnfocused] = ImVec4(0.35f, 0.35f, 0.35f, 0.0f);
 		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.6f, 0.0f, 0.6f, 0.50f);
 		colors[ImGuiCol_DockingPreview] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+		colors[ImGuiCol_ResizeGripHovered] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+		colors[ImGuiCol_ResizeGripActive] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.WindowBorderSize = 0;
+		style.TabBarBorderSize = 0;
+		style.TabBorderSize = 1;
+		style.WindowMenuButtonPosition = ImGuiDir_None;
+		style.DockingSeparatorSize = 1;
+		style.DisplaySafeAreaPadding.x = 10;
+		style.PopupBorderSize = 0;
 	}
 
 	void ImGuiEngine::BeginFrame()
