@@ -49,14 +49,28 @@ namespace Simple
 		ImVec4* colors = ImGui::GetStyle().Colors;
 		colors[ImGuiCol_MenuBarBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
 		colors[ImGuiCol_WindowBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
-		colors[ImGuiCol_TitleBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
+		colors[ImGuiCol_PopupBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
 		colors[ImGuiCol_TitleBgActive] = ImVec4(1.00f, 0.00f, 1.00f, 1.0f);
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.00f, 1.00f, 1.0f);
 		colors[ImGuiCol_ButtonHovered] = ImVec4(0.70f, 0.00f, 0.70f, 0.70f);
 		colors[ImGuiCol_HeaderHovered] = ImVec4(1.00f, 0.00f, 1.00f, 1.0f);
-		colors[ImGuiCol_TabActive] = ImVec4(0.80f, 0.00f, 0.80f, 0.90f);
 		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.40f, 0.40f, 0.40f, 0.90f);
 		colors[ImGuiCol_Border] = ImVec4(0.35f, 0.0f, 0.395f, 0.50f);
+		colors[ImGuiCol_FrameBg] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
+		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.90f, 0.25f, 1.00f, 0.40f);
+		colors[ImGuiCol_TitleBg] = ImVec4(0.35f, 0.0f, 0.395f, 0.50f);
+		colors[ImGuiCol_ScrollbarBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
+		colors[ImGuiCol_CheckMark] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
+		colors[ImGuiCol_SliderGrab] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
+		colors[ImGuiCol_SliderGrabActive] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
+		colors[ImGuiCol_Button] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
+		colors[ImGuiCol_Header] = ImVec4(1.0f, 0.00f, 1.0f, 0.50f);
+		colors[ImGuiCol_Tab] = ImVec4(0.40f, 0.00f, 0.39f, 0.50f);
+		colors[ImGuiCol_TabHovered] = ImVec4(0.40f, 0.0f, 1.0f, 1.0f);
+		colors[ImGuiCol_TabActive] = ImVec4(0.35f, 0.0f, 0.395f, 1.0f);
+		colors[ImGuiCol_TabUnfocused] = ImVec4(0.35f, 0.0f, 0.40f, 1.0f);
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+		colors[ImGuiCol_DockingPreview] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 	}
 
 	void ImGuiEngine::BeginFrame()
@@ -67,6 +81,8 @@ namespace Simple
 		ImGui::NewFrame();
 
 		ImGui::DockSpaceOverViewport(nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
+
+		ImGui::ShowStyleEditor();
 	}
 
 	void ImGuiEngine::EndFrame()
