@@ -18,60 +18,56 @@ namespace Editor
 	void HierarchyWindow::Draw()
 	{
 		static int selected = -1;
-		if (ImGui::Begin("Hierarchy",0, ImGuiWindowFlags_None))
+
+		if (ImGui::Begin("Hierarchy", 0, ImGuiWindowFlags_None))
 		{
-			Simple::Entities entities = World::GetECS()->GetAllEntities();
-
-			std::string selectedEntityName = "Selected: None";
-
-			if (selected != -1)
-			{
-				selectedEntityName = "Selected: " + entities[selected]->GetName();
-				ImGui::Text(selectedEntityName.c_str());
-			}
-			else
-			{
-				ImGui::Text(selectedEntityName.c_str());
-			}
-
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.12f, 0.12f, 0.12f, 1.0f).Value);
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
 			ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 
-			ImGui::BeginChild("SceneEntities", ImVec2(0.0f, 0.0f), ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Border);
-
-			for (int i = 0; i < entities.GetSize(); ++i)
+			if (ImGui::BeginChild("SceneEntities", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Border))
 			{
-				if (ImGui::BeginListBox("##Entities"))
+				Simple::Entities entities = World::GetECS()->GetAllEntities();
+				for (int i = 0; i < entities.GetSize(); ++i)
 				{
-					const bool isSelected = (selected == i);
-
-					if (ImGui::Selectable(entities[i]->GetName().c_str(), isSelected))
+					if (ImGui::BeginListBox("##Entities"))
 					{
-						selected = i;
-					}
+						const bool isSelected = (selected == i);
 
-					if (isSelected)
-					{
-						ImGui::SetItemDefaultFocus();
-					}
+						if (ImGui::Selectable(entities[i]->GetName().c_str(), isSelected))
+						{
+							selected = i;
+						}
 
-					ImGui::EndListBox();
+						if (isSelected)
+						{
+							ImGui::SetItemDefaultFocus();
+						}
+
+						ImGui::EndListBox();
+					}
 				}
+
+				ImGui::EndChild();
 			}
 
-			ImGui::EndChild();
 			ImGui::PopStyleVar();
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 		}
-
 		ImGui::End();
 
 		if (ImGui::Begin("Inspector"))
 		{
+			if (selected != -1)
+			{
+			}
+			else
+			{
+			}
+
 			std::string searchComponent = "";
 			if (ImGui::InputTextWithHint("Search", "Example \"TransformComponent\"", &searchComponent[0], searchComponent.capacity() + 1))
 			{
