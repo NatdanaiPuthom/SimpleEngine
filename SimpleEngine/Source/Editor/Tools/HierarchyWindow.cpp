@@ -79,6 +79,11 @@ namespace Editor
 				isListOpen = !isListOpen;
 			}
 
+			/*if (!ImGui::IsItemHovered() && ImGui::IsMouseDown(0))
+			{
+				isListOpen = false;
+			}*/
+
 			if (isListOpen == true)
 			{
 				std::array<std::string, 2> components;
@@ -93,18 +98,10 @@ namespace Editor
 
 						if (ImGui::Selectable(components[i].c_str(), isSelected))
 						{
-							
 						}
 
 						ImGui::EndListBox();
 					}
-				}
-
-				
-
-				if (!ImGui::IsItemHovered() && ImGui::IsMouseDown(0))
-				{
-					isListOpen = false;
 				}
 			}
 		}
