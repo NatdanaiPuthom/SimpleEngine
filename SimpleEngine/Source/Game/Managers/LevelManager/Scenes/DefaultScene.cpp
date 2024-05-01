@@ -14,8 +14,8 @@ namespace Scenes
 	void DefaultScene::OnEnter()
 	{
 		auto camera = Global::GetGraphicsEngine()->GetEditorCamera();
-		camera->SetRotation(Math::Vector3f(0, 0, 0));
-		camera->SetPosition(Math::Vector3f(-1, 4, -9));
+		camera->SetRotation(Math::Vector3f(30, 0, 0));
+		camera->SetPosition(Math::Vector3f(-6, 6, -9));
 
 		myDirectionalLight->myModel->SetPosition({ -8.0f, 1.0f, 1.0f });
 		Global::GetGraphicsEngine()->SetDirectionalLightDirection({ 0.0f, 0.0f, -1.0f });
