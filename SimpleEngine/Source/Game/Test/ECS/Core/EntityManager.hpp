@@ -25,7 +25,10 @@ namespace Simple
 		Entity CreateEntity();
 
 		template<typename T>
-		void AddComponent(const EntityID aEntityID);
+		bool AddComponent(const EntityID aEntityID);
+
+		template<typename T>
+		bool RemoveComponent(const EntityID aEntityID);
 
 		template<typename T>
 		T*& GetComponent(const EntityID aEntityID);
@@ -49,9 +52,16 @@ namespace Simple
 	};
 
 	template<typename T>
-	inline void EntityManager::AddComponent(const EntityID aEntityID)
+	inline bool EntityManager::AddComponent(const EntityID aEntityID)
 	{
 		myEntityComponents[aEntityID][typeid(T)] = myComponentManager->CreateComponent<T>();
+		return myEntityComponents[aEntityID].contains(typeid(T));
+	}
+
+	template<typename T>
+	inline bool EntityManager::RemoveComponent(const EntityID aEntityID)
+	{
+		aEntityID;
 	}
 
 	template<typename T>

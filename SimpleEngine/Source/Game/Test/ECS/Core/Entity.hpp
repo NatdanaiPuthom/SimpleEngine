@@ -16,16 +16,18 @@ namespace Simple
 		friend class Simple::EntityManager;
 		friend class Simple::EntityPool;
 	public:
-
 		~IEntity();
+
+		template<typename T>
+		bool AddComponent();
+
+		template<typename T>
+		bool RemoveComponent();
 
 		void SetName(const std::string& aName);
 
 		template<typename T>
-		inline void AddComponent();
-
-		template<typename T>
-		inline T*& GetComponent();
+		T*& GetComponent();
 
 		const size_t GetID() const;
 		const std::string& GetName() const;
@@ -41,9 +43,15 @@ namespace Simple
 	};
 
 	template<typename T>
-	inline void IEntity::AddComponent()
+	inline bool IEntity::AddComponent()
 	{
-		myEntityManager->AddComponent<T>(myID);
+		return myEntityManager->AddComponent<T>(myID);
+	}
+
+	template<typename T>
+	inline bool IEntity::RemoveComponent()
+	{
+		return myEntityManager->RemoveComponent(myID);
 	}
 
 	template<typename T>

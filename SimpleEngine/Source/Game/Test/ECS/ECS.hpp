@@ -1,7 +1,6 @@
 #pragma once
 #include "Game/Test/ECS/Core/Entity.hpp"
 #include "Game/Test/ECS/Core/EntityManager.hpp"
-#include <vector>
 
 namespace Simple
 {
@@ -19,7 +18,7 @@ namespace Simple
 		void Init();
 
 		Entity CreateEntity();
-
+		Entity GetEntity(const EntityID aID);
 		Entities GetAllEntities();
 
 	public:
