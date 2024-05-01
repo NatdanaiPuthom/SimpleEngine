@@ -79,19 +79,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	};
 
 	Simple::Entity entity = entities[0]; entity;
-
-	auto names = entity->GetComponentNames();
-
 	entity->AddComponent<HelloWorld>();
-	names = entity->GetComponentNames();
-
 	entity->AddComponent<TestWorld>();
-	names = entity->GetComponentNames();
-
-	bool remove = entity->RemoveComponent<HelloWorld>(); remove;
-	names = entity->GetComponentNames();
-	bool remove2 = entity->RemoveComponent<TestWorld>(); remove2;
-	names = entity->GetComponentNames();
 
 	while (Global::GetGameIsRunning())
 	{

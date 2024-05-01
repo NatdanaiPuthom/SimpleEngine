@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Input/InputManager.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/Model/Factory/ModelFactory.hpp"
