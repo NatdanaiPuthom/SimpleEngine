@@ -74,13 +74,15 @@ namespace Editor
 
 				for (size_t i = 0; i < componentNames.size(); ++i)
 				{
+					ImGui::AlignTextToFramePadding();
+
 					ImGui::PushID(std::string(componentNames[i] + " " + std::to_string(id)).c_str());
 					const bool open = ImGui::TreeNodeEx(componentNames[i].c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
 					ImGui::PopID();
 
 					if (open)
 					{
-						ImGui::SameLine(ImGui::GetWindowWidth() - 30);
+						ImGui::SameLine();
 
 						if (ImGui::Button("..."))
 						{
