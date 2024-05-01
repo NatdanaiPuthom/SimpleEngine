@@ -30,4 +30,9 @@ namespace Simple
 	{
 		return myName;
 	}
+
+	const std::vector<std::string> IEntity::GetComponentNames() const
+	{
+		return myEntityManager->GetComponentNames(myID);
+	}
 }

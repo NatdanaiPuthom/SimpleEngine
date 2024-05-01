@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <typeindex>
 #include <vector>
+#include <string>
 
 namespace Simple
 {
@@ -24,12 +25,14 @@ namespace Simple
 		Entity CreateEntity();
 
 		template<typename T>
-		void AddComponent(const size_t aEntityID);
+		void AddComponent(const EntityID aEntityID);
 
 		template<typename T>
-		T*& GetComponent(const size_t aEntityID);
+		T*& GetComponent(const EntityID aEntityID);
 
+		Entity GetEntity(const EntityID aEntityID);
 		Entities GetAllEntities();
+		const std::vector<std::string> GetComponentNames(const EntityID aEntityID);
 
 	private:
 		EntityManager(ComponentManager* aComponentManager);
@@ -46,13 +49,13 @@ namespace Simple
 	};
 
 	template<typename T>
-	inline void EntityManager::AddComponent(const size_t aEntityID)
+	inline void EntityManager::AddComponent(const EntityID aEntityID)
 	{
 		myEntityComponents[aEntityID][typeid(T)] = myComponentManager->CreateComponent<T>();
 	}
 
 	template<typename T>
-	inline T*& EntityManager::GetComponent(const size_t aEntityID)
+	inline T*& EntityManager::GetComponent(const EntityID aEntityID)
 	{
 		return myComponentManager->GetComponentByComponentID<T>(myEntityComponents[aEntityID][typeid(T)]);
 	}

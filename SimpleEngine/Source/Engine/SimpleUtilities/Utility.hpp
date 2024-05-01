@@ -9,6 +9,18 @@ namespace SimpleUtilities
 		return std::wstring(aString.begin(), aString.end());
 	}
 
+	static inline std::string ConvertTypeIndexNameToPrettyName(const std::string& aNameFromTypeIndex)
+	{
+		const size_t pos = aNameFromTypeIndex.find_last_of("::"); //NOTE(v9.30.10): I don't know why "::" but it works for now
+		
+		if (pos != std::string::npos && pos + 1 < aNameFromTypeIndex.length())
+		{
+			return aNameFromTypeIndex.substr(pos + 1);
+		}
+	
+		return aNameFromTypeIndex;
+	}
+
 	static inline const std::string GetAbsolutePath(const char* aFilePath)
 	{
 		char buffer[MAX_PATH];

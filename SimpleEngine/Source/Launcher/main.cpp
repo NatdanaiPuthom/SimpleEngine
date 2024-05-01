@@ -68,6 +68,18 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	entities[0]->SetName("Test");
 	entities[1]->SetName("Cube");
 	entities[2]->SetName("Grass");
+
+
+	struct HelloWorld
+	{
+		int a;
+	};
+
+
+	Simple::Entity entity = entities[0]; entity;
+	entity->AddComponent<HelloWorld>();
+	const std::vector<std::string> componentNames = entity->GetComponentNames();
+	componentNames;
 	
 	while (Global::GetGameIsRunning())
 	{

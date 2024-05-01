@@ -29,6 +29,7 @@ namespace Simple
 
 		const size_t GetID() const;
 		const std::string& GetName() const;
+		const std::vector<std::string> GetComponentNames() const;
 
 	private:
 		IEntity(const size_t aID, EntityManager* aEntityManager);
