@@ -68,18 +68,22 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	{
 		~HelloWorld()
 		{
-			std::cout << "destroying: " << a << std::endl;
+			std::cout << "destroying HelloWorld: " << a << std::endl;
 		}
 		int a;
 	};
 
 	struct TestWorld
 	{
+		~TestWorld()
+		{
+			std::cout << "destroying TestWorld: " << test << std::endl;
+		}
 		bool test;
 	};
 
 	Simple::Entity entity = entities[0]; entity;
-	//entity->AddComponent<TestWorld>();
+	entity->AddComponent<TestWorld>();
 	entity->AddComponent<HelloWorld>();
 	entity->GetComponent<HelloWorld>()->a = 10;
 
