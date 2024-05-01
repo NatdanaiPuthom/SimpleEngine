@@ -73,11 +73,42 @@ namespace Editor
 			{
 			}
 
+			static bool isListOpen = false;
 			if (ImGui::Button("Add Component"))
 			{
+				isListOpen = !isListOpen;
+			}
 
+			if (isListOpen == true)
+			{
+				std::array<std::string, 2> components;
+				components[0] = "Transform";
+				components[1] = "Mesh";
+
+				for (size_t i = 0; i < components.size(); ++i)
+				{
+					if (ImGui::BeginListBox("##ComponentList"))
+					{
+						const bool isSelected = false;
+
+						if (ImGui::Selectable(components[i].c_str(), isSelected))
+						{
+							
+						}
+
+						ImGui::EndListBox();
+					}
+				}
+
+				
+
+				if (!ImGui::IsItemHovered() && ImGui::IsMouseDown(0))
+				{
+					isListOpen = false;
+				}
 			}
 		}
+
 		ImGui::End();
 	}
 }
