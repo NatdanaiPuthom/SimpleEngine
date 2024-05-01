@@ -31,8 +31,21 @@ namespace Simple
 	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const size_t aComponentID)
 	{
 		ComponentPool& pool = myComponents[aComponentType]; pool;
-		aComponentType; aComponentID;
-		return false;
+		char* component = pool.GetComponentAddressByID(aComponentID);
+		char* start = pool.GetStartMemoryAddress(); start;
+		const size_t size = pool.GetComponentTypeSize();
+		const int index = pool.GetComponentIndexByMemoryAddress(component, pool.GetComponentTypeSize());
+
+		if (index < 0)
+		{
+			assert(false && "Failed to Remove Component from the Pool");
+			return false;
+		}
+
+		myComponentDestructorInvoker[aComponentType](&component[index * size]);
+		myAllComponents.erase(aComponentID);
+
+		return pool.SwapWithLastAndRemoveEditor(aComponentID);
 	}
 
 	const std::type_index ComponentManager::GetComponentTypeIndexByName(const std::string& aComponentTypeName)

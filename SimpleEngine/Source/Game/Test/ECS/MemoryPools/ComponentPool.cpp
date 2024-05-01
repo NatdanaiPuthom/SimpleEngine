@@ -4,7 +4,7 @@
 namespace Simple
 {
 	ComponentPool::ComponentPool(const size_t aDefaultSize)
-		: padding("Believe")
+		: myComponentTypeSize(0)
 	{
 		myStartMemoryAddress = new char[aDefaultSize];
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;
@@ -36,6 +36,46 @@ namespace Simple
 		myEndMemoryAddress = myStartMemoryAddress + newMemoryCapacity;
 	}
 
+	bool ComponentPool::SwapWithLastAndRemoveEditor(const size_t aComponentID)
+	{
+		const size_t index = GetComponentIndexFromComponentID(aComponentID);
+		const int indexToRemove = GetComponentIndexByMemoryAddress(myStartMemoryAddress + index * myComponentTypeSize, myComponentTypeSize);
+		const int lastIndex = GetComponentIndexByMemoryAddress(myCurrentMemoryAddress - myComponentTypeSize, myComponentTypeSize);
+
+		if (lastIndex == -1 || indexToRemove == -1)
+		{
+			return false;
+		}
+
+		if (myComponentIDs.size() > 1)
+		{
+			std::memcpy(myStartMemoryAddress + index * myComponentTypeSize, myCurrentMemoryAddress - myComponentTypeSize, myComponentTypeSize);
+			std::swap(myComponentIDs[indexToRemove], myComponentIDs[lastIndex]);
+		}
+
+		myCurrentMemoryAddress -= myComponentTypeSize;
+		memset(myCurrentMemoryAddress, 0, myComponentTypeSize);
+		myComponentIDs.pop_back();
+
+		return true;
+	}
+
+	size_t ComponentPool::GetComponentIndexFromComponentID(const size_t aComponentID) const
+	{
+		size_t index = 0;
+
+		for (size_t i = 0; i < myComponentIDs.size(); ++i)
+		{
+			if (aComponentID == myComponentIDs[i])
+			{
+				index = i;
+				break;
+			}
+		}
+
+		return index;
+	}
+
 	size_t ComponentPool::GetCapacity() const
 	{
 		return myEndMemoryAddress - myStartMemoryAddress;
@@ -44,6 +84,11 @@ namespace Simple
 	size_t ComponentPool::GetComponentCount() const
 	{
 		return myComponentIDs.size();
+	}
+
+	size_t ComponentPool::GetComponentTypeSize() const
+	{
+		return myComponentTypeSize;
 	}
 
 	size_t ComponentPool::GetOccupiedMemorySpace() const
@@ -76,5 +121,11 @@ namespace Simple
 	char* ComponentPool::GetStartMemoryAddress()
 	{
 		return myStartMemoryAddress;
+	}
+
+	char* ComponentPool::GetComponentAddressByID(const size_t aComponentID)
+	{
+		const size_t index = GetComponentIndexFromComponentID(aComponentID);
+		return myStartMemoryAddress + index * myComponentTypeSize;
 	}
 }

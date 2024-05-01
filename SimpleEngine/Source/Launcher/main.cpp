@@ -68,7 +68,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	{
 		~HelloWorld()
 		{
-			std::cout << "destroying" << std::endl;
+			std::cout << "destroying: " << a << std::endl;
 		}
 		int a;
 	};
@@ -79,8 +79,9 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	};
 
 	Simple::Entity entity = entities[0]; entity;
+	//entity->AddComponent<TestWorld>();
 	entity->AddComponent<HelloWorld>();
-	entity->AddComponent<TestWorld>();
+	entity->GetComponent<HelloWorld>()->a = 10;
 
 	while (Global::GetGameIsRunning())
 	{
