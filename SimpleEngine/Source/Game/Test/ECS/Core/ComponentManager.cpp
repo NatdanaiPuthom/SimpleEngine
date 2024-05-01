@@ -4,7 +4,6 @@
 namespace Simple
 {
 	ComponentManager::ComponentManager()
-		: padding("Never Give Up!!")
 	{
 	}
 
@@ -27,5 +26,17 @@ namespace Simple
 				myComponentDestructorInvoker[componentType](&component[i * sizeOfComponentType]);
 			}
 		}
+	}
+
+	std::type_index ComponentManager::GetTypeIndexByName(const ComponentName aComponentName)
+	{
+		auto it = myComponentNameToTypeIndex.find(aComponentName);
+
+		if (it != myComponentNameToTypeIndex.end())
+		{
+			return it->second;
+		}
+
+		return std::type_index(typeid(NullComponent));
 	}
 }

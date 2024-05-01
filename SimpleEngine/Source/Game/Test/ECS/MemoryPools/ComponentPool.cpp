@@ -56,6 +56,23 @@ namespace Simple
 		return myEndMemoryAddress - myCurrentMemoryAddress;
 	}
 
+	int ComponentPool::GetComponentIndexByMemoryAddress(char* aAddress, const size_t aSize) const
+	{
+		if (aSize == 0)
+		{
+			return -1;
+		}
+
+		const int index = static_cast<int>((aAddress - myStartMemoryAddress)) / static_cast<int>(aSize);
+
+		if (index < 0)
+		{
+			return -1;
+		}
+
+		return index;
+	}
+
 	char* ComponentPool::GetStartMemoryAddress()
 	{
 		return myStartMemoryAddress;

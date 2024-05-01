@@ -51,7 +51,7 @@ namespace Simple
 	template<typename T>
 	inline bool IEntity::RemoveComponent()
 	{
-		return myEntityManager->RemoveComponent(myID);
+		return myEntityManager->RemoveComponent<T>(myID);
 	}
 
 	template<typename T>

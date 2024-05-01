@@ -18,10 +18,14 @@ namespace Simple
 		template<typename T>
 		char* CreateComponent(const size_t aComponentID, std::unordered_map<size_t, char*>& aAllComponentMap, const T& aValue = T());
 
+		template<typename T>
+		bool SwapWithLastAndRemove(T& aComponent, const size_t aComponentID);
+
 		size_t GetCapacity() const;
 		size_t GetComponentCount() const;
 		size_t GetOccupiedMemorySpace() const;
 		size_t GetAvailableMemorySpace() const;
+		int GetComponentIndexByMemoryAddress(char* aAddress, const size_t aSize) const;
 		char* GetStartMemoryAddress();
 
 	private:
@@ -58,5 +62,38 @@ namespace Simple
 		myComponentIDs.push_back(aComponentID);
 
 		return myCurrentMemoryAddress - sizeof(T);	
+	}
+
+	template<typename T>
+	inline bool ComponentPool::SwapWithLastAndRemove(T& aComponent, const size_t aComponentID)
+	{
+		char* componentAddress = reinterpret_cast<char*>(&aComponent);
+		const int indexToRemove = GetComponentIndexByMemoryAddress(componentAddress, sizeof(T));
+		const int lastIndex = GetComponentIndexByMemoryAddress(myCurrentMemoryAddress - sizeof(T), sizeof(T));
+
+		if (lastIndex == -1 || indexToRemove == -1)
+		{
+			return false;
+		}
+		
+		if (aComponentID != myComponentIDs.back())
+		{
+			T* lastComponent = (T*)(myCurrentMemoryAddress - sizeof(T));
+			std::swap(aComponent, *lastComponent);
+			std::swap(myComponentIDs[indexToRemove], myComponentIDs[lastIndex]);
+		}
+		else
+		{
+			if constexpr (!std::is_trivially_destructible<T>::value)
+			{
+				reinterpret_cast<T*>(myCurrentMemoryAddress - sizeof(T))->~T();
+			}
+		}
+
+		myCurrentMemoryAddress -= sizeof(T);
+		memset(myCurrentMemoryAddress, 0, sizeof(T));
+		myComponentIDs.pop_back();
+
+		return true;
 	}
 }

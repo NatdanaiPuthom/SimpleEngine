@@ -28,7 +28,7 @@ namespace Simple
 		bool AddComponent(const EntityID aEntityID);
 
 		template<typename T>
-		bool RemoveComponent(const EntityID aEntityID);
+		bool RemoveComponent(const size_t aEntityID);
 
 		template<typename T>
 		T*& GetComponent(const EntityID aEntityID);
@@ -59,9 +59,21 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline bool EntityManager::RemoveComponent(const EntityID aEntityID)
+	inline bool EntityManager::RemoveComponent(const size_t aEntityID)
 	{
-		aEntityID;
+		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
+
+		auto it = components.find(typeid(T));
+
+		if (it != components.end())
+		{
+			const ComponentID id = it->second;
+			components.erase(it);
+
+			return myComponentManager->RemoveComponent<T>(id);
+		}
+
+		return false;
 	}
 
 	template<typename T>

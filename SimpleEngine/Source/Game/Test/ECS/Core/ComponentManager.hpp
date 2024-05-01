@@ -1,11 +1,21 @@
 #pragma once
 #include "Game/Test/ECS/MemoryPools/ComponentPool.hpp"
+#include "Engine/SimpleUtilities/Utility.hpp"
 #include <unordered_map>
 #include <typeindex>
+#include <string>
 
 namespace Simple
 {
 	class ECS;
+}
+
+namespace Simple
+{
+	struct NullComponent final
+	{
+		bool isNull = true;
+	};
 }
 
 namespace Simple
@@ -15,6 +25,7 @@ namespace Simple
 
 	class ComponentManager final
 	{
+		using ComponentName = std::string;
 		friend class Simple::ECS;
 	public:
 		~ComponentManager();
@@ -23,7 +34,12 @@ namespace Simple
 		ComponentID CreateComponent(const T& aComponent = T());
 
 		template<typename T>
+		bool RemoveComponent(const size_t aComponentID);
+
+		template<typename T>
 		T*& GetComponentByComponentID(const ComponentID aID);
+
+		std::type_index GetTypeIndexByName(const ComponentName aComponentName);
 
 	private:
 		ComponentManager();
@@ -34,9 +50,9 @@ namespace Simple
 		inline static size_t myCurrentComponentID = 0;
 
 		std::unordered_map<ComponentType, void(*)(void*)> myComponentDestructorInvoker;
+		std::unordered_map<ComponentName, ComponentType> myComponentNameToTypeIndex;
 		std::unordered_map<ComponentType, ComponentPool> myComponents;
-		std::unordered_map<size_t, char*> myAllComponents;
-		const char padding[16];
+		std::unordered_map<ComponentID, char*> myAllComponents;
 	};
 
 	template<typename T>
@@ -45,12 +61,34 @@ namespace Simple
 		if (myComponentDestructorInvoker.find(typeid(T)) == myComponentDestructorInvoker.end())
 		{
 			RegisterDestructor<T>();
+
+			const std::type_index typeIndex = typeid(T);
+			std::string componentName = typeIndex.name();
+			componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(componentName);
+			myComponentNameToTypeIndex.emplace(componentName, typeIndex);
 		}
 
 		myCurrentComponentID++;
 		myAllComponents[myCurrentComponentID] = myComponents[typeid(T)].CreateComponent<T>(myCurrentComponentID, myAllComponents, aComponent);;
 
 		return myCurrentComponentID;
+	}
+
+	template<typename T>
+	inline bool ComponentManager::RemoveComponent(const size_t aComponentID)
+	{
+		auto it = myComponents.find(typeid(T));
+
+		if (it != myComponents.end())
+		{
+			T* component = GetComponentByComponentID<T>(aComponentID);
+			const bool success = it->second.SwapWithLastAndRemove<T>(*component, aComponentID);
+			assert(success && "Failed to Remove Component From Component Pool");
+
+			return myAllComponents.erase(aComponentID);
+		}
+
+		return false;
 	}
 
 	template<typename T>
