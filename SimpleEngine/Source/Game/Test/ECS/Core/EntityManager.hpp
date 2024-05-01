@@ -30,6 +30,8 @@ namespace Simple
 		template<typename T>
 		bool RemoveComponent(const size_t aEntityID);
 
+		bool RemoveComponentByTypeName(const size_t aEntityID, const std::string& aComponentTypeName);
+
 		template<typename T>
 		T*& GetComponent(const EntityID aEntityID);
 

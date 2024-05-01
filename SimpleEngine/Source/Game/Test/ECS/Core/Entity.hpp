@@ -24,6 +24,8 @@ namespace Simple
 		template<typename T>
 		bool RemoveComponent();
 
+		bool RemoveComponentByTypeName(const std::string& aComponentTypeName);
+
 		void SetName(const std::string& aName);
 
 		template<typename T>

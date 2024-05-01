@@ -16,6 +16,11 @@ namespace Simple
 		myEntityManager = nullptr;
 	}
 
+	bool IEntity::RemoveComponentByTypeName(const std::string& aComponentTypeName)
+	{
+		return myEntityManager->RemoveComponentByTypeName(myID, aComponentTypeName);
+	}
+
 	void IEntity::SetName(const std::string& aName)
 	{
 		myName = aName;

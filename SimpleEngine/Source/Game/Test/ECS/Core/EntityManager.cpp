@@ -32,6 +32,24 @@ namespace Simple
 		return reinterpret_cast<Entity>(myEntities[myCurrentEntityID]);
 	}
 
+	bool EntityManager::RemoveComponentByTypeName(const size_t aEntityID, const std::string& aComponentTypeName)
+	{
+		const std::type_index componentType = myComponentManager->GetComponentTypeIndexByName(aComponentTypeName);
+
+		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
+		auto it = components.find(componentType);
+
+		if (it != components.end())
+		{
+			const ComponentID id = it->second;
+			components.erase(it);
+
+			return myComponentManager->RemoveComponentByTypeIndex(componentType, id);
+		}
+
+		return false;
+	}
+
 	Entity EntityManager::GetEntity(const EntityID aEntityID)
 	{
 		return reinterpret_cast<Entity>(myEntities[aEntityID]);

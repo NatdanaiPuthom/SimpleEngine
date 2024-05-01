@@ -28,6 +28,25 @@ namespace Simple
 		}
 	}
 
+	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const size_t aComponentID)
+	{
+		ComponentPool& pool = myComponents[aComponentType]; pool;
+		aComponentType; aComponentID;
+		return false;
+	}
+
+	const std::type_index ComponentManager::GetComponentTypeIndexByName(const std::string& aComponentTypeName)
+	{
+		const auto it = myComponentNameToTypeIndex.find(aComponentTypeName);
+
+		if (it != myComponentNameToTypeIndex.end())
+		{
+			return it->second;
+		}
+
+		return std::type_index(typeid(NullComponent));
+	}
+
 	std::type_index ComponentManager::GetTypeIndexByName(const ComponentName aComponentName)
 	{
 		auto it = myComponentNameToTypeIndex.find(aComponentName);

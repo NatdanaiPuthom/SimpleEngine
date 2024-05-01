@@ -36,6 +36,10 @@ namespace Simple
 		template<typename T>
 		bool RemoveComponent(const size_t aComponentID);
 
+		bool RemoveComponentByTypeIndex(const ComponentType& aComponentType, const size_t aComponentID);
+
+		const std::type_index GetComponentTypeIndexByName(const std::string& aComponentTypeName);
+
 		template<typename T>
 		T*& GetComponentByComponentID(const ComponentID aID);
 

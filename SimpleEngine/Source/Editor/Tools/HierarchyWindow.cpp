@@ -98,7 +98,7 @@ namespace Editor
 						{
 							if (ImGui::MenuItem("Remove Component"))
 							{
-								//selectedEntity->RemoveComponent
+								selectedEntity->RemoveComponentByTypeName(componentNames[i]);
 							}
 
 							ImGui::EndPopup();
