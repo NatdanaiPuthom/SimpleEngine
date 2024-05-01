@@ -18,6 +18,7 @@ namespace Editor
 	void HierarchyWindow::Draw()
 	{
 		static int selected = -1;
+		Simple::Entities entities = World::GetECS()->GetAllEntities();
 
 		if (ImGui::Begin("Hierarchy", 0, ImGuiWindowFlags_None))
 		{
@@ -28,7 +29,6 @@ namespace Editor
 
 			if (ImGui::BeginChild("SceneEntities", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Border))
 			{
-				Simple::Entities entities = World::GetECS()->GetAllEntities();
 				for (int i = 0; i < entities.GetSize(); ++i)
 				{
 					if (ImGui::BeginListBox("##Entities"))
@@ -61,16 +61,51 @@ namespace Editor
 
 		if (ImGui::Begin("Inspector"))
 		{
-			if (selected != -1)
-			{
-			}
-			else
-			{
-			}
-
 			std::string searchComponent = "";
 			if (ImGui::InputTextWithHint("Search", "Example \"TransformComponent\"", &searchComponent[0], searchComponent.capacity() + 1))
 			{
+			}
+
+			if (selected != -1)
+			{
+				Simple::Entity selectedEntity = entities[selected];
+				const size_t id = selectedEntity->GetID();
+				const std::vector<std::string> componentNames = selectedEntity->GetComponentNames();
+
+				for (size_t i = 0; i < componentNames.size(); ++i)
+				{
+					ImGui::PushID(std::string(componentNames[i] + " " + std::to_string(id)).c_str());
+					const bool open = ImGui::TreeNodeEx(componentNames[i].c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
+					ImGui::PopID();
+
+					if (open)
+					{
+						ImGui::SameLine(ImGui::GetWindowWidth() - 30);
+
+						if (ImGui::Button("..."))
+						{
+							ImGui::OpenPopup(std::string("ElementList" + std::to_string(id)).c_str());
+						}
+
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::SetTooltip("More Options");
+						}
+
+						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
+						{
+							if (ImGui::MenuItem("Remove Component"))
+							{
+
+							}
+
+							ImGui::EndPopup();
+						}
+
+						ImGui::TreePop();
+						ImGui::Separator();
+					}
+				}
 			}
 
 			static bool isListOpen = false;
@@ -92,7 +127,7 @@ namespace Editor
 
 				for (size_t i = 0; i < components.size(); ++i)
 				{
-					if (ImGui::BeginListBox("##ComponentList"))
+					if (ImGui::BeginListBox("##AddComponentList"))
 					{
 						const bool isSelected = false;
 

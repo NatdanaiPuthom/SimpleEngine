@@ -75,11 +75,14 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		int a;
 	};
 
+	struct TestWorld
+	{
+		bool test;
+	};
 
 	Simple::Entity entity = entities[0]; entity;
 	entity->AddComponent<HelloWorld>();
-	const std::vector<std::string> componentNames = entity->GetComponentNames();
-	componentNames;
+	entity->AddComponent<TestWorld>();
 	
 	while (Global::GetGameIsRunning())
 	{
