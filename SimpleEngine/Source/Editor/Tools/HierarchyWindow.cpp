@@ -82,7 +82,7 @@ namespace Editor
 
 					if (open)
 					{
-						ImGui::SameLine();
+						ImGui::SameLine(ImGui::GetWindowWidth() - 50);
 
 						if (ImGui::Button("..."))
 						{
