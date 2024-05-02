@@ -50,7 +50,7 @@ namespace Editor
 			ImGui::Text(World::GetActiveScene()->GetSceneName().c_str());
 			ImGui::Separator();
 
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.12f, 0.12f, 0.12f, 0.80f).Value);
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
 			ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
