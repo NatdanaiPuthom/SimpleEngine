@@ -1,7 +1,7 @@
 #pragma once
-#include "Game/Test/ECS/Core/ComponentManager.hpp"
-#include "Game/Test/ECS/MemoryPools/EntityPool.hpp"
-#include "Game/Test/ECS/Core/Entities.hpp"
+#include "Engine/ECS/Core/ComponentManager.hpp"
+#include "Engine/ECS/MemoryPools/EntityPool.hpp"
+#include "Engine/ECS/Core/Entities.hpp"
 #include <unordered_map>
 #include <typeindex>
 #include <vector>

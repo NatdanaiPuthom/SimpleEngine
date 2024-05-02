@@ -1,6 +1,6 @@
-#include "Game/Precomplied/GamePch.hpp"
-#include "Game/Test/ECS/Core/EntityManager.hpp"
-#include "Game/Test/ECS/Core/Entity.hpp"
+#include "Engine/Precomplied/EnginePch.hpp"
+#include "Engine/ECS/Core/EntityManager.hpp"
+#include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
 
 namespace Simple

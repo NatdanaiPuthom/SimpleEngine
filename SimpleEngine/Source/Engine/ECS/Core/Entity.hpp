@@ -1,6 +1,6 @@
 #pragma once
-#include "Game/Test/ECS/Core/EntityManager.hpp"
-#include "Game/Test/ECS/ECSInterface.hpp"
+#include "Engine/ECS/Core/EntityManager.hpp"
+#include "Engine/ECS/ECSInterface.hpp"
 #include <string>
 
 namespace Simple

@@ -1,12 +1,11 @@
 #include "Engine/Engine.hpp"
 #include "Engine/MemoryTracker/MemoryTracker.h"
 #include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
+#include "Engine/ECS/ECS.hpp"
 #include "Engine/Global.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
-
-#include "Game/Test/ECS/ECS.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 

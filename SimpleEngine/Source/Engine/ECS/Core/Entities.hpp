@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/Test/ECS/ECSInterface.hpp"
+#include "Engine/ECS/ECSInterface.hpp"
 #include <vector>
 
 namespace Simple

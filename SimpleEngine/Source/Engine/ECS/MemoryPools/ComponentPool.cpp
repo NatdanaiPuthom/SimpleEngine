@@ -1,5 +1,5 @@
-#include "Game/Precomplied/GamePch.hpp"
-#include "Game/Test/ECS/MemoryPools/ComponentPool.hpp"
+#include "Engine/Precomplied/EnginePch.hpp"
+#include "Engine/ECS/MemoryPools/ComponentPool.hpp"
 
 namespace Simple
 {
