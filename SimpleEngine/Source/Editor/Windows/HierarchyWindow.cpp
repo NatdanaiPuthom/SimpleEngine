@@ -18,15 +18,23 @@ namespace Editor
 
 	void HierarchyWindow::Draw()
 	{
-		static int selected = -1;
+		static int selected = 0;
 		ECS::Entities entities = World::GetECS()->GetAllEntities();
 
-		if (ImGui::Begin("Hierarchy", 0, ImGuiWindowFlags_None))
+		if (ImGui::Begin("Hierarchy", 0, ImGuiWindowFlags_NoResize))
 		{
 			if (ImGui::Button("Add"))
 			{
 				ImGui::OpenPopup("Add Scene Object");
 			}
+
+			ImGui::SameLine(ImGui::GetWindowWidth() - 175);
+			ImGui::PushItemWidth(150);
+			std::string sceneSearch = "";
+			if (ImGui::InputTextWithHint("##SearchScene", "Search", &sceneSearch[0], sceneSearch.capacity() + 1))
+			{
+			}
+			ImGui::PopItemWidth();
 
 			if (ImGui::BeginPopup("Add Scene Object"))
 			{
@@ -38,7 +46,11 @@ namespace Editor
 				ImGui::EndPopup();
 			}
 
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.12f, 0.12f, 0.12f, 1.0f).Value);
+			ImGui::Separator();
+			ImGui::Text(World::GetActiveScene()->GetSceneName().c_str());
+			ImGui::Separator();
+
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.12f, 0.12f, 0.12f, 0.80f).Value);
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
 			ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
@@ -82,7 +94,7 @@ namespace Editor
 			{
 			}
 
-			if (selected != -1)
+			if (entities.GetSize() > 0)
 			{
 				ECS::Entity selectedEntity = entities[selected];
 				const size_t id = selectedEntity->GetID();
