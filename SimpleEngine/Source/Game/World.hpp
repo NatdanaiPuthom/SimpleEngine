@@ -10,9 +10,9 @@ namespace World
 {
 	void SetActiveScene(const int aSceneIndex);
 	void SetWaterHeight(const float aHeight);
-	void SetWaterPlane(Simple::PlaneReflection* aWaterPlane);
+	void SetWaterPlane(Graphics::PlaneReflection* aWaterPlane);
 
-	Simple::PlaneReflection* GetWaterPlane();
+	Graphics::PlaneReflection* GetWaterPlane();
 	Simple::EventManager* GetEventmanager();
 	Simple::Navmesh* GetNavmesh();
 	ECS::EntityComponentSystem* GetECS();

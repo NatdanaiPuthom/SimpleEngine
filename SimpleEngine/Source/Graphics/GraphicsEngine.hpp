@@ -18,12 +18,12 @@ using Microsoft::WRL::ComPtr;
 
 namespace Simple
 {
-	class ConstantBuffer;
 	class ImGuiEngine;
 }
 
 namespace Graphics
 {
+	class ConstantBuffer;
 	class Camera;
 }
 
@@ -105,7 +105,7 @@ struct RenderTarget final
 	ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 };
 
-namespace Simple
+namespace Graphics
 {
 	class GraphicsEngine final
 	{
@@ -136,7 +136,7 @@ namespace Simple
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
 
 		void SetRenderTarget(eRenderTarget aRenderTarget);
-		void SetCamera(std::shared_ptr<Graphics::Camera> aCamera);
+		void SetCamera(std::shared_ptr<Camera> aCamera);
 		void SetToDefaultCamera();
 	public:
 		ComPtr<ID3D11Device> GetDevice();
@@ -145,12 +145,12 @@ namespace Simple
 		ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
 		ComPtr<ID3D11ShaderResourceView> GetWaterRefractionShaderResourceView();
 
-		std::shared_ptr<Graphics::Camera> GetCurrentCamera();
-		std::shared_ptr<Graphics::Camera> GetEditorCamera();
-		std::shared_ptr<const Simple::Texture> GetTexture(const char* aFilePath);
-		std::shared_ptr<const Simple::Texture> GetDefaultTexture();
-		std::shared_ptr<const Simple::Shader> GetDefaultShader();
-		std::shared_ptr<const Simple::Shader> GetShader(const char* aPSFile, const char* aVSFile);
+		std::shared_ptr<Camera> GetCurrentCamera();
+		std::shared_ptr<Camera> GetEditorCamera();
+		std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
+		std::shared_ptr<const Texture> GetDefaultTexture();
+		std::shared_ptr<const Shader> GetDefaultShader();
+		std::shared_ptr<const Shader> GetShader(const char* aPSFile, const char* aVSFile);
 
 		Drawer::Renderer* GetRenderer();
 		ModelFactory* GetModelFactory();
@@ -183,8 +183,8 @@ namespace Simple
 		void PreloadTextures();
 		void PreloadShaders();
 	private:
-		std::unordered_map<std::string, const std::shared_ptr<const Simple::Texture>> myLoadedTextures;
-		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Simple::Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
+		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
+		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<int>(eRasterizerState::Count)> myRasterizerStates;
 
 		ComPtr<ID3D11Device> myDevice;
@@ -201,14 +201,14 @@ namespace Simple
 		ComPtr<ID3D11SamplerState> mySamplerState;
 		ComPtr<ID3D11RasterizerState> myRasterizerState;
 
-		std::shared_ptr<Graphics::Camera> myCurrentCamera;
-		std::shared_ptr<Graphics::Camera> myEditorCamera;
+		std::shared_ptr<Camera> myCurrentCamera;
+		std::shared_ptr<Camera> myEditorCamera;
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
-		std::unique_ptr<Simple::ConstantBuffer> myCameraConstantBuffer;
-		std::unique_ptr<Simple::ConstantBuffer> myTimeConstantBuffer;
-		std::unique_ptr<Simple::ConstantBuffer> myLightConstantBuffer;
-		std::unique_ptr<Simple::ConstantBuffer> myBonesConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myLightConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myBonesConstantBuffer;
 
 		std::unique_ptr<LightBufferData> myLightBufferData;
 
@@ -216,7 +216,7 @@ namespace Simple
 		std::unique_ptr<RenderTarget> myWaterRefractionRenderTarget;
 		std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
 
-		std::unique_ptr<Simple::ModelFactory> myModelFactory;
+		std::unique_ptr<ModelFactory> myModelFactory;
 		std::unique_ptr<Drawer::Renderer> myRenderer;
 		std::unique_ptr<Simple::ImGuiEngine> myImGuiEngine;
 

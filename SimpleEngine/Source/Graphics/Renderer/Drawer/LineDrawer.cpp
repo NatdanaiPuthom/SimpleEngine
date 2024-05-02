@@ -5,7 +5,7 @@
 
 namespace Drawer
 {
-	using namespace Simple;
+	using namespace Graphics;
 
 	LineDrawer::LineDrawer()
 		: myObjectBuffer(std::make_unique<ConstantBuffer>())

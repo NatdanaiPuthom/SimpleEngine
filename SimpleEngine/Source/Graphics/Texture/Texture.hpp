@@ -7,7 +7,7 @@ struct ID3D11ShaderResourceView;
 struct ID3D11DeviceContext;
 struct ID3D11Device;
 
-namespace Simple
+namespace Graphics
 {
 	class Texture final
 	{

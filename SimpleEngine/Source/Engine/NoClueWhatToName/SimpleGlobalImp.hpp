@@ -5,6 +5,10 @@
 namespace Simple
 {
 	class Engine;
+}
+
+namespace Graphics
+{
 	class GraphicsEngine;
 }
 
@@ -26,9 +30,9 @@ namespace Impl
 
 	class SimpleGlobalGraphics final
 	{
-		friend class Simple::GraphicsEngine;
+		friend class Graphics::GraphicsEngine;
 	private:
-		static void SetGraphicsEngine(Simple::GraphicsEngine* aGraphicsEngine);
+		static void SetGraphicsEngine(Graphics::GraphicsEngine* aGraphicsEngine);
 		static void UpdateFPSCounter();
 		static void ResetDrawCalls();
 	};

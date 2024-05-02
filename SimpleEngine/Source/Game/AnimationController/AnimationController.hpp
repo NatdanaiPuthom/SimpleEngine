@@ -1,5 +1,12 @@
 #pragma once
 
+namespace Graphics
+{
+	struct Animation;
+	class AnimatedModel;
+	class AnimationPlayer;
+}
+
 namespace Simple
 {
 	class AnimationController final
@@ -8,21 +15,21 @@ namespace Simple
 		AnimationController();
 		~AnimationController();
 
-		void Init(AnimatedModel* aAnimatedModel, Animation* aAnimation, const bool aShouldLoop = false);
+		void Init(Graphics::AnimatedModel* aAnimatedModel, Graphics::Animation* aAnimation, const bool aShouldLoop = false);
 		void Update();
-		void ChangeAnimation(Animation* aTargetAnimation, const bool aShouldLoop = false, const float aDuration = -1.0f);
+		void ChangeAnimation(Graphics::Animation* aTargetAnimation, const bool aShouldLoop = false, const float aDuration = -1.0f);
 
 	public:
-		const AnimationPlayer& GetCurrentAnimationPlayer() const;
-		AnimationPlayer& GetCurrentAnimationPlayer();
+		const Graphics::AnimationPlayer& GetCurrentAnimationPlayer() const;
+		Graphics::AnimationPlayer& GetCurrentAnimationPlayer();
 
 	private:
-		Animation* myCurrentAnimation;
-		Animation* myTargetAnimation;
-		AnimatedModel* myAnimatedModel;
+		Graphics::Animation* myCurrentAnimation;
+		Graphics::Animation* myTargetAnimation;
+		Graphics::AnimatedModel* myAnimatedModel;
 
-		AnimationPlayer myCurrentAnimationPlayer;
-		AnimationPlayer myTargetAnimationPlayer;
+		Graphics::AnimationPlayer myCurrentAnimationPlayer;
+		Graphics::AnimationPlayer myTargetAnimationPlayer;
 
 		float myTimer;
 		float myDuration;

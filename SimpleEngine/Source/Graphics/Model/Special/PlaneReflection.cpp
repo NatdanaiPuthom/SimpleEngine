@@ -4,12 +4,12 @@
 #include "Engine/Global.hpp"
 #include "Game/world.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	PlaneReflection::PlaneReflection()
 		: myHeight(0)
 	{
-		Simple::ModelFactory* modelFactory = Global::GetModelFactory();
+		ModelFactory* modelFactory = Global::GetModelFactory();
 
 		myModel = std::move(modelFactory->CreatePlaneReflection());
 		myModel->SetScale({ 25,1,25 });

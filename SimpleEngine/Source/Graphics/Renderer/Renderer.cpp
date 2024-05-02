@@ -31,7 +31,7 @@ namespace Drawer
 		aMeshComponent->shader->BindThisShader(context.Get());
 		aMeshComponent->texture->Bind(context, aMeshComponent->texture->GetSlot());
 
-		UINT stride = sizeof(Vertex);
+		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
 
 		context->IASetVertexBuffers(0, 1, aMeshComponent->mesh.myVertexBuffer.GetAddressOf(), &stride, &offset);
@@ -57,8 +57,8 @@ namespace Drawer
 		myAnimatedSkeletonLines.reserve(SIMPLE_MAX_BONES);
 		myStaticSkeletonLines.reserve(SIMPLE_MAX_BONES);
 
-		myObjectBuffer = std::make_unique<ConstantBuffer>();
-		myBoneBuffer = std::make_unique<ConstantBuffer>();
+		myObjectBuffer = std::make_unique<Graphics::ConstantBuffer>();
+		myBoneBuffer = std::make_unique<Graphics::ConstantBuffer>();
 
 		myBoundingBoxDrawer = std::make_unique<Drawer::BoundingBoxDrawer>();
 		myLineDrawer = std::make_unique<Drawer::LineDrawer>();
@@ -79,7 +79,7 @@ namespace Drawer
 		myBoneBuffer->SetSlot(5);
 	}
 
-	void Renderer::RenderModel(const std::shared_ptr<const Model> aModel) const
+	void Renderer::RenderModel(const std::shared_ptr<const Graphics::Model> aModel) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
@@ -96,7 +96,7 @@ namespace Drawer
 			texture->Bind(context, texture->GetSlot());
 		}
 
-		UINT stride = sizeof(Vertex);
+		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
 
 		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
@@ -108,7 +108,7 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderModel(const std::shared_ptr<const Simple::AnimatedModel> aModel) const
+	void Renderer::RenderModel(const std::shared_ptr<const Graphics::AnimatedModel> aModel) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
@@ -135,7 +135,7 @@ namespace Drawer
 			texture->Bind(context, texture->GetSlot());
 		}
 
-		UINT stride = sizeof(Vertex);
+		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
 
 		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
@@ -147,7 +147,7 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderModel(const Model& aModel) const
+	void Renderer::RenderModel(const Graphics::Model& aModel) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
@@ -164,7 +164,7 @@ namespace Drawer
 			texture->Bind(context, texture->GetSlot());
 		}
 
-		UINT stride = sizeof(Vertex);
+		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
 
 		context->IASetVertexBuffers(0, 1, aModel.myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
@@ -176,7 +176,7 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderModel(const Simple::AnimatedModel& aModel) const
+	void Renderer::RenderModel(const Graphics::AnimatedModel& aModel) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
@@ -203,7 +203,7 @@ namespace Drawer
 			texture->Bind(context, texture->GetSlot());
 		}
 
-		UINT stride = sizeof(Vertex);
+		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
 
 		context->IASetVertexBuffers(0, 1, aModel.myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
@@ -260,13 +260,13 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderAnimatedSkeletonLines(const Simple::AnimatedModel& aModel, const Simple::ModelSpacePose& aModelSpacePose)
+	void Renderer::RenderAnimatedSkeletonLines(const Graphics::AnimatedModel& aModel, const Graphics::ModelSpacePose& aModelSpacePose)
 	{
 		myAnimatedSkeletonLines.resize(aModelSpacePose.count);
 
-		Simple::LocalSpacePose pose;
+		Graphics::LocalSpacePose pose;
 
-		const Simple::Skeleton* skeleton = aModel.GetSkeleton();
+		const Graphics::Skeleton* skeleton = aModel.GetSkeleton();
 		skeleton->ConvertModelSpacePoseToLocalSpacePose(aModelSpacePose, pose);
 
 		const Math::Matrix4x4f modelTransform = aModel.GetMatrix();
@@ -279,7 +279,7 @@ namespace Drawer
 
 		for (size_t index = 0; index < aModelSpacePose.count; ++index)
 		{
-			Simple::Joint joint = skeleton->myJoints[index];
+			Graphics::Joint joint = skeleton->myJoints[index];
 
 			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
 
@@ -301,12 +301,12 @@ namespace Drawer
 		myLineDrawer->RenderInstance(myAnimatedSkeletonLines);
 	}
 
-	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel, const Simple::ModelSpacePose& aModelSpacePose)
+	void Renderer::RenderAnimatedSkeletonLines(const std::shared_ptr<const Graphics::AnimatedModel> aModel, const Graphics::ModelSpacePose& aModelSpacePose)
 	{
 		myAnimatedSkeletonLines.resize(aModelSpacePose.count);
 
-		Simple::LocalSpacePose pose;
-		const Simple::Skeleton* skeleton = aModel->GetSkeleton();
+		Graphics::LocalSpacePose pose;
+		const Graphics::Skeleton* skeleton = aModel->GetSkeleton();
 		skeleton->ConvertModelSpacePoseToLocalSpacePose(aModelSpacePose, pose);
 
 		const Math::Matrix4x4f modelTransform = aModel->GetMatrix();
@@ -320,7 +320,7 @@ namespace Drawer
 
 		for (size_t index = 0; index < aModelSpacePose.count; ++index)
 		{
-			Simple::Joint joint = skeleton->myJoints[index];
+			Graphics::Joint joint = skeleton->myJoints[index];
 
 			if (joint.myParent == -1)
 				continue;
@@ -343,9 +343,9 @@ namespace Drawer
 		myLineDrawer->RenderInstance(myAnimatedSkeletonLines);
 	}
 
-	void Renderer::RenderStaticSkeletonLines(const Simple::AnimatedModel& aModel)
+	void Renderer::RenderStaticSkeletonLines(const Graphics::AnimatedModel& aModel)
 	{
-		const std::vector<Simple::Joint>& joints = aModel.GetSkeleton()->myJoints;
+		const std::vector<Graphics::Joint>& joints = aModel.GetSkeleton()->myJoints;
 		const Math::Vector3f scale = aModel.GetScale();
 
 		myStaticSkeletonLines.resize(joints.size());
@@ -358,7 +358,7 @@ namespace Drawer
 
 		for (size_t index = 0; index < joints.size(); ++index)
 		{
-			Simple::Joint joint = joints[index];
+			Graphics::Joint joint = joints[index];
 
 			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joint.myBindPoseInverse);
 
@@ -380,9 +380,9 @@ namespace Drawer
 		myLineDrawer->RenderInstance(myStaticSkeletonLines);
 	}
 
-	void Renderer::RenderStaticSkeletonLines(const std::shared_ptr<const Simple::AnimatedModel> aModel)
+	void Renderer::RenderStaticSkeletonLines(const std::shared_ptr<const Graphics::AnimatedModel> aModel)
 	{
-		const std::vector<Simple::Joint>& joints = aModel->GetSkeleton()->myJoints;
+		const std::vector<Graphics::Joint>& joints = aModel->GetSkeleton()->myJoints;
 		const Math::Vector3f scale = aModel->GetScale();
 
 		myStaticSkeletonLines.resize(joints.size());
@@ -395,7 +395,7 @@ namespace Drawer
 
 		for (size_t index = 0; index < joints.size(); ++index)
 		{
-			Simple::Joint joint = joints[index];
+			Graphics::Joint joint = joints[index];
 
 			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joints[index].myBindPoseInverse);
 
@@ -415,28 +415,28 @@ namespace Drawer
 		myLineDrawer->RenderInstance(myStaticSkeletonLines);
 	}
 
-	void Renderer::RenderBoundingBox(const std::shared_ptr<const Model> aModel) const
+	void Renderer::RenderBoundingBox(const std::shared_ptr<const Graphics::Model> aModel) const
 	{
 		myBoundingBoxDrawer->Render(aModel);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderBoundingBox(const std::shared_ptr<const Simple::AnimatedModel> aModel) const
+	void Renderer::RenderBoundingBox(const std::shared_ptr<const Graphics::AnimatedModel> aModel) const
 	{
 		myBoundingBoxDrawer->Render(aModel);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderBoundingBox(const Simple::Model& aModel) const
+	void Renderer::RenderBoundingBox(const Graphics::Model& aModel) const
 	{
 		myBoundingBoxDrawer->Render(aModel);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderBoundingBox(const Simple::AnimatedModel& aModel) const
+	void Renderer::RenderBoundingBox(const Graphics::AnimatedModel& aModel) const
 	{
 		myBoundingBoxDrawer->Render(aModel);
 
@@ -466,7 +466,7 @@ namespace Drawer
 		camera->SetPosition(oldCamPosition);
 	}
 
-	void Renderer::RenderPlaneReflection(const std::shared_ptr<const Model> aModel) const
+	void Renderer::RenderPlaneReflection(const std::shared_ptr<const Graphics::Model> aModel) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
@@ -484,7 +484,7 @@ namespace Drawer
 		auto wave = Global::GetGraphicsEngine()->GetTexture("TGA/Uppgift8/WaveTest.dds");
 		wave->Bind(context, wave->GetSlot());
 
-		UINT stride = sizeof(Vertex);
+		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
 
 		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
@@ -508,9 +508,9 @@ namespace Drawer
 		}
 	}
 
-	void Renderer::TestIKSkeletonLines(const Simple::AnimatedModel& aModel)
+	void Renderer::TestIKSkeletonLines(const Graphics::AnimatedModel& aModel)
 	{
-		const std::vector<Simple::Joint>& joints = aModel.GetTestIKSkeleton().myJoints;
+		const std::vector<Graphics::Joint>& joints = aModel.GetTestIKSkeleton().myJoints;
 		const Math::Vector3f scale = aModel.GetScale();
 
 		myStaticSkeletonLines.resize(joints.size());
@@ -523,7 +523,7 @@ namespace Drawer
 
 		for (size_t index = 0; index < joints.size(); ++index)
 		{
-			Simple::Joint joint = joints[index];
+			Graphics::Joint joint = joints[index];
 
 			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joint.myBindPoseInverse);
 
@@ -545,7 +545,7 @@ namespace Drawer
 		myLineDrawer->RenderInstance(myStaticSkeletonLines);
 	}
 
-	void Renderer::RenderUpSideDown(const std::shared_ptr<const Model> aModel) const
+	void Renderer::RenderUpSideDown(const std::shared_ptr<const Graphics::Model> aModel) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
@@ -570,7 +570,7 @@ namespace Drawer
 			texture->Bind(context, texture->GetSlot());
 		}
 
-		UINT stride = sizeof(Vertex);
+		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
 
 		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
@@ -582,7 +582,7 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderRefraction(const std::shared_ptr<const Model> aModel) const
+	void Renderer::RenderRefraction(const std::shared_ptr<const Graphics::Model> aModel) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
@@ -602,7 +602,7 @@ namespace Drawer
 			texture->Bind(context, texture->GetSlot());
 		}
 
-		UINT stride = sizeof(Vertex);
+		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
 
 		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);

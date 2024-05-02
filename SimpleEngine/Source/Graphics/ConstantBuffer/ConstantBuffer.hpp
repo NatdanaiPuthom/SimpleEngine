@@ -3,7 +3,7 @@
 
 struct ID3D11Buffer;
 
-namespace Simple
+namespace Graphics
 {
 	class ConstantBuffer final
 	{

@@ -2,7 +2,7 @@
 #include "Graphics/ConstantBuffer/ConstantBuffer.hpp"
 #include "Engine/Global.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	ConstantBuffer::ConstantBuffer()
 		: mySlot(100)

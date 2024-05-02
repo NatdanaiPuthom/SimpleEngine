@@ -5,7 +5,7 @@
 
 struct ID3D11Buffer;
 
-namespace Simple
+namespace Graphics
 {
 	class Shader;
 	class ConstantBuffer;
@@ -27,7 +27,7 @@ namespace Drawer
 	{
 		struct Data
 		{
-			Simple::MeshData meshData;
+			Graphics::MeshData meshData;
 			ComPtr<ID3D11Buffer> vertexBuffer;
 			ComPtr<ID3D11Buffer> indexBuffer;
 		};
@@ -48,8 +48,8 @@ namespace Drawer
 		std::unique_ptr<Data> myData;
 		std::unique_ptr<Data> myInstanceData;
 
-		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
-		std::shared_ptr<const Simple::Shader> myShader;
+		std::unique_ptr<Graphics::ConstantBuffer> myObjectBuffer;
+		std::shared_ptr<const Graphics::Shader> myShader;
 
 		const size_t myInstanceSizeLimit;
 	};

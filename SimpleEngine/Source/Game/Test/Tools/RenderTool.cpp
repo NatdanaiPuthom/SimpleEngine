@@ -15,7 +15,7 @@ namespace Editor
 
 	void RenderTool::ImGuiImage()
 	{
-		Simple::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		const Math::Vector2ui resolution = Global::GetResolution();
 		const ImVec2 size(static_cast<float>(resolution.x), static_cast<float>(resolution.y));

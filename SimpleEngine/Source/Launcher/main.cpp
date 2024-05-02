@@ -39,7 +39,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
 	PROFILER_BEGIN("Engine initialize");
 	Simple::Engine engine;
-	Simple::GraphicsEngine graphicsEngine;
+	Graphics::GraphicsEngine graphicsEngine;
 	Editor::EditorEngine editor;
 	ECS::EntityComponentSystem ecs;
 

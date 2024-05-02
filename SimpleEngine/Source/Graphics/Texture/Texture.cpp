@@ -9,7 +9,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <External/stb/stb_image.h>
 
-namespace Simple
+namespace Graphics
 {
 	Texture::Texture()
 		: mySlot(0)

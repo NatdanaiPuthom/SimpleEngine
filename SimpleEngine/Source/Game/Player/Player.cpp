@@ -95,11 +95,11 @@ Math::Vector3f Player::GetRotation() const
 
 void Player::LoadModel()
 {
-	myAnimatedModel = std::make_shared<Simple::AnimatedModel>(Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SM_Wizard.fbx"));
+	myAnimatedModel = std::make_shared<Graphics::AnimatedModel>(Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SM_Wizard.fbx"));
 	myAnimatedModel->SetScale(0.01f);
 	myAnimatedModel->ClearTextures();
 	myAnimatedModel->AddTexture("Models/SM_Wizard_c.dds");
 
-	myAnimations[Cast(ePlayerAnimation::Idle)] = std::make_shared<Simple::Animation>(Global::GetModelFactory()->LoadAnimationFBX("Animations/A_Wizard_Idle.fbx"));
-	myAnimations[Cast(ePlayerAnimation::Walk)] = std::make_shared<Simple::Animation>(Global::GetModelFactory()->LoadAnimationFBX("Animations/A_Wizard_Walk.fbx"));
+	myAnimations[Cast(ePlayerAnimation::Idle)] = std::make_shared<Graphics::Animation>(Global::GetModelFactory()->LoadAnimationFBX("Animations/A_Wizard_Idle.fbx"));
+	myAnimations[Cast(ePlayerAnimation::Walk)] = std::make_shared<Graphics::Animation>(Global::GetModelFactory()->LoadAnimationFBX("Animations/A_Wizard_Walk.fbx"));
 }

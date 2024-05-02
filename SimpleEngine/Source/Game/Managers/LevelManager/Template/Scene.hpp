@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-namespace Simple
+namespace Graphics
 {
 	class Model;
 	class DirectionalLightVisual;
@@ -15,13 +15,13 @@ namespace Simple
 	class Scene
 	{
 	public:
-		std::unique_ptr<Simple::DirectionalLightVisual> myDirectionalLight;
-		std::vector<std::shared_ptr<Simple::Model>> myModels;
+		std::unique_ptr<Graphics::DirectionalLightVisual> myDirectionalLight;
+		std::vector<std::shared_ptr<Graphics::Model>> myModels;
 
 	public:
 		Scene()
 		{
-			myDirectionalLight = std::make_unique<Simple::DirectionalLightVisual>();
+			myDirectionalLight = std::make_unique<Graphics::DirectionalLightVisual>();
 			myModels.push_back(myDirectionalLight->myModel);
 		}
 

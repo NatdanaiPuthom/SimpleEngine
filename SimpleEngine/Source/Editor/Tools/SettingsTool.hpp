@@ -1,4 +1,7 @@
 #pragma once
+#include "Engine/Math/Vector2.hpp"
+#include <string>
+#include <vector>
 
 namespace Editor
 {
@@ -13,14 +16,14 @@ namespace Editor
 		void ShowDrawCalls();
 		void ShowFPS();
 	private:
-		void ToggleVSync(Simple::GraphicsEngine* aGraphicsEngine);
+		void ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleConsole();
 		void ToggleRenderBoundingBox();
 		void AdjustWindowSize();
 		void AdjustResolution();
 		void AdjustRasterizerState();
 		void AdjustActiveScene();
-		void AdjustFPSCap(Simple::GraphicsEngine* aGraphicsEngine);
+		void AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine);
 	private:
 		void UpdateAndFetchCurrentMonitorResolution();
 		void LoadDataFromJson();

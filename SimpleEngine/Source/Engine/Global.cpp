@@ -9,7 +9,7 @@ namespace
 	Math::Vector2ui localWindowSize = { 800, 600 };
 
 	Simple::Engine* localEngine = nullptr;
-	Simple::GraphicsEngine* localGraphicsEngine = nullptr;
+	Graphics::GraphicsEngine* localGraphicsEngine = nullptr;
 
 	const float localUpdatePeriodically = 0.2f;
 
@@ -56,7 +56,7 @@ namespace Impl
 		localEngine = aEngine;
 	}
 
-	void SimpleGlobalGraphics::SetGraphicsEngine(Simple::GraphicsEngine* aGraphicsEngine)
+	void SimpleGlobalGraphics::SetGraphicsEngine(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
 		if (localGraphicsEngine != nullptr)
 			assert(false && "localGraphicsEngine is already set. Is this call a mistake?");
@@ -77,7 +77,7 @@ namespace Impl
 
 namespace Global
 {
-	Simple::GraphicsEngine* GetGraphicsEngine()
+	Graphics::GraphicsEngine* GetGraphicsEngine()
 	{
 		return localGraphicsEngine;
 	}
@@ -87,7 +87,7 @@ namespace Global
 		return localGraphicsEngine->GetRenderer();
 	}
 
-	Simple::ModelFactory* GetModelFactory()
+	Graphics::ModelFactory* GetModelFactory()
 	{
 		return localGraphicsEngine->GetModelFactory();
 	}

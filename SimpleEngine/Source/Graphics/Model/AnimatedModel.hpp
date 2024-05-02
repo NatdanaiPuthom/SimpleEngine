@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-namespace Simple
+namespace Graphics
 {
 	class Shader;
 	class Texture;
@@ -19,7 +19,7 @@ namespace Drawer
 	class Renderer;
 }
 
-namespace Simple
+namespace Graphics
 {
 	class AnimatedModel final
 	{
@@ -51,7 +51,7 @@ namespace Simple
 		void SetName(const std::string& aName);
 		void SetBoundingBoxLineColor(const Math::Vector4f& aColor);
 
-		const BoundingBox3D& GetBoundingBox() const;
+		const Simple::BoundingBox3D& GetBoundingBox() const;
 		Math::Vector4f GetBoundingBoxLineColor() const;
 		Math::Matrix4x4f GetMatrix() const;
 		Math::Vector3f GetPosition() const;

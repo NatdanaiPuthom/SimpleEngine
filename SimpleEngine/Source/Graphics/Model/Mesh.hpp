@@ -10,7 +10,7 @@ namespace Drawer
 	class Renderer;
 }
 
-namespace Simple
+namespace Graphics
 {
 	struct Vertex final
 	{
@@ -40,14 +40,14 @@ namespace Simple
 		~Mesh();
 
 		const bool Init(const MeshData& aMeshData);
-		const BoundingBox3D& GetBoundingBox() const;
+		const Simple::BoundingBox3D& GetBoundingBox() const;
 	private:
 		bool CreateVertexBuffer(ComPtr<ID3D11Device> aDevice);
 		bool CreateIndexBuffer(ComPtr<ID3D11Device> aDevice);
 		void CreateBoundingBox();
 	private:
 		MeshData myMeshData;
-		BoundingBox3D myBoundingBox;
+		Simple::BoundingBox3D myBoundingBox;
 
 		ComPtr<ID3D11Buffer> myVertexBuffer;
 		ComPtr<ID3D11Buffer> myIndexBuffer;

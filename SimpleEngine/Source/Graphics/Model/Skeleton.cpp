@@ -1,7 +1,7 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "Graphics/Model/Skeleton.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	Joint::Joint()
 		: myParent(-1)

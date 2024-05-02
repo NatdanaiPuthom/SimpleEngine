@@ -2,7 +2,7 @@
 
 struct ID3D11Buffer;
 
-namespace Simple
+namespace Graphics
 {
 	struct MeshData;
 
@@ -33,8 +33,8 @@ namespace Drawer
 		ComPtr<ID3D11Buffer> myVertexBuffer;
 		ComPtr<ID3D11Buffer> myIndexBuffer;
 
-		std::unique_ptr<Simple::MeshData> myMeshData;
-		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
-		std::shared_ptr<const  Simple::Shader> myShader;
+		std::unique_ptr<Graphics::MeshData> myMeshData;
+		std::unique_ptr<Graphics::ConstantBuffer> myObjectBuffer;
+		std::shared_ptr<const  Graphics::Shader> myShader;
 	};
 }

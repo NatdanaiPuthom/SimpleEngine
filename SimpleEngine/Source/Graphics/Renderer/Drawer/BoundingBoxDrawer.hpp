@@ -3,7 +3,7 @@
 
 struct ID3D11Buffer;
 
-namespace Simple
+namespace Graphics
 {
 	class Shader;
 	class ConstantBuffer;
@@ -21,10 +21,10 @@ namespace Drawer
 
 		void Init();
 
-		void Render(const std::shared_ptr<const Simple::Model> aModelInstance);
-		void Render(const std::shared_ptr<const Simple::AnimatedModel> aModelInstance);
-		void Render(const Simple::Model& aModelInstance);
-		void Render(const Simple::AnimatedModel& aModelInstance);
+		void Render(const std::shared_ptr<const Graphics::Model> aModelInstance);
+		void Render(const std::shared_ptr<const Graphics::AnimatedModel> aModelInstance);
+		void Render(const Graphics::Model& aModelInstance);
+		void Render(const Graphics::AnimatedModel& aModelInstance);
 
 		void Render(const Simple::BoundingBox2D& aBoundingBox2D);
 	private:
@@ -32,14 +32,14 @@ namespace Drawer
 		void InitMeshData3D();
 		void InitObjectBuffer();
 	private:
-		Simple::MeshData myMeshData3D;
-		Simple::MeshData myMeshData2D;
+		Graphics::MeshData myMeshData3D;
+		Graphics::MeshData myMeshData2D;
 
 		ComPtr<ID3D11Buffer> myVertexBuffer;
 		ComPtr<ID3D11Buffer> myIndexBuffer;
 
-		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
-		std::shared_ptr<const Simple::Shader> myShader3D;
-		std::shared_ptr<const Simple::Shader> myShader2D;
+		std::unique_ptr<Graphics::ConstantBuffer> myObjectBuffer;
+		std::shared_ptr<const Graphics::Shader> myShader3D;
+		std::shared_ptr<const Graphics::Shader> myShader2D;
 	};
 }

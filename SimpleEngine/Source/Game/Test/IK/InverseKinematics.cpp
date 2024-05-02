@@ -40,8 +40,8 @@ namespace Test
 		//renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myModelSpacePose);
 		renderer->TestIKSkeletonLines(myTestModel);
 
-		std::vector<Simple::Joint>& joints = myTestModel.GetTestIKSkeleton().myJoints;
-		Simple::Joint root;
+		std::vector<Graphics::Joint>& joints = myTestModel.GetTestIKSkeleton().myJoints;
+		Graphics::Joint root;
 
 		for (auto& joint : joints)
 		{
@@ -99,7 +99,7 @@ namespace Test
 		ImGui::End();
 	}
 
-	void InverseKinematics::DisplayName(std::vector<Simple::Joint>& aOriginalJoints, Simple::Joint& aJoint)
+	void InverseKinematics::DisplayName(std::vector<Graphics::Joint>& aOriginalJoints, Graphics::Joint& aJoint)
 	{
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen;
 

@@ -2,7 +2,7 @@
 #include "Graphics/Animation/Animation.hpp"
 #include "Engine/Global.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	AnimationPlayer::AnimationPlayer()
 		: myAnimation(nullptr)
@@ -60,7 +60,7 @@ namespace Simple
 		}
 	}
 
-	void AnimationPlayer::UpdateMultipleModels(std::vector<Simple::AnimatedModel*>& aModelContainer)
+	void AnimationPlayer::UpdateMultipleModels(std::vector<AnimatedModel*>& aModelContainer)
 	{
 		if (myState == eAnimationState::Playing)
 		{

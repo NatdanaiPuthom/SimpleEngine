@@ -23,7 +23,7 @@ namespace Simple
 		inline void Init()
 		{
 			PROFILER_BEGIN("Load animatedmodels");
-			Simple::AnimatedModel animatedModel;
+			Graphics::AnimatedModel animatedModel;
 			animatedModel = Global::GetModelFactory()->LoadAnimatedModelFBX("Test/SM_wizard.fbx");
 			animatedModel.SetScale(0.01f);
 			animatedModel.ClearTextures();
@@ -59,7 +59,7 @@ namespace Simple
 		inline void Update()
 		{
 			PROFILER_BEGIN("Push model pointers");
-			std::vector<Simple::AnimatedModel*> models(myModelSize, nullptr);
+			std::vector<Graphics::AnimatedModel*> models(myModelSize, nullptr);
 			for (size_t i = 0; i < myModelSize; ++i)
 			{
 				models[i] = &myAnimatedModels[i];
@@ -81,11 +81,11 @@ namespace Simple
 		}
 
 	private:
-		Simple::AnimationPlayer myAnimationPlayer;
-		Simple::Animation myAnimation;
+		Graphics::AnimationPlayer myAnimationPlayer;
+		Graphics::Animation myAnimation;
 
 		const size_t myModelSize;
 
-		std::vector<Simple::AnimatedModel> myAnimatedModels;
+		std::vector<Graphics::AnimatedModel> myAnimatedModels;
 	};
 }

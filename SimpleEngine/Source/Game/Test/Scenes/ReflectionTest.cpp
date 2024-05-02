@@ -17,19 +17,19 @@ namespace Scenes
 
 	void ReflectionSceneTest::Init()
 	{
-		myPlaneReflection = std::make_unique<Simple::PlaneReflection>();
+		myPlaneReflection = std::make_unique<Graphics::PlaneReflection>();
 		World::SetWaterPlane(myPlaneReflection.get());
 
-		Simple::ModelFactory* modelFactory = Global::GetModelFactory();
+		Graphics::ModelFactory* modelFactory = Global::GetModelFactory();
 
 		{
-			std::shared_ptr<Simple::Model> pyramid = std::move(modelFactory->CreatePyramidModel());
+			std::shared_ptr<Graphics::Model> pyramid = std::move(modelFactory->CreatePyramidModel());
 			pyramid->SetPosition({ 7.0f, 5.0f, 3.0f });
 			myModels.push_back(std::move(pyramid));
 		}
 
 		{
-			std::shared_ptr<Simple::Model> cube = std::move(modelFactory->CreateCubeModel());
+			std::shared_ptr<Graphics::Model> cube = std::move(modelFactory->CreateCubeModel());
 			cube->ClearTextures();
 			cube->AddTexture("Hamster.dds");
 			cube->SetName("Hamster");
@@ -39,20 +39,20 @@ namespace Scenes
 		}
 
 		{
-			std::shared_ptr<Simple::Model> cube = std::move(modelFactory->CreateCubeModel());
+			std::shared_ptr<Graphics::Model> cube = std::move(modelFactory->CreateCubeModel());
 			cube->SetScale({ 2,2,2 });
 			cube->SetPosition({ -7.0f, 2.0f, 10.0f });
 			myModels.push_back(std::move(cube));
 		}
 
 		{
-			std::shared_ptr<Simple::Model> sphere = std::move(modelFactory->CreateSphereModel());
+			std::shared_ptr<Graphics::Model> sphere = std::move(modelFactory->CreateSphereModel());
 			sphere->SetPosition({ 2,5,7 });
 			myModels.push_back(std::move(sphere));
 		}
 
 		{
-			std::shared_ptr<Simple::Model> plane = std::move(modelFactory->CreatePlaneModel());
+			std::shared_ptr<Graphics::Model> plane = std::move(modelFactory->CreatePlaneModel());
 			plane->SetPosition({ -1.0f, 0, -2.0f });
 			plane->SetName("Cat");
 			plane->ClearTextures();
@@ -62,13 +62,13 @@ namespace Scenes
 		}
 
 		{
-			std::shared_ptr<Simple::Model> terrain = std::move(modelFactory->CreateTerrainModel());
+			std::shared_ptr<Graphics::Model> terrain = std::move(modelFactory->CreateTerrainModel());
 			terrain->SetPosition({ -3.0f, -0.6f, 0.0f });
 			myModels.push_back(std::move(terrain));
 		}
 
 		{
-			std::shared_ptr<Simple::Model> cube = std::move(modelFactory->CreateCubeModel());
+			std::shared_ptr<Graphics::Model> cube = std::move(modelFactory->CreateCubeModel());
 			cube->SetShader("DefaultColorfulPS.cso", "DefaultVS.cso");
 			cube->SetName("Colorful");
 			cube->SetPosition({ -5.0f, 0.5f, 0.0f });
@@ -76,7 +76,7 @@ namespace Scenes
 		}
 
 		{
-			std::shared_ptr<Simple::Model> pyramid = std::move(modelFactory->CreatePyramidModel());
+			std::shared_ptr<Graphics::Model> pyramid = std::move(modelFactory->CreatePyramidModel());
 			pyramid->SetPosition({ -10.0f, 3.0f, -0.0f });
 			pyramid->ClearTextures();
 			pyramid->AddTexture("DefaultTexture.dds");
@@ -85,7 +85,7 @@ namespace Scenes
 		}
 
 		{
-			std::shared_ptr<Simple::Model> skyBox = std::move(modelFactory->CreateSkyBoxModel());
+			std::shared_ptr<Graphics::Model> skyBox = std::move(modelFactory->CreateSkyBoxModel());
 			skyBox->SetPosition({ 0.0f, 0.0f, 20.0f });
 			myModels.push_back(std::move(skyBox));
 		}

@@ -1,7 +1,7 @@
 #pragma once
 #include "Graphics/Model/Mesh.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	class Mesh;
 	class Shader;
@@ -12,8 +12,8 @@ namespace ECS
 {
 	struct MeshComponent
 	{
-		Simple::Mesh mesh;
-		const Simple::Shader* shader;
-		const Simple::Texture* texture;
+		Graphics::Mesh mesh;
+		const Graphics::Shader* shader;
+		const Graphics::Texture* texture;
 	};
 }

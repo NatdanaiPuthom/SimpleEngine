@@ -4,7 +4,7 @@
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include <External/TheGameAssembly/FBXImporter/source/Importer.h>
 
-namespace Simple
+namespace Graphics
 {
 	Mesh ModelFactory::LoadMeshTest(std::string aName)
 	{
@@ -12,9 +12,9 @@ namespace Simple
 		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aName, tgaMesh);
 		assert(status && "Failed to LoadMesh from FBXImporter");
 
-		Simple::MeshData meshData;
+		MeshData meshData;
 		LoadMeshData(meshData, tgaMesh);
-		Simple::Mesh mesh;
+		Mesh mesh;
 		mesh.Init(meshData);
 
 		return mesh;
@@ -34,20 +34,20 @@ namespace Simple
 	{
 		TGA::FBX::Importer::InitImporter();
 
-		MeshData cubeData = Simple::ShapeCreator3000::CreateCube();
-		MeshData pyramidData = Simple::ShapeCreator3000::CreatePyramid();
-		MeshData planeData = Simple::ShapeCreator3000::CreatePlane();
-		MeshData skyboxData = Simple::ShapeCreator3000::CreateSkyBox(Math::Vector3f(100, 100, 100));
-		MeshData terrainData = Simple::ShapeCreator3000::CreateTerrain();
-		MeshData sphereData = Simple::ShapeCreator3000::CreateSphere();
+		MeshData cubeData = ShapeCreator3000::CreateCube();
+		MeshData pyramidData = ShapeCreator3000::CreatePyramid();
+		MeshData planeData = ShapeCreator3000::CreatePlane();
+		MeshData skyboxData = ShapeCreator3000::CreateSkyBox(Math::Vector3f(100, 100, 100));
+		MeshData terrainData = ShapeCreator3000::CreateTerrain();
+		MeshData sphereData = ShapeCreator3000::CreateSphere();
 
-		std::unique_ptr<Simple::Mesh> cubeMesh = std::make_unique<Simple::Mesh>();
-		std::unique_ptr<Simple::Mesh> pyramidMesh = std::make_unique<Simple::Mesh>();
-		std::unique_ptr<Simple::Mesh> planeMesh = std::make_unique<Simple::Mesh>();
-		std::unique_ptr<Simple::Mesh> skyboxMesh = std::make_unique<Simple::Mesh>();
-		std::unique_ptr<Simple::Mesh> directionalLightMesh = std::make_unique<Simple::Mesh>();
-		std::unique_ptr<Simple::Mesh> terrainMesh = std::make_unique<Simple::Mesh>();
-		std::unique_ptr<Simple::Mesh> sphereMesh = std::make_unique<Simple::Mesh>();
+		std::unique_ptr<Mesh> cubeMesh = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> pyramidMesh = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> planeMesh = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> skyboxMesh = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> directionalLightMesh = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> terrainMesh = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> sphereMesh = std::make_unique<Mesh>();
 
 		if (!cubeMesh->Init(cubeData))
 			assert(false && "Failed to create Cube");
@@ -78,10 +78,10 @@ namespace Simple
 
 	Model ModelFactory::LoadStaticModelFBX(const char* aFileName)
 	{
-		Simple::Model model;
+		Model model;
 
 		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
-		const Simple::Mesh* mesh = GetMesh(path.c_str());
+		const Mesh* mesh = GetMesh(path.c_str());
 
 		if (mesh == nullptr)
 		{
@@ -99,11 +99,11 @@ namespace Simple
 
 	AnimatedModel ModelFactory::LoadAnimatedModelFBX(const char* aFileName)
 	{
-		Simple::AnimatedModel animatedModel;
+		AnimatedModel animatedModel;
 
 		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
-		const Simple::Mesh* mesh = GetMesh(path.c_str());
-		const Simple::Skeleton* skeleton = GetSkeleton(path.c_str());
+		const Mesh* mesh = GetMesh(path.c_str());
+		const Skeleton* skeleton = GetSkeleton(path.c_str());
 
 		TGA::FBX::Mesh tgaMesh;
 
@@ -136,7 +136,7 @@ namespace Simple
 		TGA::FBX::Animation tgaAnimation;
 		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(path, tgaAnimation);
 
-		Simple::Animation animation;
+		Animation animation;
 		animation.name = tgaAnimation.Name;
 		animation.length = tgaAnimation.Length;
 		animation.framesPerSecond = tgaAnimation.FramesPerSecond;
@@ -177,7 +177,7 @@ namespace Simple
 		return animation;
 	}
 
-	void ModelFactory::AddMesh(const std::string& aName, std::unique_ptr<const Simple::Mesh> aMesh)
+	void ModelFactory::AddMesh(const std::string& aName, std::unique_ptr<const Mesh> aMesh)
 	{
 		myIsCachingInProgress = true;
 		myFBXLoaderMutex.lock();
@@ -188,7 +188,7 @@ namespace Simple
 		myFBXLoaderMutex.unlock();
 	}
 
-	void ModelFactory::AddSkeleton(const std::string& aName, std::unique_ptr<const Simple::Skeleton> aSkeleton)
+	void ModelFactory::AddSkeleton(const std::string& aName, std::unique_ptr<const Skeleton> aSkeleton)
 	{
 		myIsCachingInProgress = true;
 		myFBXLoaderMutex.lock();
@@ -199,7 +199,7 @@ namespace Simple
 		myFBXLoaderMutex.unlock();
 	}
 
-	const Simple::Mesh* ModelFactory::GetMesh(const char* aMeshName) const
+	const Mesh* ModelFactory::GetMesh(const char* aMeshName) const
 	{
 		while (myIsCachingInProgress == true) {}
 
@@ -211,7 +211,7 @@ namespace Simple
 		return nullptr;
 	}
 
-	const Simple::Skeleton* Simple::ModelFactory::GetSkeleton(const char* aName) const
+	const Skeleton* ModelFactory::GetSkeleton(const char* aName) const
 	{
 		while (myIsCachingInProgress == true) {}
 
@@ -223,7 +223,7 @@ namespace Simple
 		return nullptr;
 	}
 
-	void ModelFactory::LoadSkeletonData(Simple::Skeleton& aSkeletonData, const TGA::FBX::Mesh& aTGAMesh) const
+	void ModelFactory::LoadSkeletonData(Skeleton& aSkeletonData, const TGA::FBX::Mesh& aTGAMesh) const
 	{
 		if (aTGAMesh.Skeleton.GetRoot())
 		{
@@ -254,7 +254,7 @@ namespace Simple
 				bindPoseInverse(4, 3) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m43;
 				bindPoseInverse(4, 4) = aTGAMesh.Skeleton.Bones[i].BindPoseInverse.m44;
 
-				Simple::Joint joint;
+				Joint joint;
 
 				joint.myBindPoseInverse = bindPoseInverse;
 				joint.myName = aTGAMesh.Skeleton.Bones[i].Name;
@@ -274,11 +274,11 @@ namespace Simple
 		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aFileName, tgaMesh);
 		assert(status && "Failed to LoadMesh from FBXImporter");
 
-		Simple::MeshData meshData;
+		MeshData meshData;
 
 		LoadMeshData(meshData, tgaMesh);
 
-		std::unique_ptr<Simple::Mesh> newMesh = std::make_unique<Simple::Mesh>();
+		std::unique_ptr<Mesh> newMesh = std::make_unique<Mesh>();
 		newMesh->Init(meshData);
 
 		AddMesh(aFileName, std::move(newMesh));
@@ -289,11 +289,11 @@ namespace Simple
 		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aFileName, aTGAMesh);
 		assert(status && "Failed to LoadMesh from FBXImporter");
 
-		Simple::MeshData meshData;
+		MeshData meshData;
 
 		LoadMeshData(meshData, aTGAMesh);
 
-		std::unique_ptr<Simple::Mesh> newMesh = std::make_unique<Simple::Mesh>();
+		std::unique_ptr<Mesh> newMesh = std::make_unique<Mesh>();
 		newMesh->Init(meshData);
 
 		AddMesh(aFileName, std::move(newMesh));
@@ -301,21 +301,21 @@ namespace Simple
 
 	void ModelFactory::LoadAndCacheSkeleton(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh)
 	{
-		std::unique_ptr<Simple::Skeleton> skeletonData = std::make_unique<Simple::Skeleton>();
+		std::unique_ptr<Skeleton> skeletonData = std::make_unique<Skeleton>();
 
 		LoadSkeletonData(*skeletonData.get(), aTGAMesh);
 
 		AddSkeleton(aFileName, std::move(skeletonData));
 	}
 
-	void ModelFactory::LoadMeshData(Simple::MeshData& aMeshData, const TGA::FBX::Mesh& aTGAMesh) const
+	void ModelFactory::LoadMeshData(MeshData& aMeshData, const TGA::FBX::Mesh& aTGAMesh) const
 	{
 		aMeshData.vertices.reserve(aTGAMesh.Elements[0].Vertices.size());
 		aMeshData.indices.reserve(aTGAMesh.Elements[0].Indices.size());
 
 		for (size_t i = 0; i < aTGAMesh.Elements[0].Vertices.size(); ++i)
 		{
-			Simple::Vertex vertex;
+			Vertex vertex;
 
 			vertex.position.x = aTGAMesh.Elements[0].Vertices[i].Position[0];
 			vertex.position.y = aTGAMesh.Elements[0].Vertices[i].Position[1];
@@ -366,9 +366,9 @@ namespace Simple
 		aMeshData.indices = aTGAMesh.Elements[0].Indices;
 	}
 
-	std::unique_ptr<Simple::Model> ModelFactory::CreateTerrainModel()
+	std::unique_ptr<Model> ModelFactory::CreateTerrainModel()
 	{
-		std::unique_ptr<Simple::Model> terrainModel = std::make_unique<Model>();
+		std::unique_ptr<Model> terrainModel = std::make_unique<Model>();
 
 		terrainModel->Init(GetMesh("Terrain"));
 		terrainModel->ClearTextures();
@@ -391,9 +391,9 @@ namespace Simple
 		return std::move(terrainModel);
 	}
 
-	std::unique_ptr<Simple::Model> ModelFactory::CreateSkyBoxModel()
+	std::unique_ptr<Model> ModelFactory::CreateSkyBoxModel()
 	{
-		std::unique_ptr<Simple::Model> skyBoxModel = std::make_unique<Simple::Model>();
+		std::unique_ptr<Model> skyBoxModel = std::make_unique<Model>();
 
 		skyBoxModel->Init(GetMesh("Skybox"), "TGA/Uppgift7/Cubemap.dds");
 		skyBoxModel->SetShader("SkyBoxPS.cso", "SkyBoxVS.cso");
@@ -404,11 +404,11 @@ namespace Simple
 		return std::move(skyBoxModel);
 	}
 
-	std::unique_ptr<Simple::Model> ModelFactory::CreateDirectionalLightModel()
+	std::unique_ptr<Model> ModelFactory::CreateDirectionalLightModel()
 	{
-		std::unique_ptr<Simple::Model> directionalLight = std::make_unique<Simple::Model>();
+		std::unique_ptr<Model> directionalLight = std::make_unique<Model>();
 
-		directionalLight = std::make_unique<Simple::Model>();
+		directionalLight = std::make_unique<Model>();
 		directionalLight->Init(GetMesh("DirectionalLight"));
 		directionalLight->SetScale({ 1,1,1 });
 		directionalLight->SetPosition(Math::Vector3f(0, 0, 0));
@@ -417,9 +417,9 @@ namespace Simple
 		return std::move(directionalLight);
 	}
 
-	std::unique_ptr<Simple::Model> ModelFactory::CreatePlaneModel()
+	std::unique_ptr<Model> ModelFactory::CreatePlaneModel()
 	{
-		std::unique_ptr<Simple::Model> plane = std::make_unique<Simple::Model>();
+		std::unique_ptr<Model> plane = std::make_unique<Model>();
 
 		plane->Init(GetMesh("Plane"));
 		plane->SetShader("DefaultPS.cso", "DefaultVS.cso");
@@ -430,9 +430,9 @@ namespace Simple
 		return std::move(plane);
 	}
 
-	std::unique_ptr<Simple::Model> ModelFactory::CreateCubeModel()
+	std::unique_ptr<Model> ModelFactory::CreateCubeModel()
 	{
-		std::unique_ptr<Simple::Model> cube = std::make_unique<Simple::Model>();
+		std::unique_ptr<Model> cube = std::make_unique<Model>();
 
 		cube->Init(GetMesh("Cube"));
 		cube->SetScale({ 1,1,1 });
@@ -442,9 +442,9 @@ namespace Simple
 		return std::move(cube);
 	}
 
-	std::unique_ptr<Simple::Model> ModelFactory::CreatePyramidModel()
+	std::unique_ptr<Model> ModelFactory::CreatePyramidModel()
 	{
-		std::unique_ptr<Simple::Model> pyramid = std::make_unique<Simple::Model>();
+		std::unique_ptr<Model> pyramid = std::make_unique<Model>();
 
 		pyramid->Init(GetMesh("Pyramid"), "Cat.dds");
 		pyramid->SetScale({ 1,1,1 });
@@ -454,9 +454,9 @@ namespace Simple
 		return std::move(pyramid);
 	}
 
-	std::unique_ptr<Simple::Model> ModelFactory::CreateSphereModel()
+	std::unique_ptr<Model> ModelFactory::CreateSphereModel()
 	{
-		std::unique_ptr<Simple::Model> sphere = std::make_unique<Simple::Model>();
+		std::unique_ptr<Model> sphere = std::make_unique<Model>();
 
 		sphere->Init(GetMesh("Sphere"));
 		sphere->SetScale({ 1,1,1 });
@@ -466,9 +466,9 @@ namespace Simple
 		return std::move(sphere);
 	}
 
-	std::unique_ptr<Simple::Model> ModelFactory::CreatePlaneReflection()
+	std::unique_ptr<Model> ModelFactory::CreatePlaneReflection()
 	{
-		std::unique_ptr<Simple::Model> plane = std::make_unique<Simple::Model>();
+		std::unique_ptr<Model> plane = std::make_unique<Model>();
 
 		plane->Init(GetMesh("Plane"));
 		plane->SetShader("WaterReflectionPS.cso", "DefaultVS.cso");

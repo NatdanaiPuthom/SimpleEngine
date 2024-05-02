@@ -9,7 +9,7 @@ namespace Editor
 
 	void LightTool::Draw()
 	{
-		Simple::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		if (ImGui::Begin("Lights"))
 		{

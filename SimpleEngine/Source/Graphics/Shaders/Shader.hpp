@@ -10,7 +10,7 @@ struct ID3D11InputLayout;
 struct ID3D11DeviceContext;
 struct ID3D11Device;
 
-namespace Simple
+namespace Graphics
 {
 	class Shader final
 	{

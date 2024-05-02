@@ -17,14 +17,14 @@ namespace TGA
 	}
 }
 
-namespace Simple
+namespace Graphics
 {
 	class ModelFactory final
 	{
 	public:
 
 		Mesh LoadMeshTest(std::string aName);
-		std::vector<Simple::Mesh> meshes;
+		std::vector<Mesh> meshes;
 
 		ModelFactory();
 		~ModelFactory();
@@ -40,21 +40,21 @@ namespace Simple
 		//FilePath starts at Bin/Assets/Models/
 		Animation LoadAnimationFBX(const char* aFileName);
 	public:
-		std::unique_ptr<Simple::Model> CreateTerrainModel();
-		std::unique_ptr<Simple::Model> CreateSkyBoxModel();
-		std::unique_ptr<Simple::Model> CreateDirectionalLightModel();
-		std::unique_ptr<Simple::Model> CreatePlaneModel();
-		std::unique_ptr<Simple::Model> CreateCubeModel();
-		std::unique_ptr<Simple::Model> CreatePyramidModel();
-		std::unique_ptr<Simple::Model> CreateSphereModel();
-		std::unique_ptr<Simple::Model> CreatePlaneReflection();
+		std::unique_ptr<Model> CreateTerrainModel();
+		std::unique_ptr<Model> CreateSkyBoxModel();
+		std::unique_ptr<Model> CreateDirectionalLightModel();
+		std::unique_ptr<Model> CreatePlaneModel();
+		std::unique_ptr<Model> CreateCubeModel();
+		std::unique_ptr<Model> CreatePyramidModel();
+		std::unique_ptr<Model> CreateSphereModel();
+		std::unique_ptr<Model> CreatePlaneReflection();
 	private:
-		void AddMesh(const std::string& aName, std::unique_ptr<const Simple::Mesh> aMesh);
-		void AddSkeleton(const std::string& aName, std::unique_ptr<const Simple::Skeleton> aSkeleton);
-		const Simple::Mesh* GetMesh(const char* aMeshName) const;
-		const Simple::Skeleton* GetSkeleton(const char* aName) const;
-		void LoadMeshData(Simple::MeshData& aMeshData, const TGA::FBX::Mesh& aTGAMesh) const;
-		void LoadSkeletonData(Simple::Skeleton& aSkeletonData, const TGA::FBX::Mesh& aTGAMesh) const;
+		void AddMesh(const std::string& aName, std::unique_ptr<const Mesh> aMesh);
+		void AddSkeleton(const std::string& aName, std::unique_ptr<const Skeleton> aSkeleton);
+		const Mesh* GetMesh(const char* aMeshName) const;
+		const Skeleton* GetSkeleton(const char* aName) const;
+		void LoadMeshData(MeshData& aMeshData, const TGA::FBX::Mesh& aTGAMesh) const;
+		void LoadSkeletonData(Skeleton& aSkeletonData, const TGA::FBX::Mesh& aTGAMesh) const;
 		void LoadAndCacheMesh(const std::string& aFileName);
 		void LoadAndCacheMesh(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh);
 		void LoadAndCacheSkeleton(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh);
@@ -62,7 +62,7 @@ namespace Simple
 		std::mutex myFBXLoaderMutex;
 		std::atomic<bool> myIsCachingInProgress;
 		std::unordered_map<std::string, std::atomic<bool>> myFBXLoaderQueue;
-		std::unordered_map<std::string, const std::unique_ptr<const Simple::Mesh>> myMeshes;
-		std::unordered_map<std::string, const std::unique_ptr<const Simple::Skeleton>> mySkeletons;
+		std::unordered_map<std::string, const std::unique_ptr<const Mesh>> myMeshes;
+		std::unordered_map<std::string, const std::unique_ptr<const Skeleton>> mySkeletons;
 	};
 }

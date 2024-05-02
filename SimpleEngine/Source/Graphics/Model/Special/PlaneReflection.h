@@ -1,7 +1,7 @@
 #pragma once
 #include "Graphics/Model/Model.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	class PlaneReflection
 	{
@@ -11,7 +11,7 @@ namespace Simple
 
 		void Update();
 
-		std::shared_ptr<Simple::Model> myModel;
+		std::shared_ptr<Model> myModel;
 		float myHeight;
 	};
 }

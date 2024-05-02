@@ -17,7 +17,7 @@ namespace Simple
 	{
 	}
 
-	void AnimationController::Init(AnimatedModel* aAnimatedModel, Animation* aAnimation, const bool aShouldLoop)
+	void AnimationController::Init(Graphics::AnimatedModel* aAnimatedModel, Graphics::Animation* aAnimation, const bool aShouldLoop)
 	{
 		myTimer = 0.0f;
 
@@ -88,7 +88,7 @@ namespace Simple
 		}
 	}
 
-	void AnimationController::ChangeAnimation(Animation* aTargetAnimation, const bool aShouldLoop, const float aDuration)
+	void AnimationController::ChangeAnimation(Graphics::Animation* aTargetAnimation, const bool aShouldLoop, const float aDuration)
 	{
 		if (myTargetAnimation == aTargetAnimation)
 		{
@@ -112,12 +112,12 @@ namespace Simple
 		myIsInterpolating = true;
 	}
 
-	const AnimationPlayer& AnimationController::GetCurrentAnimationPlayer() const
+	const Graphics::AnimationPlayer& AnimationController::GetCurrentAnimationPlayer() const
 	{
 		return myCurrentAnimationPlayer;
 	}
 
-	AnimationPlayer& AnimationController::GetCurrentAnimationPlayer()
+	Graphics::AnimationPlayer& AnimationController::GetCurrentAnimationPlayer()
 	{
 		return myCurrentAnimationPlayer;
 	}

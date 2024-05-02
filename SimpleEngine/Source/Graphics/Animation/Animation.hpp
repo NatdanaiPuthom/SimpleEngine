@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace Simple
+namespace Graphics
 {
 	class AnimatedModel;
 }
@@ -18,7 +18,7 @@ enum class eAnimationState
 	Finished
 };
 
-namespace Simple
+namespace Graphics
 {
 	struct Animation
 	{
@@ -51,7 +51,7 @@ namespace Simple
 		void Update();
 
 		//Update and SetPose of multiple models and animation of same kind
-		void UpdateMultipleModels(std::vector<Simple::AnimatedModel*>& aModelContainer);
+		void UpdateMultipleModels(std::vector<AnimatedModel*>& aModelContainer);
 
 		//Lerp active animation and store the pose
 		void LerpCurrentAnimation();

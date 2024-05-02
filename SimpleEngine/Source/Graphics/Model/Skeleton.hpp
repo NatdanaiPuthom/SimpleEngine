@@ -6,7 +6,7 @@
 
 #define SIMPLE_MAX_BONES 64
 
-namespace Simple
+namespace Graphics
 {
 	//Relative parent's coordinate
 	struct ModelSpacePose

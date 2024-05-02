@@ -4,9 +4,9 @@
 
 namespace SU = SimpleUtilities;
 
-namespace Simple
+namespace Graphics
 {
-	MeshData ShapeCreator3000::CreateTerrain(const Simple::TerrainData& aTerrainData)
+	MeshData ShapeCreator3000::CreateTerrain(const Graphics::TerrainData& aTerrainData)
 	{
 		const unsigned int upSampleMultiplier = aTerrainData.upSampleMultiplier;
 		const float vertexLength = aTerrainData.vertexLength;

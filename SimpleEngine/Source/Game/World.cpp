@@ -8,7 +8,7 @@ namespace World
 {
 	Simple::LevelManager* localLevelManager = nullptr;
 	Simple::EventManager* localEventManager = nullptr;
-	Simple::PlaneReflection* localWaterPlane = nullptr;
+	Graphics::PlaneReflection* localWaterPlane = nullptr;
 	ECS::EntityComponentSystem* localECS = nullptr;
 
 	float localWaterHeight = 0;
@@ -26,7 +26,7 @@ namespace World
 		localWaterHeight = aHeight;
 	}
 
-	void SetWaterPlane(Simple::PlaneReflection* aWaterPlane)
+	void SetWaterPlane(Graphics::PlaneReflection* aWaterPlane)
 	{
 		localWaterPlane = aWaterPlane;
 	}
@@ -46,7 +46,7 @@ namespace World
 		return localLevelManager->GetActiveScene();
 	}
 
-	Simple::PlaneReflection* GetWaterPlane()
+	Graphics::PlaneReflection* GetWaterPlane()
 	{
 		return localWaterPlane;
 	}

@@ -7,8 +7,8 @@
 namespace Global
 {
 	//TO-DO(v9.27): Seperate nessesary stuff that needed from GraphicsEngine instead of using the GraphicsEngine pointer itself
-	Simple::GraphicsEngine* GetGraphicsEngine(); //NOTES(v9.27): Like Engine class, we should never have direct access to GraphicsEngine but will fix it one day... i hope
-	Simple::ModelFactory* GetModelFactory();
+	Graphics::GraphicsEngine* GetGraphicsEngine(); //NOTES(v9.27): Like Engine class, we should never have direct access to GraphicsEngine but will fix it one day... i hope
+	Graphics::ModelFactory* GetModelFactory();
 	Drawer::Renderer* GetRenderer();
 
 	HWND& GetEngineHWND();

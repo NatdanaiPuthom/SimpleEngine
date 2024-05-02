@@ -33,7 +33,7 @@ namespace Editor
 	{
 		if (ImGui::Begin("Settings"))
 		{
-			Simple::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 			ShowFPS();
 
@@ -113,7 +113,7 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::ToggleVSync(Simple::GraphicsEngine* aGraphicsEngine)
+	void SettingsTool::ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
 		bool vsync = aGraphicsEngine->IsVSyncActive();
 
@@ -238,7 +238,7 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::AdjustFPSCap(Simple::GraphicsEngine* aGraphicsEngine)
+	void SettingsTool::AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
 		int monitorUpdateFrequency = 0;
 

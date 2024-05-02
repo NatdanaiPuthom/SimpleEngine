@@ -6,7 +6,7 @@
 
 namespace Drawer
 {
-	using namespace Simple;
+	using namespace Graphics;
 
 	BoundingBoxDrawer::BoundingBoxDrawer()
 	{
@@ -18,7 +18,7 @@ namespace Drawer
 
 	void BoundingBoxDrawer::Init()
 	{
-		myObjectBuffer = std::make_unique<Simple::ConstantBuffer>();
+		myObjectBuffer = std::make_unique<ConstantBuffer>();
 
 		InitMeshData2D();
 		InitMeshData3D();
@@ -89,7 +89,7 @@ namespace Drawer
 		myObjectBuffer->SetSlot(1);
 	}
 
-	void BoundingBoxDrawer::Render(const std::shared_ptr<const Simple::Model> aModelInstance)
+	void BoundingBoxDrawer::Render(const std::shared_ptr<const Model> aModelInstance)
 	{
 		const Math::Vector3f minPoint = aModelInstance->myMesh->myBoundingBox.min;
 		const Math::Vector3f  maxPoint = aModelInstance->myMesh->myBoundingBox.max;
@@ -165,7 +165,7 @@ namespace Drawer
 		context->DrawIndexed(static_cast<UINT>(myMeshData3D.vertices.size()), 0, 0);
 	}
 
-	void BoundingBoxDrawer::Render(const std::shared_ptr<const Simple::AnimatedModel> aModelInstance)
+	void BoundingBoxDrawer::Render(const std::shared_ptr<const AnimatedModel> aModelInstance)
 	{
 		const Math::Vector3f minPoint = aModelInstance->myMesh->myBoundingBox.min;
 		const Math::Vector3f  maxPoint = aModelInstance->myMesh->myBoundingBox.max;
@@ -241,7 +241,7 @@ namespace Drawer
 		context->DrawIndexed(static_cast<UINT>(myMeshData3D.vertices.size()), 0, 0);
 	}
 
-	void BoundingBoxDrawer::Render(const Simple::Model& aModelInstance)
+	void BoundingBoxDrawer::Render(const Model& aModelInstance)
 	{
 		const Math::Vector3f minPoint = aModelInstance.myMesh->myBoundingBox.min;
 		const Math::Vector3f  maxPoint = aModelInstance.myMesh->myBoundingBox.max;
@@ -317,7 +317,7 @@ namespace Drawer
 		context->DrawIndexed(static_cast<UINT>(myMeshData3D.vertices.size()), 0, 0);
 	}
 
-	void BoundingBoxDrawer::Render(const Simple::AnimatedModel& aModelInstance)
+	void BoundingBoxDrawer::Render(const AnimatedModel& aModelInstance)
 	{
 		const Math::Vector3f minPoint = aModelInstance.myMesh->myBoundingBox.min;
 		const Math::Vector3f  maxPoint = aModelInstance.myMesh->myBoundingBox.max;

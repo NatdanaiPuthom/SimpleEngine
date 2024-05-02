@@ -1,4 +1,13 @@
 #pragma once
+#include <vector>
+
+namespace Graphics
+{
+	struct Animation;
+	class Joint;
+	class AnimatedModel;
+	class AnimationPlayer;
+}
 
 namespace Test
 {
@@ -14,13 +23,13 @@ namespace Test
 		void Render();
 
 	private:
-		void DisplayName(std::vector<Simple::Joint>& aOriginalJoints, Simple::Joint& aJoint);
+		void DisplayName(std::vector<Graphics::Joint>& aOriginalJoints, Graphics::Joint& aJoint);
 
 	private:
-		Simple::Animation myTestAnimation;
-		Simple::AnimatedModel myTestModel;
-		Simple::AnimationPlayer myTestAnimationPlayer;
+		Graphics::Animation myTestAnimation;
+		Graphics::AnimatedModel myTestModel;
+		Graphics::AnimationPlayer myTestAnimationPlayer;
 
-		Simple::Joint* mySelectedJoint;
+		Graphics::Joint* mySelectedJoint;
 	};
 }

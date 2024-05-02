@@ -5,7 +5,7 @@
 #include <fstream>
 #include <vector>
 
-namespace Simple
+namespace Graphics
 {
 	Shader::Shader()
 	{

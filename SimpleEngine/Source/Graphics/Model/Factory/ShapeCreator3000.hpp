@@ -1,7 +1,7 @@
 #pragma once
 #include "Graphics/Model/Mesh.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	struct TerrainData
 	{
@@ -12,12 +12,12 @@ namespace Simple
 	};
 }
 
-namespace Simple
+namespace Graphics
 {
 	class ShapeCreator3000 final
 	{
 	public:
-		static MeshData CreateTerrain(const Simple::TerrainData& aTerrainData = Simple::TerrainData{});
+		static MeshData CreateTerrain(const Graphics::TerrainData& aTerrainData = Graphics::TerrainData{});
 		static MeshData CreatePyramid(const Math::Vector3f& aSize = { 1.0f , 1.0f, 1.0f });
 		static MeshData CreateCube(const Math::Vector3f& aSize = { 1.0f, 1.0f , 1.0f });
 		static MeshData CreateSkyBox(const Math::Vector3f& aSize = { 1000.0f, 1000.0f, 1000.0f });

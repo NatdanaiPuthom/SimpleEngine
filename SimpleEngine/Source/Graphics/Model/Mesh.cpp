@@ -2,7 +2,7 @@
 #include "Graphics/Model/Mesh.hpp"
 #include "Engine/Global.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	Mesh::Mesh()
 	{
@@ -29,7 +29,7 @@ namespace Simple
 		return true;
 	}
 
-	const BoundingBox3D& Mesh::GetBoundingBox() const
+	const Simple::BoundingBox3D& Mesh::GetBoundingBox() const
 	{
 		return myBoundingBox;
 	}
@@ -80,7 +80,7 @@ namespace Simple
 
 	void Mesh::CreateBoundingBox()
 	{
-		BoundingBox3D boundingBox;
+		Simple::BoundingBox3D boundingBox;
 
 		if (myMeshData.vertices.empty())
 			assert(false && "MeshData has no vertices");

@@ -3,15 +3,15 @@
 #include "Graphics/Model/Factory/ModelFactory.hpp"
 #include "Engine/Global.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	DirectionalLightVisual::DirectionalLightVisual()
 		: myLightDirectionLine(std::make_unique<Drawer::Line>())
 		, myLineDistance(5.0f)
 	{
-		Simple::ModelFactory* modelFactory = Global::GetModelFactory();
+		ModelFactory* modelFactory = Global::GetModelFactory();
 
-		std::shared_ptr<Simple::Model> directionalLight = std::move(modelFactory->CreateCubeModel());
+		std::shared_ptr<Model> directionalLight = std::move(modelFactory->CreateCubeModel());
 		directionalLight->ClearTextures();
 		directionalLight->AddTexture("Sunlight.dds");
 		directionalLight->SetName("Directional Light");

@@ -34,9 +34,9 @@ private:
 	Math::Vector3f myVelocity;
 
 	std::shared_ptr<PlayerState> myCurrentState;
-	std::shared_ptr<Simple::AnimatedModel> myAnimatedModel;
+	std::shared_ptr<Graphics::AnimatedModel> myAnimatedModel;
 	std::unique_ptr<Simple::AnimationController> myAnimationController;
 
-	std::array<std::shared_ptr<Simple::Animation>, static_cast<size_t>(ePlayerAnimation::Count)> myAnimations;
+	std::array<std::shared_ptr<Graphics::Animation>, static_cast<size_t>(ePlayerAnimation::Count)> myAnimations;
 	std::array<std::shared_ptr<PlayerState>, static_cast<size_t>(ePlayerState::Count)> myStates;
 };

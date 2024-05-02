@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-namespace Simple
+namespace Graphics
 {
 	class Shader;
 	class Texture;
@@ -18,7 +18,7 @@ namespace Drawer
 	class Renderer;
 }
 
-namespace Simple
+namespace Graphics
 {
 	class Model final
 	{
@@ -28,8 +28,8 @@ namespace Simple
 		Model();
 		~Model();
 
-		void Init(const Simple::Mesh* const aMesh);
-		void Init(const Simple::Mesh* const aMesh, const char* aTexturePath);
+		void Init(const Mesh* const aMesh);
+		void Init(const Mesh* const aMesh, const char* aTexturePath);
 
 		//FilePath starts at Bin/Assets/Textures/
 		void AddTexture(const char* aFilePath);
@@ -46,7 +46,7 @@ namespace Simple
 		void SetName(const std::string& aName);
 		void SetBoundingBoxLineColor(const Math::Vector4f& aColor);
 
-		const BoundingBox3D& GetBoundingBox() const;
+		const Simple::BoundingBox3D& GetBoundingBox() const;
 		Math::Vector4f GetBoundingBoxLineColor() const;
 		Math::Matrix4x4f GetMatrix() const;
 		Math::Vector3f GetPosition() const;
@@ -54,11 +54,11 @@ namespace Simple
 		Math::Vector3f GetScale() const;
 		std::string GetName() const;
 	private:
-		std::vector<std::shared_ptr<const Simple::Texture>> myTextures;
+		std::vector<std::shared_ptr<const Texture>> myTextures;
 		std::string myName;
-		std::shared_ptr<const Simple::Shader> myShader;
+		std::shared_ptr<const Shader> myShader;
 
-		const Simple::Mesh* myMesh;
+		const Mesh* myMesh;
 
 		Math::Transform myTransform;
 		Math::Vector4f myBoundingBoxColor;

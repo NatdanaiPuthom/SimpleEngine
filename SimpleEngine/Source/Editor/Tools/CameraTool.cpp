@@ -12,7 +12,7 @@ namespace Editor
 	{
 		if (ImGui::Begin("Freefly Camera"))
 		{
-			Simple::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 			ImGui::Text("Movements    - WASD");
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(100, 0));

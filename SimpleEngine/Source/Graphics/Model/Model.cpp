@@ -2,7 +2,7 @@
 #include "Graphics/Model/Model.hpp"
 #include "Engine/Global.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	Model::Model()
 		: myMesh(nullptr)
@@ -16,13 +16,13 @@ namespace Simple
 	{
 	}
 
-	void Model::Init(const Simple::Mesh* const aMesh)
+	void Model::Init(const Mesh* const aMesh)
 	{
 		myMesh = aMesh;
 		AddTexture("DefaultTexture.dds");
 	}
 
-	void Model::Init(const Simple::Mesh* const aMesh, const char* aTexturePath)
+	void Model::Init(const Mesh* const aMesh, const char* aTexturePath)
 	{
 		myMesh = aMesh;
 		AddTexture(aTexturePath);
@@ -30,7 +30,7 @@ namespace Simple
 
 	void Model::AddTexture(const char* aFilePath)
 	{
-		std::shared_ptr<const Simple::Texture> texture = Global::GetGraphicsEngine()->GetTexture(aFilePath);
+		std::shared_ptr<const Texture> texture = Global::GetGraphicsEngine()->GetTexture(aFilePath);
 
 		if (texture == nullptr)
 		{
@@ -103,7 +103,7 @@ namespace Simple
 		myBoundingBoxColor = aColor;
 	}
 
-	const BoundingBox3D& Model::GetBoundingBox() const
+	const Simple::BoundingBox3D& Model::GetBoundingBox() const
 	{
 		return myMesh->GetBoundingBox();
 	}

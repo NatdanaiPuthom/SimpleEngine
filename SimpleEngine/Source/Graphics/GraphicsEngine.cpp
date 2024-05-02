@@ -15,7 +15,7 @@
 #define REPORT_DX_WARNINGS
 #endif
 
-namespace Simple
+namespace Graphics
 {
 	GraphicsEngine::GraphicsEngine()
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
@@ -31,10 +31,10 @@ namespace Simple
 
 	const bool GraphicsEngine::Init(const Math::Vector2ui& aWindowSize, HWND& aWindowHandle)
 	{
-		myCameraConstantBuffer = std::make_unique<Simple::ConstantBuffer>();
-		myTimeConstantBuffer = std::make_unique<Simple::ConstantBuffer>();
-		myLightConstantBuffer = std::make_unique<Simple::ConstantBuffer>();
-		myBonesConstantBuffer = std::make_unique<Simple::ConstantBuffer>();
+		myCameraConstantBuffer = std::make_unique<ConstantBuffer>();
+		myTimeConstantBuffer = std::make_unique<ConstantBuffer>();
+		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
+		myBonesConstantBuffer = std::make_unique<ConstantBuffer>();
 
 		myLightBufferData = std::make_unique<LightBufferData>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
@@ -73,7 +73,7 @@ namespace Simple
 		PreloadShaders();
 
 		myRenderer = std::make_unique<Drawer::Renderer>();
-		myModelFactory = std::make_unique<Simple::ModelFactory>();
+		myModelFactory = std::make_unique<ModelFactory>();
 
 		myEditorCamera->Init();
 		myImGuiEngine->Init();
@@ -240,7 +240,7 @@ namespace Simple
 
 	const bool GraphicsEngine::AddTexture(const char* aFileName, const unsigned int aSlot)
 	{
-		std::shared_ptr<Simple::Texture> texture = std::make_shared<Simple::Texture>();
+		std::shared_ptr<Texture> texture = std::make_shared<Texture>();
 
 		if (!texture->LoadDDS(aFileName))
 			return false;
@@ -496,7 +496,7 @@ namespace Simple
 		myLightBufferData->groundColor = aColor;
 	}
 
-	std::shared_ptr<const Simple::Texture> GraphicsEngine::GetTexture(const char* aFilePath)
+	std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const char* aFilePath)
 	{
 		auto it = myLoadedTextures.find(aFilePath);
 
@@ -506,7 +506,7 @@ namespace Simple
 		return nullptr;
 	}
 
-	std::shared_ptr<const Simple::Texture> GraphicsEngine::GetDefaultTexture()
+	std::shared_ptr<const Texture> GraphicsEngine::GetDefaultTexture()
 	{
 		auto texture = GetTexture("DefaultTexture.dds");
 
@@ -516,7 +516,7 @@ namespace Simple
 		return nullptr;
 	}
 
-	std::shared_ptr<const Simple::Shader> GraphicsEngine::GetDefaultShader()
+	std::shared_ptr<const Shader> GraphicsEngine::GetDefaultShader()
 	{
 		auto defaultShader = GetShader("DefaultPS.cso", "DefaultVS.cso");
 
@@ -526,7 +526,7 @@ namespace Simple
 		return nullptr;
 	}
 
-	std::shared_ptr<const Simple::Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
+	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
 	{
 		auto shader = myLoadedShaders.find({ aPSFile, aVSFile });
 

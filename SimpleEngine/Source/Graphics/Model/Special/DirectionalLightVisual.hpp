@@ -3,13 +3,13 @@
 #include "Graphics/Renderer/Drawer/SphereDrawer.hpp"
 #include "Graphics/Model/Model.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	class DirectionalLightVisual final
 	{
 	public:
 		std::unique_ptr<Drawer::Line> myLightDirectionLine;
-		std::shared_ptr<Simple::Model> myModel;
+		std::shared_ptr<Model> myModel;
 
 		float myLineDistance;
 

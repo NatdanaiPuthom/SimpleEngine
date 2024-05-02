@@ -12,10 +12,10 @@ namespace Scenes
 		myDirectionalLight->myModel->SetPosition({ 0.0f, 10.0f, 1.0f });
 		Global::GetGraphicsEngine()->SetDirectionalLightDirection({ 0.0f, -1.0f, 0.0f });
 
-		Simple::ModelFactory* modelFactory = Global::GetModelFactory();
+		Graphics::ModelFactory* modelFactory = Global::GetModelFactory();
 
 		{
-			std::shared_ptr<Simple::Model> plane = std::move(modelFactory->CreatePlaneModel());
+			std::shared_ptr<Graphics::Model> plane = std::move(modelFactory->CreatePlaneModel());
 			plane->SetPosition({ 0.0f, -3.0f, 0.0f });
 			plane->SetScale({ 100,1,100 });
 			plane->SetShader("DefaultPBRPS.cso", "DefaultVS.cso");
@@ -23,7 +23,7 @@ namespace Scenes
 		}
 
 		{
-			std::shared_ptr<Simple::Model> sphere = std::move(modelFactory->CreateSphereModel());
+			std::shared_ptr<Graphics::Model> sphere = std::move(modelFactory->CreateSphereModel());
 			sphere->SetPosition({ 5,3,0 });
 			sphere->SetName("Spotlight1");
 			myModels.push_back(sphere);

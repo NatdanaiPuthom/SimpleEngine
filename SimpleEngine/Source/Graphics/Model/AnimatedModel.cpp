@@ -2,7 +2,7 @@
 #include "Graphics/Model/AnimatedModel.hpp"
 #include "Engine/Global.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	AnimatedModel::AnimatedModel()
 		: myMesh(nullptr)
@@ -20,7 +20,7 @@ namespace Simple
 		mySkeleton = nullptr;
 	}
 
-	void AnimatedModel::Init(const Simple::Mesh* const aMesh, const Skeleton* const aSkeleton)
+	void AnimatedModel::Init(const Mesh* const aMesh, const Skeleton* const aSkeleton)
 	{
 		myMesh = aMesh;
 		mySkeleton = aSkeleton;
@@ -28,7 +28,7 @@ namespace Simple
 		AddTexture("DefaultTexture.dds");
 	}
 
-	void AnimatedModel::Init(const Simple::Mesh* const aMesh, const Skeleton* const aSkeleton, const char* aTexturePath)
+	void AnimatedModel::Init(const Mesh* const aMesh, const Skeleton* const aSkeleton, const char* aTexturePath)
 	{
 		myMesh = aMesh;
 		mySkeleton = aSkeleton;
@@ -38,7 +38,7 @@ namespace Simple
 
 	void AnimatedModel::AddTexture(const char* aFilePath)
 	{
-		std::shared_ptr<const Simple::Texture> texture = Global::GetGraphicsEngine()->GetTexture(aFilePath);
+		std::shared_ptr<const Texture> texture = Global::GetGraphicsEngine()->GetTexture(aFilePath);
 
 		if (texture == nullptr)
 		{
@@ -123,7 +123,7 @@ namespace Simple
 		myBoundingBoxColor = aColor;
 	}
 
-	const BoundingBox3D& AnimatedModel::GetBoundingBox() const
+	const Simple::BoundingBox3D& AnimatedModel::GetBoundingBox() const
 	{
 		return myMesh->GetBoundingBox();
 	}

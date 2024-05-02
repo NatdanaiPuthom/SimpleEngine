@@ -3,6 +3,11 @@
 #include "Game/Test/IK/InverseKinematics.hpp"
 #include "Game/Player/Player.hpp"
 
+namespace Graphics
+{
+	class Model;
+}
+
 namespace Scenes
 {
 	class DefaultScene final : public Simple::Scene
@@ -17,7 +22,7 @@ namespace Scenes
 		void Update() override;
 		void Render() override;
 	private:
-		Simple::Model myFloor;	
+		Graphics::Model myFloor;
 		Player myPlayer;
 
 		Test::InverseKinematics myIKTest;

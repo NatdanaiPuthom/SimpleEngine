@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Simple
+namespace Graphics
 {
 	class PlaneReflection;
 }
@@ -17,6 +17,6 @@ namespace Scenes
 		void Update() override;
 		void Render() override;
 	private:
-		std::unique_ptr<Simple::PlaneReflection> myPlaneReflection;
+		std::unique_ptr<Graphics::PlaneReflection> myPlaneReflection;
 	};
 }

@@ -7,7 +7,7 @@ using Microsoft::WRL::ComPtr;
 
 struct ID3D11Buffer;
 
-namespace Simple
+namespace Graphics
 {
 	struct MeshData;
 
@@ -22,7 +22,7 @@ namespace Drawer
 	{
 		Math::Vector2f position;
 		Math::Vector2f size;
-		std::shared_ptr<const Simple::Texture> texture;
+		std::shared_ptr<const Graphics::Texture> texture;
 	};
 }
 
@@ -36,10 +36,10 @@ namespace Drawer
 
 		void Render(const Sprite2D& aSprite);
 	private:
-		std::shared_ptr<const Simple::Shader> myShader;
+		std::shared_ptr<const Graphics::Shader> myShader;
 
-		std::unique_ptr<Simple::ConstantBuffer> myObjectBuffer;
-		std::unique_ptr<const Simple::MeshData> myMeshData;
+		std::unique_ptr<Graphics::ConstantBuffer> myObjectBuffer;
+		std::unique_ptr<const Graphics::MeshData> myMeshData;
 
 		ComPtr<ID3D11Buffer> myVertexBuffer;
 		ComPtr<ID3D11Buffer> myIndexBuffer;

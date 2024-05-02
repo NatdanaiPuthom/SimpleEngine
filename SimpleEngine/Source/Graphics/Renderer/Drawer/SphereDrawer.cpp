@@ -6,7 +6,7 @@
 
 namespace Drawer
 {
-	using namespace Simple;
+	using namespace Graphics;
 
 	SphereDrawer::SphereDrawer()
 		: myObjectBuffer(std::make_unique<ConstantBuffer>())
