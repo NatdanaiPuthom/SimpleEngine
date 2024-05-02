@@ -2,7 +2,6 @@
 
 namespace Editor
 {
-	class InspectorWindow;
 	class HierarchyWindow;
 	class AssetWindow;
 }
@@ -27,7 +26,6 @@ namespace Tool
 	private:
 		std::unique_ptr<SettingsTool> mySettingsTool;
 		std::unique_ptr<CameraTool> myCameraTool;
-		std::unique_ptr<Editor::InspectorWindow> myInspectorWindow;
 		std::unique_ptr<Editor::HierarchyWindow> myHierarchyWindow;
 		std::unique_ptr<Editor::AssetWindow> myAssetWindow;
 

@@ -1,5 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Tools/HierarchyWindow.hpp"
+#include "Editor/Windows/HierarchyWindow.hpp"
 #include "Engine/Components/AllEngineComponents.hpp"
 
 namespace Editor

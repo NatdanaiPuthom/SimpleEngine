@@ -1,5 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Tools/AssetWindow.hpp"
+#include "Editor/Windows/AssetWindow.hpp"
 
 namespace Editor
 {
