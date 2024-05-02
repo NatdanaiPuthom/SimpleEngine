@@ -129,7 +129,7 @@ namespace Editor
 							{
 							case 0:
 								selectedEntity->AddComponent<TransformComponent>();
-								break;	
+								break;
 							case 1:
 								selectedEntity->AddComponent<Simple::NullComponent>();
 								break;
