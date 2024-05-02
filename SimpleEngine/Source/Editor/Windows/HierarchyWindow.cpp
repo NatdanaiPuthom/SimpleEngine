@@ -23,6 +23,21 @@ namespace Editor
 
 		if (ImGui::Begin("Hierarchy", 0, ImGuiWindowFlags_None))
 		{
+			if (ImGui::Button("Add"))
+			{
+				ImGui::OpenPopup("Add Scene Object");
+			}
+
+			if (ImGui::BeginPopup("Add Scene Object"))
+			{
+				if (ImGui::MenuItem("Add Entity"))
+				{
+					World::GetECS()->CreateEntity();
+				}
+
+				ImGui::EndPopup();
+			}
+
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.12f, 0.12f, 0.12f, 1.0f).Value);
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
 			ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
