@@ -19,8 +19,12 @@ using Microsoft::WRL::ComPtr;
 namespace Simple
 {
 	class ConstantBuffer;
-	class Camera;
 	class ImGuiEngine;
+}
+
+namespace Graphics
+{
+	class Camera;
 }
 
 enum class eRasterizerState
@@ -132,7 +136,7 @@ namespace Simple
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
 
 		void SetRenderTarget(eRenderTarget aRenderTarget);
-		void SetCamera(std::shared_ptr<Simple::Camera> aCamera);
+		void SetCamera(std::shared_ptr<Graphics::Camera> aCamera);
 		void SetToDefaultCamera();
 	public:
 		ComPtr<ID3D11Device> GetDevice();
@@ -141,8 +145,8 @@ namespace Simple
 		ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
 		ComPtr<ID3D11ShaderResourceView> GetWaterRefractionShaderResourceView();
 
-		std::shared_ptr<Simple::Camera> GetCurrentCamera();
-		std::shared_ptr<Simple::Camera> GetEditorCamera();
+		std::shared_ptr<Graphics::Camera> GetCurrentCamera();
+		std::shared_ptr<Graphics::Camera> GetEditorCamera();
 		std::shared_ptr<const Simple::Texture> GetTexture(const char* aFilePath);
 		std::shared_ptr<const Simple::Texture> GetDefaultTexture();
 		std::shared_ptr<const Simple::Shader> GetDefaultShader();
@@ -197,8 +201,8 @@ namespace Simple
 		ComPtr<ID3D11SamplerState> mySamplerState;
 		ComPtr<ID3D11RasterizerState> myRasterizerState;
 
-		std::shared_ptr<Simple::Camera> myCurrentCamera;
-		std::shared_ptr<Simple::Camera> myEditorCamera;
+		std::shared_ptr<Graphics::Camera> myCurrentCamera;
+		std::shared_ptr<Graphics::Camera> myEditorCamera;
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
 		std::unique_ptr<Simple::ConstantBuffer> myCameraConstantBuffer;

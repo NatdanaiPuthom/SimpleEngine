@@ -43,7 +43,7 @@ namespace Simple
 		myWaterRefractionRenderTarget = std::make_unique<RenderTarget>();
 		myImGuiImageRenderTarget = std::make_unique<RenderTarget>();
 
-		myEditorCamera = std::make_shared<Simple::Camera>();
+		myEditorCamera = std::make_shared<Graphics::Camera>();
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 
 		myCurrentCamera = myEditorCamera;
@@ -423,7 +423,7 @@ namespace Simple
 		myContext->RSSetState(rasterizerState.Get());
 	}
 
-	void GraphicsEngine::SetCamera(std::shared_ptr<Simple::Camera> aCamera)
+	void GraphicsEngine::SetCamera(std::shared_ptr<Graphics::Camera> aCamera)
 	{
 		myCurrentCamera = aCamera;
 	}
@@ -557,12 +557,12 @@ namespace Simple
 		return myModelFactory.get();
 	}
 
-	std::shared_ptr<Simple::Camera> GraphicsEngine::GetCurrentCamera()
+	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetCurrentCamera()
 	{
 		return myCurrentCamera;
 	}
 
-	std::shared_ptr<Simple::Camera> GraphicsEngine::GetEditorCamera()
+	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetEditorCamera()
 	{
 		return myEditorCamera;
 	}

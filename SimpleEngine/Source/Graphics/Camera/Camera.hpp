@@ -6,7 +6,7 @@ namespace SimpleUtilities
 	class InputManager;
 }
 
-namespace Simple
+namespace Graphics
 {
 	class Camera final
 	{

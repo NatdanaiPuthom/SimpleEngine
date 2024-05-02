@@ -3,7 +3,7 @@
 #include "Engine/Input/InputManager.hpp"
 #include "Engine/Global.hpp"
 
-namespace Simple
+namespace Graphics
 {
 	Camera::Camera(const float aFoV, const float aNearPlane, const float aFarPlane)
 		: myFoV(aFoV)
