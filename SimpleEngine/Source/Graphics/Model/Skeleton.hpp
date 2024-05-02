@@ -1,10 +1,9 @@
 #pragma once
 #include "Engine/Math/Matrix4x4.hpp"
+#include "Graphics/Defines.hpp"
 #include <string>
 #include <vector>
 #include <unordered_map>
-
-#define SIMPLE_MAX_BONES 64
 
 namespace Graphics
 {
