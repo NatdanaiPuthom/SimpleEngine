@@ -2,7 +2,7 @@
 
 namespace Editor
 {
-	class HierarchyWindow final : public Simple::ToolInterface
+	class HierarchyWindow final : public Editor::ToolInterface
 	{
 	public:
 		HierarchyWindow();

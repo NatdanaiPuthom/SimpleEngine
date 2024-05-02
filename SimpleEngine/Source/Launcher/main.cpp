@@ -40,7 +40,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_BEGIN("Engine initialize");
 	Simple::Engine engine;
 	Simple::GraphicsEngine graphicsEngine;
-	Simple::Editor editor;
+	Editor::EditorEngine editor;
 	Simple::ECS ecs;
 
 	engine.SetGlobalPointerToThis();

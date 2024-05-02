@@ -1,7 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/Tools/LightTool.hpp"
 
-namespace Tool
+namespace Editor
 {
 	LightTool::LightTool()
 	{

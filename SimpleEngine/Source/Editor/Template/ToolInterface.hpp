@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Simple
+namespace Editor
 {
 	class ToolInterface
 	{

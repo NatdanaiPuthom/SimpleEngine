@@ -2,7 +2,7 @@
 
 namespace Editor
 {
-	class AssetWindow final : public Simple::ToolInterface
+	class AssetWindow final : public Editor::ToolInterface
 	{
 	public:
 		AssetWindow();

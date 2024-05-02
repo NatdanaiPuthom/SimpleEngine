@@ -1,9 +1,9 @@
 #pragma once
 #include "Editor/Template/ToolInterface.hpp"
 
-namespace Tool
+namespace Editor
 {
-	class MeshTool final : public Simple::ToolInterface
+	class MeshTool final : public Editor::ToolInterface
 	{
 	public:
 		MeshTool();

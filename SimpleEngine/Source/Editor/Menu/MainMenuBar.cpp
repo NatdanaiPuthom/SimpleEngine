@@ -5,79 +5,82 @@
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/Windows/AssetWindow.hpp"
 
-Tool::MainMenuBar::MainMenuBar()
-	: mySettingToolActive(false)
-	, myDebugMenuActive(false)
+namespace Editor
 {
-}
-
-Tool::MainMenuBar::~MainMenuBar()
-{
-}
-
-void Tool::MainMenuBar::Init()
-{
-	LoadSettingsFromJson();
-
-	mySettingsTool = std::make_unique<Tool::SettingsTool>();
-	myCameraTool = std::make_unique<Tool::CameraTool>();
-	myAssetWindow = std::make_unique<Editor::AssetWindow>();
-	myHierarchyWindow = std::make_unique<Editor::HierarchyWindow>();
-
-	mySettingsTool->Init();
-	myCameraTool->Init();
-	myAssetWindow->Init();
-	myHierarchyWindow->Init();
-}
-
-void Tool::MainMenuBar::Update()
-{
-	myHierarchyWindow->Update();
-}
-
-void Tool::MainMenuBar::Draw()
-{
-	if (ImGui::BeginMainMenuBar())
+	MainMenuBar::MainMenuBar()
+		: mySettingToolActive(false)
+		, myDebugMenuActive(false)
 	{
-		if (ImGui::BeginMenu("Debug"))
+	}
+
+	MainMenuBar::~MainMenuBar()
+	{
+	}
+
+	void MainMenuBar::Init()
+	{
+		LoadSettingsFromJson();
+
+		mySettingsTool = std::make_unique<SettingsTool>();
+		myCameraTool = std::make_unique<CameraTool>();
+		myAssetWindow = std::make_unique<AssetWindow>();
+		myHierarchyWindow = std::make_unique<HierarchyWindow>();
+
+		mySettingsTool->Init();
+		myCameraTool->Init();
+		myAssetWindow->Init();
+		myHierarchyWindow->Init();
+	}
+
+	void MainMenuBar::Update()
+	{
+		myHierarchyWindow->Update();
+	}
+
+	void MainMenuBar::Draw()
+	{
+		if (ImGui::BeginMainMenuBar())
 		{
-			ImGui::MenuItem("Settings", "", &mySettingToolActive);	
-			ImGui::EndMenu();
+			if (ImGui::BeginMenu("Debug"))
+			{
+				ImGui::MenuItem("Settings", "", &mySettingToolActive);
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndMainMenuBar();
 		}
 
-		ImGui::EndMainMenuBar();
+		DrawTools();
 	}
 
-	DrawTools();
-}
-
-void Tool::MainMenuBar::DrawTools()
-{
-	if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_F1))
+	void MainMenuBar::DrawTools()
 	{
-		mySettingToolActive = !mySettingToolActive;
+		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_F1))
+		{
+			mySettingToolActive = !mySettingToolActive;
+		}
+
+		if (mySettingToolActive)
+		{
+			myAssetWindow->Draw();
+			myCameraTool->Draw();
+			mySettingsTool->Draw();
+			myHierarchyWindow->Draw();
+		}
 	}
 
-	if (mySettingToolActive)
+	void MainMenuBar::LoadSettingsFromJson()
 	{
-		myAssetWindow->Draw();
-		myCameraTool->Draw();
-		mySettingsTool->Draw();
-		myHierarchyWindow->Draw();
+		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR);
+
+		std::ifstream file(filename);
+		assert(file.is_open() && "Failed To Open File");
+
+		const nlohmann::json json = nlohmann::json::parse(file);
+		file.close();
+
+		const nlohmann::json settings = json["editor_settings"];
+
+		mySettingToolActive = settings["setting_tool"]["active"];
 	}
-}
-
-void Tool::MainMenuBar::LoadSettingsFromJson()
-{
-	const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR);
-
-	std::ifstream file(filename);
-	assert(file.is_open() && "Failed To Open File");
-
-	const nlohmann::json json = nlohmann::json::parse(file);
-	file.close();
-
-	const nlohmann::json settings = json["editor_settings"];
-
-	mySettingToolActive = settings["setting_tool"]["active"];
 }

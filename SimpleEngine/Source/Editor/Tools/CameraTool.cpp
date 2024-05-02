@@ -2,7 +2,7 @@
 #include "Editor/Tools/CameraTool.hpp"
 #include "Graphics/Camera/Camera.hpp"
 
-namespace Tool
+namespace Editor
 {
 	CameraTool::CameraTool()
 	{

@@ -6,19 +6,19 @@
 #include "Editor/Menu/MainMenuBar.hpp"
 #endif
 
-namespace Simple
+namespace Editor
 {
 #ifndef _SIMPLE
-	Editor::Editor()
+	EditorEngine::EditorEngine()
 	{
-		AddTool(std::move(std::make_unique<Tool::MainMenuBar>()));
+		AddTool(std::move(std::make_unique<MainMenuBar>()));
 	}
 
-	Editor::~Editor()
+	EditorEngine::~EditorEngine()
 	{
 	}
 
-	void Editor::Init()
+	void EditorEngine::Init()
 	{
 		for (const auto& tool : myTools)
 		{
@@ -26,7 +26,7 @@ namespace Simple
 		}
 	}
 
-	void Editor::Update()
+	void EditorEngine::Update()
 	{
 		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_F5))
 		{
@@ -40,33 +40,33 @@ namespace Simple
 			}
 		}
 
-		for (const std::unique_ptr<Simple::ToolInterface>& tool : myTools)
+		for (const std::unique_ptr<ToolInterface>& tool : myTools)
 		{
 			tool->Update();
 		}
 	}
 
-	void Editor::Render()
+	void EditorEngine::Render()
 	{
-		for (const std::unique_ptr<Simple::ToolInterface>& tool : myTools)
+		for (const std::unique_ptr<ToolInterface>& tool : myTools)
 		{
 			tool->Draw();
 		}
 	}
 
-	void Editor::AddTool(std::unique_ptr<Simple::ToolInterface> aTool)
+	void EditorEngine::AddTool(std::unique_ptr<ToolInterface> aTool)
 	{
 		myTools.push_back(std::move(aTool));
 	}
 
 #else
-	Editor::Editor() {}
-	Editor::~Editor() {}
+	EditorEngine::EditorEngine() {}
+	EditorEngine::~EditorEngine() {}
 
-	void Editor::Init() {}
-	void Editor::Update() {}
-	void Editor::Render() {}
+	void EditorEngine::Init() {}
+	void EditorEngine::Update() {}
+	void EditorEngine::Render() {}
 
-	void Editor::AddTool(std::unique_ptr<Simple::ToolInterface> /*aTool*/) {}
+	void EditorEngine::AddTool(std::unique_ptr<ToolInterface> /*aTool*/) {}
 #endif
 }

@@ -1,7 +1,7 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Tools/SettingsTool.hpp"
 
-namespace Tool
+namespace Editor
 {
 	SettingsTool::SettingsTool()
 		: mySelectedWindowSize(1)

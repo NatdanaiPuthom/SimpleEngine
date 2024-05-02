@@ -1,24 +1,26 @@
 #pragma once
+#include <memory>
+#include <vector>
 
-namespace Simple
+namespace Editor
 {
 	class ToolInterface;
 }
 
-namespace Simple
+namespace Editor
 {
-	class Editor final
+	class EditorEngine final
 	{
 	public:
-		Editor();
-		~Editor();
+		EditorEngine();
+		~EditorEngine();
 
 		void Init();
 		void Update();
 		void Render();
 
-		void AddTool(std::unique_ptr<Simple::ToolInterface> aTool);
+		void AddTool(std::unique_ptr<ToolInterface> aTool);
 	private:
-		std::vector<std::unique_ptr<Simple::ToolInterface>> myTools;
+		std::vector<std::unique_ptr<ToolInterface>> myTools;
 	};
 }

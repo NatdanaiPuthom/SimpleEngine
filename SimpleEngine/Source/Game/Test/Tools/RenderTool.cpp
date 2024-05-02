@@ -1,7 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/Tools/RenderTool.hpp"
 
-namespace Tool
+namespace Editor
 {
 	RenderTool::RenderTool()
 	{

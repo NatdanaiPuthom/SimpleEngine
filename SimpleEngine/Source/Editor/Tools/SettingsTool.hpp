@@ -1,8 +1,8 @@
 #pragma once
 
-namespace Tool
+namespace Editor
 {
-	class SettingsTool final : public Simple::ToolInterface
+	class SettingsTool final : public Editor::ToolInterface
 	{
 	public:
 		SettingsTool();

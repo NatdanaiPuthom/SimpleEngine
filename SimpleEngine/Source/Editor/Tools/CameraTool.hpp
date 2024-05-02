@@ -1,8 +1,8 @@
 #pragma once
 
-namespace Tool
+namespace Editor
 {
-	class CameraTool final : public Simple::ToolInterface
+	class CameraTool final : public Editor::ToolInterface
 	{
 	public:
 		CameraTool();

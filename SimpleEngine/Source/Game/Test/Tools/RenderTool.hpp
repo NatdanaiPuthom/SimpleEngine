@@ -1,9 +1,9 @@
 #pragma once
 #include "Editor/Template/ToolInterface.hpp"
 
-namespace Tool
+namespace Editor
 {
-	class RenderTool final : public Simple::ToolInterface
+	class RenderTool final : public Editor::ToolInterface
 	{
 	public:
 		RenderTool();

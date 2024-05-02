@@ -1,9 +1,9 @@
 #pragma once
 #include "Editor/Template/ToolInterface.hpp"
 
-namespace Tool
+namespace Editor
 {
-	class LightTool final : public Simple::ToolInterface
+	class LightTool final : public Editor::ToolInterface
 	{
 	public:
 		LightTool();

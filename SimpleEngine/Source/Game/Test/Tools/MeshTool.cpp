@@ -1,7 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/Tools/MeshTool.hpp"
 
-namespace Tool
+namespace Editor
 {
 	MeshTool::MeshTool()
 	{

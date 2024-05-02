@@ -6,12 +6,12 @@ namespace Editor
 	class AssetWindow;
 }
 
-namespace Tool
+namespace Editor
 {
 	class SettingsTool;
 	class CameraTool;
 
-	class MainMenuBar : public Simple::ToolInterface
+	class MainMenuBar : public Editor::ToolInterface
 	{
 	public:
 		MainMenuBar();
