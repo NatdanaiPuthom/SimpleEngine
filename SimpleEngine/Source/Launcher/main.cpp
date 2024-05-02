@@ -64,16 +64,40 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
 
+		PROFILER_BEGIN("BeginFrame");
 		if (graphicsEngine.BeginFrame() == false)
+		{
+			PROFILER_END();
 			continue;
+		}
+		PROFILER_END();
 
+		PROFILER_BEGIN("Engine Update");
 		engine.Update();
+		PROFILER_END();
+
+		PROFILER_BEGIN("GameWorld Update");
 		gameWorld.Update();
+		PROFILER_END();
+
+		PROFILER_BEGIN("Editor Update");
 		editor.Update();
+		PROFILER_END();
 
+		PROFILER_BEGIN("SetRenderTarget: Backbuffer");
+		Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::Backbuffer);
+		PROFILER_END();
+
+		PROFILER_BEGIN("GameWorld Render");
 		gameWorld.Render();
-		editor.Render();
+		PROFILER_END();
 
+		PROFILER_BEGIN("Editor Render");
+		editor.Render();
+		PROFILER_END();
+
+		PROFILER_BEGIN("Endframe");
 		graphicsEngine.EndFrame();
+		PROFILER_END();
 	}
 }
