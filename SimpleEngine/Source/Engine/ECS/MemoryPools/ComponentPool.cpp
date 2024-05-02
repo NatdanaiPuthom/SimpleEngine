@@ -1,7 +1,7 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/MemoryPools/ComponentPool.hpp"
 
-namespace Simple
+namespace ECS
 {
 	ComponentPool::ComponentPool(const size_t aDefaultSize)
 		: myComponentTypeSize(0)

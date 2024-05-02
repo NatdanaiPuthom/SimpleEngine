@@ -3,7 +3,7 @@
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
 
-namespace Simple
+namespace ECS
 {
 	size_t EntityManager::myCurrentEntityID = 0;
 	ComponentManager* EntityManager::myComponentManager = nullptr;

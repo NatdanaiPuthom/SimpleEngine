@@ -7,20 +7,20 @@
 #include <vector>
 #include <string>
 
-namespace Simple
+namespace ECS
 {
 	class IEntity;
-	class ECS;
+	class EntityComponentSystem;
 }
 
-namespace Simple
+namespace ECS
 {
 	using EntityID = size_t;
 
 	class EntityManager final
 	{
 		using ComponentType = std::type_index;
-		friend class Simple::ECS;
+		friend class ECS::EntityComponentSystem;
 	public:
 		Entity CreateEntity();
 

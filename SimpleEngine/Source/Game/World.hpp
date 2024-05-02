@@ -15,7 +15,7 @@ namespace World
 	Simple::PlaneReflection* GetWaterPlane();
 	Simple::EventManager* GetEventmanager();
 	Simple::Navmesh* GetNavmesh();
-	Simple::ECS* GetECS();
+	ECS::EntityComponentSystem* GetECS();
 
 	std::shared_ptr<Simple::Scene> GetActiveScene();
 

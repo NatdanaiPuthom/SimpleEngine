@@ -2,39 +2,39 @@
 #include "Engine/ECS/ECS.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
-namespace Simple
+namespace ECS
 {
-	ECS::ECS()
+	EntityComponentSystem::EntityComponentSystem()
 		: myEntityManager(&myComponentManager)
 	{
 	}
 
-	ECS::~ECS()
+	EntityComponentSystem::~EntityComponentSystem()
 	{
 	}
 
-	void ECS::Init()
+	void EntityComponentSystem::Init()
 	{
 		constexpr size_t entitiesToReserve = 8; //NOTE(v9.30.10):Small number for experimental purposes for now
 		myEntityManager.Init(entitiesToReserve);
 	}
 
-	Entity ECS::CreateEntity()
+	Entity EntityComponentSystem::CreateEntity()
 	{
 		return myEntityManager.CreateEntity();
 	}
 
-	Entity ECS::GetEntity(const EntityID aID)
+	Entity EntityComponentSystem::GetEntity(const EntityID aID)
 	{
 		return myEntityManager.GetEntity(aID);
 	}
 
-	Entities ECS::GetAllEntities()
+	Entities EntityComponentSystem::GetAllEntities()
 	{
 		return myEntityManager.GetAllEntities();
 	}
 
-	void ECS::SetGlobalPointerToThis()
+	void EntityComponentSystem::SetGlobalPointerToThis()
 	{
 		Impl::SimpleWorldECS::SetECS(this);
 	}

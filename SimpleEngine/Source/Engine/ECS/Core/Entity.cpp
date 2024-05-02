@@ -1,7 +1,7 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Core/Entity.hpp"
 
-namespace Simple
+namespace ECS
 {
 	IEntity::IEntity(const size_t aID, EntityManager* aEntityManager)
 		: myEntityManager(aEntityManager)

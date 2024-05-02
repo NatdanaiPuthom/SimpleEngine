@@ -9,7 +9,7 @@ namespace World
 	Simple::LevelManager* localLevelManager = nullptr;
 	Simple::EventManager* localEventManager = nullptr;
 	Simple::PlaneReflection* localWaterPlane = nullptr;
-	Simple::ECS* localECS = nullptr;
+	ECS::EntityComponentSystem* localECS = nullptr;
 
 	float localWaterHeight = 0;
 }
@@ -61,7 +61,7 @@ namespace World
 		return &localLevelManager->GetNavmesh();
 	}
 
-	Simple::ECS* GetECS()
+	ECS::EntityComponentSystem* GetECS()
 	{
 		return localECS;
 	}
@@ -85,7 +85,7 @@ namespace Impl
 		World::localLevelManager = aLevelManager;
 	}
 
-	void SimpleWorldECS::SetECS(Simple::ECS* aECS)
+	void SimpleWorldECS::SetECS(ECS::EntityComponentSystem* aECS)
 	{
 		if (World::localECS != nullptr)
 			assert(false && "localLevelManager is already set. Is this a mistake?");

@@ -3,7 +3,7 @@
 #include "Engine/ECS/Core/Entity.hpp"
 #include <cassert>
 
-namespace Simple
+namespace ECS
 {
 	Entities::Entities(std::vector<char**>& aAllEntities)
 		: myAllEntities(aAllEntities)

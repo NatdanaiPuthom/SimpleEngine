@@ -1,7 +1,7 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Core/ComponentManager.hpp"
 
-namespace Simple
+namespace ECS
 {
 	ComponentManager::ComponentManager()
 	{

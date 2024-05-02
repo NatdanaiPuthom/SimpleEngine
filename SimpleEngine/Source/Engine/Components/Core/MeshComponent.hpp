@@ -8,9 +8,12 @@ namespace Simple
 	class Texture;
 }
 
-struct MeshComponent
+namespace ECS
 {
-	Simple::Mesh mesh;
-	const Simple::Shader* shader;
-	const Simple::Texture* texture;
-};
+	struct MeshComponent
+	{
+		Simple::Mesh mesh;
+		const Simple::Shader* shader;
+		const Simple::Texture* texture;
+	};
+}

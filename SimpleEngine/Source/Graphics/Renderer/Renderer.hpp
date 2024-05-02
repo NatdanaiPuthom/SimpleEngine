@@ -9,8 +9,11 @@
 #include <memory>
 #include <vector>
 
-struct MeshComponent;
-struct TransformComponent;
+namespace ECS
+{
+	struct MeshComponent;
+	struct TransformComponent;
+}
 
 namespace Simple
 {
@@ -23,7 +26,7 @@ namespace Drawer
 	{
 	public:
 
-		void TestRender(TransformComponent* aTransformComponent, MeshComponent* aMeshComponent);
+		void TestRender(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent);
 
 		Renderer();
 		~Renderer();

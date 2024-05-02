@@ -41,7 +41,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	Simple::Engine engine;
 	Simple::GraphicsEngine graphicsEngine;
 	Editor::EditorEngine editor;
-	Simple::ECS ecs;
+	ECS::EntityComponentSystem ecs;
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();

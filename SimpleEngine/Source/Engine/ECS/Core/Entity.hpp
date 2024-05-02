@@ -3,18 +3,18 @@
 #include "Engine/ECS/ECSInterface.hpp"
 #include <string>
 
-namespace Simple
+namespace ECS
 {
 	class EntityPool;
 	class EntityManager;
 }
 
-namespace Simple
+namespace ECS
 {
 	class IEntity final
 	{
-		friend class Simple::EntityManager;
-		friend class Simple::EntityPool;
+		friend class ECS::EntityManager;
+		friend class ECS::EntityPool;
 	public:
 		~IEntity();
 

@@ -2,7 +2,7 @@
 #include "Engine/ECS/MemoryPools/ComponentPool.hpp"
 #include "Engine/ECS/Core/Entity.hpp"
 
-namespace Simple
+namespace ECS
 {
 	EntityPool::EntityPool()
 		: myStartMemoryAddress(nullptr)

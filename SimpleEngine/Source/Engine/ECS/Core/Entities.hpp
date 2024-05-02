@@ -2,7 +2,7 @@
 #include "Engine/ECS/ECSInterface.hpp"
 #include <vector>
 
-namespace Simple
+namespace ECS
 {
 	class Entities final
 	{

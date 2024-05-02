@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Simple
+namespace ECS
 {
 	//NOTE(v9.30.10):This component pool is tailored to store same type of component only
 	class ComponentPool final

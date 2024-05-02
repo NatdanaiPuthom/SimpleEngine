@@ -4,7 +4,10 @@ namespace Simple
 {
 	class LevelManager;
 	class EventManager;
-	class ECS;
+}
+namespace ECS
+{
+	class EntityComponentSystem;
 }
 
 namespace Impl
@@ -25,8 +28,8 @@ namespace Impl
 
 	class SimpleWorldECS final
 	{
-		friend class Simple::ECS;
+		friend class ECS::EntityComponentSystem;
 	private:
-		static void SetECS(Simple::ECS* aECS);
+		static void SetECS(ECS::EntityComponentSystem* aECS);
 	};
 }

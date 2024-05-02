@@ -2,13 +2,13 @@
 #include <vector>
 #include <unordered_map>
 
-namespace Simple
+namespace ECS
 {
 	class IEntity;
 	class EntityManager;
 }
 
-namespace Simple
+namespace ECS
 {
 	class EntityPool final
 	{

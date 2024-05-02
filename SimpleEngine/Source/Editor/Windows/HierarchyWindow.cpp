@@ -19,7 +19,7 @@ namespace Editor
 	void HierarchyWindow::Draw()
 	{
 		static int selected = -1;
-		Simple::Entities entities = World::GetECS()->GetAllEntities();
+		ECS::Entities entities = World::GetECS()->GetAllEntities();
 
 		if (ImGui::Begin("Hierarchy", 0, ImGuiWindowFlags_None))
 		{
@@ -69,7 +69,7 @@ namespace Editor
 
 			if (selected != -1)
 			{
-				Simple::Entity selectedEntity = entities[selected];
+				ECS::Entity selectedEntity = entities[selected];
 				const size_t id = selectedEntity->GetID();
 				const std::vector<std::string> componentNames = selectedEntity->GetComponentNames();
 
@@ -128,10 +128,10 @@ namespace Editor
 							switch (i)
 							{
 							case 0:
-								selectedEntity->AddComponent<TransformComponent>();
+								selectedEntity->AddComponent<ECS::TransformComponent>();
 								break;
 							case 1:
-								selectedEntity->AddComponent<Simple::NullComponent>();
+								selectedEntity->AddComponent<ECS::NullComponent>();
 								break;
 							}
 						}

@@ -1,7 +1,10 @@
 #pragma once
 #include "Engine/Math/Transform.hpp"
 
-struct TransformComponent
+namespace ECS
 {
-	Math::Transform transform;
-};
+	struct TransformComponent
+	{
+		Math::Transform transform;
+	};
+}

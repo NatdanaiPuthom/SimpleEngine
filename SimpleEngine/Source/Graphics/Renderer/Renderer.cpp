@@ -18,7 +18,7 @@ namespace Drawer
 {
 	using namespace Simple;
 
-	void Renderer::TestRender(TransformComponent* aTransformComponent, MeshComponent* aMeshComponent)
+	void Renderer::TestRender(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent)
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 

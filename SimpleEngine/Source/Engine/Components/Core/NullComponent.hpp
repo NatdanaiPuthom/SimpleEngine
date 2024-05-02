@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Simple
+namespace ECS
 {
 	struct NullComponent final
 	{

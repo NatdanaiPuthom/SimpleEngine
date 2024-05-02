@@ -6,12 +6,12 @@
 #include <typeindex>
 #include <string>
 
-namespace Simple
+namespace ECS
 {
-	class ECS;
+	class EntityComponentSystem;
 }
 
-namespace Simple
+namespace ECS
 {
 	using ComponentID = size_t;
 	using ComponentType = std::type_index;
@@ -19,7 +19,7 @@ namespace Simple
 	class ComponentManager final
 	{
 		using ComponentName = std::string;
-		friend class Simple::ECS;
+		friend class ECS::EntityComponentSystem;
 	public:
 		~ComponentManager();
 

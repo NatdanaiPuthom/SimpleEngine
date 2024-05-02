@@ -3,18 +3,18 @@
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Core/EntityManager.hpp"
 
-namespace Simple
+namespace ECS
 {
-	class ECS final
+	class EntityComponentSystem final
 	{
 	public:
-		ECS();
-		~ECS();
+		EntityComponentSystem();
+		~EntityComponentSystem();
 
-		ECS(const ECS&) = delete;
-		ECS(ECS&&) = delete;
-		ECS& operator=(const ECS&) = delete;
-		ECS& operator=(ECS&&) = delete;
+		EntityComponentSystem(const EntityComponentSystem&) = delete;
+		EntityComponentSystem(EntityComponentSystem&&) = delete;
+		EntityComponentSystem& operator=(const EntityComponentSystem&) = delete;
+		EntityComponentSystem& operator=(EntityComponentSystem&&) = delete;
 
 		void Init();
 
