@@ -56,6 +56,13 @@ namespace Simple
 	template<typename T>
 	inline bool EntityManager::AddComponent(const EntityID aEntityID)
 	{
+		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
+		
+		if (components.contains(typeid(T)) == true)
+		{
+			return false;
+		}
+
 		myEntityComponents[aEntityID][typeid(T)] = myComponentManager->CreateComponent<T>();
 		return myEntityComponents[aEntityID].contains(typeid(T));
 	}

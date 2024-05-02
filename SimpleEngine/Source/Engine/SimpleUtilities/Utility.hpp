@@ -11,9 +11,16 @@ namespace SimpleUtilities
 
 	static inline std::string ConvertTypeIndexNameToPrettyName(const std::string& aNameFromTypeIndex)
 	{
-		const size_t pos = aNameFromTypeIndex.find_last_of("::"); //NOTE(v9.30.10): I don't know why "::" but it works for now
+		size_t pos = aNameFromTypeIndex.find_last_of("::"); //NOTE(v9.30.10): For struct/classes with namespaces
 		
 		if (pos != std::string::npos && pos + 1 < aNameFromTypeIndex.length())
+		{
+			return aNameFromTypeIndex.substr(pos + 1);
+		}
+
+		pos = aNameFromTypeIndex.find_last_of(" "); //NOTE(v9.30.10): For struct/classes without namespaces
+
+		if (pos != std::string::npos)
 		{
 			return aNameFromTypeIndex.substr(pos + 1);
 		}

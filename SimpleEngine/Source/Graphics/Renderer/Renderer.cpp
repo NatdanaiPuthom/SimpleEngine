@@ -11,8 +11,8 @@
 #include <fstream>
 #include <cassert>
 
-#include "Engine/Components/MeshComponent.hpp"
-#include "Engine/Components/TransformComponent.hpp"
+#include "Engine/Components/Core/MeshComponent.hpp"
+#include "Engine/Components/Core/TransformComponent.hpp"
 
 namespace Drawer
 {

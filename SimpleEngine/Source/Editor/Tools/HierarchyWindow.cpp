@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Tools/HierarchyWindow.hpp"
+#include "Engine/Components/AllEngineComponents.hpp"
 
 namespace Editor
 {
@@ -108,37 +109,35 @@ namespace Editor
 						ImGui::Separator();
 					}
 				}
-			}
 
-			static bool isListOpen = false;
-			if (ImGui::Button("Add Component"))
-			{
-				isListOpen = !isListOpen;
-			}
-
-			/*if (!ImGui::IsItemHovered() && ImGui::IsMouseDown(0))
-			{
-				isListOpen = false;
-			}*/
-
-			if (isListOpen == true)
-			{
-				std::array<std::string, 2> components;
-				components[0] = "Transform";
-				components[1] = "Mesh";
-
-				for (size_t i = 0; i < components.size(); ++i)
+				if (ImGui::Button("Add Component"))
 				{
-					if (ImGui::BeginListBox("##AddComponentList"))
+					ImGui::OpenPopup("Add Component");
+				}
+
+				if (ImGui::BeginPopup("Add Component"))
+				{
+					std::array<std::string, 2> components;
+					components[0] = "Transform";
+					components[1] = "NullComponent";
+
+					for (size_t i = 0; i < components.size(); ++i)
 					{
-						const bool isSelected = false;
-
-						if (ImGui::Selectable(components[i].c_str(), isSelected))
+						if (ImGui::Selectable(components[i].c_str()))
 						{
+							switch (i)
+							{
+							case 0:
+								selectedEntity->AddComponent<TransformComponent>();
+								break;	
+							case 1:
+								selectedEntity->AddComponent<Simple::NullComponent>();
+								break;
+							}
 						}
-
-						ImGui::EndListBox();
 					}
+
+					ImGui::EndPopup();
 				}
 			}
 		}

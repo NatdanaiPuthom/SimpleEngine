@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Components/AllEngineComponents.hpp"
 #include "Game/Test/ECS/Core/Entity.hpp"
 #include "Game/Test/ECS/Core/EntityManager.hpp"
 

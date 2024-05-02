@@ -1,6 +1,7 @@
 #pragma once
-#include "Game/Test/ECS/MemoryPools/ComponentPool.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/Components/Core/NullComponent.hpp"
+#include "Game/Test/ECS/MemoryPools/ComponentPool.hpp"
 #include <unordered_map>
 #include <typeindex>
 #include <string>
@@ -8,14 +9,6 @@
 namespace Simple
 {
 	class ECS;
-}
-
-namespace Simple
-{
-	struct NullComponent final
-	{
-		bool isNull = true;
-	};
 }
 
 namespace Simple
