@@ -57,10 +57,11 @@ namespace Editor
 
 			if (ImGui::BeginChild("SceneEntities", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Border))
 			{
-				for (int i = 0; i < entities.GetSize(); ++i)
+				if (ImGui::BeginListBox("##Entities"))
 				{
-					if (ImGui::BeginListBox("##Entities"))
+					for (int i = 0; i < entities.GetSize(); ++i)
 					{
+
 						const bool isSelected = (selected == i);
 
 						if (ImGui::Selectable(entities[i]->GetName().c_str(), isSelected))
@@ -73,8 +74,9 @@ namespace Editor
 							ImGui::SetItemDefaultFocus();
 						}
 
-						ImGui::EndListBox();
 					}
+
+					ImGui::EndListBox();
 				}
 
 				ImGui::EndChild();
@@ -89,14 +91,24 @@ namespace Editor
 
 		if (ImGui::Begin("Inspector"))
 		{
-			std::string searchComponent = "";
-			if (ImGui::InputTextWithHint("Search", "Example \"TransformComponent\"", &searchComponent[0], searchComponent.capacity() + 1))
+			ECS::Entity selectedEntity = entities[selected];
+			std::string searchComponent = selectedEntity->GetName();
+			ImGui::PushItemWidth(200);
+			if (ImGui::InputTextWithHint("Name", "Entity Name", &searchComponent[0], searchComponent.capacity() + 1))
 			{
+				if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_RETURN))
+				{
+					selectedEntity->SetName(searchComponent);
+				}
 			}
+			ImGui::PopItemWidth();
+
+			ImGui::SameLine(ImGui::GetWindowWidth() - 50);
+			ImGui::Text(std::string("ID: " + std::to_string(selectedEntity->GetID())).c_str());
+			ImGui::Separator();
 
 			if (entities.GetSize() > 0)
 			{
-				ECS::Entity selectedEntity = entities[selected];
 				const size_t id = selectedEntity->GetID();
 				const std::vector<std::string> componentNames = selectedEntity->GetComponentNames();
 
