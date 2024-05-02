@@ -60,32 +60,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	ecs.CreateEntity();
 
-	Simple::Entities entities = ecs.GetAllEntities();
-	entities[0]->SetName("Test");
-
-	struct HelloWorld
-	{
-		~HelloWorld()
-		{
-			std::cout << "destroying HelloWorld: " << a << std::endl;
-		}
-		int a;
-	};
-
-	struct TestWorld
-	{
-		~TestWorld()
-		{
-			std::cout << "destroying TestWorld: " << test << std::endl;
-		}
-		bool test;
-	};
-
-	Simple::Entity entity = entities[0]; entity;
-	entity->AddComponent<TestWorld>();
-	entity->AddComponent<HelloWorld>();
-	entity->GetComponent<HelloWorld>()->a = 10;
-
 	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
