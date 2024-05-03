@@ -18,7 +18,13 @@ namespace ECS
 	{
 		const size_t size = GetSize();
 
-		if (aIndex > size || size == 0)
+		if (size == 0)
+		{
+			static IEntity* entityPointer = nullptr;
+			return std::ref(entityPointer);
+		}
+
+		if (aIndex < 0 || aIndex > size)
 		{
 			assert(false && "Index out of range");
 			static IEntity* entityPointer = nullptr;

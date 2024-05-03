@@ -52,15 +52,19 @@ namespace ECS
 
 		EntityPool myEntityPool;
 
-		static ComponentManager* myComponentManager;
-		static size_t myCurrentEntityID;
+		std::vector<EntityID> myRemovedEntityIDs;
+		ComponentManager* myComponentManager;
+		size_t myCurrentEntityID;
+		const char padding[16];
+
+		std::unordered_map<EntityID, size_t> myAllEntityIDToIndexMap; //NOTE(v9.31.1): Test, also ruin memory layout :(
 	};
 
 	template<typename T>
 	inline bool EntityManager::AddComponent(const EntityID aEntityID)
 	{
 		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
-		
+
 		if (components.contains(typeid(T)) == true)
 		{
 			return false;

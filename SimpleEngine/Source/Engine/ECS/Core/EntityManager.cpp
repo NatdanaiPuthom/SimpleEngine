@@ -5,12 +5,11 @@
 
 namespace ECS
 {
-	size_t EntityManager::myCurrentEntityID = 0;
-	ComponentManager* EntityManager::myComponentManager = nullptr;
-
 	EntityManager::EntityManager(ComponentManager* aComponentManager)
+		: myCurrentEntityID(0)
+		, myComponentManager(aComponentManager)
+		, padding("Never Give Up!!")
 	{
-		myComponentManager = aComponentManager;;
 	}
 
 	void EntityManager::Init(const size_t aEntityAmountToReserved)
@@ -28,6 +27,7 @@ namespace ECS
 		myCurrentEntityID++;
 		myEntities[myCurrentEntityID] = myEntityPool.CreateEntity(myCurrentEntityID, myEntities, this);
 		myAllEntities.push_back(&myEntities[myCurrentEntityID]);
+		myAllEntityIDToIndexMap[myCurrentEntityID] = myAllEntities.size() - 1;
 
 		return reinterpret_cast<Entity>(myEntities[myCurrentEntityID]);
 	}
@@ -40,6 +40,8 @@ namespace ECS
 		{
 			it->second = nullptr;
 		}
+
+		myAllEntities.erase(myAllEntities.begin() + myAllEntityIDToIndexMap[aID]);
 
 		return false;
 	}

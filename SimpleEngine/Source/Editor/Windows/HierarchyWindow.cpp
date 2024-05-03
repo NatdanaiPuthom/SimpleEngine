@@ -41,6 +41,7 @@ namespace Editor
 				if (ImGui::MenuItem("Add Entity"))
 				{
 					World::GetECS()->CreateEntity();
+					selected = static_cast<int>(entities.GetSize()) - 1;
 				}
 
 				ImGui::EndPopup();
@@ -89,9 +90,21 @@ namespace Editor
 		}
 		ImGui::End();
 
+		if (selected < 0)
+		{
+			return;
+		}
+
 		if (ImGui::Begin("Inspector"))
 		{
 			ECS::Entity selectedEntity = entities[selected];
+
+			if (selectedEntity == nullptr)
+			{
+				ImGui::End();
+				return;
+			}
+
 			std::string searchComponent = selectedEntity->GetName();
 			ImGui::PushItemWidth(200);
 			if (ImGui::InputTextWithHint("Name", "Entity Name", &searchComponent[0], searchComponent.capacity() + 1))
