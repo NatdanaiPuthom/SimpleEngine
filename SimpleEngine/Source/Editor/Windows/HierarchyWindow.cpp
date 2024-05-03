@@ -195,5 +195,21 @@ namespace Editor
 		}
 
 		ImGui::End();
+
+		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_DELETE))
+		{
+			if (entities.GetEntityCount() > 0)
+			{
+				entities[selected]->DestroyThis();
+				selected--;
+
+				if (selected < 0)
+				{
+					selected = 0;
+				}
+
+				return;
+			}
+		}
 	}
 }
