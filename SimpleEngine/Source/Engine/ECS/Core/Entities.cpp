@@ -16,15 +16,15 @@ namespace ECS
 
 	Entity Entities::operator[](const size_t aIndex)
 	{
-		const size_t size = GetSize();
+		const size_t entityCount = GetEntityCount();
 
-		if (size == 0)
+		if (entityCount == 0)
 		{
 			static IEntity* entityPointer = nullptr;
 			return std::ref(entityPointer);
 		}
 
-		if (aIndex < 0 || aIndex > size)
+		if (aIndex < 0 || aIndex > entityCount)
 		{
 			assert(false && "Index out of range");
 			static IEntity* entityPointer = nullptr;
@@ -34,7 +34,7 @@ namespace ECS
 		return reinterpret_cast<Entity>(*myAllEntities[aIndex]);
 	}
 
-	size_t Entities::GetSize() const
+	size_t Entities::GetEntityCount() const
 	{
 		return myAllEntities.size();
 	}

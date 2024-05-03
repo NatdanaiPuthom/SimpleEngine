@@ -41,7 +41,7 @@ namespace Editor
 				if (ImGui::MenuItem("Add Entity"))
 				{
 					World::GetECS()->CreateEntity();
-					selected = static_cast<int>(entities.GetSize()) - 1;
+					selected = static_cast<int>(entities.GetEntityCount()) - 1;
 				}
 
 				ImGui::EndPopup();
@@ -60,7 +60,7 @@ namespace Editor
 			{
 				if (ImGui::BeginListBox("##Entities"))
 				{
-					for (int i = 0; i < entities.GetSize(); ++i)
+					for (int i = 0; i < entities.GetEntityCount(); ++i)
 					{
 
 						const bool isSelected = (selected == i);
@@ -120,7 +120,7 @@ namespace Editor
 			ImGui::Text(std::string("ID: " + std::to_string(selectedEntity->GetID())).c_str());
 			ImGui::Separator();
 
-			if (entities.GetSize() > 0)
+			if (entities.GetEntityCount() > 0)
 			{
 				const size_t id = selectedEntity->GetID();
 				const std::vector<std::string> componentNames = selectedEntity->GetComponentNames();

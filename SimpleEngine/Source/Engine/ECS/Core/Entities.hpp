@@ -12,7 +12,7 @@ namespace ECS
 
 		Entity operator[](const size_t aIndex);
 
-		size_t GetSize() const;
+		size_t GetEntityCount() const;
 
 	private:
 		std::vector<char**>& myAllEntities;
