@@ -26,6 +26,8 @@ namespace ECS
 
 		bool RemoveComponentByTypeName(const std::string& aComponentTypeName);
 
+		bool DestroyThis();
+
 		void SetName(const std::string& aName);
 
 		template<typename T>

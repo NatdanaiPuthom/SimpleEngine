@@ -32,6 +32,18 @@ namespace ECS
 		return reinterpret_cast<Entity>(myEntities[myCurrentEntityID]);
 	}
 
+	bool EntityManager::DestroyEntity(const EntityID aID)
+	{
+		auto it = myEntities.find(aID);
+
+		if (it != myEntities.end())
+		{
+			it->second = nullptr;
+		}
+
+		return false;
+	}
+
 	bool EntityManager::RemoveComponentByTypeName(const size_t aEntityID, const std::string& aComponentTypeName)
 	{
 		const std::type_index componentType = myComponentManager->GetComponentTypeIndexByName(aComponentTypeName);

@@ -23,6 +23,7 @@ namespace ECS
 		friend class ECS::EntityComponentSystem;
 	public:
 		Entity CreateEntity();
+		bool DestroyEntity(const EntityID aID);
 
 		template<typename T>
 		bool AddComponent(const EntityID aEntityID);
@@ -45,12 +46,14 @@ namespace ECS
 
 		void Init(const size_t aEntityAmountToReserved = 8);
 	private:
-		static size_t myCurrentEntityID;
-		static ComponentManager* myComponentManager;
-		EntityPool myEntityPool;
-		std::unordered_map<EntityID, std::unordered_map<ComponentType, ComponentID>> myEntityComponents;
 		std::unordered_map<EntityID, char*> myEntities;
+		std::unordered_map<EntityID, std::unordered_map<ComponentType, ComponentID>> myEntityComponents;
 		std::vector<char**> myAllEntities;
+
+		EntityPool myEntityPool;
+
+		static ComponentManager* myComponentManager;
+		static size_t myCurrentEntityID;
 	};
 
 	template<typename T>

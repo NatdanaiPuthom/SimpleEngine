@@ -21,6 +21,11 @@ namespace ECS
 		return myEntityManager->RemoveComponentByTypeName(myID, aComponentTypeName);
 	}
 
+	bool IEntity::DestroyThis()
+	{
+		return myEntityManager->DestroyEntity(myID);
+	}
+
 	void IEntity::SetName(const std::string& aName)
 	{
 		myName = aName;

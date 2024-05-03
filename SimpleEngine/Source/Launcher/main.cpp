@@ -58,7 +58,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	ecs.CreateEntity();
+	ECS::Entity entity = ecs.CreateEntity(); entity;
+	entity->DestroyThis();
 
 	while (Global::GetGameIsRunning())
 	{
