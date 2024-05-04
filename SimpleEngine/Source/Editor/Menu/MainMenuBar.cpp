@@ -76,10 +76,7 @@ namespace Editor
 
 		const nlohmann::json settings = json["editor_settings"];
 
-		/*myEditorWindowActive = settings["editor"]["active"];
-		myHierarchyWindow->myIsActive = settings["windows"]["show_inspector"];*/
-
-		myEditorWindowActive = false;
-		myHierarchyWindow->myIsActive = true;
+		myEditorWindowActive = settings["editor"]["active"];
+		myHierarchyWindow->myIsActive = settings["windows"]["show_inspector"];
 	}
 }

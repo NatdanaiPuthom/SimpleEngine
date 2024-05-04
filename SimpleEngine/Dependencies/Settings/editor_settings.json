@@ -1,10 +1,13 @@
 {
   "editor_settings": {
-    "setting_tool": {
+    "editor": {
       "active": false
     },
     "help_windows": {
       "show_camera": false
+    },
+    "windows": {
+      "show_inspector": true
     }
   }
 }
