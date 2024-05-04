@@ -9,8 +9,8 @@
 
 #include "NodeScript/SimpleScript/Core/ScriptFoundation.h"
 #include "NodeScript/SimpleScriptEditor/VisualScriptingWindow.h"
-#include "SimpleScript/SimpleGameNodes.h"
-#include "SimpleScript/Core/Serialization/ScriptLoader.h"
+#include "NodeScript/SimpleScript/Core/Serialization/ScriptLoader.h"
+#include "NodeScript/SimpleScript/SimpleGameNodes.h"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 

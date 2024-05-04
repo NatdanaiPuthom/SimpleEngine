@@ -21,7 +21,6 @@ namespace Simple
 		ImGui_ImplWin32_Shutdown();
 
 		ImGui::DestroyContext();
-		ImNodes::DestroyContext();
 	}
 
 	void ImGuiEngine::Init()
@@ -29,8 +28,6 @@ namespace Simple
 		IMGUI_CHECKVERSION();
 
 		ImGui::CreateContext();
-		ImNodes::CreateContext();
-
 		ImGui::StyleColorsDark();
 
 		ImGuiIO& io = ImGui::GetIO();
