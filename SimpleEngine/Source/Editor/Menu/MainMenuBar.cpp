@@ -41,9 +41,9 @@ namespace Editor
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
-			if (ImGui::BeginMenu("Debug"))
+			if (ImGui::BeginMenu("Editor"))
 			{
-				ImGui::MenuItem("Settings", "", &mySettingToolActive);
+				ImGui::MenuItem("Show", "F1", &mySettingToolActive);
 				ImGui::EndMenu();
 			}
 
