@@ -1,5 +1,4 @@
 #pragma once
-#include <Game/GameLevel.h>
 #include <vector>
 #include "SimpleScript/Core/ScriptFoundation.h"
 
@@ -39,7 +38,6 @@ public:
 	const SceneChanger3000& GetSceneChanger() const;
 
 	std::unordered_map<std::string, Objective> myObjectives;
-	GameLevel myCurrentLevel;
 	SCRIPT::ScriptManager* myGlobalScriptManager;
 
 private:

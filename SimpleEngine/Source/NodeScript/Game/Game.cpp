@@ -1,13 +1,8 @@
 #include "Game.h"
-#include "GameObjects/Base/GameObject.h"
-
 #include <Game/GameCommon.h>
-#include <Game/GameLevel.h>
-
-#include <fstream>
-
 #include "SimpleScript/SimpleGameNodes.h"
 #include "SimpleScript/Core/Serialization/ScriptLoader.h"
+#include <fstream>
 
 Game::Game()
 {
@@ -42,7 +37,6 @@ void Game::Update(float aTimeDelta)
 	SimpleGameContext updateContext
 	{
 		aTimeDelta,
-		myCurrentLevel,
 		*this,
 	};
 }
@@ -60,8 +54,6 @@ void Game::LoadLevel(const char* /*name*/, bool runScripts)
 	{
 		return;
 	}
-
-	myCurrentLevel = { };
 
 	{
 		std::ifstream file(path);
@@ -116,7 +108,6 @@ void Game::LoadLevel(const char* /*name*/, bool runScripts)
 		SimpleGameContext updateContext
 		{
 			0.f,
-			myCurrentLevel,
 			*this,
 		};
 	}

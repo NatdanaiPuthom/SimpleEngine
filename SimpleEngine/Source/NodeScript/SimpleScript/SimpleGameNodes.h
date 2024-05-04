@@ -8,7 +8,6 @@ class ScriptComponent;
 
 struct SimpleGameContext : SCRIPT::ExecutionContextBase
 {
-	GameLevel& gameLevel;
 	Game& game;
 };
 
