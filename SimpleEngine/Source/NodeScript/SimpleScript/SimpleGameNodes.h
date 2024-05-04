@@ -1,11 +1,8 @@
 #pragma once
 #include "SimpleScript/Core/Contexts/ExecutionContextBase.h"
 
-class Game;
-
 struct SimpleGameContext : SCRIPT::ExecutionContextBase
 {
-	Game& game;
 };
 
 template<typename T>

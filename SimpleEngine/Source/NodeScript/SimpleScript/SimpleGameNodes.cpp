@@ -1,7 +1,6 @@
-#include "SimpleGameNodes.h"
+#include "SimpleScript/SimpleGameNodes.h"
 #include "SimpleScript/Core/Node/NodeTypeRegistry.h"
 #include "SimpleScript/Core/DataType/DataTypeRegistry.h"
-#include "Game/Game.h"
 
 template<typename T>
 std::string ToString(T a)
