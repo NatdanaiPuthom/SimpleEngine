@@ -144,7 +144,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		pchheader "Engine/Precomplied/EnginePch.hpp" -- Force all Source (.cpp) files in this project to include "Engine/Precomplier/stdafx.h"
 		pchsource "Source/Engine/Precomplied/EnginePch.cpp" -- Telling this project to use precomplier header
 
-		includedirs { -- Included "Source/" so that we do not need "../../Engine/Graphics/Test.h" and instead can do "Engine/Graphics/Test.h"
+		includedirs { -- Included "Source/" so that we do not need "../../Engine/Graphics/Test.h" and instead can do "Engine/Graphics/Test.h" or just "Graphics/Test.h" or just "Test.h"
 			"Source/" ,
 			"Source/Engine/", 
 			"Source/Engine/Graphics/", 
@@ -266,6 +266,40 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+	project "NodeScript"
+		kind "StaticLib"
+		location (dirs.Local)
+		targetdir (dirs.SimpleLib)
+		targetname("%{prj.name}_%{cfg.buildcfg}") 
+		flags { "FatalWarnings" }
+
+		pchheader "NodeScript/Precomplied/NodeScriptPch.hpp"
+		pchsource "Source/NodeScript/Precomplied/NodeScriptPch.cpp"
+
+		forceincludes { "%{prj.location}/NodeScript/Precomplied/NodeScriptPch.hpp" } -- Force include "NodeScriptPch.hpp" in every .cpp files without having to explicit include it ourselves
+
+		files {
+			"Source/NodeScript/**.h", 
+			"Source/NodeScript/**.hpp", 
+			"Source/NodeScript/**.cpp"
+		}
+
+		includedirs { 
+			"Source/",
+			"Source/NodeScript/",
+			"Source/External/",
+			"Source/External/**",
+		}
+
+		libdirs {
+			dirs.Lib
+		}
+
+		links {
+		}
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 	project "Editor"
 		kind "StaticLib"
 		location (dirs.Local)
@@ -323,10 +357,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 		includedirs { 
 			"Source/",
-			"Source/Engine/",
-			"Source/Graphics/",
-			"Source/Game/",
-			"Source/External/"
 		}
 
 		externalincludedirs {
@@ -343,6 +373,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Graphics", 
 			"Shader",
 			"Game",
+			"NodeScript",
 			"Editor"
 		}
 
