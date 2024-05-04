@@ -1,13 +1,7 @@
 #pragma once
-
 #include <Game/GameLevel.h>
 #include <vector>
 #include "SimpleScript/Core/ScriptFoundation.h"
-
-namespace Tga
-{
-	class Texture;
-}
 
 struct SceneChanger3000
 {
@@ -36,7 +30,7 @@ public:
 	~Game();
 
 	void Init();
-	void Update(const Tga::InputManager& inputmanager, float aTimeDelta);
+	void Update(float aTimeDelta);
 	void Render();
 
 	void LoadLevel(const char* name, bool runScripts);
@@ -47,12 +41,8 @@ public:
 	std::unordered_map<std::string, Objective> myObjectives;
 	GameLevel myCurrentLevel;
 	SCRIPT::ScriptManager* myGlobalScriptManager;
+
 private:
-	std::vector<Tga::Texture*> mySpriteTextures;
-
 	SceneChanger3000 mySceneChanger;
-
-
 	SCRIPT::ScriptFoundation myScriptFoundation;
-
 };

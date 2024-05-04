@@ -32,7 +32,7 @@ void Game::Init()
 	LoadLevel("world_Middle", false);
 }
 
-void Game::Update(const Tga::InputManager& inputManager, float aTimeDelta)
+void Game::Update(float aTimeDelta)
 {
 	if (mySceneChanger)
 	{
@@ -40,7 +40,7 @@ void Game::Update(const Tga::InputManager& inputManager, float aTimeDelta)
 		mySceneChanger.myChangeScene = false;
 	}
 
-	GameUpdateContext context{ aTimeDelta, myCurrentLevel, inputManager, this };
+	GameUpdateContext context{ aTimeDelta, myCurrentLevel, this };
 
 	SimpleGameContext updateContext
 	{
