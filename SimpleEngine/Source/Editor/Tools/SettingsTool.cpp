@@ -60,7 +60,6 @@ namespace Editor
 
 			ImGui::Dummy(ImVec2(0, 20));
 			ToggleConsole();
-			ToggleRenderBoundingBox();
 
 			ImGui::Dummy(ImVec2(0, 20));
 			AdjustActiveScene();
@@ -120,17 +119,6 @@ namespace Editor
 		if (ImGui::Checkbox("VSync", &vsync))
 		{
 			aGraphicsEngine->SetVSync(vsync);
-		}
-	}
-
-	void SettingsTool::ToggleRenderBoundingBox()
-	{
-		auto renderer = Global::GetRenderer();
-
-		bool debugMode = renderer->IsDebugModeOn();
-		if (ImGui::Checkbox("Draw BoundingBox", &debugMode))
-		{
-			renderer->SetDebugMode(debugMode);
 		}
 	}
 

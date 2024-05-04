@@ -108,27 +108,6 @@ namespace Graphics
 		return skeleton;
 	}
 
-	Model ModelFactory::LoadStaticModelFBX(const char* aFileName)
-	{
-		Model model;
-
-		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
-		const Mesh* mesh = GetMesh(path.c_str());
-
-		if (mesh == nullptr)
-		{
-			LoadAndCacheMesh(path);
-
-			mesh = GetMesh(path.c_str());
-
-			if (mesh == nullptr)
-				assert(false && "Failed to GetMesh from bank");
-		}
-
-		model.Init(mesh);
-		return model;
-	}
-
 	Animation ModelFactory::LoadAnimationFBX(const char* aFileName)
 	{
 		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
@@ -366,68 +345,5 @@ namespace Graphics
 		}
 
 		aMeshData.indices = aTGAMesh.Elements[0].Indices;
-	}
-
-	std::unique_ptr<Model> ModelFactory::CreateSkyBoxModel()
-	{
-		std::unique_ptr<Model> skyBoxModel = std::make_unique<Model>();
-
-		skyBoxModel->Init(GetMesh("Skybox"), "TGA/Uppgift7/Cubemap.dds");
-		skyBoxModel->SetShader("SkyBoxPS.cso", "SkyBoxVS.cso");
-		skyBoxModel->SetScale({ 1,1,1 });
-		skyBoxModel->SetPosition({ 0,0,0 });
-		skyBoxModel->SetName("SkyBox");
-
-		return std::move(skyBoxModel);
-	}
-
-	std::unique_ptr<Model> ModelFactory::CreateDirectionalLightModel()
-	{
-		std::unique_ptr<Model> directionalLight = std::make_unique<Model>();
-
-		directionalLight = std::make_unique<Model>();
-		directionalLight->Init(GetMesh("DirectionalLight"));
-		directionalLight->SetScale({ 1,1,1 });
-		directionalLight->SetPosition(Math::Vector3f(0, 0, 0));
-		directionalLight->SetName("DirectionalLight");
-
-		return std::move(directionalLight);
-	}
-
-	std::unique_ptr<Model> ModelFactory::CreatePlaneModel()
-	{
-		std::unique_ptr<Model> plane = std::make_unique<Model>();
-
-		plane->Init(GetMesh("Plane"));
-		plane->SetShader("DefaultPS.cso", "DefaultVS.cso");
-		plane->SetScale({ 1,1,1 });
-		plane->SetPosition(Math::Vector3f(0, 0, 0));
-		plane->SetName("Plane");
-
-		return std::move(plane);
-	}
-
-	std::unique_ptr<Model> ModelFactory::CreateCubeModel()
-	{
-		std::unique_ptr<Model> cube = std::make_unique<Model>();
-
-		cube->Init(GetMesh("Cube"));
-		cube->SetScale({ 1,1,1 });
-		cube->SetPosition(Math::Vector3f(0, 0, 0));
-		cube->SetName("Cube");
-
-		return std::move(cube);
-	}
-
-	std::unique_ptr<Model> ModelFactory::CreatePyramidModel()
-	{
-		std::unique_ptr<Model> pyramid = std::make_unique<Model>();
-
-		pyramid->Init(GetMesh("Pyramid"), "Cat.dds");
-		pyramid->SetScale({ 1,1,1 });
-		pyramid->SetPosition(Math::Vector3f(0, 0, 0));
-		pyramid->SetName("Pyramid");
-
-		return std::move(pyramid);
 	}
 }

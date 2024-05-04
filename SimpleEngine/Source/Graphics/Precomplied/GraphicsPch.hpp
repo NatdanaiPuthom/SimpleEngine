@@ -36,7 +36,6 @@
 #include "Graphics/Texture/Texture.hpp"
 #include "Graphics/Camera/Camera.hpp"
 #include "Graphics/Model/Mesh.hpp"
-#include "Graphics/Model/Model.hpp"
 #include "Graphics/Model/Skeleton.hpp"
 #include "Graphics/Animation/Animation.hpp"
 #include "Graphics/Animation/AnimationPlayer.hpp"

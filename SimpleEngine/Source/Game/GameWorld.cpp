@@ -38,14 +38,6 @@ namespace Simple
 
 	void GameWorld::Render()
 	{
-		/*
-		Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::WaterReflection);
-		Global::GetGraphicsEngine()->GetRenderer()->RenderEverythingUpSideDown();
-
-		Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::WaterRefraction);
-		Global::GetGraphicsEngine()->GetRenderer()->RenderRefraction();
-		*/
-
 		myLevelManager->Render();
 		myRaycastManager->Render();
 	}

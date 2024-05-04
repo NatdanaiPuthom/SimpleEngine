@@ -3,7 +3,6 @@
 #include "Graphics/Renderer/Drawer/LineDrawer.hpp"
 #include "Graphics/Renderer/Drawer/SphereDrawer.hpp"
 #include "Graphics/Renderer/Drawer/SpriteDrawer.hpp"
-#include "Graphics/Model/Model.hpp"
 #include <memory>
 #include <vector>
 
@@ -32,20 +31,10 @@ namespace Drawer
 
 		void Init();
 
-		void RenderModel(const std::shared_ptr<const Graphics::Model> aModel) const;
-
-		void RenderBoundingBox(const std::shared_ptr<const Graphics::Model> aModel) const;
-		void RenderBoundingBox(const Graphics::Model& aModel) const;
-
 		void RenderLine(const Drawer::Line& aLine);
 		void RenderLine(const std::vector<Drawer::Line> aLines);
-
 		void RenderSphere(const Drawer::Sphere& aSphere);
-
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
-
-		bool IsDebugModeOn() const;
-		void SetDebugMode(const bool aSetDebugMode);
 
 	private:
 		const bool CreateObjectBuffer();
@@ -59,7 +48,5 @@ namespace Drawer
 
 		std::unique_ptr<Graphics::ConstantBuffer> myObjectBuffer;
 		std::unique_ptr<Graphics::ConstantBuffer> myBoneBuffer;
-
-		bool myDebugMode;
 	};
 }

@@ -80,7 +80,6 @@ namespace Drawer
 	}
 
 	Renderer::Renderer()
-		: myDebugMode(false)
 	{
 	}
 
@@ -110,35 +109,6 @@ namespace Drawer
 
 		myObjectBuffer->SetSlot(1);
 		myBoneBuffer->SetSlot(5);
-	}
-
-	void Renderer::RenderModel(const std::shared_ptr<const Graphics::Model> aModel) const
-	{
-		const auto context = Global::GetGraphicsEngine()->GetContext();
-
-		ObjectBufferData objectBuffer = {};
-		objectBuffer.modelWorldMatrix = aModel->GetMatrix();
-
-		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
-
-		aModel->myShader->BindThisShader(context.Get());
-
-		for (const auto& texture : aModel->myTextures)
-		{
-			texture->Bind(context, texture->GetSlot());
-		}
-
-		UINT stride = sizeof(Graphics::Vertex);
-		UINT offset = 0;
-
-		context->IASetVertexBuffers(0, 1, aModel->myMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aModel->myMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		context->DrawIndexed(static_cast<UINT>(aModel->myMesh->myMeshData.indices.size()), 0, 0);
-
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
 	void Renderer::RenderLine(const Drawer::Line& aLine)
@@ -186,18 +156,6 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderBoundingBox(const std::shared_ptr<const Graphics::Model> aModel) const
-	{
-		myBoundingBoxDrawer->Render(aModel);
-
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
-	}
-
-	void Renderer::SetDebugMode(const bool aSetDebugMode)
-	{
-		myDebugMode = aSetDebugMode;
-	}
-
 	const bool Renderer::CreateObjectBuffer()
 	{
 		ObjectBufferData objectBuffer;
@@ -218,21 +176,14 @@ namespace Drawer
 		return true;
 	}
 
-	bool Renderer::IsDebugModeOn() const
-	{
-		return myDebugMode;
-	}
-
 	void Renderer::LoadSettingsFromJson()
 	{
-		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME);
+		/*const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME);
 
 		std::ifstream file(filename);
 		assert(file.is_open() && "Failed To Open File");
 
 		const nlohmann::json json = nlohmann::json::parse(file);
-		file.close();
-
-		SetDebugMode(json["game_settings"]["debugMode"]);
+		file.close();*/
 	}
 }

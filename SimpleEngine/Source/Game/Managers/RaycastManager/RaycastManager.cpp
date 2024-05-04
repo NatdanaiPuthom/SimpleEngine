@@ -48,7 +48,7 @@ namespace Simple
 		{
 			if (mySelectedModelIndex >= 0)
 			{
-				World::GetActiveScene()->myModels[mySelectedModelIndex]->SetBoundingBoxLineColor({ 1.0f,1.0f,0.0f , 1.0f });
+				//World::GetActiveScene()->myModels[mySelectedModelIndex]->SetBoundingBoxLineColor({ 1.0f,1.0f,0.0f , 1.0f });
 			}
 
 			mySelectedModelIndex = -1;
@@ -63,7 +63,7 @@ namespace Simple
 
 	void RaycastManager::Render()
 	{
-		if (Global::GetRenderer()->IsDebugModeOn())
+		if (true)
 		{
 			Global::GetRenderer()->RenderLine(*myRaycastLine);
 
@@ -108,7 +108,7 @@ namespace Simple
 	}
 
 	void RaycastManager::CheckAABB3DCollision()
-	{
+	{/*
 		SU::Ray ray = GetScreenPointToRay(SU::InputManager::GetInstance().GetMousePosition());
 
 		const auto& models = World::GetActiveScene()->myModels;
@@ -153,7 +153,7 @@ namespace Simple
 		{
 			mySelectedModelIndex = -1;
 			myShouldRenderDebugSphere = false;
-		}
+		}*/
 	}
 
 	void RaycastManager::CheckRayNavmesh()
@@ -217,7 +217,7 @@ namespace Simple
 
 	void RaycastManager::MoveObject()
 	{
-		auto& model = World::GetActiveScene()->myModels[mySelectedModelIndex];
+		/*auto& model = World::GetActiveScene()->myModels[mySelectedModelIndex];
 
 		const auto mouseDelta = SimpleUtilities::InputManager::GetInstance().GetMouseDelta();
 		const auto min = model->GetBoundingBox().min;
@@ -263,6 +263,6 @@ namespace Simple
 
 		model->SetPosition(position);
 		myDebugSphere->position = intersectionPoint;
-		model->SetBoundingBoxLineColor({ 1.0f,0.0f,0.0f , 1.0f });
+		model->SetBoundingBoxLineColor({ 1.0f,0.0f,0.0f , 1.0f });*/
 	}
 }

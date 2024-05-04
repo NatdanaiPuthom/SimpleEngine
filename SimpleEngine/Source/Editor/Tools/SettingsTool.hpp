@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/Template/ToolInterface.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include <string>
 #include <vector>
@@ -18,7 +19,6 @@ namespace Editor
 	private:
 		void ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleConsole();
-		void ToggleRenderBoundingBox();
 		void AdjustWindowSize();
 		void AdjustResolution();
 		void AdjustRasterizerState();

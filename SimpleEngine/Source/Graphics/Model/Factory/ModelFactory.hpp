@@ -1,6 +1,5 @@
 #pragma once
 #include "Graphics/Model/Mesh.hpp"
-#include "Graphics/Model/Model.hpp"
 #include "Graphics/Model/Skeleton.hpp"
 #include "Graphics/Animation/Animation.hpp"
 #include <unordered_map>
@@ -34,16 +33,8 @@ namespace Graphics
 		const Skeleton* LoadSkeleton(const std::string& aFileName);
 
 		//FilePath starts at Bin/Assets/Models/
-		Model LoadStaticModelFBX(const char* aFileName);
-
-		//FilePath starts at Bin/Assets/Models/
 		Animation LoadAnimationFBX(const char* aFileName);
-	public:
-		std::unique_ptr<Model> CreateSkyBoxModel();
-		std::unique_ptr<Model> CreateDirectionalLightModel();
-		std::unique_ptr<Model> CreatePlaneModel();
-		std::unique_ptr<Model> CreateCubeModel();
-		std::unique_ptr<Model> CreatePyramidModel();
+
 	private:
 		void AddMesh(const std::string& aName, std::unique_ptr<const Mesh> aMesh);
 		void AddSkeleton(const std::string& aName, std::unique_ptr<const Skeleton> aSkeleton);
