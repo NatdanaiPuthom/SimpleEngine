@@ -3,6 +3,7 @@
 #include "SimpleScriptEditor/VariableWindow.h"
 #include "SimpleScriptEditor/NodeCreatorWindow.h"
 #include "SimpleScript/Core/SystemTypes/ScriptVec2.h"
+#include <External/imgui.h>
 #include <vector>
 #include <string>
 #include <functional>

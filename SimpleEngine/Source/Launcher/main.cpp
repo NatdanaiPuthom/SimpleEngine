@@ -7,7 +7,6 @@
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
 
-#include <External/imgui.h>
 #include "NodeScript/SimpleScript/Core/ScriptFoundation.h"
 #include "NodeScript/SimpleScriptEditor/VisualScriptingWindow.h"
 #include "SimpleScript/SimpleGameNodes.h"
