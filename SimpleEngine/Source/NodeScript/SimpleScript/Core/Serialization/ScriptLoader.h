@@ -11,6 +11,9 @@ namespace SCR
 	class ScriptLoader
 	{
 	public:
+
+		static void Clear();
+		
 		static void Save(const Script& aScript);
 		static void Load(Script& aScript);
 		

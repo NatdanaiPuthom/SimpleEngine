@@ -31,6 +31,8 @@ namespace EDIT
 				ImNodes::DestroyContext(myContexts[i]);
 			}
 		}
+
+		ScriptLoader::Clear();
 	}
 
 	NodeContext VisualScriptingWindow::GetCurrentContext() const

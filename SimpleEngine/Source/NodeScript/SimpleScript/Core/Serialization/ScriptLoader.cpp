@@ -19,6 +19,11 @@ using json = nlohmann::json;
 
 namespace SCR
 {
+	void ScriptLoader::Clear()
+	{
+		SavePath.~basic_string();
+	}
+
 	void ScriptLoader::Save(const Script& aScript)
 	{
 		std::string fileDirectory = SavePath + "/";
