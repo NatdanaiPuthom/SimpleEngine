@@ -1,14 +1,14 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Tools/CameraTool.hpp"
+#include "Editor/HelpWindows/CameraHelpWindow.hpp"
 #include "Graphics/Camera/Camera.hpp"
 
 namespace Editor
 {
-	CameraTool::CameraTool()
+	CameraHelpWindow::CameraHelpWindow()
 	{
 	}
 
-	void CameraTool::Draw()
+	void CameraHelpWindow::Draw()
 	{
 		if (ImGui::Begin("Freefly Camera"))
 		{
@@ -20,6 +20,7 @@ namespace Editor
 			ImGui::SetNextItemWidth(100.0f);
 
 			float speed = graphicsEngine->GetCurrentCamera()->GetMoveSpeed();
+
 			if (ImGui::DragFloat("MoveSpeed", &speed, 0.1f, 0.0f, 100.0f))
 			{
 				graphicsEngine->GetCurrentCamera()->SetMoveSpeed(speed);
@@ -35,6 +36,7 @@ namespace Editor
 			ImGui::Dummy(ImVec2(107, 0));
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(100.0f);
+
 			float rotationSpeed = graphicsEngine->GetCurrentCamera()->GetRotationSpeed();
 			if (ImGui::DragFloat("Camera Rotate Speed", &rotationSpeed, 0.01f, 0.0f, 180.0f))
 			{

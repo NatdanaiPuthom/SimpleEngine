@@ -4,6 +4,7 @@
 #ifndef _SIMPLE
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Editor/Menu/MainMenuBar.hpp"
+#include "Editor/Menu/HelpMenuBar.hpp"
 #endif
 
 namespace Editor
@@ -12,6 +13,7 @@ namespace Editor
 	EditorEngine::EditorEngine()
 	{
 		AddTool(std::move(std::make_unique<MainMenuBar>()));
+		AddTool(std::move(std::make_unique<HelpMenuBar>()));
 	}
 
 	EditorEngine::~EditorEngine()
@@ -42,7 +44,10 @@ namespace Editor
 
 		for (const std::unique_ptr<ToolInterface>& tool : myTools)
 		{
-			tool->Update();
+			if (tool->myIsActive == true)
+			{
+				tool->Update();
+			}
 		}
 	}
 
@@ -50,7 +55,10 @@ namespace Editor
 	{
 		for (const std::unique_ptr<ToolInterface>& tool : myTools)
 		{
-			tool->Draw();
+			if (tool->myIsActive == true)
+			{
+				tool->Draw();
+			}
 		}
 	}
 

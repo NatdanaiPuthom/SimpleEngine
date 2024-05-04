@@ -4,13 +4,11 @@ namespace Editor
 {
 	class HierarchyWindow;
 	class AssetWindow;
+	class SettingsTool;
 }
 
 namespace Editor
 {
-	class SettingsTool;
-	class CameraTool;
-
 	class MainMenuBar : public Editor::ToolInterface
 	{
 	public:
@@ -25,7 +23,6 @@ namespace Editor
 		void LoadSettingsFromJson();
 	private:
 		std::unique_ptr<SettingsTool> mySettingsTool;
-		std::unique_ptr<CameraTool> myCameraTool;
 		std::unique_ptr<Editor::HierarchyWindow> myHierarchyWindow;
 		std::unique_ptr<Editor::AssetWindow> myAssetWindow;
 

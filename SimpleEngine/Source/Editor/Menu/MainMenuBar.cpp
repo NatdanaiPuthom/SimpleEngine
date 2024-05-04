@@ -1,7 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/MainMenuBar.hpp"
 #include "Editor/Tools/SettingsTool.hpp"
-#include "Editor/Tools/CameraTool.hpp"
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/Windows/AssetWindow.hpp"
 
@@ -19,15 +18,13 @@ namespace Editor
 
 	void MainMenuBar::Init()
 	{
-		LoadSettingsFromJson();
-
 		mySettingsTool = std::make_unique<SettingsTool>();
-		myCameraTool = std::make_unique<CameraTool>();
 		myAssetWindow = std::make_unique<AssetWindow>();
 		myHierarchyWindow = std::make_unique<HierarchyWindow>();
 
+		LoadSettingsFromJson();
+
 		mySettingsTool->Init();
-		myCameraTool->Init();
 		myAssetWindow->Init();
 		myHierarchyWindow->Init();
 	}
@@ -63,7 +60,6 @@ namespace Editor
 		if (mySettingToolActive)
 		{
 			myAssetWindow->Draw();
-			myCameraTool->Draw();
 			mySettingsTool->Draw();
 			myHierarchyWindow->Draw(); //TO-DO(v9.31.1): For now HierachyWindow should always be run last due to removing Entities during run time. Fix/Look into it in future
 		}

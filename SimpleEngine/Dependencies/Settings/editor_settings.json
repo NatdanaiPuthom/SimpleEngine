@@ -2,6 +2,9 @@
   "editor_settings": {
     "setting_tool": {
       "active": false
+    },
+    "help_windows": {
+      "show_camera": false
     }
   }
 }

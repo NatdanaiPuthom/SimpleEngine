@@ -322,7 +322,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/External/",
 			"Source/External/**",
 			"Source/Engine/",
-			"Source/Game/"
+			"Source/Game/",
+			"Source/Editor/"
 		}
 
 		libdirs {
