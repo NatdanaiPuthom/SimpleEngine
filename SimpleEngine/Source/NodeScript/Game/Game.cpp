@@ -3,7 +3,6 @@
 
 #include <Game/GameCommon.h>
 #include <Game/GameLevel.h>
-#include <Game/GameUpdateContext.h>
 
 #include <fstream>
 
@@ -46,15 +45,13 @@ void Game::Update(float aTimeDelta)
 		myCurrentLevel,
 		*this,
 	};
-
-	myCurrentLevel.scriptManager->TriggerEvent(SCRIPT::eNodeExecutionTrait::Tick, updateContext);
 }
 
 void Game::Render()
 {
 }
 
-void Game::LoadLevel(const char* name, bool runScripts)
+void Game::LoadLevel(const char* /*name*/, bool runScripts)
 {
 	bool success = false;
 	std::string path = "";//Tga::Settings::ResolveAssetPath("levels/" + std::string(name) + ".txt", &success);
@@ -64,12 +61,7 @@ void Game::LoadLevel(const char* name, bool runScripts)
 		return;
 	}
 
-	myScriptFoundation.DestroyScriptManager(*myCurrentLevel.scriptManager);
 	myCurrentLevel = { };
-	myCurrentLevel.scriptManager = &myScriptFoundation.CreateScriptManager();
-
-	SCRIPT::ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/" + std::string(name);
-	SCRIPT::ScriptLoader::LoadAll(*myCurrentLevel.scriptManager);
 
 	{
 		std::ifstream file(path);
@@ -127,8 +119,6 @@ void Game::LoadLevel(const char* name, bool runScripts)
 			myCurrentLevel,
 			*this,
 		};
-
-		myCurrentLevel.scriptManager->TriggerEvent(SCRIPT::eNodeExecutionTrait::BeginPlay, updateContext);
 	}
 }
 

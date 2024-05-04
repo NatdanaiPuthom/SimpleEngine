@@ -1,5 +1,4 @@
 #pragma once
-#include "NodeScript/Game/GameUpdateContext.h"
 #include <vector>
 #include <string>
 

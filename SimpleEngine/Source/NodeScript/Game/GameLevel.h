@@ -10,5 +10,5 @@ namespace SCRIPT
 
 struct GameLevel
 {
-	SCRIPT::ScriptManager* scriptManager;
+
 };
