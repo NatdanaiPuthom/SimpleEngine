@@ -286,9 +286,10 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 		includedirs { 
 			"Source/",
-			"Source/NodeScript/",
 			"Source/External/",
 			"Source/External/**",
+			"Source/Engine/",
+			"Source/NodeScript/",
 		}
 
 		libdirs {
@@ -357,6 +358,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 		includedirs { 
 			"Source/",
+			"Source/NodeScript/",
+			"Source/NodeScript/**"
 		}
 
 		externalincludedirs {

@@ -1,0 +1,44 @@
+#pragma once
+#include "ScriptDefines.h"
+
+namespace SCR
+{
+	template<typename T>
+	class ReferenceWrapper
+	{
+		using Ref = T&;
+		using Ptr = T*;
+	public:
+		static_assert(std::is_object_v<T> || std::is_function_v<T>,
+			"ReferenceWrapper<T> requires T to be an object type or a function type.");
+
+		ReferenceWrapper() = default;
+
+		ReferenceWrapper(Ref aRef)
+			: myPtr(&aRef)
+		{
+		}
+
+		constexpr operator Ref() const noexcept
+		{
+			return *myPtr;
+		}
+
+		_NODISCARD Ref get() const noexcept
+		{
+			return *myPtr;
+		}
+
+	private:
+		Ptr myPtr{};
+
+	public:
+		template<typename... Types>
+		constexpr auto operator()(Types&&... _Args) const
+			noexcept(noexcept(std::invoke(*myPtr, static_cast<Types&&>(_Args)...)))
+			-> decltype(std::invoke(*myPtr, static_cast<Types&&>(_Args)...))
+		{
+			return std::invoke(*myPtr, static_cast<Types&&>(_Args)...);
+		}
+	};
+}

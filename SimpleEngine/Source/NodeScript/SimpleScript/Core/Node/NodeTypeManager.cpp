@@ -1,0 +1,183 @@
+#include "NodeTypeManager.h"
+#include "../Utilities/ScriptUtilities.h"
+#include "../Script.h"
+#include "NodeTypeRegistry.h"
+#include "../ScriptFoundation.h"
+#include "../ScriptManager.h"
+
+namespace SCR
+{
+	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
+	{
+		NodeTypeID id = myTypes.size();
+		myTypes.emplace_back(std::forward<NodeType>(aNodeType));
+		Assert();
+		return id;
+	}
+
+	void NodeTypeManager::SetGetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID)
+	{
+		myGetterNodeTypeIDs.emplace(aDataTypeID, anID);
+	}
+
+	void NodeTypeManager::SetSetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID)
+	{
+		mySetterNodeTypeIDs.emplace(aDataTypeID, anID);
+	}
+
+	void NodeTypeManager::SetOperatorNodeTypeID(const DataTypeID aDataTypeID, const eNodeOperatorTrait anOperatorTrait, const NodeTypeID anID)
+	{
+		myOperatorNodeTypeIDs[anOperatorTrait].emplace(aDataTypeID, anID);
+	}
+
+	Node NodeTypeManager::CreateInstance_Getter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
+	{
+		NodeTypeID typeID = myGetterNodeTypeIDs.at(aDataTypeID);
+		return CreateInstance(aNodeID, typeID, aModifier);
+	}
+
+	Node NodeTypeManager::CreateInstance_Setter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
+	{
+		NodeTypeID typeID = mySetterNodeTypeIDs.at(aDataTypeID);
+		return CreateInstance(aNodeID, typeID, aModifier);
+	}
+
+	Node NodeTypeManager::CreateInstance_Operator(const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
+	{
+		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = myOperatorNodeTypeIDs.at(aOperatorTrait);
+		NodeTypeID typeID = operatorNodes.at(aDataTypeID);
+		return CreateInstance(aNodeID, typeID, aModifier);
+	}
+
+	Node NodeTypeManager::CreateInstance(const NodeID aNodeID, const NodeTypeID aNodeTypeID, ScriptInternalModifier& aModifier)
+	{
+		return myTypes.at(aNodeTypeID).nodeRecipe.createFunction(aNodeID, aNodeTypeID, aModifier);
+	}
+
+	bool NodeTypeManager::CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID)
+	{
+		if (myOperatorNodeTypeIDs.contains(aTrait))
+		{
+			return myOperatorNodeTypeIDs.at(aTrait).contains(aDataTypeID);
+		}
+		return false;
+	}
+
+	NodeType& NodeTypeManager::GetNodeType(const NodeTypeID anID)
+	{
+		return myTypes.at(anID);
+	}
+
+	const std::vector<NodeType>& NodeTypeManager::GetNodeTypes()
+	{
+		return myTypes;
+	}
+
+	CustomEvent& NodeTypeManager::GetCustomEvent(const CustomEventID anID)
+	{
+		return *myCustomEvents.at(anID);
+	}
+
+	const std::vector<CustomEvent*>& NodeTypeManager::GetCustomEvents()
+	{
+		return myCustomEvents;
+	}
+
+	CustomEventID NodeTypeManager::GetCustomEventNodeTypeID(const NodeTypeID aNodeTypeID)
+	{
+		if (myToCustomEventNodeTypeID.contains(aNodeTypeID))
+		{
+			return myToCustomEventNodeTypeID.find(aNodeTypeID)->second;
+		}
+		return InvalidID<CustomEventID>();
+	}
+
+	NodeTypeID NodeTypeManager::GetTypeID(const std::string& aName)
+	{
+		NodeTypeID id = 0;
+		For_Const_Break(myTypes, [&id, aName](NodeTypeID anID, const NodeType&)
+			{
+				if (GetShortName(anID) == aName)
+				{
+					id = anID;
+					return true;
+				}
+				return false;
+			});
+
+		return id;
+	}
+
+	const std::string& NodeTypeManager::GetFullName(const NodeTypeID anID)
+	{
+		return myTypes.at(anID).name;
+	}
+
+	std::string NodeTypeManager::GetShortName(const NodeTypeID anID)
+	{
+		const std::string& fullName = GetFullName(anID);
+		if (fullName.find_last_of('/') != std::string::npos)
+		{
+			return fullName.substr(fullName.find_last_of('/') + 1, fullName.length());
+
+		}
+		else
+		{
+			return fullName;
+		}
+	}
+
+	std::string NodeTypeManager::GetNameDirectory(const NodeTypeID anID)
+	{
+		const std::string& fullName = GetFullName(anID);
+		if (fullName.find_last_of('/') != std::string::npos)
+		{
+			return fullName.substr(0, fullName.find_last_of('/') + 1);
+
+		}
+		else
+		{
+			return fullName;
+		}
+	}
+
+	NodeType NodeTypeManager::CreateInvalidNodeType()
+	{
+		NodeRecipe recipe
+		{
+			[](const NodeID, const NodeTypeID, ScriptInternalModifier&)->Node {return Node(0, std::array<PinID, 0>(), std::array<PinID, 0>()); },
+			[](const NodeID, InternalExecutionContext&) {},
+			eNodeTrait::Invalid
+		};
+
+		return { recipe, "Invalid Type" };
+	}
+
+
+	void NodeTypeManager::Assert()
+	{
+		std::unordered_set<std::string> shortNames;
+		for (NodeTypeID id = 0; id < myTypes.size(); ++id)
+		{
+			std::string shortName = GetShortName(id);
+
+			if (!shortNames.insert(shortName).second)
+			{
+				throw std::runtime_error("Cannot have nodes with same name" + shortName);
+			}
+		};
+	}
+
+	void NodeTypeManager::Destroy()
+	{
+		myTypes.clear();
+		for (CustomEvent* nodeType : myCustomEvents)
+		{
+			delete nodeType;
+		}
+		myCustomEvents.clear();
+		myGetterNodeTypeIDs.clear();
+		mySetterNodeTypeIDs.clear();
+		myOperatorNodeTypeIDs.clear();
+	}
+}

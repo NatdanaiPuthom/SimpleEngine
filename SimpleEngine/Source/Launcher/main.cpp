@@ -7,6 +7,12 @@
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
 
+#include <External/imgui.h>
+#include "NodeScript/SimpleScript/Core/ScriptFoundation.h"
+#include "NodeScript/SimpleScriptEditor/VisualScriptingWindow.h"
+#include "SimpleScript/SimpleGameNodes.h"
+#include "SimpleScript/Core/Serialization/ScriptLoader.h"
+
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
@@ -58,6 +64,21 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
+	EDIT::VisualScriptingWindow simpleScriptWindow; simpleScriptWindow;
+	SCRIPT::ScriptFoundation myScriptFoundation;
+	SCRIPT::ScriptManager* scriptManager;
+
+	myScriptFoundation.InitializeSystemTypes();
+
+	RegisterSimpleDataTypes();
+	RegisterSimpleGameNodes();
+
+	scriptManager = &myScriptFoundation.CreateScriptManager();
+
+	std::string name = "world_Middle";
+	SCRIPT::ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/" + std::string(name);
+	SCRIPT::ScriptLoader::LoadAll(*scriptManager);
+
 	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
@@ -70,6 +91,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		}
 		PROFILER_END();
 
+
 		PROFILER_BEGIN("Engine Update");
 		engine.Update();
 		PROFILER_END();
@@ -79,6 +101,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		PROFILER_BEGIN("Editor Update");
+		simpleScriptWindow.Update(*scriptManager, name);
 		editor.Update();
 		PROFILER_END();
 

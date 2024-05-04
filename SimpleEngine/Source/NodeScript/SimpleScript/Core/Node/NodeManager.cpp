@@ -1,0 +1,25 @@
+#include "NodeManager.h"
+#include "NodeTypeManager.h"
+
+namespace SCR
+{
+
+	NodeManager::NodeManager()
+	{
+		myNodes.reserve(10);
+	}
+
+	NodeManager::~NodeManager()
+	{
+	}
+
+	TypeContainer<NodeID, Node, NodeType>::ConstIterator NodeManager::begin() const
+	{
+		return TypeContainer<NodeID, Node, NodeType>(myNodes, [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetNodeType(aNode.typeID); }).begin();
+	}
+
+	TypeContainer<NodeID, Node, NodeType>::ConstIterator NodeManager::end() const
+	{
+		return TypeContainer<NodeID, Node, NodeType>(myNodes, [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetNodeType(aNode.typeID); }).end();
+	}
+}

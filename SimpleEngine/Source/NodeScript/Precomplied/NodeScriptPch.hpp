@@ -12,7 +12,7 @@
 
 #pragma message("---------Never give up on your dreams!---------------")
 
-#include <External/dearimgui/imgui/imgui.h>
+#include "External/imgui.h"
 #include <External/dearimgui/imnodes/imnodes.h>
 #include <External/nlohmann/json.hpp>
 #include <External/profiler.h>
@@ -25,6 +25,8 @@
 #include "Engine/Math/Matrix4x4.hpp"
 #include "Engine/Math/Transform.hpp"
 #include "Engine/Math/Math.hpp"
+
+#include "Engine/Input/InputManager.hpp"
 
 #include "Engine/SimpleUtilities/Utility.hpp"
 

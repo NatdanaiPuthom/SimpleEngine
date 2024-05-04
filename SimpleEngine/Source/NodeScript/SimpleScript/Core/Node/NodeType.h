@@ -1,0 +1,33 @@
+#pragma once
+#include "NodeTrait.h"
+#include <vector>
+#include <string>
+
+namespace SCR
+{
+	struct NodeRecipe
+	{
+		CreateNodeSignature createFunction;
+		ExecuteNodeSignature executeFunction;
+		const eNodeTrait traits = eNodeTrait::None;
+		const eNodeExecutionTrait executionTrait = eNodeExecutionTrait::None;
+		const eNodeOperatorTrait operatorTrait = eNodeOperatorTrait::None;
+		std::vector<PinTypeID> inputPinTypeIDs;
+		std::vector<PinTypeID> outputPinTypeIDs;
+		const MemoryPoolID tupleMemoryID = InvalidID<MemoryPoolID>();
+		const MemoryPoolID functionMemoryID = InvalidID<MemoryPoolID>();
+	};
+
+	struct NodeType
+	{
+		NodeRecipe nodeRecipe;
+		std::string name;
+	};
+
+	struct NodeTypeDesc
+	{
+		std::vector<std::string> inputPinNames;
+		std::vector<std::string> outputPinNames;
+		bool showDataTypePinNames = true;
+	};
+}
