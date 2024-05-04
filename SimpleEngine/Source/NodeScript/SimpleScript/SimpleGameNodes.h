@@ -2,7 +2,6 @@
 #include "SimpleScript/Core/Contexts/ExecutionContextBase.h"
 #include "Game/GameCommon.h"
 
-struct GameLevel;
 class Game;
 class ScriptComponent;
 
@@ -18,10 +17,4 @@ struct SimpleOwnerContext : SimpleGameContext
 	T* const interaction;
 };
 
-struct SpriteTypeData
-{
-	SpriteId id;
-};
-
-void RegisterSimpleDataTypes();
 void RegisterSimpleGameNodes();

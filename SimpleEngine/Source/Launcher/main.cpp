@@ -69,8 +69,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	SCRIPT::ScriptManager* scriptManager;
 
 	myScriptFoundation.InitializeSystemTypes();
-
-	RegisterSimpleDataTypes();
 	RegisterSimpleGameNodes();
 
 	scriptManager = &myScriptFoundation.CreateScriptManager();
@@ -90,7 +88,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 			continue;
 		}
 		PROFILER_END();
-
 
 		PROFILER_BEGIN("Engine Update");
 		engine.Update();

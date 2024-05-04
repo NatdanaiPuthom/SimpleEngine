@@ -3,32 +3,6 @@
 #include "SimpleScript/Core/DataType/DataTypeRegistry.h"
 #include "Game/Game.h"
 
-static bool Edit(SpriteTypeData& aData)
-{
-	int currentID = static_cast<int>(aData.id);
-	if (ImGui::Combo("##", &currentID, GetSpriteNames()))
-	{
-		aData.id = static_cast<SpriteId>(currentID);
-		return true;
-	}
-	return false;
-}
-
-static void Save(nlohmann::json& aJson, const SpriteTypeData& aData)
-{
-	aJson["type"] = aData.id;
-}
-
-static void Load(const nlohmann::json& aJson, SpriteTypeData& aData)
-{
-	aData.id = aJson["type"];
-}
-
-void RegisterSimpleDataTypes()
-{
-	SCRIPT::DataTypeRegistry::Register<SpriteTypeData>("Sprite Type", SCRIPT::ScriptColor{ 1.f, 0.44f, 0.37f });
-}
-
 static void CreateQuest(SCRIPT::NodeExecutionContext<SimpleGameContext> aContext, std::string aQuestName, std::string aInstruction, const int aMaxCount)
 {
 	Objective quest;
