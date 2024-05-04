@@ -19,7 +19,6 @@ using json = nlohmann::json;
 
 namespace SCR
 {
-
 	void ScriptLoader::Save(const Script& aScript)
 	{
 		std::string fileDirectory = SavePath + "/";
@@ -38,7 +37,6 @@ namespace SCR
 		const ScriptFilter filter = ScriptFilter(aScript);
 		const MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(aScript);
 		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
-
 
 		json jsonDoc;
 
@@ -76,14 +74,13 @@ namespace SCR
 
 			json pinDataJson;
 
-
-
 			pinDataJson["NodeID"] = cleanedNodeIDs.at(pin.nodeID);
 			pinDataJson["PinIndex"] = ScriptLinker::GetPinIndex(aScript, inputPinID, ePinFlowType::Input);
 
 			pinDataJson["Connection"] = json::object();
 			bool connectionExists = !pin.connectedPinIDs.empty();
 			pinDataJson["Connection"]["Exists"] = connectionExists;
+
 			if (connectionExists)
 			{
 				const Pin& connectedPin = ScriptProxy::GetPin(aScript, pin.connectedPinIDs[0]);
@@ -92,7 +89,6 @@ namespace SCR
 			}
 			else
 			{
-
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 				pinDataJson["DataType"] = DataTypeManager::GetName(pinType.dataTypeID);
@@ -133,25 +129,23 @@ namespace SCR
 
 			variableJson["Nodes"] = json::array();
 			json& variableNodesJson = variableJson["Nodes"];
+
 			for (NodeID nodeID : variableManager.GetNodeIDsByVarID(i))
 			{
 				const Node& node = ScriptProxy::GetNode(aScript, nodeID);
+
 				if (!node.isDestroyed)
 				{
 					NodeID cleanNodeID = cleanedNodeIDs.at(nodeID);
 					variableNodesJson.push_back(cleanNodeID);
-
 				}
-
 			}
 
 			variableDataJson.push_back(variableJson);
 		}
 
 		ofs << jsonDoc;
-
 		ofs.close();
-
 	}
 
 	void ScriptLoader::Load(Script& aScript)
@@ -207,10 +201,8 @@ namespace SCR
 				continue;
 			}
 			const size_t pinIndex = pinData["PinIndex"];
-
-
-
 			const PinID pinID = ScriptLinker::GetPinID(aScript, nodeID, pinIndex, ePinFlowType::Input);
+
 			if (pinID == InvalidID<PinID>())
 			{
 				continue;
@@ -358,10 +350,7 @@ namespace SCR
 		}
 
 		json jsonDoc = json::object();
-
-
 		json customEventsJson = json::array();
-
 
 		const std::vector<CustomEvent*>& customEventNodeTypes = NodeTypeManager::GetCustomEvents();
 
@@ -418,10 +407,7 @@ namespace SCR
 
 		ifs.close();
 
-
-
 		const json& jsonDoc = json::parse(file);
-
 		const json& customEventsJson = jsonDoc["CustomEvents"];
 
 		for (const json& customEventJson : customEventsJson)
@@ -429,7 +415,6 @@ namespace SCR
 			const std::string& nodeName = customEventJson["Name"];
 
 			CustomEventID customEventNodeTypeID = ScriptModifier::CreateNodeType_CustomEvent(nodeName, aFoundation);
-
 
 			const json& pinsJson = customEventJson["Pins"];
 
@@ -441,9 +426,7 @@ namespace SCR
 				DataTypeID dataTypeID = DataTypeManager::GetDataTypeIDByName(dataTypeName);
 
 				ScriptModifier::AddPinToCustomEvent(dataTypeID, customEventNodeTypeID, pinName);
-
 			}
 		}
 	}
-
 }
