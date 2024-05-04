@@ -23,11 +23,7 @@ namespace Scenes
 
 	void Scenes::DefaultScene::Init()
 	{
-		myFloor = Global::GetModelFactory()->LoadStaticModelFBX("StaticModels/Simple_Floor_10x10.fbx");
-		myFloor.SetPosition({ 0.0f,-4.0f, 0.0f });
-
 		myPlayer.Init();
-
 		myIKTest.Init();
 	}
 
@@ -35,7 +31,6 @@ namespace Scenes
 	{
 		Scene::Update();
 		myPlayer.Update();
-
 		myIKTest.Update();
 	}
 
@@ -44,10 +39,6 @@ namespace Scenes
 		Scene::Render();
 
 		//myIKTest.Render();
-
 		//myPlayer.Render();
-		//auto renderer = Global::GetRenderer();
-		//renderer->RenderModel(myFloor);
-		//renderer->RenderBoundingBox(myFloor);
 	}
 }

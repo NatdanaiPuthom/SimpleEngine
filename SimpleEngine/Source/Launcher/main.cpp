@@ -60,6 +60,17 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
+	ECS::Entity entity = ecs.CreateEntity();
+	entity->AddComponent<ECS::MeshComponent>();
+	entity->AddComponent<ECS::TransformComponent>();
+
+	ECS::MeshComponent* mesh = entity->GetComponent<ECS::MeshComponent>();
+	ECS::TransformComponent* transform = entity->GetComponent<ECS::TransformComponent>();
+
+	mesh->mesh = Global::GetModelFactory()->LoadMesh("AnimatedModels/SimpleHuman3.fbx");
+	mesh->shader = graphicsEngine.GetDefaultShader().get();
+	mesh->texture = graphicsEngine.GetDefaultTexture().get();
+
 	//Script::SimpleNodeScript simpleScript;
 	//simpleScript.Init();
 
@@ -89,8 +100,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		PROFILER_BEGIN("SetRenderTarget: Backbuffer");
-		Global::GetGraphicsEngine()->SetRenderTarget(eRenderTarget::Backbuffer);
+		graphicsEngine.SetRenderTarget(eRenderTarget::Backbuffer);
 		PROFILER_END();
+
+
+		Global::GetRenderer()->TestRender(transform, mesh);
 
 		PROFILER_BEGIN("GameWorld Render");
 		gameWorld.Render();

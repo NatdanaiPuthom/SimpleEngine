@@ -4,22 +4,10 @@
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include <External/TheGameAssembly/FBXImporter/source/Importer.h>
 
+#undef LoadMesh
+
 namespace Graphics
 {
-	Mesh ModelFactory::LoadMeshTest(std::string aName)
-	{
-		TGA::FBX::Mesh tgaMesh;
-		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aName, tgaMesh);
-		assert(status && "Failed to LoadMesh from FBXImporter");
-
-		MeshData meshData;
-		LoadMeshData(meshData, tgaMesh);
-		Mesh mesh;
-		mesh.Init(meshData);
-
-		return mesh;
-	}
-
 	ModelFactory::ModelFactory()
 		: myIsCachingInProgress(false)
 	{
@@ -76,6 +64,19 @@ namespace Graphics
 		AddMesh("Sphere", std::move(sphereMesh));
 	}
 
+	const Mesh* ModelFactory::LoadMesh(const std::string& aName)
+	{
+		const std::string filePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aName;
+		const Mesh* mesh = GetMesh(filePath.c_str());
+
+		if (mesh == nullptr)
+		{
+			LoadAndCacheMesh(aName);
+		}
+
+		return mesh;
+	}
+
 	Model ModelFactory::LoadStaticModelFBX(const char* aFileName)
 	{
 		Model model;
@@ -125,7 +126,7 @@ namespace Graphics
 				assert(false && "Failed to GetSkeleton from bank");
 		}
 
-		animatedModel.Init(mesh,skeleton);
+		animatedModel.Init(mesh, skeleton);
 		return animatedModel;
 	}
 
@@ -184,8 +185,8 @@ namespace Graphics
 
 		myMeshes.emplace(aName, std::move(aMesh));
 
-		myIsCachingInProgress = false;
 		myFBXLoaderMutex.unlock();
+		myIsCachingInProgress = false;
 	}
 
 	void ModelFactory::AddSkeleton(const std::string& aName, std::unique_ptr<const Skeleton> aSkeleton)

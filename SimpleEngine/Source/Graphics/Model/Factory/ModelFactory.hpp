@@ -22,14 +22,13 @@ namespace Graphics
 	class ModelFactory final
 	{
 	public:
-
-		Mesh LoadMeshTest(std::string aName);
-		std::vector<Mesh> meshes;
-
 		ModelFactory();
 		~ModelFactory();
 
 		void Init();
+
+		//FilePath starts at Bin/Assets/Models/
+		const Mesh* LoadMesh(const std::string& aName);
 
 		//FilePath starts at Bin/Assets/Models/
 		Model LoadStaticModelFBX(const char* aFileName);

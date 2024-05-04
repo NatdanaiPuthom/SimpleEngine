@@ -1,18 +1,13 @@
 #pragma once
 #include "Graphics/Model/Mesh.hpp"
-
-namespace Graphics
-{
-	class Mesh;
-	class Shader;
-	class Texture;
-}
+#include "Graphics/Shaders/Shader.hpp"
+#include "Graphics/Texture/Texture.hpp"
 
 namespace ECS
 {
 	struct MeshComponent
 	{
-		Graphics::Mesh mesh;
+		const Graphics::Mesh* mesh;
 		const Graphics::Shader* shader;
 		const Graphics::Texture* texture;
 	};

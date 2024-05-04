@@ -22,7 +22,6 @@ namespace Scenes
 		void Update() override;
 		void Render() override;
 	private:
-		Graphics::Model myFloor;
 		Player myPlayer;
 
 		Test::InverseKinematics myIKTest;

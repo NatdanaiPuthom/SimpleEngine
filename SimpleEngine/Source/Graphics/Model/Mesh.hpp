@@ -1,5 +1,8 @@
 #pragma once
 #include "Engine/SimpleUtilities/Bounds.hpp"
+#include <wrl/client.h>
+
+using Microsoft::WRL::ComPtr;
 
 struct ID3D11Buffer;
 struct ID3D11Device;
