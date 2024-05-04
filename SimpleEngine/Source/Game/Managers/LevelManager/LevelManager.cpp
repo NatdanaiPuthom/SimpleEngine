@@ -2,7 +2,6 @@
 #include "Graphics/Camera/Camera.hpp"
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/LevelManager/Scenes/DefaultScene.hpp"
-#include "Game/Test/Scenes/NavmeshSceneTest.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
 namespace Simple
@@ -24,10 +23,6 @@ namespace Simple
 		std::shared_ptr<Scenes::DefaultScene> defaultScene = std::make_shared<Scenes::DefaultScene>();
 		defaultScene->Init();
 		myScenes.emplace(0, defaultScene);
-
-		std::shared_ptr<Scenes::NavmeshSceneTest> navmeshTest = std::make_shared<Scenes::NavmeshSceneTest>();
-		navmeshTest->Init();
-		myScenes.emplace(1, navmeshTest);
 
 		SetActiveScene(myActiveSceneIndex);
 	}

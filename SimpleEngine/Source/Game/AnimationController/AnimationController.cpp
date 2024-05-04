@@ -24,7 +24,7 @@ namespace Simple
 		myAnimatedModel = aAnimatedModel;
 		myCurrentAnimation = aAnimation;
 
-		myCurrentAnimationPlayer.Init(*myCurrentAnimation, *myAnimatedModel);
+		//myCurrentAnimationPlayer.Init(*myCurrentAnimation, *myAnimatedModel);
 		myCurrentAnimationPlayer.SetIsLooping(aShouldLoop);
 		myCurrentAnimationPlayer.Play();
 	}
@@ -35,13 +35,13 @@ namespace Simple
 		{
 			myTimer += Global::GetDeltaTime();
 
-			myCurrentAnimationPlayer.LerpCurrentAnimation();
-			myTargetAnimationPlayer.LerpCurrentAnimation();
+			//myCurrentAnimationPlayer.LerpCurrentAnimation();
+			//myTargetAnimationPlayer.LerpCurrentAnimation();
 
 			const float t = std::clamp<float>(myTimer / myDuration, 0.0f, 1.0f);
-			auto skeleton = myAnimatedModel->GetSkeleton();
+			//auto skeleton = myAnimatedModel->GetSkeleton();
 
-			for (size_t i = 0; i < skeleton->myJoints.size(); i++)
+			/*for (size_t i = 0; i < skeleton->myJoints.size(); i++)
 			{
 				const Math::Matrix4x4f& currentFrameJointTransform = myCurrentAnimationPlayer.GetLocalSpacePose().jointTransforms[i];
 				const Math::Matrix4x4f& targetFrameJointTransform = myTargetAnimationPlayer.GetLocalSpacePose().jointTransforms[i];
@@ -64,10 +64,10 @@ namespace Simple
 
 				const Math::Matrix4x4f Result = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
 				myCurrentAnimationPlayer.myModelSpacePose.jointTransforms[i] = Result;
-			}
+			}*/
 
-			myCurrentAnimationPlayer.myModelSpacePose.count = skeleton->myJoints.size();
-			myAnimatedModel->SetPose(myCurrentAnimationPlayer.myModelSpacePose);
+			//myCurrentAnimationPlayer.myModelSpacePose.count = skeleton->myJoints.size();
+			//myAnimatedModel->SetPose(myCurrentAnimationPlayer.myModelSpacePose);
 
 			if (t >= 1.0f)
 			{
@@ -76,15 +76,15 @@ namespace Simple
 
 				myCurrentAnimation = myTargetAnimation;
 
-				myCurrentAnimationPlayer.Init(*myCurrentAnimation, *myAnimatedModel);
+				//myCurrentAnimationPlayer.Init(*myCurrentAnimation, *myAnimatedModel);
 				myCurrentAnimationPlayer.SetCurrentFrame(currentFrame);
 
-				myAnimatedModel->SetPose(myCurrentAnimationPlayer.myModelSpacePose);
+				//myAnimatedModel->SetPose(myCurrentAnimationPlayer.myModelSpacePose);
 			}
 		}
 		else
 		{
-			myCurrentAnimationPlayer.Update();
+			//myCurrentAnimationPlayer.Update();
 		}
 	}
 
@@ -104,7 +104,7 @@ namespace Simple
 
 		myTargetAnimation = aTargetAnimation;
 
-		myTargetAnimationPlayer.Init(*myTargetAnimation, *myAnimatedModel);
+		//myTargetAnimationPlayer.Init(*myTargetAnimation, *myAnimatedModel);
 		myTargetAnimationPlayer.SetIsLooping(aShouldLoop);
 		myTargetAnimationPlayer.Restart();
 

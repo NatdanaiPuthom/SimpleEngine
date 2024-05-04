@@ -24,21 +24,17 @@ namespace Scenes
 	void Scenes::DefaultScene::Init()
 	{
 		myPlayer.Init();
-		myIKTest.Init();
 	}
 
 	void Scenes::DefaultScene::Update()
 	{
 		Scene::Update();
 		myPlayer.Update();
-		myIKTest.Update();
 	}
 
 	void Scenes::DefaultScene::Render()
 	{
 		Scene::Render();
-
-		//myIKTest.Render();
 		//myPlayer.Render();
 	}
 }

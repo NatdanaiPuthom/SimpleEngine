@@ -24,6 +24,8 @@ namespace Drawer
 	class Renderer final
 	{
 	public:
+		void TestIKSkeletonLines(const Graphics::AnimatedModel& aModel);
+
 		void TestRender(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent);
 		void TestRenderAnimated(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent,ECS::AnimatedComponent* aSkeletonComponent);
 
@@ -35,7 +37,9 @@ namespace Drawer
 		void RenderModel(const std::shared_ptr<const Graphics::Model> aModel) const;
 
 		void RenderBoundingBox(const std::shared_ptr<const Graphics::Model> aModel) const;
+		void RenderBoundingBox(const std::shared_ptr<const Graphics::AnimatedModel> aModel) const;
 		void RenderBoundingBox(const Graphics::Model& aModel) const;
+		void RenderBoundingBox(const Graphics::AnimatedModel& aModel) const;
 
 		void RenderLine(const Drawer::Line& aLine);
 		void RenderLine(const std::vector<Drawer::Line> aLines);

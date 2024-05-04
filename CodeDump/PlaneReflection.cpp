@@ -9,9 +9,6 @@ namespace Graphics
 	PlaneReflection::PlaneReflection()
 		: myHeight(0)
 	{
-		ModelFactory* modelFactory = Global::GetModelFactory();
-
-		myModel = std::move(modelFactory->CreatePlaneReflection());
 		myModel->SetScale({ 25,1,25 });
 		myModel->SetPosition({ 5,-1,5 });
 	}

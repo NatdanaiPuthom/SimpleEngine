@@ -8,10 +8,7 @@ namespace World
 {
 	Simple::LevelManager* localLevelManager = nullptr;
 	Simple::EventManager* localEventManager = nullptr;
-	Graphics::PlaneReflection* localWaterPlane = nullptr;
 	ECS::EntityComponentSystem* localECS = nullptr;
-
-	float localWaterHeight = 0;
 }
 
 namespace World
@@ -19,21 +16,6 @@ namespace World
 	void SetActiveScene(const int aSceneIndex)
 	{
 		localLevelManager->SetActiveScene(aSceneIndex);
-	}
-
-	void SetWaterHeight(const float aHeight)
-	{
-		localWaterHeight = aHeight;
-	}
-
-	void SetWaterPlane(Graphics::PlaneReflection* aWaterPlane)
-	{
-		localWaterPlane = aWaterPlane;
-	}
-
-	float GetWaterHeight()
-	{
-		return localWaterHeight;
 	}
 
 	int GetActiveSceneIndex()
@@ -44,11 +26,6 @@ namespace World
 	std::shared_ptr<Simple::Scene> GetActiveScene()
 	{
 		return localLevelManager->GetActiveScene();
-	}
-
-	Graphics::PlaneReflection* GetWaterPlane()
-	{
-		return localWaterPlane;
 	}
 
 	Simple::EventManager* GetEventmanager()

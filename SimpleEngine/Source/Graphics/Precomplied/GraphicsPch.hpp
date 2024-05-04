@@ -38,7 +38,8 @@
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Model/Model.hpp"
 #include "Graphics/Model/Skeleton.hpp"
-#include "Graphics/Model/AnimatedModel.hpp"
+#include "Graphics/Animation/Animation.hpp"
+#include "Graphics/Animation/AnimationPlayer.hpp"
 
 #pragma message("---------Never give up on your dreams!---------------")
 

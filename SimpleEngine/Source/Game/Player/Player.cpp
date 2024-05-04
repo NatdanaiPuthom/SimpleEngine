@@ -25,7 +25,7 @@ void Player::Init()
 	myStates[Cast(ePlayerState::Idle)]->Init();
 	myStates[Cast(ePlayerState::Walk)]->Init();
 
-	myAnimationController->Init(myAnimatedModel.get(), myAnimations[Cast(ePlayerAnimation::Idle)].get(), true);
+	//myAnimationController->Init(myAnimatedModel.get(), myAnimations[Cast(ePlayerAnimation::Idle)].get(), true);
 
 	myCurrentState = myStates[Cast(ePlayerState::Idle)];
 
@@ -63,43 +63,13 @@ void Player::SetVelocity(const Math::Vector3f& aVelocity)
 	myVelocity = aVelocity;
 }
 
-void Player::SetPosition(const Math::Vector3f& aPosition)
-{
-	myAnimatedModel->SetPosition(aPosition);
-}
-
-void Player::SetRotation(const Math::Vector3f& aRotation)
-{
-	myAnimatedModel->SetRotation(aRotation);
-}
-
-void Player::LookAt(const Math::Vector3f& aTargetPoint)
-{
-	myAnimatedModel->LookAt(aTargetPoint);
-}
-
 Math::Vector3f Player::GetVelocity() const
 {
 	return myVelocity;
 }
 
-Math::Vector3f Player::GetPosition() const
-{
-	return myAnimatedModel->GetPosition();
-}
-
-Math::Vector3f Player::GetRotation() const
-{
-	return myAnimatedModel->GetRotation();
-}
-
 void Player::LoadModel()
 {
-	myAnimatedModel = std::make_shared<Graphics::AnimatedModel>(Global::GetModelFactory()->LoadAnimatedModelFBX("AnimatedModels/SM_Wizard.fbx"));
-	myAnimatedModel->SetScale(0.01f);
-	myAnimatedModel->ClearTextures();
-	myAnimatedModel->AddTexture("Models/SM_Wizard_c.dds");
-
 	myAnimations[Cast(ePlayerAnimation::Idle)] = std::make_shared<Graphics::Animation>(Global::GetModelFactory()->LoadAnimationFBX("Animations/A_Wizard_Idle.fbx"));
 	myAnimations[Cast(ePlayerAnimation::Walk)] = std::make_shared<Graphics::Animation>(Global::GetModelFactory()->LoadAnimationFBX("Animations/A_Wizard_Walk.fbx"));
 }

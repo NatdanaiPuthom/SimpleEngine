@@ -21,20 +21,14 @@ public:
 	void SetState(const ePlayerState aState);
 	void SetAnimation(const ePlayerAnimation aAnimation, const bool aShouldLoop = false, const float aDuration = -1.0f);
 	void SetVelocity(const Math::Vector3f& aVelocity);
-	void SetPosition(const Math::Vector3f& aPosition);
-	void SetRotation(const Math::Vector3f& aRotation);
-	void LookAt(const Math::Vector3f& aTargetPoint);
 public:
 	Math::Vector3f GetVelocity() const;
-	Math::Vector3f GetPosition() const;
-	Math::Vector3f GetRotation() const;
 private:
 	void LoadModel();
 private:
 	Math::Vector3f myVelocity;
 
 	std::shared_ptr<PlayerState> myCurrentState;
-	std::shared_ptr<Graphics::AnimatedModel> myAnimatedModel;
 	std::unique_ptr<Simple::AnimationController> myAnimationController;
 
 	std::array<std::shared_ptr<Graphics::Animation>, static_cast<size_t>(ePlayerAnimation::Count)> myAnimations;

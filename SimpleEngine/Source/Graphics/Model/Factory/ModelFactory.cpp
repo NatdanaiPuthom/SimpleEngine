@@ -71,7 +71,8 @@ namespace Graphics
 
 		if (mesh == nullptr)
 		{
-			LoadAndCacheMesh(aFileName);
+			LoadAndCacheMesh(filePath);
+			mesh = GetMesh(filePath.c_str());
 
 			if (mesh == nullptr)
 			{
@@ -91,8 +92,10 @@ namespace Graphics
 		if (skeleton == nullptr)
 		{
 			TGA::FBX::Mesh tgaMesh;
-			LoadAndCacheSkeleton(filePath, tgaMesh);
+			TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(filePath, tgaMesh);
+			assert(status && "Failed to LoadMesh from FBXImporter");
 
+			LoadAndCacheSkeleton(filePath, tgaMesh);
 			skeleton = GetSkeleton(filePath.c_str());
 
 			if (skeleton == nullptr)
@@ -124,38 +127,6 @@ namespace Graphics
 
 		model.Init(mesh);
 		return model;
-	}
-
-	AnimatedModel ModelFactory::LoadAnimatedModelFBX(const char* aFileName)
-	{
-		AnimatedModel animatedModel;
-
-		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
-		const Mesh* mesh = GetMesh(path.c_str());
-		const Skeleton* skeleton = GetSkeleton(path.c_str());
-
-		TGA::FBX::Mesh tgaMesh;
-
-		if (mesh == nullptr)
-		{
-			LoadAndCacheMesh(path, tgaMesh);
-
-			mesh = GetMesh(path.c_str());
-			if (mesh == nullptr)
-				assert(false && "Failed to GetMesh from bank");
-		}
-
-		if (skeleton == nullptr)
-		{
-			LoadAndCacheSkeleton(path, tgaMesh);
-
-			skeleton = GetSkeleton(path.c_str());
-			if (skeleton == nullptr)
-				assert(false && "Failed to GetSkeleton from bank");
-		}
-
-		animatedModel.Init(mesh, skeleton);
-		return animatedModel;
 	}
 
 	Animation ModelFactory::LoadAnimationFBX(const char* aFileName)
@@ -397,31 +368,6 @@ namespace Graphics
 		aMeshData.indices = aTGAMesh.Elements[0].Indices;
 	}
 
-	std::unique_ptr<Model> ModelFactory::CreateTerrainModel()
-	{
-		std::unique_ptr<Model> terrainModel = std::make_unique<Model>();
-
-		terrainModel->Init(GetMesh("Terrain"));
-		terrainModel->ClearTextures();
-		terrainModel->SetShader("TerrainPS.cso", "DefaultVS.cso");
-
-		terrainModel->AddTexture("TGA/Uppgift6/Grass_c.dds");
-		terrainModel->AddTexture("TGA/Uppgift6/Rock_c.dds");
-		terrainModel->AddTexture("TGA/Uppgift6/Snow_c.dds");
-		terrainModel->AddTexture("TGA/Uppgift6/Grass_n.dds");
-		terrainModel->AddTexture("TGA/Uppgift6/Rock_n.dds");
-		terrainModel->AddTexture("TGA/Uppgift6/Snow_n.dds");
-		terrainModel->AddTexture("TGA/Uppgift7/Grass_m.dds");
-		terrainModel->AddTexture("TGA/Uppgift7/Rock_m.dds");
-		terrainModel->AddTexture("TGA/Uppgift7/Snow_m.dds");
-
-		terrainModel->SetScale({ 1,1,1 });
-		terrainModel->SetPosition(Math::Vector3f(0, 0, 0));
-		terrainModel->SetName("Terrain");
-
-		return std::move(terrainModel);
-	}
-
 	std::unique_ptr<Model> ModelFactory::CreateSkyBoxModel()
 	{
 		std::unique_ptr<Model> skyBoxModel = std::make_unique<Model>();
@@ -483,30 +429,5 @@ namespace Graphics
 		pyramid->SetName("Pyramid");
 
 		return std::move(pyramid);
-	}
-
-	std::unique_ptr<Model> ModelFactory::CreateSphereModel()
-	{
-		std::unique_ptr<Model> sphere = std::make_unique<Model>();
-
-		sphere->Init(GetMesh("Sphere"));
-		sphere->SetScale({ 1,1,1 });
-		sphere->SetPosition(Math::Vector3f(0, 0, 0));
-		sphere->SetName("Sphere");
-
-		return std::move(sphere);
-	}
-
-	std::unique_ptr<Model> ModelFactory::CreatePlaneReflection()
-	{
-		std::unique_ptr<Model> plane = std::make_unique<Model>();
-
-		plane->Init(GetMesh("Plane"));
-		plane->SetShader("WaterReflectionPS.cso", "DefaultVS.cso");
-		plane->SetScale({ 1,1,1 });
-		plane->SetPosition(Math::Vector3f(0, 0, 0));
-		plane->SetName("PlaneReflection");
-
-		return std::move(plane);
 	}
 }

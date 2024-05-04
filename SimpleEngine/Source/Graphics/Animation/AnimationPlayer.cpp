@@ -18,16 +18,6 @@ namespace Graphics
 	{
 	}
 
-	void AnimationPlayer::Init(Animation& aAnimation, AnimatedModel& aModel)
-	{
-		myAnimation = &aAnimation;
-		myModel = &aModel;
-		myFPS = aAnimation.framesPerSecond;
-		myTime = 0.0f;
-
-		InitPose();
-	}
-
 	void AnimationPlayer::Init(Animation& aAnimation, const Skeleton* aSkeleton)
 	{
 		myAnimation = &aAnimation;
@@ -113,45 +103,6 @@ namespace Graphics
 		myState = eAnimationState::Playing;
 	}
 
-	void AnimationPlayer::Update()
-	{
-		if (myState == eAnimationState::Playing)
-		{
-			LerpCurrentAnimation();
-			myModel->SetPose(myModelSpacePose);
-		}
-	}
-
-	void AnimationPlayer::UpdateMultipleModels(std::vector<AnimatedModel*>& aModelContainer)
-	{
-		if (myState == eAnimationState::Playing)
-		{
-			LerpCurrentAnimation();
-
-			LocalSpacePose modelSpacePose;
-			aModelContainer[0]->GetSkeleton()->ConvertModelSpacePoseToLocalSpacePose(myModelSpacePose, modelSpacePose);
-
-			for (auto& model : aModelContainer)
-			{
-				model->SetPose(modelSpacePose);
-			}
-		}
-	}
-
-	void AnimationPlayer::LerpCurrentAnimation()
-	{
-		if (myState == eAnimationState::Playing)
-		{
-			size_t currentFrame = 0;
-			size_t nextFrame = 0;
-			float delta = 0.0f; //This is use for lerping
-
-			UpdateTimer();
-			CalculateFrame(currentFrame, nextFrame, delta);
-			LerpAnimation(currentFrame, nextFrame, delta);
-		}
-	}
-
 	void AnimationPlayer::SetIsLooping(const bool aShouldLoop)
 	{
 		myIsLooping = aShouldLoop;
@@ -186,16 +137,6 @@ namespace Graphics
 		return currentFrame;
 	}
 
-	void AnimationPlayer::InitPose()
-	{
-		myState = eAnimationState::Playing;
-
-		LerpCurrentAnimation();
-		myModel->SetPose(myModelSpacePose);
-
-		myState = eAnimationState::Finished;
-	}
-
 	void AnimationPlayer::CalculateFrame(size_t& aCurrentFrame, size_t& aNextFrame, float& aDelta)
 	{
 		const float frameRate = 1.0f / myFPS;
@@ -217,37 +158,6 @@ namespace Graphics
 		aCurrentFrame = currentFrame;
 		aNextFrame = nextFrame;
 		aDelta = delta;
-	}
-
-	void AnimationPlayer::LerpAnimation(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta)
-	{
-		const Skeleton* skeleton = myModel->GetSkeleton();
-		myModelSpacePose.count = skeleton->myJoints.size();
-
-		for (size_t i = 0; i < myModelSpacePose.count; i++)
-		{
-			const Math::Matrix4x4f currentMatrix = myAnimation->frames[aCurrentFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
-			const Math::Matrix4x4f nextMatrix = myAnimation->frames[aNextFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
-
-			Math::Vector3f currentPosition;
-			Math::Vector3f nextPosition;
-
-			Math::Quaternionf currentQuaternion;
-			Math::Quaternionf nextQuaternion;
-
-			Math::Vector3f currentScale;
-			Math::Vector3f nextScale;
-
-			currentMatrix.DecomposeMatrix(currentPosition, currentQuaternion, currentScale);
-			nextMatrix.DecomposeMatrix(nextPosition, nextQuaternion, nextScale);
-
-			const Math::Vector3f translation = Math::Lerp(currentPosition, nextPosition, aDelta);
-			const Math::Quaternionf rotation = Math::Quaternionf::Slerp(currentQuaternion, nextQuaternion, aDelta);
-			const Math::Vector3f scale = Math::Lerp(currentScale, nextScale, aDelta);
-
-			const Math::Matrix4x4f lerpedMatrix = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
-			myModelSpacePose.jointTransforms[i] = lerpedMatrix;
-		}
 	}
 
 	void AnimationPlayer::UpdateTimer()

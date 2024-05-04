@@ -56,13 +56,13 @@ void PlayerWalk::Update()
 
 	velocity.Normalize();
 
-	Math::Vector3 position = myPlayer->GetPosition();
+	/*Math::Vector3 position = myPlayer->GetPosition();
 	position += 2.0f * velocity * Global::GetDeltaTime();
 
 	myPlayer->SetPosition(position);
 
 	auto lookAt = position + 2.0f * velocity;
-	myPlayer->LookAt(lookAt);
+	myPlayer->LookAt(lookAt);*/
 }
 
 void PlayerWalk::Render()

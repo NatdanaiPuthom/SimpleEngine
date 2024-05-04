@@ -193,6 +193,27 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
+	void Renderer::RenderBoundingBox(const std::shared_ptr<const Graphics::AnimatedModel> aModel) const
+	{
+		myBoundingBoxDrawer->Render(aModel);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
+	void Renderer::RenderBoundingBox(const Graphics::Model& aModel) const
+	{
+		myBoundingBoxDrawer->Render(aModel);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
+	void Renderer::RenderBoundingBox(const Graphics::AnimatedModel& aModel) const
+	{
+		myBoundingBoxDrawer->Render(aModel);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
 	void Renderer::SetDebugMode(const bool aSetDebugMode)
 	{
 		myDebugMode = aSetDebugMode;

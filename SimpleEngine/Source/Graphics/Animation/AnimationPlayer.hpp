@@ -23,25 +23,16 @@ namespace Graphics
 	{
 	public:
 		ModelSpacePose myModelSpacePose;
-
 	public:
 		void Init(Animation& aAnimation, const Skeleton* aSkeleton);
+
+		//Will lerp active animation and setpose directly
 		void UpdateTest(Math::Matrix4x4f* aMatrix);
+
 		void LerpAnimationTest(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta);
 
 		AnimationPlayer();
 		~AnimationPlayer();
-
-		void Init(Animation& aAnimation, AnimatedModel& aModel);
-
-		//Will lerp active animation and setpose directly
-		void Update();
-
-		//Update and SetPose of multiple models and animation of same kind
-		void UpdateMultipleModels(std::vector<AnimatedModel*>& aModelContainer);
-
-		//Lerp active animation and store the pose
-		void LerpCurrentAnimation();
 
 		void Play(const bool aShouldLoop = true); //NOTE(v9.34.0): Default to true because my smol brain keep forgetting and wondering why animation doesn't play everytime i rewrote system to test
 		void Pause();
@@ -57,11 +48,8 @@ namespace Graphics
 		unsigned int GetCurrentFrame() const;
 
 	private:
-		void InitPose();
 		void CalculateFrame(size_t& aCurrentFrame, size_t& aNextFrame, float& aDelta);
-		void LerpAnimation(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta);
 		void UpdateTimer();
-
 	private:
 		eAnimationState myState;
 
