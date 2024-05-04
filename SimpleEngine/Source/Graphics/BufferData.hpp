@@ -8,17 +8,12 @@
 struct alignas(16) FrameBufferData final
 {
 	Math::Matrix4x4f worldToClipMatrix;
+
 	Math::Vector3f cameraPosition;
 	const float paddingCameraPos = -1.0f;
 
 	Math::Vector2ui resolution;
 	const float paddingResolution[2] = { -1.0f };
-
-	float waterHeight;
-	const float paddingWaterHeight[3] = { -1.0f };
-
-	float waterMoveFactor = 0.0f;
-	const float paddingWaterMoveFactor[3] = { -1.0f };
 };
 
 struct alignas(16) ObjectBufferData final
@@ -28,8 +23,9 @@ struct alignas(16) ObjectBufferData final
 
 struct alignas(16) TimeBufferData final
 {
-	float totalTime = 0;
-	const float padding[3] = { -1 };
+	float totalTime = 0.0f;
+	float deltaTime = 0.0f;
+	const float padding[2] = { -1 };
 };
 
 struct alignas(16) LightBufferData final

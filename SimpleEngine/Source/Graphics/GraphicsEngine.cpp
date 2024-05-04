@@ -21,7 +21,6 @@ namespace Graphics
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
 		, myFPSLevelCap(0)
-		, myWaterMoveFactor(0.0f)
 	{
 	}
 
@@ -98,11 +97,6 @@ namespace Graphics
 			frameBuffer.worldToClipMatrix = myCurrentCamera->GetWorldToClipMatrix();
 			frameBuffer.cameraPosition = myCurrentCamera->GetPosition();
 			frameBuffer.resolution = Global::GetResolution();
-			frameBuffer.waterHeight = 0.0f;
-
-			myWaterMoveFactor += 0.01f * Global::GetDeltaTime();
-			myWaterMoveFactor = std::fmod(myWaterMoveFactor, 1.0f);
-			frameBuffer.waterMoveFactor = myWaterMoveFactor;
 
 			myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
 			myCameraConstantBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
@@ -111,6 +105,7 @@ namespace Graphics
 		{
 			TimeBufferData timeBuffer = {};
 			timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
+			timeBuffer.deltaTime = static_cast<float>(Global::GetDeltaTime());
 			myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
 			myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 		}
@@ -163,41 +158,6 @@ namespace Graphics
 
 		if (!AddTexture("Cat.dds", 0))
 			assert(false && "Failed to add Texture");
-
-		{ //TGA Uppgift
-			if (!AddTexture("TGA/Uppgift6/Grass_c.dds", 1))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift6/Rock_c.dds", 2))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift6/Snow_c.dds", 3))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift6/Grass_n.dds", 4))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift6/Rock_n.dds", 5))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift6/Snow_n.dds", 6))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift7/Grass_m.dds", 7))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift7/Rock_m.dds", 8))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift7/Snow_m.dds", 9))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift7/Cubemap.dds", 14))
-				assert(false && "Failed to add Texture");
-
-			if (!AddTexture("TGA/Uppgift8/WaveTest.dds", 2))
-				assert(false && "Failed to add Texture");
-		}
 	}
 
 	void GraphicsEngine::PreloadShaders()
@@ -221,19 +181,7 @@ namespace Graphics
 			assert(false && "Failed to add Shader");
 
 		{ //TGA Uppgift
-			if (!AddShader("TerrainPS.cso", "DefaultVS.cso"))
-				assert(false && "Failed to add Shader");
-
 			if (!AddShader("SkyBoxPS.cso", "SkyBoxVS.cso"))
-				assert(false && "Failed to add Shader");
-
-			if (!AddShader("WaterReflectionPS.cso", "PlaneReflectionVS.cso"))
-				assert(false && "Failed to add Shader");
-
-			if (!AddShader("DefaultPS.cso", "PlaneReflectionVS.cso"))
-				assert(false && "Failed to add Shader");
-
-			if (!AddShader("WaterReflectionPS.cso", "DefaultVS.cso"))
 				assert(false && "Failed to add Shader");
 		}
 	}
@@ -928,6 +876,7 @@ namespace Graphics
 		TimeBufferData timeBuffer;
 
 		timeBuffer.totalTime = 0.0f;
+		timeBuffer.deltaTime = 0.0f;
 
 		if (!myTimeConstantBuffer->Init(sizeof(TimeBufferData), &timeBuffer))
 			assert(false && "Failed to create TimeConstantBuffer");

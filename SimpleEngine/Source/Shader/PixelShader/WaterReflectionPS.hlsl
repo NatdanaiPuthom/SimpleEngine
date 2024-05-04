@@ -14,12 +14,12 @@ PixelOutput main(PixelInputType aInput)
     float2 refractUV = normalizedDeviceCoords;
     
     float distortionStrength = 0.01f;
-    float2 wave = (aDuDvMap.Sample(aSampler, float2(aInput.uv.x + waterMoveFactor, aInput.uv.y)).rg * 2.0f - 1.0f) * distortionStrength;
-    float2 wave2 = (aDuDvMap.Sample(aSampler, float2(-aInput.uv.x + waterMoveFactor, aInput.uv.y + waterMoveFactor)).rg * 2.0f - 1.0f) * distortionStrength;
-    float2 totalWave = wave + wave2;
+    //float2 wave = (aDuDvMap.Sample(aSampler, float2(aInput.uv.x + waterMoveFactor, aInput.uv.y)).rg * 2.0f - 1.0f) * distortionStrength;
+    //float2 wave2 = (aDuDvMap.Sample(aSampler, float2(-aInput.uv.x + waterMoveFactor, aInput.uv.y + waterMoveFactor)).rg * 2.0f - 1.0f) * distortionStrength;
+    //float2 totalWave = wave + wave2;
     
-    reflectUV += clamp(totalWave, 0.001f, 0.999f);
-    refractUV.y += clamp(totalWave.y, 0.001f, 0.999f);
+    //reflectUV += clamp(totalWave, 0.001f, 0.999f);
+    //refractUV.y += clamp(totalWave.y, 0.001f, 0.999f);
     
     float4 reflectColor = aDefaultTexture.Sample(aSampler, reflectUV);
     float4 refractColor = aRefractionTexture.Sample(aSampler, refractUV);

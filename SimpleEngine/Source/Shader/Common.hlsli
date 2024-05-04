@@ -12,12 +12,6 @@ cbuffer FrameBuffer : register(b0)
     
     uint2 resolution;
     float2 resolutionPadding;
-    
-    float waterHeight;
-    float3 paddingWaterHeight;
-    
-    float waterMoveFactor;
-    float3 paddingWaterMoveFactor;
 }
 
 cbuffer ObjectBuffer : register(b1)
@@ -28,7 +22,8 @@ cbuffer ObjectBuffer : register(b1)
 cbuffer TimeBuffer : register(b2)
 {
     float totalTime;
-    float3 paddingTotalTime;
+    float deltaTime;
+    float2 paddingTotalTime;
 }
 
 cbuffer LightBuffer : register(b3)
