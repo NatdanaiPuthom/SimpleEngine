@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/Template/ToolInterface.hpp"
 
 namespace Editor
 {
@@ -26,7 +27,6 @@ namespace Editor
 		std::unique_ptr<Editor::HierarchyWindow> myHierarchyWindow;
 		std::unique_ptr<Editor::AssetWindow> myAssetWindow;
 
-		bool myDebugMenuActive;
-		bool mySettingToolActive;
+		bool myEditorWindowActive;
 	};
 }

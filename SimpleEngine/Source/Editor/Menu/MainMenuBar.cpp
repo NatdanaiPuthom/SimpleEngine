@@ -7,8 +7,7 @@
 namespace Editor
 {
 	MainMenuBar::MainMenuBar()
-		: mySettingToolActive(false)
-		, myDebugMenuActive(false)
+		: myEditorWindowActive(false)
 	{
 	}
 
@@ -40,7 +39,7 @@ namespace Editor
 		{
 			if (ImGui::BeginMenu("Editor"))
 			{
-				ImGui::MenuItem("Show", "F1", &mySettingToolActive);
+				ImGui::MenuItem("Show", "F1", &myEditorWindowActive);
 				ImGui::EndMenu();
 			}
 
@@ -54,10 +53,10 @@ namespace Editor
 	{
 		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_F1))
 		{
-			mySettingToolActive = !mySettingToolActive;
+			myEditorWindowActive = !myEditorWindowActive;
 		}
 
-		if (mySettingToolActive)
+		if (myEditorWindowActive)
 		{
 			myAssetWindow->Draw();
 			mySettingsTool->Draw();
@@ -77,6 +76,7 @@ namespace Editor
 
 		const nlohmann::json settings = json["editor_settings"];
 
-		mySettingToolActive = settings["setting_tool"]["active"];
+		myEditorWindowActive = settings["editor"]["active"];
+		myHierarchyWindow->myIsActive = settings["windows"]["show_inspector"];
 	}
 }
