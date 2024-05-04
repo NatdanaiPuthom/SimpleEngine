@@ -1,4 +1,6 @@
 #pragma once
+#include "Editor/Template/ToolInterface.hpp"
+#include <string>
 
 namespace Editor
 {
@@ -9,5 +11,8 @@ namespace Editor
 
 		void Init() override;
 		void Draw() override;
+
+	private:
+		std::string myCurrentDirectory;
 	};
 }

@@ -48,7 +48,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		'SIMPLE_DIR_SHADERS="' .. "Shaders/" .. '"',
 		'SIMPLE_DIR_NAVMESH="' .. "Assets/Navmesh/" .. '"',
 		'SIMPLE_DIR_AUDIO="' .. "Assets/Audio/" .. '"',
-		'SIMPLE_DIR_MODELS="' .. "Assets/Models/" .. '"'
+		'SIMPLE_DIR_MODELS="' .. "Assets/Models/" .. '"',
+		'SIMPLE_DIR_ASSETS="' .. "Assets" .. '"'
 	}
 
 	configurations { -- Create Configurations For This WorkSpace

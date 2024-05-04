@@ -34,28 +34,35 @@ namespace Editor
 		return (std::string::npos == aFileName.find_last_of('.'));
 	}
 
-	void FileManager::ViewFolders(const std::string& aDirectory, const std::string& aName)
+	void FileManager::ViewFolders(const std::string& aStartDirectory, const std::string& aWindowName, std::string& aCurrentDirectory)
 	{
-		std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aDirectory, true);
+		std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aStartDirectory, true);
 
-		if (ImGui::TreeNode(aName.c_str()))
+		if (ImGui::TreeNode(aWindowName.c_str()))
 		{
 			for (auto& name : fileNames)
 			{
 				if (FileManager::IsFolder(name))
 				{
-					ViewFolders(aDirectory + "/" + name, name);
+					ViewFolders(aStartDirectory + "\\" + name, name, aCurrentDirectory);
 				}
 				else
 				{
-					if (ImGui::Button(name.c_str()))
+					if (ImGui::Selectable(name.c_str()))
 					{
-
+						aCurrentDirectory = aStartDirectory + "\\" + name;
 					}
 				}
 			}
 
 			ImGui::TreePop();
+		}
+		else
+		{
+			if (ImGui::IsItemClicked())
+			{
+				aCurrentDirectory = aStartDirectory;
+			}
 		}
 	}
 

@@ -37,7 +37,7 @@ namespace SimpleUtilities
 			return aFilePath.substr(pos + 1);
 		}
 
-		pos = aFilePath.find_last_of("\\");
+		pos = aFilePath.find_last_of("\\"); //NOTE(v9.35.0): Microsoft sure loves to use '\'
 
 		if (pos != std::string::npos && pos + 1 < aFilePath.length())
 		{
@@ -53,7 +53,7 @@ namespace SimpleUtilities
 		GetModuleFileNameA(NULL, buffer, MAX_PATH);
 
 		const std::string exePath(buffer);
-		const std::string outputPath = exePath.substr(0, exePath.find_last_of("\\/")) + "//" + aFilePath;
+		const std::string outputPath = exePath.substr(0, exePath.find_last_of("\\")) + "\\" + aFilePath;
 
 		return outputPath;
 	}
