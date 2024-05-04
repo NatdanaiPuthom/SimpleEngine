@@ -28,8 +28,8 @@ namespace Editor
 				ImGui::OpenPopup("Add Scene Object");
 			}
 
-			ImGui::SameLine(ImGui::GetWindowWidth() - 175);
-			ImGui::PushItemWidth(150);
+			ImGui::SameLine(ImGui::GetWindowWidth() - 135);
+			ImGui::PushItemWidth(125);
 			std::string sceneSearch = "";
 			if (ImGui::InputTextWithHint("##SearchScene", "Search", &sceneSearch[0], sceneSearch.capacity() + 1))
 			{
@@ -134,6 +134,35 @@ namespace Editor
 
 					if (open)
 					{
+						if (componentNames[i] == "TransformComponent") //NOTE(v9.34.0): Ugly hardcoded, trying to fix reflection
+						{
+							ECS::TransformComponent* transformComponent = selectedEntity->GetComponent<ECS::TransformComponent>();
+							Math::Vector3f position = transformComponent->transform.GetPosition();
+							Math::Vector3f rotation = transformComponent->transform.GetRotation();
+							Math::Vector3f scale = transformComponent->transform.GetScale();
+
+							ImGui::SetNextItemWidth(200);
+
+							if (ImGui::DragFloat3("Position", &position.x, 0.5f))
+							{
+								transformComponent->transform.SetPosition(position);
+							}
+
+							ImGui::SetNextItemWidth(200);
+
+							if (ImGui::DragFloat3("Rotation", &rotation.x, 0.1f))
+							{
+								transformComponent->transform.SetRotation(rotation);
+							}
+
+							ImGui::SetNextItemWidth(200);
+
+							if (ImGui::DragFloat3("Scale", &scale.x, 0.1f))
+							{
+								transformComponent->transform.SetScale(scale);
+							}
+						}
+
 						ImGui::SameLine(ImGui::GetWindowWidth() - 50);
 
 						if (ImGui::Button("..."))
