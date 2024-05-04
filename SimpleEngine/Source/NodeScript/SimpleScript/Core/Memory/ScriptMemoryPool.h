@@ -93,21 +93,15 @@ namespace SCR
 		size_t CurrentSize() const;
 		size_t SizeLeft() const;
 
-
 		Byte* MemoryAt(MemoryPoolID anID);
 		const Byte* MemoryAt(MemoryPoolID anID) const;
 
 		void Clear();
 
 	private:
-
 		void Reallocate();
 		void ReallocateDeepCopy();
-
-
 	private:
-
-
 		Byte* myStartMemory;
 		Byte* myEndMemory;
 		Byte* myCurrentMemory;

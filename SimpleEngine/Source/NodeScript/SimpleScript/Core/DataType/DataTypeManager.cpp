@@ -160,4 +160,3 @@ namespace SCR
 		myTemplateDataTypes.clear();
 	}
 }
-

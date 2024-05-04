@@ -171,13 +171,23 @@ namespace SCR
 	void NodeTypeManager::Destroy()
 	{
 		myTypes.clear();
+
 		for (CustomEvent* nodeType : myCustomEvents)
 		{
 			delete nodeType;
 		}
+
+		myTypes.~vector();
+		myCustomEvents.~vector();
+
 		myCustomEvents.clear();
 		myGetterNodeTypeIDs.clear();
 		mySetterNodeTypeIDs.clear();
 		myOperatorNodeTypeIDs.clear();
+		myToCustomEventNodeTypeID.clear();
+
+		//myGetterNodeTypeIDs.~unordered_map();
+		//mySetterNodeTypeIDs.~unordered_map();
+		//myOperatorNodeTypeIDs.~unordered_map();
 	}
 }

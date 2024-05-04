@@ -15,6 +15,8 @@ namespace SCR
 		NodeTypeManager::Destroy();
 		PinTypeManager::Destroy();
 		DataTypeManager::Destroy();
+
+		myGlobalMemoryPool.Clear();
 	}
 
 	void ScriptFoundation::InitializeSystemTypes()

@@ -11,6 +11,7 @@ namespace SCR
 
 	ScriptManager::~ScriptManager()
 	{
+		myScripts.clear();
 	}
 
 	void ScriptManager::TriggerEvent(const std::string& aUserEventKey, const ExecutionContextBase& aContext)

@@ -63,7 +63,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	EDIT::VisualScriptingWindow simpleScriptWindow; simpleScriptWindow;
+	EDIT::VisualScriptingWindow simpleScriptWindow;
 	SCRIPT::ScriptFoundation myScriptFoundation;
 	SCRIPT::ScriptManager* scriptManager;
 

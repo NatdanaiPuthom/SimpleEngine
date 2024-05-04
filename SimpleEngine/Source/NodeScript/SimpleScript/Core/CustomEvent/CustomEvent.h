@@ -4,9 +4,6 @@
 
 namespace SCR
 {
-
-	class MemoryPool;
-	
 	class CustomEvent final
 	{
 	public:

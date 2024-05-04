@@ -14,6 +14,11 @@ namespace SCR
 
 	MemoryPool::~MemoryPool()
 	{
+		if (myStartMemory == nullptr)
+		{
+			return;
+		}
+
 		for (int i = 0; i < myObjects.size(); ++i)
 		{
 			MemoryObject& obj = myObjects[i];
@@ -21,6 +26,10 @@ namespace SCR
 		}
 
 		delete[] myStartMemory;
+
+		myStartMemory = nullptr;
+		myEndMemory = nullptr;
+		myCurrentMemory = nullptr;
 	}
 
 	size_t MemoryPool::AllocSize() const
@@ -88,12 +97,23 @@ namespace SCR
 
 	void MemoryPool::Clear()
 	{
+		if (myStartMemory == nullptr)
+		{
+			return;
+		}
+
+		for (int i = 0; i < myObjects.size(); ++i)
+		{
+			MemoryObject& obj = myObjects[i];
+			obj.destroy(MemoryAt(obj.id));
+		}
+
 		delete[] myStartMemory;
+
+		myStartMemory = nullptr;
+		myEndMemory = nullptr;
+		myCurrentMemory = nullptr;
+
 		myObjects.clear();
-
-		myStartMemory = new Byte[1];
-		myEndMemory = myStartMemory + sizeof(Byte) * 1;
-		myCurrentMemory = myStartMemory;
 	}
-
 }

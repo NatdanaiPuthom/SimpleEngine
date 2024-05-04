@@ -13,6 +13,7 @@ namespace SCR
 	class NodeTypeManager
 	{
 		friend class ScriptInternalModifier;
+
 	public:
 		static NodeTypeID Register(NodeType&& aNodeType);
 
@@ -45,14 +46,10 @@ namespace SCR
 		static std::string GetNameDirectory(const NodeTypeID anID);
 
 		static void Assert();
-
 		static void Destroy();
 
 	private:
-
 		static NodeType CreateInvalidNodeType();
-
-
 	private:
 
 		inline static std::vector<NodeType> myTypes = { CreateInvalidNodeType() };
@@ -62,6 +59,5 @@ namespace SCR
 		inline static std::unordered_map<DataTypeID, NodeTypeID> myGetterNodeTypeIDs;
 		inline static std::unordered_map<DataTypeID, NodeTypeID> mySetterNodeTypeIDs;
 		inline static std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> myOperatorNodeTypeIDs;
-
 	};
 }
