@@ -19,7 +19,39 @@ namespace Drawer
 {
 	using namespace Simple;
 
-	void Renderer::TestRender(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent)
+	Renderer::Renderer()
+	{
+	}
+
+	Renderer::~Renderer()
+	{
+	}
+
+	void Renderer::Init()
+	{
+		myObjectBuffer = std::make_unique<Graphics::ConstantBuffer>();
+		myBoneBuffer = std::make_unique<Graphics::ConstantBuffer>();
+
+		myBoundingBoxDrawer = std::make_unique<Drawer::BoundingBoxDrawer>();
+		myLineDrawer = std::make_unique<Drawer::LineDrawer>();
+		mySphereDrawer = std::make_unique<Drawer::SphereDrawer>();
+		mySpriteDrawer = std::make_unique<Drawer::SpriteDrawer>();
+
+		LoadSettingsFromJson();
+
+		if (!CreateObjectBuffer())
+			assert(false && "Failed to create ObjectBuffer");
+
+		if (!CreateBoneBuffer())
+			assert(false && "Failed to create ObjectBuffer");
+
+		myBoundingBoxDrawer->Init();
+
+		myObjectBuffer->SetSlot(1);
+		myBoneBuffer->SetSlot(5);
+	}
+
+	void Renderer::RenderStaticModel(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent)
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
@@ -44,7 +76,8 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::TestRenderAnimated(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent, ECS::AnimatedComponent* aSkeletonComponent)
+
+	void Renderer::RenderAnimatedModel(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent, ECS::AnimatedComponent* aSkeletonComponent)
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
@@ -77,38 +110,6 @@ namespace Drawer
 		context->DrawIndexed(static_cast<UINT>(aMeshComponent->mesh->myMeshData.indices.size()), 0, 0);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
-	}
-
-	Renderer::Renderer()
-	{
-	}
-
-	Renderer::~Renderer()
-	{
-	}
-
-	void Renderer::Init()
-	{
-		myObjectBuffer = std::make_unique<Graphics::ConstantBuffer>();
-		myBoneBuffer = std::make_unique<Graphics::ConstantBuffer>();
-
-		myBoundingBoxDrawer = std::make_unique<Drawer::BoundingBoxDrawer>();
-		myLineDrawer = std::make_unique<Drawer::LineDrawer>();
-		mySphereDrawer = std::make_unique<Drawer::SphereDrawer>();
-		mySpriteDrawer = std::make_unique<Drawer::SpriteDrawer>();
-
-		LoadSettingsFromJson();
-
-		if (!CreateObjectBuffer())
-			assert(false && "Failed to create ObjectBuffer");
-
-		if (!CreateBoneBuffer())
-			assert(false && "Failed to create ObjectBuffer");
-
-		myBoundingBoxDrawer->Init();
-
-		myObjectBuffer->SetSlot(1);
-		myBoneBuffer->SetSlot(5);
 	}
 
 	void Renderer::RenderLine(const Drawer::Line& aLine)

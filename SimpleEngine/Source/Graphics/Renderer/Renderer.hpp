@@ -23,13 +23,13 @@ namespace Drawer
 	class Renderer final
 	{
 	public:
-		void TestRender(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent);
-		void TestRenderAnimated(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent,ECS::AnimatedComponent* aSkeletonComponent);
-
 		Renderer();
 		~Renderer();
 
 		void Init();
+
+		void RenderAnimatedModel(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent, ECS::AnimatedComponent* aSkeletonComponent);
+		void RenderStaticModel(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent);
 
 		void RenderLine(const Drawer::Line& aLine);
 		void RenderLine(const std::vector<Drawer::Line> aLines);

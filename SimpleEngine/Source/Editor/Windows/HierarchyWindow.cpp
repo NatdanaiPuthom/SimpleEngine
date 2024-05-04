@@ -143,7 +143,7 @@ namespace Editor
 
 							ImGui::SetNextItemWidth(200);
 
-							if (ImGui::DragFloat3("Position", &position.x, 0.5f))
+							if (ImGui::DragFloat3("Position", &position.x, 0.1f))
 							{
 								transformComponent->transform.SetPosition(position);
 							}
