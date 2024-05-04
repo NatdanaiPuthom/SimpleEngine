@@ -74,16 +74,6 @@ static void DeleteThisGameObjectNode(SCRIPT::NodeExecutionContext<SimpleGameCont
 	}
 }
 
-static std::tuple<SCRIPT::Flow, SCRIPT::Flow, GameObject*> GameObjectPredicateTriggerNode(SCRIPT::NodeExecutionContext<GameUpdateContext> /*aContext*/, GameObjectPredicate aPredicate)
-{
-	if (!aPredicate.operator bool())
-	{
-		return { false, false, nullptr };
-	}
-
-	return { false, true, nullptr };
-}
-
 static bool EvaluateGameObjectPredicate(GameObject* aGameObject, GameObjectPredicate aPredicate)
 {
 	if (!IsGameObjectActive(aGameObject) || !aPredicate.operator bool())
@@ -234,18 +224,17 @@ static void SetScriptOfScriptComponentNode(SCRIPT::NodeExecutionContext<SimpleGa
 void RegisterSimpleGameNodes()
 {
 	SCRIPT::NodeTypeRegistry::RegisterFlowNodeType(DeleteThisGameObjectNode, "Game/GameObject/Delete This GameObject");
+	SCRIPT::NodeTypeRegistry::RegisterFlowNodeType(GameObjectFilterNode, "Game/GameObject/GameObject Filter", SCRIPT::NodeTypeDesc{ { "Flow", "GameObject Vector" }, { "Flow", "GameObject Vector" } });
+	SCRIPT::NodeTypeRegistry::RegisterFlowNodeType(GetGameObjectFromVectorNode, "Game/GameObject/Get GameObject From Vector", SCRIPT::NodeTypeDesc{ { "Flow", "GameObject Vector" } });
+	SCRIPT::NodeTypeRegistry::RegisterFlowNodeType(SetScriptOfScriptComponentNode, "Game/GameObject/Set Script By Name", SCRIPT::NodeTypeDesc{ { "Flow", "GameObject Vector" } });
 
-	SCRIPT::NodeTypeRegistry::RegisterNodeType<SCRIPT::eNodeExecutionTrait::Tick>(GameObjectPredicateTriggerNode, "Game/GameObject/Predicate/GameObject Predicate Trigger", SCRIPT::NodeTypeDesc{ {}, { "True", "False" } });
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(EvaluateGameObjectPredicate, "Game/GameObject/Predicate/Evaluate GameObject Predicate", SCRIPT::NodeTypeDesc{ {  } });
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(EvaluateGameObjectVectorPredicate, "Game/GameObject/Predicate/Evaluate GameObject Vector Predicate", SCRIPT::NodeTypeDesc{ { "GameObject Vector"} });
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(CanPushPredicateNode, "Game/GameObject/Predicate/Can GameObject Push (Predicate)");
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(GameObjectNameEqualPredicateNode, "Game/GameObject/Predicate/GameObject Name Equal (Predicate)");
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(IsGameObjectEqualPredicateNode, "Game/GameObject/Predicate/Is GameObject Equal (Predicate)");
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(GetAllGameObjectsNode, "Game/GameObject/Get All GameObjects", SCRIPT::NodeTypeDesc{ {}, { "GameObject Vector" } });
-	SCRIPT::NodeTypeRegistry::RegisterFlowNodeType(GameObjectFilterNode, "Game/GameObject/GameObject Filter", SCRIPT::NodeTypeDesc{ { "Flow", "GameObject Vector" }, { "Flow", "GameObject Vector" } });
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(GetGameObjectAtIndexNode, "Game/GameObject/Get GameObject At Index", SCRIPT::NodeTypeDesc{ { "GameObject Vector", "Index" } });
-	SCRIPT::NodeTypeRegistry::RegisterFlowNodeType(GetGameObjectFromVectorNode, "Game/GameObject/Get GameObject From Vector", SCRIPT::NodeTypeDesc{ { "Flow", "GameObject Vector" } });
-	SCRIPT::NodeTypeRegistry::RegisterFlowNodeType(SetScriptOfScriptComponentNode, "Game/GameObject/Set Script By Name", SCRIPT::NodeTypeDesc{ { "Flow", "GameObject Vector" } });
 
 	SCRIPT::NodeTypeRegistry::RegisterMemberVariable(&GameObject::myCanPush, "Game/GameObject/Members/", "GameObject - Can Push");
 	SCRIPT::NodeTypeRegistry::RegisterMemberVariable(&GameObject::myCanStandOn, "Game/GameObject/Members/", "GameObject - Can Stand On");

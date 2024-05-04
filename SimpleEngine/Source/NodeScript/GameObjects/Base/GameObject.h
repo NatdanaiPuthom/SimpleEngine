@@ -28,12 +28,4 @@ public:
 	~GameObject()
 	{
 	};
-
-	void Update(const GameUpdateContext& /*aContext*/)
-	{
-		if (!myIsActive)
-		{
-			return;
-		}
-	}
 };

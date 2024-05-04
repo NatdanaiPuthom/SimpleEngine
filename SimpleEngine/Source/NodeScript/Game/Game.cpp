@@ -40,8 +40,6 @@ void Game::Update(float aTimeDelta)
 		mySceneChanger.myChangeScene = false;
 	}
 
-	GameUpdateContext context{ aTimeDelta, myCurrentLevel, this };
-
 	SimpleGameContext updateContext
 	{
 		aTimeDelta,
