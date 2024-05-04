@@ -60,8 +60,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	Script::SimpleNodeScript simpleScript;
-	simpleScript.Init();
+	//Script::SimpleNodeScript simpleScript;
+	//simpleScript.Init();
 
 	while (Global::GetGameIsRunning())
 	{
@@ -84,7 +84,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		PROFILER_BEGIN("Editor Update");
-		simpleScript.Update();
+		//simpleScript.Update();
 		editor.Update();
 		PROFILER_END();
 
