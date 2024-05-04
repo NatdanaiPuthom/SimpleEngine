@@ -187,12 +187,21 @@ namespace Editor
 						{
 							ECS::MeshComponent* meshComponent = selectedEntity->GetComponent<ECS::MeshComponent>();
 
-							const std::string textureName = "Texture: " + meshComponent->texture->GetShaderName();
-							const std::string meshName = "Mesh: " + meshComponent->mesh->GetMeshName();
+							std::string textureName = "Texture: ";
+							std::string meshName = "Mesh: ";
+
+							if (meshComponent->mesh != nullptr)
+							{
+								meshName += meshComponent->mesh->GetMeshName();
+							}
+
+							if (meshComponent->texture != nullptr)
+							{
+								textureName += meshComponent->texture->GetShaderName();
+							}
 
 							ImGui::Text(textureName.c_str());
 							ImGui::Text(meshName.c_str());
-
 
 							//static char droppedFilePath[256] = "";
 

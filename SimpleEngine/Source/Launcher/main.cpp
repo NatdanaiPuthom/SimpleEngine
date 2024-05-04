@@ -119,13 +119,16 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 
 
-		ECS::MeshComponent* meshComponent = entity->GetComponent<ECS::MeshComponent>();
-		ECS::TransformComponent* transformComponent = entity->GetComponent<ECS::TransformComponent>();
-		ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
-		ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
+		if (entity != nullptr)
+		{
+			ECS::MeshComponent* meshComponent = entity->GetComponent<ECS::MeshComponent>();
+			ECS::TransformComponent* transformComponent = entity->GetComponent<ECS::TransformComponent>();
+			ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
+			ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
 
-		animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
-		Global::GetRenderer()->RenderAnimatedModel(transformComponent, meshComponent, animatedComponent);
+			animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
+			Global::GetRenderer()->RenderAnimatedModel(transformComponent, meshComponent, animatedComponent);
+		}
 
 
 
