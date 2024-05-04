@@ -21,7 +21,7 @@ namespace Editor
 			ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 
-			if (ImGui::BeginChild("assets#", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Border))
+			if (ImGui::BeginChild("AssetPaths#", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX))
 			{
 				FileManager::ViewFolders(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS), SIMPLE_DIR_MODELS);
 

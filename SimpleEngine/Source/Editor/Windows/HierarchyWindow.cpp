@@ -21,8 +21,10 @@ namespace Editor
 		static int selected = 0;
 		ECS::Entities entities = World::GetECS()->GetAllEntities();
 
-		if (ImGui::Begin("Hierarchy", 0, ImGuiWindowFlags_NoResize))
+		if (ImGui::Begin("Hierarchy"))
 		{
+			ImVec2 windowSize = ImGui::GetWindowSize();
+
 			if (ImGui::Button("Add"))
 			{
 				ImGui::OpenPopup("Add Scene Object");
@@ -56,30 +58,27 @@ namespace Editor
 			ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 
-			if (ImGui::BeginChild("SceneEntities", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Border))
+			ImVec2 parentSize = ImGui::GetContentRegionAvail();
+
+			if (ImGui::BeginListBox("##SceneEntities", parentSize))
 			{
-				if (ImGui::BeginListBox("##Entities"))
+				for (int i = 0; i < entities.GetEntityCount(); ++i)
 				{
-					for (int i = 0; i < entities.GetEntityCount(); ++i)
+					const bool isSelected = (selected == i);
+
+					if (ImGui::Selectable(entities[i]->GetName().c_str(), isSelected))
 					{
-						const bool isSelected = (selected == i);
-
-						if (ImGui::Selectable(entities[i]->GetName().c_str(), isSelected))
-						{
-							selected = i;
-						}
-
-						if (isSelected)
-						{
-							ImGui::SetItemDefaultFocus();
-						}
-
+						selected = i;
 					}
 
-					ImGui::EndListBox();
+					if (isSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+
 				}
 
-				ImGui::EndChild();
+				ImGui::EndListBox();
 			}
 
 			ImGui::PopStyleVar();
@@ -216,7 +215,7 @@ namespace Editor
 
 							//	ImGui::EndDragDropTarget();
 							//}
-							
+
 						}
 
 						ImGui::TreePop();
