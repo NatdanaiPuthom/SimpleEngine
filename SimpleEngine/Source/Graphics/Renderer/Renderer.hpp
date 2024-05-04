@@ -36,9 +36,6 @@ namespace Drawer
 		void Init();
 
 		void RenderModel(const std::shared_ptr<const Graphics::Model> aModel) const;
-		void RenderModel(const std::shared_ptr<const Graphics::AnimatedModel> aModel) const;
-		void RenderModel(const Graphics::Model& aModel) const;
-		void RenderModel(const Graphics::AnimatedModel& aModel) const;
 
 		void RenderBoundingBox(const std::shared_ptr<const Graphics::Model> aModel) const;
 		void RenderBoundingBox(const std::shared_ptr<const Graphics::AnimatedModel> aModel) const;

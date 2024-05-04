@@ -36,7 +36,7 @@ namespace Test
 	{
 		const auto renderer = Global::GetRenderer();
 
-		renderer->RenderModel(myTestModel);
+		//renderer->RenderModel(myTestModel);
 		//renderer->RenderAnimatedSkeletonLines(myTestModel, myTestAnimationPlayer.myModelSpacePose);
 		renderer->TestIKSkeletonLines(myTestModel);
 

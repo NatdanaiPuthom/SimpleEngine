@@ -76,7 +76,7 @@ namespace Simple
 		{
 			for (size_t i = 0; i < myModelSize; ++i)
 			{
-				Global::GetRenderer()->RenderModel(myAnimatedModels[i]);
+				//Global::GetRenderer()->RenderModel(myAnimatedModels[i]);
 			}
 		}
 
