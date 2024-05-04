@@ -5,6 +5,7 @@
 #include <External/dearimgui/imgui/imgui_impl_dx11.h>
 #include <External/dearimgui/imgui/imgui_impl_win32.h>
 #include <External/dearimgui/imnodes/imnodes.h>
+#include <shellapi.h>
 
 namespace Simple
 {
@@ -26,6 +27,8 @@ namespace Simple
 	void ImGuiEngine::Init()
 	{
 		IMGUI_CHECKVERSION();
+
+		DragAcceptFiles(Global::GetEngineHWND(), TRUE);
 
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();

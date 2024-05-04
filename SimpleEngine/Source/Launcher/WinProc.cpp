@@ -1,6 +1,7 @@
 #include "Engine/Engine.hpp"
 #include "Engine/Input/InputManager.hpp"
 #include "Engine/Global.hpp"
+#include "Editor/FileManager/FileManager.hpp"
 #include <External/imgui.h>
 #include <dwmapi.h>
 
@@ -37,6 +38,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		COLORREF COLOR = 0xFF00FF; //0xBGR
 		DwmSetWindowAttribute(hWnd, DWMWINDOWATTRIBUTE::DWMWA_CAPTION_COLOR, &COLOR, sizeof(COLOR));
+		break;
+	}
+	case WM_DROPFILES:
+	{
+		HDROP hDrop = reinterpret_cast<HDROP>(wParam);
+		Editor::FileManager::DropFiles(hDrop);
 		break;
 	}
 	default:

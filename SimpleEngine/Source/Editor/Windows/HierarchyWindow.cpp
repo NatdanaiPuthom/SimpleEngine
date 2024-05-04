@@ -134,6 +134,28 @@ namespace Editor
 
 					if (open)
 					{
+						ImGui::SameLine(ImGui::GetWindowWidth() - 50);
+
+						if (ImGui::Button("..."))
+						{
+							ImGui::OpenPopup(std::string("ElementList" + std::to_string(id)).c_str());
+						}
+
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::SetTooltip("More Options");
+						}
+
+						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
+						{
+							if (ImGui::MenuItem("Remove Component"))
+							{
+								selectedEntity->RemoveComponentByTypeName(componentNames[i]);
+							}
+
+							ImGui::EndPopup();
+						}
+
 						if (componentNames[i] == "TransformComponent") //NOTE(v9.34.0): Ugly hardcoded, trying to fix reflection
 						{
 							ECS::TransformComponent* transformComponent = selectedEntity->GetComponent<ECS::TransformComponent>();
@@ -162,27 +184,39 @@ namespace Editor
 								transformComponent->transform.SetScale(scale);
 							}
 						}
-
-						ImGui::SameLine(ImGui::GetWindowWidth() - 50);
-
-						if (ImGui::Button("..."))
+						else if (componentNames[i] == "MeshComponent")
 						{
-							ImGui::OpenPopup(std::string("ElementList" + std::to_string(id)).c_str());
-						}
+							ImGui::SetNextItemWidth(200);
 
-						if (ImGui::IsItemHovered())
-						{
-							ImGui::SetTooltip("More Options");
-						}
-
-						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
-						{
-							if (ImGui::MenuItem("Remove Component"))
+							static float a = 5.0f;
+							if (ImGui::DragFloat("aa", &a, 0.1f))
 							{
-								selectedEntity->RemoveComponentByTypeName(componentNames[i]);
+
 							}
 
-							ImGui::EndPopup();
+							//static char droppedFilePath[256] = "";
+
+							//ImGui::Text("Drag and drop a file into this box:");
+							//ImGui::BeginChild("DroppableBox", ImVec2(0, 100), true);
+							//ImVec2 boxSize = ImGui::GetContentRegionAvail();
+							//ImGui::Text("Drop file here");
+							//ImGui::EndChild();
+
+							////ImGui::SetDragDropPayload("FILE_PATH", filePath.c_str(), filePath.size() + 1);
+
+							//if (ImGui::BeginDragDropTarget())
+							//{
+							//	if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FILE_PATH"))
+							//	{
+							//		// Handle the dropped file
+							//		const char* filePath = (const char*)payload->Data;
+							//		strncpy_s(droppedFilePath, filePath, sizeof(droppedFilePath));
+							//		droppedFilePath[sizeof(droppedFilePath) - 1] = '\0'; // Ensure null-terminated
+							//	}
+
+							//	ImGui::EndDragDropTarget();
+							//}
+							
 						}
 
 						ImGui::TreePop();

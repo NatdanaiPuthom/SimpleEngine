@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Windows/AssetWindow.hpp"
+#include "Editor/FileManager/FileManager.hpp"
 
 namespace Editor
 {
@@ -15,24 +16,22 @@ namespace Editor
 	{
 		if (ImGui::Begin("Assets"))
 		{
-			/*if (ImGui::BeginChild("child for drag drop"))
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
+			ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+
+			if (ImGui::BeginChild("assets#", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Border))
 			{
-								ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImGui::GetStyleColorVec4(ImGuiCol_TitleBg));
-				ImGui::BeginChild(ImGui::GetID("assets"), { 0.0f, 0.0f }, false, ImGuiWindowFlags_MenuBar);
-				ImGui::BeginGroup();
+				FileManager::ViewFolders(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS), SIMPLE_DIR_MODELS);
 
-				if (ImGui::BeginMenuBar())
-				{
-					ImGui::EndMenuBar();
-				}
-
-				ImGui::TableNextColumn();
-
-				ImGui::EndGroup();
 				ImGui::EndChild();
-				ImGui::PopStyleColor();
 			}
-				ImGui::EndChild();*/
+
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
 		}
 		ImGui::End();
 	}
