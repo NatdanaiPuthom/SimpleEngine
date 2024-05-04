@@ -41,7 +41,6 @@ public:
 
 	void RemoveGameObject(const unsigned int aID)
 	{
-		//myAvaliableIDs.push_back(aID);
 		for (GameObject* gameObject : myGameObjects)
 		{
 			if (gameObject->myID == aID)
@@ -49,12 +48,6 @@ public:
 				gameObject->myIsActive = false;
 			}
 		}
-
-		//IEntity*&
-		//Entity IEntity*
-		//Entity->
-		//delete myGameObjects[aID];
-		//myGameObjects.erase(myGameObjects.begin() + aID);
 	}
 
 	void DeleteGameObjectsToBeDeleted()
@@ -132,8 +125,6 @@ public:
 		{
 			if (!gameObject)
 				continue;
-			if (gameObject->HasComponent<T>())
-				gameObjects.push_back(gameObject);
 		}
 
 		return gameObjects;

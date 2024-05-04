@@ -1,15 +1,11 @@
 #include "Game.h"
 #include "GameObjects/Base/GameObject.h"
-#include "Components/PlayerComponent.h"
-#include "Components/SpriteComponent.h"
 
 #include <Game/GameCommon.h>
 #include <Game/GameLevel.h>
 #include <Game/GameUpdateContext.h>
 
 #include <fstream>
-
-#include "Components/ScriptComponent.h"
 
 #include "SimpleScript/SimpleGameNodes.h"
 #include "SimpleScript/Core/Serialization/ScriptLoader.h"
@@ -27,9 +23,9 @@ void Game::Init()
 
 	RegisterSimpleDataTypes();
 	RegisterSimpleGameNodes();
-	ScriptComponent::RegisterInternalScriptNodes();
 
 	myGlobalScriptManager = &myScriptFoundation.CreateScriptManager();
+
 	SCRIPT::ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/";
 	SCRIPT::ScriptLoader::LoadAll(*myGlobalScriptManager);
 
@@ -52,8 +48,6 @@ void Game::Update(const Tga::InputManager& inputManager, float aTimeDelta)
 			continue;
 		gameObject->Update(context);
 	}
-
-
 
 	SimpleGameContext updateContext
 	{
@@ -121,11 +115,6 @@ void Game::LoadLevel(const char* name, bool runScripts)
 					auto gameObject = myCurrentLevel.gameObjectManager.GetGameObject(id);
 					gameObject->myName = "Ball";
 					gameObject->myPosition = { column, row };
-
-					SpriteComponent* sprite = new SpriteComponent;
-					sprite->mySpriteID = SpriteId::Ball;
-
-					gameObject->AddComponent(sprite);
 					gameObject->myCanPush = true;
 
 				}
@@ -138,11 +127,6 @@ void Game::LoadLevel(const char* name, bool runScripts)
 					gameObject->myName = "BlueCharacter";
 
 					gameObject->myPosition = { column, row };
-
-					SpriteComponent* sprite = new SpriteComponent;
-					sprite->mySpriteID = SpriteId::CharacterBlue;
-
-					gameObject->AddComponent(sprite);
 					gameObject->myCanPush = false;
 					gameObject->myCanStandOn = false;
 
@@ -155,11 +139,6 @@ void Game::LoadLevel(const char* name, bool runScripts)
 					auto gameObject = myCurrentLevel.gameObjectManager.GetGameObject(id);
 					gameObject->myName = "Coin";
 					gameObject->myPosition = { column, row };
-
-					SpriteComponent* sprite = new SpriteComponent;
-					sprite->mySpriteID = SpriteId::Coin;
-
-					gameObject->AddComponent(sprite);
 					gameObject->myCanStandOn = true;
 				}
 				else if (line[column] == 'f')
@@ -170,16 +149,12 @@ void Game::LoadLevel(const char* name, bool runScripts)
 					auto gameObject = myCurrentLevel.gameObjectManager.GetGameObject(id);
 					gameObject->myName = "Flag";
 					gameObject->myPosition = { column, row };
-
-					SpriteComponent* sprite = new SpriteComponent;
-					sprite->mySpriteID = SpriteId::Flag;
-
-					gameObject->AddComponent(sprite);
 					gameObject->myCanStandOn = true;
 				}
 
 				myCurrentLevel.tiles[column][row] = t;
 			}
+
 			lineIndex++;
 		}
 	}
@@ -194,7 +169,6 @@ void Game::LoadLevel(const char* name, bool runScripts)
 		};
 
 		myCurrentLevel.scriptManager->TriggerEvent(SCRIPT::eNodeExecutionTrait::BeginPlay, updateContext);
-		//myGlobalScriptManager->TriggerEvent(SCRIPT::eNodeExecutionTrait::BeginPlay, updateContext);
 	}
 }
 

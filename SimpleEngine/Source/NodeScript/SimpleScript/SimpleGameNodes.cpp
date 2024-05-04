@@ -5,36 +5,6 @@
 #include "Game/Game.h"
 #include "Game/GameLevel.h"
 #include "GameObjects/Base/GameObject.h"
-#include "Components/SpriteComponent.h"
-#include "Components/PlayerComponent.h"
-#include "Components/ScriptComponent.h"
-
-struct ComponentTypeData
-{
-	eComponent id = eComponent::Player;
-};
-
-
-static bool Edit(ComponentTypeData& aData)
-{
-	int currentID = static_cast<int>(aData.id);
-	if (ImGui::Combo("##", &currentID, componentNames))
-	{
-		aData.id = static_cast<eComponent>(currentID);
-		return true;
-	}
-	return false;
-}
-
-static void Save(nlohmann::json& aJson, const ComponentTypeData& aData)
-{
-	aJson["type"] = aData.id;
-}
-
-static void Load(const nlohmann::json& aJson, ComponentTypeData& aData)
-{
-	aData.id = aJson["type"];
-}
 
 static bool Edit(SpriteTypeData& aData)
 {
@@ -88,79 +58,12 @@ void RegisterSimpleDataTypes()
 {
 	SCRIPT::DataTypeRegistry::RegisterNonSerializableType<GameObject*, SCRIPT::eNodeOperatorTrait::Equal | SCRIPT::eNodeOperatorTrait::NotEqual>("GameObject", SCRIPT::ScriptColor{ 0.42f, 0.72f, 0.85f });
 	SCRIPT::DataTypeRegistry::RegisterNonSerializableType<GameObjectPredicate, SCRIPT::eNodeOperatorTrait::Logical>("GameObject Predicate", SCRIPT::ScriptColor{ 0.42f, 0.72f, 0.17f });
-	SCRIPT::DataTypeRegistry::Register<ComponentTypeData>("Component Type", SCRIPT::ScriptColor{ 1.f, 0.44f, 0.37f });
 	SCRIPT::DataTypeRegistry::Register<SpriteTypeData>("Sprite Type", SCRIPT::ScriptColor{ 1.f, 0.44f, 0.37f });
 }
 
 static bool IsGameObjectActive(GameObject* aGameObject)
 {
 	return aGameObject && aGameObject->myIsActive;
-}
-
-static void AddComponentToGameObjectNode(GameObject* aGameObject, ComponentTypeData aComponentType)
-{
-	if (!IsGameObjectActive(aGameObject))
-	{
-		return;
-	}
-
-	switch (aComponentType.id)
-	{
-	case eComponent::Player:
-		aGameObject->AddComponent<PlayerComponent>();
-		break;
-	case eComponent::Sprite:
-		aGameObject->AddComponent<SpriteComponent>();
-		break;
-
-	case eComponent::Script:
-		aGameObject->AddComponent<ScriptComponent>();
-		break;
-
-	default:
-		break;
-	}
-}
-
-
-
-static bool HasComponentNode(GameObject* aGameObject, ComponentTypeData aComponentType)
-{
-	if (!IsGameObjectActive(aGameObject))
-	{
-		return false;
-	}
-
-	switch (aComponentType.id)
-	{
-	case eComponent::Player:
-		return aGameObject->HasComponent<PlayerComponent>();
-		break;
-	case eComponent::Sprite:
-		return aGameObject->HasComponent<SpriteComponent>();
-		break;
-
-	case eComponent::Script:
-		return aGameObject->HasComponent<ScriptComponent>();
-		break;
-	default:
-		break;
-	}
-
-	return false;
-}
-
-static void ChangeSpriteNode(GameObject* aGameObject, SpriteTypeData aData)
-{
-	if (!IsGameObjectActive(aGameObject))
-	{
-		return;
-	}
-
-	if (SpriteComponent* spriteComponent = aGameObject->GetComponent<SpriteComponent>())
-	{
-		spriteComponent->mySpriteID = aData.id;
-	}
 }
 
 static void DeleteThisGameObjectNode(SCRIPT::NodeExecutionContext<SimpleGameContext> aContext, GameObject* aGameObject)
@@ -198,7 +101,6 @@ static bool EvaluateGameObjectPredicate(GameObject* aGameObject, GameObjectPredi
 	}
 
 	return aPredicate(aGameObject);
-
 }
 
 static std::tuple<bool, GameObject*> EvaluateGameObjectVectorPredicate(std::vector<GameObject*> aGameObject, GameObjectPredicate aPredicate)
@@ -218,15 +120,6 @@ static std::tuple<bool, GameObject*> EvaluateGameObjectVectorPredicate(std::vect
 
 
 	return { false, nullptr };
-}
-
-
-static GameObjectPredicate HasComponentPredicateNode(ComponentTypeData aComponentType)
-{
-	return [aComponentType](GameObject* aGameObject) -> bool
-		{
-			return HasComponentNode(aGameObject, aComponentType);
-		};
 }
 
 static GameObjectPredicate CanPushPredicateNode()
@@ -339,30 +232,21 @@ std::string ToString(T a)
 	return std::to_string(a);
 }
 
-static void SetScriptOfScriptComponentNode(SCRIPT::NodeExecutionContext<SimpleGameContext> aContext, GameObject* aGameObject, const std::string aName)
+static void SetScriptOfScriptComponentNode(SCRIPT::NodeExecutionContext<SimpleGameContext> /*aContext*/, GameObject* aGameObject, const std::string /*aName*/)
 {
 	if (!IsGameObjectActive(aGameObject))
 	{
 		return;
 	}
-	if (ScriptComponent* scriptComp = aGameObject->GetComponent<ScriptComponent>())
-	{
-		SCRIPT::Script* script = aContext.context.game.myGlobalScriptManager->GetScriptByName(aName);
-		scriptComp->SetScript(script);
-	}
 }
 
 void RegisterSimpleGameNodes()
 {
-	SCRIPT::NodeTypeRegistry::RegisterNodeType(HasComponentNode, "Game/GameObject/Has Component");
-	SCRIPT::NodeTypeRegistry::RegisterFlowNodeType(AddComponentToGameObjectNode, "Game/GameObject/Add Component To GameObject", SCRIPT::NodeTypeDesc{ { "Flow", "GameObject", "Component Type" }, });
-	SCRIPT::NodeTypeRegistry::RegisterFlowNodeType(ChangeSpriteNode, "Game/GameObject/Change GameObject Sprite");
 	SCRIPT::NodeTypeRegistry::RegisterFlowNodeType(DeleteThisGameObjectNode, "Game/GameObject/Delete This GameObject");
 
 	SCRIPT::NodeTypeRegistry::RegisterNodeType<SCRIPT::eNodeExecutionTrait::Tick>(GameObjectPredicateTriggerNode, "Game/GameObject/Predicate/GameObject Predicate Trigger", SCRIPT::NodeTypeDesc{ {}, { "True", "False" } });
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(EvaluateGameObjectPredicate, "Game/GameObject/Predicate/Evaluate GameObject Predicate", SCRIPT::NodeTypeDesc{ {  } });
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(EvaluateGameObjectVectorPredicate, "Game/GameObject/Predicate/Evaluate GameObject Vector Predicate", SCRIPT::NodeTypeDesc{ { "GameObject Vector"} });
-	SCRIPT::NodeTypeRegistry::RegisterNodeType(HasComponentPredicateNode, "Game/GameObject/Predicate/Has Component (Predicate)");
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(CanPushPredicateNode, "Game/GameObject/Predicate/Can GameObject Push (Predicate)");
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(GameObjectNameEqualPredicateNode, "Game/GameObject/Predicate/GameObject Name Equal (Predicate)");
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(IsGameObjectEqualPredicateNode, "Game/GameObject/Predicate/Is GameObject Equal (Predicate)");
@@ -403,6 +287,5 @@ void RegisterSimpleGameNodes()
 	objectiveNames.outputPinNames.push_back("Quest");
 
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(GetQuest, "Game/Quest/Get Quest", objectiveNames);
-
 	SCRIPT::NodeTypeRegistry::RegisterNodeType(ToString<int>, "Utility/String/To String (Int)");
 }
