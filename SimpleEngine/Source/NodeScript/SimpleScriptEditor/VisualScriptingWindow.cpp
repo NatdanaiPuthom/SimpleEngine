@@ -71,6 +71,7 @@ namespace EDIT
 		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed('H'))
 		{
 			open = !open;
+
 		}
 
 		if (open == false)
