@@ -27,21 +27,45 @@ namespace ECS
 		myCurrentEntityID++;
 		myEntities[myCurrentEntityID] = myEntityPool.CreateEntity(myCurrentEntityID, myEntities, this);
 		myAllEntities.push_back(&myEntities[myCurrentEntityID]);
-		myAllEntityIDToIndexMap[myCurrentEntityID] = myAllEntities.size() - 1;
 
 		return reinterpret_cast<Entity>(myEntities[myCurrentEntityID]);
 	}
 
 	bool EntityManager::DestroyEntity(const EntityID aID)
 	{
-		auto it = myEntities.find(aID);
+		PROFILER_FUNCTION(profiler::colors::Red);
+		ECS::Entities entities = GetAllEntities();
+		const size_t count = entities.GetEntityCount();
 
+		PROFILER_BEGIN("Search and remove entity");
+		for (size_t i = 0; i < count; ++i) //TO-DO(v9.31.1): Faster remove algoritm as this is O(2) operation. I tried spatial half and half but got some error, may look into this in the future
+		{
+			if (entities[i]->GetID() == aID)
+			{
+				myAllEntities.erase(myAllEntities.begin() + i);
+				break;
+			}
+		}
+		PROFILER_END();
+
+		auto it = myEntities.find(aID);
 		if (it != myEntities.end())
 		{
-			it->second = nullptr;
-		}
+			PROFILER_BEGIN("Search and remove components from entity");
+			std::unordered_map<ComponentType, ComponentID>& entityComponents = myEntityComponents[aID];
 
-		myAllEntities.erase(myAllEntities.begin() + myAllEntityIDToIndexMap[aID]);
+			for (const auto& [typeIndex, componentID] : entityComponents)
+			{
+				assert(myComponentManager->RemoveComponentByTypeIndex(typeIndex, componentID) && "Failed to remove component by type index");
+			}
+
+			entityComponents.clear();
+			PROFILER_END();
+
+			it->second = nullptr;
+
+			return true;
+		}
 
 		return false;
 	}

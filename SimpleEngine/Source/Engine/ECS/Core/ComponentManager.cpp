@@ -30,7 +30,7 @@ namespace ECS
 
 	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const size_t aComponentID)
 	{
-		ComponentPool& pool = myComponents[aComponentType]; pool;
+		ComponentPool& pool = myComponents[aComponentType];
 		char* component = pool.GetComponentAddressByID(aComponentID);
 		char* start = pool.GetStartMemoryAddress(); start;
 		const size_t size = pool.GetComponentTypeSize();

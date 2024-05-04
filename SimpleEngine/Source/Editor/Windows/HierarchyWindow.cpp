@@ -62,7 +62,6 @@ namespace Editor
 				{
 					for (int i = 0; i < entities.GetEntityCount(); ++i)
 					{
-
 						const bool isSelected = (selected == i);
 
 						if (ImGui::Selectable(entities[i]->GetName().c_str(), isSelected))
@@ -116,7 +115,7 @@ namespace Editor
 			}
 			ImGui::PopItemWidth();
 
-			ImGui::SameLine(ImGui::GetWindowWidth() - 50);
+			ImGui::SameLine(ImGui::GetWindowWidth() - 70);
 			ImGui::Text(std::string("ID: " + std::to_string(selectedEntity->GetID())).c_str());
 			ImGui::Separator();
 
@@ -198,17 +197,24 @@ namespace Editor
 
 		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_DELETE))
 		{
-			if (entities.GetEntityCount() > 0)
+			if (const size_t count = entities.GetEntityCount() > 0)
 			{
-				entities[selected]->DestroyThis();
-				selected--;
-
-				if (selected < 0)
+				if (selected >= 0)
 				{
-					selected = 0;
-				}
+					entities[selected]->DestroyThis();
 
-				return;
+					if (selected >= static_cast<int>(count - 1))
+					{
+						selected--;
+					}
+
+					if (selected < 0 && entities.GetEntityCount() > 0)
+					{
+						selected = 0;
+					}
+
+					return;
+				}
 			}
 		}
 	}

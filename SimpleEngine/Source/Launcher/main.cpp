@@ -58,9 +58,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	ECS::Entity entity = ecs.CreateEntity(); entity;
-	entity->DestroyThis();
-
 	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);

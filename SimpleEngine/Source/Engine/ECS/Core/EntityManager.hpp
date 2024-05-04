@@ -56,8 +56,6 @@ namespace ECS
 		ComponentManager* myComponentManager;
 		size_t myCurrentEntityID;
 		const char padding[16];
-
-		std::unordered_map<EntityID, size_t> myAllEntityIDToIndexMap; //NOTE(v9.31.1): Test, also ruin memory layout :(
 	};
 
 	template<typename T>

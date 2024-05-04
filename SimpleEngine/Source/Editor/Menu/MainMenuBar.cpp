@@ -65,7 +65,7 @@ namespace Editor
 			myAssetWindow->Draw();
 			myCameraTool->Draw();
 			mySettingsTool->Draw();
-			myHierarchyWindow->Draw();
+			myHierarchyWindow->Draw(); //TO-DO(v9.31.1): For now HierachyWindow should always be run last due to removing Entities during run time. Fix/Look into it in future
 		}
 	}
 
