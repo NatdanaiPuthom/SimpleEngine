@@ -231,9 +231,12 @@ namespace Editor
 
 				if (ImGui::BeginPopup("Add Component"))
 				{
-					std::array<std::string, 2> components;
-					components[0] = "Transform";
-					components[1] = "NullComponent";
+					std::array<std::string, 5> components;
+					components[0] = "TransformComponent";
+					components[1] = "MeshComponent";
+					components[2] = "AnimatedComponent";
+					components[3] = "AnimationPlayerComponent";
+					components[4] = "NullComponent";
 
 					for (size_t i = 0; i < components.size(); ++i)
 					{
@@ -245,6 +248,15 @@ namespace Editor
 								selectedEntity->AddComponent<ECS::TransformComponent>();
 								break;
 							case 1:
+								selectedEntity->AddComponent<ECS::MeshComponent>();
+								break;
+							case 2:
+								selectedEntity->AddComponent<ECS::AnimatedComponent>();
+								break;
+							case 3:
+								selectedEntity->AddComponent<ECS::AnimationPlayerComponent>();
+								break;
+							case 4:
 								selectedEntity->AddComponent<ECS::NullComponent>();
 								break;
 							}

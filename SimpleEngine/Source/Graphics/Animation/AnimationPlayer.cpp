@@ -2,11 +2,12 @@
 #include "Graphics/Animation/AnimationPlayer.hpp"
 #include "Engine/Global.hpp"
 
+#include "Engine/Components/Core/AnimatedComponent.hpp"
+
 namespace Graphics
 {
 	AnimationPlayer::AnimationPlayer()
 		: myAnimation(nullptr)
-		, myModel(nullptr)
 		, myTime(0.0f)
 		, myFPS(0.0f)
 		, myIsLooping(false)
@@ -29,23 +30,75 @@ namespace Graphics
 		myState = eAnimationState::Playing;
 	}
 
-	void AnimationPlayer::UpdateTest(Math::Matrix4x4f* aMatrix)
+	void AnimationPlayer::UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimatedComponent* aAnimatedComponent)
 	{
 		if (myState == eAnimationState::Playing)
 		{
-			size_t currentFrame = 0;
-			size_t nextFrame = 0;
-			float delta = 0.0f; //This is use for lerping
+			myTime += Global::GetDeltaTime();
 
-			UpdateTimer();
-			CalculateFrame(currentFrame, nextFrame, delta);
-			LerpAnimationTest(currentFrame, nextFrame, delta);
+			if (myTime >= aAnimatedComponent->animation.duration)
+			{
+				if (myIsLooping)
+				{
+					while (myTime >= aAnimatedComponent->animation.duration)
+					{
+						myTime -= aAnimatedComponent->animation.duration;
+					}
+				}
+				else
+				{
+					myTime = aAnimatedComponent->animation.duration;
+					myState = eAnimationState::Finished;
+				}
+			}
 
+			const float frameRate = 1.0f / aAnimatedComponent->animation.framesPerSecond;
+			const float result = myTime / frameRate;
+			const size_t currentFrame = static_cast<size_t>(std::floor(result));
+			const float delta = result - static_cast<float>(currentFrame);
+
+			size_t nextFrame = currentFrame + 1;
+
+			if (myState == eAnimationState::Finished)
+			{
+				nextFrame = currentFrame;
+			}
+			else if (nextFrame > aAnimatedComponent->animation.length)
+			{
+				nextFrame = 0;
+			}
+
+			const Skeleton* skeleton = aAnimatedComponent->skeleton;
+			myModelSpacePose.count = skeleton->myJoints.size();
+
+			for (size_t i = 0; i < myModelSpacePose.count; i++)
+			{
+				const Math::Matrix4x4f currentMatrix = aAnimatedComponent->animation.frames[currentFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
+				const Math::Matrix4x4f nextMatrix = aAnimatedComponent->animation.frames[nextFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
+
+				Math::Vector3f currentPosition;
+				Math::Vector3f nextPosition;
+
+				Math::Quaternionf currentQuaternion;
+				Math::Quaternionf nextQuaternion;
+
+				Math::Vector3f currentScale;
+				Math::Vector3f nextScale;
+
+				currentMatrix.DecomposeMatrix(currentPosition, currentQuaternion, currentScale);
+				nextMatrix.DecomposeMatrix(nextPosition, nextQuaternion, nextScale);
+
+				const Math::Vector3f translation = Math::Lerp(currentPosition, nextPosition, delta);
+				const Math::Quaternionf rotation = Math::Quaternionf::Slerp(currentQuaternion, nextQuaternion, delta);
+				const Math::Vector3f scale = Math::Lerp(currentScale, nextScale, delta);
+
+				const Math::Matrix4x4f lerpedMatrix = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
+				myModelSpacePose.jointTransforms[i] = lerpedMatrix;
+			}
 
 			LocalSpacePose localSpacePose;
-			mySkeleton->ConvertModelSpacePoseToLocalSpacePose(myModelSpacePose, localSpacePose);
-
-			mySkeleton->ApplyBindPoseInverse(localSpacePose, aMatrix);
+			skeleton->ConvertModelSpacePoseToLocalSpacePose(myModelSpacePose, localSpacePose);
+			skeleton->ApplyBindPoseInverse(localSpacePose, aMatrix);
 		}
 	}
 

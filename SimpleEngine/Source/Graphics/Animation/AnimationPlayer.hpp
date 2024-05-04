@@ -4,9 +4,9 @@
 #include "Graphics/Animation/Animation.hpp"
 #include <vector>
 
-namespace Graphics
+namespace ECS
 {
-	class AnimatedModel;
+	struct AnimatedComponent;
 }
 
 enum class eAnimationState
@@ -27,7 +27,7 @@ namespace Graphics
 		void Init(Animation& aAnimation, const Skeleton* aSkeleton);
 
 		//Will lerp active animation and setpose directly
-		void UpdateTest(Math::Matrix4x4f* aMatrix);
+		void UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimatedComponent* aAnimatedComponent);
 
 		void LerpAnimationTest(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta);
 
@@ -52,12 +52,8 @@ namespace Graphics
 		void UpdateTimer();
 	private:
 		eAnimationState myState;
-
 		Animation* myAnimation;
-		AnimatedModel* myModel;
-
 		const Skeleton* mySkeleton;
-
 
 		float myTime;
 		float myFPS;

@@ -124,7 +124,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
 		ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
 
-		animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices);
+		animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
 		Global::GetRenderer()->RenderAnimatedModel(transformComponent, meshComponent, animatedComponent);
 
 
