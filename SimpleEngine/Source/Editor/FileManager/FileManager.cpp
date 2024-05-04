@@ -104,7 +104,7 @@ namespace Editor
 				textureID = textureDefault;
 			}
 
-			ImGui::Image(textureID, ImVec2(iconSize, iconSize));
+			ImGui::ImageButton(textureID, ImVec2(iconSize, iconSize));
 
 			x += iconSize;
 
@@ -146,8 +146,6 @@ namespace Editor
 				return aFilePath.substr(i + 1, aFilePath.length());
 			}
 		}
-
-		assert(false && "Could Not Get File Name");
 
 		return aFilePath;
 	}

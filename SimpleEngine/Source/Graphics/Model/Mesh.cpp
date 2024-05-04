@@ -12,7 +12,7 @@ namespace Graphics
 	{
 	}
 
-	const bool Mesh::Init(const MeshData& aMeshData)
+	const bool Mesh::Init(const MeshData& aMeshData, const std::string& aMeshName)
 	{
 		myMeshData = aMeshData;
 
@@ -26,12 +26,19 @@ namespace Graphics
 		if (!CreateIndexBuffer(device))
 			return false;
 
+		myName = aMeshName;
+
 		return true;
 	}
 
 	const Simple::BoundingBox3D& Mesh::GetBoundingBox() const
 	{
 		return myBoundingBox;
+	}
+
+	std::string Mesh::GetMeshName() const
+	{
+		return myName;
 	}
 
 	bool Mesh::CreateVertexBuffer(ComPtr<ID3D11Device> aDevice)

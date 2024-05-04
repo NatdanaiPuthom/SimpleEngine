@@ -1,5 +1,6 @@
 #pragma once
 #include <wrl/client.h>
+#include <string>
 
 using Microsoft::WRL::ComPtr;
 
@@ -19,14 +20,17 @@ namespace Graphics
 		bool LoadDDS(const char* aFileName);
 		bool LoadNonDDS(const char* aFileName);
 
-		const ComPtr<ID3D11ShaderResourceView> GetShaderResourceView() const;
-	public:
 		void SetSlot(const unsigned int aSlot);
+
 		unsigned int GetSlot() const;
+		std::string GetShaderName() const;
+		const ComPtr<ID3D11ShaderResourceView> GetShaderResourceView() const;
+
 	private:
 		bool InitNonDDS(ComPtr<ID3D11Device> aDevice, const unsigned char* aRGBAPixels, const int aWidth, const int aHeight);
 	private:
 		ComPtr<ID3D11ShaderResourceView> myShaderResourceView;
+		std::string myName;
 		unsigned int mySlot;
 	};
 }

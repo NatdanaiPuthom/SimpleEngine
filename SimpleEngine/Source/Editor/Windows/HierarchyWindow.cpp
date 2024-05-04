@@ -185,13 +185,14 @@ namespace Editor
 						}
 						else if (componentNames[i] == "MeshComponent")
 						{
-							ImGui::SetNextItemWidth(200);
+							ECS::MeshComponent* meshComponent = selectedEntity->GetComponent<ECS::MeshComponent>();
 
-							static float a = 5.0f;
-							if (ImGui::DragFloat("aa", &a, 0.1f))
-							{
+							const std::string textureName = "Texture: " + meshComponent->texture->GetShaderName();
+							const std::string meshName = "Mesh: " + meshComponent->mesh->GetMeshName();
 
-							}
+							ImGui::Text(textureName.c_str());
+							ImGui::Text(meshName.c_str());
+
 
 							//static char droppedFilePath[256] = "";
 

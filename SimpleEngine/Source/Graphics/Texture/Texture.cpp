@@ -36,6 +36,11 @@ namespace Graphics
 		return mySlot;
 	}
 
+	std::string Texture::GetShaderName() const
+	{
+		return myName;
+	}
+
 	bool Texture::LoadDDS(const char* aFileName)
 	{
 		const std::string texturePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_TEXTURES) + aFileName;
@@ -44,6 +49,8 @@ namespace Graphics
 		const HRESULT result = DirectX::CreateDDSTextureFromFile(Global::GetGraphicsEngine()->GetDevice().Get(), Global::GetGraphicsEngine()->GetContext().Get(), texturePathW.c_str(), NULL, &myShaderResourceView);
 		if (FAILED(result))
 			return false;
+
+		myName = SimpleUtilities::ConvertFilePathToPrettyName(aFileName);
 
 		return true;
 	}

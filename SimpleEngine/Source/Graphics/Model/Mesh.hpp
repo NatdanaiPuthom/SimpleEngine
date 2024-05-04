@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/SimpleUtilities/Bounds.hpp"
 #include <wrl/client.h>
+#include <string>
 
 using Microsoft::WRL::ComPtr;
 
@@ -42,14 +43,17 @@ namespace Graphics
 		Mesh();
 		~Mesh();
 
-		const bool Init(const MeshData& aMeshData);
+		const bool Init(const MeshData& aMeshData, const std::string& aMeshName);
 		const Simple::BoundingBox3D& GetBoundingBox() const;
+		std::string GetMeshName() const;
+
 	private:
 		bool CreateVertexBuffer(ComPtr<ID3D11Device> aDevice);
 		bool CreateIndexBuffer(ComPtr<ID3D11Device> aDevice);
 		void CreateBoundingBox();
 	private:
 		MeshData myMeshData;
+		std::string myName;
 		Simple::BoundingBox3D myBoundingBox;
 
 		ComPtr<ID3D11Buffer> myVertexBuffer;

@@ -2,6 +2,7 @@
 #include "Graphics/Model/Factory/ModelFactory.hpp"
 #include "Graphics/Model/Factory/ShapeCreator3000.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
+#include "Engine/SimpleUtilities/Utility.hpp"
 #include <External/TheGameAssembly/FBXImporter/source/Importer.h>
 
 #undef LoadMesh
@@ -37,22 +38,22 @@ namespace Graphics
 		std::unique_ptr<Mesh> terrainMesh = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> sphereMesh = std::make_unique<Mesh>();
 
-		if (!cubeMesh->Init(cubeData))
+		if (!cubeMesh->Init(cubeData, "Primitive Cube"))
 			assert(false && "Failed to create Cube");
 
-		if (!pyramidMesh->Init(pyramidData))
+		if (!pyramidMesh->Init(pyramidData, "Primitive Pyramid"))
 			assert(false && "Failed to create Pyramid");
 
-		if (!planeMesh->Init(planeData))
+		if (!planeMesh->Init(planeData, "Primitive Plane"))
 			assert(false && "Failed to create Plane");
 
-		if (!skyboxMesh->Init(skyboxData))
+		if (!skyboxMesh->Init(skyboxData, "Primitive SkyBox"))
 			assert(false && "Failed to create SkyBox");
 
-		if (!terrainMesh->Init(terrainData))
+		if (!terrainMesh->Init(terrainData, "Primitive Terrain"))
 			assert(false && "Failed to create Terrain");
 
-		if (!sphereMesh->Init(sphereData))
+		if (!sphereMesh->Init(sphereData, "Primitive Sphere"))
 			assert(false && "Failed to create Sphere");
 
 		AddMesh("Cube", std::move(cubeMesh));
@@ -260,7 +261,9 @@ namespace Graphics
 		LoadMeshData(meshData, tgaMesh);
 
 		std::unique_ptr<Mesh> newMesh = std::make_unique<Mesh>();
-		newMesh->Init(meshData);
+
+		const std::string fileName = SimpleUtilities::ConvertFilePathToPrettyName(aFileName);
+		newMesh->Init(meshData, fileName);
 
 		AddMesh(aFileName, std::move(newMesh));
 	}
@@ -275,7 +278,8 @@ namespace Graphics
 		LoadMeshData(meshData, aTGAMesh);
 
 		std::unique_ptr<Mesh> newMesh = std::make_unique<Mesh>();
-		newMesh->Init(meshData);
+		const std::string fileName = SimpleUtilities::ConvertFilePathToPrettyName(aFileName);
+		newMesh->Init(meshData, fileName);
 
 		AddMesh(aFileName, std::move(newMesh));
 	}

@@ -23,6 +23,7 @@ namespace Graphics
 		void BindThisShader(ID3D11DeviceContext* aContext) const;
 		void BindOnlyThisPixelShader(ComPtr<ID3D11DeviceContext> aContext) const;
 		void BindOnlyThisVertexShader(ComPtr<ID3D11DeviceContext> aContext) const;
+
 	private:
 		ComPtr<ID3D11VertexShader> myVertexShader;
 		ComPtr<ID3D11PixelShader> myPixelShader;
