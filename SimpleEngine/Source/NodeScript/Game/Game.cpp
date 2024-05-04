@@ -1,5 +1,4 @@
 #include "Game.h"
-#include <Game/GameCommon.h>
 #include "SimpleScript/SimpleGameNodes.h"
 #include "SimpleScript/Core/Serialization/ScriptLoader.h"
 #include <fstream>
@@ -27,12 +26,6 @@ void Game::Init()
 
 void Game::Update(float aTimeDelta)
 {
-	if (mySceneChanger)
-	{
-		LoadLevel(mySceneChanger.mySceneName.c_str(), true);
-		mySceneChanger.myChangeScene = false;
-	}
-
 	SimpleGameContext updateContext
 	{
 		aTimeDelta,
@@ -54,15 +47,4 @@ void Game::LoadLevel(const char* /*name*/, bool runScripts)
 			*this,
 		};
 	}
-}
-
-void Game::ChangeScene(const SceneChanger3000& aSceneChanger)
-{
-	mySceneChanger = aSceneChanger;
-	mySceneChanger.myChangeScene = true;
-}
-
-const SceneChanger3000& Game::GetSceneChanger() const
-{
-	return mySceneChanger;
 }
