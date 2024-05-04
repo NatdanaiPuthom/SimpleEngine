@@ -10,6 +10,7 @@ namespace Editor
 
 	void AssetWindow::Init()
 	{
+		myCurrentDirectory = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS);
 	}
 
 	void AssetWindow::Draw()
@@ -44,9 +45,12 @@ namespace Editor
 
 			parentSize = ImGui::GetContentRegionAvail();
 
-			if (ImGui::BeginChild("Test", parentSize, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX))
+			if (ImGui::BeginChild("Test", parentSize, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY))
 			{
 				ImGui::Text(myCurrentDirectory.c_str());
+
+				FileManager::DrawFilesInFolder(myCurrentDirectory);
+
 				ImGui::EndChild();
 			}
 
@@ -55,6 +59,7 @@ namespace Editor
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 		}
+
 		ImGui::End();
 	}
 }

@@ -18,6 +18,8 @@ namespace Graphics
 		void Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot) const;
 		bool LoadDDS(const char* aFileName);
 		bool LoadNonDDS(const char* aFileName);
+
+		const ComPtr<ID3D11ShaderResourceView> GetShaderResourceView() const;
 	public:
 		void SetSlot(const unsigned int aSlot);
 		unsigned int GetSlot() const;

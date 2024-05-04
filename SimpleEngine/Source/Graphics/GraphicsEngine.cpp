@@ -188,6 +188,13 @@ namespace Graphics
 
 	const bool GraphicsEngine::AddTexture(const char* aFileName, const unsigned int aSlot)
 	{
+		auto it = myLoadedTextures.find(aFileName);
+
+		if (it != myLoadedTextures.end())
+		{
+			return false;
+		}
+
 		std::shared_ptr<Texture> texture = std::make_shared<Texture>();
 
 		if (!texture->LoadDDS(aFileName))

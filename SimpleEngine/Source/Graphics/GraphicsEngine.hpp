@@ -35,6 +35,7 @@ namespace Graphics
 		bool BeginFrame();
 		void EndFrame();
 
+		//NOTE(v9.35.0): Path starts at "Assets/Textures/
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 

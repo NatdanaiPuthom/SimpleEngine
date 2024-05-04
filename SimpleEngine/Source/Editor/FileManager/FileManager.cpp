@@ -50,7 +50,7 @@ namespace Editor
 				{
 					if (ImGui::Selectable(name.c_str()))
 					{
-						aCurrentDirectory = aStartDirectory + "\\" + name;
+
 					}
 				}
 			}
@@ -62,6 +62,25 @@ namespace Editor
 			if (ImGui::IsItemClicked())
 			{
 				aCurrentDirectory = aStartDirectory;
+			}
+		}
+	}
+
+	void FileManager::DrawFilesInFolder(const std::string& aDirectory)
+	{
+		std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aDirectory, true);
+		ID3D11ShaderResourceView* texture = Global::GetGraphicsEngine()->GetTexture("Cat.dds")->GetShaderResourceView().Get();
+		ImTextureID textureID = texture;
+
+		ImVec2 windowSize = ImGui::GetContentRegionAvail();
+
+		for (size_t i = 0; i < fileNames.size() + 20; ++i)
+		{
+			ImGui::Image(textureID, ImVec2(50, 50));
+
+			if (i * 50 < windowSize.x)
+			{
+				ImGui::SameLine();
 			}
 		}
 	}

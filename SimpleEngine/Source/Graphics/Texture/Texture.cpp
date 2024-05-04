@@ -87,6 +87,11 @@ namespace Graphics
 		return true;
 	}
 
+	const ComPtr<ID3D11ShaderResourceView> Texture::GetShaderResourceView() const
+	{
+		return myShaderResourceView;
+	}
+
 	bool Texture::InitNonDDS(ComPtr<ID3D11Device> aDevice, const unsigned char* aRGBAPixels, const int aWidth, const int aHeight)
 	{
 		//TO-DO(v4.0?): Fix so it works with mipmaps
