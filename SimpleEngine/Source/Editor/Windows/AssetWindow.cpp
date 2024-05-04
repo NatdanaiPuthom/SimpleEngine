@@ -48,7 +48,7 @@ namespace Editor
 			if (ImGui::BeginChild("Test", parentSize, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY))
 			{
 				ImGui::Text(myCurrentDirectory.c_str());
-
+				ImGui::Separator();
 				FileManager::DrawFilesInFolder(myCurrentDirectory);
 
 				ImGui::EndChild();

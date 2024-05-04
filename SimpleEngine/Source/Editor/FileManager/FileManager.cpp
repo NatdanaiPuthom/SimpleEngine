@@ -17,6 +17,8 @@ namespace Editor
 				const std::string extension = GetFileExtension(filePath);
 				const std::string name = GetFileName(filePath);
 
+				UNREFERENCED_PARAMETER(name);
+
 				if (extension == ".json")
 				{
 					std::cout << "File type: json" << std::endl;
@@ -68,19 +70,51 @@ namespace Editor
 
 	void FileManager::DrawFilesInFolder(const std::string& aDirectory)
 	{
-		std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aDirectory, true);
-		ID3D11ShaderResourceView* texture = Global::GetGraphicsEngine()->GetTexture("Cat.dds")->GetShaderResourceView().Get();
-		ImTextureID textureID = texture;
+		const std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aDirectory, true);
 
-		ImVec2 windowSize = ImGui::GetContentRegionAvail();
+		ID3D11ShaderResourceView* textureCat = Global::GetGraphicsEngine()->GetTexture("Cat.dds")->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* textureHamster = Global::GetGraphicsEngine()->GetTexture("Hamster.dds")->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* textureScaredCat = Global::GetGraphicsEngine()->GetTexture("Cat-scared.dds")->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* textureDefault = Global::GetGraphicsEngine()->GetTexture("DefaultTexture.dds")->GetShaderResourceView().Get();
 
-		for (size_t i = 0; i < fileNames.size() + 20; ++i)
+		const ImVec2 windowSize = ImGui::GetContentRegionAvail();
+		const size_t iconSize = 100;
+
+		size_t x = 0;
+
+		for (size_t i = 0; i < fileNames.size(); ++i)
 		{
-			ImGui::Image(textureID, ImVec2(50, 50));
+			const std::string extension = GetFileExtension(fileNames[i]);
+			ImTextureID textureID;
 
-			if (i * 50 < windowSize.x)
+			if (extension == ".json")
+			{
+				textureID = textureCat;
+			}
+			else if (extension == ".fbx")
+			{
+				textureID = textureHamster;
+			}
+			else if (extension == ".dds")
+			{
+				textureID = textureScaredCat;
+			}
+			else
+			{
+				textureID = textureDefault;
+			}
+
+			ImGui::Image(textureID, ImVec2(iconSize, iconSize));
+
+			x += iconSize;
+
+			if (x <= windowSize.x - iconSize)
 			{
 				ImGui::SameLine();
+			}
+			else
+			{
+				x = 0;
 			}
 		}
 	}
@@ -99,8 +133,6 @@ namespace Editor
 				break;
 			}
 		}
-
-		assert(false && "Could Not Get File Extension");
 
 		return aFilePath;
 	}

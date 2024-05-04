@@ -158,6 +158,12 @@ namespace Graphics
 
 		if (!AddTexture("Cat.dds", 0))
 			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Hamster.dds", 0))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Cat-scared.dds", 0))
+			assert(false && "Failed to add Texture");
 	}
 
 	void GraphicsEngine::PreloadShaders()
