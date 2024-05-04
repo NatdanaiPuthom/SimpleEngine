@@ -175,6 +175,7 @@ namespace SCR
 		for (CustomEvent* nodeType : myCustomEvents)
 		{
 			delete nodeType;
+			nodeType = nullptr;
 		}
 
 		myTypes.~vector();
@@ -185,9 +186,5 @@ namespace SCR
 		mySetterNodeTypeIDs.clear();
 		myOperatorNodeTypeIDs.clear();
 		myToCustomEventNodeTypeID.clear();
-
-		//myGetterNodeTypeIDs.~unordered_map();
-		//mySetterNodeTypeIDs.~unordered_map();
-		//myOperatorNodeTypeIDs.~unordered_map();
 	}
 }
