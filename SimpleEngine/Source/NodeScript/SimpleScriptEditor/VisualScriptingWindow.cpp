@@ -24,6 +24,13 @@ namespace EDIT
 
 	VisualScriptingWindow::~VisualScriptingWindow()
 	{
+		for (size_t i = 0; i < myContexts.size(); ++i)
+		{
+			if (myContexts[i] != nullptr)
+			{
+				ImNodes::DestroyContext(myContexts[i]);
+			}
+		}
 	}
 
 	NodeContext VisualScriptingWindow::GetCurrentContext() const
