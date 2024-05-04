@@ -2,7 +2,7 @@
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Model/Model.hpp"
 #include "Graphics/Model/AnimatedModel.hpp"
-#include "Graphics/Animation/Animation.hpp"
+#include "Graphics/Animation/AnimationPlayer.hpp"
 #include <unordered_map>
 #include <string>
 #include <memory>

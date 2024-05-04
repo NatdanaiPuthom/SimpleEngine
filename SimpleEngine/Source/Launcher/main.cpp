@@ -63,24 +63,26 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	ECS::Entity entity = ecs.CreateEntity();
 	entity->AddComponent<ECS::MeshComponent>();
 	entity->AddComponent<ECS::TransformComponent>();
-	entity->AddComponent<ECS::SkeletonComponent>();
+	entity->AddComponent<ECS::AnimatedComponent>();
+	entity->AddComponent<ECS::AnimationPlayerComponent>();
 
-	ECS::MeshComponent* mesh = entity->GetComponent<ECS::MeshComponent>();
-	ECS::TransformComponent* transform = entity->GetComponent<ECS::TransformComponent>();
-	ECS::SkeletonComponent* skeleton = entity->GetComponent<ECS::SkeletonComponent>();
+	ECS::MeshComponent* meshComponent = entity->GetComponent<ECS::MeshComponent>();
+	ECS::TransformComponent* transformComponent = entity->GetComponent<ECS::TransformComponent>();
+	ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
+	ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
 
 	Graphics::ModelFactory* modelFactory = Global::GetModelFactory();
 
-	mesh->mesh = modelFactory->LoadMesh("AnimatedModels/SimpleHuman3.fbx");
-	mesh->shader = graphicsEngine.GetDefaultShader().get();
-	mesh->texture = graphicsEngine.GetDefaultTexture().get();
+	meshComponent->mesh = modelFactory->LoadMesh("AnimatedModels/SimpleHuman3.fbx");
+	meshComponent->shader = graphicsEngine.GetDefaultShader().get();
+	meshComponent->texture = graphicsEngine.GetDefaultTexture().get();
 
-	skeleton->shader = graphicsEngine.GetDefaultAnimatedShader().get();
-	skeleton->skeleton = modelFactory->LoadSkeleton("AnimatedModels/SimpleHuman3.fbx");
-	skeleton->animation = modelFactory->LoadAnimationFBX("Animations/SimpleHuman3_Idle.fbx");
-	skeleton->animationPlayer.Init(skeleton->animation, skeleton->skeleton);
-	skeleton->animationPlayer.Play(true);
-	
+	animatedComponent->shader = graphicsEngine.GetDefaultAnimatedShader().get();
+	animatedComponent->skeleton = modelFactory->LoadSkeleton("AnimatedModels/SimpleHuman3.fbx");
+	animatedComponent->animation = modelFactory->LoadAnimationFBX("Animations/SimpleHuman3_Idle.fbx");
+
+	animationPlayerComponent->animationPlayer.Init(animatedComponent->animation, animatedComponent->skeleton);
+	animationPlayerComponent->animationPlayer.Play(true);
 
 	//Script::SimpleNodeScript simpleScript;
 	//simpleScript.Init();
@@ -115,8 +117,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 
-		skeleton->animationPlayer.UpdateTest(skeleton->jointMatrices);
-		Global::GetRenderer()->TestRenderAnimated(transform, mesh, skeleton);
+		animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices);
+		Global::GetRenderer()->TestRenderAnimated(transformComponent, meshComponent, animatedComponent);
 
 		PROFILER_BEGIN("GameWorld Render");
 		gameWorld.Render();

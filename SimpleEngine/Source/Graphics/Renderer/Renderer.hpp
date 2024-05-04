@@ -13,7 +13,7 @@ namespace ECS
 {
 	struct MeshComponent;
 	struct TransformComponent;
-	struct SkeletonComponent;
+	struct AnimatedComponent;
 }
 
 namespace Graphics
@@ -26,9 +26,10 @@ namespace Drawer
 	class Renderer final
 	{
 	public:
+		void TestIKSkeletonLines(const Graphics::AnimatedModel& aModel);
 
 		void TestRender(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent);
-		void TestRenderAnimated(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent,ECS::SkeletonComponent* aSkeletonComponent);
+		void TestRenderAnimated(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent,ECS::AnimatedComponent* aSkeletonComponent);
 
 		Renderer();
 		~Renderer();
@@ -46,6 +47,7 @@ namespace Drawer
 		void RenderLine(const std::vector<Drawer::Line> aLines);
 
 		void RenderSphere(const Drawer::Sphere& aSphere);
+
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
 
 		void RenderAnimatedSkeletonLines(const Graphics::AnimatedModel& aModel, const Graphics::ModelSpacePose& aLocalPose);
@@ -55,17 +57,17 @@ namespace Drawer
 
 		void RenderEverythingUpSideDown() const;
 		void RenderPlaneReflection(const std::shared_ptr<const Graphics::Model> aModel) const;
-		void RenderRefraction() const;
+		void RenderRefraction() const;	
 
-		void TestIKSkeletonLines(const Graphics::AnimatedModel& aModel);
-
-	public:
 		bool IsDebugModeOn() const;
 		void SetDebugMode(const bool aSetDebugMode);
+
 	private:
 		const bool CreateObjectBuffer();
 		const bool CreateBoneBuffer();
+
 		void LoadSettingsFromJson();
+
 		void RenderUpSideDown(const std::shared_ptr<const Graphics::Model> aModel) const;
 		void RenderRefraction(const std::shared_ptr<const Graphics::Model> aModel) const;
 	private:

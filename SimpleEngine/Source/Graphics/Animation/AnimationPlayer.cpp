@@ -1,5 +1,5 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
-#include "Graphics/Animation/Animation.hpp"
+#include "Graphics/Animation/AnimationPlayer.hpp"
 #include "Engine/Global.hpp"
 
 namespace Graphics

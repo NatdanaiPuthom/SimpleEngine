@@ -43,7 +43,7 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::TestRenderAnimated(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent, ECS::SkeletonComponent* aSkeletonComponent)
+	void Renderer::TestRenderAnimated(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent, ECS::AnimatedComponent* aSkeletonComponent)
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 

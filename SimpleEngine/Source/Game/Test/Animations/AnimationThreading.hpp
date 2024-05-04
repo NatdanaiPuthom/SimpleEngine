@@ -2,7 +2,7 @@
 #include "Engine/Threadpool/ThreadPool.hpp"
 #include "Engine/Global.hpp"
 #include "Graphics/Model/AnimatedModel.hpp"
-#include "Graphics/Animation/Animation.hpp"
+#include "Graphics/Animation/AnimationPlayer.hpp"
 #include <vector>
 
 //NOTE(v9.21.0): No more thread as the new way of updating animations and setpose is faster. Will try to optimize more in future
