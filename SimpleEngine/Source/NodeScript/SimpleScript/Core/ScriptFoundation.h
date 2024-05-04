@@ -6,7 +6,6 @@
 
 namespace SCR
 {
-
 	class ScriptManager;
 	
 	class ScriptFoundation final
@@ -21,7 +20,6 @@ namespace SCR
 
 		ScriptManager& CreateScriptManager();
 		void DestroyScriptManager(ScriptManager& aScriptManager);
-
 
 		void Clear();
 

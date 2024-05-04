@@ -7,10 +7,7 @@
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
 
-#include "NodeScript/SimpleScript/Core/ScriptFoundation.h"
-#include "NodeScript/SimpleScriptEditor/VisualScriptingWindow.h"
-#include "NodeScript/SimpleScript/Core/Serialization/ScriptLoader.h"
-#include "NodeScript/SimpleScript/SimpleGameNodes.h"
+#include "NodeScript/SimpleNodeScript.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
@@ -63,18 +60,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	EDIT::VisualScriptingWindow simpleScriptWindow;
-	SCRIPT::ScriptFoundation myScriptFoundation;
-	SCRIPT::ScriptManager* scriptManager;
-
-	myScriptFoundation.InitializeSystemTypes();
-	RegisterSimpleGameNodes();
-
-	scriptManager = &myScriptFoundation.CreateScriptManager();
-
-	std::string name = "world_Middle";
-	SCRIPT::ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/" + std::string(name);
-	SCRIPT::ScriptLoader::LoadAll(*scriptManager);
+	Script::SimpleNodeScript simpleScript;
+	simpleScript.Init();
 
 	while (Global::GetGameIsRunning())
 	{
@@ -97,7 +84,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		PROFILER_BEGIN("Editor Update");
-		simpleScriptWindow.Update(*scriptManager, name);
+		simpleScript.Update();
 		editor.Update();
 		PROFILER_END();
 
