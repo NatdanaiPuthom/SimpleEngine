@@ -28,7 +28,10 @@ namespace Graphics
 		void Init();
 
 		//FilePath starts at Bin/Assets/Models/
-		const Mesh* LoadMesh(const std::string& aName);
+		const Mesh* LoadMesh(const std::string& aFileName);
+
+		//FilePath starts at Bin/Assets/Models/
+		const Skeleton* LoadSkeleton(const std::string& aFileName);
 
 		//FilePath starts at Bin/Assets/Models/
 		Model LoadStaticModelFBX(const char* aFileName);

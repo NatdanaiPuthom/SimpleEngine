@@ -5,7 +5,7 @@
 
 namespace ECS
 {
-	struct MeshComponent
+	struct MeshComponent final
 	{
 		const Graphics::Mesh* mesh;
 		const Graphics::Shader* shader;

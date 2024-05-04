@@ -42,6 +42,10 @@ namespace Graphics
 		ModelSpacePose myModelSpacePose;
 
 	public:
+		void Init(Animation& aAnimation, const Skeleton* aSkeleton);
+		void UpdateTest(Math::Matrix4x4f* aMatrix);
+		void LerpAnimationTest(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta);
+
 		AnimationPlayer();
 		~AnimationPlayer();
 
@@ -56,7 +60,7 @@ namespace Graphics
 		//Lerp active animation and store the pose
 		void LerpCurrentAnimation();
 
-		void Play(const bool aShouldLoop = false);
+		void Play(const bool aShouldLoop = true); //NOTE(v9.34.0): Default to true because my smol brain keep forgetting and wondering why animation doesn't play everytime i rewrote system to test
 		void Pause();
 		void Stop();
 		void Restart();
@@ -80,6 +84,9 @@ namespace Graphics
 
 		Animation* myAnimation;
 		AnimatedModel* myModel;
+
+		const Skeleton* mySkeleton;
+
 
 		float myTime;
 		float myFPS;

@@ -63,13 +63,24 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	ECS::Entity entity = ecs.CreateEntity();
 	entity->AddComponent<ECS::MeshComponent>();
 	entity->AddComponent<ECS::TransformComponent>();
+	entity->AddComponent<ECS::SkeletonComponent>();
 
 	ECS::MeshComponent* mesh = entity->GetComponent<ECS::MeshComponent>();
 	ECS::TransformComponent* transform = entity->GetComponent<ECS::TransformComponent>();
+	ECS::SkeletonComponent* skeleton = entity->GetComponent<ECS::SkeletonComponent>();
 
-	mesh->mesh = Global::GetModelFactory()->LoadMesh("AnimatedModels/SimpleHuman3.fbx");
+	Graphics::ModelFactory* modelFactory = Global::GetModelFactory();
+
+	mesh->mesh = modelFactory->LoadMesh("AnimatedModels/SimpleHuman3.fbx");
 	mesh->shader = graphicsEngine.GetDefaultShader().get();
 	mesh->texture = graphicsEngine.GetDefaultTexture().get();
+
+	skeleton->shader = graphicsEngine.GetDefaultAnimatedShader().get();
+	skeleton->skeleton = modelFactory->LoadSkeleton("AnimatedModels/SimpleHuman3.fbx");
+	skeleton->animation = modelFactory->LoadAnimationFBX("Animations/SimpleHuman3_Idle.fbx");
+	skeleton->animationPlayer.Init(skeleton->animation, skeleton->skeleton);
+	skeleton->animationPlayer.Play(true);
+	
 
 	//Script::SimpleNodeScript simpleScript;
 	//simpleScript.Init();
@@ -104,7 +115,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 
-		Global::GetRenderer()->TestRender(transform, mesh);
+		skeleton->animationPlayer.UpdateTest(skeleton->jointMatrices);
+		Global::GetRenderer()->TestRenderAnimated(transform, mesh, skeleton);
 
 		PROFILER_BEGIN("GameWorld Render");
 		gameWorld.Render();

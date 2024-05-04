@@ -43,6 +43,41 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
+	void Renderer::TestRenderAnimated(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent, ECS::SkeletonComponent* aSkeletonComponent)
+	{
+		const auto context = Global::GetGraphicsEngine()->GetContext();
+
+		ObjectBufferData objectBuffer = {};
+		objectBuffer.modelWorldMatrix = aTransformComponent->transform.GetMatrix();
+
+		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
+		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+
+		BonesBufferData boneBufferData = {};
+
+		for (size_t i = 0; i < SIMPLE_MAX_BONES; ++i)
+		{
+			boneBufferData.bonesTransform[i] = aSkeletonComponent->jointMatrices[i];;
+		}
+
+		myBoneBuffer->Bind(myBoneBuffer->GetSlot());
+		myBoneBuffer->Update(sizeof(BonesBufferData), &boneBufferData);
+
+		aSkeletonComponent->shader->BindThisShader(context.Get());
+		aMeshComponent->texture->Bind(context, aMeshComponent->texture->GetSlot());
+
+		UINT stride = sizeof(Graphics::Vertex);
+		UINT offset = 0;
+
+		context->IASetVertexBuffers(0, 1, aMeshComponent->mesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aMeshComponent->mesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		context->DrawIndexed(static_cast<UINT>(aMeshComponent->mesh->myMeshData.indices.size()), 0, 0);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
 	Renderer::Renderer()
 		: myDebugMode(false)
 	{

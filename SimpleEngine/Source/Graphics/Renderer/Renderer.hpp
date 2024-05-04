@@ -13,6 +13,7 @@ namespace ECS
 {
 	struct MeshComponent;
 	struct TransformComponent;
+	struct SkeletonComponent;
 }
 
 namespace Graphics
@@ -27,6 +28,7 @@ namespace Drawer
 	public:
 
 		void TestRender(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent);
+		void TestRenderAnimated(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent,ECS::SkeletonComponent* aSkeletonComponent);
 
 		Renderer();
 		~Renderer();

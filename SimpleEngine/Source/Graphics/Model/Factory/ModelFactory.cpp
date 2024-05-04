@@ -64,17 +64,45 @@ namespace Graphics
 		AddMesh("Sphere", std::move(sphereMesh));
 	}
 
-	const Mesh* ModelFactory::LoadMesh(const std::string& aName)
+	const Mesh* ModelFactory::LoadMesh(const std::string& aFileName)
 	{
-		const std::string filePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aName;
+		const std::string filePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
 		const Mesh* mesh = GetMesh(filePath.c_str());
 
 		if (mesh == nullptr)
 		{
-			LoadAndCacheMesh(aName);
+			LoadAndCacheMesh(aFileName);
+
+			if (mesh == nullptr)
+			{
+				assert(false && "Failed to Load and cache Mesh");
+				return nullptr;
+			}
 		}
 
 		return mesh;
+	}
+
+	const Skeleton* ModelFactory::LoadSkeleton(const std::string& aFileName)
+	{
+		const std::string filePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
+		const Skeleton* skeleton = GetSkeleton(filePath.c_str());
+
+		if (skeleton == nullptr)
+		{
+			TGA::FBX::Mesh tgaMesh;
+			LoadAndCacheSkeleton(filePath, tgaMesh);
+
+			skeleton = GetSkeleton(filePath.c_str());
+
+			if (skeleton == nullptr)
+			{
+				assert(false && "Failed to load and cache skeleton");
+				return nullptr;
+			}
+		}
+
+		return skeleton;
 	}
 
 	Model ModelFactory::LoadStaticModelFBX(const char* aFileName)
@@ -226,6 +254,8 @@ namespace Graphics
 
 	void ModelFactory::LoadSkeletonData(Skeleton& aSkeletonData, const TGA::FBX::Mesh& aTGAMesh) const
 	{
+		aSkeletonData.myName = SimpleUtilities::ConvertFilePathToPrettyName(aTGAMesh.Name);
+
 		if (aTGAMesh.Skeleton.GetRoot())
 		{
 			aSkeletonData.myJoints.resize(aTGAMesh.Skeleton.Bones.size());

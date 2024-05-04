@@ -28,6 +28,68 @@ namespace Graphics
 		InitPose();
 	}
 
+	void AnimationPlayer::Init(Animation& aAnimation, const Skeleton* aSkeleton)
+	{
+		myAnimation = &aAnimation;
+		mySkeleton = aSkeleton;
+
+		myFPS = aAnimation.framesPerSecond;
+		myTime = 0.0f;
+
+		myState = eAnimationState::Playing;
+	}
+
+	void AnimationPlayer::UpdateTest(Math::Matrix4x4f* aMatrix)
+	{
+		if (myState == eAnimationState::Playing)
+		{
+			size_t currentFrame = 0;
+			size_t nextFrame = 0;
+			float delta = 0.0f; //This is use for lerping
+
+			UpdateTimer();
+			CalculateFrame(currentFrame, nextFrame, delta);
+			LerpAnimationTest(currentFrame, nextFrame, delta);
+
+
+			LocalSpacePose localSpacePose;
+			mySkeleton->ConvertModelSpacePoseToLocalSpacePose(myModelSpacePose, localSpacePose);
+
+			mySkeleton->ApplyBindPoseInverse(localSpacePose, aMatrix);
+		}
+	}
+
+	void AnimationPlayer::LerpAnimationTest(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta)
+	{
+		const Skeleton* skeleton = mySkeleton;
+		myModelSpacePose.count = skeleton->myJoints.size();
+
+		for (size_t i = 0; i < myModelSpacePose.count; i++)
+		{
+			const Math::Matrix4x4f currentMatrix = myAnimation->frames[aCurrentFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
+			const Math::Matrix4x4f nextMatrix = myAnimation->frames[aNextFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
+
+			Math::Vector3f currentPosition;
+			Math::Vector3f nextPosition;
+
+			Math::Quaternionf currentQuaternion;
+			Math::Quaternionf nextQuaternion;
+
+			Math::Vector3f currentScale;
+			Math::Vector3f nextScale;
+
+			currentMatrix.DecomposeMatrix(currentPosition, currentQuaternion, currentScale);
+			nextMatrix.DecomposeMatrix(nextPosition, nextQuaternion, nextScale);
+
+			const Math::Vector3f translation = Math::Lerp(currentPosition, nextPosition, aDelta);
+			const Math::Quaternionf rotation = Math::Quaternionf::Slerp(currentQuaternion, nextQuaternion, aDelta);
+			const Math::Vector3f scale = Math::Lerp(currentScale, nextScale, aDelta);
+
+			const Math::Matrix4x4f lerpedMatrix = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
+			myModelSpacePose.jointTransforms[i] = lerpedMatrix;
+		}
+	}
+
 	void AnimationPlayer::Play(const bool aShouldLoop)
 	{
 		myState = eAnimationState::Playing;

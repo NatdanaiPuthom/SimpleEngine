@@ -67,6 +67,7 @@ namespace Graphics
 		std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
 		std::shared_ptr<const Texture> GetDefaultTexture();
 		std::shared_ptr<const Shader> GetDefaultShader();
+		std::shared_ptr<const Shader> GetDefaultAnimatedShader();
 		std::shared_ptr<const Shader> GetShader(const char* aPSFile, const char* aVSFile);
 
 		Drawer::Renderer* GetRenderer();

@@ -526,6 +526,16 @@ namespace Graphics
 		return nullptr;
 	}
 
+	std::shared_ptr<const Shader> GraphicsEngine::GetDefaultAnimatedShader()
+	{
+		auto defaultShader = GetShader("DefaultPS.cso", "AnimatedModelVS.cso");
+		
+		if (defaultShader != nullptr)
+			return defaultShader;
+
+		return nullptr;
+	}
+
 	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
 	{
 		auto shader = myLoadedShaders.find({ aPSFile, aVSFile });

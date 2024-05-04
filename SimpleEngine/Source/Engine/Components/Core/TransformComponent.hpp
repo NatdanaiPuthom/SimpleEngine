@@ -3,7 +3,7 @@
 
 namespace ECS
 {
-	struct TransformComponent
+	struct TransformComponent final
 	{
 		Math::Transform transform;
 	};

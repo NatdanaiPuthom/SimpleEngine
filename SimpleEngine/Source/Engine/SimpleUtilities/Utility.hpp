@@ -28,6 +28,25 @@ namespace SimpleUtilities
 		return aNameFromTypeIndex;
 	}
 
+	static inline std::string ConvertFilePathToPrettyName(const std::string& aFilePath)
+	{
+		size_t pos = aFilePath.find_last_of("/"); //NOTE(v9.34.0): I mostly use '/'
+
+		if (pos != std::string::npos && pos + 1 < aFilePath.length())
+		{
+			return aFilePath.substr(pos + 1);
+		}
+
+		pos = aFilePath.find_last_of("\\");
+
+		if (pos != std::string::npos && pos + 1 < aFilePath.length())
+		{
+			return aFilePath.substr(pos + 1);
+		}
+
+		return aFilePath;
+	}
+
 	static inline const std::string GetAbsolutePath(const char* aFilePath)
 	{
 		char buffer[MAX_PATH];
