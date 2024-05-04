@@ -1,25 +1,27 @@
 #pragma once
 #include "SimpleScript/Core/ScriptDefines.h"
-#include "VariableWindow.h"
-#include "NodeCreatorWindow.h"
+#include "SimpleScriptEditor/VariableWindow.h"
+#include "SimpleScriptEditor/NodeCreatorWindow.h"
 #include "SimpleScript/Core/SystemTypes/ScriptVec2.h"
 #include <vector>
 #include <string>
 #include <functional>
 
+struct ImNodesContext;
+
+namespace SCRIPT
+{
+	struct ScriptColor;
+}
 
 namespace SCRIPT
 {
 	class ScriptManager;
 	class Script;
-	struct ScriptColor;
 }
-
-struct ImNodesContext;
 
 namespace EDIT
 {
-
 	struct NodeTypeCategory
 	{
 		const std::string name;
@@ -71,11 +73,10 @@ namespace EDIT
 		void ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(SCRIPT::NodeTypeID)>& aOnClickFunction);
 		void PopulateCategories(const std::string& aName, const size_t aNodeTypeID, NodeTypeCategory& aCategory);
 
-
 		void UpdateClickPos();
 		ImVec2 GetMousePos() const;
-	private:
 
+	private:
 		char myScriptNameText[TEXT_MAX_LENGTH] = "";
 		char myNodeTypeSearch[TEXT_MAX_LENGTH] = "";
 
@@ -97,6 +98,5 @@ namespace EDIT
 		ImVec2 myDragEndPos;
 
 		int myHoveredLinkID = SCRIPT::InvalidID<SCRIPT::PinID>();
-
 	};
 }

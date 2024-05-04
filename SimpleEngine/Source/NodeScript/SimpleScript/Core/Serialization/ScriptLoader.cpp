@@ -286,9 +286,7 @@ namespace SCR
 				{
 					std::cout << "Couldn't bind node to variable" << std::endl;
 				}
-
 			}
-
 		}
 
 		ScriptProxy::GetCommandTracker(aScript).IsTracking() = true;
@@ -323,14 +321,11 @@ namespace SCR
 			}
 		}
 
-
-
 		if (aScriptManager.GetScripts().empty())
 		{
 			aScriptManager.CreateScript();
 		}
 	}
-
 
 	void ScriptLoader::CreateCopy(const Script& aScript, const std::string& aCopyName)
 	{

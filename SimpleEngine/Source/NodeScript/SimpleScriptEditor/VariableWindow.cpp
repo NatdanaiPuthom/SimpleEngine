@@ -1,9 +1,8 @@
-#include "VariableWindow.h"
-#include "VisualScriptingWindow.h"
+#include "SimpleScriptEditor/VariableWindow.h"
+#include "SimpleScriptEditor/VisualScriptingWindow.h"
 #include "SimpleScript/Core/Script.h"
 #include "SimpleScript/Core/Utilities/ScriptUtilities.h"
 #include "SimpleScript/Core/DataType/DataTypeManager.h"
-#include <imgui.h>
 
 namespace EDIT
 {
@@ -14,17 +13,13 @@ namespace EDIT
 	{
 	}
 
-
 	void VariableWindow::Update()
 	{
-
 		Script& currentScript = *myParentWindow.GetCurrentContext().script;
-
 		ScriptModifier& modifier = currentScript.GetModifier();
 
 		if (ImGui::Begin("VariableWindow"))
 		{
-
 			if (ImGui::Button("Create Variable"))
 			{
 				
@@ -64,23 +59,18 @@ namespace EDIT
 				ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0, 0, 0, 1));
 				ImGui::Separator();
 				ImGui::PopStyleColor();
-
 			}
 
 		}
-		ImGui::End();
 
+		ImGui::End();
 	}
 
 	void VariableWindow::ModifyVariablePopup(VarID aVarID)
 	{
 		Script& currentScript = *myParentWindow.GetCurrentContext().script;
 		const Variable& variable = ScriptProxy::GetVariable(currentScript, aVarID);
-
 		std::string variableName = ScriptProxy::GetVariable(currentScript, aVarID).name;
-
-
-
 
 		char buffer[35]{};
 		strcpy_s(buffer, variableName.c_str());
@@ -92,7 +82,6 @@ namespace EDIT
 		}
 
 		int currentSelectedIndex = 0;
-
 
 		std::vector<DataTypeID> dataTypeIDs;
 		std::stringstream ss;
@@ -108,9 +97,11 @@ namespace EDIT
 			}
 			++i;
 		}
+
 		std::string names = ss.str();
 
 		ImGui::Separator();
+
 		if (ImGui::Combo("##ChangeDataType", &currentSelectedIndex, names.c_str()))
 		{
 			currentScript.GetModifier().SetVariableDataType(aVarID, dataTypeIDs.at(currentSelectedIndex));
@@ -142,5 +133,4 @@ namespace EDIT
 			modifier.DestroyVariable(aVarID);
 		}
 	}
-
 }

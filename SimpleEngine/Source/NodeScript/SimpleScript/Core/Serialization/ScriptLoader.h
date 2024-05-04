@@ -4,7 +4,6 @@
 
 namespace SCR
 {
-
 	class Script;
 	class ScriptManager;
 	class ScriptFoundation;
@@ -12,8 +11,6 @@ namespace SCR
 	class ScriptLoader
 	{
 	public:
-
-
 		static void Save(const Script& aScript);
 		static void Load(Script& aScript);
 		
@@ -24,10 +21,6 @@ namespace SCR
 		static void SaveCustomEvents(const std::string& aFilePath);
 		static void LoadCustomEvents(ScriptFoundation& aFoundation);
 
-		inline static std::string SavePath = "../Source/Script/data/SimpleScripts";
-
-	private:
-
-
+		inline static std::string SavePath = "../Source/NodeScript/data/SimpleScripts";
 	};
 }

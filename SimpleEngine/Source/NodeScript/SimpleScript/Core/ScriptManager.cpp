@@ -40,7 +40,6 @@ namespace SCR
 		return myScripts;
 	}
 
-
 	Script* ScriptManager::GetScriptByName(const std::string& aName)
 	{
 		for (size_t i = 0; i < myScripts.size(); i++)

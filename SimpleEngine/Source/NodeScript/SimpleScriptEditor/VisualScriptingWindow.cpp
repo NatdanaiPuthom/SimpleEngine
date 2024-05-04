@@ -1,5 +1,4 @@
-#include <imnodes/imnodes_internal.h>
-#include "VisualScriptingWindow.h"
+#include "SimpleScriptEditor/VisualScriptingWindow.h"
 #include "SimpleScript/Core/ScriptManager.h"
 #include "SimpleScript/Core/Script.h"
 #include "SimpleScript/Core/Node/NodeTypeRegistry.h"
@@ -10,6 +9,7 @@
 #include "SimpleScript/Core/Utilities/ScriptFilter.h"
 #include "SimpleScript/Core/ScriptModifier.h"
 #include "SimpleScript/Core/CustomEvent/CustomEvent.h"
+#include <imnodes/imnodes_internal.h>
 
 namespace EDIT
 {
@@ -34,10 +34,12 @@ namespace EDIT
 	void VisualScriptingWindow::UpdateContext()
 	{
 		size_t contextAmount = myContexts.size();
+
 		for (size_t i = contextAmount; i < myCurrentScriptManager->GetScripts().size(); i++)
 		{
 			myContexts.push_back(ImNodes::CreateContext());
 		}
+
 		ImNodes::SetCurrentContext(myContexts[myCurrentIndex]);
 
 		ImNodesStyle& style = ImNodes::GetStyle();
@@ -71,7 +73,6 @@ namespace EDIT
 		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed('H'))
 		{
 			open = !open;
-
 		}
 
 		if (open == false)
@@ -79,7 +80,6 @@ namespace EDIT
 
 		if (ImGui::Begin("Node Scripting", &open))
 		{
-
 			GetCurrentContext().script->GetCommandTracker().Update(
 				[]() -> bool
 				{
@@ -93,7 +93,6 @@ namespace EDIT
 
 			if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_C))
 			{
-
 				int numSelectedNodes = ImNodes::NumSelectedNodes();
 
 				if (numSelectedNodes > 0)
@@ -106,7 +105,6 @@ namespace EDIT
 
 					GetCurrentContext().script->GetModifier().CreateCopyBuffer(copyNodes);
 				}
-
 			}
 			else if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_V))
 			{
@@ -119,10 +117,10 @@ namespace EDIT
 				GetCurrentContext().script->GetModifier().PasteCopyBuffer(mousePos);
 			}
 
-			//std::cout << ScriptVec2{ GetMousePos().x, GetMousePos().y } << std::endl;
-
 			bool& isDebug = GetCurrentContext().script->GetCommandTracker().IsDebugPrinting();
+
 			ImGui::Checkbox("Debug Commands", &isDebug);
+
 			if (isDebug)
 			{
 
@@ -133,21 +131,16 @@ namespace EDIT
 			}
 
 			ScriptSelectionMenu();
-
 			ScriptLoadingMenu();
-
 			UpdateContext();
-
-
-
 			VisualizeNodes();
 			UpdateNodes();
 			NodeCreation();
 
 			myVariableWindow.Update();
 			myNodeCreatorWindow.Update();
-
 		}
+
 		ImGui::End();
 	}
 
@@ -156,6 +149,7 @@ namespace EDIT
 		Script& currentScript = *GetCurrentContext().script;
 
 		ImGui::SetNextItemWidth(200);
+
 		if (ImGui::BeginCombo("##ScriptSelectionCombo", currentScript.Name().c_str()))
 		{
 			for (size_t i = 0; i < myCurrentScriptManager->GetScripts().size(); ++i)
@@ -179,15 +173,12 @@ namespace EDIT
 
 		ImGui::SameLine();
 
-
-
 		char buffer[35]{};
 		strcpy_s(buffer, GetCurrentContext().script->Name().c_str());
 
 		if (ImGui::InputText("##", buffer, IM_ARRAYSIZE(buffer)))
 		{
 			GetCurrentContext().script->Name() = buffer;
-
 		}
 	}
 
@@ -196,14 +187,16 @@ namespace EDIT
 		Script& currentScript = *GetCurrentContext().script;
 
 		bool canSave = GetCurrentContext().script->GetCommandTracker().GetUndoSize() == 0;
+
 		ImGui::BeginDisabled(canSave);
+
 		if (ImGui::Button("Save"))
 		{
 			ScriptLoader::Save(currentScript);
 			currentScript.GetCommandTracker().Clear();
 		}
-		ImGui::EndDisabled();
 
+		ImGui::EndDisabled();
 		ImGui::SameLine();
 
 		if (ImGui::Button("Reload All"))
@@ -212,8 +205,8 @@ namespace EDIT
 			myCurrentIndex = 0;
 		}
 
-
 		ImGui::SameLine();
+
 		if (ImGui::Button("Create New Script"))
 		{
 			ImGui::OpenPopup("Create New Script");
@@ -246,7 +239,6 @@ namespace EDIT
 
 			ImGui::PopItemFlag();
 
-
 			ImGui::SetItemDefaultFocus();
 			ImGui::SameLine();
 			if (ImGui::Button("Cancel", ImVec2(120, 0)))
@@ -257,11 +249,9 @@ namespace EDIT
 			ImGui::EndPopup();
 		}
 
-
-
+		ImGui::SameLine();
 		ImGui::SameLine();
 
-		ImGui::SameLine();
 		if (ImGui::Button("Create Copy"))
 		{
 			ImGui::OpenPopup("Create Copy Script");
@@ -281,9 +271,7 @@ namespace EDIT
 
 			if (ImGui::Button("Create Copy", ImVec2(120, 0)))
 			{
-
 				ScriptLoader::CreateCopy(*GetCurrentContext().script, myScriptNameText);
-
 				ScriptLoader::LoadAll(*myCurrentScriptManager);
 
 				for (size_t i = 0; i < myCurrentScriptManager->GetScripts().size(); i++)
@@ -293,16 +281,16 @@ namespace EDIT
 						myCurrentIndex = i;
 					}
 				}
+
 				myScriptNameText[0] = (char)0;
 
 				ImGui::CloseCurrentPopup();
 			}
 
 			ImGui::PopItemFlag();
-
-
 			ImGui::SetItemDefaultFocus();
 			ImGui::SameLine();
+
 			if (ImGui::Button("Cancel", ImVec2(120, 0)))
 			{
 				myScriptNameText[0] = (char)0;
@@ -322,7 +310,6 @@ namespace EDIT
 
 	void VisualScriptingWindow::VisualizeNodes()
 	{
-
 		Script& currentScript = *GetCurrentContext().script;
 		const NodeManager& nodeManager = ScriptProxy::GetNodeManager(currentScript);
 		const VariableManager& variableManager = ScriptProxy::GetVariableManager(currentScript);
@@ -332,7 +319,6 @@ namespace EDIT
 		// Render nodes
 		for (auto& [nodeID, node, nodeType] : nodeManager)
 		{
-
 			if (node->isDestroyed)
 			{
 				continue;
@@ -376,7 +362,6 @@ namespace EDIT
 				ImNodes::EndNodeTitleBar();
 			}
 
-
 			ImVec2 cursorPos = ImGui::GetCursorPos();
 
 			float nodeWidthLeft = node->inputPins.empty() ? 0.f : 100.f;
@@ -392,7 +377,6 @@ namespace EDIT
 			}
 
 			float nodeWidthRight = 0.f;
-
 
 			for (int i = 0; i < node->outputPins.size(); ++i)
 			{
@@ -425,7 +409,6 @@ namespace EDIT
 				ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
 				ImNodes::BeginInputAttribute(pinID, shape);
 
-
 				std::string pinLabel = GetPinLabel(pinType);
 				if (!pinLabel.empty())
 				{
@@ -441,7 +424,6 @@ namespace EDIT
 
 					ImGui::PopItemWidth();
 				}
-
 
 				ImNodes::EndInputAttribute();
 				ImNodes::PopColorStyle();
@@ -482,10 +464,7 @@ namespace EDIT
 			}
 
 			ImNodes::EndNode();
-
 		}
-
-
 
 		// Render links
 		for (PinID inputPinID : ScriptFilter(currentScript).GetInputPins())
@@ -505,7 +484,6 @@ namespace EDIT
 				ImNodes::PopColorStyle();
 				ImNodes::PopColorStyle();
 				ImNodes::PopColorStyle();
-
 			}
 		}
 
@@ -540,7 +518,6 @@ namespace EDIT
 		// Update node positions
 		for (auto& [nodeID, node, nodeType] : nodeManager)
 		{
-
 			if (node->isDestroyed)
 			{
 				continue;
@@ -560,11 +537,9 @@ namespace EDIT
 			{
 				modifier.SetNodePosition(nodeID, { newPos.x, newPos.y });
 			}
-
 		}
 
 		modifier.EndNodeDrag(endNodeDragData);
-
 
 		// See if links should be created
 
@@ -581,8 +556,6 @@ namespace EDIT
 
 		if (ImGui::IsKeyPressed(ImGuiKey_Delete))
 		{
-
-
 			std::vector<PinID> selectedLinks(ImNodes::NumSelectedLinks());
 			std::vector<NodeID> selectedNodes(ImNodes::NumSelectedNodes());
 
@@ -603,9 +576,7 @@ namespace EDIT
 
 			ImNodes::ClearNodeSelection();
 			ImNodes::ClearLinkSelection();
-
 		}
-
 
 		PinID startedPinID = InvalidID<PinID>();
 		if (ImNodes::IsLinkStarted(&startedPinID))
@@ -628,6 +599,7 @@ namespace EDIT
 		}
 
 		PinID droppedPinID = InvalidID<PinID>();
+
 		if (ImNodes::IsLinkDropped(&droppedPinID))
 
 		{
@@ -641,7 +613,6 @@ namespace EDIT
 		// Drop link create popup
 		if (ImGui::BeginPopup("Node Create Popup"))
 		{
-
 			const Pin& pin = ScriptProxy::GetPin(currentScript, myLinkCreationPinID);
 
 			DataTypeID droppedPinDataTypeID = PinTypeManager::GetPinType(pin.typeID).dataTypeID;
@@ -682,8 +653,6 @@ namespace EDIT
 							}
 					).Get();
 
-
-
 					for (NodeTypeID nodeTypeID : filtered)
 					{
 						PopulateCategories(NodeTypeManager::GetFullName(nodeTypeID), nodeTypeID, aMainCategory);
@@ -719,7 +688,6 @@ namespace EDIT
 			return;
 		}
 
-
 		rest = rest.substr(1, rest.length());
 
 		bool hasFoundCategory = false;
@@ -753,8 +721,6 @@ namespace EDIT
 
 	void VisualScriptingWindow::ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(NodeTypeID)>& aOnClickFunc)
 	{
-
-
 		if (ImGui::BeginMenu(aCategory.name.c_str()))
 		{
 
@@ -765,18 +731,13 @@ namespace EDIT
 
 			ShowNodeTypeCreationMenu(aCategory.nodeTypesIDs, aOnClickFunc);
 
-
-
 			ImGui::EndMenu();
 		}
 	}
 
 	void VisualScriptingWindow::ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(NodeTypeID)>& aOnClickFunction)
 	{
-
 		NodeTypeCategory mainCategory{ "Create Node" };
-
-
 		aCategoryFunction(mainCategory);
 
 		//ImGui::SetKeyboardFocusHere();
@@ -798,17 +759,12 @@ namespace EDIT
 		}
 	}
 
-
-
-
 	void VisualScriptingWindow::NodeCreation()
 	{
-
 		if (ImGui::IsKeyPressed(ImGuiKey_MouseRight))
 		{
 			ImGui::OpenPopup("Node Type Selection");
 			UpdateClickPos();
-
 		}
 
 		if (ImGui::BeginPopup("Node Type Selection"))
@@ -887,4 +843,3 @@ namespace EDIT
 		return ImGui::GetMousePosOnOpeningCurrentPopup() - GetCurrentContext().imNodesContext->CanvasOriginScreenSpace - ImNodes::EditorContextGetPanning();
 	}
 }
-

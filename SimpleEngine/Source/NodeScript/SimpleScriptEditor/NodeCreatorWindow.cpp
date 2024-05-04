@@ -1,5 +1,5 @@
-#include "NodeCreatorWIndow.h"
-#include "VisualScriptingWindow.h"
+#include "SimpleScriptEditor/NodeCreatorWIndow.h"
+#include "SimpleScriptEditor/VisualScriptingWindow.h"
 #include "SimpleScript/Core/Script.h"
 #include "SimpleScript/Core/Node/NodeTypeManager.h"
 
@@ -20,7 +20,6 @@ namespace EDIT
 	{
 		if (ImGui::Begin("Node Creator"))
 		{
-
 			if (ImGui::Button("Create Custom Event Node"))
 			{
 				ScriptModifier::CreateNodeType_CustomEvent("CustomEvent", ScriptProxy::GetFoundation(*myParentWindow.GetCurrentContext().script));
@@ -48,7 +47,6 @@ namespace EDIT
 
 	void NodeCreatorWindow::EditInputs(SCRIPT::CustomEventID anID)
 	{
-		anID;
 		const CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(anID);
 		NodeTypeID executorTypeID = customEvent.myExecutorTypeID;
 		NodeTypeID callerTypeID = customEvent.myCallerTypeID;
@@ -61,18 +59,18 @@ namespace EDIT
 		char nodeTypeNameBuffer[35]{};
 		strcpy_s(nodeTypeNameBuffer, shortName.c_str());
 
-
 		if (ImGui::InputText(std::string("##" + std::to_string(anID)).c_str(), nodeTypeNameBuffer, IM_ARRAYSIZE(nodeTypeNameBuffer)))
 		{
 			executorNodeType.name = nameDirectory + nodeTypeNameBuffer;
 			callerNodeType.name = nameDirectory + "Call " + nodeTypeNameBuffer;
 		}
+
 		ImGui::SameLine();
+
 		if (ImGui::Button("Add Pin"))
 		{
 			ScriptModifier::AddPinToCustomEvent(typeid(bool).hash_code(), anID, "Pin", &ScriptProxy::GetFoundation(*myParentWindow.GetCurrentContext().script));
 		}
-
 
 		ImGui::Separator();
 
@@ -95,8 +93,8 @@ namespace EDIT
 				}
 				++it;
 			}
-			std::string names = ss.str();
 
+			std::string names = ss.str();
 
 			ImGui::Text("%u:", i);
 			ImGui::SameLine();
@@ -138,16 +136,10 @@ namespace EDIT
 		}
 
 		ImGui::SameLine();
+
 		if (ImGui::Button("Create Executor"))
 		{
 			myParentWindow.GetCurrentContext().script->GetModifier().CreateNode(executorTypeID);
-
 		}
-
-
-
 	}
-
-
-
 }

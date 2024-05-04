@@ -21,6 +21,7 @@ namespace SCR
 	{
 		RegisterSystemDataTypes();
 		RegisterSystemNodes();
+
 		ScriptLoader::LoadCustomEvents(*this);
 		NodeTypeManager::Assert();
 	}
