@@ -7,7 +7,6 @@
 
 namespace SCR
 {
-
 	class PinTypeManager
 	{
 	public:
@@ -21,11 +20,9 @@ namespace SCR
 		}
 
 		static PinType& GetPinType(const PinTypeID anID);
-
 		static void Destroy();
 
 	private:
-
 		inline static std::vector<PinType> myPinTypes;
 	};
 }

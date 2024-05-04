@@ -1,10 +1,7 @@
 #include "PinTypeManager.h"
 
-
 namespace SCR
 {
-
-
 	PinTypeID PinTypeManager::Create(const std::string& aName, ePinFlowType aFlowType, DataTypeID aHashID, PinSetFunction aSetFunction)
 	{
 		PinTypeID id = myPinTypes.size();
@@ -20,5 +17,6 @@ namespace SCR
 	void PinTypeManager::Destroy()
 	{
 		myPinTypes.clear();
+		myPinTypes.~vector();
 	}
 }

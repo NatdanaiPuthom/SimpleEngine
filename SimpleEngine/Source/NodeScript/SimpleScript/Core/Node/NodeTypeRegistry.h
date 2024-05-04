@@ -9,7 +9,6 @@
 
 namespace SCR
 {
-
 	inline NodeTypeID RegisterInternal(NodeRecipe&& aNodeRecipe, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
 	{
 		const std::string defaultPinNames = aDescription.showDataTypePinNames ? "#T" : "";
@@ -78,9 +77,6 @@ namespace SCR
 		NodeTypeID nodeTypeID = RegisterInternal(CreateSetterNodeRecipe<T>(), "Set " + DataTypeManager::GetName(typeid(T).hash_code()));
 		NodeTypeManager::SetSetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
 	}
-	
-
-	class ScriptFoundation;
 
 	class NodeTypeRegistry
 	{
@@ -138,8 +134,6 @@ namespace SCR
 				;
 				RegisterInternal(CreateNodeRecipe(setterFunc, TypeList<Flow>(), TypeList<Flow, ClassType*, std::remove_const_t<MemberType>>()), aDirectory + "Set " + aVariableName);
 			}
-			
 		}
 	};
-
 }

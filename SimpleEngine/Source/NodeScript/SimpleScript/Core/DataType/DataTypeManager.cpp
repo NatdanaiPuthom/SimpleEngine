@@ -158,5 +158,6 @@ namespace SCR
 	{
 		myDataTypes.clear();
 		myTemplateDataTypes.clear();
+		myNullNameStr.~basic_string();
 	}
 }
