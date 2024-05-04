@@ -14,6 +14,7 @@
 
 #include "External/imgui.h"
 #include <External/dearimgui/imnodes/imnodes.h>
+#include <External/dearimgui/imnodes/imnodes_internal.h>
 #include <External/nlohmann/json.hpp>
 #include <External/profiler.h>
 
