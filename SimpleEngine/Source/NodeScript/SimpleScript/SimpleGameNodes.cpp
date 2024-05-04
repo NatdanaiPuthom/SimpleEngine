@@ -66,28 +66,19 @@ static bool IsGameObjectActive(GameObject* aGameObject)
 	return aGameObject && aGameObject->myIsActive;
 }
 
-static void DeleteThisGameObjectNode(SCRIPT::NodeExecutionContext<SimpleGameContext> aContext, GameObject* aGameObject)
+static void DeleteThisGameObjectNode(SCRIPT::NodeExecutionContext<SimpleGameContext> /*aContext*/, GameObject* aGameObject)
 {
 	if (!IsGameObjectActive(aGameObject))
 	{
 		return;
 	}
-	aContext.context.gameLevel.gameObjectManager.RemoveGameObject(aGameObject->myID);
 }
 
-static std::tuple<SCRIPT::Flow, SCRIPT::Flow, GameObject*> GameObjectPredicateTriggerNode(SCRIPT::NodeExecutionContext<GameUpdateContext> aContext, GameObjectPredicate aPredicate)
+static std::tuple<SCRIPT::Flow, SCRIPT::Flow, GameObject*> GameObjectPredicateTriggerNode(SCRIPT::NodeExecutionContext<GameUpdateContext> /*aContext*/, GameObjectPredicate aPredicate)
 {
 	if (!aPredicate.operator bool())
 	{
 		return { false, false, nullptr };
-	}
-
-	for (GameObject* gameObject : aContext.context.gameLevel.gameObjectManager.GetAllGameObjects())
-	{
-		if (aPredicate(gameObject))
-		{
-			return { true, false, gameObject };
-		}
 	}
 
 	return { false, true, nullptr };
@@ -146,9 +137,9 @@ static GameObjectPredicate IsGameObjectEqualPredicateNode(GameObject* aGameObjec
 		};
 }
 
-static std::vector<GameObject*> GetAllGameObjectsNode(SCRIPT::NodeExecutionContext<SimpleGameContext> aContext)
+static std::vector<GameObject*> GetAllGameObjectsNode(SCRIPT::NodeExecutionContext<SimpleGameContext> /*aContext*/)
 {
-	return aContext.context.gameLevel.gameObjectManager.GetAllGameObjects();
+	return std::vector<GameObject*>();
 }
 
 static std::vector<GameObject*> GameObjectFilterNode(std::vector<GameObject*> aGameObjects, GameObjectPredicate aPredicate)

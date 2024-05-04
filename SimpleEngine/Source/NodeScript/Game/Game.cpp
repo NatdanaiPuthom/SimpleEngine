@@ -42,13 +42,6 @@ void Game::Update(const Tga::InputManager& inputManager, float aTimeDelta)
 
 	GameUpdateContext context{ aTimeDelta, myCurrentLevel, inputManager, this };
 
-	for (auto& gameObject : myCurrentLevel.gameObjectManager.GetAllGameObjects())
-	{
-		if (!gameObject)
-			continue;
-		gameObject->Update(context);
-	}
-
 	SimpleGameContext updateContext
 	{
 		aTimeDelta,
@@ -76,7 +69,6 @@ void Game::LoadLevel(const char* name, bool runScripts)
 	myScriptFoundation.DestroyScriptManager(*myCurrentLevel.scriptManager);
 	myCurrentLevel = { };
 	myCurrentLevel.scriptManager = &myScriptFoundation.CreateScriptManager();
-	myCurrentLevel.name = name;
 
 	SCRIPT::ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/" + std::string(name);
 	SCRIPT::ScriptLoader::LoadAll(*myCurrentLevel.scriptManager);
@@ -93,9 +85,9 @@ void Game::LoadLevel(const char* name, bool runScripts)
 		char nameBuffer[128];
 
 		int lineIndex = 0;
+
 		while (std::getline(file, line) && lineIndex < LEVEL_HEIGHT)
 		{
-			int row = LEVEL_HEIGHT - 1 - lineIndex;
 			for (int column = 0; column < LEVEL_WIDTH; column++)
 			{
 				LevelTileType t = LevelTileType::Grass;
@@ -110,49 +102,19 @@ void Game::LoadLevel(const char* name, bool runScripts)
 				else if (line[column] == 'b')
 				{
 					sprintf_s(nameBuffer, "ball %03d", ballCount++);
-
-					auto id = myCurrentLevel.gameObjectManager.CreateGameObject();
-					auto gameObject = myCurrentLevel.gameObjectManager.GetGameObject(id);
-					gameObject->myName = "Ball";
-					gameObject->myPosition = { column, row };
-					gameObject->myCanPush = true;
-
 				}
 				else if (line[column] == 'v')
 				{
 					sprintf_s(nameBuffer, "BlueCharacter %03d", specialBallCount++);
-
-					auto id = myCurrentLevel.gameObjectManager.CreateGameObject();
-					auto gameObject = myCurrentLevel.gameObjectManager.GetGameObject(id);
-					gameObject->myName = "BlueCharacter";
-
-					gameObject->myPosition = { column, row };
-					gameObject->myCanPush = false;
-					gameObject->myCanStandOn = false;
-
 				}
 				else if (line[column] == 'c')
 				{
 					sprintf_s(nameBuffer, "coin %03d", coinCount++);
-
-					auto id = myCurrentLevel.gameObjectManager.CreateGameObject();
-					auto gameObject = myCurrentLevel.gameObjectManager.GetGameObject(id);
-					gameObject->myName = "Coin";
-					gameObject->myPosition = { column, row };
-					gameObject->myCanStandOn = true;
 				}
 				else if (line[column] == 'f')
 				{
 					sprintf_s(nameBuffer, "flag %03d", flagCount++);
-
-					auto id = myCurrentLevel.gameObjectManager.CreateGameObject();
-					auto gameObject = myCurrentLevel.gameObjectManager.GetGameObject(id);
-					gameObject->myName = "Flag";
-					gameObject->myPosition = { column, row };
-					gameObject->myCanStandOn = true;
 				}
-
-				myCurrentLevel.tiles[column][row] = t;
 			}
 
 			lineIndex++;
