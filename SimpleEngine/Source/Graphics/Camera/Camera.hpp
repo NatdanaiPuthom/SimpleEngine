@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/Math/Transform.hpp"
 
-namespace SimpleUtilities
+namespace Simpleton
 {
 	class InputManager;
 }
@@ -56,7 +56,7 @@ namespace Graphics
 		void CreateProjectionMatrix();
 		void UpdateCameraVectors();
 	private:
-		SimpleUtilities::InputManager* myInput;
+		Simpleton::InputManager* myInput;
 
 		Math::Matrix4x4f myProjectionMatrix;
 		Math::Transform myTransform;

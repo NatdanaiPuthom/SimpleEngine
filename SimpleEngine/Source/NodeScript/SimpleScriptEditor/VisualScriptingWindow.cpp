@@ -9,6 +9,7 @@
 #include "SimpleScript/Core/Utilities/ScriptFilter.h"
 #include "SimpleScript/Core/ScriptModifier.h"
 #include "SimpleScript/Core/CustomEvent/CustomEvent.h"
+#include "MainSingleton/MainSingleton.hpp"
 #include <imnodes/imnodes_internal.h>
 
 namespace EDIT
@@ -79,7 +80,7 @@ namespace EDIT
 
 		static bool open = false;
 
-		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed('H'))
+		if (MainSingleton::GetInputManager().IsKeyPressed('H'))
 		{
 			open = !open;
 		}

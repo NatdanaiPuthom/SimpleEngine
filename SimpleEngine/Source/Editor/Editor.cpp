@@ -30,7 +30,7 @@ namespace Editor
 
 	void EditorEngine::Update()
 	{
-		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_F5))
+		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
 		{
 			if (Global::IsFullScreen())
 			{

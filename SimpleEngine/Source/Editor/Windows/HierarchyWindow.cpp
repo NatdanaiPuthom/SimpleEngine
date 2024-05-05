@@ -107,7 +107,7 @@ namespace Editor
 			ImGui::PushItemWidth(200);
 			if (ImGui::InputTextWithHint("Name", "Entity Name", &searchComponent[0], searchComponent.capacity() + 1))
 			{
-				if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_RETURN))
+				if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
 				{
 					selectedEntity->SetName(searchComponent);
 				}
@@ -279,7 +279,7 @@ namespace Editor
 
 		ImGui::End();
 
-		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_DELETE))
+		if (MainSingleton::GetInputManager().IsKeyPressed(VK_DELETE))
 		{
 			if (const size_t count = entities.GetEntityCount() > 0)
 			{

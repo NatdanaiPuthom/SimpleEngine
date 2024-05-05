@@ -2,8 +2,8 @@
 #include "Engine/Engine.hpp"
 #include "Engine/SimpleUtilities/Timer.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
-#include "Engine/Input/InputManager.hpp"
 #include "Engine/Audio/AudioManager.h"
+#include "MainSingleton/MainSingleton.hpp"
 #include <External/nlohmann/json.hpp>
 #include <fstream>
 #include <filesystem>
@@ -50,7 +50,7 @@ namespace Simple
 		assert(myCustomCursor && "Failed to load Custom Cursor");
 
 		AudioManager::GetInstance().Init();
-		SimpleUtilities::InputManager::GetInstance().SetHWND(Global::GetEngineHWND());
+		MainSingleton::GetInputManager().SetHWND(*myHWND);
 	}
 
 	void Engine::LoadSettingsFromJson()
@@ -171,7 +171,7 @@ namespace Simple
 	void Engine::Update()
 	{
 		myTimer->Update();
-		SimpleUtilities::InputManager::GetInstance().Update();
+		MainSingleton::GetInputManager().Update();
 		AudioManager::GetInstance().Update();
 	}
 

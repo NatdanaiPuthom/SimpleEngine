@@ -20,6 +20,10 @@
 
 #pragma message("---------Never give up on your dreams!---------------")
 
+#include "MainSingleton/MainSingleton.hpp"
+
+#pragma message("---------Never give up on your dreams!---------------")
+
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Vector4.hpp"
@@ -35,8 +39,6 @@
 #include "Engine/SimpleUtilities/AABB3D.hpp"
 #include "Engine/SimpleUtilities/Bounds.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
-
-#include "Engine/Input/InputManager.hpp"
 
 #include "Engine/Global.hpp"
 #include "Game/World.hpp"

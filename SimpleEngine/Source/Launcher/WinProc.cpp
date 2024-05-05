@@ -1,5 +1,5 @@
+#include "MainSingleton/MainSingleton.hpp"
 #include "Engine/Engine.hpp"
-#include "Engine/Input/InputManager.hpp"
 #include "Engine/Global.hpp"
 #include "Editor/FileManager/FileManager.hpp"
 #include <External/imgui.h>
@@ -12,7 +12,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
 		return 0;
 
-	if (SimpleUtilities::InputManager::GetInstance().UpdateEvents(message, wParam, lParam))
+	if (MainSingleton::GetInputManager().UpdateEvents(message, wParam, lParam))
 		return 0;
 
 	switch (message)
@@ -26,9 +26,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_ACTIVATE:
 		if (LOWORD(wParam) == WA_INACTIVE)
 		{
-			SimpleUtilities::InputManager::GetInstance().ResetKeyStates();
+			MainSingleton::GetInputManager().ResetKeyStates();
 
-			if (SimpleUtilities::InputManager::GetInstance().GetMouseIsHidden() && Global::GetGraphicsEngine()->GetCurrentCamera()->IsFreeFlyActive())
+			if (MainSingleton::GetInputManager().GetMouseIsHidden() && Global::GetGraphicsEngine()->GetCurrentCamera()->IsFreeFlyActive())
 			{
 				Global::GetGraphicsEngine()->GetCurrentCamera()->InactiveFreeFly();
 			}

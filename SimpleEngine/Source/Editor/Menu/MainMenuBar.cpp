@@ -51,7 +51,7 @@ namespace Editor
 
 	void MainMenuBar::DrawTools()
 	{
-		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_F1))
+		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F1))
 		{
 			myEditorWindowActive = !myEditorWindowActive;
 		}

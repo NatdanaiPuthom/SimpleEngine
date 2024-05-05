@@ -134,6 +134,33 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+	project "MainSingleton"
+		kind "StaticLib"
+		location (dirs.Local)
+		targetdir (dirs.SimpleLib)
+		targetname ("%{prj.name}_%{cfg.buildcfg}")
+		flags { "FatalWarnings" }
+
+		includedirs {
+			"Source/",
+		}
+
+		files {
+			"Source/MainSingleton/**.h",
+			"Source/MainSingleton/**.hpp",
+			"Source/MainSingleton/**.cpp",
+		}
+
+		libdirs {
+			dirs.Lib
+		}
+
+		links {
+
+		}
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 	project "Engine"
 		kind "StaticLib" -- Build type ".lib"
 		location (dirs.Local) -- I only know that this is for where vcxproj, vcxproj.filter and vcxproj.user will be generated
@@ -153,7 +180,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/External/**",
 		} 
 
-			files { -- Files that shown in Visual Studio's Solution
+		files { -- Files that shown in Visual Studio's Solution
 			"Source/Engine/**.h", 
 			"Source/Engine/**.hpp", 
 			"Source/Engine/**.cpp"
@@ -374,6 +401,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 		links {
 			"External", 
+			"MainSingleton",
 			"Engine", 
 			"Graphics", 
 			"Shader",

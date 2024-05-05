@@ -32,7 +32,7 @@ namespace Simple
 
 	void RaycastManager::Update()
 	{
-		if (SimpleUtilities::InputManager::GetInstance().IsKeyHeld(VK_LBUTTON))
+		if (MainSingleton::GetInputManager().IsKeyHeld(VK_LBUTTON))
 		{
 			if (mySelectedModelIndex >= 0 && myTimer >= mySelectDelay)
 			{
@@ -55,7 +55,7 @@ namespace Simple
 			myTimer = 0;
 		}
 
-		if (SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_LBUTTON) || SimpleUtilities::InputManager::GetInstance().IsKeyPressed(VK_RBUTTON))
+		if (MainSingleton::GetInputManager().IsKeyPressed(VK_LBUTTON) || MainSingleton::GetInputManager().IsKeyPressed(VK_RBUTTON))
 		{
 			CheckRayNavmesh();
 		}
@@ -158,7 +158,7 @@ namespace Simple
 
 	void RaycastManager::CheckRayNavmesh()
 	{
-		SU::Ray ray = GetScreenPointToRay(SimpleUtilities::InputManager::GetInstance().GetMousePosition());
+		SU::Ray ray = GetScreenPointToRay(MainSingleton::GetInputManager().GetMousePosition());
 		Math::Vector3f intersectionPoint;
 		Math::Vector3 closetPoint(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 		bool hasHit = false;
@@ -200,7 +200,7 @@ namespace Simple
 		{
 			Simple::Message<eEvent> raycast;
 
-			auto& input = SimpleUtilities::InputManager::GetInstance();
+			auto& input = MainSingleton::GetInputManager();
 
 			if (input.IsKeyPressed(VK_LBUTTON) == true && input.IsKeyPressed(VK_RBUTTON) == false)
 				raycast.myType = Simple::eEvent::Raycast_LMB;

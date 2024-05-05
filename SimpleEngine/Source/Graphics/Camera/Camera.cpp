@@ -1,6 +1,6 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 #include "Graphics/Camera/Camera.hpp"
-#include "Engine/Input/InputManager.hpp"
 #include "Engine/Global.hpp"
 
 namespace Graphics
@@ -22,7 +22,7 @@ namespace Graphics
 
 	void Camera::Init()
 	{
-		myInput = &SimpleUtilities::InputManager::GetInstance();
+		myInput = &MainSingleton::GetInputManager();
 	}
 
 	void Camera::Update(const float aDeltaTime)

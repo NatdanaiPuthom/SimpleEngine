@@ -28,22 +28,22 @@ void PlayerWalk::Update()
 {
 	Math::Vector3 velocity;
 
-	if (SU::InputManager::GetInstance().IsKeyHeld(VK_LEFT))
+	if (MainSingleton::GetInputManager().IsKeyHeld(VK_LEFT))
 	{
 		velocity.x += -1.0f;
 	}
 
-	if (SU::InputManager::GetInstance().IsKeyHeld(VK_RIGHT))
+	if (MainSingleton::GetInputManager().IsKeyHeld(VK_RIGHT))
 	{
 		velocity.x += 1.0f;
 	}
 
-	if (SU::InputManager::GetInstance().IsKeyHeld(VK_UP))
+	if (MainSingleton::GetInputManager().IsKeyHeld(VK_UP))
 	{
 		velocity.z += 1.0f;
 	}
 
-	if (SU::InputManager::GetInstance().IsKeyHeld(VK_DOWN))
+	if (MainSingleton::GetInputManager().IsKeyHeld(VK_DOWN))
 	{
 		velocity.z += -1.0f;
 	}

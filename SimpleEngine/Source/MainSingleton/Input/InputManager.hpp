@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include <string>
 
-namespace SimpleUtilities
+namespace Simpleton
 {
 	class InputManager final
 	{

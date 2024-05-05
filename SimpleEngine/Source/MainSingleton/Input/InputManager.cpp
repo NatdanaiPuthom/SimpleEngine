@@ -1,9 +1,8 @@
-#include "Engine/Precomplied/EnginePch.hpp"
-#include "Engine/Input/InputManager.hpp"
+#include "MainSingleton/Input/InputManager.hpp"
 #include <windowsx.h>
 #include <string>
 
-namespace SimpleUtilities
+namespace Simpleton
 {
 	InputManager::InputManager()
 		: myMouseIsHidden(false)

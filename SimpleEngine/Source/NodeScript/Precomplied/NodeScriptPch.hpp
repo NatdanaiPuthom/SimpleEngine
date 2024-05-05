@@ -26,9 +26,6 @@
 #include "Engine/Math/Matrix4x4.hpp"
 #include "Engine/Math/Transform.hpp"
 #include "Engine/Math/Math.hpp"
-
-#include "Engine/Input/InputManager.hpp"
-
 #include "Engine/SimpleUtilities/Utility.hpp"
 
 namespace SU = SimpleUtilities;
