@@ -72,8 +72,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	Test::ECSTestStuff test; //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
 	test.Init(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
 
-	MainSingleton::GetAudioManager().PlayMusic("StardewValley.mp3");
-
 	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
