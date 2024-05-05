@@ -1,9 +1,13 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/FileManager/FileManager.hpp"
-#include "Engine/SimpleUtilities/Utility.hpp"
 
 namespace Editor
 {
+	void FileManager::Release()
+	{
+		sCurrentDirectory.~basic_string();
+	}
+
 	void FileManager::DropFiles(HDROP aHDROP)
 	{
 		char filePath[MAX_PATH]{};
@@ -14,18 +18,12 @@ namespace Editor
 		{
 			if (DragQueryFileA(aHDROP, i, filePath, MAX_PATH))
 			{
-				const std::string extension = GetFileExtension(filePath);
 				const std::string name = GetFileName(filePath);
+				const std::string destinationPath = sCurrentDirectory + "\\" +  name;
 
-				UNREFERENCED_PARAMETER(name);
-
-				if (extension == ".json")
+				if (CopyFileA(filePath, destinationPath.c_str(), FALSE))
 				{
-					std::cout << "File type: json" << std::endl;
-				}
-				else if (extension == ".fbx")
-				{
-					std::cout << "File type: fbx" << std::endl;
+					std::cout << "File: " << name << " has been copied to: " << destinationPath << std::endl;
 				}
 			}
 		}
@@ -52,7 +50,6 @@ namespace Editor
 				{
 					if (ImGui::Selectable(name.c_str()))
 					{
-
 					}
 				}
 			}
@@ -64,6 +61,7 @@ namespace Editor
 			if (ImGui::IsItemClicked())
 			{
 				aCurrentDirectory = aStartDirectory;
+				sCurrentDirectory = aStartDirectory;
 			}
 		}
 	}

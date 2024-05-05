@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/SimpleUtilities/Utility.hpp"
 #include <vector>
 #include <string>
 #include <Windows.h>
@@ -8,6 +9,8 @@ namespace Editor
 	class FileManager final
 	{
 	public:
+		static void Release();
+
 		static void DropFiles(HDROP aHDROP);
 		static bool IsFolder(const std::string& aFileName);
 		static void ViewFolders(const std::string& aStartDirectory, const std::string& aWindowName, std::string& aCurrentDirectory);
@@ -15,7 +18,9 @@ namespace Editor
 
 		static const std::string GetFileExtension(const std::string& aFilePath);
 		static const std::string GetFileName(const std::string& aFilePath);
-
 		static std::vector<std::string> GetFileNamesFromDirectory(const std::string& aPath, const bool aIncludeFolders = false);
+
+	private:
+		inline static std::string sCurrentDirectory = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS);
 	};
 }
