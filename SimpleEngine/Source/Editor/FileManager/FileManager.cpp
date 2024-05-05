@@ -85,6 +85,7 @@ namespace Editor
 		for (size_t i = 0; i < fileNames.size(); ++i)
 		{
 			const std::string extension = GetFileExtension(fileNames[i]);
+
 			ImTextureID textureID;
 
 			if (extension == ".json")
@@ -96,6 +97,10 @@ namespace Editor
 				textureID = textureHamster;
 			}
 			else if (extension == ".dds")
+			{
+				textureID = Global::GetGraphicsEngine()->GetTexture(fileNames[i].c_str())->GetShaderResourceView().Get();
+			}
+			else if (extension.find('.') == std::string::npos)
 			{
 				textureID = textureScaredCat;
 			}
