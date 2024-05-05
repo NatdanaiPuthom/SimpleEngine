@@ -61,8 +61,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	Script::SimpleNodeScript simpleScript;
-	simpleScript.Init();
+	//Script::SimpleNodeScript simpleScript;
+	//simpleScript.Init();
 
 	Test::ECSTestStuff test; //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
 	test.Init(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
@@ -87,9 +87,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		gameWorld.Update();
 		PROFILER_END();
 
-
 		PROFILER_BEGIN("Editor Update");
-		simpleScript.Update();
+		//simpleScript.Update();
 		editor.Update();
 		PROFILER_END();
 

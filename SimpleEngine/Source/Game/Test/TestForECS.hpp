@@ -2,7 +2,6 @@
 
 namespace Test
 {
-
 	class ECSTestStuff final
 	{
 	public:
