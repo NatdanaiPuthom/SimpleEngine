@@ -8,6 +8,7 @@
 #include "Editor/Editor.hpp"
 
 #include "NodeScript/SimpleNodeScript.hpp"
+#include "Game/Test/TestForECS.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
@@ -60,33 +61,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	ECS::Entity entity = ecs.CreateEntity();
-	entity->AddComponent<ECS::MeshComponent>();
-	entity->AddComponent<ECS::TransformComponent>();
-	entity->AddComponent<ECS::AnimatedComponent>();
-	entity->AddComponent<ECS::AnimationPlayerComponent>();
-
-	{
-		ECS::MeshComponent* meshComponent = entity->GetComponent<ECS::MeshComponent>();
-		ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
-		ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
-
-		Graphics::ModelFactory* modelFactory = Global::GetModelFactory();
-
-		meshComponent->mesh = modelFactory->LoadMesh("AnimatedModels/SimpleHuman3.fbx");
-		meshComponent->shader = graphicsEngine.GetDefaultShader().get();
-		meshComponent->texture = graphicsEngine.GetDefaultTexture().get();
-
-		animatedComponent->shader = graphicsEngine.GetDefaultAnimatedShader().get();
-		animatedComponent->skeleton = modelFactory->LoadSkeleton("AnimatedModels/SimpleHuman3.fbx");
-		animatedComponent->animation = modelFactory->LoadAnimationFBX("Animations/SimpleHuman3_Idle.fbx");
-
-		animationPlayerComponent->animationPlayer.Init(animatedComponent->animation, animatedComponent->skeleton);
-		animationPlayerComponent->animationPlayer.Play(true);
-	}
-
 	Script::SimpleNodeScript simpleScript;
 	simpleScript.Init();
+
+	Test::ECSTestStuff test; //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
+	test.Init(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
 
 	while (Global::GetGameIsRunning())
 	{
@@ -108,6 +87,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		gameWorld.Update();
 		PROFILER_END();
 
+
 		PROFILER_BEGIN("Editor Update");
 		simpleScript.Update();
 		editor.Update();
@@ -117,21 +97,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		graphicsEngine.SetRenderTarget(eRenderTarget::Backbuffer);
 		PROFILER_END();
 
-
-
-		if (entity != nullptr)
-		{
-			ECS::MeshComponent* meshComponent = entity->GetComponent<ECS::MeshComponent>();
-			ECS::TransformComponent* transformComponent = entity->GetComponent<ECS::TransformComponent>();
-			ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
-			ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
-
-			animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
-			Global::GetRenderer()->RenderAnimatedModel(transformComponent, meshComponent, animatedComponent);
-		}
-
-
-
+		test.Update(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
 
 		PROFILER_BEGIN("GameWorld Render");
 		gameWorld.Render();

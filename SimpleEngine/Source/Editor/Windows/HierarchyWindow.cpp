@@ -145,16 +145,6 @@ namespace Editor
 							ImGui::SetTooltip("More Options");
 						}
 
-						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
-						{
-							if (ImGui::MenuItem("Remove Component"))
-							{
-								selectedEntity->RemoveComponentByTypeName(componentNames[i]);
-							}
-
-							ImGui::EndPopup();
-						}
-
 						if (componentNames[i] == "TransformComponent") //NOTE(v9.34.0): Ugly hardcoded, trying to fix reflection
 						{
 							ECS::TransformComponent* transformComponent = selectedEntity->GetComponent<ECS::TransformComponent>();
@@ -226,6 +216,16 @@ namespace Editor
 							//	ImGui::EndDragDropTarget();
 							//}
 
+						}
+
+						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
+						{
+							if (ImGui::MenuItem("Remove Component"))
+							{
+								selectedEntity->RemoveComponentByTypeName(componentNames[i]);
+							}
+
+							ImGui::EndPopup();
 						}
 
 						ImGui::TreePop();
