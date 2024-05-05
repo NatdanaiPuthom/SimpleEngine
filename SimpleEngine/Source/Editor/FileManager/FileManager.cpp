@@ -23,7 +23,23 @@ namespace Editor
 
 				if (CopyFileA(filePath, destinationPath.c_str(), FALSE))
 				{
-					std::cout << "File: " << name << " has been copied to: " << destinationPath << std::endl;
+					HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+					CONSOLE_SCREEN_BUFFER_INFO defaultInfo;
+					GetConsoleScreenBufferInfo(hConsole, &defaultInfo);
+					WORD defaultAttributes = defaultInfo.wAttributes;
+
+					std::cout << "File: ";
+
+					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY); 
+					std::cout << name;
+
+					SetConsoleTextAttribute(hConsole, defaultAttributes);
+					std::cout << " has been copied to ";
+
+					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY); 
+					std::cout << sCurrentDirectory << std::endl;
+
+					SetConsoleTextAttribute(hConsole, defaultAttributes);
 				}
 			}
 		}
