@@ -27,6 +27,7 @@ namespace Editor
 
 			if (ImGui::BeginChild("AssetPaths#", parentSize, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX))
 			{
+				ImGui::SetNextItemOpen(true);
 				FileManager::ViewFolders(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS), SIMPLE_DIR_ASSETS, myCurrentDirectory);
 				ImGui::EndChild();
 			}

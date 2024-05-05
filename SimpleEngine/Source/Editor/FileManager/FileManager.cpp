@@ -106,6 +106,11 @@ namespace Editor
 
 			ImGui::ImageButton(textureID, ImVec2(iconSize, iconSize));
 
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip(fileNames[i].c_str());
+			}
+
 			x += iconSize;
 
 			if (x <= windowSize.x - iconSize)
