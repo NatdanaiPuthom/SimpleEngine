@@ -6,7 +6,11 @@
 
 #include <easy/profiler.h>
 
+#ifndef _SIMPLE
 #define PROFILER_ENABLED 1
+#else
+#define PROFILER_ENABLED 0
+#endif
 
 #if PROFILER_ENABLED
 #define PROFILER_ENABLE() EASY_PROFILER_ENABLE
