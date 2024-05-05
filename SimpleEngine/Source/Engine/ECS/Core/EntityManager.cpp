@@ -2,6 +2,8 @@
 #include "Engine/ECS/Core/EntityManager.hpp"
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/Components/Core/TransformComponent.hpp"
+#include "Engine/Components/Core/MeshComponent.hpp"
 
 namespace ECS
 {
@@ -108,7 +110,19 @@ namespace ECS
 		{
 			std::string name = componentType.first.name();
 			name = SimpleUtilities::ConvertTypeIndexNameToPrettyName(name);
-			componentNames.push_back(name);
+
+			if (componentType.first == typeid(ECS::TransformComponent))
+			{
+				componentNames.insert(componentNames.begin(), name);
+			}
+			else if (componentType.first == typeid(ECS::MeshComponent))
+			{
+				componentNames.insert(componentNames.begin() + 1, name);
+			}
+			else
+			{
+				componentNames.push_back(name);
+			}
 		}
 
 		return componentNames;

@@ -15,8 +15,8 @@ namespace Test
 		
 		ECS::Entity entity = World::GetECS()->CreateEntity();
 
-		entity->AddComponent<ECS::MeshComponent>();
 		entity->AddComponent<ECS::TransformComponent>();
+		entity->AddComponent<ECS::MeshComponent>();
 		entity->AddComponent<ECS::AnimatedComponent>();
 		entity->AddComponent<ECS::AnimationPlayerComponent>();
 
