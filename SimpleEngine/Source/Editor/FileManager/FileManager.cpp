@@ -82,6 +82,10 @@ namespace Editor
 
 		size_t x = 0;
 
+		ImGui::PushStyleColor(ImGuiCol_Button, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor(1.0f, 0.0f, 1.0f, 1.0f).Value);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImColor(1.0f, 0.8f, 0.0f, 1.0f).Value);
+
 		for (size_t i = 0; i < fileNames.size(); ++i)
 		{
 			const std::string extension = GetFileExtension(fileNames[i]);
@@ -127,6 +131,10 @@ namespace Editor
 				x = 0;
 			}
 		}
+
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
 	}
 
 	const std::string FileManager::GetFileExtension(const std::string& aFilePath)

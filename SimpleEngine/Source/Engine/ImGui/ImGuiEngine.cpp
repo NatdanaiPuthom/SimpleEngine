@@ -73,6 +73,7 @@ namespace Simple
 		colors[ImGuiCol_DockingPreview] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 		colors[ImGuiCol_ResizeGripHovered] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 		colors[ImGuiCol_ResizeGripActive] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+		colors[ImGuiCol_ButtonActive] = ImVec4(0.6f, 0.0f, 0.6f, 0.50f);
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.WindowBorderSize = 0;
