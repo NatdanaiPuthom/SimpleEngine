@@ -352,23 +352,23 @@ namespace Graphics
 		{
 		case eRenderTarget::Backbuffer:
 			renderTarget = myBackBuffer;
-			rasterizerState = myRasterizerState.Get();
+			rasterizerState = myRasterizerState;
 			break;
 		case eRenderTarget::ImGui:
 			renderTarget = myImGuiImageRenderTarget->renderTargetView;
-			rasterizerState = myRasterizerState.Get();
+			rasterizerState = myRasterizerState;
 			break;
 		case eRenderTarget::WaterReflection:
 			renderTarget = myWaterReflectionRenderTarget->renderTargetView;
-			rasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)].Get();
+			rasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)];
 			break;
 		case eRenderTarget::WaterRefraction:
 			renderTarget = myWaterRefractionRenderTarget->renderTargetView;
-			rasterizerState = myRasterizerState.Get();
+			rasterizerState = myRasterizerState;
 			break;
 		default:
 			renderTarget = myBackBuffer;
-			rasterizerState = myRasterizerState.Get();
+			rasterizerState = myRasterizerState;
 			break;
 		}
 
