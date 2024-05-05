@@ -2,7 +2,6 @@
 #include "Engine/Engine.hpp"
 #include "Engine/SimpleUtilities/Timer.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
-#include "Engine/Audio/AudioManager.h"
 #include "MainSingleton/MainSingleton.hpp"
 #include <External/nlohmann/json.hpp>
 #include <fstream>
@@ -19,7 +18,6 @@ namespace Simple
 
 	Engine::~Engine()
 	{
-		AudioManager::GetInstance().~AudioManager(); //TO-DO(v9.18.0):I will fix so AudioManager isn't a singleton later
 	}
 
 	void Engine::SetGlobalPointerToThis()
@@ -49,7 +47,6 @@ namespace Simple
 		myCustomCursor = LoadCursorFromFile(L"Assets/Icon/White-Cat.cur");
 		assert(myCustomCursor && "Failed to load Custom Cursor");
 
-		AudioManager::GetInstance().Init();
 		MainSingleton::GetInputManager().SetHWND(*myHWND);
 	}
 
@@ -171,8 +168,9 @@ namespace Simple
 	void Engine::Update()
 	{
 		myTimer->Update();
+
 		MainSingleton::GetInputManager().Update();
-		AudioManager::GetInstance().Update();
+		MainSingleton::GetAudioManager().Update();
 	}
 
 	float Engine::GetDeltaTime() const

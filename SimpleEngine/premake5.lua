@@ -143,6 +143,9 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 		includedirs {
 			"Source/",
+			"Source/MainSingleton/",
+			"Source/External/",
+			"Source/External/**"
 		}
 
 		files {

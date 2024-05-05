@@ -35,6 +35,8 @@
 
 #include "SoundEngineStructs.h"
 
+#undef PlaySound //NOTE(Natdanai v9.35.1): No clue but got Macro conflict had to undef
+
 struct SoundEngineImpl;
 
 class SoundEngine

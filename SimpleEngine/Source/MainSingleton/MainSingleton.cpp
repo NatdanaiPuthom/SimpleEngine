@@ -1,6 +1,23 @@
 #include "MainSingleton/MainSingleton.hpp"
 
-Simpleton::InputManager& MainSingleton::GetInputManager()
+using namespace Simpleton;
+
+void MainSingleton::Init()
 {
-    return Simpleton::InputManager::GetInstance();
+	AudioManager::GetInstance().Init();
+}
+
+void MainSingleton::Release()
+{
+	AudioManager::GetInstance().~AudioManager();
+}
+
+InputManager& MainSingleton::GetInputManager()
+{
+	return InputManager::GetInstance();
+}
+
+AudioManager& MainSingleton::GetAudioManager()
+{
+	return AudioManager::GetInstance();
 }

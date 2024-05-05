@@ -1,3 +1,4 @@
+#include "MainSingleton/MainSingleton.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/MemoryTracker/MemoryTracker.h"
 #include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
@@ -31,6 +32,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	Simple::EasyProfilerOutput();
 
+	MainSingleton::Release();
+
 	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!
 	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here before StopMemoryTrackingAndPrint function!
 	SimpleTracker::StopMemoryTrackingAndPrint();
@@ -41,6 +44,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
 	PROFILER_BEGIN("Engine initialize");
+	MainSingleton::Init();
+
 	Simple::Engine engine;
 	Graphics::GraphicsEngine graphicsEngine;
 	Editor::EditorEngine editor;
@@ -66,6 +71,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	Test::ECSTestStuff test; //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
 	test.Init(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
+
+	MainSingleton::GetAudioManager().PlayMusic("StardewValley.mp3");
 
 	while (Global::GetGameIsRunning())
 	{
