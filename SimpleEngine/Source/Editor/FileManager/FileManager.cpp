@@ -87,14 +87,21 @@ namespace Editor
 		const std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aDirectory, true);
 
 		ID3D11ShaderResourceView* textureCat = Global::GetGraphicsEngine()->GetTexture("Cat.dds")->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* textureHamster = Global::GetGraphicsEngine()->GetTexture("Hamster.dds")->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* textureScaredCat = Global::GetGraphicsEngine()->GetTexture("Cat-scared.dds")->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* textureDefault = Global::GetGraphicsEngine()->GetTexture("DefaultTexture.dds")->GetShaderResourceView().Get();
 
-		const ImVec2 windowSize = ImGui::GetContentRegionAvail();
-		const size_t iconSize = 100;
+		static const float padding = 16.0f;
+		static const float thumbnailSize = 64.0f;
+		static const float cellSize = thumbnailSize + padding;
+		static const float panelWidth = ImGui::GetContentRegionAvail().x;
 
-		size_t x = 0;
+		int columnCount = (int)(panelWidth / cellSize);
+
+		if (columnCount < 1)
+		{
+			columnCount = 1;
+		}
+
+		ImGui::Columns(columnCount, 0, false);
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor(1.0f, 0.0f, 1.0f, 1.0f).Value);
@@ -106,45 +113,21 @@ namespace Editor
 
 			ImTextureID textureID;
 
-			if (extension == ".json")
-			{
-				textureID = textureCat;
-			}
-			else if (extension == ".fbx")
-			{
-				textureID = textureHamster;
-			}
-			else if (extension == ".dds")
-			{
-				textureID = Global::GetGraphicsEngine()->GetTexture(fileNames[i].c_str())->GetShaderResourceView().Get();
-			}
-			else if (extension.find('.') == std::string::npos)
-			{
-				textureID = textureScaredCat;
-			}
-			else
+			if (extension[0] != '.')
 			{
 				textureID = textureDefault;
 			}
-
-			ImGui::ImageButton(textureID, ImVec2(iconSize, iconSize));
-
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetTooltip(fileNames[i].c_str());
-			}
-
-			x += iconSize;
-
-			if (x <= windowSize.x - iconSize)
-			{
-				ImGui::SameLine();
-			}
 			else
 			{
-				x = 0;
+				textureID = textureCat;
 			}
+			
+			ImGui::ImageButton(textureID, { thumbnailSize, thumbnailSize });
+			ImGui::TextWrapped(fileNames[i].c_str());
+			ImGui::NextColumn();
 		}
+
+		ImGui::Columns();
 
 		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();
