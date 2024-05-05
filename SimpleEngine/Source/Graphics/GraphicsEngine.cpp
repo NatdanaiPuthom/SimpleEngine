@@ -462,7 +462,21 @@ namespace Graphics
 		auto it = myLoadedTextures.find(aFilePath);
 
 		if (it != myLoadedTextures.end())
+		{
 			return it->second;
+		}
+		else
+		{
+			if (AddTexture(aFilePath) == true)
+			{
+				it = myLoadedTextures.find(aFilePath);
+
+				if (it != myLoadedTextures.end())
+				{
+					return it->second;
+				}
+			}
+		}
 
 		return nullptr;
 	}
@@ -490,7 +504,7 @@ namespace Graphics
 	std::shared_ptr<const Shader> GraphicsEngine::GetDefaultAnimatedShader()
 	{
 		auto defaultShader = GetShader("DefaultPS.cso", "AnimatedModelVS.cso");
-		
+
 		if (defaultShader != nullptr)
 			return defaultShader;
 
