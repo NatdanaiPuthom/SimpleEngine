@@ -1,4 +1,5 @@
 #include "MainSingleton/MainSingleton.hpp"
+#include "Editor/FileManager/FileManager.hpp"
 
 using namespace Simpleton;
 
@@ -9,6 +10,8 @@ void MainSingleton::Init()
 
 void MainSingleton::Release()
 {
+	Editor::FileManager::Release();
+
 	AudioManager::GetInstance().~AudioManager();
 }
 
