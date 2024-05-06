@@ -40,9 +40,8 @@ namespace ECS
 	{
 		const size_t index = GetComponentIndexFromComponentID(aComponentID);
 		const int indexToRemove = GetComponentIndexByMemoryAddress(myStartMemoryAddress + index * myComponentTypeSize, myComponentTypeSize);
-		const int lastIndex = GetComponentIndexByMemoryAddress(myCurrentMemoryAddress - myComponentTypeSize, myComponentTypeSize);
 
-		if (lastIndex == -1 || indexToRemove == -1)
+		if (indexToRemove == -1)
 		{
 			return false;
 		}
@@ -50,7 +49,7 @@ namespace ECS
 		if (myComponentIDs.size() > 1)
 		{
 			std::memcpy(myStartMemoryAddress + index * myComponentTypeSize, myCurrentMemoryAddress - myComponentTypeSize, myComponentTypeSize);
-			std::swap(myComponentIDs[indexToRemove], myComponentIDs[lastIndex]);
+			myComponentIDs[indexToRemove] = myComponentIDs.back();
 		}
 
 		myCurrentMemoryAddress -= myComponentTypeSize;

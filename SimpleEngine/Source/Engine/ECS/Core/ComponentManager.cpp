@@ -32,17 +32,8 @@ namespace ECS
 	{
 		ComponentPool& pool = myComponents[aComponentType];
 		char* component = pool.GetComponentAddressByID(aComponentID);
-		char* start = pool.GetStartMemoryAddress(); start;
-		const size_t size = pool.GetComponentTypeSize();
-		const int index = pool.GetComponentIndexByMemoryAddress(component, pool.GetComponentTypeSize());
 
-		if (index < 0)
-		{
-			assert(false && "Failed to Remove Component from the Pool");
-			return false;
-		}
-
-		myComponentDestructorInvoker[aComponentType](&component[index * size]);
+		myComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
 		myAllComponents.erase(aComponentID);
 
 		return pool.SwapWithLastAndRemoveEditor(aComponentID);

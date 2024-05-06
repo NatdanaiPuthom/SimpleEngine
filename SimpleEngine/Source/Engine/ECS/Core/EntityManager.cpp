@@ -106,6 +106,8 @@ namespace ECS
 		std::vector<std::string> componentNames;
 		componentNames.reserve(entityComponents.size());
 
+		bool hasTransform = false;
+
 		for (const auto& componentType : entityComponents)
 		{
 			std::string name = componentType.first.name();
@@ -114,10 +116,18 @@ namespace ECS
 			if (componentType.first == typeid(ECS::TransformComponent))
 			{
 				componentNames.insert(componentNames.begin(), name);
+				hasTransform = true;
 			}
 			else if (componentType.first == typeid(ECS::MeshComponent))
 			{
-				componentNames.insert(componentNames.begin() + 1, name);
+				if (hasTransform == true)
+				{
+					componentNames.insert(componentNames.begin() + 1, name);
+				}
+				else
+				{
+					componentNames.insert(componentNames.begin(), name);
+				}
 			}
 			else
 			{
