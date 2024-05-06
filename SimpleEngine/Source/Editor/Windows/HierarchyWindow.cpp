@@ -32,10 +32,13 @@ namespace Editor
 
 			ImGui::SameLine(ImGui::GetWindowWidth() - 135);
 			ImGui::PushItemWidth(125);
+
 			std::string sceneSearch = "";
+
 			if (ImGui::InputTextWithHint("##SearchScene", "Search", &sceneSearch[0], sceneSearch.capacity() + 1))
 			{
 			}
+
 			ImGui::PopItemWidth();
 
 			if (ImGui::BeginPopup("Add Scene Object"))
@@ -86,6 +89,7 @@ namespace Editor
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 		}
+
 		ImGui::End();
 
 		if (selected < 0)
@@ -103,15 +107,18 @@ namespace Editor
 				return;
 			}
 
-			std::string searchComponent = selectedEntity->GetName();
+			std::string selectedEntityName = selectedEntity->GetName();
+
 			ImGui::PushItemWidth(200);
-			if (ImGui::InputTextWithHint("Name", "Entity Name", &searchComponent[0], searchComponent.capacity() + 1))
+
+			if (ImGui::InputTextWithHint("Name", "Entity Name", &selectedEntityName[0], selectedEntityName.capacity() + 1))
 			{
 				if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
 				{
-					selectedEntity->SetName(searchComponent);
+					selectedEntity->SetName(selectedEntityName);
 				}
 			}
+
 			ImGui::PopItemWidth();
 
 			ImGui::SameLine(ImGui::GetWindowWidth() - 70);
@@ -192,30 +199,6 @@ namespace Editor
 
 							ImGui::Text(textureName.c_str());
 							ImGui::Text(meshName.c_str());
-
-							//static char droppedFilePath[256] = "";
-
-							//ImGui::Text("Drag and drop a file into this box:");
-							//ImGui::BeginChild("DroppableBox", ImVec2(0, 100), true);
-							//ImVec2 boxSize = ImGui::GetContentRegionAvail();
-							//ImGui::Text("Drop file here");
-							//ImGui::EndChild();
-
-							////ImGui::SetDragDropPayload("FILE_PATH", filePath.c_str(), filePath.size() + 1);
-
-							//if (ImGui::BeginDragDropTarget())
-							//{
-							//	if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FILE_PATH"))
-							//	{
-							//		// Handle the dropped file
-							//		const char* filePath = (const char*)payload->Data;
-							//		strncpy_s(droppedFilePath, filePath, sizeof(droppedFilePath));
-							//		droppedFilePath[sizeof(droppedFilePath) - 1] = '\0'; // Ensure null-terminated
-							//	}
-
-							//	ImGui::EndDragDropTarget();
-							//}
-
 						}
 
 						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
