@@ -51,6 +51,15 @@ namespace Editor
 				tool->Update();
 			}
 		}
+
+		ImTextureID textureID = Global::GetGraphicsEngine()->GetImGuiShaderResourceView().Get();
+
+		ImGui::SetNextWindowSize(ImVec2(400, 400));
+		if (ImGui::Begin("Scene"))
+		{
+			ImGui::Image(textureID, { 400,400 });
+		}
+		ImGui::End();
 	}
 
 	void EditorEngine::Render()
