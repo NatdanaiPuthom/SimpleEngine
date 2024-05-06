@@ -123,6 +123,27 @@ namespace Editor
 
 			ImGui::ImageButton(textureID, { thumbnailSize, thumbnailSize });
 
+			if (extension[0] == '.')
+			{
+				if (ImGui::IsItemHovered())
+				{
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+					{
+						std::string a = aDirectory + "\\" + fileNames[i];
+
+						ImGui::SetDragDropPayload("Assets_Browser", a.c_str(), a.size() + 1);
+
+						if (ImGui::BeginTooltip())
+						{
+							ImGui::Image(textureID, ImVec2(32, 32));
+							ImGui::EndTooltip();
+						}
+
+						ImGui::EndDragDropSource();
+					}
+				}
+			}
+
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
 				if (extension[0] != '.')

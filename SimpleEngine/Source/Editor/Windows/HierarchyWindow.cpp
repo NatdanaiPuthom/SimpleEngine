@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Windows/HierarchyWindow.hpp"
+#include "Editor/FileManager/FileManager.hpp"
 #include "Engine/Components/AllEngineComponents.hpp"
 
 namespace Editor
@@ -198,6 +199,24 @@ namespace Editor
 							}
 
 							ImGui::Text(textureName.c_str());
+
+							if (ImGui::BeginDragDropTarget())
+							{
+								if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+								{
+									const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+									const std::string extension = FileManager::GetFileExtension(payloadData);
+
+									if (extension == ".dds")
+									{
+										const std::string fileName = FileManager::GetFileName(payloadData);
+										meshComponent->texture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+									}
+								}
+
+								ImGui::EndDragDropTarget();
+							}
+
 							ImGui::Text(meshName.c_str());
 						}
 
