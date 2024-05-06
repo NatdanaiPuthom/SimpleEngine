@@ -47,6 +47,17 @@ namespace Editor
 		}
 
 		DrawTools();
+
+		if (myEditorWindowActive == true)
+		{
+			if (ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize))
+			{
+				ImTextureID textureID = Global::GetGraphicsEngine()->GetImGuiShaderResourceView().Get();
+				ImVec2 size = ImGui::GetContentRegionAvail();
+				ImGui::Image(textureID, size);
+			}
+			ImGui::End();
+		}
 	}
 
 	void MainMenuBar::DrawTools()
