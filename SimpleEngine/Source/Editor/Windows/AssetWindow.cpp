@@ -10,7 +10,6 @@ namespace Editor
 
 	void AssetWindow::Init()
 	{
-		myCurrentDirectory = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS);
 	}
 
 	void AssetWindow::Draw()
@@ -28,7 +27,7 @@ namespace Editor
 			if (ImGui::BeginChild("AssetPaths#", parentSize, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX))
 			{
 				ImGui::SetNextItemOpen(true);
-				FileManager::ViewFolders(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS), SIMPLE_DIR_ASSETS, myCurrentDirectory);
+				FileManager::ViewFolders(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS), SIMPLE_DIR_ASSETS);
 				ImGui::EndChild();
 			}
 
@@ -48,9 +47,28 @@ namespace Editor
 
 			if (ImGui::BeginChild("Test", parentSize, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY))
 			{
-				ImGui::Text(myCurrentDirectory.c_str());
+				ImGui::AlignTextToFramePadding();
+
+				if (ImGui::ArrowButton("##Arrow_back", ImGuiDir_Left))
+				{
+					const size_t lastBackSlashPos = FileManager::sCurrentDirectory.find_last_of('\\');
+
+					if (lastBackSlashPos != std::string::npos)
+					{
+						const std::string previousDirectory = FileManager::sCurrentDirectory.substr(0, lastBackSlashPos);
+
+						if (previousDirectory.find("Assets") != std::string::npos)
+						{
+							FileManager::sCurrentDirectory = previousDirectory;
+						}
+					}
+				}
+
+				ImGui::SameLine();
+				ImGui::Text(FileManager::sCurrentDirectory.c_str());
 				ImGui::Separator();
-				FileManager::DrawFilesInFolder(myCurrentDirectory);
+
+				FileManager::DrawFilesInFolder(FileManager::sCurrentDirectory);
 
 				ImGui::EndChild();
 			}

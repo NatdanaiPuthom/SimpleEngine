@@ -11,8 +11,5 @@ namespace Editor
 
 		void Init() override;
 		void Draw() override;
-
-	private:
-		std::string myCurrentDirectory;
 	};
 }

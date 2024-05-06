@@ -19,7 +19,7 @@ namespace Editor
 			if (DragQueryFileA(aHDROP, i, filePath, MAX_PATH))
 			{
 				const std::string name = GetFileName(filePath);
-				const std::string destinationPath = sCurrentDirectory + "\\" +  name;
+				const std::string destinationPath = sCurrentDirectory + "\\" + name;
 
 				if (CopyFileA(filePath, destinationPath.c_str(), FALSE))
 				{
@@ -30,13 +30,13 @@ namespace Editor
 
 					std::cout << "File: ";
 
-					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY); 
+					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 					std::cout << name;
 
 					SetConsoleTextAttribute(hConsole, defaultAttributes);
 					std::cout << " has been copied to ";
 
-					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY); 
+					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 					std::cout << sCurrentDirectory << std::endl;
 
 					SetConsoleTextAttribute(hConsole, defaultAttributes);
@@ -50,7 +50,7 @@ namespace Editor
 		return (std::string::npos == aFileName.find_last_of('.'));
 	}
 
-	void FileManager::ViewFolders(const std::string& aStartDirectory, const std::string& aWindowName, std::string& aCurrentDirectory)
+	void FileManager::ViewFolders(const std::string& aStartDirectory, const std::string& aWindowName)
 	{
 		std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aStartDirectory, true);
 
@@ -60,7 +60,7 @@ namespace Editor
 			{
 				if (FileManager::IsFolder(name))
 				{
-					ViewFolders(aStartDirectory + "\\" + name, name, aCurrentDirectory);
+					ViewFolders(aStartDirectory + "\\" + name, name);
 				}
 				else
 				{
@@ -76,7 +76,6 @@ namespace Editor
 		{
 			if (ImGui::IsItemClicked())
 			{
-				aCurrentDirectory = aStartDirectory;
 				sCurrentDirectory = aStartDirectory;
 			}
 		}
@@ -121,8 +120,17 @@ namespace Editor
 			{
 				textureID = textureCat;
 			}
-			
+
 			ImGui::ImageButton(textureID, { thumbnailSize, thumbnailSize });
+
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			{
+				if (extension[0] != '.')
+				{
+					sCurrentDirectory = aDirectory + "\\" + fileNames[i];
+				}
+			}
+
 			ImGui::TextWrapped(fileNames[i].c_str());
 			ImGui::NextColumn();
 		}
