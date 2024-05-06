@@ -30,6 +30,8 @@ namespace Editor
 
 	void EditorEngine::Update()
 	{
+		Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime());
+
 		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
 		{
 			if (Global::IsFullScreen())
