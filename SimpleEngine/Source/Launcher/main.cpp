@@ -97,6 +97,9 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		editor.Update();
 		PROFILER_END();
 
+		graphicsEngine.SetRenderTarget(eRenderTarget::ImGui);
+		test.Update(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
+
 		PROFILER_BEGIN("SetRenderTarget: Backbuffer");
 		graphicsEngine.SetRenderTarget(eRenderTarget::Backbuffer);
 		PROFILER_END();
