@@ -92,19 +92,22 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		gameWorld.Update();
 		PROFILER_END();
 
+		test.Update(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
+
 		PROFILER_BEGIN("Editor Update");
 		//simpleScript.Update();
 		editor.Update();
 		PROFILER_END();
 
-		graphicsEngine.SetRenderTarget(eRenderTarget::ImGui);
-		test.Update(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
+		graphicsEngine.SetRenderTarget(eRenderTarget::ImGui); //NOTE(v9.35.3): Remove Meeeeeeeee Laterrr
+		gameWorld.Render();  //NOTE(v9.35.3): Remove Meeeeeeeee Laterrr
+		test.Render(); //NOTE(v9.35.3): Remove Meeeeeeeee Laterrr
 
 		PROFILER_BEGIN("SetRenderTarget: Backbuffer");
 		graphicsEngine.SetRenderTarget(eRenderTarget::Backbuffer);
 		PROFILER_END();
 
-		test.Update(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
+		test.Render(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
 
 		PROFILER_BEGIN("GameWorld Render");
 		gameWorld.Render();

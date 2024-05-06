@@ -2,7 +2,7 @@
 #include "Game/Test/TestForECS.hpp"
 
 namespace Test
-{ 
+{
 	ECSTestStuff::ECSTestStuff()
 	{
 	}
@@ -12,7 +12,7 @@ namespace Test
 	}
 	void ECSTestStuff::Init()
 	{
-		
+
 		ECS::Entity entity = World::GetECS()->CreateEntity();
 
 		entity->AddComponent<ECS::TransformComponent>();
@@ -47,12 +47,22 @@ namespace Test
 
 		if (entity != nullptr)
 		{
+			ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
+			ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
+			animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
+		}
+	}
+
+	void ECSTestStuff::Render()
+	{
+		ECS::Entity entity = World::GetECS()->GetEntity(myEntityID);
+
+		if (entity != nullptr)
+		{
 			ECS::MeshComponent* meshComponent = entity->GetComponent<ECS::MeshComponent>();
 			ECS::TransformComponent* transformComponent = entity->GetComponent<ECS::TransformComponent>();
 			ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
-			ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
 
-			animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
 			Global::GetRenderer()->RenderAnimatedModel(transformComponent, meshComponent, animatedComponent);
 		}
 	}

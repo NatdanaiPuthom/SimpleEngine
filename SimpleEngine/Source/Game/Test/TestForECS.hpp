@@ -10,6 +10,7 @@ namespace Test
 
 		void Init();
 		void Update();
+		void Render();
 
 		ECS::EntityID myEntityID;
 	};
