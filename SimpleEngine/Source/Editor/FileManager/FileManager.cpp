@@ -116,6 +116,10 @@ namespace Editor
 			{
 				textureID = textureDefault;
 			}
+			else if (extension == ".dds")
+			{
+				textureID = Global::GetGraphicsEngine()->GetTexture(fileNames[i].c_str())->GetShaderResourceView().Get();
+			}
 			else
 			{
 				textureID = textureCat;
