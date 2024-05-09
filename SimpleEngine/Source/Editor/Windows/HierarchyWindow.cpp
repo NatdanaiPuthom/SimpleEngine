@@ -218,6 +218,22 @@ namespace Editor
 							}
 
 							ImGui::Text(meshName.c_str());
+
+							if (ImGui::BeginDragDropTarget())
+							{
+								if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+								{
+									const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+									const std::string extension = FileManager::GetFileExtension(payloadData);
+
+									if (extension == ".fbx")
+									{
+										meshComponent->mesh = Global::GetModelFactory()->LoadMesh(payloadData);
+									}
+								}
+
+								ImGui::EndDragDropTarget();
+							}
 						}
 
 						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))

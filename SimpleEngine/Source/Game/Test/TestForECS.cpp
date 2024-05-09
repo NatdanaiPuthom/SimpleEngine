@@ -4,15 +4,17 @@
 namespace Test
 {
 	ECSTestStuff::ECSTestStuff()
+		: myEntityID(0)
+		, myTestEntityID(0)
 	{
 	}
 
 	ECSTestStuff::~ECSTestStuff()
 	{
 	}
+
 	void ECSTestStuff::Init()
 	{
-
 		ECS::Entity entity = World::GetECS()->CreateEntity();
 
 		entity->AddComponent<ECS::TransformComponent>();
@@ -39,6 +41,13 @@ namespace Test
 		animationPlayerComponent->animationPlayer.Play(true);
 
 		myEntityID = entity->GetID();
+
+
+		ECS::Entity e = World::GetECS()->CreateEntity();
+		e->AddComponent<ECS::MeshComponent>();
+		e->AddComponent<ECS::TransformComponent>();
+		e->GetComponent<ECS::MeshComponent>()->shader = graphicsEngine->GetDefaultShader().get();
+		myTestEntityID = e->GetID();
 	}
 
 	void ECSTestStuff::Update()
@@ -53,7 +62,7 @@ namespace Test
 		}
 	}
 
-	void ECSTestStuff::Render()
+	void ECSTestStuff::Render() const
 	{
 		ECS::Entity entity = World::GetECS()->GetEntity(myEntityID);
 
@@ -64,6 +73,19 @@ namespace Test
 			ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
 
 			Global::GetRenderer()->RenderAnimatedModel(transformComponent, meshComponent, animatedComponent);
+		}
+
+		ECS::Entity e = World::GetECS()->GetEntity(myTestEntityID);
+		if (e != nullptr)
+		{
+			ECS::MeshComponent* meshComponent = e->GetComponent<ECS::MeshComponent>();
+			ECS::TransformComponent* transformComponent = e->GetComponent<ECS::TransformComponent>();
+
+
+			if (meshComponent->mesh != nullptr && meshComponent->texture != nullptr)
+			{
+				Global::GetRenderer()->RenderStaticModel(transformComponent, meshComponent);
+			}
 		}
 	}
 }
