@@ -11,9 +11,9 @@
 #include <fstream>
 #include <cassert>
 
-#include "Engine/Components/Core/MeshComponent.hpp"
-#include "Engine/Components/Core/TransformComponent.hpp"
-#include "Engine/Components/Core/AnimatedComponent.hpp"
+#include "Engine/ECS/Components/Core/MeshComponent.hpp"
+#include "Engine/ECS/Components/Core/TransformComponent.hpp"
+#include "Engine/ECS/Components/Core/AnimatedComponent.hpp"
 
 namespace Drawer
 {

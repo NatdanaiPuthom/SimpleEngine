@@ -86,10 +86,10 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		PROFILER_BEGIN("Engine Update");
 		engine.Update();
-		ecs.Update();
 		PROFILER_END();
 
-		PROFILER_BEGIN("GameWorld Update");
+		PROFILER_BEGIN("Game Update");
+		ecs.Update();
 		gameWorld.Update();
 		PROFILER_END();
 
@@ -104,13 +104,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		gameWorld.Render();  //NOTE(v9.35.3): Remove Meeeeeeeee Laterrr
 		test.Render(); //NOTE(v9.35.3): Remove Meeeeeeeee Laterrr
 
-		PROFILER_BEGIN("SetRenderTarget: Backbuffer");
 		graphicsEngine.SetRenderTarget(eRenderTarget::Backbuffer);
-		PROFILER_END();
-
+	
 		test.Render(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
 
-		PROFILER_BEGIN("GameWorld Render");
+		PROFILER_BEGIN("Game Render");
 		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();

@@ -1,7 +1,7 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/FileManager/FileManager.hpp"
-#include "Engine/Components/AllEngineComponents.hpp"
+#include "Engine/ECS/Components/AllEngineComponents.hpp"
 
 namespace Editor
 {

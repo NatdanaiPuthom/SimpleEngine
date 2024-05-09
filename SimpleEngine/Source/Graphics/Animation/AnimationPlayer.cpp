@@ -2,7 +2,7 @@
 #include "Graphics/Animation/AnimationPlayer.hpp"
 #include "Engine/Global.hpp"
 
-#include "Engine/Components/Core/AnimatedComponent.hpp"
+#include "Engine/ECS/Components/Core/AnimatedComponent.hpp"
 
 namespace Graphics
 {

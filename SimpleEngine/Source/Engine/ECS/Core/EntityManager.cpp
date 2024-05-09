@@ -2,8 +2,8 @@
 #include "Engine/ECS/Core/EntityManager.hpp"
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
-#include "Engine/Components/Core/TransformComponent.hpp"
-#include "Engine/Components/Core/MeshComponent.hpp"
+#include "Engine/ECS/Components/Core/TransformComponent.hpp"
+#include "Engine/ECS/Components/Core/MeshComponent.hpp"
 
 namespace ECS
 {

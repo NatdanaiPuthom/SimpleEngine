@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Components/AllEngineComponents.hpp"
+#include "Engine/ECS/Components/AllEngineComponents.hpp"
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Core/EntityManager.hpp"
 #include "Engine/ECS/Core/SystemManager.hpp"
