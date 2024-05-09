@@ -47,7 +47,7 @@ namespace SimpleUtilities
 		return aFilePath;
 	}
 
-	static inline const std::string GetAbsolutePath(const char* aFilePath)
+	static inline const std::string GetAbsolutePath(const std::string& aFilePath)
 	{
 		char buffer[MAX_PATH];
 		GetModuleFileNameA(NULL, buffer, MAX_PATH);
