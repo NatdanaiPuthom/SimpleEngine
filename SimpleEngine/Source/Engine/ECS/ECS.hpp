@@ -2,6 +2,7 @@
 #include "Engine/Components/AllEngineComponents.hpp"
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Core/EntityManager.hpp"
+#include "Engine/ECS/Core/SystemManager.hpp"
 
 namespace ECS
 {
@@ -17,6 +18,8 @@ namespace ECS
 		EntityComponentSystem& operator=(EntityComponentSystem&&) = delete;
 
 		void Init();
+		void Update();
+		void Render();
 
 		Entity CreateEntity();
 		Entity GetEntity(const EntityID aID);
@@ -27,5 +30,6 @@ namespace ECS
 	private:
 		EntityManager myEntityManager;
 		ComponentManager myComponentManager;
+		SystemManager mySystemManager;
 	};
 }

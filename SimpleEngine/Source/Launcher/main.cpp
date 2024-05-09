@@ -86,6 +86,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		PROFILER_BEGIN("Engine Update");
 		engine.Update();
+		ecs.Update();
 		PROFILER_END();
 
 		PROFILER_BEGIN("GameWorld Update");
@@ -110,6 +111,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		test.Render(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
 
 		PROFILER_BEGIN("GameWorld Render");
+		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();
 

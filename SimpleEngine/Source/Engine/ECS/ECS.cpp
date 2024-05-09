@@ -19,6 +19,16 @@ namespace ECS
 		myEntityManager.Init(entitiesToReserve);
 	}
 
+	void EntityComponentSystem::Update()
+	{
+		mySystemManager.Update();
+	}
+
+	void EntityComponentSystem::Render()
+	{
+		mySystemManager.Render();
+	}
+
 	Entity EntityComponentSystem::CreateEntity()
 	{
 		return myEntityManager.CreateEntity();
