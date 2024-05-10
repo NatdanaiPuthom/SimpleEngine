@@ -85,8 +85,8 @@ namespace Editor
 	{
 		const std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aDirectory, true);
 
-		ID3D11ShaderResourceView* textureCat = Global::GetGraphicsEngine()->GetTexture("Cat.dds")->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* textureDefault = Global::GetGraphicsEngine()->GetTexture("DefaultTexture.dds")->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* textureCat = Global::GetGraphicsEngine()->GetTexture("Assets/Textures/Cat.dds")->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* textureDefault = Global::GetGraphicsEngine()->GetTexture("Assets/Textures/DefaultTexture.dds")->GetShaderResourceView().Get();
 
 		static const float padding = 16.0f;
 		static const float thumbnailSize = 64.0f;
@@ -118,7 +118,8 @@ namespace Editor
 			}
 			else if (extension == ".dds")
 			{
-				textureID = Global::GetGraphicsEngine()->GetTexture(fileNames[i].c_str())->GetShaderResourceView().Get();
+				const std::string texturePath = SimpleUtilities::KeepStringAfterAssets(aDirectory) + "\\" + fileNames[i];
+				textureID = Global::GetGraphicsEngine()->GetTexture(texturePath.c_str())->GetShaderResourceView().Get();
 			}
 			else
 			{
@@ -129,22 +130,19 @@ namespace Editor
 
 			if (extension[0] == '.')
 			{
-				if (ImGui::IsItemHovered())
+				if (ImGui::BeginDragDropSource())
 				{
-					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+					std::string a = aDirectory + "\\" + fileNames[i];
+
+					ImGui::SetDragDropPayload("Assets_Browser", a.c_str(), a.size() + 1);
+
+					if (ImGui::BeginTooltip())
 					{
-						std::string a = aDirectory + "\\" + fileNames[i];
-
-						ImGui::SetDragDropPayload("Assets_Browser", a.c_str(), a.size() + 1);
-
-						if (ImGui::BeginTooltip())
-						{
-							ImGui::Image(textureID, ImVec2(32, 32));
-							ImGui::EndTooltip();
-						}
-
-						ImGui::EndDragDropSource();
+						ImGui::Image(textureID, ImVec2(64, 64));
+						ImGui::EndTooltip();
 					}
+
+					ImGui::EndDragDropSource();
 				}
 			}
 
@@ -153,6 +151,7 @@ namespace Editor
 				if (extension[0] != '.')
 				{
 					sCurrentDirectory = aDirectory + "\\" + fileNames[i];
+					break;
 				}
 			}
 

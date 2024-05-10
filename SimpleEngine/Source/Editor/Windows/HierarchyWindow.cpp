@@ -224,7 +224,7 @@ namespace Editor
 
 									if (extension == ".dds")
 									{
-										const std::string fileName = FileManager::GetFileName(payloadData);
+										const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
 										meshComponent->texture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
 									}
 								}

@@ -58,6 +58,20 @@ namespace SimpleUtilities
 		return outputPath;
 	}
 
+	static inline const std::string KeepStringAfterAssets(const std::string& aFilePath)
+	{
+		const size_t pos = aFilePath.rfind("Assets");
+
+		if (pos != std::string::npos)
+		{
+			return aFilePath.substr(pos);
+		}
+		else
+		{
+			return "";
+		}
+	}
+
 	static inline const std::string CheckAndReturnAsAbsolutePath(const std::string& aFilePath)
 	{
 		bool isAbsolutePath = false;

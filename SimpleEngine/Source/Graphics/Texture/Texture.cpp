@@ -43,7 +43,7 @@ namespace Graphics
 
 	bool Texture::LoadDDS(const char* aFileName)
 	{
-		const std::string texturePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_TEXTURES) + aFileName;
+		const std::string texturePath = SimpleUtilities::GetAbsolutePath("") + aFileName;
 		const std::wstring texturePathW = SimpleUtilities::ToWString(texturePath);
 
 		const HRESULT result = DirectX::CreateDDSTextureFromFile(Global::GetGraphicsEngine()->GetDevice().Get(), Global::GetGraphicsEngine()->GetContext().Get(), texturePathW.c_str(), NULL, &myShaderResourceView);

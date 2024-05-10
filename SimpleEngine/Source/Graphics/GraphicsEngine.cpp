@@ -153,16 +153,16 @@ namespace Graphics
 
 	void GraphicsEngine::PreloadTextures()
 	{
-		if (!AddTexture("DefaultTexture.dds", 0))
+		if (!AddTexture("Assets\\Textures\\DefaultTexture.dds", 0))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Cat.dds", 0))
+		if (!AddTexture("Assets\\Textures\\Cat.dds", 0))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Hamster.dds", 0))
+		if (!AddTexture("Assets\\Textures\\Hamster.dds", 0))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Cat-scared.dds", 0))
+		if (!AddTexture("Assets\\Textures\\Cat-scared.dds", 0))
 			assert(false && "Failed to add Texture");
 	}
 
@@ -483,7 +483,7 @@ namespace Graphics
 
 	std::shared_ptr<const Texture> GraphicsEngine::GetDefaultTexture()
 	{
-		auto texture = GetTexture("DefaultTexture.dds");
+		auto texture = GetTexture("Assets\\Textures\\DefaultTexture.dds");
 
 		if (texture != nullptr)
 			return texture;
