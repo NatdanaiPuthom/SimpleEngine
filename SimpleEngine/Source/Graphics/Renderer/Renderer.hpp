@@ -29,7 +29,7 @@ namespace Drawer
 		void Init();
 
 		void RenderAnimatedModel(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent, ECS::AnimatedComponent* aSkeletonComponent);
-		void RenderStaticModel(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent);
+		void RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const;
 
 		void RenderLine(const Drawer::Line& aLine);
 		void RenderLine(const std::vector<Drawer::Line> aLines);

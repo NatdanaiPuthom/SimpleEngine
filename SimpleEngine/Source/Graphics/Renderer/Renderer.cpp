@@ -51,7 +51,7 @@ namespace Drawer
 		myBoneBuffer->SetSlot(5);
 	}
 
-	void Renderer::RenderStaticModel(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent)
+	void Renderer::RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
