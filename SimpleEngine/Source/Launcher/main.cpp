@@ -9,7 +9,6 @@
 #include "Editor/Editor.hpp"
 
 #include "NodeScript/SimpleNodeScript.hpp"
-#include "Game/Test/TestForECS.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
@@ -41,51 +40,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	return 0;
 }
 
-#include "Engine/ECS/Core/System.hpp"
-#include "Game/World.hpp"
-
-namespace ECS
-{
-	class RenderSystem : public ECS::System
-	{
-	public:
-		RenderSystem()
-		{
-		};
-
-		~RenderSystem() override
-		{
-		};
-
-		void Init() override
-		{
-		};
-
-		void Update() override
-		{
-		};
-
-		void Render() override
-		{
-			ECS::Entities entities = World::GetECS()->GetAllEntities();
-
-			for (size_t i = 0; i < entities.GetEntityCount(); ++i)
-			{
-				auto mesh = entities[i]->GetComponent<ECS::MeshComponent>();
-
-				if (mesh == nullptr || mesh->mesh == nullptr || mesh->texture == nullptr || mesh->shader == nullptr)
-				{
-					continue;
-				}
-
-				auto transform = entities[i]->GetComponent<ECS::TransformComponent>();
-				Global::GetRenderer()->RenderStaticModel(transform, mesh);
-			}
-
-		};
-	};
-}
-
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
 	PROFILER_BEGIN("Engine initialize");
@@ -113,8 +67,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	//Script::SimpleNodeScript simpleScript;
 	//simpleScript.Init();
-
-	ecs.AddSystem(std::make_unique<ECS::RenderSystem>());
 
 	while (Global::GetGameIsRunning())
 	{

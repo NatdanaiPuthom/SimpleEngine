@@ -1,5 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Core/SystemManager.hpp"
+#include "Engine/ECS/Core/System.hpp"
 
 namespace ECS
 {
@@ -15,6 +16,10 @@ namespace ECS
 
 	void SystemManager::Init()
 	{
+		for (auto& system : mySystems)
+		{
+			system->Init();
+		}
 	}
 
 	void SystemManager::Update()
