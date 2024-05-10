@@ -18,6 +18,17 @@ namespace TGA
 
 namespace Graphics
 {
+	enum class ePrimitiveShape
+	{
+		Cube,
+		Pyramid,
+		Plane,
+		Sphere
+	};
+}
+
+namespace Graphics
+{
 	class ModelFactory final
 	{
 	public:
@@ -34,6 +45,8 @@ namespace Graphics
 
 		//FilePath starts at Bin/Assets/Models/
 		Animation LoadAnimationFBX(const char* aFileName);
+
+		const Mesh* GetPrimitiveShape(const ePrimitiveShape aShape);
 
 	private:
 		void AddMesh(const std::string& aName, std::unique_ptr<const Mesh> aMesh);

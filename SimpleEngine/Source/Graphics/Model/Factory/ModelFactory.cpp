@@ -177,6 +177,23 @@ namespace Graphics
 		return animation;
 	}
 
+	const Mesh* ModelFactory::GetPrimitiveShape(const ePrimitiveShape aShape)
+	{
+		switch (aShape)
+		{
+		case ePrimitiveShape::Cube:
+			return myMeshes["Cube"].get();
+		case ePrimitiveShape::Pyramid:
+			return myMeshes["Pyramid"].get();
+		case ePrimitiveShape::Plane:
+			return myMeshes["Plane"].get();
+		case ePrimitiveShape::Sphere:
+			return myMeshes["Sphere"].get();
+		default:
+			return nullptr;
+		}
+	}
+
 	void ModelFactory::AddMesh(const std::string& aName, std::unique_ptr<const Mesh> aMesh)
 	{
 		myIsCachingInProgress = true;
