@@ -38,6 +38,9 @@ namespace ECS
 
 		std::type_index GetTypeIndexByName(const ComponentName aComponentName);
 
+		template<typename T>
+		T*& GetNullComponent();
+
 	private:
 		ComponentManager();
 
@@ -98,8 +101,7 @@ namespace ECS
 			return reinterpret_cast<T*&>(it->second);
 		}
 
-		static T* nullPointer = nullptr;
-		return std::ref(nullPointer);
+		return GetNullComponent<T>();
 	}
 
 	template<typename T>
@@ -109,5 +111,12 @@ namespace ECS
 			{
 				static_cast<T*>(aPointer)->~T();
 			};
+	}
+
+	template<typename T>
+	inline T*& ComponentManager::GetNullComponent()
+	{
+		static T* nullPointer = nullptr;
+		return std::ref(nullPointer);
 	}
 }

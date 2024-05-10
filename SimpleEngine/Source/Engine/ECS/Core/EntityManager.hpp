@@ -95,6 +95,15 @@ namespace ECS
 	template<typename T>
 	inline T*& EntityManager::GetComponent(const EntityID aEntityID)
 	{
-		return myComponentManager->GetComponentByComponentID<T>(myEntityComponents[aEntityID][typeid(T)]);
+		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
+		
+		auto it = components.find(typeid(T));
+
+		if (it != components.end())
+		{
+			return myComponentManager->GetComponentByComponentID<T>(it->second);
+		}
+
+		return myComponentManager->GetNullComponent<T>();
 	}
 }

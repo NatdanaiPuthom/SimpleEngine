@@ -29,6 +29,11 @@ namespace ECS
 		mySystemManager.Render();
 	}
 
+	void EntityComponentSystem::AddSystem(std::unique_ptr<System> aSystem)
+	{
+		mySystemManager.AddSystem(std::move(aSystem));
+	}
+
 	Entity EntityComponentSystem::CreateEntity()
 	{
 		return myEntityManager.CreateEntity();

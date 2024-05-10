@@ -276,6 +276,7 @@ namespace Editor
 								break;
 							case 1:
 								selectedEntity->AddComponent<ECS::MeshComponent>();
+								selectedEntity->GetComponent<ECS::MeshComponent>()->shader = Global::GetGraphicsEngine()->GetDefaultShader().get();
 								break;
 							case 2:
 								selectedEntity->AddComponent<ECS::AnimatedComponent>();

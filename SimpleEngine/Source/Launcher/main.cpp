@@ -41,6 +41,51 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	return 0;
 }
 
+#include "Engine/ECS/Core/System.hpp"
+#include "Game/World.hpp"
+
+namespace ECS
+{
+	class RenderSystem : public ECS::System
+	{
+	public:
+		RenderSystem()
+		{
+		};
+
+		~RenderSystem() override
+		{
+		};
+
+		void Init() override
+		{
+		};
+
+		void Update() override
+		{
+		};
+
+		void Render() override
+		{
+			ECS::Entities entities = World::GetECS()->GetAllEntities();
+
+			for (size_t i = 0; i < entities.GetEntityCount(); ++i)
+			{
+				auto mesh = entities[i]->GetComponent<ECS::MeshComponent>();
+
+				if (mesh == nullptr || mesh->mesh == nullptr || mesh->texture == nullptr || mesh->shader == nullptr)
+				{
+					continue;
+				}
+
+				auto transform = entities[i]->GetComponent<ECS::TransformComponent>();
+				Global::GetRenderer()->RenderStaticModel(transform, mesh);
+			}
+
+		};
+	};
+}
+
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
 	PROFILER_BEGIN("Engine initialize");
@@ -69,8 +114,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	//Script::SimpleNodeScript simpleScript;
 	//simpleScript.Init();
 
-	Test::ECSTestStuff test; //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
-	test.Init(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
+	ecs.AddSystem(std::make_unique<ECS::RenderSystem>());
 
 	while (Global::GetGameIsRunning())
 	{
@@ -93,22 +137,19 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		gameWorld.Update();
 		PROFILER_END();
 
-		test.Update(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
-
 		PROFILER_BEGIN("Editor Update");
 		//simpleScript.Update();
 		editor.Update();
 		PROFILER_END();
 
-		graphicsEngine.SetRenderTarget(eRenderTarget::ImGui); //NOTE(v9.35.3): Remove Meeeeeeeee Laterrr
-		gameWorld.Render();  //NOTE(v9.35.3): Remove Meeeeeeeee Laterrr
-		test.Render(); //NOTE(v9.35.3): Remove Meeeeeeeee Laterrr
+		PROFILER_BEGIN("Render To ImGui");
+		graphicsEngine.SetRenderTarget(eRenderTarget::ImGui);
+		ecs.Render();
+		gameWorld.Render();
+		PROFILER_END();
 
+		PROFILER_BEGIN("Render To Backbuffer");
 		graphicsEngine.SetRenderTarget(eRenderTarget::Backbuffer);
-	
-		test.Render(); //NOTE(v9.35.0): Remove Meeeeeeeee Laterrr
-
-		PROFILER_BEGIN("Game Render");
 		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();

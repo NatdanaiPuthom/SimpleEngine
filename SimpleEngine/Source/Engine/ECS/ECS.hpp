@@ -3,6 +3,12 @@
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Core/EntityManager.hpp"
 #include "Engine/ECS/Core/SystemManager.hpp"
+#include <memory>
+
+namespace ECS
+{
+	class System;
+}
 
 namespace ECS
 {
@@ -20,6 +26,8 @@ namespace ECS
 		void Init();
 		void Update();
 		void Render();
+
+		void AddSystem(std::unique_ptr<System> aSystem);
 
 		Entity CreateEntity();
 		Entity GetEntity(const EntityID aID);
