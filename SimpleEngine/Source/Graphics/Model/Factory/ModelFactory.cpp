@@ -67,27 +67,7 @@ namespace Graphics
 
 	const Mesh* ModelFactory::LoadMesh(const std::string& aFileName)
 	{
-		std::string filePath;
-		bool isAbsolutePath = false;
-
-		for (const char c : aFileName)
-		{
-			if (c == ':')
-			{
-				isAbsolutePath = true;
-				break;
-			}
-		}
-
-		if (isAbsolutePath == true)
-		{
-			filePath = aFileName;
-		}
-		else
-		{
-			filePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
-		}
-
+		const std::string filePath = SimpleUtilities::CheckAndReturnAsAbsolutePath(aFileName);
 		const Mesh* mesh = GetMesh(filePath.c_str());
 
 		if (mesh == nullptr)

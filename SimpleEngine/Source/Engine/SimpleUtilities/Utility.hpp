@@ -57,4 +57,28 @@ namespace SimpleUtilities
 
 		return outputPath;
 	}
+
+	static inline const std::string CheckAndReturnAsAbsolutePath(const std::string& aFilePath)
+	{
+		bool isAbsolutePath = false;
+
+		for (const char c : aFilePath)
+		{
+			if (c == ':')
+			{
+				isAbsolutePath = true;
+				break;
+			}
+		}
+
+		if (isAbsolutePath == true)
+		{
+			return aFilePath;
+		}
+		else
+		{
+			const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFilePath;
+			return absolutePath;
+		}
+	}
 }
