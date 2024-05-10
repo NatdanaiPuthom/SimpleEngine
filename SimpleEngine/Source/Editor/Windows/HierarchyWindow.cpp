@@ -178,6 +178,21 @@ namespace Editor
 
 							if (ImGui::DragFloat3("Scale", &scale.x, 0.1f))
 							{
+								if (scale.x < 0.001f)
+								{
+									scale.x = 0.001f;
+								}
+
+								if (scale.y < 0.001f)
+								{
+									scale.y = 0.001f;
+								}
+
+								if (scale.z < 0.001f)
+								{
+									scale.z = 0.001f;
+								}
+							
 								transformComponent->transform.SetScale(scale);
 							}
 						}
