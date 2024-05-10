@@ -20,6 +20,28 @@ namespace ECS
 
 	void RenderSystem::Update()
 	{
+		ECS::Entities entities = myEntityManager->GetAllEntities();
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+
+		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
+		{
+			MeshComponent* mesh = entities[i]->GetComponent<ECS::MeshComponent>();
+
+			if (mesh == nullptr)
+			{
+				continue;
+			}
+
+			if (mesh->mesh == nullptr)
+			{
+				mesh->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
+			}
+
+			if (mesh->texture == nullptr)
+			{
+				mesh->texture = graphicsEngine->GetDefaultTexture().get();
+			}
+		}
 	}
 
 	void RenderSystem::Render()
@@ -28,14 +50,20 @@ namespace ECS
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
-			auto mesh = entities[i]->GetComponent<ECS::MeshComponent>();
+			const MeshComponent* mesh = entities[i]->GetComponent<ECS::MeshComponent>();
 
-			if (mesh == nullptr || mesh->mesh == nullptr || mesh->texture == nullptr)
+			if (mesh == nullptr)
 			{
 				continue;
 			}
 
-			auto transform = entities[i]->GetComponent<ECS::TransformComponent>();
+			const TransformComponent* transform = entities[i]->GetComponent<ECS::TransformComponent>();
+
+			if (transform == nullptr)
+			{
+				continue;
+			}
+
 			Global::GetRenderer()->RenderStaticModel(transform, mesh);
 		}
 	}
