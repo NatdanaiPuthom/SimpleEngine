@@ -48,6 +48,8 @@ namespace Simple
 		assert(myCustomCursor && "Failed to load Custom Cursor");
 
 		MainSingleton::GetInputManager().SetHWND(*myHWND);
+
+		myOriginStyle = GetWindowLong(*myHWND, GWL_STYLE);
 	}
 
 	void Engine::LoadSettingsFromJson()
@@ -149,6 +151,7 @@ namespace Simple
 		AdjustWindowRect(&wr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
 
 		std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
+
 		*hwnd = CreateWindow(
 			L"Natdanai",
 			L"SimpleEngine v9.36.0 (Simple, it's just that easy)",
@@ -191,5 +194,10 @@ namespace Simple
 	HCURSOR& Engine::GetCustomCursor()
 	{
 		return myCustomCursor;
+	}
+
+	DWORD Engine::GetOriginalStyle() const
+	{
+		return myOriginStyle;
 	}
 }

@@ -24,6 +24,7 @@ namespace Simple
 	public:
 		HWND& GetEngineHWND();
 		HCURSOR& GetCustomCursor();
+		DWORD GetOriginalStyle() const;
 		double GetTotalTime() const;
 		float GetDeltaTime() const;
 	private:
@@ -35,6 +36,7 @@ namespace Simple
 		std::unique_ptr<SimpleUtilities::Timer> myTimer;
 
 		HCURSOR myCustomCursor;
+		DWORD myOriginStyle;
 
 		Simple::Console myConsole;
 	};
