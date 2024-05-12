@@ -128,7 +128,7 @@ namespace Editor
 			}
 
 			ImGui::ImageButton(fileNames[i].c_str(), textureID, { thumbnailSize, thumbnailSize });
-			
+
 			if (ImGui::BeginDragDropSource())
 			{
 				if (extension[0] == '.')
@@ -138,16 +138,15 @@ namespace Editor
 					char buffer[256];
 					strcpy_s(buffer, filePath.c_str());
 
-					if (!ImGui::SetDragDropPayload("Assets_Browser", buffer, sizeof(buffer)))
-					{
-						ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
-						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
-						ImGui::BeginTooltip();
-						ImGui::ImageButton(textureID, ImVec2(64.0f, 64.0f));			
-						ImGui::EndTooltip();
-						ImGui::PopStyleVar();
-						ImGui::PopStyleVar();
-					}
+					ImGui::SetDragDropPayload("Assets_Browser", buffer, sizeof(buffer));
+
+					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+
+					ImGui::BeginTooltip();
+					ImGui::ImageButton(textureID, ImVec2(64.0f, 64.0f));
+					ImGui::EndTooltip();
+
+					ImGui::PopStyleVar();
 				}
 
 				ImGui::EndDragDropSource();
