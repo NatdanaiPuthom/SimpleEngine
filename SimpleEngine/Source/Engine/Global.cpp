@@ -97,6 +97,11 @@ namespace Global
 		return localEngine->GetEngineHWND();
 	}
 
+	DWORD GetOriginalWindowStyle()
+	{
+		return localEngine->GetOriginalWindowStyle();
+	}
+
 	HCURSOR& GetCustomCursor()
 	{
 		return localEngine->GetCustomCursor();
