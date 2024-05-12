@@ -169,6 +169,8 @@ namespace Graphics
 			return myMeshes["Plane"].get();
 		case ePrimitiveShape::Sphere:
 			return myMeshes["Sphere"].get();
+		case ePrimitiveShape::SkyBox:
+			return myMeshes["Skybox"].get();
 		default:
 			return nullptr;
 		}

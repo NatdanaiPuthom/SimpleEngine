@@ -23,7 +23,8 @@ namespace Graphics
 		Cube,
 		Pyramid,
 		Plane,
-		Sphere
+		Sphere,
+		SkyBox
 	};
 }
 
