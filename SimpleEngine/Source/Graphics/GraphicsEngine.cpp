@@ -192,7 +192,7 @@ namespace Graphics
 		if (!AddShader("DefaultPS.cso", "AnimatedModelVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("SkyBoxPS.cso", "SkyBoxVS.cso"))
+		if (!AddShader("SkyBoxPS.cso", "DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
 	}
 

@@ -111,7 +111,7 @@ namespace Editor
 		{
 			const std::string extension = GetFileExtension(fileNames[i]);
 
-			ImTextureID textureID;
+			ImTextureID textureID = textureCat;
 
 			if (extension[0] != '.')
 			{
@@ -120,11 +120,12 @@ namespace Editor
 			else if (extension == ".dds")
 			{
 				const std::string texturePath = SimpleUtilities::KeepStringAfterAssets(aDirectory) + "\\" + fileNames[i];
-				textureID = Global::GetGraphicsEngine()->GetTexture(texturePath.c_str())->GetShaderResourceView().Get();
-			}
-			else
-			{
-				textureID = textureCat;
+				const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(texturePath.c_str());
+
+				if (texture->GetSlot() != 14) //NOTE(v9.36.0): ugly but work for now
+				{
+					textureID = texture->GetShaderResourceView().Get();
+				}
 			}
 
 			ImGui::ImageButton(fileNames[i].c_str(), textureID, { thumbnailSize, thumbnailSize });
