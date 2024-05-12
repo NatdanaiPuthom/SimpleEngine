@@ -20,6 +20,8 @@ namespace ECS
 		myEntityManager.Init(entitiesToReserve);
 
 		mySystemManager.AddSystem(std::move(std::make_unique<RenderSystem>(&myEntityManager)));
+
+		mySystemManager.Init();
 	}
 
 	void EntityComponentSystem::Update()
