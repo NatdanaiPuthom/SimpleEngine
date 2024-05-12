@@ -16,6 +16,16 @@ namespace ECS
 
 	void RenderSystem::Init()
 	{
+		ECS::Entity entity = myEntityManager->CreateEntity();
+		entity->AddComponent<TransformComponent>();
+		entity->AddComponent<MeshComponent>();
+
+		entity->SetName("SkyBox");
+
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		entity->GetComponent<MeshComponent>()->shader = graphicsEngine->GetDefaultSkyBoxShader().get();
+		entity->GetComponent<MeshComponent>()->texture = graphicsEngine->GetDefaultSkyBoxTexture(Graphics::eSkyboxType::DayCloud).get();
+		entity->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::SkyBox);
 	}
 
 	void RenderSystem::Update()
@@ -40,6 +50,11 @@ namespace ECS
 			if (mesh->texture == nullptr)
 			{
 				mesh->texture = graphicsEngine->GetDefaultTexture().get();
+			}
+
+			if (mesh->shader == nullptr)
+			{
+				mesh->shader = graphicsEngine->GetDefaultShader().get();
 			}
 		}
 	}
