@@ -10,6 +10,7 @@ namespace Editor
 	{
 	public:
 		inline static std::string sCurrentDirectory = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS);
+		inline static bool sHasDragDropBegin = false;
 
 	public:
 		static void Release();

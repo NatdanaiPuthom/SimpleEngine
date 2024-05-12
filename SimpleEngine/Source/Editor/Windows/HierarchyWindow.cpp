@@ -192,7 +192,7 @@ namespace Editor
 								{
 									scale.z = 0.001f;
 								}
-							
+
 								transformComponent->transform.SetScale(scale);
 							}
 						}

@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/FileManager/FileManager.hpp"
+#include "External/imgui.h"
 
 namespace Editor
 {
@@ -126,24 +127,30 @@ namespace Editor
 				textureID = textureCat;
 			}
 
-			ImGui::ImageButton(textureID, { thumbnailSize, thumbnailSize });
-
-			if (extension[0] == '.')
+			ImGui::ImageButton(fileNames[i].c_str(), textureID, { thumbnailSize, thumbnailSize });
+			
+			if (ImGui::BeginDragDropSource())
 			{
-				if (ImGui::BeginDragDropSource())
+				if (extension[0] == '.')
 				{
-					std::string a = aDirectory + "\\" + fileNames[i];
+					std::string filePath = aDirectory + "\\" + fileNames[i];
 
-					ImGui::SetDragDropPayload("Assets_Browser", a.c_str(), a.size() + 1);
+					char buffer[256];
+					strcpy_s(buffer, filePath.c_str());
 
-					if (ImGui::BeginTooltip())
+					if (!ImGui::SetDragDropPayload("Assets_Browser", buffer, sizeof(buffer)))
 					{
-						ImGui::Image(textureID, ImVec2(64, 64));
+						ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
+						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
+						ImGui::BeginTooltip();
+						ImGui::ImageButton(textureID, ImVec2(64.0f, 64.0f));			
 						ImGui::EndTooltip();
+						ImGui::PopStyleVar();
+						ImGui::PopStyleVar();
 					}
-
-					ImGui::EndDragDropSource();
 				}
+
+				ImGui::EndDragDropSource();
 			}
 
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
