@@ -195,16 +195,16 @@ namespace Editor
 	{
 		ImGui::SetNextItemWidth(200);
 
-		std::array<const char*, static_cast<int>(eRasterizerState::Count)> rasterizerStates = {};
-		rasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = "BackfaceCulling";
-		rasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)] = "NoFaceCulling";
-		rasterizerStates[static_cast<int>(eRasterizerState::Wireframe)] = "Wireframe";
-		rasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)] = "WireframeNoCulling";
-		rasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)] = "FrontFaceCulling";
+		std::array<const char*, static_cast<int>(Graphics::eRasterizerState::Count)> rasterizerStates = {};
+		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::BackfaceCulling)] = "BackfaceCulling";
+		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::NoFaceCulling)] = "NoFaceCulling";
+		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::Wireframe)] = "Wireframe";
+		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::WireframeNoCulling)] = "WireframeNoCulling";
+		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::FrontFaceCulling)] = "FrontFaceCulling";
 
 		if (ImGui::Combo("RasterizerState", &mySelectedRasterizerState, rasterizerStates.data(), static_cast<int>(rasterizerStates.size())))
 		{
-			Global::GetGraphicsEngine()->SetRasterizerState(static_cast<eRasterizerState>(mySelectedRasterizerState));
+			Global::GetGraphicsEngine()->SetRasterizerState(static_cast<Graphics::eRasterizerState>(mySelectedRasterizerState));
 		}
 	}
 

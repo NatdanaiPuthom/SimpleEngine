@@ -95,13 +95,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To ImGui");
-		graphicsEngine.SetRenderTarget(eRenderTarget::ImGui);
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTarget::ImGui);
 		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To Backbuffer");
-		graphicsEngine.SetRenderTarget(eRenderTarget::Backbuffer);
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTarget::Backbuffer);
 		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();
