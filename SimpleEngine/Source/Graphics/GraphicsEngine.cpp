@@ -60,7 +60,7 @@ namespace Graphics
 		CreateTimeBuffer();
 		CreateLightBuffer();
 		CreateRasterizerStates();
-		CreateRenderTargetForImGuiImage(aWindowSize.x, aWindowSize.y);
+		CreateRenderTarget(myImGuiImageRenderTarget.get(), aWindowSize.x, aWindowSize.y);
 		CreateBonesBuffer();
 
 		LoadSettingsFromJson();
@@ -334,7 +334,7 @@ namespace Graphics
 		CreateDepthBuffer(newWidth, newHeight);
 		CreateViewport(newWidth, newHeight);
 
-		CreateRenderTargetForImGuiImage(newWidth, newHeight); //NOTE(v9.36.0): Remember to Resize/Re-create all Render targets each time we resize
+		CreateRenderTarget(myImGuiImageRenderTarget.get(), newWidth, newHeight); //NOTE(v9.36.0): Remember to Resize/Re-create all Render targets each time we resize
 
 		SetRenderTarget(eRenderTarget::Backbuffer);
 
@@ -627,7 +627,7 @@ namespace Graphics
 		return myVSync;
 	}
 
-	void GraphicsEngine::CreateRenderTargetForImGuiImage(const int aWidth, const int aHeight)
+	void GraphicsEngine::CreateRenderTarget(RenderTarget* aRenderTarget, const int aWidth, const int aHeight, const DXGI_FORMAT aFormat)
 	{
 		D3D11_TEXTURE2D_DESC desc = { 0 };
 
@@ -635,7 +635,7 @@ namespace Graphics
 		desc.Height = aHeight;
 		desc.MipLevels = 1;
 		desc.ArraySize = 1;
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.Format = aFormat;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
 		desc.Usage = D3D11_USAGE_DEFAULT;
@@ -648,10 +648,10 @@ namespace Graphics
 		HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
 		assert(SUCCEEDED(result) && "Failed to create Texture2D");
 
-		result = myDevice->CreateShaderResourceView(texture, nullptr, &myImGuiImageRenderTarget->shaderResourceView);
+		result = myDevice->CreateShaderResourceView(texture, nullptr, &aRenderTarget->shaderResourceView);
 		assert(SUCCEEDED(result) && "Failed to create ShaderResourceView");
 
-		result = myDevice->CreateRenderTargetView(texture, nullptr, &myImGuiImageRenderTarget->renderTargetView);
+		result = myDevice->CreateRenderTargetView(texture, nullptr, &aRenderTarget->renderTargetView);
 		assert(SUCCEEDED(result) && "Failed to create RenderTargetView");
 
 		texture->Release();

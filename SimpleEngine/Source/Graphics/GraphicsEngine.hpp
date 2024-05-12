@@ -93,7 +93,7 @@ namespace Graphics
 		void CreateCameraBuffer();
 		void CreateTimeBuffer();
 		void CreateLightBuffer();
-		void CreateRenderTargetForImGuiImage(const int aWidth, const int aHeight);
+		void CreateRenderTarget(RenderTarget* aRenderTarget, const int aWidth, const int aHeight, const DXGI_FORMAT aFormat = DXGI_FORMAT_R8G8B8A8_UNORM);
 		void CreateRasterizerStates();
 		void CreateBonesBuffer();
 	private:
