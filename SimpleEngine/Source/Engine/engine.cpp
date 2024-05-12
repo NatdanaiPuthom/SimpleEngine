@@ -49,7 +49,7 @@ namespace Simple
 
 		MainSingleton::GetInputManager().SetHWND(*myHWND);
 
-		myOriginStyle = GetWindowLong(*myHWND, GWL_STYLE);
+		myOriginalWindowStyle = GetWindowLong(*myHWND, GWL_STYLE);
 	}
 
 	void Engine::LoadSettingsFromJson()
@@ -196,8 +196,8 @@ namespace Simple
 		return myCustomCursor;
 	}
 
-	DWORD Engine::GetOriginalStyle() const
+	DWORD Engine::GetOriginalWindowStyle() const
 	{
-		return myOriginStyle;
+		return myOriginalWindowStyle;
 	}
 }
