@@ -19,7 +19,8 @@ namespace Graphics
 	enum class eRenderTarget
 	{
 		Backbuffer,
-		ImGui
+		ImGui,
+		Count
 	};
 
 	enum class eSkyboxType

@@ -38,8 +38,6 @@ namespace Graphics
 		myLightBufferData = std::make_unique<LightBufferData>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
 
-		myImGuiImageRenderTarget = std::make_unique<RenderTarget>();
-
 		myEditorCamera = std::make_shared<Graphics::Camera>();
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 
@@ -60,7 +58,7 @@ namespace Graphics
 		CreateTimeBuffer();
 		CreateLightBuffer();
 		CreateRasterizerStates();
-		CreateRenderTarget(myImGuiImageRenderTarget.get(), aWindowSize.x, aWindowSize.y);
+		CreateRenderTarget(myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)], aWindowSize.x, aWindowSize.y);
 		CreateBonesBuffer();
 
 		LoadSettingsFromJson();
@@ -319,14 +317,16 @@ namespace Graphics
 		SetWindowLong(Global::GetEngineHWND(), GWL_STYLE, dwStyle);
 		SetWindowPos(Global::GetEngineHWND(), nullptr, 0, 0, width, height, SWP_NOZORDER);
 
-		myBackBuffer->Release();
+		ComPtr<ID3D11RenderTargetView>& backBuffer = myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)].renderTargetView;
+		backBuffer->Release();
+
 		const HRESULT result = mySwapChain->ResizeBuffers(2, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 		assert(SUCCEEDED(result) && "Failed to resize buffer");
 
 		ID3D11Texture2D* pBackBuffer = nullptr;
 
 		mySwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-		myDevice->CreateRenderTargetView(pBackBuffer, NULL, myBackBuffer.GetAddressOf());
+		myDevice->CreateRenderTargetView(pBackBuffer, NULL, backBuffer.GetAddressOf());
 
 		pBackBuffer->Release();
 		myDepthBuffer->Release();
@@ -334,7 +334,7 @@ namespace Graphics
 		CreateDepthBuffer(newWidth, newHeight);
 		CreateViewport(newWidth, newHeight);
 
-		CreateRenderTarget(myImGuiImageRenderTarget.get(), newWidth, newHeight); //NOTE(v9.36.0): Remember to Resize/Re-create all Render targets each time we resize
+		CreateRenderTarget(myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)], newWidth, newHeight); //NOTE(v9.36.0): Remember to Resize/Re-create all Render targets each time we resize
 
 		SetRenderTarget(eRenderTarget::Backbuffer);
 
@@ -343,24 +343,7 @@ namespace Graphics
 
 	void GraphicsEngine::SetRenderTarget(eRenderTarget aRenderTarget)
 	{
-		ComPtr<ID3D11RenderTargetView> renderTarget;
-		ComPtr<ID3D11RasterizerState> rasterizerState;
-
-		switch (aRenderTarget)
-		{
-		case eRenderTarget::Backbuffer:
-			renderTarget = myBackBuffer;
-			rasterizerState = myRasterizerState;
-			break;
-		case eRenderTarget::ImGui:
-			renderTarget = myImGuiImageRenderTarget->renderTargetView;
-			rasterizerState = myRasterizerState;
-			break;
-		default:
-			renderTarget = myBackBuffer;
-			rasterizerState = myRasterizerState;
-			break;
-		}
+		const ComPtr<ID3D11RenderTargetView>& renderTarget = myRenderTargets[static_cast<size_t>(aRenderTarget)].renderTargetView;
 
 		ID3D11ShaderResourceView* nullSRV = nullptr;
 		myContext->PSSetShaderResources(0, 1, &nullSRV);
@@ -370,8 +353,6 @@ namespace Graphics
 
 		myContext->OMSetRenderTargets(1, renderTarget.GetAddressOf(), myDepthBuffer.Get());
 		myContext->ClearRenderTargetView(renderTarget.Get(), myClearColor);
-
-		myContext->RSSetState(rasterizerState.Get());
 	}
 
 	void GraphicsEngine::SetCamera(std::shared_ptr<Graphics::Camera> aCamera)
@@ -577,9 +558,9 @@ namespace Graphics
 		return myContext;
 	}
 
-	ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetImGuiShaderResourceView()
+	ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetShaderResourceView(const eRenderTarget aRenderTarget)
 	{
-		return myImGuiImageRenderTarget->shaderResourceView;
+		return myRenderTargets[static_cast<size_t>(aRenderTarget)].shaderResourceView;
 	}
 
 	Math::Vector4f GraphicsEngine::GetDirectionalLightColor() const
@@ -627,7 +608,7 @@ namespace Graphics
 		return myVSync;
 	}
 
-	void GraphicsEngine::CreateRenderTarget(RenderTarget* aRenderTarget, const int aWidth, const int aHeight, const DXGI_FORMAT aFormat)
+	void GraphicsEngine::CreateRenderTarget(RenderTarget& aRenderTarget, const int aWidth, const int aHeight, const DXGI_FORMAT aFormat)
 	{
 		D3D11_TEXTURE2D_DESC desc = { 0 };
 
@@ -648,10 +629,10 @@ namespace Graphics
 		HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
 		assert(SUCCEEDED(result) && "Failed to create Texture2D");
 
-		result = myDevice->CreateShaderResourceView(texture, nullptr, &aRenderTarget->shaderResourceView);
+		result = myDevice->CreateShaderResourceView(texture, nullptr, &aRenderTarget.shaderResourceView);
 		assert(SUCCEEDED(result) && "Failed to create ShaderResourceView");
 
-		result = myDevice->CreateRenderTargetView(texture, nullptr, &aRenderTarget->renderTargetView);
+		result = myDevice->CreateRenderTargetView(texture, nullptr, &aRenderTarget.renderTargetView);
 		assert(SUCCEEDED(result) && "Failed to create RenderTargetView");
 
 		texture->Release();
@@ -750,7 +731,7 @@ namespace Graphics
 		HRESULT result = mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBufferTexture);
 		assert(SUCCEEDED(result) && "Failed to get Backbuffer");
 
-		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, &myBackBuffer);
+		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, &myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)].renderTargetView);
 		backBufferTexture->Release();
 		assert(SUCCEEDED(result) && "Failed to create Backbuffer");
 	}

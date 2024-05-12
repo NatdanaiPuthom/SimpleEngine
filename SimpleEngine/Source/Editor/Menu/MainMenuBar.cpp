@@ -52,7 +52,7 @@ namespace Editor
 		{
 			if (ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize))
 			{
-				ImTextureID textureID = Global::GetGraphicsEngine()->GetImGuiShaderResourceView().Get();
+				ImTextureID textureID = Global::GetGraphicsEngine()->GetShaderResourceView(Graphics::eRenderTarget::ImGui).Get();
 				ImVec2 size = ImGui::GetContentRegionAvail();
 				ImGui::Image(textureID, size);
 			}
