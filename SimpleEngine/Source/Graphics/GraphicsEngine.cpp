@@ -164,6 +164,12 @@ namespace Graphics
 
 		if (!AddTexture("Assets\\Textures\\Cat-scared.dds", 0))
 			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds", 14)) //NOTE(v9.35.5): CubeMap has been at slot 14 and will be there for now
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds", 14)) //NOTE(v9.35.5): CubeMap has been at slot 14 and will be there for now
+			assert(false && "Failed to add Texture");
 	}
 
 	void GraphicsEngine::PreloadShaders()
@@ -186,10 +192,8 @@ namespace Graphics
 		if (!AddShader("DefaultPS.cso", "AnimatedModelVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		{ //TGA Uppgift
-			if (!AddShader("SkyBoxPS.cso", "SkyBoxVS.cso"))
-				assert(false && "Failed to add Shader");
-		}
+		if (!AddShader("SkyBoxPS.cso", "SkyBoxVS.cso"))
+			assert(false && "Failed to add Shader");
 	}
 
 	const bool GraphicsEngine::AddTexture(const char* aFileName, const unsigned int aSlot)
@@ -481,6 +485,19 @@ namespace Graphics
 		return nullptr;
 	}
 
+	std::shared_ptr<const Texture> GraphicsEngine::GetDefaultSkyBoxTexture(const eSkyboxType aSkyboxType)
+	{
+		switch (aSkyboxType)
+		{
+		case eSkyboxType::DayCloud:
+			return GetTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds");
+		case eSkyboxType::NightStar:
+			return GetTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds");
+		}
+
+		return nullptr;
+	}
+
 	std::shared_ptr<const Texture> GraphicsEngine::GetDefaultTexture()
 	{
 		auto texture = GetTexture("Assets\\Textures\\DefaultTexture.dds");
@@ -497,6 +514,18 @@ namespace Graphics
 
 		if (defaultShader != nullptr)
 			return defaultShader;
+
+		return nullptr;
+	}
+
+	std::shared_ptr<const Shader> GraphicsEngine::GetDefaultSkyBoxShader()
+	{
+		auto skyboxShader = GetShader("SkyBoxPS.cso", "DefaultVS.cso");
+
+		if (skyboxShader != nullptr)
+		{
+			return skyboxShader;
+		}
 
 		return nullptr;
 	}

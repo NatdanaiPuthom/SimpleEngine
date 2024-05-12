@@ -22,6 +22,15 @@ enum class eRenderTarget
 	WaterRefraction,
 };
 
+namespace Graphics
+{
+	enum class eSkyboxType
+	{
+		DayCloud,
+		NightStar
+	};
+}
+
 struct RenderTarget final
 {
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView;
