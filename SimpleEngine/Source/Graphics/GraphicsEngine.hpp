@@ -59,8 +59,6 @@ namespace Graphics
 		ComPtr<ID3D11Device> GetDevice();
 		ComPtr<ID3D11DeviceContext> GetContext();
 		ComPtr<ID3D11ShaderResourceView> GetImGuiShaderResourceView();
-		ComPtr<ID3D11ShaderResourceView> GetWaterShaderResourceView();
-		ComPtr<ID3D11ShaderResourceView> GetWaterRefractionShaderResourceView();
 
 		std::shared_ptr<Camera> GetCurrentCamera();
 		std::shared_ptr<Camera> GetEditorCamera();
@@ -96,8 +94,6 @@ namespace Graphics
 		void CreateTimeBuffer();
 		void CreateLightBuffer();
 		void CreateRenderTargetForImGuiImage(const int aWidth, const int aHeight);
-		void CreateWaterRenderTarget(const int aWidth, const int aHeight);
-		void CreateWaterRefractionRenderTarget(const int aWidth, const int aHeight);
 		void CreateRasterizerStates();
 		void CreateBonesBuffer();
 	private:
@@ -135,8 +131,6 @@ namespace Graphics
 
 		std::unique_ptr<LightBufferData> myLightBufferData;
 
-		std::unique_ptr<RenderTarget> myWaterReflectionRenderTarget;
-		std::unique_ptr<RenderTarget> myWaterRefractionRenderTarget;
 		std::unique_ptr<RenderTarget> myImGuiImageRenderTarget;
 
 		std::unique_ptr<ModelFactory> myModelFactory;

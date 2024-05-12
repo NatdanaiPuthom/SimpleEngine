@@ -38,8 +38,6 @@ namespace Graphics
 		myLightBufferData = std::make_unique<LightBufferData>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
 
-		myWaterReflectionRenderTarget = std::make_unique<RenderTarget>();
-		myWaterRefractionRenderTarget = std::make_unique<RenderTarget>();
 		myImGuiImageRenderTarget = std::make_unique<RenderTarget>();
 
 		myEditorCamera = std::make_shared<Graphics::Camera>();
@@ -63,8 +61,6 @@ namespace Graphics
 		CreateLightBuffer();
 		CreateRasterizerStates();
 		CreateRenderTargetForImGuiImage(aWindowSize.x, aWindowSize.y);
-		CreateWaterRenderTarget(aWindowSize.x, aWindowSize.y);
-		CreateWaterRefractionRenderTarget(aWindowSize.x, aWindowSize.y);
 		CreateBonesBuffer();
 
 		LoadSettingsFromJson();
@@ -292,8 +288,7 @@ namespace Graphics
 		}
 		else
 		{
-			dwStyle &= ~WS_POPUP;
-			dwStyle |= WS_OVERLAPPEDWINDOW;
+			dwStyle = Global::GetOriginalWindowStyle();
 		}
 
 		RECT wr = {};
@@ -338,9 +333,8 @@ namespace Graphics
 
 		CreateDepthBuffer(newWidth, newHeight);
 		CreateViewport(newWidth, newHeight);
-		CreateWaterRenderTarget(newWidth, newHeight);
-		CreateRenderTargetForImGuiImage(newWidth, newHeight);
-		CreateWaterRefractionRenderTarget(newWidth, newHeight);
+
+		CreateRenderTargetForImGuiImage(newWidth, newHeight); //NOTE(v9.36.0): Remember to Resize/Re-create all Render targets each time we resize
 
 		SetRenderTarget(eRenderTarget::Backbuffer);
 
@@ -360,14 +354,6 @@ namespace Graphics
 			break;
 		case eRenderTarget::ImGui:
 			renderTarget = myImGuiImageRenderTarget->renderTargetView;
-			rasterizerState = myRasterizerState;
-			break;
-		case eRenderTarget::WaterReflection:
-			renderTarget = myWaterReflectionRenderTarget->renderTargetView;
-			rasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)];
-			break;
-		case eRenderTarget::WaterRefraction:
-			renderTarget = myWaterRefractionRenderTarget->renderTargetView;
 			rasterizerState = myRasterizerState;
 			break;
 		default:
@@ -596,16 +582,6 @@ namespace Graphics
 		return myImGuiImageRenderTarget->shaderResourceView;
 	}
 
-	ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetWaterShaderResourceView()
-	{
-		return myWaterReflectionRenderTarget->shaderResourceView;
-	}
-
-	ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetWaterRefractionShaderResourceView()
-	{
-		return myWaterRefractionRenderTarget->shaderResourceView;
-	}
-
 	Math::Vector4f GraphicsEngine::GetDirectionalLightColor() const
 	{
 		return myLightBufferData->directionalLightColor;
@@ -676,66 +652,6 @@ namespace Graphics
 		assert(SUCCEEDED(result) && "Failed to create ShaderResourceView");
 
 		result = myDevice->CreateRenderTargetView(texture, nullptr, &myImGuiImageRenderTarget->renderTargetView);
-		assert(SUCCEEDED(result) && "Failed to create RenderTargetView");
-
-		texture->Release();
-	}
-
-	void GraphicsEngine::CreateWaterRenderTarget(const int aWidth, const int aHeight)
-	{
-		D3D11_TEXTURE2D_DESC desc = { 0 };
-
-		desc.Width = aWidth;
-		desc.Height = aHeight;
-		desc.MipLevels = 1;
-		desc.ArraySize = 1;
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		desc.SampleDesc.Count = 1;
-		desc.SampleDesc.Quality = 0;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = 0;
-
-		ID3D11Texture2D* texture = nullptr;
-
-		HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
-		assert(SUCCEEDED(result) && "Failed to create Texture2D");
-
-		result = myDevice->CreateShaderResourceView(texture, nullptr, &myWaterReflectionRenderTarget->shaderResourceView);
-		assert(SUCCEEDED(result) && "Failed to create ShaderResourceView");
-
-		result = myDevice->CreateRenderTargetView(texture, nullptr, &myWaterReflectionRenderTarget->renderTargetView);
-		assert(SUCCEEDED(result) && "Failed to create RenderTargetView");
-
-		texture->Release();
-	}
-
-	void GraphicsEngine::CreateWaterRefractionRenderTarget(const int aWidth, const int aHeight)
-	{
-		D3D11_TEXTURE2D_DESC desc = { 0 };
-
-		desc.Width = aWidth;
-		desc.Height = aHeight;
-		desc.MipLevels = 1;
-		desc.ArraySize = 1;
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		desc.SampleDesc.Count = 1;
-		desc.SampleDesc.Quality = 0;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = 0;
-
-		ID3D11Texture2D* texture = nullptr;
-
-		HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
-		assert(SUCCEEDED(result) && "Failed to create Texture2D");
-
-		result = myDevice->CreateShaderResourceView(texture, nullptr, &myWaterRefractionRenderTarget->shaderResourceView);
-		assert(SUCCEEDED(result) && "Failed to create ShaderResourceView");
-
-		result = myDevice->CreateRenderTargetView(texture, nullptr, &myWaterRefractionRenderTarget->renderTargetView);
 		assert(SUCCEEDED(result) && "Failed to create RenderTargetView");
 
 		texture->Release();

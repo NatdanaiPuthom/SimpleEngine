@@ -19,9 +19,7 @@ namespace Graphics
 	enum class eRenderTarget
 	{
 		Backbuffer,
-		ImGui,
-		WaterReflection,
-		WaterRefraction,
+		ImGui
 	};
 
 	enum class eSkyboxType
