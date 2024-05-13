@@ -26,7 +26,9 @@ namespace Graphics
 	enum class eSkyboxType
 	{
 		DayCloud,
-		NightStar
+		NightStar,
+		DayGrassland,
+		AutumnForest
 	};
 
 	struct RenderTarget final

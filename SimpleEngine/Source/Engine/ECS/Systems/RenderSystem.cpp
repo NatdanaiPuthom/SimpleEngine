@@ -24,7 +24,7 @@ namespace ECS
 
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		entity->GetComponent<MeshComponent>()->shader = graphicsEngine->GetDefaultSkyBoxShader().get();
-		entity->GetComponent<MeshComponent>()->texture = graphicsEngine->GetDefaultSkyBoxTexture(Graphics::eSkyboxType::DayCloud).get();
+		entity->GetComponent<MeshComponent>()->texture = graphicsEngine->GetDefaultSkyBoxTexture(Graphics::eSkyboxType::DayGrassland).get();
 		entity->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::SkyBox);
 	}
 

@@ -167,6 +167,12 @@ namespace Graphics
 
 		if (!AddTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds", 14)) //NOTE(v9.35.5): CubeMap has been at slot 14 and will be there for now
 			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds", 14)) //NOTE(v9.35.5): CubeMap has been at slot 14 and will be there for now
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds", 14)) //NOTE(v9.35.5): CubeMap has been at slot 14 and will be there for now
+			assert(false && "Failed to add Texture");
 	}
 
 	void GraphicsEngine::PreloadShaders()
@@ -463,6 +469,10 @@ namespace Graphics
 			return GetTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds");
 		case eSkyboxType::NightStar:
 			return GetTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds");
+		case eSkyboxType::DayGrassland:
+			return GetTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds");
+		case eSkyboxType::AutumnForest:
+			return GetTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds");
 		}
 
 		return nullptr;
