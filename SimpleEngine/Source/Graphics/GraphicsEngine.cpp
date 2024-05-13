@@ -326,7 +326,7 @@ namespace Graphics
 		SetWindowLong(Global::GetEngineHWND(), GWL_STYLE, dwStyle);
 		SetWindowPos(Global::GetEngineHWND(), nullptr, 0, 0, width, height, SWP_NOZORDER);
 
-		ComPtr<ID3D11RenderTargetView> backBuffer = myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)]->renderTargetView;
+		ComPtr<ID3D11RenderTargetView>& backBuffer = myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)]->renderTargetView;
 		backBuffer->Release();
 
 		const HRESULT result = mySwapChain->ResizeBuffers(2, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
@@ -343,7 +343,7 @@ namespace Graphics
 		CreateDepthBuffer(newWidth, newHeight);
 		CreateViewport(newWidth, newHeight);
 
-		CreateRenderTarget(myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)].get(), newWidth, newHeight); //NOTE(v9.36.0): Remember to Resize/Re-create all Render targets each time we resize
+		CreateRenderTarget(myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)].get(), newWidth, newHeight); //NOTE(v9.36.0): Remember to resize related render targets properly
 
 		SetRenderTarget(eRenderTarget::Backbuffer);
 
@@ -623,6 +623,16 @@ namespace Graphics
 
 	void GraphicsEngine::CreateRenderTarget(RenderTarget* aRenderTarget, const int aWidth, const int aHeight, const DXGI_FORMAT aFormat)
 	{
+		if (aRenderTarget->renderTargetView != nullptr)
+		{
+			aRenderTarget->renderTargetView->Release();
+		}
+
+		if (aRenderTarget->shaderResourceView != nullptr)
+		{
+			aRenderTarget->shaderResourceView->Release();
+		}
+
 		D3D11_TEXTURE2D_DESC desc = { 0 };
 
 		desc.Width = aWidth;
