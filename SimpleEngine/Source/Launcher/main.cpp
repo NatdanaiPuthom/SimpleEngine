@@ -8,7 +8,7 @@
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
 
-#include "NodeScript/SimpleNodeScript.hpp"
+//#include "NodeScript/SimpleNodeScript.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 

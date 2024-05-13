@@ -93,7 +93,7 @@ namespace Graphics
 		void CreateCameraBuffer();
 		void CreateTimeBuffer();
 		void CreateLightBuffer();
-		void CreateRenderTarget(RenderTarget& aRenderTarget, const int aWidth, const int aHeight, const DXGI_FORMAT aFormat = DXGI_FORMAT_R8G8B8A8_UNORM);
+		void CreateRenderTarget(RenderTarget* aRenderTarget, const int aWidth, const int aHeight, const DXGI_FORMAT aFormat = DXGI_FORMAT_R8G8B8A8_UNORM);
 		void CreateRasterizerStates();
 		void CreateBonesBuffer();
 	private:
@@ -105,7 +105,7 @@ namespace Graphics
 		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<size_t>(eRasterizerState::Count)> myRasterizerStates;
-		std::array<RenderTarget, static_cast<size_t>(eRenderTarget::Count)> myRenderTargets;
+		std::array<std::unique_ptr<RenderTarget>, static_cast<size_t>(eRenderTarget::Count)> myRenderTargets;
 
 		ComPtr<ID3D11Device> myDevice;
 		ComPtr<ID3D11DeviceContext> myContext;
