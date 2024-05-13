@@ -7,7 +7,7 @@
 #include <easy/profiler.h>
 
 #ifndef _SIMPLE
-#define PROFILER_ENABLED 0
+#define PROFILER_ENABLED 1
 #else
 #define PROFILER_ENABLED 0
 #endif
