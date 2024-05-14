@@ -22,6 +22,14 @@ namespace Graphics
 		Count
 	};
 
+	enum class eBlendState
+	{
+		Disabled,
+		AlphaBlend,
+		AdditiveBlend,
+		Count
+	};
+
 	enum class eRenderTarget
 	{
 		Backbuffer,
