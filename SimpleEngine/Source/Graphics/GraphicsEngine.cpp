@@ -41,9 +41,6 @@ namespace Graphics
 		myEditorCamera = std::make_shared<Graphics::Camera>();
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 
-		myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)] = std::make_unique<RenderTarget>();
-		myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)] = std::make_unique<RenderTarget>();
-
 		myCurrentCamera = myEditorCamera;
 
 		myLightBufferData->directionalLightDirection.x = 0.0f;
@@ -61,7 +58,8 @@ namespace Graphics
 		CreateTimeBuffer();
 		CreateLightBuffer();
 		CreateRasterizerStates();
-		CreateRenderTarget(myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)].get(), aWindowSize.x, aWindowSize.y);
+		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)], aWindowSize.x, aWindowSize.y);
+		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::PostProcessing)], aWindowSize.x, aWindowSize.y, DXGI_FORMAT_R16G16B16A16_FLOAT);
 		CreateBonesBuffer();
 
 		LoadSettingsFromJson();
@@ -79,10 +77,10 @@ namespace Graphics
 		SetRasterizerState(eRasterizerState::BackfaceCulling);
 		myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
 
-		myCameraConstantBuffer->SetSlot(0);
-		myTimeConstantBuffer->SetSlot(2);
-		myLightConstantBuffer->SetSlot(3);
-		myBonesConstantBuffer->SetSlot(5);
+		myCameraConstantBuffer->SetSlot(CAMERA_CONSTANT_BUFFER_SLOT);
+		myTimeConstantBuffer->SetSlot(TIME_CONSTANT_BUFFER_SLOT);
+		myLightConstantBuffer->SetSlot(LIGHT_CONSTANT_BUFFER_SLOT);
+		myBonesConstantBuffer->SetSlot(BONES_CONSTANT_BUFFER_SLOT);
 
 		return true;
 	}
@@ -326,8 +324,7 @@ namespace Graphics
 		SetWindowLong(Global::GetEngineHWND(), GWL_STYLE, dwStyle);
 		SetWindowPos(Global::GetEngineHWND(), nullptr, 0, 0, width, height, SWP_NOZORDER);
 
-		ComPtr<ID3D11RenderTargetView>& backBuffer = myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)]->renderTargetView;
-		backBuffer->Release();
+		myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)].renderTargetView->Release();
 
 		const HRESULT result = mySwapChain->ResizeBuffers(2, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 		assert(SUCCEEDED(result) && "Failed to resize buffer");
@@ -335,7 +332,7 @@ namespace Graphics
 		ID3D11Texture2D* pBackBuffer = nullptr;
 
 		mySwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-		myDevice->CreateRenderTargetView(pBackBuffer, NULL, backBuffer.GetAddressOf());
+		myDevice->CreateRenderTargetView(pBackBuffer, NULL, myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)].renderTargetView.GetAddressOf());
 
 		pBackBuffer->Release();
 		myDepthBuffer->Release();
@@ -343,7 +340,7 @@ namespace Graphics
 		CreateDepthBuffer(newWidth, newHeight);
 		CreateViewport(newWidth, newHeight);
 
-		CreateRenderTarget(myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)].get(), newWidth, newHeight); //NOTE(v9.36.0): Remember to resize related render targets properly
+		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)], newWidth, newHeight); //NOTE(v9.36.0): Remember to resize related render targets properly
 
 		SetRenderTarget(eRenderTarget::Backbuffer);
 
@@ -352,7 +349,7 @@ namespace Graphics
 
 	void GraphicsEngine::SetRenderTarget(eRenderTarget aRenderTarget)
 	{
-		ComPtr<ID3D11RenderTargetView> renderTarget = myRenderTargets[static_cast<size_t>(aRenderTarget)]->renderTargetView;
+		ComPtr<ID3D11RenderTargetView> renderTarget = myRenderTargets[static_cast<size_t>(aRenderTarget)].renderTargetView;
 
 		ID3D11ShaderResourceView* nullSRV = nullptr;
 		myContext->PSSetShaderResources(0, 1, &nullSRV);
@@ -573,7 +570,7 @@ namespace Graphics
 
 	ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetShaderResourceView(const eRenderTarget aRenderTarget)
 	{
-		return myRenderTargets[static_cast<size_t>(aRenderTarget)]->shaderResourceView;
+		return myRenderTargets[static_cast<size_t>(aRenderTarget)].shaderResourceView;
 	}
 
 	Math::Vector4f GraphicsEngine::GetDirectionalLightColor() const
@@ -754,7 +751,7 @@ namespace Graphics
 		HRESULT result = mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBufferTexture);
 		assert(SUCCEEDED(result) && "Failed to get Backbuffer");
 
-		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)]->renderTargetView.GetAddressOf());
+		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)].renderTargetView.GetAddressOf());
 		backBufferTexture->Release();
 		assert(SUCCEEDED(result) && "Failed to create Backbuffer");
 	}
