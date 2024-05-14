@@ -216,6 +216,6 @@ namespace Drawer
 		if (!myObjectBuffer->Init(sizeof(ObjectBufferData), &objectBuffer))
 			assert(false && "failed to create ObjectBuffer");
 
-		myObjectBuffer->SetSlot(1);
+		myObjectBuffer->SetSlot(OBJECT_CONSTANT_BUFFER_SLOT);
 	}
 }
