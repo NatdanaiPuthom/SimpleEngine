@@ -48,7 +48,7 @@ cbuffer LightBuffer : register(b3)
     float3 paddingPointlightAmounts;
 };
 
-cbuffer BoneBuffer : register(b5)
+cbuffer BoneBuffer : register(b4)
 {
     float4x4 bones[SIMPLE_MAX_BONES];
 }
