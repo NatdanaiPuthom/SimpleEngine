@@ -44,7 +44,7 @@ namespace Graphics
 	bool Mesh::CreateVertexBuffer(ComPtr<ID3D11Device> aDevice)
 	{
 		D3D11_BUFFER_DESC vertexBufferDesc = {};
-		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 		vertexBufferDesc.ByteWidth = sizeof(Vertex) * static_cast<int>(myMeshData.vertices.size());
 		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags = 0;
@@ -66,7 +66,7 @@ namespace Graphics
 	bool Mesh::CreateIndexBuffer(ComPtr<ID3D11Device> aDevice)
 	{
 		D3D11_BUFFER_DESC indexBufferDesc = {};
-		indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 		indexBufferDesc.ByteWidth = sizeof(unsigned int) * static_cast<int>(myMeshData.indices.size());
 		indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		indexBufferDesc.CPUAccessFlags = 0;
