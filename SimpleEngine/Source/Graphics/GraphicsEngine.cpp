@@ -458,31 +458,30 @@ namespace Graphics
 		return nullptr;
 	}
 
-	std::shared_ptr<const Texture> GraphicsEngine::GetDefaultSkyBoxTexture(const eSkyboxType aSkyboxType)
+	std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const eTextureType aTextureType)
 	{
-		switch (aSkyboxType)
+		std::shared_ptr<const Texture> texture = nullptr;
+
+		switch (aTextureType)
 		{
-		case eSkyboxType::DayCloud:
-			return GetTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds");
-		case eSkyboxType::NightStar:
-			return GetTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds");
-		case eSkyboxType::DayGrassland:
-			return GetTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds");
-		case eSkyboxType::AutumnForest:
-			return GetTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds");
+		case eTextureType::Default:
+			texture = GetTexture("Assets\\Textures\\DefaultTexture.dds");
+			break;
+		case eTextureType::SkyBox_DayCloud:
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds");
+			break;
+		case eTextureType::SkyBox_NightStar:
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds");
+			break;
+		case eTextureType::SkyBox_DayGrassland:
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds");
+			break;
+		case eTextureType::SkyBox_AutumnForest:
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds");
+			break;
 		}
 
-		return nullptr;
-	}
-
-	std::shared_ptr<const Texture> GraphicsEngine::GetDefaultTexture()
-	{
-		auto texture = GetTexture("Assets\\Textures\\DefaultTexture.dds");
-
-		if (texture != nullptr)
-			return texture;
-
-		return nullptr;
+		return texture;
 	}
 
 	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
@@ -490,7 +489,9 @@ namespace Graphics
 		auto shader = myLoadedShaders.find({ aPSFile, aVSFile });
 
 		if (shader != myLoadedShaders.end())
+		{
 			return shader->second;
+		}
 		else if (shader == myLoadedShaders.end())
 		{
 			const bool success = AddShader(aPSFile, aVSFile);
@@ -520,7 +521,7 @@ namespace Graphics
 			break;
 		case eShaderType::PBR_Default:
 			shader = GetShader("DefaultPBRPS.cso", "DefaultVS.cso");
-			break;	
+			break;
 		case eShaderType::PBR_Animated:
 			shader = GetShader("DefaultPBRPS.cso", "AnimatedModelVS.cso");
 			break;
@@ -529,14 +530,7 @@ namespace Graphics
 			break;
 		}
 
-		if (shader != nullptr)
-		{
-			return shader;
-		}
-		else
-		{
-			return nullptr;
-		}
+		return shader;
 	}
 
 	Drawer::Renderer* GraphicsEngine::GetRenderer()

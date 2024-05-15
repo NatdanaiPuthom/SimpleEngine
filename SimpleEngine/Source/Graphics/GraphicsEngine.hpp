@@ -65,9 +65,9 @@ namespace Graphics
 
 		//NOTE(v9.35.5): Will Add and cache the texture if it does not already exist
 		std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
-		std::shared_ptr<const Texture> GetDefaultSkyBoxTexture(const eSkyboxType aSkyboxType);
-		std::shared_ptr<const Texture> GetDefaultTexture();
+		std::shared_ptr<const Texture> GetTexture(const eTextureType aTextureType);
 
+		//NOTE(v9.36.1): Will Add and cache the shader if it does not already exist
 		std::shared_ptr<const Shader> GetShader(const char* aPSFile, const char* aVSFile);
 		std::shared_ptr<const Shader> GetShader(const eShaderType aShaderType);
 

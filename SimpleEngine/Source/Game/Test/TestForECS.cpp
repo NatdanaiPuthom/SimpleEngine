@@ -31,7 +31,7 @@ namespace Test
 
 		meshComponent->mesh = modelFactory->LoadMesh("AnimatedModels/SimpleHuman3.fbx");
 		meshComponent->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
-		meshComponent->texture = graphicsEngine->GetDefaultTexture().get();
+		meshComponent->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 
 		animatedComponent->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Animated).get();
 		animatedComponent->skeleton = modelFactory->LoadSkeleton("AnimatedModels/SimpleHuman3.fbx");

@@ -32,14 +32,6 @@ namespace Graphics
 		Count
 	};
 
-	enum class eSkyboxType
-	{
-		DayCloud,
-		NightStar,
-		DayGrassland,
-		AutumnForest
-	};
-
 	enum class eShaderType
 	{
 		Unlit_Default,
@@ -47,6 +39,15 @@ namespace Graphics
 		PBR_Default,
 		PBR_Animated,
 		SkyBox
+	};
+
+	enum class eTextureType
+	{
+		Default,
+		SkyBox_DayCloud,
+		SkyBox_NightStar,
+		SkyBox_DayGrassland,
+		SkyBox_AutumnForest,
 	};
 
 	struct RenderTarget final
