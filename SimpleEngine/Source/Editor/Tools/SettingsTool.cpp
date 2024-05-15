@@ -55,7 +55,6 @@ namespace Editor
 
 			AdjustFPSCap(graphicsEngine);
 			AdjustRasterizerState();
-			AdjustResolution();
 			AdjustWindowSize();
 
 			ImGui::Dummy(ImVec2(0, 20));
@@ -170,24 +169,6 @@ namespace Editor
 					Global::SetWindowSize(myWindowSizes[mySelectedWindowSize]);
 				}
 			}
-		}
-	}
-
-	void SettingsTool::AdjustResolution()
-	{
-		ImGui::SetNextItemWidth(200.0f);
-
-		std::vector<Math::Vector2ui> resolutions =
-		{
-			Math::Vector2ui(800, 600),
-			Math::Vector2ui(1280, 720),
-			Math::Vector2ui(1920, 1080),
-		};
-
-		const char* resolutionText[] = { "800x600", "1280x720", "1920x1080" };
-		if (ImGui::Combo("Resolution", &mySelectedResolution, resolutionText, 3))
-		{
-			Global::SetResolution(resolutions[mySelectedResolution]);
 		}
 	}
 

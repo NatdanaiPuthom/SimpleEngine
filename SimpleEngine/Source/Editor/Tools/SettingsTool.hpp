@@ -20,7 +20,6 @@ namespace Editor
 		void ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleConsole();
 		void AdjustWindowSize();
-		void AdjustResolution();
 		void AdjustRasterizerState();
 		void AdjustActiveScene();
 		void AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine);
