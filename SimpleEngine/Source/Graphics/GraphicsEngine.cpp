@@ -709,7 +709,7 @@ namespace Graphics
 		swapChainDesc.BufferDesc.Width = aWidth;
 		swapChainDesc.BufferDesc.Height = aHeight;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.OutputWindow = aWindowHandle;
 		swapChainDesc.SampleDesc.Count = 1;
@@ -793,19 +793,6 @@ namespace Graphics
 
 		result = myDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, myDepthBuffer.GetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create DepthStencilView");
-
-
-		//myTestShadowDepthBuffer
-
-		/*HRESULT test;
-		D3D11_TEXTURE2D_DESC testDesc = { 0 };
-		testDesc.Width = aWidth;
-		testDesc.Height = aHeight;
-		testDesc.MipLevels = 1;
-		testDesc.ArraySize = 1;
-		testDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-		testDesc.SampleDesc.Count = 1;
-		testDesc.SampleDesc.Quality = 1;*/
 	}
 
 	void GraphicsEngine::CreateDepthStencilState()

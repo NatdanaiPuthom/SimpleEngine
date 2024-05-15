@@ -136,8 +136,5 @@ namespace Graphics
 		float myClearColor[4];
 		unsigned int myFPSLevelCap;
 		bool myVSync;
-
-
-		ComPtr<ID3D11DepthStencilView> myTestShadowDepthBuffer;
 	};
 }
