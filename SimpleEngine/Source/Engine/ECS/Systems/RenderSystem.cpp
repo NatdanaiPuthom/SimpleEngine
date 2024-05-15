@@ -3,6 +3,7 @@
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace ECS
 {
@@ -23,9 +24,20 @@ namespace ECS
 		entity->SetName("SkyBox");
 
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-		entity->GetComponent<MeshComponent>()->shader = graphicsEngine->GetDefaultSkyBoxShader().get();
+		entity->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::SkyBox).get();
 		entity->GetComponent<MeshComponent>()->texture = graphicsEngine->GetDefaultSkyBoxTexture(Graphics::eSkyboxType::DayCloud).get();
 		entity->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::SkyBox);
+
+
+		ECS::Entity test = myEntityManager->CreateEntity();
+		test->AddComponent<TransformComponent>();
+		test->AddComponent<MeshComponent>();
+		test->SetName("Test");
+
+		test->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
+		test->GetComponent<MeshComponent>()->texture = graphicsEngine->GetDefaultTexture().get();
+		test->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
+
 	}
 
 	void RenderSystem::Update()
@@ -54,9 +66,28 @@ namespace ECS
 
 			if (mesh->shader == nullptr)
 			{
-				mesh->shader = graphicsEngine->GetDefaultShader().get();
+				mesh->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 			}
 		}
+
+		/*static Math::Vector3f dir = { 0.0f, 0.0f,0.0f };
+
+		if (MainSingleton::GetInputManager().IsKeyHeld('E'))
+		{
+			dir.x += 10.0f * Global::GetDeltaTime();
+		}
+
+		if (MainSingleton::GetInputManager().IsKeyHeld('C'))
+		{
+			dir.y += 10.0f * Global::GetDeltaTime();
+		}
+
+		if (MainSingleton::GetInputManager().IsKeyHeld('D'))
+		{
+			dir.z += 10.0f * Global::GetDeltaTime();
+		}*/
+
+		graphicsEngine->SetDirectionalLightDirection(Math::Vector3f(45.0f, 0.0f, 0.0f));
 	}
 
 	void RenderSystem::Render()

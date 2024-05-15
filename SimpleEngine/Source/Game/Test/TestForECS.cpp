@@ -30,10 +30,10 @@ namespace Test
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		meshComponent->mesh = modelFactory->LoadMesh("AnimatedModels/SimpleHuman3.fbx");
-		meshComponent->shader = graphicsEngine->GetDefaultShader().get();
+		meshComponent->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 		meshComponent->texture = graphicsEngine->GetDefaultTexture().get();
 
-		animatedComponent->shader = graphicsEngine->GetDefaultAnimatedShader().get();
+		animatedComponent->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Animated).get();
 		animatedComponent->skeleton = modelFactory->LoadSkeleton("AnimatedModels/SimpleHuman3.fbx");
 		animatedComponent->animation = modelFactory->LoadAnimationFBX("Animations/SimpleHuman3_Idle.fbx");
 
@@ -42,11 +42,10 @@ namespace Test
 
 		myEntityID = entity->GetID();
 
-
 		ECS::Entity e = World::GetECS()->CreateEntity();
 		e->AddComponent<ECS::MeshComponent>();
 		e->AddComponent<ECS::TransformComponent>();
-		e->GetComponent<ECS::MeshComponent>()->shader = graphicsEngine->GetDefaultShader().get();
+		e->GetComponent<ECS::MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 		myTestEntityID = e->GetID();
 	}
 

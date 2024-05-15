@@ -485,38 +485,6 @@ namespace Graphics
 		return nullptr;
 	}
 
-	std::shared_ptr<const Shader> GraphicsEngine::GetDefaultShader()
-	{
-		auto defaultShader = GetShader("DefaultPS.cso", "DefaultVS.cso");
-
-		if (defaultShader != nullptr)
-			return defaultShader;
-
-		return nullptr;
-	}
-
-	std::shared_ptr<const Shader> GraphicsEngine::GetDefaultSkyBoxShader()
-	{
-		auto skyboxShader = GetShader("SkyBoxPS.cso", "DefaultVS.cso");
-
-		if (skyboxShader != nullptr)
-		{
-			return skyboxShader;
-		}
-
-		return nullptr;
-	}
-
-	std::shared_ptr<const Shader> GraphicsEngine::GetDefaultAnimatedShader()
-	{
-		auto defaultShader = GetShader("DefaultPS.cso", "AnimatedModelVS.cso");
-
-		if (defaultShader != nullptr)
-			return defaultShader;
-
-		return nullptr;
-	}
-
 	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
 	{
 		auto shader = myLoadedShaders.find({ aPSFile, aVSFile });
@@ -536,6 +504,36 @@ namespace Graphics
 		}
 
 		return nullptr;
+	}
+
+	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const eShaderType aShaderType)
+	{
+		std::shared_ptr<const Shader> shader = nullptr;
+
+		switch (aShaderType)
+		{
+		case eShaderType::Unlit_Default:
+			shader = GetShader("DefaultPS.cso", "DefaultVS.cso");
+			break;
+		case eShaderType::Unlit_Animated:
+			shader = GetShader("DefaultPS.cso", "AnimatedModelVS.cso");
+			break;
+		case eShaderType::PBR_Default:
+			shader = GetShader("DefaultPBRPS.cso", "DefaultVS.cso");
+			break;	
+		case eShaderType::SkyBox:
+			shader = GetShader("SkyBoxPS.cso", "DefaultVS.cso");
+			break;
+		}
+
+		if (shader != nullptr)
+		{
+			return shader;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	Drawer::Renderer* GraphicsEngine::GetRenderer()
