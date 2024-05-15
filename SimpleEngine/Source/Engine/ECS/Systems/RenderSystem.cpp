@@ -41,8 +41,8 @@ namespace ECS
 			floor->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 			floor->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			floor->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
-			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f, -2.0f, 0.0f });
-			floor->GetComponent<TransformComponent>()->transform.SetScale({ 50.0f, 1.0f, 50.0f });
+			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 15.0f, -2.0f, 12.0f });
+			floor->GetComponent<TransformComponent>()->transform.SetScale({ 20.0f, 1.0f, 20.0f });
 		}
 
 
