@@ -521,6 +521,9 @@ namespace Graphics
 		case eShaderType::PBR_Default:
 			shader = GetShader("DefaultPBRPS.cso", "DefaultVS.cso");
 			break;	
+		case eShaderType::PBR_Animated:
+			shader = GetShader("DefaultPBRPS.cso", "AnimatedModelVS.cso");
+			break;
 		case eShaderType::SkyBox:
 			shader = GetShader("SkyBoxPS.cso", "DefaultVS.cso");
 			break;
