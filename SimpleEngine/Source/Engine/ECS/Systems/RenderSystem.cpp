@@ -52,8 +52,8 @@ namespace ECS
 			directionalLight->AddComponent<TransformComponent>();
 			directionalLight->AddComponent<MeshComponent>();
 
-			directionalLight->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
-			directionalLight->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
+			directionalLight->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
+			directionalLight->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture("Assets\\Textures\\Sunlight.dds").get();
 			directionalLight->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			directionalLight->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f, 5.0f, 0.0f });
 
@@ -156,9 +156,16 @@ namespace ECS
 		const Math::Vector3f forward = t->transform.GetMatrix().GetForward();
 
 		Drawer::Line line;
+		line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 		line.startPosition = t->transform.GetPosition();
 		line.endPosition = line.startPosition + forward * 5.0f;
 
+		Drawer::Sphere sphere;
+		sphere.radius = 0.25f;
+		sphere.position = line.endPosition;
+		sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+		Global::GetRenderer()->RenderSphere(sphere);
 		Global::GetRenderer()->RenderLine(line);
 	}
 }
