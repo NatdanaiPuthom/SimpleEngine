@@ -793,6 +793,19 @@ namespace Graphics
 
 		result = myDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, myDepthBuffer.GetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create DepthStencilView");
+
+
+		//myTestShadowDepthBuffer
+
+		/*HRESULT test;
+		D3D11_TEXTURE2D_DESC testDesc = { 0 };
+		testDesc.Width = aWidth;
+		testDesc.Height = aHeight;
+		testDesc.MipLevels = 1;
+		testDesc.ArraySize = 1;
+		testDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+		testDesc.SampleDesc.Count = 1;
+		testDesc.SampleDesc.Quality = 1;*/
 	}
 
 	void GraphicsEngine::CreateDepthStencilState()
