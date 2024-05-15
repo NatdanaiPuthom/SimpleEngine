@@ -13,5 +13,7 @@ namespace ECS
 		void Init() override;
 		void Update() override;
 		void Render() override;
+
+		ECS::EntityID myEntityID;
 	};
 }

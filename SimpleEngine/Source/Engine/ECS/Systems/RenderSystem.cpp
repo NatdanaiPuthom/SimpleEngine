@@ -8,6 +8,7 @@
 namespace ECS
 {
 	RenderSystem::RenderSystem(EntityManager* aECS) : System(aECS)
+		, myEntityID(static_cast<size_t>(-1))
 	{
 	}
 
@@ -43,6 +44,20 @@ namespace ECS
 			floor->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 15.0f, -2.0f, 12.0f });
 			floor->GetComponent<TransformComponent>()->transform.SetScale({ 20.0f, 1.0f, 20.0f });
+		}
+
+		{
+			ECS::Entity directionalLight = myEntityManager->CreateEntity();
+			directionalLight->SetName("Directional Light");
+			directionalLight->AddComponent<TransformComponent>();
+			directionalLight->AddComponent<MeshComponent>();
+
+			directionalLight->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
+			directionalLight->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
+			directionalLight->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
+			directionalLight->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f, 5.0f, 0.0f });
+
+			myEntityID = directionalLight->GetID();
 		}
 
 
@@ -105,24 +120,10 @@ namespace ECS
 			}
 		}
 
-		/*static Math::Vector3f dir = { 0.0f, 0.0f,0.0f };
-
-		if (MainSingleton::GetInputManager().IsKeyHeld('E'))
-		{
-			dir.x += 10.0f * Global::GetDeltaTime();
-		}
-
-		if (MainSingleton::GetInputManager().IsKeyHeld('C'))
-		{
-			dir.y += 10.0f * Global::GetDeltaTime();
-		}
-
-		if (MainSingleton::GetInputManager().IsKeyHeld('D'))
-		{
-			dir.z += 10.0f * Global::GetDeltaTime();
-		}*/
-
-		graphicsEngine->SetDirectionalLightDirection(Math::Vector3f(45.0f, 0.0f, 0.0f));
+		ECS::Entity e = myEntityManager->GetEntity(myEntityID);
+		ECS::TransformComponent* t = e->GetComponent<TransformComponent>();
+		const Math::Vector3f forward = t->transform.GetMatrix().GetForward();
+		graphicsEngine->SetDirectionalLightDirection((forward.GetNormalized()));
 	}
 
 	void RenderSystem::Render()
@@ -147,5 +148,17 @@ namespace ECS
 
 			Global::GetRenderer()->RenderStaticModel(transform, mesh);
 		}
+
+
+		ECS::Entity e = myEntityManager->GetEntity(myEntityID);
+
+		const ECS::TransformComponent* t = e->GetComponent<TransformComponent>();
+		const Math::Vector3f forward = t->transform.GetMatrix().GetForward();
+
+		Drawer::Line line;
+		line.startPosition = t->transform.GetPosition();
+		line.endPosition = line.startPosition + forward * 5.0f;
+
+		Global::GetRenderer()->RenderLine(line);
 	}
 }
