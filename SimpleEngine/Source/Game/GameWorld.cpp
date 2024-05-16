@@ -23,6 +23,8 @@ namespace Simple
 	{
 		myLevelManager->Init();
 		myRaycastManager->Init();
+
+		testShadow.Init();
 	}
 
 	void GameWorld::Update()
@@ -40,12 +42,16 @@ namespace Simple
 	{
 		myLevelManager->Render();
 		myRaycastManager->Render();
+
+		testShadow.Render();
 	}
 
 	void GameWorld::NormalUpdate()
 	{
 		myLevelManager->Update();
 		myRaycastManager->Update();
+
+		testShadow.Update();
 	}
 
 	void GameWorld::EarlyUpdate()

@@ -1,4 +1,5 @@
 #pragma once
+#include "Test/TestShadow.hpp"
 
 namespace Simple
 {
@@ -31,5 +32,7 @@ namespace Simple
 
 		float myFixedUpdateTimer;
 		const float myFixedUpdateFreqency;
+
+		Test::TestShadow testShadow;
 	};
 }
