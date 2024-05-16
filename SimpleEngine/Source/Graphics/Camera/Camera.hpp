@@ -1,5 +1,8 @@
 #pragma once
 #include "Engine/Math/Transform.hpp"
+#include "Engine/Math/Matrix4x4.hpp"
+#include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/Vector2.hpp"
 
 namespace Simpleton
 {
@@ -8,6 +11,12 @@ namespace Simpleton
 
 namespace Graphics
 {
+	enum class eCameraType
+	{
+		Perspective,
+		Orthographic
+	};
+
 	class Camera final
 	{
 	public:
@@ -49,15 +58,9 @@ namespace Graphics
 		bool IsFreeFlyActive() const;
 	private:
 		void SetPerspectiveProjection(const Math::Vector2ui aResolution);
-		void UpdateCameraVectors();
 	private:
 		Math::Transform myTransform;
 		Math::Matrix4x4f myProjectionMatrix;
-
-		Math::Vector3f myForward;
-		Math::Vector3f myRight;
-		Math::Vector3f myUp;
-
 		Math::Vector2i myCapturedPosition;
 
 		Simpleton::InputManager* myInput;
@@ -67,6 +70,8 @@ namespace Graphics
 		float myFarPlane;
 		float myMoveSpeed;
 		float myRotateSpeed;
+
+		eCameraType myCameraType;
 
 		bool myFreeFly;
 		bool myDebugCameraActive;

@@ -14,9 +14,8 @@ namespace Graphics
 		, myDebugCameraActive(false)
 		, myInput(nullptr)
 	{
-		SetPosition({ 0,0,0 });
-		SetPerspectiveProjection({ 1280, 720 });
-		UpdateCameraVectors();
+		myCameraType = eCameraType::Perspective;
+		UpdateResolution({ 1280,720 });
 	}
 
 	void Camera::Init()
@@ -48,6 +47,10 @@ namespace Graphics
 		{
 			const Math::Vector3f currentPosition = GetPosition();
 			const Math::Vector3f currentRotation = GetRotation();
+
+			const Math::Vector3f cameraForward = GetForward();
+			const Math::Vector3f cameraRight = GetRight();
+			const Math::Vector3f cameraUp = GetUp();
 
 			Math::Vector3f forward;
 			Math::Vector3f targetPosition(currentPosition);
@@ -82,25 +85,25 @@ namespace Graphics
 
 			if (myInput->IsKeyHeld('W'))
 			{
-				forward = myForward * speed * aDeltaTime;
+				forward = cameraForward * speed * aDeltaTime;
 				targetPosition += forward;
 			}
 
 			if (myInput->IsKeyHeld('S'))
 			{
-				forward = -1.0f * myForward * speed * aDeltaTime;
+				forward = -1.0f * cameraForward * speed * aDeltaTime;
 				targetPosition += forward;
 			}
 
 			if (myInput->IsKeyHeld('A'))
 			{
-				forward = -1.0f * myRight * speed * aDeltaTime;
+				forward = -1.0f * cameraRight * speed * aDeltaTime;
 				targetPosition += forward;
 			}
 
 			if (myInput->IsKeyHeld('D'))
 			{
-				forward = myRight * speed * aDeltaTime;
+				forward = cameraRight * speed * aDeltaTime;
 				targetPosition += forward;
 			}
 
@@ -133,7 +136,7 @@ namespace Graphics
 
 			if (myInput->IsKeyHeld(VK_SPACE))
 			{
-				targetPosition.y += direction * speed * myUp.y * aDeltaTime;
+				targetPosition.y += direction * speed * cameraUp.y * aDeltaTime;
 			}
 
 			if (myFreeFly)
@@ -193,30 +196,9 @@ namespace Graphics
 		myProjectionMatrix(4, 4) = 0.0f;
 	}
 
-	void Camera::UpdateCameraVectors()
-	{
-		const Math::Matrix4x4f modelToWorldMatrix = myTransform.GetMatrix();
-
-		myForward.x = modelToWorldMatrix(3, 1);
-		myForward.y = modelToWorldMatrix(3, 2);
-		myForward.z = modelToWorldMatrix(3, 3);
-		myForward.Normalize();
-
-		myRight.x = modelToWorldMatrix(1, 1);
-		myRight.y = modelToWorldMatrix(1, 2);
-		myRight.z = modelToWorldMatrix(1, 3);
-		myRight.Normalize();
-
-		myUp.x = modelToWorldMatrix(2, 1);
-		myUp.y = modelToWorldMatrix(2, 2);
-		myUp.z = modelToWorldMatrix(2, 3);
-		myUp.Normalize();
-	}
-
 	void Camera::SetPosition(const Math::Vector3f& aPosition)
 	{
 		myTransform.SetPosition(aPosition);
-		UpdateCameraVectors();
 	}
 
 	void Camera::SetRotation(const Math::Vector3f aRotationInDegree)
@@ -226,7 +208,14 @@ namespace Graphics
 
 	void Camera::UpdateResolution(const Math::Vector2ui aResolution)
 	{
-		SetPerspectiveProjection(aResolution);
+		switch (myCameraType)
+		{
+		case eCameraType::Perspective:
+			SetPerspectiveProjection(aResolution);
+			break;
+		case eCameraType::Orthographic:
+			break;
+		}
 	}
 
 	void Camera::InactiveFreeFly()
@@ -239,7 +228,11 @@ namespace Graphics
 	void Camera::SetNearPlane(const float aNearPlane, const Math::Vector2ui aResolution)
 	{
 		myNearPlane = aNearPlane;
-		SetPerspectiveProjection(aResolution);
+
+		if (myCameraType == eCameraType::Perspective)
+		{
+			SetPerspectiveProjection(aResolution);
+		}
 	}
 
 	void Camera::SetMoveSpeed(const float aSpeed)
@@ -255,7 +248,11 @@ namespace Graphics
 	void Camera::SetHorizontalFoV(const float aHorizontalFoVRad, const Math::Vector2ui aResolution)
 	{
 		myHorizontalFoVRad = aHorizontalFoVRad;
-		SetPerspectiveProjection(aResolution);
+
+		if (myCameraType == eCameraType::Perspective)
+		{
+			SetPerspectiveProjection(aResolution);
+		}
 	}
 
 	Math::Matrix4x4f Camera::GetModelToWorldMatrix() const
@@ -273,21 +270,25 @@ namespace Graphics
 		const Math::Vector3f& position = GetPosition();
 		Math::Matrix4x4f viewMatrix;
 
-		viewMatrix(1, 1) = myRight.x;
-		viewMatrix(2, 1) = myRight.y;
-		viewMatrix(3, 1) = myRight.z;
+		const Math::Vector3f forward = GetForward();
+		const Math::Vector3f right = GetRight();
+		const Math::Vector3f up = GetUp();
 
-		viewMatrix(1, 2) = myUp.x;
-		viewMatrix(2, 2) = myUp.y;
-		viewMatrix(3, 2) = myUp.z;
+		viewMatrix(1, 1) = right.x;
+		viewMatrix(2, 1) = right.y;
+		viewMatrix(3, 1) = right.z;
 
-		viewMatrix(1, 3) = -myForward.x;
-		viewMatrix(2, 3) = -myForward.y;
-		viewMatrix(3, 3) = -myForward.z;
+		viewMatrix(1, 2) = up.x;
+		viewMatrix(2, 2) = up.y;
+		viewMatrix(3, 2) = up.z;
 
-		viewMatrix(4, 1) = Dot(-1.0f * position, myRight);
-		viewMatrix(4, 1) = Dot(-1.0f * position, myUp);
-		viewMatrix(4, 1) = Dot(position, myForward);
+		viewMatrix(1, 3) = -forward.x;
+		viewMatrix(2, 3) = -forward.y;
+		viewMatrix(3, 3) = -forward.z;
+
+		viewMatrix(4, 1) = Dot(-1.0f * position, right);
+		viewMatrix(4, 1) = Dot(-1.0f * position, up);
+		viewMatrix(4, 1) = Dot(position, forward);
 
 		viewMatrix(1, 4) = 0.0f;
 		viewMatrix(2, 4) = 0.0f;
@@ -339,16 +340,16 @@ namespace Graphics
 
 	Math::Vector3f Camera::GetForward() const
 	{
-		return myForward;
+		return myTransform.GetMatrix().GetForward();
 	}
 
 	Math::Vector3f Camera::GetUp() const
 	{
-		return myUp;
+		return myTransform.GetMatrix().GetUp();
 	}
 
 	Math::Vector3f Camera::GetRight() const
 	{
-		return myRight;
+		return myTransform.GetMatrix().GetRight();
 	}
 }
