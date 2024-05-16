@@ -170,20 +170,6 @@ namespace Graphics
 		}
 	}
 
-	Math::Vector4f Camera::WorldToCameraSpace(const Math::Vector4f& aVector) const
-	{
-		return Math::Matrix4x4f::GetInverse(myTransform.GetMatrix()) * aVector;
-	}
-
-	Math::Vector4f Camera::CameraToProjectionSpace(const Math::Vector4f& aVector) const
-	{
-		Math::Vector4f projectedVector = myProjectionMatrix * aVector;
-		projectedVector.x = projectedVector.x / projectedVector.z;
-		projectedVector.y = projectedVector.y / projectedVector.z;
-
-		return projectedVector;
-	}
-
 	Math::Matrix4x4f Camera::GetWorldToClipMatrix()
 	{
 		const Math::Matrix4x4f clipMatrix = Math::Matrix4x4f::GetInverse(myTransform.GetMatrix()) * myProjectionMatrix;

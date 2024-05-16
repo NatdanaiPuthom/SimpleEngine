@@ -20,9 +20,6 @@ namespace Graphics
 		void UpdateResolution(const Math::Vector2ui aResolution);
 
 		void InactiveFreeFly();
-
-		Math::Vector4f WorldToCameraSpace(const Math::Vector4f& aVector) const;
-		Math::Vector4f CameraToProjectionSpace(const Math::Vector4f& aVector) const;
 	public:
 		void SetPosition(const Math::Vector3f& aPosition);
 		void SetRotation(const Math::Vector3f aRotationInDegree);
