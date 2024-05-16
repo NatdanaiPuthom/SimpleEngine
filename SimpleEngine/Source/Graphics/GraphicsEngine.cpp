@@ -87,15 +87,7 @@ namespace Graphics
 
 	void GraphicsEngine::PrepareFrame()
 	{
-		{
-			FrameBufferData frameBuffer = {};
-			frameBuffer.worldToClipMatrix = myCurrentCamera->GetWorldToClipMatrix();
-			frameBuffer.cameraPosition = myCurrentCamera->GetPosition();
-			frameBuffer.resolution = Global::GetResolution();
-
-			myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
-			myCameraConstantBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
-		}
+		UpdateCameraBuffer();
 
 		{
 			TimeBufferData timeBuffer = {};
@@ -274,6 +266,17 @@ namespace Graphics
 		PROFILER_END();
 	}
 
+	void GraphicsEngine::UpdateCameraBuffer()
+	{
+		FrameBufferData frameBuffer = {};
+		frameBuffer.worldToClipMatrix = myCurrentCamera->GetWorldToClipMatrix();
+		frameBuffer.cameraPosition = myCurrentCamera->GetPosition();
+		frameBuffer.resolution = Global::GetResolution();
+
+		myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
+		myCameraConstantBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
+	}
+
 	void GraphicsEngine::SetGlobalGraphicsEngineToThis()
 	{
 		Impl::SimpleGlobalGraphics::SetGraphicsEngine(this);
@@ -362,6 +365,7 @@ namespace Graphics
 	void GraphicsEngine::SetCamera(std::shared_ptr<Graphics::Camera> aCamera)
 	{
 		myCurrentCamera = aCamera;
+		UpdateCameraBuffer();
 	}
 
 	void GraphicsEngine::SetToDefaultCamera()
