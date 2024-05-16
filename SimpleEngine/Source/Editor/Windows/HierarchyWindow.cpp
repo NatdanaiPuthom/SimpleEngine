@@ -245,6 +245,8 @@ namespace Editor
 
 							std::string textureName = "Texture: ";
 							std::string meshName = "Mesh: ";
+							std::string pixelShaderName = "Pixel Shader: ";
+							std::string vertexShaderName = "Vertex Shader: ";
 
 							if (meshComponent->mesh != nullptr)
 							{
@@ -254,6 +256,12 @@ namespace Editor
 							if (meshComponent->texture != nullptr)
 							{
 								textureName += meshComponent->texture->GetShaderName();
+							}
+
+							if (meshComponent->shader != nullptr)
+							{
+								pixelShaderName += meshComponent->shader->GetPixelShaderName();
+								vertexShaderName += meshComponent->shader->GetVertexShaderName();
 							}
 
 							ImGui::Text(textureName.c_str());
@@ -292,6 +300,9 @@ namespace Editor
 
 								ImGui::EndDragDropTarget();
 							}
+
+							ImGui::Text(pixelShaderName.c_str());
+							ImGui::Text(vertexShaderName.c_str());
 						}
 
 						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))

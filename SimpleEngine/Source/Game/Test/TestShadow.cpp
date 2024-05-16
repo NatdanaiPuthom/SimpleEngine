@@ -47,7 +47,7 @@ namespace Test
 			floor->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 			floor->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			floor->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
-			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 9.0f, -2.0f, 10.0f });
+			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 11.0f, -2.0f, 10.0f });
 			floor->GetComponent<TransformComponent>()->transform.SetScale({ 25.0f, 1.0f, 25.0f });
 		}
 
@@ -77,7 +77,7 @@ namespace Test
 			e->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
 			e->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			e->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
-			e->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f + i * 2.0f, 0.0f, 0.0f });
+			e->GetComponent<TransformComponent>()->transform.SetPosition({ 2.0f + i * 2.0f, 0.0f, 0.0f });
 		}
 
 		for (size_t i = 0; i < 10; ++i)
@@ -91,7 +91,7 @@ namespace Test
 			e->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
 			e->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			e->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
-			e->GetComponent<TransformComponent>()->transform.SetPosition({ 9.0f, 0.0f, 2.0f + i * 2.0f });
+			e->GetComponent<TransformComponent>()->transform.SetPosition({ 11.0f, 0.0f, 2.0f + i * 2.0f });
 		}
 	}
 

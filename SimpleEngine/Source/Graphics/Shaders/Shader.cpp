@@ -58,6 +58,9 @@ namespace Graphics
 		if (FAILED(result))
 			return false;
 
+		myPixelShaderName = SimpleUtilities::ConvertFilePathToPrettyName(aPSFileName);
+		myVertexShaderName = SimpleUtilities::ConvertFilePathToPrettyName(aVSFileName);
+
 		return true;
 	}
 
@@ -78,5 +81,15 @@ namespace Graphics
 	{
 		aContext->VSSetShader(myVertexShader.Get(), nullptr, 0);
 		aContext->IASetInputLayout(myInputLayout.Get());
+	}
+
+	const std::string& Shader::GetPixelShaderName() const
+	{
+		return myPixelShaderName;
+	}
+
+	const std::string& Shader::GetVertexShaderName() const
+	{
+		return myVertexShaderName;
 	}
 }
