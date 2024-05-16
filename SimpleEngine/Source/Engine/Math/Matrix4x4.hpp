@@ -49,9 +49,10 @@ namespace Math
 		static Matrix4x4<T> CreateScaleMatrix(const Vector3<T>& aScale);
 
 		static Matrix4x4<T> Transpose(const Matrix4x4<T>& aMatrixToTranspose);
-
 		static Matrix4x4<T> GetInverse(Matrix4x4<T> aMatrixToInverse);
-		static Matrix4x4<T> GetFastInverse(const Matrix4x4<T>& aTransform);
+
+		//NOTE(v9.36.2): GetFastInverse should ONLY be use on Matrices with scale of 1
+		static Matrix4x4<T> GetFastInverse(const Matrix4x4<T>& aMatrix);
 		Matrix4x4<T> GetFastInverse();
 
 	private:
@@ -676,24 +677,24 @@ namespace Math
 
 	//Only works for objects with constant Scale = {1 , 1 , 1}
 	template<typename T>
-	inline Matrix4x4<T> Matrix4x4<T>::GetFastInverse(const Matrix4x4<T>& aTransform)
+	inline Matrix4x4<T> Matrix4x4<T>::GetFastInverse(const Matrix4x4<T>& aMatrix)
 	{
-		Matrix4x4<T> inverse = aTransform;
+		Matrix4x4<T> inverse = aMatrix;
 
-		inverse(1, 2) = aTransform(2, 1);
-		inverse(1, 3) = aTransform(3, 1);
+		inverse(1, 2) = aMatrix(2, 1);
+		inverse(1, 3) = aMatrix(3, 1);
 
-		inverse(2, 1) = aTransform(1, 2);
-		inverse(2, 3) = aTransform(3, 2);
+		inverse(2, 1) = aMatrix(1, 2);
+		inverse(2, 3) = aMatrix(3, 2);
 
-		inverse(3, 1) = aTransform(1, 3);
-		inverse(3, 2) = aTransform(2, 3);
+		inverse(3, 1) = aMatrix(1, 3);
+		inverse(3, 2) = aMatrix(2, 3);
 
-		inverse(4, 1) = ((-aTransform(4, 1)) * inverse(1, 1) - aTransform(4, 2) * inverse(2, 1) - aTransform(4, 3) * inverse(3, 1));
-		inverse(4, 2) = ((-aTransform(4, 1)) * inverse(1, 2) - aTransform(4, 2) * inverse(2, 2) - aTransform(4, 3) * inverse(3, 2));
-		inverse(4, 3) = ((-aTransform(4, 1)) * inverse(1, 3) - aTransform(4, 2) * inverse(2, 3) - aTransform(4, 3) * inverse(3, 3));
+		inverse(4, 1) = ((-aMatrix(4, 1)) * inverse(1, 1) - aMatrix(4, 2) * inverse(2, 1) - aMatrix(4, 3) * inverse(3, 1));
+		inverse(4, 2) = ((-aMatrix(4, 1)) * inverse(1, 2) - aMatrix(4, 2) * inverse(2, 2) - aMatrix(4, 3) * inverse(3, 2));
+		inverse(4, 3) = ((-aMatrix(4, 1)) * inverse(1, 3) - aMatrix(4, 2) * inverse(2, 3) - aMatrix(4, 3) * inverse(3, 3));
 
-		inverse(4, 4) = aTransform(4, 4);
+		inverse(4, 4) = aMatrix(4, 4);
 
 		return inverse;
 	}
