@@ -1,7 +1,6 @@
 #pragma once
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Vector4.hpp"
-#include "Engine/Math/Quaternion.hpp"
 #include "Engine/Math/Math.hpp"
 #include <string>
 #include <cassert>
@@ -10,6 +9,9 @@
 
 namespace Math
 {
+	template <typename T>
+	class Quaternion;
+
 	template <typename T = float>
 	class Matrix4x4
 	{
