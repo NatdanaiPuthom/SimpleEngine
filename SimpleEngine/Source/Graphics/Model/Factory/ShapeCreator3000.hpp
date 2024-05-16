@@ -19,7 +19,7 @@ namespace Graphics
 	public:
 		static MeshData CreateTerrain(const Graphics::TerrainData& aTerrainData = Graphics::TerrainData{});
 		static MeshData CreatePyramid(const Math::Vector3f& aSize = { 1.0f , 1.0f, 1.0f });
-		static MeshData CreateCube(const Math::Vector3f& aSize = { 1.0f, 1.0f , 1.0f });
+		static MeshData CreateCube(const Math::Vector3f& aSize = { 0.5f, 0.5f , 0.5f });
 		static MeshData CreateSkyBox(const Math::Vector3f& aSize = { 1000.0f, 1000.0f, 1000.0f });
 		static MeshData CreatePlane();
 		static MeshData Create2DPlane();
