@@ -5,6 +5,39 @@
 
 namespace Editor
 {
+	enum class eComponentType : size_t
+	{
+		Transform,
+		Mesh,
+		Animated,
+		AnimationPlayer,
+		Null,
+		Count
+	};
+
+	static void AddComponent(ECS::Entity aEntity, const eComponentType aType)
+	{
+		switch (aType)
+		{
+		case eComponentType::Transform:
+			aEntity->AddComponent<ECS::TransformComponent>();
+			break;
+		case eComponentType::Mesh:
+			aEntity->AddComponent<ECS::MeshComponent>();
+			aEntity->GetComponent<ECS::MeshComponent>()->shader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Unlit_Default).get();
+			break;
+		case eComponentType::Animated:
+			aEntity->AddComponent<ECS::AnimatedComponent>();
+			break;
+		case eComponentType::AnimationPlayer:
+			aEntity->AddComponent<ECS::AnimationPlayerComponent>();
+			break;
+		case eComponentType::Null:
+			aEntity->AddComponent<ECS::NullComponent>();
+			break;
+		}
+	}
+
 	HierarchyWindow::HierarchyWindow()
 	{
 	}
@@ -47,6 +80,16 @@ namespace Editor
 				if (ImGui::MenuItem("Add Entity"))
 				{
 					World::GetECS()->CreateEntity();
+					selected = static_cast<int>(entities.GetEntityCount()) - 1;
+				}
+
+				if (ImGui::MenuItem("Add Cube"))
+				{
+					ECS::Entity entity = World::GetECS()->CreateEntity();
+
+					AddComponent(entity, eComponentType::Transform);
+					AddComponent(entity, eComponentType::Mesh);
+
 					selected = static_cast<int>(entities.GetEntityCount()) - 1;
 				}
 
@@ -273,36 +316,18 @@ namespace Editor
 
 				if (ImGui::BeginPopup("Add Component"))
 				{
-					std::array<std::string, 5> components;
-					components[0] = "TransformComponent";
-					components[1] = "MeshComponent";
-					components[2] = "AnimatedComponent";
-					components[3] = "AnimationPlayerComponent";
-					components[4] = "NullComponent";
+					std::array<std::string, static_cast<size_t>(eComponentType::Count)> components;
+					components[static_cast<size_t>(eComponentType::Transform)] = "TransformComponent";
+					components[static_cast<size_t>(eComponentType::Mesh)] = "MeshComponent";
+					components[static_cast<size_t>(eComponentType::Animated)] = "AnimatedComponent";
+					components[static_cast<size_t>(eComponentType::AnimationPlayer)] = "AnimationPlayerComponent";
+					components[static_cast<size_t>(eComponentType::Null)] = "NullComponent";
 
 					for (size_t i = 0; i < components.size(); ++i)
 					{
 						if (ImGui::Selectable(components[i].c_str()))
 						{
-							switch (i)
-							{
-							case 0:
-								selectedEntity->AddComponent<ECS::TransformComponent>();
-								break;
-							case 1:
-								selectedEntity->AddComponent<ECS::MeshComponent>();
-								selectedEntity->GetComponent<ECS::MeshComponent>()->shader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Unlit_Default).get();
-								break;
-							case 2:
-								selectedEntity->AddComponent<ECS::AnimatedComponent>();
-								break;
-							case 3:
-								selectedEntity->AddComponent<ECS::AnimationPlayerComponent>();
-								break;
-							case 4:
-								selectedEntity->AddComponent<ECS::NullComponent>();
-								break;
-							}
+							AddComponent(selectedEntity, static_cast<eComponentType>(i));
 						}
 					}
 
