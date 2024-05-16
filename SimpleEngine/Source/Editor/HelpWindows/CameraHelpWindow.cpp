@@ -1,6 +1,7 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/HelpWindows/CameraHelpWindow.hpp"
 #include "Graphics/Camera/Camera.hpp"
+#include "Engine/Global.hpp"
 
 namespace Editor
 {
@@ -58,7 +59,7 @@ namespace Editor
 			if (ImGui::SliderFloat("FoV", &fov, 0.0f, 180.00f, "%0.2f"))
 			{
 				fov *= Math::globalDegToRad;
-				graphicsEngine->GetCurrentCamera()->SetFoV(fov);
+				graphicsEngine->GetCurrentCamera()->SetHorizontalFoV(fov, Global::GetResolution());
 			}
 
 			ImGui::Text("Fly Up       - SPACE");

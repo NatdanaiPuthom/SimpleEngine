@@ -152,17 +152,13 @@ namespace Global
 		localShouldClose.store(aShouldClose);
 	}
 
-	void SetResolution(const Math::Vector2ui& aResolution)
-	{
-		localResolution = aResolution;
-		localGraphicsEngine->GetCurrentCamera()->UpdateResolution();
-	}
-
 	void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen)
 	{
 		localWindowSize = aWindowSize;
+		localResolution = aWindowSize;
 		localIsFullScreen = aSetFullScreen;
 
 		localGraphicsEngine->SetWindowSize(localWindowSize, aSetFullScreen);
+		localGraphicsEngine->GetCurrentCamera()->UpdateResolution(localResolution);
 	}
 }
