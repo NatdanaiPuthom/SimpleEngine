@@ -4,8 +4,7 @@
 namespace Editor
 {
 	SettingsTool::SettingsTool()
-		: mySelectedWindowSize(1)
-		, mySelectedResolution(1)
+		: mySelectedWindowSize(0)
 		, mySelectedRasterizerState(0)
 		, myActiveSceneIndex(0)
 		, myConsoleIsOpen(true)
@@ -17,7 +16,6 @@ namespace Editor
 		LoadDataFromJson();
 		UpdateAndFetchCurrentMonitorResolution();
 
-		myWindowSizes.push_back(Math::Vector2ui(800, 600));
 		myWindowSizes.push_back(Math::Vector2ui(1280, 720));
 		myWindowSizes.push_back(Math::Vector2ui(1600, 900));
 		myWindowSizes.push_back(Math::Vector2ui(1920, 1080));

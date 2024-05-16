@@ -30,7 +30,6 @@ namespace Editor
 		Math::Vector2ui myMonitorResolution;
 
 		int myActiveSceneIndex;
-		int mySelectedResolution;
 		int mySelectedWindowSize;
 		int mySelectedRasterizerState;
 
