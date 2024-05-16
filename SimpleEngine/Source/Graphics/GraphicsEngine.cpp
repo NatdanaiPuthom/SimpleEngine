@@ -343,8 +343,6 @@ namespace Graphics
 		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)], newWidth, newHeight); //NOTE(v9.36.0): Remember to resize related render targets properly
 
 		SetRenderTarget(eRenderTarget::Backbuffer);
-
-		Global::SetResolution({ newWidth, newHeight });
 	}
 
 	void GraphicsEngine::SetRenderTarget(eRenderTarget aRenderTarget)

@@ -1,12 +1,11 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #include "Graphics/Camera/Camera.hpp"
-#include "Engine/Global.hpp"
 
 namespace Graphics
 {
-	Camera::Camera(const float aFoV, const float aNearPlane, const float aFarPlane)
-		: myFoV(aFoV)
+	Camera::Camera(const float aHorizontalFoVRad, const float aNearPlane, const float aFarPlane)
+		: myHorizontalFoVRad(aHorizontalFoVRad)
 		, myFarPlane(aFarPlane)
 		, myNearPlane(aNearPlane)
 		, myMoveSpeed(1.0f)
@@ -16,7 +15,7 @@ namespace Graphics
 		, myInput(nullptr)
 	{
 		SetPosition({ 0,0,0 });
-		CreateProjectionMatrix();
+		SetPerspectiveProjection({ 1280, 720 });
 		UpdateCameraVectors();
 	}
 
@@ -25,11 +24,9 @@ namespace Graphics
 		myInput = &MainSingleton::GetInputManager();
 	}
 
-	void Camera::Update(const float aDeltaTime)
+	void Camera::Update(const float aDeltaTime, const HWND& aHWND)
 	{
-		const HWND& hwnd = Global::GetEngineHWND();
-
-		if (GetForegroundWindow() != hwnd)
+		if (GetForegroundWindow() != aHWND)
 		{
 			if (myInput->GetMouseIsHidden())
 			{
@@ -139,7 +136,7 @@ namespace Graphics
 				targetPosition.y += direction * speed * myUp.y * aDeltaTime;
 			}
 
-			if (myFreeFly && GetForegroundWindow() == hwnd)
+			if (myFreeFly)
 			{
 				if (!myInput->GetMouseIsHidden())
 				{
@@ -187,31 +184,27 @@ namespace Graphics
 		return projectedVector;
 	}
 
-	Math::Vector2f Camera::ProjectionToPixel(const Math::Vector4f& aVector) const
-	{
-		const Math::Vector2ui resolutionUI(Global::GetResolution());
-		const Math::Vector2f resolution(static_cast<float>(resolutionUI.x), static_cast<float>(resolutionUI.y));
-
-		return Math::Vector2f(aVector.x * resolution.x / 2.0f + resolution.x / 2.0f, aVector.y * resolution.y / 2.0f + resolution.y / 2.0f);
-	}
-
 	Math::Matrix4x4f Camera::GetWorldToClipMatrix()
 	{
 		const Math::Matrix4x4f clipMatrix = Math::Matrix4x4f::GetInverse(myTransform.GetMatrix()) * myProjectionMatrix;
 		return clipMatrix;
 	}
 
-	void Camera::CreateProjectionMatrix()
+	void Camera::SetPerspectiveProjection(const Math::Vector2ui aResolution)
 	{
-		const Math::Vector2ui resolutionUI(Global::GetResolution());
-		const Math::Vector2f resolution(static_cast<float>(resolutionUI.x), static_cast<float>(resolutionUI.y));
+		const Math::Vector2f resolution(static_cast<float>(aResolution.x), static_cast<float>(aResolution.y));
 
-		myProjectionMatrix(1, 1) = 1 / tan(myFoV / 2);
-		myProjectionMatrix(2, 2) = (resolution.x / resolution.y) * (1 / tan(myFoV / 2));
-		myProjectionMatrix(3, 3) = myFarPlane / (myFarPlane - myNearPlane);
-		myProjectionMatrix(3, 4) = 1;
-		myProjectionMatrix(4, 3) = -myNearPlane * myFarPlane / (myFarPlane - myNearPlane);
-		myProjectionMatrix(4, 4) = 0;
+		const float Q = myFarPlane / (myFarPlane - myNearPlane);
+		const float verticalFoVRad = 2 * std::atan(std::tan(myHorizontalFoVRad / 2) * (resolution.y / resolution.x));
+		const float scaleX = 1.0f / std::tanf(myHorizontalFoVRad / 2.0f);
+		const float scaleY = 1.0f / std::tanf(verticalFoVRad * 0.5f);
+
+		myProjectionMatrix(1, 1) = scaleX;
+		myProjectionMatrix(2, 2) = scaleY;
+		myProjectionMatrix(3, 3) = Q;
+		myProjectionMatrix(3, 4) = 1.0f / Q;
+		myProjectionMatrix(4, 3) = -Q * myNearPlane;
+		myProjectionMatrix(4, 4) = 0.0f;
 	}
 
 	void Camera::UpdateCameraVectors()
@@ -234,16 +227,6 @@ namespace Graphics
 		myUp.Normalize();
 	}
 
-	void Camera::SetCameraValues(const Math::Vector3f& aPosition, const float aNearPlane, const float aFoV)
-	{
-		SetPosition(aPosition);
-
-		myNearPlane = aNearPlane;
-		myFoV = aFoV;
-
-		CreateProjectionMatrix();
-	}
-
 	void Camera::SetPosition(const Math::Vector3f& aPosition)
 	{
 		myTransform.SetPosition(aPosition);
@@ -255,9 +238,9 @@ namespace Graphics
 		myTransform.SetRotation(aRotationInDegree);
 	}
 
-	void Camera::UpdateResolution()
+	void Camera::UpdateResolution(const Math::Vector2ui aResolution)
 	{
-		CreateProjectionMatrix();
+		SetPerspectiveProjection(aResolution);
 	}
 
 	void Camera::InactiveFreeFly()
@@ -267,11 +250,10 @@ namespace Graphics
 		myFreeFly = false;
 	}
 
-	void Camera::SetNearPlane(const float aNearPlane)
+	void Camera::SetNearPlane(const float aNearPlane, const Math::Vector2ui aResolution)
 	{
 		myNearPlane = aNearPlane;
-
-		CreateProjectionMatrix();
+		SetPerspectiveProjection(aResolution);
 	}
 
 	void Camera::SetMoveSpeed(const float aSpeed)
@@ -284,11 +266,10 @@ namespace Graphics
 		myRotateSpeed = aRotationSpeed;
 	}
 
-	void Camera::SetFoV(const float aFoV)
+	void Camera::SetHorizontalFoV(const float aHorizontalFoVRad, const Math::Vector2ui aResolution)
 	{
-		myFoV = aFoV;
-
-		CreateProjectionMatrix();
+		myHorizontalFoVRad = aHorizontalFoVRad;
+		SetPerspectiveProjection(aResolution);
 	}
 
 	Math::Matrix4x4f Camera::GetModelToWorldMatrix() const
@@ -362,7 +343,7 @@ namespace Graphics
 
 	float Camera::GetFoV() const
 	{
-		return myFoV;
+		return myHorizontalFoVRad;
 	}
 
 	bool Camera::IsFreeFlyActive() const

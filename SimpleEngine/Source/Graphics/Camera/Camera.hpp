@@ -11,25 +11,23 @@ namespace Graphics
 	class Camera final
 	{
 	public:
-		Camera(const float aFoV = 1.57075f, const float aNearPlane = 0.1f, const float aFarPlane = 10000.0f);
+		Camera(const float aHorizontalFoVRad = 1.57075f, const float aNearPlane = 0.1f, const float aFarPlane = 10000.0f);
 		~Camera() = default;
 
 		void Init();
 
-		void Update(const float aDeltaTime);
-		void UpdateResolution();
+		void Update(const float aDeltaTime, const HWND& aHWND);
+		void UpdateResolution(const Math::Vector2ui aResolution);
 
 		void InactiveFreeFly();
 
 		Math::Vector4f WorldToCameraSpace(const Math::Vector4f& aVector) const;
 		Math::Vector4f CameraToProjectionSpace(const Math::Vector4f& aVector) const;
-		Math::Vector2f ProjectionToPixel(const Math::Vector4f& aVector) const;
 	public:
-		void SetCameraValues(const Math::Vector3f& aPosition, const float aNearPlane, const float aFoV);
 		void SetPosition(const Math::Vector3f& aPosition);
 		void SetRotation(const Math::Vector3f aRotationInDegree);
-		void SetNearPlane(const float aNearPlane);
-		void SetFoV(const float aFoV);
+		void SetNearPlane(const float aNearPlane, const Math::Vector2ui aResolution);
+		void SetHorizontalFoV(const float aHorizontalFoVRad, const Math::Vector2ui aResolution);
 
 		void SetMoveSpeed(const float aSpeed);
 		void SetRotateSpeed(const float aRotationSpeed);
@@ -53,13 +51,11 @@ namespace Graphics
 
 		bool IsFreeFlyActive() const;
 	private:
-		void CreateProjectionMatrix();
+		void SetPerspectiveProjection(const Math::Vector2ui aResolution);
 		void UpdateCameraVectors();
 	private:
-		Simpleton::InputManager* myInput;
-
-		Math::Matrix4x4f myProjectionMatrix;
 		Math::Transform myTransform;
+		Math::Matrix4x4f myProjectionMatrix;
 
 		Math::Vector3f myForward;
 		Math::Vector3f myRight;
@@ -67,7 +63,9 @@ namespace Graphics
 
 		Math::Vector2i myCapturedPosition;
 
-		float myFoV;
+		Simpleton::InputManager* myInput;
+
+		float myHorizontalFoVRad;
 		float myNearPlane;
 		float myFarPlane;
 		float myMoveSpeed;

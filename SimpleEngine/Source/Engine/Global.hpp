@@ -27,9 +27,6 @@ namespace Global
 
 	void SetGameShouldClose(const bool aShouldClose);
 
-	//NOTE(v7.0?): Not sure if this will do anything, only change Camera resolution
-	void SetResolution(const Math::Vector2ui& aResolution);
-
 	//WindowSize also change Resolution to fit. TO-DO(v9.0?): Fix dragable window size after setting full screen and revert to windowed
 	void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen = false);
 }

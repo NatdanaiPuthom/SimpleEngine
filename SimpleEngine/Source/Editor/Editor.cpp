@@ -30,7 +30,7 @@ namespace Editor
 
 	void EditorEngine::Update()
 	{
-		Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime());
+		Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
 
 		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
 		{
