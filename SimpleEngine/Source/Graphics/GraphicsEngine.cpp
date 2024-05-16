@@ -830,7 +830,7 @@ namespace Graphics
 	{
 		FrameBufferData cameraBuffer;
 
-		cameraBuffer.worldToClipMatrix = Math::Matrix4x4f::GetInverse(myCurrentCamera->GetModelToWorldMatrix()) * myCurrentCamera->GetProjectionMatrix();
+		cameraBuffer.worldToClipMatrix = Math::Matrix4x4f::GetInverse(myCurrentCamera->GetMatrix()) * myCurrentCamera->GetProjectionMatrix();
 		cameraBuffer.cameraPosition = Math::Vector3f{ 0.0f,0.0f,0.0f };
 
 		if (!myCameraConstantBuffer->Init(sizeof(FrameBufferData), &cameraBuffer))

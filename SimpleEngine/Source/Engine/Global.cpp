@@ -156,9 +156,10 @@ namespace Global
 	{
 		localWindowSize = aWindowSize;
 		localResolution = aWindowSize;
+
 		localIsFullScreen = aSetFullScreen;
 
 		localGraphicsEngine->SetWindowSize(localWindowSize, aSetFullScreen);
-		localGraphicsEngine->GetCurrentCamera()->UpdateResolution(localResolution);
+		localGraphicsEngine->GetCurrentCamera()->UpdateProjection(localResolution);
 	}
 }

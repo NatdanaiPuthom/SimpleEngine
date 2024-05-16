@@ -14,8 +14,7 @@ namespace Graphics
 		, myDebugCameraActive(false)
 		, myInput(nullptr)
 	{
-		myCameraType = eCameraType::Perspective;
-		UpdateResolution({ 1280,720 });
+		SetCameraType(eCameraType::Perspective, { 1280,720 });
 	}
 
 	void Camera::Init()
@@ -173,13 +172,13 @@ namespace Graphics
 		}
 	}
 
-	Math::Matrix4x4f Camera::GetWorldToClipMatrix()
+	Math::Matrix4x4f Camera::GetWorldToClipMatrix() const
 	{
 		const Math::Matrix4x4f clipMatrix = Math::Matrix4x4f::GetInverse(myTransform.GetMatrix()) * myProjectionMatrix;
 		return clipMatrix;
 	}
 
-	void Camera::SetPerspectiveProjection(const Math::Vector2ui aResolution)
+	void Camera::SetPerspectiveProjection(const Math::Vector2ui& aResolution)
 	{
 		const Math::Vector2f resolution(static_cast<float>(aResolution.x), static_cast<float>(aResolution.y));
 
@@ -201,12 +200,12 @@ namespace Graphics
 		myTransform.SetPosition(aPosition);
 	}
 
-	void Camera::SetRotation(const Math::Vector3f aRotationInDegree)
+	void Camera::SetRotation(const Math::Vector3f& aRotationInDegree)
 	{
 		myTransform.SetRotation(aRotationInDegree);
 	}
 
-	void Camera::UpdateResolution(const Math::Vector2ui aResolution)
+	void Camera::UpdateProjection(const Math::Vector2ui& aResolution)
 	{
 		switch (myCameraType)
 		{
@@ -225,7 +224,13 @@ namespace Graphics
 		myFreeFly = false;
 	}
 
-	void Camera::SetNearPlane(const float aNearPlane, const Math::Vector2ui aResolution)
+	void Camera::SetCameraType(const eCameraType aCameraType, const Math::Vector2ui& aResolution)
+	{
+		myCameraType = aCameraType;
+		UpdateProjection(aResolution);
+	}
+
+	void Camera::SetNearPlane(const float aNearPlane, const Math::Vector2ui& aResolution)
 	{
 		myNearPlane = aNearPlane;
 
@@ -245,7 +250,7 @@ namespace Graphics
 		myRotateSpeed = aRotationSpeed;
 	}
 
-	void Camera::SetHorizontalFoV(const float aHorizontalFoVRad, const Math::Vector2ui aResolution)
+	void Camera::SetHorizontalFoV(const float aHorizontalFoVRad, const Math::Vector2ui& aResolution)
 	{
 		myHorizontalFoVRad = aHorizontalFoVRad;
 
@@ -255,7 +260,7 @@ namespace Graphics
 		}
 	}
 
-	Math::Matrix4x4f Camera::GetModelToWorldMatrix() const
+	Math::Matrix4x4f Camera::GetMatrix() const
 	{
 		return myTransform.GetMatrix();
 	}
@@ -328,7 +333,7 @@ namespace Graphics
 		return myFarPlane;
 	}
 
-	float Camera::GetFoV() const
+	float Camera::GetHorizontalFoV() const
 	{
 		return myHorizontalFoVRad;
 	}

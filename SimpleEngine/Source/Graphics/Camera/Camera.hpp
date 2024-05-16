@@ -26,20 +26,22 @@ namespace Graphics
 		void Init();
 
 		void Update(const float aDeltaTime, const HWND& aHWND);
-		void UpdateResolution(const Math::Vector2ui aResolution);
+		void UpdateProjection(const Math::Vector2ui& aResolution);
 
 		void InactiveFreeFly();
 	public:
+		void SetCameraType(const eCameraType aCameraType, const Math::Vector2ui& aResolution);
+
 		void SetPosition(const Math::Vector3f& aPosition);
-		void SetRotation(const Math::Vector3f aRotationInDegree);
-		void SetNearPlane(const float aNearPlane, const Math::Vector2ui aResolution);
-		void SetHorizontalFoV(const float aHorizontalFoVRad, const Math::Vector2ui aResolution);
+		void SetRotation(const Math::Vector3f& aRotationInDegree);
+		void SetNearPlane(const float aNearPlane, const Math::Vector2ui& aResolution);
+		void SetHorizontalFoV(const float aHorizontalFoVRad, const Math::Vector2ui& aResolution);
 
 		void SetMoveSpeed(const float aSpeed);
 		void SetRotateSpeed(const float aRotationSpeed);
 	public:
-		Math::Matrix4x4f GetWorldToClipMatrix();
-		Math::Matrix4x4f GetModelToWorldMatrix() const;
+		Math::Matrix4x4f GetWorldToClipMatrix() const;
+		Math::Matrix4x4f GetMatrix() const;
 		Math::Matrix4x4f GetProjectionMatrix() const;
 		Math::Matrix4x4f GetViewMatrix() const;
 
@@ -53,11 +55,11 @@ namespace Graphics
 		float GetMoveSpeed() const;
 		float GetNearPlane() const;
 		float GetFarPlane() const;
-		float GetFoV() const;
+		float GetHorizontalFoV() const;
 
 		bool IsFreeFlyActive() const;
 	private:
-		void SetPerspectiveProjection(const Math::Vector2ui aResolution);
+		void SetPerspectiveProjection(const Math::Vector2ui& aResolution);
 	private:
 		Math::Transform myTransform;
 		Math::Matrix4x4f myProjectionMatrix;

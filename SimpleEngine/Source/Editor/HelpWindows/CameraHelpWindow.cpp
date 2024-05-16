@@ -55,7 +55,7 @@ namespace Editor
 			ImGui::Dummy(ImVec2(58, 0));
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(100.0f);
-			float fov = graphicsEngine->GetCurrentCamera()->GetFoV() * Math::globalRadToDeg;
+			float fov = graphicsEngine->GetCurrentCamera()->GetHorizontalFoV() * Math::globalRadToDeg;
 			if (ImGui::SliderFloat("FoV", &fov, 0.0f, 180.00f, "%0.2f"))
 			{
 				fov *= Math::globalDegToRad;
