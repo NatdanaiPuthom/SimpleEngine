@@ -39,6 +39,7 @@ namespace Graphics
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
 
 		myEditorCamera = std::make_shared<Graphics::Camera>();
+		myShadowCamera = std::make_shared<Graphics::Camera>();
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 
 		myCurrentCamera = myEditorCamera;
@@ -77,10 +78,10 @@ namespace Graphics
 		SetRasterizerState(eRasterizerState::BackfaceCulling);
 		myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
 
-		myCameraConstantBuffer->SetSlot(CAMERA_CONSTANT_BUFFER_SLOT);
-		myTimeConstantBuffer->SetSlot(TIME_CONSTANT_BUFFER_SLOT);
-		myLightConstantBuffer->SetSlot(LIGHT_CONSTANT_BUFFER_SLOT);
-		myBonesConstantBuffer->SetSlot(BONES_CONSTANT_BUFFER_SLOT);
+		myCameraConstantBuffer->SetSlot(CONSTANT_BUFFER_SLOT_CAMERA);
+		myTimeConstantBuffer->SetSlot(CONSTANT_BUFFER_SLOT_TIME);
+		myLightConstantBuffer->SetSlot(CONSTANT_BUFFER_SLOT_LIGHT);
+		myBonesConstantBuffer->SetSlot(CONSTANT_BUFFER_SLOT_BONES);
 
 		return true;
 	}
@@ -100,6 +101,7 @@ namespace Graphics
 		{
 			LightBufferData lightBufferData;
 
+			lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix() * myShadowCamera->GetProjectionMatrix());
 			lightBufferData.directionalLightColor = myLightBufferData->directionalLightColor;
 			lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
 
@@ -123,28 +125,28 @@ namespace Graphics
 
 	void GraphicsEngine::PreloadTextures()
 	{
-		if (!AddTexture("Assets\\Textures\\DefaultTexture.dds", 0))
+		if (!AddTexture("Assets\\Textures\\DefaultTexture.dds", TEXTURE_SLOT_ALBEDO))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cat.dds", 0))
+		if (!AddTexture("Assets\\Textures\\Cat.dds", TEXTURE_SLOT_ALBEDO))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Hamster.dds", 0))
+		if (!AddTexture("Assets\\Textures\\Hamster.dds", TEXTURE_SLOT_ALBEDO))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cat-scared.dds", 0))
+		if (!AddTexture("Assets\\Textures\\Cat-scared.dds", TEXTURE_SLOT_ALBEDO))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds", 14)) //NOTE(v9.35.5): CubeMap has been at slot 14 and will be there for now
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds", TEXTURE_SLOT_CUBEMAP))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds", 14)) //NOTE(v9.35.5): CubeMap has been at slot 14 and will be there for now
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds", TEXTURE_SLOT_CUBEMAP))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds", 14)) //NOTE(v9.35.5): CubeMap has been at slot 14 and will be there for now
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds", TEXTURE_SLOT_CUBEMAP))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds", 14)) //NOTE(v9.35.5): CubeMap has been at slot 14 and will be there for now
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds", TEXTURE_SLOT_CUBEMAP))
 			assert(false && "Failed to add Texture");
 	}
 
@@ -819,10 +821,13 @@ namespace Graphics
 	{
 		LightBufferData lightBufferData;
 
+		lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::Identity();
 		lightBufferData.directionalLightColor = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 		lightBufferData.directionalLightDirection = Math::Vector3f(0.0f, 0.0f, 0.0f);
 
-		if (!myLightConstantBuffer->Init(sizeof(LightBufferData), &lightBufferData))
+		if (myLightConstantBuffer->Init(sizeof(LightBufferData), &lightBufferData) == false)
+		{
 			assert(false && "Failed to create LightConstantBuffer");
+		}
 	}
 }

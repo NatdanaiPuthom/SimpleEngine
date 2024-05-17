@@ -47,8 +47,8 @@ namespace Drawer
 
 		myBoundingBoxDrawer->Init();
 
-		myObjectBuffer->SetSlot(OBJECT_CONSTANT_BUFFER_SLOT);
-		myBoneBuffer->SetSlot(BONES_CONSTANT_BUFFER_SLOT);
+		myObjectBuffer->SetSlot(CONSTANT_BUFFER_SLOT_OBJECT);
+		myBoneBuffer->SetSlot(CONSTANT_BUFFER_SLOT_BONES);
 	}
 
 	void Renderer::RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const

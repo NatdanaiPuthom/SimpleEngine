@@ -55,6 +55,10 @@ namespace Graphics
 	class GraphicsEngine final
 	{
 	public:
+		void SetShadowCamera(std::shared_ptr<Camera> aCamera)
+		{
+			myShadowCamera = aCamera;
+		}
 
 		Test::ShadowDSV CreateShadowDSV(const Math::Vector2ui& aResolution)
 		{
@@ -240,6 +244,7 @@ namespace Graphics
 
 		std::shared_ptr<Camera> myCurrentCamera;
 		std::shared_ptr<Camera> myEditorCamera;
+		std::shared_ptr<Camera> myShadowCamera;
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
 		std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
@@ -256,7 +261,5 @@ namespace Graphics
 		float myClearColor[4];
 		unsigned int myFPSLevelCap;
 		bool myVSync;
-
-
 	};
 }
