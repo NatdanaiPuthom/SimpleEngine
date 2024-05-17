@@ -195,6 +195,24 @@ namespace Graphics
 		myProjectionMatrix(4, 4) = 0.0f;
 	}
 
+	void Camera::SetOrtographicProjection(const float aHalfSize, const float aNear, const float aFar)
+	{
+		const float left = -aHalfSize;
+		const float right = aHalfSize;
+		const float top = -aHalfSize;
+		const float bottom = aHalfSize;
+
+		myProjectionMatrix = Math::Matrix4x4f::Identity();
+
+		myProjectionMatrix(1, 1) = 2.0f / (right - left);
+		myProjectionMatrix(2, 2) = 2.0f / (bottom - top);
+		myProjectionMatrix(3, 3) = 1.0f / (aFar - aNear);
+
+		myProjectionMatrix(4, 1) = -(right + left) / (right - left);
+		myProjectionMatrix(4, 2) = -(bottom + top) / (bottom - top);
+		myProjectionMatrix(4, 3) = -(aNear) / (aFar - aNear);
+	}
+
 	void Camera::SetPosition(const Math::Vector3f& aPosition)
 	{
 		myTransform.SetPosition(aPosition);

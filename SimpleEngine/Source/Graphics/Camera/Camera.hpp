@@ -30,6 +30,9 @@ namespace Graphics
 
 		void InactiveFreeFly();
 	public:
+		void SetOrtographicProjection(const float aHalfSize, const float aNear, const float aFar);
+		void SetPerspectiveProjection(const Math::Vector2ui& aResolution);
+
 		void SetCameraType(const eCameraType aCameraType, const Math::Vector2ui& aResolution);
 
 		void SetPosition(const Math::Vector3f& aPosition);
@@ -58,8 +61,7 @@ namespace Graphics
 		float GetHorizontalFoV() const;
 
 		bool IsFreeFlyActive() const;
-	private:
-		void SetPerspectiveProjection(const Math::Vector2ui& aResolution);
+
 	private:
 		Math::Transform myTransform;
 		Math::Matrix4x4f myProjectionMatrix;
