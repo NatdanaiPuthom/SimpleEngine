@@ -27,25 +27,11 @@ cbuffer TimeBuffer : register(b2)
 }
 
 cbuffer LightBuffer : register(b3)
-{
-    float4 skyColor;
-    float4 groundColor;
+{  
+    float4 directionalLightColor;
     
     float3 directionLightDirection;
     float paddingDirectionalLightDirection;
-    
-    float4 directionalLightColor;
-    
-    struct PointLightData
-    {
-        float4 position;
-        float4 color;
-        float range;
-        float3 padding;
-    } pointlights[8];
-    
-    uint numberOfPointlights;
-    float3 paddingPointlightAmounts;
 };
 
 cbuffer BoneBuffer : register(b4)

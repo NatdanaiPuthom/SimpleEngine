@@ -99,26 +99,9 @@ namespace Graphics
 
 		{
 			LightBufferData lightBufferData;
-			lightBufferData.groundColor = myLightBufferData->groundColor;
-			lightBufferData.skyColor = myLightBufferData->skyColor;
 
 			lightBufferData.directionalLightColor = myLightBufferData->directionalLightColor;
 			lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
-
-			lightBufferData.numberOfPointlights = 0;
-
-			{//Test
-				myLightBufferData->pointLights[0].position = { -5.0f, 4.0f, 0.0f,1.0f };
-				myLightBufferData->pointLights[0].color = { 1.0f, 0.0f, 0.0f,1.0f };
-				myLightBufferData->pointLights[0].range = 100.0f;
-			}
-
-			for (unsigned int i = 0; i < lightBufferData.numberOfPointlights; i++)
-			{
-				lightBufferData.pointLights[i].position = myLightBufferData->pointLights[i].position;
-				lightBufferData.pointLights[i].color = myLightBufferData->pointLights[i].color;
-				lightBufferData.pointLights[i].range = myLightBufferData->pointLights[i].range;
-			}
 
 			myLightConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
 			myLightConstantBuffer->Update(sizeof(LightBufferData), &lightBufferData);
@@ -426,16 +409,6 @@ namespace Graphics
 		myLightBufferData->directionalLightColor = aColor;
 	}
 
-	void GraphicsEngine::SetSkyColor(const Math::Vector4f& aColor)
-	{
-		myLightBufferData->skyColor = aColor;
-	}
-
-	void GraphicsEngine::SetGroundColor(const Math::Vector4f& aColor)
-	{
-		myLightBufferData->groundColor = aColor;
-	}
-
 	std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const char* aFilePath)
 	{
 		auto it = myLoadedTextures.find(aFilePath);
@@ -578,16 +551,6 @@ namespace Graphics
 	Math::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
 	{
 		return myLightBufferData->directionalLightDirection;
-	}
-
-	Math::Vector4f GraphicsEngine::GetSkyColor() const
-	{
-		return myLightBufferData->skyColor;
-	}
-
-	Math::Vector4f GraphicsEngine::GetGroundColor() const
-	{
-		return myLightBufferData->groundColor;
 	}
 
 	unsigned int GraphicsEngine::GetFPSLevelCap() const
@@ -856,12 +819,8 @@ namespace Graphics
 	{
 		LightBufferData lightBufferData;
 
-		lightBufferData.skyColor = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-		lightBufferData.groundColor = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-
 		lightBufferData.directionalLightColor = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 		lightBufferData.directionalLightDirection = Math::Vector3f(0.0f, 0.0f, 0.0f);
-
 
 		if (!myLightConstantBuffer->Init(sizeof(LightBufferData), &lightBufferData))
 			assert(false && "Failed to create LightConstantBuffer");

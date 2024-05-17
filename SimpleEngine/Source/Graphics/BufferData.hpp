@@ -30,24 +30,10 @@ struct alignas(16) TimeBufferData final
 
 struct alignas(16) LightBufferData final
 {
-	Math::Vector4f skyColor = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-	Math::Vector4f groundColor = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+	Math::Vector4f directionalLightColor = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 	Math::Vector3f directionalLightDirection;
 	const float paddingDirectionalLightDirection = -1.0f;
-
-	Math::Vector4f directionalLightColor = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-
-	struct PointLightData
-	{
-		Math::Vector4f position;
-		Math::Vector4f color = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-		float range = 0.0f;
-		const float padding[3] = { -1.0f };
-	} pointLights[8];
-
-	unsigned int numberOfPointlights = 0;
-	const float paddingPointlightData[3] = { -1.0f };
 };
 
 struct alignas(16) BonesBufferData

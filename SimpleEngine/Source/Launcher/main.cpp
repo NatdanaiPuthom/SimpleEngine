@@ -68,6 +68,23 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	//Script::SimpleNodeScript simpleScript;
 	//simpleScript.Init();
 
+	Test::ShadowDSV shadowDSV = graphicsEngine.CreateShadowDSV({ 1280,720 });
+	Test::ShadowDSV normalDSV = graphicsEngine.CreateShadowDSV({ 1280,720 });
+	Test::ShadowRTV shadowRTV = graphicsEngine.CreateShadowRTV({ 2048,2048 }, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT);
+
+	std::shared_ptr<Graphics::Camera> shadowCamera = std::make_shared<Graphics::Camera>();
+	shadowCamera->Init();
+
+	const float shadowCameraSize = 6.0f; shadowCameraSize;
+
+	shadowCamera->SetOrtographicProjection(shadowCameraSize, 0.1f, 1000.0f);
+	shadowCamera->SetPosition({ 5.0f,0.0f,-1.0f });
+	shadowCamera->SetRotation({ 1.0f,0.0f,0.0f });
+
+	shadowDSV.Clear(graphicsEngine.GetContext());
+	shadowRTV.Clear(graphicsEngine.GetContext());
+	normalDSV.Clear(graphicsEngine.GetContext());
+
 	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
