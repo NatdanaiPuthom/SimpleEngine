@@ -2,8 +2,10 @@
 #define SIMPLE_MAX_BONES 64
 
 SamplerState aSampler : register(s0);
+
 Texture2D aDefaultTexture : register(t0);
-TextureCube aCubeMap : register(t14);
+TextureCube aCubeMap : register(t4);
+Texture2D GlobalDirectionalLightShadowMap : register(t5);
 
 cbuffer FrameBuffer : register(b0)
 {
@@ -28,8 +30,9 @@ cbuffer TimeBuffer : register(b2)
 
 cbuffer LightBuffer : register(b3)
 {  
+    float4x4 directionalLightWorldToProjectionMatrix;
     float4 directionalLightColor;
-    
+   
     float3 directionLightDirection;
     float paddingDirectionalLightDirection;
 };
