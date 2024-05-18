@@ -13,21 +13,21 @@ PixelOutput main(PixelInputType aInput)
     float4 directionalLightProjectedPositionTemp = mul(directionalLightWorldToProjectionMatrix, aInput.worldPosition);
     float3 directionalLightProjectedPosition = directionalLightProjectedPositionTemp.xyz / directionalLightProjectedPositionTemp.w;
     
-    if (clamp(directionalLightProjectedPosition.x, -1.0f, 1.0f) == directionalLightProjectedPosition.x &&
-		clamp(directionalLightProjectedPosition.y, -1.0f, 1.0f) == directionalLightProjectedPosition.y)
+    if (clamp(directionalLightProjectedPosition.x, -1.0, 1.0) == directionalLightProjectedPosition.x &&
+        clamp(directionalLightProjectedPosition.y, -1.0, 1.0) == directionalLightProjectedPosition.y)
     {
         float computedZ = directionalLightProjectedPosition.z;
-        float shadowMapZ = GlobalDirectionalLightShadowMap.Sample(aSampler, 0.5f + float2(0.5f, -0.5f) * directionalLightProjectedPosition.xy).z;
-
-        float bias = 0.001f;
+        float shadowMapZ = GlobalDirectionalLightShadowMap.Sample(aSampler, 0.5f + float2(0.5f, -0.5f) * directionalLightProjectedPosition.xy).r;
+        float bias = 0.001;
         
         shadowFactor = (computedZ < shadowMapZ + bias);
-        shadowFactor += 0.0f;
     }
     
-    float3 radiance = albedo.rgb * (directionalLightColor.xyz) + shadowFactor ;
+    float3 radiance = albedo.rgb * (directionalLightColor.xyz) + shadowFactor;
     output.color.rgb = radiance * lightIntensity * directionalLightColor.a;
     output.color.a = albedo.a;
+    
+    output.color.rgb = albedo.rgb + shadowFactor * directionalLightColor.rgb;
     
     return output;
 }

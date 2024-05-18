@@ -78,7 +78,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	const float shadowCameraSize = 20.0f; shadowCameraSize;
 
-	shadowCamera->SetOrtographicProjection(shadowCameraSize, 10.0f, -1000.0f);
+	shadowCamera->SetOrtographicProjection(shadowCameraSize, -1000.0f, 500.0f);
 	graphicsEngine.SetShadowCamera(shadowCamera);
 
 	while (Global::GetGameIsRunning())
@@ -112,15 +112,17 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 			shadowRTV.Clear(graphicsEngine.GetContext());
 			normalDSV.Clear(graphicsEngine.GetContext());
 
+			shadowCamera->SetPosition({ 0.0f,0.0f,0.0f });
 			graphicsEngine.SetCamera(shadowCamera);
 
 			auto context = graphicsEngine.GetContext();
 			Math::Vector4f clearColor = { 0.0f,0.0f,1.0f, 1.0f };
 
 			ID3D11ShaderResourceView* nullSRV = nullptr;
+			ID3D11ShaderResourceView* nullSRV2 = nullptr;
 			context->PSSetShaderResources(TEXTURE_SLOT_ALBEDO, 1, &nullSRV);
+			context->PSSetShaderResources(5, 1, &nullSRV2);
 			context->OMSetRenderTargets(0, nullptr, shadowDSV.dsv.Get());
-			context->ClearRenderTargetView(shadowRTV.rtv.Get(), &clearColor.x);
 
 			ecs.Render();
 			gameWorld.Render();
@@ -133,27 +135,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 			}
 			ImGui::End();
 
-			static bool useShadowCamera = false;
-
-			if (MainSingleton::GetInputManager().IsKeyPressed('G'))
-			{
-				useShadowCamera = true;
-			}
-			else if (MainSingleton::GetInputManager().IsKeyPressed('F'))
-			{
-				useShadowCamera = false;
-			}
-
-			if (useShadowCamera)
-			{
-				graphicsEngine.SetCamera(shadowCamera);
-			}
-			else
-			{
-				graphicsEngine.SetCamera(graphicsEngine.GetEditorCamera());
-			}
 		}
 
+		graphicsEngine.GetContext()->PSSetShaderResources(5, 1, shadowDSV.srv.GetAddressOf());
+		graphicsEngine.SetCamera(graphicsEngine.GetEditorCamera());
+	
 		PROFILER_BEGIN("Render To ImGui");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTarget::ImGui);
 		ecs.Render();
@@ -173,6 +159,5 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_BEGIN("Endframe");
 		graphicsEngine.EndFrame();
 		PROFILER_END();
-
 	}
 }

@@ -101,7 +101,7 @@ namespace Graphics
 		{
 			LightBufferData lightBufferData;
 
-			lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix())  *myShadowCamera->GetProjectionMatrix();
+			lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix()) * myShadowCamera->GetProjectionMatrix();
 			lightBufferData.directionalLightColor = myLightBufferData->directionalLightColor;
 			lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
 
