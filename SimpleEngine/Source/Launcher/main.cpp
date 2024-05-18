@@ -69,17 +69,20 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	//Script::SimpleNodeScript simpleScript;
 	//simpleScript.Init();
 
-	Test::ShadowDSV shadowDSV = graphicsEngine.CreateShadowDSV({ 1280,720 });
-	Test::ShadowDSV normalDSV = graphicsEngine.CreateShadowDSV({ 1280,720 });
-	Test::ShadowRTV shadowRTV = graphicsEngine.CreateShadowRTV({ 2048,2048 }, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT);
+	Test::ShadowDSV depthBuffer = graphicsEngine.CreateShadowDSV({ 1280,720 });
+	Test::ShadowRTV renderTarget = graphicsEngine.CreateShadowRTV({ 1280,720 }, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT);
+	Test::ShadowDSV shadowDepthBuffer = graphicsEngine.CreateShadowDSV({ 2048,2048 });
 
 	std::shared_ptr<Graphics::Camera> shadowCamera = std::make_shared<Graphics::Camera>();
 	shadowCamera->Init();
 
 	const float shadowCameraSize = 20.0f; shadowCameraSize;
 
-	shadowCamera->SetOrtographicProjection(shadowCameraSize, -1000.0f, 500.0f);
+	shadowCamera->SetOrtographicProjection(shadowCameraSize, -1000.0f, 1000.0f);
 	graphicsEngine.SetShadowCamera(shadowCamera);
+
+	std::shared_ptr<Graphics::Shader> s = std::make_shared<Graphics::Shader>();
+	graphicsEngine.AddShader("PostprocessTonemapPS.cso", "PostprocessVS.cso");
 
 	while (Global::GetGameIsRunning())
 	{
@@ -108,28 +111,25 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		{
-			shadowDSV.Clear(graphicsEngine.GetContext());
-			shadowRTV.Clear(graphicsEngine.GetContext());
-			normalDSV.Clear(graphicsEngine.GetContext());
+			shadowDepthBuffer.Clear(graphicsEngine.GetContext());
+			renderTarget.Clear(graphicsEngine.GetContext());
+			depthBuffer.Clear(graphicsEngine.GetContext());
 
-			shadowCamera->SetPosition({ 0.0f,0.0f,0.0f });
 			graphicsEngine.SetCamera(shadowCamera);
 
 			auto context = graphicsEngine.GetContext();
 			Math::Vector4f clearColor = { 0.0f,0.0f,1.0f, 1.0f };
 
 			ID3D11ShaderResourceView* nullSRV = nullptr;
-			ID3D11ShaderResourceView* nullSRV2 = nullptr;
-			context->PSSetShaderResources(TEXTURE_SLOT_ALBEDO, 1, &nullSRV);
-			context->PSSetShaderResources(5, 1, &nullSRV2);
-			context->OMSetRenderTargets(0, nullptr, shadowDSV.dsv.Get());
+			context->PSSetShaderResources(5, 1, &nullSRV);
+			context->OMSetRenderTargets(0, nullptr, shadowDepthBuffer.dsv.Get());
 
 			ecs.Render();
 			gameWorld.Render();
 
 			if (ImGui::Begin("Shadow DSV"))
 			{
-				ImTextureID texture = shadowDSV.srv.Get();
+				ImTextureID texture = shadowDepthBuffer.srv.Get();
 				ImVec2 size = ImGui::GetWindowSize();
 				ImGui::Image(texture, size);
 			}
@@ -137,9 +137,27 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		}
 
-		graphicsEngine.GetContext()->PSSetShaderResources(5, 1, shadowDSV.srv.GetAddressOf());
+		graphicsEngine.GetContext()->OMSetRenderTargets(1, renderTarget.rtv.GetAddressOf(), depthBuffer.dsv.Get());
+		graphicsEngine.GetContext()->PSSetShaderResources(5, 1, shadowDepthBuffer.srv.GetAddressOf());
 		graphicsEngine.SetCamera(graphicsEngine.GetEditorCamera());
-	
+		ecs.Render();
+		gameWorld.Render();
+
+		graphicsEngine.GetContext()->OMSetRenderTargets(1, graphicsEngine.myRenderTargets[static_cast<size_t>(Graphics::eRenderTarget::Backbuffer)].renderTargetView.GetAddressOf(), nullptr);
+		graphicsEngine.GetContext()->PSSetShaderResources(0, 1, renderTarget.srv.GetAddressOf());
+
+		graphicsEngine.GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		graphicsEngine.GetContext()->IASetInputLayout(nullptr);
+		graphicsEngine.GetContext()->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
+		graphicsEngine.GetContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+
+		auto shader = graphicsEngine.GetShader("PostprocessTonemapPS.cso", "PostprocessVS.cso");
+
+		graphicsEngine.GetContext()->VSSetShader(shader->GetVertexShader().Get(), nullptr, 0);
+		graphicsEngine.GetContext()->PSSetShader(shader->GetPixelShader().Get(), nullptr, 0);
+		graphicsEngine.GetContext()->GSSetShader(nullptr, nullptr, 0);
+		graphicsEngine.GetContext()->Draw(3, 0);
+
 		PROFILER_BEGIN("Render To ImGui");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTarget::ImGui);
 		ecs.Render();

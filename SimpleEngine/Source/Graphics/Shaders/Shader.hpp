@@ -27,6 +27,9 @@ namespace Graphics
 		const std::string& GetPixelShaderName() const;
 		const std::string& GetVertexShaderName() const;
 
+		ComPtr<ID3D11VertexShader> GetVertexShader() const { return myVertexShader; };
+		ComPtr<ID3D11PixelShader> GetPixelShader() const { return myPixelShader; };
+
 	private:
 		std::string myPixelShaderName;
 		std::string myVertexShaderName;
