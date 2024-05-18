@@ -76,13 +76,12 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	std::shared_ptr<Graphics::Camera> shadowCamera = std::make_shared<Graphics::Camera>();
 	shadowCamera->Init();
 
-	const float shadowCameraSize = 20.0f; shadowCameraSize;
+	float shadowCameraSize = 5.0f;
+	float nearPlane = -1000.0f;
+	float farPlane = 500.0f;
 
-	shadowCamera->SetOrtographicProjection(shadowCameraSize, -1000.0f, 1000.0f);
+	shadowCamera->SetOrtographicProjection(shadowCameraSize, nearPlane, farPlane);
 	graphicsEngine.SetShadowCamera(shadowCamera);
-
-	std::shared_ptr<Graphics::Shader> s = std::make_shared<Graphics::Shader>();
-	graphicsEngine.AddShader("PostprocessTonemapPS.cso", "PostprocessVS.cso");
 
 	while (Global::GetGameIsRunning())
 	{
@@ -95,6 +94,26 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 			continue;
 		}
 		PROFILER_END();
+
+		if (ImGui::Begin("ShadowCamera Ortographic"))
+		{
+			if (ImGui::DragFloat("Size", &shadowCameraSize, 0.1f))
+			{
+				shadowCamera->SetOrtographicProjection(shadowCameraSize, nearPlane, farPlane);
+			}
+
+			if (ImGui::DragFloat("NearPlane", &nearPlane))
+			{
+				shadowCamera->SetOrtographicProjection(shadowCameraSize, nearPlane, farPlane);
+			}
+
+			if (ImGui::DragFloat("FarPlane", &farPlane))
+			{
+				shadowCamera->SetOrtographicProjection(shadowCameraSize, nearPlane, farPlane);
+			}
+
+		}
+		ImGui::End();
 
 		PROFILER_BEGIN("Engine Update");
 		engine.Update();
@@ -134,29 +153,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 				ImGui::Image(texture, size);
 			}
 			ImGui::End();
-
 		}
 
 		graphicsEngine.GetContext()->OMSetRenderTargets(1, renderTarget.rtv.GetAddressOf(), depthBuffer.dsv.Get());
 		graphicsEngine.GetContext()->PSSetShaderResources(5, 1, shadowDepthBuffer.srv.GetAddressOf());
 		graphicsEngine.SetCamera(graphicsEngine.GetEditorCamera());
-		ecs.Render();
-		gameWorld.Render();
-
-		graphicsEngine.GetContext()->OMSetRenderTargets(1, graphicsEngine.myRenderTargets[static_cast<size_t>(Graphics::eRenderTarget::Backbuffer)].renderTargetView.GetAddressOf(), nullptr);
-		graphicsEngine.GetContext()->PSSetShaderResources(0, 1, renderTarget.srv.GetAddressOf());
-
-		graphicsEngine.GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		graphicsEngine.GetContext()->IASetInputLayout(nullptr);
-		graphicsEngine.GetContext()->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
-		graphicsEngine.GetContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
-
-		auto shader = graphicsEngine.GetShader("PostprocessTonemapPS.cso", "PostprocessVS.cso");
-
-		graphicsEngine.GetContext()->VSSetShader(shader->GetVertexShader().Get(), nullptr, 0);
-		graphicsEngine.GetContext()->PSSetShader(shader->GetPixelShader().Get(), nullptr, 0);
-		graphicsEngine.GetContext()->GSSetShader(nullptr, nullptr, 0);
-		graphicsEngine.GetContext()->Draw(3, 0);
 
 		PROFILER_BEGIN("Render To ImGui");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTarget::ImGui);

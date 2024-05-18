@@ -165,7 +165,6 @@ namespace Graphics
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 
-		std::array<RenderTarget, static_cast<size_t>(eRenderTarget::Count)> myRenderTargets;
 		bool IsVSyncActive() const;
 	public:
 		void SetGlobalGraphicsEngineToThis();
@@ -229,7 +228,7 @@ namespace Graphics
 		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<size_t>(eRasterizerState::Count)> myRasterizerStates;
-		
+		std::array<RenderTarget, static_cast<size_t>(eRenderTarget::Count)> myRenderTargets;
 
 		ComPtr<ID3D11Device> myDevice;
 		ComPtr<ID3D11DeviceContext> myContext;

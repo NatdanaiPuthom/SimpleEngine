@@ -27,7 +27,7 @@ PixelOutput main(PixelInputType aInput)
     output.color.rgb = radiance * lightIntensity * directionalLightColor.a;
     output.color.a = albedo.a;
     
-    output.color.rgb = albedo.rgb * 0.5f + shadowFactor * directionalLightColor.rgb;
+    output.color.rgb = albedo.rgb + shadowFactor * directionalLightColor.rgb;
     
     return output;
 }
