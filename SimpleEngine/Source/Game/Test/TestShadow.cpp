@@ -44,7 +44,7 @@ namespace Test
 			floor->AddComponent<TransformComponent>();
 			floor->AddComponent<MeshComponent>();
 
-			floor->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
+			floor->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
 			floor->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			floor->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 11.0f, -2.0f, 10.0f });
@@ -57,7 +57,7 @@ namespace Test
 			directionalLight->AddComponent<TransformComponent>();
 			directionalLight->AddComponent<MeshComponent>();
 
-			directionalLight->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
+			directionalLight->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
 			directionalLight->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture("Assets\\Textures\\Sunlight.dds").get();
 			directionalLight->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			directionalLight->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f, 5.0f, 0.0f });
@@ -103,7 +103,12 @@ namespace Test
 		ECS::Entity e = ecs->GetEntity(myEntityID);
 		ECS::TransformComponent* t = e->GetComponent<TransformComponent>();
 		const Math::Vector3f forward = t->transform.GetMatrix().GetForward();
+
 		graphicsEngine->SetDirectionalLightDirection((forward.GetNormalized()));
+
+		auto shadowCam = graphicsEngine->GetShadowCamera();
+		shadowCam->SetRotation(t->transform.GetRotation());
+		shadowCam->SetPosition(t->transform.GetPosition());
 	}
 
 	void TestShadow::Render() const

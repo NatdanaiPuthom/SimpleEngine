@@ -9,6 +9,7 @@
 #include "Editor/Editor.hpp"
 
 //#include "NodeScript/SimpleNodeScript.hpp"
+#include "imgui.h"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
@@ -75,15 +76,10 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	std::shared_ptr<Graphics::Camera> shadowCamera = std::make_shared<Graphics::Camera>();
 	shadowCamera->Init();
 
-	const float shadowCameraSize = 6.0f; shadowCameraSize;
+	const float shadowCameraSize = 20.0f; shadowCameraSize;
 
-	shadowCamera->SetOrtographicProjection(shadowCameraSize, 0.1f, 1000.0f);
-	shadowCamera->SetPosition({ 5.0f,0.0f,-1.0f });
-	shadowCamera->SetRotation({ 1.0f,0.0f,0.0f });
-
-	shadowDSV.Clear(graphicsEngine.GetContext());
-	shadowRTV.Clear(graphicsEngine.GetContext());
-	normalDSV.Clear(graphicsEngine.GetContext());
+	shadowCamera->SetOrtographicProjection(shadowCameraSize, 10.0f, -1000.0f);
+	graphicsEngine.SetShadowCamera(shadowCamera);
 
 	while (Global::GetGameIsRunning())
 	{
@@ -111,6 +107,53 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		editor.Update();
 		PROFILER_END();
 
+		{
+			shadowDSV.Clear(graphicsEngine.GetContext());
+			shadowRTV.Clear(graphicsEngine.GetContext());
+			normalDSV.Clear(graphicsEngine.GetContext());
+
+			graphicsEngine.SetCamera(shadowCamera);
+
+			auto context = graphicsEngine.GetContext();
+			Math::Vector4f clearColor = { 0.0f,0.0f,1.0f, 1.0f };
+
+			ID3D11ShaderResourceView* nullSRV = nullptr;
+			context->PSSetShaderResources(TEXTURE_SLOT_ALBEDO, 1, &nullSRV);
+			context->OMSetRenderTargets(0, nullptr, shadowDSV.dsv.Get());
+			context->ClearRenderTargetView(shadowRTV.rtv.Get(), &clearColor.x);
+
+			ecs.Render();
+			gameWorld.Render();
+
+			if (ImGui::Begin("Shadow DSV"))
+			{
+				ImTextureID texture = shadowDSV.srv.Get();
+				ImVec2 size = ImGui::GetWindowSize();
+				ImGui::Image(texture, size);
+			}
+			ImGui::End();
+
+			static bool useShadowCamera = false;
+
+			if (MainSingleton::GetInputManager().IsKeyPressed('G'))
+			{
+				useShadowCamera = true;
+			}
+			else if (MainSingleton::GetInputManager().IsKeyPressed('F'))
+			{
+				useShadowCamera = false;
+			}
+
+			if (useShadowCamera)
+			{
+				graphicsEngine.SetCamera(shadowCamera);
+			}
+			else
+			{
+				graphicsEngine.SetCamera(graphicsEngine.GetEditorCamera());
+			}
+		}
+
 		PROFILER_BEGIN("Render To ImGui");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTarget::ImGui);
 		ecs.Render();
@@ -130,5 +173,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_BEGIN("Endframe");
 		graphicsEngine.EndFrame();
 		PROFILER_END();
+
 	}
 }

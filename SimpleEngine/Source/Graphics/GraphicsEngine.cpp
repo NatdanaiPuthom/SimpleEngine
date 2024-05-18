@@ -101,7 +101,7 @@ namespace Graphics
 		{
 			LightBufferData lightBufferData;
 
-			lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix() * myShadowCamera->GetProjectionMatrix());
+			lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix())  *myShadowCamera->GetProjectionMatrix();
 			lightBufferData.directionalLightColor = myLightBufferData->directionalLightColor;
 			lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
 
@@ -528,6 +528,11 @@ namespace Graphics
 	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetEditorCamera()
 	{
 		return myEditorCamera;
+	}
+
+	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetShadowCamera()
+	{
+		return myShadowCamera;
 	}
 
 	ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
