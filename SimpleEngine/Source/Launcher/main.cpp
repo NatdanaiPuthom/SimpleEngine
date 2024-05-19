@@ -111,7 +111,14 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 			{
 				shadowCamera->SetOrtographicProjection(shadowCameraSize, nearPlane, farPlane);
 			}
+		}
+		ImGui::End();
 
+		if (ImGui::Begin("Shadow DSV"))
+		{
+			ImTextureID texture = shadowDepthBuffer.srv.Get();
+			ImVec2 size = ImGui::GetWindowSize();
+			ImGui::Image(texture, size);
 		}
 		ImGui::End();
 
@@ -145,17 +152,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 			ecs.Render();
 			gameWorld.Render();
-
-			if (ImGui::Begin("Shadow DSV"))
-			{
-				ImTextureID texture = shadowDepthBuffer.srv.Get();
-				ImVec2 size = ImGui::GetWindowSize();
-				ImGui::Image(texture, size);
-			}
-			ImGui::End();
 		}
-
-		graphicsEngine.GetContext()->OMSetRenderTargets(1, renderTarget.rtv.GetAddressOf(), depthBuffer.dsv.Get());
+	
 		graphicsEngine.GetContext()->PSSetShaderResources(5, 1, shadowDepthBuffer.srv.GetAddressOf());
 		graphicsEngine.SetCamera(graphicsEngine.GetEditorCamera());
 
