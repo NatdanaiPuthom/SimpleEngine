@@ -31,7 +31,7 @@ namespace Test
 
 		meshComponent->mesh = modelFactory->LoadMesh("AnimatedModels/SimpleHuman3.fbx");
 		meshComponent->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
-		meshComponent->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
+		meshComponent->textures[0] = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 
 		animatedComponent->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Animated).get();
 		animatedComponent->skeleton = modelFactory->LoadSkeleton("AnimatedModels/SimpleHuman3.fbx");
@@ -81,7 +81,7 @@ namespace Test
 			ECS::TransformComponent* transformComponent = e->GetComponent<ECS::TransformComponent>();
 
 
-			if (meshComponent->mesh != nullptr && meshComponent->texture != nullptr)
+			if (meshComponent->mesh != nullptr && meshComponent->textures[0] != nullptr)
 			{
 				Global::GetRenderer()->RenderStaticModel(transformComponent, meshComponent);
 			}

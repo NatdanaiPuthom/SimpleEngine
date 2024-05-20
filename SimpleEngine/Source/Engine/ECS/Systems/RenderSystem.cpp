@@ -37,9 +37,9 @@ namespace ECS
 				mesh->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			}
 
-			if (mesh->texture == nullptr)
+			if (mesh->textures[0] == nullptr)
 			{
-				mesh->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
+				mesh->textures[0] = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			}
 
 			if (mesh->shader == nullptr)

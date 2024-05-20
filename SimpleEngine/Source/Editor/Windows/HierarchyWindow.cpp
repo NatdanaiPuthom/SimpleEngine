@@ -253,9 +253,9 @@ namespace Editor
 								meshName += meshComponent->mesh->GetMeshName();
 							}
 
-							if (meshComponent->texture != nullptr)
+							if (meshComponent->textures[0] != nullptr)
 							{
-								textureName += meshComponent->texture->GetShaderName();
+								textureName += meshComponent->textures[0]->GetShaderName();
 							}
 
 							if (meshComponent->shader != nullptr)
@@ -276,7 +276,7 @@ namespace Editor
 									if (extension == ".dds")
 									{
 										const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
-										meshComponent->texture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+										meshComponent->textures[0] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
 									}
 								}
 

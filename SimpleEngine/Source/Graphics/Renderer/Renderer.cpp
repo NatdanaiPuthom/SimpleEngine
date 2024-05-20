@@ -62,7 +62,14 @@ namespace Drawer
 		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
 
 		aMeshComponent->shader->BindThisShader(context.Get());
-		aMeshComponent->texture->Bind(context, aMeshComponent->texture->GetSlot());
+
+		for (size_t i = 0; i < aMeshComponent->textures.size(); ++i)
+		{
+			if (const Graphics::Texture* texture = aMeshComponent->textures[i])
+			{
+				texture->Bind(context, texture->GetSlot());
+			}
+		}
 
 		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
@@ -97,7 +104,7 @@ namespace Drawer
 		myBoneBuffer->Update(sizeof(BonesBufferData), &boneBufferData);
 
 		aSkeletonComponent->shader->BindThisShader(context.Get());
-		aMeshComponent->texture->Bind(context, aMeshComponent->texture->GetSlot());
+		aMeshComponent->textures[0]->Bind(context, aMeshComponent->textures[0]->GetSlot());
 
 		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
