@@ -241,7 +241,7 @@ namespace Graphics
 		ComPtr<ID3D11Buffer> myObjectBuffer;
 
 		ComPtr<ID3D11SamplerState> mySamplerState;
-		ComPtr<ID3D11RasterizerState> myRasterizerState;
+		ComPtr<ID3D11RasterizerState> myCurrentRasterizerState;
 
 		std::shared_ptr<Camera> myCurrentCamera;
 		std::shared_ptr<Camera> myEditorCamera;

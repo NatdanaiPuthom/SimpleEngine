@@ -363,25 +363,25 @@ namespace Graphics
 		switch (aRasterizerState)
 		{
 		case eRasterizerState::BackfaceCulling:
-			myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)];
+			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)];
 			break;
 		case eRasterizerState::NoFaceCulling:
-			myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)];
+			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)];
 			break;
 		case eRasterizerState::Wireframe:
-			myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::Wireframe)];
+			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::Wireframe)];
 			break;
 		case eRasterizerState::WireframeNoCulling:
-			myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)];
+			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)];
 			break;
 		case eRasterizerState::FrontFaceCulling:
-			myRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)];
+			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)];
 			break;
 		default:
 			break;
 		}
 
-		myContext->RSSetState(myRasterizerState.Get());
+		myContext->RSSetState(myCurrentRasterizerState.Get());
 	}
 
 	void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
