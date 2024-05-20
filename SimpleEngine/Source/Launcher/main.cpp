@@ -69,20 +69,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	//Script::SimpleNodeScript simpleScript;
 	//simpleScript.Init();
 
-	Test::ShadowDSV depthBuffer = graphicsEngine.CreateShadowDSV({ 1280,720 });
-	Test::ShadowRTV renderTarget = graphicsEngine.CreateShadowRTV({ 1280,720 }, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT);
-	Test::ShadowDSV shadowDepthBuffer = graphicsEngine.CreateShadowDSV({ 2048,2048 });
-
-	std::shared_ptr<Graphics::Camera> shadowCamera = std::make_shared<Graphics::Camera>();
-	shadowCamera->Init();
-
-	float shadowCameraSize = 5.0f;
-	float nearPlane = -1000.0f;
-	float farPlane = 500.0f;
-
-	shadowCamera->SetOrtographicProjection(shadowCameraSize, nearPlane, farPlane);
-	graphicsEngine.SetShadowCamera(shadowCamera);
-
 	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
@@ -94,33 +80,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 			continue;
 		}
 		PROFILER_END();
-
-		if (ImGui::Begin("ShadowCamera Ortographic"))
-		{
-			if (ImGui::DragFloat("Size", &shadowCameraSize, 0.1f))
-			{
-				shadowCamera->SetOrtographicProjection(shadowCameraSize, nearPlane, farPlane);
-			}
-
-			if (ImGui::DragFloat("NearPlane", &nearPlane))
-			{
-				shadowCamera->SetOrtographicProjection(shadowCameraSize, nearPlane, farPlane);
-			}
-
-			if (ImGui::DragFloat("FarPlane", &farPlane))
-			{
-				shadowCamera->SetOrtographicProjection(shadowCameraSize, nearPlane, farPlane);
-			}
-		}
-		ImGui::End();
-
-		if (ImGui::Begin("Shadow DSV"))
-		{
-			ImTextureID texture = shadowDepthBuffer.srv.Get();
-			ImVec2 size = ImGui::GetWindowSize();
-			ImGui::Image(texture, size);
-		}
-		ImGui::End();
 
 		PROFILER_BEGIN("Engine Update");
 		engine.Update();
@@ -135,27 +94,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		//simpleScript.Update();
 		editor.Update();
 		PROFILER_END();
-
-		{
-			shadowDepthBuffer.Clear(graphicsEngine.GetContext());
-			renderTarget.Clear(graphicsEngine.GetContext());
-			depthBuffer.Clear(graphicsEngine.GetContext());
-
-			graphicsEngine.SetCamera(shadowCamera);
-
-			auto context = graphicsEngine.GetContext();
-			Math::Vector4f clearColor = { 0.0f,0.0f,1.0f, 1.0f };
-
-			ID3D11ShaderResourceView* nullSRV = nullptr;
-			context->PSSetShaderResources(5, 1, &nullSRV);
-			context->OMSetRenderTargets(0, nullptr, shadowDepthBuffer.dsv.Get());
-
-			ecs.Render();
-			gameWorld.Render();
-		}
-	
-		graphicsEngine.GetContext()->PSSetShaderResources(5, 1, shadowDepthBuffer.srv.GetAddressOf());
-		graphicsEngine.SetCamera(graphicsEngine.GetEditorCamera());
 
 		PROFILER_BEGIN("Render To ImGui");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTarget::ImGui);
