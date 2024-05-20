@@ -380,6 +380,8 @@ namespace Graphics
 		default:
 			break;
 		}
+
+		myContext->RSSetState(myRasterizerState.Get());
 	}
 
 	void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
