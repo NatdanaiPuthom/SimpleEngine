@@ -44,7 +44,7 @@ namespace Test
 			floor->AddComponent<TransformComponent>();
 			floor->AddComponent<MeshComponent>();
 
-			floor->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
+			floor->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 			floor->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			floor->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 11.0f, -2.0f, 10.0f });
@@ -57,7 +57,7 @@ namespace Test
 			directionalLight->AddComponent<TransformComponent>();
 			directionalLight->AddComponent<MeshComponent>();
 
-			directionalLight->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
+			directionalLight->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 			directionalLight->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture("Assets\\Textures\\Sunlight.dds").get();
 			directionalLight->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			directionalLight->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f, 5.0f, 0.0f });
@@ -74,7 +74,7 @@ namespace Test
 			e->AddComponent<TransformComponent>();
 			e->AddComponent<MeshComponent>();
 
-			e->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
+			e->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 			e->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			e->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			e->GetComponent<TransformComponent>()->transform.SetPosition({ 2.0f + i * 2.0f, 0.0f, 0.0f });
@@ -88,7 +88,7 @@ namespace Test
 			e->AddComponent<TransformComponent>();
 			e->AddComponent<MeshComponent>();
 
-			e->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
+			e->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 			e->GetComponent<MeshComponent>()->texture = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			e->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			e->GetComponent<TransformComponent>()->transform.SetPosition({ 11.0f, 0.0f, 2.0f + i * 2.0f });
