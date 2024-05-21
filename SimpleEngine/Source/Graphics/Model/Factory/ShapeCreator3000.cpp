@@ -467,10 +467,10 @@ namespace Graphics
 
 		for (int i = 0; i <= aStacks; ++i)
 		{
-			float phi = static_cast<float>(i) / aStacks * Math::globalPi;
+			float phi = static_cast<float>(i) / aStacks * Math::GLOBAL_PI;
 			for (int j = 0; j <= aSlices; ++j)
 			{
-				float theta = static_cast<float>(j) * 2.0f * Math::globalPi / aSlices;
+				float theta = static_cast<float>(j) * 2.0f * Math::GLOBAL_PI / aSlices;
 
 				Vertex vertex;
 				vertex.position.x = aRadius * std::sin(phi) * std::cos(theta);
@@ -479,7 +479,7 @@ namespace Graphics
 				vertex.position.w = 1.0f;
 
 				vertex.color = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-				vertex.uv = Math::Vector2f((4.0f + theta) / (2.0f * Math::globalPi), 1.0f - phi / Math::globalPi);
+				vertex.uv = Math::Vector2f((4.0f + theta) / (2.0f * Math::GLOBAL_PI), 1.0f - phi / Math::GLOBAL_PI);
 
 				vertices.push_back(vertex);
 			}

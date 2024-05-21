@@ -33,7 +33,7 @@ namespace Drawer
 		ComPtr<ID3D11Buffer> myVertexBuffer;
 		ComPtr<ID3D11Buffer> myIndexBuffer;
 
-		std::unique_ptr<Graphics::ConstantBuffer> myObjectBuffer;
+		std::unique_ptr<Graphics::ConstantBuffer> myTransformBuffer;
 		std::shared_ptr<const Graphics::Shader> myShader3D;
 		std::shared_ptr<const Graphics::Shader> myShader2D;
 	};

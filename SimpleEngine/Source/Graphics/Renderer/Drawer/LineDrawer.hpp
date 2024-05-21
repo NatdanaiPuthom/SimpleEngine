@@ -43,12 +43,12 @@ namespace Drawer
 	private:
 		void CreateBuffers();
 		void CreateInstanceBuffer();
-		void CreateObjectBuffer();
+		void CreateTransformBuffer();
 	private:
 		std::unique_ptr<Data> myData;
 		std::unique_ptr<Data> myInstanceData;
 
-		std::unique_ptr<Graphics::ConstantBuffer> myObjectBuffer;
+		std::unique_ptr<Graphics::ConstantBuffer> myTransformBuffer;
 		std::shared_ptr<const Graphics::Shader> myShader;
 
 		const size_t myInstanceSizeLimit;

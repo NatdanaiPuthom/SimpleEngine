@@ -8,7 +8,7 @@ namespace Drawer
 	using namespace Graphics;
 
 	LineDrawer::LineDrawer()
-		: myObjectBuffer(std::make_unique<ConstantBuffer>())
+		: myTransformBuffer(std::make_unique<ConstantBuffer>())
 		, myData(std::make_unique<Data>())
 		, myInstanceData(std::make_unique<Data>())
 		, myInstanceSizeLimit(32768)
@@ -17,7 +17,7 @@ namespace Drawer
 
 		CreateBuffers();
 		CreateInstanceBuffer();
-		CreateObjectBuffer();
+		CreateTransformBuffer();
 	}
 
 	LineDrawer::~LineDrawer()
@@ -44,11 +44,11 @@ namespace Drawer
 		auto context = Global::GetGraphicsEngine()->GetContext();
 		context->UpdateSubresource(myData->vertexBuffer.Get(), 0, nullptr, myData->meshData.vertices.data(), 0, 0);
 
-		ObjectBufferData objectBuffer = {};
+		TransformBufferData objectBuffer = {};
 		objectBuffer.modelWorldMatrix = Math::Matrix4x4f::Identity();
 
-		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+		myTransformBuffer->Bind(myTransformBuffer->GetSlot());
+		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
@@ -91,11 +91,11 @@ namespace Drawer
 		context->UpdateSubresource(myInstanceData->vertexBuffer.Get(), 0, nullptr, myInstanceData->meshData.vertices.data(), 0, 0);
 		context->UpdateSubresource(myInstanceData->indexBuffer.Get(), 0, nullptr, myInstanceData->meshData.indices.data(), 0, 0);
 
-		ObjectBufferData objectBuffer = {};
+		TransformBufferData objectBuffer = {};
 		objectBuffer.modelWorldMatrix = Math::Matrix4x4f::Identity();
 
-		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+		myTransformBuffer->Bind(myTransformBuffer->GetSlot());
+		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
@@ -209,13 +209,13 @@ namespace Drawer
 			assert(false && "failed to create IndexBuffer");
 	}
 
-	void LineDrawer::CreateObjectBuffer()
+	void LineDrawer::CreateTransformBuffer()
 	{
-		ObjectBufferData objectBuffer;
+		TransformBufferData objectBuffer;
 
-		if (!myObjectBuffer->Init(sizeof(ObjectBufferData), &objectBuffer))
+		if (!myTransformBuffer->Init(sizeof(TransformBufferData), &objectBuffer))
 			assert(false && "failed to create ObjectBuffer");
 
-		myObjectBuffer->SetSlot(CONSTANT_BUFFER_SLOT_OBJECT);
+		myTransformBuffer->SetSlot(Graphics::GLOBAL_CONSTANT_BUFFER_SLOT_TRANSFORM);
 	}
 }

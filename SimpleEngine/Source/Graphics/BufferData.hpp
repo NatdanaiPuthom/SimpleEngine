@@ -5,7 +5,7 @@
 #include "Engine/Math/Matrix4x4.hpp"
 #include "Graphics/Defines.hpp"
 
-struct alignas(16) FrameBufferData final
+struct alignas(16) CameraBufferData final
 {
 	Math::Matrix4x4f worldToClipMatrix;
 
@@ -16,7 +16,7 @@ struct alignas(16) FrameBufferData final
 	const float paddingResolution[2] = { -1.0f };
 };
 
-struct alignas(16) ObjectBufferData final
+struct alignas(16) TransformBufferData final
 {
 	Math::Matrix4x4f modelWorldMatrix;
 };
@@ -37,7 +37,7 @@ struct alignas(16) LightBufferData final
 	const float paddingDirectionalLightDirection = -1.0f;
 };
 
-struct alignas(16) BonesBufferData
+struct alignas(16) JointsBufferData
 {
-	Math::Matrix4x4f bonesTransform[SIMPLE_MAX_BONES];
+	Math::Matrix4x4f bonesTransform[Graphics::GLOBAL_MAX_JOINTS];
 };

@@ -33,7 +33,7 @@ namespace Graphics
 		myCameraConstantBuffer = std::make_unique<ConstantBuffer>();
 		myTimeConstantBuffer = std::make_unique<ConstantBuffer>();
 		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
-		myBonesConstantBuffer = std::make_unique<ConstantBuffer>();
+		myJointsConstantBuffer = std::make_unique<ConstantBuffer>();
 
 		myLightBufferData = std::make_unique<LightBufferData>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
@@ -44,23 +44,18 @@ namespace Graphics
 
 		myCurrentCamera = myEditorCamera;
 
-		myLightBufferData->directionalLightDirection.x = 0.0f;
-		myLightBufferData->directionalLightDirection.x = -1.0f;
-		myLightBufferData->directionalLightDirection.x = 0.0f;
-
 		CreateSwapChain(aWindowHandle, aWindowSize.x, aWindowSize.y);
 		CreateDepthBuffer(aWindowSize.x, aWindowSize.y);
 		CreateDepthStencilState();
 		CreateBackBuffer();
 		CreateViewport(aWindowSize.x, aWindowSize.y);
-		CreateFrameBuffer();
 		CreateSamplerState();
 		CreateCameraBuffer();
 		CreateTimeBuffer();
 		CreateLightBuffer();
 		CreateRasterizerStates();
 		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)], aWindowSize.x, aWindowSize.y);
-		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::PostProcessing)], aWindowSize.x, aWindowSize.y, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::PostProcessing)], aWindowSize.x, aWindowSize.y, DXGI_FORMAT_R32G32B32A32_FLOAT);
 		CreateBonesBuffer();
 
 		LoadSettingsFromJson();
@@ -78,10 +73,14 @@ namespace Graphics
 		SetRasterizerState(eRasterizerState::BackfaceCulling);
 		myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
 
-		myCameraConstantBuffer->SetSlot(CONSTANT_BUFFER_SLOT_CAMERA);
-		myTimeConstantBuffer->SetSlot(CONSTANT_BUFFER_SLOT_TIME);
-		myLightConstantBuffer->SetSlot(CONSTANT_BUFFER_SLOT_LIGHT);
-		myBonesConstantBuffer->SetSlot(CONSTANT_BUFFER_SLOT_BONES);
+		myCameraConstantBuffer->SetSlot(GLOBAL_CONSTANT_BUFFER_SLOT_CAMERA);
+		myTimeConstantBuffer->SetSlot(GLOBAL_CONSTANT_BUFFER_SLOT_TIME);
+		myLightConstantBuffer->SetSlot(GLOBAL_CONSTANT_BUFFER_SLOT_LIGHT);
+		myJointsConstantBuffer->SetSlot(GLOBAL_CONSTANT_BUFFER_SLOT_JOINTS);
+
+		myLightBufferData->directionalLightDirection.x = 0.0f;
+		myLightBufferData->directionalLightDirection.y = -1.0f;
+		myLightBufferData->directionalLightDirection.z = 0.0f;
 
 		return true;
 	}
@@ -125,28 +124,28 @@ namespace Graphics
 
 	void GraphicsEngine::PreloadTextures()
 	{
-		if (!AddTexture("Assets\\Textures\\DefaultTexture.dds", TEXTURE_SLOT_ALBEDO))
+		if (!AddTexture("Assets\\Textures\\DefaultTexture.dds", GLOBAL_SLOT_ALBEDO))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cat.dds", TEXTURE_SLOT_ALBEDO))
+		if (!AddTexture("Assets\\Textures\\Cat.dds", GLOBAL_SLOT_ALBEDO))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Hamster.dds", TEXTURE_SLOT_ALBEDO))
+		if (!AddTexture("Assets\\Textures\\Hamster.dds", GLOBAL_SLOT_ALBEDO))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cat-scared.dds", TEXTURE_SLOT_ALBEDO))
+		if (!AddTexture("Assets\\Textures\\Cat-scared.dds", GLOBAL_SLOT_ALBEDO))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds", TEXTURE_SLOT_CUBEMAP))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds", GLOBAL_SLOT_CUBEMAP))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds", TEXTURE_SLOT_CUBEMAP))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds", GLOBAL_SLOT_CUBEMAP))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds", TEXTURE_SLOT_CUBEMAP))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds", GLOBAL_SLOT_CUBEMAP))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds", TEXTURE_SLOT_CUBEMAP))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds", GLOBAL_SLOT_CUBEMAP))
 			assert(false && "Failed to add Texture");
 	}
 
@@ -253,13 +252,13 @@ namespace Graphics
 
 	void GraphicsEngine::UpdateCameraBuffer()
 	{
-		FrameBufferData frameBuffer = {};
+		CameraBufferData frameBuffer = {};
 		frameBuffer.worldToClipMatrix = myCurrentCamera->GetWorldToClipMatrix();
 		frameBuffer.cameraPosition = myCurrentCamera->GetPosition();
 		frameBuffer.resolution = Global::GetResolution();
 
 		myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
-		myCameraConstantBuffer->Update(sizeof(FrameBufferData), &frameBuffer);
+		myCameraConstantBuffer->Update(sizeof(CameraBufferData), &frameBuffer);
 	}
 
 	void GraphicsEngine::SetGlobalGraphicsEngineToThis()
@@ -344,7 +343,7 @@ namespace Graphics
 		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		myContext->OMSetRenderTargets(1, renderTarget.GetAddressOf(), myDepthBuffer.Get());
-		myContext->ClearRenderTargetView(renderTarget.Get(), myClearColor);
+		myContext->ClearRenderTargetView(renderTarget.Get(), &myClearColor[0]);
 	}
 
 	void GraphicsEngine::SetCamera(std::shared_ptr<Graphics::Camera> aCamera)
@@ -670,9 +669,9 @@ namespace Graphics
 
 	void GraphicsEngine::CreateBonesBuffer()
 	{
-		BonesBufferData bonesBufferData;
+		JointsBufferData bonesBufferData;
 
-		if (!myBonesConstantBuffer->Init(sizeof(BonesBufferData), &bonesBufferData))
+		if (!myJointsConstantBuffer->Init(sizeof(JointsBufferData), &bonesBufferData))
 			assert(false && "Failed to create BoneConstantBuffer");
 	}
 
@@ -723,22 +722,6 @@ namespace Graphics
 		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)].renderTargetView.GetAddressOf());
 		backBufferTexture->Release();
 		assert(SUCCEEDED(result) && "Failed to create Backbuffer");
-	}
-
-	void GraphicsEngine::CreateFrameBuffer()
-	{
-		D3D11_BUFFER_DESC bufferDescription = { 0 };
-		bufferDescription.Usage = D3D11_USAGE_DYNAMIC;
-		bufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		bufferDescription.ByteWidth = sizeof(FrameBufferData);
-
-		HRESULT result = myDevice->CreateBuffer(&bufferDescription, nullptr, &myFrameBuffer);
-		assert(SUCCEEDED(result) && "Failed to create Framebuffer");
-
-		bufferDescription.ByteWidth = sizeof(ObjectBufferData);
-		result = myDevice->CreateBuffer(&bufferDescription, nullptr, &myObjectBuffer);
-		assert(SUCCEEDED(result) && "Failed to create ObjectBuffer");
 	}
 
 	void GraphicsEngine::CreateDepthBuffer(const int aWidth, const int aHeight)
@@ -804,12 +787,12 @@ namespace Graphics
 
 	void GraphicsEngine::CreateCameraBuffer()
 	{
-		FrameBufferData cameraBuffer;
+		CameraBufferData cameraBuffer;
 
 		cameraBuffer.worldToClipMatrix = Math::Matrix4x4f::GetInverse(myCurrentCamera->GetMatrix()) * myCurrentCamera->GetProjectionMatrix();
 		cameraBuffer.cameraPosition = Math::Vector3f{ 0.0f,0.0f,0.0f };
 
-		if (!myCameraConstantBuffer->Init(sizeof(FrameBufferData), &cameraBuffer))
+		if (!myCameraConstantBuffer->Init(sizeof(CameraBufferData), &cameraBuffer))
 			assert(false && "Failed to create CameraConstantBuffer");
 	}
 

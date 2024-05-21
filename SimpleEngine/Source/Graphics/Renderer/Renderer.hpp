@@ -46,7 +46,7 @@ namespace Drawer
 		std::unique_ptr<Drawer::SpriteDrawer> mySpriteDrawer;
 		std::unique_ptr<Drawer::BoundingBoxDrawer> myBoundingBoxDrawer;
 
-		std::unique_ptr<Graphics::ConstantBuffer> myObjectBuffer;
-		std::unique_ptr<Graphics::ConstantBuffer> myBoneBuffer;
+		std::unique_ptr<Graphics::ConstantBuffer> myTransformBuffer;
+		std::unique_ptr<Graphics::ConstantBuffer> myJointBuffer;
 	};
 }

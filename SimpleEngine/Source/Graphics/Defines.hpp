@@ -1,12 +1,18 @@
 #pragma once
 
-#define SIMPLE_MAX_BONES 64
+namespace Graphics
+{
+	constexpr size_t GLOBAL_MAX_JOINTS = 64;
 
-#define CONSTANT_BUFFER_SLOT_CAMERA 0
-#define CONSTANT_BUFFER_SLOT_OBJECT 1
-#define CONSTANT_BUFFER_SLOT_TIME 2
-#define CONSTANT_BUFFER_SLOT_LIGHT 3
-#define CONSTANT_BUFFER_SLOT_BONES 4
+	constexpr size_t GLOBAL_CONSTANT_BUFFER_SLOT_CAMERA = 0;
+	constexpr size_t GLOBAL_CONSTANT_BUFFER_SLOT_TRANSFORM = 1;
+	constexpr size_t GLOBAL_CONSTANT_BUFFER_SLOT_TIME = 2;
+	constexpr size_t GLOBAL_CONSTANT_BUFFER_SLOT_LIGHT = 3;
+	constexpr size_t GLOBAL_CONSTANT_BUFFER_SLOT_JOINTS = 4;
 
-#define TEXTURE_SLOT_ALBEDO 0
-#define TEXTURE_SLOT_CUBEMAP 4
+	constexpr size_t GLOBAL_SLOT_ALBEDO = 0;
+	constexpr size_t GLOBAL_SLOT_MATERIAL = 1;
+	constexpr size_t GLOBAL_SLOT_NORMAL = 2;
+	constexpr size_t GLOBAL_SLOT_CUBEMAP = 3;
+	constexpr size_t GLOBAL_SLOT_SHADOWMAP = 4;
+}

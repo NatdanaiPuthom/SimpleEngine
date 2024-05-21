@@ -29,8 +29,8 @@ namespace Drawer
 
 	void Renderer::Init()
 	{
-		myObjectBuffer = std::make_unique<Graphics::ConstantBuffer>();
-		myBoneBuffer = std::make_unique<Graphics::ConstantBuffer>();
+		myTransformBuffer = std::make_unique<Graphics::ConstantBuffer>();
+		myJointBuffer = std::make_unique<Graphics::ConstantBuffer>();
 
 		myBoundingBoxDrawer = std::make_unique<Drawer::BoundingBoxDrawer>();
 		myLineDrawer = std::make_unique<Drawer::LineDrawer>();
@@ -47,19 +47,19 @@ namespace Drawer
 
 		myBoundingBoxDrawer->Init();
 
-		myObjectBuffer->SetSlot(CONSTANT_BUFFER_SLOT_OBJECT);
-		myBoneBuffer->SetSlot(CONSTANT_BUFFER_SLOT_BONES);
+		myTransformBuffer->SetSlot(Graphics::GLOBAL_CONSTANT_BUFFER_SLOT_TRANSFORM);
+		myJointBuffer->SetSlot(Graphics::GLOBAL_CONSTANT_BUFFER_SLOT_JOINTS);
 	}
 
 	void Renderer::RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
-		ObjectBufferData objectBuffer = {};
+		TransformBufferData objectBuffer = {};
 		objectBuffer.modelWorldMatrix = aTransformComponent->transform.GetMatrix();
 
-		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+		myTransformBuffer->Bind(myTransformBuffer->GetSlot());
+		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
 
 		aMeshComponent->shader->BindThisShader(context.Get());
 
@@ -87,21 +87,21 @@ namespace Drawer
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
 
-		ObjectBufferData objectBuffer = {};
+		TransformBufferData objectBuffer = {};
 		objectBuffer.modelWorldMatrix = aTransformComponent->transform.GetMatrix();
 
-		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+		myTransformBuffer->Bind(myTransformBuffer->GetSlot());
+		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
 
-		BonesBufferData boneBufferData = {};
+		JointsBufferData boneBufferData = {};
 
-		for (size_t i = 0; i < SIMPLE_MAX_BONES; ++i)
+		for (size_t i = 0; i < Graphics::GLOBAL_MAX_JOINTS; ++i)
 		{
 			boneBufferData.bonesTransform[i] = aSkeletonComponent->jointMatrices[i];;
 		}
 
-		myBoneBuffer->Bind(myBoneBuffer->GetSlot());
-		myBoneBuffer->Update(sizeof(BonesBufferData), &boneBufferData);
+		myJointBuffer->Bind(myJointBuffer->GetSlot());
+		myJointBuffer->Update(sizeof(JointsBufferData), &boneBufferData);
 
 		aSkeletonComponent->shader->BindThisShader(context.Get());
 		aMeshComponent->textures[0]->Bind(context, aMeshComponent->textures[0]->GetSlot());
@@ -165,9 +165,9 @@ namespace Drawer
 
 	const bool Renderer::CreateObjectBuffer()
 	{
-		ObjectBufferData objectBuffer;
+		TransformBufferData objectBuffer;
 
-		if (!myObjectBuffer->Init(sizeof(ObjectBufferData), &objectBuffer))
+		if (!myTransformBuffer->Init(sizeof(TransformBufferData), &objectBuffer))
 			return false;
 
 		return true;
@@ -175,9 +175,9 @@ namespace Drawer
 
 	const bool Renderer::CreateBoneBuffer()
 	{
-		BonesBufferData boneBufferData;
+		JointsBufferData boneBufferData;
 
-		if (!myBoneBuffer->Init(sizeof(BonesBufferData), &boneBufferData))
+		if (!myJointBuffer->Init(sizeof(JointsBufferData), &boneBufferData))
 			return false;
 
 		return true;

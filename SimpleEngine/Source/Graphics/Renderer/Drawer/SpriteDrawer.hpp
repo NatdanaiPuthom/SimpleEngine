@@ -38,7 +38,7 @@ namespace Drawer
 	private:
 		std::shared_ptr<const Graphics::Shader> myShader;
 
-		std::unique_ptr<Graphics::ConstantBuffer> myObjectBuffer;
+		std::unique_ptr<Graphics::ConstantBuffer> myTransformBuffer;
 		std::unique_ptr<const Graphics::MeshData> myMeshData;
 
 		ComPtr<ID3D11Buffer> myVertexBuffer;

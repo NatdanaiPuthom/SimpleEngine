@@ -10,7 +10,7 @@ namespace Drawer
 	using namespace Graphics;
 
 	SpriteDrawer::SpriteDrawer()
-		: myObjectBuffer(std::make_unique<ConstantBuffer>())
+		: myTransformBuffer(std::make_unique<ConstantBuffer>())
 	{
 		myShader = Global::GetGraphicsEngine()->GetShader("DefaultPS.cso", "Sprite2DVS.cso");
 
@@ -52,12 +52,12 @@ namespace Drawer
 		if (FAILED(result))
 			assert(false && "failed to create IndexBuffer");
 
-		ObjectBufferData objectBuffer;
+		TransformBufferData objectBuffer;
 
-		if (!myObjectBuffer->Init(sizeof(ObjectBufferData), &objectBuffer))
+		if (!myTransformBuffer->Init(sizeof(TransformBufferData), &objectBuffer))
 			assert(false && "failed to create ObjectBuffer");
 
-		myObjectBuffer->SetSlot(CONSTANT_BUFFER_SLOT_OBJECT);
+		myTransformBuffer->SetSlot(Graphics::GLOBAL_CONSTANT_BUFFER_SLOT_TRANSFORM);
 	}
 
 	SpriteDrawer::~SpriteDrawer()
@@ -79,13 +79,13 @@ namespace Drawer
 		position.x = 2.0f * aSprite.position.x - 1.0f;
 		position.y = 2.0f * aSprite.position.y - 1.0f;
 
-		ObjectBufferData objectBuffer = {};
+		TransformBufferData objectBuffer = {};
 		objectBuffer.modelWorldMatrix = Math::Matrix4x4f::Identity();
 		objectBuffer.modelWorldMatrix.SetScale(scale);
 		objectBuffer.modelWorldMatrix.SetPosition(position);
 
-		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+		myTransformBuffer->Bind(myTransformBuffer->GetSlot());
+		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
 
 		myShader->BindThisShader(context.Get());
 		aSprite.texture->Bind(context, aSprite.texture->GetSlot());

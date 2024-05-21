@@ -9,7 +9,7 @@ namespace Drawer
 	using namespace Graphics;
 
 	SphereDrawer::SphereDrawer()
-		: myObjectBuffer(std::make_unique<ConstantBuffer>())
+		: myTransformBuffer(std::make_unique<ConstantBuffer>())
 		, myMeshData(std::make_unique<MeshData>())
 	{
 		myShader = Global::GetGraphicsEngine()->GetShader("LinePS.cso", "DefaultVS.cso");
@@ -60,12 +60,12 @@ namespace Drawer
 		if (FAILED(result))
 			assert(false && "failed to create IndexBuffer");
 
-		ObjectBufferData objectBuffer;
+		TransformBufferData objectBuffer;
 
-		if (!myObjectBuffer->Init(sizeof(ObjectBufferData), &objectBuffer))
+		if (!myTransformBuffer->Init(sizeof(TransformBufferData), &objectBuffer))
 			assert(false && "failed to create ObjectBuffer");
 
-		myObjectBuffer->SetSlot(CONSTANT_BUFFER_SLOT_OBJECT);
+		myTransformBuffer->SetSlot(Graphics::GLOBAL_CONSTANT_BUFFER_SLOT_TRANSFORM);
 	}
 
 	SphereDrawer::~SphereDrawer()
@@ -86,11 +86,11 @@ namespace Drawer
 		matrix.SetScale({ aSphere.radius, aSphere.radius,aSphere.radius });
 		matrix.SetPosition(aSphere.position);
 
-		ObjectBufferData objectBuffer = {};
+		TransformBufferData objectBuffer = {};
 		objectBuffer.modelWorldMatrix = matrix;
 
-		myObjectBuffer->Bind(myObjectBuffer->GetSlot());
-		myObjectBuffer->Update(sizeof(ObjectBufferData), &objectBuffer);
+		myTransformBuffer->Bind(myTransformBuffer->GetSlot());
+		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;

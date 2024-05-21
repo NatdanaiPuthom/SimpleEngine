@@ -365,7 +365,7 @@ namespace Math
 	template<typename T>
 	inline void Matrix4x4<T>::SetWorldRotation(const Vector3<T>& aRotationInDegree)
 	{
-		const Vector3<T> rad = aRotationInDegree * globalDegToRad;
+		const Vector3<T> rad = aRotationInDegree * GLOBAL_DEGREE_TO_RADIAN;
 
 		const Matrix4x4<T> scaleMatrix = Matrix4x4<T>::CreateScaleMatrix(this->GetScale());
 		Matrix4x4<T> rotationMatrix = Matrix4x4<T>::Identity();
@@ -395,7 +395,7 @@ namespace Math
 	template<typename T>
 	inline void Matrix4x4<T>::SetLocalRotation(const Vector3<T>& aRotationInDegree)
 	{
-		const Vector3<T> rad = aRotationInDegree * globalDegToRad;
+		const Vector3<T> rad = aRotationInDegree * GLOBAL_DEGREE_TO_RADIAN;
 
 		const Matrix4x4<T> scaleMatrix = Matrix4x4<T>::CreateScaleMatrix(this->GetScale());
 		Matrix4x4<T> rotationMatrix = Matrix4x4<T>::Identity();

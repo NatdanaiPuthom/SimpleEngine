@@ -18,7 +18,7 @@ namespace Drawer
 
 	void BoundingBoxDrawer::Init()
 	{
-		myObjectBuffer = std::make_unique<ConstantBuffer>();
+		myTransformBuffer = std::make_unique<ConstantBuffer>();
 
 		InitMeshData2D();
 		InitMeshData3D();
@@ -81,11 +81,11 @@ namespace Drawer
 
 	void BoundingBoxDrawer::InitObjectBuffer()
 	{
-		ObjectBufferData objectBuffer;
+		TransformBufferData objectBuffer;
 
-		if (!myObjectBuffer->Init(sizeof(ObjectBufferData), &objectBuffer))
+		if (!myTransformBuffer->Init(sizeof(TransformBufferData), &objectBuffer))
 			assert(false && "failed to create ObjectBuffer");
 
-		myObjectBuffer->SetSlot(CONSTANT_BUFFER_SLOT_OBJECT);
+		myTransformBuffer->SetSlot(Graphics::GLOBAL_CONSTANT_BUFFER_SLOT_TRANSFORM);
 	}
 }

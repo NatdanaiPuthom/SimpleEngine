@@ -313,7 +313,7 @@ namespace Math
 
 		if (abs(sinp) >= T(1))
 		{
-			yaw = std::copysign(Math::globalPi * T(0.5), sinp);
+			yaw = std::copysign(Math::GLOBAL_PI * T(0.5), sinp);
 		}
 		else
 		{
@@ -331,7 +331,7 @@ namespace Math
 	template<typename T>
 	inline Vector3<T> Quaternion<T>::GetEulerAngleInDegree() const
 	{
-		return GetEulerAngleInRadian() * Math::globalRadToDeg;
+		return GetEulerAngleInRadian() * Math::GLOBAL_RADIAN_TO_DEGREE;
 	}
 
 	template<typename T>

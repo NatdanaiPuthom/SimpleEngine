@@ -6,9 +6,9 @@
 
 namespace Math
 {
-	constexpr float globalPi = 3.141592f;
-	constexpr float globalDegToRad = globalPi / 180.0f;
-	constexpr float globalRadToDeg = (180.0f / globalPi);
+	constexpr float GLOBAL_PI = 3.141592f;
+	constexpr float GLOBAL_DEGREE_TO_RADIAN = GLOBAL_PI / 180.0f;
+	constexpr float GLOBAL_RADIAN_TO_DEGREE = (180.0f / GLOBAL_PI);
 
 	template<typename T>
 	static inline Vector4<T> AsVector4(const Vector3<T>& aVector3)
@@ -36,7 +36,6 @@ namespace Math
 		aSecondValue = swap;
 	}
 
-
 	template<typename T>
 	static inline T GetMax(const T& aFirstValue, const T& aSecondValue)
 	{
@@ -45,7 +44,6 @@ namespace Math
 
 		return aFirstValue;
 	}
-
 
 	template<typename T>
 	static inline T GetMin(const T& aFirstValue, const T& aSecondValue)
@@ -108,7 +106,7 @@ namespace Math
 		const float crossProduct = Math::Cross(aPointB, aPointA);
 
 		const float angleRadians = acos(dotProduct);
-		float angleDegrees = angleRadians * globalRadToDeg;
+		float angleDegrees = angleRadians * GLOBAL_RADIAN_TO_DEGREE;
 
 		if (crossProduct < 0)
 			angleDegrees = -angleDegrees;  // Flip the sign for clockwise rotations

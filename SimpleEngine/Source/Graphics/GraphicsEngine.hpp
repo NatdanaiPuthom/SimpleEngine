@@ -83,7 +83,6 @@ namespace Graphics
 		void CreateDepthBuffer(const int aWidth, const int aHeight);
 		void CreateDepthStencilState();
 		void CreateBackBuffer();
-		void CreateFrameBuffer();
 		void CreateSamplerState();
 		void CreateCameraBuffer();
 		void CreateTimeBuffer();
@@ -102,6 +101,7 @@ namespace Graphics
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<size_t>(eRasterizerState::Count)> myRasterizerStates;
 		std::array<RenderTarget, static_cast<size_t>(eRenderTarget::Count)> myRenderTargets;
+		std::array<float, 4> myClearColor;
 
 		ComPtr<ID3D11Device> myDevice;
 		ComPtr<ID3D11DeviceContext> myContext;
@@ -109,9 +109,6 @@ namespace Graphics
 
 		ComPtr<ID3D11DepthStencilView> myDepthBuffer;
 		ComPtr<ID3D11DepthStencilState> myDepthStencilState;
-
-		ComPtr<ID3D11Buffer> myFrameBuffer;
-		ComPtr<ID3D11Buffer> myObjectBuffer;
 
 		ComPtr<ID3D11SamplerState> mySamplerState;
 		ComPtr<ID3D11RasterizerState> myCurrentRasterizerState;
@@ -124,7 +121,7 @@ namespace Graphics
 		std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myLightConstantBuffer;
-		std::unique_ptr<ConstantBuffer> myBonesConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myJointsConstantBuffer;
 
 		std::unique_ptr<LightBufferData> myLightBufferData;
 
@@ -132,7 +129,6 @@ namespace Graphics
 		std::unique_ptr<Drawer::Renderer> myRenderer;
 		std::unique_ptr<Simple::ImGuiEngine> myImGuiEngine;
 
-		float myClearColor[4];
 		unsigned int myFPSLevelCap;
 		bool myVSync;
 	};
