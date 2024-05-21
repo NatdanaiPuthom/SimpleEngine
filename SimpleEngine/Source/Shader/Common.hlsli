@@ -4,8 +4,10 @@
 SamplerState aSampler : register(s0);
 
 Texture2D aDefaultTexture : register(t0);
-TextureCube aCubeMap : register(t4);
-Texture2D GlobalDirectionalLightShadowMap : register(t5);
+Texture2D GlobalMaterialTexture : register(t1);
+Texture2D GlobalNormalTexture : register(t2);
+TextureCube aCubeMap : register(t3);
+Texture2D GlobalDirectionalLightShadowMap : register(t4);
 
 cbuffer FrameBuffer : register(b0)
 {
