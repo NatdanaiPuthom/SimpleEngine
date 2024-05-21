@@ -12,32 +12,6 @@
 #include <array>
 #include <string>
 
-namespace Test
-{
-	struct ShadowRTV
-	{
-		ComPtr<ID3D11RenderTargetView> rtv;
-		ComPtr<ID3D11ShaderResourceView> srv;
-
-		void Clear(ComPtr<ID3D11DeviceContext> aContext)
-		{
-			Math::Vector4f clearColor = { 0.0f, 0.0f, 0.0f, 0.0f };
-			aContext->ClearRenderTargetView(rtv.Get(), &clearColor.x);
-		}
-	};
-
-	struct ShadowDSV
-	{
-		ComPtr<ID3D11DepthStencilView> dsv;
-		ComPtr<ID3D11ShaderResourceView> srv;
-
-		void Clear(ComPtr<ID3D11DeviceContext> aContext)
-		{
-			aContext->ClearDepthStencilView(dsv.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-		}
-	};
-}
-
 namespace Simple
 {
 	class ImGuiEngine;
@@ -48,112 +22,11 @@ namespace Graphics
 	class ConstantBuffer;
 }
 
-#undef max
-
 namespace Graphics
 {
 	class GraphicsEngine final
 	{
 	public:
-		void SetShadowCamera(std::shared_ptr<Camera> aCamera)
-		{
-			myShadowCamera = aCamera;
-		}
-
-		Test::ShadowDSV CreateShadowDSV(const Math::Vector2ui& aResolution)
-		{
-			HRESULT result;
-
-			D3D11_TEXTURE2D_DESC desc = { 0 };
-			desc.Width = aResolution.x;
-			desc.Height = aResolution.y;
-			desc.MipLevels = 1;
-			desc.ArraySize = 1;
-			desc.Format = DXGI_FORMAT_R32_TYPELESS;
-			desc.SampleDesc.Count = 1;
-			desc.SampleDesc.Quality = 0;
-			desc.Usage = D3D11_USAGE_DEFAULT;
-			desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = 0;
-			desc.MiscFlags = 0;
-
-			ID3D11Texture2D* texture;
-			result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
-			assert(SUCCEEDED(result));
-
-			ID3D11DepthStencilView* DSV;
-			D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
-
-			dsvDesc.Flags = 0;
-			dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-			dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-			result = myDevice->CreateDepthStencilView(texture, &dsvDesc, &DSV);
-			assert(SUCCEEDED(result));
-
-			Test::ShadowDSV textureResult;
-			textureResult.dsv = DSV;
-			DSV->Release();
-
-			ID3D11ShaderResourceView* SRV;
-			D3D11_SHADER_RESOURCE_VIEW_DESC srDesc{};
-			srDesc.Format = DXGI_FORMAT_R32_FLOAT;
-			srDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-			srDesc.Texture2D.MostDetailedMip = 0;
-			srDesc.Texture2D.MipLevels = std::numeric_limits<UINT>::max();
-
-			result = myDevice->CreateShaderResourceView(texture, &srDesc, &SRV);
-			assert(SUCCEEDED(result));
-
-			textureResult.srv = SRV;
-
-			SRV->Release();
-			texture->Release();
-
-			return textureResult;
-		}
-
-		Test::ShadowRTV CreateShadowRTV(const Math::Vector2ui& aResolution, const DXGI_FORMAT aFormat)
-		{
-			HRESULT result;
-
-			D3D11_TEXTURE2D_DESC desc = { 0 };
-			desc.Width = aResolution.x;
-			desc.Height = aResolution.y;
-			desc.MipLevels = 1;
-			desc.ArraySize = 1;
-			desc.Format = aFormat;
-			desc.SampleDesc.Count = 1;
-			desc.SampleDesc.Quality = 0;
-			desc.Usage = D3D11_USAGE_DEFAULT;
-			desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = 0;
-			desc.MiscFlags = 0;
-
-			ID3D11Texture2D* texture;
-			result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
-			assert(SUCCEEDED(result));
-
-			Test::ShadowRTV textureResult;
-
-			ID3D11RenderTargetView* RTV;
-			result = myDevice->CreateRenderTargetView(texture, nullptr, &RTV);
-			assert(SUCCEEDED(result));
-
-			textureResult.rtv = RTV;
-			RTV->Release();
-
-			ID3D11ShaderResourceView* SRV;
-			result = myDevice->CreateShaderResourceView(texture, nullptr, &SRV);
-			assert(SUCCEEDED(result));
-			textureResult.srv = SRV;
-
-			SRV->Release();
-			texture->Release();
-
-			return textureResult;
-		}
-
-
 		GraphicsEngine();
 		~GraphicsEngine();
 
