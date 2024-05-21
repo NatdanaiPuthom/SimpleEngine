@@ -36,11 +36,11 @@ namespace Editor
 		{
 			if (Global::IsFullScreen())
 			{
-				Global::SetWindowSize({ 1280, 720 }, false);
+				Global::SetWindowSize({ 1280,720 }, false);
 			}
 			else
 			{
-				Global::SetWindowSize({ 0, 0 }, true);
+				Global::SetWindowSize({ 0,0 }, true);
 			}
 		}
 

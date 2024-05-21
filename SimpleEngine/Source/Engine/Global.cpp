@@ -154,10 +154,26 @@ namespace Global
 
 	void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen)
 	{
-		localWindowSize = aWindowSize;
-		localResolution = aWindowSize;
-
 		localIsFullScreen = aSetFullScreen;
+
+		if (localIsFullScreen == true)
+		{
+			HMONITOR hMonitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY);
+
+			MONITORINFOEX monitorInfo = { sizeof(MONITORINFOEX) };
+			GetMonitorInfo(hMonitor, &monitorInfo);
+
+			Math::Vector2ui fullScreenResolution;
+
+			localWindowSize.x = static_cast<unsigned int>(monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left);
+			localWindowSize.y = static_cast<unsigned int>(monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top);
+		}
+		else
+		{
+			localWindowSize = aWindowSize;
+		}
+
+		localResolution = localWindowSize;
 
 		localGraphicsEngine->SetWindowSize(localWindowSize, aSetFullScreen);
 		localGraphicsEngine->GetCurrentCamera()->UpdateProjection(localResolution);
