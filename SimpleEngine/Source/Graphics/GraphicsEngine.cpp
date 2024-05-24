@@ -48,17 +48,19 @@ namespace Graphics
 		LoadSettingsFromJson();
 
 		CreateSwapChain(aWindowHandle, aWindowSize);
+		CreateViewport(aWindowSize);
+
+		CreateBackBuffer();
+		CreateGBuffer(aWindowSize);
+
 		CreateDepthBuffer(aWindowSize);
 		CreateDepthStencilState();
-		CreateBackBuffer();
-		CreateViewport(aWindowSize);
+		CreateRasterizerStates();
 		CreateSamplerState();
+
 		CreateCameraBuffer();
 		CreateTimeBuffer();
 		CreateLightBuffer();
-		CreateRasterizerStates();
-		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)], aWindowSize.x, aWindowSize.y);
-		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::PostProcessing)], aWindowSize.x, aWindowSize.y, DXGI_FORMAT_R32G32B32A32_FLOAT);
 		CreateBonesBuffer();
 
 		PreloadTextures();
@@ -70,7 +72,10 @@ namespace Graphics
 		myModelFactory->Init();
 
 		SetRasterizerState(eRasterizerState::BackfaceCulling);
+
 		myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
+		myContext->RSSetViewports(1, myViewPort.get());
+		myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 
 		myCameraConstantBuffer->SetSlot(GLOBAL_CONSTANT_BUFFER_SLOT_CAMERA);
 		myTimeConstantBuffer->SetSlot(GLOBAL_CONSTANT_BUFFER_SLOT_TIME);
@@ -251,6 +256,13 @@ namespace Graphics
 		PROFILER_END();
 	}
 
+	void GraphicsEngine::UnbindAllRenderTargets()
+	{
+		static constexpr size_t maxRenderTargetSupportedByDX11 = 8;
+		ID3D11RenderTargetView* nullViews[maxRenderTargetSupportedByDX11] = { nullptr };
+		myContext->OMSetRenderTargets(maxRenderTargetSupportedByDX11, nullViews, nullptr);
+	}
+
 	void GraphicsEngine::UpdateCameraBuffer()
 	{
 		CameraBufferData frameBuffer = {};
@@ -311,7 +323,8 @@ namespace Graphics
 		SetWindowLong(Global::GetEngineHWND(), GWL_STYLE, dwStyle);
 		SetWindowPos(Global::GetEngineHWND(), nullptr, 0, 0, width, height, SWP_NOZORDER);
 
-		myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)].renderTargetView->Release();
+		ID3D11RenderTargetView* backBuffer = myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)][0].renderTargetView.Get();
+		backBuffer->Release();
 
 		const HRESULT result = mySwapChain->ResizeBuffers(2, newWindowSize.x, newWindowSize.y, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 		assert(SUCCEEDED(result) && "Failed to resize buffer");
@@ -319,7 +332,7 @@ namespace Graphics
 		ID3D11Texture2D* pBackBuffer = nullptr;
 
 		mySwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-		myDevice->CreateRenderTargetView(pBackBuffer, NULL, myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)].renderTargetView.GetAddressOf());
+		myDevice->CreateRenderTargetView(pBackBuffer, NULL, &backBuffer);
 
 		pBackBuffer->Release();
 		myDepthBuffer->Release();
@@ -327,23 +340,21 @@ namespace Graphics
 		CreateDepthBuffer(newWindowSize);
 		CreateViewport(newWindowSize);
 
-		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)], newWindowSize.x, newWindowSize.y); //NOTE(v9.36.0): Remember to resize related render targets properly
+		myContext->RSSetViewports(1, myViewPort.get());
 
-		SetRenderTarget(eRenderTarget::Backbuffer);
+		SetRenderTarget(eRenderTargetType::Backbuffer, myDepthBuffer.Get());
 	}
 
-	void GraphicsEngine::SetRenderTarget(eRenderTarget aRenderTarget)
+	void GraphicsEngine::SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer)
 	{
-		ComPtr<ID3D11RenderTargetView> renderTarget = myRenderTargets[static_cast<size_t>(aRenderTarget)].renderTargetView;
-
-		ID3D11ShaderResourceView* nullSRV = nullptr;
-		myContext->PSSetShaderResources(0, 1, &nullSRV);
-
-		myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-		myContext->OMSetRenderTargets(1, renderTarget.GetAddressOf(), myDepthBuffer.Get());
-		myContext->ClearRenderTargetView(renderTarget.Get(), &myClearColor[0]);
+		UnbindAllRenderTargets();
+
+		std::vector<RenderTarget>& renderTargets = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
+		const size_t count = renderTargets.size();
+
+		myContext->OMSetRenderTargets(static_cast<unsigned int>(count), renderTargets[0].renderTargetView.GetAddressOf(), aDepthBuffer);
 	}
 
 	void GraphicsEngine::SetCamera(std::shared_ptr<Graphics::Camera> aCamera)
@@ -546,9 +557,14 @@ namespace Graphics
 		return myContext;
 	}
 
-	ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetShaderResourceView(const eRenderTarget aRenderTarget)
+	ComPtr<ID3D11ShaderResourceView> GraphicsEngine::GetShaderResourceView(const eRenderTargetType aRenderTargetType, const size_t aIndex)
 	{
-		return myRenderTargets[static_cast<size_t>(aRenderTarget)].shaderResourceView;
+		return myRenderTargets[static_cast<size_t>(aRenderTargetType)][aIndex].shaderResourceView;
+	}
+
+	ComPtr<ID3D11DepthStencilView> GraphicsEngine::GetDepthBuffer()
+	{
+		return myDepthBuffer;
 	}
 
 	Math::Vector4f GraphicsEngine::GetDirectionalLightColor() const
@@ -578,52 +594,11 @@ namespace Graphics
 		viewport->MaxDepth = 1.0f;
 
 		myViewPort = viewport;
-		myContext->RSSetViewports(1, myViewPort.get());
 	}
 
 	bool GraphicsEngine::IsVSyncActive() const
 	{
 		return myVSync;
-	}
-
-	void GraphicsEngine::CreateRenderTarget(RenderTarget* aRenderTarget, const int aWidth, const int aHeight, const DXGI_FORMAT aFormat)
-	{
-		if (aRenderTarget->renderTargetView != nullptr)
-		{
-			aRenderTarget->renderTargetView->Release();
-		}
-
-		if (aRenderTarget->shaderResourceView != nullptr)
-		{
-			aRenderTarget->shaderResourceView->Release();
-		}
-
-		D3D11_TEXTURE2D_DESC desc = { 0 };
-
-		desc.Width = aWidth;
-		desc.Height = aHeight;
-		desc.MipLevels = 1;
-		desc.ArraySize = 1;
-		desc.Format = aFormat;
-		desc.SampleDesc.Count = 1;
-		desc.SampleDesc.Quality = 0;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = 0;
-
-		ID3D11Texture2D* texture;
-
-		HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
-		assert(SUCCEEDED(result) && "Failed to create Texture2D");
-
-		result = myDevice->CreateShaderResourceView(texture, nullptr, aRenderTarget->shaderResourceView.GetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create ShaderResourceView");
-
-		result = myDevice->CreateRenderTargetView(texture, nullptr, aRenderTarget->renderTargetView.GetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create RenderTargetView");
-
-		texture->Release();
 	}
 
 	void GraphicsEngine::CreateRasterizerStates()
@@ -675,6 +650,61 @@ namespace Graphics
 			assert(false && "Failed to create BoneConstantBuffer");
 	}
 
+	void GraphicsEngine::CreateGBuffer(const Math::Vector2ui aResolution)
+	{
+		std::array<DXGI_FORMAT, 5> formats =
+		{
+			DXGI_FORMAT_R32G32B32A32_FLOAT, //Position
+			DXGI_FORMAT_R8G8B8A8_UNORM, //Albedo
+			DXGI_FORMAT_R10G10B10A2_UNORM, //Normal
+			DXGI_FORMAT_R8G8B8A8_UNORM, //Material
+			DXGI_FORMAT_R8G8B8A8_UNORM // AmbientOcclusionAndCustom (R in used, G,B,A unused)
+		};
+
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
+	}
+
+	std::vector<RenderTarget> GraphicsEngine::CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution)
+	{
+		D3D11_TEXTURE2D_DESC desc = { 0 };
+
+		desc.Width = aResolution.x;
+		desc.Height = aResolution.y;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+
+		std::vector<RenderTarget> renderTargets(aRenderTargetCount);
+
+		for (size_t i = 0; i < aRenderTargetCount; ++i)
+		{
+			desc.Format = aArrayOfFormats[i];
+
+			RenderTarget renderTarget;
+			ID3D11Texture2D* texture;
+
+			HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
+			assert(SUCCEEDED(result) && "Failed to create Texture2D");
+
+			result = myDevice->CreateShaderResourceView(texture, nullptr, renderTarget.shaderResourceView.GetAddressOf());
+			assert(SUCCEEDED(result) && "Failed to create ShaderResourceView");
+
+			result = myDevice->CreateRenderTargetView(texture, nullptr, renderTarget.renderTargetView.GetAddressOf());
+			assert(SUCCEEDED(result) && "Failed to create RenderTargetView");
+
+			texture->Release();
+
+			renderTargets[i] = renderTarget;
+		}
+
+		return renderTargets;
+	}
+
 	void GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const Math::Vector2ui aSize)
 	{
 		DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
@@ -719,8 +749,13 @@ namespace Graphics
 		HRESULT result = mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBufferTexture);
 		assert(SUCCEEDED(result) && "Failed to get Backbuffer");
 
-		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)].renderTargetView.GetAddressOf());
+		RenderTarget backBuffer;
+		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, backBuffer.renderTargetView.GetAddressOf());
+
 		backBufferTexture->Release();
+
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)].push_back(backBuffer);
+
 		assert(SUCCEEDED(result) && "Failed to create Backbuffer");
 	}
 

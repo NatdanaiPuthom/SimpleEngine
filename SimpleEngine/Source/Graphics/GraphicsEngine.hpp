@@ -50,13 +50,14 @@ namespace Graphics
 		//NOTE(v6.0.0?): Call Global::SetWindowSize() instead
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
 
-		void SetRenderTarget(eRenderTarget aRenderTarget);
+		void SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer = nullptr);
 		void SetCamera(std::shared_ptr<Camera> aCamera);
 		void SetToDefaultCamera();
 	public:
 		ComPtr<ID3D11Device> GetDevice();
 		ComPtr<ID3D11DeviceContext> GetContext();
-		ComPtr<ID3D11ShaderResourceView> GetShaderResourceView(const eRenderTarget aRenderTarget);
+		ComPtr<ID3D11ShaderResourceView> GetShaderResourceView(const eRenderTargetType aRenderTargetType, const size_t aIndex = 0);
+		ComPtr<ID3D11DepthStencilView> GetDepthBuffer();
 
 		std::shared_ptr<Camera> GetCurrentCamera();
 		std::shared_ptr<Camera> GetEditorCamera();
@@ -87,10 +88,13 @@ namespace Graphics
 		void CreateCameraBuffer();
 		void CreateTimeBuffer();
 		void CreateLightBuffer();
-		void CreateRenderTarget(RenderTarget* aRenderTarget, const int aWidth, const int aHeight, const DXGI_FORMAT aFormat = DXGI_FORMAT_R8G8B8A8_UNORM);
 		void CreateRasterizerStates();
 		void CreateBonesBuffer();
+		void CreateGBuffer(const Math::Vector2ui aResolution);
+		std::vector<RenderTarget> CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution);
 	private:
+		void UnbindAllRenderTargets();
+
 		void PrepareFrame();
 		void LoadSettingsFromJson();
 		void PreloadTextures();
@@ -99,8 +103,8 @@ namespace Graphics
 	private:
 		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
+		std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<size_t>(eRasterizerState::Count)> myRasterizerStates;
-		std::array<RenderTarget, static_cast<size_t>(eRenderTarget::Count)> myRenderTargets;
 		std::array<float, 4> myClearColor;
 
 		ComPtr<ID3D11Device> myDevice;
@@ -116,6 +120,7 @@ namespace Graphics
 		std::shared_ptr<Camera> myCurrentCamera;
 		std::shared_ptr<Camera> myEditorCamera;
 		std::shared_ptr<Camera> myShadowCamera;
+
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
 		std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;

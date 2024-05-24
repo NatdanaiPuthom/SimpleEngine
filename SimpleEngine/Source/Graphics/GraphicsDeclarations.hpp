@@ -24,11 +24,10 @@ namespace Graphics
 		Count
 	};
 
-	enum class eRenderTarget
+	enum class eRenderTargetType
 	{
 		Backbuffer,
-		ImGui,
-		PostProcessing,
+		GBuffer,
 		Count
 	};
 
