@@ -8,8 +8,7 @@
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
 
-#include "NodeScript/SimpleNodeScript.hpp"
-#include "imgui.h"
+//#include "NodeScript/SimpleNodeScript.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
@@ -66,44 +65,44 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	//Script::SimpleNodeScript simpleScript;
 	//simpleScript.Init();
 
-	//while (Global::GetGameIsRunning())
-	//{
-	//	/*PROFILER_FUNCTION(profiler::colors::Blue);
+	while (Global::GetGameIsRunning())
+	{
+		PROFILER_FUNCTION(profiler::colors::Blue);
 
-	//	PROFILER_BEGIN("BeginFrame");
-	//	if (graphicsEngine.BeginFrame() == false)
-	//	{
-	//		PROFILER_END();
-	//		continue;
-	//	}
-	//	PROFILER_END();
+		PROFILER_BEGIN("BeginFrame");
+		if (graphicsEngine.BeginFrame() == false)
+		{
+			PROFILER_END();
+			continue;
+		}
+		PROFILER_END();
 
-	//	PROFILER_BEGIN("Engine Update");
-	//	engine.Update();
-	//	PROFILER_END();
+		PROFILER_BEGIN("Engine Update");
+		engine.Update();
+		PROFILER_END();
 
-	//	PROFILER_BEGIN("Game Update");
-	//	ecs.Update();
-	//	gameWorld.Update();
-	//	PROFILER_END();
+		PROFILER_BEGIN("Game Update");
+		ecs.Update();
+		gameWorld.Update();
+		PROFILER_END();
 
-	//	PROFILER_BEGIN("Editor Update");
-	//	simpleScript.Update();
-	//	editor.Update();
-	//	PROFILER_END();
+		PROFILER_BEGIN("Editor Update");
+		//simpleScript.Update();
+		editor.Update();
+		PROFILER_END();
 
-	//	PROFILER_BEGIN("Render To Backbuffer");
-	//	graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
-	//	ecs.Render();
-	//	gameWorld.Render();
-	//	PROFILER_END();
+		PROFILER_BEGIN("Render To Backbuffer");
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
+		ecs.Render();
+		gameWorld.Render();
+		PROFILER_END();
 
-	//	PROFILER_BEGIN("Editor Render");
-	//	editor.Render();
-	//	PROFILER_END();
+		PROFILER_BEGIN("Editor Render");
+		editor.Render();
+		PROFILER_END();
 
-	//	PROFILER_BEGIN("Endframe");
-	//	graphicsEngine.EndFrame();
-	//	PROFILER_END();*/
-	//}
+		PROFILER_BEGIN("Endframe");
+		graphicsEngine.EndFrame();
+		PROFILER_END();
+	}
 }
