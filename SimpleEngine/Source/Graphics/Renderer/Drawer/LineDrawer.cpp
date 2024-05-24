@@ -216,6 +216,6 @@ namespace Drawer
 		if (!myTransformBuffer->Init(sizeof(TransformBufferData), &objectBuffer))
 			assert(false && "failed to create ObjectBuffer");
 
-		myTransformBuffer->SetSlot(Graphics::GLOBAL_CONSTANT_BUFFER_SLOT_TRANSFORM);
+		myTransformBuffer->SetSlot(Graphics::Global_Constant_Buffer_Slot_Transform);
 	}
 }

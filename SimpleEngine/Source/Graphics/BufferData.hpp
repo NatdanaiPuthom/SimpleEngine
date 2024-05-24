@@ -39,5 +39,5 @@ struct alignas(16) LightBufferData final
 
 struct alignas(16) JointsBufferData
 {
-	Math::Matrix4x4f bonesTransform[Graphics::GLOBAL_MAX_JOINTS];
+	Math::Matrix4x4f bonesTransform[Graphics::Global_Max_Joints];
 };

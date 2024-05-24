@@ -10,14 +10,14 @@ namespace Graphics
 	//Relative parent's coordinate
 	struct ModelSpacePose
 	{
-		Math::Matrix4x4f jointTransforms[GLOBAL_MAX_JOINTS];
+		Math::Matrix4x4f jointTransforms[Global_Max_Joints];
 		size_t count;
 	};
 
 	//Relative model's coordinate
 	struct LocalSpacePose
 	{
-		Math::Matrix4x4f jointTransforms[GLOBAL_MAX_JOINTS];
+		Math::Matrix4x4f jointTransforms[Global_Max_Joints];
 		size_t count;
 	};
 

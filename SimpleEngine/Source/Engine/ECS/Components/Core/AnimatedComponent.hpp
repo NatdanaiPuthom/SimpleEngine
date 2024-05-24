@@ -9,7 +9,7 @@ namespace ECS
 {
 	struct AnimatedComponent final
 	{
-		Math::Matrix4x4f jointMatrices[Graphics::GLOBAL_MAX_JOINTS];
+		Math::Matrix4x4f jointMatrices[Graphics::Global_Max_Joints];
 		Graphics::Animation animation;
 		const Graphics::Skeleton* skeleton;
 		const Graphics::Shader* shader;

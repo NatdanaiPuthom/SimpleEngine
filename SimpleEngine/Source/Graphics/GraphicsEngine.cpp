@@ -77,10 +77,10 @@ namespace Graphics
 		myContext->RSSetViewports(1, myViewPort.get());
 		myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 
-		myCameraConstantBuffer->SetSlot(GLOBAL_CONSTANT_BUFFER_SLOT_CAMERA);
-		myTimeConstantBuffer->SetSlot(GLOBAL_CONSTANT_BUFFER_SLOT_TIME);
-		myLightConstantBuffer->SetSlot(GLOBAL_CONSTANT_BUFFER_SLOT_LIGHT);
-		myJointsConstantBuffer->SetSlot(GLOBAL_CONSTANT_BUFFER_SLOT_JOINTS);
+		myCameraConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Camera);
+		myTimeConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Time);
+		myLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Light);
+		myJointsConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Joints);
 
 		myLightBufferData->directionalLightDirection.x = 0.0f;
 		myLightBufferData->directionalLightDirection.y = -1.0f;
@@ -130,28 +130,28 @@ namespace Graphics
 
 	void GraphicsEngine::PreloadTextures()
 	{
-		if (!AddTexture("Assets\\Textures\\DefaultTexture.dds", GLOBAL_SLOT_ALBEDO))
+		if (!AddTexture("Assets\\Textures\\DefaultTexture.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cat.dds", GLOBAL_SLOT_ALBEDO))
+		if (!AddTexture("Assets\\Textures\\Cat.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Hamster.dds", GLOBAL_SLOT_ALBEDO))
+		if (!AddTexture("Assets\\Textures\\Hamster.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cat-scared.dds", GLOBAL_SLOT_ALBEDO))
+		if (!AddTexture("Assets\\Textures\\Cat-scared.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds", GLOBAL_SLOT_CUBEMAP))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds", GLOBAL_SLOT_CUBEMAP))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds", GLOBAL_SLOT_CUBEMAP))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds", GLOBAL_SLOT_CUBEMAP))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 	}
 

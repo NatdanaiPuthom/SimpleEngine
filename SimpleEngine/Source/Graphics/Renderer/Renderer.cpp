@@ -47,8 +47,8 @@ namespace Drawer
 
 		myBoundingBoxDrawer->Init();
 
-		myTransformBuffer->SetSlot(Graphics::GLOBAL_CONSTANT_BUFFER_SLOT_TRANSFORM);
-		myJointBuffer->SetSlot(Graphics::GLOBAL_CONSTANT_BUFFER_SLOT_JOINTS);
+		myTransformBuffer->SetSlot(Graphics::Global_Constant_Buffer_Slot_Transform);
+		myJointBuffer->SetSlot(Graphics::Global_Constant_Buffer_Slot_Joints);
 	}
 
 	void Renderer::RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const
@@ -95,7 +95,7 @@ namespace Drawer
 
 		JointsBufferData boneBufferData = {};
 
-		for (size_t i = 0; i < Graphics::GLOBAL_MAX_JOINTS; ++i)
+		for (size_t i = 0; i < Graphics::Global_Max_Joints; ++i)
 		{
 			boneBufferData.bonesTransform[i] = aSkeletonComponent->jointMatrices[i];;
 		}

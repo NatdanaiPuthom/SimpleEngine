@@ -2,17 +2,18 @@
 
 namespace Graphics
 {
-	constexpr size_t GLOBAL_MAX_JOINTS = 64;
+	constexpr size_t Global_Max_Joints = 64;
 
-	constexpr size_t GLOBAL_CONSTANT_BUFFER_SLOT_CAMERA = 0;
-	constexpr size_t GLOBAL_CONSTANT_BUFFER_SLOT_TRANSFORM = 1;
-	constexpr size_t GLOBAL_CONSTANT_BUFFER_SLOT_TIME = 2;
-	constexpr size_t GLOBAL_CONSTANT_BUFFER_SLOT_LIGHT = 3;
-	constexpr size_t GLOBAL_CONSTANT_BUFFER_SLOT_JOINTS = 4;
+	constexpr size_t Global_Constant_Buffer_Slot_Camera = 0;
+	constexpr size_t Global_Constant_Buffer_Slot_Transform = 1;
+	constexpr size_t Global_Constant_Buffer_Slot_Time = 2;
+	constexpr size_t Global_Constant_Buffer_Slot_Light = 3;
+	constexpr size_t Global_Constant_Buffer_Slot_Joints = 4;
 
-	constexpr size_t GLOBAL_SLOT_ALBEDO = 0;
-	constexpr size_t GLOBAL_SLOT_MATERIAL = 1;
-	constexpr size_t GLOBAL_SLOT_NORMAL = 2;
-	constexpr size_t GLOBAL_SLOT_CUBEMAP = 3;
-	constexpr size_t GLOBAL_SLOT_SHADOWMAP = 4;
+	constexpr size_t Global_Slot_Albedo = 0;
+	constexpr size_t Global_Slot_Material = 1;
+	constexpr size_t Global_Slot_Normal = 2;
+	constexpr size_t Global_Slot_AmbientOcclusionAndCustom = 3;
+	constexpr size_t Global_Slot_CubeMap = 4;
+	constexpr size_t Global_Slot_ShadowMap = 5;
 }

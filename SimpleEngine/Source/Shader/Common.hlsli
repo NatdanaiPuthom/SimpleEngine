@@ -1,13 +1,14 @@
 
 #define SIMPLE_MAX_BONES 64
 
-SamplerState aSampler : register(s0);
+SamplerState GlobalDefaultSampler : register(s0);
 
-Texture2D aDefaultTexture : register(t0);
+Texture2D GlobalAlbedo : register(t0);
 Texture2D GlobalMaterialTexture : register(t1);
 Texture2D GlobalNormalTexture : register(t2);
-TextureCube aCubeMap : register(t3);
-Texture2D GlobalDirectionalLightShadowMap : register(t4);
+Texture2D GlobalAmbientOcclusionAndCustom : register(t3);
+TextureCube aCubeMap : register(t4);
+Texture2D GlobalDirectionalLightShadowMap : register(t5);
 
 cbuffer FrameBuffer : register(b0)
 {
@@ -43,6 +44,11 @@ cbuffer BoneBuffer : register(b4)
 {
     float4x4 bones[SIMPLE_MAX_BONES];
 }
+
+struct FullScreenVertexInput
+{
+    unsigned int myIndex : SV_VertexID;
+};
 
 struct PixelOutput
 {
