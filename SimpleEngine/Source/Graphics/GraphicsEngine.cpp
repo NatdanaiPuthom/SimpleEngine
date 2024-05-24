@@ -28,27 +28,30 @@ namespace Graphics
 	{
 	}
 
-	const bool GraphicsEngine::Init(const Math::Vector2ui& aWindowSize, HWND& aWindowHandle)
+	const bool GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
 	{
 		myCameraConstantBuffer = std::make_unique<ConstantBuffer>();
 		myTimeConstantBuffer = std::make_unique<ConstantBuffer>();
 		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
 		myJointsConstantBuffer = std::make_unique<ConstantBuffer>();
 
+		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 		myLightBufferData = std::make_unique<LightBufferData>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
 
 		myEditorCamera = std::make_shared<Graphics::Camera>();
 		myShadowCamera = std::make_shared<Graphics::Camera>();
-		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 
-		myCurrentCamera = myEditorCamera;
+		myRenderer = std::make_unique<Drawer::Renderer>();
+		myModelFactory = std::make_unique<ModelFactory>();
 
-		CreateSwapChain(aWindowHandle, aWindowSize.x, aWindowSize.y);
-		CreateDepthBuffer(aWindowSize.x, aWindowSize.y);
+		LoadSettingsFromJson();
+
+		CreateSwapChain(aWindowHandle, aWindowSize);
+		CreateDepthBuffer(aWindowSize);
 		CreateDepthStencilState();
 		CreateBackBuffer();
-		CreateViewport(aWindowSize.x, aWindowSize.y);
+		CreateViewport(aWindowSize);
 		CreateSamplerState();
 		CreateCameraBuffer();
 		CreateTimeBuffer();
@@ -58,12 +61,8 @@ namespace Graphics
 		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::PostProcessing)], aWindowSize.x, aWindowSize.y, DXGI_FORMAT_R32G32B32A32_FLOAT);
 		CreateBonesBuffer();
 
-		LoadSettingsFromJson();
 		PreloadTextures();
 		PreloadShaders();
-
-		myRenderer = std::make_unique<Drawer::Renderer>();
-		myModelFactory = std::make_unique<ModelFactory>();
 
 		myEditorCamera->Init();
 		myImGuiEngine->Init();
@@ -81,6 +80,8 @@ namespace Graphics
 		myLightBufferData->directionalLightDirection.x = 0.0f;
 		myLightBufferData->directionalLightDirection.y = -1.0f;
 		myLightBufferData->directionalLightDirection.z = 0.0f;
+
+		myCurrentCamera = myEditorCamera;
 
 		return true;
 	}
@@ -268,8 +269,7 @@ namespace Graphics
 
 	void GraphicsEngine::SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen)
 	{
-		unsigned int newWidth = aWindowSize.x;
-		unsigned int newHeight = aWindowSize.y;
+		Math::Vector2ui newWindowSize = aWindowSize;
 
 		DWORD dwStyle = GetWindowLong(Global::GetEngineHWND(), GWL_STYLE);
 
@@ -285,9 +285,9 @@ namespace Graphics
 
 		RECT wr = {};
 		wr.left = 0;
-		wr.right = newWidth + wr.left;
+		wr.right = newWindowSize.x + wr.left;
 		wr.top = 0;
-		wr.bottom = newHeight + wr.top;
+		wr.bottom = newWindowSize.y + wr.top;
 
 		AdjustWindowRect(&wr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
 
@@ -304,8 +304,8 @@ namespace Graphics
 			width = static_cast<unsigned int>(monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left);
 			height = static_cast<unsigned int>(monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top);
 
-			newWidth = width;
-			newHeight = height;
+			newWindowSize.x = width;
+			newWindowSize.y = height;
 		}
 
 		SetWindowLong(Global::GetEngineHWND(), GWL_STYLE, dwStyle);
@@ -313,7 +313,7 @@ namespace Graphics
 
 		myRenderTargets[static_cast<size_t>(eRenderTarget::Backbuffer)].renderTargetView->Release();
 
-		const HRESULT result = mySwapChain->ResizeBuffers(2, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+		const HRESULT result = mySwapChain->ResizeBuffers(2, newWindowSize.x, newWindowSize.y, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 		assert(SUCCEEDED(result) && "Failed to resize buffer");
 
 		ID3D11Texture2D* pBackBuffer = nullptr;
@@ -324,10 +324,10 @@ namespace Graphics
 		pBackBuffer->Release();
 		myDepthBuffer->Release();
 
-		CreateDepthBuffer(newWidth, newHeight);
-		CreateViewport(newWidth, newHeight);
+		CreateDepthBuffer(newWindowSize);
+		CreateViewport(newWindowSize);
 
-		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)], newWidth, newHeight); //NOTE(v9.36.0): Remember to resize related render targets properly
+		CreateRenderTarget(&myRenderTargets[static_cast<size_t>(eRenderTarget::ImGui)], newWindowSize.x, newWindowSize.y); //NOTE(v9.36.0): Remember to resize related render targets properly
 
 		SetRenderTarget(eRenderTarget::Backbuffer);
 	}
@@ -566,14 +566,14 @@ namespace Graphics
 		return myFPSLevelCap;
 	}
 
-	void GraphicsEngine::CreateViewport(const int aWidth, const int aHeight)
+	void GraphicsEngine::CreateViewport(const Math::Vector2ui aSize)
 	{
 		std::shared_ptr<D3D11_VIEWPORT> viewport = std::make_shared<D3D11_VIEWPORT>();
 
 		viewport->TopLeftX = 0.0f;
 		viewport->TopLeftY = 0.0f;
-		viewport->Width = static_cast<float> (aWidth);
-		viewport->Height = static_cast<float> (aHeight);
+		viewport->Width = static_cast<float> (aSize.x);
+		viewport->Height = static_cast<float> (aSize.y);
 		viewport->MinDepth = 0.0f;
 		viewport->MaxDepth = 1.0f;
 
@@ -675,12 +675,12 @@ namespace Graphics
 			assert(false && "Failed to create BoneConstantBuffer");
 	}
 
-	void GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight)
+	void GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const Math::Vector2ui aSize)
 	{
 		DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 		swapChainDesc.BufferCount = 2;
-		swapChainDesc.BufferDesc.Width = aWidth;
-		swapChainDesc.BufferDesc.Height = aHeight;
+		swapChainDesc.BufferDesc.Width = aSize.x;
+		swapChainDesc.BufferDesc.Height = aSize.y;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -724,11 +724,11 @@ namespace Graphics
 		assert(SUCCEEDED(result) && "Failed to create Backbuffer");
 	}
 
-	void GraphicsEngine::CreateDepthBuffer(const int aWidth, const int aHeight)
+	void GraphicsEngine::CreateDepthBuffer(const Math::Vector2ui aSize)
 	{
 		D3D11_TEXTURE2D_DESC descDepth = {};
-		descDepth.Width = aWidth;
-		descDepth.Height = aHeight;
+		descDepth.Width = aSize.x;
+		descDepth.Height = aSize.y;
 		descDepth.MipLevels = 1;
 		descDepth.ArraySize = 1;
 		descDepth.Format = DXGI_FORMAT_D32_FLOAT;
@@ -789,7 +789,7 @@ namespace Graphics
 	{
 		CameraBufferData cameraBuffer;
 
-		cameraBuffer.worldToClipMatrix = Math::Matrix4x4f::GetInverse(myCurrentCamera->GetMatrix()) * myCurrentCamera->GetProjectionMatrix();
+		cameraBuffer.worldToClipMatrix = Math::Matrix4x4f::Identity();
 		cameraBuffer.cameraPosition = Math::Vector3f{ 0.0f,0.0f,0.0f };
 
 		if (!myCameraConstantBuffer->Init(sizeof(CameraBufferData), &cameraBuffer))

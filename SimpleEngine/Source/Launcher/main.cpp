@@ -56,7 +56,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	ecs.SetGlobalPointerToThis();
 
 	engine.Init(hInstance, nCmdShow);
-	graphicsEngine.Init(Global::GetWindowSize(), Global::GetEngineHWND());
+	graphicsEngine.Init(Global::GetEngineHWND(), Global::GetWindowSize());
 	ecs.Init();
 	editor.Init();
 	PROFILER_END();

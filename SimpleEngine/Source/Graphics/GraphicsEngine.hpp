@@ -30,7 +30,7 @@ namespace Graphics
 		GraphicsEngine();
 		~GraphicsEngine();
 
-		const bool Init(const Math::Vector2ui& aWindowSize, HWND& aWindowHandle);
+		const bool Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize);
 
 		bool BeginFrame();
 		void EndFrame();
@@ -78,9 +78,9 @@ namespace Graphics
 
 		unsigned int GetFPSLevelCap() const;
 	private:
-		void CreateViewport(const int aWidth, const int aHeight);
-		void CreateSwapChain(HWND& aWindowHandle, const int aWidth, const int aHeight);
-		void CreateDepthBuffer(const int aWidth, const int aHeight);
+		void CreateViewport(const Math::Vector2ui aSize);
+		void CreateSwapChain(HWND& aWindowHandle, const Math::Vector2ui aSize);
+		void CreateDepthBuffer(const Math::Vector2ui aSize);
 		void CreateDepthStencilState();
 		void CreateBackBuffer();
 		void CreateSamplerState();
