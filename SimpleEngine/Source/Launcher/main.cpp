@@ -19,32 +19,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	memoryTrackerSettings.myShouldStoreStackTraces = false;
 	memoryTrackerSettings.myShouldTrackAllAllocations = true;
 	SimpleTracker::StartMemoryTracking(memoryTrackerSettings);
+	std::atexit(SimpleTracker::StopMemoryTrackingAndPrint);
 
-	/*PROFILER_INIT();
+	PROFILER_INIT();
 	PROFILER_ENABLE();
 	PROFILER_START_LISTEN();
-	PROFILER_BEGIN("Main.cpp");*/
+	PROFILER_BEGIN("Main.cpp");
 
 	Run(hInstance, nCmdShow);
 
-	//PROFILER_END();
-	//PROFILER_DISABLE();
+	PROFILER_END();
+	PROFILER_DISABLE();
 
-	//Simple::EasyProfilerOutput();
+	Simple::EasyProfilerOutput();
 
-	//MainSingleton::Release();
-
-	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!
-	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here before StopMemoryTrackingAndPrint function!
-	SimpleTracker::StopMemoryTrackingAndPrint();
+	MainSingleton::Release();
 
 	return 0;
 }
 
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
-	hInstance; nCmdShow;
-	/*PROFILER_BEGIN("Engine initialize");
+	PROFILER_BEGIN("Engine initialize");
 	MainSingleton::Init();
 
 	Simple::Engine engine;
@@ -54,21 +50,21 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
-	ecs.SetGlobalPointerToThis();*/
+	ecs.SetGlobalPointerToThis();
 
-	/*engine.Init(hInstance, nCmdShow);
+	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetEngineHWND(), Global::GetWindowSize());
 	ecs.Init();
 	editor.Init();
-	PROFILER_END();*/
+	PROFILER_END();
 
-	/*PROFILER_BEGIN("GameWorld initialize");
+	PROFILER_BEGIN("GameWorld initialize");
 	Simple::GameWorld gameWorld;
 	gameWorld.Init();
-	PROFILER_END();*/
+	PROFILER_END();
 
-	Script::SimpleNodeScript simpleScript;
-	simpleScript.Init();
+	//Script::SimpleNodeScript simpleScript;
+	//simpleScript.Init();
 
 	//while (Global::GetGameIsRunning())
 	//{
