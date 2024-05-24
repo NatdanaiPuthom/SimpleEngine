@@ -15,6 +15,7 @@ namespace SCR
 		friend class ScriptInternalModifier;
 
 	public:
+
 		static NodeTypeID Register(NodeType&& aNodeType);
 
 		static void SetGetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID);
@@ -56,8 +57,9 @@ namespace SCR
 		inline static std::vector<CustomEvent*> myCustomEvents;
 		inline static std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventNodeTypeID;
 
-		inline static std::unordered_map<DataTypeID, NodeTypeID> myGetterNodeTypeIDs;
-		inline static std::unordered_map<DataTypeID, NodeTypeID> mySetterNodeTypeIDs;
-		inline static std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> myOperatorNodeTypeIDs;
+		inline static std::unordered_map<DataTypeID, NodeTypeID>* myGetterNodeTypeIDs = new std::unordered_map<DataTypeID, NodeTypeID>;
+		inline static std::unordered_map<DataTypeID, NodeTypeID>* mySetterNodeTypeIDs = new std::unordered_map<DataTypeID, NodeTypeID>();
+		inline static std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>>* myOperatorNodeTypeIDs = new std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>>();
+	
 	};
 }

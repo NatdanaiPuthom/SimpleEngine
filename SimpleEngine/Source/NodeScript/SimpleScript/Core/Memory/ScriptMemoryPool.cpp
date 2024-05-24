@@ -30,6 +30,8 @@ namespace SCR
 		myStartMemory = nullptr;
 		myEndMemory = nullptr;
 		myCurrentMemory = nullptr;
+
+		myObjects.~vector();
 	}
 
 	size_t MemoryPool::AllocSize() const

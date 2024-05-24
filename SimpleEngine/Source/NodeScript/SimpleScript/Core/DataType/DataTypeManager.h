@@ -280,8 +280,8 @@ namespace SCR
 
 	private:
 
-		inline static std::unordered_map<DataTypeID, DataType> myDataTypes;
-		inline static std::unordered_map<DataTypeID, TemplateDataType> myTemplateDataTypes;
+		inline static std::unordered_map<DataTypeID, DataType>* myDataTypes = new std::unordered_map<DataTypeID, DataType>();
+		inline static std::unordered_map<DataTypeID, TemplateDataType>* myTemplateDataTypes = new std::unordered_map<DataTypeID, TemplateDataType>();
 
 		inline static const ScriptColor mySelectionTint = ScriptColor(0.2f, 0.2f, 0.2f, 0);
 		inline static const ScriptColor myHoverTint = ScriptColor(0.1f, 0.1f, 0.1f, 0);
@@ -316,7 +316,7 @@ namespace SCR
 		{
 			aName
 		};
-		myTemplateDataTypes.emplace(typeid(TemplateType).hash_code(), templateObjectType);
+		myTemplateDataTypes->emplace(typeid(TemplateType).hash_code(), templateObjectType);
 	}
 
 	template<typename T>
@@ -350,10 +350,10 @@ namespace SCR
 			anInterface
 		};
 
-		if (myDataTypes.contains(typeInfo.hash_code()))
+		if (myDataTypes->contains(typeInfo.hash_code()))
 		{
 			throw std::runtime_error("Two object types have the same hash value");
 		}
-		myDataTypes.emplace(typeInfo.hash_code(), dataType);
+		myDataTypes->emplace(typeInfo.hash_code(), dataType);
 	}
 }

@@ -8,7 +8,7 @@
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
 
-//#include "NodeScript/SimpleNodeScript.hpp"
+#include "NodeScript/SimpleNodeScript.hpp"
 #include "imgui.h"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
@@ -20,19 +20,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	memoryTrackerSettings.myShouldTrackAllAllocations = true;
 	SimpleTracker::StartMemoryTracking(memoryTrackerSettings);
 
-	PROFILER_INIT();
+	/*PROFILER_INIT();
 	PROFILER_ENABLE();
 	PROFILER_START_LISTEN();
-	PROFILER_BEGIN("Main.cpp");
+	PROFILER_BEGIN("Main.cpp");*/
 
 	Run(hInstance, nCmdShow);
 
-	PROFILER_END();
-	PROFILER_DISABLE();
+	//PROFILER_END();
+	//PROFILER_DISABLE();
 
-	Simple::EasyProfilerOutput();
+	//Simple::EasyProfilerOutput();
 
-	MainSingleton::Release();
+	//MainSingleton::Release();
 
 	//Remember to release any allocated memory from static classes/variables to avoid false memory leaks!
 	//As I have no clue how to call StopMemoryTracking AFTER all static classes call their destructor, so do it here before StopMemoryTrackingAndPrint function!
@@ -43,7 +43,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
-	PROFILER_BEGIN("Engine initialize");
+	hInstance; nCmdShow;
+	/*PROFILER_BEGIN("Engine initialize");
 	MainSingleton::Init();
 
 	Simple::Engine engine;
@@ -53,60 +54,60 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
-	ecs.SetGlobalPointerToThis();
+	ecs.SetGlobalPointerToThis();*/
 
-	engine.Init(hInstance, nCmdShow);
+	/*engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetEngineHWND(), Global::GetWindowSize());
 	ecs.Init();
 	editor.Init();
-	PROFILER_END();
+	PROFILER_END();*/
 
-	PROFILER_BEGIN("GameWorld initialize");
+	/*PROFILER_BEGIN("GameWorld initialize");
 	Simple::GameWorld gameWorld;
 	gameWorld.Init();
-	PROFILER_END();
+	PROFILER_END();*/
 
-	//Script::SimpleNodeScript simpleScript;
-	//simpleScript.Init();
+	Script::SimpleNodeScript simpleScript;
+	simpleScript.Init();
 
-	while (Global::GetGameIsRunning())
-	{
-		PROFILER_FUNCTION(profiler::colors::Blue);
+	//while (Global::GetGameIsRunning())
+	//{
+	//	/*PROFILER_FUNCTION(profiler::colors::Blue);
 
-		PROFILER_BEGIN("BeginFrame");
-		if (graphicsEngine.BeginFrame() == false)
-		{
-			PROFILER_END();
-			continue;
-		}
-		PROFILER_END();
+	//	PROFILER_BEGIN("BeginFrame");
+	//	if (graphicsEngine.BeginFrame() == false)
+	//	{
+	//		PROFILER_END();
+	//		continue;
+	//	}
+	//	PROFILER_END();
 
-		PROFILER_BEGIN("Engine Update");
-		engine.Update();
-		PROFILER_END();
+	//	PROFILER_BEGIN("Engine Update");
+	//	engine.Update();
+	//	PROFILER_END();
 
-		PROFILER_BEGIN("Game Update");
-		ecs.Update();
-		gameWorld.Update();
-		PROFILER_END();
+	//	PROFILER_BEGIN("Game Update");
+	//	ecs.Update();
+	//	gameWorld.Update();
+	//	PROFILER_END();
 
-		PROFILER_BEGIN("Editor Update");
-		//simpleScript.Update();
-		editor.Update();
-		PROFILER_END();
+	//	PROFILER_BEGIN("Editor Update");
+	//	simpleScript.Update();
+	//	editor.Update();
+	//	PROFILER_END();
 
-		PROFILER_BEGIN("Render To Backbuffer");
-		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
-		ecs.Render();
-		gameWorld.Render();
-		PROFILER_END();
+	//	PROFILER_BEGIN("Render To Backbuffer");
+	//	graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
+	//	ecs.Render();
+	//	gameWorld.Render();
+	//	PROFILER_END();
 
-		PROFILER_BEGIN("Editor Render");
-		editor.Render();
-		PROFILER_END();
+	//	PROFILER_BEGIN("Editor Render");
+	//	editor.Render();
+	//	PROFILER_END();
 
-		PROFILER_BEGIN("Endframe");
-		graphicsEngine.EndFrame();
-		PROFILER_END();
-	}
+	//	PROFILER_BEGIN("Endframe");
+	//	graphicsEngine.EndFrame();
+	//	PROFILER_END();*/
+	//}
 }

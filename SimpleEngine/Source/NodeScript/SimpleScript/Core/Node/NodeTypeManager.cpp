@@ -5,8 +5,10 @@
 #include "../ScriptFoundation.h"
 #include "../ScriptManager.h"
 
+
 namespace SCR
 {
+
 	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
 	{
 		NodeTypeID id = myTypes.size();
@@ -17,34 +19,34 @@ namespace SCR
 
 	void NodeTypeManager::SetGetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID)
 	{
-		myGetterNodeTypeIDs.emplace(aDataTypeID, anID);
+		myGetterNodeTypeIDs->emplace(aDataTypeID, anID);
 	}
 
 	void NodeTypeManager::SetSetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID)
 	{
-		mySetterNodeTypeIDs.emplace(aDataTypeID, anID);
+		mySetterNodeTypeIDs->emplace(aDataTypeID, anID);
 	}
 
 	void NodeTypeManager::SetOperatorNodeTypeID(const DataTypeID aDataTypeID, const eNodeOperatorTrait anOperatorTrait, const NodeTypeID anID)
 	{
-		myOperatorNodeTypeIDs[anOperatorTrait].emplace(aDataTypeID, anID);
+		(*myOperatorNodeTypeIDs)[anOperatorTrait].emplace(aDataTypeID, anID);
 	}
 
 	Node NodeTypeManager::CreateInstance_Getter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
 	{
-		NodeTypeID typeID = myGetterNodeTypeIDs.at(aDataTypeID);
+		NodeTypeID typeID = myGetterNodeTypeIDs->at(aDataTypeID);
 		return CreateInstance(aNodeID, typeID, aModifier);
 	}
 
 	Node NodeTypeManager::CreateInstance_Setter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
 	{
-		NodeTypeID typeID = mySetterNodeTypeIDs.at(aDataTypeID);
+		NodeTypeID typeID = mySetterNodeTypeIDs->at(aDataTypeID);
 		return CreateInstance(aNodeID, typeID, aModifier);
 	}
 
 	Node NodeTypeManager::CreateInstance_Operator(const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
 	{
-		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = myOperatorNodeTypeIDs.at(aOperatorTrait);
+		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = myOperatorNodeTypeIDs->at(aOperatorTrait);
 		NodeTypeID typeID = operatorNodes.at(aDataTypeID);
 		return CreateInstance(aNodeID, typeID, aModifier);
 	}
@@ -56,9 +58,9 @@ namespace SCR
 
 	bool NodeTypeManager::CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID)
 	{
-		if (myOperatorNodeTypeIDs.contains(aTrait))
+		if (myOperatorNodeTypeIDs->contains(aTrait))
 		{
-			return myOperatorNodeTypeIDs.at(aTrait).contains(aDataTypeID);
+			return myOperatorNodeTypeIDs->at(aTrait).contains(aDataTypeID);
 		}
 		return false;
 	}
@@ -85,9 +87,10 @@ namespace SCR
 
 	CustomEventID NodeTypeManager::GetCustomEventNodeTypeID(const NodeTypeID aNodeTypeID)
 	{
-		if (myToCustomEventNodeTypeID.contains(aNodeTypeID))
+		auto it = myToCustomEventNodeTypeID.find(aNodeTypeID);
+		if (it != myToCustomEventNodeTypeID.end())
 		{
-			return myToCustomEventNodeTypeID.find(aNodeTypeID)->second;
+			return it->second;
 		}
 		return InvalidID<CustomEventID>();
 	}
@@ -181,10 +184,14 @@ namespace SCR
 		myTypes.~vector();
 		myCustomEvents.~vector();
 
-		myCustomEvents.clear();
-		myGetterNodeTypeIDs.clear();
-		mySetterNodeTypeIDs.clear();
-		myOperatorNodeTypeIDs.clear();
+		//myCustomEvents.clear();
+		myGetterNodeTypeIDs->clear();
+		mySetterNodeTypeIDs->clear();
+		myOperatorNodeTypeIDs->clear();
 		myToCustomEventNodeTypeID.clear();
+
+		delete myGetterNodeTypeIDs;
+		delete mySetterNodeTypeIDs;
+		delete myOperatorNodeTypeIDs;
 	}
 }
