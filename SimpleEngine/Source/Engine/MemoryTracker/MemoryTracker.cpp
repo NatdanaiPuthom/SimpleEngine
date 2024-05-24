@@ -48,8 +48,9 @@ typedef struct _CrtMemBlockHeader
 } _CrtMemBlockHeader;
 
 int AllocHook(int aAllocType, void* aUserData, size_t aSize, int aBlockType, long aRequestNumber, const unsigned char*, int)
-{	if (aBlockType == _CRT_BLOCK || localIsAllocationInProgress)
-		return true;
+{	
+	if (aBlockType == _CRT_BLOCK || localIsAllocationInProgress)
+		return TRUE;
 
 	// Do not track allocations by the memory tracker itself
 	localIsAllocationInProgress = true;
@@ -102,7 +103,7 @@ int AllocHook(int aAllocType, void* aUserData, size_t aSize, int aBlockType, lon
 	}
 
 	localIsAllocationInProgress = false;
-	return true;
+	return TRUE;
 }
 
 void SimpleTracker::StartMemoryTracking(const MemoryTrackingSettings& aTrackingSettings)
