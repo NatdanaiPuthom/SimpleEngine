@@ -160,19 +160,13 @@ namespace Graphics
 		if (!AddShader("DefaultPS.cso", "DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("DefaultColorfulPS.cso", "DefaultVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("LinePS.cso", "Line2DVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("LinePS.cso", "DefaultVS.cso"))
+		if (!AddShader("DefaultPS.cso", "AnimatedModelVS.cso"))
 			assert(false && "Failed to add Shader");
 
 		if (!AddShader("DefaultPBRPS.cso", "DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("DefaultPS.cso", "AnimatedModelVS.cso"))
+		if (!AddShader("LinePS.cso", "Line2DVS.cso"))
 			assert(false && "Failed to add Shader");
 
 		if (!AddShader("SkyBoxPS.cso", "DefaultVS.cso"))
