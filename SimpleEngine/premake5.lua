@@ -66,6 +66,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 	filter "configurations:Release"
 		defines { "_RELEASE" }
+		symbols "On"
 		optimize "Speed"
 		runtime "Release"
 
@@ -77,6 +78,10 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 	filter "system:windows"
 		systemversion "latest"
+		
+		flags {
+			"MultiProcessorCompile"
+		}
   
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -194,7 +199,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		links { -- Linking these Libraries during build
-			--"External"
 		}
 			
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -413,8 +417,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Editor"
 		}
 
-		postbuildcommands {
-			"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}"
+		postbuildcommands { 
+			"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}" -- Copy files from this folder to targetdir (Bin)
 		}
 
 		filter "configurations:Debug"

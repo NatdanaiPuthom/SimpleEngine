@@ -92,7 +92,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To Backbuffer");
-		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer, graphicsEngine.GetDepthBuffer().Get());
 		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();
