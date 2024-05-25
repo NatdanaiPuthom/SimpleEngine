@@ -29,7 +29,7 @@ namespace SCR
 	template<CleanType T>
 	PinSetFunction CreatePinSetFunction()
 	{
-		return [](const PinID aPinID, InternalExecutionContext& aContext, const void* aValue) -> void
+		return [](const PinID aPinID, const InternalExecutionContext& aContext, const void* aValue) -> void
 			{
 
 				const T& value = *reinterpret_cast<const T*>(aValue);
@@ -237,6 +237,15 @@ namespace SCR
 		return idArray;
 	}
 
+	template<typename Return, typename A, typename B>
+	Return AppendContainers(const A& a, const B& b)
+	{
+		Return r{};
+		r.insert(r.begin(), a.begin(), a.end());
+		r.insert(r.end(), b.begin(), b.end());
+		return r;
+	}
+
 	template<typename...>
 	struct TypeList {};
 
@@ -257,12 +266,20 @@ namespace SCR
 				}
 
 				// Input pins
-				std::array<PinID, PinInputSize> inputPinIDs = CreateInputPins<InputTypes...>(aNodeID, aNodeTypeID, aModifier);
+				std::array<PinID, PinInputSize> preExistingInputPinIDs = CreateInputPins<InputTypes...>(aNodeID, aNodeTypeID, aModifier);
+
+				std::vector<PinID> addedInputPinIDs = aModifier.CreateInputPins(aNodeID, aNodeTypeID, preExistingInputPinIDs.size());
+
+				std::vector<PinID> totalInputPinIDs = AppendContainers<std::vector<PinID>>(preExistingInputPinIDs, addedInputPinIDs);
 
 				// Output pins
-				std::array<PinID, PinOutputSize> outputPinIDs = CreateOutputPins<OutputTypes...>(aNodeID, aNodeTypeID, aModifier);
+				std::array<PinID, PinOutputSize> preExistingOutputPinIDs = CreateOutputPins<OutputTypes...>(aNodeID, aNodeTypeID, aModifier);
 
-				return Node(aNodeTypeID, inputPinIDs, outputPinIDs);
+				std::vector<PinID> addedOutputPinIDs = aModifier.CreateOutputPins(aNodeID, aNodeTypeID, preExistingOutputPinIDs.size());
+
+				std::vector<PinID> totalOutputPinIDs = AppendContainers<std::vector<PinID>>(preExistingOutputPinIDs, addedOutputPinIDs);
+
+				return Node(aNodeTypeID, totalInputPinIDs, totalOutputPinIDs);
 			};
 
 	}
@@ -276,11 +293,11 @@ namespace SCR
 
 		using MemoryTupleType = MemoryTuple<InputTypes...>;
 
-		return [](const NodeID aNodeID, InternalExecutionContext& aContext) -> void
+		return [](const NodeExecutionData& aNodeExecutionData, InternalExecutionContext& aContext) -> void
 			{
 				// Node internal functionality
 
-				const Node& node = ScriptProxy::GetNode(aContext.script, aNodeID);
+				const Node& node = ScriptProxy::GetNode(aContext.script, aNodeExecutionData.currentNodeID);
 				const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
 
 				MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
@@ -300,6 +317,7 @@ namespace SCR
 					EvaluateInputValues(node.inputPins, aContext);
 				}
 
+				aContext.nodeData = aNodeExecutionData;
 				// Call function and retrieve output values
 				std::tuple<OutputTypes...> outputValues;
 
@@ -307,7 +325,7 @@ namespace SCR
 				{
 					NodeState<NodeStateDataType> nodeState
 					{
-						aContext.modifier.GetNodeState<NodeStateDataType>(aNodeID)
+						aContext.modifier.GetNodeState<NodeStateDataType>(aNodeExecutionData.currentNodeID)
 					};
 
 					NodeExecutionContext<NodeExecutionContextType> executionContext
@@ -328,7 +346,7 @@ namespace SCR
 				{
 					NodeState<NodeStateDataType> nodeState
 					{
-						aContext.modifier.GetNodeState<NodeStateDataType>(aNodeID)
+						aContext.modifier.GetNodeState<NodeStateDataType>(aNodeExecutionData.currentNodeID)
 					};
 
 					outputValues = memoryTuple.Call(callable, memoryPool, ToArray<PinInputSize>(node.inputPins, aContext), &aContext, nodeState);
@@ -338,7 +356,7 @@ namespace SCR
 				{
 					NodeState<NodeStateDataType> nodeState
 					{
-						aContext.modifier.GetNodeState<NodeStateDataType>(aNodeID)
+						aContext.modifier.GetNodeState<NodeStateDataType>(aNodeExecutionData.currentNodeID)
 					};
 
 					outputValues = memoryTuple.Call(callable, memoryPool, ToArray<PinInputSize>(node.inputPins, aContext), nodeState);
@@ -397,97 +415,97 @@ namespace SCR
 		};
 	}
 
-	template<typename OutputType>
-	static NodeRecipe CreateGetterNodeRecipe()
-	{
-		std::vector<PinTypeID> outputPinTypes = CreatePinTypes<ePinFlowType::Output, OutputType>();
+	//template<typename OutputType>
+	//static NodeRecipe CreateGetterNodeRecipe()
+	//{
+	//	std::vector<PinTypeID> outputPinTypes = CreatePinTypes<ePinFlowType::Output, OutputType>();
 
-		return NodeRecipe{ [](const NodeID aNodeID, const NodeTypeID aTypeID, ScriptInternalModifier& aModifier) -> Node
-			{
-				std::array<PinID, 1> outputPinIDs = CreateOutputPins<OutputType>(aNodeID, aTypeID, aModifier);
+	//	return NodeRecipe{ [](const NodeID aNodeID, const NodeTypeID aTypeID, ScriptInternalModifier& aModifier) -> Node
+	//		{
+	//			std::array<PinID, 1> outputPinIDs = CreateOutputPins<OutputType>(aNodeID, aTypeID, aModifier);
 
-				return Node(aTypeID, std::array<PinID, 0>(), outputPinIDs);
-
-
-			},
-			[](const NodeID aNodeID, InternalExecutionContext& aContext) -> void
-			{
-				// Execute functionality
-				const Node& node = ScriptProxy::GetNode(aContext.script, aNodeID);
-				const VariableManager& variableManager = ScriptProxy::GetVariableManager(aContext.script);
-
-				VarID varID = variableManager.GetVariableIDByNodeID(aNodeID);
-
-				MemoryPoolID runtimeID = ScriptProxy::GetVariable(aContext.script, varID).runtimeMemoryID;
+	//			return Node(aTypeID, std::array<PinID, 0>(), outputPinIDs);
 
 
+	//		},
+	//		[](const NodeID aNodeID, InternalExecutionContext& aContext) -> void
+	//		{
+	//			// Execute functionality
+	//			const Node& node = ScriptProxy::GetNode(aContext.script, aNodeID);
+	//			const VariableManager& variableManager = ScriptProxy::GetVariableManager(aContext.script);
 
-				const OutputType& output = ScriptProxy::GetScriptMemoryPool(aContext.script).At<OutputType>(runtimeID);
+	//			VarID varID = variableManager.GetVariableIDByNodeID(aNodeID);
 
-				SetOutputValues(std::tuple<OutputType>(output), node.outputPins, aContext);
-
-
-			}, eNodeTrait::Getter, eNodeExecutionTrait::None, eNodeOperatorTrait::None, std::vector<PinTypeID>(), outputPinTypes
-		};
-	}
-
-	template<typename InputType>
-	static NodeRecipe CreateSetterNodeRecipe()
-	{
-		MemoryTuple<Flow, InputType> memoryTuple;
-		std::vector<PinTypeID> inputPinTypes = CreatePinTypes<ePinFlowType::Input, Flow, InputType>(memoryTuple);
-		std::vector<PinTypeID> outputPinTypes = CreatePinTypes<ePinFlowType::Output, Flow>();
-
-		MemoryPool& globalMemoryPool = ScriptProxy::GetGlobalMemoryPool();
-
-		MemoryPoolID tupleMemoryID = globalMemoryPool.Allocate<MemoryTuple<Flow, InputType>>(memoryTuple);
-
-		return NodeRecipe{
-			[](const NodeID aNodeID, const NodeTypeID aTypeID, ScriptInternalModifier& aModifier) -> Node
-			{
-				// Creation functionality 
-
-				std::array<PinID, 2> inputPinIDs = CreateInputPins<Flow, InputType>(aNodeID, aTypeID, aModifier);
-
-				std::array<PinID, 1> outputPinIDs = CreateOutputPins<Flow>(aNodeID, aTypeID, aModifier);
-
-				return Node(aTypeID, inputPinIDs, outputPinIDs);
-			},
-			[](const NodeID aNodeID, InternalExecutionContext& aContext) -> void
-			{
-				// Execute functionality
-
-				const Node& node = ScriptProxy::GetNode(aContext.script, aNodeID);
-				const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
-
-				MemoryPool& globalMemoryPool = ScriptProxy::GetGlobalMemoryPool();
-
-				MemoryPoolID tupleMemoryID = nodeType.nodeRecipe.tupleMemoryID;
-				MemoryTuple<Flow, InputType>& memoryTuple = globalMemoryPool.At<MemoryTuple<Flow, InputType>>(tupleMemoryID);
-
-				EvaluateInputValues(node.inputPins, aContext, 1);
-
-				auto setFunc = [](const NodeID aNodeID, InternalExecutionContext* aContext, Flow, InputType anInputValue) -> Flow
-					{
-
-						VariableManager& variableManager = ScriptProxy::GetVariableManager(aContext->script);
-
-						VarID varID = variableManager.GetVariableIDByNodeID(aNodeID);
-
-						MemoryPoolID runtimeID = ScriptProxy::GetVariable(aContext->script, varID).runtimeMemoryID;
-
-						ScriptProxy::GetScriptMemoryPool(aContext->script).At<InputType>(runtimeID) = anInputValue;
-
-						return { true };
-					};
-				std::tuple<Flow> outputValues = memoryTuple.Call(setFunc, &ScriptProxy::GetScriptMemoryPool(aContext.script), ToArray<2>(node.inputPins, aContext), aNodeID, &aContext);
-
-				SetOutputValues(outputValues, node.outputPins, aContext);
+	//			MemoryPoolID runtimeID = ScriptProxy::GetVariable(aContext.script, varID).runtimeMemoryID;
 
 
-			}, eNodeTrait::Setter | eNodeTrait::HasFlow, eNodeExecutionTrait::None, eNodeOperatorTrait::None, inputPinTypes, outputPinTypes, tupleMemoryID
-		};
-	}
+
+	//			const OutputType& output = ScriptProxy::GetScriptMemoryPool(aContext.script).At<OutputType>(runtimeID);
+
+	//			SetOutputValues(std::tuple<OutputType>(output), node.outputPins, aContext);
+
+
+	//		}, eNodeTrait::Getter, eNodeExecutionTrait::None, eNodeOperatorTrait::None, std::vector<PinTypeID>(), outputPinTypes
+	//	};
+	//}
+
+	//template<typename InputType>
+	//static NodeRecipe CreateSetterNodeRecipe()
+	//{
+	//	MemoryTuple<Flow, InputType> memoryTuple;
+	//	std::vector<PinTypeID> inputPinTypes = CreatePinTypes<ePinFlowType::Input, Flow, InputType>(memoryTuple);
+	//	std::vector<PinTypeID> outputPinTypes = CreatePinTypes<ePinFlowType::Output, Flow>();
+
+	//	MemoryPool& globalMemoryPool = ScriptProxy::GetGlobalMemoryPool();
+
+	//	MemoryPoolID tupleMemoryID = globalMemoryPool.Allocate<MemoryTuple<Flow, InputType>>(memoryTuple);
+
+	//	return NodeRecipe{
+	//		[](const NodeID aNodeID, const NodeTypeID aTypeID, ScriptInternalModifier& aModifier) -> Node
+	//		{
+	//			// Creation functionality 
+
+	//			std::array<PinID, 2> inputPinIDs = CreateInputPins<Flow, InputType>(aNodeID, aTypeID, aModifier);
+
+	//			std::array<PinID, 1> outputPinIDs = CreateOutputPins<Flow>(aNodeID, aTypeID, aModifier);
+
+	//			return Node(aTypeID, inputPinIDs, outputPinIDs);
+	//		},
+	//		[](const NodeID aNodeID, InternalExecutionContext& aContext) -> void
+	//		{
+	//			// Execute functionality
+
+	//			const Node& node = ScriptProxy::GetNode(aContext.script, aNodeID);
+	//			const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
+
+	//			MemoryPool& globalMemoryPool = ScriptProxy::GetGlobalMemoryPool();
+
+	//			MemoryPoolID tupleMemoryID = nodeType.nodeRecipe.tupleMemoryID;
+	//			MemoryTuple<Flow, InputType>& memoryTuple = globalMemoryPool.At<MemoryTuple<Flow, InputType>>(tupleMemoryID);
+
+	//			EvaluateInputValues(node.inputPins, aContext, 1);
+
+	//			auto setFunc = [](const NodeID aNodeID, InternalExecutionContext* aContext, Flow, InputType anInputValue) -> Flow
+	//				{
+
+	//					VariableManager& variableManager = ScriptProxy::GetVariableManager(aContext->script);
+
+	//					VarID varID = variableManager.GetVariableIDByNodeID(aNodeID);
+
+	//					MemoryPoolID runtimeID = ScriptProxy::GetVariable(aContext->script, varID).runtimeMemoryID;
+
+	//					ScriptProxy::GetScriptMemoryPool(aContext->script).At<InputType>(runtimeID) = anInputValue;
+
+	//					return { true };
+	//				};
+	//			std::tuple<Flow> outputValues = memoryTuple.Call(setFunc, &ScriptProxy::GetScriptMemoryPool(aContext.script), ToArray<2>(node.inputPins, aContext), aNodeID, &aContext);
+
+	//			SetOutputValues(outputValues, node.outputPins, aContext);
+
+
+	//		}, eNodeTrait::Setter | eNodeTrait::HasFlow, eNodeExecutionTrait::None, eNodeOperatorTrait::None, inputPinTypes, outputPinTypes, tupleMemoryID
+	//	};
+	//}
 
 
 	// For function with 1 return value
@@ -766,19 +784,19 @@ namespace SCR
 			if constexpr (IsOutputVoid)
 			{
 				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait>(
-					[aFunction](const InternalExecutionContext* aContext, InputTypes... aInputs) -> Flow
+					[aFunction](const InternalExecutionContext* aContext, Flow, InputTypes... aInputs) -> Flow
 					{
 						aFunction(aContext, std::forward<InputTypes>(aInputs)...);
 						return true;
-					}, TypeList<Flow>(), TypeList<InputTypes...>());
+					}, TypeList<Flow>(), TypeList<Flow, InputTypes...>());
 			}
 			else
 			{
 				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait>(
-					[aFunction](const InternalExecutionContext* aContext, InputTypes... aInputs) -> std::tuple<Flow, OutputType>
+					[aFunction](const InternalExecutionContext* aContext, Flow, InputTypes... aInputs) -> std::tuple<Flow, OutputType>
 					{
 						return { true, aFunction(aContext, std::forward<InputTypes>(aInputs)...) };
-					}, TypeList<Flow, OutputType>(), TypeList<InputTypes...>());
+					}, TypeList<Flow, OutputType>(), TypeList<Flow, InputTypes...>());
 			}
 		}
 		else
@@ -786,7 +804,7 @@ namespace SCR
 			if constexpr (IsOutputVoid)
 			{
 				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait>(
-					[aFunction](const InternalExecutionContext* aContext, InputTypes... aInputs) -> OutputType
+					[aFunction](const InternalExecutionContext* aContext, Flow, InputTypes... aInputs) -> OutputType
 					{
 						return aFunction(aContext, std::forward<InputTypes>(aInputs)...);
 					}, TypeList<>(), TypeList<InputTypes...>());
@@ -813,19 +831,19 @@ namespace SCR
 			if constexpr (IsOutputVoid)
 			{
 				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait, Undefined, NodeStateDataType>(
-					[aFunction](const InternalExecutionContext* aContext, NodeState<NodeStateDataType> aNodeState, InputTypes... aInputs) -> Flow
+					[aFunction](const InternalExecutionContext* aContext, NodeState<NodeStateDataType> aNodeState, Flow, InputTypes... aInputs) -> Flow
 					{
 						aFunction(aContext, aNodeState, std::forward<InputTypes>(aInputs)...);
 						return true;
-					}, TypeList<Flow>(), TypeList<InputTypes...>());
+					}, TypeList<Flow>(), TypeList<Flow, InputTypes...>());
 			}
 			else
 			{
 				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait, Undefined, NodeStateDataType>(
-					[aFunction](const InternalExecutionContext* aContext, NodeState<NodeStateDataType> aNodeState, InputTypes... aInputs) -> std::tuple<Flow, OutputType>
+					[aFunction](const InternalExecutionContext* aContext, NodeState<NodeStateDataType> aNodeState, Flow, InputTypes... aInputs) -> std::tuple<Flow, OutputType>
 					{
 						return { true, aFunction(aContext, aNodeState, std::forward<InputTypes>(aInputs)...) };
-					}, TypeList<Flow, OutputType>(), TypeList<InputTypes...>());
+					}, TypeList<Flow, OutputType>(), TypeList<Flow, InputTypes...>());
 			}
 		}
 		else

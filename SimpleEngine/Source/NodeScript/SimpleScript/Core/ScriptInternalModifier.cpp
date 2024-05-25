@@ -20,7 +20,7 @@ namespace SCR
 		CustomEvent* customEvent = new CustomEvent(aName);
 
 		std::vector<CustomEvent*>& customEvents = NodeTypeManager::myCustomEvents;
-		std::unordered_multimap<NodeTypeID, CustomEventID>& map = NodeTypeManager::myToCustomEventNodeTypeID;
+		std::unordered_multimap<NodeTypeID, CustomEventID>& map = NodeTypeManager::myToCustomEventID;
 		CustomEventID id = customEvents.size();
 		customEvents.push_back(customEvent);
 		map.emplace(customEvent->myCallerTypeID, id);

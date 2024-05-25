@@ -171,8 +171,7 @@ namespace SCR
 	{
 		const Node& node = ScriptProxy::GetNode(myExecutionContext.script, aNodeExecutionData.currentNodeID);
 		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
-		myExecutionContext.nodeData = aNodeExecutionData;
-		nodeType.nodeRecipe.executeFunction(aNodeExecutionData.currentNodeID, myExecutionContext);
+		nodeType.nodeRecipe.executeFunction(aNodeExecutionData, myExecutionContext);
 	}
 
 }

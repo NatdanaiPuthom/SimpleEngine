@@ -316,6 +316,18 @@ namespace EDIT
 		{
 			ScriptLoader::SaveCustomEvents("Assets/VisualScripting");
 		}
+
+		static int currentEvent = 0;
+		const char* events[] = {"Begin Play", "Tick", "End Play",};
+
+		ImGui::Combo("Event Type", &currentEvent, events, IM_ARRAYSIZE(events));
+		ImGui::SameLine();
+
+		if (ImGui::Button("Trigger Event"))
+		{
+			ExecutionContextBase c;
+			GetCurrentContext().script->TriggerEvent(static_cast<eNodeExecutionTrait>(currentEvent + 1), c);
+		}
 	}
 
 	void VisualScriptingWindow::VisualizeNodes()

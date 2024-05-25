@@ -11,7 +11,7 @@ namespace SCR
 		Output,
 	};
 
-	using PinSetFunction = FuncPtr<void, const PinID, InternalExecutionContext&, const void*>;
+	using PinSetFunction = FuncPtr<void, const PinID, const InternalExecutionContext&, const void*>;
 
 	struct PinType
 	{

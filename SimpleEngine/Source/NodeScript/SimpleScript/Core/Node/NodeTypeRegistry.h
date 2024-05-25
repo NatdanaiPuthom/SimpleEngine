@@ -64,8 +64,8 @@ namespace SCR
 	template<typename T>/* requires IsValidScriptObjectType<T, nlohmann::json> || Fundamental<T>*/
 	inline void RegisterGetterNodeType()
 	{
-		//NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>), "Get " + DataTypeManager::GetName(typeid(T).hash_code()));
-		NodeTypeID nodeTypeID = RegisterInternal(CreateGetterNodeRecipe<T>(), "Get " + DataTypeManager::GetName(typeid(T).hash_code()));
+		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>), "Get " + DataTypeManager::GetName(typeid(T).hash_code()));
+		//NodeTypeID nodeTypeID = RegisterInternal(CreateGetterNodeRecipe<T>(), "Get " + DataTypeManager::GetName(typeid(T).hash_code()));
 		NodeTypeManager::SetGetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
 	}
 
@@ -73,8 +73,8 @@ namespace SCR
 	template<typename T>/* requires IsValidScriptObjectType<T, nlohmann::json> || Fundamental<T>*/
 	inline void RegisterSetterNodeType()
 	{
-		//NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>), "Set " + DataTypeManager::GetName(typeid(T).hash_code()));
-		NodeTypeID nodeTypeID = RegisterInternal(CreateSetterNodeRecipe<T>(), "Set " + DataTypeManager::GetName(typeid(T).hash_code()));
+		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>), "Set " + DataTypeManager::GetName(typeid(T).hash_code()));
+		//NodeTypeID nodeTypeID = RegisterInternal(CreateSetterNodeRecipe<T>(), "Set " + DataTypeManager::GetName(typeid(T).hash_code()));
 		NodeTypeManager::SetSetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
 	}
 
