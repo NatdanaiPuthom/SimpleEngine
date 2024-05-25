@@ -9,12 +9,10 @@ namespace Editor
 	class FileManager final
 	{
 	public:
-		inline static std::string sCurrentDirectory = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS);
-		inline static bool sHasDragDropBegin = false;
+		static std::string sCurrentDirectory;
+		static bool sHasDragDropBegin;
 
 	public:
-		static void Release();
-
 		static void DropFiles(HDROP aHDROP);
 		static bool IsFolder(const std::string& aFileName);
 		static void ViewFolders(const std::string& aStartDirectory, const std::string& aWindowName);

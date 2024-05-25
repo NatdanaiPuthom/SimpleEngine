@@ -1,4 +1,5 @@
-#include "Engine/MemoryTracker/MemoryTracker.h" //NOTE(v9.36.4): Let this be top for now
+#include "Engine/MemoryTracker/MemoryTracker.h" //NOTE(v9.36.4): Let this be top for now. Need to figure out a way to make sure this is called first
+
 #include "MainSingleton/MainSingleton.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
@@ -27,8 +28,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	PROFILER_DISABLE();
 
 	Simple::EasyProfilerOutput();
-
-	MainSingleton::Release();
 
 	return 0;
 }
@@ -83,7 +82,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		PROFILER_BEGIN("Editor Update");
-		//simpleScript.Update();
+		simpleScript.Update();
 		editor.Update();
 		PROFILER_END();
 

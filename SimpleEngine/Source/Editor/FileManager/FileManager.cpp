@@ -4,10 +4,8 @@
 
 namespace Editor
 {
-	void FileManager::Release()
-	{
-		sCurrentDirectory.~basic_string();
-	}
+	bool FileManager::sHasDragDropBegin = false;
+	std::string FileManager::sCurrentDirectory = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS);
 
 	void FileManager::DropFiles(HDROP aHDROP)
 	{
