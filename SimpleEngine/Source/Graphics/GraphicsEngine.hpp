@@ -63,7 +63,7 @@ namespace Graphics
 		std::shared_ptr<Camera> GetEditorCamera();
 		std::shared_ptr<Camera> GetShadowCamera();
 
-		//NOTE(v9.35.5): Will Add and cache the texture if it does not already exist
+		//NOTE(v9.35.5): Will Add and cache the texture if it does not already exist. aSlot is used to set slot when adding texture
 		std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
 		std::shared_ptr<const Texture> GetTexture(const eTextureType aTextureType);
 

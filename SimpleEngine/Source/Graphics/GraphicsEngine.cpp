@@ -436,7 +436,22 @@ namespace Graphics
 		}
 		else
 		{
-			if (AddTexture(aFilePath) == true)
+			unsigned int slot = 0;
+
+			if (SimpleUtilities::FindSuffix(aFilePath, "_D"))
+			{
+				slot = Graphics::Global_Slot_Albedo;
+			}
+			else if (SimpleUtilities::FindSuffix(aFilePath, "_M"))
+			{
+				slot = Graphics::Global_Slot_Material;
+			}
+			else if (SimpleUtilities::FindSuffix(aFilePath, "_N"))
+			{
+				slot = Graphics::Global_Slot_Normal;
+			}
+
+			if (AddTexture(aFilePath, slot) == true)
 			{
 				it = myLoadedTextures.find(aFilePath);
 
