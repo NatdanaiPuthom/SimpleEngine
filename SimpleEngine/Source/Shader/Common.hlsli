@@ -7,7 +7,7 @@ Texture2D GlobalAlbedo : register(t0);
 Texture2D GlobalMaterialTexture : register(t1);
 Texture2D GlobalNormalTexture : register(t2);
 Texture2D GlobalAmbientOcclusionAndCustom : register(t3);
-TextureCube aCubeMap : register(t4);
+TextureCube GlobalCubeMap : register(t4);
 Texture2D GlobalDirectionalLightShadowMap : register(t5);
 
 cbuffer CameraBuffer : register(b0)

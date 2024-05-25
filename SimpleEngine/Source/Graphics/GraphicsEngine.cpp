@@ -171,6 +171,9 @@ namespace Graphics
 
 		if (!AddShader("SkyBoxPS.cso", "DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
+
+		if (!AddShader("DeferredPS.cso", "DeferredVS.cso"))
+			assert(false && "Failed to add Shader");
 	}
 
 	const bool GraphicsEngine::AddTexture(const char* aFileName, const unsigned int aSlot)
@@ -536,6 +539,7 @@ namespace Graphics
 			shader = GetShader("SkyBoxPS.cso", "DefaultVS.cso");
 			break;
 		case eShaderType::Deferred:
+			shader = GetShader("DeferredPS.cso", "DeferredVS.cso");
 			break;
 		}
 

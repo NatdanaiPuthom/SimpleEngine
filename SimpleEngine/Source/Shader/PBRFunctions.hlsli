@@ -277,7 +277,7 @@ float3 EvalPBR(in float3 worldPosition, in float3 color, in float3 normal, in fl
     float ambientOcclusion = 1.0f;
 
     float3 ambiance = EvaluateAmbiance(
-        aCubeMap, normal, vertexNormal,
+        GlobalCubeMap, normal, vertexNormal,
         toEye, roughness,
         ambientOcclusion, diffuseColor, specularColor
     );
