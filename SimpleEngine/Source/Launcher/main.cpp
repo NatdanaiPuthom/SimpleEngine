@@ -1,6 +1,6 @@
+#include "Engine/MemoryTracker/MemoryTracker.h"
 #include "MainSingleton/MainSingleton.hpp"
 #include "Engine/Engine.hpp"
-#include "Engine/MemoryTracker/MemoryTracker.h"
 #include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/Global.hpp"
