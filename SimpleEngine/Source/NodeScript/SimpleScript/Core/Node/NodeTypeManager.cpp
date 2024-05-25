@@ -1,19 +1,18 @@
-#include "NodeTypeManager.h"
-#include "../Utilities/ScriptUtilities.h"
-#include "../Script.h"
-#include "NodeTypeRegistry.h"
-#include "../ScriptFoundation.h"
-#include "../ScriptManager.h"
+#include "Core/Node/NodeTypeManager.h"
+#include "Core/Script.h"
+#include "Core/ScriptFoundation.h"
+#include "Core/ScriptManager.h"
+#include "Core/Utilities/ScriptUtilities.h"
+#include "Core/Node/NodeTypeRegistry.h"
 
 namespace SCR
 {
 	std::vector<CustomEvent*> NodeTypeManager::myCustomEvents = {};
+	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::myGetterNodeTypeIDs = {};
+	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::mySetterNodeTypeIDs = {};
 	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToCustomEventNodeTypeID = {};
-
-	std::vector<NodeType> NodeTypeManager::myTypes = { CreateInvalidNodeType() };
-	std::unordered_map<DataTypeID, NodeTypeID>* NodeTypeManager::myGetterNodeTypeIDs = new std::unordered_map<DataTypeID, NodeTypeID>;
-	std::unordered_map<DataTypeID, NodeTypeID>* NodeTypeManager::mySetterNodeTypeIDs = new std::unordered_map<DataTypeID, NodeTypeID>();
 	std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> NodeTypeManager::myOperatorNodeTypeIDs = {};
+	std::vector<NodeType> NodeTypeManager::myTypes = { CreateInvalidNodeType() };
 
 	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
 	{
@@ -25,12 +24,12 @@ namespace SCR
 
 	void NodeTypeManager::SetGetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID)
 	{
-		myGetterNodeTypeIDs->emplace(aDataTypeID, anID);
+		myGetterNodeTypeIDs.emplace(aDataTypeID, anID);
 	}
 
 	void NodeTypeManager::SetSetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID)
 	{
-		mySetterNodeTypeIDs->emplace(aDataTypeID, anID);
+		mySetterNodeTypeIDs.emplace(aDataTypeID, anID);
 	}
 
 	void NodeTypeManager::SetOperatorNodeTypeID(const DataTypeID aDataTypeID, const eNodeOperatorTrait anOperatorTrait, const NodeTypeID anID)
@@ -40,13 +39,13 @@ namespace SCR
 
 	Node NodeTypeManager::CreateInstance_Getter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
 	{
-		NodeTypeID typeID = myGetterNodeTypeIDs->at(aDataTypeID);
+		NodeTypeID typeID = myGetterNodeTypeIDs.at(aDataTypeID);
 		return CreateInstance(aNodeID, typeID, aModifier);
 	}
 
 	Node NodeTypeManager::CreateInstance_Setter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
 	{
-		NodeTypeID typeID = mySetterNodeTypeIDs->at(aDataTypeID);
+		NodeTypeID typeID = mySetterNodeTypeIDs.at(aDataTypeID);
 		return CreateInstance(aNodeID, typeID, aModifier);
 	}
 
@@ -179,24 +178,17 @@ namespace SCR
 
 	void NodeTypeManager::Destroy()
 	{
-		myTypes.clear();
-
 		for (CustomEvent* nodeType : myCustomEvents)
 		{
 			delete nodeType;
 			nodeType = nullptr;
 		}
 
-		myTypes.~vector();
-		myCustomEvents.~vector();
-
-		//myCustomEvents.clear();
-		myGetterNodeTypeIDs->clear();
-		mySetterNodeTypeIDs->clear();
+		myTypes.clear();
+		myCustomEvents.clear();
+		myGetterNodeTypeIDs.clear();
+		mySetterNodeTypeIDs.clear();
 		myOperatorNodeTypeIDs.clear();
 		myToCustomEventNodeTypeID.clear();
-
-		delete myGetterNodeTypeIDs;
-		delete mySetterNodeTypeIDs;
 	}
 }
