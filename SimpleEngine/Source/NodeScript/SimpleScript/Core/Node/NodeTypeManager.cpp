@@ -5,9 +5,15 @@
 #include "../ScriptFoundation.h"
 #include "../ScriptManager.h"
 
-
 namespace SCR
 {
+	std::vector<CustomEvent*> NodeTypeManager::myCustomEvents = {};
+	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToCustomEventNodeTypeID = {};
+
+	std::vector<NodeType> NodeTypeManager::myTypes = { CreateInvalidNodeType() };
+	std::unordered_map<DataTypeID, NodeTypeID>* NodeTypeManager::myGetterNodeTypeIDs = new std::unordered_map<DataTypeID, NodeTypeID>;
+	std::unordered_map<DataTypeID, NodeTypeID>* NodeTypeManager::mySetterNodeTypeIDs = new std::unordered_map<DataTypeID, NodeTypeID>();
+	std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>>* NodeTypeManager::myOperatorNodeTypeIDs = new std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>>();
 
 	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
 	{

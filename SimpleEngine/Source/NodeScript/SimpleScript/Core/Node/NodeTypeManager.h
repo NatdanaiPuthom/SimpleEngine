@@ -1,21 +1,20 @@
 #pragma once
-#include "../ScriptDefines.h"
-#include "NodeType.h"
-#include "../CustomEvent/CustomEvent.h"
+#include "Core/ScriptDefines.h"
+#include "Core/Node/NodeType.h"
+#include "Core/CustomEvent/CustomEvent.h"
 #include <unordered_map>
+#include <vector>
+#include <string>
 
 namespace SCR
 {
-
 	class Script;
 	class ScriptFoundation;
 
 	class NodeTypeManager
 	{
 		friend class ScriptInternalModifier;
-
 	public:
-
 		static NodeTypeID Register(NodeType&& aNodeType);
 
 		static void SetGetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID);
@@ -26,7 +25,6 @@ namespace SCR
 		static Node CreateInstance_Getter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier);
 		static Node CreateInstance_Setter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier);
 		static Node CreateInstance_Operator(const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier);
-
 
 		static Node CreateInstance(const NodeID aNodeID, const NodeTypeID aNodeTypeID, ScriptInternalModifier& aModifier);
 
@@ -52,14 +50,12 @@ namespace SCR
 	private:
 		static NodeType CreateInvalidNodeType();
 	private:
+		static std::vector<CustomEvent*> myCustomEvents;
+		static std::vector<NodeType> myTypes;
 
-		inline static std::vector<NodeType> myTypes = { CreateInvalidNodeType() };
-		inline static std::vector<CustomEvent*> myCustomEvents;
-		inline static std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventNodeTypeID;
-
-		inline static std::unordered_map<DataTypeID, NodeTypeID>* myGetterNodeTypeIDs = new std::unordered_map<DataTypeID, NodeTypeID>;
-		inline static std::unordered_map<DataTypeID, NodeTypeID>* mySetterNodeTypeIDs = new std::unordered_map<DataTypeID, NodeTypeID>();
-		inline static std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>>* myOperatorNodeTypeIDs = new std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>>();
-	
+		static std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventNodeTypeID; //NOTE(v9.36.4): Will give memory leaks when it first need to reallocate the map
+		static std::unordered_map<DataTypeID, NodeTypeID>* myGetterNodeTypeIDs;
+		static std::unordered_map<DataTypeID, NodeTypeID>* mySetterNodeTypeIDs;
+		static std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>>* myOperatorNodeTypeIDs;
 	};
 }

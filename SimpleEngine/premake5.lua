@@ -325,6 +325,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/External/**",
 			"Source/Engine/",
 			"Source/NodeScript/",
+			"Source/NodeScript/**"
 		}
 
 		libdirs {
