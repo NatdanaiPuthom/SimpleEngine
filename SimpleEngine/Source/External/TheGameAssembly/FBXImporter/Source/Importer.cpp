@@ -73,8 +73,7 @@ namespace TGA
 			return LoadMeshA(ansiFileName, outMesh, bRegenerateNormals, bMergeDuplicateVertices);
 		}
 
-		FbxImportStatus Importer::LoadMeshA(const std::string& someFilePath, Mesh& outMesh, bool bRegenerateNormals,
-			bool bMergeDuplicateVertices)
+		FbxImportStatus Importer::LoadMeshA(const std::string& someFilePath, Mesh& outMesh, bool bRegenerateNormals, bool bMergeDuplicateVertices)
 		{
 			FbxImportStatus importStatus;
 

@@ -72,8 +72,10 @@ namespace Test
 			chest->AddComponent<MeshComponent>();
 
 			chest->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
-			chest->GetComponent<MeshComponent>()->textures[0] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\Particle_Chest_D.dds").get();
-			chest->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->LoadMesh("StaticModels\\Particle_Chest.fbx");
+			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Albedo] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\Particle_Chest_D.dds").get();
+			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\Particle_Chest_M.dds").get();
+			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Normal] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\Particle_Chest_N.dds").get();
+			chest->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->LoadMesh("Assets\\Models\\StaticModels\\Particle_Chest.fbx");
 			chest->GetComponent<TransformComponent>()->transform.SetPosition({ -5.0f, 4.0f, 5.0f });
 			chest->GetComponent<TransformComponent>()->transform.SetScale(0.01f);
 		}
