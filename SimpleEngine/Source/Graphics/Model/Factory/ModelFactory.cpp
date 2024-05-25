@@ -67,7 +67,7 @@ namespace Graphics
 
 	const Mesh* ModelFactory::LoadMesh(const std::string& aFileName)
 	{
-		const std::string filePath = SimpleUtilities::CheckAndReturnAsAbsolutePath(aFileName);
+		const std::string filePath = aFileName;
 		const Mesh* mesh = GetMesh(filePath.c_str());
 
 		if (mesh == nullptr)
@@ -87,17 +87,16 @@ namespace Graphics
 
 	const Skeleton* ModelFactory::LoadSkeleton(const std::string& aFileName)
 	{
-		const std::string filePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
-		const Skeleton* skeleton = GetSkeleton(filePath.c_str());
+		const Skeleton* skeleton = GetSkeleton(aFileName.c_str());
 
 		if (skeleton == nullptr)
 		{
 			TGA::FBX::Mesh tgaMesh;
-			TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(filePath, tgaMesh);
+			TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aFileName, tgaMesh);
 			assert(status && "Failed to LoadMesh from FBXImporter");
 
-			LoadAndCacheSkeleton(filePath, tgaMesh);
-			skeleton = GetSkeleton(filePath.c_str());
+			LoadAndCacheSkeleton(aFileName, tgaMesh);
+			skeleton = GetSkeleton(aFileName.c_str());
 
 			if (skeleton == nullptr)
 			{
@@ -111,7 +110,7 @@ namespace Graphics
 
 	Animation ModelFactory::LoadAnimationFBX(const char* aFileName)
 	{
-		const std::string path = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFileName;
+		const std::string path = aFileName;
 
 		TGA::FBX::Animation tgaAnimation;
 		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(path, tgaAnimation);
@@ -271,8 +270,10 @@ namespace Graphics
 
 	void ModelFactory::LoadAndCacheMesh(const std::string& aFileName)
 	{
+		const std::string absolutePath = SimpleUtilities::CheckAndReturnAsAbsolutePath(aFileName);
+
 		TGA::FBX::Mesh tgaMesh;
-		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aFileName, tgaMesh);
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(absolutePath, tgaMesh);
 		assert(status && "Failed to LoadMesh from FBXImporter");
 
 		MeshData meshData;
