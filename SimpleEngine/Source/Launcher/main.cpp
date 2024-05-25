@@ -8,17 +8,13 @@
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
 
-//#include "NodeScript/SimpleNodeScript.hpp"
+#include "NodeScript/SimpleNodeScript.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
 {
-	SimpleTracker::MemoryTrackingSettings memoryTrackerSettings = {};
-	memoryTrackerSettings.myShouldStoreStackTraces = false;
-	memoryTrackerSettings.myShouldTrackAllAllocations = true;
-	SimpleTracker::StartMemoryTracking(memoryTrackerSettings);
-	std::atexit(SimpleTracker::StopMemoryTrackingAndPrint);
+	//SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(memoryTrackerSettings); //NOTE(v9.36.4): It is inline static class wrapper now in MemoryTracker.h
 
 	PROFILER_INIT();
 	PROFILER_ENABLE();
@@ -62,8 +58,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	gameWorld.Init();
 	PROFILER_END();
 
-	//Script::SimpleNodeScript simpleScript;
-	//simpleScript.Init();
+	Script::SimpleNodeScript simpleScript;
+	simpleScript.Init();
 
 	while (Global::GetGameIsRunning())
 	{

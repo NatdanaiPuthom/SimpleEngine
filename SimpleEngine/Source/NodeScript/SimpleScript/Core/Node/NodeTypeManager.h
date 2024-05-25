@@ -56,6 +56,6 @@ namespace SCR
 		static std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventNodeTypeID; //NOTE(v9.36.4): Will give memory leaks when it first need to reallocate the map
 		static std::unordered_map<DataTypeID, NodeTypeID>* myGetterNodeTypeIDs;
 		static std::unordered_map<DataTypeID, NodeTypeID>* mySetterNodeTypeIDs;
-		static std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>>* myOperatorNodeTypeIDs;
+		static std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> myOperatorNodeTypeIDs;
 	};
 }

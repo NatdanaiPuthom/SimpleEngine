@@ -13,7 +13,7 @@ namespace SCR
 	std::vector<NodeType> NodeTypeManager::myTypes = { CreateInvalidNodeType() };
 	std::unordered_map<DataTypeID, NodeTypeID>* NodeTypeManager::myGetterNodeTypeIDs = new std::unordered_map<DataTypeID, NodeTypeID>;
 	std::unordered_map<DataTypeID, NodeTypeID>* NodeTypeManager::mySetterNodeTypeIDs = new std::unordered_map<DataTypeID, NodeTypeID>();
-	std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>>* NodeTypeManager::myOperatorNodeTypeIDs = new std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>>();
+	std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> NodeTypeManager::myOperatorNodeTypeIDs = {};
 
 	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
 	{
@@ -35,7 +35,7 @@ namespace SCR
 
 	void NodeTypeManager::SetOperatorNodeTypeID(const DataTypeID aDataTypeID, const eNodeOperatorTrait anOperatorTrait, const NodeTypeID anID)
 	{
-		(*myOperatorNodeTypeIDs)[anOperatorTrait].emplace(aDataTypeID, anID);
+		myOperatorNodeTypeIDs[anOperatorTrait].emplace(aDataTypeID, anID);
 	}
 
 	Node NodeTypeManager::CreateInstance_Getter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
@@ -52,7 +52,7 @@ namespace SCR
 
 	Node NodeTypeManager::CreateInstance_Operator(const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
 	{
-		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = myOperatorNodeTypeIDs->at(aOperatorTrait);
+		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = myOperatorNodeTypeIDs.at(aOperatorTrait);
 		NodeTypeID typeID = operatorNodes.at(aDataTypeID);
 		return CreateInstance(aNodeID, typeID, aModifier);
 	}
@@ -64,9 +64,9 @@ namespace SCR
 
 	bool NodeTypeManager::CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID)
 	{
-		if (myOperatorNodeTypeIDs->contains(aTrait))
+		if (myOperatorNodeTypeIDs.contains(aTrait))
 		{
-			return myOperatorNodeTypeIDs->at(aTrait).contains(aDataTypeID);
+			return myOperatorNodeTypeIDs.at(aTrait).contains(aDataTypeID);
 		}
 		return false;
 	}
@@ -193,11 +193,10 @@ namespace SCR
 		//myCustomEvents.clear();
 		myGetterNodeTypeIDs->clear();
 		mySetterNodeTypeIDs->clear();
-		myOperatorNodeTypeIDs->clear();
+		myOperatorNodeTypeIDs.clear();
 		myToCustomEventNodeTypeID.clear();
 
 		delete myGetterNodeTypeIDs;
 		delete mySetterNodeTypeIDs;
-		delete myOperatorNodeTypeIDs;
 	}
 }
