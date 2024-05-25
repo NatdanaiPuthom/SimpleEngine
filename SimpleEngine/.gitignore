@@ -1,5 +1,5 @@
 
-############### Natdanai Modify 2023 ##########################
+############### Natdanai Modify 2024 ##########################
 
 .vs/
 
@@ -17,7 +17,6 @@
 [Bb]in/*.exe
 
 [Bb]in/Shaders
-[Bb]in/Profilers
 [Bb]in/Settings
 
 [Dd]ependencies/SimpleLib
