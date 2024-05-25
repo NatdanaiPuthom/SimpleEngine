@@ -54,5 +54,8 @@ namespace SimpleTracker
 		}
 	};
 
-	inline static SimpleMemoryTrackerWrapper globalStaticMemoryTrackerWrapper;
+	class SimpleMemoryTrackerWrapperWrapper final
+	{
+		inline static SimpleMemoryTrackerWrapper globalStaticMemoryTrackerWrapper;
+	};
 }
