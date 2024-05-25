@@ -243,7 +243,10 @@ namespace Editor
 						{
 							ECS::MeshComponent* meshComponent = selectedEntity->GetComponent<ECS::MeshComponent>();
 
-							std::string textureName = "Texture: ";
+							std::string albedoName = "Albedo: ";
+							std::string materialName = "Material: ";
+							std::string normalName = "Normal: ";
+
 							std::string meshName = "Mesh: ";
 							std::string pixelShaderName = "Pixel Shader: ";
 							std::string vertexShaderName = "Vertex Shader: ";
@@ -253,9 +256,19 @@ namespace Editor
 								meshName += meshComponent->mesh->GetMeshName();
 							}
 
-							if (meshComponent->textures[0] != nullptr)
+							if (meshComponent->textures[Graphics::Global_Slot_Albedo] != nullptr)
 							{
-								textureName += meshComponent->textures[0]->GetShaderName();
+								albedoName += meshComponent->textures[Graphics::Global_Slot_Albedo]->GetShaderName();
+							}
+
+							if (meshComponent->textures[Graphics::Global_Slot_Material] != nullptr)
+							{
+								materialName += meshComponent->textures[Graphics::Global_Slot_Material]->GetShaderName();
+							}
+
+							if (meshComponent->textures[Graphics::Global_Slot_Normal] != nullptr)
+							{
+								normalName += meshComponent->textures[Graphics::Global_Slot_Normal]->GetShaderName();
 							}
 
 							if (meshComponent->shader != nullptr)
@@ -264,7 +277,7 @@ namespace Editor
 								vertexShaderName += meshComponent->shader->GetVertexShaderName();
 							}
 
-							ImGui::Text(textureName.c_str());
+							ImGui::Text(albedoName.c_str());
 
 							if (ImGui::BeginDragDropTarget())
 							{
@@ -276,7 +289,45 @@ namespace Editor
 									if (extension == ".dds")
 									{
 										const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
-										meshComponent->textures[0] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+										meshComponent->textures[Graphics::Global_Slot_Albedo] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+									}
+								}
+
+								ImGui::EndDragDropTarget();
+							}
+
+							ImGui::Text(materialName.c_str());
+
+							if (ImGui::BeginDragDropTarget())
+							{
+								if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+								{
+									const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+									const std::string extension = FileManager::GetFileExtension(payloadData);
+
+									if (extension == ".dds")
+									{
+										const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
+										meshComponent->textures[Graphics::Global_Slot_Material] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+									}
+								}
+
+								ImGui::EndDragDropTarget();
+							}
+
+							ImGui::Text(normalName.c_str());
+
+							if (ImGui::BeginDragDropTarget())
+							{
+								if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+								{
+									const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+									const std::string extension = FileManager::GetFileExtension(payloadData);
+
+									if (extension == ".dds")
+									{
+										const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
+										meshComponent->textures[Graphics::Global_Slot_Normal] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
 									}
 								}
 
