@@ -37,7 +37,8 @@ namespace Graphics
 		Unlit_Animated,
 		PBR_Default,
 		PBR_Animated,
-		SkyBox
+		SkyBox,
+		Deferred
 	};
 
 	enum class eTextureType

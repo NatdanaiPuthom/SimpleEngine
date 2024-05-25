@@ -13,6 +13,6 @@ namespace Test
 		void Update();
 		void Render() const;
 
-		ECS::EntityID myEntityID;
+		ECS::EntityID myDirectionalLightID;
 	};
 }

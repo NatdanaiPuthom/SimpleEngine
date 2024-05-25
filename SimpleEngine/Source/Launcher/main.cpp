@@ -92,12 +92,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To Backbuffer");
-		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer, graphicsEngine.GetDepthBuffer().Get());
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
 		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();
 
 		PROFILER_BEGIN("Editor Render");
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
 		editor.Render();
 		PROFILER_END();
 

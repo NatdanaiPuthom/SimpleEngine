@@ -12,7 +12,7 @@ using namespace ECS;
 namespace Test
 {
 	TestShadow::TestShadow()
-		: myEntityID(static_cast<size_t>(-1))
+		: myDirectionalLightID(static_cast<size_t>(-1))
 	{
 	}
 
@@ -62,7 +62,20 @@ namespace Test
 			directionalLight->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			directionalLight->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f, 5.0f, 0.0f });
 
-			myEntityID = directionalLight->GetID();
+			myDirectionalLightID = directionalLight->GetID();
+		}
+
+		{
+			ECS::Entity chest = ecs->CreateEntity();
+			chest->SetName("Chest");
+			chest->AddComponent<TransformComponent>();
+			chest->AddComponent<MeshComponent>();
+
+			chest->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
+			chest->GetComponent<MeshComponent>()->textures[0] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\Particle_Chest_D.dds").get();
+			chest->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->LoadMesh("StaticModels\\Particle_Chest.fbx");
+			chest->GetComponent<TransformComponent>()->transform.SetPosition({ -5.0f, 4.0f, 5.0f });
+			chest->GetComponent<TransformComponent>()->transform.SetScale(0.01f);
 		}
 
 
@@ -100,7 +113,7 @@ namespace Test
 		EntityComponentSystem* ecs = World::GetECS();
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
-		ECS::Entity e = ecs->GetEntity(myEntityID);
+		ECS::Entity e = ecs->GetEntity(myDirectionalLightID);
 		ECS::TransformComponent* t = e->GetComponent<TransformComponent>();
 		const Math::Vector3f forward = t->transform.GetMatrix().GetForward();
 
@@ -114,7 +127,7 @@ namespace Test
 	void TestShadow::Render() const
 	{
 		EntityComponentSystem* ecs = World::GetECS();
-		ECS::Entity e = ecs->GetEntity(myEntityID);
+		ECS::Entity e = ecs->GetEntity(myDirectionalLightID);
 
 		const ECS::TransformComponent* t = e->GetComponent<TransformComponent>();
 		const Math::Vector3f forward = t->transform.GetMatrix().GetForward();

@@ -345,10 +345,19 @@ namespace Graphics
 
 		UnbindAllRenderTargets();
 
-		std::vector<RenderTarget>& renderTargets = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
-		const size_t count = renderTargets.size();
 
-		myContext->OMSetRenderTargets(static_cast<unsigned int>(count), renderTargets[0].renderTargetView.GetAddressOf(), aDepthBuffer);
+		const std::vector<RenderTarget>& originalRenderTargets = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
+		const size_t count = originalRenderTargets.size();
+
+		std::vector<ID3D11RenderTargetView*> renderTargetsPointer(count);
+
+		for (size_t i = 0; i < count; ++i)
+		{
+			renderTargetsPointer[i] = originalRenderTargets[i].renderTargetView.Get();
+			myContext->ClearRenderTargetView(renderTargetsPointer[i], &myClearColor[0]);
+		}
+
+		myContext->OMSetRenderTargets(static_cast<unsigned int>(count), &renderTargetsPointer[0], aDepthBuffer);
 	}
 
 	void GraphicsEngine::SetCamera(std::shared_ptr<Graphics::Camera> aCamera)
@@ -510,6 +519,8 @@ namespace Graphics
 			break;
 		case eShaderType::SkyBox:
 			shader = GetShader("SkyBoxPS.cso", "DefaultVS.cso");
+			break;
+		case eShaderType::Deferred:
 			break;
 		}
 

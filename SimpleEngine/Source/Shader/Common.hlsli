@@ -1,5 +1,5 @@
 
-#define SIMPLE_MAX_BONES 64
+#define SIMPLE_MAX_JOINTS 64
 
 SamplerState GlobalDefaultSampler : register(s0);
 
@@ -10,16 +10,17 @@ Texture2D GlobalAmbientOcclusionAndCustom : register(t3);
 TextureCube aCubeMap : register(t4);
 Texture2D GlobalDirectionalLightShadowMap : register(t5);
 
-cbuffer FrameBuffer : register(b0)
+cbuffer CameraBuffer : register(b0)
 {
     float4x4 worldToClipMatrix;
     float3 cameraPosition;
+    float paddingCameraBuffer;
     
     uint2 resolution;
     float2 resolutionPadding;
 }
 
-cbuffer ObjectBuffer : register(b1)
+cbuffer TransformBuffer : register(b1)
 {
     float4x4 modelWorld;
 }
@@ -40,9 +41,9 @@ cbuffer LightBuffer : register(b3)
     float paddingDirectionalLightDirection;
 };
 
-cbuffer BoneBuffer : register(b4)
+cbuffer JointBuffer : register(b4)
 {
-    float4x4 bones[SIMPLE_MAX_BONES];
+    float4x4 bones[SIMPLE_MAX_JOINTS];
 }
 
 struct FullScreenVertexInput
@@ -53,6 +54,15 @@ struct FullScreenVertexInput
 struct PixelOutput
 {
     float4 color : SV_Target;
+};
+
+struct GBufferOutput
+{
+    float4 position : SV_TARGET0;
+    float4 albedo : SV_TARGET1;
+    float4 normal : SV_TARGET2;
+    float4 material : SV_TARGET3;
+    float4 ambientOcclusionAndCustom : SV_TARGET4;
 };
 
 struct VertexInputType

@@ -62,6 +62,44 @@ namespace Editor
 				tool->Draw();
 			}
 		}
+
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+
+		for (size_t i = 0; i < 5; ++i)
+		{
+			std::string name;
+
+			switch (i)
+			{
+			case 0:
+				name = "Position";
+				break;
+			case 1:
+				name = "Albedo";
+				break;
+			case 2:
+				name = "Material";
+				break;
+			case 3:
+				name = "Normal";
+				break;
+			case 4:
+				name = "AmbientOcclusion";
+				break;
+			default:
+				name = "Unknown" + std::to_string(i);
+				break;
+			}
+
+			if (ImGui::Begin(name.c_str()))
+			{
+				const ImVec2 windowSize = ImGui::GetWindowSize();
+				ImTextureID texture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::GBuffer, i).Get();
+				ImGui::Image(texture, windowSize);
+			}
+
+			ImGui::End();
+		}
 	}
 
 	void EditorEngine::AddTool(std::unique_ptr<ToolInterface> aTool)
