@@ -5,7 +5,7 @@ namespace SCR
 
 	PinSetFunction CreatePinSetFunction()
 	{
-		return [](const PinID aPinID, InternalExecutionContext& aContext, const void* aValue) -> void
+		return [](const PinID aPinID, const InternalExecutionContext& aContext, const void* aValue) -> void
 			{
 
 				const Pin& pin = ScriptProxy::GetPin(aContext.script, aPinID);

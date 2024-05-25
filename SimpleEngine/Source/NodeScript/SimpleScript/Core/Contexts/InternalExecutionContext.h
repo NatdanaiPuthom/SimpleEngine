@@ -47,6 +47,7 @@ namespace SCR
 		Script& script;
 		ScriptInternalModifier& modifier;
 		const ExecutionContextBase* executionContext = nullptr;
+		NodeExecutionData nodeData;
 
 		const NodeExecutionData& GetNodeData() const
 		{
@@ -54,7 +55,6 @@ namespace SCR
 		}
 
 	private:
-		NodeExecutionData nodeData;
 	};
 }
 

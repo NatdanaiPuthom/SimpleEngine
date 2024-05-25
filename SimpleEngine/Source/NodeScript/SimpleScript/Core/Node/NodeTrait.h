@@ -30,8 +30,7 @@ namespace SCR
 		None,
 		BeginPlay,
 		Tick,
-		EndPlay,
-		Interact
+		EndPlay
 	};
 
 	enum class eNodeOperatorTrait : size_t

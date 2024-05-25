@@ -36,7 +36,7 @@ namespace SCR
 		static CustomEvent& GetCustomEvent(const CustomEventID anID);
 		static const std::vector<CustomEvent*>& GetCustomEvents();
 
-		static CustomEventID GetCustomEventNodeTypeID(const NodeTypeID aNodeTypeID);
+		static CustomEventID GetCustomEventID(const NodeTypeID aNodeTypeID);
 
 		static NodeTypeID GetTypeID(const std::string& aName);
 
@@ -53,7 +53,7 @@ namespace SCR
 		static std::vector<CustomEvent*> myCustomEvents;
 		static std::vector<NodeType> myTypes;
 
-		static std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventNodeTypeID;
+		static std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventID;
 		static std::unordered_map<DataTypeID, NodeTypeID> myGetterNodeTypeIDs;
 		static std::unordered_map<DataTypeID, NodeTypeID> mySetterNodeTypeIDs;
 		static std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> myOperatorNodeTypeIDs;

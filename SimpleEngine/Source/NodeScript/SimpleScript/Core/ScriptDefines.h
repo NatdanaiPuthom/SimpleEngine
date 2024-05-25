@@ -40,9 +40,10 @@ namespace SCR
 	class Node;
 	class ScriptInternalModifier;
 	struct InternalExecutionContext;
+	struct NodeExecutionData;
 
 	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, ScriptInternalModifier&);
-	using ExecuteNodeSignature = void(*)(const NodeID, InternalExecutionContext&);
+	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);
 
 	struct ScriptColor
 	{

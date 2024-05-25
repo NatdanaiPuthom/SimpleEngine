@@ -10,7 +10,7 @@ namespace SCR
 	std::vector<CustomEvent*> NodeTypeManager::myCustomEvents = {};
 	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::myGetterNodeTypeIDs = {};
 	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::mySetterNodeTypeIDs = {};
-	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToCustomEventNodeTypeID = {};
+	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToCustomEventID = {};
 	std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> NodeTypeManager::myOperatorNodeTypeIDs = {};
 	std::vector<NodeType> NodeTypeManager::myTypes = { CreateInvalidNodeType() };
 
@@ -90,10 +90,10 @@ namespace SCR
 		return myCustomEvents;
 	}
 
-	CustomEventID NodeTypeManager::GetCustomEventNodeTypeID(const NodeTypeID aNodeTypeID)
+	CustomEventID NodeTypeManager::GetCustomEventID(const NodeTypeID aNodeTypeID)
 	{
-		auto it = myToCustomEventNodeTypeID.find(aNodeTypeID);
-		if (it != myToCustomEventNodeTypeID.end())
+		auto it = myToCustomEventID.find(aNodeTypeID);
+		if (it != myToCustomEventID.end())
 		{
 			return it->second;
 		}
@@ -154,7 +154,7 @@ namespace SCR
 		NodeRecipe recipe
 		{
 			[](const NodeID, const NodeTypeID, ScriptInternalModifier&)->Node {return Node(0, std::array<PinID, 0>(), std::array<PinID, 0>()); },
-			[](const NodeID, InternalExecutionContext&) {},
+			[](const NodeExecutionData&, InternalExecutionContext&) {},
 			eNodeTrait::Invalid
 		};
 
@@ -189,6 +189,6 @@ namespace SCR
 		myGetterNodeTypeIDs.clear();
 		mySetterNodeTypeIDs.clear();
 		myOperatorNodeTypeIDs.clear();
-		myToCustomEventNodeTypeID.clear();
+		myToCustomEventID.clear();
 	}
 }
