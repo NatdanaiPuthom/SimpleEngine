@@ -12,7 +12,7 @@ namespace SimpleUtilities
 	static inline std::string ConvertTypeIndexNameToPrettyName(const std::string& aNameFromTypeIndex)
 	{
 		size_t pos = aNameFromTypeIndex.find_last_of("::"); //NOTE(v9.30.10): For struct/classes with namespaces
-		
+
 		if (pos != std::string::npos && pos + 1 < aNameFromTypeIndex.length())
 		{
 			return aNameFromTypeIndex.substr(pos + 1);
@@ -24,7 +24,7 @@ namespace SimpleUtilities
 		{
 			return aNameFromTypeIndex.substr(pos + 1);
 		}
-	
+
 		return aNameFromTypeIndex;
 	}
 
@@ -78,7 +78,7 @@ namespace SimpleUtilities
 
 		for (const char c : aFilePath)
 		{
-			if (c == ':')
+			if (c == ':') //NOTE(v9.36.4): Assuming we found the symbol such as C: or D: as the ':' is special symbol
 			{
 				isAbsolutePath = true;
 				break;
@@ -91,8 +91,29 @@ namespace SimpleUtilities
 		}
 		else
 		{
-			const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_MODELS) + aFilePath;
+			const std::string absolutePath = SimpleUtilities::GetAbsolutePath(aFilePath);
 			return absolutePath;
 		}
+	}
+
+	static inline bool FindSuffix(const std::string& aName, const std::string& aSuffixToSearch)
+	{
+		for (size_t i = aName.length(); i > 0; i--)
+		{
+			if (aName[i] == '.')
+			{
+				size_t pos = i - 1;
+				pos = aName.rfind(aSuffixToSearch, pos);
+
+				if (pos != std::string::npos)
+				{
+					return true;
+				}
+
+				break;
+			}
+		}
+
+		return false;
 	}
 }
