@@ -65,9 +65,16 @@ namespace Drawer
 
 		for (size_t i = 0; i < aMeshComponent->textures.size(); ++i)
 		{
-			if (const Graphics::Texture* texture = aMeshComponent->textures[i])
+			if (const Graphics::Texture* texture = aMeshComponent->textures[i]) //NOTE(9.36.4): Disgusting
 			{
-				texture->Bind(context, texture->GetSlot());
+				size_t slot = texture->GetSlot();
+
+				if (slot < Graphics::Global_Slot_Normal)   //NOTE(9.36.4): Even more disgusting
+				{
+					slot = i;
+				}
+
+				texture->Bind(context, static_cast<unsigned int>(slot));
 			}
 		}
 
