@@ -13,7 +13,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 	local bin_dir = path.join(_SCRIPT_DIR, "Bin/") -- Returns absolute path to where this premake file is plus "Bin/" example -> C:\Users\panda\Desktop\SimpleEngine\Bin\
 	local shader_dir = path.join(_SCRIPT_DIR, "Bin/Shaders/") 
-	local profiler_dir = path.join(_SCRIPT_DIR, "Bin/Profilers/")
+	local profiler_dir = path.join(_SCRIPT_DIR, "Temp/Profilers/")
 	local settings_dir = path.join(_SCRIPT_DIR, "Bin/Settings/")
 
 	os.mkdir(bin_dir)  -- Create these folders on call "generate_project.bat" (current .bat file name)
@@ -41,8 +41,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		'SIMPLE_SETTINGS_GAME="' .. "Settings/game_settings.json" .. '"',
 		'SIMPLE_SETTINGS_EDITOR="' .. "Settings/editor_settings.json" .. '"',
 		'SIMPLE_SETTINGS_LEVELS="' .. "Settings/levels.json" .. '"',
-
-		'SIMPLE_PROFILER_FILENAME="' .. "Profilers/profiler_data.prof" .. '"',
+		
+		'SIMPLE_PROFILER_FILENAME="'  .. "../Temp/Profilers/profiler_data.prof" .. '"',
 
 		'SIMPLE_DIR_TEXTURES="' .. "Assets/Textures/" .. '"',
 		'SIMPLE_DIR_SHADERS="' .. "Shaders/" .. '"',

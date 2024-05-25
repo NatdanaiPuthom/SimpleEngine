@@ -8,7 +8,6 @@
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
-
 #include "NodeScript/SimpleNodeScript.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
@@ -34,9 +33,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
-	PROFILER_BEGIN("Engine initialize");
+	PROFILER_BEGIN("MainSingleton Initialize");
 	MainSingleton::Init();
+	PROFILER_END();
 
+	PROFILER_BEGIN("SimpleEngine Core Class Constructors");
 	Simple::Engine engine;
 	Graphics::GraphicsEngine graphicsEngine;
 	Editor::EditorEngine editor;
@@ -45,20 +46,24 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
 	ecs.SetGlobalPointerToThis();
+	PROFILER_END();
 
+	PROFILER_BEGIN("SimpleEngine Core Class Initialize");
 	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetEngineHWND(), Global::GetWindowSize());
 	ecs.Init();
 	editor.Init();
 	PROFILER_END();
 
-	PROFILER_BEGIN("GameWorld initialize");
+	PROFILER_BEGIN("GameWorld Initialize");
 	Simple::GameWorld gameWorld;
 	gameWorld.Init();
 	PROFILER_END();
 
+	PROFILER_BEGIN("SimpleScript Initialize");
 	Script::SimpleNodeScript simpleScript;
 	simpleScript.Init();
+	PROFILER_END();
 
 	while (Global::GetGameIsRunning())
 	{
@@ -86,13 +91,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		editor.Update();
 		PROFILER_END();
 
-		PROFILER_BEGIN("Render To Backbuffer");
+		PROFILER_BEGIN("Render To GBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
 		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();
 
-		PROFILER_BEGIN("Editor Render");
+		PROFILER_BEGIN("Render to BackBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
 		editor.Render();
 		PROFILER_END();
