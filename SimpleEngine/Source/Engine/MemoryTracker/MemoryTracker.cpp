@@ -88,7 +88,6 @@ namespace SimpleTracker
 	{
 		SimpleMemoryTracker::myMemoryTrackingSettings = aTrackingSettings;
 		_CrtSetAllocHook(&SimpleMemoryTracker::SimpleAllocHook);
-		std::atexit(StopMemoryTrackingAndPrint);
 	}
 
 	void SimpleMemoryTracker::PrintTopLeaks(std::unordered_map<StackTrace, int>& aMap)

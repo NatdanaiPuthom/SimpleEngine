@@ -36,7 +36,7 @@ namespace SimpleTracker
 		inline static std::unordered_map<long, Allocation> myAllocationMap = {};
 		inline static int myTotalAllocationCount = 0;
 		inline static thread_local bool myIsAllocationInProgress = false;
-		inline static MemoryTrackingSettings myMemoryTrackingSettings = { false, true };
+		inline static MemoryTrackingSettings myMemoryTrackingSettings = { false, false };
 	};
 
 	class SimpleMemoryTrackerWrapper final
@@ -44,8 +44,8 @@ namespace SimpleTracker
 	public:
 		inline SimpleMemoryTrackerWrapper()
 		{
-			SimpleMemoryTracker::myMemoryTrackingSettings = { false, true };
-			_CrtSetAllocHook(&SimpleMemoryTracker::SimpleAllocHook);
+			SimpleTracker::MemoryTrackingSettings memoryTrackingSettings = { false, true };
+			SimpleMemoryTracker::StartMemoryTracking(memoryTrackingSettings);
 		}
 
 		inline ~SimpleMemoryTrackerWrapper()
