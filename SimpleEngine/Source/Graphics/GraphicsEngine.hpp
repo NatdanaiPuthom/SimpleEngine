@@ -47,7 +47,7 @@ namespace Graphics
 		void SetFPSLevelCap(const unsigned int aCapLevel);
 		void SetRasterizerState(const eRasterizerState aRasterizerState);
 
-		//NOTE(v6.0.0?): Call Global::SetWindowSize() instead
+		//NOTE(v9.37.0?): Call SetWindowSizeNextFrame instead.
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
 
 		void SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer = nullptr);

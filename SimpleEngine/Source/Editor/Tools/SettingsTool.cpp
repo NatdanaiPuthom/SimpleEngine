@@ -160,11 +160,11 @@ namespace Editor
 				if (myWindowSizes[mySelectedWindowSize].x == myMonitorResolution.x &&
 					myWindowSizes[mySelectedWindowSize].y == myMonitorResolution.y)
 				{
-					Global::SetWindowSize(myMonitorResolution, true);
+					Global::SetWindowSizeNextFrame(myMonitorResolution, true);
 				}
 				else
 				{
-					Global::SetWindowSize(myWindowSizes[mySelectedWindowSize]);
+					Global::SetWindowSizeNextFrame(myWindowSizes[mySelectedWindowSize]);
 				}
 			}
 		}

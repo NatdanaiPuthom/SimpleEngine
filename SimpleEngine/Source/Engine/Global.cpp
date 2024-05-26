@@ -20,6 +20,8 @@ namespace
 	int localDrawCalls = 0;
 
 	bool localIsFullScreen = false;
+	bool localShouldResizeWindow = false;
+
 	std::atomic<bool> localShouldClose = false;
 }
 
@@ -62,6 +64,18 @@ namespace Impl
 			assert(false && "localGraphicsEngine is already set. Is this call a mistake?");
 
 		localGraphicsEngine = aGraphicsEngine;
+	}
+
+	void SimpleGlobalGraphics::ResizeWindow()
+	{
+		localGraphicsEngine->SetWindowSize(localWindowSize, localIsFullScreen);
+		localGraphicsEngine->GetCurrentCamera()->UpdateProjection(localResolution);
+		localShouldResizeWindow = false;
+	}
+
+	bool SimpleGlobalGraphics::GetShouldResizeWindow()
+	{
+		return localShouldResizeWindow;
 	}
 
 	void SimpleGlobalEngine::SetResolution(const Math::Vector2ui& aResolution)
@@ -152,7 +166,7 @@ namespace Global
 		localShouldClose.store(aShouldClose);
 	}
 
-	void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen)
+	void SetWindowSizeNextFrame(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen)
 	{
 		localIsFullScreen = aSetFullScreen;
 
@@ -175,7 +189,11 @@ namespace Global
 
 		localResolution = localWindowSize;
 
-		localGraphicsEngine->SetWindowSize(localWindowSize, aSetFullScreen);
-		localGraphicsEngine->GetCurrentCamera()->UpdateProjection(localResolution);
+		localShouldResizeWindow = true;
+	}
+
+	static bool GetShouldResizeWindow()
+	{
+		return localShouldResizeWindow;
 	}
 }

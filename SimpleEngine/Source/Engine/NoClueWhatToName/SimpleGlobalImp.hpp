@@ -32,9 +32,11 @@ namespace Impl
 	{
 		friend class Graphics::GraphicsEngine;
 	private:
-		static void SetGraphicsEngine(Graphics::GraphicsEngine* aGraphicsEngine);
 		static void UpdateFPSCounter();
 		static void ResetDrawCalls();
+		static void ResizeWindow();
+		static void SetGraphicsEngine(Graphics::GraphicsEngine* aGraphicsEngine);
+		static bool GetShouldResizeWindow();
 	};
 
 	class SimpleGlobalRenderer final

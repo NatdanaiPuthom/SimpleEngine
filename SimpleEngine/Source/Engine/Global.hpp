@@ -28,5 +28,5 @@ namespace Global
 	void SetGameShouldClose(const bool aShouldClose);
 
 	//WindowSize also change Resolution to fit. TO-DO(v9.0?): Fix dragable window size after setting full screen and revert to windowed
-	void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen = false);
+	void SetWindowSizeNextFrame(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen = false);
 }

@@ -228,6 +228,11 @@ namespace Graphics
 			}
 		}
 
+		if (Impl::SimpleGlobalGraphics::GetShouldResizeWindow())
+		{
+			Impl::SimpleGlobalGraphics::ResizeWindow();
+		}
+
 		Impl::SimpleGlobalGraphics::UpdateFPSCounter();
 		Impl::SimpleGlobalGraphics::ResetDrawCalls();
 
@@ -322,24 +327,18 @@ namespace Graphics
 
 		ID3D11RenderTargetView* backBuffer = myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)][0].renderTargetView.Get();
 		backBuffer->Release();
-
-		const HRESULT result = mySwapChain->ResizeBuffers(2, newWindowSize.x, newWindowSize.y, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
-		assert(SUCCEEDED(result) && "Failed to resize buffer");
-
-		ID3D11Texture2D* pBackBuffer = nullptr;
-
-		mySwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-		myDevice->CreateRenderTargetView(pBackBuffer, NULL, &backBuffer);
-
-		pBackBuffer->Release();
 		myDepthBuffer->Release();
 
+		const HRESULT result = mySwapChain->ResizeBuffers(0, newWindowSize.x, newWindowSize.y, DXGI_FORMAT_UNKNOWN, 0);
+		assert(SUCCEEDED(result) && "Failed to resize buffer");
+
+		CreateBackBuffer();
 		CreateDepthBuffer(newWindowSize);
+
+		CreateGBuffer(newWindowSize);
 		CreateViewport(newWindowSize);
 
 		myContext->RSSetViewports(1, myViewPort.get());
-
-		SetRenderTarget(eRenderTargetType::Backbuffer, myDepthBuffer.Get());
 	}
 
 	void GraphicsEngine::SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer)
@@ -347,7 +346,6 @@ namespace Graphics
 		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		UnbindAllRenderTargets();
-
 
 		const std::vector<RenderTarget>& originalRenderTargets = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
 		const size_t count = originalRenderTargets.size();
@@ -685,6 +683,7 @@ namespace Graphics
 			DXGI_FORMAT_R8G8B8A8_UNORM // AmbientOcclusionAndCustom (R in used, G,B,A unused)
 		};
 
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)] = std::vector<RenderTarget>();
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
@@ -768,19 +767,20 @@ namespace Graphics
 
 	void GraphicsEngine::CreateBackBuffer()
 	{
+		if (myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)].empty())
+		{
+			myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)].resize(1);
+		}
+
 		ID3D11Texture2D* backBufferTexture = nullptr;
 
 		HRESULT result = mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBufferTexture);
 		assert(SUCCEEDED(result) && "Failed to get Backbuffer");
 
-		RenderTarget backBuffer;
-		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, backBuffer.renderTargetView.GetAddressOf());
+		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)][0].renderTargetView.GetAddressOf());
+		assert(SUCCEEDED(result) && "Failed to create Backbuffer");
 
 		backBufferTexture->Release();
-
-		myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)].push_back(backBuffer);
-
-		assert(SUCCEEDED(result) && "Failed to create Backbuffer");
 	}
 
 	void GraphicsEngine::CreateDepthBuffer(const Math::Vector2ui aSize)
