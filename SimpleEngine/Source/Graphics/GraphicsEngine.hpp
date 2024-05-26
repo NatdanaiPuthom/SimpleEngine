@@ -35,6 +35,8 @@ namespace Graphics
 		bool BeginFrame();
 		void EndFrame();
 
+		void RenderDeferredFromGBuffer();
+
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 
@@ -54,6 +56,8 @@ namespace Graphics
 		void SetCamera(std::shared_ptr<Camera> aCamera);
 		void SetToDefaultCamera();
 	public:
+		std::vector<RenderTarget>& GetRenderTargets(const eRenderTargetType aRenderTargetType);
+
 		ComPtr<ID3D11Device> GetDevice();
 		ComPtr<ID3D11DeviceContext> GetContext();
 		ComPtr<ID3D11ShaderResourceView> GetShaderResourceView(const eRenderTargetType aRenderTargetType, const size_t aIndex = 0);
@@ -91,6 +95,7 @@ namespace Graphics
 		void CreateRasterizerStates();
 		void CreateBonesBuffer();
 		void CreateGBuffer(const Math::Vector2ui aResolution);
+		void CreateDeferredBuffer(const Math::Vector2ui aResolution);
 		std::vector<RenderTarget> CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution);
 	private:
 		void UnbindAllRenderTargets();

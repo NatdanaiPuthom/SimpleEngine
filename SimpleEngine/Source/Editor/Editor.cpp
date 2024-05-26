@@ -103,7 +103,9 @@ namespace Editor
 
 		if (ImGui::Begin("Deferred"))
 		{
-			
+			const ImVec2 windowSize = ImGui::GetWindowSize();
+			ImTextureID texture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::Deferred, 0).Get();
+			ImGui::Image(texture, windowSize);
 		}
 
 		ImGui::End();

@@ -52,6 +52,7 @@ namespace Graphics
 
 		CreateBackBuffer();
 		CreateGBuffer(aWindowSize);
+		CreateDeferredBuffer(aWindowSize);
 
 		CreateDepthBuffer(aWindowSize);
 		CreateDepthStencilState();
@@ -172,7 +173,10 @@ namespace Graphics
 		if (!AddShader("SkyBoxPS.cso", "DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("DeferredPS.cso", "DeferredVS.cso"))
+		if (!AddShader("GBufferPS.cso", "GBufferVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("DeferredPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 	}
 
@@ -258,6 +262,38 @@ namespace Graphics
 		PROFILER_END();
 	}
 
+	void GraphicsEngine::RenderDeferredFromGBuffer()
+	{
+		static constexpr size_t gBufferCount = 5;
+		static constexpr size_t gBufferStartSlot = 4; //NOTE(v9.37.0): Hardcoded unknown value is kind of disgusting, future me, pls fix
+
+		SetRenderTarget(Graphics::eRenderTargetType::Deferred);
+
+		std::vector<Graphics::RenderTarget>& gBuffers = myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)];
+
+		ID3D11ShaderResourceView* shaderResources[gBufferCount] = {};
+
+		for (size_t i = 0; i < gBuffers.size(); ++i)
+		{
+			shaderResources[i] = gBuffers[i].shaderResourceView.Get();
+		}
+
+		myContext->PSSetShaderResources(gBufferStartSlot, gBufferCount, shaderResources);
+
+		std::shared_ptr<const Shader> shader = GetShader(eShaderType::Deferred);
+		shader->BindThisShader(myContext.Get());
+
+		myContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		myContext->IASetInputLayout(nullptr);
+		myContext->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
+		myContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+		myContext->GSSetShader(nullptr, nullptr, 0);
+		myContext->Draw(3, 0);
+
+		ID3D11ShaderResourceView* nullSRVs[gBufferCount] = { NULL };
+		myContext->PSSetShaderResources(gBufferStartSlot, gBufferCount, nullSRVs);
+	}
+
 	void GraphicsEngine::UnbindAllRenderTargets()
 	{
 		static constexpr size_t maxRenderTargetSupportedByDX11 = 8;
@@ -334,8 +370,9 @@ namespace Graphics
 
 		CreateBackBuffer();
 		CreateDepthBuffer(newWindowSize);
-
 		CreateGBuffer(newWindowSize);
+		CreateDeferredBuffer(newWindowSize);
+
 		CreateViewport(newWindowSize);
 
 		myContext->RSSetViewports(1, myViewPort.get());
@@ -370,6 +407,11 @@ namespace Graphics
 	void GraphicsEngine::SetToDefaultCamera()
 	{
 		myCurrentCamera = myEditorCamera;
+	}
+
+	std::vector<RenderTarget>& GraphicsEngine::GetRenderTargets(const eRenderTargetType aRenderTargetType)
+	{
+		return myRenderTargets[static_cast<size_t>(aRenderTargetType)];
 	}
 
 	void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)
@@ -536,8 +578,13 @@ namespace Graphics
 		case eShaderType::SkyBox:
 			shader = GetShader("SkyBoxPS.cso", "DefaultVS.cso");
 			break;
+		case eShaderType::GBuffer:
+			shader = GetShader("GBufferPS.cso", "GBufferVS.cso");
+			break;
 		case eShaderType::Deferred:
-			shader = GetShader("DeferredPS.cso", "DeferredVS.cso");
+			shader = GetShader("DeferredPS.cso", "FullScreenVS.cso");
+			break;
+		default:
 			break;
 		}
 
@@ -685,6 +732,17 @@ namespace Graphics
 
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)] = std::vector<RenderTarget>();
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
+	}
+
+	void GraphicsEngine::CreateDeferredBuffer(const Math::Vector2ui aResolution)
+	{
+		std::array<DXGI_FORMAT, 1> formats =
+		{
+			DXGI_FORMAT_R16G16B16A16_FLOAT
+		};
+
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)] = std::vector<RenderTarget>();
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
 	std::vector<RenderTarget> GraphicsEngine::CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution)

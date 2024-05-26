@@ -28,6 +28,7 @@ namespace Graphics
 	{
 		Backbuffer,
 		GBuffer,
+		Deferred,
 		Count
 	};
 
@@ -38,6 +39,7 @@ namespace Graphics
 		PBR_Default,
 		PBR_Animated,
 		SkyBox,
+		GBuffer,
 		Deferred
 	};
 
