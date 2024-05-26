@@ -26,15 +26,20 @@ namespace SCR
 
 	PinSetFunction CreatePinSetFunction();
 
-	template<CleanType T>
+	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, const size_t aStartIndex);
+
+	template<CleanType T, ePinFlowType FlowType>
 	PinSetFunction CreatePinSetFunction()
 	{
-		return [](const PinID aPinID, const InternalExecutionContext& aContext, const void* aValue) -> void
+		return [](const PinSetData& aPinSetData, const InternalExecutionContext& aContext) -> void
 			{
+#ifdef _DEBUG
+				assert(aPinSetData.dataTypeID == typeid(T).hash_code());
+#endif
 
-				const T& value = *reinterpret_cast<const T*>(aValue);
+				const T& value = *reinterpret_cast<const T*>(aPinSetData.value);
 
-				const Pin& pin = ScriptProxy::GetPin(aContext.script, aPinID);
+				const Pin& pin = ScriptProxy::GetPin(aContext.script, aPinSetData.id);
 
 				T& memoryValue = ScriptProxy::GetScriptMemoryPool(aContext.script).At<T>(pin.memoryID);
 				memoryValue = value;
@@ -43,8 +48,7 @@ namespace SCR
 				{
 					if (value)
 					{
-						const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-						if (pinType.flowType == ePinFlowType::Output)
+						if constexpr (FlowType == ePinFlowType::Output)
 						{
 							NodeExecutor& executor = ScriptProxy::GetNodeExecutor(aContext.script);
 
@@ -66,7 +70,7 @@ namespace SCR
 		{
 			using CT = CleanType_V<Type>;
 
-			aPinTypeIDArray[Index] = PinTypeManager::Create<FlowType, CT>(aPinNames[Index], CreatePinSetFunction<CT>());
+			aPinTypeIDArray[Index] = PinTypeManager::Create<FlowType, CT>(aPinNames[Index], CreatePinSetFunction<CT, FlowType>());
 
 			aMemoryTuple.At<Index>() = [](const MemoryPool* aMemoryPool, MemoryPoolID anID) -> const Type&
 				{
@@ -101,7 +105,7 @@ namespace SCR
 		{
 			using CT = CleanType_V<Type>;
 
-			aPinTypeIDArray[Index] = PinTypeManager::Create<FlowType, CT>(aPinNames[Index], CreatePinSetFunction<CT>());
+			aPinTypeIDArray[Index] = PinTypeManager::Create<FlowType, CT>(aPinNames[Index], CreatePinSetFunction<CT, FlowType>());
 
 
 			if constexpr (Index + 1 < Size)
@@ -212,14 +216,19 @@ namespace SCR
 		if constexpr (Index < sizeof...(OutputTypes))
 		{
 			const PinID outputPinID = aOutputPinIDs[Index];
-
 			const Pin& pin = ScriptProxy::GetPin(aContext.script, outputPinID);
+			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
+			assert(pinType.flowType == ePinFlowType::Output);
 
 			const void* value = &std::get<Index>(aOutputValues);
 
-			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
-			pinType.setFunction(outputPinID, aContext, value);
+			pinType.setFunction(PinSetData{ outputPinID, value,
+
+#ifdef _DEBUG
+				typeid(decltype(std::get<Index>(aOutputValues))).hash_code()
+#endif
+				}, aContext);
 
 			SetOutputValues<Index + 1>(aOutputValues, aOutputPinIDs, aContext);
 		}

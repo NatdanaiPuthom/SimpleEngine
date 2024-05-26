@@ -15,15 +15,16 @@ namespace SCR
 	{
 	}
 
-	CustomEventID ScriptInternalModifier::CreateType_CustomEvent(const std::string& aName, ScriptFoundation& aFoundation)
+	CustomEventID ScriptInternalModifier::CreateCustomEvent(const std::string& aName, ScriptFoundation& aFoundation)
 	{
-		CustomEvent* customEvent = new CustomEvent(aName);
+		CustomEvent customEvent(aName);
 
-		std::vector<CustomEvent*>& customEvents = NodeTypeManager::myCustomEvents;
+		std::vector<CustomEvent>& customEvents = NodeTypeManager::myCustomEvents;
 		std::unordered_multimap<NodeTypeID, CustomEventID>& map = NodeTypeManager::myToCustomEventID;
 		CustomEventID id = customEvents.size();
 		customEvents.push_back(customEvent);
-		map.emplace(customEvent->myCallerTypeID, id);
+		map.emplace(customEvent.GetCallerTypeID(), id);
+		map.emplace(customEvent.GetExecutorTypeID(), id);
 
 		for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(aFoundation))
 		{
@@ -33,6 +34,21 @@ namespace SCR
 
 			}
 		}
+		return id;
+	}
+
+	FunctionID ScriptInternalModifier::CreateFunction(const std::string& aName)
+	{
+		Function function(aName);
+
+		std::vector<Function>& functions = NodeTypeManager::myFunctions;
+		std::unordered_multimap<NodeTypeID, FunctionID>& map = NodeTypeManager::myToFunctionID;
+		FunctionID id = functions.size();
+		NodeTypeManager::myFunctions.push_back(function);
+		map.emplace(function.GetCallerNodeTypeID(), id);
+		map.emplace(function.GetInputNodeTypeID(), id);
+		map.emplace(function.GetOutputNodeTypeID(), id);
+
 		return id;
 	}
 

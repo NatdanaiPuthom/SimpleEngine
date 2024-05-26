@@ -7,10 +7,12 @@
 
 namespace SCR
 {
-	std::vector<CustomEvent*> NodeTypeManager::myCustomEvents = {};
+	std::vector<CustomEvent> NodeTypeManager::myCustomEvents = {};
+	std::vector<Function> NodeTypeManager::myFunctions = {};
 	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::myGetterNodeTypeIDs = {};
 	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::mySetterNodeTypeIDs = {};
 	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToCustomEventID = {};
+	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToFunctionID = {};
 	std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> NodeTypeManager::myOperatorNodeTypeIDs = {};
 	std::vector<NodeType> NodeTypeManager::myTypes = { CreateInvalidNodeType() };
 
@@ -82,10 +84,25 @@ namespace SCR
 
 	CustomEvent& NodeTypeManager::GetCustomEvent(const CustomEventID anID)
 	{
-		return *myCustomEvents.at(anID);
+		return myCustomEvents.at(anID);
 	}
 
-	const std::vector<CustomEvent*>& NodeTypeManager::GetCustomEvents()
+	Function& NodeTypeManager::GetFunction(const FunctionID anID)
+	{
+		return myFunctions.at(anID);
+	}
+
+	FunctionID NodeTypeManager::GetFunctionID(const NodeTypeID aNodeTypeID)
+	{
+		auto it = myToFunctionID.find(aNodeTypeID);
+		if (it != myToFunctionID.end())
+		{
+			return it->second;
+		}
+		return InvalidID<FunctionID>();
+	}
+
+	const std::vector<CustomEvent>& NodeTypeManager::GetCustomEvents()
 	{
 		return myCustomEvents;
 	}
@@ -178,12 +195,6 @@ namespace SCR
 
 	void NodeTypeManager::Destroy()
 	{
-		for (CustomEvent* nodeType : myCustomEvents)
-		{
-			delete nodeType;
-			nodeType = nullptr;
-		}
-
 		myTypes.clear();
 		myCustomEvents.clear();
 		myGetterNodeTypeIDs.clear();

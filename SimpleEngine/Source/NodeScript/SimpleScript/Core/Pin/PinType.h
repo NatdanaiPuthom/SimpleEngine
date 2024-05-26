@@ -11,7 +11,17 @@ namespace SCR
 		Output,
 	};
 
-	using PinSetFunction = FuncPtr<void, const PinID, const InternalExecutionContext&, const void*>;
+
+	struct PinSetData
+	{
+		PinID id;
+		const void* value;
+#ifdef _DEBUG
+		DataTypeID dataTypeID;
+#endif
+	};
+
+	using PinSetFunction = FuncPtr<void, const PinSetData&, const InternalExecutionContext&>;
 
 	struct PinType
 	{
@@ -20,6 +30,7 @@ namespace SCR
 		const DataTypeID dataTypeID = InvalidID<DataTypeID>();
 		const PinSetFunction setFunction = nullptr;
 	};
+
 
 	constexpr ePinFlowType InvertPinType(const ePinFlowType aPinType)
 	{

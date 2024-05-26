@@ -357,15 +357,15 @@ namespace SCR
 		json jsonDoc = json::object();
 		json customEventsJson = json::array();
 
-		const std::vector<CustomEvent*>& customEventNodeTypes = NodeTypeManager::GetCustomEvents();
+		const std::vector<CustomEvent>& customEventNodeTypes = NodeTypeManager::GetCustomEvents();
 
-		for (CustomEvent* customEventNodeType : customEventNodeTypes)
+		for (const CustomEvent& customEventNodeType : customEventNodeTypes)
 		{
-			const NodeType& executorNodeType = NodeTypeManager::GetNodeType(customEventNodeType->myExecutorTypeID);
+			const NodeType& executorNodeType = NodeTypeManager::GetNodeType(customEventNodeType.GetExecutorTypeID());
 
 			json customEventJson;
 
-			customEventJson["Name"] = NodeTypeManager::GetShortName(customEventNodeType->myExecutorTypeID);
+			customEventJson["Name"] = NodeTypeManager::GetShortName(customEventNodeType.GetExecutorTypeID());
 
 
 			json pinArrayJson = json::array();

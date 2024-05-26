@@ -23,7 +23,8 @@ namespace SCR
 
 #pragma region NodeType
 
-		static CustomEventID CreateType_CustomEvent(const std::string& aName, ScriptFoundation& aFoundation);
+		static CustomEventID CreateCustomEvent(const std::string& aName, ScriptFoundation& aFoundation);
+		static FunctionID CreateFunction(const std::string& aName);
 
 #pragma endregion
 

@@ -16,6 +16,7 @@ namespace SCR
 	using ScriptID_size_t = size_t;
 	using NodeTypeID = ScriptID_size_t;
 	using CustomEventID = ScriptID_size_t;
+	using FunctionID = ScriptID_size_t;
 	using PinTypeID = ScriptID_size_t;
 	using VarID = ScriptID_size_t;
 	using MemoryPoolID = size_t;

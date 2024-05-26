@@ -11,7 +11,17 @@ namespace SCR
 		CustomEvent(const std::string& aName);
 		~CustomEvent();
 
-	public:
+		inline const NodeTypeID& GetExecutorTypeID() const
+		{
+			return myExecutorTypeID;
+		}
+
+		inline const NodeTypeID& GetCallerTypeID() const
+		{
+			return myCallerTypeID;
+		}
+
+	private:
 
 		NodeTypeID myExecutorTypeID;
 		NodeTypeID myCallerTypeID;

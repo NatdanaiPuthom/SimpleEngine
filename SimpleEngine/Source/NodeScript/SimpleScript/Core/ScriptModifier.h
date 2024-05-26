@@ -52,10 +52,6 @@ namespace SCR
 		void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs);
 		void SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, bool aTrackChange = false);
 		void SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, ScriptVec2 aOldPosition, bool aTrackChange = false);
-		
-		static void AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName = "Pin", ScriptFoundation* aFoundation = nullptr);
-		static void SetPinAtIndexCustomEvent(const size_t anIndex, const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation = nullptr);
-		static void DeletePinAtIndexCustomEvent(const size_t anIndex, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation = nullptr);
 
 		void BeginNodeDrag(const std::vector<NodeDragData>& aDragData);
 		void EndNodeDrag(const std::vector<NodeDragData>& aDragData);
@@ -76,6 +72,12 @@ namespace SCR
 		void PasteCopyBuffer(ScriptVec2 aPosition);
 
 		static CustomEventID CreateNodeType_CustomEvent(const std::string& aName, ScriptFoundation& aFoundation);
+
+		static void AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName = "Pin", ScriptFoundation* aFoundation = nullptr);
+		static void SetPinAtIndexCustomEvent(const size_t anIndex, const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation = nullptr);
+		static void DeletePinAtIndexCustomEvent(const size_t anIndex, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation = nullptr);
+
+		static FunctionID CreateFunction(const std::string& aName);
 
 	private:
 

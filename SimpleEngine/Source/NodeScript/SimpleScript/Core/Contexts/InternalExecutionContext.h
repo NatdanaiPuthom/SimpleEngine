@@ -54,6 +54,8 @@ namespace SCR
 			return nodeData;
 		}
 
+		const Node& GetCurrentNode() const;
+
 	private:
 	};
 }

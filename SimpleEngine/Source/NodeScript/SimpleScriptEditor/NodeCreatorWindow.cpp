@@ -28,7 +28,7 @@ namespace EDIT
 			for (CustomEventID id = 0; id < NodeTypeManager::GetCustomEvents().size(); ++id)
 			{
 				const CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(id);
-				if (ImGui::TreeNode(std::to_string(id).c_str(), NodeTypeManager::GetShortName(customEvent.myExecutorTypeID).c_str()))
+				if (ImGui::TreeNode(std::to_string(id).c_str(), NodeTypeManager::GetShortName(customEvent.GetExecutorTypeID()).c_str()))
 				{
 					EditInputs(id);
 					ImGui::TreePop();
@@ -48,8 +48,8 @@ namespace EDIT
 	void NodeCreatorWindow::EditInputs(SCRIPT::CustomEventID anID)
 	{
 		const CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(anID);
-		NodeTypeID executorTypeID = customEvent.myExecutorTypeID;
-		NodeTypeID callerTypeID = customEvent.myCallerTypeID;
+		NodeTypeID executorTypeID = customEvent.GetExecutorTypeID();
+		NodeTypeID callerTypeID = customEvent.GetCallerTypeID();
 		NodeType& executorNodeType = NodeTypeManager::GetNodeType(executorTypeID);
 		NodeType& callerNodeType = NodeTypeManager::GetNodeType(callerTypeID);
 

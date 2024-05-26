@@ -5,19 +5,23 @@ namespace SCR
 
 	PinSetFunction CreatePinSetFunction()
 	{
-		return [](const PinID aPinID, const InternalExecutionContext& aContext, const void* aValue) -> void
+		return [](const PinSetData& aPinSetData, const InternalExecutionContext& aContext) -> void
 			{
 
-				const Pin& pin = ScriptProxy::GetPin(aContext.script, aPinID);
+
+				const Pin& pin = ScriptProxy::GetPin(aContext.script, aPinSetData.id);
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
+#ifdef _DEBUG
+				assert(aPinSetData.dataTypeID == pinType.dataTypeID);
+#endif
 
 				void* destination = ScriptProxy::GetScriptMemoryPool(aContext.script).MemoryAt(pin.memoryID);
 
-				DataTypeManager::CopyData(pinType.dataTypeID, destination, aValue);
+				DataTypeManager::CopyData(pinType.dataTypeID, destination, aPinSetData.value);
 
 				if (pinType.dataTypeID == Flow::typeID)
 				{
-					const Flow& flow = *reinterpret_cast<const Flow*>(aValue);
+					const Flow& flow = *reinterpret_cast<const Flow*>(aPinSetData.value);
 
 					if (flow)
 					{
@@ -33,6 +37,31 @@ namespace SCR
 					}
 				}
 			};
+	}
+
+	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, const size_t aStartIndex)
+	{
+		assert(aDestination.size() == aSource.size());
+		const MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(aContext.script);
+		for (size_t i = aStartIndex; i < aDestination.size(); i++)
+		{
+			PinID destinationPinID = aDestination[i];
+
+			const Pin& destinationPin = ScriptProxy::GetPin(aContext.script, destinationPinID);
+
+			const PinType& outputPinType = PinTypeManager::GetPinType(destinationPin.typeID);
+
+			const PinID sourcePinID = aSource[i];
+			const Pin& sourcePin = ScriptProxy::GetPin(aContext.script, sourcePinID);
+			const void* value = memoryPool.MemoryAt(sourcePin.memoryID);
+
+
+			outputPinType.setFunction(PinSetData{ destinationPinID, value,
+#ifdef _DEBUG
+				PinTypeManager::GetPinType(sourcePin.typeID).dataTypeID
+#endif
+				}, aContext);
+		}
 	}
 
 
@@ -64,11 +93,15 @@ namespace SCR
 				const Pin& pin = ScriptProxy::GetPin(aContext.script, inputPinID);
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
-				MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(aContext.script);
+				const MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(aContext.script);
 
 				const void* value = memoryPool.MemoryAt(connectedOutputPin.memoryID);
 
-				pinType.setFunction(inputPinID, aContext, value);
+				pinType.setFunction(PinSetData{ inputPinID, value, 
+#ifdef _DEBUG
+					PinTypeManager::GetPinType(connectedOutputPin.typeID).dataTypeID
+#endif
+					}, aContext);
 			}
 		}
 	}

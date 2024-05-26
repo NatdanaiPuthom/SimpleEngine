@@ -255,165 +255,6 @@ namespace SCR
 
 	}
 
-	void ScriptModifier::AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName, ScriptFoundation* aFoundation)
-	{
-		CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(aNodeTypeID);
-
-
-		NodeType& nodeType = NodeTypeManager::GetNodeType(customEvent.myExecutorTypeID);
-
-		PinTypeID executorPinTypeID = PinTypeManager::Create(aName, ePinFlowType::Output, aDataTypeID, CreatePinSetFunction());
-		nodeType.nodeRecipe.outputPinTypeIDs.push_back(executorPinTypeID);
-
-
-		NodeType& callerNodeType = NodeTypeManager::GetNodeType(customEvent.myCallerTypeID);
-		PinTypeID callerPinTypeID = PinTypeManager::Create(aName, ePinFlowType::Input, aDataTypeID, CreatePinSetFunction());
-		callerNodeType.nodeRecipe.inputPinTypeIDs.push_back(callerPinTypeID);
-
-		if (!aFoundation)
-		{
-			return;
-		}
-
-		for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(*aFoundation))
-		{
-			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
-			{
-
-				ScriptInternalModifier& internalModifier = ScriptProxy::GetInternalModifier(*script);
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.myExecutorTypeID))
-				{
-					PinID pinID = internalModifier.CreateOutputPin(nodeID, executorPinTypeID);
-
-					ScriptProxy::GetNodeRef(*script, nodeID).outputPins.push_back(pinID);
-				}
-
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.myCallerTypeID))
-				{
-					PinID pinID = internalModifier.CreateInputPin(nodeID, callerPinTypeID);
-
-					ScriptProxy::GetNodeRef(*script, nodeID).inputPins.push_back(pinID);
-				}
-			}
-		}
-
-	}
-
-	void ScriptModifier::SetPinAtIndexCustomEvent(const size_t anIndex, const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation)
-	{
-		if (anIndex == 0)
-		{
-			return;
-		}
-		CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(aNodeTypeID);
-
-		NodeType& nodeType = NodeTypeManager::GetNodeType(customEvent.myExecutorTypeID);
-
-		if (anIndex >= nodeType.nodeRecipe.outputPinTypeIDs.size())
-		{
-			return;
-		}
-
-		const PinType& oldExecutorPinType = PinTypeManager::GetPinType(nodeType.nodeRecipe.outputPinTypeIDs[anIndex]);
-		if (oldExecutorPinType.dataTypeID == aDataTypeID)
-		{
-			return;
-		}
-
-		PinTypeID newExecutorPinTypeID = PinTypeManager::Create(oldExecutorPinType.name, ePinFlowType::Output, aDataTypeID, CreatePinSetFunction());
-		nodeType.nodeRecipe.outputPinTypeIDs[anIndex] = newExecutorPinTypeID;
-
-
-
-		NodeType& callerNodeType = NodeTypeManager::GetNodeType(customEvent.myCallerTypeID);
-
-		const PinType& oldCallerPinType = PinTypeManager::GetPinType(callerNodeType.nodeRecipe.inputPinTypeIDs[anIndex]);
-
-		PinTypeID newCallerPinTypeID = PinTypeManager::Create(oldCallerPinType.name, ePinFlowType::Input, aDataTypeID, CreatePinSetFunction());
-		callerNodeType.nodeRecipe.inputPinTypeIDs[anIndex] = newCallerPinTypeID;
-
-		if (!aFoundation)
-		{
-			return;
-		}
-
-		for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(*aFoundation))
-		{
-			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
-			{
-
-				ScriptInternalModifier& internalModifier = ScriptProxy::GetInternalModifier(*script);
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.myExecutorTypeID))
-				{
-					PinID pinID = internalModifier.CreateOutputPin(nodeID, newExecutorPinTypeID);
-
-					ScriptProxy::GetNodeRef(*script, nodeID).outputPins[anIndex] = pinID;
-
-				}
-
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.myCallerTypeID))
-				{
-					PinID pinID = internalModifier.CreateInputPin(nodeID, newCallerPinTypeID);
-
-					ScriptProxy::GetNodeRef(*script, nodeID).inputPins[anIndex] = pinID;
-				}
-			}
-		}
-
-	}
-
-	void ScriptModifier::DeletePinAtIndexCustomEvent(const size_t anIndex, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation)
-	{
-		if (anIndex == 0)
-		{
-			return;
-		}
-
-		CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(aNodeTypeID);
-
-		NodeType& executorNodeType = NodeTypeManager::GetNodeType(customEvent.myExecutorTypeID);
-
-		if (anIndex >= executorNodeType.nodeRecipe.outputPinTypeIDs.size())
-		{
-			return;
-		}
-
-		executorNodeType.nodeRecipe.outputPinTypeIDs.erase(executorNodeType.nodeRecipe.outputPinTypeIDs.begin() + anIndex);
-
-
-		NodeType& callerNodeType = NodeTypeManager::GetNodeType(customEvent.myCallerTypeID);
-		callerNodeType.nodeRecipe.inputPinTypeIDs.erase(callerNodeType.nodeRecipe.inputPinTypeIDs.begin() + anIndex);
-
-		if (!aFoundation)
-		{
-			return;
-		}
-
-		for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(*aFoundation))
-		{
-			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
-			{
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.myExecutorTypeID))
-				{
-
-					Node& node = ScriptProxy::GetNodeRef(*script, nodeID);
-					script->GetModifier().DestoryLinksByOutputPinID(node.outputPins[anIndex]);
-
-					node.outputPins.erase(node.outputPins.begin() + anIndex);
-				}
-
-
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.myCallerTypeID))
-				{
-					Node& node = ScriptProxy::GetNodeRef(*script, nodeID);
-
-					script->GetModifier().DestroyLink(node.inputPins[anIndex]);
-					node.inputPins.erase(node.inputPins.begin() + anIndex);
-				}
-			}
-		}
-	}
-
 	void ScriptModifier::BeginNodeDrag(const std::vector<NodeDragData>& aDragData)
 	{
 		for (const NodeDragData& dragData : aDragData)
@@ -670,7 +511,171 @@ namespace SCR
 
 	CustomEventID ScriptModifier::CreateNodeType_CustomEvent(const std::string& aName, ScriptFoundation& aFoundation)
 	{
-		return ScriptInternalModifier::CreateType_CustomEvent(aName, aFoundation);
+		return ScriptInternalModifier::CreateCustomEvent(aName, aFoundation);
+	}
+
+	void ScriptModifier::AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName, ScriptFoundation* aFoundation)
+	{
+		CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(aNodeTypeID);
+
+
+		NodeType& nodeType = NodeTypeManager::GetNodeType(customEvent.GetExecutorTypeID());
+
+		PinTypeID executorPinTypeID = PinTypeManager::Create(aName, ePinFlowType::Output, aDataTypeID, CreatePinSetFunction());
+		nodeType.nodeRecipe.outputPinTypeIDs.push_back(executorPinTypeID);
+
+
+		NodeType& callerNodeType = NodeTypeManager::GetNodeType(customEvent.GetCallerTypeID());
+		PinTypeID callerPinTypeID = PinTypeManager::Create(aName, ePinFlowType::Input, aDataTypeID, CreatePinSetFunction());
+		callerNodeType.nodeRecipe.inputPinTypeIDs.push_back(callerPinTypeID);
+
+		if (!aFoundation)
+		{
+			return;
+		}
+
+		for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(*aFoundation))
+		{
+			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
+			{
+
+				ScriptInternalModifier& internalModifier = ScriptProxy::GetInternalModifier(*script);
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetExecutorTypeID()))
+				{
+					PinID pinID = internalModifier.CreateOutputPin(nodeID, executorPinTypeID);
+
+					ScriptProxy::GetNodeRef(*script, nodeID).outputPins.push_back(pinID);
+				}
+
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetCallerTypeID()))
+				{
+					PinID pinID = internalModifier.CreateInputPin(nodeID, callerPinTypeID);
+
+					ScriptProxy::GetNodeRef(*script, nodeID).inputPins.push_back(pinID);
+				}
+			}
+		}
+
+	}
+
+	void ScriptModifier::SetPinAtIndexCustomEvent(const size_t anIndex, const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation)
+	{
+		if (anIndex == 0)
+		{
+			return;
+		}
+		CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(aNodeTypeID);
+
+		NodeType& nodeType = NodeTypeManager::GetNodeType(customEvent.GetExecutorTypeID());
+
+		if (anIndex >= nodeType.nodeRecipe.outputPinTypeIDs.size())
+		{
+			return;
+		}
+
+		const PinType& oldExecutorPinType = PinTypeManager::GetPinType(nodeType.nodeRecipe.outputPinTypeIDs[anIndex]);
+		if (oldExecutorPinType.dataTypeID == aDataTypeID)
+		{
+			return;
+		}
+
+		PinTypeID newExecutorPinTypeID = PinTypeManager::Create(oldExecutorPinType.name, ePinFlowType::Output, aDataTypeID, CreatePinSetFunction());
+		nodeType.nodeRecipe.outputPinTypeIDs[anIndex] = newExecutorPinTypeID;
+
+
+
+		NodeType& callerNodeType = NodeTypeManager::GetNodeType(customEvent.GetCallerTypeID());
+
+		const PinType& oldCallerPinType = PinTypeManager::GetPinType(callerNodeType.nodeRecipe.inputPinTypeIDs[anIndex]);
+
+		PinTypeID newCallerPinTypeID = PinTypeManager::Create(oldCallerPinType.name, ePinFlowType::Input, aDataTypeID, CreatePinSetFunction());
+		callerNodeType.nodeRecipe.inputPinTypeIDs[anIndex] = newCallerPinTypeID;
+
+		if (!aFoundation)
+		{
+			return;
+		}
+
+		for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(*aFoundation))
+		{
+			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
+			{
+
+				ScriptInternalModifier& internalModifier = ScriptProxy::GetInternalModifier(*script);
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetExecutorTypeID()))
+				{
+					PinID pinID = internalModifier.CreateOutputPin(nodeID, newExecutorPinTypeID);
+
+					ScriptProxy::GetNodeRef(*script, nodeID).outputPins[anIndex] = pinID;
+
+				}
+
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetCallerTypeID()))
+				{
+					PinID pinID = internalModifier.CreateInputPin(nodeID, newCallerPinTypeID);
+
+					ScriptProxy::GetNodeRef(*script, nodeID).inputPins[anIndex] = pinID;
+				}
+			}
+		}
+
+	}
+
+	void ScriptModifier::DeletePinAtIndexCustomEvent(const size_t anIndex, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation)
+	{
+		if (anIndex == 0)
+		{
+			return;
+		}
+
+		CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(aNodeTypeID);
+
+		NodeType& executorNodeType = NodeTypeManager::GetNodeType(customEvent.GetExecutorTypeID());
+
+		if (anIndex >= executorNodeType.nodeRecipe.outputPinTypeIDs.size())
+		{
+			return;
+		}
+
+		executorNodeType.nodeRecipe.outputPinTypeIDs.erase(executorNodeType.nodeRecipe.outputPinTypeIDs.begin() + anIndex);
+
+
+		NodeType& callerNodeType = NodeTypeManager::GetNodeType(customEvent.GetCallerTypeID());
+		callerNodeType.nodeRecipe.inputPinTypeIDs.erase(callerNodeType.nodeRecipe.inputPinTypeIDs.begin() + anIndex);
+
+		if (!aFoundation)
+		{
+			return;
+		}
+
+		for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(*aFoundation))
+		{
+			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
+			{
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetExecutorTypeID()))
+				{
+
+					Node& node = ScriptProxy::GetNodeRef(*script, nodeID);
+					script->GetModifier().DestoryLinksByOutputPinID(node.outputPins[anIndex]);
+
+					node.outputPins.erase(node.outputPins.begin() + anIndex);
+				}
+
+
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetCallerTypeID()))
+				{
+					Node& node = ScriptProxy::GetNodeRef(*script, nodeID);
+
+					script->GetModifier().DestroyLink(node.inputPins[anIndex]);
+					node.inputPins.erase(node.inputPins.begin() + anIndex);
+				}
+			}
+		}
+	}
+
+	FunctionID ScriptModifier::CreateFunction(const std::string& aName)
+	{
+		return ScriptInternalModifier::CreateFunction(aName);
 	}
 
 	ScriptInternalModifier& ScriptModifier::GetInternalModifier()
