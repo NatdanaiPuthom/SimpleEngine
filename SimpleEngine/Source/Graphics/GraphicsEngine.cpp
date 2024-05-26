@@ -267,8 +267,6 @@ namespace Graphics
 		static constexpr size_t gBufferCount = 5;
 		static constexpr size_t gBufferStartSlot = 4; //NOTE(v9.37.0): Hardcoded unknown value is kind of disgusting, future me, pls fix
 
-		SetRenderTarget(Graphics::eRenderTargetType::Deferred);
-
 		std::vector<Graphics::RenderTarget>& gBuffers = myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)];
 
 		ID3D11ShaderResourceView* shaderResources[gBufferCount] = {};

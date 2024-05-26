@@ -97,13 +97,20 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		gameWorld.Render();
 		PROFILER_END();
 
+#ifndef _SIMPLE
 		PROFILER_BEGIN("Render To DeferredBuffer");
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred);
 		graphicsEngine.RenderDeferredFromGBuffer();
 		PROFILER_END();
-		
+#endif
+
 		PROFILER_BEGIN("Render to BackBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
 		editor.Render();
+
+#ifdef _SIMPLE
+		graphicsEngine.RenderDeferredFromGBuffer();
+#endif
 		PROFILER_END();
 
 		PROFILER_BEGIN("Endframe");
