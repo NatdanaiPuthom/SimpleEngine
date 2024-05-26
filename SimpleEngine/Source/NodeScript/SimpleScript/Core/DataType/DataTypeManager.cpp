@@ -5,15 +5,29 @@ namespace SCR
 
 	bool DataTypeManager::EditData(DataTypeID aDataTypeID, void* aDataPtr)
 	{
-		auto it = myDataTypes->find(aDataTypeID);
-		if (it != myDataTypes->end())
+		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			const DataType& dataType = it->second;
-			if (dataType.typeInterface.function.edit)
+			// If data type has a valid edit function
+			if (dataType->typeInterface.function.edit)
 			{
-				return dataType.typeInterface.function.edit(aDataPtr);
+				return dataType->typeInterface.function.edit(aDataPtr);
 			}
+
+			bool wasEdited = false;
+
+			// Visualize properties instead
+			for (const Property& property : dataType->properties)
+			{
+				if (const DataType* propertyDataType = Find(property.typeID))
+				{
+					void* propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + property.byteOffset);
+					wasEdited |= EditData(property.typeID, propertyDataPtr);
+				}
+			}
+
+			return wasEdited;
 		}
+
 		return false;
 	}
 
@@ -162,5 +176,17 @@ namespace SCR
 
 		delete myDataTypes;
 		delete myTemplateDataTypes;
+	}
+
+	DataType* DataTypeManager::Find(DataTypeID anID)
+	{
+		auto it = myDataTypes->find(anID);
+
+		if (it != myDataTypes->end())
+		{
+			return &it->second;
+		}
+
+		return nullptr;
 	}
 }

@@ -20,6 +20,9 @@ namespace SCR
 		template<template<typename> typename TemplateType>
 		static void RegisterTemplateType(const std::string& aName);
 
+		template<typename ClassType, typename PropertyType>
+		static void RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName);
+
 	private:
 
 		template<typename T, template<typename> typename TemplateType>
@@ -31,7 +34,7 @@ namespace SCR
 	};
 
 	template<typename T, eNodeOperatorTrait Operators, template<typename> typename... Templates> requires Scriptable<T, nlohmann::json> || Fundamental<T>
-	inline void DataTypeRegistry::Register(const std::string& aName, const ScriptColor& aColor)
+	inline void DataTypeRegistry::Register(const std::string & aName, const ScriptColor & aColor)
 	{
 		DataTypeManager::Register<T>(aName, aColor);
 
@@ -56,6 +59,12 @@ namespace SCR
 	inline void DataTypeRegistry::RegisterTemplateType(const std::string& aName)
 	{
 		DataTypeManager::RegisterTemplateType<TemplateType>(aName);
+	}
+
+	template<typename ClassType, typename PropertyType>
+	inline void DataTypeRegistry::RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName)
+	{
+		DataTypeManager::RegisterProperty(aProperty, aName);
 	}
 
 	template<typename T, template<typename> typename TemplateType>

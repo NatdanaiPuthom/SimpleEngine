@@ -4,6 +4,7 @@
 
 namespace SCR
 {
+	class Script;
 
 	class Function final
 	{
@@ -12,30 +13,47 @@ namespace SCR
 		Function(const std::string& aName);
 		~Function();
 
-		inline const NodeTypeID& GetCallerNodeTypeID() const
+		const NodeTypeID& GetCallerNodeTypeID() const
 		{
 			return myCallerNodeTypeID;
 		}
 
-		inline const NodeTypeID& GetInputNodeTypeID() const
+		const NodeTypeID& GetInputNodeTypeID() const
 		{
 			return myInputNodeTypeID;
 		}
 
-		inline const NodeTypeID& GetOutputNodeTypeID() const
+		const NodeTypeID& GetOutputNodeTypeID() const
 		{
 			return myOutputNodeTypeID;
 		}
 
-		inline const NodeID& GetInputNodeID() const
+		const NodeID& GetInputNodeID() const
 		{
 			return myInputNodeID;
 		}
 
-		inline const NodeID& GetOutputNodeID() const
+		const NodeID& GetOutputNodeID() const
 		{
 			return myOutputNodeID;
 		}
+
+		struct FunctionCaller
+		{
+			NodeID nodeID;
+			Script* script;
+		};
+
+		const FunctionCaller& GetCaller() const
+		{
+			return myCaller;
+		}
+
+		void SetCaller(const FunctionCaller& aCaller)
+		{
+			myCaller = aCaller;
+		}
+
 	private:
 
 		std::string myName;
@@ -47,6 +65,8 @@ namespace SCR
 		NodeID myInputNodeID;
 		NodeID myOutputNodeID;
 
+		// Temp
+		FunctionCaller myCaller;
 		//Script myScript;
 	};
 }

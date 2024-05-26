@@ -206,6 +206,18 @@ namespace std
 namespace SCR
 {
 
+	/*struct EmilComponent
+	{
+		int a;
+		bool b;
+		float c;
+	};
+
+	static EmilComponent EmilNode(EmilComponent a)
+	{
+		return a;
+	}*/
+
 
 	void RegisterSystemDataTypes()
 	{
@@ -223,6 +235,14 @@ namespace SCR
 		DataTypeRegistry::Register<unsigned long long, eNodeOperatorTrait::All, std::vector>("Unsigned Long Long", ScriptColor(0.1f, 0.5f, 1.f));
 		DataTypeRegistry::Register<char, eNodeOperatorTrait::All, std::vector>("Char", ScriptColor(0.2f, 0.7f, 0.4f));
 		DataTypeRegistry::Register<std::string>("String", ScriptColor(0.3f, 0.8f, 0.2f));
+
+		/*NodeTypeRegistry::RegisterNodeType(EmilNode, "Test/Emil");
+
+		DataTypeRegistry::RegisterNonSerializableType<EmilComponent>("Emil");
+
+		DataTypeRegistry::RegisterProperty(&EmilComponent::a, "A");
+		DataTypeRegistry::RegisterProperty(&EmilComponent::b, "B");
+		DataTypeRegistry::RegisterProperty(&EmilComponent::c, "C");*/
 	}
 }
 

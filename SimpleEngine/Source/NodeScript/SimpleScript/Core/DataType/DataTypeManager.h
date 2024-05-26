@@ -218,12 +218,21 @@ namespace SCR
 		}
 	}
 
+
+	struct Property
+	{
+		const std::string name;
+		const DataTypeID typeID;
+		const size_t byteOffset;
+	};
+
 	struct DataType
 	{
 		const std::string name;
 		const ScriptColor color;
 		const std::type_info* typeInfo;
 		const DataTypeInterface typeInterface;
+		std::vector<Property> properties;
 	};
 
 	struct TemplateDataType
@@ -258,6 +267,8 @@ namespace SCR
 
 		static void Destroy();
 
+		static DataType* Find(DataTypeID anID);
+
 	private:
 
 		template<Scriptable<nlohmann::json> T>
@@ -278,6 +289,9 @@ namespace SCR
 		template<CleanType T>
 		static void RegisterInternal(const std::string& aName, const ScriptColor& aColor, const DataTypeInterface& anInterface);
 
+		template<CleanType ClassType, CleanType PropertyType>
+		static void RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName);
+
 	private:
 
 		inline static std::unordered_map<DataTypeID, DataType>* myDataTypes = new std::unordered_map<DataTypeID, DataType>();
@@ -289,7 +303,6 @@ namespace SCR
 		inline static const std::string myNullNameStr;
 
 	};
-
 
 	template<Scriptable<nlohmann::json> T>
 	inline void DataTypeManager::Register(const std::string& aName, const ScriptColor& aColor)
@@ -355,5 +368,25 @@ namespace SCR
 			throw std::runtime_error("Two object types have the same hash value");
 		}
 		myDataTypes->emplace(typeInfo.hash_code(), dataType);
+	}
+
+	template<CleanType ClassType, CleanType PropertyType>
+	inline void DataTypeManager::RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName)
+	{
+		size_t byteOffset = GetByteOffset(aProperty);
+
+		DataTypeID dataTypeID = typeid(PropertyType).hash_code();
+		
+		Property property
+		{
+			aName,
+			dataTypeID,
+			byteOffset
+		};
+
+		if (DataType* classDataType = Find(typeid(ClassType).hash_code()))
+		{
+			classDataType->properties.push_back(property);
+		}
 	}
 }

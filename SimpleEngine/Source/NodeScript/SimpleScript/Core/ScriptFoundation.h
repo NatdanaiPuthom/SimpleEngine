@@ -7,6 +7,7 @@
 namespace SCR
 {
 	class ScriptManager;
+	class Function;
 	
 	class ScriptFoundation final
 	{
@@ -25,9 +26,11 @@ namespace SCR
 
 	private:
 
-		inline static MemoryPool myGlobalMemoryPool;
+		static MemoryPool myGlobalMemoryPool;
 
 		std::vector<std::unique_ptr<ScriptManager>> myScriptManagers;
+
+		std::vector<std::unique_ptr<Function>> myGlobalFunctions;
 
 	};
 }

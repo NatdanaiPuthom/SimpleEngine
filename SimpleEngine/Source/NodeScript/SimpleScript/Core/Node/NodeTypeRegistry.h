@@ -136,4 +136,23 @@ namespace SCR
 			}
 		}
 	};
+
+	template<typename FunctionType>
+	struct RegisterFunctionNode;
+
+	template<typename OutputType, typename... InputTypes>
+	struct RegisterFunctionNode<SCRIPT::FuncPtr<OutputType, InputTypes...>>
+	{
+		volatile inline RegisterFunctionNode(SCRIPT::FuncPtr<OutputType, InputTypes...> function, const std::string& functionName)
+		{
+			SCRIPT::NodeTypeRegistry::RegisterNodeType(function, functionName);
+		}
+	};
+
+
+#define REGISTER_FUNCTION(function) \
+    static RegisterFunctionNode<decltype(&function)> __##function##RegisterFunctionNode(function, "Test/"##function);
+
+
 }
+

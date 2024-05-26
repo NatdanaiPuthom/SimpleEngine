@@ -6,6 +6,9 @@
 
 namespace SCR
 {
+
+	MemoryPool ScriptFoundation::myGlobalMemoryPool = MemoryPool(10000);
+
 	ScriptFoundation::ScriptFoundation()
 	{
 	}

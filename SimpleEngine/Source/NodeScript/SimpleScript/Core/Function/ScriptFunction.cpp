@@ -6,10 +6,11 @@ namespace SCR
 
 	static Flow CallerNode(Flow, const InternalExecutionContext* aContext)
 	{
-		const Node& callerNode = ScriptProxy::GetNode(aContext->script, aContext->GetNodeData().currentNodeID);
+		const Node& callerNode = aContext->GetCurrentNode();
 
 		const FunctionID functionID = NodeTypeManager::GetFunctionID(callerNode.typeID);
-		const Function& function = NodeTypeManager::GetFunction(functionID);
+		Function& function = NodeTypeManager::GetFunction(functionID);
+		function.SetCaller({ aContext->GetNodeData().currentNodeID, &aContext->script });
 		const Node& inputNode = ScriptProxy::GetNode(aContext->script, function.GetInputNodeID());
 
 		CopyPinData(*aContext, inputNode.outputPins, callerNode.inputPins, 1);
@@ -32,8 +33,10 @@ namespace SCR
 		const Function& function = NodeTypeManager::GetFunction(functionID);
 		function;
 
+		const auto& caller = function.GetCaller();
+
 		// TODO: Fix node lookup
-		const Node& callerNode = ScriptProxy::GetNode(aContext->script, 0);
+		const Node& callerNode = ScriptProxy::GetNode(*caller.script, caller.nodeID);
 
 		CopyPinData(*aContext, callerNode.outputPins, outputNode.inputPins, 1);
 

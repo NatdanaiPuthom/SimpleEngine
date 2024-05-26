@@ -251,7 +251,7 @@ namespace SCR
 	};
 
 	template<>
-	struct HasReference<> 
+	struct HasReference<>
 	{
 		static constexpr bool value = false;
 	};
@@ -344,5 +344,12 @@ namespace SCR
 				return PackContains<Type, Types...>();
 			}
 		}
+	}
+
+	template<typename ClassType, typename PropertyType>
+	constexpr size_t GetByteOffset(PropertyType ClassType::* aProperty)
+	{
+		constexpr ClassType* a = nullptr;
+		return (size_t) & reinterpret_cast<const char&>(a->*aProperty);
 	}
 }

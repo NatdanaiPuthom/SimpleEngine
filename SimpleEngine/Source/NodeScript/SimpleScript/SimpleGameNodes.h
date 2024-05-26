@@ -13,3 +13,4 @@ struct SimpleOwnerContext : SimpleGameContext
 };
 
 void RegisterSimpleGameNodes();
+

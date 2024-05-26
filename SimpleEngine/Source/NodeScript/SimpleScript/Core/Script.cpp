@@ -1,5 +1,4 @@
 #include "Script.h"
-#include "ScriptManager.h"
 
 namespace SCR
 {
