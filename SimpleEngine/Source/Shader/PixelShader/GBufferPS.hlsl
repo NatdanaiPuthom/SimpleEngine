@@ -4,9 +4,9 @@ GBufferOutput main(PixelInputType aInput)
 {
     float2 uv = aInput.uv;
     
-    float4 diffuse = GlobalAlbedo.Sample(GlobalDefaultSampler, uv) * aInput.color;
+    float4 diffuse = GlobalAlbedo.Sample(GlobalDefaultSampler, uv) * aInput.color; //NOTE(v9.37.0): Why float4 when we will never use alpha-channel
     float3 material = GlobalMaterialTexture.Sample(GlobalDefaultSampler, uv).rgb;
-    float3 normal = GlobalNormalTexture.Sample(GlobalDefaultSampler, uv).wyz;
+    float3 normal = GlobalNormalTexture.Sample(GlobalDefaultSampler, uv).wyz; //NOTE(v9.37.0): Why are we using wyz?
     
     float3 ambientLightColorAndIntensity = float3(1.0f, 1.0f, 1.0f); //NOTE(v9.37.0):  No clue, just put 1.0f for now
     float3 ambientColor = diffuse.xyz * ambientLightColorAndIntensity;
