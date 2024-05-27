@@ -9,6 +9,7 @@
 #include "Command/ScriptCommandTracker.h"
 #include "Memory/ScriptMemoryPool.h"
 #include "ScriptInternalModifier.h"
+#include "ScriptGraph.h"
 
 namespace SCR
 {
@@ -45,8 +46,10 @@ namespace SCR
 
 		MemoryPool myMemoryPool;
 
-		NodeManager myNodeManager;
-		PinManager myPinManager;
+		//NodeManager myNodeManager;
+		//PinManager myPinManager;
+
+		ScriptGraph myEventGraph;
 
 		VariableManager myVariableManager;
 		
