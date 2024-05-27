@@ -37,7 +37,7 @@ namespace Test
 			entity->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::SkyBox);
 		}
 
-		{
+		/*{
 			ECS::Entity floor = ecs->CreateEntity();
 			floor->SetName("Floor");
 
@@ -49,7 +49,7 @@ namespace Test
 			floor->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 11.0f, -2.0f, 10.0f });
 			floor->GetComponent<TransformComponent>()->transform.SetScale({ 100.0f, 1.0f, 100.0f });
-		}
+		}*/
 
 		{
 			ECS::Entity directionalLight = ecs->CreateEntity();
@@ -81,7 +81,7 @@ namespace Test
 		}
 
 
-		for (size_t i = 0; i < 10; ++i)
+		/*for (size_t i = 0; i < 10; ++i)
 		{
 			ECS::Entity e = ecs->CreateEntity();
 			e->SetName("Horizontal Cube " + std::to_string(i));
@@ -93,9 +93,9 @@ namespace Test
 			e->GetComponent<MeshComponent>()->textures[0] = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			e->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			e->GetComponent<TransformComponent>()->transform.SetPosition({ 2.0f + i * 2.0f, 0.0f, 0.0f });
-		}
+		}*/
 
-		for (size_t i = 0; i < 10; ++i)
+		/*for (size_t i = 0; i < 10; ++i)
 		{
 			ECS::Entity e = ecs->CreateEntity();
 			e->SetName("Vertical Cube " + std::to_string(i));
@@ -107,7 +107,7 @@ namespace Test
 			e->GetComponent<MeshComponent>()->textures[0] = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
 			e->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			e->GetComponent<TransformComponent>()->transform.SetPosition({ 11.0f, 0.0f, 2.0f + i * 2.0f });
-		}
+		}*/
 	}
 
 	void TestShadow::Update()

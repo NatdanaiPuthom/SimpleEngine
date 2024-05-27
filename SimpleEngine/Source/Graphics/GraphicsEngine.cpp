@@ -266,7 +266,7 @@ namespace Graphics
 	void GraphicsEngine::RenderDeferredFromGBuffer()
 	{
 		static constexpr size_t gBufferCount = 5;
-		static constexpr size_t gBufferStartSlot = 4; //NOTE(v9.37.0): Hardcoded unknown value is kind of disgusting, future me, pls fix
+		static constexpr size_t gBufferStartSlot = Global_StartSlot_GBuffer; //NOTE(v9.37.0): Hardcoded unknown value is kind of disgusting, future me, pls fix
 
 		std::vector<Graphics::RenderTarget>& gBuffers = myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)];
 
