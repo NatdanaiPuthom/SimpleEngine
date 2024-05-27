@@ -65,6 +65,17 @@ namespace Editor
 
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
+		static Math::Vector4f ambientLight = graphicsEngine->GetAmbientLightColorAndIntensity();
+
+		if (ImGui::Begin("Light"))
+		{
+			if (ImGui::DragFloat4("Ambient light", &ambientLight.x, 0.1f))
+			{
+				graphicsEngine->SetAmbientLightColorAndIntensity(ambientLight);
+			}
+		}
+		ImGui::End();
+
 		for (size_t i = 0; i < 5; ++i)
 		{
 			std::string name;
