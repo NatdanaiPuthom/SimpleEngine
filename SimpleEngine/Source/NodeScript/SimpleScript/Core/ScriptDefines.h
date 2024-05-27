@@ -1,5 +1,8 @@
 #pragma once
 #define SCR SCRIPT
+#if defined _DEBUG
+#define FLY_DEBUG
+#endif
 #include <limits>
 #include <type_traits>
 #include <algorithm>

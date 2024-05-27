@@ -8,7 +8,7 @@
 namespace SCR
 {
 	std::vector<CustomEvent> NodeTypeManager::myCustomEvents = {};
-	std::vector<Function> NodeTypeManager::myFunctions = {};
+	std::vector<Function*> NodeTypeManager::myFunctions = {};
 	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::myGetterNodeTypeIDs = {};
 	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::mySetterNodeTypeIDs = {};
 	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToCustomEventID = {};
@@ -89,7 +89,7 @@ namespace SCR
 
 	Function& NodeTypeManager::GetFunction(const FunctionID anID)
 	{
-		return myFunctions.at(anID);
+		return *myFunctions.at(anID);
 	}
 
 	FunctionID NodeTypeManager::GetFunctionID(const NodeTypeID aNodeTypeID)
@@ -195,8 +195,15 @@ namespace SCR
 
 	void NodeTypeManager::Destroy()
 	{
+		for (Function* function : myFunctions)
+		{
+			delete function;
+		}
+
+	
 		myTypes.clear();
 		myCustomEvents.clear();
+		myFunctions.clear();
 		myGetterNodeTypeIDs.clear();
 		mySetterNodeTypeIDs.clear();
 		myOperatorNodeTypeIDs.clear();

@@ -33,26 +33,49 @@ namespace SCR
 
 	void DataTypeManager::SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr)
 	{
-		auto it = myDataTypes->find(aDataTypeID);
-		if (it != myDataTypes->end())
+		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			const DataType& dataType = it->second;
-			if (dataType.typeInterface.function.save)
+			// If data type has a valid save function
+			if (dataType->typeInterface.function.save)
 			{
-				dataType.typeInterface.function.save(aJson, aDataPtr);
+				dataType->typeInterface.function.save(aJson, aDataPtr);
+			}
+
+			// Save properties instead
+			for (const Property& property : dataType->properties)
+			{
+				if (const DataType* propertyDataType = Find(property.typeID))
+				{
+					
+					nlohmann::json propertyJson;
+					const void* propertyDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + property.byteOffset);
+					SaveData(property.typeID, propertyJson, propertyDataPtr);
+
+					aJson[property.name] = propertyJson;
+				}
 			}
 		}
 	}
 
 	void DataTypeManager::LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr)
 	{
-		auto it = myDataTypes->find(aDataTypeID);
-		if (it != myDataTypes->end())
+		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			const DataType& dataType = it->second;
-			if (dataType.typeInterface.function.load)
+			// If data type has a valid load function
+			if (dataType->typeInterface.function.load)
 			{
-				dataType.typeInterface.function.load(aJson, aDataPtr);
+				dataType->typeInterface.function.load(aJson, aDataPtr);
+			}
+
+			// Load properties instead
+			for (const Property& property : dataType->properties)
+			{
+				if (const DataType* propertyDataType = Find(property.typeID))
+				{
+					const nlohmann::json& propertyJson = aJson[property.name];
+					void* propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + property.byteOffset);
+					LoadData(property.typeID, propertyJson, propertyDataPtr);
+				}
 			}
 		}
 	}

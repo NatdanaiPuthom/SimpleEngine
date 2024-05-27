@@ -15,7 +15,6 @@ namespace SCR
 			: typeID(aTypeID)
 			, inputPins(std::vector<PinID>(aInputPins.begin(), aInputPins.end()))
 			, outputPins(std::vector<PinID>(aOutputPins.begin(), aOutputPins.end()))
-			, isDestroyed(false)
 		{
 
 		}
@@ -24,7 +23,6 @@ namespace SCR
 			: typeID(aTypeID)
 			, inputPins(aInputPins)
 			, outputPins(aOutputPins)
-			, isDestroyed(false)
 		{
 
 		}
@@ -42,8 +40,9 @@ namespace SCR
 		const NodeTypeID typeID;
 		std::vector<PinID> inputPins;
 		std::vector<PinID> outputPins;
+
 		ScriptVec2 position;
-		bool isDestroyed;
+		bool isDestroyed = false;
 
 		
 	};

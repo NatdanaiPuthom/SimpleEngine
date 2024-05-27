@@ -5,8 +5,15 @@ namespace SCR
 {
 
 	MemoryPool::MemoryPool(size_t aDefaultSize)
+		: myStartMemory(nullptr)
+		, myEndMemory(nullptr)
+		, myCurrentMemory(nullptr)
 	{
-		assert(aDefaultSize != 0);
+		if (aDefaultSize == 0)
+		{
+
+			return;
+		}
 		myStartMemory = new Byte[aDefaultSize];
 		myEndMemory = myStartMemory + sizeof(Byte) * aDefaultSize;
 		myCurrentMemory = myStartMemory;
@@ -32,6 +39,74 @@ namespace SCR
 		myCurrentMemory = nullptr;
 
 		myObjects.~vector();
+	}
+
+	MemoryPool::MemoryPool(const MemoryPool& aOther)
+	{
+		size_t size = aOther.AllocSize();
+		myStartMemory = new Byte[size];
+		myEndMemory = myStartMemory + size;
+		myCurrentMemory = myStartMemory;
+
+		for (const MemoryObject& memoryObject : aOther.myObjects)
+		{
+			Byte* newAddress = &myStartMemory[memoryObject.id];
+			const Byte* oldAddress = aOther.MemoryAt(memoryObject.id);
+			memoryObject.copy(newAddress, oldAddress);
+
+			myObjects.push_back(memoryObject);
+		}
+	}
+
+	MemoryPool::MemoryPool(MemoryPool&& aOther) noexcept
+	{
+		myStartMemory = aOther.myStartMemory;
+		myEndMemory = aOther.myEndMemory;
+		myCurrentMemory = aOther.myCurrentMemory;
+
+		myObjects = std::move(aOther.myObjects);
+
+		aOther.myStartMemory = nullptr;
+		aOther.myCurrentMemory = nullptr;
+		aOther.myEndMemory = nullptr;
+
+		aOther.myObjects.clear();
+	}
+
+	MemoryPool& MemoryPool::operator=(const MemoryPool& aOther)
+	{
+		size_t size = aOther.AllocSize();
+		myStartMemory = new Byte[size];
+		myEndMemory = myStartMemory + size;
+		myCurrentMemory = myStartMemory;
+
+		for (const MemoryObject& memoryObject : aOther.myObjects)
+		{
+			Byte* newAddress = &myStartMemory[memoryObject.id];
+			const Byte* oldAddress = aOther.MemoryAt(memoryObject.id);
+			memoryObject.copy(newAddress, oldAddress);
+
+			myObjects.push_back(memoryObject);
+		}
+
+		return *this;
+	}
+
+	MemoryPool& MemoryPool::operator=(MemoryPool&& aOther) noexcept
+	{
+		myStartMemory = aOther.myStartMemory;
+		myEndMemory = aOther.myEndMemory;
+		myCurrentMemory = aOther.myCurrentMemory;
+
+		myObjects = std::move(aOther.myObjects);
+
+		aOther.myStartMemory = nullptr;
+		aOther.myCurrentMemory = nullptr;
+		aOther.myEndMemory = nullptr;
+
+		aOther.myObjects.clear();
+
+		return *this;
 	}
 
 	size_t MemoryPool::AllocSize() const
@@ -75,7 +150,7 @@ namespace SCR
 		for (const MemoryObject& memoryObject : myObjects)
 		{
 			Byte* newAddress = &newStart[memoryObject.id];
-			Byte* oldAddress = MemoryAt(memoryObject.id);
+			const Byte* oldAddress = MemoryAt(memoryObject.id);
 			//memoryObject.construct(newAddress);
 			memoryObject.copy(newAddress, oldAddress);
 		}

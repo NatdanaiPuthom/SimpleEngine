@@ -39,15 +39,15 @@ namespace SCR
 
 	FunctionID ScriptInternalModifier::CreateFunction(const std::string& aName)
 	{
-		Function function(aName);
+		Function* function = new Function(aName);
 
-		std::vector<Function>& functions = NodeTypeManager::myFunctions;
+		std::vector<Function*>& functions = NodeTypeManager::myFunctions;
 		std::unordered_multimap<NodeTypeID, FunctionID>& map = NodeTypeManager::myToFunctionID;
 		FunctionID id = functions.size();
 		NodeTypeManager::myFunctions.push_back(function);
-		map.emplace(function.GetCallerNodeTypeID(), id);
-		map.emplace(function.GetInputNodeTypeID(), id);
-		map.emplace(function.GetOutputNodeTypeID(), id);
+		map.emplace(function->GetCallerNodeTypeID(), id);
+		map.emplace(function->GetInputNodeTypeID(), id);
+		map.emplace(function->GetOutputNodeTypeID(), id);
 
 		return id;
 	}

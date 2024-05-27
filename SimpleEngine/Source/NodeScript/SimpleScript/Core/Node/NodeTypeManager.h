@@ -55,7 +55,7 @@ namespace SCR
 		static NodeType CreateInvalidNodeType();
 	private:
 		static std::vector<CustomEvent> myCustomEvents;
-		static std::vector<Function> myFunctions;
+		static std::vector<Function*> myFunctions;
 		static std::vector<NodeType> myTypes;
 
 		static std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventID;

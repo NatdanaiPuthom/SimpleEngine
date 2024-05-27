@@ -1,5 +1,6 @@
 #include "ScriptFunction.h"
 #include "NodeTypeRegistry.h"
+#include "Script.h"
 
 namespace SCR
 {
@@ -10,7 +11,7 @@ namespace SCR
 
 		const FunctionID functionID = NodeTypeManager::GetFunctionID(callerNode.typeID);
 		Function& function = NodeTypeManager::GetFunction(functionID);
-		function.SetCaller({ aContext->GetNodeData().currentNodeID, &aContext->script });
+		function.SetCaller({ aContext->GetNodeData().currentNodeID, &ScriptProxy::GetEventGraph(aContext->script) });
 		const Node& inputNode = ScriptProxy::GetNode(aContext->script, function.GetInputNodeID());
 
 		CopyPinData(*aContext, inputNode.outputPins, callerNode.inputPins, 1);
@@ -36,7 +37,7 @@ namespace SCR
 		const auto& caller = function.GetCaller();
 
 		// TODO: Fix node lookup
-		const Node& callerNode = ScriptProxy::GetNode(*caller.script, caller.nodeID);
+		const Node& callerNode = ScriptProxy::GetNode(*caller.scriptGraph, caller.nodeID);
 
 		CopyPinData(*aContext, callerNode.outputPins, outputNode.inputPins, 1);
 

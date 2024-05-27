@@ -1,6 +1,6 @@
 #pragma once
 #include "../ScriptDefines.h"
-//#include "Script.h"
+#include "../ScriptGraph.h"
 
 namespace SCR
 {
@@ -41,7 +41,7 @@ namespace SCR
 		struct FunctionCaller
 		{
 			NodeID nodeID;
-			Script* script;
+			ScriptGraph* scriptGraph;
 		};
 
 		const FunctionCaller& GetCaller() const
@@ -67,6 +67,7 @@ namespace SCR
 
 		// Temp
 		FunctionCaller myCaller;
-		//Script myScript;
+		
+		ScriptGraph myGraph;
 	};
 }

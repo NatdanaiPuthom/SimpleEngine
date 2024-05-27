@@ -48,16 +48,16 @@ namespace SCR
 		{
 			return [](void* aDestination, const void* aSource) -> void
 				{
-					T& dest = *reinterpret_cast<T*>(aDestination);
 					const T& source = *reinterpret_cast<const T*>(aSource);
 					if constexpr (std::is_trivially_copyable_v<T>)
 					{
+						T& dest = *reinterpret_cast<T*>(aDestination);
 						std::memcpy(&dest, &source, sizeof(T));
 					}
 					else
 					{
-						new(aDestination)T();
-						dest = source;
+						new(aDestination)T(source);/*
+						dest = source;*/
 					}
 				};
 		}
@@ -68,17 +68,19 @@ namespace SCR
 			const ConstructorInterface construct;
 			const DestructorInterface destroy;
 			const CopyInterface copy;
+#ifdef FLY_DEBUG
 			const std::type_info* typeInfo;
+#endif
 		};
 	public:
 
-		MemoryPool(size_t aDefaultSize = 100);
+		MemoryPool(size_t aDefaultSize = 0);
 		~MemoryPool();
 
-		MemoryPool(const MemoryPool&) = delete;
-		MemoryPool(MemoryPool&&) = delete;
-		MemoryPool& operator=(const MemoryPool&) = delete;
-		MemoryPool& operator=(MemoryPool&&) = delete;
+		MemoryPool(const MemoryPool&);
+		MemoryPool(MemoryPool&&) noexcept;
+		MemoryPool& operator=(const MemoryPool&);
+		MemoryPool& operator=(MemoryPool&&) noexcept;
 
 		template<typename T>
 		MemoryPoolID Allocate(const T aDefaultValue = T());
@@ -113,6 +115,10 @@ namespace SCR
 	inline MemoryPoolID MemoryPool::Allocate(const T aDefaultValue)
 	{
 		constexpr size_t newAllocSize = sizeof(T);
+		if (myStartMemory == nullptr)
+		{
+			*this = MemoryPool(newAllocSize * 2);
+		}
 		while (newAllocSize > SizeLeft())
 		{
 			ReallocateDeepCopy();
@@ -127,7 +133,9 @@ namespace SCR
 			CreateConstructorInterface<T>(),
 			CreateDestructorInterface<T>(),
 			CreateCopyInterface<T>(),
+#ifdef FLY_DEBUG
 			&typeid(T)
+#endif
 		};
 		myObjects.push_back(memoryObject);
 		return id;
