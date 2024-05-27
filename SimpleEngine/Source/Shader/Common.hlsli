@@ -10,10 +10,10 @@ Texture2D GlobalAmbientOcclusionAndCustom   : register(t3);
 TextureCube GlobalCubeMap                   : register(t4);
 Texture2D GlobalDirectionalLightShadowMap   : register(t5);
 
-Texture2D GlobalBufferPositionTexture           : register(t5);
-Texture2D GlobalBufferAlbedoTexture             : register(t6);
-Texture2D GlobalBufferNormalTexture             : register(t7);
-Texture2D GlobalBufferMaterialTexture           : register(t8);
+Texture2D GlobalBufferAlbedoTexture             : register(t5);
+Texture2D GlobalBufferNormalTexture             : register(t6);
+Texture2D GlobalBufferMaterialTexture           : register(t7);
+Texture2D GlobalBufferPositionTexture           : register(t8);
 Texture2D GlobalBufferAmbientOcclusionAndCustom : register(t9);
 
 cbuffer CameraBuffer : register(b0)
@@ -71,10 +71,10 @@ struct PixelOutput
 
 struct GBufferOutput
 {
-    float4 position                  : SV_TARGET0;
-    float4 albedo                    : SV_TARGET1;
-    float4 normal                    : SV_TARGET2;
-    float4 material                  : SV_TARGET3;
+    float4 albedo                    : SV_TARGET0;
+    float4 normal                    : SV_TARGET1;
+    float4 material                  : SV_TARGET2;
+    float4 position                  : SV_TARGET3;
     float4 ambientOcclusionAndCustom : SV_TARGET4;
 };
 

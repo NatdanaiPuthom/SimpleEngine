@@ -731,10 +731,10 @@ namespace Graphics
 	{
 		std::array<DXGI_FORMAT, 5> formats =
 		{
-			DXGI_FORMAT_R32G32B32A32_FLOAT, //Position
-			DXGI_FORMAT_R8G8B8A8_UNORM, //Albedo
+			DXGI_FORMAT_R32G32B32A32_FLOAT, //Albedo
 			DXGI_FORMAT_R10G10B10A2_UNORM, //Normal
 			DXGI_FORMAT_R8G8B8A8_UNORM, //Material
+			DXGI_FORMAT_R32G32B32A32_FLOAT, //Position
 			DXGI_FORMAT_R8G8B8A8_UNORM // AmbientOcclusionAndCustom (R in used, G,B,A unused)
 		};
 
