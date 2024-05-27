@@ -23,9 +23,11 @@ float4 PBRColor(float3 aPosition, float3 aAlbedo, float3 aVertexNormal, float3 a
 	);
     
     float3 emissiveAlbedo = albedo.rgb * emissive;
-    //float3 ambientColor = AmbientLightColorAndIntensity.xyz;
+    float3 ambientColor = ambientLightColorAndIntensity.xyz;
     
-    return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    float3 radiance = diffuseColor * ambientColor + cubemapAmbiance + emissiveAlbedo;
+    
+    return float4(radiance, 1.0f);
 }
 
 PixelOutput main(FullScreenVertexToPixel aInput)
@@ -44,7 +46,6 @@ PixelOutput main(FullScreenVertexToPixel aInput)
     float ambientOcclusion = ambientOcclusionSample.r;
     
     output.color = PBRColor(position, albedo, vertexNormal, material, pixelNormal, ambientOcclusion);
-   //output.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
    
     return output;
 }
