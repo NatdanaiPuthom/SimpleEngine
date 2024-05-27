@@ -3,7 +3,7 @@
 #include "../Utilities/MetaScript.h"
 #include "../Utilities/ScriptUtilities.h"
 #include "../DataType/DataTypeManager.h"
-#include "../SystemTypes/Undefined.h"
+#include "../SystemTypes/ScriptWildcard.h"
 #include "../Node/NodeTrait.h"
 #include "../Node/NodeTypeRegistry.h"
 
@@ -331,7 +331,7 @@ namespace SCR
 
 		const size_t dataTypeID = typeid(T).hash_code();
 
-		if constexpr (!IsSameType<T, Undefined>)
+		if constexpr (!IsSameType<T, Wildcard>)
 		{
 			const std::string& customTypeName = DataTypeManager::GetName(dataTypeID);
 			if (!customTypeName.empty())
@@ -349,7 +349,7 @@ namespace SCR
 
 		desc.showDataTypePinNames = true;
 
-		constexpr eNodeTrait Traits = (IsSameType<T, Undefined> ? eNodeTrait::None : eNodeTrait::Operator) | ExtraTraits;
+		constexpr eNodeTrait Traits = (IsSameType<T, Wildcard> ? eNodeTrait::None : eNodeTrait::Operator) | ExtraTraits;
 
 		auto func = GetFunctionByOperator<T, OperatorTrait>();
 

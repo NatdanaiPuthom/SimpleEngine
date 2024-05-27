@@ -1,7 +1,7 @@
 #include "SystemDataTypes.h"
 #include "DataType/DataTypeRegistry.h"
-#include "SystemTypes/Undefined.h"
-#include "SystemTypes/Flow.h"
+#include "SystemTypes/ScriptWildcard.h"
+#include "SystemTypes/ScriptFlow.h"
 #include <ImGui/imgui.h>
 #include <string>
 
@@ -223,7 +223,7 @@ namespace SCR
 	{
 		DataTypeRegistry::RegisterTemplateType<std::vector>("Array");
 
-		DataTypeRegistry::RegisterNonSerializableType<Undefined>("Undefined", ScriptColor(0.f, 0.f, 0.f));
+		DataTypeRegistry::RegisterNonSerializableType<Wildcard>("Wildcard", ScriptColor(0.f, 0.f, 0.f));
 		DataTypeRegistry::RegisterNonSerializableType<Flow>("Flow", ScriptColor(0.9f, 0.9f, 0.9f));
 
 		DataTypeRegistry::Register<bool>("Bool", ScriptColor(1.f, 0.1f, 0.1f));

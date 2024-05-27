@@ -25,7 +25,7 @@ namespace SCR
 		return true;
 	}
 
-	static Undefined OutputNode(Flow, const InternalExecutionContext* aContext)
+	static Wildcard OutputNode(Flow, const InternalExecutionContext* aContext)
 	{
 		const Node& outputNode = aContext->GetCurrentNode();
 
@@ -40,7 +40,7 @@ namespace SCR
 
 		CopyPinData(*aContext, callerNode.outputPins, outputNode.inputPins, 1);
 
-		return Undefined();
+		return Wildcard();
 	}
 
 	Function::Function(const std::string& aName)
