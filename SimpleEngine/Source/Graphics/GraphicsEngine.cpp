@@ -108,7 +108,7 @@ namespace Graphics
 			LightBufferData lightBufferData;
 
 			lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix()) * myShadowCamera->GetProjectionMatrix();
-			lightBufferData.ambientLightColorAndIntensity = { 1.0f, 1.0f, 1.0f, 1.0f };
+			lightBufferData.ambientLightColorAndIntensity = myLightBufferData->ambientLightColorAndIntensity;
 			lightBufferData.directionalLightColorAndIntensity = myLightBufferData->directionalLightColorAndIntensity;
 			lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
 
@@ -468,6 +468,11 @@ namespace Graphics
 		myLightBufferData->directionalLightColorAndIntensity = aColor;
 	}
 
+	void GraphicsEngine::SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity)
+	{
+		myLightBufferData->ambientLightColorAndIntensity = aColorAndIntensity;
+	}
+
 	std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const char* aFilePath)
 	{
 		auto it = myLoadedTextures.find(aFilePath);
@@ -633,6 +638,11 @@ namespace Graphics
 	ComPtr<ID3D11DepthStencilView> GraphicsEngine::GetDepthBuffer()
 	{
 		return myDepthBuffer;
+	}
+
+	Math::Vector4f GraphicsEngine::GetAmbientLightColorAndIntensity() const
+	{
+		return myLightBufferData->ambientLightColorAndIntensity;
 	}
 
 	Math::Vector4f GraphicsEngine::GetDirectionalLightColor() const

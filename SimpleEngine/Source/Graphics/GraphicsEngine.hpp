@@ -45,6 +45,7 @@ namespace Graphics
 		void SetGlobalGraphicsEngineToThis();
 		void SetDirectionalLightDirection(const Math::Vector3f& aDirection);
 		void SetDirectionalLightColor(const Math::Vector4f& aColor);
+		void SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity);
 		void SetVSync(const bool aShouldTurnOn);
 		void SetFPSLevelCap(const unsigned int aCapLevel);
 		void SetRasterizerState(const eRasterizerState aRasterizerState);
@@ -78,6 +79,7 @@ namespace Graphics
 		Drawer::Renderer* GetRenderer();
 		ModelFactory* GetModelFactory();
 
+		Math::Vector4f GetAmbientLightColorAndIntensity() const;
 		Math::Vector4f GetDirectionalLightColor() const;
 		Math::Vector3f GetDirectionalLightDirection() const;
 
