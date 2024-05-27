@@ -266,7 +266,6 @@ namespace Graphics
 	void GraphicsEngine::RenderDeferredFromGBuffer()
 	{
 		static constexpr size_t gBufferCount = 5;
-		static constexpr size_t gBufferStartSlot = Global_StartSlot_GBuffer; //NOTE(v9.37.0): Hardcoded unknown value is kind of disgusting, future me, pls fix
 
 		std::vector<Graphics::RenderTarget>& gBuffers = myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)];
 
@@ -277,7 +276,7 @@ namespace Graphics
 			shaderResources[i] = gBuffers[i].shaderResourceView.Get();
 		}
 
-		myContext->PSSetShaderResources(gBufferStartSlot, gBufferCount, shaderResources);
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, gBufferCount, shaderResources);
 
 		std::shared_ptr<const Shader> shader = GetShader(eShaderType::Deferred);
 		shader->BindThisShader(myContext.Get());
@@ -290,7 +289,7 @@ namespace Graphics
 		myContext->Draw(3, 0);
 
 		ID3D11ShaderResourceView* nullSRVs[gBufferCount] = { NULL };
-		myContext->PSSetShaderResources(gBufferStartSlot, gBufferCount, nullSRVs);
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, gBufferCount, nullSRVs);
 	}
 
 	void GraphicsEngine::UnbindAllRenderTargets()
