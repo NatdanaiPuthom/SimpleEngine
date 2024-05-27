@@ -37,6 +37,8 @@ namespace Graphics
 
 		void RenderDeferredFromGBuffer();
 
+		void AddPointLight(const PointLightData& aPointLightData);
+
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 
@@ -100,13 +102,14 @@ namespace Graphics
 		void CreateDeferredBuffer(const Math::Vector2ui aResolution);
 		std::vector<RenderTarget> CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution);
 	private:
-		void UnbindAllRenderTargets();
-
-		void PrepareFrame();
 		void LoadSettingsFromJson();
+		void PrepareFrame();
 		void PreloadTextures();
 		void PreloadShaders();
+		void ClearLightBuffer();
+		void UnbindAllRenderTargets();
 		void UpdateCameraBuffer();
+		void UpdateLightBuffer();
 	private:
 		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;

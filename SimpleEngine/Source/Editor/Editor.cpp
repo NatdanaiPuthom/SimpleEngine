@@ -66,6 +66,9 @@ namespace Editor
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		static Math::Vector4f ambientLight = graphicsEngine->GetAmbientLightColorAndIntensity();
+		static Math::Vector4f pointLightColorAndIntensity1 = { 1.0f, 0.0f, 0.0f, 100.0f };
+		static Math::Vector4f pointLightPosition = { 0.0f, 0.0f, 0.0f, 0.0f };
+		static float range = 1000.0f;
 
 		if (ImGui::Begin("Light"))
 		{
@@ -73,8 +76,29 @@ namespace Editor
 			{
 				graphicsEngine->SetAmbientLightColorAndIntensity(ambientLight);
 			}
+
+			ImGui::Separator();
+
+			if (ImGui::DragFloat4("PointLight1 Color", &pointLightColorAndIntensity1.x, 0.1f))
+			{
+			}
+
+			if (ImGui::DragFloat4("PointLight1 Position", &pointLightPosition.x, 0.1f))
+			{
+			}
+
+			if (ImGui::DragFloat("PointLight1 Range", &range, 0.1f))
+			{
+			}
 		}
 		ImGui::End();
+
+		PointLightData pointlight;
+		pointlight.color = pointLightColorAndIntensity1;
+		pointlight.position = pointLightPosition;
+		pointlight.range = range;
+
+		graphicsEngine->AddPointLight(pointlight);
 
 		for (size_t i = 0; i < 5; ++i)
 		{

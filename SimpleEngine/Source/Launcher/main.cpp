@@ -91,6 +91,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		editor.Update();
 		PROFILER_END();
 
+		editor.Render();
+
 		PROFILER_BEGIN("Render To GBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
 		ecs.Render();
@@ -106,7 +108,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		PROFILER_BEGIN("Render to BackBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
-		editor.Render();
 
 #ifdef _SIMPLE
 		graphicsEngine.RenderDeferredFromGBuffer();

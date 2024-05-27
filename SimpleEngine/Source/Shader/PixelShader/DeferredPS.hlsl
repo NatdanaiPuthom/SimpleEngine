@@ -22,10 +22,19 @@ float4 PBRColor(float3 aPosition, float3 aAlbedo, float3 aVertexNormal, float3 a
 		aAmbientOcclusion, diffuseColor, specularColor
 	);
     
+    float3 accumulatedPointLight = 0; // <- The sum of all point lights.
+    for (unsigned int p = 0; p < currentPointLightCount; p++)
+    {
+        accumulatedPointLight += EvaluatePointLight(
+			    diffuseColor, specularColor, pixelNormal, roughness,
+			    pointLights[p].color.rgb, pointLights[p].color.w, pointLights[p].range, pointLights[p].position.xyz,
+			    toEye.xyz, aPosition.xyz);
+    }
+    
     float3 emissiveAlbedo = albedo.rgb * emissive;
     float3 ambientColor = ambientLightColorAndIntensity.rgb;
     
-    float3 radiance = diffuseColor * ambientColor + cubemapAmbiance + emissiveAlbedo;
+    float3 radiance = diffuseColor * ambientColor + cubemapAmbiance + accumulatedPointLight + emissiveAlbedo;
     
     return float4(radiance, 1.0f);
 }
