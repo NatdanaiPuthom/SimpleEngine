@@ -108,7 +108,7 @@ namespace Graphics
 			LightBufferData lightBufferData;
 
 			lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix()) * myShadowCamera->GetProjectionMatrix();
-			lightBufferData.directionalLightColor = myLightBufferData->directionalLightColor;
+			lightBufferData.directionalLightColorAndIntensity = myLightBufferData->directionalLightColorAndIntensity;
 			lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
 
 			myLightConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
@@ -464,7 +464,7 @@ namespace Graphics
 
 	void GraphicsEngine::SetDirectionalLightColor(const Math::Vector4f& aColor)
 	{
-		myLightBufferData->directionalLightColor = aColor;
+		myLightBufferData->directionalLightColorAndIntensity = aColor;
 	}
 
 	std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const char* aFilePath)
@@ -636,7 +636,7 @@ namespace Graphics
 
 	Math::Vector4f GraphicsEngine::GetDirectionalLightColor() const
 	{
-		return myLightBufferData->directionalLightColor;
+		return myLightBufferData->directionalLightColorAndIntensity;
 	}
 
 	Math::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
@@ -927,7 +927,7 @@ namespace Graphics
 		LightBufferData lightBufferData;
 
 		lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::Identity();
-		lightBufferData.directionalLightColor = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+		lightBufferData.directionalLightColorAndIntensity = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 		lightBufferData.directionalLightDirection = Math::Vector3f(0.0f, 0.0f, 0.0f);
 
 		if (myLightConstantBuffer->Init(sizeof(LightBufferData), &lightBufferData) == false)

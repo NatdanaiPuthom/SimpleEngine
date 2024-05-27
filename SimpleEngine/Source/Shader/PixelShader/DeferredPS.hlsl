@@ -1,4 +1,32 @@
-#include "../Common.hlsli"
+#include "../PBRFunctions.hlsli"
+
+float4 PBRColor(float3 aPosition, float3 aAlbedo, float3 aVertexNormal, float3 aMaterial, float3 aPixelNormal, float aAmbientOcclusion)
+{
+    float3 albedo = aAlbedo;
+    float3 pixelNormal = aPixelNormal;
+    float3 vertexNormal = aVertexNormal;
+    float3 material = aMaterial;
+    
+    float3 toEye = normalize(cameraPosition.xyz - aPosition.xyz);
+     
+    float metalness = material.r;
+    float roughness = material.g;
+    float emissive = material.b;
+    
+    float3 specularColor = lerp((float3) 0.04f, albedo.rgb, metalness);
+    float3 diffuseColor = lerp((float3) 0.00f, albedo.rgb, 1 - metalness);
+    
+    float3 cubemapAmbiance = EvaluateAmbiance(
+		GlobalCubeMap, pixelNormal, vertexNormal,
+		toEye, roughness,
+		aAmbientOcclusion, diffuseColor, specularColor
+	);
+    
+    float3 emissiveAlbedo = albedo.rgb * emissive;
+    //float3 ambientColor = AmbientLightColorAndIntensity.xyz;
+    
+    return float4(1.0f, 1.0f, 1.0f, 1.0f);
+}
 
 PixelOutput main(FullScreenVertexToPixel aInput)
 {
@@ -15,8 +43,8 @@ PixelOutput main(FullScreenVertexToPixel aInput)
     float3 vertexNormal = ambientOcclusionSample.gba;
     float ambientOcclusion = ambientOcclusionSample.r;
     
-    //output.color = PBRColor(position, albedo, pixelNormal, material, vertexNormal, ambientOcclusion);
-    output.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    output.color = PBRColor(position, albedo, vertexNormal, material, pixelNormal, ambientOcclusion);
+   //output.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
    
     return output;
 }

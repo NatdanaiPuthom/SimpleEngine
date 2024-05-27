@@ -284,7 +284,7 @@ float3 EvalPBR(in float3 worldPosition, in float3 color, in float3 normal, in fl
 
     float3 directionalLight = EvaluateDirectionalLight(
         diffuseColor, specularColor, normal, roughness,
-        directionalLightColor.xyz, directionLightDirection.xyz, toEye.xyz
+        directionalLightColorAndIntensity.xyz, directionLightDirection.xyz, toEye.xyz
     );
 
     float3 emissiveAlbedo = color.rgb * emissive;

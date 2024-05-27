@@ -23,11 +23,11 @@ PixelOutput main(PixelInputType aInput)
         shadowFactor = (computedZ < shadowMapZ + bias);
     }
     
-    float3 radiance = albedo.rgb * (directionalLightColor.xyz) + shadowFactor;
-    output.color.rgb = radiance * lightIntensity * directionalLightColor.a;
+    float3 radiance = albedo.rgb * (directionalLightColorAndIntensity.xyz) + shadowFactor;
+    output.color.rgb = radiance * lightIntensity * directionalLightColorAndIntensity.a;
     output.color.a = albedo.a;
     
-    output.color.rgb = albedo.rgb + shadowFactor * directionalLightColor.rgb;
+    output.color.rgb = albedo.rgb + shadowFactor * directionalLightColorAndIntensity.rgb;
     
     return output;
 }
