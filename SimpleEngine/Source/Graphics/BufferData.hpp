@@ -7,9 +7,9 @@
 
 struct alignas(16) CameraBufferData final
 {
-	Math::Matrix4x4f worldToClipMatrix;
+	Math::Matrix4x4f worldToClipMatrix = Math::Matrix4x4f::Identity();
 
-	Math::Vector3f cameraPosition;
+	Math::Vector3f cameraPosition = { 0.0f, 0.0f, 0.0f };
 	const float paddingCameraPos = -1.0f;
 
 	Math::Vector2ui resolution;
@@ -18,7 +18,7 @@ struct alignas(16) CameraBufferData final
 
 struct alignas(16) TransformBufferData final
 {
-	Math::Matrix4x4f modelWorldMatrix;
+	Math::Matrix4x4f modelWorldMatrix = Math::Matrix4x4f::Identity();
 };
 
 struct alignas(16) TimeBufferData final
@@ -31,9 +31,10 @@ struct alignas(16) TimeBufferData final
 struct alignas(16) LightBufferData final
 {
 	Math::Matrix4x4f directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::Identity();
-	Math::Vector4f directionalLightColor = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+	Math::Vector4f ambientLightColorAndIntensity = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Math::Vector4f directionalLightColorAndIntensity = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	Math::Vector3f directionalLightDirection;
+	Math::Vector3f directionalLightDirection = { 0.0f, 0.0f, 1.0f };
 	const float paddingDirectionalLightDirection = -1.0f;
 };
 
