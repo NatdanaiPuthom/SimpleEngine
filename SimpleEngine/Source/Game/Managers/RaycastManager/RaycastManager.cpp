@@ -63,7 +63,7 @@ namespace Simple
 
 	void RaycastManager::Render()
 	{
-		if (true)
+		if (false)
 		{
 			Global::GetRenderer()->RenderLine(*myRaycastLine);
 
