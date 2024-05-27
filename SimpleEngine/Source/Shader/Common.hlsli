@@ -18,12 +18,12 @@ Texture2D GlobalBufferAmbientOcclusionAndCustom : register(t9);
 
 cbuffer CameraBuffer : register(b0)
 {
-    float4x4 worldToClipMatrix;
-    float3 cameraPosition;
-    float paddingCameraBuffer;
+    float4x4    worldToClipMatrix;
+    float3      cameraPosition;
+    float       paddingCameraBuffer;
     
-    uint2 resolution;
-    float2 resolutionPadding;
+    uint2       resolution;
+    float2      resolutionPadding;
 }
 
 cbuffer TransformBuffer : register(b1)
@@ -33,19 +33,31 @@ cbuffer TransformBuffer : register(b1)
 
 cbuffer TimeBuffer : register(b2)
 {
-    float totalTime;
-    float deltaTime;
-    float2 paddingTotalTime;
+    float       totalTime;
+    float       deltaTime;
+    float2      paddingTotalTime;
 }
 
 cbuffer LightBuffer : register(b3)
 {  
-    float4x4 directionalLightWorldToProjectionMatrix;
-    float4 ambientLightColorAndIntensity;
-    float4 directionalLightColorAndIntensity;
+    float4x4    directionalLightWorldToProjectionMatrix;
+    float4      ambientLightColorAndIntensity;
+    float4      directionalLightColorAndIntensity;
 
-    float3 directionLightDirection;
-    float paddingDirectionalLightDirection;
+    float3      directionLightDirection;
+    float       paddingDirectionalLightDirection;
+    
+    struct PointLightData
+    {
+        float4 position;
+        float4 color;
+        float range;
+        float3 paddingPointLight;
+        
+    } pointLights[8];
+    
+    uint currentPointLightCount;
+    float3 paddingPointLightCount;
 };
 
 cbuffer JointBuffer : register(b4)

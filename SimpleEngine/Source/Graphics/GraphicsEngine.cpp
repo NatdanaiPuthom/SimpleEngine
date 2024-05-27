@@ -94,8 +94,10 @@ namespace Graphics
 
 	void GraphicsEngine::PrepareFrame()
 	{
-		UpdateCameraBuffer();
+		ClearLightBuffer(); //NOTE(v9.37.1): Fix Lightning Pass
 
+		UpdateCameraBuffer();
+	
 		{
 			TimeBufferData timeBuffer = {};
 			timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
@@ -104,17 +106,7 @@ namespace Graphics
 			myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 		}
 
-		{
-			LightBufferData lightBufferData;
-
-			lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix()) * myShadowCamera->GetProjectionMatrix();
-			lightBufferData.ambientLightColorAndIntensity = myLightBufferData->ambientLightColorAndIntensity;
-			lightBufferData.directionalLightColorAndIntensity = myLightBufferData->directionalLightColorAndIntensity;
-			lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
-
-			myLightConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
-			myLightConstantBuffer->Update(sizeof(LightBufferData), &lightBufferData);
-		}
+		UpdateLightBuffer();
 	}
 
 	void GraphicsEngine::LoadSettingsFromJson()
@@ -179,6 +171,11 @@ namespace Graphics
 
 		if (!AddShader("DeferredPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
+	}
+
+	void GraphicsEngine::ClearLightBuffer()
+	{
+		myLightBufferData->currentPointLightCount = 0;
 	}
 
 	const bool GraphicsEngine::AddTexture(const char* aFileName, const unsigned int aSlot)
@@ -292,6 +289,14 @@ namespace Graphics
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, gBufferCount, nullSRVs);
 	}
 
+	void GraphicsEngine::AddPointLight(const PointLightData& aPointLightData)
+	{
+		myLightBufferData->pointLightData[myLightBufferData->currentPointLightCount] = aPointLightData;
+		++myLightBufferData->currentPointLightCount;
+
+		UpdateLightBuffer();
+	}
+
 	void GraphicsEngine::UnbindAllRenderTargets()
 	{
 		static constexpr size_t maxRenderTargetSupportedByDX11 = 8;
@@ -308,6 +313,25 @@ namespace Graphics
 
 		myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
 		myCameraConstantBuffer->Update(sizeof(CameraBufferData), &frameBuffer);
+	}
+
+	void GraphicsEngine::UpdateLightBuffer()
+	{
+		LightBufferData lightBufferData;
+
+		lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix()) * myShadowCamera->GetProjectionMatrix();
+		lightBufferData.ambientLightColorAndIntensity = myLightBufferData->ambientLightColorAndIntensity;
+		lightBufferData.directionalLightColorAndIntensity = myLightBufferData->directionalLightColorAndIntensity;
+		lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
+		lightBufferData.currentPointLightCount = myLightBufferData->currentPointLightCount;
+
+		for (size_t i = 0; i < myLightBufferData->currentPointLightCount; i++)
+		{
+			lightBufferData.pointLightData[i] = myLightBufferData->pointLightData[i];
+		}
+
+		myLightConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
+		myLightConstantBuffer->Update(sizeof(LightBufferData), &lightBufferData);
 	}
 
 	void GraphicsEngine::SetGlobalGraphicsEngineToThis()
