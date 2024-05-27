@@ -107,12 +107,12 @@ namespace SCR
 			const PinType& pinType1 = PinTypeManager::GetPinType(pin1.typeID);
 			const PinType& pinType2 = PinTypeManager::GetPinType(pin2.typeID);
 
-			if (pinType1.dataTypeID == typeid(Undefined).hash_code())
+			if (pinType1.dataTypeID == typeid(Wildcard).hash_code())
 			{
 				return GetInternalModifier().ReplaceOperatorNode(aPinID1, aPinID2);
 
 			}
-			else if (pinType2.dataTypeID == typeid(Undefined).hash_code())
+			else if (pinType2.dataTypeID == typeid(Wildcard).hash_code())
 			{
 				return GetInternalModifier().ReplaceOperatorNode(aPinID2, aPinID1);
 			}
