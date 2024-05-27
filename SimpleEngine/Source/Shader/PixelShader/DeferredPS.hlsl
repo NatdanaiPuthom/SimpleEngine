@@ -23,7 +23,7 @@ float4 PBRColor(float3 aPosition, float3 aAlbedo, float3 aVertexNormal, float3 a
 	);
     
     float3 emissiveAlbedo = albedo.rgb * emissive;
-    float3 ambientColor = ambientLightColorAndIntensity.xyz;
+    float3 ambientColor = ambientLightColorAndIntensity.rgb;
     
     float3 radiance = diffuseColor * ambientColor + cubemapAmbiance + emissiveAlbedo;
     
