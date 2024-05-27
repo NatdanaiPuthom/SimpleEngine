@@ -83,16 +83,16 @@ namespace Editor
 			switch (i)
 			{
 			case 0:
-				name = "Position";
-				break;
-			case 1:
 				name = "Albedo";
 				break;
-			case 2:
+			case 1:
 				name = "Material";
 				break;
-			case 3:
+			case 2:
 				name = "Normal";
+				break;
+			case 3:
+				name = "Position";
 				break;
 			case 4:
 				name = "AmbientOcclusion";
