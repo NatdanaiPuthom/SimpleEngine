@@ -132,7 +132,7 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderLine(const std::vector<Drawer::Line> aLines)
+	void Renderer::RenderLine(const std::vector<Drawer::Line>& aLines)
 	{
 		const size_t sizeLimit = myLineDrawer->GetInstanceSizeLimit();
 

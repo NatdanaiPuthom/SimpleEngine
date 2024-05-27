@@ -32,7 +32,7 @@ namespace Drawer
 		void RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const;
 
 		void RenderLine(const Drawer::Line& aLine);
-		void RenderLine(const std::vector<Drawer::Line> aLines);
+		void RenderLine(const std::vector<Drawer::Line>& aLines);
 		void RenderSphere(const Drawer::Sphere& aSphere);
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
 
