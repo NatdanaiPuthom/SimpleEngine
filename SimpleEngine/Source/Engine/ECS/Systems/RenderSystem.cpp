@@ -55,6 +55,11 @@ namespace ECS
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
+			if (entities[i]->GetID() == 1) //NOTE(v9.37.1): Skip skybox. Hardcoded for testing for now
+			{
+				continue;
+			}
+
 			const MeshComponent* mesh = entities[i]->GetComponent<ECS::MeshComponent>();
 
 			if (mesh == nullptr)
