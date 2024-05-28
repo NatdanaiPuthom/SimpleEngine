@@ -14,8 +14,6 @@ namespace Simple
 	Engine::Engine()
 		: myCustomCursor(nullptr)
 	{
-		myOriginalWindowStyle = {};
-		myHWND = {};
 	}
 
 	Engine::~Engine()
@@ -43,15 +41,15 @@ namespace Simple
 		myHWND = SetupMainWindow(hInstance, windowSize.x, windowSize.y);
 		assert(myHWND && "Failed To Create Window");
 
-		ShowWindow(myHWND, nCmdShow);
-		UpdateWindow(myHWND);
+		ShowWindow(*myHWND, nCmdShow);
+		UpdateWindow(*myHWND);
 
 		myCustomCursor = LoadCursorFromFile(L"Assets/Icon/White-Cat.cur");
 		assert(myCustomCursor && "Failed to load Custom Cursor");
 
-		MainSingleton::GetInputManager().SetHWND(myHWND);
+		MainSingleton::GetInputManager().SetHWND(*myHWND);
 
-		myOriginalWindowStyle = GetWindowLong(myHWND, GWL_STYLE);
+		myOriginalWindowStyle = GetWindowLong(*myHWND, GWL_STYLE);
 	}
 
 	void Engine::LoadSettingsFromJson()
@@ -119,7 +117,7 @@ namespace Simple
 		}
 	}
 
-	HWND Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)
+	std::unique_ptr<HWND> Engine::SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight)
 	{
 		WNDCLASSEXW wcex = {};
 		wcex.cbSize = sizeof(WNDCLASSEX);
@@ -152,7 +150,9 @@ namespace Simple
 
 		AdjustWindowRect(&wr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
 
-		return CreateWindow(
+		std::unique_ptr<HWND> hwnd = std::make_unique<HWND>();
+
+		*hwnd = CreateWindow(
 			L"Natdanai",
 			L"SimpleEngine v10.0.0 (Simple, it's just that easy)",
 			WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
@@ -164,6 +164,8 @@ namespace Simple
 			nullptr,
 			hInstance,
 			nullptr);
+
+		return hwnd;
 	}
 
 	void Engine::Update()
@@ -186,7 +188,7 @@ namespace Simple
 
 	HWND& Engine::GetEngineHWND()
 	{
-		return myHWND;
+		return *myHWND;
 	}
 
 	HCURSOR& Engine::GetCustomCursor()

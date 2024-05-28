@@ -28,11 +28,11 @@ namespace Simple
 		double GetTotalTime() const;
 		float GetDeltaTime() const;
 	private:
-		HWND SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
+		std::unique_ptr<HWND> SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
 		void LoadSettingsFromJson();
 		void CheckAndCopySettingsFiles();
 	private:
-		HWND myHWND;
+		std::unique_ptr<HWND> myHWND;
 		std::unique_ptr<SimpleUtilities::Timer> myTimer;
 
 		HCURSOR myCustomCursor;
