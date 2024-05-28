@@ -55,19 +55,14 @@ namespace ECS
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
-			if (entities[i]->GetID() == 1) //NOTE(v9.37.1): Skip skybox. Hardcoded for testing for now
-			{
-				continue;
-			}
-
-			const MeshComponent* mesh = entities[i]->GetComponent<ECS::MeshComponent>();
+			const MeshComponent* mesh = entities[i]->GetComponent<ECS::MeshComponent>(); //To-DO(v9.37.2): Disgusting, fix pls
 
 			if (mesh == nullptr)
 			{
 				continue;
 			}
 
-			const TransformComponent* transform = entities[i]->GetComponent<ECS::TransformComponent>();
+			const TransformComponent* transform = entities[i]->GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
 
 			if (transform == nullptr)
 			{
