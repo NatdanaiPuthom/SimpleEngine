@@ -337,6 +337,31 @@ namespace Graphics
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, gBufferCount, nullSRVs);
 	}
 
+	void GraphicsEngine::RenderDeferredImage()
+	{
+		ID3D11ShaderResourceView* shaderResources[1] = {};
+		shaderResources[0] = GetRenderTargets(Graphics::eRenderTargetType::Deferred)[0].shaderResourceView.Get();
+		myContext->PSSetShaderResources(5, 1, shaderResources);
+
+		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Deferred);
+		shader->BindThisShader(myContext.Get());
+
+		RenderFullScreenQuad();
+
+		ID3D11ShaderResourceView* nullViews = nullptr;
+		myContext->PSSetShaderResources(5, 1, &nullViews);
+	}
+
+	void GraphicsEngine::RenderFullScreenQuad()
+	{
+		myContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		myContext->IASetInputLayout(nullptr);
+		myContext->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
+		myContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+		myContext->GSSetShader(nullptr, nullptr, 0);
+		myContext->Draw(3, 0);
+	}
+
 	void GraphicsEngine::AddPointLight(const PointLightData& aPointLightData)
 	{
 		myLightBufferData->pointLightData[myLightBufferData->currentPointLightCount] = aPointLightData;

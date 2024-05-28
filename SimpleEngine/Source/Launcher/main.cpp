@@ -91,15 +91,12 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		editor.Update();
 		PROFILER_END();
 
-	
 		PROFILER_BEGIN("Render To GBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
 		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();
 
-
-#ifndef _SIMPLE
 		PROFILER_BEGIN("Render To DeferredBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred);
 		graphicsEngine.RenderDeferredFromGBuffer();
@@ -107,15 +104,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
 		ecs.RenderSkyBoxAndDirectionalLight();
 		PROFILER_END();
-#endif
 
 		PROFILER_BEGIN("Render to BackBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
+		graphicsEngine.RenderDeferredImage();
 		editor.Render();
-
-#ifdef _SIMPLE
-		graphicsEngine.RenderDeferredFromGBuffer();
-#endif
 		PROFILER_END();
 
 		PROFILER_BEGIN("Endframe");

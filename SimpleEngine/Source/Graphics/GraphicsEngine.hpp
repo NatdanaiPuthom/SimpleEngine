@@ -43,6 +43,8 @@ namespace Graphics
 		void EndFrame();
 
 		void RenderDeferredFromGBuffer();
+		void RenderDeferredImage();
+		void RenderFullScreenQuad();
 
 		void AddPointLight(const PointLightData& aPointLightData);
 		PointLightData GetPointLightData(const int aIndex);
