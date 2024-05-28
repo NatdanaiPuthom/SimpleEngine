@@ -3,6 +3,7 @@
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Components/Core/SkyBoxComponent.hpp"
 #include "Engine/ECS/Components/Core/DirectionalLightComponent.hpp"
+#include "External/imgui.h"
 
 namespace ECS
 {
@@ -66,6 +67,7 @@ namespace ECS
 
 	void SkyBoxAndDirectionalLightSystem::Render()
 	{
+		auto graphicsEngine = Global::GetGraphicsEngine();
 		const Drawer::Renderer* renderer = Global::GetRenderer();
 
 		ECS::Entity skyBox = myEntityManager->GetEntity(mySkyBoxID);
@@ -77,15 +79,57 @@ namespace ECS
 		renderer->RenderUnlit(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
 		renderer->RenderUnlit(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
 
+		static Math::Vector4f pointLightColorAndIntensity1 = { 1.0f, 1.0f, 1.0f, 100.0f };
+		static Math::Vector3f pointLightPosition = { -5.0f, 5.5f, 4.2f };
+		static float range = 1.0f;
+
 		{
+		
+
 			PointLightData pointLightData = Global::GetGraphicsEngine()->GetPointLightData(0);
+			
 
-			Drawer::Sphere sphere;
-			sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-			sphere.position = pointLightData.position;
-			sphere.radius = pointLightData.range;
+			auto context = Global::GetGraphicsEngine()->GetContext().Get(); context;
 
-			renderer->RenderSphere(sphere);
+			Global::GetGraphicsEngine()->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
+			context->OMSetDepthStencilState(Global::GetGraphicsEngine()->myOnlyGreaterDepth.Get(), 0);
+			context->OMSetBlendState(graphicsEngine->myBlendAdditive.Get(), nullptr, 0xffffffff);
+
+			PointLightData pointlight;
+			pointlight.color = pointLightColorAndIntensity1;
+			pointlight.position = pointLightPosition;
+			pointlight.range = range;
+
+			graphicsEngine->AddPointLight(pointlight);
+
+		
+			std::vector<Graphics::RenderTarget>& gBuffers = graphicsEngine->GetRenderTargets(Graphics::eRenderTargetType::GBuffer);
+
+			ID3D11ShaderResourceView* shaderResources[5] = {};
+
+			for (size_t i = 0; i < gBuffers.size(); ++i)
+			{
+				shaderResources[i] = gBuffers[i].shaderResourceView.Get();
+			}
+
+			context->PSSetShaderResources(5, 5, shaderResources);
+
+			Math::Transform transform;
+			transform.SetPosition(pointLightPosition);
+			transform.SetScale(range);
+
+			const Graphics::Mesh* mesh = Global::GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Sphere);
+			std::shared_ptr<const Graphics::Shader> shader = Global::GetGraphicsEngine()->GetShader("PointLightCullPS.cso", "DefaultVS.cso");
+			std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(Graphics::eTextureType::Default);
+
+			renderer->RenderUnlit(transform.GetMatrix(), mesh, shader.get(), texture.get());
+
+			context->OMSetDepthStencilState(Global::GetGraphicsEngine()->myDepthStencilState.Get(), 0);
+			Global::GetGraphicsEngine()->SetRasterizerState(Graphics::eRasterizerState::BackfaceCulling);
+			context->OMSetBlendState(graphicsEngine->myBlendStateDisable.Get(), nullptr, 0xffffffff);
+
+			ID3D11ShaderResourceView* nullSRVs[5] = { NULL };
+			context->PSSetShaderResources(5, 5, nullSRVs);
 		}
 
 		{
@@ -104,5 +148,24 @@ namespace ECS
 			renderer->RenderSphere(sphere);
 			renderer->RenderLine(line);
 		}
+
+		if (ImGui::Begin("Light"))
+		{
+
+			ImGui::Separator();
+
+			if (ImGui::DragFloat4("PointLight1 Color", &pointLightColorAndIntensity1.x, 0.001f, 0.f, 1.f))
+			{
+			}
+
+			if (ImGui::DragFloat4("PointLight1 Position", &pointLightPosition.x, 0.1f))
+			{
+			}
+
+			if (ImGui::DragFloat("PointLight1 Range", &range, 0.1f, 0.f, FLT_MAX))
+			{
+			}
+		}
+		ImGui::End();
 	}
 }

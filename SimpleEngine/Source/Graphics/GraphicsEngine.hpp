@@ -27,6 +27,13 @@ namespace Graphics
 	class GraphicsEngine final
 	{
 	public:
+		ComPtr<ID3D11DepthStencilState> myOnlyGreaterDepth;
+		ComPtr<ID3D11DepthStencilState> myDepthStencilState;
+		ComPtr<ID3D11BlendState> myBlendStateDisable;
+		ComPtr<ID3D11BlendState> myBlendAdditive;
+
+		void CreateBlendState();
+
 		GraphicsEngine();
 		~GraphicsEngine();
 
@@ -125,7 +132,7 @@ namespace Graphics
 		ComPtr<IDXGISwapChain> mySwapChain;
 
 		ComPtr<ID3D11DepthStencilView> myDepthBuffer;
-		ComPtr<ID3D11DepthStencilState> myDepthStencilState;
+		
 
 		ComPtr<ID3D11SamplerState> mySamplerState;
 		ComPtr<ID3D11RasterizerState> myCurrentRasterizerState;

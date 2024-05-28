@@ -17,6 +17,35 @@
 
 namespace Graphics
 {
+	void GraphicsEngine::CreateBlendState()
+	{
+		HRESULT result = S_OK;
+		D3D11_BLEND_DESC blendStateDescription = {};
+
+		blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
+		blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
+		blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+		blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendStateDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+		blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendStateDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		result = myDevice->CreateBlendState(&blendStateDescription, myBlendStateDisable.ReleaseAndGetAddressOf());
+		assert(SUCCEEDED(result) && "Failed to create blend state");
+		
+		D3D11_BLEND_DESC blendStateDescription2 = {};
+		blendStateDescription2.RenderTarget[0].BlendEnable = TRUE;
+		blendStateDescription2.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendStateDescription2.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+		blendStateDescription2.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendStateDescription2.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendStateDescription2.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		blendStateDescription2.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
+		blendStateDescription2.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		result = myDevice->CreateBlendState(&blendStateDescription2, myBlendAdditive.ReleaseAndGetAddressOf());
+		assert(SUCCEEDED(result) && "Failed to create blend state");
+	}
+
 	GraphicsEngine::GraphicsEngine()
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
@@ -58,6 +87,7 @@ namespace Graphics
 		CreateDepthStencilState();
 		CreateRasterizerStates();
 		CreateSamplerState();
+		CreateBlendState();
 
 		CreateCameraBuffer();
 		CreateTimeBuffer();
@@ -757,7 +787,20 @@ namespace Graphics
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
 
-		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)]);
+
+		D3D11_RASTERIZER_DESC rasterizerDesc2 = {};
+		rasterizerDesc2.AntialiasedLineEnable = false;
+		rasterizerDesc2.CullMode = D3D11_CULL_FRONT;
+		rasterizerDesc2.DepthBias = 0;
+		rasterizerDesc2.DepthBiasClamp = 0.0f;
+		rasterizerDesc2.DepthClipEnable = true;
+		rasterizerDesc2.FrontCounterClockwise = false;
+		rasterizerDesc2.MultisampleEnable = true;
+		rasterizerDesc2.ScissorEnable = false;
+		rasterizerDesc2.SlopeScaledDepthBias = 0.0f;
+		rasterizerDesc2.FillMode = D3D11_FILL_SOLID;
+
+		result = myDevice->CreateRasterizerState(&rasterizerDesc2, &myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)]);
 		assert(SUCCEEDED(result) && "Failed to create RasterizerState: FrontFaceCulling");
 
 		myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = nullptr;
@@ -929,7 +972,16 @@ namespace Graphics
 		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
-		const HRESULT result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilState.GetAddressOf());
+		 HRESULT result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilState.GetAddressOf());
+		assert(SUCCEEDED(result) && "Failed to create DepthStencilState");
+
+		D3D11_DEPTH_STENCIL_DESC depthTest = {};
+
+		depthTest.DepthEnable = true;
+		depthTest.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		depthTest.DepthFunc = D3D11_COMPARISON_GREATER;
+		depthTest.StencilEnable = false;
+		result = myDevice->CreateDepthStencilState(&depthTest, myOnlyGreaterDepth.GetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create DepthStencilState");
 	}
 

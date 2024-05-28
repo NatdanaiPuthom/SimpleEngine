@@ -12,7 +12,8 @@ namespace Drawer
 		: myTransformBuffer(std::make_unique<ConstantBuffer>())
 		, myMeshData(std::make_unique<MeshData>())
 	{
-		myShader = Global::GetGraphicsEngine()->GetShader("LinePS.cso", "DefaultVS.cso");
+		//myShader = Global::GetGraphicsEngine()->GetShader("LinePS.cso", "DefaultVS.cso");
+		myShader = Global::GetGraphicsEngine()->GetShader("PointLightCullPS.cso", "DefaultVS.cso");
 
 		MeshData sphereData = ShapeCreator3000::CreateSphere(1.0f, 10, 10);
 
@@ -96,6 +97,8 @@ namespace Drawer
 		UINT offset = 0;
 
 		myShader->BindThisShader(context.Get());
+
+		Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Unlit_Default)->BindThisShader(context.Get());
 
 		context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
 		context->IASetIndexBuffer(myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);

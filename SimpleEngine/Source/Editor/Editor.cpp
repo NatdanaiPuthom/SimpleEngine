@@ -60,7 +60,7 @@ namespace Editor
 			}
 		}
 
-		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		/*Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		static Math::Vector4f ambientLight = graphicsEngine->GetAmbientLightColorAndIntensity();
 		static Math::Vector4f pointLightColorAndIntensity1 = { 1.0f, 0.0f, 0.0f, 100.0f };
@@ -88,14 +88,14 @@ namespace Editor
 			{
 			}
 		}
-		ImGui::End();
+		ImGui::End();*/
 
-		PointLightData pointlight;
+		/*PointLightData pointlight;
 		pointlight.color = pointLightColorAndIntensity1;
 		pointlight.position = pointLightPosition;
 		pointlight.range = range;
 
-		graphicsEngine->AddPointLight(pointlight);
+		graphicsEngine->AddPointLight(pointlight);*/
 	}
 
 	void EditorEngine::Render()
