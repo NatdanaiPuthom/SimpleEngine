@@ -37,21 +37,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	MainSingleton::Init();
 	PROFILER_END();
 
-	//SimpleTracker::SimpleMemoryTracker::StartMemoryTracking({ true, true });
-
-
-	SCRIPT::NodeGraph graph;
-	SCRIPT::NodeGraph g(graph);
-	SCRIPT::NodeGraph gr = std::move(g);
-
-
-	//SimpleTracker::SimpleMemoryTracker::StopMemoryTrackingAndPrint();
-
-	if (true)
-	{
-		return;
-	}
-
 	PROFILER_BEGIN("SimpleEngine Core Class Constructors");
 	Simple::Engine engine;
 	Graphics::GraphicsEngine graphicsEngine;
