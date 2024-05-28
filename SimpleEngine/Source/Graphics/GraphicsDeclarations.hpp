@@ -24,6 +24,13 @@ namespace Graphics
 		Count
 	};
 
+	enum class eDepthStencilState
+	{
+		Less_Equal,
+		Greater,
+		Count
+	};
+
 	enum class eRenderTargetType
 	{
 		Backbuffer,

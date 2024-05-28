@@ -27,9 +27,6 @@ namespace Graphics
 	class GraphicsEngine final
 	{
 	public:
-		ComPtr<ID3D11DepthStencilState> myOnlyGreaterDepth;
-		ComPtr<ID3D11DepthStencilState> myDepthStencilState;
-
 		GraphicsEngine();
 		~GraphicsEngine();
 
@@ -58,6 +55,7 @@ namespace Graphics
 		void SetFPSLevelCap(const unsigned int aCapLevel);
 		void SetRasterizerState(const eRasterizerState aRasterizerState);
 		void SetBlendState(const eBlendState aBlendState);
+		void SetDepthStencilState(const eDepthStencilState aDepthStencilState);
 
 		//NOTE(v9.37.0?): Call SetWindowSizeNextFrame instead.
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
@@ -125,6 +123,7 @@ namespace Graphics
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
 		std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<size_t>(eRasterizerState::Count)> myRasterizerStates;
+		std::array<ComPtr<ID3D11DepthStencilState>, static_cast<size_t>(eDepthStencilState::Count)> myDepthStencilStates;
 		std::array<ComPtr<ID3D11BlendState>, static_cast<size_t>(eBlendState::Count)> myBlendStates;
 		std::array<float, 4> myClearColor;
 
@@ -134,7 +133,6 @@ namespace Graphics
 
 		ComPtr<ID3D11DepthStencilView> myDepthBuffer;
 		
-
 		ComPtr<ID3D11SamplerState> mySamplerState;
 		ComPtr<ID3D11RasterizerState> myCurrentRasterizerState;
 
