@@ -51,10 +51,7 @@ namespace Editor
 				tool->Update();
 			}
 		}
-	}
 
-	void EditorEngine::Render()
-	{
 		for (const std::unique_ptr<ToolInterface>& tool : myTools)
 		{
 			if (tool->myIsActive == true)
@@ -67,8 +64,8 @@ namespace Editor
 
 		static Math::Vector4f ambientLight = graphicsEngine->GetAmbientLightColorAndIntensity();
 		static Math::Vector4f pointLightColorAndIntensity1 = { 1.0f, 0.0f, 0.0f, 100.0f };
-		static Math::Vector4f pointLightPosition = { 0.0f, 0.0f, 0.0f, 0.0f };
-		static float range = 1000.0f;
+		static Math::Vector4f pointLightPosition = { -5.0f, 5.5f, 4.2f, 0.0f };
+		static float range = 1.0f;
 
 		if (ImGui::Begin("Light"))
 		{
@@ -99,8 +96,13 @@ namespace Editor
 		pointlight.range = range;
 
 		graphicsEngine->AddPointLight(pointlight);
+	}
 
-		for (size_t i = 0; i < 5; ++i)
+	void EditorEngine::Render()
+	{
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+
+		for (size_t i = 0; i < Graphics::Global_GBuffer_Count; ++i)
 		{
 			std::string name;
 
