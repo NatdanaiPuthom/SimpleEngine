@@ -111,10 +111,10 @@ namespace Editor
 			case 0:
 				name = "Albedo";
 				break;
-			case 1:
+			case 2:
 				name = "Material";
 				break;
-			case 2:
+			case 1:
 				name = "Normal";
 				break;
 			case 3:
