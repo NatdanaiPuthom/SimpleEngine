@@ -84,15 +84,10 @@ namespace ECS
 		static float range = 1.0f;
 
 		{
-		
-
-			PointLightData pointLightData = Global::GetGraphicsEngine()->GetPointLightData(0);
-			
-
-			auto context = Global::GetGraphicsEngine()->GetContext().Get(); context;
+			ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get(); context;
 
 			Global::GetGraphicsEngine()->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
-			context->OMSetDepthStencilState(Global::GetGraphicsEngine()->myOnlyGreaterDepth.Get(), 0);
+			graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Greater);
 			graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
 
 			PointLightData pointlight;
@@ -124,8 +119,8 @@ namespace ECS
 
 			renderer->RenderUnlit(transform.GetMatrix(), mesh, shader.get(), texture.get());
 
-			context->OMSetDepthStencilState(Global::GetGraphicsEngine()->myDepthStencilState.Get(), 0);
-			Global::GetGraphicsEngine()->SetRasterizerState(Graphics::eRasterizerState::BackfaceCulling);
+			graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Less_Equal);
+			graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::BackfaceCulling);
 			graphicsEngine->SetBlendState(Graphics::eBlendState::Disabled);
 
 			ID3D11ShaderResourceView* nullSRVs[5] = { NULL };

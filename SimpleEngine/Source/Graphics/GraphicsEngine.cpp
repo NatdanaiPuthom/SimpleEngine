@@ -74,10 +74,10 @@ namespace Graphics
 		myModelFactory->Init();
 
 		SetRasterizerState(eRasterizerState::BackfaceCulling);
+		SetDepthStencilState(eDepthStencilState::Less_Equal);
 
 		myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
 		myContext->RSSetViewports(1, myViewPort.get());
-		myContext->OMSetDepthStencilState(myDepthStencilState.Get(), 0);
 
 		myCameraConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Camera);
 		myTimeConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Time);
@@ -506,6 +506,11 @@ namespace Graphics
 	void GraphicsEngine::SetBlendState(const eBlendState aBlendState)
 	{
 		myContext->OMSetBlendState(myBlendStates[static_cast<size_t>(aBlendState)].Get(), nullptr, 0xffffffff);
+	}
+
+	void GraphicsEngine::SetDepthStencilState(const eDepthStencilState aDepthStencilState)
+	{
+		myContext->OMSetDepthStencilState(myDepthStencilStates[static_cast<size_t>(aDepthStencilState)].Get(), 0);
 	}
 
 	void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
@@ -963,21 +968,18 @@ namespace Graphics
 	void GraphicsEngine::CreateDepthStencilState()
 	{
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
-
 		depthStencilDesc.DepthEnable = true;
+		depthStencilDesc.StencilEnable = false;
+
 		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
-		 HRESULT result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilState.GetAddressOf());
+		HRESULT result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilStates[static_cast<size_t>(eDepthStencilState::Less_Equal)].ReleaseAndGetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create DepthStencilState");
 
-		D3D11_DEPTH_STENCIL_DESC depthTest = {};
-
-		depthTest.DepthEnable = true;
-		depthTest.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-		depthTest.DepthFunc = D3D11_COMPARISON_GREATER;
-		depthTest.StencilEnable = false;
-		result = myDevice->CreateDepthStencilState(&depthTest, myOnlyGreaterDepth.GetAddressOf());
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_GREATER;
+		result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilStates[static_cast<size_t>(eDepthStencilState::Greater)].GetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create DepthStencilState");
 	}
 
