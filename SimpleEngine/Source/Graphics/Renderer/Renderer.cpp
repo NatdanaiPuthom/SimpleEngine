@@ -53,64 +53,46 @@ namespace Drawer
 
 	void Renderer::RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const
 	{
-		const auto context = Global::GetGraphicsEngine()->GetContext();
+		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
-		TransformBufferData objectBuffer = {};
-		objectBuffer.modelWorldMatrix = aTransformComponent->transform.GetMatrix();
-
-		myTransformBuffer->Bind(myTransformBuffer->GetSlot());
-		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
-
-		aMeshComponent->shader->BindThisShader(context.Get());
+		aMeshComponent->shader->BindThisShader(context);
 
 		for (size_t i = 0; i < aMeshComponent->textures.size(); ++i)
 		{
-			if (const Graphics::Texture* texture = aMeshComponent->textures[i]) //NOTE(9.36.4): Disgusting
+			if (const Graphics::Texture* texture = aMeshComponent->textures[i]) //To-DO(9.36.4): Disgusting, pls fix
 			{
-				size_t slot = texture->GetSlot();
-
-				if (slot < Graphics::Global_Slot_Normal)   //NOTE(9.36.4): Even more disgusting
-				{
-					slot = i;
-				}
-
-				texture->Bind(context, static_cast<unsigned int>(slot));
+				texture->Bind(context, texture->GetSlot());
 			}
 		}
 
-		UINT stride = sizeof(Graphics::Vertex);
-		UINT offset = 0;
-
-		context->IASetVertexBuffers(0, 1, aMeshComponent->mesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aMeshComponent->mesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		context->DrawIndexed(static_cast<UINT>(aMeshComponent->mesh->myMeshData.indices.size()), 0, 0);
-
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
-	void Renderer::RenderStaticModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTextures) const
+	void Renderer::RenderUnlit(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTextures) const
 	{
-		const auto context = Global::GetGraphicsEngine()->GetContext();
+		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
+		aShader->BindThisShader(context);
+		aTextures->Bind(context, aTextures->GetSlot());
+
+		RenderModel(aTransformMatrix, aMesh, context);
+	}
+
+	void Renderer::RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const
+	{
 		TransformBufferData objectBuffer = {};
 		objectBuffer.modelWorldMatrix = aTransformMatrix;
 
 		myTransformBuffer->Bind(myTransformBuffer->GetSlot());
 		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
 
-		aShader->BindThisShader(context.Get());
-		aTextures->Bind(context, aTextures->GetSlot());
-
 		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
 
-		context->IASetVertexBuffers(0, 1, aMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		context->DrawIndexed(static_cast<UINT>(aMesh->myMeshData.indices.size()), 0, 0);
+		aContext->IASetVertexBuffers(0, 1, aMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		aContext->IASetIndexBuffer(aMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		aContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		aContext->DrawIndexed(static_cast<UINT>(aMesh->myMeshData.indices.size()), 0, 0);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}

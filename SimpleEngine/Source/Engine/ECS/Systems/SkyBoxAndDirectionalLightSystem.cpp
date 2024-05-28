@@ -74,8 +74,8 @@ namespace ECS
 		const SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
 		const DirectionalLight* directionalLightComponent = directionalLight->GetComponent<DirectionalLight>();
 
-		renderer->RenderStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
-		renderer->RenderStaticModel(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
+		renderer->RenderUnlit(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
+		renderer->RenderUnlit(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
 
 		{
 			PointLightData pointLightData = Global::GetGraphicsEngine()->GetPointLightData(0);
