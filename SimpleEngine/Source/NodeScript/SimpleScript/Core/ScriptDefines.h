@@ -49,7 +49,8 @@ namespace SCR
 	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, ScriptInternalModifier&);
 	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);
 
-	struct ScriptColor
+	// Struct for color - values between 0 and 1
+	struct Color
 	{
 		float r = 0, g = 0, b = 0, a = 1;
 
@@ -63,16 +64,16 @@ namespace SCR
 	};
 
 
-	inline ScriptColor operator+(const ScriptColor& aColor1, const ScriptColor& aColor2)
+	inline Color operator+(const Color& aColor1, const Color& aColor2)
 	{
-		ScriptColor c = { aColor1.r + aColor2.r, aColor1.g + aColor2.g, aColor1.b + aColor2.b, aColor1.a + aColor2.a };
+		Color c = { aColor1.r + aColor2.r, aColor1.g + aColor2.g, aColor1.b + aColor2.b, aColor1.a + aColor2.a };
 		c.Clamp();
 		return c;
 	}
 
-	inline ScriptColor operator-(const ScriptColor& aColor1, const ScriptColor& aColor2)
+	inline Color operator-(const Color& aColor1, const Color& aColor2)
 	{
-		ScriptColor c = { aColor1.r - aColor2.r, aColor1.g - aColor2.g, aColor1.b - aColor2.b, aColor1.a - aColor2.a };
+		Color c = { aColor1.r - aColor2.r, aColor1.g - aColor2.g, aColor1.b - aColor2.b, aColor1.a - aColor2.a };
 		c.Clamp();
 		return c;
 	}

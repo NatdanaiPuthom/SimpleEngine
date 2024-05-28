@@ -1,0 +1,33 @@
+#pragma once
+#include "ScriptDefines.h"
+#include "ScriptMemoryPool.h"
+
+namespace SCR
+{
+
+	class NodeManager;
+	class PinManager;
+
+	class NodeGraph final
+	{
+		friend class ScriptProxy;
+	public:
+
+		NodeGraph();
+		~NodeGraph();
+
+		NodeGraph(const NodeGraph&);
+		NodeGraph(NodeGraph&&) = default;
+
+		NodeGraph& operator=(const NodeGraph&) = delete;
+		NodeGraph& operator=(NodeGraph&&) = delete;
+
+
+	private:
+
+		std::unique_ptr<NodeManager> myNodeManager;
+		std::unique_ptr<PinManager> myPinManager;
+
+		MemoryPool myMemoryPool;
+	};
+}

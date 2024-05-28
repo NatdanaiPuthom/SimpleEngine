@@ -161,7 +161,7 @@ namespace SCR
 		return funcObjectTypes;
 	}
 
-	ScriptColor DataTypeManager::GetColor(const DataTypeID aDataTypeID)
+	Color DataTypeManager::GetColor(const DataTypeID aDataTypeID)
 	{
 		if (myDataTypes->contains(aDataTypeID))
 		{
@@ -171,7 +171,7 @@ namespace SCR
 		return DefaultColor;
 	}
 
-	ScriptColor DataTypeManager::GetSelectionColor(const DataTypeID aDataTypeID)
+	Color DataTypeManager::GetSelectionColor(const DataTypeID aDataTypeID)
 	{
 		if (myDataTypes->contains(aDataTypeID))
 		{
@@ -181,7 +181,7 @@ namespace SCR
 		return DefaultColor - mySelectionTint;
 	}
 
-	ScriptColor DataTypeManager::GetHoverColor(const DataTypeID aDataTypeID)
+	Color DataTypeManager::GetHoverColor(const DataTypeID aDataTypeID)
 	{
 		if (myDataTypes->contains(aDataTypeID))
 		{

@@ -51,7 +51,7 @@ namespace SCR
 		return *aScript.myEventGraph.myNodeManager;
 	}
 
-	ScriptGraph& ScriptProxy::GetEventGraph(Script& aScript)
+	NodeGraph& ScriptProxy::GetEventGraph(Script& aScript)
 	{
 		return aScript.myEventGraph;
 	}
@@ -96,9 +96,9 @@ namespace SCR
 		return aScript.myEventGraph.myNodeManager->myNodes[aNodeID];
 	}
 
-	const Node& ScriptProxy::GetNode(const ScriptGraph& aScriptGraph, NodeID aNodeID)
+	const Node& ScriptProxy::GetNode(const NodeGraph& aNodeGraph, NodeID aNodeID)
 	{
-		return aScriptGraph.myNodeManager->myNodes[aNodeID];
+		return aNodeGraph.myNodeManager->myNodes[aNodeID];
 	}
 
 	const Pin& ScriptProxy::GetPin(const Script& aScript, PinID aPinID)

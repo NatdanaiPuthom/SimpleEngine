@@ -12,7 +12,7 @@ struct ImNodesContext;
 
 namespace SCRIPT
 {
-	struct ScriptColor;
+	struct Color;
 }
 
 namespace SCRIPT
@@ -30,7 +30,7 @@ namespace EDIT
 		std::vector<SCRIPT::NodeTypeID> nodeTypesIDs;
 	};
 
-	inline static unsigned int ToImGuiColor(const SCRIPT::ScriptColor& aColor)
+	inline static unsigned int ToImGuiColor(const SCRIPT::Color& aColor)
 	{
 		return IM_COL32(aColor.r * 255, aColor.g * 255, aColor.b * 255, 255);
 	}

@@ -59,12 +59,11 @@ namespace SCR
 	}
 
 	MemoryPool::MemoryPool(MemoryPool&& aOther) noexcept
+		: myStartMemory(aOther.myStartMemory)
+		, myEndMemory(aOther.myEndMemory)
+		, myCurrentMemory(aOther.myCurrentMemory)
+		, myObjects(std::move(aOther.myObjects))
 	{
-		myStartMemory = aOther.myStartMemory;
-		myEndMemory = aOther.myEndMemory;
-		myCurrentMemory = aOther.myCurrentMemory;
-
-		myObjects = std::move(aOther.myObjects);
 
 		aOther.myStartMemory = nullptr;
 		aOther.myCurrentMemory = nullptr;

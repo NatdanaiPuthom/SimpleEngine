@@ -13,6 +13,13 @@ namespace SCR
 	{
 	}
 
+	NodeManager::NodeManager(const NodeManager& aOther)
+		: myNodes(aOther.myNodes)
+		, myNodeIDsByNodeTypeID(aOther.myNodeIDsByNodeTypeID)
+		, myInternalNodeData(aOther.myInternalNodeData)
+	{
+	}
+
 	TypeContainer<NodeID, Node, NodeType>::ConstIterator NodeManager::begin() const
 	{
 		return TypeContainer<NodeID, Node, NodeType>(myNodes, [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetNodeType(aNode.typeID); }).begin();

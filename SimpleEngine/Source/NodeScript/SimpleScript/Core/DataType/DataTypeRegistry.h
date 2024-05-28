@@ -12,10 +12,10 @@ namespace SCR
 	public:
 
 		template<typename T, eNodeOperatorTrait Operators = eNodeOperatorTrait::All, template<typename> typename... Templates> requires Scriptable<T, nlohmann::json> || Fundamental<T>
-		static void Register(const std::string& aName, const ScriptColor& aColor = DefaultColor);
+		static void Register(const std::string& aName, const Color& aColor = DefaultColor);
 
 		template<typename T, eNodeOperatorTrait Operators = eNodeOperatorTrait::All>
-		static void RegisterNonSerializableType(const std::string& aName, const ScriptColor& aColor = DefaultColor);
+		static void RegisterNonSerializableType(const std::string& aName, const Color& aColor = DefaultColor);
 
 		template<template<typename> typename TemplateType>
 		static void RegisterTemplateType(const std::string& aName);
@@ -34,7 +34,7 @@ namespace SCR
 	};
 
 	template<typename T, eNodeOperatorTrait Operators, template<typename> typename... Templates> requires Scriptable<T, nlohmann::json> || Fundamental<T>
-	inline void DataTypeRegistry::Register(const std::string & aName, const ScriptColor & aColor)
+	inline void DataTypeRegistry::Register(const std::string & aName, const Color& aColor)
 	{
 		DataTypeManager::Register<T>(aName, aColor);
 
@@ -45,7 +45,7 @@ namespace SCR
 	}
 
 	template<typename T, eNodeOperatorTrait Operators>
-	inline void DataTypeRegistry::RegisterNonSerializableType(const std::string& aName, const ScriptColor& aColor)
+	inline void DataTypeRegistry::RegisterNonSerializableType(const std::string& aName, const Color& aColor)
 	{
 		DataTypeManager::RegisterNonSerializableType<T>(aName, aColor);
 

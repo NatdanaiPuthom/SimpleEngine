@@ -29,7 +29,7 @@ namespace SCR
 
 		~Node() = default;
 
-		Node(const Node&) = delete;
+		Node(const Node&) = default;
 		Node(Node&&) = default;
 		Node& operator=(const Node&) = delete;
 		Node& operator=(Node&&) = delete;

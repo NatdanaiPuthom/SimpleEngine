@@ -19,6 +19,8 @@ namespace SCR
 		NodeManager();
 		~NodeManager();
 
+		NodeManager(const NodeManager&);
+
 		TypeContainer<NodeID, Node, NodeType>::ConstIterator begin() const;
 		TypeContainer<NodeID, Node, NodeType>::ConstIterator end() const;
 

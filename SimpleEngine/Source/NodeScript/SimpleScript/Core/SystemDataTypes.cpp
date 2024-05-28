@@ -180,7 +180,7 @@ namespace std
 
 	static bool Edit(std::string& aValue)
 	{
-		char buffer[35]{};
+		char buffer[32]{};
 		strcpy_s(buffer, aValue.c_str());
 
 		if (ImGui::InputText("##", buffer, IM_ARRAYSIZE(buffer)))
@@ -203,6 +203,18 @@ namespace std
 	}
 }
 
+template<typename T>
+struct RegisterProperty
+{
+	RegisterProperty(const char* aName, SCRIPT::Color aColor = SCRIPT::DefaultColor)
+	{
+		SCRIPT::DataTypeRegistry::Register<T>(aName, aColor);
+	}
+};
+
+#define FLY_PROPERTY(type) \
+	
+
 namespace SCR
 {
 
@@ -216,6 +228,42 @@ namespace SCR
 	static EmilComponent EmilNode(EmilComponent a)
 	{
 		return a;
+	}
+
+	static EmilComponent* EmilNode2(EmilComponent* a)
+	{
+		return a;
+	}*/
+
+
+
+	/*template<SCRIPT::IsPointer T>
+	static bool Edit(T& aValue)
+	{
+		aValue;
+		ImGui::Button(typeid(T).name());
+		if (ImGui::BeginDragDropSource())
+		{
+
+			ImGui::EndDragDropSource();
+		}
+
+
+		return false;
+	}
+
+	template<SCRIPT::IsPointer T>
+	static void Save(nlohmann::json& aJson, const T& aValue)
+	{
+		aJson;
+		aValue;
+	}
+
+	template<SCRIPT::IsPointer T>
+	static void Load(const nlohmann::json& aJson, T& aValue)
+	{
+		aJson;
+		aValue;
 	}*/
 
 
@@ -223,22 +271,24 @@ namespace SCR
 	{
 		DataTypeRegistry::RegisterTemplateType<std::vector>("Array");
 
-		DataTypeRegistry::RegisterNonSerializableType<Wildcard>("Wildcard", ScriptColor(0.f, 0.f, 0.f));
-		DataTypeRegistry::RegisterNonSerializableType<Flow>("Flow", ScriptColor(0.9f, 0.9f, 0.9f));
+		DataTypeRegistry::RegisterNonSerializableType<Wildcard>("Wildcard", Color(0.f, 0.f, 0.f));
+		DataTypeRegistry::RegisterNonSerializableType<Flow>("Flow", Color(0.9f, 0.9f, 0.9f));
 
-		DataTypeRegistry::Register<bool>("Bool", ScriptColor(1.f, 0.1f, 0.1f));
-		DataTypeRegistry::Register<int>("Int", ScriptColor(0.f, 0.2f, 1.f));
-		DataTypeRegistry::Register<float, eNodeOperatorTrait::All, std::vector>("Float", ScriptColor(0.55f, 0.2f, 0.65f));
-		DataTypeRegistry::Register<double, eNodeOperatorTrait::All, std::vector>("Double", ScriptColor(0.57f, 0.4f, 0.9f));
-		DataTypeRegistry::Register<short, eNodeOperatorTrait::All, std::vector>("Short", ScriptColor(0.f, 0.1f, 1.f));
-		DataTypeRegistry::Register<unsigned int, eNodeOperatorTrait::All, std::vector>("Unsigned Int", ScriptColor(0.f, 0.4f, 1.f));
-		DataTypeRegistry::Register<unsigned long long, eNodeOperatorTrait::All, std::vector>("Unsigned Long Long", ScriptColor(0.1f, 0.5f, 1.f));
-		DataTypeRegistry::Register<char, eNodeOperatorTrait::All, std::vector>("Char", ScriptColor(0.2f, 0.7f, 0.4f));
-		DataTypeRegistry::Register<std::string>("String", ScriptColor(0.3f, 0.8f, 0.2f));
+		DataTypeRegistry::Register<bool>("Bool", Color(1.f, 0.1f, 0.1f));
+		DataTypeRegistry::Register<int>("Int", Color(0.f, 0.2f, 1.f));
+		DataTypeRegistry::Register<float, eNodeOperatorTrait::All, std::vector>("Float", Color(0.55f, 0.2f, 0.65f));
+		DataTypeRegistry::Register<double, eNodeOperatorTrait::All, std::vector>("Double", Color(0.57f, 0.4f, 0.9f));
+		DataTypeRegistry::Register<short, eNodeOperatorTrait::All, std::vector>("Short", Color(0.f, 0.1f, 1.f));
+		DataTypeRegistry::Register<unsigned int, eNodeOperatorTrait::All, std::vector>("Unsigned Int", Color(0.f, 0.4f, 1.f));
+		DataTypeRegistry::Register<unsigned long long, eNodeOperatorTrait::All, std::vector>("Unsigned Long Long", Color(0.1f, 0.5f, 1.f));
+		DataTypeRegistry::Register<char, eNodeOperatorTrait::All, std::vector>("Char", Color(0.2f, 0.7f, 0.4f));
+		DataTypeRegistry::Register<std::string>("String", Color(0.3f, 0.8f, 0.2f));
 
 		/*NodeTypeRegistry::RegisterNodeType(EmilNode, "Test/Emil");
+		NodeTypeRegistry::RegisterNodeType(EmilNode2, "Test/Emil2");
 
 		DataTypeRegistry::RegisterNonSerializableType<EmilComponent>("Emil");
+		DataTypeRegistry::Register<EmilComponent*>("Emil*");
 
 		DataTypeRegistry::RegisterProperty(&EmilComponent::a, "A");
 		DataTypeRegistry::RegisterProperty(&EmilComponent::b, "B");

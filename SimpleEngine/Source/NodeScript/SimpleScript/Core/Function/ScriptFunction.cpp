@@ -37,7 +37,7 @@ namespace SCR
 		const auto& caller = function.GetCaller();
 
 		// TODO: Fix node lookup
-		const Node& callerNode = ScriptProxy::GetNode(*caller.scriptGraph, caller.nodeID);
+		const Node& callerNode = ScriptProxy::GetNode(*caller.nodeGraph, caller.nodeID);
 
 		CopyPinData(*aContext, callerNode.outputPins, outputNode.inputPins, 1);
 

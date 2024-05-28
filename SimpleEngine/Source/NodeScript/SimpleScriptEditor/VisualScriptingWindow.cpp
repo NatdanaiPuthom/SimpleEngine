@@ -54,16 +54,16 @@ namespace EDIT
 
 		ImNodesStyle& style = ImNodes::GetStyle();
 
-		style.Colors[ImNodesCol_TitleBar] = ToImGuiColor(ScriptColor{ 0.1f, 0.3f , 0.6f , 1.f });
-		style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(ScriptColor{ 0.1f, 0.3f , 0.7f , 1.f });
-		style.Colors[ImNodesCol_TitleBarSelected] = ToImGuiColor(ScriptColor{ 0.1f, 0.3f , 0.8f , 1.f });
+		style.Colors[ImNodesCol_TitleBar] = ToImGuiColor(Color{ 0.1f, 0.3f , 0.6f , 1.f });
+		style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(Color{ 0.1f, 0.3f , 0.7f , 1.f });
+		style.Colors[ImNodesCol_TitleBarSelected] = ToImGuiColor(Color{ 0.1f, 0.3f , 0.8f , 1.f });
 
-		style.Colors[ImNodesCol_NodeBackground] = ToImGuiColor(ScriptColor{ 0.02f, 0.02f, 0.02f, 1.f });
-		style.Colors[ImNodesCol_NodeBackgroundHovered] = ToImGuiColor(ScriptColor{ 0.015f, 0.015f, 0.015f, 1.f });
-		style.Colors[ImNodesCol_NodeBackgroundSelected] = ToImGuiColor(ScriptColor{ 0.01f, 0.01f, 0.01f, 1.f });
+		style.Colors[ImNodesCol_NodeBackground] = ToImGuiColor(Color{ 0.02f, 0.02f, 0.02f, 1.f });
+		style.Colors[ImNodesCol_NodeBackgroundHovered] = ToImGuiColor(Color{ 0.015f, 0.015f, 0.015f, 1.f });
+		style.Colors[ImNodesCol_NodeBackgroundSelected] = ToImGuiColor(Color{ 0.01f, 0.01f, 0.01f, 1.f });
 
-		style.Colors[ImNodesCol_NodeOutline] = ToImGuiColor(ScriptColor{ 0.0f, 0.0f, 0.0f, 1.f });
-		style.Colors[ImNodesCol_GridBackground] = ToImGuiColor(ScriptColor{ 0.03f,0.03f, 0.03f, 1.f });
+		style.Colors[ImNodesCol_NodeOutline] = ToImGuiColor(Color{ 0.0f, 0.0f, 0.0f, 1.f });
+		style.Colors[ImNodesCol_GridBackground] = ToImGuiColor(Color{ 0.03f,0.03f, 0.03f, 1.f });
 	}
 
 	void VisualScriptingWindow::Update(SCRIPT::ScriptManager& aScriptManager, const std::string& LevelName)
@@ -350,15 +350,15 @@ namespace EDIT
 
 			if (nodeType->nodeRecipe.executionTrait == eNodeExecutionTrait::None)
 			{
-				style.Colors[ImNodesCol_TitleBar] = ToImGuiColor(ScriptColor{ 0.1f, 0.3f, 0.6f, 1.f });
-				style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(ScriptColor{ 0.1f, 0.3f, 0.7f, 1.f });
-				style.Colors[ImNodesCol_TitleBarSelected] = ToImGuiColor(ScriptColor{ 0.1f, 0.3f, 0.8f, 1.f });
+				style.Colors[ImNodesCol_TitleBar] = ToImGuiColor(Color{ 0.1f, 0.3f, 0.6f, 1.f });
+				style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(Color{ 0.1f, 0.3f, 0.7f, 1.f });
+				style.Colors[ImNodesCol_TitleBarSelected] = ToImGuiColor(Color{ 0.1f, 0.3f, 0.8f, 1.f });
 			}
 			else
 			{
-				style.Colors[ImNodesCol_TitleBar] = ToImGuiColor(ScriptColor{ 0.8f, 0.1f, 0.1f, 1.f });
-				style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(ScriptColor{ 0.9f, 0.1f, 0.1f, 1.f });
-				style.Colors[ImNodesCol_TitleBarSelected] = ToImGuiColor(ScriptColor{ 1.f, 0.1f, 0.1f, 1.f });
+				style.Colors[ImNodesCol_TitleBar] = ToImGuiColor(Color{ 0.8f, 0.1f, 0.1f, 1.f });
+				style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(Color{ 0.9f, 0.1f, 0.1f, 1.f });
+				style.Colors[ImNodesCol_TitleBarSelected] = ToImGuiColor(Color{ 1.f, 0.1f, 0.1f, 1.f });
 			}
 
 			ImNodes::SetNodeGridSpacePos(nodeID, { node->position.x, node->position.y });

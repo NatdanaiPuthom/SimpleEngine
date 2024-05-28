@@ -25,7 +25,7 @@ namespace SCR
 	struct Pin;
 	struct Variable;
 	class ScriptInternalModifier;
-	class ScriptGraph;
+	class NodeGraph;
 	
 	class ScriptProxy
 	{
@@ -49,7 +49,7 @@ namespace SCR
 
 		static const NodeManager& GetNodeManager(const Script& aScript);
 
-		static ScriptGraph& GetEventGraph(Script& aScript);
+		static NodeGraph& GetEventGraph(Script& aScript);
 
 		static NodeExecutor& GetNodeExecutor(Script& aScript);
 
@@ -63,7 +63,7 @@ namespace SCR
 		static const std::vector<Pin>& GetPins(const Script& aScript);
 
 		static const Node& GetNode(const Script& aScript, NodeID aNodeID);
-		static const Node& GetNode(const ScriptGraph& aScriptGraph, NodeID aNodeID);
+		static const Node& GetNode(const NodeGraph& aNodeGraph, NodeID aNodeID);
 		static const Pin& GetPin(const Script& aScript, PinID aPinID);
 		static const Variable& GetVariable(const Script& aScript, const VarID aVarID);
 

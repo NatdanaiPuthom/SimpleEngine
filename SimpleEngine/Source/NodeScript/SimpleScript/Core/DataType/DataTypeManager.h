@@ -229,7 +229,7 @@ namespace SCR
 	struct DataType
 	{
 		const std::string name;
-		const ScriptColor color;
+		const Color color;
 		const std::type_info* typeInfo;
 		const DataTypeInterface typeInterface;
 		std::vector<Property> properties;
@@ -241,7 +241,7 @@ namespace SCR
 	};
 
 
-	const ScriptColor DefaultColor = ScriptColor(1.f, 1.f, 0.3f);
+	const Color DefaultColor = Color(1.f, 1.f, 0.3f);
 
 	class DataTypeManager
 	{
@@ -261,9 +261,9 @@ namespace SCR
 		static const std::unordered_map<DataTypeID, DataType>& GetObjectTypes();
 		static std::unordered_map<DataTypeID, const DataType*> GetFunctionObjectTypes();
 
-		static ScriptColor GetColor(const DataTypeID aDataTypeID);
-		static ScriptColor GetSelectionColor(const DataTypeID aDataTypeID);
-		static ScriptColor GetHoverColor(const DataTypeID aDataTypeID);
+		static Color GetColor(const DataTypeID aDataTypeID);
+		static Color GetSelectionColor(const DataTypeID aDataTypeID);
+		static Color GetHoverColor(const DataTypeID aDataTypeID);
 
 		static void Destroy();
 
@@ -272,22 +272,22 @@ namespace SCR
 	private:
 
 		template<Scriptable<nlohmann::json> T>
-		static void Register(const std::string& aName, const ScriptColor& aColor = DefaultColor);
+		static void Register(const std::string& aName, const Color& aColor = DefaultColor);
 
 		template<Fundamental T>
-		static void Register(const std::string& aName, const ScriptColor& aColor = DefaultColor);
+		static void Register(const std::string& aName, const Color& aColor = DefaultColor);
 
 		template<typename T>
-		static void RegisterNonSerializableType(const std::string& aName, const ScriptColor& aColor);
+		static void RegisterNonSerializableType(const std::string& aName, const Color& aColor);
 
 		template<template<typename> typename TemplateType>
 		static void RegisterTemplateType(const std::string& aName);
 
 		template<typename T>
-		static void RegisterTemplateSpecification(const std::string& aName, const ScriptColor& aColor = DefaultColor);
+		static void RegisterTemplateSpecification(const std::string& aName, const Color& aColor = DefaultColor);
 
 		template<CleanType T>
-		static void RegisterInternal(const std::string& aName, const ScriptColor& aColor, const DataTypeInterface& anInterface);
+		static void RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface);
 
 		template<CleanType ClassType, CleanType PropertyType>
 		static void RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName);
@@ -297,27 +297,27 @@ namespace SCR
 		inline static std::unordered_map<DataTypeID, DataType>* myDataTypes = new std::unordered_map<DataTypeID, DataType>();
 		inline static std::unordered_map<DataTypeID, TemplateDataType>* myTemplateDataTypes = new std::unordered_map<DataTypeID, TemplateDataType>();
 
-		inline static const ScriptColor mySelectionTint = ScriptColor(0.2f, 0.2f, 0.2f, 0);
-		inline static const ScriptColor myHoverTint = ScriptColor(0.1f, 0.1f, 0.1f, 0);
+		inline static const Color mySelectionTint = Color(0.2f, 0.2f, 0.2f, 0);
+		inline static const Color myHoverTint = Color(0.1f, 0.1f, 0.1f, 0);
 
 		inline static const std::string myNullNameStr;
 
 	};
 
 	template<Scriptable<nlohmann::json> T>
-	inline void DataTypeManager::Register(const std::string& aName, const ScriptColor& aColor)
+	inline void DataTypeManager::Register(const std::string& aName, const Color& aColor)
 	{
 		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T, true>());
 	}
 
 	template<Fundamental T>
-	inline void DataTypeManager::Register(const std::string& aName, const ScriptColor& aColor)
+	inline void DataTypeManager::Register(const std::string& aName, const Color& aColor)
 	{
 		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T, true>());
 	}
 
 	template<typename T>
-	inline void DataTypeManager::RegisterNonSerializableType(const std::string& aName, const ScriptColor& aColor)
+	inline void DataTypeManager::RegisterNonSerializableType(const std::string& aName, const Color& aColor)
 	{
 		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T, false>());
 	}
@@ -333,7 +333,7 @@ namespace SCR
 	}
 
 	template<typename T>
-	inline void DataTypeManager::RegisterTemplateSpecification(const std::string& aName, const ScriptColor& aColor)
+	inline void DataTypeManager::RegisterTemplateSpecification(const std::string& aName, const Color& aColor)
 	{
 		DataTypeInterface dataTypeInterface
 		{
@@ -351,7 +351,7 @@ namespace SCR
 	}
 
 	template<CleanType T>
-	inline void DataTypeManager::RegisterInternal(const std::string& aName, const ScriptColor& aColor, const DataTypeInterface& anInterface)
+	inline void DataTypeManager::RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface)
 	{
 
 		const std::type_info& typeInfo = typeid(T);

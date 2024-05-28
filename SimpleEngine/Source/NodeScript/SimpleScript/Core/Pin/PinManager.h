@@ -15,6 +15,8 @@ namespace SCR
 		PinManager();
 		~PinManager();
 
+		PinManager(const PinManager&);
+
 
 		TypeContainer<PinID, Pin, PinType>::ConstIterator begin() const;
 		TypeContainer<PinID, Pin, PinType>::ConstIterator end() const;
