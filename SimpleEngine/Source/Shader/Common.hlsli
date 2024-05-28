@@ -49,11 +49,9 @@ cbuffer LightBuffer : register(b3)
     
     struct PointLightData
     {
-        float4 position;
         float4 color;
+        float3 position;
         float range;
-        float3 paddingPointLight;
-        
     } pointLights[8];
     
     uint currentPointLightCount;

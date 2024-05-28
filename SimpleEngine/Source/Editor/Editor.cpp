@@ -64,7 +64,7 @@ namespace Editor
 
 		static Math::Vector4f ambientLight = graphicsEngine->GetAmbientLightColorAndIntensity();
 		static Math::Vector4f pointLightColorAndIntensity1 = { 1.0f, 0.0f, 0.0f, 100.0f };
-		static Math::Vector4f pointLightPosition = { -5.0f, 5.5f, 4.2f, 0.0f };
+		static Math::Vector3f pointLightPosition = { -5.0f, 5.5f, 4.2f};
 		static float range = 1.0f;
 
 		if (ImGui::Begin("Light"))

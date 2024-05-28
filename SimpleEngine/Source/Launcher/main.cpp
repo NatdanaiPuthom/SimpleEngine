@@ -118,7 +118,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		Drawer::Sphere sphere;
 		sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-		sphere.position = pointLightData.position.AsVector3XYZ();
+		sphere.position = pointLightData.position;
 		sphere.radius = pointLightData.range;
 
 		Global::GetRenderer()->RenderSphere(sphere);
