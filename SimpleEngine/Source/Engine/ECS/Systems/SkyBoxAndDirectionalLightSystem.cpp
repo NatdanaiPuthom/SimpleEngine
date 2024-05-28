@@ -67,7 +67,7 @@ namespace ECS
 
 	void SkyBoxAndDirectionalLightSystem::Render()
 	{
-		auto graphicsEngine = Global::GetGraphicsEngine();
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		const Drawer::Renderer* renderer = Global::GetRenderer();
 
 		ECS::Entity skyBox = myEntityManager->GetEntity(mySkyBoxID);
@@ -93,7 +93,7 @@ namespace ECS
 
 			Global::GetGraphicsEngine()->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
 			context->OMSetDepthStencilState(Global::GetGraphicsEngine()->myOnlyGreaterDepth.Get(), 0);
-			context->OMSetBlendState(graphicsEngine->myBlendAdditive.Get(), nullptr, 0xffffffff);
+			graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
 
 			PointLightData pointlight;
 			pointlight.color = pointLightColorAndIntensity1;
@@ -126,7 +126,7 @@ namespace ECS
 
 			context->OMSetDepthStencilState(Global::GetGraphicsEngine()->myDepthStencilState.Get(), 0);
 			Global::GetGraphicsEngine()->SetRasterizerState(Graphics::eRasterizerState::BackfaceCulling);
-			context->OMSetBlendState(graphicsEngine->myBlendStateDisable.Get(), nullptr, 0xffffffff);
+			graphicsEngine->SetBlendState(Graphics::eBlendState::Disabled);
 
 			ID3D11ShaderResourceView* nullSRVs[5] = { NULL };
 			context->PSSetShaderResources(5, 5, nullSRVs);

@@ -29,10 +29,6 @@ namespace Graphics
 	public:
 		ComPtr<ID3D11DepthStencilState> myOnlyGreaterDepth;
 		ComPtr<ID3D11DepthStencilState> myDepthStencilState;
-		ComPtr<ID3D11BlendState> myBlendStateDisable;
-		ComPtr<ID3D11BlendState> myBlendAdditive;
-
-		void CreateBlendState();
 
 		GraphicsEngine();
 		~GraphicsEngine();
@@ -61,6 +57,7 @@ namespace Graphics
 		void SetVSync(const bool aShouldTurnOn);
 		void SetFPSLevelCap(const unsigned int aCapLevel);
 		void SetRasterizerState(const eRasterizerState aRasterizerState);
+		void SetBlendState(const eBlendState aBlendState);
 
 		//NOTE(v9.37.0?): Call SetWindowSizeNextFrame instead.
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
@@ -110,6 +107,7 @@ namespace Graphics
 		void CreateBonesBuffer();
 		void CreateGBuffer(const Math::Vector2ui aResolution);
 		void CreateDeferredBuffer(const Math::Vector2ui aResolution);
+		void CreateBlendState();
 		std::vector<RenderTarget> CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution);
 	private:
 		void LoadSettingsFromJson();
@@ -127,6 +125,7 @@ namespace Graphics
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
 		std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<size_t>(eRasterizerState::Count)> myRasterizerStates;
+		std::array<ComPtr<ID3D11BlendState>, static_cast<size_t>(eBlendState::Count)> myBlendStates;
 		std::array<float, 4> myClearColor;
 
 		ComPtr<ID3D11Device> myDevice;

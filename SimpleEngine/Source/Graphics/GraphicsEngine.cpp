@@ -17,35 +17,6 @@
 
 namespace Graphics
 {
-	void GraphicsEngine::CreateBlendState()
-	{
-		HRESULT result = S_OK;
-		D3D11_BLEND_DESC blendStateDescription = {};
-
-		blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
-		blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendStateDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		blendStateDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		result = myDevice->CreateBlendState(&blendStateDescription, myBlendStateDisable.ReleaseAndGetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create blend state");
-		
-		D3D11_BLEND_DESC blendStateDescription2 = {};
-		blendStateDescription2.RenderTarget[0].BlendEnable = TRUE;
-		blendStateDescription2.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		blendStateDescription2.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-		blendStateDescription2.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendStateDescription2.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDescription2.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDescription2.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
-		blendStateDescription2.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		result = myDevice->CreateBlendState(&blendStateDescription2, myBlendAdditive.ReleaseAndGetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create blend state");
-	}
-
 	GraphicsEngine::GraphicsEngine()
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
@@ -310,13 +281,13 @@ namespace Graphics
 
 	void GraphicsEngine::RenderDeferredFromGBuffer()
 	{
-		static constexpr size_t gBufferCount = 5;
+		static constexpr size_t gBufferCount = Global_GBuffer_Count;
 
 		std::vector<Graphics::RenderTarget>& gBuffers = myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)];
 
 		ID3D11ShaderResourceView* shaderResources[gBufferCount] = {};
 
-		for (size_t i = 0; i < gBuffers.size(); ++i)
+		for (size_t i = 0; i < gBufferCount; ++i)
 		{
 			shaderResources[i] = gBuffers[i].shaderResourceView.Get();
 		}
@@ -326,12 +297,7 @@ namespace Graphics
 		std::shared_ptr<const Shader> shader = GetShader(eShaderType::Deferred);
 		shader->BindThisShader(myContext.Get());
 
-		myContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		myContext->IASetInputLayout(nullptr);
-		myContext->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
-		myContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
-		myContext->GSSetShader(nullptr, nullptr, 0);
-		myContext->Draw(3, 0);
+		RenderFullScreenQuad();
 
 		ID3D11ShaderResourceView* nullSRVs[gBufferCount] = { NULL };
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, gBufferCount, nullSRVs);
@@ -535,6 +501,11 @@ namespace Graphics
 		}
 
 		myContext->RSSetState(myCurrentRasterizerState.Get());
+	}
+
+	void GraphicsEngine::SetBlendState(const eBlendState aBlendState)
+	{
+		myContext->OMSetBlendState(myBlendStates[static_cast<size_t>(aBlendState)].Get(), nullptr, 0xffffffff);
 	}
 
 	void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
@@ -1065,5 +1036,34 @@ namespace Graphics
 		{
 			assert(false && "Failed to create LightConstantBuffer");
 		}
+	}
+
+	void GraphicsEngine::CreateBlendState()
+	{
+		HRESULT result = S_OK;
+		D3D11_BLEND_DESC blendStateDescription = {};
+
+		blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
+		blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
+		blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+		blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendStateDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+		blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendStateDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		result = myDevice->CreateBlendState(&blendStateDescription, myBlendStates[static_cast<size_t>(eBlendState::Disabled)].ReleaseAndGetAddressOf());
+		assert(SUCCEEDED(result) && "Failed to create blend state");
+
+		D3D11_BLEND_DESC blendStateDescription2 = {};
+		blendStateDescription2.RenderTarget[0].BlendEnable = TRUE;
+		blendStateDescription2.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendStateDescription2.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+		blendStateDescription2.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendStateDescription2.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendStateDescription2.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		blendStateDescription2.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
+		blendStateDescription2.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		result = myDevice->CreateBlendState(&blendStateDescription2, myBlendStates[static_cast<size_t>(eBlendState::AdditiveBlend)].ReleaseAndGetAddressOf());
+		assert(SUCCEEDED(result) && "Failed to create blend state");
 	}
 }
