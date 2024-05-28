@@ -12,7 +12,5 @@ namespace Test
 		void Init();
 		void Update();
 		void Render() const;
-
-		ECS::EntityID myDirectionalLightID;
 	};
 }

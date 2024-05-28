@@ -4,9 +4,11 @@
 
 namespace ECS
 {
-	SystemManager::SystemManager()
-		: myFixedUpdateTime(1.0f / 60.0f)
+	SystemManager::SystemManager(EntityManager* aEntityManager)
+		: myEntityManager(aEntityManager)
+		, myFixedUpdateTime(1.0f / 60.0f)
 		, myTimer(0.0f)
+		, mySkyBoxAndDirectionalLightSystem(aEntityManager)
 	{
 	}
 
@@ -20,6 +22,8 @@ namespace ECS
 		{
 			system->Init();
 		}
+
+		mySkyBoxAndDirectionalLightSystem.Init();
 	}
 
 	void SystemManager::Update()
@@ -48,6 +52,7 @@ namespace ECS
 		for (auto& system : mySystems)
 		{
 			system->Update();
+			mySkyBoxAndDirectionalLightSystem.Update();
 		}
 
 		for (auto& system : mySystems)
@@ -64,9 +69,13 @@ namespace ECS
 		}
 	}
 
+	void SystemManager::RenderSkyBoxAndDirectionalLight()
+	{
+		mySkyBoxAndDirectionalLightSystem.Render();
+	}
+
 	void SystemManager::AddSystem(std::unique_ptr<System> aSystem)
 	{
 		mySystems.push_back(std::move(aSystem));
-		mySystemPointer[typeid(*mySystems.back())] = mySystems.back().get();
 	}
 }

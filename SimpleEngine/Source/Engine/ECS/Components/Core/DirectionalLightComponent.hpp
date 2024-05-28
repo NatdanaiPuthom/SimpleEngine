@@ -6,7 +6,7 @@
 
 namespace ECS
 {
-	struct SkyBoxComponent final
+	struct DirectionalLight final
 	{
 		Math::Transform transform;
 		const Graphics::Mesh* mesh = nullptr;

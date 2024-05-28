@@ -90,6 +90,31 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
+	void Renderer::RenderStaticModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTextures) const
+	{
+		const auto context = Global::GetGraphicsEngine()->GetContext();
+
+		TransformBufferData objectBuffer = {};
+		objectBuffer.modelWorldMatrix = aTransformMatrix;
+
+		myTransformBuffer->Bind(myTransformBuffer->GetSlot());
+		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
+
+		aShader->BindThisShader(context.Get());
+		aTextures->Bind(context, aTextures->GetSlot());
+
+		UINT stride = sizeof(Graphics::Vertex);
+		UINT offset = 0;
+
+		context->IASetVertexBuffers(0, 1, aMesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(aMesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		context->DrawIndexed(static_cast<UINT>(aMesh->myMeshData.indices.size()), 0, 0);
+
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
 	void Renderer::RenderAnimatedModel(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent, ECS::AnimatedComponent* aSkeletonComponent)
 	{
 		const auto context = Global::GetGraphicsEngine()->GetContext();
@@ -125,14 +150,14 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderLine(const Drawer::Line& aLine)
+	void Renderer::RenderLine(const Drawer::Line& aLine) const
 	{
 		myLineDrawer->Render(aLine);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderLine(const std::vector<Drawer::Line>& aLines)
+	void Renderer::RenderLine(const std::vector<Drawer::Line>& aLines) const
 	{
 		const size_t sizeLimit = myLineDrawer->GetInstanceSizeLimit();
 
@@ -156,7 +181,7 @@ namespace Drawer
 		}
 	}
 
-	void Renderer::RenderSphere(const Drawer::Sphere& aSphere)
+	void Renderer::RenderSphere(const Drawer::Sphere& aSphere) const
 	{
 		mySphereDrawer->Render(aSphere);
 

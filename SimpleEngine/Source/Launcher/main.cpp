@@ -105,24 +105,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		graphicsEngine.RenderDeferredFromGBuffer();
 
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
-
-		ECS::Entity skybox = ecs.GetEntity(1);
-		auto transform = skybox->GetComponent<ECS::TransformComponent>();
-		auto mesh = skybox->GetComponent<ECS::MeshComponent>();
-
-		transform->transform.SetPosition( graphicsEngine.GetCurrentCamera()->GetPosition());
-		Global::GetRenderer()->RenderStaticModel(transform, mesh);
-
-
-		PointLightData pointLightData = graphicsEngine.GetPointLightData(0);
-
-		Drawer::Sphere sphere;
-		sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-		sphere.position = pointLightData.position;
-		sphere.radius = pointLightData.range;
-
-		Global::GetRenderer()->RenderSphere(sphere);
-
+		ecs.RenderSkyBoxAndDirectionalLight();
 		PROFILER_END();
 #endif
 

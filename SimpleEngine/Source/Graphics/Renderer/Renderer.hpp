@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Math/Matrix4x4.hpp"
 #include "Graphics/Renderer/Drawer/BoundingBoxDrawer.hpp"
 #include "Graphics/Renderer/Drawer/LineDrawer.hpp"
 #include "Graphics/Renderer/Drawer/SphereDrawer.hpp"
@@ -16,6 +17,9 @@ namespace ECS
 namespace Graphics
 {
 	class ConstantBuffer;
+	class Mesh;
+	class Shader;
+	class Texture;
 }
 
 namespace Drawer
@@ -30,10 +34,11 @@ namespace Drawer
 
 		void RenderAnimatedModel(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent, ECS::AnimatedComponent* aSkeletonComponent);
 		void RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const;
+		void RenderStaticModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTextures) const; //NOTE(v9.37.1): For testing SkyBox will need to refactor how rendering work later
 
-		void RenderLine(const Drawer::Line& aLine);
-		void RenderLine(const std::vector<Drawer::Line>& aLines);
-		void RenderSphere(const Drawer::Sphere& aSphere);
+		void RenderLine(const Drawer::Line& aLine) const;
+		void RenderLine(const std::vector<Drawer::Line>& aLines) const;
+		void RenderSphere(const Drawer::Sphere& aSphere) const;
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
 
 	private:

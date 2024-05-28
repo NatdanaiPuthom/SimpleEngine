@@ -26,6 +26,7 @@ namespace ECS
 		void Init();
 		void Update();
 		void Render();
+		void RenderSkyBoxAndDirectionalLight();
 
 		void AddSystem(std::unique_ptr<System> aSystem);
 
