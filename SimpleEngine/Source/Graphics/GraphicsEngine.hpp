@@ -38,6 +38,7 @@ namespace Graphics
 		void RenderDeferredFromGBuffer();
 
 		void AddPointLight(const PointLightData& aPointLightData);
+		PointLightData GetPointLightData(const int aIndex);
 
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
@@ -107,6 +108,8 @@ namespace Graphics
 		void PreloadTextures();
 		void PreloadShaders();
 		void ClearLightBuffer();
+		void ClearGBuffer();
+		void ClearDepthStencilView();
 		void UnbindAllRenderTargets();
 		void UpdateCameraBuffer();
 		void UpdateLightBuffer();

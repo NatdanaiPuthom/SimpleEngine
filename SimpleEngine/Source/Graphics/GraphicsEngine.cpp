@@ -94,10 +94,12 @@ namespace Graphics
 
 	void GraphicsEngine::PrepareFrame()
 	{
-		ClearLightBuffer(); //NOTE(v9.37.1): Fix Lightning Pass
+		ClearDepthStencilView();
+		ClearGBuffer();
+		ClearLightBuffer();
 
 		UpdateCameraBuffer();
-	
+
 		{
 			TimeBufferData timeBuffer = {};
 			timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
@@ -178,6 +180,21 @@ namespace Graphics
 		myLightBufferData->currentPointLightCount = 0;
 	}
 
+	void GraphicsEngine::ClearGBuffer()
+	{
+		const std::vector<RenderTarget>& gBufferRenderTargets = myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)];
+
+		for (size_t i = 0; i < gBufferRenderTargets.size(); ++i)
+		{
+			myContext->ClearRenderTargetView(gBufferRenderTargets[i].renderTargetView.Get(), &myClearColor[0]);
+		}
+	}
+
+	void GraphicsEngine::ClearDepthStencilView()
+	{
+		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	}
+
 	const bool GraphicsEngine::AddTexture(const char* aFileName, const unsigned int aSlot)
 	{
 		auto it = myLoadedTextures.find(aFileName);
@@ -240,7 +257,7 @@ namespace Graphics
 
 		PROFILER_BEGIN("ImGui BeginFrame");
 		myImGuiEngine->BeginFrame();
-		PROFILER_END();
+		PROFILER_END();	
 
 		PROFILER_BEGIN("Prepare Frame");
 		PrepareFrame();
@@ -257,6 +274,7 @@ namespace Graphics
 
 		PROFILER_BEGIN("Present frame");
 		mySwapChain->Present(myFPSLevelCap, 0);
+
 		PROFILER_END();
 	}
 
@@ -295,6 +313,11 @@ namespace Graphics
 		++myLightBufferData->currentPointLightCount;
 
 		UpdateLightBuffer();
+	}
+
+	PointLightData GraphicsEngine::GetPointLightData(const int aIndex)
+	{
+		return myLightBufferData->pointLightData[aIndex];
 	}
 
 	void GraphicsEngine::UnbindAllRenderTargets()
@@ -402,8 +425,6 @@ namespace Graphics
 
 	void GraphicsEngine::SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer)
 	{
-		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
 		UnbindAllRenderTargets();
 
 		const std::vector<RenderTarget>& originalRenderTargets = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
@@ -414,7 +435,6 @@ namespace Graphics
 		for (size_t i = 0; i < count; ++i)
 		{
 			renderTargetsPointer[i] = originalRenderTargets[i].renderTargetView.Get();
-			myContext->ClearRenderTargetView(renderTargetsPointer[i], &myClearColor[0]);
 		}
 
 		myContext->OMSetRenderTargets(static_cast<unsigned int>(count), &renderTargetsPointer[0], aDepthBuffer);
