@@ -91,23 +91,44 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		editor.Update();
 		PROFILER_END();
 
-		editor.Render();
-
+	
 		PROFILER_BEGIN("Render To GBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
 		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();
 
+
 #ifndef _SIMPLE
 		PROFILER_BEGIN("Render To DeferredBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred);
 		graphicsEngine.RenderDeferredFromGBuffer();
+
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
+
+		ECS::Entity skybox = ecs.GetEntity(1);
+		auto transform = skybox->GetComponent<ECS::TransformComponent>();
+		auto mesh = skybox->GetComponent<ECS::MeshComponent>();
+
+		transform->transform.SetPosition( graphicsEngine.GetCurrentCamera()->GetPosition());
+		Global::GetRenderer()->RenderStaticModel(transform, mesh);
+
+
+		PointLightData pointLightData = graphicsEngine.GetPointLightData(0);
+
+		Drawer::Sphere sphere;
+		sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		sphere.position = pointLightData.position.AsVector3XYZ();
+		sphere.radius = pointLightData.range;
+
+		Global::GetRenderer()->RenderSphere(sphere);
+
 		PROFILER_END();
 #endif
 
 		PROFILER_BEGIN("Render to BackBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
+		editor.Render();
 
 #ifdef _SIMPLE
 		graphicsEngine.RenderDeferredFromGBuffer();
