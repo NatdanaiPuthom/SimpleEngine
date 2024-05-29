@@ -3,6 +3,7 @@
 namespace Graphics
 {
 	constexpr size_t Global_Max_Joints = 64;
+	constexpr size_t Global_Max_PointLights = 100;
 
 	constexpr size_t Global_Constant_Buffer_Slot_Camera = 0;
 	constexpr size_t Global_Constant_Buffer_Slot_Transform = 1;
