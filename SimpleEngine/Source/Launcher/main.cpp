@@ -35,7 +35,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
-	hInstance; nCmdShow;
 	PROFILER_BEGIN("MainSingleton Initialize");
 	MainSingleton::Init();
 	PROFILER_END();
@@ -67,11 +66,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	Script::SimpleNodeScript simpleScript;
 	simpleScript.Init();
 	PROFILER_END();
-
-		//SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(showAdvanced);
-	BeginMemoryTracking(true);
-	int* a= new int(10); a;
-	EndMemoryTracking();
 
 	while (Global::GetGameIsRunning())
 	{

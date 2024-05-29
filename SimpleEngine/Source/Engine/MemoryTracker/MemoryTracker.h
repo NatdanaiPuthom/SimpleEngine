@@ -76,7 +76,7 @@ namespace SimpleTracker
 	{
 		inline static SimpleMemoryTrackerWrapper globalStaticMemoryTrackerWrapper;
 	};
+}
 
 #define BeginMemoryTracking(aShowAdvanced) SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(aShowAdvanced, std::source_location::current().function_name())
 #define EndMemoryTracking() SimpleTracker::SimpleMemoryTracker::StopMemoryTracking()
-}

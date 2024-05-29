@@ -24,13 +24,13 @@ typedef struct _SimpleCrtMemBlockHeader
 
 namespace SimpleTracker
 {
-	std::mutex SimpleMemoryTracker::myShortLivedAllocationMapMutex;
+	char localBuffer[255];
+
 	std::unordered_map<StackTrace, int> SimpleMemoryTracker::myShortLivedStackTraceToAllocationCount;
 	std::unordered_map<long, SimpleMemoryTracker::Allocation> SimpleMemoryTracker::myShortLivedAllocationMap;
-	std::atomic<bool> SimpleMemoryTracker::myHasStarted = false;
+	std::mutex SimpleMemoryTracker::myShortLivedAllocationMapMutex;
 	int SimpleMemoryTracker::myShortLivedTotalAllocationCount;
-
-	char localBuffer[255];
+	std::atomic<bool> SimpleMemoryTracker::myHasStarted = false;
 
 #ifdef _DEBUG
 	int SimpleMemoryTracker::AllocHook(int aAllocType, void* aUserData, size_t aSize, int aBlockType, long aRequestNumber, const unsigned char*, int)
@@ -208,6 +208,11 @@ namespace SimpleTracker
 
 	void SimpleMemoryTracker::StartMemoryTracking(const bool aShowAdvanced, const std::string& aCallerName)
 	{
+		if (myHasStarted == true) //TO-DO(v10.0.0): Better error and warning messages
+		{
+			return;
+		}
+
 		sprintf_s(localBuffer, std::string("== " + aCallerName).c_str());
 		myHasStarted = true;
 		myShortLivedMemoryTrackingSettings = { aShowAdvanced, true };
@@ -215,6 +220,11 @@ namespace SimpleTracker
 
 	void SimpleMemoryTracker::StopMemoryTracking()
 	{
+		if (myHasStarted == false)  //TO-DO(v10.0.0): Better error and warning messages
+		{
+			return;
+		}
+
 		myHasStarted = false;
 		PrintShortLivedToOutput();
 	}
@@ -275,7 +285,9 @@ namespace SimpleTracker
 	}
 
 #else 
-	void SimpleMemoryTracker::StartMemoryTracking(const MemoryTrackingSettings&) {}
-	void SimpleMemoryTracker::StopMemoryTrackingAndPrint() {}
+	void SimpleMemoryTracker::Init(const MemoryTrackingSettings& /*aTrackingSettings*/) {};
+	void SimpleMemoryTracker::Destory() {};
+	void SimpleMemoryTracker::StartMemoryTracking(const bool /*aShowAdvanced*/, const std::string& /*aCallerName*/) {}
+	void SimpleMemoryTracker::StopMemoryTracking() {}
 #endif 
 }
