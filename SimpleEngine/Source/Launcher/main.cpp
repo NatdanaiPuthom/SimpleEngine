@@ -18,17 +18,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 {
 	//SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(memoryTrackerSettings); //NOTE(v9.36.4): It is inline static class wrapper now in MemoryTracker.h
 
-	/*PROFILER_INIT();
+	PROFILER_INIT();
 	PROFILER_ENABLE();
 	PROFILER_START_LISTEN();
-	PROFILER_BEGIN("Main.cpp");*/
+	PROFILER_BEGIN("Main.cpp");
 
 	Run(hInstance, nCmdShow);
 
-	//PROFILER_END();
-	//PROFILER_DISABLE();
+	PROFILER_END();
+	PROFILER_DISABLE();
 
-	//Simple::EasyProfilerOutput();
+	Simple::EasyProfilerOutput();
 
 	return 0;
 }
@@ -36,7 +36,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
 	hInstance; nCmdShow;
-	/*PROFILER_BEGIN("MainSingleton Initialize");
+	PROFILER_BEGIN("MainSingleton Initialize");
 	MainSingleton::Init();
 	PROFILER_END();
 
@@ -66,21 +66,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_BEGIN("SimpleScript Initialize");
 	Script::SimpleNodeScript simpleScript;
 	simpleScript.Init();
-	PROFILER_END();*/
+	PROFILER_END();
 
-	//SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(true);
+	SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(true);
+	int* a= new int(10); a;
+	SimpleTracker::SimpleMemoryTracker::StopMemoryTracking();
 
-	/*for (size_t i = 0; i < 100; ++i)
-	{
-		int* a = new int(5); a;
-		delete a;
-	}*/
-
-	//int* b = new int(10); b;
-	//int* a= new int(10); a;
-	//SimpleTracker::SimpleMemoryTracker::StopMemoryTracking();
-
-	/*while (Global::GetGameIsRunning())
+	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
 
@@ -129,5 +121,5 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_BEGIN("Endframe");
 		graphicsEngine.EndFrame();
 		PROFILER_END();
-	}*/
+	}
 }

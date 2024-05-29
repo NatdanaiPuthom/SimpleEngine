@@ -53,8 +53,6 @@ namespace SimpleTracker
 		static std::unordered_map<long, Allocation> myShortLivedAllocationMap;
 		static std::atomic<bool> myHasStarted;
 		static int myShortLivedTotalAllocationCount;
-
-		static std::unordered_map<long, long> test;
 	};
 
 	class SimpleMemoryTrackerWrapper final
