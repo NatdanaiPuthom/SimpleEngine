@@ -42,4 +42,8 @@
 
 #pragma message("---------Never give up on your dreams!---------------")
 
+#ifdef _DEBUG
+#include "Engine/MemoryTracker/MemoryTracker.h"
+#endif
+
 using Microsoft::WRL::ComPtr;

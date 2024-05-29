@@ -28,4 +28,6 @@
 #include "Engine/Math/Math.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
 
-namespace SU = SimpleUtilities;
+#ifdef _DEBUG
+#include "Engine/MemoryTracker/MemoryTracker.h"
+#endif

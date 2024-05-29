@@ -52,5 +52,6 @@
 
 #pragma message("---------Never give up on your dreams!---------------")
 
-namespace SU = SimpleUtilities;
-namespace S = Simple;
+#ifdef _DEBUG
+#include "Engine/MemoryTracker/MemoryTracker.h"
+#endif

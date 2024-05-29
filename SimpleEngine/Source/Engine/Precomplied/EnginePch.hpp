@@ -34,5 +34,6 @@
 
 #include "Engine/Global.hpp"
 
-namespace SU = SimpleUtilities;
-namespace S = Simple;
+#ifdef _DEBUG
+#include "Engine/MemoryTracker/MemoryTracker.h"
+#endif

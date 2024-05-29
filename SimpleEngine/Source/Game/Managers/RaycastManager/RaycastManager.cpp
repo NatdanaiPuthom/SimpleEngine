@@ -103,7 +103,7 @@ namespace Simple
 		myRaycastLine->startPosition.x += 0.05f;
 		myRaycastLine->endPosition = myRaycastLine->startPosition + mouseRay * 10000.0f;
 
-		SU::Ray ray(camera->GetPosition(), mouseRay);
+		SimpleUtilities::Ray ray(camera->GetPosition(), mouseRay);
 		return ray;
 	}
 
@@ -158,7 +158,7 @@ namespace Simple
 
 	void RaycastManager::CheckRayNavmesh()
 	{
-		SU::Ray ray = GetScreenPointToRay(MainSingleton::GetInputManager().GetMousePosition());
+		SimpleUtilities::Ray ray = GetScreenPointToRay(MainSingleton::GetInputManager().GetMousePosition());
 		Math::Vector3f intersectionPoint;
 		Math::Vector3 closetPoint(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 		bool hasHit = false;
