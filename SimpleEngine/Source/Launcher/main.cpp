@@ -10,8 +10,6 @@
 #include "Editor/Editor.hpp"
 #include "NodeScript/SimpleNodeScript.hpp"
 
-#include "External/TheGameAssembly/StackWalker/StackWalker.h"
-
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
