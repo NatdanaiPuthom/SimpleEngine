@@ -33,6 +33,8 @@ namespace SimpleUtilities
 	{
 	}
 
+#undef min //NOTE(v10.0.0): Where did this come from?
+
 	void Timer::Update()
 	{
 		const std::chrono::duration<double> deltaTime = std::chrono::high_resolution_clock::now() - myStartTime;

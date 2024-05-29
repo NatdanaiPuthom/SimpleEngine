@@ -1,6 +1,10 @@
 #pragma once
 #pragma message("---------Never give up on your dreams!---------------")
 
+#include "Engine/MemoryTracker/MemoryTracker.h"
+
+#pragma message("---------Never give up on your dreams!---------------")
+
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -49,7 +53,3 @@
 #include "Editor/Template/ToolInterface.hpp"
 
 #pragma message("---------Never give up on your dreams!---------------")
-
-#ifdef _DEBUG
-#include "Engine/MemoryTracker/MemoryTracker.h"
-#endif

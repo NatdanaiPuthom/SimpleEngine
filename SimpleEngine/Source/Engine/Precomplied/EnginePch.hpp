@@ -1,6 +1,10 @@
 #pragma once
 #pragma message("---------Never give up on your dreams!---------------")
 
+#include "Engine/MemoryTracker/MemoryTracker.h"
+
+#pragma message("---------Never give up on your dreams!---------------")
+
 #if !defined(WIN32_LEAN_AND_MEAN)
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -33,7 +37,3 @@
 #include "Engine/SimpleUtilities/Utility.hpp"
 
 #include "Engine/Global.hpp"
-
-#ifdef _DEBUG
-#include "Engine/MemoryTracker/MemoryTracker.h"
-#endif
