@@ -204,16 +204,28 @@ namespace std
 }
 
 template<typename T>
-struct RegisterProperty
+struct RegisterType
 {
-	RegisterProperty(const char* aName, SCRIPT::Color aColor = SCRIPT::DefaultColor)
+	RegisterType(const char* aName, SCRIPT::Color aColor = SCRIPT::DefaultColor)
 	{
-		SCRIPT::DataTypeRegistry::Register<T>(aName, aColor);
+		SCRIPT::DataTypeRegistry::RegisterNonSerializableType<T>(aName, aColor);
 	}
 };
 
-#define FLY_PROPERTY(type) \
-	
+#define FLY_DATATYPE(type, color) inline static RegisterType<type> registerType##type = RegisterType<type>("type", color);
+
+
+
+struct RegisterProperty
+{
+	template<typename StructType, typename MemberType>
+	RegisterProperty(MemberType StructType::* aMember)
+	{
+		SCRIPT::DataTypeRegistry::RegisterProperty(aMember, "");
+	}
+};
+
+#define FLY_PROPERTY(member) inline static RegisterProperty prop = RegisterProperty(member);
 
 namespace SCR
 {
@@ -284,15 +296,15 @@ namespace SCR
 		DataTypeRegistry::Register<char, eNodeOperatorTrait::All, std::vector>("Char", Color(0.2f, 0.7f, 0.4f));
 		DataTypeRegistry::Register<std::string>("String", Color(0.3f, 0.8f, 0.2f));
 
-		/*NodeTypeRegistry::RegisterNodeType(EmilNode, "Test/Emil");
-		NodeTypeRegistry::RegisterNodeType(EmilNode2, "Test/Emil2");
+		//NodeTypeRegistry::RegisterNodeType(EmilNode, "Test/Emil");
+		//NodeTypeRegistry::RegisterNodeType(EmilNode2, "Test/Emil2");
 
-		DataTypeRegistry::RegisterNonSerializableType<EmilComponent>("Emil");
-		DataTypeRegistry::Register<EmilComponent*>("Emil*");
+		//DataTypeRegistry::RegisterNonSerializableType<EmilComponent>("Emil");
+		////DataTypeRegistry::Register<EmilComponent*>("Emil*");
 
-		DataTypeRegistry::RegisterProperty(&EmilComponent::a, "A");
-		DataTypeRegistry::RegisterProperty(&EmilComponent::b, "B");
-		DataTypeRegistry::RegisterProperty(&EmilComponent::c, "C");*/
+		//DataTypeRegistry::RegisterProperty(&EmilComponent::a, "A");
+		//DataTypeRegistry::RegisterProperty(&EmilComponent::b, "B");
+		//DataTypeRegistry::RegisterProperty(&EmilComponent::c, "C");
 	}
 }
 
