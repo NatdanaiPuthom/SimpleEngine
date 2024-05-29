@@ -1,5 +1,5 @@
 #pragma once
-#include "../ScriptDefines.h"
+#include "Core/ScriptDefines.h"
 #include <string>
 
 namespace SCR
@@ -24,6 +24,6 @@ namespace SCR
 		static void SaveCustomEvents(const std::string& aFilePath);
 		static void LoadCustomEvents(ScriptFoundation& aFoundation);
 
-		inline static std::string SavePath = "../Source/NodeScript/data/SimpleScripts";
+		static std::string SavePath;
 	};
 }

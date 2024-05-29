@@ -19,6 +19,8 @@ using json = nlohmann::json;
 
 namespace SCR
 {
+	std::string ScriptLoader::SavePath = "../Source/NodeScript/data/SimpleScripts";
+
 	void ScriptLoader::Clear()
 	{
 		SavePath.~basic_string();

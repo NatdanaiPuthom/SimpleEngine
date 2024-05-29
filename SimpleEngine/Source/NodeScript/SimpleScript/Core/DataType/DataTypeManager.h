@@ -240,7 +240,6 @@ namespace SCR
 		const std::string name;
 	};
 
-
 	const Color DefaultColor = Color(1.f, 1.f, 0.3f);
 
 	class DataTypeManager
@@ -294,14 +293,13 @@ namespace SCR
 
 	private:
 
-		inline static std::unordered_map<DataTypeID, DataType>* myDataTypes = new std::unordered_map<DataTypeID, DataType>();
-		inline static std::unordered_map<DataTypeID, TemplateDataType>* myTemplateDataTypes = new std::unordered_map<DataTypeID, TemplateDataType>();
+		 static std::unordered_map<DataTypeID, DataType> myDataTypes;
+		 static std::unordered_map<DataTypeID, TemplateDataType> myTemplateDataTypes;
 
-		inline static const Color mySelectionTint = Color(0.2f, 0.2f, 0.2f, 0);
-		inline static const Color myHoverTint = Color(0.1f, 0.1f, 0.1f, 0);
+		 static const Color mySelectionTint;
+		 static const Color myHoverTint;
 
-		inline static const std::string myNullNameStr;
-
+		 static const std::string myNullNameStr;
 	};
 
 	template<Scriptable<nlohmann::json> T>
@@ -329,7 +327,7 @@ namespace SCR
 		{
 			aName
 		};
-		myTemplateDataTypes->emplace(typeid(TemplateType).hash_code(), templateObjectType);
+		myTemplateDataTypes.emplace(typeid(TemplateType).hash_code(), templateObjectType);
 	}
 
 	template<typename T>
@@ -363,11 +361,11 @@ namespace SCR
 			anInterface
 		};
 
-		if (myDataTypes->contains(typeInfo.hash_code()))
+		if (myDataTypes.contains(typeInfo.hash_code()))
 		{
 			throw std::runtime_error("Two object types have the same hash value");
 		}
-		myDataTypes->emplace(typeInfo.hash_code(), dataType);
+		myDataTypes.emplace(typeInfo.hash_code(), dataType);
 	}
 
 	template<CleanType ClassType, CleanType PropertyType>

@@ -2,6 +2,8 @@
 
 namespace SCR
 {
+	std::vector<PinType> PinTypeManager::myPinTypes;
+
 	PinTypeID PinTypeManager::Create(const std::string& aName, ePinFlowType aFlowType, DataTypeID aHashID, PinSetFunction aSetFunction)
 	{
 		PinTypeID id = myPinTypes.size();

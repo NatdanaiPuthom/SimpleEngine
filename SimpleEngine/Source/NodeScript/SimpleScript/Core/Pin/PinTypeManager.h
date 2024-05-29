@@ -23,6 +23,6 @@ namespace SCR
 		static void Destroy();
 
 	private:
-		inline static std::vector<PinType> myPinTypes;
+		static std::vector<PinType> myPinTypes;
 	};
 }

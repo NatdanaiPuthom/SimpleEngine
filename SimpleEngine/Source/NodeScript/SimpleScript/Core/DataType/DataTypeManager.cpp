@@ -2,6 +2,13 @@
 
 namespace SCR
 {
+	std::unordered_map<DataTypeID, DataType> DataTypeManager::myDataTypes;
+	std::unordered_map<DataTypeID, TemplateDataType> DataTypeManager::myTemplateDataTypes;
+
+	const Color DataTypeManager::mySelectionTint = Color(0.2f, 0.2f, 0.2f, 0);
+	const Color DataTypeManager::myHoverTint = Color(0.1f, 0.1f, 0.1f, 0);
+
+	const std::string DataTypeManager::myNullNameStr;
 
 	bool DataTypeManager::EditData(DataTypeID aDataTypeID, void* aDataPtr)
 	{
@@ -46,7 +53,7 @@ namespace SCR
 			{
 				if (const DataType* propertyDataType = Find(property.typeID))
 				{
-					
+
 					nlohmann::json propertyJson;
 					const void* propertyDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + property.byteOffset);
 					SaveData(property.typeID, propertyJson, propertyDataPtr);
@@ -82,8 +89,8 @@ namespace SCR
 
 	MemoryPoolID DataTypeManager::AllocateData(DataTypeID aDataTypeID, MemoryPool& aMemoryPool)
 	{
-		auto it = myDataTypes->find(aDataTypeID);
-		if (it != myDataTypes->end())
+		auto it = myDataTypes.find(aDataTypeID);
+		if (it != myDataTypes.end())
 		{
 			const DataType& dataType = it->second;
 			if (dataType.typeInterface.creation.allocate)
@@ -96,8 +103,8 @@ namespace SCR
 
 	void DataTypeManager::CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource)
 	{
-		auto it = myDataTypes->find(aDataTypeID);
-		if (it != myDataTypes->end())
+		auto it = myDataTypes.find(aDataTypeID);
+		if (it != myDataTypes.end())
 		{
 			const DataType& dataType = it->second;
 			if (dataType.typeInterface.creation.copy)
@@ -109,8 +116,8 @@ namespace SCR
 
 	void DataTypeManager::SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2)
 	{
-		auto it = myDataTypes->find(aDataTypeID);
-		if (it != myDataTypes->end())
+		auto it = myDataTypes.find(aDataTypeID);
+		if (it != myDataTypes.end())
 		{
 			const DataType& dataType = it->second;
 			if (dataType.typeInterface.creation.swap)
@@ -122,16 +129,16 @@ namespace SCR
 
 	const std::string& DataTypeManager::GetName(DataTypeID aDataTypeID)
 	{
-		if (myDataTypes->contains(aDataTypeID))
+		if (myDataTypes.contains(aDataTypeID))
 		{
-			return myDataTypes->at(aDataTypeID).name;
+			return myDataTypes.at(aDataTypeID).name;
 		}
 		return myNullNameStr;
 	}
 
 	DataTypeID DataTypeManager::GetDataTypeIDByName(const std::string& aName)
 	{
-		for (const auto& [dataTypeID, dataType] : *myDataTypes)
+		for (const auto& [dataTypeID, dataType] : myDataTypes)
 		{
 			if (aName == dataType.name)
 			{
@@ -143,14 +150,14 @@ namespace SCR
 
 	const std::unordered_map<DataTypeID, DataType>& DataTypeManager::GetObjectTypes()
 	{
-		return *myDataTypes;
+		return myDataTypes;
 	}
 
 	std::unordered_map<DataTypeID, const DataType*> DataTypeManager::GetFunctionObjectTypes()
 	{
 		std::unordered_map<DataTypeID, const DataType*> funcObjectTypes;
 
-		for (const auto& [dataTypeID, dataType] : *myDataTypes)
+		for (const auto& [dataTypeID, dataType] : myDataTypes)
 		{
 			if (dataType.typeInterface)
 			{
@@ -163,9 +170,9 @@ namespace SCR
 
 	Color DataTypeManager::GetColor(const DataTypeID aDataTypeID)
 	{
-		if (myDataTypes->contains(aDataTypeID))
+		if (myDataTypes.contains(aDataTypeID))
 		{
-			const DataType& dataType = myDataTypes->at(aDataTypeID);
+			const DataType& dataType = myDataTypes.at(aDataTypeID);
 			return dataType.color;
 		}
 		return DefaultColor;
@@ -173,9 +180,9 @@ namespace SCR
 
 	Color DataTypeManager::GetSelectionColor(const DataTypeID aDataTypeID)
 	{
-		if (myDataTypes->contains(aDataTypeID))
+		if (myDataTypes.contains(aDataTypeID))
 		{
-			const DataType& dataType = myDataTypes->at(aDataTypeID);
+			const DataType& dataType = myDataTypes.at(aDataTypeID);
 			return dataType.color - mySelectionTint;
 		}
 		return DefaultColor - mySelectionTint;
@@ -183,9 +190,9 @@ namespace SCR
 
 	Color DataTypeManager::GetHoverColor(const DataTypeID aDataTypeID)
 	{
-		if (myDataTypes->contains(aDataTypeID))
+		if (myDataTypes.contains(aDataTypeID))
 		{
-			const DataType& dataType = myDataTypes->at(aDataTypeID);
+			const DataType& dataType = myDataTypes.at(aDataTypeID);
 			return dataType.color - myHoverTint;
 		}
 		return DefaultColor - myHoverTint;
@@ -193,19 +200,15 @@ namespace SCR
 
 	void DataTypeManager::Destroy()
 	{
-		myDataTypes->clear();
-		myTemplateDataTypes->clear();
-		myNullNameStr.~basic_string();
-
-		delete myDataTypes;
-		delete myTemplateDataTypes;
+		myDataTypes.clear();
+		myTemplateDataTypes.clear();
 	}
 
 	DataType* DataTypeManager::Find(DataTypeID anID)
 	{
-		auto it = myDataTypes->find(anID);
+		auto it = myDataTypes.find(anID);
 
-		if (it != myDataTypes->end())
+		if (it != myDataTypes.end())
 		{
 			return &it->second;
 		}

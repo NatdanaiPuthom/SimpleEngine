@@ -72,9 +72,9 @@ namespace SCR
 	{
 		std::string templateTypeName;
 
-		if (DataTypeManager::myTemplateDataTypes->contains(typeid(TemplateType).hash_code()))
+		if (DataTypeManager::myTemplateDataTypes.contains(typeid(TemplateType).hash_code()))
 		{
-			templateTypeName = DataTypeManager::myTemplateDataTypes->at(typeid(TemplateType).hash_code()).name;
+			templateTypeName = DataTypeManager::myTemplateDataTypes.at(typeid(TemplateType).hash_code()).name;
 		}
 		else
 		{
