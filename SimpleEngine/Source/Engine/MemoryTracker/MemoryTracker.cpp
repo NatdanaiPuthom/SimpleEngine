@@ -30,6 +30,8 @@ namespace SimpleTracker
 	std::atomic<bool> SimpleMemoryTracker::myHasStarted = false;
 	int SimpleMemoryTracker::myShortLivedTotalAllocationCount;
 
+	char localBuffer[255];
+
 #ifdef _DEBUG
 	int SimpleMemoryTracker::AllocHook(int aAllocType, void* aUserData, size_t aSize, int aBlockType, long aRequestNumber, const unsigned char*, int)
 	{
@@ -154,6 +156,14 @@ namespace SimpleTracker
 
 		if (SimpleMemoryTracker::myAllocationMap.size() == 0)
 		{
+			if (SimpleMemoryTracker::myMemoryTrackingSettings.myShouldTrackAllAllocations)
+			{
+				OutputDebugStringA("================================================================================\n");
+				char buffer[100];
+				sprintf_s(buffer, "== Total Allocation Count: %d\n", SimpleMemoryTracker::myTotalAllocationCount);
+				OutputDebugStringA(buffer);
+			}
+
 			OutputDebugStringA("================================================================================\n");
 			OutputDebugStringA("== No memory leaks found! \n");
 			OutputDebugStringA("================================================================================\n");
@@ -196,8 +206,9 @@ namespace SimpleTracker
 		SimpleMemoryTracker::myStackTraceToAllocationCount.clear();
 	}
 
-	void SimpleMemoryTracker::StartMemoryTracking(const bool aShowAdvanced)
+	void SimpleMemoryTracker::StartMemoryTracking(const bool aShowAdvanced, const std::string& aCallerName)
 	{
+		sprintf_s(localBuffer, std::string("== " + aCallerName).c_str());
 		myHasStarted = true;
 		myShortLivedMemoryTrackingSettings = { aShowAdvanced, true };
 	}
@@ -216,16 +227,19 @@ namespace SimpleTracker
 
 		if (SimpleMemoryTracker::myShortLivedAllocationMap.size() == 0)
 		{
-			OutputDebugStringA("================================================================================\n");
+			OutputDebugStringA("\n================================================================================\n");
+			OutputDebugStringA(localBuffer);
+			char buffer[100];
+			sprintf_s(buffer, "\n== Total Allocation Count: %d\n", SimpleMemoryTracker::myShortLivedTotalAllocationCount);
+			OutputDebugStringA(buffer);
 			OutputDebugStringA("== No memory leaks found! \n");
-			OutputDebugStringA("================================================================================\n");
 			OutputDebugStringA("================================================================================\n");
 		}
 		else
 		{
 			if (SimpleMemoryTracker::myShortLivedMemoryTrackingSettings.myShouldStoreStackTraces)
 			{
-				OutputDebugStringA("================================================================================\n");
+				OutputDebugStringA("\n================================================================================\n");
 				std::unordered_map<StackTrace, int> stackTraceToLeakCountMap;
 
 				for (const auto& p : SimpleMemoryTracker::myShortLivedAllocationMap)
@@ -237,15 +251,16 @@ namespace SimpleTracker
 				PrintTopLeaks(stackTraceToLeakCountMap);
 			}
 
+			OutputDebugStringA(localBuffer);
+
 			if (SimpleMemoryTracker::myShortLivedMemoryTrackingSettings.myShouldTrackAllAllocations)
 			{
-				OutputDebugStringA("================================================================================\n");
+				OutputDebugStringA("\n");
 				char buffer[100];
 				sprintf_s(buffer, "== Total Allocation Count: %d\n", SimpleMemoryTracker::myShortLivedTotalAllocationCount);
 				OutputDebugStringA(buffer);
 			}
 
-			OutputDebugStringA("================================================================================\n");
 			char buffer[100];
 			sprintf_s(buffer, "== Number of Memory Leaks: %d\n", (int)SimpleMemoryTracker::myShortLivedAllocationMap.size());
 			OutputDebugStringA(buffer);

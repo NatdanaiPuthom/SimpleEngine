@@ -68,9 +68,10 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	simpleScript.Init();
 	PROFILER_END();
 
-	SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(true);
+		//SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(showAdvanced);
+	BeginMemoryTracking(true);
 	int* a= new int(10); a;
-	SimpleTracker::SimpleMemoryTracker::StopMemoryTracking();
+	EndMemoryTracking();
 
 	while (Global::GetGameIsRunning())
 	{

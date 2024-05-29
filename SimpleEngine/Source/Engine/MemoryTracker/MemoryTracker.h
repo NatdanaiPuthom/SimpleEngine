@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <algorithm>
 #include <atomic>
+#include <string>
+#include <source_location>
 
 //The Game Assembly stuff but modified a little bit. NOTE(v9.36.4): Modified a lot
 
@@ -29,7 +31,7 @@ namespace SimpleTracker
 		};
 
 	public:
-		static void StartMemoryTracking(const bool aShowAdvanced = false);
+		static void StartMemoryTracking(const bool aShowAdvanced = false, const std::string& aCallerName = "");
 		static void StopMemoryTracking();
 	private:
 		static void Init(const MemoryTrackingSettings& aTrackingSettings);
@@ -60,7 +62,7 @@ namespace SimpleTracker
 	public:
 		inline SimpleMemoryTrackerWrapper()
 		{
-			SimpleTracker::MemoryTrackingSettings memoryTrackingSettings = { true, true };
+			SimpleTracker::MemoryTrackingSettings memoryTrackingSettings = { false, true };
 			SimpleTracker::SimpleMemoryTracker::Init(memoryTrackingSettings);
 		}
 
@@ -74,4 +76,7 @@ namespace SimpleTracker
 	{
 		inline static SimpleMemoryTrackerWrapper globalStaticMemoryTrackerWrapper;
 	};
+
+#define BeginMemoryTracking(aShowAdvanced) SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(aShowAdvanced, std::source_location::current().function_name())
+#define EndMemoryTracking() SimpleTracker::SimpleMemoryTracker::StopMemoryTracking()
 }
