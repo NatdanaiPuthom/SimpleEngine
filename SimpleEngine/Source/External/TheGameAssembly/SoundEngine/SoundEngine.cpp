@@ -4,6 +4,11 @@
 #include <utility>
 #include "SoundEngineImpl.hpp"
 
+ std::unordered_map<unsigned int, std::string> SoundEngine::myEventAccelMap;
+
+  std::unordered_map<int, SoundEngine::Listener> SoundEngine::myListeners;
+  int SoundEngine::nextListenerId = 0;
+
 int SoundEngine::ListenerHandle::GetId() const
 {
 	return myId;

@@ -51,7 +51,7 @@ class SoundEngine
 	// SoundEngine specifics are contained in this class.
 	static inline SoundEngineImpl* myImpl = nullptr;
 
-	static inline std::unordered_map<unsigned int, std::string> myEventAccelMap{};
+	static std::unordered_map<unsigned int, std::string> myEventAccelMap;
 
 public:
 	struct ListenerHandle;
@@ -73,8 +73,8 @@ private:
 		struct ListenerHandle Handle() const;
 	};
 
-	static inline std::unordered_map<int, Listener> myListeners{};
-	static inline int nextListenerId = 0;
+	static std::unordered_map<int, Listener> myListeners;
+	static int nextListenerId;
 
 	static bool RegisterCallbackInternal(const SoundEventInstanceHandle& anEventInstanceHandle, std::shared_ptr<EventCallbackBase> aPtr);
 
