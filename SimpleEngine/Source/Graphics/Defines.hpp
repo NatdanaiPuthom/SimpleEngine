@@ -17,7 +17,6 @@ namespace Graphics
 	constexpr size_t Global_Slot_Albedo = 0;
 	constexpr size_t Global_Slot_Normal = 1;
 	constexpr size_t Global_Slot_Material = 2;
-	constexpr size_t Global_Slot_AmbientOcclusionAndCustom = 3;
 	constexpr size_t Global_Slot_CubeMap = 4;
 	constexpr size_t Global_Slot_ShadowMap = 5;
 }
