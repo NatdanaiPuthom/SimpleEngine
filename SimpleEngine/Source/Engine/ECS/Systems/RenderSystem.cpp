@@ -51,6 +51,8 @@ namespace ECS
 
 	void RenderSystem::Render()
 	{
+		const Drawer::Renderer* renderer = Global::GetRenderer();
+
 		ECS::Entities entities = myEntityManager->GetAllEntities();
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
@@ -69,7 +71,7 @@ namespace ECS
 				continue;
 			}
 
-			Global::GetRenderer()->RenderStaticModel(transform, mesh);
+			renderer->RenderStaticModel(transform, mesh);
 		}
 	}
 }
