@@ -12,7 +12,7 @@ namespace Editor
 	{
 	}
 
-	void AssetWindow::Draw()
+	void AssetWindow::Update()
 	{
 		if (ImGui::Begin("Assets"))
 		{
@@ -80,5 +80,10 @@ namespace Editor
 		}
 
 		ImGui::End();
+	}
+
+	void AssetWindow::Draw()
+	{
+		
 	}
 }
