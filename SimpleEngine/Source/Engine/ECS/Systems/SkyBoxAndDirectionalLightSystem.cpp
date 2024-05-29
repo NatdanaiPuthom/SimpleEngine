@@ -99,9 +99,29 @@ namespace ECS
 			pointLightSphere.position = pointlight.position;
 			pointLightSphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
+			graphicsEngine->AddPointLight(pointlight);
+
 			renderer->RenderSphere(pointLightSphere);
 
-			graphicsEngine->AddPointLight(pointlight);
+			std::vector<PointLightData> pointLights;
+
+			for (size_t i = 0; i < 10; ++i)
+			{
+				PointLightData pointLight2;
+				pointLight2.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+				pointLight2.position = { i * 5.0f, -1.4f, 0.0f };
+				pointLight2.range = range;
+				pointLights.push_back(pointLight2);
+			}
+
+			for (size_t i = 0; i < pointLights.size(); ++i)
+			{
+				Drawer::Sphere pointLightSpheres;
+				pointLightSpheres.radius = pointLights[i].range;
+				pointLightSpheres.position = pointLights[i].position;
+				pointLightSpheres.color = pointLights[i].color;
+				renderer->RenderSphere(pointLightSpheres);
+			}
 
 			std::vector<Graphics::RenderTarget>& gBuffers = graphicsEngine->GetRenderTargets(Graphics::eRenderTargetType::GBuffer);
 
@@ -127,6 +147,20 @@ namespace ECS
 			graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
 
 			renderer->RenderUnlit(transform.GetMatrix(), mesh, shader.get(), texture.get());
+
+			Math::Transform transform2;
+
+			for (size_t i = 0; i < pointLights.size(); ++i)
+			{
+				graphicsEngine->AddPointLight(pointLights[i]);
+
+				const Graphics::Mesh* mesh2 = Global::GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Sphere);
+				std::shared_ptr<const Graphics::Shader> shader2 = Global::GetGraphicsEngine()->GetShader("PointLightCullPS.cso", "DefaultVS.cso");
+				std::shared_ptr<const Graphics::Texture> texture2 = Global::GetGraphicsEngine()->GetTexture(Graphics::eTextureType::Default);
+				transform2.SetPosition(pointLights[i].position);
+				transform2.SetScale(pointLights[i].range);
+				renderer->RenderUnlit(transform2.GetMatrix(), mesh2, shader2.get(), texture2.get());
+			}
 
 			graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Less_Equal);
 			graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::BackfaceCulling);
