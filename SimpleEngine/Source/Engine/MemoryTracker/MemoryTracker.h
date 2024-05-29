@@ -47,9 +47,10 @@ namespace SimpleTracker
 
 		inline static int myTotalAllocationCount = 0;
 		inline static thread_local bool myIsAllocationInProgress = false;
-		inline static MemoryTrackingSettings myMemoryTrackingSettings = { false, false };
 
+		inline static MemoryTrackingSettings myMemoryTrackingSettings = { false, false };
 		inline static MemoryTrackingSettings myShortLivedMemoryTrackingSettings = { false, false };
+
 		static std::mutex myShortLivedAllocationMapMutex;
 		static std::unordered_map<StackTrace, int> myShortLivedStackTraceToAllocationCount;
 		static std::unordered_map<long, Allocation> myShortLivedAllocationMap;
