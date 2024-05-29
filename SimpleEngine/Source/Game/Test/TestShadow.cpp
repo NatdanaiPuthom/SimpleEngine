@@ -23,19 +23,21 @@ namespace Test
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		EntityComponentSystem* ecs = World::GetECS();
 
-		/*{
+		{
 			ECS::Entity floor = ecs->CreateEntity();
 			floor->SetName("Floor");
 
 			floor->AddComponent<TransformComponent>();
 			floor->AddComponent<MeshComponent>();
 
-			floor->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
-			floor->GetComponent<MeshComponent>()->textures[0] = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
+			floor->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::GBuffer).get();
+			floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Albedo] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_Default_C.dds").get();
+			floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Normal] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_Default_N.dds").get();
+			floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_Default_M.dds").get();
 			floor->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 11.0f, -2.0f, 10.0f });
 			floor->GetComponent<TransformComponent>()->transform.SetScale({ 100.0f, 1.0f, 100.0f });
-		}*/
+		}
 
 		{
 			ECS::Entity chest = ecs->CreateEntity();
@@ -45,8 +47,8 @@ namespace Test
 
 			chest->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::GBuffer).get();
 			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Albedo] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\Particle_Chest_D.dds").get();
-			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\Particle_Chest_M.dds").get();
 			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Normal] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\Particle_Chest_N.dds").get();
+			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\Particle_Chest_M.dds").get();
 			chest->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->LoadMesh("Assets\\Models\\StaticModels\\Particle_Chest.fbx");
 			chest->GetComponent<TransformComponent>()->transform.SetPosition({ -5.0f, 4.0f, 5.0f });
 			chest->GetComponent<TransformComponent>()->transform.SetScale(0.01f);
