@@ -40,7 +40,6 @@ namespace SimpleTracker
 		static void PrintShortLivedToOutput();
 	private:
 		inline static std::mutex myAllocationMapMutex = {};
-		static std::mutex myShortLivedAllocationMapMutex;
 		inline static std::unordered_map<StackTrace, int> myStackTraceToAllocationCount = {};
 		inline static std::unordered_map<long, Allocation> myAllocationMap = {};
 
@@ -49,10 +48,13 @@ namespace SimpleTracker
 		inline static MemoryTrackingSettings myMemoryTrackingSettings = { false, false };
 
 		inline static MemoryTrackingSettings myShortLivedMemoryTrackingSettings = { false, false };
+		static std::mutex myShortLivedAllocationMapMutex;
 		static std::unordered_map<StackTrace, int> myShortLivedStackTraceToAllocationCount;
 		static std::unordered_map<long, Allocation> myShortLivedAllocationMap;
 		static std::atomic<bool> myHasStarted;
 		static int myShortLivedTotalAllocationCount;
+
+		static std::unordered_map<long, long> test;
 	};
 
 	class SimpleMemoryTrackerWrapper final
@@ -60,7 +62,7 @@ namespace SimpleTracker
 	public:
 		inline SimpleMemoryTrackerWrapper()
 		{
-			SimpleTracker::MemoryTrackingSettings memoryTrackingSettings = { false, true };
+			SimpleTracker::MemoryTrackingSettings memoryTrackingSettings = { true, true };
 			SimpleTracker::SimpleMemoryTracker::Init(memoryTrackingSettings);
 		}
 
