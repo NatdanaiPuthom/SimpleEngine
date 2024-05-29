@@ -210,7 +210,22 @@ namespace Graphics
 		if (!texture->LoadDDS(aFileName))
 			return false;
 
-		texture->SetSlot(aSlot);
+		if (SimpleUtilities::FindSuffix(aFileName, "_C"))
+		{
+			texture->SetSlot(Global_Slot_Albedo);
+		}
+		else if (SimpleUtilities::FindSuffix(aFileName, "_N"))
+		{
+			texture->SetSlot(Global_Slot_Normal);
+		}
+		else if (SimpleUtilities::FindSuffix(aFileName, "_M"))
+		{
+			texture->SetSlot(Global_Slot_Material);
+		}
+		else
+		{
+			texture->SetSlot(aSlot);
+		}
 
 		myLoadedTextures.emplace(aFileName, texture);
 
@@ -258,7 +273,7 @@ namespace Graphics
 
 		PROFILER_BEGIN("ImGui BeginFrame");
 		myImGuiEngine->BeginFrame();
-		PROFILER_END();	
+		PROFILER_END();
 
 		PROFILER_BEGIN("Prepare Frame");
 		PrepareFrame();
@@ -607,8 +622,11 @@ namespace Graphics
 		case eTextureType::SkyBox_AutumnForest:
 			texture = GetTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds");
 			break;
+		case eTextureType::TGA_Skansen:
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\cube_1024_preblurred_angle3_Skansen3.dds");
+			break;
 		}
-
+		
 		return texture;
 	}
 
