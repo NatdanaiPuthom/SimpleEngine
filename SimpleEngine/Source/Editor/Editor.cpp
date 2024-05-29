@@ -52,14 +52,6 @@ namespace Editor
 			}
 		}
 
-		for (const std::unique_ptr<ToolInterface>& tool : myTools)
-		{
-			if (tool->myIsActive == true)
-			{
-				tool->Draw();
-			}
-		}
-
 		/*Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		static Math::Vector4f ambientLight = graphicsEngine->GetAmbientLightColorAndIntensity();
@@ -100,52 +92,13 @@ namespace Editor
 
 	void EditorEngine::Render()
 	{
-		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-
-		for (size_t i = 0; i < Graphics::Global_GBuffer_Count; ++i)
+		for (const std::unique_ptr<ToolInterface>& tool : myTools)
 		{
-			std::string name;
-
-			switch (i)
+			if (tool->myIsActive == true)
 			{
-			case 0:
-				name = "Albedo";
-				break;
-			case 2:
-				name = "Material";
-				break;
-			case 1:
-				name = "Normal";
-				break;
-			case 3:
-				name = "Position";
-				break;
-			case 4:
-				name = "AmbientOcclusion";
-				break;
-			default:
-				name = "Unknown" + std::to_string(i);
-				break;
+				tool->Draw();
 			}
-
-			if (ImGui::Begin(name.c_str()))
-			{
-				const ImVec2 windowSize = ImGui::GetWindowSize();
-				ImTextureID texture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::GBuffer, i).Get();
-				ImGui::Image(texture, windowSize);
-			}
-
-			ImGui::End();
 		}
-
-		if (ImGui::Begin("Deferred"))
-		{
-			const ImVec2 windowSize = ImGui::GetWindowSize();
-			ImTextureID texture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::Deferred, 0).Get();
-			ImGui::Image(texture, windowSize);
-		}
-
-		ImGui::End();
 	}
 
 	void EditorEngine::AddTool(std::unique_ptr<ToolInterface> aTool)

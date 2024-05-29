@@ -48,10 +48,6 @@ namespace Editor
 
 	void HierarchyWindow::Update()
 	{
-	}
-
-	void HierarchyWindow::Draw()
-	{
 		static int selected = 0;
 		ECS::Entities entities = World::GetECS()->GetAllEntities();
 
@@ -422,5 +418,10 @@ namespace Editor
 				}
 			}
 		}
+	}
+
+	void HierarchyWindow::Draw()
+	{
+
 	}
 }

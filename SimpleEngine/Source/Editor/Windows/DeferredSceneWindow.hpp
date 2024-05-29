@@ -3,10 +3,10 @@
 
 namespace Editor
 {
-	class HierarchyWindow final : public Editor::ToolInterface
+	class DeferredSceneWindow final : public Editor::ToolInterface
 	{
 	public:
-		HierarchyWindow();
+		DeferredSceneWindow();
 
 		void Init() override;
 		void Update() override;
