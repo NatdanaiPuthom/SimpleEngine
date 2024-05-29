@@ -19,7 +19,10 @@ namespace SCR
 		NodeManager();
 		~NodeManager();
 
-		NodeManager(const NodeManager&);
+		NodeManager(const NodeManager&) = delete;
+		NodeManager(NodeManager&&) = default;
+		NodeManager& operator=(const NodeManager&) = delete;
+		NodeManager& operator=(NodeManager&&) = default;
 
 		TypeContainer<NodeID, Node, NodeType>::ConstIterator begin() const;
 		TypeContainer<NodeID, Node, NodeType>::ConstIterator end() const;
