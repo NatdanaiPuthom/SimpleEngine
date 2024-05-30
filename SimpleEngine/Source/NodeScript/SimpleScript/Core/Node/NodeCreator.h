@@ -251,7 +251,7 @@ namespace SCR
 	template<size_t Size>
 	std::array<MemoryPoolID, Size> ToArrayNew(const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
 	{
-		std::array<MemoryPoolID, Size> idArray;
+		std::array<MemoryPoolID, Size> idArray{};
 		for (size_t i = 0; i < Size; ++i)
 		{
 			const Pin& pin = ScriptProxy::GetPin(aContext.script, aPinIDs[i]);
