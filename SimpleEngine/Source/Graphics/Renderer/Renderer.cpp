@@ -63,6 +63,11 @@ namespace Drawer
 			{
 				texture->Bind(context, texture->GetSlot());
 			}
+			else
+			{
+				static ID3D11ShaderResourceView* nullview[1] = { NULL };
+				context->PSSetShaderResources(static_cast<unsigned int>(i), 1, nullview);
+			}
 		}
 
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);

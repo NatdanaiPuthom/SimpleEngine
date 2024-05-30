@@ -52,7 +52,7 @@ cbuffer LightBuffer : register(b3)
         float4 color;
         float3 position;
         float range;
-    } pointLights[8];
+    } pointLights[100];
     
     uint currentPointLightCount;
     float3 paddingPointLightCount;

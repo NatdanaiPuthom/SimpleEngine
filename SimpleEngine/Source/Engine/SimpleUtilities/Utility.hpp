@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <Windows.h>
+#include <algorithm>
+#include <cctype>
 
 namespace SimpleUtilities
 {
@@ -96,16 +98,23 @@ namespace SimpleUtilities
 		}
 	}
 
+	static inline std::string ToLower(const std::string& str)
+	{
+		std::string result = str;
+		std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c) { return std::tolower(c); });
+		return result;
+	}
+
+	//NOTE(v10.0.1): Case insensitive (doesn't matter upper or lower-case
 	static inline bool FindSuffix(const std::string& aName, const std::string& aSuffixToSearch)
 	{
 		for (size_t i = aName.length(); i > 0; i--)
 		{
 			if (aName[i] == '.')
 			{
-				size_t pos = i - 1;
-				pos = aName.rfind(aSuffixToSearch, pos);
+				std::string suffix = aName.substr(i - 2, 2);
 
-				if (pos != std::string::npos)
+				if (ToLower(suffix) == ToLower(aSuffixToSearch))
 				{
 					return true;
 				}

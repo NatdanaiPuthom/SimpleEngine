@@ -57,6 +57,7 @@ namespace Graphics
 		SkyBox_NightStar,
 		SkyBox_DayGrassland,
 		SkyBox_AutumnForest,
+		TGA_Skansen
 	};
 
 	struct RenderTarget final

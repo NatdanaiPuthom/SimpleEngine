@@ -1,28 +1,15 @@
 #include "../PBRFunctions.hlsli"
 
-//PixelOutput main(PixelInputType aInput)
-//{
-//    PixelOutput output;
- 
-//    float3 accumulatedPointLight = 0;
-//    if (distance(pointLights[0].position.xyz, aInput.worldPosition.xyz) < pointLights[0].range)
-//    {
-//        accumulatedPointLight += EvaluatePointLight(
-//			    diffuseColor, specularColor, pixelNormal, roughness,
-//			    pointLights[p].color.rgb, pointLights[p].color.w, pointLights[p].range, pointLights[p].position.xyz,
-//			    toEye.xyz, aPosition.xyz);
-//        return float(1.0f).rrrr;
-//    }
-
-//    output.color = float(1.0f).rrrr;
-    
-//    return output;
-//}
-
-
 PixelOutput main(PixelInputType aInput)
 {
     PixelOutput output;
+    
+    if (currentPointLightCount == 0)
+    {
+        discard;
+        output.color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        return output;
+    }
     
     float2 uv = aInput.position.xy / resolution.xy;
    
@@ -45,7 +32,8 @@ PixelOutput main(PixelInputType aInput)
     
     float3 accumulatedPointLight = 0;
     uint pointLightIndex = currentPointLightCount - 1;
-    if (distance(pointLights[pointLightIndex].position.xyz, position.xyz) < pointLights[pointLightIndex].range)
+    
+    if (distance(pointLights[pointLightIndex].position.xyz, position.xyz) <= pointLights[pointLightIndex].range)
     {
         accumulatedPointLight += EvaluatePointLight(
 			    diffuseColor, specularColor, pixelNormal, roughness,
