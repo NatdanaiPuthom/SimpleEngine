@@ -32,7 +32,7 @@ GBufferOutput main(PixelInputType aInput)
     output.material = float4(material, diffuse.w);;
     output.normal = float4(0.5f + 0.5f * pixelNormal, 1.f); //NOTE(v9.37.0): Packing normal to between 0 and 1
     output.ambientOcclusionAndCustom.r = GlobalNormalTexture.Sample(GlobalDefaultSampler, uv).z;
-    output.ambientOcclusionAndCustom.gba = normal;
+    output.ambientOcclusionAndCustom.gba = aInput.normal.xyz;
     
     return output;
 }
