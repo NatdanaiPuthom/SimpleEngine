@@ -10,19 +10,15 @@ PixelOutput main(PixelInputType aInput)
         output.color = float4(0.0f, 0.0f, 0.0f, 0.0f);
         return output;
     }
-    
+   
     float2 uv = aInput.position.xy / resolution.xy;
    
     float3 position = GlobalBufferPositionTexture.Sample(GlobalDefaultSampler, uv).rgb;
     float3 albedo = GlobalBufferAlbedoTexture.Sample(GlobalDefaultSampler, uv).rgb;
     float3 pixelNormal = normalize(2.0f * GlobalBufferNormalTexture.Sample(GlobalDefaultSampler, uv).xyz - 1.0f);
     float3 material = GlobalBufferMaterialTexture.Sample(GlobalDefaultSampler, uv).rgb;
-    float4 ambientOcclusionSample = GlobalBufferAmbientOcclusionAndCustom.Sample(GlobalDefaultSampler, uv);
     
     float3 toEye = normalize(cameraPosition.xyz - position.xyz);
-    
-    float3 vertexNormal = normalize(ambientOcclusionSample.gba);
-    float ambientOcclusion = ambientOcclusionSample.r;
     
     float metalness = material.r;
     float roughness = material.g;
