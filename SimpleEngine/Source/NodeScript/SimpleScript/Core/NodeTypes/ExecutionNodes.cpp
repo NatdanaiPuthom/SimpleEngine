@@ -62,14 +62,34 @@ namespace SCR
 		return false;
 	}
 
-	static std::tuple<int, bool> FloatNode(float& aValue)
+	static std::tuple<int, bool> FloatNode(float& aValue, std::string& aName)
 	{
 		aValue += 1.f;
+		std::cout << aName << std::endl;
+		aName += "E";
 		return { 4, true };
 	}
 
+	enum class eEventType1
+	{
+		eEvent,
+		eEvent2
+	};
+
+	enum class eEventType2
+	{
+
+		eEvent,
+		eEvent2
+	};
+
 	void RegisterExecutionNodes()
 	{
+
+		size_t t1 = typeid(eEventType1).hash_code();
+		size_t t2 = typeid(eEventType2).hash_code();
+		t1;
+		t2;
 		NodeTypeRegistry::RegisterFlowNodeType(FloatNode, "Test/FLoat");
 
 		NodeTypeRegistry::RegisterNodeType<eNodeExecutionTrait::Tick>(TickNode, "Execution/Event Tick", NodeTypeDesc{ { }, { "Flow", "Delta Time" } });
