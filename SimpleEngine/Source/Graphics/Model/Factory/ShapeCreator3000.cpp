@@ -235,121 +235,169 @@ namespace Graphics
 		north_bottomLeft.position = Math::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
 		north_bottomLeft.uv = Math::Vector2f(0, 0);
 		north_bottomLeft.normal = { 0.0f, 0.0f, 1.0f };
+		north_bottomLeft.tangent = { 1.0f, 0.0f, 0.0f };
+		north_bottomLeft.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex north_bottomRight;
 		north_bottomRight.position = Math::Vector4f(-aSize.x, -aSize.y, aSize.z, 1.0f);
 		north_bottomRight.uv = Math::Vector2f(1, 0);
 		north_bottomRight.normal = { 0.0f, 0.0f, 1.0f };
+		north_bottomRight.tangent = { 1.0f, 0.0f, 0.0f };
+		north_bottomRight.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex north_topLeft;
 		north_topLeft.position = Math::Vector4f(aSize.x, aSize.y, aSize.z, 1.0f);
 		north_topLeft.uv = Math::Vector2f(0, 1);
 		north_topLeft.normal = { 0.0f, 0.0f, 1.0f };
+		north_topLeft.tangent = { 1.0f, 0.0f, 0.0f };
+		north_topLeft.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex north_topRight;
 		north_topRight.position = Math::Vector4f(-aSize.x, aSize.y, aSize.z, 1.0f);
 		north_topRight.uv = Math::Vector2f(1, 1);
 		north_topRight.normal = { 0.0f, 0.0f, 1.0f };
+		north_topRight.tangent = { 1.0f, 0.0f, 0.0f };
+		north_topRight.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex west_bottomLeft;
 		west_bottomLeft.position = Math::Vector4f(-aSize.x, -aSize.y, aSize.z, 1.0f);
 		west_bottomLeft.uv = Math::Vector2f(0, 0);
-		west_bottomLeft.normal = { -1.0f, 0.0f, 0.0f };
+		west_bottomLeft.normal = { 0.0f, 0.0f, 1.0f };
+		west_bottomLeft.tangent = { 0.0f, 0.0f, 1.0f };
+		west_bottomLeft.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex west_bottomRight;
 		west_bottomRight.position = Math::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1.0f);
 		west_bottomRight.uv = Math::Vector2f(1, 0);
 		west_bottomRight.normal = { -1.0f, 0.0f, 0.0f };
+		west_bottomRight.tangent = { 0.0f, 0.0f, 1.0f };
+		west_bottomRight.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex west_topLeft;
 		west_topLeft.position = Math::Vector4f(-aSize.x, aSize.y, aSize.z, 1.0f);
 		west_topLeft.uv = Math::Vector2f(0, 1);
 		west_topLeft.normal = { -1.0f, 0.0f, 0.0f };
+		west_topLeft.tangent = { 0.0f, 0.0f, 1.0f };
+		west_topLeft.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex west_topRight;
 		west_topRight.position = Math::Vector4f(-aSize.x, aSize.y, -aSize.z, 1.0f);
 		west_topRight.uv = Math::Vector2f(1, 1);
 		west_topRight.normal = { -1.0f, 0.0f, 0.0f };
+		west_topRight.tangent = { 0.0f, 0.0f, 1.0f };
+		west_topRight.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex south_bottomLeft;
 		south_bottomLeft.position = Math::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1.0f);
 		south_bottomLeft.uv = Math::Vector2f(0, 0);
 		south_bottomLeft.normal = { 0.0f, 0.0f, -1.0f };
+		south_bottomLeft.tangent = { 1.0f, 0.0f, 0.0f };
+		south_bottomLeft.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex south_bottomRight;
 		south_bottomRight.position = Math::Vector4f(aSize.x, -aSize.y, -aSize.z, 1.0f);
 		south_bottomRight.uv = Math::Vector2f(1, 0);
 		south_bottomRight.normal = { 0.0f, 0.0f, -1.0f };
+		south_bottomRight.tangent = { 1.0f, 0.0f, 0.0f };
+		south_bottomRight.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex south_topLeft;
 		south_topLeft.position = Math::Vector4f(-aSize.x, aSize.y, -aSize.z, 1.0f);
 		south_topLeft.uv = Math::Vector2f(0, 1);
 		south_topLeft.normal = { 0.0f, 0.0f, -1.0f };
+		south_topLeft.tangent = { 1.0f, 0.0f, 0.0f };
+		south_topLeft.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex south_topRight;
 		south_topRight.position = Math::Vector4f(aSize.x, aSize.y, -aSize.z, 1.0f);
 		south_topRight.uv = Math::Vector2f(1, 1);
 		south_topRight.normal = { 0.0f, 0.0f, -1.0f };
+		south_topRight.tangent = { 1.0f, 0.0f, 0.0f };
+		south_topRight.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex east_bottomLeft;
 		east_bottomLeft.position = Math::Vector4f(aSize.x, -aSize.y, -aSize.z, 1.0f);
 		east_bottomLeft.uv = Math::Vector2f(0, 0);
 		east_bottomLeft.normal = { 1.0f, 0.0f, 0.0f };
+		east_bottomLeft.tangent = { 0.0f, 0.0f, -1.0f };
+		east_bottomLeft.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex east_bottomRight;
 		east_bottomRight.position = Math::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
 		east_bottomRight.uv = Math::Vector2f(1, 0);
 		east_bottomRight.normal = { 1.0f, 0.0f, 0.0f };
+		east_bottomRight.tangent = { 0.0f, 0.0f, -1.0f };
+		east_bottomRight.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex east_topLeft;
 		east_topLeft.position = Math::Vector4f(aSize.x, aSize.y, -aSize.z, 1.0f);
 		east_topLeft.uv = Math::Vector2f(0, 1);
 		east_topLeft.normal = { 1.0f, 0.0f, 0.0f };
+		east_topLeft.tangent = { 0.0f, 0.0f, -1.0f };
+		east_topLeft.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex east_topRight;
 		east_topRight.position = Math::Vector4f(aSize.x, aSize.y, aSize.z, 1.0f);
 		east_topRight.uv = Math::Vector2f(1, 1);
 		east_topRight.normal = { 1.0f, 0.0f, 0.0f };
+		east_topRight.tangent = { 0.0f, 0.0f, -1.0f };
+		east_topRight.bitangent = { 0.0f, 1.0f, 0.0f };
 
 		Vertex up_bottomLeft;
 		up_bottomLeft.position = Math::Vector4f(aSize.x, aSize.y, aSize.z, 1.0f);
 		up_bottomLeft.uv = Math::Vector2f(0, 0);
 		up_bottomLeft.normal = { 0.0f, 1.0f, 0.0f };
+		up_bottomLeft.tangent = { 1.0f, 0.0f, 0.0f };
+		up_bottomLeft.bitangent = { 0.0f, 0.0f, -1.0f };
 
 		Vertex up_bottomRight;
 		up_bottomRight.position = Math::Vector4f(-aSize.x, aSize.y, aSize.z, 1.0f);
 		up_bottomRight.uv = Math::Vector2f(1, 0);
 		up_bottomRight.normal = { 0.0f, 1.0f, 0.0f };
+		up_bottomRight.tangent = { 1.0f, 0.0f, 0.0f };
+		up_bottomRight.bitangent = { 0.0f, 0.0f, -1.0f };
 
 		Vertex up_topLeft;
 		up_topLeft.position = Math::Vector4f(aSize.x, aSize.y, -aSize.z, 1.0f);
 		up_topLeft.uv = Math::Vector2f(0, 1);
 		up_topLeft.normal = { 0.0f, 1.0f, 0.0f };
+		up_topLeft.tangent = { 1.0f, 0.0f, 0.0f };
+		up_topLeft.bitangent = { 0.0f, 0.0f, -1.0f };
 
 		Vertex up_topRight;
 		up_topRight.position = Math::Vector4f(-aSize.x, aSize.y, -aSize.z, 1.0f);
 		up_topRight.uv = Math::Vector2f(1, 1);
 		up_topRight.normal = { 0.0f, 1.0f, 0.0f };
+		up_topRight.tangent = { 1.0f, 0.0f, 0.0f };
+		up_topRight.bitangent = { 0.0f, 0.0f, -1.0f };
 
 		Vertex down_bottomLeft;
 		down_bottomLeft.position = Math::Vector4f(-aSize.x, -aSize.y, aSize.z, 1.0f);
 		down_bottomLeft.uv = Math::Vector2f(0, 0);
 		down_bottomLeft.normal = { 0.0f, -1.0f, 0.0f };
+		down_bottomLeft.tangent = { 1.0f, 0.0f, 0.0f };
+		down_bottomLeft.bitangent = { 0.0f, 0.0f, 1.0f };
 
 		Vertex down_bottomRight;
 		down_bottomRight.position = Math::Vector4f(aSize.x, -aSize.y, aSize.z, 1.0f);
 		down_bottomRight.uv = Math::Vector2f(1, 0);
 		down_bottomRight.normal = { 0.0f, -1.0f, 0.0f };
+		down_bottomRight.tangent = { 1.0f, 0.0f, 0.0f };
+		down_bottomRight.bitangent = { 0.0f, 0.0f, 1.0f };
 
 		Vertex down_topLeft;
 		down_topLeft.position = Math::Vector4f(-aSize.x, -aSize.y, -aSize.z, 1.0f);
 		down_topLeft.uv = Math::Vector2f(0, 1);
 		down_topLeft.normal = { 0.0f, -1.0f, 0.0f };
+		down_topLeft.tangent = { 1.0f, 0.0f, 0.0f };
+		down_topLeft.bitangent = { 0.0f, 0.0f, 1.0f };
 
 		Vertex down_topRight;
 		down_topRight.position = Math::Vector4f(aSize.x, -aSize.y, -aSize.z, 1.0f);
 		down_topRight.uv = Math::Vector2f(1, 1);
 		down_topRight.normal = { 0.0f, -1.0f, 0.0f };
+		down_topRight.tangent = { 1.0f, 0.0f, 0.0f };
+		down_topRight.bitangent = { 0.0f, 0.0f, 1.0f };
 
 		std::vector<Vertex> vertices =
 		{
