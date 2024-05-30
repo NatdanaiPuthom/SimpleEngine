@@ -21,7 +21,7 @@ PixelOutput main(PixelInputType aInput)
     
     float3 toEye = normalize(cameraPosition.xyz - position.xyz);
     
-    float3 vertexNormal = ambientOcclusionSample.gba;
+    float3 vertexNormal = normalize(ambientOcclusionSample.gba);
     float ambientOcclusion = ambientOcclusionSample.r;
     
     float metalness = material.r;
@@ -32,7 +32,7 @@ PixelOutput main(PixelInputType aInput)
     
     float3 accumulatedPointLight = 0;
     uint pointLightIndex = currentPointLightCount - 1;
-    
+   
     if (distance(pointLights[pointLightIndex].position.xyz, position.xyz) <= pointLights[pointLightIndex].range)
     {
         accumulatedPointLight += EvaluatePointLight(
