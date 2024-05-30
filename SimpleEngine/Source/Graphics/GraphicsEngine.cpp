@@ -586,6 +586,10 @@ namespace Graphics
 			{
 				slot = Graphics::Global_Slot_Normal;
 			}
+			else if (SimpleUtilities::FindSuffix(aFilePath, "_E"))
+			{
+				slot = 4;
+			}
 
 			if (AddTexture(aFilePath, slot) == true)
 			{
@@ -620,7 +624,7 @@ namespace Graphics
 			texture = GetTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds");
 			break;
 		case eTextureType::SkyBox_AutumnForest:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\beautysky_E.dds");
 			break;
 		case eTextureType::TGA_Skansen:
 			texture = GetTexture("Assets\\Textures\\Cubemaps\\cube_1024_preblurred_angle3_Skansen3.dds");
