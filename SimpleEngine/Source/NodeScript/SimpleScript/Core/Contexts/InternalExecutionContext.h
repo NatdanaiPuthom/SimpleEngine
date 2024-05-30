@@ -14,18 +14,18 @@ namespace SCR
 
 	struct NodeExecutionData final
 	{
-		NodeID currentNodeID = InvalidID<NodeID>();
+		NodeID nodeID = InvalidID<NodeID>();
 		eNodeTriggerReason triggerReason = eNodeTriggerReason::Flow;
 	};
 
 	inline bool operator==(const NodeExecutionData& aValue1, const NodeExecutionData& aValue2)
 	{
-		return aValue1.currentNodeID == aValue2.currentNodeID;
+		return aValue1.nodeID == aValue2.nodeID;
 	}
 
 	inline bool operator<(const NodeExecutionData& aValue1, const NodeExecutionData& aValue2)
 	{
-		return aValue1.currentNodeID < aValue2.currentNodeID;
+		return aValue1.nodeID < aValue2.nodeID;
 	}
 
 
@@ -65,6 +65,6 @@ struct std::hash<SCR::NodeExecutionData>
 {
 	std::size_t operator()(const SCR::NodeExecutionData& aValue) const
 	{
-		return static_cast<size_t>(aValue.currentNodeID);
+		return static_cast<size_t>(aValue.nodeID);
 	}
 };

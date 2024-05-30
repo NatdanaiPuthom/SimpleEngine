@@ -11,7 +11,7 @@ namespace SCR
 
 		const FunctionID functionID = NodeTypeManager::GetFunctionID(callerNode.typeID);
 		Function& function = NodeTypeManager::GetFunction(functionID);
-		function.SetCaller({ aContext->GetNodeData().currentNodeID, &ScriptProxy::GetEventGraph(aContext->script) });
+		function.SetCaller({ aContext->GetNodeData().nodeID, &ScriptProxy::GetEventGraph(aContext->script) });
 		const Node& inputNode = ScriptProxy::GetNode(aContext->script, function.GetInputNodeID());
 
 		CopyPinData(*aContext, inputNode.outputPins, callerNode.inputPins, 1);

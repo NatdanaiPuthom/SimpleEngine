@@ -345,15 +345,11 @@ namespace SCR
 			}
 		}
 
-		NodeTypeDesc desc;
-
-		desc.showDataTypePinNames = true;
-
 		constexpr eNodeTrait Traits = (IsSameType<T, Wildcard> ? eNodeTrait::None : eNodeTrait::Operator) | ExtraTraits;
 
 		auto func = GetFunctionByOperator<T, OperatorTrait>();
 
-		NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits, eNodeExecutionTrait::None, OperatorTrait>(func, aDefaultNodeName, desc);
+		NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits, eNodeExecutionTrait::None, OperatorTrait>(func, aDefaultNodeName);
 
 		NodeTypeManager::SetOperatorNodeTypeID(dataTypeID, OperatorTrait, nodeTypeID);
 	}

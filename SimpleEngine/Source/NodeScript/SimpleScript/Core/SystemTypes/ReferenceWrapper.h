@@ -24,9 +24,19 @@ namespace SCR
 			return *myPtr;
 		}
 
-		_NODISCARD Ref get() const noexcept
+		_NODISCARD const Ref get() const noexcept
 		{
 			return *myPtr;
+		}
+
+		_NODISCARD Ref get() noexcept
+		{
+			return *myPtr;
+		}
+
+		void set(Ref aValue)
+		{
+			myPtr = &aValue;
 		}
 
 	private:

@@ -16,6 +16,16 @@ namespace SCR
 		return aScript.myScriptManager.myFoundation;
 	}
 
+	CallStack& ScriptProxy::GetCallStack(Script& aScript)
+	{
+		return aScript.myScriptManager.myFoundation.myCallStack;
+	}
+
+	const CallStack& ScriptProxy::GetCallStack(const Script& aScript)
+	{
+		return aScript.myScriptManager.myFoundation.myCallStack;
+	}
+
 	MemoryPool& ScriptProxy::GetGlobalMemoryPool()
 	{
 		return ScriptFoundation::myGlobalMemoryPool;

@@ -26,6 +26,7 @@ namespace SCR
 	struct Variable;
 	class ScriptInternalModifier;
 	class NodeGraph;
+	class CallStack;
 	
 	class ScriptProxy
 	{
@@ -36,6 +37,9 @@ namespace SCR
 		
 		static ScriptFoundation& GetFoundation(Script& aScript);
 		static const ScriptFoundation& GetFoundation(const Script& aScript);
+
+		static CallStack& GetCallStack(Script& aScript);
+		static const CallStack& GetCallStack(const Script& aScript);
 
 		static MemoryPool& GetGlobalMemoryPool();
 
@@ -50,6 +54,7 @@ namespace SCR
 		static const NodeManager& GetNodeManager(const Script& aScript);
 
 		static NodeGraph& GetEventGraph(Script& aScript);
+
 
 		static NodeExecutor& GetNodeExecutor(Script& aScript);
 

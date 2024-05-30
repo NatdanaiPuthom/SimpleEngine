@@ -8,7 +8,7 @@ namespace SCR
 		// Sets the values of the custom 
 
 
-		NodeID callerNodeID = aContext->GetNodeData().currentNodeID;
+		NodeID callerNodeID = aContext->GetNodeData().nodeID;
 
 		const Node& callerNode = ScriptProxy::GetNode(aContext->script, callerNodeID);
 		CustomEventID customEventID = NodeTypeManager::GetCustomEventID(callerNode.typeID);

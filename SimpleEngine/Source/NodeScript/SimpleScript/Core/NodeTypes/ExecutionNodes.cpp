@@ -5,17 +5,10 @@
 namespace SCR
 {
 
-
-	//#define SCRIPT_FUNCTION(func) \
-	//    SCRIPT::NodeTypeRegistry::RegisterNodeType(func, "");
-
 	static std::tuple<Flow, float> TickNode(NodeExecutionContext<ExecutionContextBase> aContext)
 	{
 		return { Flow(true), aContext.context.deltaTime };
 	}
-
-
-	//SCRIPT_FUNCTION(TickNode)
 
 	static Flow BeginPlayNode()
 	{
@@ -57,20 +50,28 @@ namespace SCR
 			{
 				aState.value.time = 0.f;
 			}
-			ScriptProxy::GetNodeExecutor(aContext->script).RegisterAutoTickNode(aContext->GetNodeData().currentNodeID);
+			ScriptProxy::GetNodeExecutor(aContext->script).RegisterAutoTickNode(aContext->GetNodeData().nodeID);
 		}
 		aState.value.time += aContext->executionContext->deltaTime;
 		if (aState.value.time > aDuration)
 		{
 			aState.value.time = 0.f;
-			ScriptProxy::GetNodeExecutor(aContext->script).UnregisterAutoTickNode(aContext->GetNodeData().currentNodeID);
+			ScriptProxy::GetNodeExecutor(aContext->script).UnregisterAutoTickNode(aContext->GetNodeData().nodeID);
 			return true;
 		}
 		return false;
 	}
 
+	static std::tuple<int, bool> FloatNode(float& aValue)
+	{
+		aValue += 1.f;
+		return { 4, true };
+	}
+
 	void RegisterExecutionNodes()
 	{
+		NodeTypeRegistry::RegisterFlowNodeType(FloatNode, "Test/FLoat");
+
 		NodeTypeRegistry::RegisterNodeType<eNodeExecutionTrait::Tick>(TickNode, "Execution/Event Tick", NodeTypeDesc{ { }, { "Flow", "Delta Time" } });
 		NodeTypeRegistry::RegisterNodeType<eNodeExecutionTrait::BeginPlay>(BeginPlayNode, "Execution/Event Begin Play", NodeTypeDesc{ { }, { "Flow" } });
 		NodeTypeRegistry::RegisterNodeType<eNodeExecutionTrait::EndPlay>(EndPlayNode, "Execution/Event End Play", NodeTypeDesc{ { }, { "Flow" } });

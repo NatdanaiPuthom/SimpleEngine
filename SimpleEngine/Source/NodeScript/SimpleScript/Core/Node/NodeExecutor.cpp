@@ -3,6 +3,7 @@
 #include "../Script.h"
 #include "NodeTypeManager.h"
 #include "../ScriptInternalModifier.h"
+#include "ReferenceWrapper.h"
 
 namespace SCR
 {
@@ -17,12 +18,46 @@ namespace SCR
 
 	void NodeExecutor::Execute(const std::string& aUserEventKey, const ExecutionContextBase& anExecutionContext)
 	{
-		//myCurrentNodes = myUserEventNodes[aUserEventName];
 		ExecuteInternal(myUserEventNodes[aUserEventKey], anExecutionContext);
 	}
 
+	/*static void TestFunc(int& a)
+	{
+		std::cout << a << std::endl;
+
+		a = 1;
+	}*/
+
 	void NodeExecutor::Execute(const eNodeExecutionTrait aTrait, const ExecutionContextBase& anExecutionContext)
 	{
+		/*MemoryTuple2<int> memTuple;
+
+		memTuple.At<0>() = [](MemoryPool* aPool, MemoryPoolID anID) -> int&
+			{
+				return aPool->At<int>(anID);
+			};
+
+		MemoryPool memPool;
+
+		MemoryPoolID intID = memPool.Allocate<int>(5);
+
+		using T = MemoryTuple2<int>::VariedArgsType;
+
+		memTuple.Call(TestFunc, &memPool, T{std::tuple<MemoryPoolID>{ intID }});
+
+		std::tuple<ReferenceWrapper<int>> refTuple = memTuple.Resolve(&memPool, T{ std::tuple<MemoryPoolID>{ intID } });
+
+		std::tuple<int&> tuple = std::move(refTuple);
+
+		int& i = std::get<0>(tuple);
+
+		std::cout << i << std::endl;
+
+		if (&i == &memPool.At<int>(intID))
+		{
+			std::cout << "Hello" << std::endl;
+		}*/
+
 		/*myExecutionContext.executionContext = &anExecutionContext;
 
 		myCurrentNodes = myEventNodes[aTrait];
@@ -60,11 +95,11 @@ namespace SCR
 
 	void NodeExecutor::Push(const NodeExecutionData& aNodeExecutionData)
 	{
-	/*	if (!myFrameNodes.contains(aNodeExecutionData))
-		{*/
-			myCurrentNodes.push_back(aNodeExecutionData);
-			//myFrameNodes.insert(aNodeExecutionData);
-		//}
+		/*	if (!myFrameNodes.contains(aNodeExecutionData))
+			{*/
+		myCurrentNodes.push_back(aNodeExecutionData);
+		//myFrameNodes.insert(aNodeExecutionData);
+	//}
 	}
 
 	void NodeExecutor::ForceExecuteNode(const NodeExecutionData& aNodeExecutionData)
@@ -89,7 +124,7 @@ namespace SCR
 			bool alreadyExists = false;
 			for (const NodeExecutionData& nodeExecutionData : myEventNodes[aTrait])
 			{
-				if (nodeExecutionData.currentNodeID == aNodeID)
+				if (nodeExecutionData.nodeID == aNodeID)
 				{
 					alreadyExists = true;
 					break;
@@ -163,13 +198,13 @@ namespace SCR
 			}
 		}
 
-		
+
 		//myFrameNodes.clear();
 	}
 
 	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
 	{
-		const Node& node = ScriptProxy::GetNode(myExecutionContext.script, aNodeExecutionData.currentNodeID);
+		const Node& node = ScriptProxy::GetNode(myExecutionContext.script, aNodeExecutionData.nodeID);
 		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
 		nodeType.nodeRecipe.executeFunction(aNodeExecutionData, myExecutionContext);
 	}

@@ -161,16 +161,6 @@ namespace SCR
 		myEndMemory = myStartMemory + newSize;
 	}
 
-	Byte* MemoryPool::MemoryAt(MemoryPoolID anID)
-	{
-		return myStartMemory + anID;
-	}
-
-	const Byte* MemoryPool::MemoryAt(MemoryPoolID anID) const
-	{
-		return myStartMemory + anID;
-	}
-
 	void MemoryPool::Clear()
 	{
 		if (myStartMemory == nullptr)

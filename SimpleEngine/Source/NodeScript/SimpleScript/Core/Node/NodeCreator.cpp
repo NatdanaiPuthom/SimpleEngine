@@ -11,7 +11,7 @@ namespace SCR
 
 				const Pin& pin = ScriptProxy::GetPin(aContext.script, aPinSetData.id);
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-#ifdef _DEBUG
+#ifdef FLY_DEBUG
 				assert(aPinSetData.dataTypeID == pinType.dataTypeID);
 #endif
 
@@ -57,7 +57,7 @@ namespace SCR
 
 
 			outputPinType.setFunction(PinSetData{ destinationPinID, value,
-#ifdef _DEBUG
+#ifdef FLY_DEBUG
 				PinTypeManager::GetPinType(sourcePin.typeID).dataTypeID
 #endif
 				}, aContext);

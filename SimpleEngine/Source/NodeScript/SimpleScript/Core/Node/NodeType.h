@@ -7,8 +7,8 @@ namespace SCR
 {
 	struct NodeRecipe
 	{
-		const CreateNodeSignature createFunction;
-		const ExecuteNodeSignature executeFunction;
+		const CreateNodeSignature createFunction = nullptr;
+		const ExecuteNodeSignature executeFunction = nullptr;
 		const eNodeTrait traits = eNodeTrait::None;
 		const eNodeExecutionTrait executionTrait = eNodeExecutionTrait::None;
 		const eNodeOperatorTrait operatorTrait = eNodeOperatorTrait::None;

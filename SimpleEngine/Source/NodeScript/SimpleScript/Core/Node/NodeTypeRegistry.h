@@ -35,7 +35,7 @@ namespace SCR
 	template<typename T>
 	inline T GetterNode(const InternalExecutionContext* aContext)
 	{
-		const NodeID nodeID = aContext->GetNodeData().currentNodeID;
+		const NodeID nodeID = aContext->GetNodeData().nodeID;
 		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aContext->script);
 
 		VarID varID = variableManager.GetVariableIDByNodeID(nodeID);
@@ -50,7 +50,7 @@ namespace SCR
 	template<typename T>
 	inline void SetterNode(const InternalExecutionContext* aContext, const T aValue)
 	{
-		const NodeID nodeID = aContext->GetNodeData().currentNodeID;
+		const NodeID nodeID = aContext->GetNodeData().nodeID;
 		VariableManager& variableManager = ScriptProxy::GetVariableManager(aContext->script);
 
 		VarID varID = variableManager.GetVariableIDByNodeID(nodeID);
@@ -82,13 +82,13 @@ namespace SCR
 	{
 	public:
 
-		template<eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, IsNotVoid OutputType, typename... InputTypes> requires NoArgsReference<InputTypes...>
+		template<eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, IsNotVoid OutputType, typename... InputTypes>
 		static void RegisterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
 		{
 			RegisterInternal(FilterNodeType<eNodeTrait::None, ExecutionTrait>(aFunction), aNodeName, aDescription);
 		}
 
-		template<typename OutputType, typename... InputTypes> requires NoArgsReference<InputTypes...>
+		template<typename OutputType, typename... InputTypes> /*requires NoArgsReference<InputTypes...>*/
 		static void RegisterFlowNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
 		{
 			RegisterInternal(FilterNodeType<eNodeTrait::HasImplicitFlow>(aFunction), aNodeName, aDescription);

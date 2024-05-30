@@ -154,4 +154,15 @@ namespace SCR
 		const Byte* byte = MemoryAt(anID);
 		return *reinterpret_cast<const T*>(byte);
 	}
+
+	inline Byte* MemoryPool::MemoryAt(MemoryPoolID anID)
+	{
+		return myStartMemory + anID;
+	}
+
+	inline const Byte* MemoryPool::MemoryAt(MemoryPoolID anID) const
+	{
+		return myStartMemory + anID;
+	}
+
 }

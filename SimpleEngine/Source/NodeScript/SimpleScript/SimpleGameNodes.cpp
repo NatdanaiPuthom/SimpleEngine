@@ -4,14 +4,14 @@
 #include <ECS/ECSInterface.hpp>
 #include "ECS/Core/Entity.hpp"
 
-template<typename T>
-std::string ToString(T a)
-{
-	return std::to_string(a);
-}
+//template<typename T>
+//std::string ToString(T a)
+//{
+//	return std::to_string(a);
+//}
 
 
 void RegisterSimpleGameNodes()
 {
-	SCRIPT::NodeTypeRegistry::RegisterNodeType(ToString<int>, "Utility/String/To String (Int)");
+	//SCRIPT::NodeTypeRegistry::RegisterNodeType(ToString<int>, "Utility/String/To String (Int)");
 }

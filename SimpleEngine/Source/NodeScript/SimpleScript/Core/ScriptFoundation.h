@@ -3,6 +3,7 @@
 #include "Memory/ScriptMemoryPool.h"
 #include <memory>
 #include "ScriptManager.h"
+#include "ScriptCallStack.h"
 
 namespace SCR
 {
@@ -31,6 +32,8 @@ namespace SCR
 		std::vector<std::unique_ptr<ScriptManager>> myScriptManagers;
 
 		std::vector<std::unique_ptr<Function>> myGlobalFunctions;
+
+		CallStack myCallStack;
 
 	};
 }

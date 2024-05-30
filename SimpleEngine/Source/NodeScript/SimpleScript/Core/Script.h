@@ -46,9 +46,6 @@ namespace SCR
 
 		MemoryPool myMemoryPool;
 
-		//NodeManager myNodeManager;
-		//PinManager myPinManager;
-
 		NodeGraph myEventGraph;
 
 		VariableManager myVariableManager;
