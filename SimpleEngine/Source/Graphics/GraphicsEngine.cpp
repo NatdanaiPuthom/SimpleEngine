@@ -588,7 +588,7 @@ namespace Graphics
 			}
 			else if (SimpleUtilities::FindSuffix(aFilePath, "_E"))
 			{
-				slot = 4;
+				slot = Global_Slot_CubeMap;
 			}
 
 			if (AddTexture(aFilePath, slot) == true)
