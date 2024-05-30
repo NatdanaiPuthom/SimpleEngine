@@ -3,8 +3,8 @@
 float4 PBRColor(float3 aPosition, float3 aAlbedo, float3 aVertexNormal, float3 aMaterial, float3 aPixelNormal, float aAmbientOcclusion)
 {
     float3 albedo = aAlbedo;
-    float3 pixelNormal = aPixelNormal;
-    float3 vertexNormal = aVertexNormal;
+    float3 pixelNormal = normalize(aPixelNormal);
+    float3 vertexNormal = normalize(aVertexNormal);
     float3 material = aMaterial;
     
     float3 toEye = normalize(cameraPosition.xyz - aPosition.xyz);
