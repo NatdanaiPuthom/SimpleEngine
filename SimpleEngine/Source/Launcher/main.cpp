@@ -55,7 +55,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	editor.Init();
 	PROFILER_END();
 
-	BeginMemoryTracking(false);
+	BeginMemoryTracking(true);
 	EndMemoryTracking();
 
 	PROFILER_BEGIN("GameWorld Initialize");
