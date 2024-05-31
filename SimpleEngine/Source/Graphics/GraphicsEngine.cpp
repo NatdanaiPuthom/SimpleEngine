@@ -347,13 +347,16 @@ namespace Graphics
 	{
 		myLightBufferData->pointLightData[myLightBufferData->currentPointLightCount] = aPointLightData;
 		++myLightBufferData->currentPointLightCount;
-
-		UpdateLightBuffer();
 	}
 
-	PointLightData GraphicsEngine::GetPointLightData(const int aIndex)
+	PointLightData* GraphicsEngine::GetPointLightDataArray()
 	{
-		return myLightBufferData->pointLightData[aIndex];
+		return myLightBufferData->pointLightData;
+	}
+
+	size_t GraphicsEngine::GetPointLightCount() const
+	{
+		return myLightBufferData->currentPointLightCount;
 	}
 
 	void GraphicsEngine::UnbindAllRenderTargets()
@@ -683,6 +686,9 @@ namespace Graphics
 			break;
 		case eShaderType::Deferred:
 			shader = GetShader("DeferredPS.cso", "FullScreenVS.cso");
+			break;
+		case eShaderType::PointLight:
+			shader = GetShader("PointLightCullPS.cso", "DefaultVS.cso");
 			break;
 		default:
 			break;

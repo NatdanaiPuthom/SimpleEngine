@@ -47,7 +47,8 @@ namespace Graphics
 		PBR_Animated,
 		SkyBox,
 		GBuffer,
-		Deferred
+		Deferred,
+		PointLight
 	};
 
 	enum class eTextureType

@@ -35,17 +35,18 @@ namespace Graphics
 		bool BeginFrame();
 		void EndFrame();
 
+		bool IsVSyncActive() const;
+
 		void RenderDeferredFromGBuffer();
 		void RenderDeferredImage();
 		void RenderFullScreenQuad();
 
 		void AddPointLight(const PointLightData& aPointLightData);
-		PointLightData GetPointLightData(const int aIndex);
-
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 
-		bool IsVSyncActive() const;
+		void UpdateLightBuffer();
+
 	public:
 		void SetGlobalGraphicsEngineToThis();
 		void SetDirectionalLightDirection(const Math::Vector3f& aDirection);
@@ -89,6 +90,8 @@ namespace Graphics
 		Math::Vector4f GetAmbientLightColorAndIntensity() const;
 		Math::Vector4f GetDirectionalLightColor() const;
 		Math::Vector3f GetDirectionalLightDirection() const;
+		PointLightData* GetPointLightDataArray();
+		size_t GetPointLightCount() const;
 
 		unsigned int GetFPSLevelCap() const;
 	private:
@@ -117,7 +120,6 @@ namespace Graphics
 		void ClearDepthStencilView();
 		void UnbindAllRenderTargets();
 		void UpdateCameraBuffer();
-		void UpdateLightBuffer();
 	private:
 		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
