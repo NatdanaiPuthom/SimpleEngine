@@ -335,4 +335,4 @@ namespace SimpleTracker
 	void SimpleMemoryTracker::StartMemoryTracking(const bool /*aShowAdvanced*/, const std::string& /*aCallerName*/) {}
 	void SimpleMemoryTracker::StopMemoryTracking() {}
 #endif 
-	}
+}
