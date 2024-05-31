@@ -7,6 +7,8 @@
 
 namespace Editor
 {
+	bool MainMenuBar::staticNodeScriptWindowActive = false;
+
 	MainMenuBar::MainMenuBar()
 		: myEditorWindowActive(false)
 		, myDeferredWindowActive(false)
@@ -34,12 +36,30 @@ namespace Editor
 
 	void MainMenuBar::Update()
 	{
+		Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
+
+		if (inputManager.IsKeyPressed(VK_F1))
+		{
+			myEditorWindowActive = !myEditorWindowActive;
+		}
+
+		if (inputManager.IsKeyPressed(VK_F2))
+		{
+			myDeferredWindowActive = !myDeferredWindowActive;
+		}
+
+		if (inputManager.IsKeyPressed(VK_F3))
+		{
+			staticNodeScriptWindowActive = !staticNodeScriptWindowActive;
+		}
+
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu("Windows"))
 			{
 				ImGui::MenuItem("Editor", "F1", &myEditorWindowActive);
 				ImGui::MenuItem("Deferred", "F2", &myDeferredWindowActive);
+				ImGui::MenuItem("NodeScript", "F3", &staticNodeScriptWindowActive);
 				ImGui::EndMenu();
 			}
 
@@ -71,16 +91,6 @@ namespace Editor
 
 	void MainMenuBar::DrawTools()
 	{
-		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F1))
-		{
-			myEditorWindowActive = !myEditorWindowActive;
-		}
-
-		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F2))
-		{
-			myDeferredWindowActive = !myDeferredWindowActive;
-		}
-
 		if (myEditorWindowActive)
 		{
 			myAssetWindow->Draw();

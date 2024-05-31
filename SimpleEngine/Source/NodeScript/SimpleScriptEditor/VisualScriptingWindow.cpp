@@ -9,7 +9,9 @@
 #include "SimpleScript/Core/Utilities/ScriptFilter.h"
 #include "SimpleScript/Core/ScriptModifier.h"
 #include "SimpleScript/Core/CustomEvent/CustomEvent.h"
-#include "MainSingleton/MainSingleton.hpp"
+
+#include "Editor/Menu/MainMenuBar.hpp" //NOTE(v10.0.2): Remove this once we no longer use static bool of MainMenuBar class
+
 #include <imnodes/imnodes_internal.h>
 
 namespace EDIT
@@ -78,17 +80,12 @@ namespace EDIT
 		ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/" + LevelName;
 		UpdateContext();
 
-		static bool open = false;
-
-		if (MainSingleton::GetInputManager().IsKeyPressed('H'))
+		if (Editor::MainMenuBar::staticNodeScriptWindowActive == false) //TO-DO(v10.0.2): May move this somehow?
 		{
-			open = !open;
+			return;
 		}
 
-		if (open == false)
-			return;
-
-		if (ImGui::Begin("Node Scripting", &open))
+		if (ImGui::Begin("Node Scripting"))
 		{
 			GetCurrentContext().script->GetCommandTracker().Update(
 				[]() -> bool
@@ -318,7 +315,7 @@ namespace EDIT
 		}
 
 		static int currentEvent = 0;
-		const char* events[] = {"Begin Play", "Tick", "End Play",};
+		const char* events[] = { "Begin Play", "Tick", "End Play", };
 
 		ImGui::Combo("Event Type", &currentEvent, events, IM_ARRAYSIZE(events));
 		ImGui::SameLine();
@@ -673,7 +670,7 @@ namespace EDIT
 
 								return size > 0;
 							}
-					).Get();
+						).Get();
 
 					for (NodeTypeID nodeTypeID : filtered)
 					{
@@ -807,7 +804,7 @@ namespace EDIT
 									}
 									return true;
 								}
-						).Get();
+							).Get();
 						for (NodeTypeID nodeTypeID : nodeTypeIDs)
 						{
 							PopulateCategories(NodeTypeManager::GetFullName(nodeTypeID), nodeTypeID, aMainCategory);

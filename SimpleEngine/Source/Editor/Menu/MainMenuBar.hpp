@@ -14,6 +14,8 @@ namespace Editor
 	class MainMenuBar : public Editor::ToolInterface
 	{
 	public:
+		static bool staticNodeScriptWindowActive; //TO-DO(v10.0.2): Fix/Move this
+	public:
 		MainMenuBar();
 		~MainMenuBar();
 

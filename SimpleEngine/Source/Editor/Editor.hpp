@@ -20,6 +20,7 @@ namespace Editor
 		void Render();
 
 		void AddTool(std::unique_ptr<ToolInterface> aTool);
+
 	private:
 		std::vector<std::unique_ptr<ToolInterface>> myTools;
 	};
