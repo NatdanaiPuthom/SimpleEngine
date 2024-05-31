@@ -1,17 +1,12 @@
 #pragma once
 #include "ScriptDefines.h"
+#include "Node/NodeRef.h"
 #include <stack>
 
 namespace SCR
 {
 
 	class NodeGraph;
-
-	struct NodeCall
-	{
-		NodeID nodeID;
-		NodeGraph* nodeGraph;
-	};
 
 	class CallStack final
 	{
@@ -28,7 +23,7 @@ namespace SCR
 
 	private:
 
-		std::stack<NodeCall> myCallStack;
+		std::stack<NodeRef> myCallStack;
 
 	};
 }

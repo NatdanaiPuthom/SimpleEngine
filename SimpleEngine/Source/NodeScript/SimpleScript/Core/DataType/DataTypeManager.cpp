@@ -38,7 +38,7 @@ namespace SCR
 		return false;
 	}
 
-	void DataTypeManager::SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr)
+	bool DataTypeManager::SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr)
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -46,25 +46,25 @@ namespace SCR
 			if (dataType->typeInterface.function.save)
 			{
 				dataType->typeInterface.function.save(aJson, aDataPtr);
+				return true;
 			}
 
 			// Save properties instead
 			for (const Property& property : dataType->properties)
 			{
-				if (const DataType* propertyDataType = Find(property.typeID))
+				nlohmann::json propertyJson;
+				const void* propertyDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + property.byteOffset);
+				if (SaveData(property.typeID, propertyJson, propertyDataPtr))
 				{
-
-					nlohmann::json propertyJson;
-					const void* propertyDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + property.byteOffset);
-					SaveData(property.typeID, propertyJson, propertyDataPtr);
-
 					aJson[property.name] = propertyJson;
 				}
+
 			}
 		}
+		return false;
 	}
 
-	void DataTypeManager::LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr)
+	bool DataTypeManager::LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr)
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -72,30 +72,30 @@ namespace SCR
 			if (dataType->typeInterface.function.load)
 			{
 				dataType->typeInterface.function.load(aJson, aDataPtr);
+				return true;
 			}
 
 			// Load properties instead
 			for (const Property& property : dataType->properties)
 			{
-				if (const DataType* propertyDataType = Find(property.typeID))
+				auto it = aJson.find(property.name);
+				if (it != aJson.end())
 				{
-					const nlohmann::json& propertyJson = aJson[property.name];
 					void* propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + property.byteOffset);
-					LoadData(property.typeID, propertyJson, propertyDataPtr);
+					LoadData(property.typeID, it.value(), propertyDataPtr);
 				}
 			}
 		}
+		return false;
 	}
 
-	MemoryPoolID DataTypeManager::AllocateData(DataTypeID aDataTypeID, MemoryPool& aMemoryPool)
+	MemoryPoolID DataTypeManager::AllocateData(DataTypeID aDataTypeID, MemoryPool& aMemoryPool, const void* aDefaultValue)
 	{
-		auto it = myDataTypes.find(aDataTypeID);
-		if (it != myDataTypes.end())
+		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			const DataType& dataType = it->second;
-			if (dataType.typeInterface.creation.allocate)
+			if (dataType->typeInterface.creation.allocate)
 			{
-				return dataType.typeInterface.creation.allocate(aMemoryPool);
+				return dataType->typeInterface.creation.allocate(aMemoryPool, aDefaultValue);
 			}
 		}
 		return false;
@@ -103,26 +103,22 @@ namespace SCR
 
 	void DataTypeManager::CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource)
 	{
-		auto it = myDataTypes.find(aDataTypeID);
-		if (it != myDataTypes.end())
+		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			const DataType& dataType = it->second;
-			if (dataType.typeInterface.creation.copy)
+			if (dataType->typeInterface.creation.copy)
 			{
-				dataType.typeInterface.creation.copy(aDestination, aSource);
+				dataType->typeInterface.creation.copy(aDestination, aSource);
 			}
 		}
 	}
 
 	void DataTypeManager::SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2)
 	{
-		auto it = myDataTypes.find(aDataTypeID);
-		if (it != myDataTypes.end())
+		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			const DataType& dataType = it->second;
-			if (dataType.typeInterface.creation.swap)
+			if (dataType->typeInterface.creation.swap)
 			{
-				dataType.typeInterface.creation.swap(aDataPtr1, aDataPtr2);
+				dataType->typeInterface.creation.swap(aDataPtr1, aDataPtr2);
 			}
 		}
 	}

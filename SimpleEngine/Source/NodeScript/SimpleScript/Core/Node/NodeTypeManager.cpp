@@ -14,12 +14,12 @@ namespace SCR
 	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToCustomEventID = {};
 	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToFunctionID = {};
 	std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> NodeTypeManager::myOperatorNodeTypeIDs = {};
-	std::vector<NodeType> NodeTypeManager::myTypes = { CreateInvalidNodeType() };
+	std::vector<NodeType> NodeTypeManager::myNodeTypes = { CreateInvalidNodeType() };
 
 	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
 	{
-		NodeTypeID id = myTypes.size();
-		myTypes.emplace_back(std::forward<NodeType>(aNodeType));
+		NodeTypeID id = myNodeTypes.size();
+		myNodeTypes.emplace_back(std::forward<NodeType>(aNodeType));
 		Assert();
 		return id;
 	}
@@ -60,7 +60,7 @@ namespace SCR
 
 	Node NodeTypeManager::CreateInstance(const NodeID aNodeID, const NodeTypeID aNodeTypeID, ScriptInternalModifier& aModifier)
 	{
-		return myTypes.at(aNodeTypeID).nodeRecipe.createFunction(aNodeID, aNodeTypeID, aModifier);
+		return myNodeTypes.at(aNodeTypeID).nodeRecipe.createFunction(aNodeID, aNodeTypeID, aModifier);
 	}
 
 	bool NodeTypeManager::CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID)
@@ -74,12 +74,12 @@ namespace SCR
 
 	NodeType& NodeTypeManager::GetNodeType(const NodeTypeID anID)
 	{
-		return myTypes.at(anID);
+		return myNodeTypes.at(anID);
 	}
 
 	const std::vector<NodeType>& NodeTypeManager::GetNodeTypes()
 	{
-		return myTypes;
+		return myNodeTypes;
 	}
 
 	CustomEvent& NodeTypeManager::GetCustomEvent(const CustomEventID anID)
@@ -119,23 +119,19 @@ namespace SCR
 
 	NodeTypeID NodeTypeManager::GetTypeID(const std::string& aName)
 	{
-		NodeTypeID id = 0;
-		For_Const_Break(myTypes, [&id, aName](NodeTypeID anID, const NodeType&)
+		for (NodeTypeID id = 0; id < myNodeTypes.size(); ++id)
+		{
+			if (GetShortName(id) == aName)
 			{
-				if (GetShortName(anID) == aName)
-				{
-					id = anID;
-					return true;
-				}
-				return false;
-			});
-
-		return id;
+				return id;
+			}
+		}
+		return 0;
 	}
 
 	const std::string& NodeTypeManager::GetFullName(const NodeTypeID anID)
 	{
-		return myTypes.at(anID).name;
+		return myNodeTypes.at(anID).name;
 	}
 
 	std::string NodeTypeManager::GetShortName(const NodeTypeID anID)
@@ -182,7 +178,7 @@ namespace SCR
 	void NodeTypeManager::Assert()
 	{
 		std::unordered_set<std::string> shortNames;
-		for (NodeTypeID id = 0; id < myTypes.size(); ++id)
+		for (NodeTypeID id = 0; id < myNodeTypes.size(); ++id)
 		{
 			std::string shortName = GetShortName(id);
 
@@ -201,7 +197,7 @@ namespace SCR
 		}
 
 	
-		myTypes.clear();
+		myNodeTypes.clear();
 		myCustomEvents.clear();
 		myFunctions.clear();
 		myGetterNodeTypeIDs.clear();

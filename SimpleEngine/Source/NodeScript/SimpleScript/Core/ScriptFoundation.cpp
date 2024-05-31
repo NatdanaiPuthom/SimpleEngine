@@ -3,6 +3,7 @@
 #include "NodeTypes/SystemNodes.h"
 #include "Serialization/ScriptLoader.h"
 #include "SystemDataTypes.h"
+#include "ScriptCopyBuffer.h"
 
 namespace SCR
 {
@@ -10,6 +11,7 @@ namespace SCR
 	MemoryPool ScriptFoundation::myGlobalMemoryPool = MemoryPool(10000);
 
 	ScriptFoundation::ScriptFoundation()
+		: myCopyBuffer(std::make_unique<CopyBuffer>())
 	{
 	}
 

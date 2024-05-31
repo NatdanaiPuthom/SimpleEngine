@@ -110,6 +110,10 @@ namespace SCR
 	{
 		DataTypeRegistry::Register<WaveTypeData>("Wave Type");
 		NodeTypeRegistry::RegisterNodeType(WaveNode, "Utility/Math/Wave", NodeTypeDesc{ { "Frequency", "Amplitude", "Equilibrium", "Wave Function" }, { "Value" } });
+		NodeTypeRegistry::RegisterNodeType(std::sinf, "Utility/Math/Sin");
+		NodeTypeRegistry::RegisterNodeType(std::cosf, "Utility/Math/Cos");
+		NodeTypeRegistry::RegisterNodeType(std::asinf, "Utility/Math/Asin");
+		NodeTypeRegistry::RegisterNodeType(std::acosf, "Utility/Math/Acos");
 	}
 }
 

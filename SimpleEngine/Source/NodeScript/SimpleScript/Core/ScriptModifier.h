@@ -18,14 +18,14 @@ namespace SCR
 		ScriptVec2 pos;
 	};
 
-	struct CopyBuffer
-	{
-		//ScriptVec2 copyPosition;
-		//ScriptVec2 pastePosition;
-		ScriptVec2 avgPosition;
-		std::vector<NodeID> nodeIDs;
-		//std::vector<PinID> linkIDs;
-	};
+	//struct CopyBuffer
+	//{
+	//	//ScriptVec2 copyPosition;
+	//	//ScriptVec2 pastePosition;
+	//	ScriptVec2 avgPosition;
+	//	std::vector<NodeID> nodeIDs;
+	//	//std::vector<PinID> linkIDs;
+	//};
 
 	class Script;
 	class MoveNodesCommand;
@@ -85,7 +85,7 @@ namespace SCR
 
 		std::unordered_map<NodeID, MoveNodeData> myMoveNodesData;
 
-		CopyBuffer myCopyBuffer;
+		//CopyBuffer myCopyBuffer;
 
 		ScriptInternalModifier& GetInternalModifier();
 	};

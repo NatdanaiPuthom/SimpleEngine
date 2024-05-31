@@ -5,6 +5,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include "NodeTypeManager.h"
+
 namespace SCR
 {
 
@@ -27,6 +29,7 @@ namespace SCR
 	class ScriptInternalModifier;
 	class NodeGraph;
 	class CallStack;
+	struct CopyBuffer;
 	
 	class ScriptProxy
 	{
@@ -74,6 +77,13 @@ namespace SCR
 
 		static const std::vector<NodeID>& GetNodeIDsByNodeType(const Script& aScript, const NodeTypeID aNodeTypeID);
 		static std::vector<std::vector<NodeID>>& GetNodeIDsByNodeTypeContainer(Script& aScript);
+
+#pragma region Types
+
+		inline static const NodeType& GetNodeType(NodeTypeID anID)
+		{
+			return NodeTypeManager::myNodeTypes[anID];
+		}
 		
 	private:
 
@@ -92,6 +102,8 @@ namespace SCR
 		static std::unordered_map<NodeID, std::any>& GetNodeStateMap(Script& aScript);
 
 		static std::unordered_map<NodeID, VarID>& GetNodeIDToVarIDMap(Script& aScript);
+
+		static CopyBuffer& GetGlobalCopyBufferRef(Script& aScript);
 
 	};
 }
