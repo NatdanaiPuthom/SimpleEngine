@@ -13,7 +13,7 @@ namespace SCR
 	using EditInterface = bool(*)(void*);
 	using SaveInterface = void(*)(nlohmann::json&, const void*);
 	using LoadInterface = void(*)(const nlohmann::json&, void*);
-	using AllocateInterface = MemoryPoolID(*)(MemoryPool&);
+	using AllocateInterface = MemoryPoolID(*)(MemoryPool&, const void*);
 	using CopyInterface = void(*)(void*, const void*);
 	using SwapInterface = void(*)(void*, void*);
 
@@ -111,8 +111,13 @@ namespace SCR
 	template<DefaultConstructible T>
 	AllocateInterface CreateAllocateInterface()
 	{
-		return [](MemoryPool& aMemoryPool) -> MemoryPoolID
+		return [](MemoryPool& aMemoryPool, const void* aDefaultValue) -> MemoryPoolID
 			{
+				if (aDefaultValue != nullptr)
+				{
+					const T& defaultValue = *reinterpret_cast<const T*>(aDefaultValue);
+					return aMemoryPool.Allocate<T>(defaultValue);
+				}
 				return aMemoryPool.Allocate<T>();
 			};
 	}
@@ -248,9 +253,9 @@ namespace SCR
 	public:
 
 		static bool EditData(DataTypeID aDataTypeID, void* aDataPtr);
-		static void SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr);
-		static void LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr);
-		static MemoryPoolID AllocateData(DataTypeID aDataTypeID, MemoryPool& aMemoryPool);
+		static bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr);
+		static bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr);
+		static MemoryPoolID AllocateData(DataTypeID aDataTypeID, MemoryPool& aMemoryPool, const void* aDefaultValue = nullptr);
 		static void CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource);
 		static void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2);
 		static const std::string& GetName(DataTypeID aDataTypeID);
@@ -293,13 +298,13 @@ namespace SCR
 
 	private:
 
-		 static std::unordered_map<DataTypeID, DataType> myDataTypes;
-		 static std::unordered_map<DataTypeID, TemplateDataType> myTemplateDataTypes;
+		static std::unordered_map<DataTypeID, DataType> myDataTypes;
+		static std::unordered_map<DataTypeID, TemplateDataType> myTemplateDataTypes;
 
-		 static const Color mySelectionTint;
-		 static const Color myHoverTint;
+		static const Color mySelectionTint;
+		static const Color myHoverTint;
 
-		 static const std::string myNullNameStr;
+		static const std::string myNullNameStr;
 	};
 
 	template<Scriptable<nlohmann::json> T>
@@ -374,7 +379,7 @@ namespace SCR
 		size_t byteOffset = GetByteOffset(aProperty);
 
 		DataTypeID dataTypeID = typeid(PropertyType).hash_code();
-		
+
 		Property property
 		{
 			aName,

@@ -16,8 +16,8 @@ namespace SCR
 	{
 		assert(!myCallStack.empty());
 
-		const NodeCall& call = myCallStack.top();
-		return ScriptProxy::GetNode(*call.nodeGraph, call.nodeID);
+		const NodeRef& nodeRef = myCallStack.top();
+		return ScriptProxy::GetNode(*nodeRef.nodeGraph, nodeRef.nodeID);
 	}
 
 	void CallStack::Push(NodeID aNodeID, NodeGraph* aNodeGraph)

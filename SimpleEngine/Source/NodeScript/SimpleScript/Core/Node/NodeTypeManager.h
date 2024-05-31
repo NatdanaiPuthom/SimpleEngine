@@ -14,6 +14,7 @@ namespace SCR
 
 	class NodeTypeManager
 	{
+		friend class ScriptProxy;
 		friend class ScriptInternalModifier;
 	public:
 		static NodeTypeID Register(NodeType&& aNodeType);
@@ -56,7 +57,7 @@ namespace SCR
 	private:
 		static std::vector<CustomEvent> myCustomEvents;
 		static std::vector<Function*> myFunctions;
-		static std::vector<NodeType> myTypes;
+		static std::vector<NodeType> myNodeTypes;
 
 		static std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventID;
 		static std::unordered_multimap<NodeTypeID, FunctionID> myToFunctionID;

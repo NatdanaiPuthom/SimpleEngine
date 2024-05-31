@@ -5,6 +5,7 @@
 #include "Node/NodeTypeRegistry.h"
 #include "ScriptManager.h"
 #include "ScriptInternalModifier.h"
+#include "ScriptCopyBuffer.h"
 
 namespace SCR
 {
@@ -340,21 +341,23 @@ namespace SCR
 		const Pin& pin = ScriptProxy::GetPin(myScript, aPinID);
 		const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
+
+		MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(myScript);
+
 		DataTypeID dataTypeID = pinType.dataTypeID;
-		void* dataPtr = ScriptProxy::GetScriptMemoryPool(myScript).MemoryAt(pin.memoryID);
+		void* dataPtr = memoryPool.MemoryAt(pin.memoryID);
 
 		MemoryPool tempPool(64);
-		MemoryPoolID tempID = DataTypeManager::AllocateData(dataTypeID, tempPool);
+		MemoryPoolID tempID = DataTypeManager::AllocateData(dataTypeID, tempPool, dataPtr);
 		void* copyDataPtr = tempPool.MemoryAt(tempID);
-		DataTypeManager::CopyData(dataTypeID, copyDataPtr, dataPtr);
+		//DataTypeManager::CopyData(dataTypeID, copyDataPtr, dataPtr);
 
 		if (DataTypeManager::EditData(dataTypeID, dataPtr))
 		{
-			MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(myScript);
 
-			MemoryPoolID prevMemoryID = DataTypeManager::AllocateData(dataTypeID, memoryPool);
-			void* prevDataPtr = memoryPool.MemoryAt(prevMemoryID);
-			DataTypeManager::CopyData(dataTypeID, prevDataPtr, copyDataPtr);
+			MemoryPoolID prevMemoryID = DataTypeManager::AllocateData(dataTypeID, memoryPool, copyDataPtr);
+			//void* prevDataPtr = memoryPool.MemoryAt(prevMemoryID);
+			//DataTypeManager::CopyData(dataTypeID, prevDataPtr, copyDataPtr);
 
 			CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
 
@@ -435,78 +438,161 @@ namespace SCR
 		DestroySelection(ScriptProxy::GetVariableManager(myScript).GetNodeIDsByVarID(aVarID), {});
 	}
 
-	/*Selection& ScriptModifier::GetSelection()
-	{
-		return mySelection;
-	}*/
-
-
 	void ScriptModifier::CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs)
 	{
-		myCopyBuffer.nodeIDs = aNodeIDs;
+		if (aNodeIDs.empty())
+		{
+			return;
+		}
 
-		ScriptVec2 avgPos;
+		CopyBuffer& copyBuffer = ScriptProxy::GetGlobalCopyBufferRef(myScript);
+
+		copyBuffer = CopyBuffer{};
+
+		ScriptVec2 nodeTotalPos;
 		for (NodeID nodeID : aNodeIDs)
 		{
 			const Node& node = ScriptProxy::GetNode(myScript, nodeID);
-			avgPos += node.position;
-		}
-		avgPos /= static_cast<float>(aNodeIDs.size());
+			nodeTotalPos += node.position;
 
-		myCopyBuffer.avgPosition = avgPos;
+
+			NodeCopy& nodeCopy = copyBuffer.nodes.emplace_back();
+			nodeCopy.typeID = node.typeID;
+
+			const MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(myScript);
+
+			for (PinID inputPinID : node.inputPins)
+			{
+				PinCopy& pinCopy = nodeCopy.inputPinCopies.emplace_back();
+
+				const Pin& inputPin = ScriptProxy::GetPin(myScript, inputPinID);
+				const PinType& inputPinType = PinTypeManager::GetPinType(inputPin.typeID);
+
+
+				const void* sourceDataPtr = memoryPool.MemoryAt(inputPin.memoryID);
+				pinCopy.memoryID = DataTypeManager::AllocateData(inputPinType.dataTypeID, nodeCopy.data, sourceDataPtr);
+
+				//void* destDataPtr = nodeCopy.data.MemoryAt(pinCopy.memoryID);
+
+				//DataTypeManager::CopyData(inputPinType.dataTypeID, destDataPtr, sourceDataPtr);
+			}
+
+			for (PinID outputPinID : node.outputPins)
+			{
+				PinCopy& pinCopy = nodeCopy.outputPinCopies.emplace_back();
+
+				const Pin& outputPin = ScriptProxy::GetPin(myScript, outputPinID);
+				const PinType& outputPinType = PinTypeManager::GetPinType(outputPin.typeID);
+
+				const void* sourceDataPtr = memoryPool.MemoryAt(outputPin.memoryID); 
+				pinCopy.memoryID = DataTypeManager::AllocateData(outputPinType.dataTypeID, nodeCopy.data, sourceDataPtr);
+
+				//void* destDataPtr = nodeCopy.data.MemoryAt(pinCopy.memoryID);
+
+				//DataTypeManager::CopyData(outputPinType.dataTypeID, destDataPtr, sourceDataPtr);
+			}
+
+		}
+
+		ScriptVec2 avgPos = nodeTotalPos / static_cast<float>(aNodeIDs.size());
+
+		// Calculate difference from avg pos for every copied node
+
+		for (size_t i = 0; i < aNodeIDs.size(); ++i)
+		{
+			const Node& node = ScriptProxy::GetNode(myScript, aNodeIDs[i]);
+
+			NodeCopy& nodeCopy = copyBuffer.nodes[i];
+			nodeCopy.diffFromAvg = node.position - avgPos;
+		}
+
+
 	}
 
 	void ScriptModifier::PasteCopyBuffer(ScriptVec2 aPosition)
 	{
-		if (!myCopyBuffer.nodeIDs.empty())
+		const CopyBuffer& copyBuffer = ScriptProxy::GetGlobalCopyBufferRef(myScript);
+		if (copyBuffer.nodes.empty())
 		{
-			CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
-			commandTracker.BeginComposite("Paste Nodes");
+			return;
+		}
 
-			std::unordered_map<NodeID, NodeID> copyMap;
+		CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
+		commandTracker.BeginComposite("Paste Nodes");
 
-			for (NodeID nodeID : myCopyBuffer.nodeIDs)
+
+		MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(myScript);
+
+		// Create nodes
+		for (const NodeCopy& nodeCopy : copyBuffer.nodes)
+		{
+			ScriptVec2 newPos = aPosition + nodeCopy.diffFromAvg;
+			NodeID createdNodeID = CreateNode(nodeCopy.typeID, newPos);
+
+			const Node& createdNode = ScriptProxy::GetNode(myScript, createdNodeID);
+
+
+			assert(createdNode.inputPins.size() == nodeCopy.inputPinCopies.size());
+			assert(createdNode.outputPins.size() == nodeCopy.outputPinCopies.size());
+
+			for (size_t i = 0; i < createdNode.inputPins.size(); ++i)
 			{
-				const Node& node = ScriptProxy::GetNode(myScript, nodeID);
-				ScriptVec2 newPos = aPosition + (node.position - myCopyBuffer.avgPosition);
-				NodeID createdNodeID = CreateNode(node.typeID, newPos);
+				const Pin& inputPin = ScriptProxy::GetPin(myScript, createdNode.inputPins[i]);
+				const PinType& inputPinType = PinTypeManager::GetPinType(inputPin.typeID);
 
-				
-				copyMap.emplace(nodeID, createdNodeID);
+				void* dataPtr = memoryPool.MemoryAt(inputPin.memoryID);
+				const void* sourceDataPtr = nodeCopy.data.MemoryAt(nodeCopy.inputPinCopies[i].memoryID);
+
+				DataTypeManager::CopyData(inputPinType.dataTypeID, dataPtr, sourceDataPtr);
+
 			}
 
-			for (const auto& [copiedNodeID, pastedNodeID] : copyMap)
+			for (size_t i = 0; i < createdNode.outputPins.size(); ++i)
 			{
-				const Node& copyNode = ScriptProxy::GetNode(myScript, copiedNodeID);
-				const Node& pasteNode = ScriptProxy::GetNode(myScript, pastedNodeID);
+				const Pin& outputPin = ScriptProxy::GetPin(myScript, createdNode.outputPins[i]);
+				const PinType& outputPinType = PinTypeManager::GetPinType(outputPin.typeID);
 
-				for (size_t i = 0; i < copyNode.inputPins.size(); ++i)
+				void* dataPtr = memoryPool.MemoryAt(outputPin.memoryID);
+				const void* sourceDataPtr = nodeCopy.data.MemoryAt(nodeCopy.outputPinCopies[i].memoryID);
+
+				DataTypeManager::CopyData(outputPinType.dataTypeID, dataPtr, sourceDataPtr);
+
+			}
+		}
+
+		// Create links
+		/*for (const auto& [copiedNodeID, pastedNodeID] : copyMap)
+		{
+			const Node& copyNode = ScriptProxy::GetNode(myScript, copiedNodeID);
+			const Node& pasteNode = ScriptProxy::GetNode(myScript, pastedNodeID);
+
+			for (size_t i = 0; i < copyNode.inputPins.size(); ++i)
+			{
+				const Pin& copyInputPin = ScriptProxy::GetPin(myScript, copyNode.inputPins[i]);
+
+				const PinID pasteInputPinID = pasteNode.inputPins[i];
+
+				for (size_t j = 0; j < copyInputPin.connectedPinIDs.size(); ++j)
 				{
-					const Pin& copyInputPin = ScriptProxy::GetPin(myScript, copyNode.inputPins[i]);
-					
-					const PinID pasteInputPinID = pasteNode.inputPins[i];
 
-					for (size_t j = 0; j < copyInputPin.connectedPinIDs.size(); ++j)
+					PinID copyConnectedPinID = copyInputPin.connectedPinIDs[j];
+					const Pin& copyConnectedPin = ScriptProxy::GetPin(myScript, copyConnectedPinID);
+
+					if (copyMap.contains(copyConnectedPin.nodeID))
 					{
-						
-						PinID copyConnectedPinID = copyInputPin.connectedPinIDs[j];
-						const Pin& copyConnectedPin = ScriptProxy::GetPin(myScript, copyConnectedPinID);
+						NodeID newConnectedNodeID = copyMap.at(copyConnectedPin.nodeID);
+						const Node& newConnectedNode = ScriptProxy::GetNode(myScript, newConnectedNodeID);
 
-						if (copyMap.contains(copyConnectedPin.nodeID))
-						{
-							NodeID newConnectedNodeID = copyMap.at(copyConnectedPin.nodeID);
-							const Node& newConnectedNode = ScriptProxy::GetNode(myScript, newConnectedNodeID);
+						PinID newConnectedPinID = newConnectedNode.outputPins[ScriptLinker::GetPinIndex(myScript, copyConnectedPinID, ePinFlowType::Output)];
 
-							PinID newConnectedPinID = newConnectedNode.outputPins[ScriptLinker::GetPinIndex(myScript, copyConnectedPinID, ePinFlowType::Output)];
-
-							TryCreateLink(pasteInputPinID, newConnectedPinID);
-						}
+						TryCreateLink(pasteInputPinID, newConnectedPinID);
 					}
 				}
 			}
+		}*/
 
-			commandTracker.EndComposite();
-		}
+		commandTracker.EndComposite();
+
 	}
 
 	CustomEventID ScriptModifier::CreateNodeType_CustomEvent(const std::string& aName, ScriptFoundation& aFoundation)
