@@ -69,9 +69,14 @@ namespace ECS
 		}
 	}
 
-	void SystemManager::RenderSkyBoxAndDirectionalLight()
+	void SystemManager::RenderPointLights()
 	{
 		mySkyBoxAndDirectionalLightSystem.Render();
+	}
+
+	void SystemManager::RenderSkyBoxAndDirectionalLight()
+	{
+		mySkyBoxAndDirectionalLightSystem.RenderSkyBoxAndDirectionalLight();
 	}
 
 	void SystemManager::AddSystem(std::unique_ptr<System> aSystem)

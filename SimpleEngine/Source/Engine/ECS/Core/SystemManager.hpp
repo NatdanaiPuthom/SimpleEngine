@@ -1,6 +1,6 @@
 #pragma once
 #include "Engine/ECS/Core/System.hpp"
-#include "Engine/ECS/Systems/SkyBoxAndDirectionalLightSystem.hpp"
+#include "Engine/ECS/Systems/RenderLightSystem.hpp"
 #include <memory>
 #include <vector>
 
@@ -15,13 +15,14 @@ namespace ECS
 		void Init();
 		void Update();
 		void Render();
+		void RenderPointLights();
 		void RenderSkyBoxAndDirectionalLight();
 
 		void AddSystem(std::unique_ptr<System> aSystem);
 
 	private:
 		std::vector<std::unique_ptr<System>> mySystems;
-		SkyBoxAndDirectionalLightSystem mySkyBoxAndDirectionalLightSystem;
+		RenderLightSystem mySkyBoxAndDirectionalLightSystem;
 
 		EntityManager* myEntityManager;
 

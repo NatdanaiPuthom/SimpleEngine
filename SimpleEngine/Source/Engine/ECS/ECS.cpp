@@ -1,7 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/ECS/Systems/RenderSystem.hpp"
-#include "Engine/ECS/Systems/SkyBoxAndDirectionalLightSystem.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
 
 namespace ECS
@@ -34,6 +33,11 @@ namespace ECS
 	void EntityComponentSystem::Render()
 	{
 		mySystemManager.Render();
+	}
+
+	void EntityComponentSystem::RenderPointLights()
+	{
+		mySystemManager.RenderPointLights();
 	}
 
 	void EntityComponentSystem::RenderSkyBoxAndDirectionalLight()

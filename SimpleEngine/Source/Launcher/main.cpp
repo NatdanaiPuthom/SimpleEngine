@@ -103,6 +103,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
 		ecs.RenderSkyBoxAndDirectionalLight();
+		ecs.RenderPointLights();
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render to BackBuffer");
