@@ -51,24 +51,24 @@ namespace Editor
 
 				if (ImGui::ArrowButton("##Arrow_back", ImGuiDir_Left))
 				{
-					const size_t lastBackSlashPos = FileManager::sCurrentDirectory.find_last_of('\\');
+					const size_t lastBackSlashPos = FileManager::myStaticCurrentDirectory.find_last_of('\\');
 
 					if (lastBackSlashPos != std::string::npos)
 					{
-						const std::string previousDirectory = FileManager::sCurrentDirectory.substr(0, lastBackSlashPos);
+						const std::string previousDirectory = FileManager::myStaticCurrentDirectory.substr(0, lastBackSlashPos);
 
 						if (previousDirectory.find("Assets") != std::string::npos)
 						{
-							FileManager::sCurrentDirectory = previousDirectory;
+							FileManager::myStaticCurrentDirectory = previousDirectory;
 						}
 					}
 				}
 
 				ImGui::SameLine();
-				ImGui::Text(FileManager::sCurrentDirectory.c_str());
+				ImGui::Text(FileManager::myStaticCurrentDirectory.c_str());
 				ImGui::Separator();
 
-				FileManager::DrawFilesInFolder(FileManager::sCurrentDirectory);
+				FileManager::DrawFilesInFolder(FileManager::myStaticCurrentDirectory);
 
 				ImGui::EndChild();
 			}

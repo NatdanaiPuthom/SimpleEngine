@@ -4,8 +4,8 @@
 
 namespace Editor
 {
-	bool FileManager::sHasDragDropBegin = false;
-	std::string FileManager::sCurrentDirectory = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS);
+	bool FileManager::myStaticHasDragDropBegin = false;
+	std::string FileManager::myStaticCurrentDirectory = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS);
 
 	void FileManager::DropFiles(HDROP aHDROP)
 	{
@@ -18,7 +18,7 @@ namespace Editor
 			if (DragQueryFileA(aHDROP, i, filePath, MAX_PATH))
 			{
 				const std::string name = GetFileName(filePath);
-				const std::string destinationPath = sCurrentDirectory + "\\" + name;
+				const std::string destinationPath = myStaticCurrentDirectory + "\\" + name;
 
 				if (CopyFileA(filePath, destinationPath.c_str(), FALSE))
 				{
@@ -36,7 +36,7 @@ namespace Editor
 					std::cout << " has been copied to ";
 
 					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-					std::cout << sCurrentDirectory << std::endl;
+					std::cout << myStaticCurrentDirectory << std::endl;
 
 					SetConsoleTextAttribute(hConsole, defaultAttributes);
 				}
@@ -75,7 +75,7 @@ namespace Editor
 		{
 			if (ImGui::IsItemClicked())
 			{
-				sCurrentDirectory = aStartDirectory;
+				myStaticCurrentDirectory = aStartDirectory;
 			}
 		}
 	}
@@ -155,7 +155,7 @@ namespace Editor
 			{
 				if (extension[0] != '.')
 				{
-					sCurrentDirectory = aDirectory + "\\" + fileNames[i];
+					myStaticCurrentDirectory = aDirectory + "\\" + fileNames[i];
 					break;
 				}
 			}

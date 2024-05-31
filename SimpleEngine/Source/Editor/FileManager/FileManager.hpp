@@ -9,8 +9,8 @@ namespace Editor
 	class FileManager final
 	{
 	public:
-		static std::string sCurrentDirectory;
-		static bool sHasDragDropBegin;
+		static std::string myStaticCurrentDirectory;
+		static bool myStaticHasDragDropBegin;
 
 	public:
 		static void DropFiles(HDROP aHDROP);

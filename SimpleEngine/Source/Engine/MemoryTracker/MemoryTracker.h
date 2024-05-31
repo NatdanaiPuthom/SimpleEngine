@@ -16,8 +16,8 @@ namespace SimpleTracker
 {
 	struct MemoryTrackingSettings final
 	{
-		bool myShouldStoreStackTraces;
-		bool myShouldTrackAllAllocations;
+		bool shouldStoreStackTraces;
+		bool shouldTrackAllAllocations;
 	};
 
 	class SimpleMemoryTracker final
@@ -26,8 +26,8 @@ namespace SimpleTracker
 
 		struct Allocation final
 		{
-			size_t mySize = 0;
-			StackTrace myStackTrace;
+			size_t size = 0;
+			StackTrace stackTrace;
 		};
 
 	public:
@@ -41,21 +41,21 @@ namespace SimpleTracker
 		static void PrintTopLeaks(std::unordered_map<StackTrace, int>& aMap);
 		static void PrintShortLivedToOutput();
 	private:
-		inline static std::mutex myAllocationMapMutex = {};
-		inline static std::unordered_map<StackTrace, int> myStackTraceToAllocationCount = {};
-		inline static std::unordered_map<long, Allocation> myAllocationMap = {};
+		inline static std::mutex myStaticAllocationMapMutex = {};
+		inline static std::unordered_map<StackTrace, int> myStaticStackTraceToAllocationCount = {};
+		inline static std::unordered_map<long, Allocation> myStaticAllocationMap = {};
 
-		inline static int myTotalAllocationCount = 0;
-		inline static thread_local bool myIsAllocationInProgress = false;
+		inline static int myStaticTotalAllocationCount = 0;
+		inline static thread_local bool myStaticIsAllocationInProgress = false;
 
-		inline static MemoryTrackingSettings myMemoryTrackingSettings = { false, false };
-		inline static MemoryTrackingSettings myShortLivedMemoryTrackingSettings = { false, false };
+		inline static MemoryTrackingSettings myStaticMemoryTrackingSettings = { false, false };
+		inline static MemoryTrackingSettings myStaticShortLivedMemoryTrackingSettings = { false, false };
 
-		static std::mutex myShortLivedAllocationMapMutex;
-		static std::unordered_map<StackTrace, int> myShortLivedStackTraceToAllocationCount;
-		static std::unordered_map<long, Allocation> myShortLivedAllocationMap;
-		static std::atomic<bool> myHasStarted;
-		static int myShortLivedTotalAllocationCount;
+		static std::mutex myStaticShortLivedAllocationMapMutex;
+		static std::unordered_map<StackTrace, int> myStaticShortLivedStackTraceToAllocationCount;
+		static std::unordered_map<long, Allocation> myStaticShortLivedAllocationMap;
+		static std::atomic<bool> myStaticHasStarted;
+		static int myStaticShortLivedTotalAllocationCount;
 	};
 
 	class SimpleMemoryTrackerWrapper final
@@ -79,7 +79,7 @@ namespace SimpleTracker
 
 	class SimpleMemoryTrackerWrapperWrapper final
 	{
-		inline static SimpleMemoryTrackerWrapper globalStaticMemoryTrackerWrapper;
+		inline static SimpleMemoryTrackerWrapper myStaticMemoryTrackerWrapper;
 	};
 }
 

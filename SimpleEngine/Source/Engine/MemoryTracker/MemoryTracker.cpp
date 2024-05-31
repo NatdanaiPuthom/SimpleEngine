@@ -31,22 +31,22 @@ namespace SimpleTracker
 	char localBuffer[255];
 	bool SimpleMemoryTrackerWrapper::myShouldActive = false;
 
-	std::unordered_map<StackTrace, int> SimpleMemoryTracker::myShortLivedStackTraceToAllocationCount;
-	std::unordered_map<long, SimpleMemoryTracker::Allocation> SimpleMemoryTracker::myShortLivedAllocationMap;
-	std::mutex SimpleMemoryTracker::myShortLivedAllocationMapMutex;
-	int SimpleMemoryTracker::myShortLivedTotalAllocationCount;
-	std::atomic<bool> SimpleMemoryTracker::myHasStarted = false;
+	std::unordered_map<StackTrace, int> SimpleMemoryTracker::myStaticShortLivedStackTraceToAllocationCount;
+	std::unordered_map<long, SimpleMemoryTracker::Allocation> SimpleMemoryTracker::myStaticShortLivedAllocationMap;
+	std::mutex SimpleMemoryTracker::myStaticShortLivedAllocationMapMutex;
+	int SimpleMemoryTracker::myStaticShortLivedTotalAllocationCount;
+	std::atomic<bool> SimpleMemoryTracker::myStaticHasStarted = false;
 
 #ifdef _DEBUG
 	int SimpleMemoryTracker::AllocHook(int aAllocType, void* aUserData, size_t aSize, int aBlockType, long aRequestNumber, const unsigned char*, int)
 	{
-		if (aBlockType == _CRT_BLOCK || SimpleMemoryTracker::myIsAllocationInProgress)
+		if (aBlockType == _CRT_BLOCK || SimpleMemoryTracker::myStaticIsAllocationInProgress)
 			return 1;
 
 		// Do not track allocations by the memory tracker itself
-		SimpleMemoryTracker::myIsAllocationInProgress = true;
+		SimpleMemoryTracker::myStaticIsAllocationInProgress = true;
 
-		std::lock_guard<std::mutex> guard(SimpleMemoryTracker::myAllocationMapMutex);
+		std::lock_guard<std::mutex> guard(SimpleMemoryTracker::myStaticAllocationMapMutex);
 
 		bool alloc = false;
 		bool free = false;
@@ -67,29 +67,29 @@ namespace SimpleTracker
 
 		if (alloc)
 		{
-			Allocation& entry = SimpleMemoryTracker::myAllocationMap[aRequestNumber];
+			Allocation& entry = SimpleMemoryTracker::myStaticAllocationMap[aRequestNumber];
 
-			if (SimpleMemoryTracker::myMemoryTrackingSettings.myShouldStoreStackTraces)
+			if (SimpleMemoryTracker::myStaticMemoryTrackingSettings.shouldStoreStackTraces)
 			{
-				entry.myStackTrace = StackTrace::CaptureStackTrace(1);
-				SimpleMemoryTracker::myStackTraceToAllocationCount[entry.myStackTrace]++;
+				entry.stackTrace = StackTrace::CaptureStackTrace(1);
+				SimpleMemoryTracker::myStaticStackTraceToAllocationCount[entry.stackTrace]++;
 			}
 
-			entry.mySize = aSize;
-			SimpleMemoryTracker::myTotalAllocationCount++;
+			entry.size = aSize;
+			SimpleMemoryTracker::myStaticTotalAllocationCount++;
 
-			if (myHasStarted)
+			if (myStaticHasStarted)
 			{
-				Allocation& entry2 = SimpleMemoryTracker::myShortLivedAllocationMap[aRequestNumber];
+				Allocation& entry2 = SimpleMemoryTracker::myStaticShortLivedAllocationMap[aRequestNumber];
 
-				if (SimpleMemoryTracker::myShortLivedMemoryTrackingSettings.myShouldStoreStackTraces)
+				if (SimpleMemoryTracker::myStaticShortLivedMemoryTrackingSettings.shouldStoreStackTraces)
 				{
-					entry2.myStackTrace = StackTrace::CaptureStackTrace(1);
-					SimpleMemoryTracker::myShortLivedStackTraceToAllocationCount[entry2.myStackTrace]++;
+					entry2.stackTrace = StackTrace::CaptureStackTrace(1);
+					SimpleMemoryTracker::myStaticShortLivedStackTraceToAllocationCount[entry2.stackTrace]++;
 				}
 
-				entry2.mySize = aSize;
-				SimpleMemoryTracker::myShortLivedTotalAllocationCount++;
+				entry2.size = aSize;
+				SimpleMemoryTracker::myStaticShortLivedTotalAllocationCount++;
 			}
 		}
 
@@ -104,17 +104,17 @@ namespace SimpleTracker
 
 			long freeRequestNumber = pHead->lRequest;
 
-			SimpleMemoryTracker::myStackTraceToAllocationCount.erase(SimpleMemoryTracker::myAllocationMap[freeRequestNumber].myStackTrace);
-			SimpleMemoryTracker::myAllocationMap.erase(freeRequestNumber);
+			SimpleMemoryTracker::myStaticStackTraceToAllocationCount.erase(SimpleMemoryTracker::myStaticAllocationMap[freeRequestNumber].stackTrace);
+			SimpleMemoryTracker::myStaticAllocationMap.erase(freeRequestNumber);
 
-			if (myHasStarted)
+			if (myStaticHasStarted)
 			{
-				SimpleMemoryTracker::myShortLivedStackTraceToAllocationCount.erase(SimpleMemoryTracker::myShortLivedAllocationMap[freeRequestNumber].myStackTrace);
-				SimpleMemoryTracker::myShortLivedAllocationMap.erase(freeRequestNumber);
+				SimpleMemoryTracker::myStaticShortLivedStackTraceToAllocationCount.erase(SimpleMemoryTracker::myStaticShortLivedAllocationMap[freeRequestNumber].stackTrace);
+				SimpleMemoryTracker::myStaticShortLivedAllocationMap.erase(freeRequestNumber);
 			}
 		}
 
-		SimpleMemoryTracker::myIsAllocationInProgress = false;
+		SimpleMemoryTracker::myStaticIsAllocationInProgress = false;
 		return 1;
 	}
 
@@ -147,7 +147,7 @@ namespace SimpleTracker
 			return;
 		}
 
-		SimpleMemoryTracker::myMemoryTrackingSettings = aTrackingSettings;
+		SimpleMemoryTracker::myStaticMemoryTrackingSettings = aTrackingSettings;
 		_CrtSetAllocHook(&SimpleMemoryTracker::AllocHook);
 	}
 
@@ -187,17 +187,17 @@ namespace SimpleTracker
 			return;
 		}
 
-		std::lock_guard<std::mutex> guard(SimpleMemoryTracker::myAllocationMapMutex);
+		std::lock_guard<std::mutex> guard(SimpleMemoryTracker::myStaticAllocationMapMutex);
 
 		_CrtSetAllocHook(nullptr);
 
-		if (SimpleMemoryTracker::myAllocationMap.size() == 0)
+		if (SimpleMemoryTracker::myStaticAllocationMap.size() == 0)
 		{
-			if (SimpleMemoryTracker::myMemoryTrackingSettings.myShouldTrackAllAllocations)
+			if (SimpleMemoryTracker::myStaticMemoryTrackingSettings.shouldTrackAllAllocations)
 			{
 				OutputDebugStringA("================================================================================\n");
 				char buffer[100];
-				sprintf_s(buffer, "== Total Allocation Count: %d\n", SimpleMemoryTracker::myTotalAllocationCount);
+				sprintf_s(buffer, "== Total Allocation Count: %d\n", SimpleMemoryTracker::myStaticTotalAllocationCount);
 				OutputDebugStringA(buffer);
 			}
 
@@ -207,31 +207,31 @@ namespace SimpleTracker
 		}
 		else
 		{
-			if (SimpleMemoryTracker::myMemoryTrackingSettings.myShouldStoreStackTraces)
+			if (SimpleMemoryTracker::myStaticMemoryTrackingSettings.shouldStoreStackTraces)
 			{
 				OutputDebugStringA("================================================================================\n");
 				std::unordered_map<StackTrace, int> stackTraceToLeakCountMap;
 
-				for (const auto& p : SimpleMemoryTracker::myAllocationMap)
+				for (const auto& p : SimpleMemoryTracker::myStaticAllocationMap)
 				{
-					stackTraceToLeakCountMap[p.second.myStackTrace]++;
+					stackTraceToLeakCountMap[p.second.stackTrace]++;
 				}
 
 				OutputDebugStringA("== Top 10 Leaks: \n");
 				PrintTopLeaks(stackTraceToLeakCountMap);
 			}
 
-			if (SimpleMemoryTracker::myMemoryTrackingSettings.myShouldTrackAllAllocations)
+			if (SimpleMemoryTracker::myStaticMemoryTrackingSettings.shouldTrackAllAllocations)
 			{
 				OutputDebugStringA("================================================================================\n");
 				char buffer[100];
-				sprintf_s(buffer, "== Total Allocation Count: %d\n", SimpleMemoryTracker::myTotalAllocationCount);
+				sprintf_s(buffer, "== Total Allocation Count: %d\n", SimpleMemoryTracker::myStaticTotalAllocationCount);
 				OutputDebugStringA(buffer);
 			}
 
 			OutputDebugStringA("================================================================================\n");
 			char buffer[100];
-			sprintf_s(buffer, "== Total Number of Memory Leaks: %d\n", (int)SimpleMemoryTracker::myAllocationMap.size());
+			sprintf_s(buffer, "== Total Number of Memory Leaks: %d\n", (int)SimpleMemoryTracker::myStaticAllocationMap.size());
 			OutputDebugStringA(buffer);
 			OutputDebugStringA("================================================================================\n");
 			OutputDebugStringA("== For more details modify SimpleTracker::MemoryTrackingSettings\n");
@@ -239,25 +239,25 @@ namespace SimpleTracker
 			OutputDebugStringA("================================================================================\n");
 		}
 
-		SimpleMemoryTracker::myAllocationMap.clear();
-		SimpleMemoryTracker::myStackTraceToAllocationCount.clear();
+		SimpleMemoryTracker::myStaticAllocationMap.clear();
+		SimpleMemoryTracker::myStaticStackTraceToAllocationCount.clear();
 	}
 
 	void SimpleMemoryTracker::StartMemoryTracking(const bool aShowAdvanced, const std::string& aCallerName)
 	{
-		if (myHasStarted == true) //TO-DO(v10.0.0): Better error and warning messages
+		if (myStaticHasStarted == true) //TO-DO(v10.0.0): Better error and warning messages
 		{
 			return;
 		}
 
 		sprintf_s(localBuffer, std::string("== " + aCallerName).c_str());
-		myHasStarted = true;
-		myShortLivedMemoryTrackingSettings = { aShowAdvanced, true };
+		myStaticHasStarted = true;
+		myStaticShortLivedMemoryTrackingSettings = { aShowAdvanced, true };
 	}
 
 	void SimpleMemoryTracker::StopMemoryTracking()
 	{
-		if (myHasStarted == false)  //TO-DO(v10.0.0): Better error and warning messages
+		if (myStaticHasStarted == false)  //TO-DO(v10.0.0): Better error and warning messages
 		{
 			return;
 		}
@@ -267,36 +267,36 @@ namespace SimpleTracker
 			return;
 		}
 
-		myHasStarted = false;
+		myStaticHasStarted = false;
 		PrintShortLivedToOutput();
 	}
 
 	void SimpleMemoryTracker::PrintShortLivedToOutput()
 	{
-		SimpleMemoryTracker::myIsAllocationInProgress = true;
+		SimpleMemoryTracker::myStaticIsAllocationInProgress = true;
 
-		std::lock_guard<std::mutex> guard(SimpleMemoryTracker::myAllocationMapMutex);
+		std::lock_guard<std::mutex> guard(SimpleMemoryTracker::myStaticAllocationMapMutex);
 
-		if (SimpleMemoryTracker::myShortLivedAllocationMap.size() == 0)
+		if (SimpleMemoryTracker::myStaticShortLivedAllocationMap.size() == 0)
 		{
 			OutputDebugStringA("\n================================================================================\n");
 			OutputDebugStringA(localBuffer);
 			char buffer[100];
-			sprintf_s(buffer, "\n== Total Allocation Count: %d\n", SimpleMemoryTracker::myShortLivedTotalAllocationCount);
+			sprintf_s(buffer, "\n== Total Allocation Count: %d\n", SimpleMemoryTracker::myStaticShortLivedTotalAllocationCount);
 			OutputDebugStringA(buffer);
 			OutputDebugStringA("== No memory leaks found! \n");
 			OutputDebugStringA("================================================================================\n");
 		}
 		else
 		{
-			if (SimpleMemoryTracker::myShortLivedMemoryTrackingSettings.myShouldStoreStackTraces)
+			if (SimpleMemoryTracker::myStaticShortLivedMemoryTrackingSettings.shouldStoreStackTraces)
 			{
 				OutputDebugStringA("\n================================================================================\n");
 				std::unordered_map<StackTrace, int> stackTraceToLeakCountMap;
 
-				for (const auto& p : SimpleMemoryTracker::myShortLivedAllocationMap)
+				for (const auto& p : SimpleMemoryTracker::myStaticShortLivedAllocationMap)
 				{
-					stackTraceToLeakCountMap[p.second.myStackTrace]++;
+					stackTraceToLeakCountMap[p.second.stackTrace]++;
 				}
 
 				OutputDebugStringA("== Top 10 Leaks: \n");
@@ -305,25 +305,25 @@ namespace SimpleTracker
 
 			OutputDebugStringA(localBuffer);
 
-			if (SimpleMemoryTracker::myShortLivedMemoryTrackingSettings.myShouldTrackAllAllocations)
+			if (SimpleMemoryTracker::myStaticShortLivedMemoryTrackingSettings.shouldTrackAllAllocations)
 			{
 				OutputDebugStringA("\n");
 				char buffer[100];
-				sprintf_s(buffer, "== Total Allocation Count: %d\n", SimpleMemoryTracker::myShortLivedTotalAllocationCount);
+				sprintf_s(buffer, "== Total Allocation Count: %d\n", SimpleMemoryTracker::myStaticShortLivedTotalAllocationCount);
 				OutputDebugStringA(buffer);
 			}
 
 			char buffer[100];
-			sprintf_s(buffer, "== Number of Memory Leaks: %d\n", (int)SimpleMemoryTracker::myShortLivedAllocationMap.size());
+			sprintf_s(buffer, "== Number of Memory Leaks: %d\n", (int)SimpleMemoryTracker::myStaticShortLivedAllocationMap.size());
 			OutputDebugStringA(buffer);
 			OutputDebugStringA("================================================================================\n\n");
 		}
 
-		SimpleMemoryTracker::myShortLivedAllocationMap.clear();
-		SimpleMemoryTracker::myShortLivedStackTraceToAllocationCount.clear();
-		SimpleMemoryTracker::myShortLivedTotalAllocationCount = 0;
+		SimpleMemoryTracker::myStaticShortLivedAllocationMap.clear();
+		SimpleMemoryTracker::myStaticShortLivedStackTraceToAllocationCount.clear();
+		SimpleMemoryTracker::myStaticShortLivedTotalAllocationCount = 0;
 
-		SimpleMemoryTracker::myIsAllocationInProgress = false;
+		SimpleMemoryTracker::myStaticIsAllocationInProgress = false;
 	}
 #else 
 	void SimpleMemoryTracker::Init(const MemoryTrackingSettings& /*aTrackingSettings*/) {};
