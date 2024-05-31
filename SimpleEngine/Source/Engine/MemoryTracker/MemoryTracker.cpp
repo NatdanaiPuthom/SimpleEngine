@@ -109,7 +109,11 @@ namespace SimpleTracker
 
 			if (myStaticHasStarted)
 			{
-				SimpleMemoryTracker::myStaticShortLivedStackTraceToAllocationCount.erase(SimpleMemoryTracker::myStaticShortLivedAllocationMap[freeRequestNumber].stackTrace);
+				if (SimpleMemoryTracker::myStaticMemoryTrackingSettings.shouldStoreStackTraces)
+				{
+					SimpleMemoryTracker::myStaticShortLivedStackTraceToAllocationCount.erase(SimpleMemoryTracker::myStaticShortLivedAllocationMap[freeRequestNumber].stackTrace);
+				}
+
 				SimpleMemoryTracker::myStaticShortLivedAllocationMap.erase(freeRequestNumber);
 			}
 		}
@@ -123,7 +127,7 @@ namespace SimpleTracker
 		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_DEBUG);
 
 		std::ifstream file(filename);
-		
+
 		if (file.is_open() == false)
 		{
 			const std::string fileName = "debug_settings.json";
@@ -262,7 +266,7 @@ namespace SimpleTracker
 			return;
 		}
 
-		if (SimpleMemoryTrackerWrapper::myShouldActive)
+		if (SimpleMemoryTrackerWrapper::myShouldActive == false)
 		{
 			return;
 		}
@@ -331,4 +335,4 @@ namespace SimpleTracker
 	void SimpleMemoryTracker::StartMemoryTracking(const bool /*aShowAdvanced*/, const std::string& /*aCallerName*/) {}
 	void SimpleMemoryTracker::StopMemoryTracking() {}
 #endif 
-}
+	}

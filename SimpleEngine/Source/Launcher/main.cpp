@@ -55,6 +55,9 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	editor.Init();
 	PROFILER_END();
 
+	BeginMemoryTracking(false);
+	EndMemoryTracking();
+
 	PROFILER_BEGIN("GameWorld Initialize");
 	Simple::GameWorld gameWorld;
 	gameWorld.Init();
