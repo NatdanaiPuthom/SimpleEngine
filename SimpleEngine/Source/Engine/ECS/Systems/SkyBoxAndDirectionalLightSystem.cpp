@@ -108,7 +108,7 @@ namespace ECS
 			for (size_t i = 0; i < 10; ++i)
 			{
 				PointLightData pointLight2;
-				pointLight2.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+				pointLight2.color = { 1.0f, 0.0f, 0.0f, 1000.0f };
 				pointLight2.position = { i * 5.0f, -1.4f, 0.0f };
 				pointLight2.range = range;
 				pointLights.push_back(pointLight2);
