@@ -78,6 +78,6 @@ namespace Graphics
 		eCameraType myCameraType;
 
 		bool myFreeFly;
-		bool myDebugCameraActive;
+		bool myMouseIsTapped;
 	};
 }

@@ -11,7 +11,7 @@ namespace Graphics
 		, myMoveSpeed(1.0f)
 		, myRotateSpeed(45.0f)
 		, myFreeFly(false)
-		, myDebugCameraActive(false)
+		, myMouseIsTapped(false)
 		, myInput(nullptr)
 	{
 		SetCameraType(eCameraType::Perspective, { 1280,720 });
@@ -33,17 +33,31 @@ namespace Graphics
 			}
 
 			myFreeFly = false;
-			myDebugCameraActive = false;
+			myMouseIsTapped = false;
 			return;
 		}
 
-		if (myInput->IsKeyPressed(VK_TAB) == true)
+		if (myInput->IsKeyPressed(VK_TAB) == true && myMouseIsTapped == false)
 		{
-			myDebugCameraActive = !myDebugCameraActive;
+			myFreeFly = !myFreeFly;
 		}
 
-		if (myDebugCameraActive == true && myInput->GetAKeyIsPressed() || myFreeFly)
+		myMouseIsTapped = myInput->IsKeyHeld(VK_RBUTTON);
+
+		if (myFreeFly == true || myMouseIsTapped == true)
 		{
+			if (!myInput->GetMouseIsHidden())
+			{
+				const Math::Vector2f mousePosition = myInput->GetMousePosition();
+				myCapturedPosition.x = static_cast<int>(mousePosition.x);
+				myCapturedPosition.y = static_cast<int>(mousePosition.y);
+
+				myInput->HideMouse();
+				myInput->CaptureMouse();
+			}
+
+			SetCursorPos(myCapturedPosition.x, myCapturedPosition.y);
+
 			const Math::Vector3f currentPosition = GetPosition();
 			const Math::Vector3f currentRotation = GetRotation();
 
@@ -60,18 +74,6 @@ namespace Graphics
 			if (myInput->IsKeyHeld(VK_SHIFT))
 			{
 				speed *= 5.0f;
-			}
-
-			if (myInput->IsKeyPressed(VK_TAB))
-			{
-				if (!myFreeFly)
-				{
-					myFreeFly = true;
-				}
-				else
-				{
-					myFreeFly = false;
-				}
 			}
 
 			const int mouseWheelDelta = myInput->GetMouseWheelDelta();
@@ -138,37 +140,22 @@ namespace Graphics
 				targetPosition.y += direction * speed * cameraUp.y * aDeltaTime;
 			}
 
-			if (myFreeFly)
-			{
-				if (!myInput->GetMouseIsHidden())
-				{
-					Math::Vector2f pos = myInput->GetMousePosition();
-					myCapturedPosition.x = static_cast<int>(pos.x);
-					myCapturedPosition.y = static_cast<int>(pos.y);
+			Math::Vector2f mouseDelta = myInput->GetMouseDelta();
+			mouseDelta *= myRotateSpeed * 0.0015f;
 
-					myInput->HideMouse();
-					myInput->CaptureMouse();
-				}
-
-				SetCursorPos(myCapturedPosition.x, myCapturedPosition.y);
-
-				Math::Vector2f mouseDelta = myInput->GetMouseDelta();
-				mouseDelta *= myRotateSpeed * 0.0015f;
-
-				targetRotation.x += -mouseDelta.y; //I don't know why flip
-				targetRotation.y += mouseDelta.x;
-			}
-			else
-			{
-				if (myInput->GetMouseIsHidden())
-				{
-					myInput->ShowMouse();
-					myInput->ReleaseMouse();
-				}
-			}
+			targetRotation.x += -mouseDelta.y;
+			targetRotation.y += mouseDelta.x;
 
 			SetRotation(targetRotation);
 			SetPosition(targetPosition);
+		}
+		else
+		{
+			if (myInput->GetMouseIsHidden())
+			{
+				myInput->ShowMouse();
+				myInput->ReleaseMouse();
+			}
 		}
 	}
 
