@@ -16,13 +16,13 @@ GBufferOutput main(PixelInputType aInput)
     normal.z = sqrt(1.0f - saturate(normal.x * normal.x + normal.y * normal.y)); //NOTE(v9.37.0): No clue what this does
     normal = normalize(normal);
     
-    float3x3 TBN = float3x3( //NOTE(v9.37.0): Not fully understand this either
+    float3x3 TBN = float3x3( //NOTE(v9.37.0): Not fully understand this either.
         normalize(aInput.tangent.xyz),
         normalize(-aInput.bitangent.xyz),
         normalize(aInput.normal.xyz)
     );
     
-    TBN = transpose(TBN); //NOTE(v9.37.0): Why transpose?
+    TBN = transpose(TBN); //NOTE(v9.37.0): Why transpose? NOTE(v10.0.1): Inverse of TBN matrix is tranpose version of it and transpose is faster than inverse
     float3 pixelNormal = normalize(mul(TBN, normal)); //NOTE(v9.37.0): What is PixelNormal?
     
     GBufferOutput output;
