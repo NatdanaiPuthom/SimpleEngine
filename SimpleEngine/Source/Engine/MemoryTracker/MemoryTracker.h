@@ -60,6 +60,7 @@ namespace SimpleTracker
 
 	class SimpleMemoryTrackerWrapper final
 	{
+		friend class SimpleMemoryTracker;
 	public:
 		inline SimpleMemoryTrackerWrapper()
 		{
@@ -71,6 +72,9 @@ namespace SimpleTracker
 		{
 			SimpleMemoryTracker::Destory();
 		}
+
+	private:
+		static bool myShouldActive;
 	};
 
 	class SimpleMemoryTrackerWrapperWrapper final

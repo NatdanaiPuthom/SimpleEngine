@@ -8,7 +8,6 @@
       "x": 1280,
       "y": 720
     },
-    "vsync": false,
-    "debugMode":  true
+    "vsync": false
   }
 }

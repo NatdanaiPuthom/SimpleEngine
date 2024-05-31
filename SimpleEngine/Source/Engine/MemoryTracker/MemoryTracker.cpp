@@ -1,5 +1,8 @@
 #include "Engine/Precomplied/EnginePch.hpp"
-#include "MemoryTracker.h"
+#include "Engine/MemoryTracker/MemoryTracker.h"
+#include "External/nlohmann/json.hpp"
+#include <fstream>
+#include <iostream>
 
 typedef struct _SimpleCrtMemBlockHeader
 {
@@ -22,9 +25,11 @@ typedef struct _SimpleCrtMemBlockHeader
 	unsigned char               gap[4];
 } _SimpleCrtMemBlockHeader;
 
+
 namespace SimpleTracker
 {
 	char localBuffer[255];
+	bool SimpleMemoryTrackerWrapper::myShouldActive = false;
 
 	std::unordered_map<StackTrace, int> SimpleMemoryTracker::myShortLivedStackTraceToAllocationCount;
 	std::unordered_map<long, SimpleMemoryTracker::Allocation> SimpleMemoryTracker::myShortLivedAllocationMap;
@@ -115,6 +120,33 @@ namespace SimpleTracker
 
 	void SimpleMemoryTracker::Init(const MemoryTrackingSettings& aTrackingSettings)
 	{
+		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_DEBUG);
+
+		std::ifstream file(filename);
+		
+		if (file.is_open() == false)
+		{
+			const std::string fileName = "debug_settings.json";
+			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS) + fileName;
+			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS) + fileName;
+			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
+
+			std::cout << "Copied: " << fileName << std::endl;
+		}
+
+		file.open(filename);
+		assert(file.is_open() && "Failed to open file");
+
+		const nlohmann::json json = nlohmann::json::parse(file);
+		file.close();
+
+		SimpleMemoryTrackerWrapper::myShouldActive = json["debug_settings"]["memory_tracker"];
+
+		if (SimpleMemoryTrackerWrapper::myShouldActive == false)
+		{
+			return;
+		}
+
 		SimpleMemoryTracker::myMemoryTrackingSettings = aTrackingSettings;
 		_CrtSetAllocHook(&SimpleMemoryTracker::AllocHook);
 	}
@@ -150,6 +182,11 @@ namespace SimpleTracker
 
 	void SimpleMemoryTracker::Destory()
 	{
+		if (SimpleMemoryTrackerWrapper::myShouldActive == false)
+		{
+			return;
+		}
+
 		std::lock_guard<std::mutex> guard(SimpleMemoryTracker::myAllocationMapMutex);
 
 		_CrtSetAllocHook(nullptr);
@@ -225,6 +262,11 @@ namespace SimpleTracker
 			return;
 		}
 
+		if (SimpleMemoryTrackerWrapper::myShouldActive)
+		{
+			return;
+		}
+
 		myHasStarted = false;
 		PrintShortLivedToOutput();
 	}
@@ -283,7 +325,6 @@ namespace SimpleTracker
 
 		SimpleMemoryTracker::myIsAllocationInProgress = false;
 	}
-
 #else 
 	void SimpleMemoryTracker::Init(const MemoryTrackingSettings& /*aTrackingSettings*/) {};
 	void SimpleMemoryTracker::Destory() {};
