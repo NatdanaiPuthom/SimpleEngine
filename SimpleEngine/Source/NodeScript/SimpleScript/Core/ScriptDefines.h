@@ -42,11 +42,11 @@ namespace SCR
 	using FuncPtrMember_Const = OutputType(ClassType::*)(InputTypes...) const;
 
 	class Node;
-	class ScriptInternalModifier;
+	class NodeGraph;
 	struct InternalExecutionContext;
 	struct NodeExecutionData;
 
-	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, ScriptInternalModifier&);
+	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, NodeGraph&);
 	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);
 
 	// Struct for color - values between 0 and 1

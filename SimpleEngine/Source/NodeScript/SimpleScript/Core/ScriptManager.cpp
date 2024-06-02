@@ -14,14 +14,6 @@ namespace SCR
 		myScripts.clear();
 	}
 
-	void ScriptManager::TriggerEvent(const std::string& aUserEventKey, const ExecutionContextBase& aContext)
-	{
-		for (const std::unique_ptr<Script>& script : myScripts)
-		{
-			script->TriggerEvent(aUserEventKey, aContext);
-		}
-	}
-
 	void ScriptManager::TriggerEvent(const eNodeExecutionTrait anExecutionTrait, const ExecutionContextBase& aContext)
 	{
 		for (const std::unique_ptr<Script>& script : myScripts)

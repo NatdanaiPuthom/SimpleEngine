@@ -1,18 +1,15 @@
 #pragma once
 #include "ScriptDefines.h"
 #include "Variable/VariableManager.h"
-#include "Node/NodeManager.h"
-#include "Pin/PinManager.h"
-#include "Node/NodeExecutor.h"
-#include "Utilities/ScriptLinker.h"
 #include "ScriptModifier.h"
-#include "Command/ScriptCommandTracker.h"
-#include "Memory/ScriptMemoryPool.h"
-#include "ScriptInternalModifier.h"
 #include "ScriptNodeGraph.h"
 
 namespace SCR
 {
+
+	class CommandTracker;
+	class ScriptManager;
+	struct ExecutionContextBase;
 
 	class Script final
 	{
@@ -27,7 +24,6 @@ namespace SCR
 		Script& operator=(const Script&) = delete;
 		Script& operator=(Script&&) = delete;
 
-		void TriggerEvent(const std::string& aUserEventKey, const ExecutionContextBase& anExecutionContext);
 		void TriggerEvent(const eNodeExecutionTrait anExecutionTrait, const ExecutionContextBase& anExecutionContext);
 
 		std::string& Name();
@@ -35,27 +31,20 @@ namespace SCR
 
 		ScriptModifier& GetModifier();
 		CommandTracker& GetCommandTracker();
+		NodeGraph& GetEventGraph();
 
-	private:
-
-		ScriptInternalModifier& GetInternalModifier();
 
 	private:
 
 		std::string myName;
-
-		MemoryPool myMemoryPool;
-
 		NodeGraph myEventGraph;
 
 		VariableManager myVariableManager;
-		
-		ScriptInternalModifier myInternalModifier;
 
-		NodeExecutor myExecutor;
+		//NodeExecutor myExecutor;
 
 		ScriptModifier myModifier;
-		CommandTracker myCommandTracker;
+		std::unique_ptr<CommandTracker> myCommandTracker;
 
 		ScriptManager& myScriptManager;
 

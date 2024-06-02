@@ -39,28 +39,28 @@ namespace SCR
 		myOperatorNodeTypeIDs[anOperatorTrait].emplace(aDataTypeID, anID);
 	}
 
-	Node NodeTypeManager::CreateInstance_Getter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
+	Node NodeTypeManager::CreateInstance_Getter(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID)
 	{
 		NodeTypeID typeID = myGetterNodeTypeIDs.at(aDataTypeID);
-		return CreateInstance(aNodeID, typeID, aModifier);
+		return CreateInstance(aNodeGraph, aNodeID, typeID);
 	}
 
-	Node NodeTypeManager::CreateInstance_Setter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
+	Node NodeTypeManager::CreateInstance_Setter(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID)
 	{
 		NodeTypeID typeID = mySetterNodeTypeIDs.at(aDataTypeID);
-		return CreateInstance(aNodeID, typeID, aModifier);
+		return CreateInstance(aNodeGraph, aNodeID, typeID);
 	}
 
-	Node NodeTypeManager::CreateInstance_Operator(const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier)
+	Node NodeTypeManager::CreateInstance_Operator(NodeGraph& aNodeGraph, const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID)
 	{
 		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = myOperatorNodeTypeIDs.at(aOperatorTrait);
 		NodeTypeID typeID = operatorNodes.at(aDataTypeID);
-		return CreateInstance(aNodeID, typeID, aModifier);
+		return CreateInstance(aNodeGraph, aNodeID, typeID);
 	}
 
-	Node NodeTypeManager::CreateInstance(const NodeID aNodeID, const NodeTypeID aNodeTypeID, ScriptInternalModifier& aModifier)
+	Node NodeTypeManager::CreateInstance(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID)
 	{
-		return myNodeTypes.at(aNodeTypeID).nodeRecipe.createFunction(aNodeID, aNodeTypeID, aModifier);
+		return myNodeTypes.at(aNodeTypeID).nodeRecipe.createFunction(aNodeID, aNodeTypeID, aNodeGraph);
 	}
 
 	bool NodeTypeManager::CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID)
@@ -166,7 +166,7 @@ namespace SCR
 	{
 		NodeRecipe recipe
 		{
-			[](const NodeID, const NodeTypeID, ScriptInternalModifier&)->Node {return Node(0, std::array<PinID, 0>(), std::array<PinID, 0>()); },
+			[](const NodeID, const NodeTypeID, NodeGraph&)->Node {return Node(0, std::array<PinID, 0>(), std::array<PinID, 0>()); },
 			[](const NodeExecutionData&, InternalExecutionContext&) {},
 			eNodeTrait::Invalid
 		};

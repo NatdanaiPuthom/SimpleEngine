@@ -12,18 +12,15 @@ namespace SCR
 	{
 	public:
 
-		ScriptFilter(const Script& aScript);
+		ScriptFilter() = delete;
 		~ScriptFilter();
 
-		std::vector<PinID> GetInputPins() const;
-		std::vector<PinID> GetOutputPins() const;
-		std::vector<PinID> GetNonConnectedInputPins() const;
-		std::vector<PinID> GetNonConnectedOutputPins() const;
-		std::vector<PinID> GetNonConnectedPinsOfType(const ePinFlowType aFlowType) const;
-		std::vector<PinID> GetNonConnectedPinsOfTypeAndHash(const ePinFlowType aFlowType, const DataTypeID aDataTypeID) const;
+		static std::vector<PinID> GetInputPins(const NodeGraph& aNodeGraph);
+		static std::vector<PinID> GetOutputPins(const NodeGraph& aNodeGraph);
+		static std::vector<PinID> GetNonConnectedInputPins(const NodeGraph& aNodeGraph);
+		static std::vector<PinID> GetNonConnectedOutputPins(const NodeGraph& aNodeGraph);
+		static std::vector<PinID> GetNonConnectedPinsOfType(const NodeGraph& aNodeGraph, const ePinFlowType aFlowType);
+		static std::vector<PinID> GetNonConnectedPinsOfTypeAndHash(const NodeGraph& aNodeGraph, const ePinFlowType aFlowType, const DataTypeID aDataTypeID);
 
-	private:
-
-		const Script& myScript;
 	};
 }

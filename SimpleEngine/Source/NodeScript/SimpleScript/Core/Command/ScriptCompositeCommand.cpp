@@ -3,8 +3,8 @@
 
 namespace SCR
 {
-	CompositeCommand::CompositeCommand(const std::string& aName)
-		: Command("Composite: " + aName)
+	CompositeCommand::CompositeCommand(Script& aScript, const std::string& aName)
+		: Command(CommandContext{ aScript, nullptr }, "Composite: " + aName)
 	{
 	}
 
@@ -24,15 +24,15 @@ namespace SCR
 		}
 	}
 
-	void CompositeCommand::Begin(const std::string& aName)
+	void CompositeCommand::Begin(Script& aScript, const std::string& aName)
 	{
 		if (myCurrentChild)
 		{
-			myCurrentChild->Begin(aName);
+			myCurrentChild->Begin(aScript, aName);
 		}
 		else
 		{
-			myCurrentChild = std::make_unique<CompositeCommand>(aName);
+			myCurrentChild = std::make_unique<CompositeCommand>(aScript, aName);
 		}
 	}
 
@@ -60,19 +60,19 @@ namespace SCR
 		return eEndCode::Ended;
 	}
 
-	void CompositeCommand::Do(Script& aScript)
+	void CompositeCommand::Do()
 	{
 		for (const std::shared_ptr<Command>& command : myCommands)
 		{
-			command->DoInternal(aScript);
+			command->DoInternal();
 		}
 	}
 
-	void CompositeCommand::Undo(Script& aScript)
+	void CompositeCommand::Undo()
 	{
 		for (int i = static_cast<int>(myCommands.size()) - 1; i >= 0; --i)
 		{
-			myCommands.at(i)->UndoInternal(aScript);
+			myCommands.at(i)->UndoInternal();
 		}
 	}
 

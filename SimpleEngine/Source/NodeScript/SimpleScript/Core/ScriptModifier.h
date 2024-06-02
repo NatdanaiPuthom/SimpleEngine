@@ -1,8 +1,7 @@
 #pragma once
 #include "ScriptDefines.h"
-#include "Node/NodeTypeManager.h"
-#include "Pin/PinTypeManager.h"
-#include "Node/NodeCreator.h"
+#include "SystemTypes/ScriptVec2.h"
+#include "Pin/Pin.h"
 
 namespace SCR
 {
@@ -18,16 +17,8 @@ namespace SCR
 		ScriptVec2 pos;
 	};
 
-	//struct CopyBuffer
-	//{
-	//	//ScriptVec2 copyPosition;
-	//	//ScriptVec2 pastePosition;
-	//	ScriptVec2 avgPosition;
-	//	std::vector<NodeID> nodeIDs;
-	//	//std::vector<PinID> linkIDs;
-	//};
-
 	class Script;
+	class ScriptFoundation;
 	class MoveNodesCommand;
 
 	class ScriptModifier
@@ -79,15 +70,15 @@ namespace SCR
 
 		static FunctionID CreateFunction(const std::string& aName);
 
+		void SetCurrentNodeGraph(NodeGraph* aNodeGraph);
+		NodeGraph* GetCurrentNodeGraph() const;
+
 	private:
 
 		Script& myScript;
+		NodeGraph* myCurrentNodeGraph;
 
 		std::unordered_map<NodeID, MoveNodeData> myMoveNodesData;
-
-		//CopyBuffer myCopyBuffer;
-
-		ScriptInternalModifier& GetInternalModifier();
 	};
 
 	

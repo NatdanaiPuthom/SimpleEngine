@@ -6,6 +6,9 @@
 #include "ScriptManager.h"
 #include "ScriptInternalModifier.h"
 #include "ScriptCopyBuffer.h"
+#include "Command/ScriptFunctionCommand.h"
+#include "Utilities/ScriptLinker.h"
+#include "Command/ScriptCommandTracker.h"
 
 namespace SCR
 {
@@ -13,6 +16,7 @@ namespace SCR
 	ScriptModifier::ScriptModifier(Script& aScript)
 		: myScript(aScript)
 	{
+		myCurrentNodeGraph = &ScriptProxy::GetEventGraph(myScript);
 	}
 
 	ScriptModifier::~ScriptModifier()
@@ -21,9 +25,9 @@ namespace SCR
 
 	NodeID ScriptModifier::CreateNode(const NodeTypeID aNodeTypeID, ScriptVec2 aPosition)
 	{
-		ScriptProxy::GetCommandTracker(myScript).BeginComposite("Create Node + Set Node Pos");
+		ScriptProxy::GetCommandTracker(myScript).BeginComposite(myScript, "Create Node + Set Node Pos");
 
-		NodeID nodeID = GetInternalModifier().CreateNode(aNodeTypeID);
+		NodeID nodeID = InternalModifier::CreateNode(NodeGraphContext{ *myCurrentNodeGraph, myScript }, aNodeTypeID);
 
 		SetNodePosition(nodeID, aPosition, true);
 
@@ -34,12 +38,12 @@ namespace SCR
 
 	NodeID ScriptModifier::CreateNodeAutoLink(const NodeTypeID aNodeTypeID, PinID aConnection, ScriptVec2 aPosition)
 	{
-		ScriptProxy::GetCommandTracker(myScript).BeginComposite("Create Node + Auto Link");
+		ScriptProxy::GetCommandTracker(myScript).BeginComposite(myScript, "Create Node + Auto Link");
 
 		NodeID nodeID = CreateNode(aNodeTypeID, aPosition);
 
-		const Pin& createdFromPin = ScriptProxy::GetPin(myScript, aConnection);
-		const Node& createdNode = ScriptProxy::GetNode(myScript, nodeID);
+		const Pin& createdFromPin = ScriptProxy::GetPin(*myCurrentNodeGraph, aConnection);
+		const Node& createdNode = ScriptProxy::GetNode(*myCurrentNodeGraph, nodeID);
 
 		const std::vector<PinID>& pinIDs = PinTypeManager::GetPinType(createdFromPin.typeID).flowType == ePinFlowType::Input ? createdNode.outputPins : createdNode.inputPins;
 
@@ -61,8 +65,8 @@ namespace SCR
 		CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
 		bool prevTracking = commandTracker.IsTracking();
 		commandTracker.IsTracking() = aTrackChange;
-		commandTracker.BeginComposite("Create Node + Set Node Pos");
-		NodeID nodeID = GetInternalModifier().CreateNode(aName, aSuccess, aCreateIfNameNotFound);
+		commandTracker.BeginComposite(myScript, "Create Node + Set Node Pos");
+		NodeID nodeID = InternalModifier::CreateNode(NodeGraphContext{ *myCurrentNodeGraph, myScript }, aName, aSuccess, aCreateIfNameNotFound);
 
 		SetNodePosition(nodeID, aPosition, aTrackChange);
 
@@ -73,11 +77,11 @@ namespace SCR
 
 	NodeID ScriptModifier::CreateGetterNode(DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition)
 	{
-		ScriptProxy::GetCommandTracker(myScript).BeginComposite("Create Getter Node");
+		ScriptProxy::GetCommandTracker(myScript).BeginComposite(myScript, "Create Getter Node");
 
-		NodeID nodeID = GetInternalModifier().CreateGetterNode(aDataTypeID);
+		NodeID nodeID = InternalModifier::CreateGetterNode(NodeGraphContext{ *myCurrentNodeGraph, myScript }, aDataTypeID);
 		SetNodePosition(nodeID, aPosition, true);
-		GetInternalModifier().BindVariable(nodeID, aVarID);
+		InternalModifier::BindVariable(myScript, nodeID, aVarID);
 
 		ScriptProxy::GetCommandTracker(myScript).EndComposite();
 		return nodeID;
@@ -85,11 +89,11 @@ namespace SCR
 
 	NodeID ScriptModifier::CreateSetterNode(DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition)
 	{
-		ScriptProxy::GetCommandTracker(myScript).BeginComposite("Create Setter Node");
+		ScriptProxy::GetCommandTracker(myScript).BeginComposite(myScript, "Create Setter Node");
 
-		NodeID nodeID = GetInternalModifier().CreateSetterNode(aDataTypeID);
+		NodeID nodeID = InternalModifier::CreateSetterNode(NodeGraphContext{ *myCurrentNodeGraph, myScript }, aDataTypeID);
 		SetNodePosition(nodeID, aPosition, true);
-		GetInternalModifier().BindVariable(nodeID, aVarID);
+		InternalModifier::BindVariable(myScript, nodeID, aVarID);
 
 		ScriptProxy::GetCommandTracker(myScript).EndComposite();
 		return nodeID;
@@ -98,24 +102,24 @@ namespace SCR
 
 	Link ScriptModifier::TryCreateLink(PinID aPinID1, PinID aPinID2)
 	{
-		Link createdLink = ScriptLinker::ArePinsLinkable(myScript, aPinID1, aPinID2);
+		Link createdLink = ScriptLinker::ArePinsLinkable(*myCurrentNodeGraph, aPinID1, aPinID2);
 		if (!createdLink)
 		{
 			// Check if we can replace node with overloaded opearator node
-			const Pin& pin1 = ScriptProxy::GetPin(myScript, aPinID1);
-			const Pin& pin2 = ScriptProxy::GetPin(myScript, aPinID2);
+			const Pin& pin1 = ScriptProxy::GetPin(*myCurrentNodeGraph, aPinID1);
+			const Pin& pin2 = ScriptProxy::GetPin(*myCurrentNodeGraph, aPinID2);
 
 			const PinType& pinType1 = PinTypeManager::GetPinType(pin1.typeID);
 			const PinType& pinType2 = PinTypeManager::GetPinType(pin2.typeID);
 
 			if (pinType1.dataTypeID == typeid(Wildcard).hash_code())
 			{
-				return GetInternalModifier().ReplaceOperatorNode(aPinID1, aPinID2);
+				return InternalModifier::ReplaceOperatorNode(NodeGraphContext{ *myCurrentNodeGraph, myScript }, aPinID1, aPinID2);
 
 			}
 			else if (pinType2.dataTypeID == typeid(Wildcard).hash_code())
 			{
-				return GetInternalModifier().ReplaceOperatorNode(aPinID2, aPinID1);
+				return InternalModifier::ReplaceOperatorNode(NodeGraphContext{ *myCurrentNodeGraph, myScript }, aPinID2, aPinID1);
 			}
 			else
 			{
@@ -123,7 +127,7 @@ namespace SCR
 			}
 		}
 
-		GetInternalModifier().RebindLink(createdLink.inputPinID, createdLink.outputPinID);
+		InternalModifier::RebindLink(NodeGraphContext{ *myCurrentNodeGraph, myScript }, createdLink.inputPinID, createdLink.outputPinID);
 
 
 		return Link{ aPinID2, aPinID1 };
@@ -131,13 +135,13 @@ namespace SCR
 
 	void ScriptModifier::DestroyLink(const PinID aInputPinID)
 	{
-		GetInternalModifier().RebindLink(aInputPinID, InvalidID<PinID>());
+		InternalModifier::RebindLink(NodeGraphContext{ *myCurrentNodeGraph, myScript }, aInputPinID, InvalidID<PinID>());
 	}
 
 	void ScriptModifier::DestoryLinksByOutputPinID(const PinID aOutputPinID)
 	{
 
-		Pin& outputPin = ScriptProxy::GetPinRef(myScript, aOutputPinID);
+		Pin& outputPin = ScriptProxy::GetPinRef(*myCurrentNodeGraph, aOutputPinID);
 
 		for (PinID connectedInputPin : outputPin.connectedPinIDs)
 		{
@@ -155,35 +159,35 @@ namespace SCR
 
 		data.nodeID = aNodeID;
 
-		ScriptProxy::GetCommandTracker(myScript).BeginComposite("Destroy Node + Conncected Links");
+		ScriptProxy::GetCommandTracker(myScript).BeginComposite(myScript, "Destroy Node + Conncected Links");
 
-		ScriptProxy::GetCommandTracker(myScript).DoCommand<FunctionCommand<DestroyNodeData>>(data,
-			[](const DestroyNodeData& aData, Script& aScript) -> void
+		ScriptProxy::GetCommandTracker(myScript).DoCommand<FunctionCommand<DestroyNodeData>>(CommandContext{ myScript, myCurrentNodeGraph }, data,
+			[](const DestroyNodeData& aData, const CommandContext& aContext) -> void
 			{
-				Node& node = ScriptProxy::GetNodeRef(aScript, aData.nodeID);
+				Node& node = ScriptProxy::GetNodeRef(*aContext.nodeGraph, aData.nodeID);
 				node.isDestroyed = true;
-				ScriptProxy::GetNodeExecutor(aScript).Unregister(aData.nodeID);
+				ScriptProxy::GetNodeExecutor(aContext.script).UnbindFromEvent(NodeRef{ aData.nodeID, aContext.nodeGraph });
 
 			},
-			[](const DestroyNodeData& aData, Script& aScript) -> void
+			[](const DestroyNodeData& aData, const CommandContext& aContext) -> void
 			{
-				Node& node = ScriptProxy::GetNodeRef(aScript, aData.nodeID);
+				Node& node = ScriptProxy::GetNodeRef(*aContext.nodeGraph, aData.nodeID);
 				node.isDestroyed = false;
 
-				ScriptProxy::GetNodeExecutor(aScript).Register(aData.nodeID);
+				ScriptProxy::GetNodeExecutor(aContext.script).BindToEvent(NodeRef{ aData.nodeID, aContext.nodeGraph });
 			}, "Destroy Node"
 		);
 
-		ScriptProxy::GetInternalModifier(myScript).UnbindVariable(aNodeID);
+		InternalModifier::UnbindVariable(myScript, aNodeID);
 
-		for (PinID inputPinID : ScriptProxy::GetNode(myScript, aNodeID).inputPins)
+		for (PinID inputPinID : ScriptProxy::GetNode(*myCurrentNodeGraph, aNodeID).inputPins)
 		{
 			DestroyLink(inputPinID);
 		}
 
-		for (PinID outputPinID : ScriptProxy::GetNode(myScript, aNodeID).outputPins)
+		for (PinID outputPinID : ScriptProxy::GetNode(*myCurrentNodeGraph, aNodeID).outputPins)
 		{
-			const Pin& outputPin = ScriptProxy::GetPin(myScript, outputPinID);
+			const Pin& outputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, outputPinID);
 
 			for (PinID connectedInputPin : outputPin.connectedPinIDs)
 			{
@@ -198,7 +202,7 @@ namespace SCR
 
 	void ScriptModifier::DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs)
 	{
-		ScriptProxy::GetCommandTracker(myScript).BeginComposite("Destroy Selection");
+		ScriptProxy::GetCommandTracker(myScript).BeginComposite(myScript, "Destroy Selection");
 
 		for (LinkID linkID : aLinkIDs)
 		{
@@ -215,7 +219,7 @@ namespace SCR
 
 	void ScriptModifier::SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, bool aTrackChange)
 	{
-		SetNodePosition(aNodeID, aPosition, ScriptProxy::GetNode(myScript, aNodeID).position, aTrackChange);
+		SetNodePosition(aNodeID, aPosition, ScriptProxy::GetNode(*myCurrentNodeGraph, aNodeID).position, aTrackChange);
 
 	}
 	void ScriptModifier::SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, ScriptVec2 aOldPosition, bool aTrackChange)
@@ -237,15 +241,15 @@ namespace SCR
 			data.oldPos = aOldPosition;
 			data.newPos = aPosition;
 
-			commandTracker.DoCommand<FunctionCommand<SetNodePositionData>>(data,
-				[](const SetNodePositionData& aData, Script& aScript) -> void
+			commandTracker.DoCommand<FunctionCommand<SetNodePositionData>>(CommandContext{ myScript, myCurrentNodeGraph }, data,
+				[](const SetNodePositionData& aData, const CommandContext& aContext) -> void
 				{
-					Node& node = ScriptProxy::GetNodeRef(aScript, aData.nodeID);
+					Node& node = ScriptProxy::GetNodeRef(*aContext.nodeGraph, aData.nodeID);
 					node.position = aData.newPos;
 				},
-				[](const SetNodePositionData& aData, Script& aScript) -> void
+				[](const SetNodePositionData& aData, const CommandContext& aContext) -> void
 				{
-					Node& node = ScriptProxy::GetNodeRef(aScript, aData.nodeID);
+					Node& node = ScriptProxy::GetNodeRef(*aContext.nodeGraph, aData.nodeID);
 					node.position = aData.oldPos;
 				}, "Set Node Position"
 			);
@@ -268,7 +272,7 @@ namespace SCR
 	{
 		CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
 
-		commandTracker.BeginComposite("Move Nodes");
+		commandTracker.BeginComposite(myScript, "Move Nodes");
 		for (const NodeDragData& dragData : aDragData)
 		{
 			EndNodeDrag(dragData.nodeID, dragData.pos);
@@ -309,7 +313,7 @@ namespace SCR
 	void ScriptModifier::DestroyVariable(VarID aVarID)
 	{
 		CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
-		commandTracker.BeginComposite("Destroy Variable + Connected Nodes");
+		commandTracker.BeginComposite(myScript, "Destroy Variable + Connected Nodes");
 
 		struct DestroyVariableData
 		{
@@ -318,14 +322,14 @@ namespace SCR
 
 		data.varID = aVarID;
 
-		commandTracker.DoCommand<FunctionCommand<DestroyVariableData>>(data,
-			[](const DestroyVariableData& aData, Script& aScript) -> void
+		commandTracker.DoCommand<FunctionCommand<DestroyVariableData>>(CommandContext{ myScript }, data,
+			[](const DestroyVariableData& aData, const CommandContext& aContext) -> void
 			{
-				ScriptProxy::GetVariableRef(aScript, aData.varID).isDestroyed = true;
+				ScriptProxy::GetVariableRef(aContext.script, aData.varID).isDestroyed = true;
 			},
-			[](const DestroyVariableData& aData, Script& aScript) -> void
+			[](const DestroyVariableData& aData, const CommandContext& aContext) -> void
 			{
-				ScriptProxy::GetVariableRef(aScript, aData.varID).isDestroyed = false;
+				ScriptProxy::GetVariableRef(aContext.script, aData.varID).isDestroyed = false;
 			}
 		);
 
@@ -338,11 +342,11 @@ namespace SCR
 
 	void ScriptModifier::EditPin(PinID aPinID)
 	{
-		const Pin& pin = ScriptProxy::GetPin(myScript, aPinID);
+		const Pin& pin = ScriptProxy::GetPin(*myCurrentNodeGraph, aPinID);
 		const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 
-		MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(myScript);
+		MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*myCurrentNodeGraph);
 
 		DataTypeID dataTypeID = pinType.dataTypeID;
 		void* dataPtr = memoryPool.MemoryAt(pin.memoryID);
@@ -350,14 +354,11 @@ namespace SCR
 		MemoryPool tempPool(64);
 		MemoryPoolID tempID = DataTypeManager::AllocateData(dataTypeID, tempPool, dataPtr);
 		void* copyDataPtr = tempPool.MemoryAt(tempID);
-		//DataTypeManager::CopyData(dataTypeID, copyDataPtr, dataPtr);
 
 		if (DataTypeManager::EditData(dataTypeID, dataPtr))
 		{
 
 			MemoryPoolID prevMemoryID = DataTypeManager::AllocateData(dataTypeID, memoryPool, copyDataPtr);
-			//void* prevDataPtr = memoryPool.MemoryAt(prevMemoryID);
-			//DataTypeManager::CopyData(dataTypeID, prevDataPtr, copyDataPtr);
 
 			CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
 
@@ -372,10 +373,10 @@ namespace SCR
 			data.previousMemoryID = prevMemoryID;
 			data.actualMemoryID = pin.memoryID;
 
-			commandTracker.RegisterCommand<FunctionCommand<EditValueData>>(data,
-				[](const EditValueData& aData, Script& aScript) -> void
+			commandTracker.RegisterCommand<FunctionCommand<EditValueData>>(CommandContext{ myScript }, data,
+				[](const EditValueData& aData, const CommandContext& aContext) -> void
 				{
-					MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(aScript);
+					MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*aContext.nodeGraph);
 
 					DataTypeID dataTypeID = aData.dataTypeID;
 					void* oldDataPtr = memoryPool.MemoryAt(aData.previousMemoryID);
@@ -383,9 +384,9 @@ namespace SCR
 
 					DataTypeManager::SwapData(dataTypeID, oldDataPtr, newDataPtr);
 				},
-				[](const EditValueData& aData, Script& aScript) -> void
+				[](const EditValueData& aData, const CommandContext& aContext) -> void
 				{
-					MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(aScript);
+					MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*aContext.nodeGraph);
 
 					DataTypeID dataTypeID = aData.dataTypeID;
 					void* oldDataPtr = memoryPool.MemoryAt(aData.previousMemoryID);
@@ -403,7 +404,7 @@ namespace SCR
 
 		MemoryPoolID id = variable.defaultValueMemoryID;
 
-		MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(myScript);
+		MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(myScript);
 
 		void* dataPtr = memoryPool.MemoryAt(id);
 		if (DataTypeManager::EditData(variable.dataTypeID, dataPtr))
@@ -416,8 +417,8 @@ namespace SCR
 	{
 		Variable& variable = ScriptProxy::GetVariableRef(myScript, aVarID);
 
-		MemoryPoolID runtimeMemID = DataTypeManager::AllocateData(aDataTypeID, ScriptProxy::GetScriptMemoryPool(myScript));
-		MemoryPoolID defaultValueMemID = DataTypeManager::AllocateData(aDataTypeID, ScriptProxy::GetScriptMemoryPool(myScript));
+		MemoryPoolID runtimeMemID = DataTypeManager::AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryPool(myScript));
+		MemoryPoolID defaultValueMemID = DataTypeManager::AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryPool(myScript));
 
 		variable.dataTypeID = aDataTypeID;
 		variable.runtimeMemoryID = runtimeMemID;
@@ -449,47 +450,41 @@ namespace SCR
 
 		copyBuffer = CopyBuffer{};
 
+		CreateNode(0);
+
 		ScriptVec2 nodeTotalPos;
 		for (NodeID nodeID : aNodeIDs)
 		{
-			const Node& node = ScriptProxy::GetNode(myScript, nodeID);
+			const Node& node = ScriptProxy::GetNode(*myCurrentNodeGraph, nodeID);
 			nodeTotalPos += node.position;
 
 
 			NodeCopy& nodeCopy = copyBuffer.nodes.emplace_back();
 			nodeCopy.typeID = node.typeID;
 
-			const MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(myScript);
+			const MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*myCurrentNodeGraph);
 
 			for (PinID inputPinID : node.inputPins)
 			{
 				PinCopy& pinCopy = nodeCopy.inputPinCopies.emplace_back();
 
-				const Pin& inputPin = ScriptProxy::GetPin(myScript, inputPinID);
+				const Pin& inputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, inputPinID);
 				const PinType& inputPinType = PinTypeManager::GetPinType(inputPin.typeID);
 
 
 				const void* sourceDataPtr = memoryPool.MemoryAt(inputPin.memoryID);
 				pinCopy.memoryID = DataTypeManager::AllocateData(inputPinType.dataTypeID, nodeCopy.data, sourceDataPtr);
-
-				//void* destDataPtr = nodeCopy.data.MemoryAt(pinCopy.memoryID);
-
-				//DataTypeManager::CopyData(inputPinType.dataTypeID, destDataPtr, sourceDataPtr);
 			}
 
 			for (PinID outputPinID : node.outputPins)
 			{
 				PinCopy& pinCopy = nodeCopy.outputPinCopies.emplace_back();
 
-				const Pin& outputPin = ScriptProxy::GetPin(myScript, outputPinID);
+				const Pin& outputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, outputPinID);
 				const PinType& outputPinType = PinTypeManager::GetPinType(outputPin.typeID);
 
 				const void* sourceDataPtr = memoryPool.MemoryAt(outputPin.memoryID); 
 				pinCopy.memoryID = DataTypeManager::AllocateData(outputPinType.dataTypeID, nodeCopy.data, sourceDataPtr);
-
-				//void* destDataPtr = nodeCopy.data.MemoryAt(pinCopy.memoryID);
-
-				//DataTypeManager::CopyData(outputPinType.dataTypeID, destDataPtr, sourceDataPtr);
 			}
 
 		}
@@ -500,7 +495,7 @@ namespace SCR
 
 		for (size_t i = 0; i < aNodeIDs.size(); ++i)
 		{
-			const Node& node = ScriptProxy::GetNode(myScript, aNodeIDs[i]);
+			const Node& node = ScriptProxy::GetNode(*myCurrentNodeGraph, aNodeIDs[i]);
 
 			NodeCopy& nodeCopy = copyBuffer.nodes[i];
 			nodeCopy.diffFromAvg = node.position - avgPos;
@@ -518,10 +513,10 @@ namespace SCR
 		}
 
 		CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
-		commandTracker.BeginComposite("Paste Nodes");
+		commandTracker.BeginComposite(myScript, "Paste Nodes");
 
 
-		MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(myScript);
+		MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*myCurrentNodeGraph);
 
 		// Create nodes
 		for (const NodeCopy& nodeCopy : copyBuffer.nodes)
@@ -529,7 +524,7 @@ namespace SCR
 			ScriptVec2 newPos = aPosition + nodeCopy.diffFromAvg;
 			NodeID createdNodeID = CreateNode(nodeCopy.typeID, newPos);
 
-			const Node& createdNode = ScriptProxy::GetNode(myScript, createdNodeID);
+			const Node& createdNode = ScriptProxy::GetNode(*myCurrentNodeGraph, createdNodeID);
 
 
 			assert(createdNode.inputPins.size() == nodeCopy.inputPinCopies.size());
@@ -537,7 +532,7 @@ namespace SCR
 
 			for (size_t i = 0; i < createdNode.inputPins.size(); ++i)
 			{
-				const Pin& inputPin = ScriptProxy::GetPin(myScript, createdNode.inputPins[i]);
+				const Pin& inputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, createdNode.inputPins[i]);
 				const PinType& inputPinType = PinTypeManager::GetPinType(inputPin.typeID);
 
 				void* dataPtr = memoryPool.MemoryAt(inputPin.memoryID);
@@ -549,7 +544,7 @@ namespace SCR
 
 			for (size_t i = 0; i < createdNode.outputPins.size(); ++i)
 			{
-				const Pin& outputPin = ScriptProxy::GetPin(myScript, createdNode.outputPins[i]);
+				const Pin& outputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, createdNode.outputPins[i]);
 				const PinType& outputPinType = PinTypeManager::GetPinType(outputPin.typeID);
 
 				void* dataPtr = memoryPool.MemoryAt(outputPin.memoryID);
@@ -597,7 +592,7 @@ namespace SCR
 
 	CustomEventID ScriptModifier::CreateNodeType_CustomEvent(const std::string& aName, ScriptFoundation& aFoundation)
 	{
-		return ScriptInternalModifier::CreateCustomEvent(aName, aFoundation);
+		return InternalModifier::CreateCustomEvent(aName, aFoundation);
 	}
 
 	void ScriptModifier::AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName, ScriptFoundation* aFoundation)
@@ -624,20 +619,21 @@ namespace SCR
 		{
 			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
 			{
+				// TODO - fix
+				NodeGraph& eventGraph = ScriptProxy::GetEventGraph(*script);
 
-				ScriptInternalModifier& internalModifier = ScriptProxy::GetInternalModifier(*script);
 				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetExecutorTypeID()))
 				{
-					PinID pinID = internalModifier.CreateOutputPin(nodeID, executorPinTypeID);
+					PinID pinID = InternalModifier::CreateOutputPin(eventGraph, nodeID, executorPinTypeID);
 
-					ScriptProxy::GetNodeRef(*script, nodeID).outputPins.push_back(pinID);
+					ScriptProxy::GetNodeRef(eventGraph, nodeID).outputPins.push_back(pinID);
 				}
 
 				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetCallerTypeID()))
 				{
-					PinID pinID = internalModifier.CreateInputPin(nodeID, callerPinTypeID);
+					PinID pinID = InternalModifier::CreateInputPin(eventGraph, nodeID, callerPinTypeID);
 
-					ScriptProxy::GetNodeRef(*script, nodeID).inputPins.push_back(pinID);
+					ScriptProxy::GetNodeRef(eventGraph, nodeID).inputPins.push_back(pinID);
 				}
 			}
 		}
@@ -686,21 +682,22 @@ namespace SCR
 		{
 			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
 			{
+				// TODO - fix
+				NodeGraph& eventGraph = ScriptProxy::GetEventGraph(*script);
 
-				ScriptInternalModifier& internalModifier = ScriptProxy::GetInternalModifier(*script);
 				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetExecutorTypeID()))
 				{
-					PinID pinID = internalModifier.CreateOutputPin(nodeID, newExecutorPinTypeID);
+					PinID pinID = InternalModifier::CreateOutputPin(eventGraph, nodeID, newExecutorPinTypeID);
 
-					ScriptProxy::GetNodeRef(*script, nodeID).outputPins[anIndex] = pinID;
+					ScriptProxy::GetNodeRef(eventGraph, nodeID).outputPins[anIndex] = pinID;
 
 				}
 
 				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetCallerTypeID()))
 				{
-					PinID pinID = internalModifier.CreateInputPin(nodeID, newCallerPinTypeID);
+					PinID pinID = InternalModifier::CreateInputPin(eventGraph, nodeID, newCallerPinTypeID);
 
-					ScriptProxy::GetNodeRef(*script, nodeID).inputPins[anIndex] = pinID;
+					ScriptProxy::GetNodeRef(eventGraph, nodeID).inputPins[anIndex] = pinID;
 				}
 			}
 		}
@@ -738,10 +735,12 @@ namespace SCR
 		{
 			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
 			{
+				// TODO
+				NodeGraph& eventGraph = ScriptProxy::GetEventGraph(*script);
 				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetExecutorTypeID()))
 				{
 
-					Node& node = ScriptProxy::GetNodeRef(*script, nodeID);
+					Node& node = ScriptProxy::GetNodeRef(eventGraph, nodeID);
 					script->GetModifier().DestoryLinksByOutputPinID(node.outputPins[anIndex]);
 
 					node.outputPins.erase(node.outputPins.begin() + anIndex);
@@ -750,7 +749,7 @@ namespace SCR
 
 				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetCallerTypeID()))
 				{
-					Node& node = ScriptProxy::GetNodeRef(*script, nodeID);
+					Node& node = ScriptProxy::GetNodeRef(eventGraph, nodeID);
 
 					script->GetModifier().DestroyLink(node.inputPins[anIndex]);
 					node.inputPins.erase(node.inputPins.begin() + anIndex);
@@ -761,12 +760,17 @@ namespace SCR
 
 	FunctionID ScriptModifier::CreateFunction(const std::string& aName)
 	{
-		return ScriptInternalModifier::CreateFunction(aName);
+		return InternalModifier::CreateFunction(aName);
 	}
 
-	ScriptInternalModifier& ScriptModifier::GetInternalModifier()
+	void ScriptModifier::SetCurrentNodeGraph(NodeGraph* aNodeGraph)
 	{
-		return ScriptProxy::GetInternalModifier(myScript);
+		myCurrentNodeGraph = aNodeGraph;
+	}
+
+	NodeGraph* ScriptModifier::GetCurrentNodeGraph() const
+	{
+		return myCurrentNodeGraph;
 	}
 
 }

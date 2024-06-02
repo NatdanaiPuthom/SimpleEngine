@@ -10,6 +10,7 @@
 #include "../Utilities/ScriptProxy.h"
 #include "../ScriptInternalModifier.h"
 #include "../Utilities/ScriptFilter.h"
+#include "../Command/ScriptCommandTracker.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -41,8 +42,8 @@ namespace SCR
 			return;
 		}
 
-		const ScriptFilter filter = ScriptFilter(aScript);
-		const MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(aScript);
+		const NodeGraph& eventGraph = ScriptProxy::GetEventGraph(aScript);
+		const MemoryPool& eventGraphMemoryPool = ScriptProxy::GetGraphMemoryPool(eventGraph);
 		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
 
 		json jsonDoc;
@@ -75,14 +76,14 @@ namespace SCR
 		dataJson["PinData"] = json::array();
 		json& pinDataArrayJson = dataJson["PinData"];
 
-		for (PinID inputPinID : filter.GetInputPins())
+		for (PinID inputPinID : ScriptFilter::GetInputPins(eventGraph))
 		{
-			const Pin& pin = ScriptProxy::GetPin(aScript, inputPinID);
+			const Pin& pin = ScriptProxy::GetPin(eventGraph, inputPinID);
 
 			json pinDataJson;
 
 			pinDataJson["NodeID"] = cleanedNodeIDs.at(pin.nodeID);
-			pinDataJson["PinIndex"] = ScriptLinker::GetPinIndex(aScript, inputPinID, ePinFlowType::Input);
+			pinDataJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, inputPinID, ePinFlowType::Input);
 
 			pinDataJson["Connection"] = json::object();
 			bool connectionExists = !pin.connectedPinIDs.empty();
@@ -90,9 +91,9 @@ namespace SCR
 
 			if (connectionExists)
 			{
-				const Pin& connectedPin = ScriptProxy::GetPin(aScript, pin.connectedPinIDs[0]);
+				const Pin& connectedPin = ScriptProxy::GetPin(eventGraph, pin.connectedPinIDs[0]);
 				pinDataJson["Connection"]["NodeID"] = cleanedNodeIDs.at(connectedPin.nodeID);
-				pinDataJson["Connection"]["PinIndex"] = ScriptLinker::GetPinIndex(aScript, pin.connectedPinIDs[0], ePinFlowType::Output);
+				pinDataJson["Connection"]["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, pin.connectedPinIDs[0], ePinFlowType::Output);
 			}
 			else
 			{
@@ -103,7 +104,7 @@ namespace SCR
 				const MemoryPoolID memoryID = pin.memoryID;
 
 				json valueJson = json::object();
-				DataTypeManager::SaveData(pinType.dataTypeID, valueJson, memoryPool.MemoryAt(memoryID));
+				DataTypeManager::SaveData(pinType.dataTypeID, valueJson, eventGraphMemoryPool.MemoryAt(memoryID));
 				pinDataJson["Value"] = valueJson;
 			}
 
@@ -130,7 +131,7 @@ namespace SCR
 			json defaultValueJson = json::object();
 			DataTypeID dataTypeID = variable.dataTypeID;
 
-			DataTypeManager::SaveData(dataTypeID, defaultValueJson, memoryPool.MemoryAt(variable.defaultValueMemoryID));
+			DataTypeManager::SaveData(dataTypeID, defaultValueJson, eventGraphMemoryPool.MemoryAt(variable.defaultValueMemoryID));
 
 			variableJson["DefaultValue"] = defaultValueJson;
 
@@ -139,7 +140,7 @@ namespace SCR
 
 			for (NodeID nodeID : variableManager.GetNodeIDsByVarID(i))
 			{
-				const Node& node = ScriptProxy::GetNode(aScript, nodeID);
+				const Node& node = ScriptProxy::GetNode(eventGraph, nodeID);
 
 				if (!node.isDestroyed)
 				{
@@ -174,7 +175,8 @@ namespace SCR
 
 		const json jsonDoc = json::parse(file);
 
-		MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(aScript);
+		NodeGraph& eventGraph = ScriptProxy::GetEventGraph(aScript);
+		MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(eventGraph);
 		ScriptModifier& modifier = aScript.GetModifier();
 		ScriptProxy::GetCommandTracker(aScript).IsTracking() = false;
 
@@ -208,13 +210,13 @@ namespace SCR
 				continue;
 			}
 			const size_t pinIndex = pinData["PinIndex"];
-			const PinID pinID = ScriptLinker::GetPinID(aScript, nodeID, pinIndex, ePinFlowType::Input);
+			const PinID pinID = ScriptLinker::GetPinID(eventGraph, nodeID, pinIndex, ePinFlowType::Input);
 
 			if (pinID == InvalidID<PinID>())
 			{
 				continue;
 			}
-			const Pin& pin = ScriptProxy::GetPin(aScript, pinID);
+			const Pin& pin = ScriptProxy::GetPin(eventGraph, pinID);
 
 			//InputPin& inputPin = ScriptProxy::GetInputPin(aScript, pinID);
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
@@ -231,7 +233,7 @@ namespace SCR
 
 				size_t connectedPinIndex = connectionJson["PinIndex"];
 
-				PinID connectionID = ScriptLinker::GetPinID(aScript, connectionNodeID, connectedPinIndex, ePinFlowType::Output);
+				PinID connectionID = ScriptLinker::GetPinID(eventGraph, connectionNodeID, connectedPinIndex, ePinFlowType::Output);
 
 				if (connectionID != InvalidID<PinID>())
 				{
@@ -279,7 +281,7 @@ namespace SCR
 			{
 				if (!failedNodeIDs.contains(nodeID))
 				{
-					ScriptInternalModifier(aScript).BindVariable(nodeID, varID);
+					InternalModifier::BindVariable(aScript, nodeID, varID);
 				}
 				else
 				{

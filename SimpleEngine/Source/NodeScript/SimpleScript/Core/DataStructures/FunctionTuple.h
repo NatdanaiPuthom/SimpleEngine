@@ -264,9 +264,6 @@ namespace SCR
 		template<typename Callable, typename... CallableArgs>
 		decltype(auto) Call(Callable&& aCallable, MemoryPool* aMemoryPool, const MemoryIDArray& anIDArray, CallableArgs&&... aCallableArgs) const
 		{
-			aCallable;
-			aMemoryPool;
-			anIDArray;
 			return std::apply(std::forward<Callable>(aCallable),
 				std::tuple_cat(std::make_tuple<CallableArgs...>(
 					std::forward<CallableArgs>(aCallableArgs)...),
@@ -274,17 +271,6 @@ namespace SCR
 				)
 			);
 		}
-
-		/*template<typename Callable, typename... CallableArgs>
-		decltype(auto) Call(Callable&& aCallable, ConstantArgs... aConstantArgs, CallableArgs&&... aCallableArgs) const
-		{
-			return std::apply(std::forward<Callable>(aCallable),
-				std::tuple_cat(
-					std::make_tuple<CallableArgs...>(std::forward<CallableArgs>(aCallableArgs)...),
-					std::forward<ResultTuple>(Resolve(std::forward<ConstantArgs>(aConstantArgs)...))
-				)
-			);
-		}*/
 
 		ResultTuple Resolve(MemoryPool* aMemoryPool, const MemoryIDArray& aMemoryIDArray) const
 		{

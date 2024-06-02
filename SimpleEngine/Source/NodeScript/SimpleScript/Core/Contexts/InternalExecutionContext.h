@@ -1,5 +1,6 @@
 #pragma once
 #include "../ScriptDefines.h"
+#include "NodeRef.h"
 
 namespace SCR
 {
@@ -14,38 +15,30 @@ namespace SCR
 
 	struct NodeExecutionData final
 	{
-		NodeID nodeID = InvalidID<NodeID>();
+		NodeRef nodeRef;
 		eNodeTriggerReason triggerReason = eNodeTriggerReason::Flow;
 	};
 
-	inline bool operator==(const NodeExecutionData& aValue1, const NodeExecutionData& aValue2)
+	inline bool operator==(const NodeExecutionData& a, const NodeExecutionData& b)
 	{
-		return aValue1.nodeID == aValue2.nodeID;
+		return a.nodeRef == b.nodeRef;
 	}
 
-	inline bool operator<(const NodeExecutionData& aValue1, const NodeExecutionData& aValue2)
+	inline bool operator<(const NodeExecutionData& a, const NodeExecutionData& b)
 	{
-		return aValue1.nodeID < aValue2.nodeID;
+		return a.nodeRef < b.nodeRef;
 	}
 
 
 	class Script;
-	class ScriptInternalModifier;
+	class InternalModifier;
 	struct ExecutionContextBase;
 
 	struct InternalExecutionContext final
 	{
 		friend class NodeExecutor;
 
-		InternalExecutionContext(Script& aScript, ScriptInternalModifier& aModifier)
-			: script(aScript)
-			, modifier(aModifier)
-		{
-
-		}
-
-		Script& script;
-		ScriptInternalModifier& modifier;
+		Script* script;
 		const ExecutionContextBase* executionContext = nullptr;
 		NodeExecutionData nodeData;
 
@@ -65,6 +58,6 @@ struct std::hash<SCR::NodeExecutionData>
 {
 	std::size_t operator()(const SCR::NodeExecutionData& aValue) const
 	{
-		return static_cast<size_t>(aValue.nodeID);
+		return static_cast<size_t>(aValue.nodeRef.nodeID);
 	}
 };

@@ -7,18 +7,19 @@ namespace SCR
 {
 
 	class Script;
+	class NodeGraph;
 
 	class ScriptLinker
 	{
 	public:
 
-		static PinID GetPinID(const Script& aScript, const NodeID aNodeID, const size_t aPinIndex, const ePinFlowType aPinFlowType);
-		static size_t GetPinIndex(const Script& aScript, const PinID aPinID, const ePinFlowType aPinFlowType);
+		static PinID GetPinID(const NodeGraph& aNodeGraph, const NodeID aNodeID, const size_t aPinIndex, const ePinFlowType aPinFlowType);
+		static size_t GetPinIndex(const NodeGraph& aNodeGraph, const PinID aPinID, const ePinFlowType aPinFlowType);
 
-		static bool AreDataPinsLinkable(const Script& aScript, const PinID anOutputPinID, const PinID anInputPinID);
+		static bool AreDataPinsLinkable(const NodeGraph& aNodeGraph, const PinID anOutputPinID, const PinID anInputPinID);
 
-		static Link ArePinsLinkable(const Script& aScript, PinID aPinID1, PinID aPinID2);
+		static Link ArePinsLinkable(const NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2);
 
-		static std::vector<Link> GetNodeLinks(const Script& aScript, const NodeID aNodeID);
+		static std::vector<Link> GetNodeLinks(const NodeGraph& aNodeGraph, const NodeID aNodeID);
 	};
 }

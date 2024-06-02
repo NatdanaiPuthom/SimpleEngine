@@ -1,10 +1,10 @@
 #include "ScriptCommandTracker.h"
+#include "ScriptCompositeCommand.h"
 
 namespace SCR
 {
-	CommandTracker::CommandTracker(Script& aScript)
-		: myScript(aScript)
-		, myIsTracking(true)
+	CommandTracker::CommandTracker()
+		: myIsTracking(true)
 		, myIsDebugPrinting(false)
 	{
 	}
@@ -26,15 +26,15 @@ namespace SCR
 
 	}
 
-	void CommandTracker::BeginComposite(const std::string& aName)
+	void CommandTracker::BeginComposite(Script& aScript, const std::string& aName)
 	{
 		if (myCompositeCommand)
 		{
-			myCompositeCommand->Begin(aName);
+			myCompositeCommand->Begin(aScript, aName);
 		}
 		else
 		{
-			myCompositeCommand = std::make_shared<CompositeCommand>(aName);
+			myCompositeCommand = std::make_shared<CompositeCommand>(aScript, aName);
 		}
 	}
 
@@ -89,7 +89,7 @@ namespace SCR
 		}
 		if (aExecuteCommand)
 		{
-			aCommand->DoInternal(myScript);
+			aCommand->DoInternal();
 		}
 
 		if (myIsTracking)
@@ -107,7 +107,7 @@ namespace SCR
 	{
 		if (!myUndoStack.empty())
 		{
-			myUndoStack.top()->UndoInternal(myScript);
+			myUndoStack.top()->UndoInternal();
 			myRedoStack.push(myUndoStack.top());
 			myUndoStack.pop();
 		}
@@ -117,7 +117,7 @@ namespace SCR
 	{
 		if (!myRedoStack.empty())
 		{
-			myRedoStack.top()->DoInternal(myScript);
+			myRedoStack.top()->DoInternal();
 			myUndoStack.push(myRedoStack.top());
 			myRedoStack.pop();
 		}

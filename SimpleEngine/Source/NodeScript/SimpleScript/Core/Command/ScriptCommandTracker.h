@@ -1,21 +1,21 @@
 #pragma once
 #include "../ScriptDefines.h"
 #include "ScriptCommand.h"
-#include "ScriptFunctionCommand.h"
-#include "ScriptCompositeCommand.h"
-#include "../Utilities/ScriptUtilities.h"
+#include "../Utilities/MetaScript.h"
 #include <stack>
 
 namespace SCR
 {
 
+	class CompositeCommand;
+
 	class CommandTracker final
 	{
 		friend class ScriptModifier;
-		friend class ScriptInternalModifier;
+		friend class InternalModifier;
 	public:
 
-		CommandTracker(Script& aScript);
+		CommandTracker();
 		~CommandTracker();
 
 		template<Predicate UndoPredicate, Predicate RedoPredicate>
@@ -39,7 +39,7 @@ namespace SCR
 		template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
 		void RegisterCommand(Args&&... args);
 
-		void BeginComposite(const std::string& aName);
+		void BeginComposite(Script& aScript, const std::string& aName);
 		void EndComposite();
 
 		void DoCommand(std::shared_ptr<Command> aCommand, bool aExecuteCommand);
@@ -53,8 +53,6 @@ namespace SCR
 		std::stack<std::shared_ptr<Command>> myRedoStack;
 
 		std::shared_ptr<CompositeCommand> myCompositeCommand;
-
-		Script& myScript;
 
 		bool myIsTracking;
 		bool myIsDebugPrinting;

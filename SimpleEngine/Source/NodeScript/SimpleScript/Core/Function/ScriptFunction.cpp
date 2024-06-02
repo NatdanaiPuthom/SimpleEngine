@@ -11,12 +11,12 @@ namespace SCR
 
 		const FunctionID functionID = NodeTypeManager::GetFunctionID(callerNode.typeID);
 		Function& function = NodeTypeManager::GetFunction(functionID);
-		function.SetCaller({ aContext->GetNodeData().nodeID, &ScriptProxy::GetEventGraph(aContext->script) });
-		const Node& inputNode = ScriptProxy::GetNode(aContext->script, function.GetInputNodeID());
+		function.SetCaller({ aContext->GetNodeData().nodeRef.nodeID, aContext->nodeData.nodeRef.nodeGraph });
+		const Node& inputNode = ScriptProxy::GetNode(*aContext->nodeData.nodeRef.nodeGraph, function.GetInputNodeID());
 
 		CopyPinData(*aContext, inputNode.outputPins, callerNode.inputPins, 1);
 
-		ScriptProxy::GetNodeExecutor(aContext->script).Push({ function.GetInputNodeID(), eNodeTriggerReason::Flow });
+		ScriptProxy::GetNodeExecutor(*aContext->script).Push({ NodeRef{function.GetInputNodeID(), &ScriptProxy::GetEventGraph(*aContext->script) }, eNodeTriggerReason::Flow });
 
 		return true;
 	}

@@ -3,6 +3,7 @@
 #include "SimpleScript/Core/Script.h"
 #include "SimpleScript/Core/Utilities/ScriptUtilities.h"
 #include "SimpleScript/Core/DataType/DataTypeManager.h"
+#include "SimpleScript/Core/Utilities/ScriptProxy.h"
 
 namespace EDIT
 {

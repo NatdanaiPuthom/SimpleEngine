@@ -7,8 +7,7 @@
 
 namespace SCR
 {
-	NodeExecutor::NodeExecutor(ScriptInternalModifier& aModifier)
-		: myExecutionContext(aModifier.myScript, aModifier)
+	NodeExecutor::NodeExecutor()
 	{
 	}
 
@@ -16,70 +15,11 @@ namespace SCR
 	{
 	}
 
-	void NodeExecutor::Execute(const std::string& aUserEventKey, const ExecutionContextBase& anExecutionContext)
+	void NodeExecutor::ExecuteEvent(const eNodeExecutionTrait aTrait, Script& aScript, const ExecutionContextBase& anExecutionContext)
 	{
-		ExecuteInternal(myUserEventNodes[aUserEventKey], anExecutionContext);
-	}
-
-	/*static void TestFunc(int& a)
-	{
-		std::cout << a << std::endl;
-
-		a = 1;
-	}*/
-
-	void NodeExecutor::Execute(const eNodeExecutionTrait aTrait, const ExecutionContextBase& anExecutionContext)
-	{
-		/*MemoryTuple2<int> memTuple;
-
-		memTuple.At<0>() = [](MemoryPool* aPool, MemoryPoolID anID) -> int&
-			{
-				return aPool->At<int>(anID);
-			};
-
-		MemoryPool memPool;
-
-		MemoryPoolID intID = memPool.Allocate<int>(5);
-
-		using T = MemoryTuple2<int>::VariedArgsType;
-
-		memTuple.Call(TestFunc, &memPool, T{std::tuple<MemoryPoolID>{ intID }});
-
-		std::tuple<ReferenceWrapper<int>> refTuple = memTuple.Resolve(&memPool, T{ std::tuple<MemoryPoolID>{ intID } });
-
-		std::tuple<int&> tuple = std::move(refTuple);
-
-		int& i = std::get<0>(tuple);
-
-		std::cout << i << std::endl;
-
-		if (&i == &memPool.At<int>(intID))
-		{
-			std::cout << "Hello" << std::endl;
-		}*/
-
-		/*myExecutionContext.executionContext = &anExecutionContext;
-
-		myCurrentNodes = myEventNodes[aTrait];
-		myFrameNodes.insert(myCurrentNodes.begin(), myCurrentNodes.end());
-
-		auto executeFunc = [this]() -> void
-		{
-			while (!myCurrentNodes.empty())
-			{
-				std::vector<NodeExecutionData> currentNodes = myCurrentNodes;
-
-				myCurrentNodes.clear();
-				for (const NodeExecutionData& nodeExecutionData : currentNodes)
-				{
-					ExecuteNode(nodeExecutionData);
-				}
-			}
-		};
-
-		executeFunc();*/
-
-		ExecuteInternal(myEventNodes[aTrait], anExecutionContext);
+		myExecutionContext.script = &aScript;
+		myExecutionContext.executionContext = &anExecutionContext;
+		ExecuteInternal(myEventNodes[aTrait]);
 
 		if (aTrait == eNodeExecutionTrait::Tick)
 		{
@@ -87,44 +27,31 @@ namespace SCR
 			{
 				Push(executionData);
 			}
-			ExecuteInternal(myCurrentNodes, anExecutionContext);
-			//executeFunc();
+			ExecuteInternal(myCurrentNodes);
 		}
-		//myFrameNodes.clear();
+	}
+
+
+	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
+	{
+		const Node& node = ScriptProxy::GetNode(*aNodeExecutionData.nodeRef.nodeGraph, aNodeExecutionData.nodeRef.nodeID);
+		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
+		nodeType.nodeRecipe.executeFunction(aNodeExecutionData, myExecutionContext);
 	}
 
 	void NodeExecutor::Push(const NodeExecutionData& aNodeExecutionData)
 	{
-		/*	if (!myFrameNodes.contains(aNodeExecutionData))
-			{*/
 		myCurrentNodes.push_back(aNodeExecutionData);
-		//myFrameNodes.insert(aNodeExecutionData);
-	//}
 	}
 
-	void NodeExecutor::ForceExecuteNode(const NodeExecutionData& aNodeExecutionData)
-	{
-		//myFrameNodes.insert(aNodeExecutionData);
-		ExecuteNode(aNodeExecutionData);
-	}
-
-	/*void NodeExecutor::TryExecuteNode(const NodeExecutionData aNodeExecutionData)
-	{
-		if (!myFrameNodes.contains(aNodeExecutionData))
-		{
-			myFrameNodes.insert(aNodeExecutionData);
-			ExecuteNode(aNodeExecutionData);
-		}
-	}*/
-
-	void NodeExecutor::Register(const NodeID aNodeID, const eNodeExecutionTrait aTrait)
+	void NodeExecutor::BindToEvent(const NodeRef& aNodeRef, const eNodeExecutionTrait aTrait)
 	{
 		if (aTrait != eNodeExecutionTrait::None)
 		{
 			bool alreadyExists = false;
 			for (const NodeExecutionData& nodeExecutionData : myEventNodes[aTrait])
 			{
-				if (nodeExecutionData.nodeID == aNodeID)
+				if (nodeExecutionData.nodeRef == aNodeRef)
 				{
 					alreadyExists = true;
 					break;
@@ -133,14 +60,14 @@ namespace SCR
 
 			if (!alreadyExists)
 			{
-				myEventNodes[aTrait].push_back({ aNodeID, eNodeTriggerReason::Event });
+				myEventNodes[aTrait].push_back({ aNodeRef, eNodeTriggerReason::Event });
 			}
 		}
 	}
 
-	void NodeExecutor::Register(const NodeID aNodeID)
+	void NodeExecutor::BindToEvent(const NodeRef& aNodeRef)
 	{
-		const Node& node = ScriptProxy::GetNode(myExecutionContext.script, aNodeID);
+		const Node& node = ScriptProxy::GetNode(*aNodeRef.nodeGraph, aNodeRef.nodeID);
 
 		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
 
@@ -148,44 +75,42 @@ namespace SCR
 
 		if (executionTrait != eNodeExecutionTrait::None)
 		{
-			Register(aNodeID, executionTrait);
+			BindToEvent(aNodeRef, executionTrait);
 
 		}
 	}
 
-	void NodeExecutor::Unregister(const NodeID aNodeID, const eNodeExecutionTrait aTrait)
+	void NodeExecutor::UnbindFromEvent(const NodeRef& aNodeRef, const eNodeExecutionTrait aTrait)
 	{
 		if (aTrait != eNodeExecutionTrait::None)
 		{
-			std::erase(myEventNodes.at(aTrait), NodeExecutionData{ aNodeID });
+			std::erase(myEventNodes.at(aTrait), NodeExecutionData{ aNodeRef });
 		}
 	}
 
-	void NodeExecutor::Unregister(const NodeID aNodeID)
+	void NodeExecutor::UnbindFromEvent(const NodeRef& aNodeRef)
 	{
-		const Node& node = ScriptProxy::GetNode(myExecutionContext.script, aNodeID);
+		const Node& node = ScriptProxy::GetNode(*aNodeRef.nodeGraph, aNodeRef.nodeID);
 
 		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
 
-		Unregister(aNodeID, nodeType.nodeRecipe.executionTrait);
+		UnbindFromEvent(aNodeRef, nodeType.nodeRecipe.executionTrait);
 	}
 
-	void NodeExecutor::RegisterAutoTickNode(const NodeID aNodeID)
+	void NodeExecutor::RegisterAutoTickNode(const NodeRef& aNodeRef)
 	{
-		myAutoTickNodes.insert({ aNodeID, eNodeTriggerReason::Event });
+		myAutoTickNodes.insert({ aNodeRef, eNodeTriggerReason::Event });
 	}
 
-	void NodeExecutor::UnregisterAutoTickNode(const NodeID aNodeID)
+	void NodeExecutor::UnregisterAutoTickNode(const NodeRef& aNodeRef)
 	{
-		myAutoTickNodes.erase({ aNodeID, eNodeTriggerReason::Event });
+		myAutoTickNodes.erase({ aNodeRef, eNodeTriggerReason::Event });
 	}
 
-	void NodeExecutor::ExecuteInternal(const std::vector<NodeExecutionData>& aNodes, const ExecutionContextBase& anExecutionContext)
+	void NodeExecutor::ExecuteInternal(const std::vector<NodeExecutionData>& aNodes)
 	{
-		myExecutionContext.executionContext = &anExecutionContext;
 
 		myCurrentNodes = aNodes;
-		//myFrameNodes.insert(myCurrentNodes.begin(), myCurrentNodes.end());
 
 		while (!myCurrentNodes.empty())
 		{
@@ -197,16 +122,6 @@ namespace SCR
 				ExecuteNode(nodeExecutionData);
 			}
 		}
-
-
-		//myFrameNodes.clear();
-	}
-
-	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
-	{
-		const Node& node = ScriptProxy::GetNode(myExecutionContext.script, aNodeExecutionData.nodeID);
-		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
-		nodeType.nodeRecipe.executeFunction(aNodeExecutionData, myExecutionContext);
 	}
 
 }

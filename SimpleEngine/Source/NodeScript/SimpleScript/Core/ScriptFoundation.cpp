@@ -4,6 +4,7 @@
 #include "Serialization/ScriptLoader.h"
 #include "SystemDataTypes.h"
 #include "ScriptCopyBuffer.h"
+#include "Node/NodeExecutor.h"
 
 namespace SCR
 {
@@ -12,6 +13,7 @@ namespace SCR
 
 	ScriptFoundation::ScriptFoundation()
 		: myCopyBuffer(std::make_unique<CopyBuffer>())
+		, myNodeExecutor(std::make_unique<NodeExecutor>())
 	{
 	}
 

@@ -8,9 +8,9 @@
 namespace SCR
 {
 
-	PinID ScriptLinker::GetPinID(const Script& aScript, const NodeID aNodeID, const size_t aPinIndex, const ePinFlowType aPinFlowType)
+	PinID ScriptLinker::GetPinID(const NodeGraph& aNodeGraph, const NodeID aNodeID, const size_t aPinIndex, const ePinFlowType aPinFlowType)
 	{
-		const Node& node = ScriptProxy::GetNode(aScript, aNodeID);
+		const Node& node = ScriptProxy::GetNode(aNodeGraph, aNodeID);
 		switch (aPinFlowType)
 		{
 		case ePinFlowType::Input:
@@ -31,10 +31,10 @@ namespace SCR
 		return InvalidID<PinID>();
 	}
 
-	size_t ScriptLinker::GetPinIndex(const Script& aScript, const PinID aPinID, const ePinFlowType aPinFlowType)
+	size_t ScriptLinker::GetPinIndex(const NodeGraph& aNodeGraph, const PinID aPinID, const ePinFlowType aPinFlowType)
 	{
-		const NodeID nodeID = ScriptProxy::GetPin(aScript, aPinID).nodeID;
-		const Node& node = ScriptProxy::GetNode(aScript, nodeID);
+		const NodeID nodeID = ScriptProxy::GetPin(aNodeGraph, aPinID).nodeID;
+		const Node& node = ScriptProxy::GetNode(aNodeGraph, nodeID);
 
 		const std::vector<PinID>& pinIDs = aPinFlowType == ePinFlowType::Output ? node.outputPins : node.inputPins;
 
@@ -48,24 +48,24 @@ namespace SCR
 		return InvalidID<size_t>();
 	}
 
-	bool ScriptLinker::AreDataPinsLinkable(const Script& aScript, const PinID aOutputPinID, const PinID aInputPinID)
+	bool ScriptLinker::AreDataPinsLinkable(const NodeGraph& aNodeGraph, const PinID aOutputPinID, const PinID aInputPinID)
 	{
-		const Pin& outputPin = ScriptProxy::GetPin(aScript, aOutputPinID);
-		const Pin& inputPin = ScriptProxy::GetPin(aScript, aInputPinID);
+		const Pin& outputPin = ScriptProxy::GetPin(aNodeGraph, aOutputPinID);
+		const Pin& inputPin = ScriptProxy::GetPin(aNodeGraph, aInputPinID);
 		return PinTypeManager::GetPinType(outputPin.typeID).dataTypeID == PinTypeManager::GetPinType(inputPin.typeID).dataTypeID;
 	}
 
-	Link ScriptLinker::ArePinsLinkable(const Script& aScript, PinID aOutputPinID, PinID aInputPinID)
+	Link ScriptLinker::ArePinsLinkable(const NodeGraph& aNodeGraph, PinID aOutputPinID, PinID aInputPinID)
 	{
-		const Pin& outputPin = ScriptProxy::GetPin(aScript, aOutputPinID);
-		const Pin& inputPin = ScriptProxy::GetPin(aScript, aInputPinID);
+		const Pin& outputPin = ScriptProxy::GetPin(aNodeGraph, aOutputPinID);
+		const Pin& inputPin = ScriptProxy::GetPin(aNodeGraph, aInputPinID);
 
 		switch (PinTypeManager::GetPinType(outputPin.typeID).flowType)
 		{
 		case ePinFlowType::Input:
 			if (PinTypeManager::GetPinType(inputPin.typeID).flowType == ePinFlowType::Output)
 			{
-				if (AreDataPinsLinkable(aScript, aInputPinID, aOutputPinID))
+				if (AreDataPinsLinkable(aNodeGraph, aInputPinID, aOutputPinID))
 				{
 					std::swap(aOutputPinID, aInputPinID);
 					return { aInputPinID, aOutputPinID };
@@ -75,7 +75,7 @@ namespace SCR
 		case ePinFlowType::Output:
 			if (PinTypeManager::GetPinType(inputPin.typeID).flowType == ePinFlowType::Input)
 			{
-				bool linkable = AreDataPinsLinkable(aScript, aOutputPinID, aInputPinID);
+				bool linkable = AreDataPinsLinkable(aNodeGraph, aOutputPinID, aInputPinID);
 				return linkable ? Link{ aInputPinID, aOutputPinID } : Link{};
 			}
 			break;
@@ -85,14 +85,14 @@ namespace SCR
 		return Link{};
 	}
 
-	std::vector<Link> ScriptLinker::GetNodeLinks(const Script& aScript, const NodeID aNodeID)
+	std::vector<Link> ScriptLinker::GetNodeLinks(const NodeGraph& aNodeGraph, const NodeID aNodeID)
 	{
-		const Node& node = ScriptProxy::GetNode(aScript, aNodeID);
+		const Node& node = ScriptProxy::GetNode(aNodeGraph, aNodeID);
 
 		std::vector<Link> links;
 		for (PinID inputPinID : node.inputPins)
 		{
-			const Pin& inputPin = ScriptProxy::GetPin(aScript, inputPinID);
+			const Pin& inputPin = ScriptProxy::GetPin(aNodeGraph, inputPinID);
 			for (PinID connectedOutputPinID : inputPin.connectedPinIDs)
 			{
 				links.emplace_back(inputPinID, connectedOutputPinID);
@@ -100,7 +100,7 @@ namespace SCR
 		}
 		for (PinID outputPinID : node.outputPins)
 		{
-			const Pin& outputPin = ScriptProxy::GetPin(aScript, outputPinID);
+			const Pin& outputPin = ScriptProxy::GetPin(aNodeGraph, outputPinID);
 
 			for (PinID connectedInputPinID : outputPin.connectedPinIDs)
 			{

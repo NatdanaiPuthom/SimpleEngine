@@ -9,6 +9,7 @@
 #include "SimpleScript/Core/Utilities/ScriptFilter.h"
 #include "SimpleScript/Core/ScriptModifier.h"
 #include "SimpleScript/Core/CustomEvent/CustomEvent.h"
+#include "SimpleScript/Core/Command/ScriptCommandTracker.h"
 
 #include "Editor/Menu/MainMenuBar.hpp" //NOTE(v10.0.2): Remove this once we no longer use static bool of MainMenuBar class
 
@@ -389,7 +390,7 @@ namespace EDIT
 			{
 				const PinID pinID = node->inputPins[i];
 
-				std::string pinLabel = GetPinLabel(PinTypeManager::GetPinType(ScriptProxy::GetPin(currentScript, pinID).typeID));
+				std::string pinLabel = GetPinLabel(PinTypeManager::GetPinType(ScriptProxy::GetPin(*currentScript.GetModifier().GetCurrentNodeGraph(), pinID).typeID));
 				const float labelWidth = ImGui::CalcTextSize(pinLabel.c_str()).x;
 
 				nodeWidthLeft = std::max(nodeWidthLeft, labelWidth);
@@ -400,7 +401,7 @@ namespace EDIT
 			for (int i = 0; i < node->outputPins.size(); ++i)
 			{
 				const PinID pinID = node->outputPins[i];
-				const std::string& pinLabel = GetPinLabel(PinTypeManager::GetPinType(ScriptProxy::GetPin(currentScript, pinID).typeID));
+				const std::string& pinLabel = GetPinLabel(PinTypeManager::GetPinType(ScriptProxy::GetPin(*currentScript.GetModifier().GetCurrentNodeGraph(), pinID).typeID));
 				const float labelWidth = ImGui::CalcTextSize(pinLabel.c_str()).x;
 
 				nodeWidthRight = std::max(nodeWidthRight, labelWidth);
@@ -417,7 +418,7 @@ namespace EDIT
 			for (int i = 0; i < node->inputPins.size(); ++i)
 			{
 				const PinID pinID = node->inputPins[i];
-				const Pin& pin = ScriptProxy::GetPin(currentScript, pinID);
+				const Pin& pin = ScriptProxy::GetPin(*currentScript.GetModifier().GetCurrentNodeGraph(), pinID);
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(DataTypeManager::GetColor(pinType.dataTypeID)));
@@ -455,7 +456,7 @@ namespace EDIT
 			for (int i = 0; i < node->outputPins.size(); ++i)
 			{
 				const PinID pinID = node->outputPins[i];
-				const Pin& pin = ScriptProxy::GetPin(currentScript, pinID);
+				const Pin& pin = ScriptProxy::GetPin(*currentScript.GetModifier().GetCurrentNodeGraph(), pinID);
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(DataTypeManager::GetColor(pinType.dataTypeID)));
@@ -486,9 +487,9 @@ namespace EDIT
 		}
 
 		// Render links
-		for (PinID inputPinID : ScriptFilter(currentScript).GetInputPins())
+		for (PinID inputPinID : ScriptFilter::GetInputPins(*currentScript.GetModifier().GetCurrentNodeGraph()))
 		{
-			const Pin& pin = ScriptProxy::GetPin(currentScript, inputPinID);
+			const Pin& pin = ScriptProxy::GetPin(ScriptProxy::GetEventGraph(currentScript), inputPinID);
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 			if (!pin.connectedPinIDs.empty())
@@ -514,7 +515,6 @@ namespace EDIT
 	{
 		Script& currentScript = *GetCurrentContext().script;
 		const NodeManager& nodeManager = ScriptProxy::GetNodeManager(currentScript);
-		const ScriptFilter filter(currentScript);
 		ScriptModifier& modifier = currentScript.GetModifier();
 
 		bool dragStarted = ImGui::IsKeyDown(ImGuiKey_MouseLeft) && !myIsDraggingNode;
@@ -602,14 +602,14 @@ namespace EDIT
 		{
 			myStartedLinkPinID = startedPinID;
 
-			const Pin& pin = ScriptProxy::GetPin(currentScript, myStartedLinkPinID);
+			const Pin& pin = ScriptProxy::GetPin(ScriptProxy::GetEventGraph(currentScript), myStartedLinkPinID);
 
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-			myPinIDsToHighlight = filter.GetNonConnectedPinsOfTypeAndHash(InvertPinType(pinType.flowType), pinType.dataTypeID);
+			myPinIDsToHighlight = ScriptFilter::GetNonConnectedPinsOfTypeAndHash(*currentScript.GetModifier().GetCurrentNodeGraph(), InvertPinType(pinType.flowType), pinType.dataTypeID);
 
 			for (PinID i = 0; i < myPinIDsToHighlight.size(); i++)
 			{
-				if (ScriptProxy::GetPin(currentScript, myPinIDsToHighlight[i]).nodeID == pin.nodeID)
+				if (ScriptProxy::GetPin(ScriptProxy::GetEventGraph(currentScript), myPinIDsToHighlight[i]).nodeID == pin.nodeID)
 				{
 					myPinIDsToHighlight.erase(myPinIDsToHighlight.begin() + i);
 					i--;
@@ -632,7 +632,7 @@ namespace EDIT
 		// Drop link create popup
 		if (ImGui::BeginPopup("Node Create Popup"))
 		{
-			const Pin& pin = ScriptProxy::GetPin(currentScript, myLinkCreationPinID);
+			const Pin& pin = ScriptProxy::GetPin(ScriptProxy::GetEventGraph(currentScript), myLinkCreationPinID);
 
 			DataTypeID droppedPinDataTypeID = PinTypeManager::GetPinType(pin.typeID).dataTypeID;
 

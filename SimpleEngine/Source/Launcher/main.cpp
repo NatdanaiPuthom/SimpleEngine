@@ -64,7 +64,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_END();
 
 	PROFILER_BEGIN("SimpleScript Initialize");
-	Script::SimpleNodeScript simpleScript;
+	SCRIPT::SimpleNodeScript simpleScript;
 	simpleScript.Init();
 	PROFILER_END();
 

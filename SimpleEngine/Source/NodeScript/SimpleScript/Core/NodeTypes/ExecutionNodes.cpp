@@ -50,13 +50,13 @@ namespace SCR
 			{
 				aState.value.time = 0.f;
 			}
-			ScriptProxy::GetNodeExecutor(aContext->script).RegisterAutoTickNode(aContext->GetNodeData().nodeID);
+			ScriptProxy::GetNodeExecutor(*aContext->script).RegisterAutoTickNode(aContext->GetNodeData().nodeRef);
 		}
 		aState.value.time += aContext->executionContext->deltaTime;
 		if (aState.value.time > aDuration)
 		{
 			aState.value.time = 0.f;
-			ScriptProxy::GetNodeExecutor(aContext->script).UnregisterAutoTickNode(aContext->GetNodeData().nodeID);
+			ScriptProxy::GetNodeExecutor(*aContext->script).UnregisterAutoTickNode(aContext->GetNodeData().nodeRef);
 			return true;
 		}
 		return false;

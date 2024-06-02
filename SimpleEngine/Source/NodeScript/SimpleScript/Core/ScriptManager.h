@@ -23,7 +23,6 @@ namespace SCR
 		ScriptManager& operator=(const ScriptManager&) = delete;
 		ScriptManager& operator=(ScriptManager&&) = delete;
 
-		void TriggerEvent(const std::string& aUserEventKey, const ExecutionContextBase& aContext);
 		void TriggerEvent(const eNodeExecutionTrait anExecutionTrait, const ExecutionContextBase& aContext);
 
 		Script& CreateScript(const std::string& aName = "Default Script");

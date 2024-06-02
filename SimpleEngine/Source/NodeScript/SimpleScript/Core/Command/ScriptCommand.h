@@ -5,6 +5,13 @@
 namespace SCR
 {
 	class Script;
+	class NodeGraph;
+
+	struct CommandContext
+	{
+		Script& script;
+		NodeGraph* nodeGraph = nullptr;
+	};
 
 	class Command
 	{
@@ -12,17 +19,21 @@ namespace SCR
 		friend class CompositeCommand;
 	public:
 		
-		Command();
-		Command(const std::string& aName);
+		Command(const CommandContext& aContext);
+		Command(const CommandContext& aContext, const std::string& aName);
 		virtual ~Command() = default;
 
 	private:
 
-		void DoInternal(Script& aScript);
-		void UndoInternal(Script& aScript);
+		void DoInternal();
+		void UndoInternal();
 
-		virtual void Do(Script& aScript) = 0;
-		virtual void Undo(Script& aScript) = 0;
+		virtual void Do() = 0;
+		virtual void Undo() = 0;
+
+	protected:
+
+		const CommandContext myContext;
 
 	private:
 

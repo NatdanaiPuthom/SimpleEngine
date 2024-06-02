@@ -18,7 +18,7 @@ namespace SCR
 
 		const Node& GetCurrentNode();
 		
-		void Push(NodeID aNodeID, NodeGraph* aNodeGraph);
+		void Push(NodeID aNodeID, NodeGraph& aNodeGraph);
 		void Pop();
 
 	private:

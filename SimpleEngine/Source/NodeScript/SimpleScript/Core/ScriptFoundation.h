@@ -10,6 +10,7 @@ namespace SCR
 	class ScriptManager;
 	class Function;
 	struct CopyBuffer;
+	class NodeExecutor;
 	
 	class ScriptFoundation final
 	{
@@ -37,5 +38,7 @@ namespace SCR
 		CallStack myCallStack;
 
 		std::unique_ptr<CopyBuffer> myCopyBuffer;
+
+		std::unique_ptr<NodeExecutor> myNodeExecutor;
 	};
 }

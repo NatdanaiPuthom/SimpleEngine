@@ -20,9 +20,9 @@ namespace SCR
 		return ScriptProxy::GetNode(*nodeRef.nodeGraph, nodeRef.nodeID);
 	}
 
-	void CallStack::Push(NodeID aNodeID, NodeGraph* aNodeGraph)
+	void CallStack::Push(NodeID aNodeID, NodeGraph& aNodeGraph)
 	{
-		myCallStack.push({ aNodeID, aNodeGraph });
+		myCallStack.push(NodeRef{ aNodeID, &aNodeGraph });
 	}
 
 

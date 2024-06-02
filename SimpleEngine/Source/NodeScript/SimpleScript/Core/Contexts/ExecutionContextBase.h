@@ -7,6 +7,6 @@ namespace SCR
 
 	struct ExecutionContextBase
 	{
-		const float deltaTime = 0.01f;
+		const float deltaTime = 0.0f;
 	};
 }

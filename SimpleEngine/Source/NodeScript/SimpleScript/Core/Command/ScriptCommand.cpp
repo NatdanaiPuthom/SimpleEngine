@@ -1,34 +1,37 @@
 #include "ScriptCommand.h"
 #include "../Script.h"
+#include "Utilities/ScriptProxy.h"
+#include "ScriptCommandTracker.h"
 
 namespace SCR
 {
-	Command::Command()
-		: myName(typeid(*this).name())
+	Command::Command(const CommandContext& aContext)
+		: Command(aContext, typeid(*this).name())
 	{
 	}
 
-	Command::Command(const std::string& aName)
-		: myName(aName)
+	Command::Command(const CommandContext& aContext, const std::string& aName)
+		: myContext(aContext)
+		, myName(aName)
 	{
 	}
 
-	void Command::DoInternal(Script& aScript)
+	void Command::DoInternal()
 	{
-		if (ScriptProxy::GetCommandTracker(aScript).IsDebugPrinting() && ScriptProxy::GetCommandTracker(aScript).IsTracking())
+		if (ScriptProxy::GetCommandTracker(myContext.script).IsDebugPrinting() && ScriptProxy::GetCommandTracker(myContext.script).IsTracking())
 		{
 			std::cout << "Do Command: " << myName << std::endl;
 		}
-		Do(aScript);
+		Do();
 	}
 
-	void Command::UndoInternal(Script& aScript)
+	void Command::UndoInternal()
 	{
-		if (ScriptProxy::GetCommandTracker(aScript).IsDebugPrinting() && ScriptProxy::GetCommandTracker(aScript).IsTracking())
+		if (ScriptProxy::GetCommandTracker(myContext.script).IsDebugPrinting() && ScriptProxy::GetCommandTracker(myContext.script).IsTracking())
 		{
 			std::cout << "Undo Command: " << myName << std::endl;
 		}
-		Undo(aScript);
+		Undo();
 	}
 
 

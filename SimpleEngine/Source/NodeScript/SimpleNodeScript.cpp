@@ -1,8 +1,8 @@
 #include "SimpleNodeScript.hpp"
 
-namespace Script
+namespace SCRIPT
 {
-	Script::SimpleNodeScript::SimpleNodeScript()
+	SimpleNodeScript::SimpleNodeScript()
 		: myScriptManager(nullptr)
 	{
 	}

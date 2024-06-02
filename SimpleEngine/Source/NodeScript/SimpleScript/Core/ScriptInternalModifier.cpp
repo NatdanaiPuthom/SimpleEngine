@@ -3,19 +3,17 @@
 #include "ScriptManager.h"
 #include "CustomEvent/CustomEvent.h"
 #include "Node/NodeTypeManager.h"
+#include "Pin/PinTypeManager.h"
+#include "DataType/DataTypeManager.h"
+#include "Command/ScriptCommandTracker.h"
+#include "Command/ScriptFunctionCommand.h"
+#include "Node/NodeExecutor.h"
+#include "Utilities/ScriptLinker.h"
 
 namespace SCR
 {
-	ScriptInternalModifier::ScriptInternalModifier(Script& aScript)
-		: myScript(aScript)
-	{
-	}
 
-	ScriptInternalModifier::~ScriptInternalModifier()
-	{
-	}
-
-	CustomEventID ScriptInternalModifier::CreateCustomEvent(const std::string& aName, ScriptFoundation& aFoundation)
+	CustomEventID InternalModifier::CreateCustomEvent(const std::string& aName, ScriptFoundation& aFoundation)
 	{
 		CustomEvent customEvent(aName);
 
@@ -30,14 +28,14 @@ namespace SCR
 		{
 			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
 			{
-				ScriptProxy::GetInternalModifier(*script).UpdateNodeTypeIDSize();
+				UpdateNodeTypeIDSize(ScriptProxy::GetEventGraph(*script));
 
 			}
 		}
 		return id;
 	}
 
-	FunctionID ScriptInternalModifier::CreateFunction(const std::string& aName)
+	FunctionID InternalModifier::CreateFunction(const std::string& aName)
 	{
 		Function* function = new Function(aName);
 
@@ -52,14 +50,14 @@ namespace SCR
 		return id;
 	}
 
-	NodeID ScriptInternalModifier::CreateNode(const NodeTypeID aNodeTypeID)
+	NodeID InternalModifier::CreateNode(const NodeGraphContext& aContext, const NodeTypeID aNodeTypeID)
 	{
-		const NodeID id = GetCurrentNodeID();
-		AddNode(NodeTypeManager::CreateInstance(id, aNodeTypeID, *this), id);
+		const NodeID id = GetCurrentNodeID(aContext.nodeGraph);
+		AddNode(aContext, NodeTypeManager::CreateInstance(aContext.nodeGraph, id, aNodeTypeID), id);
 		return id;
 	}
 
-	NodeID ScriptInternalModifier::CreateNode(const std::string& aName, bool& aSuccess, bool aCreateIfNameNotFound)
+	NodeID InternalModifier::CreateNode(const NodeGraphContext& aContext, const std::string& aName, bool& aSuccess, bool aCreateIfNameNotFound)
 	{
 		NodeTypeID typeID = NodeTypeManager::GetTypeID(aName);
 		aSuccess = typeID != 0;
@@ -67,39 +65,40 @@ namespace SCR
 		{
 			return InvalidID<NodeID>();
 		}
-		return CreateNode(typeID);
+		return CreateNode(aContext, typeID);
 	}
 
-	NodeID ScriptInternalModifier::CreateGetterNode(const DataTypeID aDataTypeID)
+	NodeID InternalModifier::CreateGetterNode(const NodeGraphContext& aContext, const DataTypeID aDataTypeID)
 	{
-		const NodeID id = GetCurrentNodeID();
-		AddNode(NodeTypeManager::CreateInstance_Getter(id, aDataTypeID, *this), id);
+		const NodeID id = GetCurrentNodeID(aContext.nodeGraph);
+		AddNode(aContext, NodeTypeManager::CreateInstance_Getter(aContext.nodeGraph, id, aDataTypeID), id);
 		return id;
 	}
 
-	NodeID ScriptInternalModifier::CreateSetterNode(const DataTypeID aDataTypeID)
+	NodeID InternalModifier::CreateSetterNode(const NodeGraphContext& aContext, const DataTypeID aDataTypeID)
 	{
-		const NodeID id = GetCurrentNodeID();
-		AddNode(NodeTypeManager::CreateInstance_Setter(id, aDataTypeID, *this), id);
+		const NodeID id = GetCurrentNodeID(aContext.nodeGraph);
+		AddNode(aContext, NodeTypeManager::CreateInstance_Setter(aContext.nodeGraph, id, aDataTypeID), id);
 		return id;
 	}
 
-	NodeID ScriptInternalModifier::CreateOperatorNode(const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID)
+	NodeID InternalModifier::CreateOperatorNode(const NodeGraphContext& aContext, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID)
 	{
-		const NodeID id = GetCurrentNodeID();
-		AddNode(NodeTypeManager::CreateInstance_Operator(id, aOperatorTrait, aDataTypeID, *this), id);
+		const NodeID id = GetCurrentNodeID(aContext.nodeGraph);
+		AddNode(aContext, NodeTypeManager::CreateInstance_Operator(aContext.nodeGraph, id, aOperatorTrait, aDataTypeID), id);
 		return id;
 	}
 
-	void ScriptInternalModifier::AddNode(Node&& aNode, const NodeID aNodeID)
+	void InternalModifier::AddNode(const NodeGraphContext& aContext, Node&& aNode, const NodeID aNodeID)
 	{
-		std::vector<Node>& nodes = ScriptProxy::GetNodes(myScript);
-		std::vector<std::vector<NodeID>>& nodeIDByTypeIDs = ScriptProxy::GetNodeIDsByNodeTypeContainer(myScript);
+		std::vector<Node>& nodes = ScriptProxy::GetNodes(aContext.nodeGraph);
+		std::vector<std::vector<NodeID>>& nodeIDsByTypeID = ScriptProxy::GetNodeIDsByNodeTypeContainer(aContext.nodeGraph);
 
 		nodes.emplace_back(std::move(aNode));
 
+		nodeIDsByTypeID.resize(NodeTypeManager::GetNodeTypes().size());
 		Node& createdNode = nodes.back();
-		nodeIDByTypeIDs.at(createdNode.typeID).push_back(aNodeID);
+		nodeIDsByTypeID[createdNode.typeID].push_back(aNodeID);
 
 		struct CreateNodeData
 		{
@@ -108,36 +107,36 @@ namespace SCR
 
 		data.nodeID = aNodeID;
 
-		ScriptProxy::GetCommandTracker(myScript).DoCommand<FunctionCommand<CreateNodeData>>(data,
-			[](const CreateNodeData& aData, Script& aScript) -> void
+		ScriptProxy::GetCommandTracker(aContext.script).DoCommand<FunctionCommand<CreateNodeData>>(CommandContext{ aContext.script, &aContext.nodeGraph },data,
+			[](const CreateNodeData& aData, const CommandContext& aContext) -> void
 			{
-				Node& node = ScriptProxy::GetNodeRef(aScript, aData.nodeID);
+				Node& node = ScriptProxy::GetNodeRef(*aContext.nodeGraph, aData.nodeID);
 
 				node.isDestroyed = false;
 
-				ScriptProxy::GetNodeExecutor(aScript).Register(aData.nodeID);
+				ScriptProxy::GetNodeExecutor(aContext.script).BindToEvent(NodeRef{ aData.nodeID, aContext.nodeGraph });
 			},
-			[](const CreateNodeData& aData, Script& aScript) -> void
+			[](const CreateNodeData& aData, const CommandContext& aContext) -> void
 			{
-				Node& node = ScriptProxy::GetNodeRef(aScript, aData.nodeID);
+				Node& node = ScriptProxy::GetNodeRef(*aContext.nodeGraph, aData.nodeID);
 
 				node.isDestroyed = true;
 
-				ScriptProxy::GetNodeExecutor(aScript).Unregister(aData.nodeID);
+				ScriptProxy::GetNodeExecutor(aContext.script).UnbindFromEvent(NodeRef{ aData.nodeID, aContext.nodeGraph });
 			}, "Create Node"
 		);
 	}
 
-	PinID ScriptInternalModifier::CreateInputPin(const NodeID aNodeID, const PinTypeID aPinTypeID)
+	PinID InternalModifier::CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID)
 	{
 		DataTypeID dataTypeID = PinTypeManager::GetPinType(aPinTypeID).dataTypeID;
 
-		MemoryPoolID memoryPoolID = DataTypeManager::AllocateData(dataTypeID, ScriptProxy::GetScriptMemoryPool(myScript));
+		MemoryPoolID memoryPoolID = DataTypeManager::AllocateData(dataTypeID, ScriptProxy::GetGraphMemoryPool(aNodeGraph));
 
-		return CreateInputPin(aNodeID, aPinTypeID, memoryPoolID);
+		return CreateInputPin(aNodeGraph, aNodeID, aPinTypeID, memoryPoolID);
 	}
 
-	std::vector<PinID> ScriptInternalModifier::CreateInputPins(const NodeID aNodeID, const NodeTypeID aNodeTypeID, size_t aStartIndex)
+	std::vector<PinID> InternalModifier::CreateInputPins(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID, size_t aStartIndex)
 	{
 		const NodeType& nodeType = NodeTypeManager::GetNodeType(aNodeTypeID);
 		const std::vector<PinTypeID>& pinTypeIDs = nodeType.nodeRecipe.inputPinTypeIDs;
@@ -145,24 +144,24 @@ namespace SCR
 
 		for (size_t i = aStartIndex; i < pinTypeIDs.size(); i++)
 		{
-			pinsIDs.push_back(CreateInputPin(aNodeID, pinTypeIDs[i]));
+			pinsIDs.push_back(CreateInputPin(aNodeGraph, aNodeID, pinTypeIDs[i]));
 		}
 
 		return pinsIDs;
 	}
 
-	PinID ScriptInternalModifier::CreateOutputPin(const NodeID aNodeID, const PinTypeID aPinTypeID)
+	PinID InternalModifier::CreateOutputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID)
 	{
 		DataTypeID dataTypeID = PinTypeManager::GetPinType(aPinTypeID).dataTypeID;
 
-		MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(myScript);
+		MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(aNodeGraph);
 		MemoryPoolID memoryID = DataTypeManager::AllocateData(dataTypeID, memoryPool);
 
-		return CreateOutputPin(aNodeID, aPinTypeID, memoryID);
+		return CreateOutputPin(aNodeGraph, aNodeID, aPinTypeID, memoryID);
 	}
 
 
-	std::vector<PinID> ScriptInternalModifier::CreateOutputPins(const NodeID aNodeID, const NodeTypeID aNodeTypeID, const size_t aStartIndex)
+	std::vector<PinID> InternalModifier::CreateOutputPins(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID, const size_t aStartIndex)
 	{
 		const NodeType& nodeType = NodeTypeManager::GetNodeType(aNodeTypeID);
 		const std::vector<PinTypeID>& pinTypeIDs = nodeType.nodeRecipe.outputPinTypeIDs;
@@ -170,30 +169,30 @@ namespace SCR
 
 		for (size_t i = aStartIndex; i < pinTypeIDs.size(); i++)
 		{
-			pinsIDs.push_back(CreateOutputPin(aNodeID, pinTypeIDs[i]));
+			pinsIDs.push_back(CreateOutputPin(aNodeGraph, aNodeID, pinTypeIDs[i]));
 		}
 
 		return pinsIDs;
 	}
 
 
-	PinID ScriptInternalModifier::CreateInputPin(const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID)
+	PinID InternalModifier::CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID)
 	{
-		std::vector<Pin>& pins = ScriptProxy::GetPins(myScript);
+		std::vector<Pin>& pins = ScriptProxy::GetPins(aNodeGraph);
 		const PinID id = static_cast<PinID>(pins.size());
 		pins.push_back(Pin{ aNodeID, aPinTypeID, aMemoryPoolID });
 		return id;
 	}
 
-	PinID ScriptInternalModifier::CreateOutputPin(const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID)
+	PinID InternalModifier::CreateOutputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID)
 	{
-		std::vector<Pin>& pins = ScriptProxy::GetPins(myScript);
+		std::vector<Pin>& pins = ScriptProxy::GetPins(aNodeGraph);
 		const PinID id = static_cast<PinID>(pins.size());
 		pins.push_back(Pin{ aNodeID, aPinTypeID, aMemoryPoolID });
 		return id;
 	}
 
-	void ScriptInternalModifier::RebindLink(const PinID aInputPinID, const PinID aNewOutputPinID)
+	void InternalModifier::RebindLink(const NodeGraphContext& aContext, const PinID aInputPinID, const PinID aNewOutputPinID)
 	{
 		assert(aInputPinID != InvalidID<PinID>());
 
@@ -205,18 +204,18 @@ namespace SCR
 
 		data.createdLink = { aInputPinID, aNewOutputPinID };
 
-		const Pin& inputPin = ScriptProxy::GetPin(myScript, aInputPinID);
+		const Pin& inputPin = ScriptProxy::GetPin(aContext.nodeGraph, aInputPinID);
 		if (!inputPin.connectedPinIDs.empty())
 		{
 			data.oldOutputPinID = inputPin.connectedPinIDs[0];
 
 		}
 
-		ScriptProxy::GetCommandTracker(myScript).DoCommand<FunctionCommand<RebindLinkData>>(data,
-			[](const RebindLinkData& aData, Script& aScript) -> void
+		ScriptProxy::GetCommandTracker(aContext.script).DoCommand<FunctionCommand<RebindLinkData>>(CommandContext{ aContext.script, &aContext.nodeGraph}, data,
+			[](const RebindLinkData& aData, const CommandContext& aContext) -> void
 			{
 
-				Pin& inputPin = ScriptProxy::GetPinRef(aScript, aData.createdLink.inputPinID);
+				Pin& inputPin = ScriptProxy::GetPinRef(*aContext.nodeGraph, aData.createdLink.inputPinID);
 
 				if (aData.createdLink.outputPinID == InvalidID<PinID>())
 				{
@@ -230,34 +229,34 @@ namespace SCR
 
 				if (aData.oldOutputPinID != InvalidID<PinID>())
 				{
-					Pin& oldOutputPin = ScriptProxy::GetPinRef(aScript, aData.oldOutputPinID);
+					Pin& oldOutputPin = ScriptProxy::GetPinRef(*aContext.nodeGraph, aData.oldOutputPinID);
 					std::erase(oldOutputPin.connectedPinIDs, aData.createdLink.inputPinID);
 
 				}
 
 				if (aData.createdLink.outputPinID != InvalidID<PinID>())
 				{
-					Pin& outputPin = ScriptProxy::GetPinRef(aScript, aData.createdLink.outputPinID);
+					Pin& outputPin = ScriptProxy::GetPinRef(*aContext.nodeGraph, aData.createdLink.outputPinID);
 
 					outputPin.connectedPinIDs.push_back(aData.createdLink.inputPinID);
 				}
 			},
-			[](const RebindLinkData& aData, Script& aScript)
+			[](const RebindLinkData& aData, const CommandContext& aContext)
 			{
-				ScriptProxy::GetCommandTracker(aScript).IsTracking() = false;
-				ScriptProxy::GetInternalModifier(aScript).RebindLink(aData.createdLink.inputPinID, aData.oldOutputPinID);
-				ScriptProxy::GetCommandTracker(aScript).IsTracking() = true;
+				ScriptProxy::GetCommandTracker(aContext.script).IsTracking() = false;
+				InternalModifier::RebindLink(NodeGraphContext{ *aContext.nodeGraph, aContext.script }, aData.createdLink.inputPinID, aData.oldOutputPinID);
+				ScriptProxy::GetCommandTracker(aContext.script).IsTracking() = true;
 			}, "Rebind Link"
 		);
 
 	}
 
-	void ScriptInternalModifier::UpdateNodeTypeIDSize()
+	void InternalModifier::UpdateNodeTypeIDSize(NodeGraph& aNodeGraph)
 	{
-		ScriptProxy::GetNodeIDsByNodeTypeContainer(myScript).resize(NodeTypeManager::GetNodeTypes().size());
+		ScriptProxy::GetNodeIDsByNodeTypeContainer(aNodeGraph).resize(NodeTypeManager::GetNodeTypes().size());
 	}
 
-	void ScriptInternalModifier::BindVariable(const NodeID aNodeID, const VarID aVarID)
+	void InternalModifier::BindVariable(Script& aScript, const NodeID aNodeID, const VarID aVarID)
 	{
 		struct BindVarData
 		{
@@ -267,22 +266,22 @@ namespace SCR
 
 		data.nodeID = aNodeID;
 		data.varID = aVarID;
-		ScriptProxy::GetCommandTracker(myScript).DoCommand<FunctionCommand<BindVarData>>(data,
-			[](const BindVarData& aData, Script& aScript) -> void
+		ScriptProxy::GetCommandTracker(aScript).DoCommand<FunctionCommand<BindVarData>>(CommandContext{ aScript }, data,
+			[](const BindVarData& aData, const CommandContext& aContext) -> void
 			{
-				ScriptProxy::GetNodeIDToVarIDMap(aScript)[aData.nodeID] = aData.varID;
+				ScriptProxy::GetNodeIDToVarIDMap(aContext.script)[aData.nodeID] = aData.varID;
 			},
-			[](const BindVarData& aData, Script& aScript) -> void
+			[](const BindVarData& aData, const CommandContext& aContext) -> void
 			{
-				ScriptProxy::GetNodeIDToVarIDMap(aScript).erase(aData.nodeID);
+				ScriptProxy::GetNodeIDToVarIDMap(aContext.script).erase(aData.nodeID);
 
 			}, "Bind Node To Variable"
 		);
 	}
 
-	void ScriptInternalModifier::UnbindVariable(const NodeID aNodeID)
+	void InternalModifier::UnbindVariable(Script& aScript, const NodeID aNodeID)
 	{
-		if (!ScriptProxy::GetNodeIDToVarIDMap(myScript).contains(aNodeID))
+		if (!ScriptProxy::GetNodeIDToVarIDMap(aScript).contains(aNodeID))
 		{
 			return;
 		}
@@ -294,28 +293,28 @@ namespace SCR
 		} data;
 
 		data.nodeID = aNodeID;
-		data.varID = ScriptProxy::GetNodeIDToVarIDMap(myScript).at(data.nodeID);
+		data.varID = ScriptProxy::GetNodeIDToVarIDMap(aScript).at(data.nodeID);
 
-		ScriptProxy::GetCommandTracker(myScript).DoCommand<FunctionCommand<UnbindVarData>>(data,
-			[](const UnbindVarData& aData, Script& aScript) -> void
+		ScriptProxy::GetCommandTracker(aScript).DoCommand<FunctionCommand<UnbindVarData>>(CommandContext{ aScript }, data,
+			[](const UnbindVarData& aData, const CommandContext& aContext) -> void
 			{
-				ScriptProxy::GetNodeIDToVarIDMap(aScript).erase(aData.nodeID);
+				ScriptProxy::GetNodeIDToVarIDMap(aContext.script).erase(aData.nodeID);
 			},
-			[](const UnbindVarData& aData, Script& aScript) -> void
+			[](const UnbindVarData& aData, const CommandContext& aContext) -> void
 			{
-				ScriptProxy::GetNodeIDToVarIDMap(aScript)[aData.nodeID] = aData.varID;
+				ScriptProxy::GetNodeIDToVarIDMap(aContext.script)[aData.nodeID] = aData.varID;
 
 			}
 		);
 	}
 
-	Link ScriptInternalModifier::ReplaceOperatorNode(PinID aReplacePinID, PinID aConnectedPinID)
+	Link InternalModifier::ReplaceOperatorNode(const NodeGraphContext& aContext, PinID aReplacePinID, PinID aConnectedPinID)
 	{
-		const Pin& replacePin = ScriptProxy::GetPin(myScript, aReplacePinID);
-		const Pin& connectedPin = ScriptProxy::GetPin(myScript, aConnectedPinID);
+		const Pin& replacePin = ScriptProxy::GetPin(aContext.nodeGraph, aReplacePinID);
+		const Pin& connectedPin = ScriptProxy::GetPin(aContext.nodeGraph, aConnectedPinID);
 
 		const NodeID replaceNodeID = replacePin.nodeID;
-		Node& replaceNode = ScriptProxy::GetNodeRef(myScript, replaceNodeID);
+		Node& replaceNode = ScriptProxy::GetNodeRef(aContext.nodeGraph, replaceNodeID);
 
 		const NodeType& nodeType = NodeTypeManager::GetNodeType(replaceNode.typeID);
 
@@ -328,50 +327,50 @@ namespace SCR
 			{
 				return Link{};
 			}
-			ScriptProxy::GetCommandTracker(myScript).BeginComposite("Replace node composite");
-			NodeID createdNodeID = CreateOperatorNode(nodeType.nodeRecipe.operatorTrait, connectedPinType.dataTypeID);
+			ScriptProxy::GetCommandTracker(aContext.script).BeginComposite(aContext.script, "Replace node composite");
+			NodeID createdNodeID = CreateOperatorNode(aContext, nodeType.nodeRecipe.operatorTrait, connectedPinType.dataTypeID);
 
 
-			myScript.GetModifier().DestroyNode(replaceNodeID);
+			aContext.script.GetModifier().DestroyNode(replaceNodeID);
 
-			Node& createdNode = ScriptProxy::GetNodeRef(myScript, createdNodeID);
+			Node& createdNode = ScriptProxy::GetNodeRef(aContext.nodeGraph, createdNodeID);
 			createdNode.position = replaceNode.position;
 
 			Link createdLink;
 
 
 			{ // Link new pin
-				size_t pinIndex = ScriptLinker::GetPinIndex(myScript, aReplacePinID, replacePinType.flowType);
+				size_t pinIndex = ScriptLinker::GetPinIndex(aContext.nodeGraph, aReplacePinID, replacePinType.flowType);
 
 				const PinID createdPinConnectedID = replacePinType.flowType == ePinFlowType::Input ? createdNode.inputPins[pinIndex] : createdNode.outputPins[pinIndex];
 
-				createdLink = myScript.GetModifier().TryCreateLink(aConnectedPinID, createdPinConnectedID);
+				createdLink = aContext.script.GetModifier().TryCreateLink(aConnectedPinID, createdPinConnectedID);
 			}
 
 			{ // Link previously linked pins
 
-				const Node& destroyedNode = ScriptProxy::GetNode(myScript, replaceNodeID);
+				const Node& destroyedNode = ScriptProxy::GetNode(aContext.nodeGraph, replaceNodeID);
 
 				for (size_t pinIndex = 0; pinIndex < destroyedNode.inputPins.size(); ++pinIndex)
 				{
-					const Pin& destroyedInputPin = ScriptProxy::GetPin(myScript, destroyedNode.inputPins[pinIndex]);
+					const Pin& destroyedInputPin = ScriptProxy::GetPin(aContext.nodeGraph, destroyedNode.inputPins[pinIndex]);
 
 					if (!destroyedInputPin.connectedPinIDs.empty())
 					{
-						myScript.GetModifier().TryCreateLink(destroyedInputPin.connectedPinIDs[0], ScriptLinker::GetPinID(myScript, createdNodeID, pinIndex, ePinFlowType::Input));
+						aContext.script.GetModifier().TryCreateLink(destroyedInputPin.connectedPinIDs[0], ScriptLinker::GetPinID(aContext.nodeGraph, createdNodeID, pinIndex, ePinFlowType::Input));
 					}
 
 				}
 
 				for (size_t pinIndex = 0; pinIndex < destroyedNode.outputPins.size(); ++pinIndex)
 				{
-					const Pin& destroyedOutputPin = ScriptProxy::GetPin(myScript, destroyedNode.outputPins.at(pinIndex));
+					const Pin& destroyedOutputPin = ScriptProxy::GetPin(aContext.nodeGraph, destroyedNode.outputPins.at(pinIndex));
 
 					for (PinID connectedInputPinID : destroyedOutputPin.connectedPinIDs)
 					{
 						if (connectedInputPinID != InvalidID<PinID>())
 						{
-							myScript.GetModifier().TryCreateLink(connectedInputPinID, ScriptLinker::GetPinID(myScript, createdNodeID, pinIndex, ePinFlowType::Output));
+							aContext.script.GetModifier().TryCreateLink(connectedInputPinID, ScriptLinker::GetPinID(aContext.nodeGraph, createdNodeID, pinIndex, ePinFlowType::Output));
 						}
 
 					}
@@ -379,13 +378,13 @@ namespace SCR
 				}
 			}
 
-			ScriptProxy::GetCommandTracker(myScript).EndComposite();
+			ScriptProxy::GetCommandTracker(aContext.script).EndComposite();
 			return createdLink;
 		}
 		return Link{};
 	}
-	NodeID ScriptInternalModifier::GetCurrentNodeID() const
+	NodeID InternalModifier::GetCurrentNodeID(NodeGraph& aNodeGraph)
 	{
-		return static_cast<NodeID>(ScriptProxy::GetNodes(myScript).size());
+		return static_cast<NodeID>(ScriptProxy::GetNodes(aNodeGraph).size());
 	}
 }

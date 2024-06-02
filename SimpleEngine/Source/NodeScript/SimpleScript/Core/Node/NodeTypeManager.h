@@ -11,11 +11,12 @@ namespace SCR
 {
 	class Script;
 	class ScriptFoundation;
+	struct NodeGraphContext;
 
 	class NodeTypeManager
 	{
 		friend class ScriptProxy;
-		friend class ScriptInternalModifier;
+		friend class InternalModifier;
 	public:
 		static NodeTypeID Register(NodeType&& aNodeType);
 
@@ -24,11 +25,11 @@ namespace SCR
 
 		static void SetOperatorNodeTypeID(const DataTypeID aDataTypeID, const eNodeOperatorTrait anOperatorTrait, const NodeTypeID anID);
 
-		static Node CreateInstance_Getter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier);
-		static Node CreateInstance_Setter(const NodeID aNodeID, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier);
-		static Node CreateInstance_Operator(const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, ScriptInternalModifier& aModifier);
+		static Node CreateInstance_Getter(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID);
+		static Node CreateInstance_Setter(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID);
+		static Node CreateInstance_Operator(NodeGraph& aNodeGraph, const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID);
 
-		static Node CreateInstance(const NodeID aNodeID, const NodeTypeID aNodeTypeID, ScriptInternalModifier& aModifier);
+		static Node CreateInstance(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID);
 
 		static bool CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID);
 

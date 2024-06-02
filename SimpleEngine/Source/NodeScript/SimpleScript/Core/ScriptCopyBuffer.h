@@ -17,6 +17,8 @@ namespace SCR
 		ScriptVec2 diffFromAvg;
 	};
 
+	class NodeGraph;
+
 	struct CopyBuffer
 	{
 		std::vector<NodeCopy> nodes;

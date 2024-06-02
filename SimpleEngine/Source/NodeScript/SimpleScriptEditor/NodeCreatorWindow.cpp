@@ -2,6 +2,9 @@
 #include "SimpleScriptEditor/VisualScriptingWindow.h"
 #include "SimpleScript/Core/Script.h"
 #include "SimpleScript/Core/Node/NodeTypeManager.h"
+#include "SimpleScript/Core/Pin/PinTypeManager.h"
+#include "SimpleScript/Core/DataType/DataTypeManager.h"
+#include "SimpleScript/Core/Utilities/ScriptProxy.h"
 
 using namespace SCRIPT;
 

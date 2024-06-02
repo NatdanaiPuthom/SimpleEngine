@@ -35,14 +35,14 @@ namespace SCR
 	template<typename T>
 	inline T GetterNode(const InternalExecutionContext* aContext)
 	{
-		const NodeID nodeID = aContext->GetNodeData().nodeID;
-		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aContext->script);
+		const NodeID nodeID = aContext->GetNodeData().nodeRef.nodeID;
+		const VariableManager& variableManager = ScriptProxy::GetVariableManager(*aContext->script);
 
 		VarID varID = variableManager.GetVariableIDByNodeID(nodeID);
 
-		MemoryPoolID runtimeID = ScriptProxy::GetVariable(aContext->script, varID).runtimeMemoryID;
+		MemoryPoolID runtimeID = ScriptProxy::GetVariable(*aContext->script, varID).runtimeMemoryID;
 
-		MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(aContext->script);
+		MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(*aContext->script);
 		const T& output = memoryPool.At<T>(runtimeID);
 		return output;
 	}
@@ -50,14 +50,14 @@ namespace SCR
 	template<typename T>
 	inline void SetterNode(const InternalExecutionContext* aContext, const T aValue)
 	{
-		const NodeID nodeID = aContext->GetNodeData().nodeID;
-		VariableManager& variableManager = ScriptProxy::GetVariableManager(aContext->script);
+		const NodeID nodeID = aContext->GetNodeData().nodeRef.nodeID;
+		VariableManager& variableManager = ScriptProxy::GetVariableManager(*aContext->script);
 
 		VarID varID = variableManager.GetVariableIDByNodeID(nodeID);
 
-		MemoryPoolID runtimeID = ScriptProxy::GetVariable(aContext->script, varID).runtimeMemoryID;
+		MemoryPoolID runtimeID = ScriptProxy::GetVariable(*aContext->script, varID).runtimeMemoryID;
 
-		MemoryPool& memoryPool = ScriptProxy::GetScriptMemoryPool(aContext->script);
+		MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(*aContext->script);
 		memoryPool.At<T>(runtimeID) = aValue;
 	}
 

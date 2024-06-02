@@ -3,6 +3,8 @@
 #include "../Script.h"
 #include "../ScriptManager.h"
 #include "../ScriptInternalModifier.h"
+#include "../Node/NodeManager.h"
+#include "../Pin/PinManager.h"
 
 namespace SCR
 {
@@ -46,14 +48,19 @@ namespace SCR
 		return aFoundation.myScriptManagers;
 	}
 
-	MemoryPool& ScriptProxy::GetScriptMemoryPool(Script& aScript)
+	MemoryPool& ScriptProxy::GetGraphMemoryPool(NodeGraph& aNodeGraph)
 	{
-		return aScript.myMemoryPool;
+		return aNodeGraph.myMemoryPool;
 	}
 
-	const MemoryPool& ScriptProxy::GetScriptMemoryPool(const Script& aScript)
+	const MemoryPool& ScriptProxy::GetGraphMemoryPool(const NodeGraph& aNodeGraph)
 	{
-		return aScript.myMemoryPool;
+		return aNodeGraph.myMemoryPool;
+	}
+
+	MemoryPool& ScriptProxy::GetVariableMemoryPool(Script& aScript)
+	{
+		return *aScript.myVariableManager.myMemoryPool;
 	}
 
 	const NodeManager& ScriptProxy::GetNodeManager(const Script& aScript)
@@ -66,9 +73,14 @@ namespace SCR
 		return aScript.myEventGraph;
 	}
 
+	const NodeGraph& ScriptProxy::GetEventGraph(const Script& aScript)
+	{
+		return aScript.myEventGraph;
+	}
+
 	NodeExecutor& ScriptProxy::GetNodeExecutor(Script& aScript)
 	{
-		return aScript.myExecutor;
+		return *aScript.myScriptManager.myFoundation.myNodeExecutor;
 	}
 
 	VariableManager& ScriptProxy::GetVariableManager(Script& aScript)
@@ -83,12 +95,12 @@ namespace SCR
 
 	CommandTracker& ScriptProxy::GetCommandTracker(Script& aScript)
 	{
-		return aScript.myCommandTracker;
+		return *aScript.myCommandTracker;
 	}
 
 	const CommandTracker& ScriptProxy::GetCommandTracker(const Script& aScript)
 	{
-		return aScript.myCommandTracker;
+		return *aScript.myCommandTracker;
 	}
 
 	const std::vector<Variable>& ScriptProxy::GetVariables(const Script& aScript)
@@ -96,14 +108,9 @@ namespace SCR
 		return aScript.myVariableManager.myVariables;
 	}
 
-	const std::vector<Pin>& ScriptProxy::GetPins(const Script& aScript)
+	const std::vector<Pin>& ScriptProxy::GetPins(const NodeGraph& aNodeGraph)
 	{
-		return aScript.myEventGraph.myPinManager->myPins;
-	}
-
-	const Node& ScriptProxy::GetNode(const Script& aScript, NodeID aNodeID)
-	{
-		return aScript.myEventGraph.myNodeManager->myNodes[aNodeID];
+		return aNodeGraph.myPinManager->myPins;
 	}
 
 	const Node& ScriptProxy::GetNode(const NodeGraph& aNodeGraph, NodeID aNodeID)
@@ -111,9 +118,9 @@ namespace SCR
 		return aNodeGraph.myNodeManager->myNodes[aNodeID];
 	}
 
-	const Pin& ScriptProxy::GetPin(const Script& aScript, PinID aPinID)
+	const Pin& ScriptProxy::GetPin(const NodeGraph& aNodeGraph, PinID aPinID)
 	{
-		return aScript.myEventGraph.myPinManager->myPins[aPinID];
+		return aNodeGraph.myPinManager->myPins[aPinID];
 	}
 
 	const Variable& ScriptProxy::GetVariable(const Script& aScript, const VarID aVarID)
@@ -126,19 +133,19 @@ namespace SCR
 		return aScript.myEventGraph.myNodeManager->myNodeIDsByNodeTypeID[aNodeTypeID];
 	}
 
-	std::vector<std::vector<NodeID>>& ScriptProxy::GetNodeIDsByNodeTypeContainer(Script& aScript)
+	const std::vector<NodeID>& ScriptProxy::GetNodeIDsByNodeType(const NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID)
 	{
-		return aScript.myEventGraph.myNodeManager->myNodeIDsByNodeTypeID;
+		return aNodeGraph.myNodeManager->myNodeIDsByNodeTypeID[aNodeTypeID];
 	}
 
-	ScriptInternalModifier& ScriptProxy::GetInternalModifier(Script& aScript)
+	std::vector<std::vector<NodeID>>& ScriptProxy::GetNodeIDsByNodeTypeContainer(NodeGraph& aNodeGraph)
 	{
-		return aScript.GetInternalModifier();
+		return aNodeGraph.myNodeManager->myNodeIDsByNodeTypeID;
 	}
 
-	std::vector<Node>& ScriptProxy::GetNodes(Script& aScript)
+	std::vector<Node>& ScriptProxy::GetNodes(NodeGraph& aNodeGraph)
 	{
-		return aScript.myEventGraph.myNodeManager->myNodes;
+		return aNodeGraph.myNodeManager->myNodes;
 	}
 
 	std::vector<Variable>& ScriptProxy::GetVariablesRef(Script& aScript)
@@ -146,19 +153,19 @@ namespace SCR
 		return aScript.myVariableManager.myVariables;
 	}
 
-	std::vector<Pin>& ScriptProxy::GetPins(Script& aScript)
+	std::vector<Pin>& ScriptProxy::GetPins(NodeGraph& aNodeGraph)
 	{
-		return aScript.myEventGraph.myPinManager->myPins;
+		return aNodeGraph.myPinManager->myPins;
 	}
 
-	Node& ScriptProxy::GetNodeRef(Script& aScript, NodeID aNodeID)
+	Node& ScriptProxy::GetNodeRef(NodeGraph& aNodeGraph, NodeID aNodeID)
 	{
-		return aScript.myEventGraph.myNodeManager->myNodes[aNodeID];
+		return aNodeGraph.myNodeManager->myNodes[aNodeID];
 	}
 
-	Pin& ScriptProxy::GetPinRef(Script& aScript, const PinID aPinID)
+	Pin& ScriptProxy::GetPinRef(NodeGraph& aNodeGraph, const PinID aPinID)
 	{
-		return aScript.myEventGraph.myPinManager->myPins[aPinID];
+		return aNodeGraph.myPinManager->myPins[aPinID];
 	}
 
 	Variable& ScriptProxy::GetVariableRef(Script& aScript, const VarID aVarID)
@@ -166,9 +173,9 @@ namespace SCR
 		return aScript.myVariableManager.myVariables[aVarID];
 	}
 
-	std::unordered_map<NodeID, std::any>& ScriptProxy::GetNodeStateMap(Script& aScript)
+	std::unordered_map<NodeID, std::any>& ScriptProxy::GetNodeStateMap(NodeGraph& aNodeGraph)
 	{
-		return aScript.myEventGraph.myNodeManager->myInternalNodeData;
+		return aNodeGraph.myNodeManager->myInternalNodeData;
 	}
 
 	std::unordered_map<NodeID, VarID>& ScriptProxy::GetNodeIDToVarIDMap(Script& aScript)

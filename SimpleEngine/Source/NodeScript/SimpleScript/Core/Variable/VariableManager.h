@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 namespace SCR
 {
@@ -16,7 +17,7 @@ namespace SCR
 		bool isDestroyed = false;
 	};
 
-	class Script;
+	class MemoryPool;
 
 	class VariableManager
 	{
@@ -36,6 +37,7 @@ namespace SCR
 
 		std::unordered_map<NodeID, VarID> myNodeIDToVarID;
 
+		std::unique_ptr<MemoryPool> myMemoryPool;
 
 	};
 	

@@ -26,7 +26,7 @@ namespace SCR
 	class Node;
 	struct Pin;
 	struct Variable;
-	class ScriptInternalModifier;
+	class InternalModifier;
 	class NodeGraph;
 	class CallStack;
 	struct CopyBuffer;
@@ -34,7 +34,7 @@ namespace SCR
 	class ScriptProxy
 	{
 		friend class ScriptModifier;
-		friend class ScriptInternalModifier;
+		friend class InternalModifier;
 		ScriptProxy() = delete;
 	public:
 		
@@ -51,13 +51,16 @@ namespace SCR
 
 		static const std::vector<std::unique_ptr<ScriptManager>>& GetScriptManagers(ScriptFoundation& aFoundation);
 
-		static MemoryPool& GetScriptMemoryPool(Script& aScript);
-		static const MemoryPool& GetScriptMemoryPool(const Script& aScript);
+		static MemoryPool& GetGraphMemoryPool(NodeGraph& aNodeGraph);
+		static const MemoryPool& GetGraphMemoryPool(const NodeGraph& aNodeGraph);
+
+		static MemoryPool& GetVariableMemoryPool(Script& aScript);
+		static const MemoryPool& GetVariableMemoryPool(const Script& aScript);
 
 		static const NodeManager& GetNodeManager(const Script& aScript);
 
 		static NodeGraph& GetEventGraph(Script& aScript);
-
+		static const NodeGraph& GetEventGraph(const Script& aScript);
 
 		static NodeExecutor& GetNodeExecutor(Script& aScript);
 
@@ -68,15 +71,25 @@ namespace SCR
 		static const CommandTracker& GetCommandTracker(const Script& aScript);
 		
 		static const std::vector<Variable>& GetVariables(const Script& aScript);
-		static const std::vector<Pin>& GetPins(const Script& aScript);
+		static const std::vector<Pin>& GetPins(const NodeGraph& aNodeGraph);
 
-		static const Node& GetNode(const Script& aScript, NodeID aNodeID);
 		static const Node& GetNode(const NodeGraph& aNodeGraph, NodeID aNodeID);
-		static const Pin& GetPin(const Script& aScript, PinID aPinID);
+		static const Pin& GetPin(const NodeGraph& aNodeGraph, PinID aPinID);
 		static const Variable& GetVariable(const Script& aScript, const VarID aVarID);
 
 		static const std::vector<NodeID>& GetNodeIDsByNodeType(const Script& aScript, const NodeTypeID aNodeTypeID);
-		static std::vector<std::vector<NodeID>>& GetNodeIDsByNodeTypeContainer(Script& aScript);
+		static const std::vector<NodeID>& GetNodeIDsByNodeType(const NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID);
+		static std::vector<std::vector<NodeID>>& GetNodeIDsByNodeTypeContainer(NodeGraph& aNodeGraph);
+
+		static std::unordered_map<NodeID, std::any>& GetNodeStateMap(NodeGraph& aNodeGraph);
+
+		template<typename T>
+		static T& GetNodeState(NodeGraph& aNodeGraph, NodeID aNodeID)
+		{
+			std::any& anyData = GetNodeStateMap(aNodeGraph).at(aNodeID);
+			T& data = std::any_cast<T&>(anyData);
+			return data;
+		}
 
 #pragma region Types
 
@@ -87,19 +100,16 @@ namespace SCR
 		
 	private:
 
-		static ScriptInternalModifier& GetInternalModifier(Script& aScript);
-
-		static std::vector<Node>& GetNodes(Script& aScript);
+		static std::vector<Node>& GetNodes(NodeGraph& aNodeGraph);
 		static std::vector<Variable>& GetVariablesRef(Script& aScript);
 
-		static std::vector<Pin>& GetPins(Script& aScript);
+		static std::vector<Pin>& GetPins(NodeGraph& aNodeGraph);
 
-		static Node& GetNodeRef(Script& aScript, const NodeID aNodeID);
-		static Pin& GetPinRef(Script& aScript, const PinID aPinID);
+		static Node& GetNodeRef(NodeGraph& aNodeGraph, const NodeID aNodeID);
+		static Pin& GetPinRef(NodeGraph& aNodeGraph, const PinID aPinID);
 		static Variable& GetVariableRef(Script& aScript, const VarID aVarID);
 
 
-		static std::unordered_map<NodeID, std::any>& GetNodeStateMap(Script& aScript);
 
 		static std::unordered_map<NodeID, VarID>& GetNodeIDToVarIDMap(Script& aScript);
 

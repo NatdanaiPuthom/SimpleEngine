@@ -4,7 +4,7 @@
 #include "NodeScript/SimpleScript/Core/Serialization/ScriptLoader.h"
 #include "NodeScript/SimpleScript/SimpleGameNodes.h"
 
-namespace Script
+namespace SCRIPT
 {
 	class SimpleNodeScript final
 	{

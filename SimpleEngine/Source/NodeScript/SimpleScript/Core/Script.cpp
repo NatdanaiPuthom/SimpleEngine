@@ -1,32 +1,27 @@
 #include "Script.h"
+#include "Utilities/ScriptProxy.h"
+#include "Node/NodeExecutor.h"
+#include "Command/ScriptCommandTracker.h"
 
 namespace SCR
 {
 
 	Script::Script(ScriptManager& aScriptManager, const std::string& aName)
 		: myName(aName)
-		, myInternalModifier(*this)
-		, myExecutor(myInternalModifier)
 		, myModifier(*this)
-		, myCommandTracker(*this)
-		, myMemoryPool(200)
+		, myCommandTracker(std::make_unique<CommandTracker>())
 		, myScriptManager(aScriptManager)
 	{
-		myInternalModifier.UpdateNodeTypeIDSize();
 	}
 
 	Script::~Script()
 	{
 	}
 
-	void Script::TriggerEvent(const std::string& aUserEventKey, const ExecutionContextBase& anExecutionContext)
-	{
-		myExecutor.Execute(aUserEventKey, anExecutionContext);
-	}
-
 	void Script::TriggerEvent(const eNodeExecutionTrait anExecutionTrait, const ExecutionContextBase& anExecutionContext)
 	{
-		myExecutor.Execute(anExecutionTrait, anExecutionContext);
+		ScriptProxy::GetNodeExecutor(*this).ExecuteEvent(anExecutionTrait, *this, anExecutionContext);
+		//myExecutor.Execute(anExecutionTrait, anExecutionContext);
 	}
 
 	std::string& Script::Name()
@@ -46,12 +41,12 @@ namespace SCR
 
 	CommandTracker& Script::GetCommandTracker()
 	{
-		return myCommandTracker;
+		return *myCommandTracker;
 	}
 
-	ScriptInternalModifier& Script::GetInternalModifier()
+	NodeGraph& Script::GetEventGraph()
 	{
-		return myInternalModifier;
+		return myEventGraph;
 	}
 }
 

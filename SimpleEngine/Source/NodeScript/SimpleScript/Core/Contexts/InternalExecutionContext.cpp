@@ -6,6 +6,6 @@ namespace SCR
 {
 	const Node& InternalExecutionContext::GetCurrentNode() const
 	{
-		return ScriptProxy::GetNode(script, nodeData.nodeID);
+		return ScriptProxy::GetNode(*nodeData.nodeRef.nodeGraph, nodeData.nodeRef.nodeID);
 	}
 }

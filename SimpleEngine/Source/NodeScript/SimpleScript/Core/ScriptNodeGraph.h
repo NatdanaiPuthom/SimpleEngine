@@ -1,5 +1,7 @@
 #pragma once
 #include "ScriptDefines.h"
+#include "NodeManager.h"
+#include "PinManager.h"
 #include "ScriptMemoryPool.h"
 
 namespace SCR
@@ -21,7 +23,6 @@ namespace SCR
 
 		NodeGraph& operator=(const NodeGraph&) = delete;
 		NodeGraph& operator=(NodeGraph&&) = delete;
-
 
 	private:
 
