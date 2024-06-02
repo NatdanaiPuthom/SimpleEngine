@@ -23,11 +23,13 @@ namespace SCR
 
 		if (aTrait == eNodeExecutionTrait::Tick)
 		{
+			std::vector<NodeExecutionData> tickNodes;
+			tickNodes.reserve(myAutoTickNodes.size());
 			for (const NodeExecutionData& executionData : myAutoTickNodes)
 			{
-				Push(executionData);
+				tickNodes.push_back(executionData);
 			}
-			ExecuteInternal(myCurrentNodes);
+			ExecuteInternal(tickNodes);
 		}
 	}
 
@@ -37,11 +39,6 @@ namespace SCR
 		const Node& node = ScriptProxy::GetNode(*aNodeExecutionData.nodeRef.nodeGraph, aNodeExecutionData.nodeRef.nodeID);
 		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
 		nodeType.nodeRecipe.executeFunction(aNodeExecutionData, myExecutionContext);
-	}
-
-	void NodeExecutor::Push(const NodeExecutionData& aNodeExecutionData)
-	{
-		myCurrentNodes.push_back(aNodeExecutionData);
 	}
 
 	void NodeExecutor::BindToEvent(const NodeRef& aNodeRef, const eNodeExecutionTrait aTrait)
@@ -109,18 +106,9 @@ namespace SCR
 
 	void NodeExecutor::ExecuteInternal(const std::vector<NodeExecutionData>& aNodes)
 	{
-
-		myCurrentNodes = aNodes;
-
-		while (!myCurrentNodes.empty())
+		for (const NodeExecutionData& node : aNodes)
 		{
-			std::vector<NodeExecutionData> currentNodes = myCurrentNodes;
-
-			myCurrentNodes.clear();
-			for (const NodeExecutionData& nodeExecutionData : currentNodes)
-			{
-				ExecuteNode(nodeExecutionData);
-			}
+			ExecuteNode(node);
 		}
 	}
 

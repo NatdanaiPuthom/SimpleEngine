@@ -373,7 +373,7 @@ namespace SCR
 			data.previousMemoryID = prevMemoryID;
 			data.actualMemoryID = pin.memoryID;
 
-			commandTracker.RegisterCommand<FunctionCommand<EditValueData>>(CommandContext{ myScript }, data,
+			commandTracker.RegisterCommand<FunctionCommand<EditValueData>>(CommandContext{ myScript, myCurrentNodeGraph }, data,
 				[](const EditValueData& aData, const CommandContext& aContext) -> void
 				{
 					MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*aContext.nodeGraph);

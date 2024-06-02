@@ -1,6 +1,7 @@
 #pragma once
 #include "../ScriptDefines.h"
 #include "NodeRef.h"
+#include <queue>
 
 namespace SCR
 {
@@ -29,6 +30,24 @@ namespace SCR
 		return a.nodeRef < b.nodeRef;
 	}
 
+	class NodeExecutor;
+
+	class ExecutionQueue
+	{
+	public:
+
+		ExecutionQueue();
+		~ExecutionQueue();
+
+		void Push(const NodeExecutionData& aNode);
+		void Execute(NodeExecutor& aNodeExecutor);
+
+	private:
+
+
+		std::queue<NodeExecutionData> myExecutionQueue;
+
+	};
 
 	class Script;
 	class InternalModifier;
@@ -41,6 +60,7 @@ namespace SCR
 		Script* script;
 		const ExecutionContextBase* executionContext = nullptr;
 		NodeExecutionData nodeData;
+		ExecutionQueue* executionQueue = nullptr;
 
 		const NodeExecutionData& GetNodeData() const
 		{

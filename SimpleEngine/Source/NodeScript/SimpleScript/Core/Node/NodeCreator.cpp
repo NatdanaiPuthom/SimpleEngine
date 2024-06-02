@@ -25,11 +25,12 @@ namespace SCR
 					{
 						if (pinType.flowType == ePinFlowType::Output)
 						{
+							assert(aContext.executionQueue);
 							for (PinID connectedInputPinID : pin.connectedPinIDs)
 							{
 								const Pin& connectedInputPin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, connectedInputPinID);
-								ScriptProxy::GetNodeExecutor(*aContext.script).Push({ NodeRef{ connectedInputPin.nodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
-
+								//ScriptProxy::GetNodeExecutor(*aContext.script).Push({ NodeRef{ connectedInputPin.nodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
+								aContext.executionQueue->Push({ NodeRef{ connectedInputPin.nodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
 							}
 						}
 					}
@@ -63,7 +64,7 @@ namespace SCR
 	}
 
 
-	void EvaluateInputValues(const std::vector<PinID>& aInputPinIDs, InternalExecutionContext& aContext, const size_t aStartIndex)
+	void EvaluateInputValues(const std::vector<PinID>& aInputPinIDs, const InternalExecutionContext& aContext, const size_t aStartIndex)
 	{
 		for (size_t i = aStartIndex; i < aInputPinIDs.size(); ++i)
 		{

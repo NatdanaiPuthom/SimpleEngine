@@ -45,6 +45,7 @@ namespace SCR
 	class NodeGraph;
 	struct InternalExecutionContext;
 	struct NodeExecutionData;
+	class ExecutionQueue;
 
 	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, NodeGraph&);
 	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);

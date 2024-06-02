@@ -15,17 +15,15 @@ namespace SCR
 
 		const CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(customEventID);
 
-		NodeExecutor& nodeExecutor = ScriptProxy::GetNodeExecutor(*aContext->script);
-
 		const std::vector<NodeID>& executorNodeIDs = ScriptProxy::GetNodeIDsByNodeType(*aContext->nodeData.nodeRef.nodeGraph, customEvent.GetExecutorTypeID());
 		for (NodeID executorNodeID : executorNodeIDs)
 		{
-
-			nodeExecutor.Push({ NodeRef{ executorNodeID, aContext->nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
+			aContext->executionQueue->Push({ NodeRef{ executorNodeID, aContext->nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
 
 			const Node& executorNode = ScriptProxy::GetNode(*aContext->nodeData.nodeRef.nodeGraph, executorNodeID);
 
 			CopyPinData(*aContext, executorNode.outputPins, callerNode.inputPins, 1);
+
 		}
 	}
 

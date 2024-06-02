@@ -52,12 +52,13 @@ namespace SCR
 					{
 						if constexpr (FlowType == ePinFlowType::Output)
 						{
-							NodeExecutor& executor = ScriptProxy::GetNodeExecutor(*aContext.script);
+							//NodeExecutor& executor = ScriptProxy::GetNodeExecutor(*aContext.script);
 
 							for (PinID connectedInputPinID : pin.connectedPinIDs)
 							{
 								const Pin& connectedInputPin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, connectedInputPinID);
-								executor.Push({ NodeRef{connectedInputPin.nodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
+								//executor.Push({ NodeRef{connectedInputPin.nodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
+								aContext.executionQueue->Push({ NodeRef{connectedInputPin.nodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
 							}
 						}
 					}
@@ -170,7 +171,7 @@ namespace SCR
 		return pinIDs;
 	}
 
-	void EvaluateInputValues(const std::vector<PinID>& aInputPinIDs, InternalExecutionContext& anInternalExecutionContext, size_t aStartIndex = 0);
+	void EvaluateInputValues(const std::vector<PinID>& aInputPinIDs, const InternalExecutionContext& anInternalExecutionContext, size_t aStartIndex = 0);
 
 	template<typename OutputType>
 	PinID CreateOutputPin(const NodeID aNodeID, const PinTypeID aPinTypeID, NodeGraph& aNodeGraph)
@@ -400,6 +401,9 @@ namespace SCR
 				// Set current node data before calling function
 				aContext.nodeData = aNodeExecutionData;
 
+
+				ExecutionQueue executionQueue;
+				aContext.executionQueue = &executionQueue;
 				
 				// Call function and retrieve output values
 				std::tuple<OutputTypes...> outputValues = CallFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext, 
@@ -407,7 +411,9 @@ namespace SCR
 
 				// Set output of function
 				SetOutputValues(std::forward<std::tuple<OutputTypes...>>(outputValues), node.outputPins, aContext);
-
+				
+				aContext.executionQueue = nullptr;
+				executionQueue.Execute(ScriptProxy::GetNodeExecutor(*aContext.script));
 			};
 	}
 

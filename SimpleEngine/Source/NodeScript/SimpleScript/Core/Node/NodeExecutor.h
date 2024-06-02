@@ -22,8 +22,6 @@ namespace SCR
 		void ExecuteEvent(const eNodeExecutionTrait aTrait, Script& aScript, const ExecutionContextBase& anExecutionContext);
 		void ExecuteNode(const NodeExecutionData& aNodeExecutionData);
 
-		void Push(const NodeExecutionData& aNodeExecutionData);
-
 		void BindToEvent(const NodeRef& aNodeRef, const eNodeExecutionTrait aTrait);
 		void BindToEvent(const NodeRef& aNodeRef);
 		void UnbindFromEvent(const NodeRef& aNodeRef, const eNodeExecutionTrait aTrait);
@@ -41,9 +39,6 @@ namespace SCR
 
 		std::unordered_map<eNodeExecutionTrait, std::vector<NodeExecutionData>> myEventNodes;
 		std::unordered_set<NodeExecutionData> myAutoTickNodes;
-
-		std::vector<NodeExecutionData> myCurrentNodes;
-		std::queue<NodeExecutionData> myExecutionQueue;
 
 		InternalExecutionContext myExecutionContext;
 

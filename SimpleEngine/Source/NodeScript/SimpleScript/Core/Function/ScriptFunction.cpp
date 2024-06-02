@@ -16,7 +16,7 @@ namespace SCR
 
 		CopyPinData(*aContext, inputNode.outputPins, callerNode.inputPins, 1);
 
-		ScriptProxy::GetNodeExecutor(*aContext->script).Push({ NodeRef{function.GetInputNodeID(), &ScriptProxy::GetEventGraph(*aContext->script) }, eNodeTriggerReason::Flow });
+		aContext->executionQueue->Push({ NodeRef{function.GetInputNodeID(), &ScriptProxy::GetEventGraph(*aContext->script) }, eNodeTriggerReason::Flow });
 
 		return true;
 	}
