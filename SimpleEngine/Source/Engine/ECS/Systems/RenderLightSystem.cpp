@@ -65,16 +65,19 @@ namespace ECS
 		graphicsEngine->SetDirectionalLightDirection((forward.GetNormalized()));
 
 		{
-			static Math::Vector4f pointLightColorAndIntensity1 = { 1.0f, 1.0f, 1.0f, 100.0f };
-			static Math::Vector3f pointLightPosition = { -5.0f, 5.5f, 4.2f };
-			static float range = 1.0f;
+			PointLightData pointLight1;
+			pointLight1.color = { 1.0f, 1.0f, 1.0f, 50.0f };
+			pointLight1.position = { -3.5f, 1.0f, 0.0f };
+			pointLight1.range = 1.5f;
 
-			PointLightData pointlight;
-			pointlight.color = pointLightColorAndIntensity1;
-			pointlight.position = pointLightPosition;
-			pointlight.range = range;
+			graphicsEngine->AddPointLight(pointLight1);
 
-			graphicsEngine->AddPointLight(pointlight);
+			PointLightData pointLight2;
+			pointLight2.color = { 0.0f, 1.0f, 0.0f, 100.0f };
+			pointLight2.position = { 0.0f, -1.0f, -1.0f };
+			pointLight2.range = 1.2f;
+
+			graphicsEngine->AddPointLight(pointLight2);
 		}
 	}
 
