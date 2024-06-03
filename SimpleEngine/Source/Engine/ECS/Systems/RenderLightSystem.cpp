@@ -133,6 +133,9 @@ namespace ECS
 			pointLightDebugSpheres.position = pointLightBuffer[i].position;
 			pointLightDebugSpheres.radius = pointLightBuffer[i].radius;
 			renderer->RenderSphere(pointLightDebugSpheres);
+
+			pointLightDebugSpheres.radius = 0.1f;
+			renderer->RenderSphere(pointLightDebugSpheres);
 		}
 
 		{
