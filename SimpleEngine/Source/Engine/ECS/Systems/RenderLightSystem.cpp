@@ -68,14 +68,14 @@ namespace ECS
 			PointLightData pointLight1;
 			pointLight1.color = { 1.0f, 1.0f, 1.0f, 50.0f };
 			pointLight1.position = { -3.5f, 1.0f, 0.0f };
-			pointLight1.range = 1.5f;
+			pointLight1.radius = 1.5f;
 
 			graphicsEngine->AddPointLight(pointLight1);
 
 			PointLightData pointLight2;
 			pointLight2.color = { 0.0f, 1.0f, 0.0f, 100.0f };
 			pointLight2.position = { 0.0f, -1.0f, -1.0f };
-			pointLight2.range = 1.2f;
+			pointLight2.radius = 1.2f;
 
 			graphicsEngine->AddPointLight(pointLight2);
 		}
@@ -113,7 +113,7 @@ namespace ECS
 		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
 		{
 			transform.SetPosition(pointLightBuffer[i].position);
-			transform.SetScale(pointLightBuffer[i].range);
+			transform.SetScale(pointLightBuffer[i].radius);
 
 			renderer->RenderUnlit(transform.GetMatrix(), mesh, shader.get(), texture.get());
 		}
@@ -131,7 +131,7 @@ namespace ECS
 		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
 		{
 			pointLightDebugSpheres.position = pointLightBuffer[i].position;
-			pointLightDebugSpheres.radius = pointLightBuffer[i].range;
+			pointLightDebugSpheres.radius = pointLightBuffer[i].radius;
 			renderer->RenderSphere(pointLightDebugSpheres);
 		}
 

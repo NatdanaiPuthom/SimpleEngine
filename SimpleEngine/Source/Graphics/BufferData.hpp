@@ -9,7 +9,7 @@ struct alignas(16) PointLightData final
 {
 	Math::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	Math::Vector3f position = { 0.0f, 0.0f, 0.0f };
-	float range = 0.0f;
+	float radius = 0.0f;
 };
 
 struct alignas(16) CameraBufferData final
