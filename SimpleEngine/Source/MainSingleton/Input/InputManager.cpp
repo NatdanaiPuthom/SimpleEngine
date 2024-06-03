@@ -1,3 +1,4 @@
+#include "Engine/Global.hpp"
 #include "MainSingleton/Input/InputManager.hpp"
 #include <windowsx.h>
 #include <string>
@@ -19,6 +20,19 @@ namespace Simpleton
 		myKeyLiveState = { 0 };
 		myKeyState = { 0 };
 		myKeyPreviousState = { 0 };
+	}
+
+	void InputManager::SetCapturedMousePosition()
+	{
+		const Math::Vector2ui resolution = Global::GetResolution();
+
+		POINT mousePositionScreenSpace = {};
+		mousePositionScreenSpace.x = myCurrentMousePosition.x;
+		mousePositionScreenSpace.y = resolution.y - myCurrentMousePosition.y;
+		ClientToScreen(Global::GetEngineHWND(), &mousePositionScreenSpace);
+
+		myCapturedMousePosition.x = mousePositionScreenSpace.x;
+		myCapturedMousePosition.y = mousePositionScreenSpace.y;
 	}
 
 	bool InputManager::IsKeyPressed(const int aKeyCode) const
@@ -406,7 +420,7 @@ namespace Simpleton
 		return Math::Vector2f((float)myCurrentMousePosition.x, (float)myCurrentMousePosition.y);
 	}
 
-	void InputManager::CaptureMouse() const
+	void InputManager::CaptureMouse()
 	{
 		RECT clipRect;
 		GetClientRect(myOwnerHWND, &clipRect);
@@ -428,11 +442,14 @@ namespace Simpleton
 		clipRect.bottom = lowerRight.y;
 
 		ClipCursor(&clipRect);
+
+		SetCapturedMousePosition();
 	}
 
 	void InputManager::ReleaseMouse() const
 	{
 		ClipCursor(nullptr);
+		SetCursorPos(myCapturedMousePosition.x, myCapturedMousePosition.y);
 	}
 
 	void InputManager::ResetKeyStates()
