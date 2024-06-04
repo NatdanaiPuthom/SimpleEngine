@@ -29,10 +29,11 @@ namespace Test
 			floor->AddComponent<MeshComponent>();
 
 			floor->GetComponent<MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::GBuffer).get();
-			floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Albedo] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_Default_C.dds").get();
-			floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Normal] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_Default_N.dds").get();
-			//floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_Default_M.dds").get();
+			floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Albedo] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_DefaultMaterial_C.dds").get();
+			floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Normal] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_DefaultMaterial_N.dds").get();
+			floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_DefaultMaterial_M.dds").get();
 			floor->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
+			floor->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->LoadMesh("Assets\\Models\\StaticModels\\SM_DefaultCube_1x1.fbx");
 			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f, -1.6f, 0.2f });
 			floor->GetComponent<TransformComponent>()->transform.SetScale({ 1.0f, 1.0f, 1.0f });
 		}
