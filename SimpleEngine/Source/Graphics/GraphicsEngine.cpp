@@ -577,7 +577,7 @@ namespace Graphics
 		{
 			unsigned int slot = 0;
 
-			if (SimpleUtilities::FindSuffix(aFilePath, "_D"))
+			if (SimpleUtilities::FindSuffix(aFilePath, "_C"))
 			{
 				slot = Graphics::Global_Slot_Albedo;
 			}
