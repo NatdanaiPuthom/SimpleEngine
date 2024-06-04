@@ -16,7 +16,6 @@ PixelInputType main(VertexInputType aInput)
     output.tangent = mul((float3x3) modelWorld, aInput.tangent);
     output.bitangent = mul((float3x3) modelWorld, aInput.bitangent);
     
-    output.clip = aInput.clip;
     output.color = aInput.color;
     
     return output;
