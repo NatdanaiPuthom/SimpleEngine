@@ -52,7 +52,7 @@ namespace Test
 			chest->GetComponent<TransformComponent>()->transform.SetScale(0.01f);
 		}
 
-		graphicsEngine->GetCurrentCamera()->SetPosition({ 0.0f,0.0f,-2.0f });
+		graphicsEngine->GetCurrentCamera()->SetPosition({ 0.0f,6.0f,-9.0f });
 	}
 
 	void TestShadow::Update()
