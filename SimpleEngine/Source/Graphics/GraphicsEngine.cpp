@@ -127,28 +127,31 @@ namespace Graphics
 
 	void GraphicsEngine::PreloadTextures()
 	{
-		if (!AddTexture("Assets\\Textures\\DefaultTexture.dds", Global_Slot_Albedo))
+		if (!AddTexture("Assets\\Textures\\T_SimpleTexture_C.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cat.dds", Global_Slot_Albedo))
+		if (!AddTexture("Assets\\Textures\\T_Cat_C.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Hamster.dds", Global_Slot_Albedo))
+		if (!AddTexture("Assets\\Textures\\T_Hamster_C.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cat-scared.dds", Global_Slot_Albedo))
+		if (!AddTexture("Assets\\Textures\\T_CatScared_C.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds", Global_Slot_CubeMap))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_CloudAnime_E.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds", Global_Slot_CubeMap))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_NightStars_E.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds", Global_Slot_CubeMap))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_DayCloud_E.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds", Global_Slot_CubeMap))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_AutumnForest_E.dds", Global_Slot_CubeMap))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_Skansen_E.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 	}
 
@@ -158,9 +161,6 @@ namespace Graphics
 			assert(false && "Failed to add Shader");
 
 		if (!AddShader("DefaultPS.cso", "AnimatedModelVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("DefaultPBRPS.cso", "DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
 
 		if (!AddShader("LinePS.cso", "Line2DVS.cso"))
@@ -615,22 +615,25 @@ namespace Graphics
 		switch (aTextureType)
 		{
 		case eTextureType::Default:
-			texture = GetTexture("Assets\\Textures\\DefaultTexture.dds");
+			texture = GetTexture("Assets\\Textures\\T_SimpleTexture_C.dds");
+			break;
+		case eTextureType::Simple:
+			texture = GetTexture("Assets\\Textures\\T_SimpleTexture_C.dds");
 			break;
 		case eTextureType::SkyBox_DayCloud:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_DayCloud_E.dds");
 			break;
 		case eTextureType::SkyBox_NightStar:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_NightStars_E.dds");
 			break;
 		case eTextureType::SkyBox_DayGrassland:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_CloudAnime_E.dds");
 			break;
 		case eTextureType::SkyBox_AutumnForest:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_AutumnForest_E.dds");
 			break;
 		case eTextureType::TGA_Skansen:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\cube_1024_preblurred_angle3_Skansen3.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_Skansen_E.dds");
 			break;
 		}
 		

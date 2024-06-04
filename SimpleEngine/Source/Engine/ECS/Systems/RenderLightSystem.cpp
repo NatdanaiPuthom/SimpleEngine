@@ -41,7 +41,7 @@ namespace ECS
 
 			DirectionalLight* directionalLightComponent = directionalLight->GetComponent<DirectionalLight>();
 			directionalLightComponent->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
-			directionalLightComponent->texture = graphicsEngine->GetTexture("Assets\\Textures\\Sunlight.dds").get();
+			directionalLightComponent->texture = graphicsEngine->GetTexture("Assets\\Textures\\T_Sunlight_C.dds").get();
 			directionalLightComponent->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			directionalLightComponent->transform.SetPosition({ 0.0f, 5.0f, 0.0f });
 

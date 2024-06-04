@@ -54,6 +54,7 @@ namespace Graphics
 	enum class eTextureType
 	{
 		Default,
+		Simple,
 		SkyBox_DayCloud,
 		SkyBox_NightStar,
 		SkyBox_DayGrassland,
