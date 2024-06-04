@@ -5,7 +5,7 @@
 #include "Engine/ECS/Components/Core/DirectionalLightComponent.hpp"
 #include "External/imgui.h"
 
-#define RENDER_DEBUG_LINES 0
+#include "Editor/Editor.hpp"
 
 namespace ECS
 {
@@ -80,6 +80,13 @@ namespace ECS
 			pointLight2.radius = 3.0f;
 
 			graphicsEngine->AddPointLight(pointLight2);
+
+			PointLightData pointLight3;
+			pointLight3.color = { 1.0f, 0.0f, 0.0f, 10.0f };
+			pointLight3.position = { -1.0f, 2.5f, -1.0f };
+			pointLight3.radius = 2.0f;
+
+			graphicsEngine->AddPointLight(pointLight3);
 		}
 	}
 
@@ -108,9 +115,9 @@ namespace ECS
 		Global::GetGraphicsEngine()->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
 		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Greater);
 		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
-		graphicsEngine->UpdateLightBuffer();
 
 		PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
+		graphicsEngine->UpdateLightBuffer();
 
 		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
 		{
@@ -127,20 +134,21 @@ namespace ECS
 		ID3D11ShaderResourceView* nullSRVs[5] = { NULL };
 		context->PSSetShaderResources(5, 5, nullSRVs);
 
-#if RENDER_DEBUG_LINES
-		Drawer::Sphere pointLightDebugSpheres;
-		pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-
-		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
+		if (Editor::EditorEngine::myStaticShouldRenderDebugLines == true)
 		{
-			pointLightDebugSpheres.position = pointLightBuffer[i].position;
-			pointLightDebugSpheres.radius = pointLightBuffer[i].radius;
-			renderer->RenderSphere(pointLightDebugSpheres);
+			Drawer::Sphere pointLightDebugSpheres;
+			pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
-			pointLightDebugSpheres.radius = 0.1f;
-			renderer->RenderSphere(pointLightDebugSpheres);
+			for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
+			{
+				pointLightDebugSpheres.position = pointLightBuffer[i].position;
+				pointLightDebugSpheres.radius = pointLightBuffer[i].radius;
+				renderer->RenderSphere(pointLightDebugSpheres);
+
+				pointLightDebugSpheres.radius = 0.1f;
+				renderer->RenderSphere(pointLightDebugSpheres);
+			}
 		}
-#endif
 
 		{
 			ECS::Entity directionalLight = myEntityManager->GetEntity(myDirectionalLightID);

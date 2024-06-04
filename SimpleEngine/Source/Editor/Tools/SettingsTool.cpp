@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Tools/SettingsTool.hpp"
+#include "Editor/Editor.hpp"
 
 namespace Editor
 {
@@ -57,6 +58,11 @@ namespace Editor
 
 			ImGui::Dummy(ImVec2(0, 20));
 			ToggleConsole();
+
+			if (ImGui::Checkbox("Render Debug Lines", &EditorEngine::myStaticShouldRenderDebugLines))
+			{
+
+			}
 
 			ImGui::Dummy(ImVec2(0, 20));
 			AdjustActiveScene();

@@ -21,7 +21,7 @@ PixelOutput main(PixelInputType aInput)
     
     float3 accumulatedPointLight = 0;
     for (unsigned int i = 0; i < currentPointLightCount; i++)
-    {
+    {     
         if (distance(pointLights[i].position.xyz, position.xyz) <= pointLights[i].range)
         {
             accumulatedPointLight += EvaluatePointLight(
