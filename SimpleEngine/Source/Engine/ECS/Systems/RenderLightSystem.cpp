@@ -5,6 +5,8 @@
 #include "Engine/ECS/Components/Core/DirectionalLightComponent.hpp"
 #include "External/imgui.h"
 
+#define RENDER_DEBUG_LINES 0
+
 namespace ECS
 {
 	RenderLightSystem::RenderLightSystem(EntityManager* aECS) : System(aECS)
@@ -66,16 +68,16 @@ namespace ECS
 
 		{
 			PointLightData pointLight1;
-			pointLight1.color = { 1.0f, 1.0f, 1.0f, 50.0f };
-			pointLight1.position = { -3.5f, 1.0f, 0.0f };
+			pointLight1.color = { 1.0f, 1.0f, 1.0f, 25.0f };
+			pointLight1.position = { -3.5f, 2.0f, 0.0f };
 			pointLight1.radius = 1.5f;
 
 			graphicsEngine->AddPointLight(pointLight1);
 
 			PointLightData pointLight2;
-			pointLight2.color = { 0.0f, 1.0f, 0.0f, 100.0f };
-			pointLight2.position = { 0.0f, -1.0f, -1.0f };
-			pointLight2.radius = 1.2f;
+			pointLight2.color = { 0.0f, 1.0f, 0.0f, 10.0f };
+			pointLight2.position = { 0.0f, 2.5f, -1.0f };
+			pointLight2.radius = 3.0f;
 
 			graphicsEngine->AddPointLight(pointLight2);
 		}
@@ -125,6 +127,7 @@ namespace ECS
 		ID3D11ShaderResourceView* nullSRVs[5] = { NULL };
 		context->PSSetShaderResources(5, 5, nullSRVs);
 
+#if RENDER_DEBUG_LINES
 		Drawer::Sphere pointLightDebugSpheres;
 		pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
@@ -137,6 +140,7 @@ namespace ECS
 			pointLightDebugSpheres.radius = 0.1f;
 			renderer->RenderSphere(pointLightDebugSpheres);
 		}
+#endif
 
 		{
 			ECS::Entity directionalLight = myEntityManager->GetEntity(myDirectionalLightID);
