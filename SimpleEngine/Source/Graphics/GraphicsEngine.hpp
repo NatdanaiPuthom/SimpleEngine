@@ -123,11 +123,11 @@ namespace Graphics
 		void PreloadTextures();
 		void PreloadShaders();
 		void ClearLightBuffer();
-		void ClearGBuffer();
-		void ClearPostProcessBuffer();
+		void ClearRenderTarget(const eRenderTargetType aRenderTargetType);
 		void ClearDepthStencilView();
 		void UnbindAllRenderTargets();
-		void UpdateCameraBuffer();
+		void UpdateCameraConstantBuffer();
+		void UpdateTimeConstantBuffer();
 	private:
 		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;

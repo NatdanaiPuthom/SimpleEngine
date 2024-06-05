@@ -100,19 +100,12 @@ namespace Graphics
 	void GraphicsEngine::PrepareFrame()
 	{
 		ClearDepthStencilView();
-		ClearGBuffer();
-		ClearPostProcessBuffer();
+		ClearRenderTarget(eRenderTargetType::GBuffer);
+		ClearRenderTarget(eRenderTargetType::PostProcessing);
 		ClearLightBuffer();
 
-		UpdateCameraBuffer();
-
-		{
-			TimeBufferData timeBuffer = {};
-			timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
-			timeBuffer.deltaTime = static_cast<float>(Global::GetDeltaTime());
-			myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
-			myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
-		}
+		UpdateTimeConstantBuffer();
+		UpdateCameraConstantBuffer();
 
 		{
 			myPostProcessConstantBuffer->Bind(myPostProcessConstantBuffer->GetSlot());
@@ -236,23 +229,13 @@ namespace Graphics
 		myLightBufferData->currentPointLightCount = 0;
 	}
 
-	void GraphicsEngine::ClearGBuffer()
+	void GraphicsEngine::ClearRenderTarget(const eRenderTargetType aRenderTargetType)
 	{
-		const std::vector<RenderTarget>& gBufferRenderTargets = myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)];
+		const std::vector<RenderTarget>& renderTargets = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
 
-		for (size_t i = 0; i < gBufferRenderTargets.size(); ++i)
+		for (size_t i = 0; i < renderTargets.size(); ++i)
 		{
-			myContext->ClearRenderTargetView(gBufferRenderTargets[i].renderTargetView.Get(), &myClearColor[0]);
-		}
-	}
-
-	void GraphicsEngine::ClearPostProcessBuffer()
-	{
-		const std::vector<RenderTarget>& postProcessRenderTargets = myRenderTargets[static_cast<size_t>(eRenderTargetType::PostProcessing)];
-
-		for (size_t i = 0; i < postProcessRenderTargets.size(); ++i)
-		{
-			myContext->ClearRenderTargetView(postProcessRenderTargets[i].renderTargetView.Get(), &myClearColor[0]);
+			myContext->ClearRenderTargetView(renderTargets[i].renderTargetView.Get(), &myClearColor[0]);
 		}
 	}
 
@@ -399,7 +382,7 @@ namespace Graphics
 		myContext->OMSetRenderTargets(maxRenderTargetSupportedByDX11, nullViews, nullptr);
 	}
 
-	void GraphicsEngine::UpdateCameraBuffer()
+	void GraphicsEngine::UpdateCameraConstantBuffer()
 	{
 		CameraBufferData frameBuffer = {};
 		frameBuffer.worldToClipMatrix = myCurrentCamera->GetWorldToClipMatrix();
@@ -408,6 +391,15 @@ namespace Graphics
 
 		myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
 		myCameraConstantBuffer->Update(sizeof(CameraBufferData), &frameBuffer);
+	}
+
+	void GraphicsEngine::UpdateTimeConstantBuffer()
+	{
+		TimeBufferData timeBuffer = {};
+		timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
+		timeBuffer.deltaTime = static_cast<float>(Global::GetDeltaTime());
+		myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
+		myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 	}
 
 	void GraphicsEngine::UpdateLightBuffer(const size_t aLightIndex)
@@ -515,7 +507,7 @@ namespace Graphics
 	void GraphicsEngine::SetCamera(std::shared_ptr<Graphics::Camera> aCamera)
 	{
 		myCurrentCamera = aCamera;
-		UpdateCameraBuffer();
+		UpdateCameraConstantBuffer();
 	}
 
 	void GraphicsEngine::SetToDefaultCamera()
