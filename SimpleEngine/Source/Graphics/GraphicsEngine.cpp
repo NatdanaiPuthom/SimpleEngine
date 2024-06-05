@@ -802,14 +802,31 @@ namespace Graphics
 		HRESULT result = S_OK;
 
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
-		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+		rasterizerDesc.AntialiasedLineEnable = false;
 		rasterizerDesc.CullMode = D3D11_CULL_BACK;
+		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+		rasterizerDesc.DepthBias = 0;
+		rasterizerDesc.DepthBiasClamp = 0.0f;
 		rasterizerDesc.DepthClipEnable = true;
+		rasterizerDesc.FrontCounterClockwise = false;
+		rasterizerDesc.MultisampleEnable = true;
+		rasterizerDesc.ScissorEnable = false;
+		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 
 		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::Wireframe)]);
 		assert(SUCCEEDED(result) && "Failed to create RasterizerState: Wireframe");
 
+		rasterizerDesc = {};
+		rasterizerDesc.AntialiasedLineEnable = false;
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+		rasterizerDesc.DepthBias = 0;
+		rasterizerDesc.DepthBiasClamp = 0.0f;
+		rasterizerDesc.DepthClipEnable = true;
+		rasterizerDesc.FrontCounterClockwise = false;
+		rasterizerDesc.MultisampleEnable = true;
+		rasterizerDesc.ScissorEnable = false;
+		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 
 		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)]);
 		assert(SUCCEEDED(result) && "Failed to create RasterizerState: WireframeNoCulling");
@@ -817,10 +834,10 @@ namespace Graphics
 		rasterizerDesc = {};
 		rasterizerDesc.AntialiasedLineEnable = false;
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.DepthBias = 0;
 		rasterizerDesc.DepthBiasClamp = 0.0f;
 		rasterizerDesc.DepthClipEnable = true;
-		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.FrontCounterClockwise = false;
 		rasterizerDesc.MultisampleEnable = true;
 		rasterizerDesc.ScissorEnable = false;
@@ -829,23 +846,19 @@ namespace Graphics
 		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)]);
 		assert(SUCCEEDED(result) && "Failed to create RasterizerState: NoFaceCulling");
 
-		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc = {};
+		rasterizerDesc.AntialiasedLineEnable = false;
 		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.DepthBias = 0;
+		rasterizerDesc.DepthBiasClamp = 0.0f;
+		rasterizerDesc.DepthClipEnable = true;
+		rasterizerDesc.FrontCounterClockwise = false;
+		rasterizerDesc.MultisampleEnable = true;
+		rasterizerDesc.ScissorEnable = false;
+		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 
-
-		D3D11_RASTERIZER_DESC rasterizerDesc2 = {};
-		rasterizerDesc2.AntialiasedLineEnable = false;
-		rasterizerDesc2.CullMode = D3D11_CULL_FRONT;
-		rasterizerDesc2.DepthBias = 0;
-		rasterizerDesc2.DepthBiasClamp = 0.0f;
-		rasterizerDesc2.DepthClipEnable = true;
-		rasterizerDesc2.FrontCounterClockwise = false;
-		rasterizerDesc2.MultisampleEnable = true;
-		rasterizerDesc2.ScissorEnable = false;
-		rasterizerDesc2.SlopeScaledDepthBias = 0.0f;
-		rasterizerDesc2.FillMode = D3D11_FILL_SOLID;
-
-		result = myDevice->CreateRasterizerState(&rasterizerDesc2, &myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)]);
+		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)]);
 		assert(SUCCEEDED(result) && "Failed to create RasterizerState: FrontFaceCulling");
 
 		myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = nullptr;
