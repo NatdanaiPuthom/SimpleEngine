@@ -365,7 +365,7 @@ namespace Graphics
 		++myLightBufferData->currentPointLightCount;
 	}
 
-	PointLightData* GraphicsEngine::GetPointLightDataArray()
+	PointLightData* GraphicsEngine::GetPointLightDataArray() const
 	{
 		return myLightBufferData->pointLightData;
 	}
@@ -522,28 +522,8 @@ namespace Graphics
 
 	void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)
 	{
-		switch (aRasterizerState)
-		{
-		case eRasterizerState::BackfaceCulling:
-			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)];
-			break;
-		case eRasterizerState::NoFaceCulling:
-			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)];
-			break;
-		case eRasterizerState::Wireframe:
-			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::Wireframe)];
-			break;
-		case eRasterizerState::WireframeNoCulling:
-			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)];
-			break;
-		case eRasterizerState::FrontFaceCulling:
-			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)];
-			break;
-		default:
-			break;
-		}
-
-		myContext->RSSetState(myCurrentRasterizerState.Get());
+		myCurrentRasterizerState = aRasterizerState;
+		myContext->RSSetState(myRasterizerStates[static_cast<int>(myCurrentRasterizerState)].Get());
 	}
 
 	void GraphicsEngine::SetBlendState(const eBlendState aBlendState)
@@ -771,6 +751,11 @@ namespace Graphics
 	ComPtr<ID3D11DepthStencilView> GraphicsEngine::GetDepthBuffer()
 	{
 		return myDepthBuffer;
+	}
+
+	const eRasterizerState GraphicsEngine::GetCurrentRasterizerState() const
+	{
+		return myCurrentRasterizerState;
 	}
 
 	Math::Vector4f GraphicsEngine::GetAmbientLightColorAndIntensity() const

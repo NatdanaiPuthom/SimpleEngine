@@ -112,7 +112,9 @@ namespace ECS
 		std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(Graphics::eTextureType::Default);
 		Math::Transform transform;
 
-		Global::GetGraphicsEngine()->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
+		const Graphics::eRasterizerState previousRasterizerState = graphicsEngine->GetCurrentRasterizerState();
+
+		graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
 		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Greater);
 		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
 
@@ -129,7 +131,7 @@ namespace ECS
 		}
 
 		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Less_Equal);
-		graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::BackfaceCulling);
+		graphicsEngine->SetRasterizerState(previousRasterizerState);
 		graphicsEngine->SetBlendState(Graphics::eBlendState::Disabled);
 
 		ID3D11ShaderResourceView* nullSRVs[5] = { NULL };

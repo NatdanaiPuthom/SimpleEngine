@@ -63,7 +63,10 @@ namespace Graphics
 		void SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity);
 		void SetVSync(const bool aShouldTurnOn);
 		void SetFPSLevelCap(const unsigned int aCapLevel);
+
+		//TO-DO(v10.0.4): Fix some of states not working since I switched to deferred rendering
 		void SetRasterizerState(const eRasterizerState aRasterizerState);
+
 		void SetBlendState(const eBlendState aBlendState);
 		void SetDepthStencilState(const eDepthStencilState aDepthStencilState);
 
@@ -80,6 +83,8 @@ namespace Graphics
 		ComPtr<ID3D11DeviceContext> GetContext();
 		ComPtr<ID3D11ShaderResourceView> GetShaderResourceView(const eRenderTargetType aRenderTargetType, const size_t aIndex = 0);
 		ComPtr<ID3D11DepthStencilView> GetDepthBuffer();
+
+		const eRasterizerState GetCurrentRasterizerState() const;
 
 		std::shared_ptr<Camera> GetCurrentCamera();
 		std::shared_ptr<Camera> GetEditorCamera();
@@ -99,7 +104,7 @@ namespace Graphics
 		Math::Vector4f GetAmbientLightColorAndIntensity() const;
 		Math::Vector4f GetDirectionalLightColor() const;
 		Math::Vector3f GetDirectionalLightDirection() const;
-		PointLightData* GetPointLightDataArray();
+		PointLightData* GetPointLightDataArray() const;
 		size_t GetPointLightCount() const;
 
 		unsigned int GetFPSLevelCap() const;
@@ -157,7 +162,6 @@ namespace Graphics
 		ComPtr<ID3D11DepthStencilView> myDepthBuffer;
 		
 		ComPtr<ID3D11SamplerState> mySamplerState;
-		ComPtr<ID3D11RasterizerState> myCurrentRasterizerState;
 
 		std::shared_ptr<Camera> myCurrentCamera;
 		std::shared_ptr<Camera> myEditorCamera;
@@ -176,6 +180,8 @@ namespace Graphics
 		std::unique_ptr<ModelFactory> myModelFactory;
 		std::unique_ptr<Drawer::Renderer> myRenderer;
 		std::unique_ptr<Simple::ImGuiEngine> myImGuiEngine;
+
+		eRasterizerState myCurrentRasterizerState;
 
 		unsigned int myFPSLevelCap;
 		bool myVSync;
