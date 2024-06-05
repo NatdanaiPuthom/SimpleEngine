@@ -40,8 +40,12 @@ namespace Graphics
 
 		bool IsVSyncActive() const;
 
+		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
 		void RenderDeferredFromGBuffer();
+
+		//NOTE(v10.0.): I have no clue what I am doing but it works for now
 		void RenderDeferredImage();
+
 		void RenderFullScreenQuad();
 		void RenderPostProcessing();
 
@@ -101,31 +105,40 @@ namespace Graphics
 		unsigned int GetFPSLevelCap() const;
 	private:
 		void CreateViewport(const Math::Vector2ui aSize);
+
 		void CreateSwapChain(HWND& aWindowHandle, const Math::Vector2ui aSize);
-		void CreateDepthBuffer(const Math::Vector2ui aSize);
-		void CreateDepthStencilState();
 		void CreateBackBuffer();
+		void CreateDepthBuffer(const Math::Vector2ui aSize);
+
+		void CreateDepthStencilState();
 		void CreateSamplerState();
-		void CreateCameraBuffer();
-		void CreateTimeBuffer();
-		void CreateLightBuffer();
-		void CreatePostProcessingBuffer();
+		void CreateBlendStates();
 		void CreateRasterizerStates();
-		void CreateBonesBuffer();
-		void CreateGBuffer(const Math::Vector2ui aResolution);
-		void CreateDeferredBuffer(const Math::Vector2ui aResolution);
-		void CreatePostProcessingBuffer(const Math::Vector2ui aResolution);
-		void CreateBlendState();
+
+		void CreateCameraConstantBuffer();
+		void CreateTimeConstantBuffer();
+		void CreateLightConstantBuffer();
+		void CreatePostProcessingConstantBuffer();
+		void CreateJointsConstantBuffer();
+
+		void CreateGRenderTarget(const Math::Vector2ui aResolution);
+		void CreateDeferredRenderTarget(const Math::Vector2ui aResolution);
+		void CreatePostProcessingRenderTarget(const Math::Vector2ui aResolution);
+
 		std::vector<RenderTarget> CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution);
 	private:
 		void LoadSettingsFromJson();
+
 		void PrepareFrame();
 		void PreloadTextures();
 		void PreloadShaders();
-		void ClearLightBuffer();
+
+		void ClearPointLightCount();
 		void ClearRenderTarget(const eRenderTargetType aRenderTargetType);
 		void ClearDepthStencilView();
+
 		void UnbindAllRenderTargets();
+
 		void UpdateCameraConstantBuffer();
 		void UpdateTimeConstantBuffer();
 	private:

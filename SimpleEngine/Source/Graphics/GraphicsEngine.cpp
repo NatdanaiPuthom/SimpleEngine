@@ -52,21 +52,21 @@ namespace Graphics
 		CreateViewport(aWindowSize);
 
 		CreateBackBuffer();
-		CreateGBuffer(aWindowSize);
-		CreateDeferredBuffer(aWindowSize);
-		CreatePostProcessingBuffer(aWindowSize);
+		CreateGRenderTarget(aWindowSize);
+		CreateDeferredRenderTarget(aWindowSize);
+		CreatePostProcessingRenderTarget(aWindowSize);
 
 		CreateDepthBuffer(aWindowSize);
 		CreateDepthStencilState();
 		CreateRasterizerStates();
 		CreateSamplerState();
-		CreateBlendState();
+		CreateBlendStates();
 
-		CreateCameraBuffer();
-		CreateTimeBuffer();
-		CreateLightBuffer();
-		CreateBonesBuffer();
-		CreatePostProcessingBuffer();
+		CreateCameraConstantBuffer();
+		CreateTimeConstantBuffer();
+		CreateLightConstantBuffer();
+		CreateJointsConstantBuffer();
+		CreatePostProcessingConstantBuffer();
 
 		PreloadTextures();
 		PreloadShaders();
@@ -102,7 +102,7 @@ namespace Graphics
 		ClearDepthStencilView();
 		ClearRenderTarget(eRenderTargetType::GBuffer);
 		ClearRenderTarget(eRenderTargetType::PostProcessing);
-		ClearLightBuffer();
+		ClearPointLightCount();
 
 		UpdateTimeConstantBuffer();
 		UpdateCameraConstantBuffer();
@@ -224,7 +224,7 @@ namespace Graphics
 			assert(false && "Failed to add Shader");
 	}
 
-	void GraphicsEngine::ClearLightBuffer()
+	void GraphicsEngine::ClearPointLightCount()
 	{
 		myLightBufferData->currentPointLightCount = 0;
 	}
@@ -479,8 +479,8 @@ namespace Graphics
 
 		CreateBackBuffer();
 		CreateDepthBuffer(newWindowSize);
-		CreateGBuffer(newWindowSize);
-		CreateDeferredBuffer(newWindowSize);
+		CreateGRenderTarget(newWindowSize);
+		CreateDeferredRenderTarget(newWindowSize);
 
 		CreateViewport(newWindowSize);
 
@@ -866,15 +866,15 @@ namespace Graphics
 		myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = nullptr;
 	}
 
-	void GraphicsEngine::CreateBonesBuffer()
+	void GraphicsEngine::CreateJointsConstantBuffer()
 	{
 		JointsBufferData bonesBufferData;
 
-		if (!myJointsConstantBuffer->Init(sizeof(JointsBufferData), &bonesBufferData))
+		if (myJointsConstantBuffer->Init(sizeof(JointsBufferData), &bonesBufferData) == false)
 			assert(false && "Failed to create BoneConstantBuffer");
 	}
 
-	void GraphicsEngine::CreateGBuffer(const Math::Vector2ui aResolution)
+	void GraphicsEngine::CreateGRenderTarget(const Math::Vector2ui aResolution)
 	{
 		std::array<DXGI_FORMAT, 5> formats =
 		{
@@ -889,7 +889,7 @@ namespace Graphics
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
-	void GraphicsEngine::CreateDeferredBuffer(const Math::Vector2ui aResolution)
+	void GraphicsEngine::CreateDeferredRenderTarget(const Math::Vector2ui aResolution)
 	{
 		std::array<DXGI_FORMAT, 1> formats =
 		{
@@ -900,7 +900,7 @@ namespace Graphics
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
-	void GraphicsEngine::CreatePostProcessingBuffer(const Math::Vector2ui aResolution)
+	void GraphicsEngine::CreatePostProcessingRenderTarget(const Math::Vector2ui aResolution)
 	{
 		std::array<DXGI_FORMAT, 1> formats =
 		{
@@ -1074,7 +1074,7 @@ namespace Graphics
 		assert(SUCCEEDED(result) && "Failed to create SamplerState");
 	}
 
-	void GraphicsEngine::CreateCameraBuffer()
+	void GraphicsEngine::CreateCameraConstantBuffer()
 	{
 		CameraBufferData cameraBuffer;
 
@@ -1085,7 +1085,7 @@ namespace Graphics
 			assert(false && "Failed to create CameraConstantBuffer");
 	}
 
-	void GraphicsEngine::CreateTimeBuffer()
+	void GraphicsEngine::CreateTimeConstantBuffer()
 	{
 		TimeBufferData timeBuffer;
 
@@ -1096,7 +1096,7 @@ namespace Graphics
 			assert(false && "Failed to create TimeConstantBuffer");
 	}
 
-	void GraphicsEngine::CreateLightBuffer()
+	void GraphicsEngine::CreateLightConstantBuffer()
 	{
 		LightBufferData lightBufferData;
 
@@ -1110,7 +1110,7 @@ namespace Graphics
 		}
 	}
 
-	void GraphicsEngine::CreatePostProcessingBuffer()
+	void GraphicsEngine::CreatePostProcessingConstantBuffer()
 	{
 		PostProcessingData postProcessingData;
 
@@ -1120,7 +1120,7 @@ namespace Graphics
 		}
 	}
 
-	void GraphicsEngine::CreateBlendState()
+	void GraphicsEngine::CreateBlendStates()
 	{
 		HRESULT result = S_OK;
 		D3D11_BLEND_DESC blendStateDescription = {};
