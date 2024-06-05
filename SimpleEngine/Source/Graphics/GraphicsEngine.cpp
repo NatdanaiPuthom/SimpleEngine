@@ -108,8 +108,6 @@ namespace Graphics
 			myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
 			myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 		}
-
-		UpdateLightBuffer();
 	}
 
 	void GraphicsEngine::LoadSettingsFromJson()
@@ -377,7 +375,7 @@ namespace Graphics
 		myCameraConstantBuffer->Update(sizeof(CameraBufferData), &frameBuffer);
 	}
 
-	void GraphicsEngine::UpdateLightBuffer()
+	void GraphicsEngine::UpdateLightBuffer(const size_t aLightIndex)
 	{
 		LightBufferData lightBufferData;
 
@@ -389,7 +387,7 @@ namespace Graphics
 
 		for (size_t i = 0; i < myLightBufferData->currentPointLightCount; i++)
 		{
-			lightBufferData.pointLightData[i] = myLightBufferData->pointLightData[i];
+			lightBufferData.pointLightData[i] = myLightBufferData->pointLightData[aLightIndex];
 		}
 
 		myLightConstantBuffer->Bind(myLightConstantBuffer->GetSlot());

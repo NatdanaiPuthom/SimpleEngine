@@ -45,7 +45,8 @@ namespace Graphics
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 
-		void UpdateLightBuffer();
+		//TO-DO(v10.0.3): Fix this properly. This quick fix right now
+		void UpdateLightBuffer(const size_t aLightIndex);
 
 	public:
 		void SetGlobalGraphicsEngineToThis();

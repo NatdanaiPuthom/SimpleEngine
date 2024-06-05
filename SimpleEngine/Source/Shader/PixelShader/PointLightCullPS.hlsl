@@ -19,17 +19,23 @@ PixelOutput main(PixelInputType aInput)
     const float3 specularColor = lerp((float3) 0.04f, albedo.rgb, metalness);
     const float3 diffuseColor = lerp((float3) 0.00f, albedo.rgb, 1 - metalness);
     
-    float3 accumulatedPointLight = 0;
-    for (unsigned int i = 0; i < currentPointLightCount; i++)
-    {     
-        if (distance(pointLights[i].position.xyz, position.xyz) <= pointLights[i].range)
-        {
-            accumulatedPointLight += EvaluatePointLight(
-			    diffuseColor, specularColor, pixelNormal, roughness,
-			    pointLights[i].color.rgb, pointLights[i].color.w, pointLights[i].range, pointLights[i].position.xyz,
-			    toEye.xyz, position.xyz);
-        }
+   float3 accumulatedPointLight = 0; 
+    //if (distance(pointLights[0].position.xyz, position.xyz) <= pointLights[0].range)
+    {
+        accumulatedPointLight += EvaluatePointLight(
+            diffuseColor, 
+            specularColor, 
+            pixelNormal, 
+            roughness,
+            pointLights[0].color.rgb,
+            pointLights[0].color.w,
+            pointLights[0].range,
+            pointLights[0].position.xyz,
+            toEye.xyz,
+            position.xyz
+        );
     }
+    
     
     output.color = float4(accumulatedPointLight, 1.0f);
     return output;

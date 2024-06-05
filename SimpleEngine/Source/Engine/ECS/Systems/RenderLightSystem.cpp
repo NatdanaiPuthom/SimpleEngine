@@ -117,10 +117,11 @@ namespace ECS
 		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
 
 		PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
-		graphicsEngine->UpdateLightBuffer();
 
 		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
 		{
+			graphicsEngine->UpdateLightBuffer(i);
+
 			transform.SetPosition(pointLightBuffer[i].position);
 			transform.SetScale(pointLightBuffer[i].radius);
 
