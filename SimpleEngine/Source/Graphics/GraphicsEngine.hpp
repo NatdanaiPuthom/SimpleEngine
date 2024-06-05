@@ -27,6 +27,9 @@ namespace Graphics
 	class GraphicsEngine final
 	{
 	public:
+		PostProcessingData myPostProcessData;
+
+	public:
 		GraphicsEngine();
 		~GraphicsEngine();
 
@@ -106,6 +109,7 @@ namespace Graphics
 		void CreateCameraBuffer();
 		void CreateTimeBuffer();
 		void CreateLightBuffer();
+		void CreatePostProcessingBuffer();
 		void CreateRasterizerStates();
 		void CreateBonesBuffer();
 		void CreateGBuffer(const Math::Vector2ui aResolution);
@@ -150,8 +154,9 @@ namespace Graphics
 
 		std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
-		std::unique_ptr<ConstantBuffer> myLightConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myJointsConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myLightConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myPostProcessConstantBuffer;
 
 		std::unique_ptr<LightBufferData> myLightBufferData;
 

@@ -32,8 +32,9 @@ namespace Graphics
 	{
 		myCameraConstantBuffer = std::make_unique<ConstantBuffer>();
 		myTimeConstantBuffer = std::make_unique<ConstantBuffer>();
-		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
 		myJointsConstantBuffer = std::make_unique<ConstantBuffer>();
+		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
+		myPostProcessConstantBuffer = std::make_unique<ConstantBuffer>();
 
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 		myLightBufferData = std::make_unique<LightBufferData>();
@@ -65,6 +66,7 @@ namespace Graphics
 		CreateTimeBuffer();
 		CreateLightBuffer();
 		CreateBonesBuffer();
+		CreatePostProcessingBuffer();
 
 		PreloadTextures();
 		PreloadShaders();
@@ -84,6 +86,7 @@ namespace Graphics
 		myTimeConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Time);
 		myLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Light);
 		myJointsConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Joints);
+		myPostProcessConstantBuffer->SetSlot(5);
 
 		myLightBufferData->directionalLightDirection.x = 0.0f;
 		myLightBufferData->directionalLightDirection.y = -1.0f;
@@ -109,6 +112,11 @@ namespace Graphics
 			timeBuffer.deltaTime = static_cast<float>(Global::GetDeltaTime());
 			myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
 			myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
+		}
+
+		{
+			myPostProcessConstantBuffer->Bind(myPostProcessConstantBuffer->GetSlot());
+			myPostProcessConstantBuffer->Update(sizeof(PostProcessingData), &myPostProcessData);
 		}
 	}
 
@@ -1105,6 +1113,16 @@ namespace Graphics
 		lightBufferData.directionalLightDirection = Math::Vector3f(0.0f, 0.0f, 0.0f);
 
 		if (myLightConstantBuffer->Init(sizeof(LightBufferData), &lightBufferData) == false)
+		{
+			assert(false && "Failed to create LightConstantBuffer");
+		}
+	}
+
+	void GraphicsEngine::CreatePostProcessingBuffer()
+	{
+		PostProcessingData postProcessingData;
+
+		if (myPostProcessConstantBuffer->Init(sizeof(LightBufferData), &postProcessingData) == false)
 		{
 			assert(false && "Failed to create LightConstantBuffer");
 		}

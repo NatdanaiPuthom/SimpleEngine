@@ -12,6 +12,17 @@ struct alignas(16) PointLightData final
 	float radius = 0.0f;
 };
 
+struct alignas(16) PostProcessingData final
+{
+	Math::Vector3f tint = { 0.0f, 0.0f, 0.0f };
+	float saturation = 1.0f;
+
+	float exposure = 1.0f;
+	float contrast = 1.0f;
+	float blackpoint = 1.0f;
+	const float paddingPostProcess[1] = { -1.0f };
+};
+
 struct alignas(16) CameraBufferData final
 {
 	Math::Matrix4x4f worldToClipMatrix = Math::Matrix4x4f::Identity();

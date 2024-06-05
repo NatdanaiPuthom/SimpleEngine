@@ -64,6 +64,16 @@ cbuffer JointBuffer : register(b4)
     float4x4 bones[SIMPLE_MAX_JOINTS];
 }
 
+cbuffer PostProcessingBuffer : register(b5)
+{
+    float3 tint;
+    float saturation;
+    float exposure;
+    float constrast;
+    float blackpoint;
+    float paddingPostProcess;
+}
+
 struct FullScreenVertexInput
 {
     unsigned int index : SV_VertexID;

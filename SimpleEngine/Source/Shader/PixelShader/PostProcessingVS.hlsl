@@ -7,7 +7,7 @@ PixelOutput main(FullScreenVertexToPixel aInput)
     const float2 uv = aInput.position.xy / resolution.xy;
     float3 albedo = GlobalBufferAlbedoTexture.Sample(GlobalDefaultSampler, uv).rgb;
   
-    //albedo.r += 0.5f;
+    albedo += tint;
     
     output.color = float4(albedo,1.0f);
     
