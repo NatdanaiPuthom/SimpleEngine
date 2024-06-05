@@ -36,6 +36,7 @@ namespace Graphics
 		Backbuffer,
 		GBuffer,
 		Deferred,
+		PostProcessing,
 		Count
 	};
 
@@ -48,7 +49,8 @@ namespace Graphics
 		SkyBox,
 		GBuffer,
 		Deferred,
-		PointLight
+		PointLight,
+		PostProcessing
 	};
 
 	enum class eTextureType

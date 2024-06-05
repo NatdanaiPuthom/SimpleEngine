@@ -53,6 +53,7 @@ namespace Graphics
 		CreateBackBuffer();
 		CreateGBuffer(aWindowSize);
 		CreateDeferredBuffer(aWindowSize);
+		CreatePostProcessingBuffer(aWindowSize);
 
 		CreateDepthBuffer(aWindowSize);
 		CreateDepthStencilState();
@@ -97,6 +98,7 @@ namespace Graphics
 	{
 		ClearDepthStencilView();
 		ClearGBuffer();
+		ClearPostProcessBuffer();
 		ClearLightBuffer();
 
 		UpdateCameraBuffer();
@@ -186,6 +188,16 @@ namespace Graphics
 		for (size_t i = 0; i < gBufferRenderTargets.size(); ++i)
 		{
 			myContext->ClearRenderTargetView(gBufferRenderTargets[i].renderTargetView.Get(), &myClearColor[0]);
+		}
+	}
+
+	void GraphicsEngine::ClearPostProcessBuffer()
+	{
+		const std::vector<RenderTarget>& postProcessRenderTargets = myRenderTargets[static_cast<size_t>(eRenderTargetType::PostProcessing)];
+
+		for (size_t i = 0; i < postProcessRenderTargets.size(); ++i)
+		{
+			myContext->ClearRenderTargetView(postProcessRenderTargets[i].renderTargetView.Get(), &myClearColor[0]);
 		}
 	}
 
@@ -339,6 +351,21 @@ namespace Graphics
 		myContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 		myContext->GSSetShader(nullptr, nullptr, 0);
 		myContext->Draw(3, 0);
+	}
+
+	void GraphicsEngine::RenderPostProcessing()
+	{
+		ID3D11ShaderResourceView* shaderResources[1] = {};
+		shaderResources[0] = GetRenderTargets(Graphics::eRenderTargetType::PostProcessing)[0].shaderResourceView.Get();
+		myContext->PSSetShaderResources(5, 1, shaderResources);
+
+		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::PostProcessing);
+		shader->BindThisShader(myContext.Get());
+
+		RenderFullScreenQuad();
+
+		ID3D11ShaderResourceView* nullViews = nullptr;
+		myContext->PSSetShaderResources(5, 1, &nullViews);
 	}
 
 	void GraphicsEngine::AddPointLight(const PointLightData& aPointLightData)
@@ -691,6 +718,9 @@ namespace Graphics
 		case eShaderType::PointLight:
 			shader = GetShader("PointLightCullPS.cso", "DefaultVS.cso");
 			break;
+		case eShaderType::PostProcessing:
+			shader = GetShader("PostProcessingVS.cso", "FullScreenVS.cso");
+			break;
 		default:
 			break;
 		}
@@ -863,11 +893,22 @@ namespace Graphics
 	{
 		std::array<DXGI_FORMAT, 1> formats =
 		{
-			DXGI_FORMAT_R16G16B16A16_FLOAT
+			DXGI_FORMAT_R32G32B32A32_FLOAT
 		};
 
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)] = std::vector<RenderTarget>();
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
+	}
+
+	void GraphicsEngine::CreatePostProcessingBuffer(const Math::Vector2ui aResolution)
+	{
+		std::array<DXGI_FORMAT, 1> formats =
+		{
+			DXGI_FORMAT_R32G32B32A32_FLOAT
+		};
+
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::PostProcessing)] = std::vector<RenderTarget>();
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::PostProcessing)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
 	std::vector<RenderTarget> GraphicsEngine::CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution)

@@ -109,9 +109,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		ecs.RenderPointLights();
 		PROFILER_END();
 
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
+		graphicsEngine.RenderDeferredImage();
+		
+
 		PROFILER_BEGIN("Render to BackBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
-		graphicsEngine.RenderDeferredImage();
+		graphicsEngine.RenderPostProcessing();
 		editor.Render();
 		PROFILER_END();
 

@@ -40,6 +40,7 @@ namespace Graphics
 		void RenderDeferredFromGBuffer();
 		void RenderDeferredImage();
 		void RenderFullScreenQuad();
+		void RenderPostProcessing();
 
 		void AddPointLight(const PointLightData& aPointLightData);
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
@@ -109,6 +110,7 @@ namespace Graphics
 		void CreateBonesBuffer();
 		void CreateGBuffer(const Math::Vector2ui aResolution);
 		void CreateDeferredBuffer(const Math::Vector2ui aResolution);
+		void CreatePostProcessingBuffer(const Math::Vector2ui aResolution);
 		void CreateBlendState();
 		std::vector<RenderTarget> CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution);
 	private:
@@ -118,6 +120,7 @@ namespace Graphics
 		void PreloadShaders();
 		void ClearLightBuffer();
 		void ClearGBuffer();
+		void ClearPostProcessBuffer();
 		void ClearDepthStencilView();
 		void UnbindAllRenderTargets();
 		void UpdateCameraBuffer();
