@@ -120,6 +120,53 @@ namespace Graphics
 		}
 	}
 
+	bool GraphicsEngine::BeginFrame()
+	{
+		MSG msg = { 0 };
+
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+
+			if (msg.message == WM_QUIT)
+			{
+				Global::SetGameShouldClose(true);
+				return false;
+			}
+		}
+
+		if (Impl::SimpleGlobalGraphics::GetShouldResizeWindow())
+		{
+			Impl::SimpleGlobalGraphics::ResizeWindow();
+		}
+
+		Impl::SimpleGlobalGraphics::UpdateFPSCounter();
+		Impl::SimpleGlobalGraphics::ResetDrawCalls();
+
+		PROFILER_BEGIN("ImGui BeginFrame");
+		myImGuiEngine->BeginFrame();
+		PROFILER_END();
+
+		PROFILER_BEGIN("Prepare Frame");
+		PrepareFrame();
+		PROFILER_END();
+
+		return true;
+	}
+
+	void GraphicsEngine::EndFrame()
+	{
+		PROFILER_BEGIN("ImGui Endframe");
+		myImGuiEngine->EndFrame();
+		PROFILER_END();
+
+		PROFILER_BEGIN("Present frame");
+		mySwapChain->Present(myFPSLevelCap, 0);
+
+		PROFILER_END();
+	}
+
 	void GraphicsEngine::LoadSettingsFromJson()
 	{
 		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME);
@@ -263,53 +310,6 @@ namespace Graphics
 		myLoadedShaders.emplace(std::make_pair(PSKey, VSKey), shader);
 
 		return true;
-	}
-
-	bool GraphicsEngine::BeginFrame()
-	{
-		MSG msg = { 0 };
-
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-
-			if (msg.message == WM_QUIT)
-			{
-				Global::SetGameShouldClose(true);
-				return false;
-			}
-		}
-
-		if (Impl::SimpleGlobalGraphics::GetShouldResizeWindow())
-		{
-			Impl::SimpleGlobalGraphics::ResizeWindow();
-		}
-
-		Impl::SimpleGlobalGraphics::UpdateFPSCounter();
-		Impl::SimpleGlobalGraphics::ResetDrawCalls();
-
-		PROFILER_BEGIN("ImGui BeginFrame");
-		myImGuiEngine->BeginFrame();
-		PROFILER_END();
-
-		PROFILER_BEGIN("Prepare Frame");
-		PrepareFrame();
-		PROFILER_END();
-
-		return true;
-	}
-
-	void GraphicsEngine::EndFrame()
-	{
-		PROFILER_BEGIN("ImGui Endframe");
-		myImGuiEngine->EndFrame();
-		PROFILER_END();
-
-		PROFILER_BEGIN("Present frame");
-		mySwapChain->Present(myFPSLevelCap, 0);
-
-		PROFILER_END();
 	}
 
 	void GraphicsEngine::RenderDeferredFromGBuffer()
