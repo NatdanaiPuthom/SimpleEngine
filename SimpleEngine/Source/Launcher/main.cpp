@@ -122,7 +122,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
 		graphicsEngine.RenderDeferredImage();
 		
-
 		PROFILER_BEGIN("Render to BackBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
 		graphicsEngine.RenderPostProcessing();
