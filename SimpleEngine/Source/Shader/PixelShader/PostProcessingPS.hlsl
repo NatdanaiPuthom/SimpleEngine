@@ -15,7 +15,7 @@ PixelOutput main(FullScreenVertexToPixel aInput)
     const float3 newExposureColor = exp2(exposure) * albedo;
     albedo = newExposureColor;
     
-    const float3 newContrast = 0.18 * pow(albedo / 0.18, constrast);
+    const float3 newContrast = 0.18 * pow(abs(albedo / 0.18), constrast);
     albedo = newContrast;
     
     const float3 newTint = tint * albedo;
