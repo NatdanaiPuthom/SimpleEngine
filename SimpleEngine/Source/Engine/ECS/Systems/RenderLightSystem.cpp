@@ -64,7 +64,7 @@ namespace ECS
 		const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
 		skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
-		graphicsEngine->SetDirectionalLightDirection((forward.GetNormalized()));
+		graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
 
 		{
 			PointLightData pointLight1;
@@ -88,6 +88,24 @@ namespace ECS
 
 			graphicsEngine->AddPointLight(pointLight3);
 		}
+
+		if (ImGui::Begin("DirectionalLight"))
+		{
+			Math::Transform& transform = directionalLightComponent->transform;
+			Math::Vector3f position = transform.GetPosition();
+			Math::Vector3f rotation = transform.GetRotation();
+
+			if (ImGui::DragFloat3("Position", &position.x))
+			{
+				transform.SetPosition(position);
+			}
+
+			if (ImGui::DragFloat3("Rotation", &rotation.x))
+			{
+				transform.SetRotation(rotation);
+			}
+		}
+		ImGui::End();
 	}
 
 	void RenderLightSystem::Render()
