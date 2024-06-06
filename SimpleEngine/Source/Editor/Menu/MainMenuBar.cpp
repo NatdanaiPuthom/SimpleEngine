@@ -42,34 +42,45 @@ namespace Editor
 	{
 		Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
 
-		if (inputManager.IsKeyPressed(VK_F1))
-		{
-			myEditorWindowActive = !myEditorWindowActive;
-		}
+		bool* windowActive[] = { &myEditorWindowActive, &myDeferredWindowActive, &myPostProcessWindowActive, &myStaticNodeScriptWindowActive };
+		const char* windowNames[] = { "Editor", "Deferred", "PostProcess", "NodeScript" };
+		const char* keyShortCuts[] = { "F1", "F2", "F3", "F4" };
 
-		if (inputManager.IsKeyPressed(VK_F2))
+		for (int i = 0; i < sizeof(windowActive) / sizeof(windowActive[0]); ++i)
 		{
-			myDeferredWindowActive = !myDeferredWindowActive;
-		}
+			if (inputManager.IsKeyPressed(VK_F1 + i))
+			{
+				*windowActive[i] = !(*windowActive[i]);
 
-		if (inputManager.IsKeyPressed(VK_F3))
-		{
-			myPostProcessWindowActive = !myPostProcessWindowActive;
-		}
-
-		if (inputManager.IsKeyPressed(VK_F4))
-		{
-			myStaticNodeScriptWindowActive = !myStaticNodeScriptWindowActive;
+				for (int j = 0; j < sizeof(windowActive) / sizeof(windowActive[0]); ++j)
+				{
+					if (j != i)
+					{
+						*windowActive[j] = false;
+					}
+				}
+			}
 		}
 
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu("Windows"))
 			{
-				ImGui::MenuItem("Editor", "F1", &myEditorWindowActive);
-				ImGui::MenuItem("Deferred", "F2", &myDeferredWindowActive);
-				ImGui::MenuItem("PostProcess", "F3", &myPostProcessWindowActive);
-				ImGui::MenuItem("NodeScript", "F4", &myStaticNodeScriptWindowActive);
+				for (unsigned int i = 0; i < sizeof(windowActive) / sizeof(windowActive[0]); ++i)
+				{
+					if (ImGui::MenuItem(windowNames[i], keyShortCuts[i], *&windowActive[i]))
+					{
+						std::cout << "hello" << std::endl;
+						for (unsigned int j = 0; j < sizeof(windowActive) / sizeof(windowActive[0]); ++j)
+						{
+							if (j != i)
+							{
+								*windowActive[j] = false;
+							}
+						}
+					}
+				}
+
 				ImGui::EndMenu();
 			}
 
