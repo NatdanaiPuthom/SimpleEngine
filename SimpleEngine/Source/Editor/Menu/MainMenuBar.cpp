@@ -4,14 +4,16 @@
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/Windows/AssetWindow.hpp"
 #include "Editor/Windows/DeferredSceneWindow.hpp"
+#include "Editor/Windows/PostProcessingWindow.hpp"
 
 namespace Editor
 {
-	bool MainMenuBar::staticNodeScriptWindowActive = false;
+	bool MainMenuBar::myStaticNodeScriptWindowActive = false;
 
 	MainMenuBar::MainMenuBar()
 		: myEditorWindowActive(false)
 		, myDeferredWindowActive(false)
+		, myPostProcessWindowActive(false)
 	{
 	}
 
@@ -25,6 +27,7 @@ namespace Editor
 		myAssetWindow = std::make_unique<AssetWindow>();
 		myHierarchyWindow = std::make_unique<HierarchyWindow>();
 		myDeferredSceneWindow = std::make_unique<DeferredSceneWindow>();
+		myPostProcessWindow = std::make_unique<PostProcessingWindow>();
 
 		LoadSettingsFromJson();
 
@@ -32,6 +35,7 @@ namespace Editor
 		myAssetWindow->Init();
 		myHierarchyWindow->Init();
 		myDeferredSceneWindow->Init();
+		myPostProcessWindow->Init();
 	}
 
 	void MainMenuBar::Update()
@@ -50,7 +54,12 @@ namespace Editor
 
 		if (inputManager.IsKeyPressed(VK_F3))
 		{
-			staticNodeScriptWindowActive = !staticNodeScriptWindowActive;
+			myPostProcessWindowActive = !myPostProcessWindowActive;
+		}
+
+		if (inputManager.IsKeyPressed(VK_F4))
+		{
+			myStaticNodeScriptWindowActive = !myStaticNodeScriptWindowActive;
 		}
 
 		if (ImGui::BeginMainMenuBar())
@@ -59,7 +68,8 @@ namespace Editor
 			{
 				ImGui::MenuItem("Editor", "F1", &myEditorWindowActive);
 				ImGui::MenuItem("Deferred", "F2", &myDeferredWindowActive);
-				ImGui::MenuItem("NodeScript", "F3", &staticNodeScriptWindowActive);
+				ImGui::MenuItem("PostProcess", "F3", &myPostProcessWindowActive);
+				ImGui::MenuItem("NodeScript", "F4", &myStaticNodeScriptWindowActive);
 				ImGui::EndMenu();
 			}
 
@@ -101,6 +111,11 @@ namespace Editor
 		if (myDeferredWindowActive == true)
 		{
 			myDeferredSceneWindow->Draw();
+		}
+
+		if (myPostProcessWindowActive == true)
+		{
+			myPostProcessWindow->Draw();
 		}
 	}
 

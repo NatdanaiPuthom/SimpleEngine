@@ -699,7 +699,7 @@ namespace Graphics
 			shader = GetShader("PointLightCullPS.cso", "DefaultVS.cso");
 			break;
 		case eShaderType::PostProcessing:
-			shader = GetShader("PostProcessingVS.cso", "FullScreenVS.cso");
+			shader = GetShader("PostProcessingPS.cso", "FullScreenVS.cso");
 			break;
 		default:
 			break;

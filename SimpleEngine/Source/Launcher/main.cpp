@@ -94,16 +94,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		editor.Update();
 		PROFILER_END();
 
-		if (ImGui::Begin("PostProcess"))
-		{
-			ImGui::ColorPicker3("Tint", &graphicsEngine.myPostProcessData.tint.x);
-			ImGui::DragFloat("Saturation", &graphicsEngine.myPostProcessData.saturation, 0.01f);
-			ImGui::DragFloat("Exposure", &graphicsEngine.myPostProcessData.exposure, 0.01f);
-			ImGui::DragFloat("Constract", &graphicsEngine.myPostProcessData.contrast, 0.01f);
-			ImGui::DragFloat("Blackpoint", &graphicsEngine.myPostProcessData.blackpoint, 0.01f);
-		}
-		ImGui::End();
-
 		PROFILER_BEGIN("Render To GBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
 		ecs.Render();
