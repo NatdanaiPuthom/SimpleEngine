@@ -17,15 +17,29 @@ float4 PBRColor(float3 aPosition, float3 aAlbedo, float3 aVertexNormal, float3 a
     const float3 diffuseColor = lerp((float3) 0.00f, albedo.rgb, 1 - metalness);
     
     const float3 cubemapAmbiance = EvaluateAmbiance(
-		GlobalCubeMap, pixelNormal, vertexNormal,
-		toEye, roughness,
-		aAmbientOcclusion, diffuseColor, specularColor
+		GlobalCubeMap,
+        pixelNormal,
+        vertexNormal,
+		toEye,
+        roughness,
+		aAmbientOcclusion,
+        diffuseColor,
+        specularColor
 	);
+   
+    const float3 directionalLightColor = EvaluateDirectionalLight(
+        diffuseColor,
+        specularColor,
+        pixelNormal,
+        roughness,
+        directionalLightColorAndIntensity.xyz,
+        directionLightDirection,
+        toEye
+    );
     
     const float3 emissiveAlbedo = albedo.rgb * emissive;
     const float3 ambientColor = ambientLightColorAndIntensity.rgb;
-    
-    const float3 radiance = diffuseColor * ambientColor + cubemapAmbiance + emissiveAlbedo;
+    const float3 radiance = cubemapAmbiance + directionalLightColor + emissiveAlbedo;
     
     return float4(radiance, 1.0f);
 }
@@ -36,7 +50,7 @@ PixelOutput main(FullScreenVertexToPixel aInput)
     
     const float2 uv = aInput.position.xy / resolution.xy;
     
-    const  float3 position = GlobalBufferPositionTexture.Sample(GlobalDefaultSampler, uv).rgb;
+    const float3 position = GlobalBufferPositionTexture.Sample(GlobalDefaultSampler, uv).rgb;
     const float3 albedo = GlobalBufferAlbedoTexture.Sample(GlobalDefaultSampler, uv).rgb;
     const float3 pixelNormal = normalize(2.0f * GlobalBufferNormalTexture.Sample(GlobalDefaultSampler, uv).xyz - 1.0f);
     const float3 material = GlobalBufferMaterialTexture.Sample(GlobalDefaultSampler, uv).rgb;
