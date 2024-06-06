@@ -580,6 +580,11 @@ namespace Graphics
 		myLightBufferData->ambientLightColorAndIntensity = aColorAndIntensity;
 	}
 
+	void GraphicsEngine::SetUseToneMapping(const bool aShouldUseToneMapping)
+	{
+		myPostProcessData.useToneMapping = aShouldUseToneMapping;
+	}
+
 	void GraphicsEngine::SetSaturation(const float aValue)
 	{
 		myPostProcessData.saturation = aValue;

@@ -63,6 +63,7 @@ namespace Graphics
 		void SetDirectionalLightDirection(const Math::Vector3f& aDirection);
 		void SetDirectionalLightColor(const Math::Vector4f& aColor);
 		void SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity);
+		void SetUseToneMapping(const bool aShouldUseToneMapping);
 		void SetSaturation(const float aValue);
 		void SetExposure(const float aValue);
 		void SetContrast(const float aValue);

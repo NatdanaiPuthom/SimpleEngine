@@ -13,14 +13,14 @@ struct alignas(16) PointLightData final
 };
 
 struct alignas(16) PostProcessData final
-{
+{ //NOTE(v10.0.5): SimpleEngine default value
 	Math::Vector3f tint = { 1.0f, 1.0f, 1.0f };
-	float saturation = 1.0f;
+	float saturation = 1.070f;
 
-	float exposure = 0.0f;
-	float contrast = 1.0f;
-	float blackpoint = 0.0f;
-	const float paddingPostProcess[1] = { -1.0f };
+	float exposure = 0.060f;
+	float contrast = 0.970f;
+	float blackpoint = 0.020f;
+	unsigned int useToneMapping = 0;
 };
 
 struct alignas(16) CameraBufferData final

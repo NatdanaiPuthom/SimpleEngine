@@ -20,7 +20,7 @@ namespace Editor
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		const PostProcessData& postProcessData = graphicsEngine->GetPostProcessData();
 
-		if (ImGui::Begin("PostProcess", 0, ImGuiWindowFlags_NoMove || ImGuiWindowFlags_NoResize))
+		if (ImGui::Begin("PostProcess", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
 		{
 			Math::Vector3f tintValue = postProcessData.tint;
 			if (ImGui::ColorPicker3("Tint", &tintValue.x))
@@ -41,7 +41,7 @@ namespace Editor
 			}
 
 			float contrast = postProcessData.contrast;
-			if (ImGui::DragFloat("Constract", &contrast, 0.01f))
+			if (ImGui::DragFloat("Contrast", &contrast, 0.01f))
 			{
 				graphicsEngine->SetContrast(contrast);
 			}
@@ -51,11 +51,17 @@ namespace Editor
 			{
 				graphicsEngine->SetBlackPoint(blackpoint);
 			}
+
+			bool useToneMapping = static_cast<bool>(postProcessData.useToneMapping);
+			if (ImGui::Checkbox("Use ACES Film ToneMapping", &useToneMapping))
+			{
+				graphicsEngine->SetUseToneMapping(useToneMapping);
+			}
 		}
 
 		ImGui::End();
 
-		if (ImGui::Begin("PostProcessImage", 0, ImGuiWindowFlags_NoMove || ImGuiWindowFlags_NoResize))
+		if (ImGui::Begin("PostProcessImage", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
 		{
 			const ImVec2 windowSize = ImGui::GetWindowSize();
 

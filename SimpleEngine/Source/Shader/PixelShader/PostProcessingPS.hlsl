@@ -9,22 +9,18 @@ PixelOutput main(FullScreenVertexToPixel aInput)
     float3 albedo = GlobalBufferAlbedoTexture.Sample(GlobalDefaultSampler, uv).rgb;
       
     const float luminance = dot(float3(0.2126, 0.7152, 0.0722), albedo);
-    const float3 newSaturationColor = luminance + saturation * (albedo - luminance);
-    albedo = newSaturationColor;
     
-    const float3 newExposureColor = exp2(exposure) * albedo;
-    albedo = newExposureColor;
+    albedo = luminance + saturation * (albedo - luminance); //NOTE(v10.0.5): Apply saturation
+    albedo = exp2(exposure) * albedo; //NOTE(v10.0.5): Apply exposure 
+    albedo = 0.18 * pow(abs(albedo / 0.18), contrast); //NOTE(v10.0.5): Apply contrast
+    albedo *= tint; //NOTE(v10.0.5): Apply tint
+    albedo = max(0.0f, albedo - blackpoint); //NOTE(v10.0.5): Apply blackpoint
     
-    const float3 newContrast = 0.18 * pow(abs(albedo / 0.18), constrast);
-    albedo = newContrast;
-    
-    const float3 newTint = tint * albedo;
-    albedo = newTint;
-    
-    const float3 newBlackPoint = max(0.0f, albedo - blackpoint);
-    albedo = newBlackPoint;
-    
-   //albedo = tonemap_s_gamut3_cine(albedo); //NOTE(v10.0.4): This look trash
+    if (useToneMapping)
+    {
+        //albedo = tonemap_s_gamut3_cine(albedo); //NOTE(v10.0.4): This look trash
+        albedo = ACESFilm(albedo); //NOTE(v10.0.5): This also look trash
+    }
     
     output.color = float4(albedo, 1.0f);
     return output;
