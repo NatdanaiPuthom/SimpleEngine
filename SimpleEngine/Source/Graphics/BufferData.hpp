@@ -12,7 +12,7 @@ struct alignas(16) PointLightData final
 	float radius = 0.0f;
 };
 
-struct alignas(16) PostProcessingData final
+struct alignas(16) PostProcessData final
 {
 	Math::Vector3f tint = { 1.0f, 1.0f, 1.0f };
 	float saturation = 1.0f;

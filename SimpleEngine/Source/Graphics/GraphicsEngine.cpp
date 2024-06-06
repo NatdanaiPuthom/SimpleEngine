@@ -109,7 +109,7 @@ namespace Graphics
 
 		{
 			myPostProcessConstantBuffer->Bind(myPostProcessConstantBuffer->GetSlot());
-			myPostProcessConstantBuffer->Update(sizeof(PostProcessingData), &myPostProcessData);
+			myPostProcessConstantBuffer->Update(sizeof(PostProcessData), &myPostProcessData);
 		}
 	}
 
@@ -570,6 +570,31 @@ namespace Graphics
 		myLightBufferData->ambientLightColorAndIntensity = aColorAndIntensity;
 	}
 
+	void GraphicsEngine::SetSaturation(const float aValue)
+	{
+		myPostProcessData.saturation = aValue;
+	}
+
+	void GraphicsEngine::SetExposure(const float aValue)
+	{
+		myPostProcessData.exposure = aValue;
+	}
+
+	void GraphicsEngine::SetContrast(const float aValue)
+	{
+		myPostProcessData.contrast = aValue;
+	}
+
+	void GraphicsEngine::SetBlackPoint(const float aValue)
+	{
+		myPostProcessData.blackpoint = aValue;
+	}
+
+	void GraphicsEngine::SetTint(const Math::Vector3f& aColor)
+	{
+		myPostProcessData.tint = aColor;
+	}
+
 	std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const char* aFilePath)
 	{
 		auto it = myLoadedTextures.find(aFilePath);
@@ -776,6 +801,11 @@ namespace Graphics
 	unsigned int GraphicsEngine::GetFPSLevelCap() const
 	{
 		return myFPSLevelCap;
+	}
+
+	const PostProcessData& GraphicsEngine::GetPostProcessData() const
+	{
+		return myPostProcessData;
 	}
 
 	void GraphicsEngine::CreateViewport(const Math::Vector2ui aSize)
@@ -1110,7 +1140,7 @@ namespace Graphics
 
 	void GraphicsEngine::CreatePostProcessingConstantBuffer()
 	{
-		PostProcessingData postProcessingData;
+		PostProcessData postProcessingData;
 
 		if (myPostProcessConstantBuffer->Init(sizeof(LightBufferData), &postProcessingData) == false)
 		{

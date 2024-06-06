@@ -27,9 +27,6 @@ namespace Graphics
 	class GraphicsEngine final
 	{
 	public:
-		PostProcessingData myPostProcessData;
-
-	public:
 		GraphicsEngine();
 		~GraphicsEngine();
 
@@ -61,6 +58,11 @@ namespace Graphics
 		void SetDirectionalLightDirection(const Math::Vector3f& aDirection);
 		void SetDirectionalLightColor(const Math::Vector4f& aColor);
 		void SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity);
+		void SetSaturation(const float aValue);
+		void SetExposure(const float aValue);
+		void SetContrast(const float aValue);
+		void SetBlackPoint(const float aValue);
+		void SetTint(const Math::Vector3f& aColor);
 		void SetVSync(const bool aShouldTurnOn);
 		void SetFPSLevelCap(const unsigned int aCapLevel);
 
@@ -108,6 +110,9 @@ namespace Graphics
 		size_t GetPointLightCount() const;
 
 		unsigned int GetFPSLevelCap() const;
+
+		const PostProcessData& GetPostProcessData() const;
+
 	private:
 		void CreateViewport(const Math::Vector2ui aSize);
 
@@ -154,6 +159,8 @@ namespace Graphics
 		std::array<ComPtr<ID3D11DepthStencilState>, static_cast<size_t>(eDepthStencilState::Count)> myDepthStencilStates;
 		std::array<ComPtr<ID3D11BlendState>, static_cast<size_t>(eBlendState::Count)> myBlendStates;
 		std::array<float, 4> myClearColor;
+
+		PostProcessData myPostProcessData;
 
 		ComPtr<ID3D11Device> myDevice;
 		ComPtr<ID3D11DeviceContext> myContext;

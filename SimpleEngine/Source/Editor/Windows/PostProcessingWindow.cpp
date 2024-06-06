@@ -18,14 +18,39 @@ namespace Editor
 	void Editor::PostProcessingWindow::Draw()
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		const PostProcessData& postProcessData = graphicsEngine->GetPostProcessData();
 
 		if (ImGui::Begin("PostProcess"))
 		{
-			ImGui::ColorPicker3("Tint", &graphicsEngine->myPostProcessData.tint.x);
-			ImGui::DragFloat("Saturation", &graphicsEngine->myPostProcessData.saturation, 0.01f);
-			ImGui::DragFloat("Exposure", &graphicsEngine->myPostProcessData.exposure, 0.01f);
-			ImGui::DragFloat("Constract", &graphicsEngine->myPostProcessData.contrast, 0.01f);
-			ImGui::DragFloat("Blackpoint", &graphicsEngine->myPostProcessData.blackpoint, 0.01f);
+			Math::Vector3f tintValue = postProcessData.tint;
+			if (ImGui::ColorPicker3("Tint", &tintValue.x))
+			{
+				graphicsEngine->SetTint(tintValue);
+			}
+
+			float saturation = postProcessData.saturation;
+			if (ImGui::DragFloat("Saturation", &saturation, 0.01f))
+			{
+				graphicsEngine->SetSaturation(saturation);
+			}
+
+			float exposure = postProcessData.exposure;
+			if (ImGui::DragFloat("Exposure", &exposure, 0.01f))
+			{
+				graphicsEngine->SetExposure(exposure);
+			}
+
+			float contrast = postProcessData.contrast;
+			if (ImGui::DragFloat("Constract", &contrast, 0.01f))
+			{
+				graphicsEngine->SetContrast(contrast);
+			}
+
+			float blackpoint = postProcessData.blackpoint;
+			if (ImGui::DragFloat("Blackpoint", &blackpoint, 0.01f))
+			{
+				graphicsEngine->SetBlackPoint(blackpoint);
+			}
 		}
 
 		ImGui::End();
