@@ -27,11 +27,6 @@ namespace Editor
 				graphicsEngine->GetCurrentCamera()->SetMoveSpeed(speed);
 			}
 
-			ImGui::SameLine();
-			ImGui::Dummy(ImVec2(100, 0));
-			ImGui::SameLine();
-			ImGui::Text("Click and Hold to select the scene object. Move object using mouse");
-
 			ImGui::Text("FreeFly      - TAB");
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(107, 0));
@@ -43,11 +38,6 @@ namespace Editor
 			{
 				graphicsEngine->GetCurrentCamera()->SetRotateSpeed(rotationSpeed);
 			}
-
-			ImGui::SameLine();
-			ImGui::Dummy(ImVec2(30, 0));
-			ImGui::SameLine();
-			ImGui::Text("While object is selected, hold CTRL to move object up/down.");
 
 			ImGui::Text("Speedx5      - Hold Shift");
 
@@ -69,6 +59,7 @@ namespace Editor
 			ImGui::Text("Rotate Up    - C");
 			ImGui::Text("Rotate Down  - Z");
 			ImGui::Text("Movespeed    - Scroll");
+			ImGui::Text("FreeFly      - Hold Right-Click");
 		}
 		ImGui::End();
 	}
