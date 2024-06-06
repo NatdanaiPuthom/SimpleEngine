@@ -24,7 +24,7 @@ PixelOutput main(FullScreenVertexToPixel aInput)
     const float3 newBlackPoint = max(0.0f, albedo - blackpoint);
     albedo = newBlackPoint;
     
-    //albedo = tonemap_s_gamut3_cine(albedo); //NOTE(v10.0.4): This look trash
+   //albedo = tonemap_s_gamut3_cine(albedo); //NOTE(v10.0.4): This look trash
     
     output.color = float4(albedo, 1.0f);
     return output;

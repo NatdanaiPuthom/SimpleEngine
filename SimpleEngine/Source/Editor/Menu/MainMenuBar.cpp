@@ -70,7 +70,6 @@ namespace Editor
 				{
 					if (ImGui::MenuItem(windowNames[i], keyShortCuts[i], *&windowActive[i]))
 					{
-						std::cout << "hello" << std::endl;
 						for (unsigned int j = 0; j < sizeof(windowActive) / sizeof(windowActive[0]); ++j)
 						{
 							if (j != i)
