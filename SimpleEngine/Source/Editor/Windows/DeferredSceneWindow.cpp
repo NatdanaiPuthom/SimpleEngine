@@ -17,7 +17,13 @@ namespace Editor
 
 	void Editor::DeferredSceneWindow::Draw()
 	{
+		static constexpr float aspectRatio = 16.0f / 9.0f; //TO-DO(v10.0.4): should read from some json file
+
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+
+		const ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+		const float quadWidth = screenSize.x / 3.0f;
+		const float quadHeight = screenSize.y / 2.0f;
 
 		for (size_t i = 0; i < Graphics::Global_GBuffer_Count; ++i)
 		{
@@ -45,21 +51,41 @@ namespace Editor
 				break;
 			}
 
-			if (ImGui::Begin(name.c_str()))
+			ImGui::SetNextWindowSize(ImVec2(quadWidth, quadHeight), ImGuiCond_Always);
+
+			if (ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 			{
-				const ImVec2 windowSize = ImGui::GetWindowSize();
+				float newWidth = quadWidth;
+				float newHeight = newWidth / aspectRatio;
+
+				if (newHeight > quadHeight)
+				{
+					newHeight = quadHeight;
+					newWidth = newHeight * aspectRatio;
+				}
+
 				ImTextureID texture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::GBuffer, i).Get();
-				ImGui::Image(texture, windowSize);
+				ImGui::Image(texture, ImVec2(newWidth, newHeight));
 			}
 
 			ImGui::End();
 		}
 
-		if (ImGui::Begin("Deferred"))
+		ImGui::SetNextWindowSize(ImVec2(quadWidth, quadHeight), ImGuiCond_Always);
+
+		if (ImGui::Begin("Deferred", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 		{
-			const ImVec2 windowSize = ImGui::GetWindowSize();
+			float newWidth = quadWidth;
+			float newHeight = newWidth / aspectRatio;
+
+			if (newHeight > quadHeight)
+			{
+				newHeight = quadHeight;
+				newWidth = newHeight * aspectRatio;
+			}
+
 			ImTextureID texture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::Deferred, 0).Get();
-			ImGui::Image(texture, windowSize);
+			ImGui::Image(texture, ImVec2(newWidth, newHeight));
 		}
 
 		ImGui::End();
