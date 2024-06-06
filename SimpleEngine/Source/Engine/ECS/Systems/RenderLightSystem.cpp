@@ -68,9 +68,9 @@ namespace ECS
 
 		{
 			PointLightData pointLight1;
-			pointLight1.color = { 1.0f, 1.0f, 1.0f, 25.0f };
+			pointLight1.color = { 1.0f, 1.0f, 1.0f, 5.0f };
 			pointLight1.position = { -3.5f, 2.0f, 0.0f };
-			pointLight1.radius = 1.5f;
+			pointLight1.radius = 2.5f;
 
 			graphicsEngine->AddPointLight(pointLight1);
 
@@ -83,8 +83,8 @@ namespace ECS
 
 			PointLightData pointLight3;
 			pointLight3.color = { 1.0f, 0.0f, 0.0f, 10.0f };
-			pointLight3.position = { -1.75f, 2.5f, -1.25f };
-			pointLight3.radius = 2.0f;
+			pointLight3.position = { -1.75f, 2.8f, -1.25f };
+			pointLight3.radius = 5.0f;
 
 			graphicsEngine->AddPointLight(pointLight3);
 		}
