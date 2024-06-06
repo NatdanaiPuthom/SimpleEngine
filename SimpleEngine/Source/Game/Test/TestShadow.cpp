@@ -33,8 +33,8 @@ namespace Test
 			floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Normal] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_DefaultMaterial_N.dds").get();
 			floor->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_DefaultMaterial_M.dds").get();
 			floor->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->LoadMesh("Assets\\Models\\StaticModels\\SM_DefaultCube_1x1.fbx");
-			floor->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f, 0.0f, 0.2f });
-			floor->GetComponent<TransformComponent>()->transform.SetScale({ 10.0f, 1.0f, 10.0f });
+			floor->GetComponent<TransformComponent>()->transform.SetPosition({ -1.25f, 0.0f, 0.0f });
+			floor->GetComponent<TransformComponent>()->transform.SetScale({ 4.0f, 1.0f, 4.0f });
 		}
 
 		{
@@ -47,9 +47,8 @@ namespace Test
 			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Albedo] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_Particle_Chest_C.dds").get();
 			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Normal] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_Particle_Chest_N.dds").get();
 			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_Particle_Chest_M.dds").get();
-			chest->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->LoadMesh("Assets\\Models\\StaticModels\\Particle_Chest.fbx");
-			chest->GetComponent<TransformComponent>()->transform.SetPosition({ -5.0f, 1.0f, 0.0f });
-			chest->GetComponent<TransformComponent>()->transform.SetScale(0.01f);
+			chest->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->LoadMesh("Assets\\Models\\StaticModels\\SM_Particle_Chest.fbx");
+			chest->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f, 1.0f, 0.0f });
 		}
 
 		graphicsEngine->GetCurrentCamera()->SetPosition({ 0.0f,6.0f,-9.0f });
