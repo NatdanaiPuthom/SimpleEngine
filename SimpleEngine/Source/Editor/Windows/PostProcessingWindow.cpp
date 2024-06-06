@@ -20,7 +20,7 @@ namespace Editor
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		const PostProcessData& postProcessData = graphicsEngine->GetPostProcessData();
 
-		if (ImGui::Begin("PostProcess", 0, ImGuiWindowFlags_NoMove))
+		if (ImGui::Begin("PostProcess", 0, ImGuiWindowFlags_NoMove || ImGuiWindowFlags_NoResize))
 		{
 			Math::Vector3f tintValue = postProcessData.tint;
 			if (ImGui::ColorPicker3("Tint", &tintValue.x))
@@ -55,7 +55,7 @@ namespace Editor
 
 		ImGui::End();
 
-		if (ImGui::Begin("PostProcessImage", 0, ImGuiWindowFlags_NoMove))
+		if (ImGui::Begin("PostProcessImage", 0, ImGuiWindowFlags_NoMove || ImGuiWindowFlags_NoResize))
 		{
 			const ImVec2 windowSize = ImGui::GetWindowSize();
 
