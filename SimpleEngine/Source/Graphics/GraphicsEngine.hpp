@@ -38,15 +38,20 @@ namespace Graphics
 		bool IsVSyncActive() const;
 
 		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
-		void RenderDeferredFromGBuffer();
+		void ApplyAmbientAndDirectionalLightDeferred(const eRenderTargetType aRenderTargetType);
 
-		//NOTE(v10.0.): I have no clue what I am doing but it works for now
-		void RenderDeferredImage();
-
+		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
 		void RenderFullScreenQuad();
-		void RenderPostProcessing();
 
+		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
+		void RenderFullScreenCopy(const eRenderTargetType aRenderTargetType);
+
+		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
+		void ApplyPostProcessing(const eRenderTargetType aRenderTargetType);
+	
+		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
 		void AddPointLight(const PointLightData& aPointLightData);
+
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 

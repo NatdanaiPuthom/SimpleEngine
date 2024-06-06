@@ -50,7 +50,8 @@ namespace Graphics
 		GBuffer,
 		Deferred,
 		PointLight,
-		PostProcessing
+		PostProcessing,
+		Copy
 	};
 
 	enum class eTextureType

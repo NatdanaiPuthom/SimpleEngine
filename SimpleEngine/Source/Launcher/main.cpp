@@ -102,19 +102,21 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		PROFILER_BEGIN("Render To DeferredBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred);
-		graphicsEngine.RenderDeferredFromGBuffer();
+		graphicsEngine.ApplyAmbientAndDirectionalLightDeferred(Graphics::eRenderTargetType::GBuffer);
 
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
-		ecs.RenderSkyBoxAndDirectionalLight();
 		ecs.RenderPointLights();
+		ecs.RenderSkyBoxAndDirectionalLight(); //NOTE(v10.0.4): skybox and directional light visual is rendering last so these visual models do not get affected by other light sources
 		PROFILER_END();
 
+		PROFILER_BEGIN("Render To PostProcessingBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
-		graphicsEngine.RenderDeferredImage();
-		
+		graphicsEngine.ApplyPostProcessing(Graphics::eRenderTargetType::Deferred);
+		PROFILER_END();
+
 		PROFILER_BEGIN("Render to BackBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
-		graphicsEngine.RenderPostProcessing();
+		graphicsEngine.RenderFullScreenCopy(Graphics::eRenderTargetType::PostProcessing);
 		editor.Render();
 		PROFILER_END();
 

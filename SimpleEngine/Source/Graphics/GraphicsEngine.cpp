@@ -21,6 +21,7 @@ namespace Graphics
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
 		, myFPSLevelCap(0)
+		, myCurrentRasterizerState(eRasterizerState::BackfaceCulling)
 	{
 	}
 
@@ -222,6 +223,15 @@ namespace Graphics
 
 		if (!AddShader("DeferredPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
+
+		if (!AddShader("PointLightCullPS.cso", "DefaultVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("PostProcessingPS.cso", "FullScreenVS.cso"))
+			assert(false && "Failed to add Shader");
+	
+		if (!AddShader("FullScreenCopyPS.cso", "FullScreenVS.cso"))
+			assert(false && "Failed to add Shader");
 	}
 
 	void GraphicsEngine::ClearPointLightCount()
@@ -295,11 +305,11 @@ namespace Graphics
 		return true;
 	}
 
-	void GraphicsEngine::RenderDeferredFromGBuffer()
+	void GraphicsEngine::ApplyAmbientAndDirectionalLightDeferred(const eRenderTargetType aRenderTargetType)
 	{
 		static constexpr size_t gBufferCount = Global_GBuffer_Count;
 
-		std::vector<Graphics::RenderTarget>& gBuffers = myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)];
+		std::vector<Graphics::RenderTarget>& gBuffers = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
 
 		ID3D11ShaderResourceView* shaderResources[gBufferCount] = {};
 
@@ -319,21 +329,6 @@ namespace Graphics
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, gBufferCount, nullSRVs);
 	}
 
-	void GraphicsEngine::RenderDeferredImage()
-	{
-		ID3D11ShaderResourceView* shaderResources[1] = {};
-		shaderResources[0] = GetRenderTargets(Graphics::eRenderTargetType::Deferred)[0].shaderResourceView.Get();
-		myContext->PSSetShaderResources(5, 1, shaderResources);
-
-		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Deferred);
-		shader->BindThisShader(myContext.Get());
-
-		RenderFullScreenQuad();
-
-		ID3D11ShaderResourceView* nullViews = nullptr;
-		myContext->PSSetShaderResources(5, 1, &nullViews);
-	}
-
 	void GraphicsEngine::RenderFullScreenQuad()
 	{
 		myContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -344,11 +339,11 @@ namespace Graphics
 		myContext->Draw(3, 0);
 	}
 
-	void GraphicsEngine::RenderPostProcessing()
+	void GraphicsEngine::ApplyPostProcessing(const eRenderTargetType aRenderTargetType)
 	{
 		ID3D11ShaderResourceView* shaderResources[1] = {};
-		shaderResources[0] = GetRenderTargets(Graphics::eRenderTargetType::PostProcessing)[0].shaderResourceView.Get();
-		myContext->PSSetShaderResources(5, 1, shaderResources);
+		shaderResources[0] = GetRenderTargets(aRenderTargetType)[0].shaderResourceView.Get();
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
 		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::PostProcessing);
 		shader->BindThisShader(myContext.Get());
@@ -356,7 +351,22 @@ namespace Graphics
 		RenderFullScreenQuad();
 
 		ID3D11ShaderResourceView* nullViews = nullptr;
-		myContext->PSSetShaderResources(5, 1, &nullViews);
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+	}
+
+	void GraphicsEngine::RenderFullScreenCopy(const eRenderTargetType aRenderTargetType)
+	{
+		ID3D11ShaderResourceView* shaderResources[1] = {};
+		shaderResources[0] = GetRenderTargets(aRenderTargetType)[0].shaderResourceView.Get();
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);	
+
+		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Copy);
+		shader->BindThisShader(myContext.Get());
+
+		RenderFullScreenQuad();
+
+		ID3D11ShaderResourceView* nullViews = nullptr;
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 	}
 
 	void GraphicsEngine::AddPointLight(const PointLightData& aPointLightData)
@@ -725,6 +735,9 @@ namespace Graphics
 			break;
 		case eShaderType::PostProcessing:
 			shader = GetShader("PostProcessingPS.cso", "FullScreenVS.cso");
+			break;
+		case eShaderType::Copy:
+			shader = GetShader("FullScreenCopyPS.cso", "FullScreenVS.cso");
 			break;
 		default:
 			break;
