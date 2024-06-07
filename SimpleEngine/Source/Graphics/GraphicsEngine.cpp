@@ -1047,7 +1047,12 @@ namespace Graphics
 		HRESULT result = mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBufferTexture);
 		assert(SUCCEEDED(result) && "Failed to get Backbuffer");
 
-		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)][0].renderTargetView.GetAddressOf());
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D.MipSlice = 0;
+
+		result = myDevice->CreateRenderTargetView(backBufferTexture, &rtvDesc, myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)][0].renderTargetView.GetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create Backbuffer");
 
 		backBufferTexture->Release();
