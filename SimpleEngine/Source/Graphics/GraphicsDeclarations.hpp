@@ -61,6 +61,7 @@ namespace Graphics
 		PointLight,
 		PostProcessing,
 		DownScale,
+		GaussianBlur_Y,
 		Bloom,
 		Copy
 	};
