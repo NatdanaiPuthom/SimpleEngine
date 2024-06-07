@@ -60,9 +60,9 @@ namespace Graphics
 		Deferred,
 		PointLight,
 		PostProcessing,
-		DownScale,
-		GaussianBlur_Y,
+		GaussianBlur,
 		Bloom,
+		BloomPixelFilter,
 		Copy
 	};
 

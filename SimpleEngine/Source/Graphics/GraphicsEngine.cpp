@@ -20,9 +20,8 @@ namespace Graphics
 	void GraphicsEngine::TestBloom()
 	{
 		SetRenderTarget(eRenderTargetType::BloomTempChangeMeAfter);
-		//RenderFullScreenCopy(eRenderTargetType::Deferred);
 
-		auto testShader = GetShader("TestLightFilterPS.cso", "FullScreenVS.cso");
+		auto testShader = GetShader(eShaderType::BloomPixelFilter);
 		testShader->BindThisShader(myContext.Get());
 
 
@@ -85,7 +84,7 @@ namespace Graphics
 
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
-			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::DownScale);
+			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::GaussianBlur);
 			shader->BindThisShader(myContext.Get());
 
 			RenderFullScreenQuad();
@@ -115,7 +114,7 @@ namespace Graphics
 			shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i - 1].shaderResourceView.Get();
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
-			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::DownScale);
+			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::GaussianBlur);
 			shader->BindThisShader(myContext.Get());
 
 			RenderFullScreenQuad();
@@ -123,10 +122,6 @@ namespace Graphics
 			ID3D11ShaderResourceView* nullViews = nullptr;
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 		}
-
-		SetBlendState(eBlendState::AdditiveBlend);
-		SetBlendState(eBlendState::Disabled);
-		
 
 		myContext->RSSetViewports(1, myViewPort.get());
 
@@ -919,11 +914,14 @@ namespace Graphics
 		case eShaderType::PostProcessing:
 			shader = GetShader("PostProcessingPS.cso", "FullScreenVS.cso");
 			break;
-		case eShaderType::DownScale:
-			shader = GetShader("FullScreenDownScalePS.cso", "FullScreenVS.cso");
+		case eShaderType::GaussianBlur:
+			shader = GetShader("GaussianBlurPS.cso", "FullScreenVS.cso");
 			break;
 		case eShaderType::Bloom:
 			shader = GetShader("BloomPS.cso", "FullScreenVS.cso");
+			break;
+		case eShaderType::BloomPixelFilter:
+			shader = GetShader("BloomPixelFilterPS.cso", "FullScreenVS.cso");
 			break;
 		case eShaderType::Copy:
 			shader = GetShader("FullScreenCopyPS.cso", "FullScreenVS.cso");

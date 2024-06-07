@@ -106,26 +106,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
 		ecs.RenderPointLights();
-		ecs.RenderSkyBoxAndDirectionalLight(); //NOTE(v10.0.4): skybox and directional light visual is rendering last so these visual models do not get affected by other light sources
+		ecs.RenderSkyBoxAndDirectionalLight();
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To PostProcessingBuffer");
 		if (graphicsEngine.GetPostProcessData().useBloom)
 		{
 			graphicsEngine.TestBloom();
-
-			for (size_t i = 0; i < graphicsEngine.myRenderTargets[static_cast<size_t>(Graphics::eRenderTargetType::Bloom)].size(); ++i)
-			{
-				const std::string name = "DownScale" + std::to_string(i);
-
-				if (ImGui::Begin(name.c_str()))
-				{
-					ImTextureID texture = graphicsEngine.myRenderTargets[static_cast<size_t>(Graphics::eRenderTargetType::Bloom)][i].shaderResourceView.Get();
-					ImGui::Image(texture, ImVec2(256, 256));
-				}
-
-				ImGui::End();
-			}
 		}
 		else
 		{
