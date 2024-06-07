@@ -19,6 +19,8 @@ namespace Graphics
 {
 	void GraphicsEngine::TestBloom()
 	{
+		SetSamplerState(eSamplerState::Trilinear_Clamp);
+
 		const Math::Vector2ui currentResolution = Global::GetResolution();
 		Math::Vector2ui downScaledResolution = currentResolution;
 
@@ -131,6 +133,8 @@ namespace Graphics
 
 		ID3D11ShaderResourceView* nullViews = nullptr;
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+
+		SetSamplerState(eSamplerState::Bilinear_Warp);
 	}
 
 	GraphicsEngine::GraphicsEngine()
@@ -196,8 +200,8 @@ namespace Graphics
 
 		SetRasterizerState(eRasterizerState::BackfaceCulling);
 		SetDepthStencilState(eDepthStencilState::Less_Equal);
+		SetSamplerState(eSamplerState::Bilinear_Warp);
 
-		myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
 		myContext->RSSetViewports(1, myViewPort.get());
 
 		myCameraConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Camera);
@@ -670,6 +674,11 @@ namespace Graphics
 	void GraphicsEngine::SetDepthStencilState(const eDepthStencilState aDepthStencilState)
 	{
 		myContext->OMSetDepthStencilState(myDepthStencilStates[static_cast<size_t>(aDepthStencilState)].Get(), 0);
+	}
+
+	void GraphicsEngine::SetSamplerState(const eSamplerState aSamplerState)
+	{
+		myContext->PSSetSamplers(0, 1, mySamplerStates[static_cast<size_t>(aSamplerState)].GetAddressOf());
 	}
 
 	void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
@@ -1294,16 +1303,15 @@ namespace Graphics
 
 	void GraphicsEngine::CreateSamplerState()
 	{
+		HRESULT result = S_OK;
+
 		D3D11_SAMPLER_DESC samplerDesc = {};
 		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		//samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		//samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		//samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		samplerDesc.MipLODBias = 0.0f;
-		samplerDesc.MaxAnisotropy = 1;
+		samplerDesc.MaxAnisotropy = 16;
 		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 		samplerDesc.BorderColor[0] = 0;
 		samplerDesc.BorderColor[1] = 0;
@@ -1312,7 +1320,25 @@ namespace Graphics
 		samplerDesc.MinLOD = 0;
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		const HRESULT result = myDevice->CreateSamplerState(&samplerDesc, &mySamplerState);
+		result = myDevice->CreateSamplerState(&samplerDesc, &mySamplerStates[static_cast<size_t>(eSamplerState::Bilinear_Warp)]);
+		assert(SUCCEEDED(result) && "Failed to create SamplerState");
+
+		D3D11_SAMPLER_DESC samplerDesc2 = {};
+		samplerDesc2.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc2.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc2.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc2.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc2.MipLODBias = 0.0f;
+		samplerDesc2.MaxAnisotropy = 16;
+		samplerDesc2.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		samplerDesc2.BorderColor[0] = 0;
+		samplerDesc2.BorderColor[1] = 0;
+		samplerDesc2.BorderColor[2] = 0;
+		samplerDesc2.BorderColor[3] = 0;
+		samplerDesc2.MinLOD = 0;
+		samplerDesc2.MaxLOD = D3D11_FLOAT32_MAX;
+
+		result = myDevice->CreateSamplerState(&samplerDesc2, &mySamplerStates[static_cast<size_t>(eSamplerState::Trilinear_Clamp)]);
 		assert(SUCCEEDED(result) && "Failed to create SamplerState");
 	}
 

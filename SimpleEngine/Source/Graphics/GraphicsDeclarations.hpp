@@ -24,6 +24,13 @@ namespace Graphics
 		Count
 	};
 
+	enum class eSamplerState
+	{
+		Bilinear_Warp,
+		Trilinear_Clamp,
+		Count
+	};
+
 	enum class eDepthStencilState
 	{
 		Less_Equal,

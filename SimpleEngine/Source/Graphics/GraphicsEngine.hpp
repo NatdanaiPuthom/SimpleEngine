@@ -81,6 +81,7 @@ namespace Graphics
 
 		void SetBlendState(const eBlendState aBlendState);
 		void SetDepthStencilState(const eDepthStencilState aDepthStencilState);
+		void SetSamplerState(const eSamplerState aSamplerState);
 
 		//NOTE(v9.37.0?): Call SetWindowSizeNextFrame instead.
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
@@ -169,6 +170,7 @@ namespace Graphics
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<size_t>(eRasterizerState::Count)> myRasterizerStates;
 		std::array<ComPtr<ID3D11DepthStencilState>, static_cast<size_t>(eDepthStencilState::Count)> myDepthStencilStates;
 		std::array<ComPtr<ID3D11BlendState>, static_cast<size_t>(eBlendState::Count)> myBlendStates;
+		std::array<ComPtr<ID3D11SamplerState>, static_cast<size_t>(eSamplerState::Count)> mySamplerStates;
 		std::array<float, 4> myClearColor;
 
 		PostProcessData myPostProcessData;
@@ -178,8 +180,6 @@ namespace Graphics
 		ComPtr<IDXGISwapChain> mySwapChain;
 
 		ComPtr<ID3D11DepthStencilView> myDepthBuffer;
-		
-		ComPtr<ID3D11SamplerState> mySamplerState;
 
 		std::shared_ptr<Camera> myCurrentCamera;
 		std::shared_ptr<Camera> myEditorCamera;
