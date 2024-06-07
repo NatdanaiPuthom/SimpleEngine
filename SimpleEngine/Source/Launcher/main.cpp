@@ -124,9 +124,17 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 			ImGui::End();
 		}
 
+		if (ImGui::Begin("Test Before"))
+		{
+			ImTextureID texture = graphicsEngine.myRenderTargets[static_cast<size_t>(Graphics::eRenderTargetType::Deferred)][0].shaderResourceView.Get();
+			ImGui::Image(texture, ImVec2(256, 256));
+		}
+
+		ImGui::End();
+
 		PROFILER_BEGIN("Render To PostProcessingBuffer");
-		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
-		graphicsEngine.ApplyPostProcessing(Graphics::eRenderTargetType::Deferred);
+		//graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
+		//graphicsEngine.ApplyPostProcessing(Graphics::eRenderTargetType::Deferred);
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render to BackBuffer");
