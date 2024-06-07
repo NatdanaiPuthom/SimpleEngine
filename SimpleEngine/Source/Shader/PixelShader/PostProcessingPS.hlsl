@@ -4,9 +4,9 @@ PixelOutput main(FullScreenVertexToPixel aInput)
 {
     PixelOutput output;
     
-    const float2 uv = aInput.position.xy / resolution.xy;
+    //const float2 uv = aInput.position.xy / resolution.xy;
     
-    float3 albedo = GlobalBufferAlbedoTexture.Sample(GlobalDefaultSampler, uv).rgb;
+    float3 albedo = GlobalBufferAlbedoTexture.Sample(GlobalDefaultSampler, aInput.uv).rgb;
       
     const float luminance = dot(float3(0.2126, 0.7152, 0.0722), albedo);
     

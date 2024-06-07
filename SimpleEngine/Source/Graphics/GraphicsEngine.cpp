@@ -17,6 +17,77 @@
 
 namespace Graphics
 {
+	void GraphicsEngine::TestBloom()
+	{
+		const Math::Vector2ui currentResolution = Global::GetResolution();
+		Math::Vector2ui downScaledResolution = currentResolution;
+
+		D3D11_VIEWPORT viewport = {};
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+
+		ID3D11RenderTargetView* renderTargetsPointer = nullptr;
+
+		for (size_t i = 0; i < myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)].size(); ++i)
+		{
+			downScaledResolution = downScaledResolution / 2;
+
+			viewport.Width = static_cast<float>(downScaledResolution.x);
+			viewport.Height = static_cast<float>(downScaledResolution.y);
+
+			myContext->RSSetViewports(1, &viewport);
+
+			UnbindAllRenderTargets();
+
+			renderTargetsPointer = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i].renderTargetView.Get();
+			myContext->OMSetRenderTargets(1, &renderTargetsPointer, nullptr);
+
+			ID3D11ShaderResourceView* shaderResources[1] = {};
+			shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)][0].shaderResourceView.Get();
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
+
+			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Bloom);
+			shader->BindThisShader(myContext.Get());
+
+			RenderFullScreenQuad();
+
+			ID3D11ShaderResourceView* nullViews = nullptr;
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+		}
+
+		for (size_t i = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)].size(); i > 1; --i)
+		{
+			downScaledResolution.x = downScaledResolution.x * 2;
+			downScaledResolution.y = downScaledResolution.y * 2;
+
+			viewport.Width = static_cast<float>(downScaledResolution.x);
+			viewport.Height = static_cast<float>(downScaledResolution.y);
+
+			myContext->RSSetViewports(1, &viewport);
+
+			UnbindAllRenderTargets();
+
+			renderTargetsPointer = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i - 2].renderTargetView.Get();
+			myContext->OMSetRenderTargets(1, &renderTargetsPointer, nullptr);
+
+			ID3D11ShaderResourceView* shaderResources[1] = {};
+			shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i - 1].shaderResourceView.Get();
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
+
+			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Bloom);
+			shader->BindThisShader(myContext.Get());
+
+			RenderFullScreenQuad();
+
+			ID3D11ShaderResourceView* nullViews = nullptr;
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+		}
+
+		myContext->RSSetViewports(1, myViewPort.get());
+	}
+
 	GraphicsEngine::GraphicsEngine()
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
@@ -232,6 +303,9 @@ namespace Graphics
 			assert(false && "Failed to add Shader");
 
 		if (!AddShader("FullScreenCopyPS.cso", "FullScreenVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("BloomPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 	}
 
@@ -745,6 +819,9 @@ namespace Graphics
 		case eShaderType::PostProcessing:
 			shader = GetShader("PostProcessingPS.cso", "FullScreenVS.cso");
 			break;
+		case eShaderType::Bloom:
+			shader = GetShader("BloomPS.cso", "FullScreenVS.cso");
+			break;
 		case eShaderType::Copy:
 			shader = GetShader("FullScreenCopyPS.cso", "FullScreenVS.cso");
 			break;
@@ -972,16 +1049,6 @@ namespace Graphics
 			DXGI_FORMAT_R32G32B32A32_FLOAT
 		};
 
-		std::array<Math::Vector2ui, 5> downScale =
-		{
-			aResolution / 2,
-			aResolution / 4,
-			aResolution / 8,
-			aResolution / 16,
-			aResolution / 32
-		};
-
-
 		D3D11_TEXTURE2D_DESC desc = { 0 };
 
 		desc.MipLevels = 1;
@@ -993,12 +1060,18 @@ namespace Graphics
 		desc.CPUAccessFlags = 0;
 		desc.MiscFlags = 0;
 
+		Math::Vector2ui resolution = aResolution;
+
 		std::vector<RenderTarget> renderTargets(5);
 
 		for (size_t i = 0; i < 5; ++i)
 		{
-			desc.Width = downScale[i].x;
-			desc.Height = downScale[i].y;
+			resolution.x = resolution.x / 2;
+			resolution.y = resolution.y / 2;
+
+			desc.Width = resolution.x;
+			desc.Height = resolution.y;
+
 			desc.Format = formats[i];
 
 			RenderTarget renderTarget;
