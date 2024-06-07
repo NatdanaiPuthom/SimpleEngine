@@ -45,6 +45,7 @@ namespace Graphics
 		Deferred,
 		PostProcessing,
 		Bloom,
+		BloomTempChangeMeAfter,
 		Count
 	};
 
