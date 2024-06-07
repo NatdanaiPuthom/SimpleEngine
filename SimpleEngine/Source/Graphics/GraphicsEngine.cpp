@@ -45,7 +45,17 @@ namespace Graphics
 			myContext->OMSetRenderTargets(1, &renderTargetsPointer, nullptr);
 
 			ID3D11ShaderResourceView* shaderResources[1] = {};
-			shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)][0].shaderResourceView.Get();
+
+			if (i == 0)
+			{
+				shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)][0].shaderResourceView.Get();
+			}
+			else
+			{
+				shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i - 1].shaderResourceView.Get();
+			}
+
+
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
 			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::DownScale);
@@ -1286,9 +1296,12 @@ namespace Graphics
 	{
 		D3D11_SAMPLER_DESC samplerDesc = {};
 		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		//samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		//samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		//samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 		samplerDesc.MipLODBias = 0.0f;
 		samplerDesc.MaxAnisotropy = 1;
 		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
