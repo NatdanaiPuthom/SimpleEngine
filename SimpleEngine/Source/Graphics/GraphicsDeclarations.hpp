@@ -52,6 +52,7 @@ namespace Graphics
 		Deferred,
 		PointLight,
 		PostProcessing,
+		DownScale,
 		Bloom,
 		Copy
 	};

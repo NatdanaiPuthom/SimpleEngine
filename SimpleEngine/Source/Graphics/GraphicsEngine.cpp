@@ -48,7 +48,7 @@ namespace Graphics
 			shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)][0].shaderResourceView.Get();
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
-			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Bloom);
+			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::DownScale);
 			shader->BindThisShader(myContext.Get());
 
 			RenderFullScreenQuad();
@@ -76,7 +76,7 @@ namespace Graphics
 			shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i - 1].shaderResourceView.Get();
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
-			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Bloom);
+			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::DownScale);
 			shader->BindThisShader(myContext.Get());
 
 			RenderFullScreenQuad();
@@ -305,7 +305,7 @@ namespace Graphics
 		if (!AddShader("FullScreenCopyPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("BloomPS.cso", "FullScreenVS.cso"))
+		if (!AddShader("FullScreenDownScalePS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 	}
 
@@ -819,8 +819,8 @@ namespace Graphics
 		case eShaderType::PostProcessing:
 			shader = GetShader("PostProcessingPS.cso", "FullScreenVS.cso");
 			break;
-		case eShaderType::Bloom:
-			shader = GetShader("BloomPS.cso", "FullScreenVS.cso");
+		case eShaderType::DownScale:
+			shader = GetShader("FullScreenDownScalePS.cso", "FullScreenVS.cso");
 			break;
 		case eShaderType::Copy:
 			shader = GetShader("FullScreenCopyPS.cso", "FullScreenVS.cso");
