@@ -37,6 +37,7 @@ namespace Graphics
 		GBuffer,
 		Deferred,
 		PostProcessing,
+		Bloom,
 		Count
 	};
 

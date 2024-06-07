@@ -140,6 +140,7 @@ namespace Graphics
 		void CreateGRenderTarget(const Math::Vector2ui aResolution);
 		void CreateDeferredRenderTarget(const Math::Vector2ui aResolution);
 		void CreatePostProcessingRenderTarget(const Math::Vector2ui aResolution);
+		void CreateBloomRenderTarget(const Math::Vector2ui aResolution);
 
 		std::vector<RenderTarget> CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution);
 	private:

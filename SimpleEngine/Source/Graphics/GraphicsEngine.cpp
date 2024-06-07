@@ -56,6 +56,7 @@ namespace Graphics
 		CreateGRenderTarget(aWindowSize);
 		CreateDeferredRenderTarget(aWindowSize);
 		CreatePostProcessingRenderTarget(aWindowSize);
+		CreateBloomRenderTarget(aWindowSize);
 
 		CreateDepthBuffer(aWindowSize);
 		CreateDepthStencilState();
@@ -229,7 +230,7 @@ namespace Graphics
 
 		if (!AddShader("PostProcessingPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
-	
+
 		if (!AddShader("FullScreenCopyPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 	}
@@ -358,7 +359,7 @@ namespace Graphics
 	{
 		ID3D11ShaderResourceView* shaderResources[1] = {};
 		shaderResources[0] = GetRenderTargets(aRenderTargetType)[0].shaderResourceView.Get();
-		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);	
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
 		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Copy);
 		shader->BindThisShader(myContext.Get());
@@ -487,10 +488,13 @@ namespace Graphics
 		const HRESULT result = mySwapChain->ResizeBuffers(0, newWindowSize.x, newWindowSize.y, DXGI_FORMAT_UNKNOWN, 0);
 		assert(SUCCEEDED(result) && "Failed to resize buffer");
 
-		CreateBackBuffer();
-		CreateDepthBuffer(newWindowSize);
-		CreateGRenderTarget(newWindowSize);
-		CreateDeferredRenderTarget(newWindowSize);
+		{ //TO-DO(v10.0.5): Figure a out to resize buffers properly
+			CreateBackBuffer();
+			CreateDepthBuffer(newWindowSize);
+			CreateGRenderTarget(newWindowSize);
+			CreateDeferredRenderTarget(newWindowSize);
+			CreatePostProcessingRenderTarget(newWindowSize);
+		}
 
 		CreateViewport(newWindowSize);
 
@@ -681,7 +685,7 @@ namespace Graphics
 			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_Skansen_E.dds");
 			break;
 		}
-		
+
 		return texture;
 	}
 
@@ -957,6 +961,66 @@ namespace Graphics
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::PostProcessing)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
+	void GraphicsEngine::CreateBloomRenderTarget(const Math::Vector2ui aResolution)
+	{
+		std::array<DXGI_FORMAT, 5> formats =
+		{
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_R32G32B32A32_FLOAT
+		};
+
+		std::array<Math::Vector2ui, 5> downScale =
+		{
+			aResolution / 2,
+			aResolution / 4,
+			aResolution / 8,
+			aResolution / 16,
+			aResolution / 32
+		};
+
+
+		D3D11_TEXTURE2D_DESC desc = { 0 };
+
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+
+		std::vector<RenderTarget> renderTargets(5);
+
+		for (size_t i = 0; i < 5; ++i)
+		{
+			desc.Width = downScale[i].x;
+			desc.Height = downScale[i].y;
+			desc.Format = formats[i];
+
+			RenderTarget renderTarget;
+			ID3D11Texture2D* texture;
+
+			HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
+			assert(SUCCEEDED(result) && "Failed to create Texture2D");
+
+			result = myDevice->CreateShaderResourceView(texture, nullptr, renderTarget.shaderResourceView.GetAddressOf());
+			assert(SUCCEEDED(result) && "Failed to create ShaderResourceView");
+
+			result = myDevice->CreateRenderTargetView(texture, nullptr, renderTarget.renderTargetView.GetAddressOf());
+			assert(SUCCEEDED(result) && "Failed to create RenderTargetView");
+
+			texture->Release();
+
+			renderTargets[i] = renderTarget;
+		}
+
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)] = renderTargets;
+	}
+
 	std::vector<RenderTarget> GraphicsEngine::CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution)
 	{
 		D3D11_TEXTURE2D_DESC desc = { 0 };
@@ -1174,8 +1238,8 @@ namespace Graphics
 	void GraphicsEngine::CreateBlendStates()
 	{
 		HRESULT result = S_OK;
-		D3D11_BLEND_DESC blendStateDescription = {};
 
+		D3D11_BLEND_DESC blendStateDescription = {};
 		blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
 		blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
 		blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
@@ -1197,6 +1261,18 @@ namespace Graphics
 		blendStateDescription2.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
 		blendStateDescription2.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 		result = myDevice->CreateBlendState(&blendStateDescription2, myBlendStates[static_cast<size_t>(eBlendState::AdditiveBlend)].ReleaseAndGetAddressOf());
+		assert(SUCCEEDED(result) && "Failed to create blend state");
+
+		D3D11_BLEND_DESC blendStateDescription3 = {};
+		blendStateDescription3.RenderTarget[0].BlendEnable = TRUE;
+		blendStateDescription3.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendStateDescription3.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		blendStateDescription3.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendStateDescription3.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendStateDescription3.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		blendStateDescription3.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
+		blendStateDescription3.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		result = myDevice->CreateBlendState(&blendStateDescription, myBlendStates[static_cast<size_t>(eBlendState::AlphaBlend)].ReleaseAndGetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create blend state");
 	}
 }
