@@ -52,6 +52,15 @@ namespace Editor
 				graphicsEngine->SetBlackPoint(blackpoint);
 			}
 
+			if (ImGui::Button("Reset"))
+			{
+				graphicsEngine->SetTint({1.0f, 1.0f, 1.0f});
+				graphicsEngine->SetSaturation(1.0f);
+				graphicsEngine->SetExposure(0.0f);
+				graphicsEngine->SetContrast(1.0f);
+				graphicsEngine->SetBlackPoint(0.0f);
+			}
+
 			bool useToneMapping = static_cast<bool>(postProcessData.useToneMapping);
 			if (ImGui::Checkbox("Use ACES Film ToneMapping", &useToneMapping))
 			{
