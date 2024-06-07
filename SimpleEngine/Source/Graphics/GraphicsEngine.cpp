@@ -35,6 +35,8 @@ namespace Graphics
 
 		ID3D11RenderTargetView* renderTargetsPointer = nullptr;
 
+		SetBlendState(eBlendState::Disabled);
+
 		for (size_t i = 0; i < myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)].size(); ++i)
 		{
 			downScaledResolution = downScaledResolution / 2;
@@ -71,6 +73,8 @@ namespace Graphics
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 		}
 
+		SetBlendState(eBlendState::AlphaBlend);
+
 		for (size_t i = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)].size(); i > 1; --i)
 		{
 			downScaledResolution.x = downScaledResolution.x * 2;
@@ -98,6 +102,8 @@ namespace Graphics
 			ID3D11ShaderResourceView* nullViews = nullptr;
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 		}
+
+		SetBlendState(eBlendState::Disabled);
 
 		myContext->RSSetViewports(1, myViewPort.get());
 
