@@ -61,11 +61,19 @@ namespace Editor
 				graphicsEngine->SetBlackPoint(0.0f);
 			}
 
+			ImGui::Separator();
+
 			bool useToneMapping = static_cast<bool>(postProcessData.useToneMapping);
 			if (ImGui::Checkbox("Use ACES Film ToneMapping", &useToneMapping))
 			{
 				graphicsEngine->SetUseToneMapping(useToneMapping);
 			}
+
+			/*static bool useBloom = false;
+			if (ImGui::Checkbox("Bloom (not implemented)", &useBloom))
+			{
+				
+			}*/
 		}
 
 		ImGui::End();
