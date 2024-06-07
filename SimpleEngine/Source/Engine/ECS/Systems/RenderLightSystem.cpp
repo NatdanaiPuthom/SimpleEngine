@@ -89,7 +89,7 @@ namespace ECS
 			graphicsEngine->AddPointLight(pointLight3);
 		}
 
-		if (ImGui::Begin("DirectionalLight"))
+		/*if (ImGui::Begin("DirectionalLight"))
 		{
 			Math::Transform& transform = directionalLightComponent->transform;
 			Math::Vector3f position = transform.GetPosition();
@@ -105,7 +105,7 @@ namespace ECS
 				transform.SetRotation(rotation);
 			}
 		}
-		ImGui::End();
+		ImGui::End();*/
 	}
 
 	void RenderLightSystem::Render()

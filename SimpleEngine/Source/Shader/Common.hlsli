@@ -68,10 +68,15 @@ cbuffer PostProcessingBuffer : register(b5)
 {
     float3 tint;
     float saturation;
+    
     float exposure;
     float contrast;
     float blackpoint;
+    float bloom;
+    
     uint useToneMapping;
+    uint useBloom;
+    int paddingPostProcess[2];
 }
 
 struct FullScreenVertexInput

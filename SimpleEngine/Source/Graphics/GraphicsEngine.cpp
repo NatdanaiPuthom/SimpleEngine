@@ -69,6 +69,8 @@ namespace Graphics
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 		}
 
+		SetBlendState(eBlendState::AlphaBlend);
+
 		for (size_t i = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)].size(); i > 1; --i)
 		{
 			downScaledResolution.x = downScaledResolution.x * 2;
@@ -96,6 +98,8 @@ namespace Graphics
 			ID3D11ShaderResourceView* nullViews = nullptr;
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 		}
+
+		SetBlendState(eBlendState::Disabled);
 
 		myContext->RSSetViewports(1, myViewPort.get());
 
@@ -720,6 +724,11 @@ namespace Graphics
 		myPostProcessData.useToneMapping = aShouldUseToneMapping;
 	}
 
+	void GraphicsEngine::SetUseBloom(const bool aShouldUseBloom)
+	{
+		myPostProcessData.useBloom = aShouldUseBloom;
+	}
+
 	void GraphicsEngine::SetSaturation(const float aValue)
 	{
 		myPostProcessData.saturation = aValue;
@@ -738,6 +747,11 @@ namespace Graphics
 	void GraphicsEngine::SetBlackPoint(const float aValue)
 	{
 		myPostProcessData.blackpoint = aValue;
+	}
+
+	void GraphicsEngine::SetBloom(const float aValue)
+	{
+		myPostProcessData.bloom = aValue;
 	}
 
 	void GraphicsEngine::SetTint(const Math::Vector3f& aColor)

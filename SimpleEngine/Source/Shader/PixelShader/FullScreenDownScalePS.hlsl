@@ -14,7 +14,7 @@ PixelOutput main(FullScreenVertexToPixel aInput)
     float3 p11 = GlobalBufferAlbedoTexture.Sample(GlobalDefaultSampler, aInput.uv + pixelOffset * float2(1.0f, 1.0f)).rgb;
     
     output.color.rgb = 0.25f * (p00 + p01 + p10 + p11);
-    output.color.a = 1.0f;
+    output.color.a = bloom;
     
     return output;
 }

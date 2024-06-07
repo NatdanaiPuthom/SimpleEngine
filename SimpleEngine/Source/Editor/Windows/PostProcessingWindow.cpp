@@ -52,6 +52,12 @@ namespace Editor
 				graphicsEngine->SetBlackPoint(blackpoint);
 			}
 
+			float bloom = postProcessData.bloom;
+			if (ImGui::DragFloat("Bloom", &bloom, 0.01f))
+			{
+				graphicsEngine->SetBloom(bloom);
+			}
+
 			if (ImGui::Button("Reset"))
 			{
 				graphicsEngine->SetTint({1.0f, 1.0f, 1.0f});
@@ -59,6 +65,7 @@ namespace Editor
 				graphicsEngine->SetExposure(0.0f);
 				graphicsEngine->SetContrast(1.0f);
 				graphicsEngine->SetBlackPoint(0.0f);
+				graphicsEngine->SetBloom(0.0f);
 			}
 
 			ImGui::Separator();
@@ -69,11 +76,11 @@ namespace Editor
 				graphicsEngine->SetUseToneMapping(useToneMapping);
 			}
 
-			/*static bool useBloom = false;
-			if (ImGui::Checkbox("Bloom (not implemented)", &useBloom))
+			bool useBloom = static_cast<bool>(postProcessData.useBloom);
+			if (ImGui::Checkbox("Use Bloom", &useBloom))
 			{
-				
-			}*/
+				graphicsEngine->SetUseBloom(useBloom);
+			}
 		}
 
 		ImGui::End();

@@ -68,10 +68,12 @@ namespace Graphics
 		void SetDirectionalLightColor(const Math::Vector4f& aColor);
 		void SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity);
 		void SetUseToneMapping(const bool aShouldUseToneMapping);
+		void SetUseBloom(const bool aShouldUseBloom);
 		void SetSaturation(const float aValue);
 		void SetExposure(const float aValue);
 		void SetContrast(const float aValue);
 		void SetBlackPoint(const float aValue);
+		void SetBloom(const float aValue);
 		void SetTint(const Math::Vector3f& aColor);
 		void SetVSync(const bool aShouldTurnOn);
 		void SetFPSLevelCap(const unsigned int aCapLevel);

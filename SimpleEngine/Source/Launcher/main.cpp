@@ -109,7 +109,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		ecs.RenderSkyBoxAndDirectionalLight(); //NOTE(v10.0.4): skybox and directional light visual is rendering last so these visual models do not get affected by other light sources
 		PROFILER_END();
 
-		graphicsEngine.TestBloom();
+		//graphicsEngine.TestBloom();
+		/*
 
 		for (size_t i = 0; i < graphicsEngine.myRenderTargets[static_cast<size_t>(Graphics::eRenderTargetType::Bloom)].size(); ++i)
 		{
@@ -130,11 +131,18 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 			ImGui::Image(texture, ImVec2(256, 256));
 		}
 
-		ImGui::End();
+		ImGui::End();*/
 
 		PROFILER_BEGIN("Render To PostProcessingBuffer");
-		//graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
-		//graphicsEngine.ApplyPostProcessing(Graphics::eRenderTargetType::Deferred);
+		if (graphicsEngine.GetPostProcessData().useBloom)
+		{
+			graphicsEngine.TestBloom();
+		}
+		else
+		{
+			graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
+			graphicsEngine.ApplyPostProcessing(Graphics::eRenderTargetType::Deferred);
+		}
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render to BackBuffer");
