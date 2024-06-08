@@ -345,6 +345,8 @@ namespace Graphics
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 		}
 
+		SetBlendState(eBlendState::Disabled);
+
 		myContext->RSSetViewports(1, myViewPort.get());
 	}
 
