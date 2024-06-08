@@ -87,21 +87,6 @@ namespace SCR
 		return myCustomEvents.at(anID);
 	}
 
-	Function& NodeTypeManager::GetFunction(const FunctionID anID)
-	{
-		return *myFunctions.at(anID);
-	}
-
-	FunctionID NodeTypeManager::GetFunctionID(const NodeTypeID aNodeTypeID)
-	{
-		auto it = myToFunctionID.find(aNodeTypeID);
-		if (it != myToFunctionID.end())
-		{
-			return it->second;
-		}
-		return InvalidID<FunctionID>();
-	}
-
 	const std::vector<CustomEvent>& NodeTypeManager::GetCustomEvents()
 	{
 		return myCustomEvents;
@@ -115,6 +100,26 @@ namespace SCR
 			return it->second;
 		}
 		return InvalidID<CustomEventID>();
+	}
+
+	Function& NodeTypeManager::GetFunction(const FunctionID anID)
+	{
+		return *myFunctions.at(anID);
+	}
+
+	const std::vector<Function*>& NodeTypeManager::GetFunctions()
+	{
+		return myFunctions;
+	}
+
+	FunctionID NodeTypeManager::GetFunctionID(const NodeTypeID aNodeTypeID)
+	{
+		auto it = myToFunctionID.find(aNodeTypeID);
+		if (it != myToFunctionID.end())
+		{
+			return it->second;
+		}
+		return InvalidID<FunctionID>();
 	}
 
 	NodeTypeID NodeTypeManager::GetTypeID(const std::string& aName)

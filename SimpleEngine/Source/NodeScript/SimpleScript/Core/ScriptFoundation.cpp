@@ -32,7 +32,7 @@ namespace SCR
 		RegisterSystemDataTypes();
 		RegisterSystemNodes();
 
-		ScriptLoader::LoadCustomEvents(*this);
+		ScriptLoader::LoadCustomEvents();
 		NodeTypeManager::Assert();
 	}
 

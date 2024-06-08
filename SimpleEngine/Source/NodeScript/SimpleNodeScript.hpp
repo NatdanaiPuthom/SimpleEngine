@@ -15,7 +15,7 @@ namespace SCRIPT
 		void Init();
 		void Update();
 
-		EDIT::VisualScriptingWindow mySimpleScriptWindow;
+		Editor::VisualScriptingWindow mySimpleScriptWindow;
 		SCRIPT::ScriptFoundation myScriptFoundation;
 		SCRIPT::ScriptManager* myScriptManager;
 		std::string myName;

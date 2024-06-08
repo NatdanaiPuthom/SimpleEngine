@@ -62,7 +62,7 @@ namespace SCR
 		void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs);
 		void PasteCopyBuffer(ScriptVec2 aPosition);
 
-		static CustomEventID CreateNodeType_CustomEvent(const std::string& aName, ScriptFoundation& aFoundation);
+		static CustomEventID CreateNodeType_CustomEvent(const std::string& aName);
 
 		static void AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName = "Pin", ScriptFoundation* aFoundation = nullptr);
 		static void SetPinAtIndexCustomEvent(const size_t anIndex, const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation = nullptr);

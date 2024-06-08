@@ -5,7 +5,7 @@
 #include "SimpleScript/Core/DataType/DataTypeManager.h"
 #include "SimpleScript/Core/Utilities/ScriptProxy.h"
 
-namespace EDIT
+namespace Editor
 {
 	using namespace SCRIPT;
 

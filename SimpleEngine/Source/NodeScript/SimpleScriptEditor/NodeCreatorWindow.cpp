@@ -8,7 +8,7 @@
 
 using namespace SCRIPT;
 
-namespace EDIT
+namespace Editor
 {
 	NodeCreatorWindow::NodeCreatorWindow(VisualScriptingWindow& aParentWindow)
 		: myParentWindow(aParentWindow)
@@ -25,7 +25,7 @@ namespace EDIT
 		{
 			if (ImGui::Button("Create Custom Event Node"))
 			{
-				ScriptModifier::CreateNodeType_CustomEvent("CustomEvent", ScriptProxy::GetFoundation(*myParentWindow.GetCurrentContext().script));
+				ScriptModifier::CreateNodeType_CustomEvent("CustomEvent");
 			}
 
 			for (CustomEventID id = 0; id < NodeTypeManager::GetCustomEvents().size(); ++id)
