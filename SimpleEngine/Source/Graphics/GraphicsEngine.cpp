@@ -255,7 +255,10 @@ namespace Graphics
 		if (!AddShader("FullScreenCopyPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("FullScreenDownScalePS.cso", "FullScreenVS.cso"))
+		if (!AddShader("GaussianBlurPS.cso", "FullScreenVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("BloomPixelFilterPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 
 		if (!AddShader("BloomPS.cso", "FullScreenVS.cso"))
