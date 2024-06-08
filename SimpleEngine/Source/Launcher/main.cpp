@@ -10,6 +10,8 @@
 #include "Editor/Editor.hpp"
 #include "NodeScript/SimpleNodeScript.hpp"
 
+#include "Engine/Reflection.hpp"
+
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
@@ -30,6 +32,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	return 0;
 }
+
+struct EmilStruct
+{
+	int value;
+};
 
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
@@ -64,6 +71,22 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	SCRIPT::SimpleNodeScript simpleScript;
 	simpleScript.Init();
 	PROFILER_END();
+
+	
+	Component_Registry test;
+	test.RegisterComponentType<ECS::NullComponent>();
+	test.RegisterComponentType<EmilStruct>();
+	test.RegisterComponentType<int>();
+	test.RegisterComponentType<bool>();
+	test.RegisterProperty(&ECS::NullComponent::value, "value");
+	test.RegisterProperty(&ECS::NullComponent::isNull, "isNull");
+	test.RegisterProperty(&EmilStruct::value, "value");
+	
+
+	
+
+
+	
 
 	while (Global::GetGameIsRunning())
 	{
