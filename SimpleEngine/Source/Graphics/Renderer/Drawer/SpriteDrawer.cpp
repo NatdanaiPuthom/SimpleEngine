@@ -88,7 +88,7 @@ namespace Drawer
 		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
 
 		myShader->BindThisShader(context.Get());
-		aSprite.texture->Bind(context, aSprite.texture->GetSlot());
+		aSprite.texture->Bind(context);
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;

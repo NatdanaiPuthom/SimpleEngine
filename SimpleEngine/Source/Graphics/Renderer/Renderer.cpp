@@ -61,7 +61,7 @@ namespace Drawer
 		{
 			if (const Graphics::Texture* texture = aMeshComponent->textures[i]) //To-DO(9.36.4): Disgusting, pls fix
 			{
-				texture->Bind(context, texture->GetSlot());
+				texture->Bind(context);
 			}
 			else
 			{
@@ -78,7 +78,7 @@ namespace Drawer
 		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
 		aShader->BindThisShader(context);
-		aTextures->Bind(context, aTextures->GetSlot());
+		aTextures->Bind(context);
 
 		RenderModel(aTransformMatrix, aMesh, context);
 	}
@@ -123,7 +123,7 @@ namespace Drawer
 		myJointBuffer->Update(sizeof(JointsBufferData), &boneBufferData);
 
 		aSkeletonComponent->shader->BindThisShader(context.Get());
-		aMeshComponent->textures[0]->Bind(context, aMeshComponent->textures[0]->GetSlot());
+		aMeshComponent->textures[0]->Bind(context);
 
 		UINT stride = sizeof(Graphics::Vertex);
 		UINT offset = 0;
