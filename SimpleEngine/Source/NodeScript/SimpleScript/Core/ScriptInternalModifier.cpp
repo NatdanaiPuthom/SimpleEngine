@@ -13,7 +13,7 @@
 namespace SCR
 {
 
-	CustomEventID InternalModifier::CreateCustomEvent(const std::string& aName, ScriptFoundation& aFoundation)
+	CustomEventID InternalModifier::CreateCustomEvent(const std::string& aName)
 	{
 		CustomEvent customEvent(aName);
 
@@ -24,14 +24,6 @@ namespace SCR
 		map.emplace(customEvent.GetCallerTypeID(), id);
 		map.emplace(customEvent.GetExecutorTypeID(), id);
 
-		for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(aFoundation))
-		{
-			for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
-			{
-				UpdateNodeTypeIDSize(ScriptProxy::GetEventGraph(*script));
-
-			}
-		}
 		return id;
 	}
 
@@ -42,7 +34,7 @@ namespace SCR
 		std::vector<Function*>& functions = NodeTypeManager::myFunctions;
 		std::unordered_multimap<NodeTypeID, FunctionID>& map = NodeTypeManager::myToFunctionID;
 		FunctionID id = functions.size();
-		NodeTypeManager::myFunctions.push_back(function);
+		functions.push_back(function);
 		map.emplace(function->GetCallerNodeTypeID(), id);
 		map.emplace(function->GetInputNodeTypeID(), id);
 		map.emplace(function->GetOutputNodeTypeID(), id);

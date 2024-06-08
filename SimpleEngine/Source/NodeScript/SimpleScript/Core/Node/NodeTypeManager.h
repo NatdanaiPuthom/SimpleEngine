@@ -42,6 +42,7 @@ namespace SCR
 		static CustomEventID GetCustomEventID(const NodeTypeID aNodeTypeID);
 
 		static Function& GetFunction(const FunctionID aFunctionID);
+		static const std::vector<Function*>& GetFunctions();
 		static FunctionID GetFunctionID(const NodeTypeID aNodeTypeID);
 
 		static NodeTypeID GetTypeID(const std::string& aName);

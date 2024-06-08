@@ -1,7 +1,7 @@
 #pragma once
 #include "SimpleScript/Core/ScriptDefines.h"
 
-namespace EDIT
+namespace Editor
 {
 	class VisualScriptingWindow;
 

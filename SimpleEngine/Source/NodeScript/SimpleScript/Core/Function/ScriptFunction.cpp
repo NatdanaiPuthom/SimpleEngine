@@ -5,7 +5,7 @@
 namespace SCR
 {
 
-	static Flow CallerNode(Flow, const InternalExecutionContext* aContext)
+	static Flow CallerNode(const InternalExecutionContext* aContext, Flow)
 	{
 		const Node& callerNode = aContext->GetCurrentNode();
 
@@ -26,7 +26,7 @@ namespace SCR
 		return true;
 	}
 
-	static Wildcard OutputNode(Flow, const InternalExecutionContext* aContext)
+	static Wildcard OutputNode(const InternalExecutionContext* aContext, Flow)
 	{
 		const Node& outputNode = aContext->GetCurrentNode();
 

@@ -400,7 +400,7 @@ namespace SCR
 		ofs.close();
 	}
 
-	void ScriptLoader::LoadCustomEvents(ScriptFoundation& aFoundation)
+	void ScriptLoader::LoadCustomEvents()
 	{
 		std::string filePath = SavePath + "/" + std::string(CUSTOM_EVENT_FILE_NAME);
 		std::ifstream ifs(filePath);
@@ -423,7 +423,7 @@ namespace SCR
 		{
 			const std::string& nodeName = customEventJson["Name"];
 
-			CustomEventID customEventNodeTypeID = ScriptModifier::CreateNodeType_CustomEvent(nodeName, aFoundation);
+			CustomEventID customEventNodeTypeID = ScriptModifier::CreateNodeType_CustomEvent(nodeName);
 
 			const json& pinsJson = customEventJson["Pins"];
 

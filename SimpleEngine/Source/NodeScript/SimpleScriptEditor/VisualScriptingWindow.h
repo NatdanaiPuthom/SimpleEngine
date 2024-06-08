@@ -2,6 +2,7 @@
 #include "SimpleScript/Core/ScriptDefines.h"
 #include "SimpleScriptEditor/VariableWindow.h"
 #include "SimpleScriptEditor/NodeCreatorWindow.h"
+#include "SimpleScriptEditor/FunctionWindow.h"
 #include "SimpleScript/Core/SystemTypes/ScriptVec2.h"
 #include <External/imgui.h>
 #include <vector>
@@ -21,7 +22,7 @@ namespace SCRIPT
 	class Script;
 }
 
-namespace EDIT
+namespace Editor
 {
 	struct NodeTypeCategory
 	{
@@ -92,6 +93,8 @@ namespace EDIT
 
 		VariableWindow myVariableWindow;
 		NodeCreatorWindow myNodeCreatorWindow;
+		FunctionWindow myFunctionWindow;
+
 		ImVec2 myNodeCreationClickPos;
 
 		bool myIsDraggingNode;

@@ -22,7 +22,7 @@ namespace SCR
 		static void CreateCopy(const Script& aScript, const std::string& aCopyName);
 
 		static void SaveCustomEvents(const std::string& aFilePath);
-		static void LoadCustomEvents(ScriptFoundation& aFoundation);
+		static void LoadCustomEvents();
 
 		static std::string SavePath;
 	};

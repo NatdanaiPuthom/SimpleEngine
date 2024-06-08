@@ -590,9 +590,9 @@ namespace SCR
 
 	}
 
-	CustomEventID ScriptModifier::CreateNodeType_CustomEvent(const std::string& aName, ScriptFoundation& aFoundation)
+	CustomEventID ScriptModifier::CreateNodeType_CustomEvent(const std::string& aName)
 	{
-		return InternalModifier::CreateCustomEvent(aName, aFoundation);
+		return InternalModifier::CreateCustomEvent(aName);
 	}
 
 	void ScriptModifier::AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName, ScriptFoundation* aFoundation)

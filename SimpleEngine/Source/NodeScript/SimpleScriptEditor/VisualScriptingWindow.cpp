@@ -15,13 +15,14 @@
 
 #include <imnodes/imnodes_internal.h>
 
-namespace EDIT
+namespace Editor
 {
 	using namespace SCRIPT;
 
 	VisualScriptingWindow::VisualScriptingWindow()
 		: myVariableWindow(*this)
 		, myNodeCreatorWindow(*this)
+		, myFunctionWindow(*this)
 	{
 		myCurrentIndex = 0;
 	}
@@ -147,6 +148,7 @@ namespace EDIT
 
 			myVariableWindow.Update();
 			myNodeCreatorWindow.Update();
+			myFunctionWindow.Update();
 		}
 
 		ImGui::End();
