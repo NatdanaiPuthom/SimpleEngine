@@ -20,9 +20,9 @@ struct alignas(16) PostProcessData final
 	float exposure = 0.060f;
 	float contrast = 0.970f;
 	float blackpoint = 0.020f;
-	float bloom = 1.0f;
+	float bloom = 1.280f;
 
-	float bloomPixelFilterThreshold = 0.896f;
+	float bloomPixelFilterThreshold = 0.991f;
 	unsigned int useToneMapping = 0;
 	unsigned int useBloom = 0;
 	const int paddingPostProcessData = -1;

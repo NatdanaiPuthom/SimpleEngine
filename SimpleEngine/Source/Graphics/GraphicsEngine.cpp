@@ -17,26 +17,6 @@
 
 namespace Graphics
 {
-	void GraphicsEngine::ApplyBloom()
-	{
-		if (myPostProcessData.useBloom == false)
-		{
-			SetRenderTarget(eRenderTargetType::Bloom);
-			RenderFullScreenCopy(eRenderTargetType::Deferred);
-			return;
-		}
-
-		FilterPixelForBloom();
-
-		SetSamplerState(eSamplerState::Trilinear_Clamp);
-
-		DownAndUpSampleForBloom();
-		RenderBloom();
-
-		SetBlendState(eBlendState::Disabled);
-		SetSamplerState(eSamplerState::Bilinear_Warp);
-	}
-
 	GraphicsEngine::GraphicsEngine()
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
@@ -509,6 +489,26 @@ namespace Graphics
 
 		ID3D11ShaderResourceView* nullViews = nullptr;
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+	}
+
+	void GraphicsEngine::ApplyBloom()
+	{
+		if (myPostProcessData.useBloom == false)
+		{
+			SetRenderTarget(eRenderTargetType::Bloom);
+			RenderFullScreenCopy(eRenderTargetType::Deferred);
+			return;
+		}
+
+		FilterPixelForBloom();
+
+		SetSamplerState(eSamplerState::Trilinear_Clamp);
+
+		DownAndUpSampleForBloom();
+		RenderBloom();
+
+		SetBlendState(eBlendState::Disabled);
+		SetSamplerState(eSamplerState::Bilinear_Warp);
 	}
 
 	void GraphicsEngine::RenderFullScreenCopy(const eRenderTargetType aRenderTargetType)
