@@ -17,151 +17,23 @@
 
 namespace Graphics
 {
-	void GraphicsEngine::TestBloom()
+	void GraphicsEngine::ApplyBloom()
 	{
-		SetRenderTarget(eRenderTargetType::BloomTempChangeMeAfter);
+		if (myPostProcessData.useBloom == false)
+		{
+			SetRenderTarget(eRenderTargetType::Bloom);
+			RenderFullScreenCopy(eRenderTargetType::Deferred);
+			return;
+		}
 
-		auto testShader = GetShader(eShaderType::BloomPixelFilter);
-		testShader->BindThisShader(myContext.Get());
-
-
-		ID3D11ShaderResourceView* testtest[1] = {};
-		testtest[0] = GetRenderTargets(eRenderTargetType::Deferred)[0].shaderResourceView.Get();
-		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, testtest);
-
-		RenderFullScreenQuad();
-
-		ID3D11ShaderResourceView* nullViewstest = nullptr;
-		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViewstest);
-
-
-
-
-
-
-
-		
+		FilterPixelForBloom();
 
 		SetSamplerState(eSamplerState::Trilinear_Clamp);
 
-		const Math::Vector2ui currentResolution = Global::GetResolution();
-		Math::Vector2ui downScaledResolution = currentResolution;
-
-		D3D11_VIEWPORT viewport = {};
-		viewport.MinDepth = 0.0f;
-		viewport.MaxDepth = 1.0f;
-		viewport.TopLeftX = 0;
-		viewport.TopLeftY = 0;
-
-		ID3D11RenderTargetView* renderTargetsPointer = nullptr;
+		DownAndUpSampleForBloom();
+		RenderBloom();
 
 		SetBlendState(eBlendState::Disabled);
-
-		for (size_t i = 0; i < myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)].size(); ++i)
-		{
-			downScaledResolution = downScaledResolution / 2;
-
-			viewport.Width = static_cast<float>(downScaledResolution.x);
-			viewport.Height = static_cast<float>(downScaledResolution.y);
-
-			myContext->RSSetViewports(1, &viewport);
-
-			UnbindAllRenderTargets();
-
-			renderTargetsPointer = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i].renderTargetView.Get();
-			myContext->OMSetRenderTargets(1, &renderTargetsPointer, nullptr);
-
-			ID3D11ShaderResourceView* shaderResources[1] = {};
-
-			if (i == 0)
-			{
-				shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomTempChangeMeAfter)][0].shaderResourceView.Get();
-			}
-			else
-			{
-				shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i - 1].shaderResourceView.Get();
-			}
-
-			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
-
-			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::GaussianBlur);
-			shader->BindThisShader(myContext.Get());
-
-			RenderFullScreenQuad();
-
-			ID3D11ShaderResourceView* nullViews = nullptr;
-			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
-		}
-
-		SetBlendState(eBlendState::AlphaBlend);
-
-		for (size_t i = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)].size(); i > 1; --i)
-		{
-			downScaledResolution.x = downScaledResolution.x * 2;
-			downScaledResolution.y = downScaledResolution.y * 2;
-
-			viewport.Width = static_cast<float>(downScaledResolution.x);
-			viewport.Height = static_cast<float>(downScaledResolution.y);
-
-			myContext->RSSetViewports(1, &viewport);
-
-			UnbindAllRenderTargets();
-
-			renderTargetsPointer = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i - 2].renderTargetView.Get();
-			myContext->OMSetRenderTargets(1, &renderTargetsPointer, nullptr);
-
-			ID3D11ShaderResourceView* shaderResources[1] = {};
-			shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i - 1].shaderResourceView.Get();
-			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
-
-			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::GaussianBlur);
-			shader->BindThisShader(myContext.Get());
-
-			RenderFullScreenQuad();
-
-			ID3D11ShaderResourceView* nullViews = nullptr;
-			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
-		}
-
-		myContext->RSSetViewports(1, myViewPort.get());
-
-		SetRenderTarget(eRenderTargetType::PostProcessing);
-
-		for (size_t i = 0; i < myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)].size(); ++i)
-		{
-			ID3D11ShaderResourceView* test[2] = {};
-			test[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)][0].shaderResourceView.Get();
-			test[1] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][i].shaderResourceView.Get();
-			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 2, test);
-
-			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Bloom);
-			shader->BindThisShader(myContext.Get());
-
-			RenderFullScreenQuad();
-
-			ID3D11ShaderResourceView* nullViews[2] = { nullptr };
-			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 2, nullViews);
-		}
-
-		SetBlendState(eBlendState::Disabled);
-
-		SetRenderTarget(eRenderTargetType::BloomTempChangeMeAfter);
-		RenderFullScreenCopy(eRenderTargetType::PostProcessing);
-
-		SetRenderTarget(eRenderTargetType::PostProcessing);
-
-		ID3D11ShaderResourceView* shaderResources[1] = {};
-		shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomTempChangeMeAfter)][0].shaderResourceView.Get();
-		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
-
-		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::PostProcessing);
-		shader->BindThisShader(myContext.Get());
-
-		RenderFullScreenQuad();
-
-		ID3D11ShaderResourceView* nullViews = nullptr;
-		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
-
 		SetSamplerState(eSamplerState::Bilinear_Warp);
 	}
 
@@ -204,6 +76,7 @@ namespace Graphics
 		CreateGRenderTarget(aWindowSize);
 		CreateDeferredRenderTarget(aWindowSize);
 		CreatePostProcessingRenderTarget(aWindowSize);
+		CreateBloomDownAndUpSampleRenderTarget(aWindowSize);
 		CreateBloomRenderTarget(aWindowSize);
 
 		CreateDepthBuffer(aWindowSize);
@@ -387,6 +260,132 @@ namespace Graphics
 
 		if (!AddShader("BloomPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
+	}
+
+	void GraphicsEngine::FilterPixelForBloom()
+	{
+		constexpr size_t shaderResourceViewCount = 1;
+
+		SetRenderTarget(eRenderTargetType::Bloom);
+
+		const std::shared_ptr<const Shader> bloomPixelFilterShader = GetShader(eShaderType::BloomPixelFilter);
+		bloomPixelFilterShader->BindThisShader(myContext.Get());
+
+		ID3D11ShaderResourceView* shaderResourceViews[shaderResourceViewCount] = {};
+		shaderResourceViews[0] = GetRenderTargets(eRenderTargetType::Deferred)[0].shaderResourceView.Get();
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, shaderResourceViewCount, shaderResourceViews);
+
+		RenderFullScreenQuad();
+
+		ID3D11ShaderResourceView* nullViews = nullptr;
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, shaderResourceViewCount, &nullViews);
+	}
+
+	void GraphicsEngine::DownAndUpSampleForBloom()
+	{
+		const Math::Vector2ui currentResolution = Global::GetResolution();
+		Math::Vector2ui downScaledResolution = currentResolution;
+
+		D3D11_VIEWPORT viewport = {};
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+
+		ID3D11RenderTargetView* renderTargetPointer = nullptr;
+
+		SetBlendState(eBlendState::Disabled);
+
+		for (size_t i = 0; i < myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)].size(); ++i)
+		{
+			downScaledResolution = downScaledResolution / 2;
+
+			viewport.Width = static_cast<float>(downScaledResolution.x);
+			viewport.Height = static_cast<float>(downScaledResolution.y);
+
+			myContext->RSSetViewports(1, &viewport);
+
+			UnbindAllRenderTargets();
+
+			renderTargetPointer = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i].renderTargetView.Get();
+			myContext->OMSetRenderTargets(1, &renderTargetPointer, nullptr);
+
+			ID3D11ShaderResourceView* shaderResources[1] = {};
+
+			if (i == 0)
+			{
+				shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][0].shaderResourceView.Get();
+			}
+			else
+			{
+				shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i - 1].shaderResourceView.Get();
+			}
+
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
+
+			const std::shared_ptr<const Graphics::Shader> gaussianBlurShader = GetShader(Graphics::eShaderType::GaussianBlur);
+			gaussianBlurShader->BindThisShader(myContext.Get());
+
+			RenderFullScreenQuad();
+
+			ID3D11ShaderResourceView* nullViews = nullptr;
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+		}
+
+		SetBlendState(eBlendState::AlphaBlend);
+
+		for (size_t i = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)].size(); i > 1; --i)
+		{
+			downScaledResolution.x = downScaledResolution.x * 2;
+			downScaledResolution.y = downScaledResolution.y * 2;
+
+			viewport.Width = static_cast<float>(downScaledResolution.x);
+			viewport.Height = static_cast<float>(downScaledResolution.y);
+
+			myContext->RSSetViewports(1, &viewport);
+
+			UnbindAllRenderTargets();
+
+			renderTargetPointer = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i - 2].renderTargetView.Get();
+			myContext->OMSetRenderTargets(1, &renderTargetPointer, nullptr);
+
+			ID3D11ShaderResourceView* shaderResources[1] = {};
+			shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i - 1].shaderResourceView.Get();
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
+
+			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::GaussianBlur);
+			shader->BindThisShader(myContext.Get());
+
+			RenderFullScreenQuad();
+
+			ID3D11ShaderResourceView* nullViews = nullptr;
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+		}
+
+		myContext->RSSetViewports(1, myViewPort.get());
+	}
+
+	void GraphicsEngine::RenderBloom()
+	{
+		constexpr size_t shaderResourceViewCount = 2;
+
+		SetRenderTarget(eRenderTargetType::Bloom);
+
+		for (size_t i = 0; i < myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)].size(); ++i)
+		{
+			ID3D11ShaderResourceView* shaderResourceViews[shaderResourceViewCount] = {};
+			shaderResourceViews[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)][0].shaderResourceView.Get();
+			shaderResourceViews[1] = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i].shaderResourceView.Get();
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, shaderResourceViewCount, shaderResourceViews);
+
+			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Bloom);
+			shader->BindThisShader(myContext.Get());
+
+			RenderFullScreenQuad();
+
+			ID3D11ShaderResourceView* nullViews[2] = { nullptr };
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 2, nullViews);
+		}
 	}
 
 	void GraphicsEngine::ClearPointLightCount()
@@ -751,6 +750,11 @@ namespace Graphics
 	void GraphicsEngine::SetUseBloom(const bool aShouldUseBloom)
 	{
 		myPostProcessData.useBloom = aShouldUseBloom;
+	}
+
+	void GraphicsEngine::SetBloomPixelThreshold(const float aValue)
+	{
+		myPostProcessData.bloomPixelFilterThreshold = aValue;
 	}
 
 	void GraphicsEngine::SetSaturation(const float aValue)
@@ -1139,7 +1143,7 @@ namespace Graphics
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::PostProcessing)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
-	void GraphicsEngine::CreateBloomRenderTarget(const Math::Vector2ui aResolution)
+	void GraphicsEngine::CreateBloomDownAndUpSampleRenderTarget(const Math::Vector2ui aResolution)
 	{
 		std::array<DXGI_FORMAT, 5> formats =
 		{
@@ -1163,9 +1167,9 @@ namespace Graphics
 
 		Math::Vector2ui resolution = aResolution;
 
-		std::vector<RenderTarget> renderTargets(5);
+		std::vector<RenderTarget> renderTargets(formats.size());
 
-		for (size_t i = 0; i < 5; ++i)
+		for (size_t i = 0; i < formats.size(); ++i)
 		{
 			resolution.x = resolution.x / 2;
 			resolution.y = resolution.y / 2;
@@ -1192,17 +1196,17 @@ namespace Graphics
 			renderTargets[i] = renderTarget;
 		}
 
-		myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)] = renderTargets;
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)] = renderTargets;
+	}
 
-
-
-		//TO-DO(v10.0.5): refactor whole bloom, make it work first.
-		std::array<DXGI_FORMAT, 1> moveMeAfterFormat =
+	void GraphicsEngine::CreateBloomRenderTarget(const Math::Vector2ui aResolution)
+	{
+		std::array<DXGI_FORMAT, 1> formats =
 		{
 			DXGI_FORMAT_R32G32B32A32_FLOAT
 		};
 
-		myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomTempChangeMeAfter)] = CreateRenderTargets(moveMeAfterFormat.size(), &moveMeAfterFormat[0], aResolution);
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
 	std::vector<RenderTarget> GraphicsEngine::CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution)

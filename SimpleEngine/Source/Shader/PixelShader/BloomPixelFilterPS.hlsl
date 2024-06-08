@@ -8,17 +8,17 @@ PixelOutput main(FullScreenVertexToPixel aInput)
     
     float3 color = float3(0.0f, 0.0f, 0.0f);
     
-    if (albedo.r > 0.99f)
+    if (albedo.r > bloomPixelFilterThreshold)
     {
         color.r = albedo.r;
     }
     
-    if (albedo.g > 0.99f)
+    if (albedo.g > bloomPixelFilterThreshold)
     {
         color.g = albedo.g;
     }
     
-    if (albedo.b > 0.99f)
+    if (albedo.b > bloomPixelFilterThreshold)
     {
         color.b = albedo.b;
     }

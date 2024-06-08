@@ -44,8 +44,8 @@ namespace Graphics
 		GBuffer,
 		Deferred,
 		PostProcessing,
+		BloomDownAndUpScale,
 		Bloom,
-		BloomTempChangeMeAfter,
 		Count
 	};
 

@@ -55,9 +55,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	editor.Init();
 	PROFILER_END();
 
-	BeginMemoryTracking(true);
-	EndMemoryTracking();
-
 	PROFILER_BEGIN("GameWorld Initialize");
 	Simple::GameWorld gameWorld;
 	gameWorld.Init();
@@ -109,16 +106,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		ecs.RenderSkyBoxAndDirectionalLight();
 		PROFILER_END();
 
+		PROFILER_BEGIN("Render To BloomRenderTarget");
+		graphicsEngine.ApplyBloom();
+		PROFILER_END();
+
 		PROFILER_BEGIN("Render To PostProcessingBuffer");
-		if (graphicsEngine.GetPostProcessData().useBloom)
-		{
-			graphicsEngine.TestBloom();
-		}
-		else
-		{
-			graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
-			graphicsEngine.ApplyPostProcessing(Graphics::eRenderTargetType::Deferred);
-		}
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
+		graphicsEngine.ApplyPostProcessing(Graphics::eRenderTargetType::Bloom);
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render to BackBuffer");

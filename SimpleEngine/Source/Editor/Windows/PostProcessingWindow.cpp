@@ -52,11 +52,21 @@ namespace Editor
 				graphicsEngine->SetBlackPoint(blackpoint);
 			}
 
+			ImGui::Separator();
+
 			float bloom = postProcessData.bloom;
 			if (ImGui::DragFloat("Bloom", &bloom, 0.01f))
 			{
 				graphicsEngine->SetBloom(bloom);
 			}
+
+			float bloomPixelFilterThreshold = postProcessData.bloomPixelFilterThreshold;
+			if (ImGui::DragFloat("Threshold", &bloomPixelFilterThreshold, 0.001f))
+			{
+				graphicsEngine->SetBloomPixelThreshold(bloomPixelFilterThreshold);
+			}
+
+			ImGui::Separator();
 
 			if (ImGui::Button("Reset"))
 			{
@@ -65,7 +75,23 @@ namespace Editor
 				graphicsEngine->SetExposure(0.0f);
 				graphicsEngine->SetContrast(1.0f);
 				graphicsEngine->SetBlackPoint(0.0f);
-				graphicsEngine->SetBloom(0.0f);
+				graphicsEngine->SetBloom(1.0f);
+				graphicsEngine->SetBloomPixelThreshold(0.50f);
+			}
+
+			ImGui::SameLine();
+			
+			if (ImGui::Button("Default"))
+			{
+				PostProcessData tempPostProcessData;
+
+				graphicsEngine->SetTint(tempPostProcessData.tint);
+				graphicsEngine->SetSaturation(tempPostProcessData.saturation);
+				graphicsEngine->SetExposure(tempPostProcessData.exposure);
+				graphicsEngine->SetContrast(tempPostProcessData.contrast);
+				graphicsEngine->SetBlackPoint(tempPostProcessData.blackpoint);
+				graphicsEngine->SetBloom(tempPostProcessData.bloom);
+				graphicsEngine->SetBloomPixelThreshold(tempPostProcessData.bloomPixelFilterThreshold);
 			}
 
 			ImGui::Separator();

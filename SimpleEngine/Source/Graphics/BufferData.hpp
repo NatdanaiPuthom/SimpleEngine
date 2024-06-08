@@ -22,9 +22,10 @@ struct alignas(16) PostProcessData final
 	float blackpoint = 0.020f;
 	float bloom = 1.0f;
 
+	float bloomPixelFilterThreshold = 0.896f;
 	unsigned int useToneMapping = 0;
 	unsigned int useBloom = 0;
-	const int paddingPostProcessData[2] = { -1 };
+	const int paddingPostProcessData = -1;
 };
 
 struct alignas(16) CameraBufferData final

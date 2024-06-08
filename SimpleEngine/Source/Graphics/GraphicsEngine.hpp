@@ -27,10 +27,6 @@ namespace Graphics
 	class GraphicsEngine final
 	{
 	public:
-		std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
-
-		void TestBloom();
-	public:
 		GraphicsEngine();
 		~GraphicsEngine();
 
@@ -41,19 +37,13 @@ namespace Graphics
 
 		bool IsVSyncActive() const;
 
-		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
 		void ApplyAmbientAndDirectionalLightDeferred(const eRenderTargetType aRenderTargetType);
+		void ApplyPostProcessing(const eRenderTargetType aRenderTargetType);
+		void ApplyBloom();
 
-		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
 		void RenderFullScreenQuad();
-
-		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
 		void RenderFullScreenCopy(const eRenderTargetType aRenderTargetType);
 
-		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
-		void ApplyPostProcessing(const eRenderTargetType aRenderTargetType);
-	
-		//NOTE(v10.0.4): I have no clue what I am doing but it works for now
 		void AddPointLight(const PointLightData& aPointLightData);
 
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
@@ -69,6 +59,7 @@ namespace Graphics
 		void SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity);
 		void SetUseToneMapping(const bool aShouldUseToneMapping);
 		void SetUseBloom(const bool aShouldUseBloom);
+		void SetBloomPixelThreshold(const float aValue);
 		void SetSaturation(const float aValue);
 		void SetExposure(const float aValue);
 		void SetContrast(const float aValue);
@@ -147,6 +138,7 @@ namespace Graphics
 		void CreateGRenderTarget(const Math::Vector2ui aResolution);
 		void CreateDeferredRenderTarget(const Math::Vector2ui aResolution);
 		void CreatePostProcessingRenderTarget(const Math::Vector2ui aResolution);
+		void CreateBloomDownAndUpSampleRenderTarget(const Math::Vector2ui aResolution);
 		void CreateBloomRenderTarget(const Math::Vector2ui aResolution);
 
 		std::vector<RenderTarget> CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution);
@@ -156,6 +148,10 @@ namespace Graphics
 		void PrepareFrame();
 		void PreloadTextures();
 		void PreloadShaders();
+
+		void FilterPixelForBloom();
+		void DownAndUpSampleForBloom();
+		void RenderBloom();
 
 		void ClearPointLightCount();
 		void ClearRenderTarget(const eRenderTargetType aRenderTargetType);
@@ -168,7 +164,7 @@ namespace Graphics
 	private:
 		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
-		//std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
+		std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<size_t>(eRasterizerState::Count)> myRasterizerStates;
 		std::array<ComPtr<ID3D11DepthStencilState>, static_cast<size_t>(eDepthStencilState::Count)> myDepthStencilStates;
 		std::array<ComPtr<ID3D11BlendState>, static_cast<size_t>(eBlendState::Count)> myBlendStates;
