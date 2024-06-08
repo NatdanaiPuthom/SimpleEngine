@@ -35,7 +35,7 @@ namespace Simpleton
 
 		void ShowMouse();
 		void HideMouse();
-		void CaptureMouse() const;
+		void CaptureMouse();
 		void ReleaseMouse() const;
 		void ResetKeyStates();
 	public:
@@ -49,6 +49,7 @@ namespace Simpleton
 		void SetHWND(HWND& aWindowHandle);
 	private:
 		InputManager();
+		void SetCapturedMousePosition();
 	private:
 		HWND myOwnerHWND = {};
 
@@ -57,8 +58,9 @@ namespace Simpleton
 		std::bitset<256> myKeyLiveState;
 
 		Math::Vector2i myTentativeMousePosition;
-		Math::Vector2i myCurrentMousePosition;
+		Math::Vector2i myCurrentMousePosition; //NOTE(v10.0.2): Relative to Client/HWND Window
 		Math::Vector2i myPreviousMousePosition;
+		Math::Vector2i myCapturedMousePosition; //NOTE(v10.0.2): Relative to Monitor
 
 		Math::Vector2i myTentativeMouseDelta;
 		Math::Vector2i myMouseDelta;

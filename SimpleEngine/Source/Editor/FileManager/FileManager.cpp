@@ -84,8 +84,8 @@ namespace Editor
 	{
 		const std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aDirectory, true);
 
-		ID3D11ShaderResourceView* textureCat = Global::GetGraphicsEngine()->GetTexture("Assets/Textures/Cat.dds")->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* textureDefault = Global::GetGraphicsEngine()->GetTexture("Assets/Textures/DefaultTexture.dds")->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* textureCat = Global::GetGraphicsEngine()->GetTexture("Assets/Textures/T_Cat_C.dds")->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* textureDefault = Global::GetGraphicsEngine()->GetTexture(Graphics::eTextureType::Simple)->GetShaderResourceView().Get();
 
 		static const float padding = 16.0f;
 		static const float thumbnailSize = 64.0f;

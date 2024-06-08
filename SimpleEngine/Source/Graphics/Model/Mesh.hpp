@@ -26,7 +26,6 @@ namespace Graphics
 		Math::Vector3f tangent = { 0,0,0 };
 		Math::Vector3f bitangent = { 0,0,0 };
 		Math::Vector2f uv = { 0,0 };
-		float clip = 0.0f;
 	};
 
 	struct MeshData final

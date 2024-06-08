@@ -7,6 +7,7 @@ namespace Editor
 	class AssetWindow;
 	class SettingsTool;
 	class DeferredSceneWindow;
+	class PostProcessingWindow;
 }
 
 namespace Editor
@@ -14,7 +15,7 @@ namespace Editor
 	class MainMenuBar : public Editor::ToolInterface
 	{
 	public:
-		static bool staticNodeScriptWindowActive; //TO-DO(v10.0.2): Fix/Move this
+		static bool myStaticNodeScriptWindowActive; //TO-DO(v10.0.2): Fix/Move this
 	public:
 		MainMenuBar();
 		~MainMenuBar();
@@ -30,8 +31,10 @@ namespace Editor
 		std::unique_ptr<Editor::HierarchyWindow> myHierarchyWindow;
 		std::unique_ptr<Editor::AssetWindow> myAssetWindow;
 		std::unique_ptr<Editor::DeferredSceneWindow> myDeferredSceneWindow;
+		std::unique_ptr<Editor::PostProcessingWindow> myPostProcessWindow;
 
 		bool myEditorWindowActive;
 		bool myDeferredWindowActive;
+		bool myPostProcessWindowActive;
 	};
 }

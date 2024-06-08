@@ -23,7 +23,7 @@ namespace Graphics
 		static MeshData CreateSkyBox(const Math::Vector3f& aSize = { 1000.0f, 1000.0f, 1000.0f });
 		static MeshData CreatePlane();
 		static MeshData Create2DPlane();
-		static MeshData CreateSphere(const float aRadius = 1.0f, const int aSlices = 20, const int aStacks = 20);
+		static MeshData CreateSphere(const float aRadius = 1.0f, const int aSlices = 30, const int aStacks = 30);
 	private:
 		static Math::Vector3f CalcualtePyramidNormal(const Math::Vector3f& aVertexA, const Math::Vector3f& aVertexB, const Math::Vector3f& aVertexC);
 	};

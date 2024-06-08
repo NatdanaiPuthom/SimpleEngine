@@ -82,7 +82,7 @@ namespace Editor
 		ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/" + LevelName;
 		UpdateContext();
 
-		if (Editor::MainMenuBar::staticNodeScriptWindowActive == false) //TO-DO(v10.0.2): May move this somehow?
+		if (Editor::MainMenuBar::myStaticNodeScriptWindowActive == false) //TO-DO(v10.0.2): May move this somehow?
 		{
 			return;
 		}

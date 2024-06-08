@@ -21,6 +21,7 @@ namespace Graphics
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
 		, myFPSLevelCap(0)
+		, myCurrentRasterizerState(eRasterizerState::BackfaceCulling)
 	{
 	}
 
@@ -32,8 +33,9 @@ namespace Graphics
 	{
 		myCameraConstantBuffer = std::make_unique<ConstantBuffer>();
 		myTimeConstantBuffer = std::make_unique<ConstantBuffer>();
-		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
 		myJointsConstantBuffer = std::make_unique<ConstantBuffer>();
+		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
+		myPostProcessConstantBuffer = std::make_unique<ConstantBuffer>();
 
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 		myLightBufferData = std::make_unique<LightBufferData>();
@@ -51,19 +53,23 @@ namespace Graphics
 		CreateViewport(aWindowSize);
 
 		CreateBackBuffer();
-		CreateGBuffer(aWindowSize);
-		CreateDeferredBuffer(aWindowSize);
+		CreateGRenderTarget(aWindowSize);
+		CreateDeferredRenderTarget(aWindowSize);
+		CreatePostProcessingRenderTarget(aWindowSize);
+		CreateBloomDownAndUpSampleRenderTarget(aWindowSize);
+		CreateBloomRenderTarget(aWindowSize);
 
 		CreateDepthBuffer(aWindowSize);
 		CreateDepthStencilState();
 		CreateRasterizerStates();
 		CreateSamplerState();
-		CreateBlendState();
+		CreateBlendStates();
 
-		CreateCameraBuffer();
-		CreateTimeBuffer();
-		CreateLightBuffer();
-		CreateBonesBuffer();
+		CreateCameraConstantBuffer();
+		CreateTimeConstantBuffer();
+		CreateLightConstantBuffer();
+		CreateJointsConstantBuffer();
+		CreatePostProcessingConstantBuffer();
 
 		PreloadTextures();
 		PreloadShaders();
@@ -75,14 +81,15 @@ namespace Graphics
 
 		SetRasterizerState(eRasterizerState::BackfaceCulling);
 		SetDepthStencilState(eDepthStencilState::Less_Equal);
+		SetSamplerState(eSamplerState::Bilinear_Warp);
 
-		myContext->PSSetSamplers(0, 1, mySamplerState.GetAddressOf());
 		myContext->RSSetViewports(1, myViewPort.get());
 
 		myCameraConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Camera);
 		myTimeConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Time);
 		myLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Light);
 		myJointsConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Joints);
+		myPostProcessConstantBuffer->SetSlot(5);
 
 		myLightBufferData->directionalLightDirection.x = 0.0f;
 		myLightBufferData->directionalLightDirection.y = -1.0f;
@@ -96,20 +103,64 @@ namespace Graphics
 	void GraphicsEngine::PrepareFrame()
 	{
 		ClearDepthStencilView();
-		ClearGBuffer();
-		ClearLightBuffer();
+		ClearRenderTarget(eRenderTargetType::GBuffer);
+		ClearRenderTarget(eRenderTargetType::PostProcessing);
+		ClearPointLightCount();
 
-		UpdateCameraBuffer();
+		UpdateTimeConstantBuffer();
+		UpdateCameraConstantBuffer();
 
 		{
-			TimeBufferData timeBuffer = {};
-			timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
-			timeBuffer.deltaTime = static_cast<float>(Global::GetDeltaTime());
-			myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
-			myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
+			myPostProcessConstantBuffer->Bind(myPostProcessConstantBuffer->GetSlot());
+			myPostProcessConstantBuffer->Update(sizeof(PostProcessData), &myPostProcessData);
+		}
+	}
+
+	bool GraphicsEngine::BeginFrame()
+	{
+		MSG msg = { 0 };
+
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+
+			if (msg.message == WM_QUIT)
+			{
+				Global::SetGameShouldClose(true);
+				return false;
+			}
 		}
 
-		UpdateLightBuffer();
+		if (Impl::SimpleGlobalGraphics::GetShouldResizeWindow())
+		{
+			Impl::SimpleGlobalGraphics::ResizeWindow();
+		}
+
+		Impl::SimpleGlobalGraphics::UpdateFPSCounter();
+		Impl::SimpleGlobalGraphics::ResetDrawCalls();
+
+		PROFILER_BEGIN("ImGui BeginFrame");
+		myImGuiEngine->BeginFrame();
+		PROFILER_END();
+
+		PROFILER_BEGIN("Prepare Frame");
+		PrepareFrame();
+		PROFILER_END();
+
+		return true;
+	}
+
+	void GraphicsEngine::EndFrame()
+	{
+		PROFILER_BEGIN("ImGui Endframe");
+		myImGuiEngine->EndFrame();
+		PROFILER_END();
+
+		PROFILER_BEGIN("Present frame");
+		mySwapChain->Present(myFPSLevelCap, 0);
+
+		PROFILER_END();
 	}
 
 	void GraphicsEngine::LoadSettingsFromJson()
@@ -127,28 +178,31 @@ namespace Graphics
 
 	void GraphicsEngine::PreloadTextures()
 	{
-		if (!AddTexture("Assets\\Textures\\DefaultTexture.dds", Global_Slot_Albedo))
+		if (!AddTexture("Assets\\Textures\\T_SimpleTexture_C.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cat.dds", Global_Slot_Albedo))
+		if (!AddTexture("Assets\\Textures\\T_Cat_C.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Hamster.dds", Global_Slot_Albedo))
+		if (!AddTexture("Assets\\Textures\\T_Hamster_C.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cat-scared.dds", Global_Slot_Albedo))
+		if (!AddTexture("Assets\\Textures\\T_CatScared_C.dds", Global_Slot_Albedo))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds", Global_Slot_CubeMap))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_CloudAnime_E.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds", Global_Slot_CubeMap))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_NightStars_E.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds", Global_Slot_CubeMap))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_DayCloud_E.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds", Global_Slot_CubeMap))
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_AutumnForest_E.dds", Global_Slot_CubeMap))
+			assert(false && "Failed to add Texture");
+
+		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_Skansen_E.dds", Global_Slot_CubeMap))
 			assert(false && "Failed to add Texture");
 	}
 
@@ -158,9 +212,6 @@ namespace Graphics
 			assert(false && "Failed to add Shader");
 
 		if (!AddShader("DefaultPS.cso", "AnimatedModelVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("DefaultPBRPS.cso", "DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
 
 		if (!AddShader("LinePS.cso", "Line2DVS.cso"))
@@ -174,20 +225,166 @@ namespace Graphics
 
 		if (!AddShader("DeferredPS.cso", "FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
+
+		if (!AddShader("PointLightCullPS.cso", "DefaultVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("PostProcessingPS.cso", "FullScreenVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("FullScreenCopyPS.cso", "FullScreenVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("GaussianBlurPS.cso", "FullScreenVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("BloomPixelFilterPS.cso", "FullScreenVS.cso"))
+			assert(false && "Failed to add Shader");
+
+		if (!AddShader("BloomPS.cso", "FullScreenVS.cso"))
+			assert(false && "Failed to add Shader");
 	}
 
-	void GraphicsEngine::ClearLightBuffer()
+	void GraphicsEngine::FilterPixelForBloom()
+	{
+		constexpr size_t shaderResourceViewCount = 1;
+
+		SetRenderTarget(eRenderTargetType::Bloom);
+
+		const std::shared_ptr<const Shader> bloomPixelFilterShader = GetShader(eShaderType::BloomPixelFilter);
+		bloomPixelFilterShader->BindThisShader(myContext.Get());
+
+		ID3D11ShaderResourceView* shaderResourceViews[shaderResourceViewCount] = {};
+		shaderResourceViews[0] = GetRenderTargets(eRenderTargetType::Deferred)[0].shaderResourceView.Get();
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, shaderResourceViewCount, shaderResourceViews);
+
+		RenderFullScreenQuad();
+
+		ID3D11ShaderResourceView* nullViews = nullptr;
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, shaderResourceViewCount, &nullViews);
+	}
+
+	void GraphicsEngine::DownAndUpSampleForBloom()
+	{
+		const Math::Vector2ui currentResolution = Global::GetResolution();
+		Math::Vector2ui downScaledResolution = currentResolution;
+
+		D3D11_VIEWPORT viewport = {};
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+
+		ID3D11RenderTargetView* renderTargetPointer = nullptr;
+
+		SetBlendState(eBlendState::Disabled);
+
+		for (size_t i = 0; i < myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)].size(); ++i)
+		{
+			downScaledResolution = downScaledResolution / 2;
+
+			viewport.Width = static_cast<float>(downScaledResolution.x);
+			viewport.Height = static_cast<float>(downScaledResolution.y);
+
+			myContext->RSSetViewports(1, &viewport);
+
+			UnbindAllRenderTargets();
+
+			renderTargetPointer = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i].renderTargetView.Get();
+			myContext->OMSetRenderTargets(1, &renderTargetPointer, nullptr);
+
+			ID3D11ShaderResourceView* shaderResources[1] = {};
+
+			if (i == 0)
+			{
+				shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)][0].shaderResourceView.Get();
+			}
+			else
+			{
+				shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i - 1].shaderResourceView.Get();
+			}
+
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
+
+			const std::shared_ptr<const Graphics::Shader> gaussianBlurShader = GetShader(Graphics::eShaderType::GaussianBlur);
+			gaussianBlurShader->BindThisShader(myContext.Get());
+
+			RenderFullScreenQuad();
+
+			ID3D11ShaderResourceView* nullViews = nullptr;
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+		}
+
+		SetBlendState(eBlendState::AlphaBlend);
+
+		for (size_t i = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)].size(); i > 1; --i)
+		{
+			downScaledResolution.x = downScaledResolution.x * 2;
+			downScaledResolution.y = downScaledResolution.y * 2;
+
+			viewport.Width = static_cast<float>(downScaledResolution.x);
+			viewport.Height = static_cast<float>(downScaledResolution.y);
+
+			myContext->RSSetViewports(1, &viewport);
+
+			UnbindAllRenderTargets();
+
+			renderTargetPointer = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i - 2].renderTargetView.Get();
+			myContext->OMSetRenderTargets(1, &renderTargetPointer, nullptr);
+
+			ID3D11ShaderResourceView* shaderResources[1] = {};
+			shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i - 1].shaderResourceView.Get();
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
+
+			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::GaussianBlur);
+			shader->BindThisShader(myContext.Get());
+
+			RenderFullScreenQuad();
+
+			ID3D11ShaderResourceView* nullViews = nullptr;
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+		}
+
+		SetBlendState(eBlendState::Disabled);
+
+		myContext->RSSetViewports(1, myViewPort.get());
+	}
+
+	void GraphicsEngine::RenderBloom()
+	{
+		constexpr size_t shaderResourceViewCount = 2;
+
+		SetRenderTarget(eRenderTargetType::Bloom);
+
+		for (size_t i = 0; i < myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)].size(); ++i)
+		{
+			ID3D11ShaderResourceView* shaderResourceViews[shaderResourceViewCount] = {};
+			shaderResourceViews[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)][0].shaderResourceView.Get();
+			shaderResourceViews[1] = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i].shaderResourceView.Get();
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, shaderResourceViewCount, shaderResourceViews);
+
+			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Bloom);
+			shader->BindThisShader(myContext.Get());
+
+			RenderFullScreenQuad();
+
+			ID3D11ShaderResourceView* nullViews[2] = { nullptr };
+			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 2, nullViews);
+		}
+	}
+
+	void GraphicsEngine::ClearPointLightCount()
 	{
 		myLightBufferData->currentPointLightCount = 0;
 	}
 
-	void GraphicsEngine::ClearGBuffer()
+	void GraphicsEngine::ClearRenderTarget(const eRenderTargetType aRenderTargetType)
 	{
-		const std::vector<RenderTarget>& gBufferRenderTargets = myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)];
+		const std::vector<RenderTarget>& renderTargets = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
 
-		for (size_t i = 0; i < gBufferRenderTargets.size(); ++i)
+		for (size_t i = 0; i < renderTargets.size(); ++i)
 		{
-			myContext->ClearRenderTargetView(gBufferRenderTargets[i].renderTargetView.Get(), &myClearColor[0]);
+			myContext->ClearRenderTargetView(renderTargets[i].renderTargetView.Get(), &myClearColor[0]);
 		}
 	}
 
@@ -247,58 +444,11 @@ namespace Graphics
 		return true;
 	}
 
-	bool GraphicsEngine::BeginFrame()
-	{
-		MSG msg = { 0 };
-
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-
-			if (msg.message == WM_QUIT)
-			{
-				Global::SetGameShouldClose(true);
-				return false;
-			}
-		}
-
-		if (Impl::SimpleGlobalGraphics::GetShouldResizeWindow())
-		{
-			Impl::SimpleGlobalGraphics::ResizeWindow();
-		}
-
-		Impl::SimpleGlobalGraphics::UpdateFPSCounter();
-		Impl::SimpleGlobalGraphics::ResetDrawCalls();
-
-		PROFILER_BEGIN("ImGui BeginFrame");
-		myImGuiEngine->BeginFrame();
-		PROFILER_END();
-
-		PROFILER_BEGIN("Prepare Frame");
-		PrepareFrame();
-		PROFILER_END();
-
-		return true;
-	}
-
-	void GraphicsEngine::EndFrame()
-	{
-		PROFILER_BEGIN("ImGui Endframe");
-		myImGuiEngine->EndFrame();
-		PROFILER_END();
-
-		PROFILER_BEGIN("Present frame");
-		mySwapChain->Present(myFPSLevelCap, 0);
-
-		PROFILER_END();
-	}
-
-	void GraphicsEngine::RenderDeferredFromGBuffer()
+	void GraphicsEngine::ApplyAmbientAndDirectionalLightDeferred(const eRenderTargetType aRenderTargetType)
 	{
 		static constexpr size_t gBufferCount = Global_GBuffer_Count;
 
-		std::vector<Graphics::RenderTarget>& gBuffers = myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)];
+		std::vector<Graphics::RenderTarget>& gBuffers = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
 
 		ID3D11ShaderResourceView* shaderResources[gBufferCount] = {};
 
@@ -318,21 +468,6 @@ namespace Graphics
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, gBufferCount, nullSRVs);
 	}
 
-	void GraphicsEngine::RenderDeferredImage()
-	{
-		ID3D11ShaderResourceView* shaderResources[1] = {};
-		shaderResources[0] = GetRenderTargets(Graphics::eRenderTargetType::Deferred)[0].shaderResourceView.Get();
-		myContext->PSSetShaderResources(5, 1, shaderResources);
-
-		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Deferred);
-		shader->BindThisShader(myContext.Get());
-
-		RenderFullScreenQuad();
-
-		ID3D11ShaderResourceView* nullViews = nullptr;
-		myContext->PSSetShaderResources(5, 1, &nullViews);
-	}
-
 	void GraphicsEngine::RenderFullScreenQuad()
 	{
 		myContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -343,13 +478,63 @@ namespace Graphics
 		myContext->Draw(3, 0);
 	}
 
+	void GraphicsEngine::ApplyPostProcessing(const eRenderTargetType aRenderTargetType)
+	{
+		ID3D11ShaderResourceView* shaderResources[1] = {};
+		shaderResources[0] = GetRenderTargets(aRenderTargetType)[0].shaderResourceView.Get();
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
+
+		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::PostProcessing);
+		shader->BindThisShader(myContext.Get());
+
+		RenderFullScreenQuad();
+
+		ID3D11ShaderResourceView* nullViews = nullptr;
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+	}
+
+	void GraphicsEngine::ApplyBloom()
+	{
+		if (myPostProcessData.useBloom == false)
+		{
+			SetRenderTarget(eRenderTargetType::Bloom);
+			RenderFullScreenCopy(eRenderTargetType::Deferred);
+			return;
+		}
+
+		FilterPixelForBloom();
+
+		SetSamplerState(eSamplerState::Trilinear_Clamp);
+
+		DownAndUpSampleForBloom();
+		RenderBloom();
+
+		SetBlendState(eBlendState::Disabled);
+		SetSamplerState(eSamplerState::Bilinear_Warp);
+	}
+
+	void GraphicsEngine::RenderFullScreenCopy(const eRenderTargetType aRenderTargetType)
+	{
+		ID3D11ShaderResourceView* shaderResources[1] = {};
+		shaderResources[0] = GetRenderTargets(aRenderTargetType)[0].shaderResourceView.Get();
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
+
+		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Copy);
+		shader->BindThisShader(myContext.Get());
+
+		RenderFullScreenQuad();
+
+		ID3D11ShaderResourceView* nullViews = nullptr;
+		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
+	}
+
 	void GraphicsEngine::AddPointLight(const PointLightData& aPointLightData)
 	{
 		myLightBufferData->pointLightData[myLightBufferData->currentPointLightCount] = aPointLightData;
 		++myLightBufferData->currentPointLightCount;
 	}
 
-	PointLightData* GraphicsEngine::GetPointLightDataArray()
+	PointLightData* GraphicsEngine::GetPointLightDataArray() const
 	{
 		return myLightBufferData->pointLightData;
 	}
@@ -366,7 +551,7 @@ namespace Graphics
 		myContext->OMSetRenderTargets(maxRenderTargetSupportedByDX11, nullViews, nullptr);
 	}
 
-	void GraphicsEngine::UpdateCameraBuffer()
+	void GraphicsEngine::UpdateCameraConstantBuffer()
 	{
 		CameraBufferData frameBuffer = {};
 		frameBuffer.worldToClipMatrix = myCurrentCamera->GetWorldToClipMatrix();
@@ -377,7 +562,16 @@ namespace Graphics
 		myCameraConstantBuffer->Update(sizeof(CameraBufferData), &frameBuffer);
 	}
 
-	void GraphicsEngine::UpdateLightBuffer()
+	void GraphicsEngine::UpdateTimeConstantBuffer()
+	{
+		TimeBufferData timeBuffer = {};
+		timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
+		timeBuffer.deltaTime = static_cast<float>(Global::GetDeltaTime());
+		myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
+		myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
+	}
+
+	void GraphicsEngine::UpdateLightBuffer(const size_t aLightIndex)
 	{
 		LightBufferData lightBufferData;
 
@@ -389,7 +583,7 @@ namespace Graphics
 
 		for (size_t i = 0; i < myLightBufferData->currentPointLightCount; i++)
 		{
-			lightBufferData.pointLightData[i] = myLightBufferData->pointLightData[i];
+			lightBufferData.pointLightData[i] = myLightBufferData->pointLightData[aLightIndex];
 		}
 
 		myLightConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
@@ -452,10 +646,13 @@ namespace Graphics
 		const HRESULT result = mySwapChain->ResizeBuffers(0, newWindowSize.x, newWindowSize.y, DXGI_FORMAT_UNKNOWN, 0);
 		assert(SUCCEEDED(result) && "Failed to resize buffer");
 
-		CreateBackBuffer();
-		CreateDepthBuffer(newWindowSize);
-		CreateGBuffer(newWindowSize);
-		CreateDeferredBuffer(newWindowSize);
+		{ //TO-DO(v10.0.5): Figure a out to resize buffers properly
+			CreateBackBuffer();
+			CreateDepthBuffer(newWindowSize);
+			CreateGRenderTarget(newWindowSize);
+			CreateDeferredRenderTarget(newWindowSize);
+			CreatePostProcessingRenderTarget(newWindowSize);
+		}
 
 		CreateViewport(newWindowSize);
 
@@ -482,7 +679,7 @@ namespace Graphics
 	void GraphicsEngine::SetCamera(std::shared_ptr<Graphics::Camera> aCamera)
 	{
 		myCurrentCamera = aCamera;
-		UpdateCameraBuffer();
+		UpdateCameraConstantBuffer();
 	}
 
 	void GraphicsEngine::SetToDefaultCamera()
@@ -497,28 +694,8 @@ namespace Graphics
 
 	void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)
 	{
-		switch (aRasterizerState)
-		{
-		case eRasterizerState::BackfaceCulling:
-			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)];
-			break;
-		case eRasterizerState::NoFaceCulling:
-			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)];
-			break;
-		case eRasterizerState::Wireframe:
-			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::Wireframe)];
-			break;
-		case eRasterizerState::WireframeNoCulling:
-			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)];
-			break;
-		case eRasterizerState::FrontFaceCulling:
-			myCurrentRasterizerState = myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)];
-			break;
-		default:
-			break;
-		}
-
-		myContext->RSSetState(myCurrentRasterizerState.Get());
+		myCurrentRasterizerState = aRasterizerState;
+		myContext->RSSetState(myRasterizerStates[static_cast<int>(myCurrentRasterizerState)].Get());
 	}
 
 	void GraphicsEngine::SetBlendState(const eBlendState aBlendState)
@@ -529,6 +706,11 @@ namespace Graphics
 	void GraphicsEngine::SetDepthStencilState(const eDepthStencilState aDepthStencilState)
 	{
 		myContext->OMSetDepthStencilState(myDepthStencilStates[static_cast<size_t>(aDepthStencilState)].Get(), 0);
+	}
+
+	void GraphicsEngine::SetSamplerState(const eSamplerState aSamplerState)
+	{
+		myContext->PSSetSamplers(0, 1, mySamplerStates[static_cast<size_t>(aSamplerState)].GetAddressOf());
 	}
 
 	void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
@@ -565,6 +747,51 @@ namespace Graphics
 		myLightBufferData->ambientLightColorAndIntensity = aColorAndIntensity;
 	}
 
+	void GraphicsEngine::SetUseToneMapping(const bool aShouldUseToneMapping)
+	{
+		myPostProcessData.useToneMapping = aShouldUseToneMapping;
+	}
+
+	void GraphicsEngine::SetUseBloom(const bool aShouldUseBloom)
+	{
+		myPostProcessData.useBloom = aShouldUseBloom;
+	}
+
+	void GraphicsEngine::SetBloomPixelThreshold(const float aValue)
+	{
+		myPostProcessData.bloomPixelFilterThreshold = aValue;
+	}
+
+	void GraphicsEngine::SetSaturation(const float aValue)
+	{
+		myPostProcessData.saturation = aValue;
+	}
+
+	void GraphicsEngine::SetExposure(const float aValue)
+	{
+		myPostProcessData.exposure = aValue;
+	}
+
+	void GraphicsEngine::SetContrast(const float aValue)
+	{
+		myPostProcessData.contrast = aValue;
+	}
+
+	void GraphicsEngine::SetBlackPoint(const float aValue)
+	{
+		myPostProcessData.blackpoint = aValue;
+	}
+
+	void GraphicsEngine::SetBloom(const float aValue)
+	{
+		myPostProcessData.bloom = aValue;
+	}
+
+	void GraphicsEngine::SetTint(const Math::Vector3f& aColor)
+	{
+		myPostProcessData.tint = aColor;
+	}
+
 	std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const char* aFilePath)
 	{
 		auto it = myLoadedTextures.find(aFilePath);
@@ -575,9 +802,9 @@ namespace Graphics
 		}
 		else
 		{
-			unsigned int slot = 0;
+			unsigned int slot = Graphics::Global_Slot_Albedo;
 
-			if (SimpleUtilities::FindSuffix(aFilePath, "_D"))
+			if (SimpleUtilities::FindSuffix(aFilePath, "_C"))
 			{
 				slot = Graphics::Global_Slot_Albedo;
 			}
@@ -615,25 +842,28 @@ namespace Graphics
 		switch (aTextureType)
 		{
 		case eTextureType::Default:
-			texture = GetTexture("Assets\\Textures\\DefaultTexture.dds");
+			texture = GetTexture("Assets\\Textures\\T_SimpleTexture_C.dds");
+			break;
+		case eTextureType::Simple:
+			texture = GetTexture("Assets\\Textures\\T_SimpleTexture_C.dds");
 			break;
 		case eTextureType::SkyBox_DayCloud:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\CloudCubeMap_1024.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_DayCloud_E.dds");
 			break;
 		case eTextureType::SkyBox_NightStar:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\NightStarsCubeMap.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_NightStars_E.dds");
 			break;
 		case eTextureType::SkyBox_DayGrassland:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\CloudAnime.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_CloudAnime_E.dds");
 			break;
 		case eTextureType::SkyBox_AutumnForest:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\AutumnForest.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_AutumnForest_E.dds");
 			break;
 		case eTextureType::TGA_Skansen:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\cube_1024_preblurred_angle3_Skansen3.dds");
+			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_Skansen_E.dds");
 			break;
 		}
-		
+
 		return texture;
 	}
 
@@ -690,6 +920,21 @@ namespace Graphics
 		case eShaderType::PointLight:
 			shader = GetShader("PointLightCullPS.cso", "DefaultVS.cso");
 			break;
+		case eShaderType::PostProcessing:
+			shader = GetShader("PostProcessingPS.cso", "FullScreenVS.cso");
+			break;
+		case eShaderType::GaussianBlur:
+			shader = GetShader("GaussianBlurPS.cso", "FullScreenVS.cso");
+			break;
+		case eShaderType::Bloom:
+			shader = GetShader("BloomPS.cso", "FullScreenVS.cso");
+			break;
+		case eShaderType::BloomPixelFilter:
+			shader = GetShader("BloomPixelFilterPS.cso", "FullScreenVS.cso");
+			break;
+		case eShaderType::Copy:
+			shader = GetShader("FullScreenCopyPS.cso", "FullScreenVS.cso");
+			break;
 		default:
 			break;
 		}
@@ -742,6 +987,11 @@ namespace Graphics
 		return myDepthBuffer;
 	}
 
+	const eRasterizerState GraphicsEngine::GetCurrentRasterizerState() const
+	{
+		return myCurrentRasterizerState;
+	}
+
 	Math::Vector4f GraphicsEngine::GetAmbientLightColorAndIntensity() const
 	{
 		return myLightBufferData->ambientLightColorAndIntensity;
@@ -760,6 +1010,11 @@ namespace Graphics
 	unsigned int GraphicsEngine::GetFPSLevelCap() const
 	{
 		return myFPSLevelCap;
+	}
+
+	const PostProcessData& GraphicsEngine::GetPostProcessData() const
+	{
+		return myPostProcessData;
 	}
 
 	void GraphicsEngine::CreateViewport(const Math::Vector2ui aSize)
@@ -786,14 +1041,31 @@ namespace Graphics
 		HRESULT result = S_OK;
 
 		D3D11_RASTERIZER_DESC rasterizerDesc = {};
-		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+		rasterizerDesc.AntialiasedLineEnable = false;
 		rasterizerDesc.CullMode = D3D11_CULL_BACK;
+		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+		rasterizerDesc.DepthBias = 0;
+		rasterizerDesc.DepthBiasClamp = 0.0f;
 		rasterizerDesc.DepthClipEnable = true;
+		rasterizerDesc.FrontCounterClockwise = false;
+		rasterizerDesc.MultisampleEnable = true;
+		rasterizerDesc.ScissorEnable = false;
+		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 
 		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::Wireframe)]);
 		assert(SUCCEEDED(result) && "Failed to create RasterizerState: Wireframe");
 
+		rasterizerDesc = {};
+		rasterizerDesc.AntialiasedLineEnable = false;
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+		rasterizerDesc.DepthBias = 0;
+		rasterizerDesc.DepthBiasClamp = 0.0f;
+		rasterizerDesc.DepthClipEnable = true;
+		rasterizerDesc.FrontCounterClockwise = false;
+		rasterizerDesc.MultisampleEnable = true;
+		rasterizerDesc.ScissorEnable = false;
+		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 
 		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)]);
 		assert(SUCCEEDED(result) && "Failed to create RasterizerState: WireframeNoCulling");
@@ -801,10 +1073,10 @@ namespace Graphics
 		rasterizerDesc = {};
 		rasterizerDesc.AntialiasedLineEnable = false;
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.DepthBias = 0;
 		rasterizerDesc.DepthBiasClamp = 0.0f;
 		rasterizerDesc.DepthClipEnable = true;
-		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.FrontCounterClockwise = false;
 		rasterizerDesc.MultisampleEnable = true;
 		rasterizerDesc.ScissorEnable = false;
@@ -813,37 +1085,33 @@ namespace Graphics
 		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)]);
 		assert(SUCCEEDED(result) && "Failed to create RasterizerState: NoFaceCulling");
 
-		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc = {};
+		rasterizerDesc.AntialiasedLineEnable = false;
 		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.DepthBias = 0;
+		rasterizerDesc.DepthBiasClamp = 0.0f;
+		rasterizerDesc.DepthClipEnable = true;
+		rasterizerDesc.FrontCounterClockwise = false;
+		rasterizerDesc.MultisampleEnable = true;
+		rasterizerDesc.ScissorEnable = false;
+		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 
-
-		D3D11_RASTERIZER_DESC rasterizerDesc2 = {};
-		rasterizerDesc2.AntialiasedLineEnable = false;
-		rasterizerDesc2.CullMode = D3D11_CULL_FRONT;
-		rasterizerDesc2.DepthBias = 0;
-		rasterizerDesc2.DepthBiasClamp = 0.0f;
-		rasterizerDesc2.DepthClipEnable = true;
-		rasterizerDesc2.FrontCounterClockwise = false;
-		rasterizerDesc2.MultisampleEnable = true;
-		rasterizerDesc2.ScissorEnable = false;
-		rasterizerDesc2.SlopeScaledDepthBias = 0.0f;
-		rasterizerDesc2.FillMode = D3D11_FILL_SOLID;
-
-		result = myDevice->CreateRasterizerState(&rasterizerDesc2, &myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)]);
+		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)]);
 		assert(SUCCEEDED(result) && "Failed to create RasterizerState: FrontFaceCulling");
 
 		myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = nullptr;
 	}
 
-	void GraphicsEngine::CreateBonesBuffer()
+	void GraphicsEngine::CreateJointsConstantBuffer()
 	{
 		JointsBufferData bonesBufferData;
 
-		if (!myJointsConstantBuffer->Init(sizeof(JointsBufferData), &bonesBufferData))
+		if (myJointsConstantBuffer->Init(sizeof(JointsBufferData), &bonesBufferData) == false)
 			assert(false && "Failed to create BoneConstantBuffer");
 	}
 
-	void GraphicsEngine::CreateGBuffer(const Math::Vector2ui aResolution)
+	void GraphicsEngine::CreateGRenderTarget(const Math::Vector2ui aResolution)
 	{
 		std::array<DXGI_FORMAT, 5> formats =
 		{
@@ -858,15 +1126,92 @@ namespace Graphics
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
-	void GraphicsEngine::CreateDeferredBuffer(const Math::Vector2ui aResolution)
+	void GraphicsEngine::CreateDeferredRenderTarget(const Math::Vector2ui aResolution)
 	{
 		std::array<DXGI_FORMAT, 1> formats =
 		{
-			DXGI_FORMAT_R16G16B16A16_FLOAT
+			DXGI_FORMAT_R32G32B32A32_FLOAT
 		};
 
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)] = std::vector<RenderTarget>();
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::Deferred)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
+	}
+
+	void GraphicsEngine::CreatePostProcessingRenderTarget(const Math::Vector2ui aResolution)
+	{
+		std::array<DXGI_FORMAT, 1> formats =
+		{
+			DXGI_FORMAT_R32G32B32A32_FLOAT
+		};
+
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::PostProcessing)] = std::vector<RenderTarget>();
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::PostProcessing)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
+	}
+
+	void GraphicsEngine::CreateBloomDownAndUpSampleRenderTarget(const Math::Vector2ui aResolution)
+	{
+		std::array<DXGI_FORMAT, 5> formats =
+		{
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_R32G32B32A32_FLOAT
+		};
+
+		D3D11_TEXTURE2D_DESC desc = { 0 };
+
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+
+		Math::Vector2ui resolution = aResolution;
+
+		std::vector<RenderTarget> renderTargets(formats.size());
+
+		for (size_t i = 0; i < formats.size(); ++i)
+		{
+			resolution.x = resolution.x / 2;
+			resolution.y = resolution.y / 2;
+
+			desc.Width = resolution.x;
+			desc.Height = resolution.y;
+
+			desc.Format = formats[i];
+
+			RenderTarget renderTarget;
+			ID3D11Texture2D* texture;
+
+			HRESULT result = myDevice->CreateTexture2D(&desc, nullptr, &texture);
+			assert(SUCCEEDED(result) && "Failed to create Texture2D");
+
+			result = myDevice->CreateShaderResourceView(texture, nullptr, renderTarget.shaderResourceView.GetAddressOf());
+			assert(SUCCEEDED(result) && "Failed to create ShaderResourceView");
+
+			result = myDevice->CreateRenderTargetView(texture, nullptr, renderTarget.renderTargetView.GetAddressOf());
+			assert(SUCCEEDED(result) && "Failed to create RenderTargetView");
+
+			texture->Release();
+
+			renderTargets[i] = renderTarget;
+		}
+
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)] = renderTargets;
+	}
+
+	void GraphicsEngine::CreateBloomRenderTarget(const Math::Vector2ui aResolution)
+	{
+		std::array<DXGI_FORMAT, 1> formats =
+		{
+			DXGI_FORMAT_R32G32B32A32_FLOAT
+		};
+
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
 	std::vector<RenderTarget> GraphicsEngine::CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution)
@@ -959,7 +1304,12 @@ namespace Graphics
 		HRESULT result = mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBufferTexture);
 		assert(SUCCEEDED(result) && "Failed to get Backbuffer");
 
-		result = myDevice->CreateRenderTargetView(backBufferTexture, nullptr, myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)][0].renderTargetView.GetAddressOf());
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D.MipSlice = 0;
+
+		result = myDevice->CreateRenderTargetView(backBufferTexture, &rtvDesc, myRenderTargets[static_cast<size_t>(eRenderTargetType::Backbuffer)][0].renderTargetView.GetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create Backbuffer");
 
 		backBufferTexture->Release();
@@ -1013,13 +1363,15 @@ namespace Graphics
 
 	void GraphicsEngine::CreateSamplerState()
 	{
+		HRESULT result = S_OK;
+
 		D3D11_SAMPLER_DESC samplerDesc = {};
 		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		samplerDesc.MipLODBias = 0.0f;
-		samplerDesc.MaxAnisotropy = 1;
+		samplerDesc.MaxAnisotropy = 16;
 		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 		samplerDesc.BorderColor[0] = 0;
 		samplerDesc.BorderColor[1] = 0;
@@ -1028,11 +1380,29 @@ namespace Graphics
 		samplerDesc.MinLOD = 0;
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		const HRESULT result = myDevice->CreateSamplerState(&samplerDesc, &mySamplerState);
+		result = myDevice->CreateSamplerState(&samplerDesc, &mySamplerStates[static_cast<size_t>(eSamplerState::Bilinear_Warp)]);
+		assert(SUCCEEDED(result) && "Failed to create SamplerState");
+
+		D3D11_SAMPLER_DESC samplerDesc2 = {};
+		samplerDesc2.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc2.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc2.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc2.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc2.MipLODBias = 0.0f;
+		samplerDesc2.MaxAnisotropy = 16;
+		samplerDesc2.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		samplerDesc2.BorderColor[0] = 0;
+		samplerDesc2.BorderColor[1] = 0;
+		samplerDesc2.BorderColor[2] = 0;
+		samplerDesc2.BorderColor[3] = 0;
+		samplerDesc2.MinLOD = 0;
+		samplerDesc2.MaxLOD = D3D11_FLOAT32_MAX;
+
+		result = myDevice->CreateSamplerState(&samplerDesc2, &mySamplerStates[static_cast<size_t>(eSamplerState::Trilinear_Clamp)]);
 		assert(SUCCEEDED(result) && "Failed to create SamplerState");
 	}
 
-	void GraphicsEngine::CreateCameraBuffer()
+	void GraphicsEngine::CreateCameraConstantBuffer()
 	{
 		CameraBufferData cameraBuffer;
 
@@ -1043,7 +1413,7 @@ namespace Graphics
 			assert(false && "Failed to create CameraConstantBuffer");
 	}
 
-	void GraphicsEngine::CreateTimeBuffer()
+	void GraphicsEngine::CreateTimeConstantBuffer()
 	{
 		TimeBufferData timeBuffer;
 
@@ -1054,7 +1424,7 @@ namespace Graphics
 			assert(false && "Failed to create TimeConstantBuffer");
 	}
 
-	void GraphicsEngine::CreateLightBuffer()
+	void GraphicsEngine::CreateLightConstantBuffer()
 	{
 		LightBufferData lightBufferData;
 
@@ -1068,11 +1438,21 @@ namespace Graphics
 		}
 	}
 
-	void GraphicsEngine::CreateBlendState()
+	void GraphicsEngine::CreatePostProcessingConstantBuffer()
+	{
+		PostProcessData postProcessingData;
+
+		if (myPostProcessConstantBuffer->Init(sizeof(LightBufferData), &postProcessingData) == false)
+		{
+			assert(false && "Failed to create LightConstantBuffer");
+		}
+	}
+
+	void GraphicsEngine::CreateBlendStates()
 	{
 		HRESULT result = S_OK;
-		D3D11_BLEND_DESC blendStateDescription = {};
 
+		D3D11_BLEND_DESC blendStateDescription = {};
 		blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
 		blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
 		blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
@@ -1094,6 +1474,18 @@ namespace Graphics
 		blendStateDescription2.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
 		blendStateDescription2.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 		result = myDevice->CreateBlendState(&blendStateDescription2, myBlendStates[static_cast<size_t>(eBlendState::AdditiveBlend)].ReleaseAndGetAddressOf());
+		assert(SUCCEEDED(result) && "Failed to create blend state");
+
+		D3D11_BLEND_DESC blendStateDescription3 = {};
+		blendStateDescription3.RenderTarget[0].BlendEnable = TRUE;
+		blendStateDescription3.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendStateDescription3.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		blendStateDescription3.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendStateDescription3.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendStateDescription3.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		blendStateDescription3.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
+		blendStateDescription3.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		result = myDevice->CreateBlendState(&blendStateDescription, myBlendStates[static_cast<size_t>(eBlendState::AlphaBlend)].ReleaseAndGetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create blend state");
 	}
 }

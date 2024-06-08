@@ -60,8 +60,6 @@ namespace TGA
 					fbxManager = nullptr;
 					fbxIOSettings = nullptr;
 					fbxImporter = nullptr;
-
-					lastFbxStatus.~basic_string();
 				}
 			}
 		};

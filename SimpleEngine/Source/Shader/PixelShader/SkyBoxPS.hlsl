@@ -4,9 +4,8 @@ PixelOutput main(PixelInputType aInput)
 {
     PixelOutput output;
  
-    float3 cubeMap = normalize(aInput.worldPosition.xyz - cameraPosition);
-    
-    float3 color = GlobalCubeMap.SampleLevel(GlobalDefaultSampler, cubeMap, 0).rgb;
+    const float3 position = normalize(aInput.worldPosition.xyz - cameraPosition);
+    const float3 color = GlobalCubeMap.SampleLevel(GlobalDefaultSampler, position, 0).rgb;
 
     output.color = float4(color, 1);
     

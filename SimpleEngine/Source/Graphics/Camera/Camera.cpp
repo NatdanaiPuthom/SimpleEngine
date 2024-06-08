@@ -26,7 +26,7 @@ namespace Graphics
 	{
 		if (GetForegroundWindow() != aHWND)
 		{
-			if (myInput->GetMouseIsHidden())
+			if (myInput->GetMouseIsHidden() == true)
 			{
 				myInput->ShowMouse();
 				myInput->ReleaseMouse();
@@ -46,17 +46,11 @@ namespace Graphics
 
 		if (myFreeFly == true || myMouseIsTapped == true)
 		{
-			if (!myInput->GetMouseIsHidden())
+			if (myInput->GetMouseIsHidden() == false)
 			{
-				const Math::Vector2f mousePosition = myInput->GetMousePosition();
-				myCapturedPosition.x = static_cast<int>(mousePosition.x);
-				myCapturedPosition.y = static_cast<int>(mousePosition.y);
-
 				myInput->HideMouse();
 				myInput->CaptureMouse();
 			}
-
-			SetCursorPos(myCapturedPosition.x, myCapturedPosition.y);
 
 			const Math::Vector3f currentPosition = GetPosition();
 			const Math::Vector3f currentRotation = GetRotation();

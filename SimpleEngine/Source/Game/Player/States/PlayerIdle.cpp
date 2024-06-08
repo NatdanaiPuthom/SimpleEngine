@@ -26,12 +26,12 @@ void PlayerIdle::Init()
 
 void PlayerIdle::Update()
 {
-	if (MainSingleton::GetInputManager().IsKeyHeld(VK_UP) ||
+	/*if (MainSingleton::GetInputManager().IsKeyHeld(VK_UP) ||
 		MainSingleton::GetInputManager().IsKeyHeld(VK_DOWN) ||
 		MainSingleton::GetInputManager().IsKeyHeld(VK_LEFT) ||
 		MainSingleton::GetInputManager().IsKeyHeld(VK_RIGHT))
 	{
 		myPlayer->SetState(ePlayerState::Walk);
 		return;
-	}
+	}*/
 }

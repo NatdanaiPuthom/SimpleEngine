@@ -5,6 +5,8 @@
 #include "Engine/ECS/Components/Core/DirectionalLightComponent.hpp"
 #include "External/imgui.h"
 
+#include "Editor/Editor.hpp"
+
 namespace ECS
 {
 	RenderLightSystem::RenderLightSystem(EntityManager* aECS) : System(aECS)
@@ -41,7 +43,7 @@ namespace ECS
 
 			DirectionalLight* directionalLightComponent = directionalLight->GetComponent<DirectionalLight>();
 			directionalLightComponent->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
-			directionalLightComponent->texture = graphicsEngine->GetTexture("Assets\\Textures\\Sunlight.dds").get();
+			directionalLightComponent->texture = graphicsEngine->GetTexture("Assets\\Textures\\T_Sunlight_C.dds").get();
 			directionalLightComponent->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 			directionalLightComponent->transform.SetPosition({ 0.0f, 5.0f, 0.0f });
 
@@ -62,20 +64,48 @@ namespace ECS
 		const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
 		skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
-		graphicsEngine->SetDirectionalLightDirection((forward.GetNormalized()));
+		graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
 
 		{
-			static Math::Vector4f pointLightColorAndIntensity1 = { 1.0f, 1.0f, 1.0f, 100.0f };
-			static Math::Vector3f pointLightPosition = { -5.0f, 5.5f, 4.2f };
-			static float range = 1.0f;
+			PointLightData pointLight1;
+			pointLight1.color = { 1.0f, 1.0f, 1.0f, 5.0f };
+			pointLight1.position = { -3.5f, 2.0f, 0.0f };
+			pointLight1.radius = 2.5f;
 
-			PointLightData pointlight;
-			pointlight.color = pointLightColorAndIntensity1;
-			pointlight.position = pointLightPosition;
-			pointlight.range = range;
+			graphicsEngine->AddPointLight(pointLight1);
 
-			graphicsEngine->AddPointLight(pointlight);
+			PointLightData pointLight2;
+			pointLight2.color = { 0.0f, 1.0f, 0.0f, 10.0f };
+			pointLight2.position = { 0.0f, 2.5f, -1.0f };
+			pointLight2.radius = 3.0f;
+
+			graphicsEngine->AddPointLight(pointLight2);
+
+			PointLightData pointLight3;
+			pointLight3.color = { 1.0f, 0.0f, 0.0f, 10.0f };
+			pointLight3.position = { -1.75f, 2.8f, -1.25f };
+			pointLight3.radius = 5.0f;
+
+			graphicsEngine->AddPointLight(pointLight3);
 		}
+
+		/*if (ImGui::Begin("DirectionalLight"))
+		{
+			Math::Transform& transform = directionalLightComponent->transform;
+			Math::Vector3f position = transform.GetPosition();
+			Math::Vector3f rotation = transform.GetRotation();
+
+			if (ImGui::DragFloat3("Position", &position.x))
+			{
+				transform.SetPosition(position);
+			}
+
+			if (ImGui::DragFloat3("Rotation", &rotation.x))
+			{
+				transform.SetRotation(rotation);
+			}
+		}
+		ImGui::End();*/
 	}
 
 	void RenderLightSystem::Render()
@@ -100,36 +130,45 @@ namespace ECS
 		std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(Graphics::eTextureType::Default);
 		Math::Transform transform;
 
-		Global::GetGraphicsEngine()->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
+		const Graphics::eRasterizerState previousRasterizerState = graphicsEngine->GetCurrentRasterizerState();
+
+		graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
 		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Greater);
 		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
-		graphicsEngine->UpdateLightBuffer();
 
 		PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
 
 		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
 		{
+			graphicsEngine->UpdateLightBuffer(i);
+
 			transform.SetPosition(pointLightBuffer[i].position);
-			transform.SetScale(pointLightBuffer[i].range);
+			transform.SetScale(pointLightBuffer[i].radius);
 
 			renderer->RenderUnlit(transform.GetMatrix(), mesh, shader.get(), texture.get());
 		}
 
 		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Less_Equal);
-		graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::BackfaceCulling);
+		graphicsEngine->SetRasterizerState(previousRasterizerState);
 		graphicsEngine->SetBlendState(Graphics::eBlendState::Disabled);
 
 		ID3D11ShaderResourceView* nullSRVs[5] = { NULL };
 		context->PSSetShaderResources(5, 5, nullSRVs);
 
-		Drawer::Sphere pointLightDebugSpheres;
-		pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-
-		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
+		if (Editor::EditorEngine::myStaticShouldRenderDebugLines == true)
 		{
-			pointLightDebugSpheres.position = pointLightBuffer[i].position;
-			pointLightDebugSpheres.radius = pointLightBuffer[i].range;
-			renderer->RenderSphere(pointLightDebugSpheres);
+			Drawer::Sphere pointLightDebugSpheres;
+			pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+			for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
+			{
+				pointLightDebugSpheres.position = pointLightBuffer[i].position;
+				pointLightDebugSpheres.radius = pointLightBuffer[i].radius;
+				renderer->RenderSphere(pointLightDebugSpheres);
+
+				pointLightDebugSpheres.radius = 0.1f;
+				renderer->RenderSphere(pointLightDebugSpheres);
+			}
 		}
 
 		{

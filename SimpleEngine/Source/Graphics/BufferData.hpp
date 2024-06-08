@@ -9,7 +9,23 @@ struct alignas(16) PointLightData final
 {
 	Math::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	Math::Vector3f position = { 0.0f, 0.0f, 0.0f };
-	float range = 0.0f;
+	float radius = 0.0f;
+};
+
+struct alignas(16) PostProcessData final
+{ //NOTE(v10.0.5): SimpleEngine default value
+	Math::Vector3f tint = { 1.0f, 1.0f, 1.0f };
+	float saturation = 1.070f;
+
+	float exposure = 0.060f;
+	float contrast = 0.970f;
+	float blackpoint = 0.020f;
+	float bloom = 1.280f;
+
+	float bloomPixelFilterThreshold = 0.991f;
+	unsigned int useToneMapping = 0;
+	unsigned int useBloom = 0;
+	const int paddingPostProcessData = -1;
 };
 
 struct alignas(16) CameraBufferData final

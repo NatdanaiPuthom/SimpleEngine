@@ -55,9 +55,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	editor.Init();
 	PROFILER_END();
 
-	BeginMemoryTracking(true);
-	EndMemoryTracking();
-
 	PROFILER_BEGIN("GameWorld Initialize");
 	Simple::GameWorld gameWorld;
 	gameWorld.Init();
@@ -102,16 +99,25 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		PROFILER_BEGIN("Render To DeferredBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred);
-		graphicsEngine.RenderDeferredFromGBuffer();
+		graphicsEngine.ApplyAmbientAndDirectionalLightDeferred(Graphics::eRenderTargetType::GBuffer);
 
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
-		ecs.RenderSkyBoxAndDirectionalLight();
 		ecs.RenderPointLights();
+		ecs.RenderSkyBoxAndDirectionalLight();
+		PROFILER_END();
+
+		PROFILER_BEGIN("Render To BloomRenderTarget");
+		graphicsEngine.ApplyBloom();
+		PROFILER_END();
+
+		PROFILER_BEGIN("Render To PostProcessingBuffer");
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
+		graphicsEngine.ApplyPostProcessing(Graphics::eRenderTargetType::Bloom);
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render to BackBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
-		graphicsEngine.RenderDeferredImage();
+		graphicsEngine.RenderFullScreenCopy(Graphics::eRenderTargetType::PostProcessing);
 		editor.Render();
 		PROFILER_END();
 

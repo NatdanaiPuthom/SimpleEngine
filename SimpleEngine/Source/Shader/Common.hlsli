@@ -1,5 +1,6 @@
 
 #define SIMPLE_MAX_JOINTS 64
+#define SIMPLE_MAX_POINTLIGHTS 100
 
 SamplerState GlobalDefaultSampler : register(s0);
 
@@ -52,7 +53,7 @@ cbuffer LightBuffer : register(b3)
         float4 color;
         float3 position;
         float range;
-    } pointLights[100];
+    } pointLights[SIMPLE_MAX_POINTLIGHTS];
     
     uint currentPointLightCount;
     float3 paddingPointLightCount;
@@ -61,6 +62,22 @@ cbuffer LightBuffer : register(b3)
 cbuffer JointBuffer : register(b4)
 {
     float4x4 bones[SIMPLE_MAX_JOINTS];
+}
+
+cbuffer PostProcessingBuffer : register(b5)
+{
+    float3 tint;
+    float saturation;
+    
+    float exposure;
+    float contrast;
+    float blackpoint;
+    float bloom;
+    
+    float bloomPixelFilterThreshold;
+    uint useToneMapping;
+    uint useBloom;
+    int paddingPostProcess;
 }
 
 struct FullScreenVertexInput
@@ -98,7 +115,6 @@ struct VertexInputType
     float3 tangent      : TANGENT0;
     float3 bitangent    : BITANGENT0;
     float2 uv           : TEXCOORD0;
-    float clip          : SV_ClipDistance0;
 };
 
 struct PixelInputType
@@ -110,5 +126,4 @@ struct PixelInputType
     float3 tangent          : TANGENT0;
     float3 bitangent        : BITANGENT0;
     float2 uv               : TEXCOORD0;
-    float clip              : SV_ClipDistance0;
 };

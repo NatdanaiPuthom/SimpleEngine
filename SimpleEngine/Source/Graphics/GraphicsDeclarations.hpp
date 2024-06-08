@@ -24,6 +24,13 @@ namespace Graphics
 		Count
 	};
 
+	enum class eSamplerState
+	{
+		Bilinear_Warp,
+		Trilinear_Clamp,
+		Count
+	};
+
 	enum class eDepthStencilState
 	{
 		Less_Equal,
@@ -36,6 +43,9 @@ namespace Graphics
 		Backbuffer,
 		GBuffer,
 		Deferred,
+		PostProcessing,
+		BloomDownAndUpScale,
+		Bloom,
 		Count
 	};
 
@@ -48,12 +58,18 @@ namespace Graphics
 		SkyBox,
 		GBuffer,
 		Deferred,
-		PointLight
+		PointLight,
+		PostProcessing,
+		GaussianBlur,
+		Bloom,
+		BloomPixelFilter,
+		Copy
 	};
 
 	enum class eTextureType
 	{
 		Default,
+		Simple,
 		SkyBox_DayCloud,
 		SkyBox_NightStar,
 		SkyBox_DayGrassland,

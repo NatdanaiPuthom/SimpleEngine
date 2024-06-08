@@ -4,14 +4,16 @@
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/Windows/AssetWindow.hpp"
 #include "Editor/Windows/DeferredSceneWindow.hpp"
+#include "Editor/Windows/PostProcessingWindow.hpp"
 
 namespace Editor
 {
-	bool MainMenuBar::staticNodeScriptWindowActive = false;
+	bool MainMenuBar::myStaticNodeScriptWindowActive = false;
 
 	MainMenuBar::MainMenuBar()
 		: myEditorWindowActive(false)
 		, myDeferredWindowActive(false)
+		, myPostProcessWindowActive(false)
 	{
 	}
 
@@ -25,6 +27,7 @@ namespace Editor
 		myAssetWindow = std::make_unique<AssetWindow>();
 		myHierarchyWindow = std::make_unique<HierarchyWindow>();
 		myDeferredSceneWindow = std::make_unique<DeferredSceneWindow>();
+		myPostProcessWindow = std::make_unique<PostProcessingWindow>();
 
 		LoadSettingsFromJson();
 
@@ -32,34 +35,51 @@ namespace Editor
 		myAssetWindow->Init();
 		myHierarchyWindow->Init();
 		myDeferredSceneWindow->Init();
+		myPostProcessWindow->Init();
 	}
 
 	void MainMenuBar::Update()
 	{
 		Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
 
-		if (inputManager.IsKeyPressed(VK_F1))
-		{
-			myEditorWindowActive = !myEditorWindowActive;
-		}
+		bool* windowActive[] = { &myEditorWindowActive, &myDeferredWindowActive, &myPostProcessWindowActive, &myStaticNodeScriptWindowActive };
+		const char* windowNames[] = { "Editor", "Deferred", "PostProcess", "NodeScript" };
+		const char* keyShortCuts[] = { "F1", "F2", "F3", "F4" };
 
-		if (inputManager.IsKeyPressed(VK_F2))
+		for (int i = 0; i < sizeof(windowActive) / sizeof(windowActive[0]); ++i)
 		{
-			myDeferredWindowActive = !myDeferredWindowActive;
-		}
+			if (inputManager.IsKeyPressed(VK_F1 + i))
+			{
+				*windowActive[i] = !(*windowActive[i]);
 
-		if (inputManager.IsKeyPressed(VK_F3))
-		{
-			staticNodeScriptWindowActive = !staticNodeScriptWindowActive;
+				for (int j = 0; j < sizeof(windowActive) / sizeof(windowActive[0]); ++j)
+				{
+					if (j != i)
+					{
+						*windowActive[j] = false;
+					}
+				}
+			}
 		}
 
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu("Windows"))
 			{
-				ImGui::MenuItem("Editor", "F1", &myEditorWindowActive);
-				ImGui::MenuItem("Deferred", "F2", &myDeferredWindowActive);
-				ImGui::MenuItem("NodeScript", "F3", &staticNodeScriptWindowActive);
+				for (unsigned int i = 0; i < sizeof(windowActive) / sizeof(windowActive[0]); ++i)
+				{
+					if (ImGui::MenuItem(windowNames[i], keyShortCuts[i], *&windowActive[i]))
+					{
+						for (unsigned int j = 0; j < sizeof(windowActive) / sizeof(windowActive[0]); ++j)
+						{
+							if (j != i)
+							{
+								*windowActive[j] = false;
+							}
+						}
+					}
+				}
+
 				ImGui::EndMenu();
 			}
 
@@ -81,7 +101,7 @@ namespace Editor
 		{
 			if (ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize))
 			{
-				ImTextureID textureID = Global::GetGraphicsEngine()->GetShaderResourceView(Graphics::eRenderTargetType::Deferred).Get();
+				ImTextureID textureID = Global::GetGraphicsEngine()->GetShaderResourceView(Graphics::eRenderTargetType::PostProcessing).Get();
 				ImVec2 size = ImGui::GetContentRegionAvail();
 				ImGui::Image(textureID, size);
 			}
@@ -101,6 +121,11 @@ namespace Editor
 		if (myDeferredWindowActive == true)
 		{
 			myDeferredSceneWindow->Draw();
+		}
+
+		if (myPostProcessWindowActive == true)
+		{
+			myPostProcessWindow->Draw();
 		}
 	}
 
