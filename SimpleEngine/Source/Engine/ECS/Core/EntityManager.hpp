@@ -111,6 +111,8 @@ namespace ECS
 			return myComponentManager->GetComponentByComponentID<T>(it->second);
 		}
 
-		return myComponentManager->GetNullComponent<T>();
+		static T* nullPointer = nullptr;
+
+		return std::ref(nullPointer);
 	}
 }

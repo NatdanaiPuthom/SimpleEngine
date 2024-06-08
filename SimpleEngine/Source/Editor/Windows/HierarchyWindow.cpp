@@ -33,9 +33,6 @@ namespace Editor
 		case eComponentType::AnimationPlayer:
 			aEntity->AddComponent<ECS::AnimationPlayerComponent>();
 			break;
-		case eComponentType::Null:
-			aEntity->AddComponent<ECS::NullComponent>();
-			break;
 		}
 	}
 
@@ -173,18 +170,32 @@ namespace Editor
 
 				std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = selectedEntity->GetComponentMap();
 
-
-
 				for (auto& [key, value] : componentMap)
 				{
+					ImGui::AlignTextToFramePadding();
+
+					const size_t hashCode = key.hash_code();
 					void* componentPointer = World::GetECS()->myComponentManager.GetComponentByComponentID(value);
 
-					/*ECS::NullComponent nullComponent;
-					nullComponent.isNull = true;
-					nullComponent.value = 2999;*/
+					if (ComponentRegistry::myTypeErasureComponents.contains(hashCode) == false)
+					{
+						continue;
+					}
 
-					//Component_Registry::Edit(typeid(ECS::NullComponent).hash_code(), &nullComponent);
-					Component_Registry::Edit(key.hash_code(), componentPointer);
+					const std::string& name = ComponentRegistry::myTypeErasureComponents[hashCode].myComponentName;
+
+					const bool open = ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
+
+
+					if (open)
+					{
+
+						ComponentRegistry::Edit(hashCode, componentPointer);
+						ImGui::TreePop();
+					}
+
+
+					ImGui::Separator();
 				}
 
 
@@ -392,11 +403,16 @@ namespace Editor
 
 				if (ImGui::BeginPopup("Add Component"))
 				{
-					for (auto& test : Component_Registry::myTypeErasureComponents)
+					for (const auto& [hashCode, componentType] : ComponentRegistry::myTypeErasureComponents)
 					{
-						if (ImGui::Selectable(test.second.componentName.c_str()))
+						if (componentType.myTypeTrait == eTypeTraits::Primitive)
 						{
-							test.second.AddComponentFunctionPointer(selectedEntity);
+							continue;
+						}
+
+						if (ImGui::Selectable(componentType.myComponentName.c_str()))
+						{
+							componentType.AddComponentFunctionPointer(selectedEntity);
 						}
 					}
 

@@ -1,20 +1,19 @@
 #pragma once
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
-#include "External/imgui.h"
 #include <string>
 #include <unordered_map>
 #include <concepts>
 
-inline bool EditValue(int& aValue, const std::string& aVariableName)
-{
-	return ImGui::DragInt(aVariableName.c_str(), &aValue);
-}
+bool EditValue(int& aValue, const std::string& aVariableName);
+bool EditValue(bool& aValue, const std::string& aVariableName);
 
-inline bool EditValue(bool& aValue, const std::string& aVariableName)
+enum class eTypeTraits
 {
-	return ImGui::Checkbox(aVariableName.c_str(), &aValue);
-}
+	Primitive,
+	StructOrClass,
+	NotAssigned
+};
 
 struct ComponentProperty
 {
@@ -23,22 +22,26 @@ struct ComponentProperty
 	size_t byteOffset;
 };
 
-struct TypeErasureComponent
+class TypeErasureComponent final
 {
-	std::vector<ComponentProperty> componentProperties;
-	std::string componentName;
+public:
+	std::vector<ComponentProperty> myComponentProperties;
+	std::string myComponentName;
+
+	eTypeTraits myTypeTrait;
 
 	bool(*AddComponentFunctionPointer)(ECS::Entity aEntity) = nullptr;
 	bool(*Edit)(void* aData, const std::string& aVariableName) = nullptr;
+
 };
 
 template<typename T>
-concept Editable = requires(T & aData, const std::string& aVariableName)
+concept Editable = requires(T & aData, const std::string & aVariableName)
 {
 	{ EditValue(aData, aVariableName) } -> std::same_as<bool>;
 };
 
-class Component_Registry
+class ComponentRegistry
 {
 public:
 	static inline std::unordered_map<size_t, TypeErasureComponent> myTypeErasureComponents = {};
@@ -56,7 +59,18 @@ public:
 		}
 
 		TypeErasureComponent typeErasureComponent;
-		typeErasureComponent.componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+		typeErasureComponent.myTypeTrait = eTypeTraits::NotAssigned;
+
+		if (std::is_fundamental_v<T>)
+		{
+			typeErasureComponent.myTypeTrait = eTypeTraits::Primitive;
+		}
+		else
+		{
+			typeErasureComponent.myTypeTrait = eTypeTraits::StructOrClass;
+		}
+
+		typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
 		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> bool
 			{
@@ -86,9 +100,9 @@ public:
 				it->second.Edit(aData, aVariableName);
 			}
 
-			for (auto& test : it->second.componentProperties)
+			for (auto& componentProperty : it->second.myComponentProperties)
 			{
-				Edit(test.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + test.byteOffset)), test.name);
+				Edit(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.name);
 			}
 		}
 	}
@@ -96,8 +110,8 @@ public:
 	template<typename ClassType, typename PropertyType>
 	static inline constexpr size_t GetByteOffset(PropertyType ClassType::* aProperty)
 	{
-		constexpr ClassType* a = nullptr;
-		return (size_t) & reinterpret_cast<const char&>(a->*aProperty);
+		constexpr ClassType* nullClassType = nullptr;
+		return (size_t) & reinterpret_cast<const char&>(nullClassType->*aProperty);
 	}
 
 	template<typename DataType, typename Component>
@@ -115,6 +129,32 @@ public:
 			return;
 		}
 
-		myTypeErasureComponents[typeid(Component).hash_code()].componentProperties.push_back(componentProperty);
+		myTypeErasureComponents[typeid(Component).hash_code()].myComponentProperties.push_back(componentProperty);
 	}
 };
+
+template<typename T>
+struct __RegisterComponent final
+{
+	__RegisterComponent()
+	{
+		ComponentRegistry::RegisterComponentType<T>();
+	}
+};
+
+struct __RegisterProperty final
+{
+	template<typename DataType, typename Component>
+	__RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName)
+	{
+		ComponentRegistry::RegisterProperty(aVariable, aVariableName);
+	}
+};
+
+#define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
+
+//NOTE(v11.0.0): I have no clue how this work and where __COUNTER__ macro came from. But it works.
+#define CONCATENATE_DETAIL(x, y) x##y
+#define CONCATENATE(x, y) CONCATENATE_DETAIL(x, y)
+#define REGISTER_PROPERTY(aVariable, aVariableName) \
+ inline __RegisterProperty CONCATENATE(registerType_, __COUNTER__) = __RegisterProperty(aVariable, aVariableName);

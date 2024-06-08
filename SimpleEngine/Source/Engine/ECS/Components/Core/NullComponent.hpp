@@ -1,10 +1,12 @@
 #pragma once
+#include "Engine/Reflection.hpp"
 
 namespace ECS
 {
 	struct NullComponent final
 	{
-		int value = 3000;
 		bool isNull = true;
 	};
+
+	REGISTER_COMPONENT(NullComponent);
 }

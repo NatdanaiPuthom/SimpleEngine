@@ -1,6 +1,5 @@
 #pragma once
 #include "Engine/SimpleUtilities/Utility.hpp"
-#include "Engine/ECS/Components/Core/NullComponent.hpp"
 #include "Engine/ECS/MemoryPools/ComponentPool.hpp"
 #include <unordered_map>
 #include <typeindex>
@@ -40,8 +39,8 @@ namespace ECS
 
 		std::type_index GetTypeIndexByName(const ComponentName aComponentName);
 
-		template<typename T>
-		T*& GetNullComponent();
+		/*template<typename T>
+		T*& GetNullComponent();*/
 
 	private:
 		ComponentManager();
@@ -103,7 +102,9 @@ namespace ECS
 			return reinterpret_cast<T*&>(it->second);
 		}
 
-		return GetNullComponent<T>();
+		static T* nullPointer = nullptr;
+
+		return std::ref(nullPointer);
 	}
 
 	inline void* ComponentManager::GetComponentByComponentID(const ComponentID aID)
@@ -127,10 +128,10 @@ namespace ECS
 			};
 	}
 
-	template<typename T>
+	/*template<typename T>
 	inline T*& ComponentManager::GetNullComponent()
 	{
 		static T* nullPointer = nullptr;
 		return std::ref(nullPointer);
-	}
+	}*/
 }

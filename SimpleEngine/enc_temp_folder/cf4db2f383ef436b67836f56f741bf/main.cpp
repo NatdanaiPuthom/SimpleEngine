@@ -49,7 +49,7 @@ REGISTER_COMPONENT(bool);
 
 namespace Math
 {
-	REGISTER_COMPONENT(Vector3f);
+REGISTER_COMPONENT(Vector3f);
 }
 
 REGISTER_COMPONENT(EmilStruct);
@@ -95,9 +95,9 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	simpleScript.Init();
 	PROFILER_END();
 
-
+	
 	/*ComponentRegistry test; test;
-
+	
 	test.RegisterComponentType<ECS::NullComponent>();
 	test.RegisterComponentType<bool>();
 	test.RegisterProperty(&ECS::NullComponent::isNull, "isNull");*/
@@ -109,12 +109,12 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	/*test.RegisterProperty(&ECS::NullComponent::value, "value");
 	test.RegisterProperty(&EmilStruct::value, "value");*/
+	
+
+	
 
 
-
-
-
-
+	
 
 	while (Global::GetGameIsRunning())
 	{
