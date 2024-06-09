@@ -1,12 +1,16 @@
 #pragma once
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/Vector4.hpp"
 #include <string>
 #include <unordered_map>
 #include <concepts>
 
 bool EditValue(int& aValue, const std::string& aVariableName);
 bool EditValue(bool& aValue, const std::string& aVariableName);
+bool EditValue(Math::Vector3f& aValue, const std::string& aVariableName);
+bool EditValue(Math::Vector4f& aValue, const std::string& aVariableName);
 
 struct ComponentProperty
 {
@@ -142,7 +146,7 @@ public:
 	static inline constexpr size_t GetByteOffset(PropertyType DataType::* aProperty)
 	{
 		constexpr DataType* nullDataType = nullptr;
-		return (size_t)&reinterpret_cast<const char&>(nullDataType->*aProperty);
+		return (size_t)&reinterpret_cast<const char&>(nullDataType->*aProperty); //NOTE(v11.0.1): this is supposed to be null?
 	}
 
 	template<typename DataType, typename Component>
@@ -153,11 +157,11 @@ public:
 		componentProperty.id = typeid(DataType).hash_code();
 		componentProperty.byteOffset = GetByteOffset(aVariable);
 
-		const bool exist = myTypeErasureComponents.contains(typeid(Component).hash_code());
+		const bool componentDoesExist = myTypeErasureComponents.contains(typeid(Component).hash_code());
 
-		if (exist == false)
+		if (componentDoesExist == false)
 		{
-			assert(false && "Component type does not exist in register. Please register it first!");
+			assert(false && "Component type does not exist in register. Please register the component first before it's properties");
 			return;
 		}
 
@@ -220,3 +224,9 @@ constexpr const char* ExtractVariableNameFromDataTypeName(const char (&name)[N])
 
 REGISTER_DATA_TYPE(int);
 REGISTER_DATA_TYPE(bool);
+
+namespace Math
+{
+	REGISTER_DATA_TYPE(Vector3f);
+	REGISTER_DATA_TYPE(Vector4f);
+}
