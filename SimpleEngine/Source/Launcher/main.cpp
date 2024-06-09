@@ -33,19 +33,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	return 0;
 }
 
-//REGISTER_COMPONENT(bool);
-
-namespace Math
-{
-	//REGISTER_COMPONENT(Vector3f);
-}
-
 struct NatdanaiStruct
 {
 	int value = 0;
 	int number = 3000;
 	bool isTrue = false;
-	//Math::Vector3f test;
 };
 
 REGISTER_COMPONENT(NatdanaiStruct);
