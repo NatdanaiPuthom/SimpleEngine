@@ -2,7 +2,7 @@
 #include "Graphics/Texture/Texture.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/Global.hpp"
-#include <External/DDSTextureLoader/DDSTextureLoader11.h>
+#include "External/DDSTextureLoader/DDSTextureLoader11.h"
 #include <d3d11.h>
 #include <string>
 
@@ -18,12 +18,17 @@ namespace Graphics
 
 	Texture::~Texture()
 	{
-		myShaderResourceView.Reset();
+		
 	}
 
 	void Texture::Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot) const
 	{
 		aContext->PSSetShaderResources(aSlot, 1, myShaderResourceView.GetAddressOf());
+	}
+
+	void Texture::Bind(ComPtr<ID3D11DeviceContext> aContext) const
+	{
+		aContext->PSSetShaderResources(mySlot, 1, myShaderResourceView.GetAddressOf());
 	}
 
 	void Texture::SetSlot(const unsigned int aSlot)

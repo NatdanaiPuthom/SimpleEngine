@@ -15,6 +15,8 @@ namespace ECS
 	class EntityComponentSystem final
 	{
 	public:
+		ComponentManager myComponentManager;
+
 		EntityComponentSystem();
 		~EntityComponentSystem();
 
@@ -39,7 +41,6 @@ namespace ECS
 		void SetGlobalPointerToThis();
 	private:
 		EntityManager myEntityManager;
-		ComponentManager myComponentManager;
 		SystemManager mySystemManager;
 	};
 }

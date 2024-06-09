@@ -1,5 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Core/ComponentManager.hpp"
+#include "Engine/ECS/Components/Core/NullComponent.hpp"
 
 namespace ECS
 {

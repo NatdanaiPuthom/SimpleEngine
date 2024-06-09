@@ -2,6 +2,7 @@
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/FileManager/FileManager.hpp"
 #include "Engine/ECS/Components/AllEngineComponents.hpp"
+#include "Engine/Reflection.hpp"
 
 namespace Editor
 {
@@ -31,9 +32,6 @@ namespace Editor
 			break;
 		case eComponentType::AnimationPlayer:
 			aEntity->AddComponent<ECS::AnimationPlayerComponent>();
-			break;
-		case eComponentType::Null:
-			aEntity->AddComponent<ECS::NullComponent>();
 			break;
 		}
 	}
@@ -167,205 +165,236 @@ namespace Editor
 
 			if (entities.GetEntityCount() > 0)
 			{
-				const size_t id = selectedEntity->GetID();
+				const size_t id = selectedEntity->GetID(); id;
 				const std::vector<std::string> componentNames = selectedEntity->GetComponentNames();
 
-				for (size_t i = 0; i < componentNames.size(); ++i)
+				std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = selectedEntity->GetComponentMap();
+
+				for (auto& [key, value] : componentMap)
 				{
 					ImGui::AlignTextToFramePadding();
 
-					ImGui::PushID(std::string(componentNames[i] + " " + std::to_string(id)).c_str());
-					const bool open = ImGui::TreeNodeEx(componentNames[i].c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
-					ImGui::PopID();
+					const size_t hashCode = key.hash_code();
+					void* componentPointer = World::GetECS()->myComponentManager.GetComponentByComponentID(value);
+
+					if (ComponentRegistry::myTypeErasureComponents.contains(hashCode) == false)
+					{
+						continue;
+					}
+
+					const std::string& name = ComponentRegistry::myTypeErasureComponents[hashCode].myComponentName;
+
+					const bool open = ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
+
 
 					if (open)
 					{
-						ImGui::SameLine(ImGui::GetWindowWidth() - 50);
 
-						if (ImGui::Button("..."))
-						{
-							ImGui::OpenPopup(std::string("ElementList" + std::to_string(id)).c_str());
-						}
-
-						if (ImGui::IsItemHovered())
-						{
-							ImGui::SetTooltip("More Options");
-						}
-
-						if (componentNames[i] == "TransformComponent") //NOTE(v9.34.0): Ugly hardcoded, trying to fix reflection
-						{
-							ECS::TransformComponent* transformComponent = selectedEntity->GetComponent<ECS::TransformComponent>();
-							Math::Vector3f position = transformComponent->transform.GetPosition();
-							Math::Vector3f rotation = transformComponent->transform.GetRotation();
-							Math::Vector3f scale = transformComponent->transform.GetScale();
-
-							ImGui::SetNextItemWidth(200);
-
-							if (ImGui::DragFloat3("Position", &position.x, 0.1f))
-							{
-								transformComponent->transform.SetPosition(position);
-							}
-
-							ImGui::SetNextItemWidth(200);
-
-							if (ImGui::DragFloat3("Rotation", &rotation.x, 0.1f))
-							{
-								transformComponent->transform.SetRotation(rotation);
-							}
-
-							ImGui::SetNextItemWidth(200);
-
-							if (ImGui::DragFloat3("Scale", &scale.x, 0.1f))
-							{
-								if (scale.x < 0.001f)
-								{
-									scale.x = 0.001f;
-								}
-
-								if (scale.y < 0.001f)
-								{
-									scale.y = 0.001f;
-								}
-
-								if (scale.z < 0.001f)
-								{
-									scale.z = 0.001f;
-								}
-
-								transformComponent->transform.SetScale(scale);
-							}
-						}
-						else if (componentNames[i] == "MeshComponent")
-						{
-							ECS::MeshComponent* meshComponent = selectedEntity->GetComponent<ECS::MeshComponent>();
-
-							std::string albedoName = "Albedo: ";
-							std::string materialName = "Material: ";
-							std::string normalName = "Normal: ";
-
-							std::string meshName = "Mesh: ";
-							std::string pixelShaderName = "Pixel Shader: ";
-							std::string vertexShaderName = "Vertex Shader: ";
-
-							if (meshComponent->mesh != nullptr)
-							{
-								meshName += meshComponent->mesh->GetMeshName();
-							}
-
-							if (meshComponent->textures[Graphics::Global_Slot_Albedo] != nullptr)
-							{
-								albedoName += meshComponent->textures[Graphics::Global_Slot_Albedo]->GetShaderName();
-							}
-
-							if (meshComponent->textures[Graphics::Global_Slot_Material] != nullptr)
-							{
-								materialName += meshComponent->textures[Graphics::Global_Slot_Material]->GetShaderName();
-							}
-
-							if (meshComponent->textures[Graphics::Global_Slot_Normal] != nullptr)
-							{
-								normalName += meshComponent->textures[Graphics::Global_Slot_Normal]->GetShaderName();
-							}
-
-							if (meshComponent->shader != nullptr)
-							{
-								pixelShaderName += meshComponent->shader->GetPixelShaderName();
-								vertexShaderName += meshComponent->shader->GetVertexShaderName();
-							}
-
-							ImGui::Text(albedoName.c_str());
-
-							if (ImGui::BeginDragDropTarget())
-							{
-								if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
-								{
-									const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
-									const std::string extension = FileManager::GetFileExtension(payloadData);
-
-									if (extension == ".dds")
-									{
-										const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
-										meshComponent->textures[Graphics::Global_Slot_Albedo] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
-									}
-								}
-
-								ImGui::EndDragDropTarget();
-							}
-
-							ImGui::Text(materialName.c_str());
-
-							if (ImGui::BeginDragDropTarget())
-							{
-								if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
-								{
-									const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
-									const std::string extension = FileManager::GetFileExtension(payloadData);
-
-									if (extension == ".dds")
-									{
-										const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
-										meshComponent->textures[Graphics::Global_Slot_Material] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
-									}
-								}
-
-								ImGui::EndDragDropTarget();
-							}
-
-							ImGui::Text(normalName.c_str());
-
-							if (ImGui::BeginDragDropTarget())
-							{
-								if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
-								{
-									const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
-									const std::string extension = FileManager::GetFileExtension(payloadData);
-
-									if (extension == ".dds")
-									{
-										const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
-										meshComponent->textures[Graphics::Global_Slot_Normal] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
-									}
-								}
-
-								ImGui::EndDragDropTarget();
-							}
-
-							ImGui::Text(meshName.c_str());
-
-							if (ImGui::BeginDragDropTarget())
-							{
-								if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
-								{
-									const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
-									const std::string extension = FileManager::GetFileExtension(payloadData);
-
-									if (extension == ".fbx")
-									{
-										meshComponent->mesh = Global::GetModelFactory()->LoadMesh(payloadData);
-									}
-								}
-
-								ImGui::EndDragDropTarget();
-							}
-
-							ImGui::Text(pixelShaderName.c_str());
-							ImGui::Text(vertexShaderName.c_str());
-						}
-
-						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
-						{
-							if (ImGui::MenuItem("Remove Component"))
-							{
-								selectedEntity->RemoveComponentByTypeName(componentNames[i]);
-							}
-
-							ImGui::EndPopup();
-						}
-
+						ComponentRegistry::Edit(hashCode, componentPointer);
 						ImGui::TreePop();
-						ImGui::Separator();
 					}
+
+
+					ImGui::Separator();
 				}
+
+
+				//for (size_t i = 0; i < componentNames.size(); ++i)
+					//{
+					//	ImGui::AlignTextToFramePadding();
+
+					//	ImGui::PushID(std::string(componentNames[i] + " " + std::to_string(id)).c_str());
+					//	const bool open = ImGui::TreeNodeEx(componentNames[i].c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
+					//	ImGui::PopID();
+
+					//	//if (open)
+					//	//{
+					//	//	ImGui::SameLine(ImGui::GetWindowWidth() - 50);
+
+					//	//	if (ImGui::Button("..."))
+					//	//	{
+					//	//		ImGui::OpenPopup(std::string("ElementList" + std::to_string(id)).c_str());
+					//	//	}
+
+					//	//	if (ImGui::IsItemHovered())
+					//	//	{
+					//	//		ImGui::SetTooltip("More Options");
+					//	//	}
+
+					//	//	if (componentNames[i] == "TransformComponent") //NOTE(v9.34.0): Ugly hardcoded, trying to fix reflection
+					//	//	{
+					//	//		ECS::TransformComponent* transformComponent = selectedEntity->GetComponent<ECS::TransformComponent>();
+					//	//		Math::Vector3f position = transformComponent->transform.GetPosition();
+					//	//		Math::Vector3f rotation = transformComponent->transform.GetRotation();
+					//	//		Math::Vector3f scale = transformComponent->transform.GetScale();
+
+					//	//		ImGui::SetNextItemWidth(200);
+
+					//	//		if (ImGui::DragFloat3("Position", &position.x, 0.1f))
+					//	//		{
+					//	//			transformComponent->transform.SetPosition(position);
+					//	//		}
+
+					//	//		ImGui::SetNextItemWidth(200);
+
+					//	//		if (ImGui::DragFloat3("Rotation", &rotation.x, 0.1f))
+					//	//		{
+					//	//			transformComponent->transform.SetRotation(rotation);
+					//	//		}
+
+					//	//		ImGui::SetNextItemWidth(200);
+
+					//	//		if (ImGui::DragFloat3("Scale", &scale.x, 0.1f))
+					//	//		{
+					//	//			if (scale.x < 0.001f)
+					//	//			{
+					//	//				scale.x = 0.001f;
+					//	//			}
+
+					//	//			if (scale.y < 0.001f)
+					//	//			{
+					//	//				scale.y = 0.001f;
+					//	//			}
+
+					//	//			if (scale.z < 0.001f)
+					//	//			{
+					//	//				scale.z = 0.001f;
+					//	//			}
+
+					//	//			transformComponent->transform.SetScale(scale);
+					//	//		}
+					//	//	}
+					//	//	else if (componentNames[i] == "MeshComponent")
+					//	//	{
+					//	//		ECS::MeshComponent* meshComponent = selectedEntity->GetComponent<ECS::MeshComponent>();
+
+					//	//		std::string albedoName = "Albedo: ";
+					//	//		std::string materialName = "Material: ";
+					//	//		std::string normalName = "Normal: ";
+
+					//	//		std::string meshName = "Mesh: ";
+					//	//		std::string pixelShaderName = "Pixel Shader: ";
+					//	//		std::string vertexShaderName = "Vertex Shader: ";
+
+					//	//		if (meshComponent->mesh != nullptr)
+					//	//		{
+					//	//			meshName += meshComponent->mesh->GetMeshName();
+					//	//		}
+
+					//	//		if (meshComponent->textures[Graphics::Global_Slot_Albedo] != nullptr)
+					//	//		{
+					//	//			albedoName += meshComponent->textures[Graphics::Global_Slot_Albedo]->GetShaderName();
+					//	//		}
+
+					//	//		if (meshComponent->textures[Graphics::Global_Slot_Material] != nullptr)
+					//	//		{
+					//	//			materialName += meshComponent->textures[Graphics::Global_Slot_Material]->GetShaderName();
+					//	//		}
+
+					//	//		if (meshComponent->textures[Graphics::Global_Slot_Normal] != nullptr)
+					//	//		{
+					//	//			normalName += meshComponent->textures[Graphics::Global_Slot_Normal]->GetShaderName();
+					//	//		}
+
+					//	//		if (meshComponent->shader != nullptr)
+					//	//		{
+					//	//			pixelShaderName += meshComponent->shader->GetPixelShaderName();
+					//	//			vertexShaderName += meshComponent->shader->GetVertexShaderName();
+					//	//		}
+
+					//	//		ImGui::Text(albedoName.c_str());
+
+					//	//		if (ImGui::BeginDragDropTarget())
+					//	//		{
+					//	//			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+					//	//			{
+					//	//				const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+					//	//				const std::string extension = FileManager::GetFileExtension(payloadData);
+
+					//	//				if (extension == ".dds")
+					//	//				{
+					//	//					const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
+					//	//					meshComponent->textures[Graphics::Global_Slot_Albedo] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+					//	//				}
+					//	//			}
+
+					//	//			ImGui::EndDragDropTarget();
+					//	//		}
+
+					//	//		ImGui::Text(materialName.c_str());
+
+					//	//		if (ImGui::BeginDragDropTarget())
+					//	//		{
+					//	//			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+					//	//			{
+					//	//				const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+					//	//				const std::string extension = FileManager::GetFileExtension(payloadData);
+
+					//	//				if (extension == ".dds")
+					//	//				{
+					//	//					const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
+					//	//					meshComponent->textures[Graphics::Global_Slot_Material] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+					//	//				}
+					//	//			}
+
+					//	//			ImGui::EndDragDropTarget();
+					//	//		}
+
+					//	//		ImGui::Text(normalName.c_str());
+
+					//	//		if (ImGui::BeginDragDropTarget())
+					//	//		{
+					//	//			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+					//	//			{
+					//	//				const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+					//	//				const std::string extension = FileManager::GetFileExtension(payloadData);
+
+					//	//				if (extension == ".dds")
+					//	//				{
+					//	//					const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
+					//	//					meshComponent->textures[Graphics::Global_Slot_Normal] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+					//	//				}
+					//	//			}
+
+					//	//			ImGui::EndDragDropTarget();
+					//	//		}
+
+					//	//		ImGui::Text(meshName.c_str());
+
+					//	//		if (ImGui::BeginDragDropTarget())
+					//	//		{
+					//	//			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+					//	//			{
+					//	//				const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+					//	//				const std::string extension = FileManager::GetFileExtension(payloadData);
+
+					//	//				if (extension == ".fbx")
+					//	//				{
+					//	//					meshComponent->mesh = Global::GetModelFactory()->LoadMesh(payloadData);
+					//	//				}
+					//	//			}
+
+					//	//			ImGui::EndDragDropTarget();
+					//	//		}
+
+					//	//		ImGui::Text(pixelShaderName.c_str());
+					//	//		ImGui::Text(vertexShaderName.c_str());
+					//	//	}
+
+					//	//	if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
+					//	//	{
+					//	//		if (ImGui::MenuItem("Remove Component"))
+					//	//		{
+					//	//			selectedEntity->RemoveComponentByTypeName(componentNames[i]);
+					//	//		}
+
+					//	//		ImGui::EndPopup();
+					//	//	}
+
+					//	//	ImGui::TreePop();
+					//	//	ImGui::Separator();
+					//	//}
+					//}
 
 				if (ImGui::Button("Add Component"))
 				{
@@ -374,7 +403,20 @@ namespace Editor
 
 				if (ImGui::BeginPopup("Add Component"))
 				{
-					std::array<std::string, static_cast<size_t>(eComponentType::Count)> components;
+					for (const auto& [hashCode, componentType] : ComponentRegistry::myTypeErasureComponents)
+					{
+						if (componentType.myTypeTrait == eTypeTraits::Primitive)
+						{
+							continue;
+						}
+
+						if (ImGui::Selectable(componentType.myComponentName.c_str()))
+						{
+							componentType.AddComponentFunctionPointer(selectedEntity);
+						}
+					}
+
+					/*std::array<std::string, static_cast<size_t>(eComponentType::Count)> components;
 					components[static_cast<size_t>(eComponentType::Transform)] = "TransformComponent";
 					components[static_cast<size_t>(eComponentType::Mesh)] = "MeshComponent";
 					components[static_cast<size_t>(eComponentType::Animated)] = "AnimatedComponent";
@@ -387,7 +429,7 @@ namespace Editor
 						{
 							AddComponent(selectedEntity, static_cast<eComponentType>(i));
 						}
-					}
+					}*/
 
 					ImGui::EndPopup();
 				}

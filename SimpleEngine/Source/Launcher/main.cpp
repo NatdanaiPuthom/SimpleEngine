@@ -10,6 +10,8 @@
 #include "Editor/Editor.hpp"
 #include "NodeScript/SimpleNodeScript.hpp"
 
+#include "Engine/Reflection.hpp"
+
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
@@ -30,6 +32,34 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	return 0;
 }
+
+struct EmilStruct
+{
+	int value;
+	Math::Vector3f test;
+};
+
+struct EricoStruct
+{
+	int value;
+};
+
+REGISTER_COMPONENT(int);
+REGISTER_COMPONENT(bool);
+
+namespace Math
+{
+	REGISTER_COMPONENT(Vector3f);
+}
+
+REGISTER_COMPONENT(EmilStruct);
+REGISTER_COMPONENT(EricoStruct);
+
+REGISTER_PROPERTY(&ECS::NullComponent::isNull, "hello");
+REGISTER_PROPERTY(&EmilStruct::value, "test");
+REGISTER_PROPERTY(&EmilStruct::test, "vectorTest");
+
+REGISTER_PROPERTY(&EricoStruct::value, "test2");
 
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
@@ -64,6 +94,27 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	SCRIPT::SimpleNodeScript simpleScript;
 	simpleScript.Init();
 	PROFILER_END();
+
+
+	/*ComponentRegistry test; test;
+
+	test.RegisterComponentType<ECS::NullComponent>();
+	test.RegisterComponentType<bool>();
+	test.RegisterProperty(&ECS::NullComponent::isNull, "isNull");*/
+
+	/*test.RegisterComponentType<EmilStruct>();
+
+	test.RegisterComponentType<int>();
+	*/
+
+	/*test.RegisterProperty(&ECS::NullComponent::value, "value");
+	test.RegisterProperty(&EmilStruct::value, "value");*/
+
+
+
+
+
+
 
 	while (Global::GetGameIsRunning())
 	{

@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Reflection.hpp"
 
 namespace ECS
 {
@@ -6,4 +7,6 @@ namespace ECS
 	{
 		bool isNull = true;
 	};
+
+	REGISTER_COMPONENT(NullComponent);
 }

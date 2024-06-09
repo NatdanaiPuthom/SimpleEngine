@@ -37,6 +37,11 @@ namespace ECS
 		const std::string& GetName() const;
 		const std::vector<std::string> GetComponentNames() const;
 
+		inline std::unordered_map<ComponentType, ComponentID>& GetComponentMap()
+		{
+			return myEntityManager->GetComponentsMap(myID);
+		}
+
 	private:
 		IEntity(const size_t aID, EntityManager* aEntityManager);
 	private:
