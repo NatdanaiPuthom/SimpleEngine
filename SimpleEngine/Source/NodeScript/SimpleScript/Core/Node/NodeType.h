@@ -14,7 +14,7 @@ namespace SCR
 		const eNodeOperatorTrait operatorTrait = eNodeOperatorTrait::None;
 		std::vector<PinTypeID> inputPinTypeIDs;
 		std::vector<PinTypeID> outputPinTypeIDs;
-		const MemoryPoolID tupleMemoryID = InvalidID<MemoryPoolID>();
+		//const MemoryPoolID tupleMemoryID = InvalidID<MemoryPoolID>();
 		const MemoryPoolID functionMemoryID = InvalidID<MemoryPoolID>();
 	};
 

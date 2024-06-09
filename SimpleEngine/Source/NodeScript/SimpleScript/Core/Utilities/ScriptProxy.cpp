@@ -48,7 +48,7 @@ namespace SCR
 		return aFoundation.myScriptManagers;
 	}
 
-	MemoryPool& ScriptProxy::GetGraphMemoryPool(NodeGraph& aNodeGraph)
+	/*MemoryPool& ScriptProxy::GetGraphMemoryPool(NodeGraph& aNodeGraph)
 	{
 		return aNodeGraph.myMemoryPool;
 	}
@@ -56,11 +56,21 @@ namespace SCR
 	const MemoryPool& ScriptProxy::GetGraphMemoryPool(const NodeGraph& aNodeGraph)
 	{
 		return aNodeGraph.myMemoryPool;
+	}*/
+
+	MemoryManager& ScriptProxy::GetNodeGraphMemoryManager(NodeGraph& aNodeGraph)
+	{
+		return aNodeGraph.myMemoryManager;
 	}
 
-	MemoryPool& ScriptProxy::GetVariableMemoryPool(Script& aScript)
+	/*MemoryPool& ScriptProxy::GetVariableMemoryPool(Script& aScript)
 	{
 		return *aScript.myVariableManager.myMemoryPool;
+	}*/
+
+	MemoryManager& ScriptProxy::GetVariableMemoryManager(Script& aScript)
+	{
+		return *aScript.myVariableManager.myMemoryManager;
 	}
 
 	const NodeManager& ScriptProxy::GetNodeManager(const Script& aScript)

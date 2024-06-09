@@ -89,16 +89,16 @@ namespace SCR
 		return false;
 	}
 
-	MemoryPoolID DataTypeManager::AllocateData(DataTypeID aDataTypeID, MemoryPool& aMemoryPool, const void* aDefaultValue)
+	void* DataTypeManager::AllocateData(DataTypeID aDataTypeID, MemoryManager& aMemoryManager, const void* aDefaultValue)
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
 			if (dataType->typeInterface.creation.allocate)
 			{
-				return dataType->typeInterface.creation.allocate(aMemoryPool, aDefaultValue);
+				return dataType->typeInterface.creation.allocate(aMemoryManager, aDefaultValue);
 			}
 		}
-		return false;
+		return nullptr;
 	}
 
 	void DataTypeManager::CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource)

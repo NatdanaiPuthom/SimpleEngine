@@ -43,7 +43,8 @@ namespace SCR
 
 				const Pin& pin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, aPinSetData.id);
 
-				T& memoryValue = ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph).At<T>(pin.memoryID);
+				//T& memoryValue = ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph).At<T>(pin.memoryID);
+				T& memoryValue = *reinterpret_cast<T*>(pin.dataPtr);
 				memoryValue = value;
 
 				if constexpr (IsSameType<T, Flow>)
@@ -140,13 +141,13 @@ namespace SCR
 
 		using CT = CleanType_V<InputType>;
 
-		MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(aNodeGraph);
-
-		MemoryPoolID memoryID = memoryPool.Allocate<CT>();
+		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(aNodeGraph);
+		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
+		void* dataPtr = &memoryManager.Allocate<CT>();
 
 		const PinTypeID pinTypeID = NodeTypeManager::GetNodeType(aNodeTypeID).nodeRecipe.inputPinTypeIDs[anIndex];
 
-		return InternalModifier::CreateInputPin(aNodeGraph, aNodeID, pinTypeID, memoryID);
+		return InternalModifier::CreateInputPin(aNodeGraph, aNodeID, pinTypeID, dataPtr);
 
 	}
 	template<size_t Index, size_t InputSize, typename InputType, typename... InputTypes>
@@ -179,9 +180,9 @@ namespace SCR
 		static_assert(!std::is_reference_v<OutputType>, "Return type can't be a reference");
 		static_assert(!std::is_same_v<void, OutputType>, "Return type can't be void");
 
-		MemoryPoolID memoryPoolID = ScriptProxy::GetGraphMemoryPool(aNodeGraph).Allocate<OutputType>();
-
-		return InternalModifier::CreateOutputPin(aNodeGraph, aNodeID, aPinTypeID, memoryPoolID);
+		//MemoryPoolID memoryPoolID = ScriptProxy::GetGraphMemoryPool(aNodeGraph).Allocate<OutputType>();
+		void* dataPtr = &ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph).Allocate<OutputType>();
+		return InternalModifier::CreateOutputPin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}
 
 	template<size_t Index, size_t OutputSize, typename OutputType, typename... OutputTypes>
@@ -237,7 +238,7 @@ namespace SCR
 		}
 	}
 
-	template<size_t Size>
+	/*template<size_t Size>
 	std::array<std::tuple<MemoryPoolID>, Size> ToArray(const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
 	{
 		std::array<std::tuple<MemoryPoolID>, Size> idArray;
@@ -259,6 +260,73 @@ namespace SCR
 			idArray[i] = pin.memoryID;
 		}
 		return idArray;
+	}*/
+
+	//template<typename TupleType, size_t Index, typename Arg, typename... Args>
+	//void CreateInputPackInternal(TupleType& aTuple, const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
+	//{
+	//	if constexpr (Index < std::tuple_size_v<TupleType>)
+	//	{
+	//		const Pin& pin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, aPinIDs[Index]);
+	//		std::get<Index>(aTuple) = *reinterpret_cast<Arg*>(pin.dataPtr);
+	//		CreateInputPackInternal<TupleType, Index + 1, Args...>(aPinIDs, aContext);
+	//	}
+	//}
+
+	//template<typename... Args>
+	//std::tuple<ReferenceWrapper<Args>...> CreateInputPack(const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
+	//{
+	//	std::tuple<ReferenceWrapper<Args>...> tuple;
+	//	CreateInputPackInternal<std::tuple<ReferenceWrapper<Args>...>, 0, Args...>(tuple, aPinIDs, aContext);
+	//	return tuple;
+	//}
+
+	//// Internal recursive function
+	//template <typename TupleType, size_t Index = 0, typename... Args>
+	//void CreateInputPackInternal(TupleType& aTuple, const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext) 
+	//{
+	//	if constexpr (Index < std::tuple_size_v<TupleType>) 
+	//	{
+	//		const Pin& pin = ScriptProxy::GetPin(aContext.nodeData.nodeRef.nodeGraph, aPinIDs[Index]);
+	//		std::get<Index>(aTuple) = ReferenceWrapper(*reinterpret_cast<Args*>(pin.dataPtr));
+	//		CreateInputPackInternal<TupleType, Index + 1, Args...>(aTuple, aPinIDs, aContext);
+	//	}
+	//}
+
+	//// Entry point function
+	//template <typename... Args>
+	//std::tuple<ReferenceWrapper<Args>...> CreateInputPack(const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext) 
+	//{
+	//	std::tuple<ReferenceWrapper<Args>...> tuple;
+	//	CreateInputPackInternal<std::tuple<ReferenceWrapper<Args>...>, 0, Args...>(tuple, aPinIDs, aContext);
+	//	return tuple;
+	//}
+
+	// Function definitions.
+	template<typename TupleType, size_t Index, typename Arg, typename... Args>
+	void CreateInputPackInternal(TupleType& aTuple, const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
+	{
+		if constexpr (Index < std::tuple_size_v<TupleType>)
+		{
+			const Pin& pin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, aPinIDs[Index]);
+			std::get<Index>(aTuple) = ReferenceWrapper<Arg>(*reinterpret_cast<Arg*>(pin.dataPtr));
+
+			if constexpr (sizeof...(Args) > 0)
+			{
+				CreateInputPackInternal<TupleType, Index + 1, Args...>(aTuple, aPinIDs, aContext);
+			}
+		}
+	}
+
+	template<typename... Args>
+	std::tuple<ReferenceWrapper<Args>...> CreateInputPack(const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
+	{
+		std::tuple<ReferenceWrapper<Args>...> tuple;
+		if constexpr (sizeof...(Args) > 0)
+		{
+			CreateInputPackInternal<std::tuple<ReferenceWrapper<Args>...>, 0, Args...>(tuple, aPinIDs, aContext);
+		}
+		return tuple;
 	}
 
 	template<typename Return, typename A, typename B>
@@ -311,7 +379,7 @@ namespace SCR
 	template<bool TakesExecutionContext, bool TakesNodeState, bool TakesInternalExecutionContext, typename NodeExecutionContextType, typename NodeStateDataType, typename Callable, typename... OutputTypes, typename... InputTypes>
 	std::tuple<OutputTypes...> CallFunction(InternalExecutionContext& aContext, TypeList<OutputTypes...>, TypeList<InputTypes...>)
 	{
-		constexpr size_t PinInputSize = sizeof...(InputTypes);
+		//constexpr size_t PinInputSize = sizeof...(InputTypes);
 
 		using MemoryTupleType = MemoryTupleNew<InputTypes...>;
 
@@ -322,14 +390,17 @@ namespace SCR
 
 		MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
 
-		MemoryPoolID memoryTupleMemoryID = nodeType.nodeRecipe.tupleMemoryID;
-		MemoryTupleType& memoryTuple = foundationMemoryPool.At<MemoryTupleType>(memoryTupleMemoryID);
+		//MemoryPoolID memoryTupleMemoryID = nodeType.nodeRecipe.tupleMemoryID;
+		//MemoryTupleType& memoryTuple = foundationMemoryPool.At<MemoryTupleType>(memoryTupleMemoryID);
 
 		MemoryPoolID functionMemoryID = nodeType.nodeRecipe.functionMemoryID;
 		Callable& callable = foundationMemoryPool.At<Callable>(functionMemoryID);
 
 
-		MemoryPool* memoryPool = &ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph);
+		//MemoryPool* memoryPool = &ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph);
+
+		std::tuple<ReferenceWrapper<InputTypes>...> inputTuple = CreateInputPack<InputTypes...>(node.inputPins, aContext);
+		inputTuple;
 
 		if constexpr (TakesExecutionContext && TakesNodeState)
 		{
@@ -342,7 +413,8 @@ namespace SCR
 			{
 				*reinterpret_cast<const NodeExecutionContextType*>(aContext.executionContext)
 			};
-			return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), executionContext, nodeState);
+			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(executionContext, nodeState), inputTuple));
+			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), executionContext, nodeState);
 		}
 		else if constexpr (TakesExecutionContext)
 		{
@@ -350,16 +422,18 @@ namespace SCR
 			{
 				*reinterpret_cast<const NodeExecutionContextType*>(aContext.executionContext)
 			};
-			return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), executionContext);
+			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(executionContext), inputTuple));
+			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), executionContext);
 		}
 		else if constexpr (TakesNodeState && TakesInternalExecutionContext)
 		{
 			NodeState<NodeStateDataType> nodeState
-			{ 
+			{
 				ScriptProxy::GetNodeState<NodeStateDataType>(*aContext.nodeData.nodeRef.nodeGraph, aContext.nodeData.nodeRef.nodeID)
 			};
+			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(&aContext, nodeState), inputTuple));
 
-			return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), &aContext, nodeState);
+			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), &aContext, nodeState);
 
 		}
 		else if constexpr (TakesNodeState)
@@ -368,16 +442,19 @@ namespace SCR
 			{
 				ScriptProxy::GetNodeState<NodeStateDataType>(*aContext.nodeData.nodeRef.nodeGraph, aContext.nodeData.nodeRef.nodeID)
 			};
+			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(nodeState), inputTuple));
 
-			return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), nodeState);
+			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), nodeState);
 		}
 		else if constexpr (TakesInternalExecutionContext)
 		{
-			return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), &aContext);
+			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(&aContext), inputTuple));
+			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), &aContext);
 		}
 		else
 		{
-			return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext));
+			return std::apply(callable, inputTuple);
+			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext));
 		}
 	}
 
@@ -404,14 +481,14 @@ namespace SCR
 
 				ExecutionQueue executionQueue;
 				aContext.executionQueue = &executionQueue;
-				
+
 				// Call function and retrieve output values
-				std::tuple<OutputTypes...> outputValues = CallFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext, 
+				std::tuple<OutputTypes...> outputValues = CallFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext,
 					NodeExecutionContextType, NodeStateDataType, Callable>(aContext, TypeList<OutputTypes...>{}, TypeList<InputTypes...>{});
 
 				// Set output of function
 				SetOutputValues(std::forward<std::tuple<OutputTypes...>>(outputValues), node.outputPins, aContext);
-				
+
 				aContext.executionQueue = nullptr;
 				executionQueue.Execute(ScriptProxy::GetNodeExecutor(*aContext.script));
 			};
@@ -436,14 +513,14 @@ namespace SCR
 		//static_assert(false);
 
 		//using CleanInputTypes = RemoveReferences<InputTypes...>;
-		using MemoryTupleType = MemoryTupleNew<std::remove_cvref_t<InputTypes>...>;
-		MemoryTupleType memoryTupleTest;
-		std::vector<PinTypeID> inputPinTypes = CreatePinTypes<ePinFlowType::Input, MemoryTupleType, std::remove_cvref_t<InputTypes>...>(memoryTupleTest);
+		//using MemoryTupleType = AccessorTupleNew<std::remove_cvref_t<InputTypes>...>;
+		//MemoryTupleType memoryTupleTest;
+		std::vector<PinTypeID> inputPinTypes = CreatePinTypes<ePinFlowType::Input, std::remove_cvref_t<InputTypes>...>();
 		std::vector<PinTypeID> outputPinTypes = CreatePinTypes<ePinFlowType::Output, OutputTypes...>();
 
 		MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
 		MemoryPoolID functionMemoryID = foundationMemoryPool.Allocate<Callable>(aCallable);
-		MemoryPoolID tupleMemoryID = foundationMemoryPool.Allocate<MemoryTupleType>(memoryTupleTest);
+		//MemoryPoolID tupleMemoryID = foundationMemoryPool.Allocate<MemoryTupleType>(memoryTupleTest);
 
 		return NodeRecipe
 		{
@@ -454,7 +531,7 @@ namespace SCR
 			OperatorTrait,
 			inputPinTypes,
 			outputPinTypes,
-			tupleMemoryID,
+			//tupleMemoryID,
 			functionMemoryID
 		};
 	}

@@ -56,8 +56,11 @@ namespace SCR
 		static PinID CreateOutputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID);
 		static std::vector<PinID> CreateOutputPins(NodeGraph& aNodeGraph, const NodeID, const NodeTypeID aNodeTypeID, size_t aStartIndex);
 
-		static PinID CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID);
-		static PinID CreateOutputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID);
+		static PinID CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, void* aDataPtr);
+		static PinID CreateOutputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, void* aDataPtr);
+
+		//static PinID CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID);
+		//static PinID CreateOutputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID);
 
 		static void RebindLink(const NodeGraphContext& aContext, const PinID aInputPinID, const PinID aNewOutputPinID);
 

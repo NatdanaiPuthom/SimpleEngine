@@ -346,10 +346,12 @@ namespace SCR
 		const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 
-		MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*myCurrentNodeGraph);
+		DataTypeManager::EditData(pinType.dataTypeID, pin.dataPtr);
 
-		DataTypeID dataTypeID = pinType.dataTypeID;
-		void* dataPtr = memoryPool.MemoryAt(pin.memoryID);
+		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*myCurrentNodeGraph);
+
+		/*DataTypeID dataTypeID = pinType.dataTypeID;
+		void* dataPtr = pin.dataPtr;
 
 		MemoryPool tempPool(64);
 		MemoryPoolID tempID = DataTypeManager::AllocateData(dataTypeID, tempPool, dataPtr);
@@ -357,7 +359,7 @@ namespace SCR
 
 		if (DataTypeManager::EditData(dataTypeID, dataPtr))
 		{
-
+			
 			MemoryPoolID prevMemoryID = DataTypeManager::AllocateData(dataTypeID, memoryPool, copyDataPtr);
 
 			CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
@@ -395,21 +397,21 @@ namespace SCR
 					DataTypeManager::SwapData(dataTypeID, newDataPtr, oldDataPtr);
 				}, "Edit Pin Data"
 			);
-		}
+		}*/
 	}
 
 	void ScriptModifier::EditVariableDefaultValue(VarID aVarID)
 	{
 		Variable& variable = ScriptProxy::GetVariableRef(myScript, aVarID);
 
-		MemoryPoolID id = variable.defaultValueMemoryID;
+		//MemoryPoolID id = variable.defaultValueMemoryID;
 
-		MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(myScript);
+		//MemoryManager& memoryManager = ScriptProxy::GetVariableMemoryManager(myScript);
 
-		void* dataPtr = memoryPool.MemoryAt(id);
+		void* dataPtr = variable.runtimeDataPtr;
 		if (DataTypeManager::EditData(variable.dataTypeID, dataPtr))
 		{
-			DataTypeManager::CopyData(variable.dataTypeID, memoryPool.MemoryAt(variable.runtimeMemoryID), dataPtr);
+			DataTypeManager::CopyData(variable.dataTypeID, variable.runtimeDataPtr, dataPtr);
 		}
 	}
 
@@ -417,12 +419,16 @@ namespace SCR
 	{
 		Variable& variable = ScriptProxy::GetVariableRef(myScript, aVarID);
 
-		MemoryPoolID runtimeMemID = DataTypeManager::AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryPool(myScript));
-		MemoryPoolID defaultValueMemID = DataTypeManager::AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryPool(myScript));
+		void* runtimeDataPtr = DataTypeManager::AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryManager(myScript));
+		void* defaultValueDataPtr = DataTypeManager::AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryManager(myScript));
+		//MemoryPoolID runtimeMemID = DataTypeManager::AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryPool(myScript));
+		//MemoryPoolID defaultValueMemID = DataTypeManager::AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryPool(myScript));
 
 		variable.dataTypeID = aDataTypeID;
-		variable.runtimeMemoryID = runtimeMemID;
-		variable.defaultValueMemoryID = defaultValueMemID;
+		//variable.runtimeMemoryID = runtimeMemID;
+		//variable.defaultValueMemoryID = defaultValueMemID;
+		variable.runtimeDataPtr = runtimeDataPtr;
+		variable.defaultValueDataPtr = defaultValueDataPtr;
 
 		DestroyVariableNodes(aVarID);
 	}
@@ -446,114 +452,117 @@ namespace SCR
 			return;
 		}
 
-		CopyBuffer& copyBuffer = ScriptProxy::GetGlobalCopyBufferRef(myScript);
+		//CopyBuffer& copyBuffer = ScriptProxy::GetGlobalCopyBufferRef(myScript);
 
-		copyBuffer = CopyBuffer{};
+		//copyBuffer = CopyBuffer{};
 
-		CreateNode(0);
+		////CreateNode(0);
 
-		ScriptVec2 nodeTotalPos;
-		for (NodeID nodeID : aNodeIDs)
-		{
-			const Node& node = ScriptProxy::GetNode(*myCurrentNodeGraph, nodeID);
-			nodeTotalPos += node.position;
-
-
-			NodeCopy& nodeCopy = copyBuffer.nodes.emplace_back();
-			nodeCopy.typeID = node.typeID;
-
-			const MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*myCurrentNodeGraph);
-
-			for (PinID inputPinID : node.inputPins)
-			{
-				PinCopy& pinCopy = nodeCopy.inputPinCopies.emplace_back();
-
-				const Pin& inputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, inputPinID);
-				const PinType& inputPinType = PinTypeManager::GetPinType(inputPin.typeID);
+		//ScriptVec2 nodeTotalPos;
+		//for (NodeID nodeID : aNodeIDs)
+		//{
+		//	const Node& node = ScriptProxy::GetNode(*myCurrentNodeGraph, nodeID);
+		//	nodeTotalPos += node.position;
 
 
-				const void* sourceDataPtr = memoryPool.MemoryAt(inputPin.memoryID);
-				pinCopy.memoryID = DataTypeManager::AllocateData(inputPinType.dataTypeID, nodeCopy.data, sourceDataPtr);
-			}
+		//	NodeCopy& nodeCopy = copyBuffer.nodes.emplace_back();
+		//	nodeCopy.typeID = node.typeID;
 
-			for (PinID outputPinID : node.outputPins)
-			{
-				PinCopy& pinCopy = nodeCopy.outputPinCopies.emplace_back();
+		//	//const MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*myCurrentNodeGraph);
 
-				const Pin& outputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, outputPinID);
-				const PinType& outputPinType = PinTypeManager::GetPinType(outputPin.typeID);
+		//	for (PinID inputPinID : node.inputPins)
+		//	{
+		//		PinCopy& pinCopy = nodeCopy.inputPinCopies.emplace_back();
 
-				const void* sourceDataPtr = memoryPool.MemoryAt(outputPin.memoryID); 
-				pinCopy.memoryID = DataTypeManager::AllocateData(outputPinType.dataTypeID, nodeCopy.data, sourceDataPtr);
-			}
+		//		const Pin& inputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, inputPinID);
+		//		const PinType& inputPinType = PinTypeManager::GetPinType(inputPin.typeID);
 
-		}
 
-		ScriptVec2 avgPos = nodeTotalPos / static_cast<float>(aNodeIDs.size());
+		//		//const void* sourceDataPtr = memoryPool.MemoryAt(inputPin.memoryID);
+		//		const void* sourceDataPtr = inputPin.dataPtr;
+		//		pinCopy.memoryID = DataTypeManager::AllocateData(inputPinType.dataTypeID, nodeCopy.data, sourceDataPtr);
+		//	}
 
-		// Calculate difference from avg pos for every copied node
+		//	for (PinID outputPinID : node.outputPins)
+		//	{
+		//		PinCopy& pinCopy = nodeCopy.outputPinCopies.emplace_back();
 
-		for (size_t i = 0; i < aNodeIDs.size(); ++i)
-		{
-			const Node& node = ScriptProxy::GetNode(*myCurrentNodeGraph, aNodeIDs[i]);
+		//		const Pin& outputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, outputPinID);
+		//		const PinType& outputPinType = PinTypeManager::GetPinType(outputPin.typeID);
 
-			NodeCopy& nodeCopy = copyBuffer.nodes[i];
-			nodeCopy.diffFromAvg = node.position - avgPos;
-		}
+		//		//const void* sourceDataPtr = memoryPool.MemoryAt(outputPin.memoryID); 
+		//		const void* sourceDataPtr = outputPin.dataPtr;
+		//		pinCopy.memoryID = DataTypeManager::AllocateData(outputPinType.dataTypeID, nodeCopy.data, sourceDataPtr);
+		//	}
+
+		//}
+
+		//ScriptVec2 avgPos = nodeTotalPos / static_cast<float>(aNodeIDs.size());
+
+		//// Calculate difference from avg pos for every copied node
+
+		//for (size_t i = 0; i < aNodeIDs.size(); ++i)
+		//{
+		//	const Node& node = ScriptProxy::GetNode(*myCurrentNodeGraph, aNodeIDs[i]);
+
+		//	NodeCopy& nodeCopy = copyBuffer.nodes[i];
+		//	nodeCopy.diffFromAvg = node.position - avgPos;
+		//}
 
 
 	}
 
 	void ScriptModifier::PasteCopyBuffer(ScriptVec2 aPosition)
 	{
-		const CopyBuffer& copyBuffer = ScriptProxy::GetGlobalCopyBufferRef(myScript);
-		if (copyBuffer.nodes.empty())
-		{
-			return;
-		}
+		aPosition;
+		//const CopyBuffer& copyBuffer = ScriptProxy::GetGlobalCopyBufferRef(myScript);
+		//if (copyBuffer.nodes.empty())
+		//{
+		//	return;
+		//}
 
-		CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
-		commandTracker.BeginComposite(myScript, "Paste Nodes");
-
-
-		MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*myCurrentNodeGraph);
-
-		// Create nodes
-		for (const NodeCopy& nodeCopy : copyBuffer.nodes)
-		{
-			ScriptVec2 newPos = aPosition + nodeCopy.diffFromAvg;
-			NodeID createdNodeID = CreateNode(nodeCopy.typeID, newPos);
-
-			const Node& createdNode = ScriptProxy::GetNode(*myCurrentNodeGraph, createdNodeID);
+		//CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
+		//commandTracker.BeginComposite(myScript, "Paste Nodes");
 
 
-			assert(createdNode.inputPins.size() == nodeCopy.inputPinCopies.size());
-			assert(createdNode.outputPins.size() == nodeCopy.outputPinCopies.size());
+		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*myCurrentNodeGraph);
 
-			for (size_t i = 0; i < createdNode.inputPins.size(); ++i)
-			{
-				const Pin& inputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, createdNode.inputPins[i]);
-				const PinType& inputPinType = PinTypeManager::GetPinType(inputPin.typeID);
+		//// Create nodes
+		//for (const NodeCopy& nodeCopy : copyBuffer.nodes)
+		//{
+		//	ScriptVec2 newPos = aPosition + nodeCopy.diffFromAvg;
+		//	NodeID createdNodeID = CreateNode(nodeCopy.typeID, newPos);
 
-				void* dataPtr = memoryPool.MemoryAt(inputPin.memoryID);
-				const void* sourceDataPtr = nodeCopy.data.MemoryAt(nodeCopy.inputPinCopies[i].memoryID);
+		//	const Node& createdNode = ScriptProxy::GetNode(*myCurrentNodeGraph, createdNodeID);
 
-				DataTypeManager::CopyData(inputPinType.dataTypeID, dataPtr, sourceDataPtr);
 
-			}
+		//	assert(createdNode.inputPins.size() == nodeCopy.inputPinCopies.size());
+		//	assert(createdNode.outputPins.size() == nodeCopy.outputPinCopies.size());
 
-			for (size_t i = 0; i < createdNode.outputPins.size(); ++i)
-			{
-				const Pin& outputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, createdNode.outputPins[i]);
-				const PinType& outputPinType = PinTypeManager::GetPinType(outputPin.typeID);
+		//	for (size_t i = 0; i < createdNode.inputPins.size(); ++i)
+		//	{
+		//		const Pin& inputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, createdNode.inputPins[i]);
+		//		const PinType& inputPinType = PinTypeManager::GetPinType(inputPin.typeID);
 
-				void* dataPtr = memoryPool.MemoryAt(outputPin.memoryID);
-				const void* sourceDataPtr = nodeCopy.data.MemoryAt(nodeCopy.outputPinCopies[i].memoryID);
+		//		//void* dataPtr = memoryPool.MemoryAt(inputPin.memoryID);
+		//		const void* sourceDataPtr = nodeCopy.data.MemoryAt(nodeCopy.inputPinCopies[i].memoryID);
 
-				DataTypeManager::CopyData(outputPinType.dataTypeID, dataPtr, sourceDataPtr);
+		//		DataTypeManager::CopyData(inputPinType.dataTypeID, inputPin.dataPtr, sourceDataPtr);
 
-			}
-		}
+		//	}
+
+		//	for (size_t i = 0; i < createdNode.outputPins.size(); ++i)
+		//	{
+		//		const Pin& outputPin = ScriptProxy::GetPin(*myCurrentNodeGraph, createdNode.outputPins[i]);
+		//		const PinType& outputPinType = PinTypeManager::GetPinType(outputPin.typeID);
+
+		//		//void* dataPtr = memoryPool.MemoryAt(outputPin.memoryID);
+		//		const void* sourceDataPtr = nodeCopy.data.MemoryAt(nodeCopy.outputPinCopies[i].memoryID);
+
+		//		DataTypeManager::CopyData(outputPinType.dataTypeID, outputPin.dataPtr, sourceDataPtr);
+
+		//	}
+		//}
 
 		// Create links
 		/*for (const auto& [copiedNodeID, pastedNodeID] : copyMap)
@@ -586,7 +595,7 @@ namespace SCR
 			}
 		}*/
 
-		commandTracker.EndComposite();
+		//commandTracker.EndComposite();
 
 	}
 

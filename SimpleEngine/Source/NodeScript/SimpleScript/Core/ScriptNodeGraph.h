@@ -2,7 +2,7 @@
 #include "ScriptDefines.h"
 #include "NodeManager.h"
 #include "PinManager.h"
-#include "ScriptMemoryPool.h"
+#include "Memory/ScriptMemoryManager.h"
 
 namespace SCR
 {
@@ -29,6 +29,7 @@ namespace SCR
 		std::unique_ptr<NodeManager> myNodeManager;
 		std::unique_ptr<PinManager> myPinManager;
 
-		MemoryPool myMemoryPool;
+		MemoryManager myMemoryManager;
+		//MemoryPool myMemoryPool;
 	};
 }

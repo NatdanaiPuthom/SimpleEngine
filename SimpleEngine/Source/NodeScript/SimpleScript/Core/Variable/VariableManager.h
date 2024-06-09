@@ -11,13 +11,16 @@ namespace SCR
 	struct Variable
 	{
 		DataTypeID dataTypeID = InvalidID<DataTypeID>();
-		MemoryPoolID runtimeMemoryID = InvalidID<MemoryPoolID>();
-		MemoryPoolID defaultValueMemoryID = InvalidID<MemoryPoolID>();
+		//MemoryPoolID runtimeMemoryID = InvalidID<MemoryPoolID>();
+		//MemoryPoolID defaultValueMemoryID = InvalidID<MemoryPoolID>();
+		void* runtimeDataPtr = nullptr;
+		void* defaultValueDataPtr = nullptr;
 		std::string name = "Var";
 		bool isDestroyed = false;
 	};
 
 	class MemoryPool;
+	class MemoryManager;
 
 	class VariableManager
 	{
@@ -37,7 +40,8 @@ namespace SCR
 
 		std::unordered_map<NodeID, VarID> myNodeIDToVarID;
 
-		std::unique_ptr<MemoryPool> myMemoryPool;
+		std::unique_ptr<MemoryManager> myMemoryManager;
+		//std::unique_ptr<MemoryPool> myMemoryPool;
 
 	};
 	

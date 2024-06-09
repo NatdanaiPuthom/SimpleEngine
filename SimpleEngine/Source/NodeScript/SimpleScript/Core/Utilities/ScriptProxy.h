@@ -17,6 +17,7 @@ namespace SCR
 	class PinTypeManager;
 	class DataTypeManager;
 	class MemoryPool;
+	class MemoryManager;
 	class NodeManager;
 	class PinManager;
 	class NodeExecutor;
@@ -51,11 +52,15 @@ namespace SCR
 
 		static const std::vector<std::unique_ptr<ScriptManager>>& GetScriptManagers(ScriptFoundation& aFoundation);
 
-		static MemoryPool& GetGraphMemoryPool(NodeGraph& aNodeGraph);
-		static const MemoryPool& GetGraphMemoryPool(const NodeGraph& aNodeGraph);
+		//static MemoryPool& GetGraphMemoryPool(NodeGraph& aNodeGraph);
+		//static const MemoryPool& GetGraphMemoryPool(const NodeGraph& aNodeGraph);
 
-		static MemoryPool& GetVariableMemoryPool(Script& aScript);
-		static const MemoryPool& GetVariableMemoryPool(const Script& aScript);
+		static MemoryManager& GetNodeGraphMemoryManager(NodeGraph& aNodeGraph);
+
+		//static MemoryPool& GetVariableMemoryPool(Script& aScript);
+		//static const MemoryPool& GetVariableMemoryPool(const Script& aScript);
+		static MemoryManager& GetVariableMemoryManager(Script& aScript);
+		static const MemoryManager& GetVariableMemoryManager(const Script& aScript);
 
 		static const NodeManager& GetNodeManager(const Script& aScript);
 

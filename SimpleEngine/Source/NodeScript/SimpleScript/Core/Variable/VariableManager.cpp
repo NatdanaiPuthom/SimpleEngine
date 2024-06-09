@@ -1,12 +1,13 @@
 #include "VariableManager.h"
 #include "../Script.h"
 #include "ScriptMemoryPool.h"
+#include "ScriptMemoryManager.h"
 
 namespace SCR
 {
 
 	VariableManager::VariableManager()
-		: myMemoryPool(std::make_unique<MemoryPool>(100))
+		: myMemoryManager(std::make_unique<MemoryManager>())
 	{
 	}
 

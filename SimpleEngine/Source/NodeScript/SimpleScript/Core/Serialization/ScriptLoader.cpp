@@ -43,7 +43,7 @@ namespace SCR
 		}
 
 		const NodeGraph& eventGraph = ScriptProxy::GetEventGraph(aScript);
-		const MemoryPool& eventGraphMemoryPool = ScriptProxy::GetGraphMemoryPool(eventGraph);
+		//const MemoryPool& eventGraphMemoryPool = ScriptProxy::GetGraphMemoryPool(eventGraph);
 		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
 
 		json jsonDoc;
@@ -101,10 +101,10 @@ namespace SCR
 
 				pinDataJson["DataType"] = DataTypeManager::GetName(pinType.dataTypeID);
 
-				const MemoryPoolID memoryID = pin.memoryID;
+				//const MemoryPoolID memoryID = pin.memoryID;
 
 				json valueJson = json::object();
-				DataTypeManager::SaveData(pinType.dataTypeID, valueJson, eventGraphMemoryPool.MemoryAt(memoryID));
+				DataTypeManager::SaveData(pinType.dataTypeID, valueJson, pin.dataPtr);
 				pinDataJson["Value"] = valueJson;
 			}
 
@@ -131,7 +131,7 @@ namespace SCR
 			json defaultValueJson = json::object();
 			DataTypeID dataTypeID = variable.dataTypeID;
 
-			DataTypeManager::SaveData(dataTypeID, defaultValueJson, eventGraphMemoryPool.MemoryAt(variable.defaultValueMemoryID));
+			DataTypeManager::SaveData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
 
 			variableJson["DefaultValue"] = defaultValueJson;
 
@@ -176,7 +176,7 @@ namespace SCR
 		const json jsonDoc = json::parse(file);
 
 		NodeGraph& eventGraph = ScriptProxy::GetEventGraph(aScript);
-		MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(eventGraph);
+		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(eventGraph);
 		ScriptModifier& modifier = aScript.GetModifier();
 		ScriptProxy::GetCommandTracker(aScript).IsTracking() = false;
 
@@ -244,7 +244,7 @@ namespace SCR
 
 
 			const json& valueJson = pinData["Value"];
-			DataTypeManager::LoadData(pinType.dataTypeID, valueJson, memoryPool.MemoryAt(pin.memoryID));
+			DataTypeManager::LoadData(pinType.dataTypeID, valueJson, pin.dataPtr);
 		}
 
 		const json& variableDataJson = dataJson["Variables"];
@@ -270,8 +270,8 @@ namespace SCR
 				
 				aScript.GetModifier().SetVariableDataType(varID, dataTypeID);
 
-				DataTypeManager::LoadData(dataTypeID, defaultValueJson, memoryPool.MemoryAt(variable.defaultValueMemoryID));
-				DataTypeManager::LoadData(dataTypeID, defaultValueJson, memoryPool.MemoryAt(variable.runtimeMemoryID));
+				DataTypeManager::LoadData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
+				DataTypeManager::CopyData(dataTypeID, variable.runtimeDataPtr, variable.defaultValueDataPtr);
 
 			}
 

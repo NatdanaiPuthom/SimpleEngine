@@ -8,6 +8,7 @@ namespace SCR
 	{
 		using Ref = T&;
 		using Ptr = T*;
+		using PtrRef = T*&;
 	public:
 		static_assert(std::is_object_v<T> || std::is_function_v<T>,
 			"ReferenceWrapper<T> requires T to be an object type or a function type.");
@@ -24,17 +25,27 @@ namespace SCR
 			return *myPtr;
 		}
 
-		_NODISCARD const Ref get() const noexcept
+		_NODISCARD const T& Get() const noexcept
 		{
 			return *myPtr;
 		}
 
-		_NODISCARD Ref get() noexcept
+		_NODISCARD T& Get() noexcept
 		{
 			return *myPtr;
 		}
 
-		void set(Ref aValue)
+		_NODISCARD T*& GetPtr() noexcept
+		{
+			return myPtr;
+		}
+
+		_NODISCARD const T*& GetPtr() const noexcept
+		{
+			return myPtr;
+		}
+
+		void Set(Ref aValue)
 		{
 			myPtr = &aValue;
 		}
