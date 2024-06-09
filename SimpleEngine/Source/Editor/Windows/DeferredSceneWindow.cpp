@@ -21,7 +21,7 @@ namespace Editor
 
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
-		const ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+		const ImVec2 screenSize = {static_cast<float>(Global::GetResolution().x), static_cast<float>(Global::GetResolution().y)};
 		const float quadWidth = screenSize.x / 3.0f;
 		const float quadHeight = screenSize.y / 2.0f;
 
@@ -51,7 +51,7 @@ namespace Editor
 				break;
 			}
 
-			ImGui::SetNextWindowSize(ImVec2(quadWidth, quadHeight), ImGuiCond_Always);
+			ImGui::SetNextWindowSize(ImVec2(quadWidth, quadHeight));
 
 			if (ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 			{

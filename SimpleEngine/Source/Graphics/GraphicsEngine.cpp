@@ -648,13 +648,14 @@ namespace Graphics
 
 		{ //TO-DO(v10.0.5): Figure a out to resize buffers properly
 			CreateBackBuffer();
+			CreateViewport(newWindowSize);
 			CreateDepthBuffer(newWindowSize);
 			CreateGRenderTarget(newWindowSize);
 			CreateDeferredRenderTarget(newWindowSize);
 			CreatePostProcessingRenderTarget(newWindowSize);
+			CreateBloomDownAndUpSampleRenderTarget(newWindowSize);
+			CreateBloomRenderTarget(newWindowSize);
 		}
-
-		CreateViewport(newWindowSize);
 
 		myContext->RSSetViewports(1, myViewPort.get());
 	}
@@ -1201,6 +1202,7 @@ namespace Graphics
 			renderTargets[i] = renderTarget;
 		}
 
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)] = std::vector<RenderTarget>();
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)] = renderTargets;
 	}
 
@@ -1211,6 +1213,7 @@ namespace Graphics
 			DXGI_FORMAT_R32G32B32A32_FLOAT
 		};
 
+		myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)] = std::vector<RenderTarget>();
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::Bloom)] = CreateRenderTargets(formats.size(), &formats[0], aResolution);
 	}
 
