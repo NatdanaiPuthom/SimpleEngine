@@ -129,7 +129,7 @@ namespace Editor
 	{
 		bool isFullScreen = Global::IsFullScreen();
 
-		if (ImGui::MenuItem("Fullscreen", "F5", &isFullScreen))
+		if (ImGui::MenuItem("FullScreen", "F5", &isFullScreen))
 		{
 			if (Global::IsFullScreen())
 			{

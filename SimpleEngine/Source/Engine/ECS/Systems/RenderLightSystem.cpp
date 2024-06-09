@@ -106,6 +106,21 @@ namespace ECS
 			}
 		}
 		ImGui::End();*/
+
+		/*
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+
+		static Math::Vector4f ambientLight = graphicsEngine->GetAmbientLightColorAndIntensity();
+
+		if (ImGui::Begin("Light"))
+		{
+			if (ImGui::DragFloat4("Ambient light", &ambientLight.x, 0.1f))
+			{
+				graphicsEngine->SetAmbientLightColorAndIntensity(ambientLight);
+			}
+		}
+		ImGui::End();
+		*/
 	}
 
 	void RenderLightSystem::Render()
