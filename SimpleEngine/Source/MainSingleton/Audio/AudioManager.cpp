@@ -104,6 +104,11 @@ namespace Simpleton
 		{
 			SoundEngine::StopSound(myMusicChannels[i].myChannelIndex);
 		}
+
+		for (size_t i = 0; i < myMusicChannels.size(); i++)
+		{
+			myMusicChannels.erase(myMusicChannels.begin() + i);
+		}
 	}
 
 	float AudioManager::GetSFXVolume() const

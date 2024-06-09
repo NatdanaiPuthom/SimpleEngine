@@ -8,6 +8,7 @@
     },
     "windows": {
       "show_inspector": true
-    }
+    },
+    "musicActive":  true
   }
 }

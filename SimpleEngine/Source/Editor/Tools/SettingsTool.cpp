@@ -1,6 +1,7 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Tools/SettingsTool.hpp"
 #include "Editor/Editor.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
 {
@@ -9,6 +10,7 @@ namespace Editor
 		, mySelectedRasterizerState(0)
 		, myActiveSceneIndex(0)
 		, myConsoleIsOpen(true)
+		, myMusicIsActive(true)
 	{
 	}
 
@@ -26,6 +28,15 @@ namespace Editor
 		{
 			myWindowSizes.push_back(myMonitorResolution);
 		}
+
+		if (myMusicIsActive)
+		{
+			MainSingleton::GetAudioManager().PlayMusic("StardewValley.mp3");
+		}
+	}
+
+	void SettingsTool::Update()
+	{
 	}
 
 	void SettingsTool::Draw()
@@ -56,13 +67,44 @@ namespace Editor
 			AdjustRasterizerState();
 			AdjustWindowSize();
 
+			ImGui::Separator();
+
 			ImGui::Dummy(ImVec2(0, 20));
 			ToggleConsole();
 
 			if (ImGui::Checkbox("Render Debug Lines", &EditorEngine::myStaticShouldRenderDebugLines))
 			{
-
 			}
+
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0, 20));
+
+			Simpleton::AudioManager& audioManager = MainSingleton::GetAudioManager();
+
+			const std::string musicName = "StardewValley.mp3";
+
+			if (ImGui::Checkbox("Play Music", &myMusicIsActive))
+			{
+				if (myMusicIsActive == true)
+				{
+					audioManager.PlayMusic(musicName);
+				}
+				else
+				{
+					audioManager.StopAllMusic();
+				}
+			}
+
+			const std::string musicNameAsText = "Music: " + musicName;
+			ImGui::Text(musicNameAsText.c_str());
+
+			float musicVolume = audioManager.GetMusicVolume();
+			if (ImGui::DragFloat("Music Volume", &musicVolume, 0.01f, 0.0f, 1.0f))
+			{
+				audioManager.ChangeMusicVolume(musicVolume);
+			}
+
+			ImGui::Separator();
 
 			ImGui::Dummy(ImVec2(0, 20));
 			AdjustActiveScene();
@@ -84,15 +126,15 @@ namespace Editor
 
 	void SettingsTool::LoadDataFromJson()
 	{
-		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_LEVELS);
+		const std::string levelJsonFileName = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_LEVELS);
 
-		std::ifstream file(filename);
-		assert(file.is_open() && "Failed To Open File");
+		std::ifstream levelFile(levelJsonFileName);
+		assert(levelFile.is_open() && "Failed To Open file");
 
-		const nlohmann::json json = nlohmann::json::parse(file);
-		file.close();
+		const nlohmann::json levelJson = nlohmann::json::parse(levelFile);
+		levelFile.close();
 
-		const nlohmann::json& scenesIndexes = json["scenes"];
+		const nlohmann::json& scenesIndexes = levelJson["scenes"];
 
 		myScenes.resize(scenesIndexes.size());
 		for (size_t i = 0; i < scenesIndexes.size(); ++i)
@@ -100,6 +142,16 @@ namespace Editor
 			const std::string name = scenesIndexes[i]["name"];
 			myScenes[static_cast<size_t>(scenesIndexes[i]["id"])] = name;
 		}
+
+		const std::string editorJsonFileName = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR);
+		std::ifstream editorFile(editorJsonFileName);
+		assert(editorFile.is_open() && "Failed To Open file");
+
+		const nlohmann::json editorJson = nlohmann::json::parse(editorFile);
+		editorFile.close();
+
+		const nlohmann::json editorSettings = editorJson["editor_settings"];
+		myMusicIsActive = editorSettings["musicActive"];
 	}
 
 	void SettingsTool::ToggleConsole()

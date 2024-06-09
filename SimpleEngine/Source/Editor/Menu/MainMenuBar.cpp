@@ -88,6 +88,7 @@ namespace Editor
 
 		if (myEditorWindowActive == true)
 		{
+			mySettingsTool->Update();
 			myHierarchyWindow->Update();
 			myAssetWindow->Update();
 		}

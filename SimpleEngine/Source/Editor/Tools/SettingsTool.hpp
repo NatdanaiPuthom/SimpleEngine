@@ -12,6 +12,7 @@ namespace Editor
 		SettingsTool();
 
 		void Init() override;
+		void Update() override;
 		void Draw() override;
 	private:
 		void ShowDrawCalls();
@@ -34,6 +35,7 @@ namespace Editor
 		int mySelectedRasterizerState;
 
 		bool myConsoleIsOpen;
+		bool myMusicIsActive;
 
 		std::vector<Math::Vector2ui> myWindowSizes;
 		std::vector<std::string> myScenes;
