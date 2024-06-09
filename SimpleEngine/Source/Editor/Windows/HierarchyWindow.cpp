@@ -199,7 +199,7 @@ namespace Editor
 							ImGui::SetTooltip("More Options");
 						}
 
-						ComponentRegistry::Edit(componentHashCode, componentPointer);
+						ComponentRegistry::InspectComponentProperties(componentHashCode, componentPointer);
 
 						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
 						{
