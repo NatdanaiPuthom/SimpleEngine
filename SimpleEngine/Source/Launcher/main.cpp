@@ -33,33 +33,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	return 0;
 }
 
-struct EmilStruct
-{
-	int value;
-	Math::Vector3f test;
-};
-
-struct EricoStruct
-{
-	int value;
-};
-
-REGISTER_COMPONENT(int);
-REGISTER_COMPONENT(bool);
+//REGISTER_COMPONENT(bool);
 
 namespace Math
 {
-	REGISTER_COMPONENT(Vector3f);
+	//REGISTER_COMPONENT(Vector3f);
 }
 
-REGISTER_COMPONENT(EmilStruct);
-REGISTER_COMPONENT(EricoStruct);
+struct NatdanaiStruct
+{
+	int value = 0;
+	int number = 3000;
+	bool isTrue = false;
+	//Math::Vector3f test;
+};
 
-REGISTER_PROPERTY(&ECS::NullComponent::isNull, "hello");
-REGISTER_PROPERTY(&EmilStruct::value, "test");
-REGISTER_PROPERTY(&EmilStruct::test, "vectorTest");
-
-REGISTER_PROPERTY(&EricoStruct::value, "test2");
+REGISTER_COMPONENT(int);	//TO-DO(v11.0.0): seperate to register data type
+REGISTER_COMPONENT(bool);	//TO-DO(v11.0.0): seperate to register data type
+REGISTER_COMPONENT(NatdanaiStruct);
+REGISTER_PROPERTY(&NatdanaiStruct::value);
+REGISTER_PROPERTY(&NatdanaiStruct::number);
+REGISTER_PROPERTY(&NatdanaiStruct::isTrue);
 
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {

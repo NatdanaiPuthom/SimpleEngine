@@ -170,30 +170,26 @@ namespace Editor
 
 				std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = selectedEntity->GetComponentMap();
 
-				for (auto& [key, value] : componentMap)
+				for (auto& [componentType, componentID] : componentMap)
 				{
 					ImGui::AlignTextToFramePadding();
 
-					const size_t hashCode = key.hash_code();
-					void* componentPointer = World::GetECS()->myComponentManager.GetComponentByComponentID(value);
+					const size_t componentHashCode = componentType.hash_code();
 
-					if (ComponentRegistry::myTypeErasureComponents.contains(hashCode) == false)
+					if (ComponentRegistry::myTypeErasureComponents.contains(componentHashCode) == false)
 					{
 						continue;
 					}
 
-					const std::string& name = ComponentRegistry::myTypeErasureComponents[hashCode].myComponentName;
-
-					const bool open = ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
-
+					const std::string& componentName = ComponentRegistry::myTypeErasureComponents[componentHashCode].myComponentName;
+					const bool open = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
+					void* componentPointer = World::GetECS()->myComponentManager.GetComponentByComponentID(componentID);
 
 					if (open)
 					{
-
-						ComponentRegistry::Edit(hashCode, componentPointer);
+						ComponentRegistry::Edit(componentHashCode, componentPointer);
 						ImGui::TreePop();
 					}
-
 
 					ImGui::Separator();
 				}

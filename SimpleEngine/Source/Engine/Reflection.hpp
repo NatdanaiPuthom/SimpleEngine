@@ -18,8 +18,8 @@ enum class eTypeTraits
 struct ComponentProperty
 {
 	std::string name;
-	size_t id;
-	size_t byteOffset;
+	size_t id = 0;
+	size_t byteOffset = 0;
 };
 
 class TypeErasureComponent final
@@ -32,7 +32,6 @@ public:
 
 	bool(*AddComponentFunctionPointer)(ECS::Entity aEntity) = nullptr;
 	bool(*Edit)(void* aData, const std::string& aVariableName) = nullptr;
-
 };
 
 template<typename T>
@@ -145,16 +144,34 @@ struct __RegisterComponent final
 struct __RegisterProperty final
 {
 	template<typename DataType, typename Component>
-	__RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName)
+	__RegisterProperty(DataType Component::* aVariable, const char* aVariableName)
 	{
 		ComponentRegistry::RegisterProperty(aVariable, aVariableName);
 	}
 };
 
-#define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
+#define STRINGIFY(aName) #aName
+#define TOSTRING(aName) STRINGIFY(aName)
 
-//NOTE(v11.0.0): I have no clue how this work and where __COUNTER__ macro came from. But it works.
 #define CONCATENATE_DETAIL(x, y) x##y
 #define CONCATENATE(x, y) CONCATENATE_DETAIL(x, y)
-#define REGISTER_PROPERTY(aVariable, aVariableName) \
- inline __RegisterProperty CONCATENATE(registerType_, __COUNTER__) = __RegisterProperty(aVariable, aVariableName);
+
+template <size_t N>
+constexpr const char* StripScope(const char (&name)[N]) 
+{
+    for (size_t i = N - 1; i > 0; --i) 
+	{
+        if (name[i - 1] == ':') 
+		{
+            return name + i;
+        }
+    }
+
+    return name;
+}
+
+//NOTE(v11.0.0): where does __COUNTER__ macro came from?. But it works.
+#define REGISTER_PROPERTY(aVariable) \
+ inline __RegisterProperty CONCATENATE(registerType_, __COUNTER__) = __RegisterProperty(aVariable, StripScope(TOSTRING(aVariable)));
+
+#define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
