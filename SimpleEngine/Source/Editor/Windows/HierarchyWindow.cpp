@@ -187,13 +187,36 @@ namespace Editor
 
 					if (open)
 					{
+						ImGui::SameLine(ImGui::GetWindowWidth() - 50);
+
+						if (ImGui::Button("..."))
+						{
+							ImGui::OpenPopup(std::string("ElementList" + std::to_string(id)).c_str());
+						}
+
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::SetTooltip("More Options");
+						}
+
 						ComponentRegistry::Edit(componentHashCode, componentPointer);
+
+						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
+						{
+							if (ImGui::MenuItem("Remove Component"))
+							{
+								//selectedEntity->RemoveComponent()
+								//selectedEntity->RemoveComponentByTypeName(componentNames[i]);
+							}
+
+							ImGui::EndPopup();
+						}
+
 						ImGui::TreePop();
 					}
 
 					ImGui::Separator();
 				}
-
 
 				//for (size_t i = 0; i < componentNames.size(); ++i)
 					//{
@@ -205,18 +228,7 @@ namespace Editor
 
 					//	//if (open)
 					//	//{
-					//	//	ImGui::SameLine(ImGui::GetWindowWidth() - 50);
-
-					//	//	if (ImGui::Button("..."))
-					//	//	{
-					//	//		ImGui::OpenPopup(std::string("ElementList" + std::to_string(id)).c_str());
-					//	//	}
-
-					//	//	if (ImGui::IsItemHovered())
-					//	//	{
-					//	//		ImGui::SetTooltip("More Options");
-					//	//	}
-
+			
 					//	//	if (componentNames[i] == "TransformComponent") //NOTE(v9.34.0): Ugly hardcoded, trying to fix reflection
 					//	//	{
 					//	//		ECS::TransformComponent* transformComponent = selectedEntity->GetComponent<ECS::TransformComponent>();
@@ -377,18 +389,6 @@ namespace Editor
 					//	//		ImGui::Text(vertexShaderName.c_str());
 					//	//	}
 
-					//	//	if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
-					//	//	{
-					//	//		if (ImGui::MenuItem("Remove Component"))
-					//	//		{
-					//	//			selectedEntity->RemoveComponentByTypeName(componentNames[i]);
-					//	//		}
-
-					//	//		ImGui::EndPopup();
-					//	//	}
-
-					//	//	ImGui::TreePop();
-					//	//	ImGui::Separator();
 					//	//}
 					//}
 
@@ -406,21 +406,6 @@ namespace Editor
 							componentType.AddComponentFunctionPointer(selectedEntity);
 						}
 					}
-
-					/*std::array<std::string, static_cast<size_t>(eComponentType::Count)> components;
-					components[static_cast<size_t>(eComponentType::Transform)] = "TransformComponent";
-					components[static_cast<size_t>(eComponentType::Mesh)] = "MeshComponent";
-					components[static_cast<size_t>(eComponentType::Animated)] = "AnimatedComponent";
-					components[static_cast<size_t>(eComponentType::AnimationPlayer)] = "AnimationPlayerComponent";
-					components[static_cast<size_t>(eComponentType::Null)] = "NullComponent";
-
-					for (size_t i = 0; i < components.size(); ++i)
-					{
-						if (ImGui::Selectable(components[i].c_str()))
-						{
-							AddComponent(selectedEntity, static_cast<eComponentType>(i));
-						}
-					}*/
 
 					ImGui::EndPopup();
 				}
