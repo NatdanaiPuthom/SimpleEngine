@@ -5,6 +5,7 @@
 #include "Editor/Windows/AssetWindow.hpp"
 #include "Editor/Windows/DeferredSceneWindow.hpp"
 #include "Editor/Windows/PostProcessingWindow.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
 {
@@ -62,6 +63,18 @@ namespace Editor
 			}
 		}
 
+		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
+		{
+			if (Global::IsFullScreen())
+			{
+				Global::SetWindowSizeNextFrame({ 1280,720 }, false);
+			}
+			else
+			{
+				Global::SetWindowSizeNextFrame({ 0,0 }, true);
+			}
+		}
+
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu("Windows"))
@@ -79,6 +92,8 @@ namespace Editor
 						}
 					}
 				}
+
+				MenuItemFullScreen();
 
 				ImGui::EndMenu();
 			}
@@ -107,6 +122,23 @@ namespace Editor
 				ImGui::Image(textureID, size);
 			}
 			ImGui::End();
+		}
+	}
+
+	void MainMenuBar::MenuItemFullScreen()
+	{
+		bool isFullScreen = Global::IsFullScreen();
+
+		if (ImGui::MenuItem("Fullscreen", "F5", &isFullScreen))
+		{
+			if (Global::IsFullScreen())
+			{
+				Global::SetWindowSizeNextFrame({ 1280,720 }, false);
+			}
+			else
+			{
+				Global::SetWindowSizeNextFrame({ 0,0 }, true);
+			}
 		}
 	}
 

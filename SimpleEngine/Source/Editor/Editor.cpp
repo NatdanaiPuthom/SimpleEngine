@@ -34,18 +34,6 @@ namespace Editor
 	{
 		Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
 
-		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
-		{
-			if (Global::IsFullScreen())
-			{
-				Global::SetWindowSizeNextFrame({ 1280,720 }, false);
-			}
-			else
-			{
-				Global::SetWindowSizeNextFrame({ 0,0 }, true);
-			}
-		}
-
 		for (const std::unique_ptr<ToolInterface>& tool : myTools)
 		{
 			if (tool->myIsActive == true)

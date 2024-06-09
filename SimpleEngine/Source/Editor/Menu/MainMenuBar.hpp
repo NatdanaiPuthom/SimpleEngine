@@ -24,6 +24,7 @@ namespace Editor
 		void Update() override;
 		void Draw() override;
 	private:
+		void MenuItemFullScreen();
 		void DrawTools();
 		void LoadSettingsFromJson();
 	private:

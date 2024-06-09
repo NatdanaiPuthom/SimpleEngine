@@ -33,22 +33,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	return 0;
 }
 
-struct NatdanaiStruct
-{
-	Math::Vector4f testVec4 = { 1.0f, 2.0f, 3.0f, 4.0f };
-	Math::Vector3f testVec3 = { 1.0f, 2.0f, 3.0f };
-	int value = 0;
-	int number = 3000;
-	bool isTrue = false;
-};
-
-REGISTER_COMPONENT(NatdanaiStruct);
-REGISTER_PROPERTY(&NatdanaiStruct::value);
-REGISTER_PROPERTY(&NatdanaiStruct::number);
-REGISTER_PROPERTY(&NatdanaiStruct::isTrue);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec3);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec4);
-
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
 	PROFILER_BEGIN("MainSingleton Initialize");
