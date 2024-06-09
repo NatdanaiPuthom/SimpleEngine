@@ -401,11 +401,6 @@ namespace Editor
 				{
 					for (const auto& [hashCode, componentType] : ComponentRegistry::myTypeErasureComponents)
 					{
-						if (componentType.myTypeTrait == eTypeTraits::Primitive)
-						{
-							continue;
-						}
-
 						if (ImGui::Selectable(componentType.myComponentName.c_str()))
 						{
 							componentType.AddComponentFunctionPointer(selectedEntity);

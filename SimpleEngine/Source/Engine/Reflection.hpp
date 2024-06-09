@@ -8,13 +8,6 @@
 bool EditValue(int& aValue, const std::string& aVariableName);
 bool EditValue(bool& aValue, const std::string& aVariableName);
 
-enum class eTypeTraits
-{
-	Primitive,
-	StructOrClass,
-	NotAssigned
-};
-
 struct ComponentProperty
 {
 	std::string name;
@@ -27,8 +20,6 @@ class TypeErasureComponent final
 public:
 	std::vector<ComponentProperty> myComponentProperties;
 	std::string myComponentName;
-
-	eTypeTraits myTypeTrait;
 
 	bool(*AddComponentFunctionPointer)(ECS::Entity aEntity) = nullptr;
 	bool(*Edit)(void* aData, const std::string& aVariableName) = nullptr;
@@ -44,6 +35,7 @@ class ComponentRegistry
 {
 public:
 	static inline std::unordered_map<size_t, TypeErasureComponent> myTypeErasureComponents = {};
+	static inline std::unordered_map<size_t, TypeErasureComponent> myTypeErasureDataTypes = {};
 public:
 
 	template<typename T>
@@ -58,16 +50,6 @@ public:
 		}
 
 		TypeErasureComponent typeErasureComponent;
-		typeErasureComponent.myTypeTrait = eTypeTraits::NotAssigned;
-
-		if (std::is_fundamental_v<T>)
-		{
-			typeErasureComponent.myTypeTrait = eTypeTraits::Primitive;
-		}
-		else
-		{
-			typeErasureComponent.myTypeTrait = eTypeTraits::StructOrClass;
-		}
 
 		typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
@@ -88,6 +70,56 @@ public:
 		myTypeErasureComponents[typeid(T).hash_code()] = typeErasureComponent;
 	}
 
+	template<typename T>
+	static inline void RegisterDataType()
+	{
+		const bool alreadyExistOrHashCollision = myTypeErasureDataTypes.contains(typeid(T).hash_code());
+
+		if (alreadyExistOrHashCollision == true)
+		{
+			assert(false && "Component already exist or has hash collision!");
+			return;
+		}
+
+		TypeErasureComponent typeErasureComponent;
+
+		typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+
+		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> bool
+			{
+				return aEntity->AddComponent<T>();
+			};
+
+		if constexpr (Editable<T>)
+		{
+			typeErasureComponent.Edit = [](void* aDataPointer, const std::string& aVariableName) -> bool
+				{
+					T* pointer = reinterpret_cast<T*>(aDataPointer);
+					return EditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
+				};
+		}
+
+		myTypeErasureDataTypes[typeid(T).hash_code()] = typeErasureComponent;
+	}
+
+	static inline void EditRecursive(size_t aHashCode, void* aData, const std::string& aVariableName = "")
+	{
+		auto it = myTypeErasureDataTypes.find(aHashCode);
+
+		if (it != myTypeErasureDataTypes.end())
+		{
+			if (it->second.Edit != nullptr)
+			{
+				it->second.Edit(aData, aVariableName);
+			}
+
+			for (auto& componentProperty : it->second.myComponentProperties)
+			{
+				EditRecursive(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.name);
+			}
+		}
+	}
+
 	static inline void Edit(size_t aHashCode, void* aData, const std::string& aVariableName = "")
 	{
 		auto it = myTypeErasureComponents.find(aHashCode);
@@ -101,7 +133,7 @@ public:
 
 			for (auto& componentProperty : it->second.myComponentProperties)
 			{
-				Edit(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.name);
+				EditRecursive(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.name);
 			}
 		}
 	}
@@ -142,6 +174,15 @@ struct __RegisterComponent final
 	}
 };
 
+template<typename T>
+struct __RegisterDataType final
+{
+	__RegisterDataType()
+	{
+		ComponentRegistry::RegisterDataType<T>();
+	}
+};
+
 struct __RegisterProperty final
 {
 	template<typename DataType, typename Component>
@@ -175,6 +216,7 @@ constexpr const char* ExtractVariableNameFromDataTypeName(const char (&name)[N])
  inline __RegisterProperty CONCATENATE(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(TOSTRING(aVariable)));
 
 #define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
+#define REGISTER_DATA_TYPE(aDataType) inline __RegisterDataType<aDataType> registerType##aDataType;
 
-REGISTER_COMPONENT(int);	//TO-DO(v11.0.0): seperate to register data type
-REGISTER_COMPONENT(bool);	//TO-DO(v11.0.0): seperate to register data type
+REGISTER_DATA_TYPE(int);
+REGISTER_DATA_TYPE(bool);
