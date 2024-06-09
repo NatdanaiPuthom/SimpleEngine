@@ -106,11 +106,11 @@ public:
 		}
 	}
 
-	template<typename ClassType, typename PropertyType>
-	static inline constexpr size_t GetByteOffset(PropertyType ClassType::* aProperty)
+	template<typename DataType, typename PropertyType>
+	static inline constexpr size_t GetByteOffset(PropertyType DataType::* aProperty)
 	{
-		constexpr ClassType* nullClassType = nullptr;
-		return (size_t) & reinterpret_cast<const char&>(nullClassType->*aProperty);
+		constexpr DataType* nullDataType = nullptr;
+		return (size_t)&reinterpret_cast<const char&>(nullDataType->*aProperty);
 	}
 
 	template<typename DataType, typename Component>
@@ -122,6 +122,7 @@ public:
 		componentProperty.byteOffset = GetByteOffset(aVariable);
 
 		const bool exist = myTypeErasureComponents.contains(typeid(Component).hash_code());
+
 		if (exist == false)
 		{
 			assert(false && "Component type does not exist in register. Please register it first!");
@@ -150,14 +151,8 @@ struct __RegisterProperty final
 	}
 };
 
-#define STRINGIFY(aName) #aName
-#define TOSTRING(aName) STRINGIFY(aName)
-
-#define CONCATENATE_DETAIL(x, y) x##y
-#define CONCATENATE(x, y) CONCATENATE_DETAIL(x, y)
-
 template <size_t N>
-constexpr const char* StripScope(const char (&name)[N]) 
+constexpr const char* ExtractVariableNameFromDataTypeName(const char (&name)[N]) 
 {
     for (size_t i = N - 1; i > 0; --i) 
 	{
@@ -170,8 +165,13 @@ constexpr const char* StripScope(const char (&name)[N])
     return name;
 }
 
+#define STRINGIFY(aName) #aName
+#define TOSTRING(aName) STRINGIFY(aName)
+#define CONCATENATE_DETAIL(x, y) x##y
+#define CONCATENATE(x, y) CONCATENATE_DETAIL(x, y)
+
 //NOTE(v11.0.0): where does __COUNTER__ macro came from?. But it works.
 #define REGISTER_PROPERTY(aVariable) \
- inline __RegisterProperty CONCATENATE(registerType_, __COUNTER__) = __RegisterProperty(aVariable, StripScope(TOSTRING(aVariable)));
+ inline __RegisterProperty CONCATENATE(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(TOSTRING(aVariable)));
 
 #define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;

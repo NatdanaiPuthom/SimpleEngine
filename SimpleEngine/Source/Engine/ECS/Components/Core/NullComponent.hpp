@@ -9,4 +9,5 @@ namespace ECS
 	};
 
 	REGISTER_COMPONENT(NullComponent);
+	REGISTER_PROPERTY(&NullComponent::isNull);
 }
