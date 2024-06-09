@@ -18,7 +18,7 @@ namespace SCR
 	NodeGraph::NodeGraph(const NodeGraph& aOther)
 		: myNodeManager(std::make_unique<NodeManager>(*aOther.myNodeManager))
 		, myPinManager(std::make_unique<PinManager>(*aOther.myPinManager))
-		, myMemoryPool(aOther.myMemoryPool)
+		, myMemoryManager(aOther.myMemoryManager)
 	{
 	}
 }

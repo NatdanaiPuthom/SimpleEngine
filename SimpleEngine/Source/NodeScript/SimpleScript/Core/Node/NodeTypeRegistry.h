@@ -40,10 +40,10 @@ namespace SCR
 
 		VarID varID = variableManager.GetVariableIDByNodeID(nodeID);
 
-		MemoryPoolID runtimeID = ScriptProxy::GetVariable(*aContext->script, varID).runtimeMemoryID;
+		const void* runtimeDataPtr = ScriptProxy::GetVariable(*aContext->script, varID).runtimeDataPtr;
 
-		MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(*aContext->script);
-		const T& output = memoryPool.At<T>(runtimeID);
+		//MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(*aContext->script);
+		const T& output = *reinterpret_cast<const T*>(runtimeDataPtr);
 		return output;
 	}
 
@@ -55,10 +55,14 @@ namespace SCR
 
 		VarID varID = variableManager.GetVariableIDByNodeID(nodeID);
 
-		MemoryPoolID runtimeID = ScriptProxy::GetVariable(*aContext->script, varID).runtimeMemoryID;
+		const Variable& variable = ScriptProxy::GetVariable(*aContext->script, varID);
+		
+		T& runtimeValue = *reinterpret_cast<T*>(variable.runtimeDataPtr);
+		runtimeValue = aValue;
+		//MemoryPoolID runtimeID = ScriptProxy::GetVariable(*aContext->script, varID).runtimeMemoryID;
 
-		MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(*aContext->script);
-		memoryPool.At<T>(runtimeID) = aValue;
+		//MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(*aContext->script);
+		//memoryPool.At<T>(runtimeID) = aValue;
 	}
 
 	template<typename T>/* requires IsValidScriptObjectType<T, nlohmann::json> || Fundamental<T>*/

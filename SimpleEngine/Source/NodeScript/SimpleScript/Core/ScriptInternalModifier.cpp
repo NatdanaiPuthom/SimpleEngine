@@ -123,9 +123,10 @@ namespace SCR
 	{
 		DataTypeID dataTypeID = PinTypeManager::GetPinType(aPinTypeID).dataTypeID;
 
-		MemoryPoolID memoryPoolID = DataTypeManager::AllocateData(dataTypeID, ScriptProxy::GetGraphMemoryPool(aNodeGraph));
-
-		return CreateInputPin(aNodeGraph, aNodeID, aPinTypeID, memoryPoolID);
+		//MemoryPoolID memoryPoolID = DataTypeManager::AllocateData(dataTypeID, ScriptProxy::GetGraphMemoryPool(aNodeGraph));
+		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
+		void* dataPtr = DataTypeManager::AllocateData(dataTypeID, memoryManager);
+		return CreateInputPin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}
 
 	std::vector<PinID> InternalModifier::CreateInputPins(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID, size_t aStartIndex)
@@ -146,10 +147,12 @@ namespace SCR
 	{
 		DataTypeID dataTypeID = PinTypeManager::GetPinType(aPinTypeID).dataTypeID;
 
-		MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(aNodeGraph);
-		MemoryPoolID memoryID = DataTypeManager::AllocateData(dataTypeID, memoryPool);
+		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
 
-		return CreateOutputPin(aNodeGraph, aNodeID, aPinTypeID, memoryID);
+		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(aNodeGraph);
+		void* dataPtr = DataTypeManager::AllocateData(dataTypeID, memoryManager);
+
+		return CreateOutputPin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}
 
 
@@ -168,11 +171,28 @@ namespace SCR
 	}
 
 
-	PinID InternalModifier::CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID)
+	PinID InternalModifier::CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, void* const aDataPtr)
 	{
 		std::vector<Pin>& pins = ScriptProxy::GetPins(aNodeGraph);
 		const PinID id = static_cast<PinID>(pins.size());
-		pins.push_back(Pin{ aNodeID, aPinTypeID, aMemoryPoolID });
+		pins.push_back(Pin{ aNodeID, aPinTypeID, aDataPtr });
+		return id;
+	}
+
+	PinID InternalModifier::CreateOutputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, void* const aDataPtr)
+	{
+		std::vector<Pin>& pins = ScriptProxy::GetPins(aNodeGraph);
+		const PinID id = static_cast<PinID>(pins.size());
+		pins.push_back(Pin{ aNodeID, aPinTypeID, aDataPtr });
+		return id;
+	}
+
+
+	/*PinID InternalModifier::CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID)
+	{
+		std::vector<Pin>& pins = ScriptProxy::GetPins(aNodeGraph);
+		const PinID id = static_cast<PinID>(pins.size());
+		pins.push_back(Pin{ aNodeID, aPinTypeID, nullptr, aMemoryPoolID });
 		return id;
 	}
 
@@ -180,9 +200,9 @@ namespace SCR
 	{
 		std::vector<Pin>& pins = ScriptProxy::GetPins(aNodeGraph);
 		const PinID id = static_cast<PinID>(pins.size());
-		pins.push_back(Pin{ aNodeID, aPinTypeID, aMemoryPoolID });
+		pins.push_back(Pin{ aNodeID, aPinTypeID, nullptr, aMemoryPoolID });
 		return id;
-	}
+	}*/
 
 	void InternalModifier::RebindLink(const NodeGraphContext& aContext, const PinID aInputPinID, const PinID aNewOutputPinID)
 	{

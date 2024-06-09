@@ -278,6 +278,7 @@ namespace SCR
 		aValue;
 	}*/
 
+	//FLY_DATATYPE(int, Color{});
 
 	void RegisterSystemDataTypes()
 	{

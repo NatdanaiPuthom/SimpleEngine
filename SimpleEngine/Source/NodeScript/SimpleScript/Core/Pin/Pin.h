@@ -9,7 +9,8 @@ namespace SCR
 	{
 		const NodeID nodeID;
 		const PinTypeID typeID;
-		const MemoryPoolID memoryID;
+		void* const dataPtr;
+		//const MemoryPoolID memoryID;
 		std::vector<PinID> connectedPinIDs;
 	};
 

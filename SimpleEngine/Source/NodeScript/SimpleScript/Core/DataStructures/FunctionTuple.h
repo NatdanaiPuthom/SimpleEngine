@@ -295,5 +295,43 @@ namespace SCR
 
 	};
 
+	template<typename... Args>
+	class AccessorTupleNew
+	{
+	public:
+
+
+
+		AccessorTupleNew()
+		{
+
+		}
+		~AccessorTupleNew()
+		{
+
+		}
+
+		const std::tuple<ReferenceWrapper<Args>...>& Get() const
+		{
+			return myData;
+		}
+
+		template<size_t Index> requires IsInRange<Index, 0, sizeof...(Args) - 1>
+		constexpr decltype(auto) At()
+		{
+			return std::get<Index>(myData).GetPtr();
+		}
+
+		template<size_t Index> requires IsInRange<Index, 0, sizeof...(Args) - 1>
+		constexpr decltype(auto) At() const
+		{
+			return std::get<Index>(myData).GetPtr();
+		}
+
+
+	private:
+
+		std::tuple<ReferenceWrapper<Args>...> myData;
+	};
 
 }

@@ -13,7 +13,9 @@ namespace SCR
 				assert(aPinSetData.dataTypeID == pinType.dataTypeID);
 #endif
 
-				void* destination = ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph).MemoryAt(pin.memoryID);
+				//void* destination = ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph).MemoryAt(pin.memoryID);
+
+				void* destination = pin.dataPtr;
 
 				DataTypeManager::CopyData(pinType.dataTypeID, destination, aPinSetData.value);
 
@@ -41,7 +43,7 @@ namespace SCR
 	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, const size_t aStartIndex)
 	{
 		assert(aDestination.size() == aSource.size());
-		const MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph);
+		//const MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph);
 		for (size_t i = aStartIndex; i < aDestination.size(); i++)
 		{
 			PinID destinationPinID = aDestination[i];
@@ -52,10 +54,10 @@ namespace SCR
 
 			const PinID sourcePinID = aSource[i];
 			const Pin& sourcePin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, sourcePinID);
-			const void* value = memoryPool.MemoryAt(sourcePin.memoryID);
+			//const void* value = memoryPool.MemoryAt(sourcePin.memoryID);
 
 
-			outputPinType.setFunction(PinSetData{ destinationPinID, value,
+			outputPinType.setFunction(PinSetData{ destinationPinID, sourcePin.dataPtr,
 #ifdef FLY_DEBUG
 				PinTypeManager::GetPinType(sourcePin.typeID).dataTypeID
 #endif
@@ -92,11 +94,11 @@ namespace SCR
 				const Pin& pin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, inputPinID);
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
-				const MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph);
+				//const MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph);
 
-				const void* value = memoryPool.MemoryAt(connectedOutputPin.memoryID);
+				//const void* value = memoryPool.MemoryAt(connectedOutputPin.memoryID);
 
-				pinType.setFunction(PinSetData{ inputPinID, value,
+				pinType.setFunction(PinSetData{ inputPinID, pin.dataPtr,
 #ifdef _DEBUG
 					PinTypeManager::GetPinType(connectedOutputPin.typeID).dataTypeID
 #endif
