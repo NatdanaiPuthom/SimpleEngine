@@ -48,8 +48,6 @@ struct NatdanaiStruct
 	//Math::Vector3f test;
 };
 
-REGISTER_COMPONENT(int);	//TO-DO(v11.0.0): seperate to register data type
-REGISTER_COMPONENT(bool);	//TO-DO(v11.0.0): seperate to register data type
 REGISTER_COMPONENT(NatdanaiStruct);
 REGISTER_PROPERTY(&NatdanaiStruct::value);
 REGISTER_PROPERTY(&NatdanaiStruct::number);
@@ -88,27 +86,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	SCRIPT::SimpleNodeScript simpleScript;
 	simpleScript.Init();
 	PROFILER_END();
-
-
-	/*ComponentRegistry test; test;
-
-	test.RegisterComponentType<ECS::NullComponent>();
-	test.RegisterComponentType<bool>();
-	test.RegisterProperty(&ECS::NullComponent::isNull, "isNull");*/
-
-	/*test.RegisterComponentType<EmilStruct>();
-
-	test.RegisterComponentType<int>();
-	*/
-
-	/*test.RegisterProperty(&ECS::NullComponent::value, "value");
-	test.RegisterProperty(&EmilStruct::value, "value");*/
-
-
-
-
-
-
 
 	while (Global::GetGameIsRunning())
 	{

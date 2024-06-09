@@ -175,3 +175,6 @@ constexpr const char* ExtractVariableNameFromDataTypeName(const char (&name)[N])
  inline __RegisterProperty CONCATENATE(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(TOSTRING(aVariable)));
 
 #define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
+
+REGISTER_COMPONENT(int);	//TO-DO(v11.0.0): seperate to register data type
+REGISTER_COMPONENT(bool);	//TO-DO(v11.0.0): seperate to register data type
