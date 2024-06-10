@@ -289,7 +289,7 @@ namespace Editor
 		static int selectedStyle = 0;
 
 		ImGui::SetNextItemWidth(200);
-		if (ImGui::Combo("Editor Styles##SettingTool", &selectedStyle, editorStyles.data(), static_cast<int>(editorStyles.size())))
+		if (ImGui::Combo("Editor Style##SettingTool", &selectedStyle, editorStyles.data(), static_cast<int>(editorStyles.size())))
 		{
 			switch (selectedStyle)
 			{
