@@ -906,6 +906,9 @@ namespace Graphics
 		case eIconType::MP3:
 			texture = GetTexture("Assets\\Textures\\Editor\\Icon_MP3.dds");
 			break;
+		case eIconType::Unknown:
+			texture = GetTexture("Assets\\Textures\\Editor\\Icon_Question.dds");
+			break;
 		}
 
 		return texture;

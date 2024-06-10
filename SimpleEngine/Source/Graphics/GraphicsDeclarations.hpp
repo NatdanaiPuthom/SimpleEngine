@@ -89,7 +89,8 @@ namespace Graphics
 		PNG,
 		JPG,
 		OBJ,
-		MP3
+		MP3,
+		Unknown
 	};
 
 	struct RenderTarget final

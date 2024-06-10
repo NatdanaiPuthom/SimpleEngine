@@ -85,7 +85,7 @@ namespace Editor
 	{
 		const std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aDirectory, true);
 
-		ID3D11ShaderResourceView* textureCat = Global::GetGraphicsEngine()->GetTexture("Assets/Textures/T_Cat_C.dds")->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* unknownIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Unknown)->GetShaderResourceView().Get();
 
 		ID3D11ShaderResourceView* cubeMapIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::CubeMap)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* folderIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Folder)->GetShaderResourceView().Get();
@@ -117,7 +117,7 @@ namespace Editor
 		{
 			const std::string extension = GetFileExtension(fileNames[i]);
 
-			ImTextureID textureID = textureCat;
+			ImTextureID textureID = unknownIcon;
 
 			if (extension[0] != '.')
 			{
