@@ -37,6 +37,19 @@ namespace Editor
 
 	void SettingsTool::Update()
 	{
+		Math::Vector2ui resolution = Global::GetResolution();
+
+		if (myWindowSizes[mySelectedWindowSize].x != resolution.x && myWindowSizes[mySelectedWindowSize].y != resolution.y)
+		{
+			for (size_t i = 0; i < myWindowSizes.size(); ++i)
+			{
+				if (myWindowSizes[i].x == resolution.x && myWindowSizes[i].y == resolution.y)
+				{
+					mySelectedWindowSize = static_cast<int>(i);
+					break;
+				}
+			}
+		}
 	}
 
 	void SettingsTool::Draw()
