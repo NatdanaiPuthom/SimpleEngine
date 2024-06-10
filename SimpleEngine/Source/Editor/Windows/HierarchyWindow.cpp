@@ -77,15 +77,15 @@ namespace Editor
 					selected = static_cast<int>(entities.GetEntityCount()) - 1;
 				}
 
-				if (ImGui::MenuItem("Add Cube"))
-				{
-					ECS::Entity entity = World::GetECS()->CreateEntity();
+				//if (ImGui::MenuItem("Add Cube"))
+				//{
+				//	ECS::Entity entity = World::GetECS()->CreateEntity();
 
-					AddComponent(entity, eComponentType::Transform);
-					AddComponent(entity, eComponentType::Mesh);
+				//	AddComponent(entity, eComponentType::Transform);
+				//	AddComponent(entity, eComponentType::Mesh);
 
-					selected = static_cast<int>(entities.GetEntityCount()) - 1;
-				}
+				//	selected = static_cast<int>(entities.GetEntityCount()) - 1;
+				//}
 
 				ImGui::EndPopup();
 			}
@@ -229,49 +229,7 @@ namespace Editor
 					//	//if (open)
 					//	//{
 			
-					//	//	if (componentNames[i] == "TransformComponent") //NOTE(v9.34.0): Ugly hardcoded, trying to fix reflection
-					//	//	{
-					//	//		ECS::TransformComponent* transformComponent = selectedEntity->GetComponent<ECS::TransformComponent>();
-					//	//		Math::Vector3f position = transformComponent->transform.GetPosition();
-					//	//		Math::Vector3f rotation = transformComponent->transform.GetRotation();
-					//	//		Math::Vector3f scale = transformComponent->transform.GetScale();
-
-					//	//		ImGui::SetNextItemWidth(200);
-
-					//	//		if (ImGui::DragFloat3("Position", &position.x, 0.1f))
-					//	//		{
-					//	//			transformComponent->transform.SetPosition(position);
-					//	//		}
-
-					//	//		ImGui::SetNextItemWidth(200);
-
-					//	//		if (ImGui::DragFloat3("Rotation", &rotation.x, 0.1f))
-					//	//		{
-					//	//			transformComponent->transform.SetRotation(rotation);
-					//	//		}
-
-					//	//		ImGui::SetNextItemWidth(200);
-
-					//	//		if (ImGui::DragFloat3("Scale", &scale.x, 0.1f))
-					//	//		{
-					//	//			if (scale.x < 0.001f)
-					//	//			{
-					//	//				scale.x = 0.001f;
-					//	//			}
-
-					//	//			if (scale.y < 0.001f)
-					//	//			{
-					//	//				scale.y = 0.001f;
-					//	//			}
-
-					//	//			if (scale.z < 0.001f)
-					//	//			{
-					//	//				scale.z = 0.001f;
-					//	//			}
-
-					//	//			transformComponent->transform.SetScale(scale);
-					//	//		}
-					//	//	}
+					
 					//	//	else if (componentNames[i] == "MeshComponent")
 					//	//	{
 					//	//		ECS::MeshComponent* meshComponent = selectedEntity->GetComponent<ECS::MeshComponent>();

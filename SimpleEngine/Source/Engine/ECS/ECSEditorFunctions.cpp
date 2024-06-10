@@ -2,6 +2,9 @@
 #include "Engine/ECS/ECSEditorFunctions.hpp"
 #include "External/imgui.h"
 
+#include "Graphics/Defines.hpp"
+#include "Editor/FileManager/FileManager.hpp"
+
 static std::string ExtractStringFromImGuiIDFullName(const std::string& aString)
 {
 	const size_t position = aString.find("##");
@@ -199,13 +202,13 @@ bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, 
 
 		switch (i)
 		{
-		case 0:
+		case Graphics::Global_Slot_Albedo:
 			ImGui::Text("Albedo:");
 			break;
-		case 1:
+		case Graphics::Global_Slot_Normal:
 			ImGui::Text("Normal:");
 			break;
-		case 2:
+		case Graphics::Global_Slot_Material:
 			ImGui::Text("Material:");
 			break;
 		}
@@ -214,6 +217,23 @@ bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, 
 		ImGui::BeginDisabled();
 		ImGui::InputText("", texture.data(), texture.size());
 		ImGui::EndDisabled();
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+			{
+				const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+				const std::string extension = Editor::FileManager::GetFileExtension(payloadData);
+
+				if (extension == ".dds")
+				{
+					const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
+					aTextures[i] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+				}
+			}
+
+			ImGui::EndDragDropTarget();
+		}
 	}
 
 	return isValid;
