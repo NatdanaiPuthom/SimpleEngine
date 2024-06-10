@@ -55,21 +55,21 @@ namespace Simple
 		colors[ImGuiCol_ButtonHovered] = ImVec4(0.70f, 0.00f, 0.70f, 0.70f);
 		colors[ImGuiCol_HeaderHovered] = ImVec4(1.00f, 0.00f, 1.00f, 1.0f);
 		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.40f, 0.40f, 0.40f, 0.90f);
-		colors[ImGuiCol_Border] = ImVec4(0.35f, 0.0f, 0.395f, 0.50f);
+		colors[ImGuiCol_Border] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
 		colors[ImGuiCol_FrameBg] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
 		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.90f, 0.25f, 1.00f, 0.40f);
-		colors[ImGuiCol_TitleBg] = ImVec4(0.35f, 0.0f, 0.395f, 0.50f);
+		colors[ImGuiCol_TitleBg] = ImVec4(0.18f, 0.18f, 0.18f, 0.80f);
 		colors[ImGuiCol_ScrollbarBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
 		colors[ImGuiCol_CheckMark] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
 		colors[ImGuiCol_SliderGrab] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
 		colors[ImGuiCol_SliderGrabActive] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
 		colors[ImGuiCol_Button] = ImVec4(1.0f, 0.00f, 1.0f, 1.0f);
 		colors[ImGuiCol_Header] = ImVec4(1.0f, 0.00f, 1.0f, 0.50f);
-		colors[ImGuiCol_Tab] = ImVec4(0.50f, 0.00f, 0.50f, 0.00f);
-		colors[ImGuiCol_TabHovered] = ImVec4(0.30f, 0.0f, 0.30f, 1.00f);
-		colors[ImGuiCol_TabActive] = ImVec4(0.3f, 0.0f, 0.3f, 0.60f);
-		colors[ImGuiCol_TabUnfocused] = ImVec4(0.35f, 0.35f, 0.35f, 0.0f);
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.6f, 0.0f, 0.6f, 0.50f);
+		colors[ImGuiCol_Tab] = ImVec4(0.33f, 0.33f, 0.33f, 1.00f);
+		colors[ImGuiCol_TabHovered] = ImVec4(1.00f, 0.0f, 1.00f, 0.90f);
+		colors[ImGuiCol_TabActive] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+		colors[ImGuiCol_TabUnfocused] = ImVec4(0.18f, 0.18f, 0.18f, 0.90f);
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.485f, 0.485f, 0.485f, 0.90f);
 		colors[ImGuiCol_DockingPreview] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 		colors[ImGuiCol_ResizeGripHovered] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 		colors[ImGuiCol_ResizeGripActive] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
@@ -83,6 +83,7 @@ namespace Simple
 		style.DockingSeparatorSize = 1;
 		style.DisplaySafeAreaPadding.x = 10;
 		style.PopupBorderSize = 0;
+		style.FrameBorderSize = 1.0f;
 	}
 
 	void ImGuiEngine::BeginFrame()
