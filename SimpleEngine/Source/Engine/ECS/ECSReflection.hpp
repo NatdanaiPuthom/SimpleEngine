@@ -30,12 +30,6 @@ concept Editable = requires(T & aData, const std::string & aVariableName)
 	{ ViewAndEditValue(aData, aVariableName) } -> std::same_as<bool>;
 };
 
-//template<typename T, typename... Args>
-//concept Editable = requires(T & aData, const std::string & aVariableName, Args&&... args)
-//{
-//	{ ViewAndEditValue(aData, aVariableName, std::forward<Args>(args)...) } -> std::same_as<bool>;
-//};
-
 class ComponentRegistry final
 {
 public:

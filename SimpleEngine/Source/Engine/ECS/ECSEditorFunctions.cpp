@@ -145,3 +145,34 @@ bool ViewAndEditValue(const Graphics::Mesh*& aValue, const std::string& /*aVaria
 
 	return true;
 }
+
+bool ViewAndEditValue(const Graphics::Shader*& aValue, const std::string& /*aVariableName*/)
+{
+	bool isValid = false;
+
+	std::string pixelShader;
+	std::string vertexShader;
+
+	if (aValue != nullptr)
+	{
+		pixelShader += aValue->GetPixelShaderName();
+		vertexShader += aValue->GetVertexShaderName();
+		isValid = true;
+	}
+
+	ImGui::AlignTextToFramePadding();
+
+	ImGui::Text("PixelShader:");
+	ImGui::SameLine();
+	ImGui::BeginDisabled();
+	ImGui::InputText("", pixelShader.data(), pixelShader.size());
+	ImGui::EndDisabled();
+
+	ImGui::Text("VertexShader:");
+	ImGui::SameLine();
+	ImGui::BeginDisabled();
+	ImGui::InputText("", vertexShader.data(), vertexShader.size());
+	ImGui::EndDisabled();
+
+	return isValid;
+}

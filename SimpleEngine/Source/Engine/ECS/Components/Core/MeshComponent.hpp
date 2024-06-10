@@ -9,7 +9,6 @@ namespace ECS
 	struct MeshComponent final
 	{
 		std::array<const Graphics::Texture*, 3> textures;
-
 		const Graphics::Mesh* mesh;
 		const Graphics::Shader* shader;
 	};
@@ -22,14 +21,9 @@ namespace ECS
 //	REGISTER_DATATYPE_ARRAY_CONST_POINTER(array, int, 3);
 //}
 
-namespace Graphics
-{
-	REGISTER_DATATYPE_CONST_POINTER(Mesh);
-}
-
 namespace ECS
 {
 	REGISTER_COMPONENT(MeshComponent);
-
 	EXPOSE_VARIABLE(&MeshComponent::mesh)
+	EXPOSE_VARIABLE(&MeshComponent::shader)
 }

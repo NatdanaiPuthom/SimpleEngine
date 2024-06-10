@@ -1,5 +1,12 @@
 #pragma once
+#include "Engine/Math/Vector2.hpp"
+#include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/Vector4.hpp"
+#include "Engine/Math/Transform.hpp"
+
 #include "Graphics/Model/Mesh.hpp"
+#include "Graphics/Shaders/Shader.hpp"
+
 #include  <string>
 
 template <size_t N>
@@ -30,6 +37,7 @@ bool ViewAndEditValue(Math::Vector4f& aValue, const std::string& aVariableName);
 bool ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName);
 
 bool ViewAndEditValue(const Graphics::Mesh*& aValue, const std::string& aVariableName);
+bool ViewAndEditValue(const Graphics::Shader*& aValue, const std::string& aVariableName);
 
 //
 //template<typename T, size_t N>
