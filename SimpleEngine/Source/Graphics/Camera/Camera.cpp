@@ -13,6 +13,7 @@ namespace Graphics
 		, myFreeFly(false)
 		, myMouseIsTapped(false)
 		, myInput(nullptr)
+		, myMouseTapTimer(0.0f)
 	{
 		SetCameraType(eCameraType::Perspective, { 1280,720 });
 	}
@@ -42,7 +43,25 @@ namespace Graphics
 			myFreeFly = !myFreeFly;
 		}
 
-		myMouseIsTapped = myInput->IsKeyHeld(VK_RBUTTON);
+		const bool tapped = myInput->IsKeyHeld(VK_RBUTTON);
+
+		if (tapped == true)
+		{
+			myMouseTapTimer += aDeltaTime;
+
+			if (myMouseTapTimer > 0.12f)
+			{
+				myMouseTapTimer = 0.0f;
+				myMouseIsTapped = true;
+			}
+		}
+		else
+		{
+			myMouseTapTimer = 0.0f;
+			myMouseIsTapped = false;
+		}
+
+		//myMouseIsTapped = myInput->IsKeyHeld(VK_RBUTTON);
 
 		if (myFreeFly == true || myMouseIsTapped == true)
 		{

@@ -74,6 +74,7 @@ namespace Graphics
 		float myFarPlane;
 		float myMoveSpeed;
 		float myRotateSpeed;
+		float myMouseTapTimer;
 
 		eCameraType myCameraType;
 
