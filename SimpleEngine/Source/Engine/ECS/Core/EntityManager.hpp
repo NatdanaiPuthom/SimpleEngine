@@ -40,7 +40,7 @@ namespace ECS
 		Entity GetEntity(const EntityID aEntityID);
 		Entities GetAllEntities();
 
-		std::unordered_map<ComponentType, ComponentID>& GetComponentsMap(const EntityID aEntityID);
+		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap(const EntityID aEntityID);
 
 	private:
 		EntityManager(ComponentManager* aComponentManager);

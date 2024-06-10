@@ -40,4 +40,9 @@ namespace ECS
 	{
 		return myName;
 	}
+
+	const std::unordered_map<ComponentType, ComponentID>& IEntity::GetComponentMap()
+	{
+		return myEntityManager->GetComponentMap(myID);
+	}
 }

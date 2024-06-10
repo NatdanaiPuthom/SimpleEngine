@@ -28,6 +28,7 @@ namespace ECS
 
 		bool DestroyThis();
 
+	public:
 		void SetName(const std::string& aName);
 
 		template<typename T>
@@ -35,12 +36,7 @@ namespace ECS
 
 		const size_t GetID() const;
 		const std::string& GetName() const;
-		const std::vector<std::string> GetComponentNames() const;
-
-		inline std::unordered_map<ComponentType, ComponentID>& GetComponentMap()
-		{
-			return myEntityManager->GetComponentsMap(myID);
-		}
+		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap();
 
 	private:
 		IEntity(const size_t aID, EntityManager* aEntityManager);

@@ -137,9 +137,9 @@ namespace Editor
 			{
 				const size_t id = selectedEntity->GetID(); id;
 
-				std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = selectedEntity->GetComponentMap();
+				const std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = selectedEntity->GetComponentMap();
 
-				for (auto& [componentType, componentID] : componentMap)
+				for (const auto& [componentType, componentID] : componentMap)
 				{
 					ImGui::AlignTextToFramePadding();
 
