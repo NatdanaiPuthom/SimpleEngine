@@ -76,7 +76,7 @@ namespace SCR
 			aOther.release = nullptr;
 			aOther.memory = nullptr;
 			aOther.copy = nullptr;
-			aOther.typeInfo = nullptr;
+			//aOther.typeInfo = nullptr; //NOTE(v11.0.2) : crashed in Release and Simple, commented away
 		}
 
 		MemoryObject& operator=(const MemoryObject& aOther)
