@@ -139,11 +139,11 @@ namespace SCR
 	{
 		static_assert(!(std::is_reference_v<InputType> && !std::is_const_v<std::remove_reference_t<InputType>>), "Non const references are not supported");
 
-		using CT = CleanType_V<InputType>;
+		using CleanType = CleanType_V<InputType>;
 
 		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(aNodeGraph);
 		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
-		void* dataPtr = &memoryManager.Allocate<CT>();
+		void* dataPtr = &memoryManager.Allocate<CleanType>();
 
 		const PinTypeID pinTypeID = NodeTypeManager::GetNodeType(aNodeTypeID).nodeRecipe.inputPinTypeIDs[anIndex];
 
