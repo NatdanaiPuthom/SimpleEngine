@@ -37,11 +37,6 @@ namespace ECS
 
 		inline void* GetComponentByComponentID(const ComponentID aID);
 
-		std::type_index GetTypeIndexByName(const ComponentName aComponentName);
-
-		/*template<typename T>
-		T*& GetNullComponent();*/
-
 	private:
 		ComponentManager();
 
@@ -51,7 +46,6 @@ namespace ECS
 		inline static size_t myCurrentComponentID = 0;
 
 		std::unordered_map<ComponentType, void(*)(void*)> myComponentDestructorInvoker;
-		std::unordered_map<ComponentName, ComponentType> myComponentNameToTypeIndex;
 		std::unordered_map<ComponentType, ComponentPool> myComponents;
 		std::unordered_map<ComponentID, char*> myAllComponents;
 	};
@@ -62,11 +56,6 @@ namespace ECS
 		if (myComponentDestructorInvoker.find(typeid(T)) == myComponentDestructorInvoker.end())
 		{
 			RegisterDestructor<T>();
-
-			const std::type_index typeIndex = typeid(T);
-			std::string componentName = typeIndex.name();
-			componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(componentName);
-			myComponentNameToTypeIndex.emplace(componentName, typeIndex);
 		}
 
 		myCurrentComponentID++;
@@ -127,11 +116,4 @@ namespace ECS
 				static_cast<T*>(aPointer)->~T();
 			};
 	}
-
-	/*template<typename T>
-	inline T*& ComponentManager::GetNullComponent()
-	{
-		static T* nullPointer = nullptr;
-		return std::ref(nullPointer);
-	}*/
 }

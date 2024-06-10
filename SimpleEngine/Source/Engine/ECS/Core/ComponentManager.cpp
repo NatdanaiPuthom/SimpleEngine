@@ -39,28 +39,4 @@ namespace ECS
 
 		return pool.SwapWithLastAndRemoveEditor(aComponentID);
 	}
-
-	const std::type_index ComponentManager::GetComponentTypeIndexByName(const std::string& aComponentTypeName)
-	{
-		const auto it = myComponentNameToTypeIndex.find(aComponentTypeName);
-
-		if (it != myComponentNameToTypeIndex.end())
-		{
-			return it->second;
-		}
-
-		return std::type_index(typeid(NullComponent));
-	}
-
-	std::type_index ComponentManager::GetTypeIndexByName(const ComponentName aComponentName)
-	{
-		auto it = myComponentNameToTypeIndex.find(aComponentName);
-
-		if (it != myComponentNameToTypeIndex.end())
-		{
-			return it->second;
-		}
-
-		return std::type_index(typeid(NullComponent));
-	}
 }
