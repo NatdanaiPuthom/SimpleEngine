@@ -203,8 +203,8 @@ struct __RegisterProperty final
 
 
 //NOTE(v11.0.2): Work in progress, need more tests
-#define REGISTER_DATATYPE_CONST_POINTER(aDataType) inline __RegisterDataType<const aDataType*> registerTypePointer##aDataType;
+#define REGISTER_DATATYPE_CONST_POINTER(aDataType) inline __RegisterDataType<const aDataType*> registerTypeConstPointer##aDataType;
+#define REGISTER_DATATYPE_ARRAY_CONST_POINTER(aArray, aDataType, aSize) inline __RegisterDataType<aArray<const aDataType*, aSize>> registerTypeArrayConstPointer##aArray;
 
 
 //#define REGISTER_DATATYPE_POINTER(aDataType) inline __RegisterDataType<aDataType*> registerTypePointer##aDataType;
-//#define REGISTER_DATATYPE_ARRAY_CONST_POINTER(aArray, aDataType, aSize) inline __RegisterDataType<aArray<const aDataType*, aSize>> registerTypeArrayConstPointer##aArray;

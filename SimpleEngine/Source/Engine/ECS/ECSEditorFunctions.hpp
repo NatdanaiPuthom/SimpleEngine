@@ -6,6 +6,7 @@
 
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Shaders/Shader.hpp"
+#include "Graphics/Texture/Texture.hpp"
 
 #include  <string>
 
@@ -39,20 +40,12 @@ bool ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName)
 bool ViewAndEditValue(const Graphics::Mesh*& aValue, const std::string& aVariableName);
 bool ViewAndEditValue(const Graphics::Shader*& aValue, const std::string& aVariableName);
 
-//
-//template<typename T, size_t N>
-//bool ViewAndEditValue(std::array<T, N>& aValue, const std::string& aVariableName)
-//{
-//	for (size_t i = 0; i < aValue.size(); ++i)
-//	{
-//		aValue[i] = new int(static_cast<int>(i));
-//	}
-//
-//	for (size_t i = 0; i < aValue.size(); ++i)
-//	{
-//		CustomViewAndEditValue(aValue[i], aVariableName);
-//	}
-//
-//	aValue; aVariableName;
-//	return true;
-//}
+//bool CustomViewAndEditValue(const Graphics::Texture*& aValue, const std::string& aVariableName);
+
+bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName);
+
+template<typename T, size_t N>
+bool ViewAndEditValue(std::array<T, N>& aValue, const std::string& aVariableName)
+{
+	return CustomViewAndEditValue(aValue, aVariableName);
+}

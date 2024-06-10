@@ -6,6 +6,7 @@
 
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Shaders/Shader.hpp"
+#include "Graphics/Texture/Texture.hpp"
 
 #include <string>
 
@@ -19,6 +20,7 @@ REGISTER_DATATYPE(char);
 namespace std
 {
 	REGISTER_DATATYPE(string);
+	REGISTER_DATATYPE_ARRAY_CONST_POINTER(array, Graphics::Texture, 3); //TO-DO(v11.0.2): figure out a way to not having to have hardcoded "3"
 }
 
 namespace Math

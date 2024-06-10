@@ -176,3 +176,67 @@ bool ViewAndEditValue(const Graphics::Shader*& aValue, const std::string& /*aVar
 
 	return isValid;
 }
+
+bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& /*aVariableName*/)
+{
+	bool isValid = false;
+
+	ImGui::AlignTextToFramePadding();
+
+	if (aTextures[0] != nullptr)
+	{
+		isValid = true;
+	}
+
+	for (size_t i = 0; i < aTextures.size(); ++i)
+	{
+		std::string texture;
+
+		if (aTextures[i] != nullptr)
+		{
+			texture = aTextures[i]->GetShaderName();
+		}
+
+		switch (i)
+		{
+		case 0:
+			ImGui::Text("Albedo:");
+			break;
+		case 1:
+			ImGui::Text("Normal:");
+			break;
+		case 2:
+			ImGui::Text("Material:");
+			break;
+		}
+
+		ImGui::SameLine();
+		ImGui::BeginDisabled();
+		ImGui::InputText("", texture.data(), texture.size());
+		ImGui::EndDisabled();
+	}
+
+	return isValid;
+}
+
+//bool CustomViewAndEditValue(const Graphics::Texture*& aTexture, const std::string& /*aVariableName*/)
+//{
+//	bool isValid = false;
+//
+//	std::string texture;
+//	if (aTexture != nullptr)
+//	{
+//		texture = aTexture->GetShaderName();
+//		isValid = true;
+//	}
+//
+//	ImGui::AlignTextToFramePadding();
+//
+//	ImGui::Text("Texture:");
+//	ImGui::SameLine();
+//	ImGui::BeginDisabled();
+//	ImGui::InputText("", texture.data(), texture.size());
+//	ImGui::EndDisabled();
+//
+//	return isValid;
+//}
