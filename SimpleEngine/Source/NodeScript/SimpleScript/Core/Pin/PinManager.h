@@ -21,10 +21,9 @@ namespace SCR
 		TypeContainer<PinID, Pin, PinType>::ConstIterator begin() const;
 		TypeContainer<PinID, Pin, PinType>::ConstIterator end() const;
 
+		std::vector<Pin> myPins;
 	private:
 
-		std::vector<Pin> myPins;
-		//std::vector<InputPin> myInputPins;
 	};
 
 }

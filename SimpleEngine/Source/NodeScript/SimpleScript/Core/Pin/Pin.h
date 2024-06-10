@@ -7,9 +7,9 @@ namespace SCR
 
 	struct Pin
 	{
-		const NodeID nodeID;
-		const PinTypeID typeID;
-		void* const dataPtr;
+		NodeID nodeID;
+		PinTypeID typeID;
+		void* dataPtr;
 		//const MemoryPoolID memoryID;
 		std::vector<PinID> connectedPinIDs;
 	};

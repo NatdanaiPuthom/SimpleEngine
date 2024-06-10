@@ -26,6 +26,8 @@ namespace SCR
 	using DataTypeID = ScriptID_size_t;
 	using ObjectTypeID = ScriptID_size_t;
 
+	constexpr size_t NodeBufferCapacity = 1024;
+
 	template<std::integral IDType>
 	inline constexpr IDType InvalidID()
 	{

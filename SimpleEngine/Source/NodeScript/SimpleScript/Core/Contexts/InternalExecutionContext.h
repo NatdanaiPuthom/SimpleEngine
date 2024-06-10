@@ -61,6 +61,7 @@ namespace SCR
 		const ExecutionContextBase* executionContext = nullptr;
 		NodeExecutionData nodeData;
 		ExecutionQueue* executionQueue = nullptr;
+		void* owner = nullptr;
 
 		const NodeExecutionData& GetNodeData() const
 		{

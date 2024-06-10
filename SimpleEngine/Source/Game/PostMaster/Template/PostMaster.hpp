@@ -96,7 +96,7 @@ namespace Simple
 		{
 			void* owner;
 			//SubscribeFunction function;
-			std::function<void(const void*, size_t, void*)> func;
+			std::function<void(const void* aData, size_t aTypeID, void* aOwner)> func;
 			size_t dataTypeID;
 
 			bool operator==(const FuncPair& aOther) const

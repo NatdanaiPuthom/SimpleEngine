@@ -17,6 +17,11 @@ namespace SCR
 			return myMemory.Allocate<T>(aDefaultValue);
 		}
 
+		const MemoryArena<1024>& GetMemory() const
+		{
+			return myMemory;
+		}
+
 	private:
 
 

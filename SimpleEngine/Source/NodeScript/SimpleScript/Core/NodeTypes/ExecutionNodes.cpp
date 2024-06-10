@@ -42,7 +42,7 @@ namespace SCR
 		float time = 0.f;
 	};
 
-	static Flow DelayNodeTest(const InternalExecutionContext* aContext, NodeState<DelayNodeData> aState, Flow, float aDuration, bool aResetOnFlow)
+	static Flow DelayNode(const InternalExecutionContext* aContext, NodeState<DelayNodeData> aState, Flow, float aDuration, bool aResetOnFlow)
 	{
 		if (aContext->GetNodeData().triggerReason == eNodeTriggerReason::Flow)
 		{
@@ -70,26 +70,10 @@ namespace SCR
 		return { 4, true };
 	}
 
-	enum class eEventType1
-	{
-		eEvent,
-		eEvent2
-	};
 
-	enum class eEventType2
-	{
-
-		eEvent,
-		eEvent2
-	};
 
 	void RegisterExecutionNodes()
 	{
-
-		size_t t1 = typeid(eEventType1).hash_code();
-		size_t t2 = typeid(eEventType2).hash_code();
-		t1;
-		t2;
 		NodeTypeRegistry::RegisterFlowNodeType(FloatNode, "Test/FLoat");
 
 		NodeTypeRegistry::RegisterNodeType<eNodeExecutionTrait::Tick>(TickNode, "Execution/Event Tick", NodeTypeDesc{ { }, { "Flow", "Delta Time" } });
@@ -97,7 +81,7 @@ namespace SCR
 		NodeTypeRegistry::RegisterNodeType<eNodeExecutionTrait::EndPlay>(EndPlayNode, "Execution/Event End Play", NodeTypeDesc{ { }, { "Flow" } });
 		NodeTypeRegistry::RegisterNodeType(BranchNode, "Execution/Branch", NodeTypeDesc{ { "Flow", "Condition" }, { "True", "False" } });
 		NodeTypeRegistry::RegisterNodeType(FlipFlopNode, "Execution/FlipFlop", NodeTypeDesc{ { "Flow" }, { "Flip", "Flop" } });
-		NodeTypeRegistry::RegisterNodeType(DelayNodeTest, "Execution/Delay", NodeTypeDesc{ { "Flow", "Duration", "Reset On Flow" }, {"Flow"} });
+		NodeTypeRegistry::RegisterNodeType(DelayNode, "Execution/Delay", NodeTypeDesc{ { "Flow", "Duration", "Reset On Flow" }, {"Flow"} });
 	}
 
 }

@@ -82,6 +82,13 @@ namespace SCR
 		NodeTypeManager::SetSetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
 	}
 
+	template<typename T>
+	static T* GetSelfNode(const InternalExecutionContext* aContext)
+	{
+		return (T*)aContext->owner;
+	}
+
+
 	class NodeTypeRegistry
 	{
 	public:
