@@ -47,15 +47,15 @@ namespace Editor
 					selected = static_cast<int>(entities.GetEntityCount()) - 1;
 				}
 
-				//if (ImGui::MenuItem("Add Cube"))
-				//{
-				//	ECS::Entity entity = World::GetECS()->CreateEntity();
+				if (ImGui::MenuItem("Add Cube"))
+				{
+					ECS::Entity entity = World::GetECS()->CreateEntity();
 
-				//	AddComponent(entity, eComponentType::Transform);
-				//	AddComponent(entity, eComponentType::Mesh);
-
-				//	selected = static_cast<int>(entities.GetEntityCount()) - 1;
-				//}
+					entity->AddComponent<ECS::TransformComponent>();
+					entity->AddComponent<ECS::MeshComponent>();
+			
+					selected = static_cast<int>(entities.GetEntityCount()) - 1;
+				}
 
 				ImGui::EndPopup();
 			}
