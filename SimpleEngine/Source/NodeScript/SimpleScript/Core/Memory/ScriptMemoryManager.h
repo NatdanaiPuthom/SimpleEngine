@@ -1,6 +1,6 @@
 #pragma once
 #include "../ScriptDefines.h"
-#include "ScriptMemoryPool.h"
+#include "ScriptMemoryArena.h"
 
 namespace SCR
 {
@@ -20,7 +20,7 @@ namespace SCR
 	private:
 
 
-		MultiMemoryPool<1024> myMemory;
+		MemoryArena<1024> myMemory;
 
 
 	};
