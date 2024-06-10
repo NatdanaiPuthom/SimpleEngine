@@ -14,3 +14,16 @@ namespace ECS
 		const Graphics::Shader* shader;
 	};
 }
+
+#include "Engine/ECS/Components/Core/MeshComponent.hpp"
+
+namespace Graphics
+{
+	REGISTER_CONST_DATATYPE_POINTER(Mesh);
+}
+
+namespace ECS
+{
+	REGISTER_COMPONENT(MeshComponent);
+	EXPOSE_VARIABLE(&MeshComponent::mesh)
+}

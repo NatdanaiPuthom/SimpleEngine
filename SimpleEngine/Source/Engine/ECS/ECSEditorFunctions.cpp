@@ -43,6 +43,21 @@ bool ViewAndEditValue(int& aValue, const std::string& aVariableName)
 	return ImGui::DragInt(aVariableName.c_str(), &aValue);
 }
 
+bool ViewAndEditValue(int*& aValue, const std::string& aVariableName)
+{
+	if (aValue == nullptr)
+	{
+		//assert(false && "Value is nullptr");
+
+		int nullValue = INT_MIN;
+		ImGui::DragInt(aVariableName.c_str(), &nullValue);
+
+		return false;
+	}
+
+	return ImGui::DragInt(aVariableName.c_str(), aValue);
+}
+
 bool ViewAndEditValue(float& aValue, const std::string& aVariableName)
 {
 	return ImGui::DragFloat(aVariableName.c_str(), &aValue);
@@ -109,4 +124,18 @@ bool ViewAndEditValue(Math::Transform& aValue, const std::string& /*aVariableNam
 	}
 
 	return edited;
+}
+
+bool ViewAndEditValue(const Graphics::Mesh*& aValue, const std::string& /*aVariableName*/)
+{
+	std::string mesh = "Mesh: ";
+
+	if (aValue != nullptr)
+	{
+		mesh += aValue->GetMeshName();
+	}
+
+	ImGui::Text(mesh.c_str());
+
+	return true;
 }

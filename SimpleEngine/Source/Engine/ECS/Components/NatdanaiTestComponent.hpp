@@ -8,6 +8,8 @@ struct NatdanaiTestComponent
 {
 	char testCharArray[9] = "TestChar"; //TO-DO(v11.0.1): make this work
 
+	int* testIntPtr = nullptr;
+
 	char testChar = 'A';
 	std::string testString = "TestString";
 	Math::Vector4f testVec4 = { 1.0f, 2.0f, 3.0f, 4.0f };
@@ -23,6 +25,8 @@ struct NatdanaiTestComponent
 REGISTER_COMPONENT(NatdanaiTestComponent);
 
 EXPOSE_VARIABLE(&NatdanaiTestComponent::testCharArray); //TO-DO(v11.0.1): make register property work with pointers & arrays
+
+EXPOSE_VARIABLE(&NatdanaiTestComponent::testIntPtr);
 
 EXPOSE_VARIABLE(&NatdanaiTestComponent::testChar);
 EXPOSE_VARIABLE(&NatdanaiTestComponent::testString);

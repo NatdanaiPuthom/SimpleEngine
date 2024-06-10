@@ -1,4 +1,5 @@
 #pragma once
+#include "Graphics/Model/Mesh.hpp"
 #include  <string>
 
 template <size_t N>
@@ -20,9 +21,12 @@ bool ViewAndEditValue(const std::string& aValue, const std::string& aVariableNam
 
 bool ViewAndEditValue(bool& aValue, const std::string& aVariableName);
 bool ViewAndEditValue(int& aValue, const std::string& aVariableName);
+bool ViewAndEditValue(int*& aValue, const std::string& aVariableName);
 bool ViewAndEditValue(float& aValue, const std::string& aVariableName);
 
 bool ViewAndEditValue(Math::Vector2f& aValue, const std::string& aVariableName);
 bool ViewAndEditValue(Math::Vector3f& aValue, const std::string& aVariableName);
 bool ViewAndEditValue(Math::Vector4f& aValue, const std::string& aVariableName);
 bool ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName);
+
+bool ViewAndEditValue(const Graphics::Mesh*& aValue, const std::string& aVariableName);

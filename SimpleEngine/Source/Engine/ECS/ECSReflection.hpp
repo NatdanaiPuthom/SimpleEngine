@@ -204,6 +204,9 @@ struct __RegisterProperty final
 #define COMBINE_FOR_UNIQUE_NAME(aName, aNumberCounter) PROPERTY_DETAIL(aName, aNumberCounter)
 
 #define REGISTER_DATATYPE(aDataType) inline __RegisterDataType<aDataType> registerType##aDataType;
+#define REGISTER_DATATYPE_POINTER(aDataType) inline __RegisterDataType<aDataType*> registerTypePointer##aDataType;
+#define REGISTER_CONST_DATATYPE_POINTER(aDataType) inline __RegisterDataType<const aDataType*> registerTypePointer##aDataType;
+
 #define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
 
 #define EXPOSE_VARIABLE(aVariable) inline __RegisterProperty COMBINE_FOR_UNIQUE_NAME(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(CONVERT_TO_STRING(aVariable))); //NOTE(v11.0.0): where does __COUNTER__ macro came from?. But it works.
