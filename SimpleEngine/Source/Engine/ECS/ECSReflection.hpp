@@ -3,22 +3,11 @@
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/ECS/ECSEditorFunctions.hpp"
 #include <string>
+#include <vector>
 #include <unordered_map>
 #include <concepts>
 
-bool EditValue(bool& aValue, const std::string& aVariableName);
-bool EditValue(int& aValue, const std::string& aVariableName);
-bool EditValue(float& aValue, const std::string& aVariableName);
-bool EditValue(char& aValue, const std::string& aVariableName);
-
-bool EditValue(const std::string& aValue, const std::string& aVariableName);
-
-bool EditValue(Math::Vector2f& aValue, const std::string& aVariableName);
-bool EditValue(Math::Vector3f& aValue, const std::string& aVariableName);
-bool EditValue(Math::Vector4f& aValue, const std::string& aVariableName);
-bool EditValue(Math::Transform& aValue, const std::string& aVariableName);
-
-struct ComponentProperty
+struct ComponentProperty final
 {
 	std::string name;
 	size_t id = 0;
@@ -38,10 +27,10 @@ public:
 template<typename T>
 concept Editable = requires(T & aData, const std::string & aVariableName)
 {
-	{ EditValue(aData, aVariableName) } -> std::same_as<bool>;
+	{ ViewAndEditValue(aData, aVariableName) } -> std::same_as<bool>;
 };
 
-class ComponentRegistry
+class ComponentRegistry final
 {
 public:
 	static inline std::unordered_map<size_t, TypeErasureComponent> myTypeErasureComponents = {};
@@ -73,7 +62,7 @@ public:
 			typeErasureComponent.EditorFunctionPointer = [](void* aDataPointer, const std::string& aVariableName) -> bool
 				{
 					T* pointer = reinterpret_cast<T*>(aDataPointer);
-					return EditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
+					return ViewAndEditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
 				};
 		}
 
@@ -105,7 +94,7 @@ public:
 			typeErasureComponent.EditorFunctionPointer = [](void* aDataPointer, const std::string& aVariableName) -> bool
 				{
 					T* pointer = reinterpret_cast<T*>(aDataPointer);
-					return EditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
+					return ViewAndEditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
 				};
 		}
 
