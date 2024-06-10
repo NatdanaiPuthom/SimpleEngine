@@ -218,25 +218,3 @@ bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, 
 
 	return isValid;
 }
-
-//bool CustomViewAndEditValue(const Graphics::Texture*& aTexture, const std::string& /*aVariableName*/)
-//{
-//	bool isValid = false;
-//
-//	std::string texture;
-//	if (aTexture != nullptr)
-//	{
-//		texture = aTexture->GetShaderName();
-//		isValid = true;
-//	}
-//
-//	ImGui::AlignTextToFramePadding();
-//
-//	ImGui::Text("Texture:");
-//	ImGui::SameLine();
-//	ImGui::BeginDisabled();
-//	ImGui::InputText("", texture.data(), texture.size());
-//	ImGui::EndDisabled();
-//
-//	return isValid;
-//}

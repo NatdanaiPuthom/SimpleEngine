@@ -9,6 +9,7 @@
 #include "Graphics/Texture/Texture.hpp"
 
 #include <string>
+#include <array>
 
 #include "Engine/ECS/ECSReflection.hpp"
 

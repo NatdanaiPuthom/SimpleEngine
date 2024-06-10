@@ -40,8 +40,6 @@ bool ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName)
 bool ViewAndEditValue(const Graphics::Mesh*& aValue, const std::string& aVariableName);
 bool ViewAndEditValue(const Graphics::Shader*& aValue, const std::string& aVariableName);
 
-//bool CustomViewAndEditValue(const Graphics::Texture*& aValue, const std::string& aVariableName);
-
 bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName);
 
 template<typename T, size_t N>
