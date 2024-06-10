@@ -4,6 +4,7 @@
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Vector4.hpp"
+#include "Engine/Math/Transform.hpp"
 #include <string>
 #include <unordered_map>
 #include <concepts>
@@ -18,6 +19,7 @@ bool EditValue(const std::string& aValue, const std::string& aVariableName);
 bool EditValue(Math::Vector2f& aValue, const std::string& aVariableName);
 bool EditValue(Math::Vector3f& aValue, const std::string& aVariableName);
 bool EditValue(Math::Vector4f& aValue, const std::string& aVariableName);
+bool EditValue(Math::Transform& aValue, const std::string& aVariableName);
 
 struct ComponentProperty
 {
@@ -244,6 +246,7 @@ namespace Math
 	REGISTER_DATA_TYPE(Vector2f);
 	REGISTER_DATA_TYPE(Vector3f);
 	REGISTER_DATA_TYPE(Vector4f);
+	REGISTER_DATA_TYPE(Transform);
 }
 
 struct NatdanaiStruct

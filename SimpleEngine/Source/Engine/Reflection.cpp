@@ -46,6 +46,49 @@ bool EditValue(Math::Vector4f& aValue, const std::string& aVariableName)
 	return ImGui::DragFloat4(aVariableName.c_str(), &aValue.x);
 }
 
+bool EditValue(Math::Transform& aValue, const std::string& /*aVariableName*/)
+{
+	bool edited = false;
+
+	Math::Vector3f position = aValue.GetPosition();
+	if (ImGui::DragFloat3("Position", &position.x, 0.1f))
+	{
+		edited = true;
+		aValue.SetPosition(position);
+	}
+
+	Math::Vector3f rotation = aValue.GetRotation();
+	if (ImGui::DragFloat3("Rotation", &rotation.x, 0.01f))
+	{
+		edited = true;
+		aValue.SetRotation(rotation);
+	}
+
+	Math::Vector3f scale = aValue.GetScale();
+	if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, 0.001f))
+	{
+		if (scale.x < 0.001f)
+		{
+			scale.x = 0.001f;
+		}
+
+		if (scale.y < 0.001f)
+		{
+			scale.y = 0.001f;
+		}
+
+		if (scale.z < 0.001f)
+		{
+			scale.z = 0.001f;
+		}
+
+		edited = true;
+		aValue.SetScale(scale);
+	}
+
+	return edited;
+}
+
 bool EditValue(char& aValue, const std::string& aVariableName)
 {
 	const std::string constCharToString(1, aValue);
