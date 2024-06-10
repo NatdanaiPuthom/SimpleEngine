@@ -11,10 +11,10 @@ namespace SCR
 		MemoryManager() = default;
 		~MemoryManager() = default;
 
-		template<typename T>
-		T& Allocate(const T& aDefaultValue = T())
+		template<typename T, typename... Args>
+		T& Allocate(Args&&... aArgs)
 		{
-			return myMemory.Allocate<T>(aDefaultValue);
+			return myMemory.Allocate<T>(std::forward<Args>(aArgs)...);
 		}
 
 		const MemoryArena<1024>& GetMemory() const
