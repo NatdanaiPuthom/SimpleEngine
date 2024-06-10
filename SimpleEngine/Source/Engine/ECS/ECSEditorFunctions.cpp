@@ -128,14 +128,20 @@ bool ViewAndEditValue(Math::Transform& aValue, const std::string& /*aVariableNam
 
 bool ViewAndEditValue(const Graphics::Mesh*& aValue, const std::string& /*aVariableName*/)
 {
-	std::string mesh = "Mesh: ";
+	std::string mesh;
 
 	if (aValue != nullptr)
 	{
 		mesh += aValue->GetMeshName();
 	}
 
-	ImGui::Text(mesh.c_str());
+	ImGui::AlignTextToFramePadding();
+
+	ImGui::Text("Mesh:");
+	ImGui::SameLine();
+	ImGui::BeginDisabled();
+	ImGui::InputText("", mesh.data(), mesh.size());
+	ImGui::EndDisabled();
 
 	return true;
 }

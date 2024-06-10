@@ -17,13 +17,19 @@ namespace ECS
 
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
 
+//namespace std
+//{
+//	REGISTER_DATATYPE_ARRAY_CONST_POINTER(array, int, 3);
+//}
+
 namespace Graphics
 {
-	REGISTER_CONST_DATATYPE_POINTER(Mesh);
+	REGISTER_DATATYPE_CONST_POINTER(Mesh);
 }
 
 namespace ECS
 {
 	REGISTER_COMPONENT(MeshComponent);
+
 	EXPOSE_VARIABLE(&MeshComponent::mesh)
 }
