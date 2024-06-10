@@ -36,7 +36,7 @@ namespace Simpleton
 		void ShowMouse();
 		void HideMouse();
 		void CaptureMouse();
-		void ReleaseMouse() const;
+		void ReleaseMouse();
 		void ResetKeyStates();
 	public:
 		Math::Vector2f GetMouseDelta() const;
@@ -70,5 +70,6 @@ namespace Simpleton
 
 		bool myMouseIsHidden;
 		bool myAKeyIsPressed;
+		bool myMouseIsCaptured;
 	};
 }

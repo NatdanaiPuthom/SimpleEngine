@@ -8,6 +8,7 @@ namespace Simpleton
 	InputManager::InputManager()
 		: myMouseIsHidden(false)
 		, myAKeyIsPressed(false)
+		, myMouseIsCaptured(false)
 		, myTentativeMousePosition(0, 0)
 		, myCurrentMousePosition(0, 0)
 		, myPreviousMousePosition(0, 0)
@@ -20,19 +21,6 @@ namespace Simpleton
 		myKeyLiveState = { 0 };
 		myKeyState = { 0 };
 		myKeyPreviousState = { 0 };
-	}
-
-	void InputManager::SetCapturedMousePosition()
-	{
-		const Math::Vector2ui resolution = Global::GetResolution();
-
-		POINT mousePositionScreenSpace = {};
-		mousePositionScreenSpace.x = myCurrentMousePosition.x;
-		mousePositionScreenSpace.y = resolution.y - myCurrentMousePosition.y;
-		ClientToScreen(Global::GetEngineHWND(), &mousePositionScreenSpace);
-
-		myCapturedMousePosition.x = mousePositionScreenSpace.x;
-		myCapturedMousePosition.y = mousePositionScreenSpace.y;
 	}
 
 	bool InputManager::IsKeyPressed(const int aKeyCode) const
@@ -89,6 +77,11 @@ namespace Simpleton
 		else
 		{
 			myAKeyIsPressed = false;
+		}
+
+		if (myMouseIsCaptured == true)
+		{
+			SetCursorPos(myCapturedMousePosition.x, myCapturedMousePosition.y);
 		}
 	}
 
@@ -331,6 +324,21 @@ namespace Simpleton
 		RegisterRawInputDevices(Rid, 1, sizeof(Rid[0]));
 	}
 
+	void InputManager::SetCapturedMousePosition()
+	{
+		const Math::Vector2ui resolution = Global::GetResolution();
+
+		POINT mousePositionScreenSpace = {};
+		mousePositionScreenSpace.x = myCurrentMousePosition.x;
+		mousePositionScreenSpace.y = resolution.y - myCurrentMousePosition.y;
+		ClientToScreen(Global::GetEngineHWND(), &mousePositionScreenSpace);
+
+		myCapturedMousePosition.x = mousePositionScreenSpace.x;
+		myCapturedMousePosition.y = mousePositionScreenSpace.y;
+
+		myMouseIsCaptured = true;
+	}
+
 	bool InputManager::UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (message)
@@ -446,10 +454,11 @@ namespace Simpleton
 		SetCapturedMousePosition();
 	}
 
-	void InputManager::ReleaseMouse() const
+	void InputManager::ReleaseMouse()
 	{
 		ClipCursor(nullptr);
 		SetCursorPos(myCapturedMousePosition.x, myCapturedMousePosition.y);
+		myMouseIsCaptured = false;
 	}
 
 	void InputManager::ResetKeyStates()
