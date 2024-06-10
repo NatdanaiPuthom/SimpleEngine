@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/FileManager/FileManager.hpp"
+#include "Graphics/Defines.hpp"
 #include "External/imgui.h"
 
 namespace Editor
@@ -85,7 +86,14 @@ namespace Editor
 		const std::vector<std::string> fileNames = FileManager::GetFileNamesFromDirectory(aDirectory, true);
 
 		ID3D11ShaderResourceView* textureCat = Global::GetGraphicsEngine()->GetTexture("Assets/Textures/T_Cat_C.dds")->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* textureDefault = Global::GetGraphicsEngine()->GetTexture(Graphics::eTextureType::Simple)->GetShaderResourceView().Get();
+
+		ID3D11ShaderResourceView* cubeMapIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::CubeMap)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* folderIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Folder)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* fbxIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::FBX)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* pngIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::PNG)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* jpgIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::JPG)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* objIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::OBJ)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* mp3Icon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::MP3)->GetShaderResourceView().Get();
 
 		static const float padding = 16.0f;
 		static const float thumbnailSize = 64.0f;
@@ -113,17 +121,42 @@ namespace Editor
 
 			if (extension[0] != '.')
 			{
-				textureID = textureDefault;
+				textureID = folderIcon;
 			}
 			else if (extension == ".dds")
 			{
 				const std::string texturePath = SimpleUtilities::KeepStringAfterAssets(aDirectory) + "\\" + fileNames[i];
 				const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(texturePath.c_str());
 
-				if (texture->GetSlot() != 14) //NOTE(v9.36.0): ugly but work for now
+				if (texture->GetSlot() != Graphics::Global_Slot_CubeMap)
 				{
 					textureID = texture->GetShaderResourceView().Get();
 				}
+				else
+				{
+					textureID = cubeMapIcon;
+				}
+
+			}
+			else if (extension == ".fbx")
+			{
+				textureID = fbxIcon;
+			}
+			else if (extension == ".png")
+			{
+				textureID = pngIcon;
+			}
+			else if (extension == ".jpg")
+			{
+				textureID = jpgIcon;
+			}
+			else if (extension == ".obj")
+			{
+				textureID = objIcon;
+			}
+			else if (extension == ".mp3")
+			{
+				textureID = mp3Icon;
 			}
 
 			ImGui::ImageButton(fileNames[i].c_str(), textureID, { thumbnailSize, thumbnailSize });

@@ -868,6 +868,38 @@ namespace Graphics
 		return texture;
 	}
 
+	std::shared_ptr<const Texture> GraphicsEngine::GetIcon(const eIconType aTextureType)
+	{
+		std::shared_ptr<const Texture> texture = nullptr;
+
+		switch (aTextureType)
+		{
+		case eIconType::FBX:
+			texture = GetTexture("Assets\\Textures\\Editor\\Icon_FBX.dds");
+			break;
+		case eIconType::Folder:
+			texture = GetTexture("Assets\\Textures\\Editor\\Icon_Folder.dds");
+			break;
+		case eIconType::CubeMap:
+			texture = GetTexture("Assets\\Textures\\Editor\\Icon_CubeMap.dds");
+			break;
+		case eIconType::PNG:
+			texture = GetTexture("Assets\\Textures\\Editor\\Icon_PNG.dds");
+			break;
+		case eIconType::JPG:
+			texture = GetTexture("Assets\\Textures\\Editor\\Icon_JPG.dds");
+			break;
+		case eIconType::OBJ:
+			texture = GetTexture("Assets\\Textures\\Editor\\Icon_OBJ.dds");
+			break;
+		case eIconType::MP3:
+			texture = GetTexture("Assets\\Textures\\Editor\\Icon_MP3.dds");
+			break;
+		}
+
+		return texture;
+	}
+
 	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
 	{
 		auto shader = myLoadedShaders.find({ aPSFile, aVSFile });

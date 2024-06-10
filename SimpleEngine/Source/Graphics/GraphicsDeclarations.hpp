@@ -77,6 +77,17 @@ namespace Graphics
 		TGA_Skansen
 	};
 
+	enum class eIconType
+	{
+		FBX,
+		Folder,
+		CubeMap,
+		PNG,
+		JPG,
+		OBJ,
+		MP3
+	};
+
 	struct RenderTarget final
 	{
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView;
