@@ -1,6 +1,7 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Tools/SettingsTool.hpp"
 #include "Editor/Editor.hpp"
+#include "Engine/ImGui/ImGuiEngine.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
@@ -121,6 +122,7 @@ namespace Editor
 
 			ImGui::Dummy(ImVec2(0, 20));
 			AdjustActiveScene();
+			AdjustEditorStyle();
 		}
 
 		ImGui::End();
@@ -273,6 +275,34 @@ namespace Editor
 		if (ImGui::Combo("Active Scene", &myActiveSceneIndex, sceneNameChar.data(), static_cast<int>(sceneNameChar.size())))
 		{
 			World::SetActiveScene(myActiveSceneIndex);
+		}
+	}
+
+	void SettingsTool::AdjustEditorStyle()
+	{
+		std::vector<const char*> editorStyles(3);
+
+		editorStyles[0] = "Simple";
+		editorStyles[1] = "Dark";
+		editorStyles[2] = "Light";
+
+		static int selectedStyle = 0;
+
+		ImGui::SetNextItemWidth(200);
+		if (ImGui::Combo("Editor Styles##SettingTool", &selectedStyle, editorStyles.data(), static_cast<int>(editorStyles.size())))
+		{
+			switch (selectedStyle)
+			{
+			case 0:
+				Simple::ImGuiEngine::SetSimpleStyle();
+				break;
+			case 1:
+				Simple::ImGuiEngine::SetDarkStyle();
+				break;
+			case 2:
+				Simple::ImGuiEngine::SetLightStyle();
+				break;
+			}
 		}
 	}
 

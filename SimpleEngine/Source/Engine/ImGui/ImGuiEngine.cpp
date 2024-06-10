@@ -1,7 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ImGui/ImGuiEngine.hpp"
 
-#include <External/dearimgui/imgui/imgui.h>
 #include <External/dearimgui/imgui/imgui_impl_dx11.h>
 #include <External/dearimgui/imgui/imgui_impl_win32.h>
 #include <External/dearimgui/imnodes/imnodes.h>
@@ -9,6 +8,9 @@
 
 namespace Simple
 {
+	ImGuiStyle ImGuiEngine::myStyle = {};
+	ImVec4 ImGuiEngine::myColors = {};
+
 	ImGuiEngine::ImGuiEngine()
 	{
 	}
@@ -84,6 +86,9 @@ namespace Simple
 		style.DisplaySafeAreaPadding.x = 10;
 		style.PopupBorderSize = 0;
 		style.FrameBorderSize = 1.0f;
+
+		myStyle = style;
+		myColors = *colors;
 	}
 
 	void ImGuiEngine::BeginFrame()
@@ -100,7 +105,7 @@ namespace Simple
 	{
 		ImGui::Render();
 
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); 
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
@@ -110,5 +115,24 @@ namespace Simple
 	{
 		const std::string output = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_IMGUI);
 		ImGui::SaveIniSettingsToDisk(output.c_str());
+	}
+
+	void ImGuiEngine::SetSimpleStyle()
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImVec4* colors = ImGui::GetStyle().Colors;
+
+		style = myStyle;
+		colors = &myColors;
+	}
+
+	void ImGuiEngine::SetDarkStyle()
+	{
+		ImGui::StyleColorsDark();
+	}
+
+	void ImGuiEngine::SetLightStyle()
+	{
+		ImGui::StyleColorsLight();
 	}
 }

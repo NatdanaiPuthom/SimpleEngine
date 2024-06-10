@@ -23,6 +23,7 @@ namespace Editor
 		void AdjustWindowSize();
 		void AdjustRasterizerState();
 		void AdjustActiveScene();
+		void AdjustEditorStyle();
 		void AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine);
 	private:
 		void UpdateAndFetchCurrentMonitorResolution();

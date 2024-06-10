@@ -1,4 +1,5 @@
 #pragma once
+#include "External/imgui.h"
 
 namespace Simple
 {
@@ -12,5 +13,13 @@ namespace Simple
 		void BeginFrame();
 		void EndFrame();
 		void Save();
+
+	public:
+		static void SetSimpleStyle();
+		static void SetDarkStyle();
+		static void SetLightStyle();
+	private:
+		static ImGuiStyle myStyle;
+		static ImVec4 myColors;
 	};
 }
