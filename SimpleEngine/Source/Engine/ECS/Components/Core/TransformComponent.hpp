@@ -14,5 +14,5 @@ namespace ECS
 namespace ECS
 {
 	REGISTER_COMPONENT(TransformComponent);
-	REGISTER_PROPERTY(&TransformComponent::transform);
+	EXPOSE_VARIABLE(&TransformComponent::transform);
 }

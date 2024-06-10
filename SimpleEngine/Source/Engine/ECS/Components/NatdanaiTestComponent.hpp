@@ -1,11 +1,10 @@
 #pragma once
-#include "Engine/ECS/ECSReflection.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Vector4.hpp"
 #include <string>
 
-struct NatdanaiStruct
+struct NatdanaiTestComponent
 {
 	char testCharArray[9] = "TestChar"; //TO-DO(v11.0.1): make this work
 
@@ -19,15 +18,17 @@ struct NatdanaiStruct
 	bool testBool = false;
 };
 
-REGISTER_COMPONENT(NatdanaiStruct);
+#include "Engine/ECS/ECSReflection.hpp"
 
-REGISTER_PROPERTY(&NatdanaiStruct::testCharArray); //TO-DO(v11.0.1): make register property work with pointers & arrays
+REGISTER_COMPONENT(NatdanaiTestComponent);
 
-REGISTER_PROPERTY(&NatdanaiStruct::testChar);
-REGISTER_PROPERTY(&NatdanaiStruct::testString);
-REGISTER_PROPERTY(&NatdanaiStruct::testBool);
-REGISTER_PROPERTY(&NatdanaiStruct::testInt);
-REGISTER_PROPERTY(&NatdanaiStruct::testFloat);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec2);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec3);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec4);
+EXPOSE_VARIABLE(&NatdanaiTestComponent::testCharArray); //TO-DO(v11.0.1): make register property work with pointers & arrays
+
+EXPOSE_VARIABLE(&NatdanaiTestComponent::testChar);
+EXPOSE_VARIABLE(&NatdanaiTestComponent::testString);
+EXPOSE_VARIABLE(&NatdanaiTestComponent::testBool);
+EXPOSE_VARIABLE(&NatdanaiTestComponent::testInt);
+EXPOSE_VARIABLE(&NatdanaiTestComponent::testFloat);
+EXPOSE_VARIABLE(&NatdanaiTestComponent::testVec2);
+EXPOSE_VARIABLE(&NatdanaiTestComponent::testVec3);
+EXPOSE_VARIABLE(&NatdanaiTestComponent::testVec4);

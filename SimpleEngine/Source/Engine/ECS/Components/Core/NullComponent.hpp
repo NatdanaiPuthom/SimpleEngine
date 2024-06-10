@@ -14,6 +14,6 @@ namespace ECS
 namespace ECS
 {
 	REGISTER_COMPONENT(NullComponent);
-	REGISTER_PROPERTY(&NullComponent::iAmYourSolution);
-	REGISTER_PROPERTY(&NullComponent::dontTouchMe);
+	EXPOSE_VARIABLE(&NullComponent::iAmYourSolution);
+	EXPOSE_VARIABLE(&NullComponent::dontTouchMe);
 }
