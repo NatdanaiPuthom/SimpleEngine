@@ -58,15 +58,13 @@ namespace ECS
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
 			const MeshComponent* mesh = entities[i]->GetComponent<ECS::MeshComponent>(); //To-DO(v9.37.2): Disgusting, fix pls
+			const TransformComponent* transform = entities[i]->GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
 
-			if (mesh == nullptr)
+			if (mesh == nullptr || transform == nullptr)
 			{
 				continue;
 			}
-
-			const TransformComponent* transform = entities[i]->GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
-
-			if (transform == nullptr)
+			else if (mesh->textures[0] == nullptr)
 			{
 				continue;
 			}
