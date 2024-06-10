@@ -26,7 +26,7 @@ namespace Graphics
 		void SetSlot(const unsigned int aSlot);
 
 		unsigned int GetSlot() const;
-		std::string GetShaderName() const;
+		std::string GetTextureName() const;
 		const ComPtr<ID3D11ShaderResourceView> GetShaderResourceView() const;
 
 	private:

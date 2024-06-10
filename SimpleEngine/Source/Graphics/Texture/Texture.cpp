@@ -41,7 +41,7 @@ namespace Graphics
 		return mySlot;
 	}
 
-	std::string Texture::GetShaderName() const
+	std::string Texture::GetTextureName() const
 	{
 		return myName;
 	}

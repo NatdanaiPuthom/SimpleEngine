@@ -194,7 +194,7 @@ bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, 
 
 		if (aTextures[i] != nullptr)
 		{
-			texture = aTextures[i]->GetShaderName();
+			texture = aTextures[i]->GetTextureName();
 		}
 
 		switch (i)
