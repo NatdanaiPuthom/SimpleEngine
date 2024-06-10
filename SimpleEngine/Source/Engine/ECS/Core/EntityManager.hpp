@@ -33,17 +33,14 @@ namespace ECS
 
 		bool RemoveComponentByTypeIndex(const std::type_index& aTypeIndex, const EntityID aEntityID);
 
+	public:
 		template<typename T>
 		T*& GetComponent(const EntityID aEntityID);
 
 		Entity GetEntity(const EntityID aEntityID);
 		Entities GetAllEntities();
 
-		//Note(v11.0.0):
-		inline std::unordered_map<ComponentType, ComponentID>& GetComponentsMap(const EntityID aEntityID)
-		{
-			return myEntityComponents[aEntityID];
-		}
+		std::unordered_map<ComponentType, ComponentID>& GetComponentsMap(const EntityID aEntityID);
 
 	private:
 		EntityManager(ComponentManager* aComponentManager);
@@ -99,7 +96,7 @@ namespace ECS
 	inline T*& EntityManager::GetComponent(const EntityID aEntityID)
 	{
 		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
-		
+
 		auto it = components.find(typeid(T));
 
 		if (it != components.end())
