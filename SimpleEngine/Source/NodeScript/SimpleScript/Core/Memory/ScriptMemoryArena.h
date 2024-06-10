@@ -34,6 +34,7 @@ namespace SCR
 			, release(CreateReleaseFunction<T>())
 			, copy(CreateCopyFunction<T>())
 		{
+			std::cout << "Constructor" << std::endl;
 #ifdef FLY_DEBUG
 			typeInfo = &typeid(T);
 #endif
@@ -41,6 +42,7 @@ namespace SCR
 		}
 		~MemoryObject()
 		{
+			std::cout << "Destructor" << std::endl;
 			if (release)
 			{
 				release(memory);
@@ -62,9 +64,36 @@ namespace SCR
 #endif
 		}
 
-		MemoryObject(MemoryObject&&) noexcept = default;
-		MemoryObject& operator=(const MemoryObject&) = delete;
-		MemoryObject& operator=(MemoryObject&&) noexcept = default;
+		MemoryObject(MemoryObject&& aOther) noexcept
+			: release(aOther.release)
+			, copy(aOther.copy)
+			, memory(aOther.memory)
+		{
+			std::cout << "Move constructor" << std::endl;
+#ifdef FLY_DEBUG
+			typeInfo = aOther.typeInfo;
+#endif
+			aOther.release = nullptr;
+			aOther.memory = nullptr;
+			aOther.copy = nullptr;
+			//aOther.typeInfo = nullptr; //NOTE(v11.0.2) : crashed in Release and Simple, commented away
+		}
+
+		MemoryObject& operator=(const MemoryObject& aOther)
+		{
+			std::cout << "Copy assign" << std::endl;
+
+			aOther;
+			return *this;
+		}
+
+		MemoryObject& operator=(MemoryObject&& aOther) noexcept
+		{
+			std::cout << "Move assign" << std::endl;
+
+			aOther;
+			return *this;
+		}
 
 		void* memory = nullptr;
 		ReleaseFunction release = nullptr;
@@ -111,33 +140,15 @@ namespace SCR
 			, myCurrentSize(aOther.myCurrentSize)
 			, myMemoryObjects(std::move(aOther.myMemoryObjects))
 		{
-			memmove(myBuffer, aOther.myBuffer, Capacity);
-			aOther.myCurrentSize = 0;
-		}
-
-		MemoryBuffer& operator=(const MemoryBuffer& aOther)
-		{
-			memcpy(myBuffer, aOther.myBuffer, Capacity);
-			myCurrentSize = aOther.myCurrentSize;
-
-			for (const MemoryObject& memoryObject : aOther.myMemoryObjects)
+			/*for (const MemoryObject& memoryObject : aOther.myMemoryObjects)
 			{
 				size_t ptrDiff = reinterpret_cast<size_t>(memoryObject.memory) - reinterpret_cast<size_t>(&aOther.myBuffer[0]);
 				void* newMemory = &myBuffer[0] + ptrDiff;
 				myMemoryObjects.emplace_back(memoryObject, newMemory);
-			}
-
-			return *this;
-		}
-
-		MemoryBuffer& operator=(MemoryBuffer&& aOther) noexcept
-		{
-			memmove(myBuffer, aOther.myBuffer, Capacity);
-			myCurrentSize = aOther.myCurrentSize;
-			myMemoryObjects = std::move(aOther.myMemoryObjects);
+			}*/
 
 			aOther.myCurrentSize = 0;
-			return *this;
+			//memmove(myBuffer, aOther.myBuffer, Capacity);
 		}
 
 		template<MemSizeLessEqual<Capacity> T>
@@ -145,23 +156,6 @@ namespace SCR
 		{
 			void* currentMemory = (&myBuffer[0]) + myCurrentSize;
 			new (currentMemory) T(aDefaultValue);
-
-			myCurrentSize += sizeof(T);
-
-			T* value = reinterpret_cast<T*>(currentMemory);
-
-			if constexpr (!std::is_fundamental_v<T>)
-			{
-				myMemoryObjects.emplace_back(value);
-			}
-			return *value;
-		}
-
-		template<MemSizeLessEqual<Capacity> T, typename... Args>
-		T& EmplaceAllocate(Args&&... args)
-		{
-			void* currentMemory = (&myBuffer[0]) + myCurrentSize;
-			new (currentMemory) T(std::forward<Args>(args)...);
 
 			myCurrentSize += sizeof(T);
 
@@ -239,7 +233,7 @@ namespace SCR
 		MemoryArena& operator=(MemoryArena&&) = default;
 
 
-		template<MemSizeLessEqual<BufferCapacity> T, typename... Args>
+		template<MemSizeLessEqual<BufferCapacity> T>
 		T& Allocate(const T& aDefaultValue = T())
 		{
 			constexpr size_t allocSize = sizeof(T);

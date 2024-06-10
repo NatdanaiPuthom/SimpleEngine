@@ -372,6 +372,38 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	project "Networking"
+		kind "StaticLib"
+		location (dirs.Local)
+		targetdir (dirs.SimpleLib)
+		targetname("%{prj.name}_%{cfg.buildcfg}")
+		flags { "FatalWarnings"}
+
+		--pchheader "Editor/Precomplied/EditorPch.hpp"
+		--pchsource "Source/Editor/Precomplied/EditorPch.cpp"
+
+		files {
+			"Source/Networking/**.h",
+			"Source/Networking/**.hpp",
+			"Source/Networking/**.cpp"
+		}
+
+		includedirs {
+			"Source/",
+			"Source/External/",
+			"Source/External/**", 
+		}
+
+		libdirs {
+			dirs.lib
+		}
+
+		links {
+
+		}
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	project "Launcher"
 		kind "WindowedApp"

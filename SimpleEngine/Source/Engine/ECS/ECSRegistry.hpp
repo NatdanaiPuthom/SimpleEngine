@@ -3,6 +3,10 @@
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Vector4.hpp"
 #include "Engine/Math/Transform.hpp"
+
+#include "Graphics/Model/Mesh.hpp"
+#include "Graphics/Shaders/Shader.hpp"
+
 #include <string>
 
 #include "Engine/ECS/ECSReflection.hpp"
@@ -23,4 +27,10 @@ namespace Math
 	REGISTER_DATATYPE(Vector3f);
 	REGISTER_DATATYPE(Vector4f);
 	REGISTER_DATATYPE(Transform);
+}
+
+namespace Graphics
+{
+	REGISTER_DATATYPE_CONST_POINTER(Mesh);
+	REGISTER_DATATYPE_CONST_POINTER(Shader);
 }
