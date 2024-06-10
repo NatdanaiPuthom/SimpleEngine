@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/ECS/ECSEditorFunctions.hpp"
 #include <string>
 #include <unordered_map>
 #include <concepts>
@@ -201,28 +202,12 @@ struct __RegisterProperty final
 	}
 };
 
-template <size_t N>
-constexpr const char* ExtractVariableNameFromDataTypeName(const char(&name)[N])
-{
-	for (size_t i = N - 1; i > 0; --i)
-	{
-		if (name[i - 1] == ':')
-		{
-			return name + i;
-		}
-	}
+#define DATATYPE_NAME(aName) #aName
+#define CONVERT_TO_STRING(aName) DATATYPE_NAME(aName)
 
-	return name;
-}
+#define PROPERTY_DETAIL(aName, aNumberCounter) aName##aNumberCounter
+#define COMBINE_FOR_UNIQUE_NAME(aName, aNumberCounter) PROPERTY_DETAIL(aName, aNumberCounter)
 
-#define STRINGIFY(aName) #aName
-#define TOSTRING(aName) STRINGIFY(aName)
-#define CONCATENATE_DETAIL(x, y) x##y
-#define CONCATENATE(x, y) CONCATENATE_DETAIL(x, y)
-
-//NOTE(v11.0.0): where does __COUNTER__ macro came from?. But it works.
-#define REGISTER_PROPERTY(aVariable) \
- inline __RegisterProperty CONCATENATE(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(TOSTRING(aVariable)));
-
-#define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
 #define REGISTER_DATA_TYPE(aDataType) inline __RegisterDataType<aDataType> registerType##aDataType;
+#define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
+#define REGISTER_PROPERTY(aVariable) inline __RegisterProperty COMBINE_FOR_UNIQUE_NAME(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(CONVERT_TO_STRING(aVariable))); //NOTE(v11.0.0): where does __COUNTER__ macro came from?. But it works.
