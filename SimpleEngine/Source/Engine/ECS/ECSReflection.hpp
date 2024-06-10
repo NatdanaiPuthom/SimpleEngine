@@ -1,25 +1,13 @@
 #pragma once
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
-#include "Engine/Math/Vector2.hpp"
-#include "Engine/Math/Vector3.hpp"
-#include "Engine/Math/Vector4.hpp"
+#include "Engine/ECS/ECSEditorFunctions.hpp"
 #include <string>
+#include <vector>
 #include <unordered_map>
 #include <concepts>
 
-bool EditValue(bool& aValue, const std::string& aVariableName);
-bool EditValue(int& aValue, const std::string& aVariableName);
-bool EditValue(float& aValue, const std::string& aVariableName);
-bool EditValue(char& aValue, const std::string& aVariableName);
-
-bool EditValue(const std::string& aValue, const std::string& aVariableName);
-
-bool EditValue(Math::Vector2f& aValue, const std::string& aVariableName);
-bool EditValue(Math::Vector3f& aValue, const std::string& aVariableName);
-bool EditValue(Math::Vector4f& aValue, const std::string& aVariableName);
-
-struct ComponentProperty
+struct ComponentProperty final
 {
 	std::string name;
 	size_t id = 0;
@@ -39,10 +27,10 @@ public:
 template<typename T>
 concept Editable = requires(T & aData, const std::string & aVariableName)
 {
-	{ EditValue(aData, aVariableName) } -> std::same_as<bool>;
+	{ ViewAndEditValue(aData, aVariableName) } -> std::same_as<bool>;
 };
 
-class ComponentRegistry
+class ComponentRegistry final
 {
 public:
 	static inline std::unordered_map<size_t, TypeErasureComponent> myTypeErasureComponents = {};
@@ -74,7 +62,7 @@ public:
 			typeErasureComponent.EditorFunctionPointer = [](void* aDataPointer, const std::string& aVariableName) -> bool
 				{
 					T* pointer = reinterpret_cast<T*>(aDataPointer);
-					return EditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
+					return ViewAndEditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
 				};
 		}
 
@@ -106,7 +94,7 @@ public:
 			typeErasureComponent.EditorFunctionPointer = [](void* aDataPointer, const std::string& aVariableName) -> bool
 				{
 					T* pointer = reinterpret_cast<T*>(aDataPointer);
-					return EditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
+					return ViewAndEditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
 				};
 		}
 
@@ -203,72 +191,13 @@ struct __RegisterProperty final
 	}
 };
 
-template <size_t N>
-constexpr const char* ExtractVariableNameFromDataTypeName(const char(&name)[N])
-{
-	for (size_t i = N - 1; i > 0; --i)
-	{
-		if (name[i - 1] == ':')
-		{
-			return name + i;
-		}
-	}
+#define DATATYPE_NAME(aName) #aName
+#define CONVERT_TO_STRING(aName) DATATYPE_NAME(aName)
 
-	return name;
-}
+#define PROPERTY_DETAIL(aName, aNumberCounter) aName##aNumberCounter
+#define COMBINE_FOR_UNIQUE_NAME(aName, aNumberCounter) PROPERTY_DETAIL(aName, aNumberCounter)
 
-#define STRINGIFY(aName) #aName
-#define TOSTRING(aName) STRINGIFY(aName)
-#define CONCATENATE_DETAIL(x, y) x##y
-#define CONCATENATE(x, y) CONCATENATE_DETAIL(x, y)
-
-//NOTE(v11.0.0): where does __COUNTER__ macro came from?. But it works.
-#define REGISTER_PROPERTY(aVariable) \
- inline __RegisterProperty CONCATENATE(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(TOSTRING(aVariable)));
-
+#define REGISTER_DATATYPE(aDataType) inline __RegisterDataType<aDataType> registerType##aDataType;
 #define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
-#define REGISTER_DATA_TYPE(aDataType) inline __RegisterDataType<aDataType> registerType##aDataType;
 
-REGISTER_DATA_TYPE(float);
-REGISTER_DATA_TYPE(int);
-REGISTER_DATA_TYPE(bool);
-REGISTER_DATA_TYPE(char);
-
-namespace std
-{
-	REGISTER_DATA_TYPE(string);
-}
-
-namespace Math
-{
-	REGISTER_DATA_TYPE(Vector2f);
-	REGISTER_DATA_TYPE(Vector3f);
-	REGISTER_DATA_TYPE(Vector4f);
-}
-
-struct NatdanaiStruct
-{
-	char testCharArray[9] = "TestChar"; //TO-DO(v11.0.1): make this work
-
-	char testChar = 'A';
-	std::string testString = "TestString";
-	Math::Vector4f testVec4 = { 1.0f, 2.0f, 3.0f, 4.0f };
-	Math::Vector3f testVec3 = { 1.0f, 2.0f, 3.0f };
-	Math::Vector2f testVec2 = { 1.0f, 2.0f };
-	int testInt = 0;
-	float testFloat = 3000.0f;
-	bool testBool = false;
-};
-
-REGISTER_COMPONENT(NatdanaiStruct);
-
-REGISTER_PROPERTY(&NatdanaiStruct::testCharArray); //TO-DO(v11.0.1): make register property work with pointers & arrays
-
-REGISTER_PROPERTY(&NatdanaiStruct::testChar);
-REGISTER_PROPERTY(&NatdanaiStruct::testString);
-REGISTER_PROPERTY(&NatdanaiStruct::testBool);
-REGISTER_PROPERTY(&NatdanaiStruct::testInt);
-REGISTER_PROPERTY(&NatdanaiStruct::testFloat);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec2);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec3);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec4);
+#define EXPOSE_VARIABLE(aVariable) inline __RegisterProperty COMBINE_FOR_UNIQUE_NAME(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(CONVERT_TO_STRING(aVariable))); //NOTE(v11.0.0): where does __COUNTER__ macro came from?. But it works.

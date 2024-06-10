@@ -1,13 +1,19 @@
 #pragma once
-#include "Engine/Reflection.hpp"
 
 namespace ECS
 {
 	struct NullComponent final
 	{
-		bool isNull = true;
+		bool iAmYourSolution = true;
+		bool dontTouchMe = true;
 	};
+}
 
+#include "Engine/ECS/ECSReflection.hpp"
+
+namespace ECS
+{
 	REGISTER_COMPONENT(NullComponent);
-	REGISTER_PROPERTY(&NullComponent::isNull);
+	EXPOSE_VARIABLE(&NullComponent::iAmYourSolution);
+	EXPOSE_VARIABLE(&NullComponent::dontTouchMe);
 }

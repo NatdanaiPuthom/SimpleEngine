@@ -8,3 +8,11 @@ namespace ECS
 		Math::Transform transform;
 	};
 }
+
+#include "Engine/ECS/ECSReflection.hpp"
+
+namespace ECS
+{
+	REGISTER_COMPONENT(TransformComponent);
+	EXPOSE_VARIABLE(&TransformComponent::transform);
+}

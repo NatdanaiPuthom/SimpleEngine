@@ -37,3 +37,7 @@
 #include "Engine/SimpleUtilities/Utility.hpp"
 
 #include "Engine/Global.hpp"
+
+#pragma message("---------Never give up on your dreams!---------------")
+
+#include "Engine/ECS/ECSRegistry.hpp"
