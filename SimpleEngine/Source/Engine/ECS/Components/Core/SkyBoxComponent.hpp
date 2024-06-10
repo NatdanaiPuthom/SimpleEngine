@@ -14,3 +14,10 @@ namespace ECS
 		const Graphics::Shader* shader = nullptr;
 	};
 }
+
+#include "Engine/ECS/ECSReflection.hpp"
+
+namespace ECS
+{
+	REGISTER_COMPONENT(SkyBoxComponent);
+}

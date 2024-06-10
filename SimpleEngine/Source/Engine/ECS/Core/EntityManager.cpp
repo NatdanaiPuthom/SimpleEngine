@@ -80,17 +80,17 @@ namespace ECS
 			return false;
 		}
 
-		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
+		std::unordered_map<ComponentType, ComponentID>& entityComponents = myEntityComponents[aEntityID];
 
-		auto component = components.find(aTypeIndex);
+		auto component = entityComponents.find(aTypeIndex);
 
-		if (component != components.end())
+		if (component != entityComponents.end())
 		{
 			const ComponentID componentID = component->second;
-			components.erase(component);
-			componentID;
-			return true;
-			//return myComponentManager->RemoveComponentByTypeIndex(aTypeIndex, componentID); //TO-DO(v11.0.2): fix crash
+			const bool removed = myComponentManager->RemoveComponentByTypeIndex(aTypeIndex, componentID);
+			entityComponents.erase(component);
+
+			return removed;
 		}
 
 		return false;
@@ -104,43 +104,5 @@ namespace ECS
 	Entities EntityManager::GetAllEntities()
 	{
 		return Entities(myAllEntities);
-	}
-
-	const std::vector<std::string> EntityManager::GetComponentNames(const EntityID aEntityID)
-	{
-		std::unordered_map<ComponentType, ComponentID>& entityComponents = myEntityComponents[aEntityID];
-		std::vector<std::string> componentNames;
-		componentNames.reserve(entityComponents.size());
-
-		bool hasTransform = false;
-
-		for (const auto& componentType : entityComponents)
-		{
-			std::string name = componentType.first.name();
-			name = SimpleUtilities::ConvertTypeIndexNameToPrettyName(name);
-
-			if (componentType.first == typeid(ECS::TransformComponent))
-			{
-				componentNames.insert(componentNames.begin(), name);
-				hasTransform = true;
-			}
-			else if (componentType.first == typeid(ECS::MeshComponent))
-			{
-				if (hasTransform == true)
-				{
-					componentNames.insert(componentNames.begin() + 1, name);
-				}
-				else
-				{
-					componentNames.insert(componentNames.begin(), name);
-				}
-			}
-			else
-			{
-				componentNames.push_back(name);
-			}
-		}
-
-		return componentNames;
 	}
 }

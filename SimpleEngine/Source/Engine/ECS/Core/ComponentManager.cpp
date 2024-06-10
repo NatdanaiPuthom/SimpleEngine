@@ -1,6 +1,7 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Core/ComponentManager.hpp"
 #include "Engine/ECS/Components/Core/NullComponent.hpp"
+#include "Engine/ECS/ECSReflection.hpp"
 
 namespace ECS
 {
@@ -24,7 +25,7 @@ namespace ECS
 
 			for (size_t i = 0; i < componentCount; ++i)
 			{
-				myComponentDestructorInvoker[componentType](&component[i * sizeOfComponentType]);
+				ComponentRegistry::myTypeErasureComponentDestructorInvoker[componentType](&component[i * sizeOfComponentType]);;
 			}
 		}
 	}
@@ -34,7 +35,7 @@ namespace ECS
 		ComponentPool& pool = myComponents[aComponentType];
 		char* component = pool.GetComponentAddressByID(aComponentID);
 
-		myComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
+		ComponentRegistry::myTypeErasureComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
 		myAllComponents.erase(aComponentID);
 
 		return pool.SwapWithLastAndRemoveEditor(aComponentID);

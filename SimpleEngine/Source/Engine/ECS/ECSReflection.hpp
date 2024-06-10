@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_map>
 #include <concepts>
+#include <typeindex>
 
 struct ComponentProperty final
 {
@@ -35,6 +36,7 @@ class ComponentRegistry final
 public:
 	static inline std::unordered_map<size_t, TypeErasureComponent> myTypeErasureComponents = {};
 	static inline std::unordered_map<size_t, TypeErasureComponent> myTypeErasureDataTypes = {};
+	static inline std::unordered_map<std::type_index, void(*)(void*)> myTypeErasureComponentDestructorInvoker;
 public:
 
 	template<typename T>
@@ -67,6 +69,11 @@ public:
 		}
 
 		myTypeErasureComponents[typeid(T).hash_code()] = typeErasureComponent;
+
+		myTypeErasureComponentDestructorInvoker[typeid(T)] = [](void* aPointer) -> void
+			{
+				static_cast<T*>(aPointer)->~T();
+			};
 	}
 
 	template<typename T>

@@ -30,8 +30,6 @@ namespace ECS
 
 		bool RemoveComponentByTypeIndex(const ComponentType& aComponentType, const size_t aComponentID);
 
-		const std::type_index GetComponentTypeIndexByName(const std::string& aComponentTypeName);
-
 		template<typename T>
 		T*& GetComponentByComponentID(const ComponentID aID);
 
@@ -39,13 +37,9 @@ namespace ECS
 
 	private:
 		ComponentManager();
-
-		template<typename T>
-		void RegisterDestructor();
 	private:
 		inline static size_t myCurrentComponentID = 0;
 
-		std::unordered_map<ComponentType, void(*)(void*)> myComponentDestructorInvoker;
 		std::unordered_map<ComponentType, ComponentPool> myComponents;
 		std::unordered_map<ComponentID, char*> myAllComponents;
 	};
@@ -53,11 +47,6 @@ namespace ECS
 	template<typename T>
 	inline ComponentID ComponentManager::CreateComponent(const T& aComponent)
 	{
-		if (myComponentDestructorInvoker.find(typeid(T)) == myComponentDestructorInvoker.end())
-		{
-			RegisterDestructor<T>();
-		}
-
 		myCurrentComponentID++;
 		myAllComponents[myCurrentComponentID] = myComponents[typeid(T)].CreateComponent<T>(myCurrentComponentID, myAllComponents, aComponent);;
 
@@ -106,14 +95,5 @@ namespace ECS
 		}
 
 		return nullptr;
-	}
-
-	template<typename T>
-	inline void ComponentManager::RegisterDestructor()
-	{
-		myComponentDestructorInvoker[typeid(T)] = [](void* aPointer)
-			{
-				static_cast<T*>(aPointer)->~T();
-			};
 	}
 }

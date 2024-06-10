@@ -39,9 +39,9 @@ namespace ECS
 		{
 			ECS::Entity directionalLight = myEntityManager->CreateEntity();
 			directionalLight->SetName("Directional Light");
-			directionalLight->AddComponent<DirectionalLight>();
+			directionalLight->AddComponent<DirectionalLightComponent>();
 
-			DirectionalLight* directionalLightComponent = directionalLight->GetComponent<DirectionalLight>();
+			DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 			directionalLightComponent->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 			directionalLightComponent->texture = graphicsEngine->GetTexture("Assets\\Textures\\T_Sunlight_C.dds").get();
 			directionalLightComponent->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
@@ -59,7 +59,7 @@ namespace ECS
 		ECS::Entity directionalLight = myEntityManager->GetEntity(myDirectionalLightID);
 
 		SkyBoxComponent* skyBoxComponent = skyboxEntity->GetComponent<SkyBoxComponent>();
-		DirectionalLight* directionalLightComponent = directionalLight->GetComponent<DirectionalLight>();
+		DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 
 		const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
@@ -188,7 +188,7 @@ namespace ECS
 
 		{
 			ECS::Entity directionalLight = myEntityManager->GetEntity(myDirectionalLightID);
-			DirectionalLight* directionalLightComponent = directionalLight->GetComponent<DirectionalLight>();
+			DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
@@ -215,7 +215,7 @@ namespace ECS
 		ECS::Entity directionalLight = myEntityManager->GetEntity(myDirectionalLightID);
 
 		const SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
-		const DirectionalLight* directionalLightComponent = directionalLight->GetComponent<DirectionalLight>();
+		const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 
 		renderer->RenderUnlit(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
 		renderer->RenderUnlit(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);

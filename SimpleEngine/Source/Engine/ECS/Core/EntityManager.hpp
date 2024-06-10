@@ -39,10 +39,6 @@ namespace ECS
 		Entity GetEntity(const EntityID aEntityID);
 		Entities GetAllEntities();
 
-		//NOTE(v9.35.2): Ugly but will try to figure out reflection when have time
-		const std::vector<std::string> GetComponentNames(const EntityID aEntityID);
-
-
 		//Note(v11.0.0):
 		inline std::unordered_map<ComponentType, ComponentID>& GetComponentsMap(const EntityID aEntityID)
 		{

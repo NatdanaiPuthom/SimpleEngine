@@ -6,36 +6,6 @@
 
 namespace Editor
 {
-	enum class eComponentType : size_t
-	{
-		Transform,
-		Mesh,
-		Animated,
-		AnimationPlayer,
-		Null,
-		Count
-	};
-
-	static void AddComponent(ECS::Entity aEntity, const eComponentType aType)
-	{
-		switch (aType)
-		{
-		case eComponentType::Transform:
-			aEntity->AddComponent<ECS::TransformComponent>();
-			break;
-		case eComponentType::Mesh:
-			aEntity->AddComponent<ECS::MeshComponent>();
-			aEntity->GetComponent<ECS::MeshComponent>()->shader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Unlit_Default).get();
-			break;
-		case eComponentType::Animated:
-			aEntity->AddComponent<ECS::AnimatedComponent>();
-			break;
-		case eComponentType::AnimationPlayer:
-			aEntity->AddComponent<ECS::AnimationPlayerComponent>();
-			break;
-		}
-	}
-
 	HierarchyWindow::HierarchyWindow()
 	{
 	}
@@ -166,7 +136,6 @@ namespace Editor
 			if (entities.GetEntityCount() > 0)
 			{
 				const size_t id = selectedEntity->GetID(); id;
-				const std::vector<std::string> componentNames = selectedEntity->GetComponentNames();
 
 				std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = selectedEntity->GetComponentMap();
 
@@ -182,38 +151,47 @@ namespace Editor
 					}
 
 					const std::string& componentName = ComponentRegistry::myTypeErasureComponents[componentHashCode].myComponentName;
-					const bool open = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
 					void* componentPointer = World::GetECS()->myComponentManager.GetComponentByComponentID(componentID);
 
-					if (open)
+					const bool isOpen = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
+
+					ImGui::SameLine(ImGui::GetWindowWidth() - 50);
+
+					if (ImGui::Button("..."))
 					{
-						ImGui::SameLine(ImGui::GetWindowWidth() - 50);
+						ImGui::OpenPopup(std::string("ElementList" + std::to_string(id)).c_str());
+					}
 
-						if (ImGui::Button("..."))
-						{
-							ImGui::OpenPopup(std::string("ElementList" + std::to_string(id)).c_str());
-						}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::SetTooltip("More Options");
+					}
 
-						if (ImGui::IsItemHovered())
-						{
-							ImGui::SetTooltip("More Options");
-						}
-
+					if (isOpen)
+					{
 						ComponentRegistry::InspectComponentProperties(componentHashCode, componentPointer);
+					}
 
-						if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
+					if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
+					{
+						if (ImGui::MenuItem("Remove Component"))
 						{
-							if (ImGui::MenuItem("Remove Component"))
+							selectedEntity->RemoveComponentByTypeIndex(componentType);
+							ImGui::EndPopup();
+
+							if (isOpen)
 							{
-								selectedEntity->RemoveComponentByTypeIndex(componentType);
-								ImGui::EndPopup();
 								ImGui::TreePop();
-								break;
 							}
 
-							ImGui::EndPopup();
+							break;
 						}
 
+						ImGui::EndPopup();
+					}
+
+					if (isOpen)
+					{
 						ImGui::TreePop();
 					}
 
