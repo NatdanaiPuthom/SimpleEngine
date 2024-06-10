@@ -61,8 +61,6 @@ namespace Graphics
 			myMouseIsTapped = false;
 		}
 
-		//myMouseIsTapped = myInput->IsKeyHeld(VK_RBUTTON);
-
 		if (myFreeFly == true || myMouseIsTapped == true)
 		{
 			if (myInput->GetMouseIsHidden() == false)
