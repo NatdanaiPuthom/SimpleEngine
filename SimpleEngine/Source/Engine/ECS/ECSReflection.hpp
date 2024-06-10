@@ -208,10 +208,6 @@ struct __RegisterProperty final
 #define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
 #define EXPOSE_VARIABLE(aVariable) inline __RegisterProperty COMBINE_FOR_UNIQUE_NAME(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(CONVERT_TO_STRING(aVariable))); //NOTE(v11.0.0): where does __COUNTER__ macro came from?. But it works.
 
-
-//NOTE(v11.0.2): Work in progress, need more tests
+//TO-DO(v11.0.3): maybe figure out a more modular way to register different type of const, pointers and array of different sizes
 #define REGISTER_DATATYPE_CONST_POINTER(aDataType) inline __RegisterDataType<const aDataType*> registerTypeConstPointer##aDataType;
 #define REGISTER_DATATYPE_ARRAY_CONST_POINTER(aArray, aDataType, aSize) inline __RegisterDataType<aArray<const aDataType*, aSize>> registerTypeArrayConstPointer##aArray;
-
-
-//#define REGISTER_DATATYPE_POINTER(aDataType) inline __RegisterDataType<aDataType*> registerTypePointer##aDataType;
