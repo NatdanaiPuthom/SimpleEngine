@@ -846,21 +846,32 @@ namespace Graphics
 			texture = GetTexture("Assets\\Textures\\T_SimpleTexture_C.dds");
 			break;
 		case eTextureType::Simple:
-			texture = GetTexture("Assets\\Textures\\T_SimpleTexture_C.dds");
+			texture = GetTexture("Assets\\Textures\\T_Hamster_C.dds");
 			break;
-		case eTextureType::SkyBox_DayCloud:
+		}
+
+		return texture;
+	}
+
+	std::shared_ptr<const Texture> GraphicsEngine::GetSkyBox(const eSkyBox aSkyBox)
+	{
+		std::shared_ptr<const Texture> texture = nullptr;
+
+		switch (aSkyBox)
+		{
+		case eSkyBox::DayCloud:
 			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_DayCloud_E.dds");
 			break;
-		case eTextureType::SkyBox_NightStar:
+		case eSkyBox::NightStar:
 			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_NightStars_E.dds");
 			break;
-		case eTextureType::SkyBox_DayGrassland:
+		case eSkyBox::DayGrassland:
 			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_CloudAnime_E.dds");
 			break;
-		case eTextureType::SkyBox_AutumnForest:
+		case eSkyBox::AutumnForest:
 			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_AutumnForest_E.dds");
 			break;
-		case eTextureType::TGA_Skansen:
+		case eSkyBox::TGA_Skansen:
 			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_Skansen_E.dds");
 			break;
 		}
@@ -868,11 +879,11 @@ namespace Graphics
 		return texture;
 	}
 
-	std::shared_ptr<const Texture> GraphicsEngine::GetIcon(const eIconType aTextureType)
+	std::shared_ptr<const Texture> GraphicsEngine::GetIcon(const eIconType aIcon)
 	{
 		std::shared_ptr<const Texture> texture = nullptr;
 
-		switch (aTextureType)
+		switch (aIcon)
 		{
 		case eIconType::FBX:
 			texture = GetTexture("Assets\\Textures\\Editor\\Icon_FBX.dds");

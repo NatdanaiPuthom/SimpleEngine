@@ -30,7 +30,7 @@ namespace ECS
 
 			SkyBoxComponent* skyBoxComponent = entity->GetComponent<SkyBoxComponent>();
 			skyBoxComponent->shader = graphicsEngine->GetShader(Graphics::eShaderType::SkyBox).get();
-			skyBoxComponent->texture = graphicsEngine->GetTexture(Graphics::eTextureType::SkyBox_AutumnForest).get();
+			skyBoxComponent->texture = graphicsEngine->GetSkyBox(Graphics::eSkyBox::AutumnForest).get();
 			skyBoxComponent->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::SkyBox);
 
 			mySkyBoxID = entity->GetID();
