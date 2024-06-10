@@ -1,10 +1,6 @@
 #pragma once
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
-#include "Engine/Math/Vector2.hpp"
-#include "Engine/Math/Vector3.hpp"
-#include "Engine/Math/Vector4.hpp"
-#include "Engine/Math/Transform.hpp"
 #include <string>
 #include <unordered_map>
 #include <concepts>
@@ -230,48 +226,3 @@ constexpr const char* ExtractVariableNameFromDataTypeName(const char(&name)[N])
 
 #define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
 #define REGISTER_DATA_TYPE(aDataType) inline __RegisterDataType<aDataType> registerType##aDataType;
-
-REGISTER_DATA_TYPE(float);
-REGISTER_DATA_TYPE(int);
-REGISTER_DATA_TYPE(bool);
-REGISTER_DATA_TYPE(char);
-
-namespace std
-{
-	REGISTER_DATA_TYPE(string);
-}
-
-namespace Math
-{
-	REGISTER_DATA_TYPE(Vector2f);
-	REGISTER_DATA_TYPE(Vector3f);
-	REGISTER_DATA_TYPE(Vector4f);
-	REGISTER_DATA_TYPE(Transform);
-}
-
-struct NatdanaiStruct
-{
-	char testCharArray[9] = "TestChar"; //TO-DO(v11.0.1): make this work
-
-	char testChar = 'A';
-	std::string testString = "TestString";
-	Math::Vector4f testVec4 = { 1.0f, 2.0f, 3.0f, 4.0f };
-	Math::Vector3f testVec3 = { 1.0f, 2.0f, 3.0f };
-	Math::Vector2f testVec2 = { 1.0f, 2.0f };
-	int testInt = 0;
-	float testFloat = 3000.0f;
-	bool testBool = false;
-};
-
-REGISTER_COMPONENT(NatdanaiStruct);
-
-REGISTER_PROPERTY(&NatdanaiStruct::testCharArray); //TO-DO(v11.0.1): make register property work with pointers & arrays
-
-REGISTER_PROPERTY(&NatdanaiStruct::testChar);
-REGISTER_PROPERTY(&NatdanaiStruct::testString);
-REGISTER_PROPERTY(&NatdanaiStruct::testBool);
-REGISTER_PROPERTY(&NatdanaiStruct::testInt);
-REGISTER_PROPERTY(&NatdanaiStruct::testFloat);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec2);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec3);
-REGISTER_PROPERTY(&NatdanaiStruct::testVec4);

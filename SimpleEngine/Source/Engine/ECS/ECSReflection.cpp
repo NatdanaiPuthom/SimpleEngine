@@ -1,5 +1,5 @@
 #include "Engine/Precomplied/EnginePch.hpp"
-#include "Engine/Reflection.hpp"
+#include "Engine/ECS/ECSReflection.hpp"
 #include "External/imgui.h"
 
 static std::string ExtractStringFromImGuiIDFullName(const std::string& aString)
@@ -51,21 +51,21 @@ bool EditValue(Math::Transform& aValue, const std::string& /*aVariableName*/)
 	bool edited = false;
 
 	Math::Vector3f position = aValue.GetPosition();
-	if (ImGui::DragFloat3("Position", &position.x, 0.1f))
+	if (ImGui::DragFloat3("Position##Transform", &position.x, 0.1f))
 	{
 		edited = true;
 		aValue.SetPosition(position);
 	}
 
 	Math::Vector3f rotation = aValue.GetRotation();
-	if (ImGui::DragFloat3("Rotation", &rotation.x, 0.01f))
+	if (ImGui::DragFloat3("Rotation##Transform", &rotation.x, 0.01f))
 	{
 		edited = true;
 		aValue.SetRotation(rotation);
 	}
 
 	Math::Vector3f scale = aValue.GetScale();
-	if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, 0.001f))
+	if (ImGui::DragFloat3("Scale##Transform", &scale.x, 0.01f, 0.001f))
 	{
 		if (scale.x < 0.001f)
 		{

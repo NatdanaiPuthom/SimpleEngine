@@ -1,6 +1,5 @@
 #pragma once
 #include "Engine/Math/Transform.hpp"
-#include "Engine/Reflection.hpp"
 
 namespace ECS
 {
@@ -8,7 +7,12 @@ namespace ECS
 	{
 		Math::Transform transform;
 	};
+}
 
+#include "Engine/ECS/ECSReflection.hpp"
+
+namespace ECS
+{
 	REGISTER_COMPONENT(TransformComponent);
 	REGISTER_PROPERTY(&TransformComponent::transform);
 }
