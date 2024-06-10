@@ -129,13 +129,13 @@ bool ViewAndEditValue(Math::Transform& aValue, const std::string& /*aVariableNam
 	return edited;
 }
 
-bool ViewAndEditValue(const Graphics::Mesh*& aValue, const std::string& /*aVariableName*/)
+bool ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& /*aVariableName*/)
 {
 	std::string mesh;
 
-	if (aValue != nullptr)
+	if (aMesh != nullptr)
 	{
-		mesh += aValue->GetMeshName();
+		mesh += aMesh->GetMeshName();
 	}
 
 	ImGui::AlignTextToFramePadding();
@@ -146,20 +146,36 @@ bool ViewAndEditValue(const Graphics::Mesh*& aValue, const std::string& /*aVaria
 	ImGui::InputText("", mesh.data(), mesh.size());
 	ImGui::EndDisabled();
 
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+		{
+			const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+			const std::string extension = Editor::FileManager::GetFileExtension(payloadData);
+
+			if (extension == ".fbx")
+			{
+				aMesh = Global::GetModelFactory()->LoadMesh(payloadData);
+			}
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+
 	return true;
 }
 
-bool ViewAndEditValue(const Graphics::Shader*& aValue, const std::string& /*aVariableName*/)
+bool ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& /*aVariableName*/)
 {
 	bool isValid = false;
 
 	std::string pixelShader;
 	std::string vertexShader;
 
-	if (aValue != nullptr)
+	if (aShader != nullptr)
 	{
-		pixelShader += aValue->GetPixelShaderName();
-		vertexShader += aValue->GetVertexShaderName();
+		pixelShader += aShader->GetPixelShaderName();
+		vertexShader += aShader->GetVertexShaderName();
 		isValid = true;
 	}
 

@@ -37,8 +37,8 @@ bool ViewAndEditValue(Math::Vector3f& aValue, const std::string& aVariableName);
 bool ViewAndEditValue(Math::Vector4f& aValue, const std::string& aVariableName);
 bool ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName);
 
-bool ViewAndEditValue(const Graphics::Mesh*& aValue, const std::string& aVariableName);
-bool ViewAndEditValue(const Graphics::Shader*& aValue, const std::string& aVariableName);
+bool ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& aVariableName);
+bool ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& aVariableName);
 
 bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName);
 
