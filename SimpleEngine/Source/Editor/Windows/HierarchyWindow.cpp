@@ -205,8 +205,10 @@ namespace Editor
 						{
 							if (ImGui::MenuItem("Remove Component"))
 							{
-								//selectedEntity->RemoveComponent()
-								//selectedEntity->RemoveComponentByTypeName(componentNames[i]);
+								selectedEntity->RemoveComponentByTypeIndex(componentType);
+								ImGui::EndPopup();
+								ImGui::TreePop();
+								break;
 							}
 
 							ImGui::EndPopup();

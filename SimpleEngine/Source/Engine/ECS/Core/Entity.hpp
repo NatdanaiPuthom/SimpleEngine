@@ -24,7 +24,7 @@ namespace ECS
 		template<typename T>
 		bool RemoveComponent();
 
-		bool RemoveComponentByTypeName(const std::string& aComponentTypeName);
+		bool RemoveComponentByTypeIndex(const std::type_index& aTypeIndex);
 
 		bool DestroyThis();
 

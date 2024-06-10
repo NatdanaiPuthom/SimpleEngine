@@ -31,7 +31,7 @@ namespace ECS
 		template<typename T>
 		bool RemoveComponent(const size_t aEntityID);
 
-		bool RemoveComponentByTypeName(const size_t aEntityID, const std::string& aComponentTypeName);
+		bool RemoveComponentByTypeIndex(const std::type_index& aTypeIndex, const EntityID aEntityID);
 
 		template<typename T>
 		T*& GetComponent(const EntityID aEntityID);

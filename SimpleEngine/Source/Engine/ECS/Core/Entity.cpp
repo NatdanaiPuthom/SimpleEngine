@@ -16,9 +16,9 @@ namespace ECS
 		myEntityManager = nullptr;
 	}
 
-	bool IEntity::RemoveComponentByTypeName(const std::string& aComponentTypeName)
+	bool IEntity::RemoveComponentByTypeIndex(const std::type_index& aTypeIndex)
 	{
-		return myEntityManager->RemoveComponentByTypeName(myID, aComponentTypeName);
+		return myEntityManager->RemoveComponentByTypeIndex(aTypeIndex, myID);
 	}
 
 	bool IEntity::DestroyThis()

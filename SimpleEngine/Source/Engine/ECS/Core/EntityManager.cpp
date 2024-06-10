@@ -72,19 +72,25 @@ namespace ECS
 		return false;
 	}
 
-	bool EntityManager::RemoveComponentByTypeName(const size_t aEntityID, const std::string& aComponentTypeName)
+	bool EntityManager::RemoveComponentByTypeIndex(const std::type_index& aTypeIndex, const EntityID aEntityID)
 	{
-		const std::type_index componentType = myComponentManager->GetComponentTypeIndexByName(aComponentTypeName);
+		if (myEntityComponents.contains(aEntityID) == false)
+		{
+			assert(false && "Entity with this ID does not exist");
+			return false;
+		}
 
 		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
-		auto it = components.find(componentType);
 
-		if (it != components.end())
+		auto component = components.find(aTypeIndex);
+
+		if (component != components.end())
 		{
-			const ComponentID id = it->second;
-			components.erase(it);
-
-			return myComponentManager->RemoveComponentByTypeIndex(componentType, id);
+			const ComponentID componentID = component->second;
+			components.erase(component);
+			componentID;
+			return true;
+			//return myComponentManager->RemoveComponentByTypeIndex(aTypeIndex, componentID); //TO-DO(v11.0.2): fix crash
 		}
 
 		return false;
