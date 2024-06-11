@@ -52,7 +52,7 @@ namespace SCR
 
 			for (PinID pinID : pinIDs)
 			{
-				if (TryCreateLink(pinID, aConnection))
+				if (TryCreateLink(aNodeGraph, pinID, aConnection, aCommandTracker))
 				{
 					break;
 				}
@@ -119,6 +119,40 @@ namespace SCR
 				aCommandTracker->EndComposite();
 			}
 			return nodeID;
+		}
+
+		Link TryCreateLink(NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2, CommandTracker* aCommandTracker)
+		{
+			Link createdLink = ScriptLinker::ArePinsLinkable(aNodeGraph, aPinID1, aPinID2);
+			if (!createdLink)
+			{
+				// Check if we can replace node with overloaded opearator node
+				const Pin& pin1 = ScriptProxy::GetPin(aNodeGraph, aPinID1);
+				const Pin& pin2 = ScriptProxy::GetPin(aNodeGraph, aPinID2);
+
+				const PinType& pinType1 = PinTypeManager::GetPinType(pin1.typeID);
+				const PinType& pinType2 = PinTypeManager::GetPinType(pin2.typeID);
+
+				if (pinType1.dataTypeID == typeid(Wildcard).hash_code())
+				{
+					//return InternalModifier::ReplaceOperatorNode(NodeGraphContext{ *myCurrentNodeGraph, myScript }, aPinID1, aPinID2);
+
+				}
+				else if (pinType2.dataTypeID == typeid(Wildcard).hash_code())
+				{
+					//return InternalModifier::ReplaceOperatorNode(NodeGraphContext{ *myCurrentNodeGraph, myScript }, aPinID2, aPinID1);
+				}
+				else
+				{
+					return Link{};
+				}
+				return Link{};
+			}
+
+			InternalModifier::RebindLink(aNodeGraph, createdLink.inputPinID, createdLink.outputPinID, aCommandTracker);
+
+
+			return Link{ aPinID2, aPinID1 };
 		}
 
 		void SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
@@ -280,7 +314,7 @@ namespace SCR
 			}
 		}
 
-		InternalModifier::RebindLink(NodeGraphContext{ *myCurrentNodeGraph, myScript }, createdLink.inputPinID, createdLink.outputPinID);
+		InternalModifier::RebindLink(*myCurrentNodeGraph, createdLink.inputPinID, createdLink.outputPinID, &ScriptProxy::GetCommandTracker(myScript));
 
 
 		return Link{ aPinID2, aPinID1 };
@@ -288,7 +322,7 @@ namespace SCR
 
 	void ScriptModifier::DestroyLink(const PinID aInputPinID)
 	{
-		InternalModifier::RebindLink(NodeGraphContext{ *myCurrentNodeGraph, myScript }, aInputPinID, InvalidID<PinID>());
+		InternalModifier::RebindLink(*myCurrentNodeGraph, aInputPinID, InvalidID<PinID>(), &ScriptProxy::GetCommandTracker(myScript));
 	}
 
 	void ScriptModifier::DestoryLinksByOutputPinID(const PinID aOutputPinID)

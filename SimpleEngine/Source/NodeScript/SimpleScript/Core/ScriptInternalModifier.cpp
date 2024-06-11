@@ -216,7 +216,7 @@ namespace SCR
 		return id;
 	}*/
 
-	void InternalModifier::RebindLink(const NodeGraphContext& aContext, const PinID aInputPinID, const PinID aNewOutputPinID)
+	void InternalModifier::RebindLink(NodeGraph& aNodeGraph, const PinID aInputPinID, const PinID aNewOutputPinID, CommandTracker* aCommandTracker)
 	{
 		assert(aInputPinID != InvalidID<PinID>());
 
@@ -228,15 +228,14 @@ namespace SCR
 
 		data.createdLink = { aInputPinID, aNewOutputPinID };
 
-		const Pin& inputPin = ScriptProxy::GetPin(aContext.nodeGraph, aInputPinID);
+		const Pin& inputPin = ScriptProxy::GetPin(aNodeGraph, aInputPinID);
 		if (!inputPin.connectedPinIDs.empty())
 		{
 			data.oldOutputPinID = inputPin.connectedPinIDs[0];
 
 		}
 
-		ScriptProxy::GetCommandTracker(aContext.script).DoCommand<FunctionCommand<RebindLinkData>>(CommandContext{ &aContext.script, &aContext.nodeGraph}, data,
-			[](const RebindLinkData& aData, const CommandContext& aContext) -> void
+		auto doAction = [](const RebindLinkData& aData, const CommandContext& aContext) -> void
 			{
 
 				Pin& inputPin = ScriptProxy::GetPinRef(*aContext.nodeGraph, aData.createdLink.inputPinID);
@@ -264,14 +263,24 @@ namespace SCR
 
 					outputPin.connectedPinIDs.push_back(aData.createdLink.inputPinID);
 				}
-			},
-			[](const RebindLinkData& aData, const CommandContext& aContext)
-			{
-				ScriptProxy::GetCommandTracker(*aContext.script).IsTracking() = false;
-				InternalModifier::RebindLink(NodeGraphContext{ *aContext.nodeGraph, *aContext.script }, aData.createdLink.inputPinID, aData.oldOutputPinID);
-				ScriptProxy::GetCommandTracker(*aContext.script).IsTracking() = true;
-			}, "Rebind Link"
-		);
+			};
+
+		if (!aCommandTracker)
+		{
+			doAction(data, CommandContext{ .nodeGraph = &aNodeGraph });
+		}
+		else
+		{
+			aCommandTracker->DoCommand<FunctionCommand<RebindLinkData>>(CommandContext{ .nodeGraph = &aNodeGraph }, data,
+				doAction,
+				[](const RebindLinkData& aData, const CommandContext& aContext)
+				{
+					InternalModifier::RebindLink(*aContext.nodeGraph, aData.createdLink.inputPinID, aData.oldOutputPinID, nullptr);
+				}, "Rebind Link"
+			);
+		}
+
+		
 
 	}
 

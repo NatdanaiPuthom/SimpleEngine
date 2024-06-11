@@ -62,7 +62,7 @@ namespace SCR
 		//static PinID CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID);
 		//static PinID CreateOutputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID);
 
-		static void RebindLink(const NodeGraphContext& aContext, const PinID aInputPinID, const PinID aNewOutputPinID);
+		static void RebindLink(NodeGraph& aNodeGraph, const PinID aInputPinID, const PinID aNewOutputPinID, CommandTracker* aCommandTracker);
 
 #pragma endregion
 

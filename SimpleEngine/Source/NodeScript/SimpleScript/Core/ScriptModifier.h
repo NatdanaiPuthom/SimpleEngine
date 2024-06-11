@@ -30,7 +30,7 @@ namespace SCR
 		NodeID CreateGetterNode(Script& aScript, NodeGraph& aNodeGraph, DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeID CreateSetterNode(Script& aScript, NodeGraph& aNodeGraph, DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
 
-		Link TryCreateLink(PinID aPinID1, PinID aPinID2);
+		Link TryCreateLink(NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2, CommandTracker* aCommandTracker);
 		void DestroyLink(const PinID aInputPinID);
 		void DestoryLinksByOutputPinID(const PinID aOutputPinID);
 		void DestroyNode(const NodeID aNodeID);
