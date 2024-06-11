@@ -98,7 +98,7 @@ bool ViewAndEditValue(Math::Transform& aValue, const std::string& /*aVariableNam
 	}
 
 	Math::Vector3f rotation = aValue.GetRotation();
-	if (ImGui::DragFloat3("Rotation##Transform", &rotation.x, 0.01f))
+	if (ImGui::DragFloat3("Rotation##Transform", &rotation.x, 1.0f))
 	{
 		edited = true;
 		aValue.SetRotation(rotation);

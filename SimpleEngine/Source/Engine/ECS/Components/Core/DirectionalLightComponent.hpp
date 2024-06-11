@@ -20,4 +20,8 @@ namespace ECS
 namespace ECS
 {
 	REGISTER_COMPONENT(DirectionalLightComponent);
+	EXPOSE_VARIABLE(&DirectionalLightComponent::transform);
+	EXPOSE_VARIABLE(&DirectionalLightComponent::mesh);
+	EXPOSE_VARIABLE(&DirectionalLightComponent::texture);
+	EXPOSE_VARIABLE(&DirectionalLightComponent::shader);
 }
