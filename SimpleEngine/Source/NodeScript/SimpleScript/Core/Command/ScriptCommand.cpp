@@ -18,16 +18,19 @@ namespace SCR
 
 	void Command::DoInternal()
 	{
-		if (ScriptProxy::GetCommandTracker(myContext.script).IsDebugPrinting() && ScriptProxy::GetCommandTracker(myContext.script).IsTracking())
+		if (myContext.script)
 		{
-			std::cout << "Do Command: " << myName << std::endl;
+			if (ScriptProxy::GetCommandTracker(*myContext.script).IsDebugPrinting() && ScriptProxy::GetCommandTracker(*myContext.script).IsTracking())
+			{
+				std::cout << "Do Command: " << myName << std::endl;
+			}
 		}
 		Do();
 	}
 
 	void Command::UndoInternal()
 	{
-		if (ScriptProxy::GetCommandTracker(myContext.script).IsDebugPrinting() && ScriptProxy::GetCommandTracker(myContext.script).IsTracking())
+		if (ScriptProxy::GetCommandTracker(*myContext.script).IsDebugPrinting() && ScriptProxy::GetCommandTracker(*myContext.script).IsTracking())
 		{
 			std::cout << "Undo Command: " << myName << std::endl;
 		}

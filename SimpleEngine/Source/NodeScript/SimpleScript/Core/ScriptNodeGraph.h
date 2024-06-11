@@ -24,7 +24,7 @@ namespace SCR
 		NodeGraph& operator=(const NodeGraph&) = delete;
 		NodeGraph& operator=(NodeGraph&&) = delete;
 
-	private:
+	public:
 
 		std::unique_ptr<NodeManager> myNodeManager;
 		std::unique_ptr<PinManager> myPinManager;

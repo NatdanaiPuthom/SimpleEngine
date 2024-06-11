@@ -36,13 +36,13 @@ namespace SCR
 
 #pragma region Node
 
-		static NodeID CreateNode(const NodeGraphContext& aContext, const NodeTypeID aNodeTypeID);
-		static NodeID CreateNode(const NodeGraphContext& aContext, const std::string& aName, bool& aSuccess, bool aCreateIfNameNotFound);
-		static NodeID CreateGetterNode(const NodeGraphContext& aContext, const DataTypeID aDataTypeID);
-		static NodeID CreateSetterNode(const NodeGraphContext& aContext, const DataTypeID aDataTypeID);
-		static NodeID CreateOperatorNode(const NodeGraphContext& aContext, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID);
+		static NodeID CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, CommandTracker* aCommandTracker);
+		static NodeID CreateNode(NodeGraph& aNodeGraph, const std::string& aName, bool& aSuccess, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker);
+		static NodeID CreateGetterNode(NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
+		static NodeID CreateSetterNode(NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
+		static NodeID CreateOperatorNode(NodeGraph& aNodeGraph, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 
-		static void AddNode(const NodeGraphContext& aContext, Node&& aNode, const NodeID aNodeID);
+		static void AddNode(NodeGraph& aNodeGraph, Node&& aNode, const NodeID aNodeID, CommandTracker* aCommandTracker);
 
 		static void UpdateNodeTypeIDSize(NodeGraph& aNodeGraph);
 

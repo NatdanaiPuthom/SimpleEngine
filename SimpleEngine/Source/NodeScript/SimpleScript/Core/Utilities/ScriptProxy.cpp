@@ -93,6 +93,11 @@ namespace SCR
 		return *aScript.myScriptManager.myFoundation.myNodeExecutor;
 	}
 
+	NodeExecutor& ScriptProxy::GetNodeExecutor()
+	{
+		return *ScriptFoundation::GetInstance().myNodeExecutor;
+	}
+
 	VariableManager& ScriptProxy::GetVariableManager(Script& aScript)
 	{
 		return aScript.myVariableManager;
@@ -111,6 +116,16 @@ namespace SCR
 	const CommandTracker& ScriptProxy::GetCommandTracker(const Script& aScript)
 	{
 		return *aScript.myCommandTracker;
+	}
+
+	CommandTracker& ScriptProxy::GetCommandTracker(ScriptFoundation& aFoundation)
+	{
+		return *aFoundation.myCommandTracker;
+	}
+
+	const CommandTracker& ScriptProxy::GetCommandTracker(const ScriptFoundation& aFoundation)
+	{
+		return *aFoundation.myCommandTracker;
 	}
 
 	const std::vector<Variable>& ScriptProxy::GetVariables(const Script& aScript)

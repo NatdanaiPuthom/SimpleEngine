@@ -26,31 +26,31 @@ namespace SCR
 
 	}
 
-	void CommandTracker::BeginComposite(Script& aScript, const std::string& aName)
+	void CommandTracker::BeginComposite(const std::string& aName)
 	{
-		if (myCompositeCommand)
+		if (myCurrentCompositeCommand)
 		{
-			myCompositeCommand->Begin(aScript, aName);
+			myCurrentCompositeCommand->Begin(aName);
 		}
 		else
 		{
-			myCompositeCommand = std::make_shared<CompositeCommand>(aScript, aName);
+			myCurrentCompositeCommand = std::make_shared<CompositeCommand>(aName);
 		}
 	}
 
 	void CommandTracker::EndComposite()
 	{
-		CompositeCommand::eEndCode endCode = myCompositeCommand->End();
+		CompositeCommand::eEndCode endCode = myCurrentCompositeCommand->End();
 		
 		if (endCode == CompositeCommand::eEndCode::Ended)
 		{
-			std::shared_ptr<CompositeCommand> composite = myCompositeCommand;
-			myCompositeCommand.reset();
+			std::shared_ptr<CompositeCommand> composite = myCurrentCompositeCommand;
+			myCurrentCompositeCommand.reset();
 			DoCommand(composite, true);
 		}
 		else if (endCode == CompositeCommand::eEndCode::Ended_Empty)
 		{
-			myCompositeCommand.reset();
+			myCurrentCompositeCommand.reset();
 		}
 	}
 
@@ -82,9 +82,9 @@ namespace SCR
 
 	void CommandTracker::DoCommand(std::shared_ptr<Command> aCommand, bool aExecuteCommand)
 	{
-		if (myIsTracking && myCompositeCommand)
+		if (myIsTracking && myCurrentCompositeCommand)
 		{
-			myCompositeCommand->AddCommand(aCommand);
+			myCurrentCompositeCommand->AddCommand(aCommand);
 			return;
 		}
 		if (aExecuteCommand)

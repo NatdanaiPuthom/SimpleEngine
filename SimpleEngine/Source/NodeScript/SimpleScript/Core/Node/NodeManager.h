@@ -24,7 +24,7 @@ namespace SCR
 		TypeContainer<NodeID, Node, NodeType>::ConstIterator begin() const;
 		TypeContainer<NodeID, Node, NodeType>::ConstIterator end() const;
 
-	private:
+	public:
 
 		std::vector<Node> myNodes;
 		std::vector<std::vector<NodeID>> myNodeIDsByNodeTypeID;

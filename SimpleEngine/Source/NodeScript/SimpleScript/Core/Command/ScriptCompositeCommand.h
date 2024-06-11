@@ -19,7 +19,7 @@ namespace SCR
 
 	public:
 
-		CompositeCommand(Script& aScript, const std::string& aName = "Composite");
+		CompositeCommand(const std::string& aName);
 		~CompositeCommand();
 
 		template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
@@ -27,7 +27,7 @@ namespace SCR
 
 		void AddCommand(std::shared_ptr<Command> aCommand);
 
-		void Begin(Script& aScript, const std::string& aName);
+		void Begin(const std::string& aName);
 		eEndCode End();
 
 	private:

@@ -3,8 +3,8 @@
 
 namespace SCR
 {
-	CompositeCommand::CompositeCommand(Script& aScript, const std::string& aName)
-		: Command(CommandContext{ aScript, nullptr }, "Composite: " + aName)
+	CompositeCommand::CompositeCommand(const std::string& aName)
+		: Command({}, "Composite: " + aName)
 	{
 	}
 
@@ -24,15 +24,15 @@ namespace SCR
 		}
 	}
 
-	void CompositeCommand::Begin(Script& aScript, const std::string& aName)
+	void CompositeCommand::Begin(const std::string& aName)
 	{
 		if (myCurrentChild)
 		{
-			myCurrentChild->Begin(aScript, aName);
+			myCurrentChild->Begin(aName);
 		}
 		else
 		{
-			myCurrentChild = std::make_unique<CompositeCommand>(aScript, aName);
+			myCurrentChild = std::make_unique<CompositeCommand>(aName);
 		}
 	}
 

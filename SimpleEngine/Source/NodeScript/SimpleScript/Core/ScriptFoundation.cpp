@@ -5,6 +5,7 @@
 #include "SystemDataTypes.h"
 #include "ScriptCopyBuffer.h"
 #include "Node/NodeExecutor.h"
+#include "Command/ScriptCommandTracker.h"
 
 namespace SCR
 {
@@ -14,7 +15,9 @@ namespace SCR
 	ScriptFoundation::ScriptFoundation()
 		: myCopyBuffer(std::make_unique<CopyBuffer>())
 		, myNodeExecutor(std::make_unique<NodeExecutor>())
+		, myCommandTracker(std::make_unique<CommandTracker>())
 	{
+		myFoundationPtr = this;
 	}
 
 	ScriptFoundation::~ScriptFoundation()

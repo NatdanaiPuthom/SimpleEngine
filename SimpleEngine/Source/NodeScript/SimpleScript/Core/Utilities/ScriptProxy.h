@@ -68,12 +68,16 @@ namespace SCR
 		static const NodeGraph& GetEventGraph(const Script& aScript);
 
 		static NodeExecutor& GetNodeExecutor(Script& aScript);
+		static NodeExecutor& GetNodeExecutor();
 
 		static VariableManager& GetVariableManager(Script& aScript);
 		static const VariableManager& GetVariableManager(const Script& aScript);
 
 		static CommandTracker& GetCommandTracker(Script& aScript);
 		static const CommandTracker& GetCommandTracker(const Script& aScript);
+
+		static CommandTracker& GetCommandTracker(ScriptFoundation& aFoundation);
+		static const CommandTracker& GetCommandTracker(const ScriptFoundation& aFoundation);
 		
 		static const std::vector<Variable>& GetVariables(const Script& aScript);
 		static const std::vector<Pin>& GetPins(const NodeGraph& aNodeGraph);

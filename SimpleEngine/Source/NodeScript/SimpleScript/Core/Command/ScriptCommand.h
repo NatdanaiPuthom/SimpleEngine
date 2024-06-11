@@ -9,7 +9,7 @@ namespace SCR
 
 	struct CommandContext
 	{
-		Script& script;
+		Script* script = nullptr;
 		NodeGraph* nodeGraph = nullptr;
 	};
 

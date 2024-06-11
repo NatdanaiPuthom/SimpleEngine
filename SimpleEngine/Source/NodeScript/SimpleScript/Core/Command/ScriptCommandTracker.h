@@ -30,7 +30,7 @@ namespace SCR
 		size_t GetUndoSize() const;
 		size_t GetRedoSize() const;
 
-	private:
+	public:
 
 
 		template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
@@ -39,7 +39,7 @@ namespace SCR
 		template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
 		void RegisterCommand(Args&&... args);
 
-		void BeginComposite(Script& aScript, const std::string& aName);
+		void BeginComposite(const std::string& aName);
 		void EndComposite();
 
 		void DoCommand(std::shared_ptr<Command> aCommand, bool aExecuteCommand);
@@ -52,7 +52,7 @@ namespace SCR
 		std::stack<std::shared_ptr<Command>> myUndoStack;
 		std::stack<std::shared_ptr<Command>> myRedoStack;
 
-		std::shared_ptr<CompositeCommand> myCompositeCommand;
+		std::shared_ptr<CompositeCommand> myCurrentCompositeCommand;
 
 		bool myIsTracking;
 		bool myIsDebugPrinting;
