@@ -20,4 +20,8 @@ namespace ECS
 namespace ECS
 {
 	REGISTER_COMPONENT(SkyBoxComponent);
+	EXPOSE_VARIABLE(&SkyBoxComponent::transform)
+	EXPOSE_VARIABLE(&SkyBoxComponent::mesh)
+	EXPOSE_VARIABLE(&SkyBoxComponent::texture)
+	EXPOSE_VARIABLE(&SkyBoxComponent::shader)
 }

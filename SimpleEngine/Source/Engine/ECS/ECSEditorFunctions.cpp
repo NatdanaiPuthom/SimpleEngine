@@ -196,6 +196,47 @@ bool ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& /*aVa
 	return isValid;
 }
 
+bool ViewAndEditValue(const Graphics::Texture*& aTexture, const std::string& /*aVariableName*/)
+{
+	bool isValid = false;
+
+	std::string texture;
+
+	if (aTexture != nullptr)
+	{
+		texture = aTexture->GetTextureName();
+		isValid = true;
+	}
+
+	ImGui::AlignTextToFramePadding();
+
+	ImGui::Text("Texture:");
+
+	ImGui::SameLine();
+	ImGui::BeginDisabled();
+	ImGui::InputText("", texture.data(), texture.size());
+	ImGui::EndDisabled();
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+		{
+			const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
+			const std::string extension = Editor::FileManager::GetFileExtension(payloadData);
+
+			if (extension == ".dds")
+			{
+				const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
+				aTexture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+			}
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+
+	return isValid;
+}
+
 bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& /*aVariableName*/)
 {
 	bool isValid = false;
