@@ -43,9 +43,9 @@ namespace Editor
 	{
 		Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
 
-		bool* windowActive[] = { &myEditorWindowActive, &myDeferredWindowActive, &myPostProcessWindowActive, &myStaticNodeScriptWindowActive };
-		const char* windowNames[] = { "Editor", "Deferred", "PostProcess", "NodeScript" };
-		const char* keyShortCuts[] = { "F1", "F2", "F3", "F4" };
+		bool* const windowActive[] = { &myEditorWindowActive, &myDeferredWindowActive, &myPostProcessWindowActive, &myStaticNodeScriptWindowActive };
+		static const char* const windowNames[] = { "Editor", "Deferred", "PostProcess", "NodeScript" };
+		static const char* const keyShortCuts[] = { "F1", "F2", "F3", "F4" };
 
 		for (int i = 0; i < sizeof(windowActive) / sizeof(windowActive[0]); ++i)
 		{
