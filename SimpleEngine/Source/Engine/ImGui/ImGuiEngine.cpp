@@ -76,6 +76,7 @@ namespace Simple
 		colors[ImGuiCol_ResizeGripHovered] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 		colors[ImGuiCol_ResizeGripActive] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 		colors[ImGuiCol_ButtonActive] = ImVec4(0.6f, 0.0f, 0.6f, 0.50f);
+		colors[ImGuiCol_ChildBg] = ImVec4(0.18f, 0.18f, 0.18f, 0.80f);
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.WindowBorderSize = 0;
@@ -85,7 +86,8 @@ namespace Simple
 		style.DockingSeparatorSize = 1;
 		style.DisplaySafeAreaPadding.x = 10;
 		style.PopupBorderSize = 0;
-		style.FrameBorderSize = 1.0f;
+		//style.FrameBorderSize = 1.0f;
+		style.ChildRounding = 5.0f;
 
 		myStyle = style;
 		myColors = *colors;
