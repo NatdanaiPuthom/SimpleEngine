@@ -151,7 +151,7 @@ namespace Editor
 					}
 
 					const std::string& componentName = ComponentRegistry::myTypeErasureComponents[componentHashCode].myComponentName;
-					void* componentPointer = World::GetECS()->myComponentManager.GetComponentByComponentID(componentID);
+					void* componentPointer = World::GetECS()->GetComponentPointerByComponentID(componentID);
 
 					const bool isOpen = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
 

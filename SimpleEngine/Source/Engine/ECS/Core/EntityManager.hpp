@@ -105,7 +105,6 @@ namespace ECS
 		}
 
 		static T* nullPointer = nullptr;
-
 		return std::ref(nullPointer);
 	}
 }

@@ -6,6 +6,7 @@
 namespace ECS
 {
 	ComponentManager::ComponentManager()
+		: myCurrentComponentID(0)
 	{
 	}
 

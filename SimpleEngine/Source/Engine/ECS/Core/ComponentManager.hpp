@@ -38,7 +38,7 @@ namespace ECS
 	private:
 		ComponentManager();
 	private:
-		inline static size_t myCurrentComponentID = 0;
+		size_t myCurrentComponentID;
 
 		std::unordered_map<ComponentType, ComponentPool> myComponents;
 		std::unordered_map<ComponentID, char*> myAllComponents;

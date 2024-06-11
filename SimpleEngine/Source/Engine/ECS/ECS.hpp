@@ -15,7 +15,6 @@ namespace ECS
 	class EntityComponentSystem final
 	{
 	public:
-		ComponentManager myComponentManager;
 
 		EntityComponentSystem();
 		~EntityComponentSystem();
@@ -34,13 +33,16 @@ namespace ECS
 		void AddSystem(std::unique_ptr<System> aSystem);
 
 		Entity CreateEntity();
+
 		Entity GetEntity(const EntityID aID);
 		Entities GetAllEntities();
+		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
 
 	public:
 		void SetGlobalPointerToThis();
 	private:
 		EntityManager myEntityManager;
+		ComponentManager myComponentManager;
 		SystemManager mySystemManager;
 	};
 }

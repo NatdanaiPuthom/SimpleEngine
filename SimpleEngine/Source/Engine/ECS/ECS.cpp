@@ -55,6 +55,11 @@ namespace ECS
 		return myEntityManager.CreateEntity();
 	}
 
+	void EntityComponentSystem::SetGlobalPointerToThis()
+	{
+		Impl::SimpleWorldECS::SetECS(this);
+	}
+
 	Entity EntityComponentSystem::GetEntity(const EntityID aID)
 	{
 		return myEntityManager.GetEntity(aID);
@@ -65,8 +70,8 @@ namespace ECS
 		return myEntityManager.GetAllEntities();
 	}
 
-	void EntityComponentSystem::SetGlobalPointerToThis()
+	void* EntityComponentSystem::GetComponentPointerByComponentID(const ComponentID aComponentID)
 	{
-		Impl::SimpleWorldECS::SetECS(this);
+		return myComponentManager.GetComponentByComponentID(aComponentID);
 	}
 }
