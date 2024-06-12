@@ -24,13 +24,18 @@ namespace ECS
 		myComponentManager = nullptr;
 	}
 
-	Entity EntityManager::CreateEntity()
+	Entity EntityManager::CreateEntity(EntityID aEntityID)
 	{
-		myCurrentEntityID++;
-		myEntities[myCurrentEntityID] = myEntityPool.CreateEntity(myCurrentEntityID, myEntities, this);
-		myAllEntities.push_back(&myEntities[myCurrentEntityID]);
+		if (aEntityID <= myCurrentEntityID)
+		{
+			++myCurrentEntityID;
+			aEntityID = myCurrentEntityID;
+		}
 
-		return reinterpret_cast<Entity>(myEntities[myCurrentEntityID]);
+		myEntities[aEntityID] = myEntityPool.CreateEntity(aEntityID, myEntities, this);
+		myAllEntities.push_back(&myEntities[aEntityID]);
+
+		return reinterpret_cast<Entity>(myEntities[aEntityID]);
 	}
 
 	bool EntityManager::DestroyEntity(const EntityID aID)

@@ -20,7 +20,6 @@ namespace ECS
 		using ComponentName = std::string;
 		friend class ECS::EntityComponentSystem;
 	public:
-		~ComponentManager();
 
 		template<typename T>
 		ComponentID CreateComponent(const T& aComponent = T());
@@ -37,6 +36,7 @@ namespace ECS
 
 	private:
 		ComponentManager();
+		~ComponentManager();
 	private:
 		size_t myCurrentComponentID;
 

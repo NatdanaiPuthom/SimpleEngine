@@ -50,9 +50,9 @@ namespace ECS
 		mySystemManager.AddSystem(std::move(aSystem));
 	}
 
-	Entity EntityComponentSystem::CreateEntity()
+	Entity EntityComponentSystem::CreateEntity(const EntityID aEntityID)
 	{
-		return myEntityManager.CreateEntity();
+		return myEntityManager.CreateEntity(aEntityID);
 	}
 
 	bool EntityComponentSystem::RemoveEntity(const EntityID aEntityID)

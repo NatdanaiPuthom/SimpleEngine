@@ -19,10 +19,10 @@ namespace ECS
 		EntityComponentSystem();
 		~EntityComponentSystem();
 
-		EntityComponentSystem(const EntityComponentSystem&) = delete;
-		EntityComponentSystem(EntityComponentSystem&&) = delete;
-		EntityComponentSystem& operator=(const EntityComponentSystem&) = delete;
-		EntityComponentSystem& operator=(EntityComponentSystem&&) = delete;
+		//EntityComponentSystem(const EntityComponentSystem&) = delete;
+		//EntityComponentSystem(EntityComponentSystem&&) = delete;
+		//EntityComponentSystem& operator=(const EntityComponentSystem&) = delete;
+		//EntityComponentSystem& operator=(EntityComponentSystem&&) = delete;
 
 		void Init();
 		void Update();
@@ -32,7 +32,7 @@ namespace ECS
 
 		void AddSystem(std::unique_ptr<System> aSystem);
 
-		Entity CreateEntity();
+		Entity CreateEntity(const EntityID aEntityID = 0);
 		bool RemoveEntity(const EntityID aEntityID);
 
 		Entity GetEntity(const EntityID aID);
