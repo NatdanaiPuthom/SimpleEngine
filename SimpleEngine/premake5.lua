@@ -36,6 +36,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	defines { -- Create Global Macro For Strings. NOTE(v11.0.3): these macros need names rework as they starting to get quite confuse to understand
 		'SIMPLE_ROOT="' .."../" .. '"',
 		'SIMPLE_DEPENDENCIES="' .."../Dependencies/" .. '"',
+		'SIMPLE_DIR_DEPENDENCIES_FORCE="' .."../Dependencies/Settings/Always_Force_Copy/" .. '"',
 
 		'SIMPLE_BIN_SETTINGS="' .."Settings/" .. '"',
 		'SIMPLE_SOURCE_SETTINGS="' .."../Dependencies/Settings/" .. '"',
@@ -100,7 +101,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		flags { "FatalCompileWarnings" } -- Treat ComplieWarnings as error but not Lib/Link warnings as error
 
 		defines {
-			"FBXSDK_SHARED" 
+			"FBXSDK_SHARED"  -- This define will only exist withing this "External" project
 		}
 
 		includedirs {
@@ -460,11 +461,9 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 		postbuildcommands { 
 			"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}", -- Copy files from this folder to targetdir (Bin)
-			"{COPY} %{wks.location}/Dependencies/Settings/Always_Force_Copy/*.json" .. dirs.Bin_Settings -- NOTE(v11.0.3): forces to copy all jsons in this folder AFTER the build
 		}
 
 		prebuildcommands {
-               "{COPY} %{wks.location}/Dependencies/Settings/Always_Force_Copy/*.json %{dirs.Bin_Settings}" -- NOTE(v11.0.3): forces to copy all jsons in this folder  BEFORE the build, apparently it only run this once unless you call "Clean Solution" and rebuild
 		}
 
 		filter "configurations:Debug"

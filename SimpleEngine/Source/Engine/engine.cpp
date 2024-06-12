@@ -82,9 +82,11 @@ namespace Simple
 	{
 		const std::string binSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS);
 		const std::string dependenciesSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS);
+		const std::string forceDependenciesSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_FORCE);
 
 		std::vector<std::string> binSettingsFileNames;
 		std::vector<std::string> dependenciesSettingsFileNames;
+		std::vector<std::string> forceDependenciesSettingsFileNames;
 
 		for (const auto& entry : std::filesystem::directory_iterator(binSettings))
 		{
@@ -102,19 +104,36 @@ namespace Simple
 			}
 		}
 
+		for (const auto& entry : std::filesystem::directory_iterator(forceDependenciesSettings))
+		{
+			if (std::filesystem::is_regular_file(entry.path()))
+			{
+				forceDependenciesSettingsFileNames.push_back(entry.path().filename().string());
+			}
+		}
+
 		std::vector<std::string> missingFileNames;
 
 		std::sort(dependenciesSettingsFileNames.begin(), dependenciesSettingsFileNames.end());
 		std::sort(binSettingsFileNames.begin(), binSettingsFileNames.end());
 		std::set_difference(dependenciesSettingsFileNames.begin(), dependenciesSettingsFileNames.end(), binSettingsFileNames.begin(), binSettingsFileNames.end(), std::inserter(missingFileNames, missingFileNames.begin()));
 
-		for (auto& name : missingFileNames)
+		for (const std::string& name : missingFileNames)
 		{
 			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS) + name;
 			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS) + name;
 			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
 
 			std::cout << "Copied: " << name << std::endl;
+		}
+
+		for (const std::string& name : forceDependenciesSettingsFileNames)
+		{
+			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_FORCE) + name;
+			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS) + name;
+			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
+
+			std::cout << "Force Copied: " << name << std::endl;
 		}
 	}
 
