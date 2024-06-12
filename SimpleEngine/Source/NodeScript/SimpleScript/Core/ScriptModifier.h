@@ -30,11 +30,11 @@ namespace SCR
 		NodeID CreateGetterNode(Script& aScript, NodeGraph& aNodeGraph, DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeID CreateSetterNode(Script& aScript, NodeGraph& aNodeGraph, DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
 
-		Link TryCreateLink(NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2, CommandTracker* aCommandTracker);
-		void DestroyLink(const PinID aInputPinID);
-		void DestoryLinksByOutputPinID(const PinID aOutputPinID);
-		void DestroyNode(const NodeID aNodeID);
-		void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs);
+		Link TryCreateLink(PinID aPinID1, PinID aPinID2, /*Script& aScript, */NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void DestroyLink(const PinID aInputPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void DestoryLinksByOutputPinID(const PinID aOutputPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void DestroyNode(const NodeID aNodeID, /*Script& aScript, */NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 		void SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 		void SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, ScriptVec2 aOldPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
@@ -48,10 +48,10 @@ namespace SCR
 
 		void EditPin(PinID anPinID);
 		void EditVariableDefaultValue(VarID aVarID);
-		void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID);
-		void SetVariableName(VarID aVarID, const std::string& aName);
+		void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID, Script& aScript, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void SetVariableName(VarID aVarID, const std::string& aName, Script& aScript);
 
-		void DestroyVariableNodes(const VarID aVarID);
+		void DestroyVariableNodes(const VarID aVarID, Script& aScript, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
 		void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs);
 		void PasteCopyBuffer(ScriptVec2 aPosition);

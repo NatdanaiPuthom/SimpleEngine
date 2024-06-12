@@ -119,6 +119,8 @@ namespace SCR
 			memcpy(myBuffer, aOther.myBuffer, Capacity);
 			myCurrentSize = aOther.myCurrentSize;
 
+			myMemoryObjects.clear();
+
 			for (const MemoryObject& memoryObject : aOther.myMemoryObjects)
 			{
 				size_t ptrDiff = reinterpret_cast<size_t>(memoryObject.memory) - reinterpret_cast<size_t>(&aOther.myBuffer[0]);

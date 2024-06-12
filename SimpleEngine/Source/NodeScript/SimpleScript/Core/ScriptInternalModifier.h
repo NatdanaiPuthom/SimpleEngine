@@ -75,9 +75,9 @@ namespace SCR
 #pragma endregion
 
 
-	private:
+	public:
 
-		static Link ReplaceOperatorNode(const NodeGraphContext& aContext, PinID aUndefinedPinID, PinID aConnectedPinID);
+		static Link ReplaceOperatorNode(/*Script& aScript, */NodeGraph& aNodeGraph, PinID aUndefinedPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);
 
 		static NodeID GetCurrentNodeID(NodeGraph& aNodeGraph);
 

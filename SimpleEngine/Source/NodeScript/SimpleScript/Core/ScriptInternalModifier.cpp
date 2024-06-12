@@ -128,7 +128,7 @@ namespace SCR
 			);
 		}
 
-		
+
 	}
 
 	PinID InternalModifier::CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID)
@@ -280,7 +280,7 @@ namespace SCR
 			);
 		}
 
-		
+
 
 	}
 
@@ -341,13 +341,13 @@ namespace SCR
 		);
 	}
 
-	Link InternalModifier::ReplaceOperatorNode(const NodeGraphContext& aContext, PinID aReplacePinID, PinID aConnectedPinID)
+	Link InternalModifier::ReplaceOperatorNode(/*Script& aScript, */NodeGraph& aNodeGraph, PinID aReplacePinID, PinID aConnectedPinID, CommandTracker* aCommandTracker)
 	{
-		const Pin& replacePin = ScriptProxy::GetPin(aContext.nodeGraph, aReplacePinID);
-		const Pin& connectedPin = ScriptProxy::GetPin(aContext.nodeGraph, aConnectedPinID);
+		const Pin& replacePin = ScriptProxy::GetPin(aNodeGraph, aReplacePinID);
+		const Pin& connectedPin = ScriptProxy::GetPin(aNodeGraph, aConnectedPinID);
 
 		const NodeID replaceNodeID = replacePin.nodeID;
-		Node& replaceNode = ScriptProxy::GetNodeRef(aContext.nodeGraph, replaceNodeID);
+		Node& replaceNode = ScriptProxy::GetNodeRef(aNodeGraph, replaceNodeID);
 
 		const NodeType& nodeType = NodeTypeManager::GetNodeType(replaceNode.typeID);
 
@@ -360,58 +360,62 @@ namespace SCR
 			{
 				return Link{};
 			}
-			ScriptProxy::GetCommandTracker(aContext.script).BeginComposite("Replace node composite");
-			NodeID createdNodeID = CreateOperatorNode(aContext.nodeGraph, nodeType.nodeRecipe.operatorTrait, connectedPinType.dataTypeID, &ScriptProxy::GetCommandTracker(aContext.script));
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Replace node composite");
+			}
+			NodeID createdNodeID = CreateOperatorNode(aNodeGraph, nodeType.nodeRecipe.operatorTrait, connectedPinType.dataTypeID, aCommandTracker);
 
 
-			aContext.script.GetModifier().DestroyNode(replaceNodeID);
+			Modify::DestroyNode(replaceNodeID,/* aScript, */aNodeGraph, aCommandTracker);
 
-			Node& createdNode = ScriptProxy::GetNodeRef(aContext.nodeGraph, createdNodeID);
+			Node& createdNode = ScriptProxy::GetNodeRef(aNodeGraph, createdNodeID);
 			createdNode.position = replaceNode.position;
 
 			Link createdLink;
 
 
 			{ // Link new pin
-				size_t pinIndex = ScriptLinker::GetPinIndex(aContext.nodeGraph, aReplacePinID, replacePinType.flowType);
+				size_t pinIndex = ScriptLinker::GetPinIndex(aNodeGraph, aReplacePinID, replacePinType.flowType);
 
 				const PinID createdPinConnectedID = replacePinType.flowType == ePinFlowType::Input ? createdNode.inputPins[pinIndex] : createdNode.outputPins[pinIndex];
 
-				createdLink = aContext.script.GetModifier().TryCreateLink(aConnectedPinID, createdPinConnectedID);
+				createdLink = Modify::TryCreateLink(aConnectedPinID, createdPinConnectedID, aNodeGraph, aCommandTracker);
 			}
 
 			{ // Link previously linked pins
 
-				const Node& destroyedNode = ScriptProxy::GetNode(aContext.nodeGraph, replaceNodeID);
+				const Node& destroyedNode = ScriptProxy::GetNode(aNodeGraph, replaceNodeID);
 
 				for (size_t pinIndex = 0; pinIndex < destroyedNode.inputPins.size(); ++pinIndex)
 				{
-					const Pin& destroyedInputPin = ScriptProxy::GetPin(aContext.nodeGraph, destroyedNode.inputPins[pinIndex]);
+					const Pin& destroyedInputPin = ScriptProxy::GetPin(aNodeGraph, destroyedNode.inputPins[pinIndex]);
 
 					if (!destroyedInputPin.connectedPinIDs.empty())
 					{
-						aContext.script.GetModifier().TryCreateLink(destroyedInputPin.connectedPinIDs[0], ScriptLinker::GetPinID(aContext.nodeGraph, createdNodeID, pinIndex, ePinFlowType::Input));
+						Modify::TryCreateLink(destroyedInputPin.connectedPinIDs[0], ScriptLinker::GetPinID(aNodeGraph, createdNodeID, pinIndex, ePinFlowType::Input), aNodeGraph, aCommandTracker);
 					}
 
 				}
 
 				for (size_t pinIndex = 0; pinIndex < destroyedNode.outputPins.size(); ++pinIndex)
 				{
-					const Pin& destroyedOutputPin = ScriptProxy::GetPin(aContext.nodeGraph, destroyedNode.outputPins.at(pinIndex));
+					const Pin& destroyedOutputPin = ScriptProxy::GetPin(aNodeGraph, destroyedNode.outputPins.at(pinIndex));
 
 					for (PinID connectedInputPinID : destroyedOutputPin.connectedPinIDs)
 					{
 						if (connectedInputPinID != InvalidID<PinID>())
 						{
-							aContext.script.GetModifier().TryCreateLink(connectedInputPinID, ScriptLinker::GetPinID(aContext.nodeGraph, createdNodeID, pinIndex, ePinFlowType::Output));
+							Modify::TryCreateLink(connectedInputPinID, ScriptLinker::GetPinID(aNodeGraph, createdNodeID, pinIndex, ePinFlowType::Output), aNodeGraph, aCommandTracker);
 						}
-
 					}
-
 				}
 			}
 
-			ScriptProxy::GetCommandTracker(aContext.script).EndComposite();
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
 			return createdLink;
 		}
 		return Link{};

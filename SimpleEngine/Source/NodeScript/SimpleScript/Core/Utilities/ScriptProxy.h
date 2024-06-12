@@ -107,7 +107,7 @@ namespace SCR
 			return NodeTypeManager::myNodeTypes[anID];
 		}
 		
-	private:
+	public:
 
 		static std::vector<Node>& GetNodes(NodeGraph& aNodeGraph);
 		static std::vector<Variable>& GetVariablesRef(Script& aScript);
