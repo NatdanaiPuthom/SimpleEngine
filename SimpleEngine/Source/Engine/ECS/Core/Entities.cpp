@@ -34,6 +34,26 @@ namespace ECS
 		return reinterpret_cast<Entity>(*myAllEntities[aIndex]);
 	}
 
+	const Entity Entities::operator[](const size_t aIndex) const
+	{
+		const size_t entityCount = GetEntityCount();
+
+		if (entityCount == 0)
+		{
+			static IEntity* entityPointer = nullptr;
+			return std::ref(entityPointer);
+		}
+
+		if (aIndex < 0 || aIndex > entityCount)
+		{
+			assert(false && "Index out of range");
+			static IEntity* entityPointer = nullptr;
+			return std::ref(entityPointer);
+		}
+
+		return reinterpret_cast<const Entity>(*myAllEntities[aIndex]);
+	}
+
 	size_t Entities::GetEntityCount() const
 	{
 		return myAllEntities.size();

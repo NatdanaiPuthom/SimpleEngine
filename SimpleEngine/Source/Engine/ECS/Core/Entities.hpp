@@ -11,6 +11,7 @@ namespace ECS
 		~Entities();
 
 		Entity operator[](const size_t aIndex);
+		const Entity operator[](const size_t aIndex) const;
 
 		size_t GetEntityCount() const;
 
