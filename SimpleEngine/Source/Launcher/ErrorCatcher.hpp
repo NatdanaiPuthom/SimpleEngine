@@ -45,7 +45,7 @@ static int CreateMiniDump(EXCEPTION_POINTERS* someExceptionPointers)
 
 	const nlohmann::json& engineSettings = json["engine_settings"];
 
-	const std::string engineNameString = engineSettings["engine_name"];
+	const std::string engineNameString = engineSettings["name"];
 	const std::string engineVersionString = engineSettings["version"];
 
 	const std::wstring engineNameWide = std::wstring(engineNameString.begin(), engineNameString.end());
