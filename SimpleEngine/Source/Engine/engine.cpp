@@ -5,7 +5,6 @@
 #include "MainSingleton/MainSingleton.hpp"
 #include <External/nlohmann/json.hpp>
 #include <fstream>
-#include <filesystem>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 

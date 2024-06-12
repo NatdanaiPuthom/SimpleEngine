@@ -15,11 +15,13 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	local shader_dir = path.join(_SCRIPT_DIR, "Bin/Shaders/") 
 	local profiler_dir = path.join(_SCRIPT_DIR, "Temp/Profilers/")
 	local settings_dir = path.join(_SCRIPT_DIR, "Bin/Settings/")
+	local minidump_dir = path.join(_SCRIPT_DIR, "Temp/Minidumps/")
 
 	os.mkdir(bin_dir)  -- Create these folders on call "generate_project.bat" (current .bat file name)
 	os.mkdir(shader_dir)
 	os.mkdir(profiler_dir)
 	os.mkdir(settings_dir)
+	os.mkdir(minidump_dir)
 	
 	dirs = {} -- Absolute path to specific folder
 	dirs["root"]           = os.realpath("/")
@@ -30,7 +32,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	dirs["DLL"]            = os.realpath("Dependencies/DLL/")
 	dirs["SimpleLib"]      = os.realpath("Dependencies/SimpleLib/")
 
-	defines { -- Create Global Macro For Strings
+	defines { -- Create Global Macro For Strings. NOTE(v11.0.3): these macros need names rework as they starting to get quite confuse to understand
 		'SIMPLE_ROOT="' .."../" .. '"',
 		'SIMPLE_DEPENDENCIES="' .."../Dependencies/" .. '"',
 
@@ -42,15 +44,18 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		'SIMPLE_SETTINGS_EDITOR="' .. "Settings/editor_settings.json" .. '"',
 		'SIMPLE_SETTINGS_LEVELS="' .. "Settings/levels.json" .. '"',
 		'SIMPLE_SETTINGS_DEBUG="' .. "Settings/debug_settings.json" .. '"',
+		'SIMPLE_SETTINGS_ENGINE="' .. "Settings/engine_settings.json" .. '"',
 		
 		'SIMPLE_PROFILER_FILENAME="'  .. "../Temp/Profilers/profiler_data.prof" .. '"',
+
+		'SIMPLE_DIR_ASSETS="' .. "Assets" .. '"',
+		'SIMPLE_DIR_MINIDUMP="' .."../Temp/Minidumps/".. '"',
 
 		'SIMPLE_DIR_TEXTURES="' .. "Assets/Textures/" .. '"',
 		'SIMPLE_DIR_SHADERS="' .. "Shaders/" .. '"',
 		'SIMPLE_DIR_NAVMESH="' .. "Assets/Navmesh/" .. '"',
 		'SIMPLE_DIR_AUDIO="' .. "Assets/Audio/" .. '"',
-		'SIMPLE_DIR_MODELS="' .. "Assets/Models/" .. '"',
-		'SIMPLE_DIR_ASSETS="' .. "Assets" .. '"'
+		'SIMPLE_DIR_MODELS="' .. "Assets/Models/" .. '"'
 	}
 
 	configurations { -- Create Configurations For This WorkSpace
@@ -448,7 +453,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Shader",
 			"Game",
 			"NodeScript",
-			"Editor"
+			"Editor",
+			"DbgHelp"
 		}
 
 		postbuildcommands { 

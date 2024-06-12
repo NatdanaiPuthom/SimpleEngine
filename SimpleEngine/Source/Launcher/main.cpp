@@ -9,6 +9,7 @@
 #include "Game/GameWorld.hpp"
 #include "Editor/Editor.hpp"
 #include "NodeScript/SimpleNodeScript.hpp"
+#include "Launcher/ErrorCatcher.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 
@@ -21,7 +22,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	PROFILER_START_LISTEN();
 	PROFILER_BEGIN("Main.cpp");
 
-	Run(hInstance, nCmdShow);
+	__try
+	{
+		Run(hInstance, nCmdShow);
+	}
+	__except (ExceptionFilter(GetExceptionInformation()))
+	{
+	}
 
 	PROFILER_END();
 	PROFILER_DISABLE();
