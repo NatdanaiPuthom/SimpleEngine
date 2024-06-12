@@ -161,7 +161,7 @@ namespace Simple
 
 		const nlohmann::json& engineSettings = json["engine_settings"];
 
-		const std::string engineNameAndVersionString = std::string(engineSettings["engine_name"]) + " " + std::string(engineSettings["version"]) + " " + std::string(engineSettings["quote"]);
+		const std::string engineNameAndVersionString = std::string(engineSettings["name"]) + " " + std::string(engineSettings["version"]) + " " + std::string(engineSettings["quote"]);
 		const std::wstring engineNameAndVersionWide = std::wstring(engineNameAndVersionString.begin(), engineNameAndVersionString.end());
 
 		WCHAR engineNameAndVersion[MAX_PATH];
