@@ -184,7 +184,7 @@ namespace Simple
 		const std::wstring engineNameAndVersionWide = std::wstring(engineNameAndVersionString.begin(), engineNameAndVersionString.end());
 
 		WCHAR engineNameAndVersion[MAX_PATH];
-		wcsncpy_s(engineNameAndVersion, engineNameAndVersionWide.c_str(), MAX_PATH - 1);
+		wcsncpy_s(engineNameAndVersion, engineNameAndVersionWide.c_str(), MAX_PATH - 1); //NOTE(v11.0.4): disgusting will in future try to figure a better way when I am smarter
 		engineNameAndVersion[MAX_PATH - 1] = L'\0';
 
 		return CreateWindow(
