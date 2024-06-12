@@ -31,6 +31,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	dirs["Lib"]            = os.realpath("Dependencies/Lib/")
 	dirs["DLL"]            = os.realpath("Dependencies/DLL/")
 	dirs["SimpleLib"]      = os.realpath("Dependencies/SimpleLib/")
+	dirs["Bin_Settings"]      = os.realpath("Bin/Settings/")
 
 	defines { -- Create Global Macro For Strings. NOTE(v11.0.3): these macros need names rework as they starting to get quite confuse to understand
 		'SIMPLE_ROOT="' .."../" .. '"',
@@ -458,7 +459,12 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		postbuildcommands { 
-			"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}" -- Copy files from this folder to targetdir (Bin)
+			"{COPY} %{wks.location}/Dependencies/DLL/Common/*.dll %{cfg.targetdir}", -- Copy files from this folder to targetdir (Bin)
+			"{COPY} %{wks.location}/Dependencies/Settings/Always_Force_Copy/*.json" .. dirs.Bin_Settings -- NOTE(v11.0.3): forces to copy all jsons in this folder AFTER the build
+		}
+
+		prebuildcommands {
+               "{COPY} %{wks.location}/Dependencies/Settings/Always_Force_Copy/*.json %{dirs.Bin_Settings}" -- NOTE(v11.0.3): forces to copy all jsons in this folder  BEFORE the build, apparently it only run this once unless you call "Clean Solution" and rebuild
 		}
 
 		filter "configurations:Debug"

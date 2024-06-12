@@ -151,9 +151,26 @@ namespace Simple
 
 		AdjustWindowRect(&wr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
 
+		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_ENGINE);
+
+		std::ifstream file(filename);
+		assert(file.is_open() && "Failed To Open File");
+
+		const nlohmann::json json = nlohmann::json::parse(file);
+		file.close();
+
+		const nlohmann::json& engineSettings = json["engine_settings"];
+
+		const std::string engineNameAndVersionString = std::string(engineSettings["engine_name"]) + " " + std::string(engineSettings["version"]) + " " + std::string(engineSettings["quote"]);
+		const std::wstring engineNameAndVersionWide = std::wstring(engineNameAndVersionString.begin(), engineNameAndVersionString.end());
+
+		WCHAR engineNameAndVersion[MAX_PATH];
+		wcsncpy_s(engineNameAndVersion, engineNameAndVersionWide.c_str(), MAX_PATH - 1);
+		engineNameAndVersion[MAX_PATH - 1] = L'\0';
+
 		return CreateWindow(
 			L"Natdanai",
-			L"SimpleEngine v11.0.3 (Simple, it's just that easy)",
+			engineNameAndVersion,
 			WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
