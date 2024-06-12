@@ -2,11 +2,20 @@
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/ECS/Reflection/ECSEditorFunctions.hpp"
+#include "External/nlohmann/json.hpp"
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include <concepts>
 #include <typeindex>
+
+inline static nlohmann::json TestSaveData(float& aValue, const std::string aVariableName)
+{
+	std::cout << "hello world" << std::endl;
+	nlohmann::json json;
+	json[aVariableName] = aValue;
+	return json;
+}
 
 struct ComponentProperty final
 {
@@ -24,12 +33,20 @@ public:
 
 	bool(*AddComponentFunctionPointer)(ECS::Entity aEntity) = nullptr;
 	bool(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
+
+	nlohmann::json(*TestSaveLoadData)(void* aData, const std::string aVariableName) = nullptr;
 };
 
 template<typename T>
 concept Editable = requires(T & aData, const std::string & aVariableName)
 {
 	{ ViewAndEditValue(aData, aVariableName) } -> std::same_as<bool>;
+};
+
+template<typename T>
+concept Editable2 = requires(T & aData, const std::string aVariableName)
+{
+	{ TestSaveData(aData, aVariableName) } -> std::same_as<nlohmann::json>;
 };
 
 class ComponentRegistry final
@@ -88,25 +105,34 @@ public:
 			return;
 		}
 
-		TypeErasureComponent typeErasureComponent;
+		TypeErasureComponent dataType;
 
-		typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+		dataType.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> bool
+		dataType.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> bool
 			{
 				return aEntity->AddComponent<T>();
 			};
 
 		if constexpr (Editable<T>)
 		{
-			typeErasureComponent.EditorFunctionPointer = [](void* aDataPointer, const std::string& aVariableName) -> bool
+			dataType.EditorFunctionPointer = [](void* aDataPointer, const std::string& aVariableName) -> bool
 				{
 					T* pointer = reinterpret_cast<T*>(aDataPointer);
 					return ViewAndEditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
 				};
 		}
 
-		myTypeErasureDataTypes[typeid(T).hash_code()] = typeErasureComponent;
+		if constexpr (Editable2<T>)
+		{
+			dataType.TestSaveLoadData = [](void* aDataPointer, const std::string aVariableName) -> nlohmann::json
+				{
+					T* pointer = reinterpret_cast<T*>(aDataPointer);
+					return TestSaveData(*pointer, aVariableName);
+				};
+		}
+
+		myTypeErasureDataTypes[typeid(T).hash_code()] = dataType;
 	}
 
 	static inline void ExposeProperty(size_t aHashCode, void* aData, const std::string& aVariableName = "")

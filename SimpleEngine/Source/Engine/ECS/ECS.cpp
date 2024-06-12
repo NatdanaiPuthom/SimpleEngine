@@ -25,6 +25,10 @@ namespace ECS
 
 		nlohmann::ordered_json jsonData;
 
+		Entity e = myEntityManager.CreateEntity();
+		e->AddComponent<NullComponent>();
+		e->GetComponent<NullComponent>()->test = 10.0f;
+
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
 			const Entity entity = entities[i];
@@ -37,14 +41,24 @@ namespace ECS
 
 			for (const auto& [componentType, componentID] : components)
 			{
+				void* componentPointer = myComponentManager.GetComponentByComponentID(componentID);
+				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties;
+
 				const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(componentType.name());
 				jsonData["Entities"][i]["Components"][count]["Name"] = componentName;
 
-				/*void* componentPointer = myComponentManager.GetComponentByComponentID(componentID);
-				std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties;
-				auto unknownType = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + componentProperties[0].byteOffset));*/
+				for (size_t j = 0; j < componentProperties.size(); ++j)
+				{
+					jsonData["Entities"][i]["Components"][count]["Properties"][ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties[j].name] = INT_MIN;
+					auto& componentProperty = ComponentRegistry::myTypeErasureDataTypes[componentProperties[j].id];
 
-				jsonData["Entities"][i]["Components"][count]["Properties"][ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties[0].name] = 0;
+					if (componentProperty.TestSaveLoadData != nullptr)
+					{
+						nlohmann::json json = componentProperty.TestSaveLoadData(componentPointer, componentProperties[j].name);
+						jsonData["Entities"][i]["Components"][count]["Properties"][componentProperties[j].name] = json[componentProperties[j].name];
+					}
+				}
+
 				++count;
 			}
 		}
