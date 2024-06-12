@@ -55,6 +55,11 @@ namespace ECS
 		return myEntityManager.CreateEntity();
 	}
 
+	bool EntityComponentSystem::RemoveEntity(const EntityID aEntityID)
+	{
+		return myEntityManager.DestroyEntity(aEntityID);
+	}
+
 	void EntityComponentSystem::SetGlobalPointerToThis()
 	{
 		Impl::SimpleWorldECS::SetECS(this);

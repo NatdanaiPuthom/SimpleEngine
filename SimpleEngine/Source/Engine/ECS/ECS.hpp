@@ -33,6 +33,7 @@ namespace ECS
 		void AddSystem(std::unique_ptr<System> aSystem);
 
 		Entity CreateEntity();
+		bool RemoveEntity(const EntityID aEntityID);
 
 		Entity GetEntity(const EntityID aID);
 		Entities GetAllEntities();
