@@ -72,6 +72,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	simpleScript.Init();
 	PROFILER_END();
 
+	ecs.LoadData();
+
 	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);

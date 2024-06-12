@@ -9,10 +9,10 @@ namespace ECS
 	};
 }
 
-#include "Engine/ECS/ECSReflection.hpp"
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 
 namespace ECS
 {
 	REGISTER_COMPONENT(TransformComponent);
-	EXPOSE_VARIABLE(&TransformComponent::transform);
+	REGISTER_AND_EXPOSE_PROPERTY(&TransformComponent::transform);
 }

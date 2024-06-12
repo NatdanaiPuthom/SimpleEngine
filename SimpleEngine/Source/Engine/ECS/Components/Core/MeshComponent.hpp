@@ -19,7 +19,7 @@ namespace ECS
 namespace ECS
 {
 	REGISTER_COMPONENT(MeshComponent);
-	EXPOSE_VARIABLE(&MeshComponent::mesh)
-	EXPOSE_VARIABLE(&MeshComponent::textures)
-	EXPOSE_VARIABLE(&MeshComponent::shader)
+	REGISTER_AND_EXPOSE_PROPERTY(&MeshComponent::mesh);
+	REGISTER_AND_EXPOSE_PROPERTY(&MeshComponent::textures);
+	REGISTER_AND_EXPOSE_PROPERTY(&MeshComponent::shader);
 }

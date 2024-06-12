@@ -1,7 +1,10 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/ECS/Systems/RenderSystem.hpp"
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
+#include "External/nlohmann/json.hpp"
+#include <fstream>
 
 namespace ECS
 {
@@ -13,6 +16,44 @@ namespace ECS
 
 	EntityComponentSystem::~EntityComponentSystem()
 	{
+	}
+
+	void EntityComponentSystem::LoadData()
+	{
+		const std::string filePath = SimpleUtilities::GetAbsolutePath("Assets/Scenes/scene_1.json"); filePath;
+		const ECS::Entities entities = myEntityManager.GetAllEntities();
+
+		nlohmann::ordered_json jsonData;
+
+		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
+		{
+			const Entity entity = entities[i];
+
+			jsonData["Entities"][i]["ID"] = entity->GetID();;
+			jsonData["Entities"][i]["Name"] = entity->GetName();;
+
+			const std::unordered_map<ECS::ComponentType, ComponentID>& components = entity->GetComponentMap();
+			size_t count = 0;
+
+			for (const auto& [componentType, componentID] : components)
+			{
+				const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(componentType.name());
+				jsonData["Entities"][i]["Components"][count]["Name"] = componentName;
+
+				/*void* componentPointer = myComponentManager.GetComponentByComponentID(componentID);
+				std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties;
+				auto unknownType = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + componentProperties[0].byteOffset));*/
+
+				jsonData["Entities"][i]["Components"][count]["Properties"][ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties[0].name] = 0;
+				++count;
+			}
+		}
+
+		std::ofstream writeFile(filePath);
+		assert(writeFile.is_open() && "Failed to open the file");
+
+		writeFile << jsonData.dump(-1);
+		writeFile.close();
 	}
 
 	void EntityComponentSystem::Init()

@@ -1,5 +1,5 @@
 #include "Engine/Precomplied/EnginePch.hpp"
-#include "Engine/ECS/ECSEditorFunctions.hpp"
+#include "Engine/ECS/Reflection/ECSEditorFunctions.hpp"
 #include "External/imgui.h"
 
 #include "Graphics/Defines.hpp"

@@ -11,7 +11,7 @@
 #include <string>
 #include <array>
 
-#include "Engine/ECS/ECSReflection.hpp"
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 
 REGISTER_DATATYPE(float);
 REGISTER_DATATYPE(int);

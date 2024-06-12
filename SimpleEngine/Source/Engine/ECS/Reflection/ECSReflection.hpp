@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
-#include "Engine/ECS/ECSEditorFunctions.hpp"
+#include "Engine/ECS/Reflection/ECSEditorFunctions.hpp"
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -10,9 +10,10 @@
 
 struct ComponentProperty final
 {
-	std::string name;
+	std::string name = "UnknownProperty";
 	size_t id = 0;
 	size_t byteOffset = 0;
+	bool shouldExpose = true;
 };
 
 class TypeErasureComponent final
@@ -139,6 +140,11 @@ public:
 
 			for (auto& componentProperty : it->second.myComponentProperties)
 			{
+				if (componentProperty.shouldExpose == false)
+				{
+					continue;
+				}
+
 				ExposeProperty(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.name);
 			}
 		}
@@ -152,12 +158,13 @@ public:
 	}
 
 	template<typename DataType, typename Component>
-	static inline void RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName)
+	static inline void RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName, const bool aShouldExpose)
 	{
 		ComponentProperty componentProperty;
 		componentProperty.name = aVariableName;
 		componentProperty.id = typeid(DataType).hash_code();
 		componentProperty.byteOffset = GetByteOffset(aVariable);
+		componentProperty.shouldExpose = aShouldExpose;
 
 		const bool componentDoesExist = myTypeErasureComponents.contains(typeid(Component).hash_code());
 
@@ -192,21 +199,17 @@ struct __RegisterDataType final
 struct __RegisterProperty final
 {
 	template<typename DataType, typename Component>
-	__RegisterProperty(DataType Component::* aVariable, const char* aVariableName)
+	__RegisterProperty(DataType Component::* aVariable, const char* aVariableName, const bool aShouldExpose = true)
 	{
-		ComponentRegistry::RegisterProperty(aVariable, aVariableName);
+		ComponentRegistry::RegisterProperty(aVariable, aVariableName, aShouldExpose);
 	}
 };
 
-#define DATATYPE_NAME(aName) #aName
-#define CONVERT_TO_STRING(aName) DATATYPE_NAME(aName)
-
-#define PROPERTY_DETAIL(aName, aNumberCounter) aName##aNumberCounter
-#define COMBINE_FOR_UNIQUE_NAME(aName, aNumberCounter) PROPERTY_DETAIL(aName, aNumberCounter)
+#include "Engine/ECS/Reflection/ECSMacros.hpp"
 
 #define REGISTER_DATATYPE(aDataType) inline __RegisterDataType<aDataType> registerType##aDataType;
 #define REGISTER_COMPONENT(aComponent) inline __RegisterComponent<aComponent> registerType##aComponent;
-#define EXPOSE_VARIABLE(aVariable) inline __RegisterProperty COMBINE_FOR_UNIQUE_NAME(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(CONVERT_TO_STRING(aVariable))); //NOTE(v11.0.0): where does __COUNTER__ macro came from?. But it works.
+#define REGISTER_AND_EXPOSE_PROPERTY(aVariable, ...) inline __RegisterProperty COMBINE_FOR_UNIQUE_NAME(registerType_, __COUNTER__) = __RegisterProperty(aVariable, ExtractVariableNameFromDataTypeName(CONVERT_TO_STRING(aVariable)), __VA_ARGS__); //NOTE(v11.0.0): where does __COUNTER__ macro came from?. But it works.
 
 //TO-DO(v11.0.3): maybe figure out a more modular way to register different type of const, pointers and array of different sizes
 #define REGISTER_DATATYPE_CONST_POINTER(aDataType) inline __RegisterDataType<const aDataType*> registerTypeConstPointer##aDataType;

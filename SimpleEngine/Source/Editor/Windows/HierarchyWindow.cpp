@@ -2,7 +2,7 @@
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/FileManager/FileManager.hpp"
 #include "Engine/ECS/Components/AllEngineComponents.hpp"
-#include "Engine/ECS/ECSReflection.hpp"
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 
 namespace Editor
 {
