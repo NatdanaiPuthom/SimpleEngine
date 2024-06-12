@@ -19,10 +19,10 @@ namespace ECS
 		EntityComponentSystem();
 		~EntityComponentSystem();
 
-		//EntityComponentSystem(const EntityComponentSystem&) = delete;
-		//EntityComponentSystem(EntityComponentSystem&&) = delete;
-		//EntityComponentSystem& operator=(const EntityComponentSystem&) = delete;
-		//EntityComponentSystem& operator=(EntityComponentSystem&&) = delete;
+		EntityComponentSystem(const EntityComponentSystem&) = delete;
+		EntityComponentSystem(EntityComponentSystem&&) = delete;
+		EntityComponentSystem& operator=(const EntityComponentSystem&) = delete;
+		EntityComponentSystem& operator=(EntityComponentSystem&&) = delete;
 
 		void Init();
 		void Update();
