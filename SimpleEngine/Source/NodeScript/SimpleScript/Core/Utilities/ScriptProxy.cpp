@@ -95,7 +95,7 @@ namespace SCR
 
 	NodeExecutor& ScriptProxy::GetNodeExecutor()
 	{
-		return *ScriptFoundation::GetInstance().myNodeExecutor;
+		return *ScriptFoundation::GetInstance()->myNodeExecutor;
 	}
 
 	VariableManager& ScriptProxy::GetVariableManager(Script& aScript)
@@ -151,11 +151,6 @@ namespace SCR
 	const Variable& ScriptProxy::GetVariable(const Script& aScript, const VarID aVarID)
 	{
 		return aScript.myVariableManager.myVariables[aVarID];
-	}
-
-	const std::vector<NodeID>& ScriptProxy::GetNodeIDsByNodeType(const Script& aScript, const NodeTypeID aNodeTypeID)
-	{
-		return aScript.myEventGraph.myNodeManager->myNodeIDsByNodeTypeID[aNodeTypeID];
 	}
 
 	const std::vector<NodeID>& ScriptProxy::GetNodeIDsByNodeType(const NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID)

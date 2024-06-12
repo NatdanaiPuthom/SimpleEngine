@@ -86,7 +86,6 @@ namespace SCR
 		static const Pin& GetPin(const NodeGraph& aNodeGraph, PinID aPinID);
 		static const Variable& GetVariable(const Script& aScript, const VarID aVarID);
 
-		static const std::vector<NodeID>& GetNodeIDsByNodeType(const Script& aScript, const NodeTypeID aNodeTypeID);
 		static const std::vector<NodeID>& GetNodeIDsByNodeType(const NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID);
 		static std::vector<std::vector<NodeID>>& GetNodeIDsByNodeTypeContainer(NodeGraph& aNodeGraph);
 

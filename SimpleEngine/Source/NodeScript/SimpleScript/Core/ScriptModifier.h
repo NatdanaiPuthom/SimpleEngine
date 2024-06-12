@@ -5,7 +5,7 @@
 
 namespace SCR
 {
-	
+
 	struct MoveNodeData
 	{
 		ScriptVec2 startPos, endPos;
@@ -43,12 +43,12 @@ namespace SCR
 		void BeginNodeDrag(const NodeID aNodeID, ScriptVec2 aStartPos);
 		void EndNodeDrag(const NodeID aNodeID, ScriptVec2 aEndPos);
 
-		VarID CreateVariable(DataTypeID aDataTypeID = typeid(bool).hash_code());
-		void DestroyVariable(VarID aVarID);
+		VarID CreateVariable(Script& aScript, DataTypeID aDataTypeID = typeid(bool).hash_code(), CommandTracker* aCommandTracker = nullptr);
+		void DestroyVariable(VarID aVarID, Script& aScript, CommandTracker* aCommandTracker);
 
-		void EditPin(PinID anPinID);
-		void EditVariableDefaultValue(VarID aVarID);
-		void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID, Script& aScript, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void EditPin(PinID anPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void EditVariableDefaultValue(VarID aVarID, Script& aScript, CommandTracker* aCommandTracker);
+		void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID, Script& aScript, CommandTracker* aCommandTracker);
 		void SetVariableName(VarID aVarID, const std::string& aName, Script& aScript);
 
 		void DestroyVariableNodes(const VarID aVarID, Script& aScript, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
@@ -56,13 +56,13 @@ namespace SCR
 		void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs);
 		void PasteCopyBuffer(ScriptVec2 aPosition);
 
-		static CustomEventID CreateNodeType_CustomEvent(const std::string& aName);
+		CustomEventID CreateCustomEvent(const std::string& aName);
 
-		static void AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName = "Pin", ScriptFoundation* aFoundation = nullptr);
-		static void SetPinAtIndexCustomEvent(const size_t anIndex, const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation = nullptr);
-		static void DeletePinAtIndexCustomEvent(const size_t anIndex, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation = nullptr);
+		void AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName = "Pin");
+		void SetPinAtIndexCustomEvent(const size_t anIndex, const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID);
+		void DeletePinAtIndexCustomEvent(const size_t anIndex, const CustomEventID aNodeTypeID);
 
-		static FunctionID CreateFunction(const std::string& aName);
+		FunctionID CreateGlobalFunction(const std::string& aName);
 	}
 
 	class ScriptModifier
@@ -125,5 +125,5 @@ namespace SCR
 		std::unordered_map<NodeID, MoveNodeData> myMoveNodesData;
 	};
 
-	
+
 }

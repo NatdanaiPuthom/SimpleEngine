@@ -1,5 +1,6 @@
 #pragma once
 #include "NodeTrait.h"
+#include "NodeRef.h"
 #include <vector>
 #include <string>
 
@@ -22,6 +23,7 @@ namespace SCR
 	{
 		NodeRecipe nodeRecipe;
 		std::string name;
+		std::vector<NodeRef> nodeRefs;
 	};
 
 	struct NodeTypeDesc

@@ -18,9 +18,9 @@ namespace SCR
 		friend class ScriptProxy;
 	public:
 
-		static ScriptFoundation& GetInstance()
+		static ScriptFoundation* GetInstance()
 		{
-			return *myFoundationPtr;
+			return myFoundationPtr;
 		}
 
 		ScriptFoundation();
