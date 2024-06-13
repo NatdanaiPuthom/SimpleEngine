@@ -18,9 +18,9 @@ namespace ECS
 	{
 	}
 
-	void EntityComponentSystem::LoadData()
+	void EntityComponentSystem::SaveData(EntityComponentSystem& aECS)
 	{
-		const ECS::Entities entities = myEntityManager.GetAllEntities();
+		const ECS::Entities entities = aECS.GetAllEntities();
 
 		nlohmann::ordered_json jsonData;
 
@@ -35,15 +35,14 @@ namespace ECS
 			size_t count = 0;
 			for (const auto& [componentType, componentID] : components)
 			{
-				void* componentPointer = myComponentManager.GetComponentByComponentID(componentID);
+				void* componentPointer = aECS.GetComponentPointerByComponentID(componentID);
 				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties;
 
 				const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(componentType.name());
 				jsonData["Entities"][i]["Components"][count]["Name"] = componentName;
 
-				for (size_t j = 0; j < componentProperties.size(); ++j)
+				for (const ECS::ComponentProperty& componentProperty : componentProperties)
 				{
-					const ECS::ComponentProperty& componentProperty = componentProperties[j];
 					const std::string& propertyName = componentProperty.name;
 					const size_t propertyID = componentProperty.id;
 					const size_t byteOffset = componentProperty.byteOffset;

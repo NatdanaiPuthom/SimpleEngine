@@ -24,7 +24,7 @@ namespace ECS
 		EntityComponentSystem& operator=(const EntityComponentSystem&) = delete;
 		EntityComponentSystem& operator=(EntityComponentSystem&&) = delete;
 
-		void LoadData();
+		static void SaveData(EntityComponentSystem& aECS);
 
 		void Init();
 		void Update();
