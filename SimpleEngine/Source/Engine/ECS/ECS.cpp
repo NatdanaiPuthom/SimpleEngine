@@ -43,15 +43,16 @@ namespace ECS
 
 				for (size_t j = 0; j < componentProperties.size(); ++j)
 				{
-					const std::string& propertyName = componentProperties[j].name;
-					const size_t propertyID = componentProperties[j].id;
-					const size_t byteOffset = componentProperties[j].byteOffset;
+					const ECS::ComponentProperty& componentProperty = componentProperties[j];
+					const std::string& propertyName = componentProperty.name;
+					const size_t propertyID = componentProperty.id;
+					const size_t byteOffset = componentProperty.byteOffset;
 
-					const TypeErasureComponent& componentProperty = ComponentRegistry::myTypeErasureDataTypes[propertyID];
+					const TypeErasureComponent& dataType = ComponentRegistry::myTypeErasureDataTypes[propertyID];
 
 					jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = INT_MIN;
 
-					if (const auto& getDataFunction = componentProperty.GetDataAsJSON)
+					if (const auto& getDataFunction = dataType.GetDataAsJSON)
 					{
 						void* propertyPointer = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + byteOffset));
 						const nlohmann::json json = getDataFunction(propertyPointer, propertyName);

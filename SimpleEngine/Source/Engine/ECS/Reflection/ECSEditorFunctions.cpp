@@ -1,6 +1,9 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Reflection/ECSEditorFunctions.hpp"
 #include "Graphics/Defines.hpp"
+#include "Graphics/Model/Mesh.hpp"
+#include "Graphics/Shaders/Shader.hpp"
+#include "Graphics/Texture/Texture.hpp"
 #include "Editor/FileManager/FileManager.hpp"
 #include "External/imgui.h"
 

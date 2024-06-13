@@ -4,12 +4,15 @@
 #include "Engine/Math/Vector4.hpp"
 #include "Engine/Math/Transform.hpp"
 
-#include "Graphics/Model/Mesh.hpp"
-#include "Graphics/Shaders/Shader.hpp"
-#include "Graphics/Texture/Texture.hpp"
-
 #include <string>
 #include <array>
+
+namespace Graphics
+{
+	class Mesh;
+	class Shader;
+	class Texture;
+}
 
 namespace ECS
 {
