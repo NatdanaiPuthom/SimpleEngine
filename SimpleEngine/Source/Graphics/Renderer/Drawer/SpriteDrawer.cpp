@@ -12,7 +12,7 @@ namespace Drawer
 	SpriteDrawer::SpriteDrawer()
 		: myTransformBuffer(std::make_unique<ConstantBuffer>())
 	{
-		myShader = Global::GetGraphicsEngine()->GetShader("DefaultPS.cso", "Sprite2DVS.cso");
+		myShader = Global::GetGraphicsEngine()->GetShader("Shaders/DefaultPS.cso", "Shaders/Sprite2DVS.cso");
 
 		myMeshData = std::make_unique<const MeshData>(ShapeCreator3000::Create2DPlane());
 

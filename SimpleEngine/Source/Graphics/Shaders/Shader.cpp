@@ -23,7 +23,7 @@ namespace Graphics
 		std::ifstream vsFile;
 		std::ifstream psFile;
 
-		const std::string vsFilepath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SHADERS) + aVSFilePath;
+		const std::string vsFilepath = SimpleUtilities::GetAbsolutePath(aVSFilePath);
 		vsFile.open(vsFilepath.c_str(), std::ios::binary);
 		vsData = { std::istreambuf_iterator<char>(vsFile), std::istreambuf_iterator<char>() };
 		vsFile.close();
@@ -32,7 +32,7 @@ namespace Graphics
 		if (FAILED(result))
 			return false;
 
-		const std::string psFilepath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SHADERS) + aPSFilePath;
+		const std::string psFilepath = SimpleUtilities::GetAbsolutePath(aPSFilePath);
 		psFile.open(psFilepath.c_str(), std::ios::binary);
 		psData = { std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>() };
 		psFile.close();
