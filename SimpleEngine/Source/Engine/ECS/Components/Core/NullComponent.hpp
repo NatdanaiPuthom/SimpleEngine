@@ -5,7 +5,6 @@ namespace ECS
 {
 	struct NullComponent final
 	{
-		std::string testString = "testMe";
 		float test = 0.0f;
 		bool iAmYourSolution = true;
 		bool dontTouchMe = true;

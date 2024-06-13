@@ -11,7 +11,6 @@
 
 inline static nlohmann::json TestSaveData(float& aValue, const std::string aVariableName)
 {
-	std::cout << "hello world" << std::endl;
 	nlohmann::json json;
 	json[aVariableName] = aValue;
 	return json;
