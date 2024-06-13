@@ -12,7 +12,7 @@ namespace Graphics
 	{
 	}
 
-	const bool Mesh::Init(const MeshData& aMeshData, const std::string& aMeshName)
+	const bool Mesh::Init(const MeshData& aMeshData, const std::string& aMeshName, const std::string& aRelativePath)
 	{
 		myMeshData = aMeshData;
 
@@ -27,6 +27,7 @@ namespace Graphics
 			return false;
 
 		myName = aMeshName;
+		myRelativePath = aRelativePath;
 
 		return true;
 	}
@@ -36,9 +37,14 @@ namespace Graphics
 		return myBoundingBox;
 	}
 
-	std::string Mesh::GetMeshName() const
+	const std::string& Mesh::GetMeshName() const
 	{
 		return myName;
+	}
+
+	const std::string& Mesh::GetRelativePath() const
+	{
+		return myRelativePath;
 	}
 
 	bool Mesh::CreateVertexBuffer(ComPtr<ID3D11Device> aDevice)

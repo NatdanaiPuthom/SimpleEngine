@@ -38,22 +38,22 @@ namespace Graphics
 		std::unique_ptr<Mesh> terrainMesh = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> sphereMesh = std::make_unique<Mesh>();
 
-		if (!cubeMesh->Init(cubeData, "Primitive Cube"))
+		if (!cubeMesh->Init(cubeData, "Primitive Cube", ""))
 			assert(false && "Failed to create Cube");
 
-		if (!pyramidMesh->Init(pyramidData, "Primitive Pyramid"))
+		if (!pyramidMesh->Init(pyramidData, "Primitive Pyramid", ""))
 			assert(false && "Failed to create Pyramid");
 
-		if (!planeMesh->Init(planeData, "Primitive Plane"))
+		if (!planeMesh->Init(planeData, "Primitive Plane", ""))
 			assert(false && "Failed to create Plane");
 
-		if (!skyboxMesh->Init(skyboxData, "Primitive SkyBox"))
+		if (!skyboxMesh->Init(skyboxData, "Primitive SkyBox", ""))
 			assert(false && "Failed to create SkyBox");
 
-		if (!terrainMesh->Init(terrainData, "Primitive Terrain"))
+		if (!terrainMesh->Init(terrainData, "Primitive Terrain", ""))
 			assert(false && "Failed to create Terrain");
 
-		if (!sphereMesh->Init(sphereData, "Primitive Sphere"))
+		if (!sphereMesh->Init(sphereData, "Primitive Sphere", ""))
 			assert(false && "Failed to create Sphere");
 
 		AddMesh("Cube", std::move(cubeMesh));
@@ -283,14 +283,14 @@ namespace Graphics
 		std::unique_ptr<Mesh> newMesh = std::make_unique<Mesh>();
 
 		const std::string fileName = SimpleUtilities::ConvertFilePathToPrettyName(aFileName);
-		newMesh->Init(meshData, fileName);
+		newMesh->Init(meshData, fileName, aFileName);
 
 		AddMesh(aFileName, std::move(newMesh));
 	}
 
-	void ModelFactory::LoadAndCacheMesh(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh)
+	void ModelFactory::LoadAndCacheMesh(const std::string& aFilePath, TGA::FBX::Mesh& aTGAMesh)
 	{
-		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aFileName, aTGAMesh);
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aFilePath, aTGAMesh);
 		assert(status && "Failed to LoadMesh from FBXImporter");
 
 		MeshData meshData;
@@ -298,10 +298,10 @@ namespace Graphics
 		LoadMeshData(meshData, aTGAMesh);
 
 		std::unique_ptr<Mesh> newMesh = std::make_unique<Mesh>();
-		const std::string fileName = SimpleUtilities::ConvertFilePathToPrettyName(aFileName);
-		newMesh->Init(meshData, fileName);
+		const std::string fileName = SimpleUtilities::ConvertFilePathToPrettyName(aFilePath);
+		newMesh->Init(meshData, fileName, aFilePath);
 
-		AddMesh(aFileName, std::move(newMesh));
+		AddMesh(aFilePath, std::move(newMesh));
 	}
 
 	void ModelFactory::LoadAndCacheSkeleton(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh)

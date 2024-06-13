@@ -42,9 +42,10 @@ namespace Graphics
 		Mesh();
 		~Mesh();
 
-		const bool Init(const MeshData& aMeshData, const std::string& aMeshName);
+		const bool Init(const MeshData& aMeshData, const std::string& aMeshName, const std::string& aRelativePath);
 		const Simple::BoundingBox3D& GetBoundingBox() const;
-		std::string GetMeshName() const;
+		const std::string& GetMeshName() const;
+		const std::string& GetRelativePath() const;
 
 	private:
 		bool CreateVertexBuffer(ComPtr<ID3D11Device> aDevice);
@@ -53,6 +54,7 @@ namespace Graphics
 	private:
 		MeshData myMeshData;
 		std::string myName;
+		std::string myRelativePath;
 		Simple::BoundingBox3D myBoundingBox;
 
 		ComPtr<ID3D11Buffer> myVertexBuffer;

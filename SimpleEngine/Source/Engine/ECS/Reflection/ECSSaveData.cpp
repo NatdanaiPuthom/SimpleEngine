@@ -54,14 +54,14 @@ namespace ECS
 	nlohmann::json ReturnDataAsJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName)
 	{
 		nlohmann::json json;
-		std::string textureName;
+		std::string meshPath;
 
 		if (aMesh != nullptr)
 		{
-			textureName = aMesh->GetMeshName();
+			meshPath = aMesh->GetRelativePath();
 		}
 	
-		json[aVariableName] = textureName;
+		json[aVariableName] = meshPath;
 		return json;
 	}
 
@@ -74,8 +74,8 @@ namespace ECS
 
 		if (aShader != nullptr)
 		{
-			vertexShader = aShader->GetVertexShaderName();
-			pixelShader = aShader->GetPixelShaderName();
+			vertexShader = aShader->GetVertexShaderRelativePath();
+			pixelShader = aShader->GetPixelShaderRelativePath();
 		}
 
 		json[aVariableName]["VertexShader"] = vertexShader;
@@ -114,13 +114,13 @@ namespace ECS
 				switch (i)
 				{
 				case Graphics::Global_Slot_Albedo:
-					albedoTexture = aTextures[i]->GetTextureName();
+					albedoTexture = aTextures[i]->GetRelativePath();
 					break;
 				case Graphics::Global_Slot_Normal:
-					normalTexture = aTextures[i]->GetTextureName();
+					normalTexture = aTextures[i]->GetRelativePath();
 					break;
 				case Graphics::Global_Slot_Material:
-					materialTexture = aTextures[i]->GetTextureName();
+					materialTexture = aTextures[i]->GetRelativePath();
 					break;
 				}
 			}

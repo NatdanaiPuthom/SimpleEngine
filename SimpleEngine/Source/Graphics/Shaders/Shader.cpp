@@ -15,7 +15,7 @@ namespace Graphics
 	{
 	}
 
-	const bool Shader::Init(ComPtr<ID3D11Device>& aDevice, const std::string& aPSFileName, const std::string& aVSFileName)
+	const bool Shader::Init(ComPtr<ID3D11Device>& aDevice, const std::string& aPSFilePath, const std::string& aVSFilePath)
 	{
 		HRESULT result;
 		std::string vsData;
@@ -23,7 +23,7 @@ namespace Graphics
 		std::ifstream vsFile;
 		std::ifstream psFile;
 
-		const std::string vsFilepath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SHADERS) + aVSFileName;
+		const std::string vsFilepath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SHADERS) + aVSFilePath;
 		vsFile.open(vsFilepath.c_str(), std::ios::binary);
 		vsData = { std::istreambuf_iterator<char>(vsFile), std::istreambuf_iterator<char>() };
 		vsFile.close();
@@ -32,7 +32,7 @@ namespace Graphics
 		if (FAILED(result))
 			return false;
 
-		const std::string psFilepath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SHADERS) + aPSFileName;
+		const std::string psFilepath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SHADERS) + aPSFilePath;
 		psFile.open(psFilepath.c_str(), std::ios::binary);
 		psData = { std::istreambuf_iterator<char>(psFile), std::istreambuf_iterator<char>() };
 		psFile.close();
@@ -57,8 +57,11 @@ namespace Graphics
 		if (FAILED(result))
 			return false;
 
-		myPixelShaderName = SimpleUtilities::ConvertFilePathToPrettyName(aPSFileName);
-		myVertexShaderName = SimpleUtilities::ConvertFilePathToPrettyName(aVSFileName);
+		myPixelShaderName = SimpleUtilities::ConvertFilePathToPrettyName(aPSFilePath);
+		myVertexShaderName = SimpleUtilities::ConvertFilePathToPrettyName(aVSFilePath);
+
+		myPixelShaderRelativePath = aPSFilePath;
+		myVertexShaderRelativePath = aVSFilePath;
 
 		return true;
 	}
@@ -90,5 +93,15 @@ namespace Graphics
 	const std::string& Shader::GetVertexShaderName() const
 	{
 		return myVertexShaderName;
+	}
+
+	const std::string& Shader::GetVertexShaderRelativePath() const
+	{
+		return myVertexShaderRelativePath;
+	}
+
+	const std::string& Shader::GetPixelShaderRelativePath() const
+	{
+		return myPixelShaderRelativePath;
 	}
 }

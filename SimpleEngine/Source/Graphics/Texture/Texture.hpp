@@ -26,7 +26,8 @@ namespace Graphics
 		void SetSlot(const unsigned int aSlot);
 
 		unsigned int GetSlot() const;
-		std::string GetTextureName() const;
+		const std::string& GetTextureName() const;
+		const std::string& GetRelativePath() const;
 		const ComPtr<ID3D11ShaderResourceView> GetShaderResourceView() const;
 
 	private:
@@ -34,6 +35,7 @@ namespace Graphics
 	private:
 		ComPtr<ID3D11ShaderResourceView> myShaderResourceView;
 		std::string myName;
+		std::string myRelativePath;
 		unsigned int mySlot;
 	};
 }

@@ -41,9 +41,14 @@ namespace Graphics
 		return mySlot;
 	}
 
-	std::string Texture::GetTextureName() const
+	const std::string& Texture::GetTextureName() const
 	{
 		return myName;
+	}
+
+	const std::string& Texture::GetRelativePath() const
+	{
+		return myRelativePath;
 	}
 
 	bool Texture::LoadDDS(const char* aFileName)
@@ -56,6 +61,7 @@ namespace Graphics
 			return false;
 
 		myName = SimpleUtilities::ConvertFilePathToPrettyName(aFileName);
+		myRelativePath = aFileName;
 
 		return true;
 	}
