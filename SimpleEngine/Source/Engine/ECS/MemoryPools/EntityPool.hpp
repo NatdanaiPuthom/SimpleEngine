@@ -34,6 +34,7 @@ namespace ECS
 
 	private:
 		void Reallocate();
+		void Clear();
 	private:
 		char* myCurrentMemoryAddress;
 		char* myStartMemoryAddress;

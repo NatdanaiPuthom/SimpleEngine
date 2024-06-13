@@ -1,0 +1,53 @@
+{
+  "Entities": [
+    {
+      "ID": 1,
+      "Name": "Entity 1",
+      "Components": [
+        {
+          "Name": "NullComponent",
+          "ComponentID": 6538246477828626970,
+          "Properties": {
+            "iAmYourSolution": false,
+            "dontTouchMe": false
+          }
+        },
+        {
+          "Name": "TransformComponent",
+          "ComponentID": 1077899362345657344,
+          "Properties": {
+            "transform": {
+              "Position": {
+                "x": 10.0,
+                "y": 10.0,
+                "z": 10.0
+              },
+              "Rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "Scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "ID": 2,
+      "Name": "Entity 2"
+    },
+    {
+      "ID": 3,
+      "Name": "Entity 3"
+    },
+    {
+      "ID": 4,
+      "Name": "Entity 4"
+    }
+  ]
+}

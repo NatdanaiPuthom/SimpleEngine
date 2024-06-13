@@ -40,6 +40,7 @@ namespace ECS
 
 				const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(componentType.name());
 				jsonData["Entities"][i]["Components"][count]["Name"] = componentName;
+				jsonData["Entities"][i]["Components"][count]["ComponentID"] = componentType.hash_code();
 
 				for (const ECS::ComponentProperty& componentProperty : componentProperties)
 				{
@@ -69,6 +70,56 @@ namespace ECS
 
 		writeFile << jsonData.dump(-1);
 		writeFile.close();
+	}
+
+	void EntityComponentSystem::LoadData(EntityComponentSystem& aECS, const std::string& aFileName)
+	{
+		const std::string filePath = SimpleUtilities::GetAbsolutePath(aFileName);
+		std::ifstream readFile(filePath);
+		assert(readFile.is_open() && "Failed to open the file");
+
+		const nlohmann::json jsonData = nlohmann::json::parse(readFile);
+		readFile.close();
+
+		for (const auto& entityData : jsonData["Entities"])
+		{
+			const EntityID id = entityData["ID"];
+			const std::string name = entityData["Name"];
+
+			Entity entity = aECS.CreateEntity(id);
+			entity->SetName(name);
+
+			const auto& componentList = entityData["Components"];
+
+			for (const auto& componentDataJSON : componentList)
+			{
+				const size_t componentHashCode = componentDataJSON["ComponentID"];
+				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentHashCode].myComponentProperties;
+				const ComponentID componentID = ComponentRegistry::myTypeErasureComponents[componentHashCode].AddComponentFunctionPointer(entity);
+				const auto& componentPropertiesJSON = componentDataJSON["Properties"];
+				const size_t propertySize = componentPropertiesJSON.size();
+
+				void* componentPointer = aECS.GetComponentPointerByComponentID(componentID);
+
+				if (componentProperties.size() != propertySize)
+				{
+					assert(false && "Registered Component Properties doesn't match between Component and JSON data");
+					continue;
+				}
+
+				for (size_t i = 0; i < propertySize; ++i)
+				{
+					const ComponentProperty& property = componentProperties[i];
+					const TypeErasureComponent& typeErasedData = ComponentRegistry::myTypeErasureDataTypes[property.id];
+					void* propertyPointer = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + property.byteOffset));
+
+					if (const auto& loadDataFromJSONFunction = typeErasedData.LoadDataFromJSON)
+					{
+						loadDataFromJSONFunction(propertyPointer, property.name, componentPropertiesJSON);
+					}
+				}
+			}
+		}
 	}
 
 	void EntityComponentSystem::Init()

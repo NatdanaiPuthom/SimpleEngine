@@ -72,8 +72,23 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	simpleScript.Init();
 	PROFILER_END();
 
-	ECS::EntityComponentSystem testECS; testECS;
-	ECS::EntityComponentSystem::SaveData(testECS,"Assets/Scenes/scene_1.json");
+	ECS::EntityComponentSystem ecsSave;
+	//testECS.Init();
+	ECS::Entity e = ecsSave.CreateEntity();
+	e->AddComponent<ECS::NullComponent>();
+	e->AddComponent<ECS::TransformComponent>();
+	e->AddComponent<ECS::MeshComponent>();
+	e->GetComponent<ECS::NullComponent>()->dontTouchMe = false;
+	e->GetComponent<ECS::NullComponent>()->iAmYourSolution = false;
+	e->GetComponent<ECS::TransformComponent>()->transform.SetPosition({ 10,10,10 });
+	e->GetComponent<ECS::MeshComponent>()->mesh = graphicsEngine.GetModelFactory()->LoadMesh("Assets/Models/StaticModels/SM_DefaultCube_1x1.fbx");
+
+	ECS::EntityComponentSystem::SaveData(ecsSave, "Assets/Scenes/scene_1.json");
+
+	/*ECS::EntityComponentSystem ecsLoad;
+	ECS::EntityComponentSystem::LoadData(ecsLoad, "Assets/Scenes/scene_1.json");
+
+	ECS::EntityComponentSystem::SaveData(ecsLoad, "Assets/Scenes/scene_1_copy.json");*/
 
 	while (Global::GetGameIsRunning())
 	{

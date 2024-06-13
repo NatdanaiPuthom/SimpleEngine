@@ -3,6 +3,7 @@
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/ECS/Reflection/ECSEditorFunctions.hpp"
 #include "Engine/ECS/Reflection/ECSSerialisation.hpp"
+#include "Engine/ECS/Reflection/ECSLoadData.hpp"
 #include "External/nlohmann/json.hpp"
 #include <string>
 #include <vector>
@@ -31,6 +32,12 @@ namespace ECS
 		{ ECS::ReturnDataAsJSON(aData, aVariableName) } -> std::same_as<nlohmann::json>;
 	};
 
+	template<typename T>
+	concept Loadable = requires(T & aData, const std::string & aVariableName, const nlohmann::json & aJSONData)
+	{
+		{ ECS::LoadAndSetDataFromJSON(aData, aVariableName, aJSONData) } -> std::same_as<bool>;
+	};
+
 	struct ComponentProperty final
 	{
 		std::string name = "UnknownProperty";
@@ -45,10 +52,11 @@ namespace ECS
 		std::vector<ComponentProperty> myComponentProperties;
 		std::string myComponentName;
 
-		bool(*AddComponentFunctionPointer)(ECS::Entity aEntity) = nullptr;
+		const ComponentID(*AddComponentFunctionPointer)(ECS::Entity aEntity) = nullptr;
 		bool(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
 
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
+		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
 	};
 
 	class ComponentRegistry final
@@ -101,7 +109,7 @@ namespace ECS
 
 			typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-			typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> bool
+			typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> const ComponentID
 				{
 					return aEntity->AddComponent<T>();
 				};
@@ -138,7 +146,7 @@ namespace ECS
 
 			dataType.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-			dataType.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> bool
+			dataType.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> const ComponentID
 				{
 					return aEntity->AddComponent<T>();
 				};
@@ -157,7 +165,16 @@ namespace ECS
 				dataType.GetDataAsJSON = [](void* aDataPointer, const std::string& aVariableName) -> nlohmann::json
 					{
 						T* pointer = reinterpret_cast<T*>(aDataPointer);
-						return ReturnDataAsJSON(*pointer, aVariableName);
+						return ECS::ReturnDataAsJSON(*pointer, aVariableName);
+					};
+			}
+
+			if constexpr (ECS::Loadable<T>)
+			{
+				dataType.LoadDataFromJSON = [](void* aDataPointer, const std::string& aVariableName, const nlohmann::json& aJSONData) -> bool
+					{
+						T* pointer = reinterpret_cast<T*>(aDataPointer);
+						return ECS::LoadAndSetDataFromJSON(*pointer, aVariableName, aJSONData);
 					};
 			}
 

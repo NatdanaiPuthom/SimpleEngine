@@ -10,24 +10,18 @@ namespace ECS
 		, myCurrentMemoryAddress(nullptr)
 		, padding("Believe")
 	{
+		Init(1);
 	}
 
 	EntityPool::~EntityPool()
 	{
-		for (size_t i = 0; i < myEntityIDs.size(); ++i)
-		{
-			reinterpret_cast<IEntity*>(myStartMemoryAddress + i * sizeof(IEntity))->~IEntity();
-		}
-
-		delete[] myStartMemoryAddress;
-
-		myStartMemoryAddress = nullptr;
-		myEndMemoryAddress = nullptr;
-		myCurrentMemoryAddress = nullptr;
+		Clear();
 	}
 
 	void EntityPool::Init(const size_t aEntityAmountToReserved)
 	{
+		Clear();
+
 		const size_t size = aEntityAmountToReserved * sizeof(IEntity);
 		myStartMemoryAddress = new char[size];
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * size;
@@ -98,5 +92,19 @@ namespace ECS
 
 		myCurrentMemoryAddress = myStartMemoryAddress + currentOccupiedMemorySpace;
 		myEndMemoryAddress = myStartMemoryAddress + newMemoryCapacity;
+	}
+
+	void EntityPool::Clear()
+	{
+		for (size_t i = 0; i < myEntityIDs.size(); ++i)
+		{
+			reinterpret_cast<IEntity*>(myStartMemoryAddress + i * sizeof(IEntity))->~IEntity();
+		}
+
+		delete[] myStartMemoryAddress;
+
+		myStartMemoryAddress = nullptr;
+		myEndMemoryAddress = nullptr;
+		myCurrentMemoryAddress = nullptr;
 	}
 }

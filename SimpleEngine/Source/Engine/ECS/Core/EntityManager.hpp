@@ -26,10 +26,10 @@ namespace ECS
 		bool DestroyEntity(const EntityID aID);
 
 		template<typename T>
-		bool AddComponent(const EntityID aEntityID);
+		const ComponentID AddComponent(const EntityID aEntityID);
 
 		template<typename T>
-		bool RemoveComponent(const size_t aEntityID);
+		bool RemoveComponent(const EntityID aEntityID);
 
 		bool RemoveComponentByTypeIndex(const std::type_index& aTypeIndex, const EntityID aEntityID);
 
@@ -61,21 +61,29 @@ namespace ECS
 	};
 
 	template<typename T>
-	inline bool EntityManager::AddComponent(const EntityID aEntityID)
+	inline const ComponentID EntityManager::AddComponent(const EntityID aEntityID)
 	{
 		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
 
 		if (components.contains(typeid(T)) == true)
 		{
-			return false;
+			return static_cast<ComponentID>(-1);
 		}
 
-		myEntityComponents[aEntityID][typeid(T)] = myComponentManager->CreateComponent<T>();
-		return myEntityComponents[aEntityID].contains(typeid(T));
+		const ComponentID componentID = myComponentManager->CreateComponent<T>();
+
+		myEntityComponents[aEntityID][typeid(T)] = componentID;
+
+		if (myEntityComponents[aEntityID].contains(typeid(T)))
+		{
+			return componentID;
+		}
+
+		return static_cast<ComponentID>(-1);
 	}
 
 	template<typename T>
-	inline bool EntityManager::RemoveComponent(const size_t aEntityID)
+	inline bool EntityManager::RemoveComponent(const EntityID aEntityID)
 	{
 		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
 

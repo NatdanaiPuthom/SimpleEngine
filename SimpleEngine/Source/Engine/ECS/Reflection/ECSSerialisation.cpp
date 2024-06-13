@@ -115,19 +115,20 @@ namespace ECS
 				{
 				case Graphics::Global_Slot_Albedo:
 					albedoTexture = aTextures[i]->GetTextureName();
-					json[aVariableName]["Albedo"] = albedoTexture;
 					break;
 				case Graphics::Global_Slot_Normal:
 					normalTexture = aTextures[i]->GetTextureName();
-					json[aVariableName]["Normal"] = normalTexture;
 					break;
 				case Graphics::Global_Slot_Material:
 					materialTexture = aTextures[i]->GetTextureName();
-					json[aVariableName]["Material"] = materialTexture;
 					break;
 				}
 			}
 		}
+
+		json[aVariableName]["Albedo"] = albedoTexture;
+		json[aVariableName]["Normal"] = normalTexture;
+		json[aVariableName]["Material"] = materialTexture;
 
 		return json;
 	}

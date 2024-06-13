@@ -25,6 +25,7 @@ namespace ECS
 		EntityComponentSystem& operator=(EntityComponentSystem&&) = delete;
 
 		static void SaveData(EntityComponentSystem& aECS, const std::string& aFileName);
+		static void LoadData(EntityComponentSystem& aECS, const std::string& aFileName);
 
 		void Init();
 		void Update();

@@ -19,7 +19,7 @@ namespace ECS
 		~IEntity();
 
 		template<typename T>
-		bool AddComponent();
+		const ComponentID AddComponent();
 
 		template<typename T>
 		bool RemoveComponent();
@@ -48,7 +48,7 @@ namespace ECS
 	};
 
 	template<typename T>
-	inline bool IEntity::AddComponent()
+	inline const ComponentID IEntity::AddComponent()
 	{
 		return myEntityManager->AddComponent<T>(myID);
 	}

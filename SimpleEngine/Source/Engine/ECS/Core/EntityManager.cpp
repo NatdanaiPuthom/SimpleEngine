@@ -31,6 +31,10 @@ namespace ECS
 			++myCurrentEntityID;
 			aEntityID = myCurrentEntityID;
 		}
+		else
+		{
+			++myCurrentEntityID;
+		}
 
 		myEntities[aEntityID] = myEntityPool.CreateEntity(aEntityID, myEntities, this);
 		myAllEntities.push_back(&myEntities[aEntityID]);
