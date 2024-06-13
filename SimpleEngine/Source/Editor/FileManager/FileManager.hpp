@@ -2,7 +2,7 @@
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include <vector>
 #include <string>
-#include <Windows.h>
+#include <shellapi.h>
 
 namespace Editor
 {
