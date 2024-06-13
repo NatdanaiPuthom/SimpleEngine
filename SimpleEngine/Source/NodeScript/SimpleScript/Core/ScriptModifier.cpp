@@ -286,7 +286,6 @@ namespace SCR
 
 			if (aPosition != aOldPosition)
 			{
-				//CommandTracker& commandTracker = ScriptProxy::GetCommandTracker(myScript);
 
 				data.nodeID = aNodeID;
 				data.oldPos = aOldPosition;
@@ -295,7 +294,7 @@ namespace SCR
 				aCommandTracker->DoCommand<FunctionCommand<SetNodePositionData>>(CommandContext{ nullptr, &aNodeGraph }, data,
 					[](const SetNodePositionData& aData, const CommandContext& aContext) -> void
 					{
-						Node& node = aContext.nodeGraph->myNodeManager->myNodes.at(aData.nodeID);// ScriptProxy::GetNodeRef(*aContext.nodeGraph, aData.nodeID);
+						Node& node = aContext.nodeGraph->myNodeManager->myNodes.at(aData.nodeID);
 						node.position = aData.newPos;
 					},
 					[](const SetNodePositionData& aData, const CommandContext& aContext) -> void
@@ -307,7 +306,83 @@ namespace SCR
 			}
 		}
 
-		void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID, Script& aScript, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+		VarID CreateVariable(Script& aScript, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
+		{
+			std::vector<Variable>& variables = ScriptProxy::GetVariablesRef(aScript);
+			VarID id = variables.size();
+			variables.emplace_back();
+			SetVariableDataType(id, aDataTypeID, aScript, aCommandTracker);
+			return id;
+		}
+
+		void DestroyVariable(VarID aVarID, Script& aScript, CommandTracker* aCommandTracker)
+		{
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Destroy Variable + Connected Nodes");
+			}
+
+			struct DestroyVariableData
+			{
+				VarID varID = InvalidID<VarID>();
+			} data;
+
+			data.varID = aVarID;
+
+			auto doAction = [](const DestroyVariableData& aData, const CommandContext& aContext) -> void
+				{
+					ScriptProxy::GetVariableRef(*aContext.script, aData.varID).isDestroyed = true;
+				};
+
+			CommandContext commandContext{ .script = &aScript };
+
+			if (!aCommandTracker)
+			{
+				doAction(data, commandContext);
+			}
+			else
+			{
+				aCommandTracker->DoCommand<FunctionCommand<DestroyVariableData>>(commandContext, data,
+					doAction,
+					[](const DestroyVariableData& aData, const CommandContext& aContext) -> void
+					{
+						ScriptProxy::GetVariableRef(*aContext.script, aData.varID).isDestroyed = false;
+					}
+				);
+			}
+
+			const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
+			DestroySelection(variableManager.GetNodeIDsByVarID(aVarID), {}, aScript.GetEventGraph(), aCommandTracker);
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+
+		}
+
+		void EditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker*)
+		{
+			const Pin& pin = aNodeGraph.myPinManager->myPins[aPinID];
+			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
+
+			if (DataTypeManager::EditData(pinType.dataTypeID, pin.dataPtr))
+			{
+
+			}
+		}
+
+		void EditVariableDefaultValue(VarID aVarID, Script& aScript, CommandTracker*)
+		{
+			const Variable& variable = ScriptProxy::GetVariable(aScript, aVarID);
+
+			if (DataTypeManager::EditData(variable.dataTypeID, variable.defaultValueDataPtr))
+			{
+
+			}
+		}
+
+		void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID, Script& aScript, CommandTracker* aCommandTracker)
 		{
 			Variable& variable = ScriptProxy::GetVariableRef(aScript, aVarID);
 
@@ -318,7 +393,7 @@ namespace SCR
 			variable.runtimeDataPtr = runtimeDataPtr;
 			variable.defaultValueDataPtr = defaultValueDataPtr;
 
-			DestroyVariableNodes(aVarID, aScript, aNodeGraph, aCommandTracker);
+			DestroyVariableNodes(aVarID, aScript, aScript.GetEventGraph(), aCommandTracker);
 		}
 
 		void SetVariableName(VarID aVarID, const std::string& aName, Script& aScript)
@@ -331,6 +406,184 @@ namespace SCR
 		void DestroyVariableNodes(const VarID aVarID, Script& aScript, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
 			DestroySelection(ScriptProxy::GetVariableManager(aScript).GetNodeIDsByVarID(aVarID), {}, aNodeGraph, aCommandTracker);
+		}
+
+		CustomEventID CreateCustomEvent(const std::string& aName)
+		{
+			return InternalModifier::CreateCustomEvent(aName);
+		}
+
+		void AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName)
+		{
+			CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(aNodeTypeID);
+
+
+			NodeType& nodeType = NodeTypeManager::GetNodeType(customEvent.GetExecutorTypeID());
+
+			PinTypeID executorPinTypeID = PinTypeManager::Create(aName, ePinFlowType::Output, aDataTypeID, CreatePinSetFunction());
+			nodeType.nodeRecipe.outputPinTypeIDs.push_back(executorPinTypeID);
+
+
+			NodeType& callerNodeType = NodeTypeManager::GetNodeType(customEvent.GetCallerTypeID());
+			PinTypeID callerPinTypeID = PinTypeManager::Create(aName, ePinFlowType::Input, aDataTypeID, CreatePinSetFunction());
+			callerNodeType.nodeRecipe.inputPinTypeIDs.push_back(callerPinTypeID);
+
+			ScriptFoundation* foundation = ScriptFoundation::GetInstance();
+
+			if (!foundation)
+			{
+				return;
+			}
+
+			for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(*foundation))
+			{
+				for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
+				{
+					// TODO - fix
+					NodeGraph& eventGraph = ScriptProxy::GetEventGraph(*script);
+
+					for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetExecutorTypeID()))
+					{
+						PinID pinID = InternalModifier::CreateOutputPin(eventGraph, nodeID, executorPinTypeID);
+
+						ScriptProxy::GetNodeRef(eventGraph, nodeID).outputPins.push_back(pinID);
+					}
+
+					for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetCallerTypeID()))
+					{
+						PinID pinID = InternalModifier::CreateInputPin(eventGraph, nodeID, callerPinTypeID);
+
+						ScriptProxy::GetNodeRef(eventGraph, nodeID).inputPins.push_back(pinID);
+					}
+				}
+			}
+		}
+
+		void SetPinAtIndexCustomEvent(const size_t anIndex, const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID)
+		{
+			if (anIndex == 0)
+			{
+				return;
+			}
+			CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(aNodeTypeID);
+
+			NodeType& nodeType = NodeTypeManager::GetNodeType(customEvent.GetExecutorTypeID());
+
+			if (anIndex >= nodeType.nodeRecipe.outputPinTypeIDs.size())
+			{
+				return;
+			}
+
+			const PinType& oldExecutorPinType = PinTypeManager::GetPinType(nodeType.nodeRecipe.outputPinTypeIDs[anIndex]);
+			if (oldExecutorPinType.dataTypeID == aDataTypeID)
+			{
+				return;
+			}
+
+			PinTypeID newExecutorPinTypeID = PinTypeManager::Create(oldExecutorPinType.name, ePinFlowType::Output, aDataTypeID, CreatePinSetFunction());
+			nodeType.nodeRecipe.outputPinTypeIDs[anIndex] = newExecutorPinTypeID;
+
+
+
+			NodeType& callerNodeType = NodeTypeManager::GetNodeType(customEvent.GetCallerTypeID());
+
+			const PinType& oldCallerPinType = PinTypeManager::GetPinType(callerNodeType.nodeRecipe.inputPinTypeIDs[anIndex]);
+
+			PinTypeID newCallerPinTypeID = PinTypeManager::Create(oldCallerPinType.name, ePinFlowType::Input, aDataTypeID, CreatePinSetFunction());
+			callerNodeType.nodeRecipe.inputPinTypeIDs[anIndex] = newCallerPinTypeID;
+
+			ScriptFoundation* foundation = ScriptFoundation::GetInstance();
+
+			if (!foundation)
+			{
+				return;
+			}
+
+			for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(*foundation))
+			{
+				for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
+				{
+					// TODO - fix
+					NodeGraph& eventGraph = ScriptProxy::GetEventGraph(*script);
+
+					for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetExecutorTypeID()))
+					{
+						PinID pinID = InternalModifier::CreateOutputPin(eventGraph, nodeID, newExecutorPinTypeID);
+
+						ScriptProxy::GetNodeRef(eventGraph, nodeID).outputPins[anIndex] = pinID;
+
+					}
+
+					for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetCallerTypeID()))
+					{
+						PinID pinID = InternalModifier::CreateInputPin(eventGraph, nodeID, newCallerPinTypeID);
+
+						ScriptProxy::GetNodeRef(eventGraph, nodeID).inputPins[anIndex] = pinID;
+					}
+				}
+			}
+
+		}
+
+		void DeletePinAtIndexCustomEvent(const size_t anIndex, const CustomEventID aNodeTypeID)
+		{
+			if (anIndex == 0)
+			{
+				return;
+			}
+
+			CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(aNodeTypeID);
+
+			NodeType& executorNodeType = NodeTypeManager::GetNodeType(customEvent.GetExecutorTypeID());
+
+			if (anIndex >= executorNodeType.nodeRecipe.outputPinTypeIDs.size())
+			{
+				return;
+			}
+
+			executorNodeType.nodeRecipe.outputPinTypeIDs.erase(executorNodeType.nodeRecipe.outputPinTypeIDs.begin() + anIndex);
+
+
+			NodeType& callerNodeType = NodeTypeManager::GetNodeType(customEvent.GetCallerTypeID());
+			callerNodeType.nodeRecipe.inputPinTypeIDs.erase(callerNodeType.nodeRecipe.inputPinTypeIDs.begin() + anIndex);
+
+			ScriptFoundation* foundation = ScriptFoundation::GetInstance();
+
+			if (!foundation)
+			{
+				return;
+			}
+
+			for (const std::unique_ptr<ScriptManager>& scriptManager : ScriptProxy::GetScriptManagers(*foundation))
+			{
+				for (const std::unique_ptr<Script>& script : scriptManager->GetScripts())
+				{
+					// TODO
+					NodeGraph& eventGraph = ScriptProxy::GetEventGraph(*script);
+					for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetExecutorTypeID()))
+					{
+
+						Node& node = ScriptProxy::GetNodeRef(eventGraph, nodeID);
+						script->GetModifier().DestoryLinksByOutputPinID(node.outputPins[anIndex]);
+
+						node.outputPins.erase(node.outputPins.begin() + anIndex);
+					}
+
+
+					for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetCallerTypeID()))
+					{
+						Node& node = ScriptProxy::GetNodeRef(eventGraph, nodeID);
+
+						script->GetModifier().DestroyLink(node.inputPins[anIndex]);
+						node.inputPins.erase(node.inputPins.begin() + anIndex);
+					}
+				}
+			}
+		}
+
+		FunctionID CreateGlobalFunction(const std::string& aName)
+		{
+			return InternalModifier::CreateFunction(aName);
 		}
 
 }
@@ -959,14 +1212,14 @@ namespace SCR
 				// TODO - fix
 				NodeGraph& eventGraph = ScriptProxy::GetEventGraph(*script);
 
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetExecutorTypeID()))
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetExecutorTypeID()))
 				{
 					PinID pinID = InternalModifier::CreateOutputPin(eventGraph, nodeID, executorPinTypeID);
 
 					ScriptProxy::GetNodeRef(eventGraph, nodeID).outputPins.push_back(pinID);
 				}
 
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetCallerTypeID()))
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetCallerTypeID()))
 				{
 					PinID pinID = InternalModifier::CreateInputPin(eventGraph, nodeID, callerPinTypeID);
 
@@ -1022,7 +1275,7 @@ namespace SCR
 				// TODO - fix
 				NodeGraph& eventGraph = ScriptProxy::GetEventGraph(*script);
 
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetExecutorTypeID()))
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetExecutorTypeID()))
 				{
 					PinID pinID = InternalModifier::CreateOutputPin(eventGraph, nodeID, newExecutorPinTypeID);
 
@@ -1030,7 +1283,7 @@ namespace SCR
 
 				}
 
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetCallerTypeID()))
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetCallerTypeID()))
 				{
 					PinID pinID = InternalModifier::CreateInputPin(eventGraph, nodeID, newCallerPinTypeID);
 
@@ -1074,7 +1327,7 @@ namespace SCR
 			{
 				// TODO
 				NodeGraph& eventGraph = ScriptProxy::GetEventGraph(*script);
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetExecutorTypeID()))
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetExecutorTypeID()))
 				{
 
 					Node& node = ScriptProxy::GetNodeRef(eventGraph, nodeID);
@@ -1084,7 +1337,7 @@ namespace SCR
 				}
 
 
-				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(*script, customEvent.GetCallerTypeID()))
+				for (NodeID nodeID : ScriptProxy::GetNodeIDsByNodeType(eventGraph, customEvent.GetCallerTypeID()))
 				{
 					Node& node = ScriptProxy::GetNodeRef(eventGraph, nodeID);
 

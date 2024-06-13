@@ -1,4 +1,4 @@
-#include "SimpleScriptEditor/NodeCreatorWIndow.h"
+#include "SimpleScriptEditor/NodeCreatorWindow.h"
 #include "SimpleScriptEditor/VisualScriptingWindow.h"
 #include "SimpleScript/Core/Script.h"
 #include "SimpleScript/Core/Node/NodeTypeManager.h"
