@@ -20,14 +20,9 @@ namespace ECS
 
 	void EntityComponentSystem::LoadData()
 	{
-		const std::string filePath = SimpleUtilities::GetAbsolutePath("Assets/Scenes/scene_1.json"); filePath;
 		const ECS::Entities entities = myEntityManager.GetAllEntities();
 
 		nlohmann::ordered_json jsonData;
-
-		Entity e = myEntityManager.CreateEntity();
-		e->AddComponent<NullComponent>();
-		e->GetComponent<NullComponent>()->test = 10.0f;
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
@@ -65,6 +60,7 @@ namespace ECS
 			}
 		}
 
+		const std::string filePath = SimpleUtilities::GetAbsolutePath("Assets/Scenes/scene_1.json"); filePath;
 		std::ofstream writeFile(filePath);
 		assert(writeFile.is_open() && "Failed to open the file");
 
