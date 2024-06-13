@@ -45,13 +45,16 @@ namespace ECS
 				{
 					const std::string& propertyName = componentProperties[j].name;
 					const size_t propertyID = componentProperties[j].id;
+					const size_t byteOffset = componentProperties[j].byteOffset;
+
+					const TypeErasureComponent& componentProperty = ComponentRegistry::myTypeErasureDataTypes[propertyID];
 
 					jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = INT_MIN;
-					const TypeErasureComponent& componentProperty = ComponentRegistry::myTypeErasureDataTypes[propertyID];
 
 					if (const auto& getDataFunction = componentProperty.GetDataAsJSON)
 					{
-						const nlohmann::json json = getDataFunction(componentPointer, propertyName);
+						void* propertyPointer = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + byteOffset));
+						const nlohmann::json json = getDataFunction(propertyPointer, propertyName);
 						jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = json[propertyName];
 					}
 				}

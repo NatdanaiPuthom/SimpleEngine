@@ -28,7 +28,7 @@ namespace ECS
 	template<typename T>
 	concept Saveable = requires(T & aData, const std::string & aVariableName)
 	{
-		{ ReturnDataAsJSON(aData, aVariableName) } -> std::same_as<nlohmann::json>;
+		{ ECS::ReturnDataAsJSON(aData, aVariableName) } -> std::same_as<nlohmann::json>;
 	};
 
 	struct ComponentProperty final
