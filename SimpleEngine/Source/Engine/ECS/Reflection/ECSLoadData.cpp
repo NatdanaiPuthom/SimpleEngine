@@ -52,9 +52,14 @@ namespace ECS
 	bool LoadAndSetDataFromJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
 		const std::string filePath = aJSONData[aVariableName];
-		aMesh = Global::GetGraphicsEngine()->GetModelFactory()->LoadMesh(filePath);
 
-		return true;
+		if (filePath.empty() == false)
+		{
+			aMesh = Global::GetGraphicsEngine()->GetModelFactory()->LoadMesh(filePath);
+			return true;
+		}
+
+		return false;
 	}
 
 	bool LoadAndSetDataFromJSON(const Graphics::Texture*& aTexture, const std::string& aVariableName, const nlohmann::json& aJSONData)

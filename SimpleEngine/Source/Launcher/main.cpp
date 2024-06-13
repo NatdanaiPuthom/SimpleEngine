@@ -72,28 +72,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	simpleScript.Init();
 	PROFILER_END();
 
+	//ECS::EntityComponentSystem::SaveData(ecs, "Assets/Scenes/scene_original.json");
+
 	{ //NOTE(V11.0.4): TEST
-		ECS::EntityComponentSystem ecsSave;
-		//testECS.Init();
-		ECS::Entity e = ecsSave.CreateEntity();
-		e->AddComponent<ECS::NullComponent>();
-		e->AddComponent<ECS::TransformComponent>();
-		e->AddComponent<ECS::MeshComponent>();
-		e->GetComponent<ECS::NullComponent>()->dontTouchMe = false;
-		e->GetComponent<ECS::NullComponent>()->iAmYourSolution = false;
-		e->GetComponent<ECS::TransformComponent>()->transform.SetPosition({ 10,10,10 });
-		e->GetComponent<ECS::MeshComponent>()->mesh = graphicsEngine.GetModelFactory()->LoadMesh("Assets/Models/StaticModels/SM_DefaultCube_1x1.fbx");
-		e->GetComponent<ECS::MeshComponent>()->textures[0] = graphicsEngine.GetTexture("Assets/Textures/T_Sunlight_C.dds").get();
-		e->GetComponent<ECS::MeshComponent>()->textures[1] = graphicsEngine.GetTexture("Assets/Textures/T_Hamster_C.dds").get();
-		e->GetComponent<ECS::MeshComponent>()->textures[2] = graphicsEngine.GetTexture("Assets/Textures/T_Cat_C.dds").get();
-		e->GetComponent<ECS::MeshComponent>()->shader = graphicsEngine.GetShader(Graphics::eShaderType::Unlit_Default).get();
-
-		ECS::EntityComponentSystem::SaveData(ecsSave, "Assets/Scenes/scene_1.json");
-
 		ECS::EntityComponentSystem ecsLoad;
-		ECS::EntityComponentSystem::LoadData(ecsLoad, "Assets/Scenes/scene_1.json");
-
-		ECS::EntityComponentSystem::SaveData(ecsLoad, "Assets/Scenes/scene_1_copy.json");
+		//ecsLoad.Init();
+		ECS::EntityComponentSystem::LoadData(ecsLoad, "Assets/Scenes/scene_original.json");
+		//ECS::EntityComponentSystem::SaveData(ecsLoad, "Assets/Scenes/scene_1.json");
 	}
 
 	while (Global::GetGameIsRunning())
