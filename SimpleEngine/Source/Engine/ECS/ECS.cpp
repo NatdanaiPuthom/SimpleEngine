@@ -32,13 +32,12 @@ namespace ECS
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
 			const Entity entity = entities[i];
+			const std::unordered_map<ECS::ComponentType, ComponentID>& components = entity->GetComponentMap();
 
 			jsonData["Entities"][i]["ID"] = entity->GetID();;
 			jsonData["Entities"][i]["Name"] = entity->GetName();;
 
-			const std::unordered_map<ECS::ComponentType, ComponentID>& components = entity->GetComponentMap();
 			size_t count = 0;
-
 			for (const auto& [componentType, componentID] : components)
 			{
 				void* componentPointer = myComponentManager.GetComponentByComponentID(componentID);
@@ -49,13 +48,16 @@ namespace ECS
 
 				for (size_t j = 0; j < componentProperties.size(); ++j)
 				{
-					jsonData["Entities"][i]["Components"][count]["Properties"][ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties[j].name] = INT_MIN;
-					auto& componentProperty = ComponentRegistry::myTypeErasureDataTypes[componentProperties[j].id];
+					const std::string& propertyName = componentProperties[j].name;
+					const size_t propertyID = componentProperties[j].id;
 
-					if (componentProperty.TestSaveLoadData != nullptr)
+					jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = INT_MIN;
+					const TypeErasureComponent& componentProperty = ComponentRegistry::myTypeErasureDataTypes[propertyID];
+
+					if (componentProperty.StoreData != nullptr)
 					{
-						nlohmann::json json = componentProperty.TestSaveLoadData(componentPointer, componentProperties[j].name);
-						jsonData["Entities"][i]["Components"][count]["Properties"][componentProperties[j].name] = json[componentProperties[j].name];
+						const nlohmann::json json = componentProperty.StoreData(componentPointer, propertyName);
+						jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = json[propertyName];
 					}
 				}
 
