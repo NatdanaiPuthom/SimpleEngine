@@ -9,7 +9,7 @@
 #include <concepts>
 #include <typeindex>
 
-inline static nlohmann::json SaveData(float& aValue, const std::string aVariableName)
+inline static nlohmann::json ReturnDataAsJSON(float& aValue, const std::string& aVariableName)
 {
 	nlohmann::json json;
 	json[aVariableName] = aValue;
@@ -33,7 +33,7 @@ public:
 	bool(*AddComponentFunctionPointer)(ECS::Entity aEntity) = nullptr;
 	bool(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
 
-	nlohmann::json(*StoreData)(void* aData, const std::string aVariableName) = nullptr;
+	nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
 };
 
 template<typename T>
@@ -43,9 +43,9 @@ concept Editable = requires(T & aData, const std::string & aVariableName)
 };
 
 template<typename T>
-concept Editable2 = requires(T & aData, const std::string aVariableName)
+concept Editable2 = requires(T & aData, const std::string & aVariableName)
 {
-	{ SaveData(aData, aVariableName) } -> std::same_as<nlohmann::json>;
+	{ ReturnDataAsJSON(aData, aVariableName) } -> std::same_as<nlohmann::json>;
 };
 
 class ComponentRegistry final
@@ -124,10 +124,10 @@ public:
 
 		if constexpr (Editable2<T>)
 		{
-			dataType.StoreData = [](void* aDataPointer, const std::string aVariableName) -> nlohmann::json
+			dataType.GetDataAsJSON = [](void* aDataPointer, const std::string& aVariableName) -> nlohmann::json
 				{
 					T* pointer = reinterpret_cast<T*>(aDataPointer);
-					return SaveData(*pointer, aVariableName);
+					return ReturnDataAsJSON(*pointer, aVariableName);
 				};
 		}
 

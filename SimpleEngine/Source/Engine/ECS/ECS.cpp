@@ -54,9 +54,9 @@ namespace ECS
 					jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = INT_MIN;
 					const TypeErasureComponent& componentProperty = ComponentRegistry::myTypeErasureDataTypes[propertyID];
 
-					if (componentProperty.StoreData != nullptr)
+					if (const auto& getDataFunction = componentProperty.GetDataAsJSON)
 					{
-						const nlohmann::json json = componentProperty.StoreData(componentPointer, propertyName);
+						const nlohmann::json json = getDataFunction(componentPointer, propertyName);
 						jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = json[propertyName];
 					}
 				}
