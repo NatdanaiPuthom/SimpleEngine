@@ -1,7 +1,10 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/ECS/Systems/RenderSystem.hpp"
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 #include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
+#include "External/nlohmann/json.hpp"
+#include <fstream>
 
 namespace ECS
 {
@@ -13,6 +16,59 @@ namespace ECS
 
 	EntityComponentSystem::~EntityComponentSystem()
 	{
+	}
+
+	void EntityComponentSystem::SaveData(EntityComponentSystem& aECS, const std::string& aFileName)
+	{
+		const ECS::Entities entities = aECS.GetAllEntities();
+
+		nlohmann::ordered_json jsonData;
+
+		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
+		{
+			const Entity entity = entities[i];
+			const std::unordered_map<ECS::ComponentType, ComponentID>& components = entity->GetComponentMap();
+
+			jsonData["Entities"][i]["ID"] = entity->GetID();;
+			jsonData["Entities"][i]["Name"] = entity->GetName();;
+
+			size_t count = 0;
+			for (const auto& [componentType, componentID] : components)
+			{
+				void* componentPointer = aECS.GetComponentPointerByComponentID(componentID);
+				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties;
+
+				const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(componentType.name());
+				jsonData["Entities"][i]["Components"][count]["Name"] = componentName;
+
+				for (const ECS::ComponentProperty& componentProperty : componentProperties)
+				{
+					const std::string& propertyName = componentProperty.name;
+					const size_t propertyID = componentProperty.id;
+					const size_t byteOffset = componentProperty.byteOffset;
+
+					const TypeErasureComponent& dataType = ComponentRegistry::myTypeErasureDataTypes[propertyID];
+
+					jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = INT_MIN;
+
+					if (const auto& getDataFunction = dataType.GetDataAsJSON)
+					{
+						void* propertyPointer = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + byteOffset));
+						const nlohmann::json json = getDataFunction(propertyPointer, propertyName);
+						jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = json[propertyName];
+					}
+				}
+
+				++count;
+			}
+		}
+
+		const std::string filePath = SimpleUtilities::GetAbsolutePath(aFileName);
+		std::ofstream writeFile(filePath);
+		assert(writeFile.is_open() && "Failed to open the file");
+
+		writeFile << jsonData.dump(-1);
+		writeFile.close();
 	}
 
 	void EntityComponentSystem::Init()

@@ -72,6 +72,9 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	simpleScript.Init();
 	PROFILER_END();
 
+	ECS::EntityComponentSystem testECS; testECS;
+	ECS::EntityComponentSystem::SaveData(testECS,"Assets/Scenes/scene_1.json");
+
 	while (Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
