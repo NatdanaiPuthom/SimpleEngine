@@ -18,7 +18,7 @@ namespace ECS
 	{
 	}
 
-	void EntityComponentSystem::SaveData(EntityComponentSystem& aECS)
+	void EntityComponentSystem::SaveData(EntityComponentSystem& aECS, const std::string& aFileName)
 	{
 		const ECS::Entities entities = aECS.GetAllEntities();
 
@@ -63,7 +63,7 @@ namespace ECS
 			}
 		}
 
-		const std::string filePath = SimpleUtilities::GetAbsolutePath("Assets/Scenes/scene_1.json"); filePath;
+		const std::string filePath = SimpleUtilities::GetAbsolutePath(aFileName);
 		std::ofstream writeFile(filePath);
 		assert(writeFile.is_open() && "Failed to open the file");
 
