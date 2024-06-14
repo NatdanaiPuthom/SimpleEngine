@@ -19,7 +19,7 @@ namespace Test
 	void TestShadow::Init()
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-		EntityComponentSystem* ecs = World::GetECS();
+		/*EntityComponentSystem* ecs = World::GetECS();
 
 		{
 			ECS::Entity floor = ecs->CreateEntity();
@@ -49,7 +49,7 @@ namespace Test
 			chest->GetComponent<MeshComponent>()->textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTexture("Assets\\Textures\\Models\\T_Particle_Chest_M.dds").get();
 			chest->GetComponent<MeshComponent>()->mesh = graphicsEngine->GetModelFactory()->LoadMesh("Assets\\Models\\StaticModels\\SM_Particle_Chest.fbx");
 			chest->GetComponent<TransformComponent>()->transform.SetPosition({ 0.0f, 1.0f, 0.0f });
-		}
+		}*/
 
 		graphicsEngine->GetCurrentCamera()->SetPosition({ 0.0f,6.0f,-9.0f });
 	}

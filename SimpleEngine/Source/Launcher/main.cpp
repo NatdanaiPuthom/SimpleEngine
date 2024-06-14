@@ -62,6 +62,10 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	editor.Init();
 	PROFILER_END();
 
+	PROFILER_BEGIN("ECS LoadData");
+	ECS::EntityComponentSystem::LoadData(ecs, "Assets/Scenes/Scene_Test.json");
+	PROFILER_END();
+
 	PROFILER_BEGIN("GameWorld Initialize");
 	Simple::GameWorld gameWorld;
 	gameWorld.Init();
@@ -71,15 +75,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	SCRIPT::SimpleNodeScript simpleScript;
 	simpleScript.Init();
 	PROFILER_END();
-
-	ECS::EntityComponentSystem::SaveData(ecs, "Assets/Scenes/scene_original.json");
-
-	//{ //NOTE(V11.0.4): TEST
-	//	ECS::EntityComponentSystem ecsLoad;
-	//	//ecsLoad.Init();
-	//	ECS::EntityComponentSystem::LoadData(ecsLoad, "Assets/Scenes/scene_original.json");
-	//	ECS::EntityComponentSystem::SaveData(ecsLoad, "Assets/Scenes/scene_1.json");
-	//}
 
 	while (Global::GetGameIsRunning())
 	{

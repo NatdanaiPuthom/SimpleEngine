@@ -18,6 +18,71 @@ namespace ECS
 	{
 	}
 
+	void EntityComponentSystem::Init()
+	{
+		constexpr size_t entitiesToReserve = 16; //NOTE(v9.30.10):Small number for experimental purposes for now
+		myEntityManager.Init(entitiesToReserve);
+
+		mySystemManager.AddSystem(std::move(std::make_unique<RenderSystem>(&myEntityManager)));
+
+		mySystemManager.Init();
+	}
+
+	void EntityComponentSystem::Update()
+	{
+		mySystemManager.Update();
+	}
+
+	void EntityComponentSystem::Render()
+	{
+		mySystemManager.Render();
+	}
+
+	void EntityComponentSystem::RenderPointLights()
+	{
+		mySystemManager.RenderPointLights();
+	}
+
+	void EntityComponentSystem::RenderSkyBoxAndDirectionalLight()
+	{
+		mySystemManager.RenderSkyBoxAndDirectionalLight();
+	}
+
+	void EntityComponentSystem::AddSystem(std::unique_ptr<System> aSystem)
+	{
+		mySystemManager.AddSystem(std::move(aSystem));
+	}
+
+	Entity EntityComponentSystem::CreateEntity(const EntityID aEntityID)
+	{
+		return myEntityManager.CreateEntity(aEntityID);
+	}
+
+	bool EntityComponentSystem::RemoveEntity(const EntityID aEntityID)
+	{
+		return myEntityManager.DestroyEntity(aEntityID);
+	}
+
+	void EntityComponentSystem::SetGlobalPointerToThis()
+	{
+		Impl::SimpleWorldECS::SetECS(this);
+	}
+
+	Entity EntityComponentSystem::GetEntity(const EntityID aID)
+	{
+		return myEntityManager.GetEntity(aID);
+	}
+
+	Entities EntityComponentSystem::GetAllEntities()
+	{
+		return myEntityManager.GetAllEntities();
+	}
+
+	void* EntityComponentSystem::GetComponentPointerByComponentID(const ComponentID aComponentID)
+	{
+		return myComponentManager.GetComponentByComponentID(aComponentID);
+	}
+
 	void EntityComponentSystem::SaveData(EntityComponentSystem& aECS, const std::string& aFileName)
 	{
 		const ECS::Entities entities = aECS.GetAllEntities();
@@ -122,68 +187,4 @@ namespace ECS
 		}
 	}
 
-	void EntityComponentSystem::Init()
-	{
-		constexpr size_t entitiesToReserve = 8; //NOTE(v9.30.10):Small number for experimental purposes for now
-		myEntityManager.Init(entitiesToReserve);
-
-		mySystemManager.AddSystem(std::move(std::make_unique<RenderSystem>(&myEntityManager)));
-
-		mySystemManager.Init();
-	}
-
-	void EntityComponentSystem::Update()
-	{
-		mySystemManager.Update();
-	}
-
-	void EntityComponentSystem::Render()
-	{
-		mySystemManager.Render();
-	}
-
-	void EntityComponentSystem::RenderPointLights()
-	{
-		mySystemManager.RenderPointLights();
-	}
-
-	void EntityComponentSystem::RenderSkyBoxAndDirectionalLight()
-	{
-		mySystemManager.RenderSkyBoxAndDirectionalLight();
-	}
-
-	void EntityComponentSystem::AddSystem(std::unique_ptr<System> aSystem)
-	{
-		mySystemManager.AddSystem(std::move(aSystem));
-	}
-
-	Entity EntityComponentSystem::CreateEntity(const EntityID aEntityID)
-	{
-		return myEntityManager.CreateEntity(aEntityID);
-	}
-
-	bool EntityComponentSystem::RemoveEntity(const EntityID aEntityID)
-	{
-		return myEntityManager.DestroyEntity(aEntityID);
-	}
-
-	void EntityComponentSystem::SetGlobalPointerToThis()
-	{
-		Impl::SimpleWorldECS::SetECS(this);
-	}
-
-	Entity EntityComponentSystem::GetEntity(const EntityID aID)
-	{
-		return myEntityManager.GetEntity(aID);
-	}
-
-	Entities EntityComponentSystem::GetAllEntities()
-	{
-		return myEntityManager.GetAllEntities();
-	}
-
-	void* EntityComponentSystem::GetComponentPointerByComponentID(const ComponentID aComponentID)
-	{
-		return myComponentManager.GetComponentByComponentID(aComponentID);
-	}
 }

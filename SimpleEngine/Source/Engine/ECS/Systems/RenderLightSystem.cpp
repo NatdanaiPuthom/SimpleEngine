@@ -21,9 +21,9 @@ namespace ECS
 
 	void RenderLightSystem::Init()
 	{
-		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		//Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
-		{
+		/*{
 			ECS::Entity entity = myEntityManager->CreateEntity();
 			entity->SetName("SkyBox");
 			entity->AddComponent<SkyBoxComponent>();
@@ -34,9 +34,9 @@ namespace ECS
 			skyBoxComponent->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::SkyBox);
 
 			mySkyBoxID = entity->GetID();
-		}
+		}*/
 
-		{
+		/*{
 			ECS::Entity directionalLight = myEntityManager->CreateEntity();
 			directionalLight->SetName("Directional Light");
 			directionalLight->AddComponent<DirectionalLightComponent>();
@@ -48,12 +48,12 @@ namespace ECS
 			directionalLightComponent->transform.SetPosition({ 0.0f, 5.0f, 0.0f });
 
 			myDirectionalLightID = directionalLight->GetID();
-		}
+		}*/
 	}
 
 	void RenderLightSystem::Update()
 	{
-		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		/*Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		ECS::Entity skyboxEntity = myEntityManager->GetEntity(mySkyBoxID);
 		ECS::Entity directionalLight = myEntityManager->GetEntity(myDirectionalLightID);
@@ -87,7 +87,7 @@ namespace ECS
 			pointLight3.radius = 5.0f;
 
 			graphicsEngine->AddPointLight(pointLight3);
-		}
+		}*/
 
 		/*if (ImGui::Begin("DirectionalLight"))
 		{
@@ -125,7 +125,7 @@ namespace ECS
 
 	void RenderLightSystem::Render()
 	{
-		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		/*Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		ID3D11DeviceContext* context = graphicsEngine->GetContext().Get(); context;
 		const Drawer::Renderer* renderer = Global::GetRenderer();
 
@@ -204,12 +204,12 @@ namespace ECS
 
 			renderer->RenderSphere(sphere);
 			renderer->RenderLine(line);
-		}
+		}*/
 	}
 
 	void RenderLightSystem::RenderSkyBoxAndDirectionalLight()
 	{
-		const Drawer::Renderer* renderer = Global::GetRenderer();
+		/*const Drawer::Renderer* renderer = Global::GetRenderer();
 
 		ECS::Entity skyBox = myEntityManager->GetEntity(mySkyBoxID);
 		ECS::Entity directionalLight = myEntityManager->GetEntity(myDirectionalLightID);
@@ -218,6 +218,6 @@ namespace ECS
 		const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 
 		renderer->RenderUnlit(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
-		renderer->RenderUnlit(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
+		renderer->RenderUnlit(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);*/
 	}
 }
