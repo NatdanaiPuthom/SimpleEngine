@@ -52,7 +52,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
-	ecs.SetGlobalPointerToThis();
+	ecs.SetGlobalPointerToThis(); //NOTE(v11.0.6): move this once SceneManager is finish
 	PROFILER_END();
 
 	PROFILER_BEGIN("SimpleEngine Core Class Initialize");
@@ -63,7 +63,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_END();
 
 	PROFILER_BEGIN("ECS LoadData");
-	ECS::EntityComponentSystem::LoadData(ecs, "Assets/Scenes/Scene_Test.scene");
+	ECS::EntityComponentSystem::LoadData(ecs, "Assets/Scenes/Scene_Test.scene"); //NOTE(v11.0.6): move this once SceneManager is finish
 	PROFILER_END();
 
 	PROFILER_BEGIN("GameWorld Initialize");
