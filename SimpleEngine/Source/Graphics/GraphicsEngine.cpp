@@ -208,40 +208,40 @@ namespace Graphics
 
 	void GraphicsEngine::PreloadShaders()
 	{
-		if (!AddShader("Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso"))
+		if (!AddShader("Shaders\\DefaultPS.cso", "Shaders\\DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/DefaultPS.cso", "Shaders/AnimatedModelVS.cso"))
+		if (!AddShader("Shaders\\DefaultPS.cso", "Shaders\\AnimatedModelVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/LinePS.cso", "Shaders/Line2DVS.cso"))
+		if (!AddShader("Shaders\\LinePS.cso", "Shaders\\Line2DVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/SkyBoxPS.cso", "Shaders/DefaultVS.cso"))
+		if (!AddShader("Shaders\\SkyBoxPS.cso", "Shaders\\DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/GBufferPS.cso", "Shaders/GBufferVS.cso"))
+		if (!AddShader("Shaders\\GBufferPS.cso", "Shaders\\GBufferVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/DeferredPS.cso", "Shaders/FullScreenVS.cso"))
+		if (!AddShader("Shaders\\DeferredPS.cso", "Shaders\\FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/PointLightCullPS.cso", "Shaders/DefaultVS.cso"))
+		if (!AddShader("Shaders\\PointLightCullPS.cso", "Shaders\\DefaultVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/PostProcessingPS.cso", "Shaders/FullScreenVS.cso"))
+		if (!AddShader("Shaders\\PostProcessingPS.cso", "Shaders\\FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/FullScreenCopyPS.cso", "Shaders/FullScreenVS.cso"))
+		if (!AddShader("Shaders\\FullScreenCopyPS.cso", "Shaders\\FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/GaussianBlurPS.cso", "Shaders/FullScreenVS.cso"))
+		if (!AddShader("Shaders\\GaussianBlurPS.cso", "Shaders\\FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/BloomPixelFilterPS.cso", "Shaders/FullScreenVS.cso"))
+		if (!AddShader("Shaders\\BloomPixelFilterPS.cso", "Shaders\\FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 
-		if (!AddShader("Shaders/BloomPS.cso", "Shaders/FullScreenVS.cso"))
+		if (!AddShader("Shaders\\BloomPS.cso", "Shaders\\FullScreenVS.cso"))
 			assert(false && "Failed to add Shader");
 	}
 
@@ -944,43 +944,43 @@ namespace Graphics
 		switch (aShaderType)
 		{
 		case eShaderType::Unlit_Default:
-			shader = GetShader("Shaders/DefaultPS.cso", "Shaders/DefaultVS.cso");
+			shader = GetShader("Shaders\\DefaultPS.cso", "Shaders\\DefaultVS.cso");
 			break;
 		case eShaderType::Unlit_Animated:
-			shader = GetShader("Shaders/DefaultPS.cso", "Shaders/AnimatedModelVS.cso");
+			shader = GetShader("Shaders\\DefaultPS.cso", "Shaders\\AnimatedModelVS.cso");
 			break;
 		case eShaderType::PBR_Default:
-			shader = GetShader("Shaders/DefaultPBRPS.cso", "Shaders/DefaultVS.cso");
+			shader = GetShader("Shaders\\DefaultPBRPS.cso", "Shaders\\DefaultVS.cso");
 			break;
 		case eShaderType::PBR_Animated:
-			shader = GetShader("Shaders/DefaultPBRPS.cso", "Shaders/AnimatedModelVS.cso");
+			shader = GetShader("Shaders\\DefaultPBRPS.cso", "Shaders\\AnimatedModelVS.cso");
 			break;
 		case eShaderType::SkyBox:
-			shader = GetShader("Shaders/SkyBoxPS.cso", "Shaders/DefaultVS.cso");
+			shader = GetShader("Shaders\\SkyBoxPS.cso", "Shaders\\DefaultVS.cso");
 			break;
 		case eShaderType::GBuffer:
-			shader = GetShader("Shaders/GBufferPS.cso", "Shaders/GBufferVS.cso");
+			shader = GetShader("Shaders\\GBufferPS.cso", "Shaders\\GBufferVS.cso");
 			break;
 		case eShaderType::Deferred:
-			shader = GetShader("Shaders/DeferredPS.cso", "Shaders/FullScreenVS.cso");
+			shader = GetShader("Shaders\\DeferredPS.cso", "Shaders\\FullScreenVS.cso");
 			break;
 		case eShaderType::PointLight:
-			shader = GetShader("Shaders/PointLightCullPS.cso", "Shaders/DefaultVS.cso");
+			shader = GetShader("Shaders\\PointLightCullPS.cso", "Shaders\\DefaultVS.cso");
 			break;
 		case eShaderType::PostProcessing:
-			shader = GetShader("Shaders/PostProcessingPS.cso", "Shaders/FullScreenVS.cso");
+			shader = GetShader("Shaders\\PostProcessingPS.cso", "Shaders\\FullScreenVS.cso");
 			break;
 		case eShaderType::GaussianBlur:
-			shader = GetShader("Shaders/GaussianBlurPS.cso", "Shaders/FullScreenVS.cso");
+			shader = GetShader("Shaders\\GaussianBlurPS.cso", "Shaders\\FullScreenVS.cso");
 			break;
 		case eShaderType::Bloom:
-			shader = GetShader("Shaders/BloomPS.cso", "Shaders/FullScreenVS.cso");
+			shader = GetShader("Shaders\\BloomPS.cso", "Shaders\\FullScreenVS.cso");
 			break;
 		case eShaderType::BloomPixelFilter:
-			shader = GetShader("Shaders/BloomPixelFilterPS.cso", "Shaders/FullScreenVS.cso");
+			shader = GetShader("Shaders\\BloomPixelFilterPS.cso", "Shaders\\FullScreenVS.cso");
 			break;
 		case eShaderType::Copy:
-			shader = GetShader("Shaders/FullScreenCopyPS.cso", "Shaders/FullScreenVS.cso");
+			shader = GetShader("Shaders\\FullScreenCopyPS.cso", "Shaders\\FullScreenVS.cso");
 			break;
 		default:
 			break;

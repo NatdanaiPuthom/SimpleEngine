@@ -34,35 +34,33 @@ namespace Graphics
 		std::unique_ptr<Mesh> pyramidMesh = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> planeMesh = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> skyboxMesh = std::make_unique<Mesh>();
-		std::unique_ptr<Mesh> directionalLightMesh = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> terrainMesh = std::make_unique<Mesh>();
 		std::unique_ptr<Mesh> sphereMesh = std::make_unique<Mesh>();
 
-		if (!cubeMesh->Init(cubeData, "Primitive Cube", ""))
+		if (!cubeMesh->Init(cubeData, "Primitive Cube", "Primitive Cube"))
 			assert(false && "Failed to create Cube");
 
-		if (!pyramidMesh->Init(pyramidData, "Primitive Pyramid", ""))
+		if (!pyramidMesh->Init(pyramidData, "Primitive Pyramid", "Primitive Pyramid"))
 			assert(false && "Failed to create Pyramid");
 
-		if (!planeMesh->Init(planeData, "Primitive Plane", ""))
+		if (!planeMesh->Init(planeData, "Primitive Plane", "Primitive Plane"))
 			assert(false && "Failed to create Plane");
 
-		if (!skyboxMesh->Init(skyboxData, "Primitive SkyBox", ""))
+		if (!skyboxMesh->Init(skyboxData, "Primitive SkyBox", "Primitive Skybox"))
 			assert(false && "Failed to create SkyBox");
 
-		if (!terrainMesh->Init(terrainData, "Primitive Terrain", ""))
+		if (!terrainMesh->Init(terrainData, "Primitive Terrain", "Primitive Terrain"))
 			assert(false && "Failed to create Terrain");
 
-		if (!sphereMesh->Init(sphereData, "Primitive Sphere", ""))
+		if (!sphereMesh->Init(sphereData, "Primitive Sphere", "Primitive Sphere"))
 			assert(false && "Failed to create Sphere");
 
-		AddMesh("Cube", std::move(cubeMesh));
-		AddMesh("Pyramid", std::move(pyramidMesh));
-		AddMesh("Plane", std::move(planeMesh));
-		AddMesh("Skybox", std::move(skyboxMesh));
-		AddMesh("DirectionalLight", std::move(directionalLightMesh));
-		AddMesh("Terrain", std::move(terrainMesh));
-		AddMesh("Sphere", std::move(sphereMesh));
+		AddMesh("Primitive Cube", std::move(cubeMesh));
+		AddMesh("Primitive Pyramid", std::move(pyramidMesh));
+		AddMesh("Primitive Plane", std::move(planeMesh));
+		AddMesh("Primitive Skybox", std::move(skyboxMesh));
+		AddMesh("Primitive Terrain", std::move(terrainMesh));
+		AddMesh("Primitive Sphere", std::move(sphereMesh));
 	}
 
 	const Mesh* ModelFactory::LoadMesh(const std::string& aFileName)
@@ -161,15 +159,15 @@ namespace Graphics
 		switch (aShape)
 		{
 		case ePrimitiveShape::Cube:
-			return myMeshes["Cube"].get();
+			return myMeshes["Primitive Cube"].get();
 		case ePrimitiveShape::Pyramid:
-			return myMeshes["Pyramid"].get();
+			return myMeshes["Primitive Pyramid"].get();
 		case ePrimitiveShape::Plane:
-			return myMeshes["Plane"].get();
+			return myMeshes["Primitive Plane"].get();
 		case ePrimitiveShape::Sphere:
-			return myMeshes["Sphere"].get();
+			return myMeshes["Primitive Sphere"].get();
 		case ePrimitiveShape::SkyBox:
-			return myMeshes["Skybox"].get();
+			return myMeshes["Primitive Skybox"].get();
 		default:
 			return nullptr;
 		}

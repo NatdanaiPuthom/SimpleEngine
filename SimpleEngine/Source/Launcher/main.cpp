@@ -72,14 +72,14 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	simpleScript.Init();
 	PROFILER_END();
 
-	//ECS::EntityComponentSystem::SaveData(ecs, "Assets/Scenes/scene_original.json");
+	ECS::EntityComponentSystem::SaveData(ecs, "Assets/Scenes/scene_original.json");
 
-	{ //NOTE(V11.0.4): TEST
-		ECS::EntityComponentSystem ecsLoad;
-		//ecsLoad.Init();
-		ECS::EntityComponentSystem::LoadData(ecsLoad, "Assets/Scenes/scene_original.json");
-		//ECS::EntityComponentSystem::SaveData(ecsLoad, "Assets/Scenes/scene_1.json");
-	}
+	//{ //NOTE(V11.0.4): TEST
+	//	ECS::EntityComponentSystem ecsLoad;
+	//	//ecsLoad.Init();
+	//	ECS::EntityComponentSystem::LoadData(ecsLoad, "Assets/Scenes/scene_original.json");
+	//	ECS::EntityComponentSystem::SaveData(ecsLoad, "Assets/Scenes/scene_1.json");
+	//}
 
 	while (Global::GetGameIsRunning())
 	{

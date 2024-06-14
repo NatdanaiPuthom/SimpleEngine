@@ -60,7 +60,7 @@ namespace ECS
 		{
 			meshPath = aMesh->GetRelativePath();
 		}
-	
+
 		json[aVariableName] = meshPath;
 		return json;
 	}
@@ -92,9 +92,10 @@ namespace ECS
 
 		if (aTexture != nullptr)
 		{
-			textureName = aTexture->GetTextureName();
-			json[aVariableName] = textureName;
+			textureName = aTexture->GetRelativePath();
 		}
+
+		json[aVariableName] = textureName;
 
 		return json;
 	}
