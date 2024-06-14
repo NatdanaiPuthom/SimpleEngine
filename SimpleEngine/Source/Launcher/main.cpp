@@ -63,7 +63,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_END();
 
 	PROFILER_BEGIN("ECS LoadData");
-	ECS::EntityComponentSystem::LoadData(ecs, "Assets/Scenes/Scene_Test.json");
+	ECS::EntityComponentSystem::LoadData(ecs, "Assets/Scenes/Scene_Test.scene");
 	PROFILER_END();
 
 	PROFILER_BEGIN("GameWorld Initialize");
