@@ -21,7 +21,7 @@ namespace Editor
 		{
 			if (ImGui::BeginMenu("File##FileMenuBar"))
 			{
-				if (ImGui::MenuItem("Open", ""))
+				if (ImGui::MenuItem("Save", "Ctrl + S"))
 				{
 				}
 				ImGui::EndMenu();

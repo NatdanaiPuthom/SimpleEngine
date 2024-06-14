@@ -46,7 +46,7 @@ namespace ECS
 		bool shouldExpose = true;
 	};
 
-	class TypeErasureComponent final
+	class TypeErasureObject final
 	{
 	public:
 		std::vector<ComponentProperty> myComponentProperties;
@@ -65,8 +65,8 @@ namespace ECS
 		template<typename T>  friend class ECS::__RegisterDataType;
 		friend class ECS::__RegisterProperty;
 	public:
-		static inline std::unordered_map<size_t, TypeErasureComponent> myTypeErasureComponents = {};
-		static inline std::unordered_map<size_t, TypeErasureComponent> myTypeErasureDataTypes = {};
+		static inline std::unordered_map<size_t, TypeErasureObject> myTypeErasureComponents = {};
+		static inline std::unordered_map<size_t, TypeErasureObject> myTypeErasureDataTypes = {};
 		static inline std::unordered_map<std::type_index, void(*)(void*)> myTypeErasureComponentDestructorInvoker;
 	public:
 
@@ -105,7 +105,7 @@ namespace ECS
 				return;
 			}
 
-			TypeErasureComponent typeErasureComponent;
+			TypeErasureObject typeErasureComponent;
 
 			typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
@@ -142,7 +142,7 @@ namespace ECS
 				return;
 			}
 
-			TypeErasureComponent dataType;
+			TypeErasureObject dataType;
 
 			dataType.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
