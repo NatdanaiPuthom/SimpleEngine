@@ -12,6 +12,7 @@
 #include "Launcher/ErrorCatcher.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
+static void RunWithSEH(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
 {
@@ -22,13 +23,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	PROFILER_START_LISTEN();
 	PROFILER_BEGIN("Main.cpp");
 
-	__try
-	{
-		Run(hInstance, nCmdShow);
-	}
-	__except (ExceptionFilter(GetExceptionInformation()))
-	{
-	}
+	RunWithSEH(hInstance, nCmdShow);
 
 	PROFILER_END();
 	PROFILER_DISABLE();
@@ -36,6 +31,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	Simple::EasyProfilerOutput();
 
 	return 0;
+}
+
+static void RunWithSEH(HINSTANCE& hInstance, int nCmdShow)
+{
+	__try
+	{
+		Run(hInstance, nCmdShow);
+	}
+	__except (ExceptionFilter(GetExceptionInformation()))
+	{
+	}
 }
 
 static void Run(HINSTANCE& hInstance, int nCmdShow)
