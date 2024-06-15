@@ -70,7 +70,7 @@ namespace ECS
 			return static_cast<ComponentID>(-1);
 		}
 
-		const ComponentID componentID = myComponentManager->CreateComponent<T>();
+		const ComponentID componentID = myComponentManager->CreateComponent<T>(aEntityID);
 
 		myEntityComponents[aEntityID][typeid(T)] = componentID;
 

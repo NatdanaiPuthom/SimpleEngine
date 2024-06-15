@@ -4,6 +4,7 @@
 #include "Engine/ECS/Core/EntityManager.hpp"
 #include "Engine/ECS/Core/SystemManager.hpp"
 #include <memory>
+#include <unordered_set>
 
 namespace ECS
 {
@@ -37,10 +38,14 @@ namespace ECS
 
 		Entity CreateEntity(const EntityID aEntityID = 0);
 		bool RemoveEntity(const EntityID aEntityID);
+	public:
 
 		Entity GetEntity(const EntityID aID);
 		Entities GetAllEntities();
 		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
+
+		template<typename T>
+		const std::unordered_set<EntityID>& GetEntityIDsWithThisComponent();
 
 	public:
 		void SetGlobalPointerToThis();
@@ -49,4 +54,10 @@ namespace ECS
 		ComponentManager myComponentManager;
 		SystemManager mySystemManager;
 	};
+
+	template<typename T>
+	inline const std::unordered_set<EntityID>& EntityComponentSystem::GetEntityIDsWithThisComponent()
+	{
+		return myComponentManager.GetEntityIDsWithThisComponent<T>();
+	}
 }

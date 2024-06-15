@@ -7,6 +7,7 @@ namespace ECS
 {
 	ComponentManager::ComponentManager()
 		: myCurrentComponentID(0)
+		, myPaddings{ -1 }
 	{
 	}
 
@@ -31,14 +32,27 @@ namespace ECS
 		}
 	}
 
-	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const size_t aComponentID)
+	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const EntityID aEntityID, const ComponentID aComponentID)
 	{
 		ComponentPool& pool = myComponents[aComponentType];
 		char* component = pool.GetComponentAddressByID(aComponentID);
 
 		ComponentRegistry::myTypeErasureComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
 		myAllComponents.erase(aComponentID);
+		myComponentTypeToEntityIDs[aComponentType].erase(aEntityID);
 
 		return pool.SwapWithLastAndRemoveEditor(aComponentID);
+	}
+
+	void* ComponentManager::GetComponentByComponentID(const ComponentID aID)
+	{
+		auto it = myAllComponents.find(aID);
+
+		if (it != myAllComponents.end())
+		{
+			return reinterpret_cast<void*>(it->second);
+		}
+
+		return nullptr;
 	}
 }
