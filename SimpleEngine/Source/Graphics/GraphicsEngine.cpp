@@ -884,28 +884,28 @@ namespace Graphics
 		switch (aIcon)
 		{
 		case eIconType::FBX:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_FBX.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_FBX.dds");
 			break;
 		case eIconType::Folder:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_Folder.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Folder.dds");
 			break;
 		case eIconType::CubeMap:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_CubeMap.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_CubeMap.dds");
 			break;
 		case eIconType::PNG:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_PNG.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_PNG.dds");
 			break;
 		case eIconType::JPG:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_JPG.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_JPG.dds");
 			break;
 		case eIconType::OBJ:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_OBJ.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_OBJ.dds");
 			break;
 		case eIconType::MP3:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_MP3.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_MP3.dds");
 			break;
 		case eIconType::Unknown:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_Question.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Question.dds");
 			break;
 		}
 
