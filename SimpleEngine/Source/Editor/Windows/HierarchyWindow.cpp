@@ -28,16 +28,20 @@ namespace Editor
 				ImGui::OpenPopup("Add Scene Object");
 			}
 
+			/*
+			* 
+			* TO-DO(v11.0.6): implement name search filter which will require how ecs work i assume?
+			* 
 			ImGui::SameLine(ImGui::GetWindowWidth() - 135);
 			ImGui::PushItemWidth(125);
 
 			std::string sceneSearch = "";
-
 			if (ImGui::InputTextWithHint("##SearchScene", "Search", &sceneSearch[0], sceneSearch.capacity() + 1))
 			{
 			}
 
 			ImGui::PopItemWidth();
+			*/
 
 			if (ImGui::BeginPopup("Add Scene Object"))
 			{
