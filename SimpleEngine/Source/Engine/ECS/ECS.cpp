@@ -154,9 +154,12 @@ namespace ECS
 			Entity entity = aECS.CreateEntity(id);
 			entity->SetName(name);
 
-			const auto& componentList = entityData["Components"];
+			if (entityData.contains("Components") == false)
+			{
+				continue;
+			}
 
-			for (const auto& componentDataJSON : componentList)
+			for (const auto& componentDataJSON : entityData["Components"])
 			{
 				const size_t componentHashCode = componentDataJSON["ComponentHash"];
 				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentHashCode].myComponentProperties;

@@ -14,7 +14,7 @@ namespace Editor
 #ifndef _SIMPLE
 	EditorEngine::EditorEngine()
 	{
-		//AddTool(std::move(std::make_unique<FileMenuBar>())); //TO-DO(11.0.6): implement save function to save current world to json so ecs can load from it
+		AddTool(std::move(std::make_unique<FileMenuBar>())); //TO-DO(11.0.6): implement save function to save current world to json so ecs can load from it
 		AddTool(std::move(std::make_unique<MainMenuBar>()));
 		AddTool(std::move(std::make_unique<HelpMenuBar>()));
 	}

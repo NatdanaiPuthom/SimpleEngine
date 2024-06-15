@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/FileMenuBar.hpp"
+#include "Game/World.hpp"
 
 namespace Editor
 {
@@ -23,6 +24,8 @@ namespace Editor
 			{
 				if (ImGui::MenuItem("Save", "Ctrl + S"))
 				{
+					auto ecs = World::GetECS();
+					ECS::EntityComponentSystem::SaveData(*ecs, "Assets/Scenes/Test_Scene_Copy.scene");
 				}
 				ImGui::EndMenu();
 			}
