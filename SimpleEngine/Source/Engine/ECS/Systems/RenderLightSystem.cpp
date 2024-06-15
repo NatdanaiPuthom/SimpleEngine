@@ -42,6 +42,13 @@ namespace ECS
 			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 			graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
+			graphicsEngine->SetDirectionalLightColor({ 1.0f, 1.0f, 1.0f,1.0f });
+		}
+		else
+		{
+			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+			graphicsEngine->SetDirectionalLightDirection({ 0.0f,0.0f,0.0f });
+			graphicsEngine->SetDirectionalLightColor({ 0.0f, 0.0f, 0.0f,0.0f });
 		}
 
 		{
