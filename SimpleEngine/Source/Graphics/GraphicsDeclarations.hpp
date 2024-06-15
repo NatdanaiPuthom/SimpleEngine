@@ -69,7 +69,8 @@ namespace Graphics
 	enum class eTextureType
 	{
 		Default,
-		Simple
+		Simple,
+		DirectionalLight
 	};
 
 	enum class eSkyBox

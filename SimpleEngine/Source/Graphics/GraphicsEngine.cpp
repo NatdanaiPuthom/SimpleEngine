@@ -843,6 +843,9 @@ namespace Graphics
 		case eTextureType::Simple:
 			texture = GetTexture("Assets\\Textures\\T_Hamster_C.dds");
 			break;
+		case eTextureType::DirectionalLight:
+			texture = GetTexture("Assets\\Textures\\T_Sunlight_C.dds");
+			break;
 		}
 
 		return texture;
