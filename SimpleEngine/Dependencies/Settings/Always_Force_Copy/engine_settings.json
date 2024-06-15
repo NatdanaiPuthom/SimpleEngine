@@ -1,8 +1,9 @@
 {
   "engine_settings": {
     "name": "SimpleEngine",
-    "version": "v11.1.0",
+    "version": "v11.1.1",
     "quote":  "(Simple, it's just that easy)",
-    "author":  "Natdanai"
+    "author": "Natdanai",
+    "co":  "Emil"
   }
 }
