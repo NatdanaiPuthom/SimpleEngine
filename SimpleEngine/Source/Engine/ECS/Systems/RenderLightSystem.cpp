@@ -80,7 +80,7 @@ namespace ECS
 
 	void RenderLightSystem::Render()
 	{
-		/*Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		ID3D11DeviceContext* context = graphicsEngine->GetContext().Get(); context;
 		const Drawer::Renderer* renderer = Global::GetRenderer();
 
@@ -141,10 +141,11 @@ namespace ECS
 			}
 		}
 
+		if (myEntityWithDirectionalLightID != (static_cast<size_t>(-1)))
 		{
-			ECS::Entity directionalLight = myEntityManager->GetEntity(myDirectionalLightID);
-			DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 
+			const ECS::Entity directionalLight = myEntityComponentSystem.GetEntity(myEntityWithDirectionalLightID);
+			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
 			Drawer::Line line;
@@ -159,7 +160,7 @@ namespace ECS
 
 			renderer->RenderSphere(sphere);
 			renderer->RenderLine(line);
-		}*/
+		}
 	}
 
 	void RenderLightSystem::RenderSkyBoxAndDirectionalLight() const
