@@ -30,7 +30,7 @@ namespace Graphics
 		GraphicsEngine();
 		~GraphicsEngine();
 
-		const bool Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize);
+		void Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize);
 
 		bool BeginFrame();
 		void EndFrame();

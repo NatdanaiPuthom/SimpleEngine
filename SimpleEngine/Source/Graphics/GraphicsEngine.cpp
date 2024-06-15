@@ -29,7 +29,7 @@ namespace Graphics
 	{
 	}
 
-	const bool GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
+	void GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
 	{
 		myCameraConstantBuffer = std::make_unique<ConstantBuffer>();
 		myTimeConstantBuffer = std::make_unique<ConstantBuffer>();
@@ -95,8 +95,6 @@ namespace Graphics
 		myLightBufferData->directionalLightDirection.z = 0.0f;
 
 		myCurrentCamera = myEditorCamera;
-
-		return true;
 	}
 
 	void GraphicsEngine::PrepareFrame()
@@ -158,7 +156,6 @@ namespace Graphics
 
 		PROFILER_BEGIN("Present frame");
 		mySwapChain->Present(myFPSLevelCap, 0);
-
 		PROFILER_END();
 	}
 
