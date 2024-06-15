@@ -999,6 +999,16 @@ namespace Graphics
 		return myModelFactory.get();
 	}
 
+	const Drawer::Renderer* GraphicsEngine::GetRenderer() const
+	{
+		return myRenderer.get();
+	}
+
+	const ModelFactory* GraphicsEngine::GetModelFactory() const
+	{
+		return myModelFactory.get();
+	}
+
 	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetCurrentCamera()
 	{
 		return myCurrentCamera;

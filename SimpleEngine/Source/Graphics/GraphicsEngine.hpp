@@ -108,6 +108,8 @@ namespace Graphics
 
 		Drawer::Renderer* GetRenderer();
 		ModelFactory* GetModelFactory();
+		const Drawer::Renderer* GetRenderer() const;
+		const ModelFactory* GetModelFactory() const;
 
 		Math::Vector4f GetAmbientLightColorAndIntensity() const;
 		Math::Vector4f GetDirectionalLightColor() const;
