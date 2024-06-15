@@ -44,6 +44,16 @@ namespace ECS
 			graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
 		}
 
+		{
+			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+
+			PointLightData pointLight1;
+			pointLight1.color = { 1.0f, 0.0f,0.0f, 5.0f };
+			pointLight1.position = { 2.75f, 1.7f, 1.25f };
+			pointLight1.radius = 3.0f;
+			graphicsEngine->AddPointLight(pointLight1);
+		}
+
 		/*if (ImGui::Begin("DirectionalLight"))
 		{
 			Math::Transform& transform = directionalLightComponent->transform;
@@ -107,6 +117,8 @@ namespace ECS
 		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
 
 		PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
+
+		graphicsEngine->UpdateLightBuffer(static_cast<size_t>(-1)); //TO-DO(v11.0.6): Refactor somehow, maybe seperate directionalLight buffer from pointlights?
 
 		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
 		{
