@@ -41,7 +41,6 @@ cbuffer TimeBuffer : register(b2)
 
 cbuffer LightBuffer : register(b3)
 {  
-    float4x4    directionalLightWorldToProjectionMatrix;
     float4      ambientLightColorAndIntensity;
     float4      directionalLightColorAndIntensity;
 

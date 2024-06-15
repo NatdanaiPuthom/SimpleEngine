@@ -42,7 +42,6 @@ namespace Graphics
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
 
 		myEditorCamera = std::make_shared<Graphics::Camera>();
-		myShadowCamera = std::make_shared<Graphics::Camera>();
 
 		myRenderer = std::make_unique<Drawer::Renderer>();
 		myModelFactory = std::make_unique<ModelFactory>();
@@ -575,7 +574,6 @@ namespace Graphics
 	{
 		LightBufferData lightBufferData;
 
-		lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix()) * myShadowCamera->GetProjectionMatrix();
 		lightBufferData.ambientLightColorAndIntensity = myLightBufferData->ambientLightColorAndIntensity;
 		lightBufferData.directionalLightColorAndIntensity = myLightBufferData->directionalLightColorAndIntensity;
 		lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
@@ -1019,9 +1017,14 @@ namespace Graphics
 		return myEditorCamera;
 	}
 
-	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetShadowCamera()
+	const std::shared_ptr<Camera> GraphicsEngine::GetCurrentCamera() const
 	{
-		return myShadowCamera;
+		return myCurrentCamera;
+	}
+
+	const std::shared_ptr<Camera> GraphicsEngine::GetEditorCamera() const
+	{
+		return myEditorCamera;
 	}
 
 	ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
@@ -1487,7 +1490,6 @@ namespace Graphics
 	{
 		LightBufferData lightBufferData;
 
-		lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::Identity();
 		lightBufferData.directionalLightColorAndIntensity = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 		lightBufferData.directionalLightDirection = Math::Vector3f(0.0f, 0.0f, 0.0f);
 
