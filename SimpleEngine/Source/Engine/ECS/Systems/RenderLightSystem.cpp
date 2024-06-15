@@ -196,6 +196,8 @@ namespace ECS
 
 	bool RenderLightSystem::FindAndSetSkyBox()
 	{
+		myEntityWithSkyBoxID = static_cast<size_t>(-1);
+
 		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem.GetEntityIDsWithThisComponent<SkyBoxComponent>();
 
 		if (entitiesWithSkyBoxComponent.empty() == false)
@@ -209,6 +211,8 @@ namespace ECS
 
 	bool RenderLightSystem::FindAndSetDirectionalLight()
 	{
+		myEntityWithDirectionalLightID = static_cast<size_t>(-1);
+
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem.GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 
 		if (entitiesWithDirectionalLightComponent.empty() == false)

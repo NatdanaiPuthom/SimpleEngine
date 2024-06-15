@@ -98,14 +98,14 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		engine.Update();
 		PROFILER_END();
 
-		PROFILER_BEGIN("Game Update");
-		ecs.Update();
-		gameWorld.Update();
-		PROFILER_END();
-
 		PROFILER_BEGIN("Editor Update");
 		simpleScript.Update();
 		editor.Update();
+		PROFILER_END();
+
+		PROFILER_BEGIN("Game Update");
+		ecs.Update();
+		gameWorld.Update();
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To GBuffer");
