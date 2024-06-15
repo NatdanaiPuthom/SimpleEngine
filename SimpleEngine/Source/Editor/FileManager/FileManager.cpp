@@ -94,6 +94,7 @@ namespace Editor
 		ID3D11ShaderResourceView* jpgIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::JPG)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* objIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::OBJ)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* mp3Icon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::MP3)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* sceneIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Scene)->GetShaderResourceView().Get();
 
 		static constexpr float padding = 16.0f;
 		static constexpr float thumbnailSize = 64.0f;
@@ -141,6 +142,10 @@ namespace Editor
 			else if (extension == ".fbx")
 			{
 				textureID = fbxIcon;
+			}
+			else if (extension == ".scene")
+			{
+				textureID = sceneIcon;
 			}
 			else if (extension == ".png")
 			{

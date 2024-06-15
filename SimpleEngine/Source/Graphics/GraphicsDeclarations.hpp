@@ -91,6 +91,7 @@ namespace Graphics
 		JPG,
 		OBJ,
 		MP3,
+		Scene,
 		Unknown
 	};
 
