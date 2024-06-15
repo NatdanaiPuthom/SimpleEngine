@@ -95,10 +95,10 @@ namespace Editor
 		ID3D11ShaderResourceView* objIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::OBJ)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* mp3Icon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::MP3)->GetShaderResourceView().Get();
 
-		static const float padding = 16.0f;
-		static const float thumbnailSize = 64.0f;
-		static const float cellSize = thumbnailSize + padding;
-		static const float panelWidth = ImGui::GetContentRegionAvail().x;
+		static constexpr float padding = 16.0f;
+		static constexpr float thumbnailSize = 64.0f;
+		static constexpr float cellSize = thumbnailSize + padding;
+		const float panelWidth = ImGui::GetContentRegionAvail().x;
 
 		int columnCount = (int)(panelWidth / cellSize);
 
