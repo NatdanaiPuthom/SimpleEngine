@@ -1,13 +1,14 @@
 #pragma once
 #include "Engine/ECS/Core/System.hpp"
-#include <vector>
 
 namespace ECS
 {
+	class EntityComponentSystem;
+
 	class RenderSystem : public ECS::System
 	{
 	public:
-		RenderSystem(EntityManager* aECS);
+		RenderSystem(EntityComponentSystem& aEntityComponentSystem);
 		~RenderSystem() override;
 
 		void Init() override;

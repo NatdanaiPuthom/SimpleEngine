@@ -4,11 +4,10 @@
 
 namespace ECS
 {
-	SystemManager::SystemManager(EntityManager* aEntityManager)
-		: myEntityManager(aEntityManager)
-		, myFixedUpdateTime(1.0f / 60.0f)
+	SystemManager::SystemManager(EntityComponentSystem& aEntityComponentSystem)
+		: myFixedUpdateTime(1.0f / 60.0f)
 		, myTimer(0.0f)
-		, mySkyBoxAndDirectionalLightSystem(aEntityManager)
+		, mySkyBoxAndDirectionalLightSystem(aEntityComponentSystem)
 	{
 	}
 

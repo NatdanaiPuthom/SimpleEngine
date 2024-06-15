@@ -1,15 +1,16 @@
 #pragma once
-#include "Engine/ECS/Core/System.hpp"
 #include "Engine/ECS/Systems/RenderLightSystem.hpp"
 #include <memory>
 #include <vector>
 
 namespace ECS
 {
+	class System;
+
 	class SystemManager final
 	{
 	public:
-		SystemManager(EntityManager* aEntityManager);
+		SystemManager(EntityComponentSystem& aEntityComponentSystem);
 		~SystemManager();
 
 		void Init();
@@ -23,8 +24,6 @@ namespace ECS
 	private:
 		std::vector<std::unique_ptr<System>> mySystems;
 		RenderLightSystem mySkyBoxAndDirectionalLightSystem;
-
-		EntityManager* myEntityManager;
 
 		const float myFixedUpdateTime;
 		float myTimer;

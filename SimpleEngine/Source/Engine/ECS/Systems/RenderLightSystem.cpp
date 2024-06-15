@@ -9,7 +9,7 @@
 
 namespace ECS
 {
-	RenderLightSystem::RenderLightSystem(EntityManager* aECS) : System(aECS)
+	RenderLightSystem::RenderLightSystem(EntityComponentSystem& aEntityComponentSystem) : System(aEntityComponentSystem)
 		, mySkyBoxID(static_cast<size_t>(-1))
 		, myDirectionalLightID(static_cast<size_t>(-1))
 	{
