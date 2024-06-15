@@ -907,6 +907,9 @@ namespace Graphics
 		case eIconType::Scene:
 			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Scene.dds");
 			break;
+		case eIconType::Cursor:
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Cursor.dds");
+			break;
 		case eIconType::Unknown:
 			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Question.dds");
 			break;

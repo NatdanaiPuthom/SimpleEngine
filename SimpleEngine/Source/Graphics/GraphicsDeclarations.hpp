@@ -92,6 +92,7 @@ namespace Graphics
 		OBJ,
 		MP3,
 		Scene,
+		Cursor,
 		Unknown
 	};
 
