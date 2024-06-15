@@ -69,7 +69,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_END();
 
 	PROFILER_BEGIN("ECS LoadData");
-	ECS::EntityComponentSystem::LoadData(ecs, "Assets/Scenes/Test_Scene_Copy.scene"); //NOTE(v11.0.6): move this once SceneManager is finish
+	ECS::EntityComponentSystem::LoadData(ecs, "Assets/Scenes/Test_Scene.scene"); //NOTE(v11.0.6): move this once SceneManager is finish
 	PROFILER_END();
 
 	PROFILER_BEGIN("GameWorld Initialize");

@@ -18,6 +18,15 @@ namespace Editor
 
 	void FileMenuBar::Update()
 	{
+		if (MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL))
+		{
+			if (MainSingleton::GetInputManager().IsKeyPressed('S'))
+			{
+				auto ecs = World::GetECS();
+				ECS::EntityComponentSystem::SaveData(*ecs, "Assets/Scenes/Test_Scene.scene");
+			}
+		}
+
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu("File##FileMenuBar"))
@@ -25,8 +34,9 @@ namespace Editor
 				if (ImGui::MenuItem("Save", "Ctrl + S"))
 				{
 					auto ecs = World::GetECS();
-					ECS::EntityComponentSystem::SaveData(*ecs, "Assets/Scenes/Test_Scene_Copy.scene");
+					ECS::EntityComponentSystem::SaveData(*ecs, "Assets/Scenes/Test_Scene.scene"); //TO-DO(v11.1.0): save current active scene
 				}
+
 				ImGui::EndMenu();
 			}
 
