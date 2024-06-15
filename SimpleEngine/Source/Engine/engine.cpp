@@ -45,7 +45,7 @@ namespace Simple
 		ShowWindow(myHWND, nCmdShow);
 		UpdateWindow(myHWND);
 
-		myCustomCursor = LoadCursorFromFile(L"Assets/Icon/White-Cat.cur");
+		myCustomCursor = LoadCursorFromFile(L"Assets/Cursors/White-Cat.cur");
 		assert(myCustomCursor && "Failed to load Custom Cursor");
 
 		MainSingleton::GetInputManager().SetHWND(myHWND);
