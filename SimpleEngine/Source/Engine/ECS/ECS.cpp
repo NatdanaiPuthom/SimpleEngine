@@ -23,7 +23,7 @@ namespace ECS
 		constexpr size_t entitiesToReserve = 16; //NOTE(v9.30.10):Small number for experimental purposes for now
 		myEntityManager.Init(entitiesToReserve);
 
-		mySystemManager.AddSystem(std::move(std::make_unique<RenderSystem>(*this)));
+		mySystemManager.AddSystem<RenderSystem>(*this);
 
 		mySystemManager.Init();
 	}
@@ -46,11 +46,6 @@ namespace ECS
 	void EntityComponentSystem::RenderSkyBoxAndDirectionalLight()
 	{
 		mySystemManager.RenderSkyBoxAndDirectionalLight();
-	}
-
-	void EntityComponentSystem::AddSystem(std::unique_ptr<System> aSystem)
-	{
-		mySystemManager.AddSystem(std::move(aSystem));
 	}
 
 	Entity EntityComponentSystem::CreateEntity(const EntityID aEntityID)
