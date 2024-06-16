@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/ECS/Systems/RenderLightSystem.hpp"
 #include <memory>
-#include <vector>
+#include <unordered_map>
 
 namespace ECS
 {
@@ -9,6 +9,7 @@ namespace ECS
 
 	class SystemManager final
 	{
+		using SystemHashCode = size_t;
 	public:
 		SystemManager(EntityComponentSystem& aEntityComponentSystem);
 		~SystemManager();
@@ -19,13 +20,28 @@ namespace ECS
 		void RenderPointLights();
 		void RenderSkyBoxAndDirectionalLight();
 
-		void AddSystem(std::unique_ptr<System> aSystem);
+		template<typename T>
+		void AddSystem(EntityComponentSystem& aEntityComponentSystem);
 
 	private:
-		std::vector<std::unique_ptr<System>> mySystems;
+		std::unordered_map<SystemHashCode, std::shared_ptr<System>> mySystems;
 		RenderLightSystem mySkyBoxAndDirectionalLightSystem;
 
 		const float myFixedUpdateTime;
 		float myTimer;
 	};
+
+	template<typename T>
+	inline void SystemManager::AddSystem(EntityComponentSystem& aEntityComponentSystem)
+	{
+		const SystemHashCode hashCode = typeid(T).hash_code();
+
+		if (mySystems.contains(hashCode))
+		{
+			assert(false && "System already exist.");
+			return;
+		}
+
+		mySystems[hashCode] = std::make_shared<T>(aEntityComponentSystem);
+	}
 }

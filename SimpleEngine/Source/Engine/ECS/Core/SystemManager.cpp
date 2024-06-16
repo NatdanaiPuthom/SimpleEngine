@@ -17,7 +17,7 @@ namespace ECS
 
 	void SystemManager::Init()
 	{
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			system->Init();
 		}
@@ -35,12 +35,12 @@ namespace ECS
 			myTimer = 0.0f;
 		}
 
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			system->EarlyUpdate();
 		}
 
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			if (shouldUpdate)
 			{
@@ -48,13 +48,13 @@ namespace ECS
 			}
 		}
 
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			system->Update();
 			mySkyBoxAndDirectionalLightSystem.Update();
 		}
 
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			system->LateUpdate();
 		}
@@ -62,7 +62,7 @@ namespace ECS
 
 	void SystemManager::Render()
 	{
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			system->Render();
 		}
@@ -76,10 +76,5 @@ namespace ECS
 	void SystemManager::RenderSkyBoxAndDirectionalLight()
 	{
 		mySkyBoxAndDirectionalLightSystem.RenderSkyBoxAndDirectionalLight();
-	}
-
-	void SystemManager::AddSystem(std::unique_ptr<System> aSystem)
-	{
-		mySystems.push_back(std::move(aSystem));
 	}
 }
