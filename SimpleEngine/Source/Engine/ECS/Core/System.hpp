@@ -7,7 +7,7 @@ namespace ECS
 	class System
 	{
 	public:
-		System(EntityComponentSystem& aEntityComponentSystem): myEntityComponentSystem(aEntityComponentSystem) {};
+		System(EntityComponentSystem* aEntityComponentSystem): myEntityComponentSystem(aEntityComponentSystem) {};
 
 		virtual ~System() {};
 
@@ -20,6 +20,6 @@ namespace ECS
 		virtual void LateUpdate() {};
 
 	protected:
-		EntityComponentSystem& myEntityComponentSystem;
+		EntityComponentSystem* myEntityComponentSystem;
 	};
 }

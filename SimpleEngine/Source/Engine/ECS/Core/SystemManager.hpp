@@ -11,7 +11,7 @@ namespace ECS
 	{
 		using SystemHashCode = size_t;
 	public:
-		SystemManager(EntityComponentSystem& aEntityComponentSystem);
+		SystemManager(EntityComponentSystem* aEntityComponentSystem);
 		~SystemManager();
 
 		void Init();
@@ -21,18 +21,18 @@ namespace ECS
 		void RenderSkyBoxAndDirectionalLight();
 
 		template<typename T>
-		void AddSystem(EntityComponentSystem& aEntityComponentSystem);
+		void AddSystem(EntityComponentSystem* aEntityComponentSystem);
 
 	private:
 		std::unordered_map<SystemHashCode, std::shared_ptr<System>> mySystems;
-		RenderLightSystem mySkyBoxAndDirectionalLightSystem;
+		std::shared_ptr<RenderLightSystem> mySkyBoxAndDirectionalLightSystem;
 
-		const float myFixedUpdateTime;
+		float myFixedUpdateTime;
 		float myTimer;
 	};
 
 	template<typename T>
-	inline void SystemManager::AddSystem(EntityComponentSystem& aEntityComponentSystem)
+	inline void SystemManager::AddSystem(EntityComponentSystem* aEntityComponentSystem)
 	{
 		const SystemHashCode hashCode = typeid(T).hash_code();
 

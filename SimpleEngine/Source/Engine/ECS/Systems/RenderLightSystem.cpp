@@ -9,7 +9,7 @@
 
 namespace ECS
 {
-	RenderLightSystem::RenderLightSystem(EntityComponentSystem& aEntityComponentSystem) : System(aEntityComponentSystem)
+	RenderLightSystem::RenderLightSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
 		, myEntityWithSkyBoxID(static_cast<size_t>(-1))
 		, myEntityWithDirectionalLightID(static_cast<size_t>(-1))
 	{
@@ -30,7 +30,7 @@ namespace ECS
 		if (FindAndSetSkyBox())
 		{
 			const Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-			const ECS::Entity skyboxEntity = myEntityComponentSystem.GetEntity(myEntityWithSkyBoxID);
+			const ECS::Entity skyboxEntity = myEntityComponentSystem->GetEntity(myEntityWithSkyBoxID);
 			SkyBoxComponent* skyBoxComponent = skyboxEntity->GetComponent<SkyBoxComponent>();
 			skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
 		}
@@ -38,7 +38,7 @@ namespace ECS
 		if (FindAndSetDirectionalLight())
 		{
 			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-			const ECS::Entity directionalLight = myEntityComponentSystem.GetEntity(myEntityWithDirectionalLightID);
+			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(myEntityWithDirectionalLightID);
 			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 			graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
@@ -163,7 +163,7 @@ namespace ECS
 		if (myEntityWithDirectionalLightID != (static_cast<size_t>(-1)))
 		{
 
-			const ECS::Entity directionalLight = myEntityComponentSystem.GetEntity(myEntityWithDirectionalLightID);
+			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(myEntityWithDirectionalLightID);
 			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
@@ -188,14 +188,14 @@ namespace ECS
 
 		if (myEntityWithSkyBoxID != (static_cast<size_t>(-1)))
 		{
-			const ECS::Entity skyBox = myEntityComponentSystem.GetEntity(myEntityWithSkyBoxID);
+			const ECS::Entity skyBox = myEntityComponentSystem->GetEntity(myEntityWithSkyBoxID);
 			const SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
 			renderer->RenderUnlit(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
 		}
 
 		if (myEntityWithDirectionalLightID != (static_cast<size_t>(-1)))
 		{
-			const ECS::Entity directionalLight = myEntityComponentSystem.GetEntity(myEntityWithDirectionalLightID);
+			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(myEntityWithDirectionalLightID);
 			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 			renderer->RenderUnlit(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
 		}
@@ -205,7 +205,7 @@ namespace ECS
 	{
 		myEntityWithSkyBoxID = static_cast<size_t>(-1);
 
-		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem.GetEntityIDsWithThisComponent<SkyBoxComponent>();
+		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 
 		if (entitiesWithSkyBoxComponent.empty() == false)
 		{
@@ -220,7 +220,7 @@ namespace ECS
 	{
 		myEntityWithDirectionalLightID = static_cast<size_t>(-1);
 
-		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem.GetEntityIDsWithThisComponent<DirectionalLightComponent>();
+		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 
 		if (entitiesWithDirectionalLightComponent.empty() == false)
 		{

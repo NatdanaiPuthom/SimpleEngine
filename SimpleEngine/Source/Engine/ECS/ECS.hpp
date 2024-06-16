@@ -2,6 +2,7 @@
 #include "Engine/ECS/Components/AllEngineComponents.hpp"
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Core/EntityManager.hpp"
+#include "Engine/ECS/Core/ComponentManager.hpp"
 #include "Engine/ECS/Core/SystemManager.hpp"
 #include <memory>
 #include <unordered_set>
@@ -19,11 +20,6 @@ namespace ECS
 
 		EntityComponentSystem();
 		~EntityComponentSystem();
-
-		EntityComponentSystem(const EntityComponentSystem&) = delete;
-		EntityComponentSystem(EntityComponentSystem&&) = delete;
-		EntityComponentSystem& operator=(const EntityComponentSystem&) = delete;
-		EntityComponentSystem& operator=(EntityComponentSystem&&) = delete;
 
 		static void SaveData(EntityComponentSystem& aECS, const std::string& aFileName);
 		static void LoadData(EntityComponentSystem& aECS, const std::string& aFileName);

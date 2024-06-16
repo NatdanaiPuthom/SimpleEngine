@@ -6,7 +6,7 @@ namespace ECS
 	class RenderLightSystem final : public ECS::System
 	{
 	public:
-		RenderLightSystem(EntityComponentSystem& aEntityComponentSystem);
+		RenderLightSystem(EntityComponentSystem* aEntityComponentSystem);
 		~RenderLightSystem();
 
 		void Init() override;

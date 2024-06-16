@@ -8,7 +8,7 @@ namespace ECS
 		: myStartMemoryAddress(nullptr)
 		, myEndMemoryAddress(nullptr)
 		, myCurrentMemoryAddress(nullptr)
-		, padding("Believe")
+		//, padding("Believe")
 	{
 		Init(1);
 	}

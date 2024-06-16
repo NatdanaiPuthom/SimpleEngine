@@ -17,10 +17,10 @@ namespace ECS
 		EntityPool();
 		~EntityPool();
 
-		EntityPool(const EntityPool&) = delete;
+		/*EntityPool(const EntityPool&) = delete;
 		EntityPool(EntityPool&&) = delete;
 		EntityPool& operator=(const EntityPool&) = delete;
-		EntityPool& operator=(EntityPool&&) = delete;
+		EntityPool& operator=(EntityPool&&) = delete;*/
 
 		void Init(const size_t aEntityAmountToReserved);
 
@@ -40,6 +40,6 @@ namespace ECS
 		char* myStartMemoryAddress;
 		char* myEndMemoryAddress;
 		std::vector<size_t> myEntityIDs;
-		const char padding[8];
+		//const char padding[8];
 	};
 }

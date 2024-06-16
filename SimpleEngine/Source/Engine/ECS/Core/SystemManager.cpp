@@ -4,11 +4,11 @@
 
 namespace ECS
 {
-	SystemManager::SystemManager(EntityComponentSystem& aEntityComponentSystem)
+	SystemManager::SystemManager(EntityComponentSystem* aEntityComponentSystem)
 		: myFixedUpdateTime(1.0f / 60.0f)
 		, myTimer(0.0f)
-		, mySkyBoxAndDirectionalLightSystem(aEntityComponentSystem)
 	{
+		mySkyBoxAndDirectionalLightSystem = std::make_shared<RenderLightSystem>(aEntityComponentSystem);
 	}
 
 	SystemManager::~SystemManager()
@@ -22,7 +22,7 @@ namespace ECS
 			system->Init();
 		}
 
-		mySkyBoxAndDirectionalLightSystem.Init();
+		mySkyBoxAndDirectionalLightSystem->Init();
 	}
 
 	void SystemManager::Update()
@@ -51,7 +51,7 @@ namespace ECS
 		for (const auto& [key, system] : mySystems)
 		{
 			system->Update();
-			mySkyBoxAndDirectionalLightSystem.Update();
+			mySkyBoxAndDirectionalLightSystem->Update();
 		}
 
 		for (const auto& [key, system] : mySystems)
@@ -70,11 +70,11 @@ namespace ECS
 
 	void SystemManager::RenderPointLights()
 	{
-		mySkyBoxAndDirectionalLightSystem.Render();
+		mySkyBoxAndDirectionalLightSystem->Render();
 	}
 
 	void SystemManager::RenderSkyBoxAndDirectionalLight()
 	{
-		mySkyBoxAndDirectionalLightSystem.RenderSkyBoxAndDirectionalLight();
+		mySkyBoxAndDirectionalLightSystem->RenderSkyBoxAndDirectionalLight();
 	}
 }

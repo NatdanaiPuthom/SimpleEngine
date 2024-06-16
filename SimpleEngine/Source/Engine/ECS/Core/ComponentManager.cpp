@@ -7,7 +7,7 @@ namespace ECS
 {
 	ComponentManager::ComponentManager()
 		: myCurrentComponentID(0)
-		, myPaddings{ -1 }
+		//, myPaddings{ -1 }
 	{
 	}
 

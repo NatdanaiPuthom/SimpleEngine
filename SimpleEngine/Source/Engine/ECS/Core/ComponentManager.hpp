@@ -46,7 +46,7 @@ namespace ECS
 		std::unordered_map<ComponentID, char*> myAllComponents;
 		std::unordered_map<ComponentType, std::unordered_set<EntityID>> myComponentTypeToEntityIDs;
 		size_t myCurrentComponentID;
-		const int myPaddings[2];
+		//const int myPaddings[2];
 	};
 
 	template<typename T>

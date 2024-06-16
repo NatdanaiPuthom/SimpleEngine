@@ -10,7 +10,7 @@ namespace ECS
 {
 	EntityComponentSystem::EntityComponentSystem()
 		: myEntityManager(&myComponentManager)
-		, mySystemManager(*this)
+		, mySystemManager(this)
 	{
 	}
 
@@ -23,7 +23,7 @@ namespace ECS
 		constexpr size_t entitiesToReserve = 16; //NOTE(v9.30.10):Small number for experimental purposes for now
 		myEntityManager.Init(entitiesToReserve);
 
-		mySystemManager.AddSystem<RenderSystem>(*this);
+		mySystemManager.AddSystem<RenderSystem>(this);
 
 		mySystemManager.Init();
 	}

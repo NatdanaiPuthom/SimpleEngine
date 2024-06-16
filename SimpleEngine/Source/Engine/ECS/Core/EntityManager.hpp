@@ -57,7 +57,7 @@ namespace ECS
 		std::vector<EntityID> myRemovedEntityIDs;
 		ComponentManager* myComponentManager;
 		size_t myCurrentEntityID;
-		const char padding[16];
+		//const char padding[16];
 	};
 
 	template<typename T>

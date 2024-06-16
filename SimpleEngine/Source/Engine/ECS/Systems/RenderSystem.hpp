@@ -8,7 +8,7 @@ namespace ECS
 	class RenderSystem : public ECS::System
 	{
 	public:
-		RenderSystem(EntityComponentSystem& aEntityComponentSystem);
+		RenderSystem(EntityComponentSystem* aEntityComponentSystem);
 		~RenderSystem() override;
 
 		void Init() override;

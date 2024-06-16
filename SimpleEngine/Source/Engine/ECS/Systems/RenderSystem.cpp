@@ -7,7 +7,7 @@
 
 namespace ECS
 {
-	RenderSystem::RenderSystem(EntityComponentSystem& aEntityComponentSystem) : System(aEntityComponentSystem)
+	RenderSystem::RenderSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
 	{
 	}
 
@@ -21,7 +21,7 @@ namespace ECS
 
 	void RenderSystem::Update()
 	{
-		const ECS::Entities entities = myEntityComponentSystem.GetAllEntities();
+		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
@@ -53,7 +53,7 @@ namespace ECS
 	void RenderSystem::Render()
 	{
 		const Drawer::Renderer* renderer = Global::GetRenderer();
-		const ECS::Entities entities = myEntityComponentSystem.GetAllEntities();
+		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
