@@ -10,7 +10,7 @@ namespace ECS
 	EntityManager::EntityManager(ComponentManager* aComponentManager)
 		: myCurrentEntityID(0)
 		, myComponentManager(aComponentManager)
-		//, padding("Never Give Up!!")
+		, padding("Never Give Up!!Never Give Up!!Never Give Up!!!\0")
 	{
 	}
 
