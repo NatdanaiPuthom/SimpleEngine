@@ -3,6 +3,7 @@
 #include "Editor/Editor.hpp"
 #include "Engine/ImGui/ImGuiEngine.hpp"
 #include "MainSingleton/MainSingleton.hpp"
+#include <stdlib.h>
 
 namespace Editor
 {
@@ -58,6 +59,7 @@ namespace Editor
 		if (ImGui::Begin("Settings"))
 		{
 			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+			static constexpr unsigned int heightPadding = 2;
 
 			ShowFPS();
 
@@ -81,17 +83,28 @@ namespace Editor
 			AdjustRasterizerState();
 			AdjustWindowSize();
 
+			ImGui::Dummy(ImVec2(0, heightPadding));
 			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0, heightPadding));
 
-			ImGui::Dummy(ImVec2(0, 20));
 			ToggleConsole();
+
+			if (ImGui::Button("Clear Console##SettingsTool"))
+			{
+				system("CLS");
+			}
+
+			ImGui::Dummy(ImVec2(0, heightPadding));
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0, heightPadding));
 
 			if (ImGui::Checkbox("Render Debug Lines", &EditorEngine::myStaticShouldRenderDebugLines))
 			{
 			}
 
+			ImGui::Dummy(ImVec2(0, heightPadding));
 			ImGui::Separator();
-			ImGui::Dummy(ImVec2(0, 20));
+			ImGui::Dummy(ImVec2(0, heightPadding));
 
 			Simpleton::AudioManager& audioManager = MainSingleton::GetAudioManager();
 
@@ -118,11 +131,16 @@ namespace Editor
 				audioManager.ChangeMusicVolume(musicVolume);
 			}
 
+			ImGui::Dummy(ImVec2(0, heightPadding));
 			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0, heightPadding));
 
-			ImGui::Dummy(ImVec2(0, 20));
 			AdjustActiveScene();
 			AdjustEditorStyle();
+
+			ImGui::Dummy(ImVec2(0, heightPadding));
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0, heightPadding));
 		}
 
 		ImGui::End();
