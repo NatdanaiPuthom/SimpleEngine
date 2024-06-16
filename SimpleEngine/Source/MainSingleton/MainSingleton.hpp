@@ -1,6 +1,7 @@
 #pragma once
 #include "MainSingleton/Input/InputManager.hpp"
 #include "MainSingleton/Audio/AudioManager.h"
+#include "MainSingleton/SceneManager/SceneManager.hpp"
 
 class MainSingleton final
 {
@@ -9,4 +10,5 @@ public:
 
 	static Simpleton::InputManager& GetInputManager();
 	static Simpleton::AudioManager& GetAudioManager();
+	static Simpleton::SceneManager& GetSceneManager();
 };

@@ -16,3 +16,8 @@ AudioManager& MainSingleton::GetAudioManager()
 {
 	return AudioManager::GetInstance();
 }
+
+Simpleton::SceneManager& MainSingleton::GetSceneManager()
+{
+	return SceneManager::GetInstance();
+}
