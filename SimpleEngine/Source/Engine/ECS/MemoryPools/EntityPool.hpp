@@ -4,7 +4,6 @@
 
 namespace ECS
 {
-	class IEntity;
 	class EntityManager;
 }
 
@@ -13,15 +12,9 @@ namespace ECS
 	class EntityPool final
 	{
 		using EntityID = size_t;
+
+		friend class EntityManager;
 	public:
-		EntityPool();
-		~EntityPool();
-
-		/*EntityPool(const EntityPool&) = delete;
-		EntityPool(EntityPool&&) = delete;
-		EntityPool& operator=(const EntityPool&) = delete;
-		EntityPool& operator=(EntityPool&&) = delete;*/
-
 		void Init(const size_t aEntityAmountToReserved);
 
 		char* CreateEntity(const EntityID aID, std::unordered_map<EntityID, char*>& aEntities, EntityManager* aEntityManager);
@@ -33,6 +26,9 @@ namespace ECS
 		char* GetStartMemoryAddress();
 
 	private:
+		EntityPool();
+		~EntityPool();
+
 		void Reallocate();
 		void Clear();
 	private:
@@ -40,6 +36,6 @@ namespace ECS
 		char* myStartMemoryAddress;
 		char* myEndMemoryAddress;
 		std::vector<size_t> myEntityIDs;
-		//const char padding[8];
+		char padding[8];
 	};
 }
