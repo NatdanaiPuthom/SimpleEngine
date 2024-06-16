@@ -13,4 +13,16 @@ namespace Simpleton
 	void SceneManager::Init()
 	{
 	}
+
+	void SceneManager::Update()
+	{
+	}
+
+	void SceneManager::Render()
+	{
+	}
+
+	void SceneManager::LateRender()
+	{
+	}
 }

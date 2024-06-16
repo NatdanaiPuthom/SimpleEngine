@@ -19,6 +19,7 @@ namespace Simple
 		void Init();
 		void Update();
 		void Render();
+		void LateRender();
 
 	private:
 		void NormalUpdate();

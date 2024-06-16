@@ -3,6 +3,7 @@
 #include "Game/Managers/LevelManager/LevelManager.hpp"
 #include "Game/Managers/RaycastManager/RaycastManager.hpp"
 #include "Game/Managers/EventManager/EventManager.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace Simple
 {
@@ -24,7 +25,7 @@ namespace Simple
 		myLevelManager->Init();
 		myRaycastManager->Init();
 
-		testShadow.Init();
+		MainSingleton::GetSceneManager().Init();
 	}
 
 	void GameWorld::Update()
@@ -43,7 +44,12 @@ namespace Simple
 		myLevelManager->Render();
 		myRaycastManager->Render();
 
-		testShadow.Render();
+		MainSingleton::GetSceneManager().Render();
+	}
+
+	void GameWorld::LateRender()
+	{
+		MainSingleton::GetSceneManager().LateRender();
 	}
 
 	void GameWorld::NormalUpdate()
@@ -51,7 +57,7 @@ namespace Simple
 		myLevelManager->Update();
 		myRaycastManager->Update();
 
-		testShadow.Update();
+		MainSingleton::GetSceneManager().Update();
 	}
 
 	void GameWorld::EarlyUpdate()

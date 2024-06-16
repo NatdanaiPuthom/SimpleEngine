@@ -12,6 +12,9 @@ namespace Simpleton
 	public:
 	
 		void Init();
+		void Update();
+		void Render();
+		void LateRender();
 
 	private:
 		static SceneManager& GetInstance()

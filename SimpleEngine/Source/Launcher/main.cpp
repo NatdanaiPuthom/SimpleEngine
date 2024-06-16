@@ -119,6 +119,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		graphicsEngine.ApplyAmbientAndDirectionalLightDeferred(Graphics::eRenderTargetType::GBuffer);
 
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
+		gameWorld.LateRender();
 		ecs.RenderPointLights();
 		ecs.RenderSkyBoxAndDirectionalLight();
 		PROFILER_END();
