@@ -2,6 +2,7 @@
 #include "Engine/ECS/Systems/RenderLightSystem.hpp"
 #include <memory>
 #include <unordered_map>
+#include <cassert>
 
 namespace ECS
 {
