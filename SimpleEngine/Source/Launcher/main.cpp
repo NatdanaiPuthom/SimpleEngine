@@ -45,30 +45,23 @@ static void RunWithSEH(HINSTANCE& hInstance, int nCmdShow)
 
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
-	PROFILER_BEGIN("MainSingleton Initialize");
-	MainSingleton::Init();
-	PROFILER_END();
-
 	PROFILER_BEGIN("SimpleEngine Core Class Constructors");
 	Simple::Engine engine;
 	Graphics::GraphicsEngine graphicsEngine;
 	Editor::EditorEngine editor;
-	ECS::EntityComponentSystem ecs;
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
-	ecs.SetGlobalPointerToThis(); //NOTE(v11.0.6): move this once SceneManager is finish
 	PROFILER_END();
 
 	PROFILER_BEGIN("SimpleEngine Core Class Initialize");
 	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetEngineHWND(), Global::GetWindowSize());
-	ecs.Init();
 	editor.Init();
 	PROFILER_END();
 
-	PROFILER_BEGIN("ECS LoadData");
-	ECS::EntityComponentSystem::LoadData(ecs, "Assets/Scenes/Test_Scene.scene"); //NOTE(v11.0.6): move this once SceneManager is finish
+	PROFILER_BEGIN("MainSingleton Initialize");
+	MainSingleton::Init();
 	PROFILER_END();
 
 	PROFILER_BEGIN("GameWorld Initialize");
@@ -103,13 +96,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		PROFILER_BEGIN("Game Update");
-		ecs.Update();
 		gameWorld.Update();
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To GBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
-		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();
 
@@ -119,8 +110,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
 		gameWorld.LateRender();
-		ecs.RenderPointLights();
-		ecs.RenderSkyBoxAndDirectionalLight();
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To BloomRenderTarget");

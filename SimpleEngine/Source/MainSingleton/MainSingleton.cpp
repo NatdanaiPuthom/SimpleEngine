@@ -1,30 +1,30 @@
 #include "MainSingleton/MainSingleton.hpp"
 
-using namespace Simpleton;
-
 void MainSingleton::Init()
 {
-	AudioManager::GetInstance().Init();
+	Simpleton::AudioManager::GetInstance().Init();
+	Simpleton::SceneManager::GetInstance().Init();
 }
 
 void MainSingleton::Destroy()
 {
+	Simpleton::SceneManager::GetInstance().Destroy();
 	ECS::ComponentRegistry::GetInstance()->Destroy();
 }
 
-InputManager& MainSingleton::GetInputManager()
+Simpleton::InputManager& MainSingleton::GetInputManager()
 {
-	return InputManager::GetInstance();
+	return Simpleton::InputManager::GetInstance();
 }
 
-AudioManager& MainSingleton::GetAudioManager()
+Simpleton::AudioManager& MainSingleton::GetAudioManager()
 {
-	return AudioManager::GetInstance();
+	return Simpleton::AudioManager::GetInstance();
 }
 
-SceneManager& MainSingleton::GetSceneManager()
+Simpleton::SceneManager& MainSingleton::GetSceneManager()
 {
-	return SceneManager::GetInstance();
+	return Simpleton::SceneManager::GetInstance();
 }
 
 ECS::ComponentRegistry* MainSingleton::GetComponentRegistry()

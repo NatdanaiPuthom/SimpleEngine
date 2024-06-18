@@ -1,8 +1,12 @@
 #pragma once
-#include "Engine/ECS/ECS.hpp"
 #include <vector>
 
 class MainSingleton;
+
+namespace ECS
+{
+	class EntityComponentSystem;
+}
 
 namespace Simpleton
 {
@@ -25,6 +29,8 @@ namespace Simpleton
 
 		SceneManager();
 		~SceneManager();
+
+		void Destroy();
 	private:
 		std::vector<ECS::EntityComponentSystem> myECSs;
 	};

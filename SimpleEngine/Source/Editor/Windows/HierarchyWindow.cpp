@@ -65,7 +65,8 @@ namespace Editor
 			}
 
 			ImGui::Separator();
-			ImGui::Text(World::GetActiveScene()->GetSceneName().c_str());
+			//ImGui::Text(World::GetActiveScene()->GetSceneName().c_str()); //TO-DO(v11.1.1): Fix this once SceneManager is done
+			ImGui::Text("Test");
 			ImGui::Separator();
 
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);

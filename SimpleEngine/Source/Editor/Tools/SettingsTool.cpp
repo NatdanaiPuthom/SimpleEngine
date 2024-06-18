@@ -135,7 +135,7 @@ namespace Editor
 			ImGui::Separator();
 			ImGui::Dummy(ImVec2(0, heightPadding));
 
-			AdjustActiveScene();
+			//AdjustActiveScene(); //TO-DO(v11.1.1): fix when SceneManager is complete
 			AdjustEditorStyle();
 
 			ImGui::Dummy(ImVec2(0, heightPadding));
