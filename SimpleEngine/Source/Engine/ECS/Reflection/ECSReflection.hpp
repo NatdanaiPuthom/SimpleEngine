@@ -10,6 +10,8 @@
 #include <concepts>
 #include <typeindex>
 
+class MainSingleton;
+
 namespace ECS
 {
 	class __RegisterProperty;
@@ -60,6 +62,7 @@ namespace ECS
 
 	class ComponentRegistry final
 	{
+		friend class MainSingleton;
 		friend class __RegisterProperty;
 		template<typename T> friend class __RegisterComponent;
 		template<typename T> friend class __RegisterDataType;
@@ -68,14 +71,13 @@ namespace ECS
 		std::unordered_map<size_t, TypeErasureObject> myTypeErasureComponents;
 		std::unordered_map<size_t, TypeErasureObject> myTypeErasureDataTypes;
 		std::unordered_map<std::type_index, void(*)(void*)> myTypeErasureComponentDestructorInvoker;
-
 	public:
+		void InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "");
+	private:
 		static ComponentRegistry* GetInstance();
 
 		void Destroy();
-		void InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "");
 
-	private:
 		void ExposeProperty(size_t aHashCode, void* aData, const std::string& aVariableName = "");
 
 		template<typename T>
@@ -207,15 +209,7 @@ namespace ECS
 	inline constexpr size_t ComponentRegistry::GetByteOffset(PropertyType DataType::* aProperty)
 	{
 		constexpr DataType* nullDataType = nullptr;
-
-		if (aProperty != nullptr)
-		{
-			return (size_t) & reinterpret_cast<const char&>(nullDataType->*aProperty);
-		}
-
-		assert(false && "Something has gone wrong");
-
-		return 0;
+		return (size_t) & reinterpret_cast<const char&>(nullDataType->*aProperty);
 	}
 
 	template<typename T>

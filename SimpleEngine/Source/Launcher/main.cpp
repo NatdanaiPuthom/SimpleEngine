@@ -1,12 +1,11 @@
-#include "Engine/MemoryTracker/MemoryTracker.h" //NOTE(v9.36.4): Let this be top for now. Need to figure out a way to make sure this is called first
-
-#include "MainSingleton/MainSingleton.hpp"
+#include "Engine/MemoryTracker/MemoryTracker.h"
 #include "Engine/Engine.hpp"
-#include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/Global.hpp"
+#include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 #include "Editor/Editor.hpp"
 #include "NodeScript/SimpleNodeScript.hpp"
 #include "Launcher/ErrorCatcher.hpp"
@@ -16,8 +15,6 @@ static void RunWithSEH(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
 {
-	//SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(memoryTrackerSettings); //NOTE(v9.36.4): It is inline static class wrapper now in MemoryTracker.h
-
 	PROFILER_INIT();
 	PROFILER_ENABLE();
 	PROFILER_START_LISTEN();
@@ -30,7 +27,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	Simple::EasyProfilerOutput();
 
-	ECS::ComponentRegistry::GetInstance()->Destroy();
+	MainSingleton::Destroy();
 
 	return 0;
 }

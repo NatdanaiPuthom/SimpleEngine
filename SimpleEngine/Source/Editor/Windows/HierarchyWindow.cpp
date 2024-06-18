@@ -2,7 +2,7 @@
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/FileManager/FileManager.hpp"
 #include "Engine/ECS/Components/AllEngineComponents.hpp"
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
 {
@@ -149,12 +149,12 @@ namespace Editor
 
 					const size_t componentHashCode = componentType.hash_code();
 
-					if (ECS::ComponentRegistry::GetInstance()->myTypeErasureComponents.contains(componentHashCode) == false)
+					if (MainSingleton::GetComponentRegistry()->myTypeErasureComponents.contains(componentHashCode) == false)
 					{
 						continue;
 					}
 
-					const std::string& componentName = ECS::ComponentRegistry::GetInstance()->myTypeErasureComponents[componentHashCode].myComponentName;
+					const std::string& componentName = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentName;
 					void* componentPointer = World::GetECS()->GetComponentPointerByComponentID(componentID);
 
 					const bool isOpen = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
@@ -173,7 +173,7 @@ namespace Editor
 
 					if (isOpen)
 					{
-						ECS::ComponentRegistry::GetInstance()->InspectComponentProperties(componentHashCode, componentPointer);
+						MainSingleton::GetComponentRegistry()->InspectComponentProperties(componentHashCode, componentPointer);
 					}
 
 					if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
@@ -209,7 +209,7 @@ namespace Editor
 
 				if (ImGui::BeginPopup("Add Component"))
 				{
-					for (const auto& [hashCode, componentType] : ECS::ComponentRegistry::GetInstance()->myTypeErasureComponents)
+					for (const auto& [hashCode, componentType] : MainSingleton::GetComponentRegistry()->myTypeErasureComponents)
 					{
 						if (ImGui::Selectable(componentType.myComponentName.c_str()))
 						{

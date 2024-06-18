@@ -7,6 +7,11 @@ void MainSingleton::Init()
 	AudioManager::GetInstance().Init();
 }
 
+void MainSingleton::Destroy()
+{
+	ECS::ComponentRegistry::GetInstance()->Destroy();
+}
+
 InputManager& MainSingleton::GetInputManager()
 {
 	return InputManager::GetInstance();
@@ -17,7 +22,12 @@ AudioManager& MainSingleton::GetAudioManager()
 	return AudioManager::GetInstance();
 }
 
-Simpleton::SceneManager& MainSingleton::GetSceneManager()
+SceneManager& MainSingleton::GetSceneManager()
 {
 	return SceneManager::GetInstance();
+}
+
+ECS::ComponentRegistry* MainSingleton::GetComponentRegistry()
+{
+	return ECS::ComponentRegistry::GetInstance();
 }

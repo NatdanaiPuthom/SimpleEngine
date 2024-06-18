@@ -26,6 +26,6 @@ namespace Simpleton
 		SceneManager();
 		~SceneManager();
 	private:
-		//std::vector<ECS::EntityComponentSystem> myECSs;
+		std::vector<ECS::EntityComponentSystem> myECSs;
 	};
 }

@@ -1,13 +1,11 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Core/ComponentManager.hpp"
-#include "Engine/ECS/Components/Core/NullComponent.hpp"
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace ECS
 {
 	ComponentManager::ComponentManager()
 		: myCurrentComponentID(0)
-		//, myPaddings{ -1 }
 	{
 	}
 
@@ -26,8 +24,8 @@ namespace ECS
 			char* component = componentPool.GetStartMemoryAddress();
 
 			for (size_t i = 0; i < componentCount; ++i)
-			{
-				ComponentRegistry::GetInstance()->myTypeErasureComponentDestructorInvoker[componentType](&component[i * sizeOfComponentType]);;
+			{	
+				MainSingleton::GetComponentRegistry()->myTypeErasureComponentDestructorInvoker[componentType](&component[i * sizeOfComponentType]);;
 			}
 		}
 	}
@@ -37,7 +35,7 @@ namespace ECS
 		ComponentPool& pool = myComponents[aComponentType];
 		char* component = pool.GetComponentAddressByID(aComponentID);
 
-		ComponentRegistry::GetInstance()->myTypeErasureComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
+		MainSingleton::GetComponentRegistry()->myTypeErasureComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
 		myAllComponents.erase(aComponentID);
 		myComponentTypeToEntityIDs[aComponentType].erase(aEntityID);
 
