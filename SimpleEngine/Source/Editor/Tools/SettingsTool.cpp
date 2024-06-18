@@ -10,7 +10,6 @@ namespace Editor
 	SettingsTool::SettingsTool()
 		: mySelectedWindowSize(0)
 		, mySelectedRasterizerState(0)
-		, myActiveSceneIndex(0)
 		, myConsoleIsOpen(true)
 		, myMusicIsActive(true)
 	{
@@ -159,23 +158,6 @@ namespace Editor
 
 	void SettingsTool::LoadDataFromJson()
 	{
-		const std::string levelJsonFileName = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_LEVELS);
-
-		std::ifstream levelFile(levelJsonFileName);
-		assert(levelFile.is_open() && "Failed To Open file");
-
-		const nlohmann::json levelJson = nlohmann::json::parse(levelFile);
-		levelFile.close();
-
-		const nlohmann::json& scenesIndexes = levelJson["scenes"];
-
-		myScenes.resize(scenesIndexes.size());
-		for (size_t i = 0; i < scenesIndexes.size(); ++i)
-		{
-			const std::string name = scenesIndexes[i]["name"];
-			myScenes[static_cast<size_t>(scenesIndexes[i]["id"])] = name;
-		}
-
 		const std::string editorJsonFileName = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR);
 		std::ifstream editorFile(editorJsonFileName);
 		assert(editorFile.is_open() && "Failed To Open file");
@@ -278,24 +260,6 @@ namespace Editor
 			Global::GetGraphicsEngine()->SetRasterizerState(static_cast<Graphics::eRasterizerState>(mySelectedRasterizerState));
 		}
 		ImGui::EndDisabled();
-	}
-
-	void SettingsTool::AdjustActiveScene()
-	{
-		std::vector<const char*> sceneNameChar;
-		sceneNameChar.reserve(myScenes.size());
-
-		for (size_t i = 0; i < myScenes.size(); ++i)
-		{
-			sceneNameChar.push_back(myScenes[i].c_str());
-		}
-
-		ImGui::SetNextItemWidth(200);
-		myActiveSceneIndex = World::GetActiveSceneIndex();
-		if (ImGui::Combo("Active Scene", &myActiveSceneIndex, sceneNameChar.data(), static_cast<int>(sceneNameChar.size())))
-		{
-			World::SetActiveScene(myActiveSceneIndex);
-		}
 	}
 
 	void SettingsTool::AdjustEditorStyle()

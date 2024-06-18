@@ -72,14 +72,5 @@ namespace Simple
 
 	void LevelManager::LoadSettingsFromJson()
 	{
-		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_LEVELS);
-
-		std::ifstream file(filename);
-		assert(file.is_open() && "Failed To Open File");
-
-		const nlohmann::json json = nlohmann::json::parse(file);
-		file.close();
-
-		myActiveSceneIndex = json["activeScene"];
 	}
 }

@@ -24,14 +24,14 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	os.mkdir(minidump_dir)
 	
 	dirs = {} -- Absolute path to specific folder
-	dirs["root"]           = os.realpath("/")
-	dirs["Bin"]            = os.realpath("Bin/")
-	dirs["Local"]          = os.realpath("Local/")
-	dirs["Dependencies"]   = os.realpath("Dependencies/")
-	dirs["Lib"]            = os.realpath("Dependencies/Lib/")
-	dirs["DLL"]            = os.realpath("Dependencies/DLL/")
-	dirs["SimpleLib"]      = os.realpath("Dependencies/SimpleLib/")
-	dirs["Bin_Settings"]      = os.realpath("Bin/Settings/")
+	dirs["root"]				= os.realpath("/")
+	dirs["Bin"]					= os.realpath("Bin/")
+	dirs["Local"]				= os.realpath("Local/")
+	dirs["Dependencies"]		= os.realpath("Dependencies/")
+	dirs["Lib"]					= os.realpath("Dependencies/Lib/")
+	dirs["DLL"]					= os.realpath("Dependencies/DLL/")
+	dirs["SimpleLib"]			= os.realpath("Dependencies/SimpleLib/")
+	dirs["Bin_Settings"]		= os.realpath("Bin/Settings/")
 
 	defines { -- Create Global Macro For Strings. NOTE(v11.0.3): these macros need names rework as they starting to get quite confuse to understand
 		'SIMPLE_ROOT="' .."../" .. '"',
@@ -44,7 +44,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		'SIMPLE_SETTINGS_IMGUI="' .."Settings/imgui.ini" .. '"',
 		'SIMPLE_SETTINGS_GAME="' .. "Settings/game_settings.json" .. '"',
 		'SIMPLE_SETTINGS_EDITOR="' .. "Settings/editor_settings.json" .. '"',
-		'SIMPLE_SETTINGS_LEVELS="' .. "Settings/levels.json" .. '"',
 		'SIMPLE_SETTINGS_DEBUG="' .. "Settings/debug_settings.json" .. '"',
 		'SIMPLE_SETTINGS_ENGINE="' .. "Settings/engine_settings.json" .. '"',
 		
