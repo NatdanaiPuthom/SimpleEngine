@@ -22,6 +22,9 @@ namespace Simpleton
 		void LateRender();
 
 	private:
+		void LoadSettingsFromJson();
+		void LoadDefaultScene();
+	private:
 		static SceneManager& GetInstance()
 		{
 			static SceneManager instance;
