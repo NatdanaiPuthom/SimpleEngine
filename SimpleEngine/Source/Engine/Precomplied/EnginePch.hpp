@@ -31,6 +31,10 @@
 
 #pragma message("---------Never give up on your dreams!---------------")
 
+#include "MainSingleton/MainSingleton.hpp"
+
+#pragma message("---------Never give up on your dreams!---------------")
+
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Vector4.hpp"
