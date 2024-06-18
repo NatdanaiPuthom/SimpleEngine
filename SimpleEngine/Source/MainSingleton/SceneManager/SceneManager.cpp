@@ -24,28 +24,30 @@ namespace Simpleton
 		camera->SetRotation(Math::Vector3f(30, 0, 0));
 		camera->SetPosition(Math::Vector3f(1, 9, -12));
 
-		myECSs.emplace_back();
-		myECSs[0].SetGlobalPointerToThis();
-		myECSs[0].Init();
+		myCurrentScene = "Assets/Scenes/Test_Scene.scene";
+		myECSs.try_emplace(myCurrentScene);
+
+		myECSs[myCurrentScene].SetGlobalPointerToThis();
+		myECSs[myCurrentScene].Init();
 
 		PROFILER_BEGIN("ECS LoadData");
-		ECS::EntityComponentSystem::LoadData(myECSs[0], "Assets/Scenes/Test_Scene.scene"); //NOTE(v11.0.6): move this once SceneManager is finish
+		ECS::EntityComponentSystem::LoadData(myECSs[myCurrentScene], myCurrentScene);
 		PROFILER_END();
 	}
 
 	void SceneManager::Update()
 	{
-		myECSs[0].Update();
+		myECSs[myCurrentScene].Update();
 	}
 
 	void SceneManager::Render()
 	{
-		myECSs[0].Render();
+		myECSs[myCurrentScene].Render();
 	}
 
 	void SceneManager::LateRender()
 	{
-		myECSs[0].RenderPointLights();
-		myECSs[0].RenderSkyBoxAndDirectionalLight();
+		myECSs[myCurrentScene].RenderPointLights();
+		myECSs[myCurrentScene].RenderSkyBoxAndDirectionalLight();
 	}
 }

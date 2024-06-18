@@ -1,5 +1,6 @@
 #pragma once
-#include <vector>
+#include <unordered_map>
+#include <string>
 
 class MainSingleton;
 
@@ -32,6 +33,7 @@ namespace Simpleton
 
 		void Destroy();
 	private:
-		std::vector<ECS::EntityComponentSystem> myECSs;
+		std::unordered_map<std::string, ECS::EntityComponentSystem> myECSs;
+		std::string myCurrentScene;
 	};
 }
