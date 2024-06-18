@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 
+class MainSingleton;
+
 namespace Simpleton
 {
 	class AudioManager
@@ -13,23 +15,16 @@ namespace Simpleton
 			size_t myChannelIndex;
 		};
 
+		friend class MainSingleton;
+
 	public:
-		//Remember to call destructor for all singletons before main calling return 0
-		static AudioManager& GetInstance()
-		{
-			static AudioManager myInstance;
-			return myInstance;
-		}
-
-		~AudioManager();
-
 		// Delete copy constructor and copy assignment operator
 		AudioManager(const AudioManager&) = delete;
 		AudioManager& operator=(const AudioManager&) = delete;
 
 		// Default move constructor and move assignment operator
-		AudioManager(AudioManager&&) = default;
-		AudioManager& operator=(AudioManager&&) = default;
+		AudioManager(AudioManager&&) = delete;
+		AudioManager& operator=(AudioManager&&) = delete;
 
 		void Init();
 		void Update();
@@ -54,7 +49,15 @@ namespace Simpleton
 		float GetSFXVolume() const;
 
 	private:
+		static AudioManager& GetInstance()
+		{
+			static AudioManager myInstance;
+			return myInstance;
+		}
+
 		AudioManager();
+		~AudioManager();
+
 	private:
 		std::string myFilePathRoot;
 

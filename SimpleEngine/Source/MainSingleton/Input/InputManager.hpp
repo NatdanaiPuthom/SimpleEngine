@@ -4,24 +4,19 @@
 #include <Windows.h>
 #include <string>
 
+class MainSingleton;
+
 namespace Simpleton
 {
 	class InputManager final
 	{
+		friend class MainSingleton;
 	public:
-		static InputManager& GetInstance()
-		{
-			static InputManager myInstance;
-			return myInstance;
-		}
-
-		~InputManager() = default;
-
 		InputManager(const InputManager&) = delete;
 		InputManager& operator=(const InputManager&) = delete;
 
-		InputManager(InputManager&&) = default;
-		InputManager& operator=(InputManager&&) = default;
+		InputManager(InputManager&&) = delete;
+		InputManager& operator=(InputManager&&) = delete;
 
 		void AppendKeyAsString(std::string& aString, const int aCharactersLimit = 30) const;
 
@@ -48,8 +43,17 @@ namespace Simpleton
 	public:
 		void SetHWND(HWND& aWindowHandle);
 	private:
-		InputManager();
 		void SetCapturedMousePosition();
+	private:
+		static InputManager& GetInstance()
+		{
+			static InputManager myInstance;
+			return myInstance;
+		}
+
+		InputManager();
+		~InputManager() = default;
+
 	private:
 		HWND myOwnerHWND = {};
 
@@ -71,5 +75,7 @@ namespace Simpleton
 		bool myMouseIsHidden;
 		bool myAKeyIsPressed;
 		bool myMouseIsCaptured;
+
+		const int myPadding[6] = {INT_MIN};
 	};
 }
