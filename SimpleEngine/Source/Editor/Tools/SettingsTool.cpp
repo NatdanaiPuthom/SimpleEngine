@@ -183,8 +183,8 @@ namespace Editor
 		const nlohmann::json editorJson = nlohmann::json::parse(editorFile);
 		editorFile.close();
 
-		const nlohmann::json editorSettings = editorJson["editor_settings"];
-		myMusicIsActive = editorSettings["musicActive"];
+		const nlohmann::json editorSettings = editorJson["Editor_Settings"];
+		myMusicIsActive = editorSettings["MusicActive"];
 	}
 
 	void SettingsTool::ToggleConsole()

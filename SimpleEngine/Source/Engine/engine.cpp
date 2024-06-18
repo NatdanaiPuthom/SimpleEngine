@@ -63,8 +63,8 @@ namespace Simple
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		const nlohmann::json& windowSizeJson = json["game_settings"]["window_size"];
-		const nlohmann::json& resolutionJson = json["game_settings"]["resolution"];
+		const nlohmann::json& windowSizeJson = json["Game_Settings"]["Window_Size"];
+		const nlohmann::json& resolutionJson = json["Game_Settings"]["Resolution"];
 
 		Math::Vector2ui windowSize;
 		windowSize.x = windowSizeJson["x"];
@@ -178,9 +178,9 @@ namespace Simple
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		const nlohmann::json& engineSettings = json["engine_settings"];
+		const nlohmann::json& engineSettings = json["Engine_Settings"];
 
-		const std::string engineNameAndVersionString = std::string(engineSettings["name"]) + " " + std::string(engineSettings["version"]) + " " + std::string(engineSettings["quote"]);
+		const std::string engineNameAndVersionString = std::string(engineSettings["Name"]) + " " + std::string(engineSettings["Version"]) + " " + std::string(engineSettings["Quote"]);
 		const std::wstring engineNameAndVersionWide = std::wstring(engineNameAndVersionString.begin(), engineNameAndVersionString.end());
 
 		WCHAR engineNameAndVersion[MAX_PATH];

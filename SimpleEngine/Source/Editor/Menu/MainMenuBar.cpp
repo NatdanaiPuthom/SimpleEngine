@@ -172,9 +172,9 @@ namespace Editor
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		const nlohmann::json settings = json["editor_settings"];
+		const nlohmann::json settings = json["Editor_Settings"];
 
-		myEditorWindowActive = settings["editor"]["active"];
-		myHierarchyWindow->myIsActive = settings["windows"]["show_inspector"];
+		myEditorWindowActive = settings["Editor"]["Active"];
+		myHierarchyWindow->myIsActive = settings["Windows"]["Show_Inspector"];
 	}
 }

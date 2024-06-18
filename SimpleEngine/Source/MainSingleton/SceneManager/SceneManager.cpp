@@ -54,7 +54,7 @@ namespace Simpleton
 		assert(file.is_open() && "Failed To Open File");
 
 		const nlohmann::json jsonData = nlohmann::json::parse(file);
-		const nlohmann::json gameSettings = jsonData["game_settings"];
+		const nlohmann::json gameSettings = jsonData["Game_Settings"];
 		file.close();
 
 		const std::string levelFileName = SimpleUtilities::GetAbsolutePath(gameSettings["Start_Scene"]);

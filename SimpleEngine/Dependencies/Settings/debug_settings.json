@@ -1,6 +1,6 @@
 {
-  "debug_settings": {
-    "debugMode": true,
-    "memory_tracker": true
+  "Debug_Settings": {
+    "DebugMode": true,
+    "MemoryTracker": true
   }
 }

@@ -1,14 +1,14 @@
 {
-  "game_settings": {
-    "window_size": {
+  "Game_Settings": {
+    "Window_Size": {
       "x": 1280,
       "y": 720
     },
-    "resolution": {
+    "Resolution": {
       "x": 1280,
       "y": 720
     },
-    "vsync": false,
+    "VSync": false,
     "Start_Scene": "Assets\\Scenes\\Test_Scene.scene"
   }
 }

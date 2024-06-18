@@ -53,8 +53,8 @@ namespace Editor
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		const nlohmann::json settings = json["editor_settings"]["help_windows"];
+		const nlohmann::json settings = json["Editor_Settings"]["Help_Windows"];
 
-		myCameraHelpWindow->myIsActive = settings["show_camera"];
+		myCameraHelpWindow->myIsActive = settings["Show_Camera"];
 	}
 }

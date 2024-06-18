@@ -144,7 +144,7 @@ namespace SimpleTracker
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		SimpleMemoryTrackerWrapper::myShouldActive = json["debug_settings"]["memory_tracker"];
+		SimpleMemoryTrackerWrapper::myShouldActive = json["Debug_Settings"]["MemoryTracker"];
 
 		if (SimpleMemoryTrackerWrapper::myShouldActive == false)
 		{

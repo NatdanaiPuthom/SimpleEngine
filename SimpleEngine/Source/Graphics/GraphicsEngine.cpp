@@ -169,7 +169,7 @@ namespace Graphics
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		SetVSync(json["game_settings"]["vsync"]);
+		SetVSync(json["Game_Settings"]["VSync"]);
 	}
 
 	void GraphicsEngine::PreloadTextures()

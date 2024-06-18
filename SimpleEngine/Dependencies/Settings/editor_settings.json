@@ -1,14 +1,14 @@
 {
-  "editor_settings": {
-    "editor": {
-      "active": false
+  "Editor_Settings": {
+    "Editor": {
+      "Active": false
     },
-    "help_windows": {
-      "show_camera": false
+    "Help_Windows": {
+      "Show_Camera": false
     },
-    "windows": {
-      "show_inspector": true
+    "Windows": {
+      "Show_Inspector": true
     },
-    "musicActive":  false
+    "MusicActive":  false
   }
 }
