@@ -38,5 +38,6 @@ namespace Simpleton
 	private:
 		std::unordered_map<std::string, ECS::EntityComponentSystem> myECSs;
 		std::string myCurrentScene;
+		const int myPadding[2] = { INT_MIN };
 	};
 }

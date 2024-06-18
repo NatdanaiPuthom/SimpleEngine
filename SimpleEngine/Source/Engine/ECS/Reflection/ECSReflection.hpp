@@ -58,6 +58,8 @@ namespace ECS
 
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
 		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
+	private:
+		int padding[6] = { INT_MIN };
 	};
 
 	class ComponentRegistry final
