@@ -73,6 +73,12 @@ namespace ECS
 		std::unordered_map<std::type_index, void(*)(void*)> myTypeErasureComponentDestructorInvoker;
 	public:
 		void InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "");
+
+		ComponentRegistry(const ComponentRegistry&) = delete;
+		ComponentRegistry(const ComponentRegistry&&) = delete;
+		ComponentRegistry operator=(const ComponentRegistry&) = delete;
+		ComponentRegistry operator=(const ComponentRegistry&&) = delete;
+
 	private:
 		static ComponentRegistry* GetInstance();
 
