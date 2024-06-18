@@ -141,6 +141,11 @@ namespace ECS
 		const nlohmann::json jsonData = nlohmann::json::parse(readFile);
 		readFile.close();
 
+		if (jsonData.contains("Entities") == false)
+		{
+			return;
+		}
+
 		for (const auto& entityData : jsonData["Entities"])
 		{
 			const EntityID id = entityData["ID"];
