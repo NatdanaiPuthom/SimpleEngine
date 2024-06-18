@@ -2,7 +2,6 @@
 
 namespace Simple
 {
-	class LevelManager;
 	class EventManager;
 }
 namespace ECS
@@ -12,13 +11,6 @@ namespace ECS
 
 namespace Impl
 {
-	class SimpleWorldLevelManager final
-	{
-		friend class Simple::LevelManager;
-	private:
-		static void SetLevelManager(Simple::LevelManager* aLevelManager);
-	};
-
 	class SimpleWorldEventManager final
 	{
 		friend class Simple::EventManager;

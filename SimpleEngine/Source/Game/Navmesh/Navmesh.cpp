@@ -407,7 +407,7 @@ namespace Simple
 		return true;
 	}
 
-	NavmeshData Navmesh::LoadNavmesh(const char* aObjFile)
+	NavmeshData Navmesh::LoadNavmesh(const char* aObjFile) //NOTE(v11.1.2): Only tested from Blender obj export
 	{
 		const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_NAVMESH);
 		const std::string fileName = absolutePath + std::string(aObjFile);

@@ -2,7 +2,7 @@
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/ECS/Systems/RenderSystem.hpp"
 #include "MainSingleton/MainSingleton.hpp"
-#include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
+#include "Game/WorldImpl/SimpleWorldImpl.hpp"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
 
