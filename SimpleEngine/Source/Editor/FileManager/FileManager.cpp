@@ -89,16 +89,18 @@ namespace Editor
 
 		ID3D11ShaderResourceView* cubeMapIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::CubeMap)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* folderIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Folder)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* cursorIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Cursor)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* sceneIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Scene)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* fbxIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::FBX)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* pngIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::PNG)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* jpgIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::JPG)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* objIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::OBJ)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* mp3Icon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::MP3)->GetShaderResourceView().Get();
 
-		static const float padding = 16.0f;
-		static const float thumbnailSize = 64.0f;
-		static const float cellSize = thumbnailSize + padding;
-		static const float panelWidth = ImGui::GetContentRegionAvail().x;
+		static constexpr float padding = 16.0f;
+		static constexpr float thumbnailSize = 64.0f;
+		static constexpr float cellSize = thumbnailSize + padding;
+		const float panelWidth = ImGui::GetContentRegionAvail().x;
 
 		int columnCount = (int)(panelWidth / cellSize);
 
@@ -142,6 +144,10 @@ namespace Editor
 			{
 				textureID = fbxIcon;
 			}
+			else if (extension == ".scene")
+			{
+				textureID = sceneIcon;
+			}
 			else if (extension == ".png")
 			{
 				textureID = pngIcon;
@@ -157,6 +163,10 @@ namespace Editor
 			else if (extension == ".mp3")
 			{
 				textureID = mp3Icon;
+			}
+			else if (extension == ".cur")
+			{
+				textureID = cursorIcon;
 			}
 
 			ImGui::ImageButton(fileNames[i].c_str(), textureID, { thumbnailSize, thumbnailSize });

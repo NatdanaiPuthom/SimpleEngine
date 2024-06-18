@@ -22,7 +22,6 @@ namespace Editor
 		void ToggleConsole();
 		void AdjustWindowSize();
 		void AdjustRasterizerState();
-		void AdjustActiveScene();
 		void AdjustEditorStyle();
 		void AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine);
 	private:
@@ -31,7 +30,6 @@ namespace Editor
 	private:
 		Math::Vector2ui myMonitorResolution;
 
-		int myActiveSceneIndex;
 		int mySelectedWindowSize;
 		int mySelectedRasterizerState;
 
@@ -39,6 +37,5 @@ namespace Editor
 		bool myMusicIsActive;
 
 		std::vector<Math::Vector2ui> myWindowSizes;
-		std::vector<std::string> myScenes;
 	};
 }

@@ -1,12 +1,13 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Systems/RenderSystem.hpp"
+#include "Engine/ECS/ECS.hpp"
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
 
 namespace ECS
 {
-	RenderSystem::RenderSystem(EntityManager* aECS) : System(aECS)
+	RenderSystem::RenderSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
 	{
 	}
 
@@ -20,7 +21,7 @@ namespace ECS
 
 	void RenderSystem::Update()
 	{
-		ECS::Entities entities = myEntityManager->GetAllEntities();
+		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
@@ -52,8 +53,7 @@ namespace ECS
 	void RenderSystem::Render()
 	{
 		const Drawer::Renderer* renderer = Global::GetRenderer();
-
-		ECS::Entities entities = myEntityManager->GetAllEntities();
+		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{

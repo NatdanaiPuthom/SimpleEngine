@@ -1,12 +1,4 @@
 #pragma once
-#include "Test/TestShadow.hpp"
-
-namespace Simple
-{
-	class LevelManager;
-	class RaycastManager;
-	class EventManager;
-}
 
 namespace Simple
 {
@@ -19,6 +11,7 @@ namespace Simple
 		void Init();
 		void Update();
 		void Render();
+		void LateRender();
 
 	private:
 		void NormalUpdate();
@@ -26,13 +19,7 @@ namespace Simple
 		void LateUpdate();
 		void FixedUpdate();
 	private:
-		std::unique_ptr<Simple::LevelManager> myLevelManager;
-		std::unique_ptr<Simple::RaycastManager> myRaycastManager;
-		std::unique_ptr<Simple::EventManager> myEventManager;
-
 		float myFixedUpdateTimer;
 		const float myFixedUpdateFreqency;
-
-		Test::TestShadow testShadow;
 	};
 }

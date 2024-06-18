@@ -30,7 +30,7 @@ namespace Graphics
 		GraphicsEngine();
 		~GraphicsEngine();
 
-		const bool Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize);
+		void Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize);
 
 		bool BeginFrame();
 		void EndFrame();
@@ -94,7 +94,9 @@ namespace Graphics
 
 		std::shared_ptr<Camera> GetCurrentCamera();
 		std::shared_ptr<Camera> GetEditorCamera();
-		std::shared_ptr<Camera> GetShadowCamera();
+
+		const std::shared_ptr<Camera> GetCurrentCamera() const;
+		const std::shared_ptr<Camera> GetEditorCamera() const;
 
 		//NOTE(v9.35.5): Will Add and cache the texture if it does not already exist. aSlot is used to set slot when adding texture
 		std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
@@ -108,6 +110,8 @@ namespace Graphics
 
 		Drawer::Renderer* GetRenderer();
 		ModelFactory* GetModelFactory();
+		const Drawer::Renderer* GetRenderer() const;
+		const ModelFactory* GetModelFactory() const;
 
 		Math::Vector4f GetAmbientLightColorAndIntensity() const;
 		Math::Vector4f GetDirectionalLightColor() const;
@@ -183,7 +187,6 @@ namespace Graphics
 
 		std::shared_ptr<Camera> myCurrentCamera;
 		std::shared_ptr<Camera> myEditorCamera;
-		std::shared_ptr<Camera> myShadowCamera;
 
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 

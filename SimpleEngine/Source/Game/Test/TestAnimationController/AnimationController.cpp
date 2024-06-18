@@ -1,0 +1,124 @@
+#include "Game/Precomplied/GamePch.hpp"
+//#include "Game/AnimationController/AnimationController.hpp"
+//
+//namespace Simple
+//{
+//	AnimationController::AnimationController()
+//		: myIsInterpolating(false)
+//		, myDuration(0.0f)
+//		, myTimer(0.0f)
+//		, myCurrentAnimation(nullptr)
+//		, myTargetAnimation(nullptr)
+//		, myAnimatedModel(nullptr)
+//	{
+//	}
+//
+//	AnimationController::~AnimationController()
+//	{
+//	}
+//
+//	void AnimationController::Init(Graphics::AnimatedModel* aAnimatedModel, Graphics::Animation* aAnimation, const bool aShouldLoop)
+//	{
+//		myTimer = 0.0f;
+//
+//		myAnimatedModel = aAnimatedModel;
+//		myCurrentAnimation = aAnimation;
+//
+//		//myCurrentAnimationPlayer.Init(*myCurrentAnimation, *myAnimatedModel);
+//		myCurrentAnimationPlayer.SetIsLooping(aShouldLoop);
+//		myCurrentAnimationPlayer.Play();
+//	}
+//
+//	void AnimationController::Update()
+//	{
+//		if (myIsInterpolating == true)
+//		{
+//			myTimer += Global::GetDeltaTime();
+//
+//			//myCurrentAnimationPlayer.LerpCurrentAnimation();
+//			//myTargetAnimationPlayer.LerpCurrentAnimation();
+//
+//			const float t = std::clamp<float>(myTimer / myDuration, 0.0f, 1.0f);
+//			//auto skeleton = myAnimatedModel->GetSkeleton();
+//
+//			/*for (size_t i = 0; i < skeleton->myJoints.size(); i++)
+//			{
+//				const Math::Matrix4x4f& currentFrameJointTransform = myCurrentAnimationPlayer.GetLocalSpacePose().jointTransforms[i];
+//				const Math::Matrix4x4f& targetFrameJointTransform = myTargetAnimationPlayer.GetLocalSpacePose().jointTransforms[i];
+//
+//				Math::Vector3 currentPosition;
+//				Math::Vector3 targetPosition;
+//
+//				Math::Quaternion currentQuaternion;
+//				Math::Quaternion targetQuaternion;
+//
+//				Math::Vector3 currentScale;
+//				Math::Vector3 targetScale;
+//
+//				currentFrameJointTransform.DecomposeMatrix(currentPosition, currentQuaternion, currentScale);
+//				targetFrameJointTransform.DecomposeMatrix(targetPosition, targetQuaternion, targetScale);
+//
+//				const Math::Vector3 translation = Math::Lerp(currentPosition, targetPosition, t);
+//				const Math::Quaternionf rotation = Math::Quaternionf::Slerp(currentQuaternion, targetQuaternion, t);
+//				const Math::Vector3 scale = Math::Lerp(currentScale, targetScale, t);
+//
+//				const Math::Matrix4x4f Result = Math::Matrix4x4f::CreateScaleMatrix(scale) * rotation.GetRotationMatrix4x4() * Math::Matrix4x4f::CreateTranslationMatrix(translation);
+//				myCurrentAnimationPlayer.myModelSpacePose.jointTransforms[i] = Result;
+//			}*/
+//
+//			//myCurrentAnimationPlayer.myModelSpacePose.count = skeleton->myJoints.size();
+//			//myAnimatedModel->SetPose(myCurrentAnimationPlayer.myModelSpacePose);
+//
+//			if (t >= 1.0f)
+//			{
+//				myIsInterpolating = false;
+//				const unsigned int currentFrame = myTargetAnimationPlayer.GetCurrentFrame();
+//
+//				myCurrentAnimation = myTargetAnimation;
+//
+//				//myCurrentAnimationPlayer.Init(*myCurrentAnimation, *myAnimatedModel);
+//				myCurrentAnimationPlayer.SetCurrentFrame(currentFrame);
+//
+//				//myAnimatedModel->SetPose(myCurrentAnimationPlayer.myModelSpacePose);
+//			}
+//		}
+//		else
+//		{
+//			//myCurrentAnimationPlayer.Update();
+//		}
+//	}
+//
+//	void AnimationController::ChangeAnimation(Graphics::Animation* aTargetAnimation, const bool aShouldLoop, const float aDuration)
+//	{
+//		if (myTargetAnimation == aTargetAnimation)
+//		{
+//			return;
+//		}
+//
+//		myDuration = myCurrentAnimation->duration -  myCurrentAnimationPlayer.GetTime();
+//
+//		if (aDuration >= 0.0f)
+//		{
+//			myDuration = aDuration;
+//		}
+//
+//		myTargetAnimation = aTargetAnimation;
+//
+//		//myTargetAnimationPlayer.Init(*myTargetAnimation, *myAnimatedModel);
+//		myTargetAnimationPlayer.SetIsLooping(aShouldLoop);
+//		myTargetAnimationPlayer.Restart();
+//
+//		myTimer = 0.0f;
+//		myIsInterpolating = true;
+//	}
+//
+//	const Graphics::AnimationPlayer& AnimationController::GetCurrentAnimationPlayer() const
+//	{
+//		return myCurrentAnimationPlayer;
+//	}
+//
+//	Graphics::AnimationPlayer& AnimationController::GetCurrentAnimationPlayer()
+//	{
+//		return myCurrentAnimationPlayer;
+//	}
+//}

@@ -29,7 +29,7 @@ namespace Graphics
 	{
 	}
 
-	const bool GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
+	void GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
 	{
 		myCameraConstantBuffer = std::make_unique<ConstantBuffer>();
 		myTimeConstantBuffer = std::make_unique<ConstantBuffer>();
@@ -42,7 +42,6 @@ namespace Graphics
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
 
 		myEditorCamera = std::make_shared<Graphics::Camera>();
-		myShadowCamera = std::make_shared<Graphics::Camera>();
 
 		myRenderer = std::make_unique<Drawer::Renderer>();
 		myModelFactory = std::make_unique<ModelFactory>();
@@ -96,8 +95,6 @@ namespace Graphics
 		myLightBufferData->directionalLightDirection.z = 0.0f;
 
 		myCurrentCamera = myEditorCamera;
-
-		return true;
 	}
 
 	void GraphicsEngine::PrepareFrame()
@@ -159,7 +156,6 @@ namespace Graphics
 
 		PROFILER_BEGIN("Present frame");
 		mySwapChain->Present(myFPSLevelCap, 0);
-
 		PROFILER_END();
 	}
 
@@ -173,7 +169,7 @@ namespace Graphics
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		SetVSync(json["game_settings"]["vsync"]);
+		SetVSync(json["Game_Settings"]["VSync"]);
 	}
 
 	void GraphicsEngine::PreloadTextures()
@@ -575,7 +571,6 @@ namespace Graphics
 	{
 		LightBufferData lightBufferData;
 
-		lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::GetFastInverse(myShadowCamera->GetMatrix()) * myShadowCamera->GetProjectionMatrix();
 		lightBufferData.ambientLightColorAndIntensity = myLightBufferData->ambientLightColorAndIntensity;
 		lightBufferData.directionalLightColorAndIntensity = myLightBufferData->directionalLightColorAndIntensity;
 		lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
@@ -848,6 +843,9 @@ namespace Graphics
 		case eTextureType::Simple:
 			texture = GetTexture("Assets\\Textures\\T_Hamster_C.dds");
 			break;
+		case eTextureType::DirectionalLight:
+			texture = GetTexture("Assets\\Textures\\T_Sunlight_C.dds");
+			break;
 		}
 
 		return texture;
@@ -886,28 +884,34 @@ namespace Graphics
 		switch (aIcon)
 		{
 		case eIconType::FBX:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_FBX.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_FBX.dds");
 			break;
 		case eIconType::Folder:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_Folder.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Folder.dds");
 			break;
 		case eIconType::CubeMap:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_CubeMap.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_CubeMap.dds");
 			break;
 		case eIconType::PNG:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_PNG.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_PNG.dds");
 			break;
 		case eIconType::JPG:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_JPG.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_JPG.dds");
 			break;
 		case eIconType::OBJ:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_OBJ.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_OBJ.dds");
 			break;
 		case eIconType::MP3:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_MP3.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_MP3.dds");
+			break;
+		case eIconType::Scene:
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Scene.dds");
+			break;
+		case eIconType::Cursor:
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Cursor.dds");
 			break;
 		case eIconType::Unknown:
-			texture = GetTexture("Assets\\Textures\\Editor\\Icon_Question.dds");
+			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Question.dds");
 			break;
 		}
 
@@ -999,6 +1003,16 @@ namespace Graphics
 		return myModelFactory.get();
 	}
 
+	const Drawer::Renderer* GraphicsEngine::GetRenderer() const
+	{
+		return myRenderer.get();
+	}
+
+	const ModelFactory* GraphicsEngine::GetModelFactory() const
+	{
+		return myModelFactory.get();
+	}
+
 	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetCurrentCamera()
 	{
 		return myCurrentCamera;
@@ -1009,9 +1023,14 @@ namespace Graphics
 		return myEditorCamera;
 	}
 
-	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetShadowCamera()
+	const std::shared_ptr<Camera> GraphicsEngine::GetCurrentCamera() const
 	{
-		return myShadowCamera;
+		return myCurrentCamera;
+	}
+
+	const std::shared_ptr<Camera> GraphicsEngine::GetEditorCamera() const
+	{
+		return myEditorCamera;
 	}
 
 	ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
@@ -1477,7 +1496,6 @@ namespace Graphics
 	{
 		LightBufferData lightBufferData;
 
-		lightBufferData.directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::Identity();
 		lightBufferData.directionalLightColorAndIntensity = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 		lightBufferData.directionalLightDirection = Math::Vector3f(0.0f, 0.0f, 0.0f);
 

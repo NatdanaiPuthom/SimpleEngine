@@ -8,10 +8,12 @@ namespace ECS
 {
 	struct DirectionalLightComponent final
 	{
+		DirectionalLightComponent();
+
 		Math::Transform transform;
-		const Graphics::Mesh* mesh = nullptr;
-		const Graphics::Texture* texture = nullptr;
-		const Graphics::Shader* shader = nullptr;
+		const Graphics::Mesh* mesh;
+		const Graphics::Texture* texture;
+		const Graphics::Shader* shader;
 	};
 }
 

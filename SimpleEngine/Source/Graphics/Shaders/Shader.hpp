@@ -1,6 +1,7 @@
 #pragma once
 #include <wrl/client.h>
 #include <string>
+#include <d3d11.h> //TO-DO(v11.1.1): why do I have to include this when I already forward declare structs?
 
 using Microsoft::WRL::ComPtr;
 

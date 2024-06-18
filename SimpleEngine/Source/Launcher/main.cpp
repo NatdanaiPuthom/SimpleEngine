@@ -1,27 +1,39 @@
-#include "Engine/MemoryTracker/MemoryTracker.h" //NOTE(v9.36.4): Let this be top for now. Need to figure out a way to make sure this is called first
-
-#include "MainSingleton/MainSingleton.hpp"
+#include "Engine/MemoryTracker/MemoryTracker.h"
 #include "Engine/Engine.hpp"
-#include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/Global.hpp"
+#include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 #include "Editor/Editor.hpp"
 #include "NodeScript/SimpleNodeScript.hpp"
 #include "Launcher/ErrorCatcher.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
+static void RunWithSEH(HINSTANCE& hInstance, int nCmdShow);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int nCmdShow)
 {
-	//SimpleTracker::SimpleMemoryTracker::StartMemoryTracking(memoryTrackerSettings); //NOTE(v9.36.4): It is inline static class wrapper now in MemoryTracker.h
-
 	PROFILER_INIT();
 	PROFILER_ENABLE();
 	PROFILER_START_LISTEN();
 	PROFILER_BEGIN("Main.cpp");
 
+	RunWithSEH(hInstance, nCmdShow);
+
+	PROFILER_END();
+	PROFILER_DISABLE();
+
+	Simple::EasyProfilerOutput();
+
+	MainSingleton::Destroy();
+
+	return 0;
+}
+
+static void RunWithSEH(HINSTANCE& hInstance, int nCmdShow)
+{
 	__try
 	{
 		Run(hInstance, nCmdShow);
@@ -29,41 +41,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 	__except (ExceptionFilter(GetExceptionInformation()))
 	{
 	}
-
-	PROFILER_END();
-	PROFILER_DISABLE();
-
-	Simple::EasyProfilerOutput();
-
-	return 0;
 }
 
 static void Run(HINSTANCE& hInstance, int nCmdShow)
 {
-	PROFILER_BEGIN("MainSingleton Initialize");
-	MainSingleton::Init();
-	PROFILER_END();
-
 	PROFILER_BEGIN("SimpleEngine Core Class Constructors");
 	Simple::Engine engine;
 	Graphics::GraphicsEngine graphicsEngine;
 	Editor::EditorEngine editor;
-	ECS::EntityComponentSystem ecs;
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
-	ecs.SetGlobalPointerToThis(); //NOTE(v11.0.6): move this once SceneManager is finish
 	PROFILER_END();
 
 	PROFILER_BEGIN("SimpleEngine Core Class Initialize");
 	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetEngineHWND(), Global::GetWindowSize());
-	ecs.Init();
 	editor.Init();
 	PROFILER_END();
 
-	PROFILER_BEGIN("ECS LoadData");
-	ECS::EntityComponentSystem::LoadData(ecs, "Assets/Scenes/Scene_Test.scene"); //NOTE(v11.0.6): move this once SceneManager is finish
+	PROFILER_BEGIN("MainSingleton Initialize");
+	MainSingleton::Init();
 	PROFILER_END();
 
 	PROFILER_BEGIN("GameWorld Initialize");
@@ -92,19 +90,17 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		engine.Update();
 		PROFILER_END();
 
-		PROFILER_BEGIN("Game Update");
-		ecs.Update();
-		gameWorld.Update();
-		PROFILER_END();
-
 		PROFILER_BEGIN("Editor Update");
 		simpleScript.Update();
 		editor.Update();
 		PROFILER_END();
 
+		PROFILER_BEGIN("Game Update");
+		gameWorld.Update();
+		PROFILER_END();
+
 		PROFILER_BEGIN("Render To GBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
-		ecs.Render();
 		gameWorld.Render();
 		PROFILER_END();
 
@@ -113,8 +109,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		graphicsEngine.ApplyAmbientAndDirectionalLightDeferred(Graphics::eRenderTargetType::GBuffer);
 
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
-		ecs.RenderPointLights();
-		ecs.RenderSkyBoxAndDirectionalLight();
+		gameWorld.LateRender();
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To BloomRenderTarget");

@@ -38,8 +38,8 @@ namespace ECS
 
 	bool ComponentPool::SwapWithLastAndRemoveEditor(const size_t aComponentID)
 	{
-		const size_t index = GetComponentIndexFromComponentID(aComponentID);
-		const int indexToRemove = GetComponentIndexByMemoryAddress(myStartMemoryAddress + index * myComponentTypeSize, myComponentTypeSize);
+		const size_t componentIDIndex = GetComponentIndexFromComponentID(aComponentID); //TO-DO(v11.0.6): What was these indexes for? Rewrite whole this function please, if it even needed anymore
+		const int indexToRemove = GetComponentIndexByMemoryAddress(myStartMemoryAddress + componentIDIndex * myComponentTypeSize, myComponentTypeSize);
 
 		if (indexToRemove == -1)
 		{
@@ -48,7 +48,7 @@ namespace ECS
 
 		if (myComponentIDs.size() > 1)
 		{
-			std::memcpy(myStartMemoryAddress + index * myComponentTypeSize, myCurrentMemoryAddress - myComponentTypeSize, myComponentTypeSize);
+			std::memcpy(myStartMemoryAddress + componentIDIndex * myComponentTypeSize, myCurrentMemoryAddress - myComponentTypeSize, myComponentTypeSize);
 			myComponentIDs[indexToRemove] = myComponentIDs.back();
 		}
 

@@ -1,8 +1,8 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/ECS/Systems/RenderSystem.hpp"
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
-#include "Game/NoClueWhatToName/SimpleWorldImpl.hpp"
+#include "MainSingleton/MainSingleton.hpp"
+#include "Game/WorldImpl/SimpleWorldImpl.hpp"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
 
@@ -10,7 +10,7 @@ namespace ECS
 {
 	EntityComponentSystem::EntityComponentSystem()
 		: myEntityManager(&myComponentManager)
-		, mySystemManager(&myEntityManager)
+		, mySystemManager(this)
 	{
 	}
 
@@ -23,7 +23,7 @@ namespace ECS
 		constexpr size_t entitiesToReserve = 16; //NOTE(v9.30.10):Small number for experimental purposes for now
 		myEntityManager.Init(entitiesToReserve);
 
-		mySystemManager.AddSystem(std::move(std::make_unique<RenderSystem>(&myEntityManager)));
+		mySystemManager.AddSystem<RenderSystem>(this);
 
 		mySystemManager.Init();
 	}
@@ -46,11 +46,6 @@ namespace ECS
 	void EntityComponentSystem::RenderSkyBoxAndDirectionalLight()
 	{
 		mySystemManager.RenderSkyBoxAndDirectionalLight();
-	}
-
-	void EntityComponentSystem::AddSystem(std::unique_ptr<System> aSystem)
-	{
-		mySystemManager.AddSystem(std::move(aSystem));
 	}
 
 	Entity EntityComponentSystem::CreateEntity(const EntityID aEntityID)
@@ -101,7 +96,7 @@ namespace ECS
 			for (const auto& [componentType, componentID] : components)
 			{
 				void* componentPointer = aECS.GetComponentPointerByComponentID(componentID);
-				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties;
+				const std::vector<ComponentProperty>& componentProperties = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentType.hash_code()].myComponentProperties;
 
 				const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(componentType.name());
 				jsonData["Entities"][i]["Components"][count]["Name"] = componentName;
@@ -113,7 +108,7 @@ namespace ECS
 					const size_t propertyID = componentProperty.id;
 					const size_t byteOffset = componentProperty.byteOffset;
 
-					const TypeErasureObject& dataType = ComponentRegistry::myTypeErasureDataTypes[propertyID];
+					const TypeErasureObject& dataType = MainSingleton::GetComponentRegistry()->myTypeErasureDataTypes[propertyID];
 
 					jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = INT_MIN;
 
@@ -146,6 +141,11 @@ namespace ECS
 		const nlohmann::json jsonData = nlohmann::json::parse(readFile);
 		readFile.close();
 
+		if (jsonData.contains("Entities") == false)
+		{
+			return;
+		}
+
 		for (const auto& entityData : jsonData["Entities"])
 		{
 			const EntityID id = entityData["ID"];
@@ -154,13 +154,16 @@ namespace ECS
 			Entity entity = aECS.CreateEntity(id);
 			entity->SetName(name);
 
-			const auto& componentList = entityData["Components"];
+			if (entityData.contains("Components") == false)
+			{
+				continue;
+			}
 
-			for (const auto& componentDataJSON : componentList)
+			for (const auto& componentDataJSON : entityData["Components"])
 			{
 				const size_t componentHashCode = componentDataJSON["ComponentHash"];
-				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentHashCode].myComponentProperties;
-				const ComponentID componentID = ComponentRegistry::myTypeErasureComponents[componentHashCode].AddComponentFunctionPointer(entity);
+				const std::vector<ComponentProperty>& componentProperties = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentProperties;
+				const ComponentID componentID = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].AddComponentFunctionPointer(entity);
 				const auto& componentPropertiesJSON = componentDataJSON["Properties"];
 				const size_t propertySize = componentPropertiesJSON.size();
 
@@ -175,7 +178,7 @@ namespace ECS
 				for (size_t i = 0; i < propertySize; ++i)
 				{
 					const ComponentProperty& property = componentProperties[i];
-					const TypeErasureObject& typeErasedData = ComponentRegistry::myTypeErasureDataTypes[property.id];
+					const TypeErasureObject& typeErasedData = MainSingleton::GetComponentRegistry()->myTypeErasureDataTypes[property.id];
 					void* propertyPointer = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + property.byteOffset));
 
 					if (const auto& loadDataFromJSONFunction = typeErasedData.LoadDataFromJSON)

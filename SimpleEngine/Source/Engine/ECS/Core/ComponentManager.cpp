@@ -1,7 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Core/ComponentManager.hpp"
-#include "Engine/ECS/Components/Core/NullComponent.hpp"
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace ECS
 {
@@ -25,20 +24,33 @@ namespace ECS
 			char* component = componentPool.GetStartMemoryAddress();
 
 			for (size_t i = 0; i < componentCount; ++i)
-			{
-				ComponentRegistry::myTypeErasureComponentDestructorInvoker[componentType](&component[i * sizeOfComponentType]);;
+			{	
+				MainSingleton::GetComponentRegistry()->myTypeErasureComponentDestructorInvoker[componentType](&component[i * sizeOfComponentType]);;
 			}
 		}
 	}
 
-	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const size_t aComponentID)
+	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const EntityID aEntityID, const ComponentID aComponentID)
 	{
 		ComponentPool& pool = myComponents[aComponentType];
 		char* component = pool.GetComponentAddressByID(aComponentID);
 
-		ComponentRegistry::myTypeErasureComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
+		MainSingleton::GetComponentRegistry()->myTypeErasureComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
 		myAllComponents.erase(aComponentID);
+		myComponentTypeToEntityIDs[aComponentType].erase(aEntityID);
 
 		return pool.SwapWithLastAndRemoveEditor(aComponentID);
+	}
+
+	void* ComponentManager::GetComponentByComponentID(const ComponentID aID)
+	{
+		auto it = myAllComponents.find(aID);
+
+		if (it != myAllComponents.end())
+		{
+			return reinterpret_cast<void*>(it->second);
+		}
+
+		return nullptr;
 	}
 }

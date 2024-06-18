@@ -9,7 +9,6 @@
 
 namespace ECS
 {
-	class IEntity;
 	class EntityComponentSystem;
 }
 
@@ -54,10 +53,9 @@ namespace ECS
 
 		EntityPool myEntityPool;
 
-		std::vector<EntityID> myRemovedEntityIDs;
 		ComponentManager* myComponentManager;
 		size_t myCurrentEntityID;
-		const char padding[16];
+		char padding[48];
 	};
 
 	template<typename T>
@@ -70,7 +68,7 @@ namespace ECS
 			return static_cast<ComponentID>(-1);
 		}
 
-		const ComponentID componentID = myComponentManager->CreateComponent<T>();
+		const ComponentID componentID = myComponentManager->CreateComponent<T>(aEntityID);
 
 		myEntityComponents[aEntityID][typeid(T)] = componentID;
 

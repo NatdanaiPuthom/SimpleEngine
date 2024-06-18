@@ -53,7 +53,6 @@ struct alignas(16) TimeBufferData final
 
 struct alignas(16) LightBufferData final
 {
-	Math::Matrix4x4f directionalLightWorldToProjectionMatrix = Math::Matrix4x4f::Identity();
 	Math::Vector4f ambientLightColorAndIntensity = { 1.0f, 1.0f, 1.0f, 1.0f };
 	Math::Vector4f directionalLightColorAndIntensity = { 1.0f, 1.0f, 1.0f, 1.0f };
 

@@ -1,12 +1,13 @@
 #pragma once
-#include "Engine/ECS/Core/EntityManager.hpp"
 
 namespace ECS
 {
+	class EntityComponentSystem;
+
 	class System
 	{
 	public:
-		System(EntityManager* aEntityManager) : myEntityManager(aEntityManager) {};
+		System(EntityComponentSystem* aEntityComponentSystem): myEntityComponentSystem(aEntityComponentSystem) {};
 
 		virtual ~System() {};
 
@@ -19,6 +20,6 @@ namespace ECS
 		virtual void LateUpdate() {};
 
 	protected:
-		EntityManager* myEntityManager;
+		EntityComponentSystem* myEntityComponentSystem;
 	};
 }

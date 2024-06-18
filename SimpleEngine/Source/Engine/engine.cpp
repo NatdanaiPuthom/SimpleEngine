@@ -45,7 +45,7 @@ namespace Simple
 		ShowWindow(myHWND, nCmdShow);
 		UpdateWindow(myHWND);
 
-		myCustomCursor = LoadCursorFromFile(L"Assets/Icon/White-Cat.cur");
+		myCustomCursor = LoadCursorFromFile(L"Assets/Cursors/White-Cat.cur");
 		assert(myCustomCursor && "Failed to load Custom Cursor");
 
 		MainSingleton::GetInputManager().SetHWND(myHWND);
@@ -63,8 +63,8 @@ namespace Simple
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		const nlohmann::json& windowSizeJson = json["game_settings"]["window_size"];
-		const nlohmann::json& resolutionJson = json["game_settings"]["resolution"];
+		const nlohmann::json& windowSizeJson = json["Game_Settings"]["Window_Size"];
+		const nlohmann::json& resolutionJson = json["Game_Settings"]["Resolution"];
 
 		Math::Vector2ui windowSize;
 		windowSize.x = windowSizeJson["x"];
@@ -80,8 +80,8 @@ namespace Simple
 
 	void Engine::CheckAndCopySettingsFiles()
 	{
-		const std::string binSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS);
-		const std::string dependenciesSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS);
+		const std::string binSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS);
+		const std::string dependenciesSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_SETTINGS);
 		const std::string forceDependenciesSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_FORCE);
 
 		std::vector<std::string> binSettingsFileNames;
@@ -120,8 +120,8 @@ namespace Simple
 
 		for (const std::string& name : missingFileNames)
 		{
-			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS) + name;
-			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS) + name;
+			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_SETTINGS) + name;
+			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS) + name;
 			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
 
 			std::cout << "Copied: " << name << std::endl;
@@ -130,7 +130,7 @@ namespace Simple
 		for (const std::string& name : forceDependenciesSettingsFileNames)
 		{
 			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_FORCE) + name;
-			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS) + name;
+			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS) + name;
 			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
 
 			std::cout << "Force Copied: " << name << std::endl;
@@ -178,9 +178,9 @@ namespace Simple
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		const nlohmann::json& engineSettings = json["engine_settings"];
+		const nlohmann::json& engineSettings = json["Engine_Settings"];
 
-		const std::string engineNameAndVersionString = std::string(engineSettings["name"]) + " " + std::string(engineSettings["version"]) + " " + std::string(engineSettings["quote"]);
+		const std::string engineNameAndVersionString = std::string(engineSettings["Name"]) + " " + std::string(engineSettings["Version"]) + " " + std::string(engineSettings["Quote"]);
 		const std::wstring engineNameAndVersionWide = std::wstring(engineNameAndVersionString.begin(), engineNameAndVersionString.end());
 
 		WCHAR engineNameAndVersion[MAX_PATH];

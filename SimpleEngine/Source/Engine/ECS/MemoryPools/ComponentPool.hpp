@@ -11,10 +11,10 @@ namespace ECS
 		ComponentPool(const size_t aDefaultSize = 16);
 		~ComponentPool();
 
-		ComponentPool(const ComponentPool&) = delete;
+		/*ComponentPool(const ComponentPool&) = delete;
 		ComponentPool(ComponentPool&&) = delete;
 		ComponentPool& operator=(const ComponentPool&) = delete;
-		ComponentPool& operator=(ComponentPool&&) = delete;
+		ComponentPool& operator=(ComponentPool&&) = delete;*/
 
 		template<typename T>
 		char* CreateComponent(const size_t aComponentID, std::unordered_map<size_t, char*>& aAllComponentMap, const T& aValue = T());

@@ -6,16 +6,19 @@ namespace ECS
 	class RenderLightSystem final : public ECS::System
 	{
 	public:
-		RenderLightSystem(EntityManager* aECS);
+		RenderLightSystem(EntityComponentSystem* aEntityComponentSystem);
 		~RenderLightSystem();
 
 		void Init() override;
 		void Update() override;
 		void Render() override;
-		void RenderSkyBoxAndDirectionalLight();
+		void RenderSkyBoxAndDirectionalLight() const;
 
 	private:
-		EntityID mySkyBoxID;
-		EntityID myDirectionalLightID;
+		bool FindAndSetSkyBox();
+		bool FindAndSetDirectionalLight();
+	private:
+		EntityID myEntityWithSkyBoxID;
+		EntityID myEntityWithDirectionalLightID;
 	};
 }

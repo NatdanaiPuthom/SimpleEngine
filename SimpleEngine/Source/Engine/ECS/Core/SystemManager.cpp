@@ -4,12 +4,11 @@
 
 namespace ECS
 {
-	SystemManager::SystemManager(EntityManager* aEntityManager)
-		: myEntityManager(aEntityManager)
-		, myFixedUpdateTime(1.0f / 60.0f)
+	SystemManager::SystemManager(EntityComponentSystem* aEntityComponentSystem)
+		: myFixedUpdateTime(1.0f / 60.0f)
 		, myTimer(0.0f)
-		, mySkyBoxAndDirectionalLightSystem(aEntityManager)
 	{
+		mySkyBoxAndDirectionalLightSystem = std::make_shared<RenderLightSystem>(aEntityComponentSystem);
 	}
 
 	SystemManager::~SystemManager()
@@ -18,12 +17,12 @@ namespace ECS
 
 	void SystemManager::Init()
 	{
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			system->Init();
 		}
 
-		mySkyBoxAndDirectionalLightSystem.Init();
+		mySkyBoxAndDirectionalLightSystem->Init();
 	}
 
 	void SystemManager::Update()
@@ -36,12 +35,12 @@ namespace ECS
 			myTimer = 0.0f;
 		}
 
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			system->EarlyUpdate();
 		}
 
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			if (shouldUpdate)
 			{
@@ -49,13 +48,13 @@ namespace ECS
 			}
 		}
 
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			system->Update();
-			mySkyBoxAndDirectionalLightSystem.Update();
+			mySkyBoxAndDirectionalLightSystem->Update();
 		}
 
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			system->LateUpdate();
 		}
@@ -63,7 +62,7 @@ namespace ECS
 
 	void SystemManager::Render()
 	{
-		for (auto& system : mySystems)
+		for (const auto& [key, system] : mySystems)
 		{
 			system->Render();
 		}
@@ -71,16 +70,11 @@ namespace ECS
 
 	void SystemManager::RenderPointLights()
 	{
-		mySkyBoxAndDirectionalLightSystem.Render();
+		mySkyBoxAndDirectionalLightSystem->Render();
 	}
 
 	void SystemManager::RenderSkyBoxAndDirectionalLight()
 	{
-		mySkyBoxAndDirectionalLightSystem.RenderSkyBoxAndDirectionalLight();
-	}
-
-	void SystemManager::AddSystem(std::unique_ptr<System> aSystem)
-	{
-		mySystems.push_back(std::move(aSystem));
+		mySkyBoxAndDirectionalLightSystem->RenderSkyBoxAndDirectionalLight();
 	}
 }

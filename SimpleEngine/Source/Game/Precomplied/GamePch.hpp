@@ -1,7 +1,9 @@
 #pragma once
 #pragma message("---------Never give up on your dreams!---------------")
 
+#ifdef _DEBUG
 #include "Engine/MemoryTracker/MemoryTracker.h"
+#endif
 
 #pragma message("---------Never give up on your dreams!---------------")
 
@@ -49,17 +51,7 @@
 
 #pragma message("---------Never give up on your dreams!---------------")
 
-#include "Game/Managers/LevelManager/Template/Scene.hpp"
 #include "Game/PostMaster/Template/PostMaster.hpp"
 #include "Game/Managers/EventManager/EventManager.hpp"
-#include "Game/Player/PlayerState.hpp"
 
 #pragma message("---------Never give up on your dreams!---------------")
-
-//#include "Engine/ECS/Reflection/ECSRegistry.hpp"
-
-#pragma message("---------Never give up on your dreams!---------------")
-
-#ifdef _DEBUG
-#include "Engine/MemoryTracker/MemoryTracker.h"
-#endif

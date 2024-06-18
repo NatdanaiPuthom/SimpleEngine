@@ -1,7 +1,9 @@
 #pragma once
 #pragma message("---------Never give up on your dreams!---------------")
 
+#ifdef _DEBUG
 #include "Engine/MemoryTracker/MemoryTracker.h"
+#endif
 
 #pragma message("---------Never give up on your dreams!---------------")
 
@@ -44,9 +46,5 @@
 #include "Graphics/Animation/AnimationPlayer.hpp"
 
 #pragma message("---------Never give up on your dreams!---------------")
-
-#ifdef _DEBUG
-#include "Engine/MemoryTracker/MemoryTracker.h"
-#endif
 
 using Microsoft::WRL::ComPtr;

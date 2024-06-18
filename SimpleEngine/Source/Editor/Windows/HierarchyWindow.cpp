@@ -2,7 +2,7 @@
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/FileManager/FileManager.hpp"
 #include "Engine/ECS/Components/AllEngineComponents.hpp"
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
 {
@@ -28,16 +28,20 @@ namespace Editor
 				ImGui::OpenPopup("Add Scene Object");
 			}
 
+			/*
+			* 
+			* TO-DO(v11.0.6): implement name search filter which will require how ecs work i assume?
+			* 
 			ImGui::SameLine(ImGui::GetWindowWidth() - 135);
 			ImGui::PushItemWidth(125);
 
 			std::string sceneSearch = "";
-
 			if (ImGui::InputTextWithHint("##SearchScene", "Search", &sceneSearch[0], sceneSearch.capacity() + 1))
 			{
 			}
 
 			ImGui::PopItemWidth();
+			*/
 
 			if (ImGui::BeginPopup("Add Scene Object"))
 			{
@@ -61,7 +65,8 @@ namespace Editor
 			}
 
 			ImGui::Separator();
-			ImGui::Text(World::GetActiveScene()->GetSceneName().c_str());
+			//ImGui::Text(World::GetActiveScene()->GetSceneName().c_str()); //TO-DO(v11.1.1): Fix this once SceneManager is done
+			ImGui::Text("????");
 			ImGui::Separator();
 
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
@@ -145,12 +150,12 @@ namespace Editor
 
 					const size_t componentHashCode = componentType.hash_code();
 
-					if (ECS::ComponentRegistry::myTypeErasureComponents.contains(componentHashCode) == false)
+					if (MainSingleton::GetComponentRegistry()->myTypeErasureComponents.contains(componentHashCode) == false)
 					{
 						continue;
 					}
 
-					const std::string& componentName = ECS::ComponentRegistry::myTypeErasureComponents[componentHashCode].myComponentName;
+					const std::string& componentName = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentName;
 					void* componentPointer = World::GetECS()->GetComponentPointerByComponentID(componentID);
 
 					const bool isOpen = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
@@ -169,7 +174,7 @@ namespace Editor
 
 					if (isOpen)
 					{
-						ECS::ComponentRegistry::InspectComponentProperties(componentHashCode, componentPointer);
+						MainSingleton::GetComponentRegistry()->InspectComponentProperties(componentHashCode, componentPointer);
 					}
 
 					if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
@@ -205,7 +210,7 @@ namespace Editor
 
 				if (ImGui::BeginPopup("Add Component"))
 				{
-					for (const auto& [hashCode, componentType] : ECS::ComponentRegistry::myTypeErasureComponents)
+					for (const auto& [hashCode, componentType] : MainSingleton::GetComponentRegistry()->myTypeErasureComponents)
 					{
 						if (ImGui::Selectable(componentType.myComponentName.c_str()))
 						{
