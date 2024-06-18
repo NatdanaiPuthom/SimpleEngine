@@ -4,6 +4,7 @@
 namespace ECS
 {
 	ComponentRegistry::ComponentRegistry()
+		: myPaddings{ INT_MIN }
 	{
 	}
 

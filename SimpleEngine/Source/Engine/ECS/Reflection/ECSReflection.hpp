@@ -1,6 +1,6 @@
 #pragma once
-#include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Reflection/ECSEditorFunctions.hpp"
 #include "Engine/ECS/Reflection/ECSSaveData.hpp"
 #include "Engine/ECS/Reflection/ECSLoadData.hpp"
@@ -102,6 +102,7 @@ namespace ECS
 		~ComponentRegistry();
 	private:
 		inline static ComponentRegistry* myPtr = nullptr;
+		const int myPaddings[4];
 	};
 
 	template<typename T>
