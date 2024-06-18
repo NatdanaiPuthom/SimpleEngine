@@ -96,7 +96,7 @@ namespace ECS
 			for (const auto& [componentType, componentID] : components)
 			{
 				void* componentPointer = aECS.GetComponentPointerByComponentID(componentID);
-				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentType.hash_code()].myComponentProperties;
+				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::GetInstance()->myTypeErasureComponents[componentType.hash_code()].myComponentProperties;
 
 				const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(componentType.name());
 				jsonData["Entities"][i]["Components"][count]["Name"] = componentName;
@@ -108,7 +108,7 @@ namespace ECS
 					const size_t propertyID = componentProperty.id;
 					const size_t byteOffset = componentProperty.byteOffset;
 
-					const TypeErasureObject& dataType = ComponentRegistry::myTypeErasureDataTypes[propertyID];
+					const TypeErasureObject& dataType = ComponentRegistry::GetInstance()->myTypeErasureDataTypes[propertyID];
 
 					jsonData["Entities"][i]["Components"][count]["Properties"][propertyName] = INT_MIN;
 
@@ -157,8 +157,8 @@ namespace ECS
 			for (const auto& componentDataJSON : entityData["Components"])
 			{
 				const size_t componentHashCode = componentDataJSON["ComponentHash"];
-				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::myTypeErasureComponents[componentHashCode].myComponentProperties;
-				const ComponentID componentID = ComponentRegistry::myTypeErasureComponents[componentHashCode].AddComponentFunctionPointer(entity);
+				const std::vector<ComponentProperty>& componentProperties = ComponentRegistry::GetInstance()->myTypeErasureComponents[componentHashCode].myComponentProperties;
+				const ComponentID componentID = ComponentRegistry::GetInstance()->myTypeErasureComponents[componentHashCode].AddComponentFunctionPointer(entity);
 				const auto& componentPropertiesJSON = componentDataJSON["Properties"];
 				const size_t propertySize = componentPropertiesJSON.size();
 
@@ -173,7 +173,7 @@ namespace ECS
 				for (size_t i = 0; i < propertySize; ++i)
 				{
 					const ComponentProperty& property = componentProperties[i];
-					const TypeErasureObject& typeErasedData = ComponentRegistry::myTypeErasureDataTypes[property.id];
+					const TypeErasureObject& typeErasedData = ComponentRegistry::GetInstance()->myTypeErasureDataTypes[property.id];
 					void* propertyPointer = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + property.byteOffset));
 
 					if (const auto& loadDataFromJSONFunction = typeErasedData.LoadDataFromJSON)

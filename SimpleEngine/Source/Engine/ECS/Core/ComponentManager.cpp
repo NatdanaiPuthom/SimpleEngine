@@ -27,7 +27,7 @@ namespace ECS
 
 			for (size_t i = 0; i < componentCount; ++i)
 			{
-				ComponentRegistry::myTypeErasureComponentDestructorInvoker[componentType](&component[i * sizeOfComponentType]);;
+				ComponentRegistry::GetInstance()->myTypeErasureComponentDestructorInvoker[componentType](&component[i * sizeOfComponentType]);;
 			}
 		}
 	}
@@ -37,7 +37,7 @@ namespace ECS
 		ComponentPool& pool = myComponents[aComponentType];
 		char* component = pool.GetComponentAddressByID(aComponentID);
 
-		ComponentRegistry::myTypeErasureComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
+		ComponentRegistry::GetInstance()->myTypeErasureComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
 		myAllComponents.erase(aComponentID);
 		myComponentTypeToEntityIDs[aComponentType].erase(aEntityID);
 

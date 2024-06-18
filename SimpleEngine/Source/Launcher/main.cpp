@@ -30,6 +30,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR,
 
 	Simple::EasyProfilerOutput();
 
+	ECS::ComponentRegistry::GetInstance()->Destroy();
+
 	return 0;
 }
 

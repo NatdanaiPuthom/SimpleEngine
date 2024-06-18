@@ -1,5 +1,5 @@
 #pragma once
-//#include "Engine/ECS/ECS.hpp"
+#include "Engine/ECS/ECS.hpp"
 #include <vector>
 
 class MainSingleton;

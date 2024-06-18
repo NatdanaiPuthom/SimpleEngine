@@ -149,12 +149,12 @@ namespace Editor
 
 					const size_t componentHashCode = componentType.hash_code();
 
-					if (ECS::ComponentRegistry::myTypeErasureComponents.contains(componentHashCode) == false)
+					if (ECS::ComponentRegistry::GetInstance()->myTypeErasureComponents.contains(componentHashCode) == false)
 					{
 						continue;
 					}
 
-					const std::string& componentName = ECS::ComponentRegistry::myTypeErasureComponents[componentHashCode].myComponentName;
+					const std::string& componentName = ECS::ComponentRegistry::GetInstance()->myTypeErasureComponents[componentHashCode].myComponentName;
 					void* componentPointer = World::GetECS()->GetComponentPointerByComponentID(componentID);
 
 					const bool isOpen = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
@@ -173,7 +173,7 @@ namespace Editor
 
 					if (isOpen)
 					{
-						ECS::ComponentRegistry::InspectComponentProperties(componentHashCode, componentPointer);
+						ECS::ComponentRegistry::GetInstance()->InspectComponentProperties(componentHashCode, componentPointer);
 					}
 
 					if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
@@ -209,7 +209,7 @@ namespace Editor
 
 				if (ImGui::BeginPopup("Add Component"))
 				{
-					for (const auto& [hashCode, componentType] : ECS::ComponentRegistry::myTypeErasureComponents)
+					for (const auto& [hashCode, componentType] : ECS::ComponentRegistry::GetInstance()->myTypeErasureComponents)
 					{
 						if (ImGui::Selectable(componentType.myComponentName.c_str()))
 						{
