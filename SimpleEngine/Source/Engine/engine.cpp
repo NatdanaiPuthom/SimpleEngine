@@ -80,8 +80,8 @@ namespace Simple
 
 	void Engine::CheckAndCopySettingsFiles()
 	{
-		const std::string binSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS);
-		const std::string dependenciesSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS);
+		const std::string binSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS);
+		const std::string dependenciesSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_SETTINGS);
 		const std::string forceDependenciesSettings = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_FORCE);
 
 		std::vector<std::string> binSettingsFileNames;
@@ -120,8 +120,8 @@ namespace Simple
 
 		for (const std::string& name : missingFileNames)
 		{
-			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_SOURCE_SETTINGS) + name;
-			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS) + name;
+			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_SETTINGS) + name;
+			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS) + name;
 			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
 
 			std::cout << "Copied: " << name << std::endl;
@@ -130,7 +130,7 @@ namespace Simple
 		for (const std::string& name : forceDependenciesSettingsFileNames)
 		{
 			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_FORCE) + name;
-			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_BIN_SETTINGS) + name;
+			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS) + name;
 			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
 
 			std::cout << "Force Copied: " << name << std::endl;

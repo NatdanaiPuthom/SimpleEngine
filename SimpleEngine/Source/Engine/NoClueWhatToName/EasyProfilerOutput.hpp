@@ -8,7 +8,7 @@ namespace Simple
 {
 	void EasyProfilerOutput()
 	{
-		const std::string baseFileName = SimpleUtilities::GetAbsolutePath(SIMPLE_PROFILER_FILENAME);
+		const std::string baseFileName = SimpleUtilities::GetAbsolutePath(SIMPLE_FILENAME_PROFILER);
 		const size_t dotPosition = baseFileName.find_last_of('.');
 		const std::string extension = baseFileName.substr(dotPosition);
 

@@ -13,5 +13,6 @@ public:
 	static Simpleton::InputManager& GetInputManager();
 	static Simpleton::AudioManager& GetAudioManager();
 	static Simpleton::SceneManager& GetSceneManager();
+
 	static ECS::ComponentRegistry* GetComponentRegistry();
 };
