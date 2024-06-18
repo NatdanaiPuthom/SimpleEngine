@@ -10,6 +10,7 @@ namespace SCR
 
 	class Script;
 
+
 	struct NodeGraphContext
 	{
 		NodeGraph& nodeGraph;
@@ -68,8 +69,8 @@ namespace SCR
 
 #pragma region Variable
 
-		static void BindVariable(Script& aScript, NodeID aNodeID, VarID aVarID);
-		static void UnbindVariable(Script& aScript, NodeID aNodeID);
+		static void BindVariable(Script& aScript, NodeID aNodeID, VarID aVarID, CommandTracker* aCommandTracker);
+		static void UnbindVariable(Script& aScript, NodeID aNodeID, CommandTracker* aCommandTracker);
 
 
 #pragma endregion
@@ -92,4 +93,6 @@ namespace SCR
 	{
 		ScriptProxy::GetNodeStateMap(aNodeGraph).emplace(aNodeID, DataType());
 	}
+
+
 }

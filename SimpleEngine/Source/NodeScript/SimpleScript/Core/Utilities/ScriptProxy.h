@@ -62,8 +62,6 @@ namespace SCR
 		static MemoryManager& GetVariableMemoryManager(Script& aScript);
 		static const MemoryManager& GetVariableMemoryManager(const Script& aScript);
 
-		static const NodeManager& GetNodeManager(const Script& aScript);
-
 		static NodeGraph& GetEventGraph(Script& aScript);
 		static const NodeGraph& GetEventGraph(const Script& aScript);
 
@@ -72,12 +70,6 @@ namespace SCR
 
 		static VariableManager& GetVariableManager(Script& aScript);
 		static const VariableManager& GetVariableManager(const Script& aScript);
-
-		static CommandTracker& GetCommandTracker(Script& aScript);
-		static const CommandTracker& GetCommandTracker(const Script& aScript);
-
-		static CommandTracker& GetCommandTracker(ScriptFoundation& aFoundation);
-		static const CommandTracker& GetCommandTracker(const ScriptFoundation& aFoundation);
 		
 		static const std::vector<Variable>& GetVariables(const Script& aScript);
 		static const std::vector<Pin>& GetPins(const NodeGraph& aNodeGraph);

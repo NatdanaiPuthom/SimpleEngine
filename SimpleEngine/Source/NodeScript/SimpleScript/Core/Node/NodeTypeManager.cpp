@@ -19,8 +19,9 @@ namespace SCR
 	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
 	{
 		NodeTypeID id = myNodeTypes.size();
-		myNodeTypes.emplace_back(std::forward<NodeType>(aNodeType));
+		myNodeTypes.emplace_back(std::move(aNodeType));
 		Assert();
+
 		return id;
 	}
 

@@ -28,11 +28,16 @@ namespace SCR
 		VariableManager();
 		~VariableManager();
 
+		VariableManager(const VariableManager& aOther);
+		VariableManager(VariableManager&&) = default;
+		VariableManager& operator=(const VariableManager&) = default;
+		VariableManager& operator=(VariableManager&&) = default;
+
 
 		VarID GetVariableIDByNodeID(const NodeID aNodeID) const;
 		std::vector<NodeID> GetNodeIDsByVarID(const VarID aVarID) const;
 
-	private:
+	public:
 
 		std::vector<Variable> myVariables;
 

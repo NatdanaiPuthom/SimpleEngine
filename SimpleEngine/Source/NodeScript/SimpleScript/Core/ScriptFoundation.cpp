@@ -41,8 +41,7 @@ namespace SCR
 
 	ScriptManager& ScriptFoundation::CreateScriptManager()
 	{
-		ScriptManager* scriptManager = new ScriptManager(*this);
-		myScriptManagers.push_back(std::unique_ptr<ScriptManager>(scriptManager));
+		myScriptManagers.emplace_back(std::make_unique<ScriptManager>(*this));
 		return *myScriptManagers.back();
 	}
 

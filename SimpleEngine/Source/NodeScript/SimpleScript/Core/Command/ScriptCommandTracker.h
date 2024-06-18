@@ -23,7 +23,7 @@ namespace SCR
 
 		void Clear();
 
-		bool& IsTracking();
+		//bool& IsTracking();
 		bool& IsDebugPrinting();
 		const bool& IsDebugPrinting() const;
 

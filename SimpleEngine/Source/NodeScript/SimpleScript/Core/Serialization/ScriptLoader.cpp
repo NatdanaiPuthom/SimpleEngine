@@ -11,6 +11,7 @@
 #include "../ScriptInternalModifier.h"
 #include "../Utilities/ScriptFilter.h"
 #include "../Command/ScriptCommandTracker.h"
+#include "../ScriptModifier.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -58,7 +59,7 @@ namespace SCR
 
 		std::unordered_map<NodeID, NodeID> cleanedNodeIDs;
 
-		for (auto& [nodeID, node, nodeType] : ScriptProxy::GetNodeManager(aScript))
+		for (auto& [nodeID, node, nodeType] : *eventGraph.myNodeManager)
 		{
 			if (node->isDestroyed) continue;
 
@@ -177,8 +178,8 @@ namespace SCR
 
 		NodeGraph& eventGraph = ScriptProxy::GetEventGraph(aScript);
 		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(eventGraph);
-		ScriptModifier& modifier = aScript.GetModifier();
-		ScriptProxy::GetCommandTracker(aScript).IsTracking() = false;
+		//ScriptModifier& modifier = aScript.GetModifier();
+		//ScriptProxy::GetCommandTracker(aScript).IsTracking() = false;
 
 		const json& dataJson = jsonDoc["Data"];
 
@@ -192,7 +193,7 @@ namespace SCR
 			float yPos = nodePosJson["y"];
 
 			bool success = true;
-			NodeID nodeID = modifier.CreateNode(nodeName, success, { xPos, yPos }, false, true);
+			NodeID nodeID = Modify::CreateNode(eventGraph, nodeName, success, { xPos, yPos }, nullptr, true);
 
 			if (!success)
 			{
@@ -217,8 +218,6 @@ namespace SCR
 				continue;
 			}
 			const Pin& pin = ScriptProxy::GetPin(eventGraph, pinID);
-
-			//InputPin& inputPin = ScriptProxy::GetInputPin(aScript, pinID);
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 			const json& connectionJson = pinData["Connection"];
@@ -237,7 +236,7 @@ namespace SCR
 
 				if (connectionID != InvalidID<PinID>())
 				{
-					modifier.TryCreateLink(pinID, connectionID);
+					Modify::TryCreateLink(pinID, connectionID, eventGraph, nullptr);
 				}
 				continue;
 			}
@@ -251,14 +250,14 @@ namespace SCR
 
 		for (const json& variableJson : variableDataJson)
 		{
-			VarID varID = modifier.CreateVariable();
+			VarID varID = Modify::CreateVariable(aScript);
 
 			const Variable& variable = ScriptProxy::GetVariable(aScript, varID);
 
 			const std::string& dataTypeStr = variableJson["DataType"];
 
 			const std::string variableName = variableJson["Name"];
-			modifier.SetVariableName(varID, variableName);
+			Modify::SetVariableName(varID, variableName, aScript);
 
 			const json& defaultValueJson = variableJson["DefaultValue"];
 
@@ -268,7 +267,7 @@ namespace SCR
 			if (dataTypeID != InvalidID<DataTypeID>())
 			{
 				
-				aScript.GetModifier().SetVariableDataType(varID, dataTypeID);
+				Modify::SetVariableDataType(varID, dataTypeID, aScript, nullptr);
 
 				DataTypeManager::LoadData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
 				DataTypeManager::CopyData(dataTypeID, variable.runtimeDataPtr, variable.defaultValueDataPtr);
@@ -281,7 +280,7 @@ namespace SCR
 			{
 				if (!failedNodeIDs.contains(nodeID))
 				{
-					InternalModifier::BindVariable(aScript, nodeID, varID);
+					InternalModifier::BindVariable(aScript, nodeID, varID, nullptr);
 				}
 				else
 				{
@@ -290,7 +289,7 @@ namespace SCR
 			}
 		}
 
-		ScriptProxy::GetCommandTracker(aScript).IsTracking() = true;
+		//ScriptProxy::GetCommandTracker(aScript).IsTracking() = true;
 	}
 
 	void ScriptLoader::LoadAll(ScriptManager& aScriptManager)
@@ -423,7 +422,7 @@ namespace SCR
 		{
 			const std::string& nodeName = customEventJson["Name"];
 
-			CustomEventID customEventNodeTypeID = ScriptModifier::CreateNodeType_CustomEvent(nodeName);
+			CustomEventID customEventNodeTypeID = Modify::CreateCustomEvent(nodeName);
 
 			const json& pinsJson = customEventJson["Pins"];
 
@@ -434,7 +433,7 @@ namespace SCR
 
 				DataTypeID dataTypeID = DataTypeManager::GetDataTypeIDByName(dataTypeName);
 
-				ScriptModifier::AddPinToCustomEvent(dataTypeID, customEventNodeTypeID, pinName);
+				Modify::AddPinToCustomEvent(dataTypeID, customEventNodeTypeID, pinName);
 			}
 		}
 	}

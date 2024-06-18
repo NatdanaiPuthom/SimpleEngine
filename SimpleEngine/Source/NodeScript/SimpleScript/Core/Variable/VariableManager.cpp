@@ -15,6 +15,13 @@ namespace SCR
 	{
 	}
 
+	VariableManager::VariableManager(const VariableManager& aOther)
+		: myVariables(aOther.myVariables)
+		, myNodeIDToVarID(aOther.myNodeIDToVarID)
+		, myMemoryManager(std::make_unique<MemoryManager>(*aOther.myMemoryManager))
+	{
+	}
+
 	VarID VariableManager::GetVariableIDByNodeID(const NodeID aNodeID) const
 	{
 		return myNodeIDToVarID.at(aNodeID);

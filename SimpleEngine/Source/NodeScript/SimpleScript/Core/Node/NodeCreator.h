@@ -494,7 +494,7 @@ namespace SCR
 			};
 	}
 
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename NodeExecutionContextType = Wildcard, typename NodeStateDataType = Wildcard, typename Callable, typename... OutputTypes, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename NodeExecutionContextType = Wildcard, typename NodeStateDataType = Wildcard, typename Callable, typename... OutputTypes, typename... InputTypes>
 	NodeRecipe CreateNodeRecipe(Callable aCallable, TypeList<OutputTypes...> aOutputList, TypeList<InputTypes...>)
 	{
 		static_assert(sizeof...(OutputTypes) > 0, "A node must always have an output pin, have you considered registering it as a flow node type?");
@@ -527,7 +527,7 @@ namespace SCR
 			CreateCreateNodeFunction<TakesNodeState, NodeStateDataType>(aOutputList, TypeList<std::remove_cvref_t<InputTypes>...>{}),
 			CreateExecuteNodeFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext, NodeExecutionContextType, NodeStateDataType, Callable>(aOutputList,  TypeList<std::remove_cvref_t<InputTypes>...>{}),
 			traits,
-			ExecutionTrait,
+			EnumCast(EventType),
 			OperatorTrait,
 			inputPinTypes,
 			outputPinTypes,
@@ -539,7 +539,7 @@ namespace SCR
 
 
 	// For function with 1 return value
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, InputTypes...> aFunction)
 	{
 		constexpr bool IsOutputVoid = IsSameType<OutputType, void>;
@@ -552,13 +552,13 @@ namespace SCR
 						aFunction(std::forward<InputTypes>(someInputs)...);
 						return true;
 					};
-				return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait>(l, TypeList<Flow>(),
+				return CreateNodeRecipe<Traits, EventType, OperatorTrait>(l, TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>());
 
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait>(
+				return CreateNodeRecipe<Traits, EventType, OperatorTrait>(
 					[aFunction](Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(std::forward<InputTypes>(someInputs)...);
@@ -572,17 +572,17 @@ namespace SCR
 		{
 			if constexpr (IsOutputVoid)
 			{
-				return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait>(aFunction, TypeList<>(), TypeList<InputTypes...>());
+				return CreateNodeRecipe<Traits, EventType, OperatorTrait>(aFunction, TypeList<>(), TypeList<InputTypes...>());
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait>(aFunction, TypeList<OutputType>(), TypeList<InputTypes...>());
+				return CreateNodeRecipe<Traits, EventType, OperatorTrait>(aFunction, TypeList<OutputType>(), TypeList<InputTypes...>());
 			}
 		}
 	}
 
 	// For functions with 1 return value && takes in an execution context
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename ExecutionContextType, typename OutputType, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename ExecutionContextType, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeExecutionContext<ExecutionContextType>, InputTypes...> aFunction)
 	{
 		constexpr bool IsOutputTypeVoid = IsSameType<OutputType, void>;
@@ -590,7 +590,7 @@ namespace SCR
 		{
 			if constexpr (IsOutputTypeVoid)
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionTrait, OperatorTrait, ExecutionContextType>(
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, EventType, OperatorTrait, ExecutionContextType>(
 					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow>
 					{
 						aFunction(aContext, std::forward<InputTypes>(someInputs)...);
@@ -602,7 +602,7 @@ namespace SCR
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionTrait, OperatorTrait, ExecutionContextType>(
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, EventType, OperatorTrait, ExecutionContextType>(
 					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(aContext, std::forward<InputTypes>(someInputs)...);
@@ -617,18 +617,18 @@ namespace SCR
 		{
 			if constexpr (IsOutputTypeVoid)
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionTrait, OperatorTrait, ExecutionContextType>(aFunction, TypeList<>(), TypeList<InputTypes...>());
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, EventType, OperatorTrait, ExecutionContextType>(aFunction, TypeList<>(), TypeList<InputTypes...>());
 
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionTrait, OperatorTrait, ExecutionContextType>(aFunction, TypeList<OutputType>(), TypeList<InputTypes...>());
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, EventType, OperatorTrait, ExecutionContextType>(aFunction, TypeList<OutputType>(), TypeList<InputTypes...>());
 			}
 		}
 	}
 
 	// For functions with 1 return value and takes in internal data
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename NodeStateDataType, typename OutputType, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename NodeStateDataType, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeState<NodeStateDataType>, InputTypes...> aFunction)
 	{
 		constexpr bool IsOutputVoid = IsSameType<OutputType, void>;
@@ -636,7 +636,7 @@ namespace SCR
 		{
 			if constexpr (IsOutputVoid)
 			{
-				return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait, Wildcard, NodeStateDataType>(
+				return CreateNodeRecipe<Traits, EventType, OperatorTrait, Wildcard, NodeStateDataType>(
 					[aFunction](NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow>
 					{
 						aFunction(aInternalData, someInputs...);
@@ -647,7 +647,7 @@ namespace SCR
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait, Wildcard, NodeStateDataType>(
+				return CreateNodeRecipe<Traits, EventType, OperatorTrait, Wildcard, NodeStateDataType>(
 					[aFunction](NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(aInternalData, someInputs...);
@@ -661,18 +661,18 @@ namespace SCR
 		{
 			if constexpr (IsOutputVoid)
 			{
-				return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait, Wildcard, NodeStateDataType>(aFunction, TypeList<>(), TypeList<InputTypes...>());
+				return CreateNodeRecipe<Traits, EventType, OperatorTrait, Wildcard, NodeStateDataType>(aFunction, TypeList<>(), TypeList<InputTypes...>());
 
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait, Wildcard, NodeStateDataType>(aFunction, TypeList<OutputType>(), TypeList<InputTypes...>());
+				return CreateNodeRecipe<Traits, EventType, OperatorTrait, Wildcard, NodeStateDataType>(aFunction, TypeList<OutputType>(), TypeList<InputTypes...>());
 			}
 		}
 	}
 
 	// For functions with 1 return value && takes in execution context && takes in internal data 
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename ExecutionContextType, typename NodeStateDataType, typename OutputType, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename ExecutionContextType, typename NodeStateDataType, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeExecutionContext<ExecutionContextType>, NodeState<NodeStateDataType>, InputTypes...> aFunction)
 	{
 		constexpr bool IsOutputVoid = IsSameType<OutputType, void>;
@@ -680,7 +680,7 @@ namespace SCR
 		{
 			if constexpr (IsOutputVoid)
 			{
-				return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait, ExecutionContextType, NodeStateDataType>(
+				return CreateNodeRecipe<Traits, EventType, OperatorTrait, ExecutionContextType, NodeStateDataType>(
 					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow>
 					{
 						aFunction(aContext, aInternalData, std::forward<InputTypes>(someInputs)...);
@@ -691,7 +691,7 @@ namespace SCR
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait, ExecutionContextType, NodeStateDataType>(
+				return CreateNodeRecipe<Traits, EventType, OperatorTrait, ExecutionContextType, NodeStateDataType>(
 					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(aContext, aInternalData, std::forward<InputTypes>(someInputs)...);
@@ -705,23 +705,23 @@ namespace SCR
 		{
 			if constexpr (IsOutputVoid)
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionTrait, OperatorTrait, ExecutionContextType, NodeStateDataType>(aFunction, TypeList<>(), TypeList<InputTypes...>());
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, EventType, OperatorTrait, ExecutionContextType, NodeStateDataType>(aFunction, TypeList<>(), TypeList<InputTypes...>());
 
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionTrait, OperatorTrait, ExecutionContextType, NodeStateDataType>(aFunction, TypeList<OutputType>(), TypeList<InputTypes...>());
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, EventType, OperatorTrait, ExecutionContextType, NodeStateDataType>(aFunction, TypeList<OutputType>(), TypeList<InputTypes...>());
 			}
 		}
 	}
 
 	// For functions with tuple return value
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename... OutputTypes, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename... OutputTypes, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, InputTypes...> aFunction)
 	{
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
-			return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait>(
+			return CreateNodeRecipe<Traits, EventType, OperatorTrait>(
 				[aFunction](Flow aFlow, InputTypes... someInputs) -> std::tuple<Flow, OutputTypes...>
 				{
 					return std::tuple_cat(std::make_tuple(aFlow), aFunction(std::forward<InputTypes>(someInputs)...));
@@ -733,18 +733,18 @@ namespace SCR
 		else
 		{
 
-			return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait>(aFunction, TypeList<OutputTypes...>(), TypeList<InputTypes...>());
+			return CreateNodeRecipe<Traits, EventType, OperatorTrait>(aFunction, TypeList<OutputTypes...>(), TypeList<InputTypes...>());
 
 		}
 	}
 
 	// For functions with tuple return value && takes in execution context
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename ExecutionContextType, typename... OutputTypes, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename ExecutionContextType, typename... OutputTypes, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, NodeExecutionContext<ExecutionContextType>, InputTypes...> aFunction)
 	{
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
-			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionTrait, OperatorTrait, ExecutionContextType>(
+			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, EventType, OperatorTrait, ExecutionContextType>(
 				[aFunction](NodeExecutionContext<ExecutionContextType> aContext, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputTypes...>
 				{
 					return std::tuple_cat(std::make_tuple(aFlow), aFunction(aContext, std::forward<InputTypes>(someInputs)...));
@@ -756,17 +756,17 @@ namespace SCR
 		}
 		else
 		{
-			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionTrait, OperatorTrait, ExecutionContextType>(aFunction, TypeList<OutputTypes...>(), TypeList<InputTypes...>());
+			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, EventType, OperatorTrait, ExecutionContextType>(aFunction, TypeList<OutputTypes...>(), TypeList<InputTypes...>());
 		}
 	}
 
 	// For functions with tuple return value && takes in internal data
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename NodeStateDataType, typename... OutputTypes, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename NodeStateDataType, typename... OutputTypes, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, NodeState<NodeStateDataType>, InputTypes...> aFunction)
 	{
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
-			return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait, Wildcard, NodeStateDataType>(
+			return CreateNodeRecipe<Traits, EventType, OperatorTrait, Wildcard, NodeStateDataType>(
 				[aFunction](NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputTypes...>
 				{
 					return std::tuple_cat(std::make_tuple(aFlow), aFunction(aInternalData, std::forward<InputTypes>(someInputs)...));
@@ -778,17 +778,17 @@ namespace SCR
 		}
 		else
 		{
-			return CreateNodeRecipe<Traits, ExecutionTrait, OperatorTrait, Wildcard, NodeStateDataType>(aFunction, TypeList<OutputTypes...>(), TypeList<InputTypes...>());
+			return CreateNodeRecipe<Traits, EventType, OperatorTrait, Wildcard, NodeStateDataType>(aFunction, TypeList<OutputTypes...>(), TypeList<InputTypes...>());
 		}
 	}
 
 	// For functions with tuple return value && takes in execution context && takes in NodeState
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename ExecutionContextType, typename NodeStateDataType, typename... OutputTypes, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename ExecutionContextType, typename NodeStateDataType, typename... OutputTypes, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, NodeExecutionContext<ExecutionContextType>, NodeState<NodeStateDataType>, InputTypes...> aFunction)
 	{
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
-			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionTrait, OperatorTrait, ExecutionContextType, NodeStateDataType>(
+			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, EventType, OperatorTrait, ExecutionContextType, NodeStateDataType>(
 				[aFunction](NodeExecutionContext<ExecutionContextType> aContext, NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputTypes...>
 				{
 					return std::tuple_cat(std::make_tuple(aFlow), aFunction(aContext, aInternalData, std::forward<InputTypes>(someInputs)...));
@@ -799,13 +799,13 @@ namespace SCR
 		}
 		else
 		{
-			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionTrait, OperatorTrait, ExecutionContextType, NodeStateDataType>(aFunction, TypeList<OutputTypes...>(), TypeList<InputTypes...>());
+			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, EventType, OperatorTrait, ExecutionContextType, NodeStateDataType>(aFunction, TypeList<OutputTypes...>(), TypeList<InputTypes...>());
 		}
 	}
 
 
 	// For functions with 1 return value and takes in InternalExecutionContext
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, const InternalExecutionContext*, InputTypes...> aFunction)
 	{
 		constexpr bool IsOutputVoid = IsSameType<OutputType, void>;
@@ -813,7 +813,7 @@ namespace SCR
 		{
 			if constexpr (IsOutputVoid)
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait>(
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, EventType, OperatorTrait>(
 					[aFunction](const InternalExecutionContext* aContext, Flow, InputTypes... aInputs) -> Flow
 					{
 						aFunction(aContext, std::forward<InputTypes>(aInputs)...);
@@ -822,7 +822,7 @@ namespace SCR
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait>(
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, EventType, OperatorTrait>(
 					[aFunction](const InternalExecutionContext* aContext, Flow, InputTypes... aInputs) -> std::tuple<Flow, OutputType>
 					{
 						return { true, aFunction(aContext, std::forward<InputTypes>(aInputs)...) };
@@ -833,7 +833,7 @@ namespace SCR
 		{
 			if constexpr (IsOutputVoid)
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait>(
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, EventType, OperatorTrait>(
 					[aFunction](const InternalExecutionContext* aContext, Flow, InputTypes... aInputs) -> OutputType
 					{
 						return aFunction(aContext, std::forward<InputTypes>(aInputs)...);
@@ -841,7 +841,7 @@ namespace SCR
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait>(
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, EventType, OperatorTrait>(
 					[aFunction](const InternalExecutionContext* aContext, InputTypes... aInputs) -> OutputType
 					{
 						return aFunction(aContext, std::forward<InputTypes>(aInputs)...);
@@ -852,7 +852,7 @@ namespace SCR
 
 
 	// For functions with 1 return value and takes in InternalExecutionContext and NodeState
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename NodeStateDataType, typename OutputType, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename NodeStateDataType, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, const InternalExecutionContext*, NodeState<NodeStateDataType>, InputTypes...> aFunction)
 	{
 		constexpr bool IsOutputVoid = IsSameType<OutputType, void>;
@@ -860,7 +860,7 @@ namespace SCR
 		{
 			if constexpr (IsOutputVoid)
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait, Wildcard, NodeStateDataType>(
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, EventType, OperatorTrait, Wildcard, NodeStateDataType>(
 					[aFunction](const InternalExecutionContext* aContext, NodeState<NodeStateDataType> aNodeState, Flow, InputTypes... aInputs) -> Flow
 					{
 						aFunction(aContext, aNodeState, std::forward<InputTypes>(aInputs)...);
@@ -869,7 +869,7 @@ namespace SCR
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait, Wildcard, NodeStateDataType>(
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, EventType, OperatorTrait, Wildcard, NodeStateDataType>(
 					[aFunction](const InternalExecutionContext* aContext, NodeState<NodeStateDataType> aNodeState, Flow, InputTypes... aInputs) -> std::tuple<Flow, OutputType>
 					{
 						return { true, aFunction(aContext, aNodeState, std::forward<InputTypes>(aInputs)...) };
@@ -880,7 +880,7 @@ namespace SCR
 		{
 			if constexpr (IsOutputVoid)
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait, Wildcard, NodeStateDataType>(
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, EventType, OperatorTrait, Wildcard, NodeStateDataType>(
 					[aFunction](const InternalExecutionContext* aContext, NodeState<NodeStateDataType> aNodeState, InputTypes... aInputs) -> OutputType
 					{
 						return aFunction(aContext, aNodeState, std::forward<InputTypes>(aInputs)...);
@@ -888,7 +888,7 @@ namespace SCR
 			}
 			else
 			{
-				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, ExecutionTrait, OperatorTrait, Wildcard, NodeStateDataType>(
+				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, EventType, OperatorTrait, Wildcard, NodeStateDataType>(
 					[aFunction](const InternalExecutionContext* aContext, NodeState<NodeStateDataType> aNodeState, InputTypes... aInputs) -> OutputType
 					{
 						return aFunction(aContext, aNodeState, std::forward<InputTypes>(aInputs)...);

@@ -25,7 +25,8 @@ namespace Editor
 
 			if (ImGui::Button("Create Function"))
 			{
-				SCRIPT::ScriptModifier::CreateFunction("Function");
+				SCRIPT::Modify::CreateGlobalFunction("Function");
+				//SCRIPT::ScriptModifier::CreateFunction("Function");
 			}
 
 			const std::vector<SCRIPT::Function*>& functions = SCRIPT::NodeTypeManager::GetFunctions();
@@ -35,17 +36,17 @@ namespace Editor
 
 				if (ImGui::Button("Create Caller"))
 				{
-					myParentWindow.GetCurrentContext().script->GetModifier().CreateNode(function->GetCallerNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function->GetCallerNodeTypeID());
 				}
 
 				if (ImGui::Button("Create Input"))
 				{
-					myParentWindow.GetCurrentContext().script->GetModifier().CreateNode(function->GetInputNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function->GetInputNodeTypeID());
 				}
 
 				if (ImGui::Button("Create Output"))
 				{
-					myParentWindow.GetCurrentContext().script->GetModifier().CreateNode(function->GetOutputNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function->GetOutputNodeTypeID());
 				}
 
 				ImGui::Separator();

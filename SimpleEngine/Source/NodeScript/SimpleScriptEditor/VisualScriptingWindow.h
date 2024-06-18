@@ -20,6 +20,7 @@ namespace SCRIPT
 {
 	class ScriptManager;
 	class Script;
+	class CommandTracker;
 }
 
 namespace Editor
@@ -39,6 +40,7 @@ namespace Editor
 	struct NodeContext
 	{
 		SCRIPT::Script* script;
+		SCRIPT::NodeGraph* nodeGraph;
 		ImNodesContext* imNodesContext;
 	};
 
@@ -83,6 +85,7 @@ namespace Editor
 		char myNodeTypeSearch[TEXT_MAX_LENGTH] = "";
 
 		SCRIPT::ScriptManager* myCurrentScriptManager;
+		std::unique_ptr<SCRIPT::CommandTracker> myCommandTracker;
 
 		size_t myCurrentIndex;
 		std::vector<ImNodesContext*> myContexts;

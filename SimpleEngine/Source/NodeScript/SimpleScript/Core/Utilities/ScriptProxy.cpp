@@ -73,19 +73,14 @@ namespace SCR
 		return *aScript.myVariableManager.myMemoryManager;
 	}
 
-	const NodeManager& ScriptProxy::GetNodeManager(const Script& aScript)
-	{
-		return *aScript.myEventGraph.myNodeManager;
-	}
-
 	NodeGraph& ScriptProxy::GetEventGraph(Script& aScript)
 	{
-		return aScript.myEventGraph;
+		return aScript.myEventGraph.myNodeGraph;
 	}
 
 	const NodeGraph& ScriptProxy::GetEventGraph(const Script& aScript)
 	{
-		return aScript.myEventGraph;
+		return aScript.myEventGraph.myNodeGraph;
 	}
 
 	NodeExecutor& ScriptProxy::GetNodeExecutor(Script& aScript)
@@ -108,25 +103,6 @@ namespace SCR
 		return aScript.myVariableManager;
 	}
 
-	CommandTracker& ScriptProxy::GetCommandTracker(Script& aScript)
-	{
-		return *aScript.myCommandTracker;
-	}
-
-	const CommandTracker& ScriptProxy::GetCommandTracker(const Script& aScript)
-	{
-		return *aScript.myCommandTracker;
-	}
-
-	CommandTracker& ScriptProxy::GetCommandTracker(ScriptFoundation& aFoundation)
-	{
-		return *aFoundation.myCommandTracker;
-	}
-
-	const CommandTracker& ScriptProxy::GetCommandTracker(const ScriptFoundation& aFoundation)
-	{
-		return *aFoundation.myCommandTracker;
-	}
 
 	const std::vector<Variable>& ScriptProxy::GetVariables(const Script& aScript)
 	{

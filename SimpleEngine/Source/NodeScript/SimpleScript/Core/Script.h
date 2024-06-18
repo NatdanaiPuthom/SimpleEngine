@@ -1,8 +1,8 @@
 #pragma once
 #include "ScriptDefines.h"
 #include "Variable/VariableManager.h"
-#include "ScriptModifier.h"
 #include "ScriptNodeGraph.h"
+#include "EventGraph.h"
 
 namespace SCR
 {
@@ -10,6 +10,13 @@ namespace SCR
 	class CommandTracker;
 	class ScriptManager;
 	struct ExecutionContextBase;
+
+	class ScriptInstance;
+
+	struct MoveNodeData
+	{
+		ScriptVec2 startPos, endPos;
+	};
 
 	class Script final
 	{
@@ -24,31 +31,26 @@ namespace SCR
 		Script& operator=(const Script&) = delete;
 		Script& operator=(Script&&) = delete;
 
-		void TriggerEvent(const eNodeExecutionTrait anExecutionTrait, const ExecutionContextBase& anExecutionContext);
-
 		std::string& Name();
 		const std::string& Name() const;
 
-		ScriptModifier& GetModifier();
-		CommandTracker& GetCommandTracker();
-		NodeGraph& GetEventGraph();
+		ScriptInstance* CreateScriptInstance();
 
+		EventGraph& GetEventGraph();
 
 	private:
 
 		std::string myName;
-		NodeGraph myEventGraph;
+		EventGraph myEventGraph;
+		DataTypeID myTargetID;
+
+		//NodeGraph myNodeGraph;
 
 		VariableManager myVariableManager;
 
-		//NodeExecutor myExecutor;
-
-		ScriptModifier myModifier;
-		std::unique_ptr<CommandTracker> myCommandTracker;
+		std::vector<std::unique_ptr<ScriptInstance>> myScriptInstances;
 
 		ScriptManager& myScriptManager;
-
-
 	};
 }
 

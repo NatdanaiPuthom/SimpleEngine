@@ -4,6 +4,7 @@
 #include "SimpleScript/Core/Utilities/ScriptUtilities.h"
 #include "SimpleScript/Core/DataType/DataTypeManager.h"
 #include "SimpleScript/Core/Utilities/ScriptProxy.h"
+#include "SimpleScript/Core/ScriptModifier.h"
 
 namespace Editor
 {
@@ -17,14 +18,14 @@ namespace Editor
 	void VariableWindow::Update()
 	{
 		Script& currentScript = *myParentWindow.GetCurrentContext().script;
-		ScriptModifier& modifier = currentScript.GetModifier();
+		//ScriptModifier& modifier = currentScript.GetModifier();
 
 		if (ImGui::Begin("VariableWindow"))
 		{
 			if (ImGui::Button("Create Variable"))
 			{
 				
-				modifier.CreateVariable();
+				Modify::CreateVariable(*myParentWindow.GetCurrentContext().script);
 			}
 
 			ImGui::Separator();
@@ -79,7 +80,7 @@ namespace Editor
 		if (ImGui::InputText("##VariableName", buffer, IM_ARRAYSIZE(buffer)))
 		{
 			variableName = buffer;
-			currentScript.GetModifier().SetVariableName(aVarID, variableName);
+			Modify::SetVariableName(aVarID, variableName, *myParentWindow.GetCurrentContext().script);
 		}
 
 		int currentSelectedIndex = 0;
@@ -105,18 +106,18 @@ namespace Editor
 
 		if (ImGui::Combo("##ChangeDataType", &currentSelectedIndex, names.c_str()))
 		{
-			currentScript.GetModifier().SetVariableDataType(aVarID, dataTypeIDs.at(currentSelectedIndex));
+			Modify::SetVariableDataType(aVarID, dataTypeIDs.at(currentSelectedIndex), *myParentWindow.GetCurrentContext().script, nullptr);
 		}
 
 		ImGui::Text("Default value:");
 		ImGui::SameLine();
-		currentScript.GetModifier().EditVariableDefaultValue(aVarID);
+		Modify::EditVariableDefaultValue(aVarID, *myParentWindow.GetCurrentContext().script, nullptr);
 
 		ImGui::Separator();
 
 		if (ImGui::Button("Create Getter"))
 		{
-			currentScript.GetModifier().CreateGetterNode(variable.dataTypeID, aVarID);
+			Modify::CreateGetterNode(*myParentWindow.GetCurrentContext().script, *myParentWindow.GetCurrentContext().nodeGraph, variable.dataTypeID, aVarID);
 			ImGui::CloseCurrentPopup();
 
 		}
@@ -125,13 +126,12 @@ namespace Editor
 
 		if (ImGui::Button("Create Setter"))
 		{
-			currentScript.GetModifier().CreateSetterNode(variable.dataTypeID, aVarID);
+			Modify::CreateGetterNode(*myParentWindow.GetCurrentContext().script, *myParentWindow.GetCurrentContext().nodeGraph, variable.dataTypeID, aVarID);
 		}
 
 		if (ImGui::Button("Delete Variable"))
 		{
-			ScriptModifier& modifier = currentScript.GetModifier();
-			modifier.DestroyVariable(aVarID);
+			Modify::DestroyVariable(aVarID, *myParentWindow.GetCurrentContext().script, nullptr);
 		}
 	}
 }

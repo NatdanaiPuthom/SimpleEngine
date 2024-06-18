@@ -11,7 +11,7 @@ namespace SCR
 		const CreateNodeSignature createFunction = nullptr;
 		const ExecuteNodeSignature executeFunction = nullptr;
 		const eNodeTrait traits = eNodeTrait::None;
-		const eNodeExecutionTrait executionTrait = eNodeExecutionTrait::None;
+		const EventID eventID = 0;
 		const eNodeOperatorTrait operatorTrait = eNodeOperatorTrait::None;
 		std::vector<PinTypeID> inputPinTypeIDs;
 		std::vector<PinTypeID> outputPinTypeIDs;

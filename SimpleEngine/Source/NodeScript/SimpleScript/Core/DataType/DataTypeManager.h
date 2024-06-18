@@ -238,6 +238,7 @@ namespace SCR
 		const std::type_info* typeInfo;
 		const DataTypeInterface typeInterface;
 		std::vector<Property> properties;
+		std::vector<NodeTypeID> functions;
 	};
 
 	struct TemplateDataType
@@ -272,6 +273,9 @@ namespace SCR
 		static void Destroy();
 
 		static DataType* Find(DataTypeID anID);
+
+		template<typename T>
+		static DataType* Find();
 
 	private:
 
@@ -340,12 +344,12 @@ namespace SCR
 	{
 		DataTypeInterface dataTypeInterface
 		{
-			{
+			.function = {
 				CreateEditTemplateInterface<T>(),
 				CreateSaveTemplateInterface<T>(),
 				CreateLoadTemplateInterface<T>()
 			},
-			{
+			.creation = {
 				CreateAllocateInterface<T>(),
 				CreateCopyInterface<T>()
 			}
@@ -360,17 +364,17 @@ namespace SCR
 		const std::type_info& typeInfo = typeid(T);
 		DataType dataType
 		{
-			aName,
-			aColor,
-			&typeInfo,
-			anInterface
+			.name = aName,
+			.color = aColor,
+			.typeInfo = &typeInfo,
+			.typeInterface = anInterface,
 		};
 
-		if (myDataTypes.contains(typeInfo.hash_code()))
+		auto [it, success] = myDataTypes.emplace(typeInfo.hash_code(), dataType);
+		if (!success)
 		{
-			throw std::runtime_error("Two object types have the same hash value");
+			throw std::runtime_error("Two data types have the same hash value");
 		}
-		myDataTypes.emplace(typeInfo.hash_code(), dataType);
 	}
 
 	template<CleanType ClassType, CleanType PropertyType>
@@ -382,14 +386,20 @@ namespace SCR
 
 		Property property
 		{
-			aName,
-			dataTypeID,
-			byteOffset
+			.name = aName,
+			.typeID = dataTypeID,
+			.byteOffset = byteOffset
 		};
 
-		if (DataType* classDataType = Find(typeid(ClassType).hash_code()))
+		if (DataType* classDataType = Find<ClassType>())
 		{
 			classDataType->properties.push_back(property);
 		}
+	}
+
+	template<typename T>
+	inline DataType* DataTypeManager::Find()
+	{
+		return Find(typeid(T).hash_code());
 	}
 }

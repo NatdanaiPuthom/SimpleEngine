@@ -54,10 +54,10 @@ namespace SCR
 		}
 	}
 
-	bool& CommandTracker::IsTracking()
+	/*bool& CommandTracker::IsTracking()
 	{
 		return myIsTracking;
-	}
+	}*/
 
 	bool& CommandTracker::IsDebugPrinting()
 	{

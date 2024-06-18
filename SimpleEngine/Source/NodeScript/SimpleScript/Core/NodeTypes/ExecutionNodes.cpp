@@ -1,6 +1,7 @@
 #include "ExecutionNodes.h"
 #include "../Node/NodeTypeRegistry.h"
 #include "../Contexts/ExecutionContextBase.h"
+#include <DataTypeRegistry.h>
 
 namespace SCR
 {
@@ -70,15 +71,35 @@ namespace SCR
 		return { 4, true };
 	}
 
+	REGISTER_FUNCTION(BeginPlayNode, Event);
 
+	class Emil
+	{
+	public:
+
+
+		int GetI() const
+		{
+			return i;
+		}
+	private:
+
+		int i = 5;
+	};
 
 	void RegisterExecutionNodes()
 	{
+
+		DataTypeRegistry::RegisterNonSerializableType<Emil>("Emil");
+
+		NodeTypeRegistry::RegisterMemberNodeType(&Emil::GetI, "Test/Get I");
+
 		NodeTypeRegistry::RegisterFlowNodeType(FloatNode, "Test/FLoat");
 
-		NodeTypeRegistry::RegisterNodeType<eNodeExecutionTrait::Tick>(TickNode, "Execution/Event Tick", NodeTypeDesc{ { }, { "Flow", "Delta Time" } });
-		NodeTypeRegistry::RegisterNodeType<eNodeExecutionTrait::BeginPlay>(BeginPlayNode, "Execution/Event Begin Play", NodeTypeDesc{ { }, { "Flow" } });
-		NodeTypeRegistry::RegisterNodeType<eNodeExecutionTrait::EndPlay>(EndPlayNode, "Execution/Event End Play", NodeTypeDesc{ { }, { "Flow" } });
+		NodeTypeRegistry::RegisterNodeType<eNodeEventType::Tick>(TickNode, "Events/Event Tick", NodeTypeDesc{ { }, { "Flow", "Delta Time" } });
+		NodeTypeRegistry::RegisterNodeType<eNodeEventType::BeginPlay>(BeginPlayNode, "Events/Event Begin Play", NodeTypeDesc{ { }, { "Flow" } });
+		NodeTypeRegistry::RegisterNodeType<eNodeEventType::EndPlay>(EndPlayNode, "Events/Event End Play", NodeTypeDesc{ { }, { "Flow" } });
+
 		NodeTypeRegistry::RegisterNodeType(BranchNode, "Execution/Branch", NodeTypeDesc{ { "Flow", "Condition" }, { "True", "False" } });
 		NodeTypeRegistry::RegisterNodeType(FlipFlopNode, "Execution/FlipFlop", NodeTypeDesc{ { "Flow" }, { "Flip", "Flop" } });
 		NodeTypeRegistry::RegisterNodeType(DelayNode, "Execution/Delay", NodeTypeDesc{ { "Flow", "Duration", "Reset On Flow" }, {"Flow"} });

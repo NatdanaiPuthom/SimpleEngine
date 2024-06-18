@@ -25,6 +25,7 @@ namespace SCR
 	using MemoryPoolID = size_t;
 	using DataTypeID = ScriptID_size_t;
 	using ObjectTypeID = ScriptID_size_t;
+	using EventID = ScriptID_size_t;
 
 	constexpr size_t NodeBufferCapacity = 1024;
 

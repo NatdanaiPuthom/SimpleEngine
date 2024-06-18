@@ -3,10 +3,12 @@
 #include "../Script.h"
 #include "NodeTypeManager.h"
 #include "../ScriptInternalModifier.h"
-#include "ReferenceWrapper.h"
+#include "ScriptUtilities.h"
+#include "ScriptInstance.h"
 
 namespace SCR
 {
+
 	NodeExecutor::NodeExecutor()
 	{
 	}
@@ -15,21 +17,27 @@ namespace SCR
 	{
 	}
 
-	void NodeExecutor::ExecuteEvent(const eNodeExecutionTrait aTrait, Script& aScript, const ExecutionContextBase& anExecutionContext)
+	void NodeExecutor::ExecuteEvent(const size_t anEventHash, EventGraph& anEventGraph, ScriptInstance& aScriptInstance, const ExecutionContextBase& anExecutionContext)
 	{
-		myExecutionContext.script = &aScript;
+		myExecutionContext.script = aScriptInstance.myScript;
 		myExecutionContext.executionContext = &anExecutionContext;
-		ExecuteInternal(myEventNodes[aTrait]);
 
-		if (aTrait == eNodeExecutionTrait::Tick)
+		auto it = anEventGraph.myEventNodes.find(anEventHash);
+
+		if (it != anEventGraph.myEventNodes.end())
 		{
-			std::vector<NodeExecutionData> tickNodes;
-			tickNodes.reserve(myAutoTickNodes.size());
+			for (NodeID nodeID : it->second)
+			{
+				ExecuteNode(NodeExecutionData{ NodeRef{.nodeID = nodeID, .nodeGraph = &anEventGraph.myNodeGraph }, eNodeTriggerReason::Event });
+			}
+		}
+
+		if (anEventHash == EnumCast(eNodeEventType::Tick))
+		{
 			for (const NodeExecutionData& executionData : myAutoTickNodes)
 			{
-				tickNodes.push_back(executionData);
+				ExecuteNode(executionData);
 			}
-			ExecuteInternal(tickNodes);
 		}
 	}
 
@@ -41,9 +49,9 @@ namespace SCR
 		nodeType.nodeRecipe.executeFunction(aNodeExecutionData, myExecutionContext);
 	}
 
-	void NodeExecutor::BindToEvent(const NodeRef& aNodeRef, const eNodeExecutionTrait aTrait)
+	/*void NodeExecutor::BindToEvent(const NodeRef& aNodeRef, const size_t aTrait)
 	{
-		if (aTrait != eNodeExecutionTrait::None)
+		if (aTrait != EnumCast(eNodeExecutionTrait::None))
 		{
 			bool alreadyExists = false;
 			for (const NodeExecutionData& nodeExecutionData : myEventNodes[aTrait])
@@ -72,16 +80,16 @@ namespace SCR
 
 		if (executionTrait != eNodeExecutionTrait::None)
 		{
-			BindToEvent(aNodeRef, executionTrait);
+			BindToEvent(aNodeRef, EnumCast(executionTrait));
 
 		}
 	}
 
-	void NodeExecutor::UnbindFromEvent(const NodeRef& aNodeRef, const eNodeExecutionTrait aTrait)
+	void NodeExecutor::UnbindFromEvent(const NodeRef& aNodeRef, const size_t anEventHash)
 	{
-		if (aTrait != eNodeExecutionTrait::None)
+		if (anEventHash != EnumCast(eNodeExecutionTrait::None))
 		{
-			std::erase(myEventNodes.at(aTrait), NodeExecutionData{ aNodeRef });
+			std::erase(myEventNodes.at(anEventHash), NodeExecutionData{ aNodeRef });
 		}
 	}
 
@@ -91,8 +99,8 @@ namespace SCR
 
 		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
 
-		UnbindFromEvent(aNodeRef, nodeType.nodeRecipe.executionTrait);
-	}
+		UnbindFromEvent(aNodeRef, EnumCast(nodeType.nodeRecipe.executionTrait));
+	}*/
 
 	void NodeExecutor::RegisterAutoTickNode(const NodeRef& aNodeRef)
 	{
@@ -102,14 +110,6 @@ namespace SCR
 	void NodeExecutor::UnregisterAutoTickNode(const NodeRef& aNodeRef)
 	{
 		myAutoTickNodes.erase({ aNodeRef, eNodeTriggerReason::Event });
-	}
-
-	void NodeExecutor::ExecuteInternal(const std::vector<NodeExecutionData>& aNodes)
-	{
-		for (const NodeExecutionData& node : aNodes)
-		{
-			ExecuteNode(node);
-		}
 	}
 
 }

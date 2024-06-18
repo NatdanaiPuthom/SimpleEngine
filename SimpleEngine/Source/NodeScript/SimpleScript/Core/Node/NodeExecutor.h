@@ -12,6 +12,13 @@
 namespace SCR
 {
 
+	class EventGraph;
+	class ScriptInstance;
+
+	template<typename T>
+	concept IsFunction = std::is_function_v<T>;
+
+
 	class NodeExecutor final
 	{
 	public:
@@ -19,29 +26,35 @@ namespace SCR
 		NodeExecutor();
 		~NodeExecutor();
 
-		void ExecuteEvent(const eNodeExecutionTrait aTrait, Script& aScript, const ExecutionContextBase& anExecutionContext);
+		void ExecuteEvent(const size_t anEventHash, EventGraph& anEventGraph, ScriptInstance& aScriptInstance, const ExecutionContextBase& anExecutionContext);
+
+		template<IsFunction EventFunction>
+		void ExecuteEvent(EventFunction, const ExecutionContextBase& aContext);
+
 		void ExecuteNode(const NodeExecutionData& aNodeExecutionData);
 
-		void BindToEvent(const NodeRef& aNodeRef, const eNodeExecutionTrait aTrait);
+		/*void BindToEvent(const NodeRef& aNodeRef, const size_t anEventHash);
 		void BindToEvent(const NodeRef& aNodeRef);
-		void UnbindFromEvent(const NodeRef& aNodeRef, const eNodeExecutionTrait aTrait);
-		void UnbindFromEvent(const NodeRef& aNodeRef);
+		void UnbindFromEvent(const NodeRef& aNodeRef, const size_t anEventHash);
+		void UnbindFromEvent(const NodeRef& aNodeRef);*/
 
 		void RegisterAutoTickNode(const NodeRef& aNodeRef);
 		void UnregisterAutoTickNode(const NodeRef& aNodeRef);
 
-	private:
-
-		void ExecuteInternal(const std::vector<NodeExecutionData>& aNodes);
-
 
 	private:
 
-		std::unordered_map<eNodeExecutionTrait, std::vector<NodeExecutionData>> myEventNodes;
+		//std::unordered_map<size_t, std::vector<NodeExecutionData>> myEventNodes;
 		std::unordered_set<NodeExecutionData> myAutoTickNodes;
 
 		InternalExecutionContext myExecutionContext;
 
 		CallStack myCallStack;
 	};
+
+	template<IsFunction EventFunction>
+	inline void NodeExecutor::ExecuteEvent(EventFunction, const ExecutionContextBase& aContext)
+	{
+		ExecuteEvent(typeid(EventFunction).hash_code(), aContext);
+	}
 }

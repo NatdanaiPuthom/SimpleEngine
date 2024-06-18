@@ -222,10 +222,11 @@ struct RegisterProperty
 	RegisterProperty(MemberType StructType::* aMember)
 	{
 		SCRIPT::DataTypeRegistry::RegisterProperty(aMember, "");
+		//SCRIPT::NodeTypeRegistry::RegisterMemberVariable(aMember, );
 	}
 };
 
-#define FLY_PROPERTY(member) inline static RegisterProperty prop = RegisterProperty(member);
+#define FLY_PROPERTY(member) inline static RegisterProperty prop(member);
 
 namespace SCR
 {

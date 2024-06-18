@@ -14,6 +14,7 @@ namespace SCR
 		const std::string defaultPinNames = aDescription.showDataTypePinNames ? "#T" : "";
 		aDescription.inputPinNames.resize(aNodeRecipe.inputPinTypeIDs.size(), defaultPinNames);
 		aDescription.outputPinNames.resize(aNodeRecipe.outputPinTypeIDs.size(), defaultPinNames);
+		
 
 		for (size_t i = 0; i < aDescription.inputPinNames.size(); ++i)
 		{
@@ -26,10 +27,10 @@ namespace SCR
 		return NodeTypeManager::Register(NodeType{ std::move(aNodeRecipe), aNodeName });
 	}
 
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
 	inline NodeTypeID RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
 	{
-		return RegisterInternal(FilterNodeType<Traits, ExecutionTrait, OperatorTrait>(aFunction), aNodeName, aDescription);
+		return RegisterInternal(FilterNodeType<Traits, EventType, OperatorTrait>(aFunction), aNodeName, aDescription);
 	}
 
 	template<typename T>
@@ -59,17 +60,12 @@ namespace SCR
 		
 		T& runtimeValue = *reinterpret_cast<T*>(variable.runtimeDataPtr);
 		runtimeValue = aValue;
-		//MemoryPoolID runtimeID = ScriptProxy::GetVariable(*aContext->script, varID).runtimeMemoryID;
-
-		//MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(*aContext->script);
-		//memoryPool.At<T>(runtimeID) = aValue;
 	}
 
 	template<typename T>/* requires IsValidScriptObjectType<T, nlohmann::json> || Fundamental<T>*/
 	inline void RegisterGetterNodeType()
 	{
 		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>), "Get " + DataTypeManager::GetName(typeid(T).hash_code()));
-		//NodeTypeID nodeTypeID = RegisterInternal(CreateGetterNodeRecipe<T>(), "Get " + DataTypeManager::GetName(typeid(T).hash_code()));
 		NodeTypeManager::SetGetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
 	}
 
@@ -78,7 +74,6 @@ namespace SCR
 	inline void RegisterSetterNodeType()
 	{
 		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>), "Set " + DataTypeManager::GetName(typeid(T).hash_code()));
-		//NodeTypeID nodeTypeID = RegisterInternal(CreateSetterNodeRecipe<T>(), "Set " + DataTypeManager::GetName(typeid(T).hash_code()));
 		NodeTypeManager::SetSetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
 	}
 
@@ -93,10 +88,10 @@ namespace SCR
 	{
 	public:
 
-		template<eNodeExecutionTrait ExecutionTrait = eNodeExecutionTrait::None, IsNotVoid OutputType, typename... InputTypes>
+		template<eNodeEventType EventType = eNodeEventType::None, IsNotVoid OutputType, typename... InputTypes>
 		static void RegisterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
 		{
-			RegisterInternal(FilterNodeType<eNodeTrait::None, ExecutionTrait>(aFunction), aNodeName, aDescription);
+			RegisterInternal(FilterNodeType<eNodeTrait::None, EventType>(aFunction), aNodeName, aDescription);
 		}
 
 		template<typename OutputType, typename... InputTypes> /*requires NoArgsReference<InputTypes...>*/
@@ -108,13 +103,23 @@ namespace SCR
 		template<typename ClassType, typename OutputType, typename... InputTypes> requires NoArgsReference<InputTypes...>
 		static void RegisterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
 		{
-			RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aDescription);
+			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aDescription);
+
+			if (DataType* dataType = DataTypeManager::Find<ClassType>())
+			{
+				dataType->functions.push_back(nodeTypeID);
+			}
 		}
 
 		template<typename ClassType, typename OutputType, typename... InputTypes> requires NoArgsReference<InputTypes...>
 		static void RegisterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
 		{
-			RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aDescription);
+			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aDescription);
+
+			if (DataType* dataType = DataTypeManager::Find<ClassType>())
+			{
+				dataType->functions.push_back(nodeTypeID);
+			}
 		}
 
 		template<typename ClassType, typename MemberType>
@@ -148,22 +153,56 @@ namespace SCR
 		}
 	};
 
+
+	struct Event
+	{
+
+	};
+
 	template<typename FunctionType>
 	struct RegisterFunctionNode;
 
-	template<typename OutputType, typename... InputTypes>
-	struct RegisterFunctionNode<SCRIPT::FuncPtr<OutputType, InputTypes...>>
+
+	enum class eNodeRegTrait : unsigned char
 	{
-		volatile inline RegisterFunctionNode(SCRIPT::FuncPtr<OutputType, InputTypes...> function, const std::string& functionName)
+		None = 0,
+		Event = 1 << 0,
+		Pure = 1 << 1
+	};
+
+	template<typename OutputType, typename... InputTypes>
+	struct RegisterFunctionNode<FuncPtr<OutputType, InputTypes...>>
+	{
+
+
+		template<typename CurrentTrait, typename... Traits>
+		constexpr static eNodeRegTrait UnpackTraits()
 		{
+			if constexpr (std::is_same_v<CurrentTrait, Event>)
+			{
+				return eNodeRegTrait::Event;
+			}
+			return eNodeRegTrait::None;
+		}
+
+
+		template<typename... Traits>
+		volatile inline RegisterFunctionNode(FuncPtr<OutputType, InputTypes...> function, const std::string& functionName, TypeList<Traits...>)
+		{
+			constexpr eNodeRegTrait traits = UnpackTraits<Traits...>();
+			if constexpr (HasFlag(traits, eNodeRegTrait::Event))
+			{
+				int a = 4;
+				a;
+			}
 			SCRIPT::NodeTypeRegistry::RegisterNodeType(function, functionName);
 		}
 	};
 
 
-#define REGISTER_FUNCTION(function) \
-    static RegisterFunctionNode<decltype(&function)> __##function##RegisterFunctionNode(function, "Test/"##function);
-
 
 }
 
+
+#define REGISTER_FUNCTION(function, ...) \
+    inline static SCRIPT::RegisterFunctionNode<decltype(&function)> __##function##RegisterFunctionNode(function, "Test/" #function, SCRIPT::TypeList<__VA_ARGS__>());

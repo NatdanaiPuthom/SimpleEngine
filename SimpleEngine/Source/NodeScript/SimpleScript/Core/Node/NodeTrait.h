@@ -25,12 +25,13 @@ namespace SCR
 		TakesExecutionContext
 	};
 
-	enum class eNodeExecutionTrait : unsigned int
+	enum class eNodeEventType : unsigned int
 	{
 		None,
 		BeginPlay,
 		Tick,
-		EndPlay
+		EndPlay,
+		Custom,
 	};
 
 	enum class eNodeOperatorTrait : size_t

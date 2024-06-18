@@ -1,6 +1,7 @@
 #pragma once
 #include "../ScriptDefines.h"
-#include <list>
+#include <memory>
+#include <vector>
 
 namespace SCR
 {
@@ -141,11 +142,11 @@ namespace SCR
 			return *this;
 		}
 
-		template<MemSizeLessEqual<Capacity> T>
-		T& Allocate(const T& aDefaultValue = T())
+		template<MemSizeLessEqual<Capacity> T, typename... Args>
+		T& Allocate(Args&&... aArgs)
 		{
 			void* currentMemory = (&myBuffer[0]) + myCurrentSize;
-			new (currentMemory) T(aDefaultValue);
+			new (currentMemory) T(std::forward<Args>(aArgs)...);
 
 			myCurrentSize += sizeof(T);
 
@@ -241,7 +242,7 @@ namespace SCR
 
 
 		template<MemSizeLessEqual<BufferCapacity> T, typename... Args>
-		T& Allocate(const T& aDefaultValue = T())
+		T& Allocate(Args&&... aArgs)
 		{
 			constexpr size_t allocSize = sizeof(T);
 			if (GetCurrentBuffer().SizeLeft() < allocSize)
@@ -250,7 +251,7 @@ namespace SCR
 			}
 
 			MemoryBuffer& currentBuffer = GetCurrentBuffer();
-			T& value = currentBuffer.Allocate(aDefaultValue);
+			T& value = currentBuffer.Allocate<T>(std::forward<Args>(aArgs)...);
 
 
 			return value;
@@ -258,7 +259,7 @@ namespace SCR
 
 		void* GetRenewedPointer(void* aPtr, const MemoryArena& aPrevious) const
 		{
-			for (size_t i = 0; const std::unique_ptr<MemoryBuffer>&buffer : aPrevious.myMemoryBuffers)
+			for (size_t i = 0; const std::unique_ptr<MemoryBuffer>& buffer : aPrevious.myMemoryBuffers)
 			{
 				size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->Data());
 				if (ptrDiff < BufferCapacity)
@@ -273,6 +274,10 @@ namespace SCR
 			return nullptr;
 		}
 
+		void Clear()
+		{
+			*this = MemoryArena();
+		}
 	private:
 
 

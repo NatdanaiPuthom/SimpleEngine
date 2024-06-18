@@ -4,7 +4,7 @@
 namespace SCR
 {
 	CompositeCommand::CompositeCommand(const std::string& aName)
-		: Command({}, "Composite: " + aName)
+		: Command("Composite: " + aName)
 	{
 	}
 

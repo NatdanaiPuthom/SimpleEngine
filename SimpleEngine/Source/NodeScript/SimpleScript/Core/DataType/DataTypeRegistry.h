@@ -42,6 +42,7 @@ namespace SCR
 		RegisterGetterNodeType<T>();
 		RegisterSetterNodeType<T>();
 		RegisterOperatorNodeTypes<T, Operators>();
+		NodeTypeRegistry::RegisterNodeType(GetSelfNode<T>, aName + "/" + aName + "::Get Self");
 	}
 
 	template<typename T, eNodeOperatorTrait Operators>
@@ -52,7 +53,7 @@ namespace SCR
 		RegisterGetterNodeType<T>();
 		RegisterSetterNodeType<T>();
 		RegisterOperatorNodeTypes<T, Operators>();
-
+		NodeTypeRegistry::RegisterNodeType(GetSelfNode<T>, aName + "/" + aName + "::Get Self");
 	}
 
 	template<template<typename> typename TemplateType>

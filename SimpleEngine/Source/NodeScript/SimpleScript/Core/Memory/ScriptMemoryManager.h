@@ -22,6 +22,12 @@ namespace SCR
 			return myMemory;
 		}
 
+		void Clear()
+		{
+			return myMemory.Clear();
+		}
+
+
 	private:
 
 

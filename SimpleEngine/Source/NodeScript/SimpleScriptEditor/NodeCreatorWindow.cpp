@@ -5,6 +5,7 @@
 #include "SimpleScript/Core/Pin/PinTypeManager.h"
 #include "SimpleScript/Core/DataType/DataTypeManager.h"
 #include "SimpleScript/Core/Utilities/ScriptProxy.h"
+#include "SimpleScript/Core/ScriptModifier.h"
 
 using namespace SCRIPT;
 
@@ -25,7 +26,7 @@ namespace Editor
 		{
 			if (ImGui::Button("Create Custom Event Node"))
 			{
-				ScriptModifier::CreateNodeType_CustomEvent("CustomEvent");
+				Modify::CreateCustomEvent("CustomEvent");
 			}
 
 			for (CustomEventID id = 0; id < NodeTypeManager::GetCustomEvents().size(); ++id)
@@ -72,7 +73,7 @@ namespace Editor
 
 		if (ImGui::Button("Add Pin"))
 		{
-			ScriptModifier::AddPinToCustomEvent(typeid(bool).hash_code(), anID, "Pin", &ScriptProxy::GetFoundation(*myParentWindow.GetCurrentContext().script));
+			Modify::AddPinToCustomEvent(typeid(bool).hash_code(), anID, "Pin");
 		}
 
 		ImGui::Separator();
@@ -115,13 +116,13 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button(std::string("Delete##" + std::to_string(i)).c_str()))
 			{
-				ScriptModifier::DeletePinAtIndexCustomEvent(i, anID, &ScriptProxy::GetFoundation(*myParentWindow.GetCurrentContext().script));
+				Modify::DeletePinAtIndexCustomEvent(i, anID);
 			}
 
 			if (ImGui::Combo(std::string("##CustomEventPinType" + std::to_string(i)).c_str(), &currentSelectedIndex, names.c_str()))
 			{
 
-				ScriptModifier::SetPinAtIndexCustomEvent(i, dataTypeIDs.at(currentSelectedIndex), anID, &ScriptProxy::GetFoundation(*myParentWindow.GetCurrentContext().script));
+				Modify::SetPinAtIndexCustomEvent(i, dataTypeIDs.at(currentSelectedIndex), anID);
 			}
 
 			ImGui::SameLine();
@@ -135,14 +136,14 @@ namespace Editor
 
 		if (ImGui::Button("Create Caller"))
 		{
-			myParentWindow.GetCurrentContext().script->GetModifier().CreateNode(callerTypeID);
+			Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, callerTypeID);
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Create Executor"))
 		{
-			myParentWindow.GetCurrentContext().script->GetModifier().CreateNode(executorTypeID);
+			Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, executorTypeID);
 		}
 	}
 }

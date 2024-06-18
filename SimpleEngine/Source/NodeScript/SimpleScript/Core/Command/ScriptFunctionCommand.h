@@ -11,10 +11,10 @@ namespace SCR
 	template<>
 	class FunctionCommand<void> final : public Command
 	{
-		using FunctionType = std::function<void(const CommandContext&)>;
+		using FunctionType = std::function<void()>;
 	public:
 
-		FunctionCommand(const CommandContext& aContext, const FunctionType& aDoFunction, const FunctionType& aUndoFunction, const std::string& aName = "FunctionCommand");
+		FunctionCommand(const FunctionType& aDoFunction, const FunctionType& aUndoFunction, const std::string& aName = "FunctionCommand");
 		~FunctionCommand();
 
 	private:
@@ -29,8 +29,8 @@ namespace SCR
 
 	};
 
-	inline FunctionCommand<void>::FunctionCommand(const CommandContext& aContext, const FunctionType& aDoFunction, const FunctionType& aUndoFunction, const std::string& aName)
-		: Command(aContext, aName)
+	inline FunctionCommand<void>::FunctionCommand(const FunctionType& aDoFunction, const FunctionType& aUndoFunction, const std::string& aName)
+		: Command(aName)
 		, myDoFunction(aDoFunction)
 		, myUndoFunction(aUndoFunction)
 	{
@@ -42,21 +42,21 @@ namespace SCR
 
 	inline void FunctionCommand<void>::Do()
 	{
-		myDoFunction(myContext);
+		myDoFunction();
 	}
 
 	inline void FunctionCommand<void>::Undo()
 	{
-		myUndoFunction(myContext);
+		myUndoFunction();
 	}
 	
 	template<typename DataType>
 	class FunctionCommand final : public Command
 	{
-		using FunctionType = FuncPtr<void, const DataType&, const CommandContext&>;
+		using FunctionType = FuncPtr<void, const DataType&>;
 	public:
 
-		FunctionCommand(const CommandContext& aContext, const DataType& aData, FunctionType aDoFunction, FunctionType aUndoFunction, const std::string& aName = "FunctionCommand");
+		FunctionCommand(const DataType& aData, FunctionType aDoFunction, FunctionType aUndoFunction, const std::string& aName = "FunctionCommand");
 		~FunctionCommand();
 
 	private:
@@ -74,8 +74,8 @@ namespace SCR
 	};
 
 	template<typename DataType>
-	inline FunctionCommand<DataType>::FunctionCommand(const CommandContext& aContext, const DataType& aData, FunctionType aDoFunction, FunctionType aUndoFunction, const std::string& aName)
-		: Command(aContext, aName)
+	inline FunctionCommand<DataType>::FunctionCommand(const DataType& aData, FunctionType aDoFunction, FunctionType aUndoFunction, const std::string& aName)
+		: Command(aName)
 		, myData(aData)
 		, myDoFunction(aDoFunction)
 		, myUndoFunction(aUndoFunction)
@@ -90,12 +90,12 @@ namespace SCR
 	template<typename DataType>
 	inline void FunctionCommand<DataType>::Do()
 	{
-		myDoFunction(myData, myContext);
+		myDoFunction(myData);
 	}
 
 	template<typename Data>
 	inline void FunctionCommand<Data>::Undo()
 	{
-		myUndoFunction(myData, myContext);
+		myUndoFunction(myData);
 	}
 }
