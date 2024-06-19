@@ -13,7 +13,7 @@ namespace SCR
 	class NodeExecutor;
 	class CommandTracker;
 	class TypeManager;
-	
+
 	class ScriptFoundation final
 	{
 		friend class ScriptProxy;
@@ -30,7 +30,12 @@ namespace SCR
 
 		void Destroy()
 		{
-			delete myInstance;
+			if (myInstance)
+			{
+
+				delete myInstance;
+				myInstance = nullptr;
+			}
 		}
 	private:
 		ScriptFoundation();
