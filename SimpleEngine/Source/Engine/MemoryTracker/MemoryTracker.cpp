@@ -122,7 +122,7 @@ namespace SimpleTracker
 		return 1;
 	}
 
-	void SimpleMemoryTracker::Init(const MemoryTrackingSettings& aTrackingSettings)
+	void SimpleMemoryTracker::Init()
 	{
 		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_DEBUG);
 
@@ -144,14 +144,18 @@ namespace SimpleTracker
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		SimpleMemoryTrackerWrapper::myShouldActive = json["Debug_Settings"]["MemoryTracker"];
+		const nlohmann::json memoryTrackerSettings = json["Debug_Settings"]["MemoryTracker"];
+
+		SimpleMemoryTrackerWrapper::myShouldActive = memoryTrackerSettings["Active"];
 
 		if (SimpleMemoryTrackerWrapper::myShouldActive == false)
 		{
 			return;
 		}
 
-		SimpleMemoryTracker::myStaticMemoryTrackingSettings = aTrackingSettings;
+		const MemoryTrackingSettings& trackingSettings = { memoryTrackerSettings["Advanced"], true };
+
+		SimpleMemoryTracker::myStaticMemoryTrackingSettings = trackingSettings;
 		_CrtSetAllocHook(&SimpleMemoryTracker::AllocHook);
 	}
 

@@ -34,7 +34,7 @@ namespace SimpleTracker
 		static void StartMemoryTracking(const bool aShowAdvanced = false, const std::string& aCallerName = "");
 		static void StopMemoryTracking();
 	private:
-		static void Init(const MemoryTrackingSettings& aTrackingSettings);
+		static void Init();
 		static void Destory();
 
 		static int AllocHook(int aAllocType, void* aUserData, size_t aSize, int aBlockType, long aRequestNumber, const unsigned char*, int);
@@ -64,8 +64,7 @@ namespace SimpleTracker
 	public:
 		inline SimpleMemoryTrackerWrapper()
 		{
-			SimpleTracker::MemoryTrackingSettings memoryTrackingSettings = { false, true };
-			SimpleTracker::SimpleMemoryTracker::Init(memoryTrackingSettings);
+			SimpleTracker::SimpleMemoryTracker::Init();
 		}
 
 		inline ~SimpleMemoryTrackerWrapper()
