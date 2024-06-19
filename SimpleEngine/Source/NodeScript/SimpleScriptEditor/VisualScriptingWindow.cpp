@@ -39,7 +39,7 @@ namespace Editor
 
 		}
 
-		ImNodes::CreateContext();
+		//ImNodes::CreateContext(); //NOTE(v11.2.0): Is it supposed to call CreateContext in destructor?
 
 		ScriptLoader::Clear();
 	}
