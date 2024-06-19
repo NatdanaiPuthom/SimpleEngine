@@ -379,9 +379,9 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	project "Networking"
-		kind "StaticLib"
+		kind "WindowedApp"
 		location (dirs.Local)
-		targetdir (dirs.SimpleLib)
+		targetdir (dirs.Bin)
 		targetname("%{prj.name}_%{cfg.buildcfg}")
 		flags { "FatalWarnings"}
 
@@ -405,7 +405,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		links {
-
+			"ws2_32"
 		}
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
