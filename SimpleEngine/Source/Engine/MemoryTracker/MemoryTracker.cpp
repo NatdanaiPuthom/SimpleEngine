@@ -170,7 +170,7 @@ namespace SimpleTracker
 		int i = 0;
 		for (const auto& p : pairs)
 		{
-			if (i >= 10)
+			if (i >= 5)
 				break;
 
 			char buffer[100];
@@ -221,7 +221,7 @@ namespace SimpleTracker
 					stackTraceToLeakCountMap[p.second.stackTrace]++;
 				}
 
-				OutputDebugStringA("== Top 10 Leaks: \n");
+				OutputDebugStringA("== Top 5 Leaks: \n");
 				PrintTopLeaks(stackTraceToLeakCountMap);
 			}
 
