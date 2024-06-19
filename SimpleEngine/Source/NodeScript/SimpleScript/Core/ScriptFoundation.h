@@ -12,42 +12,58 @@ namespace SCR
 	struct CopyBuffer;
 	class NodeExecutor;
 	class CommandTracker;
+	class TypeManager;
 	
 	class ScriptFoundation final
 	{
 		friend class ScriptProxy;
 	public:
 
-		static ScriptFoundation* GetInstance()
+		static ScriptFoundation& GetInstance()
 		{
-			return myFoundationPtr;
+			if (!myInstance)
+			{
+				myInstance = new ScriptFoundation();
+			}
+			return *myInstance;
 		}
 
+		void Destroy()
+		{
+			delete myInstance;
+		}
+	private:
 		ScriptFoundation();
 		~ScriptFoundation();
 
+	public:
+
 		void InitializeSystemTypes();
 
-		ScriptManager& CreateScriptManager();
-		void DestroyScriptManager(ScriptManager& aScriptManager);
+		void ClearScripts();
 
-		void Clear();
+		Script& CreateScript(const DataTypeID aTargetID, const std::string& aName = "Default Script");
+		void DestroyScript(Script& aScript);
+		const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Script>>>& GetScripts();
+
+		TypeManager& GetTypeManager();
 
 	private:
 
-		static MemoryPool myGlobalMemoryPool;
-		inline static ScriptFoundation* myFoundationPtr = nullptr;
+		inline static ScriptFoundation* myInstance = nullptr;
 
-		std::vector<std::unique_ptr<ScriptManager>> myScriptManagers;
+		MemoryPool myMemoryPool;
+		std::unique_ptr<TypeManager> myTypeManager;
+
+		std::unique_ptr<NodeExecutor> myNodeExecutor;
 
 		std::vector<std::unique_ptr<Function>> myGlobalFunctions;
+
+		std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Script>>> myScripts;
 
 		CallStack myCallStack;
 
 		std::unique_ptr<CopyBuffer> myCopyBuffer;
 
-		std::unique_ptr<CommandTracker> myCommandTracker;
-
-		std::unique_ptr<NodeExecutor> myNodeExecutor;
 	};
 }

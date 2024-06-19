@@ -1,31 +1,30 @@
 #include "SimpleNodeScript.hpp"
+#include "ScriptFoundation.h"
+#include "ScriptLoader.h"
 
 namespace SCRIPT
 {
 	SimpleNodeScript::SimpleNodeScript()
-		: myScriptManager(nullptr)
 	{
 	}
 
 	SimpleNodeScript::~SimpleNodeScript()
 	{
-		myScriptManager = nullptr;
+		ScriptFoundation::GetInstance().Destroy();
 	}
 
 	void SimpleNodeScript::Init()
 	{
-		myScriptFoundation.InitializeSystemTypes();
+		ScriptFoundation::GetInstance().InitializeSystemTypes();
 		RegisterSimpleGameNodes();
-
-		myScriptManager = &myScriptFoundation.CreateScriptManager();
 
 		myName = "world_Middle";
 		SCRIPT::ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/" + std::string(myName);
-		SCRIPT::ScriptLoader::LoadAll(*myScriptManager);
+		SCRIPT::ScriptLoader::LoadAll();
 	}
 
 	void SimpleNodeScript::Update()
 	{
-		mySimpleScriptWindow.Update(*myScriptManager, myName);
+		mySimpleScriptWindow.Update(myName);
 	}
 }

@@ -18,53 +18,61 @@ namespace SCR
 		friend class ScriptProxy;
 		friend class InternalModifier;
 	public:
-		static NodeTypeID Register(NodeType&& aNodeType);
 
-		static void SetGetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID);
-		static void SetSetterNodeTypeID(const DataTypeID aHashID, const NodeTypeID anID);
+		NodeTypeManager();
+		~NodeTypeManager();
 
-		static void SetOperatorNodeTypeID(const DataTypeID aDataTypeID, const eNodeOperatorTrait anOperatorTrait, const NodeTypeID anID);
+		static NodeTypeManager& GetInstance();
 
-		static Node CreateInstance_Getter(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID);
-		static Node CreateInstance_Setter(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID);
-		static Node CreateInstance_Operator(NodeGraph& aNodeGraph, const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID);
+		NodeTypeID Register(NodeType&& aNodeType);
 
-		static Node CreateInstance(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID);
+		void SetGetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID);
+		void SetSetterNodeTypeID(const DataTypeID aHashID, const NodeTypeID anID);
 
-		static bool CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID);
+		void SetOperatorNodeTypeID(const DataTypeID aDataTypeID, const eNodeOperatorTrait anOperatorTrait, const NodeTypeID anID);
 
-		static NodeType& GetNodeType(const NodeTypeID anID);
-		static const std::vector<NodeType>& GetNodeTypes();
+		Node CreateInstance_Getter(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID);
+		Node CreateInstance_Setter(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID);
+		Node CreateInstance_Operator(NodeGraph& aNodeGraph, const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID);
 
-		static CustomEvent& GetCustomEvent(const CustomEventID anID);
-		static const std::vector<CustomEvent>& GetCustomEvents();
+		Node CreateInstance(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID);
 
-		static CustomEventID GetCustomEventID(const NodeTypeID aNodeTypeID);
+		bool CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID);
 
-		static Function& GetFunction(const FunctionID aFunctionID);
-		static const std::vector<Function*>& GetFunctions();
-		static FunctionID GetFunctionID(const NodeTypeID aNodeTypeID);
+		NodeType& GetNodeType(const NodeTypeID anID);
+		const std::vector<NodeType>& GetNodeTypes();
 
-		static NodeTypeID GetTypeID(const std::string& aName);
+		CustomEvent& GetCustomEvent(const CustomEventID anID);
+		const std::vector<CustomEvent>& GetCustomEvents();
 
-		static const std::string& GetFullName(const NodeTypeID anID);
-		static std::string GetShortName(const NodeTypeID anID);
-		static std::string GetNameDirectory(const NodeTypeID anID);
+		CustomEventID GetCustomEventID(const NodeTypeID aNodeTypeID);
 
-		static void Assert();
-		static void Destroy();
+		Function& GetFunction(const FunctionID aFunctionID);
+		const std::vector<std::unique_ptr<Function>>& GetFunctions();
+		FunctionID GetFunctionID(const NodeTypeID aNodeTypeID);
+
+		NodeTypeID GetTypeID(const std::string& aName);
+
+		const std::string& GetFullName(const NodeTypeID anID);
+		std::string GetShortName(const NodeTypeID anID);
+		std::string GetNameDirectory(const NodeTypeID anID);
+
+		void Assert();
+		//static void Destroy();
 
 	private:
+
 		static NodeType CreateInvalidNodeType();
-	private:
-		static std::vector<CustomEvent> myCustomEvents;
-		static std::vector<Function*> myFunctions;
-		static std::vector<NodeType> myNodeTypes;
 
-		static std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventID;
-		static std::unordered_multimap<NodeTypeID, FunctionID> myToFunctionID;
-		static std::unordered_map<DataTypeID, NodeTypeID> myGetterNodeTypeIDs;
-		static std::unordered_map<DataTypeID, NodeTypeID> mySetterNodeTypeIDs;
-		static std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> myOperatorNodeTypeIDs;
+	private:
+		std::vector<CustomEvent> myCustomEvents;
+		std::vector<std::unique_ptr<Function>> myFunctions;
+		std::vector<NodeType> myNodeTypes;
+
+		std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventID;
+		std::unordered_multimap<NodeTypeID, FunctionID> myToFunctionID;
+		std::unordered_map<DataTypeID, NodeTypeID> myGetterNodeTypeIDs;
+		std::unordered_map<DataTypeID, NodeTypeID> mySetterNodeTypeIDs;
+		std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> myOperatorNodeTypeIDs;
 	};
 }

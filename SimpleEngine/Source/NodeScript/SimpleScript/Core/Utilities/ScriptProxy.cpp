@@ -8,44 +8,10 @@
 
 namespace SCR
 {
-	ScriptFoundation& ScriptProxy::GetFoundation(Script& aScript)
-	{
-		return aScript.myScriptManager.myFoundation;
-	}
-
-	const ScriptFoundation& ScriptProxy::GetFoundation(const Script& aScript)
-	{
-		return aScript.myScriptManager.myFoundation;
-	}
-
-	CallStack& ScriptProxy::GetCallStack(Script& aScript)
-	{
-		return aScript.myScriptManager.myFoundation.myCallStack;
-	}
-
-	const CallStack& ScriptProxy::GetCallStack(const Script& aScript)
-	{
-		return aScript.myScriptManager.myFoundation.myCallStack;
-	}
 
 	MemoryPool& ScriptProxy::GetGlobalMemoryPool()
 	{
-		return ScriptFoundation::myGlobalMemoryPool;
-	}
-
-	ScriptManager& ScriptProxy::GetScriptManager(Script& aScript)
-	{
-		return aScript.myScriptManager;
-	}
-
-	const ScriptManager& ScriptProxy::GetScriptManager(const Script& aScript)
-	{
-		return aScript.myScriptManager;
-	}
-
-	const std::vector<std::unique_ptr<ScriptManager>>& ScriptProxy::GetScriptManagers(ScriptFoundation& aFoundation)
-	{
-		return aFoundation.myScriptManagers;
+		return ScriptFoundation::GetInstance().myMemoryPool;
 	}
 
 	/*MemoryPool& ScriptProxy::GetGraphMemoryPool(NodeGraph& aNodeGraph)
@@ -75,22 +41,17 @@ namespace SCR
 
 	NodeGraph& ScriptProxy::GetEventGraph(Script& aScript)
 	{
-		return aScript.myEventGraph.myNodeGraph;
+		return aScript.myEventGraph;
 	}
 
 	const NodeGraph& ScriptProxy::GetEventGraph(const Script& aScript)
 	{
-		return aScript.myEventGraph.myNodeGraph;
-	}
-
-	NodeExecutor& ScriptProxy::GetNodeExecutor(Script& aScript)
-	{
-		return *aScript.myScriptManager.myFoundation.myNodeExecutor;
+		return aScript.myEventGraph;
 	}
 
 	NodeExecutor& ScriptProxy::GetNodeExecutor()
 	{
-		return *ScriptFoundation::GetInstance()->myNodeExecutor;
+		return *ScriptFoundation::GetInstance().myNodeExecutor;
 	}
 
 	VariableManager& ScriptProxy::GetVariableManager(Script& aScript)
@@ -179,8 +140,8 @@ namespace SCR
 		return aScript.myVariableManager.myNodeIDToVarID;
 	}
 
-	CopyBuffer& ScriptProxy::GetGlobalCopyBufferRef(Script& aScript)
+	CopyBuffer& ScriptProxy::GetGlobalCopyBufferRef()
 	{
-		return *aScript.myScriptManager.myFoundation.myCopyBuffer;
+		return *ScriptFoundation::GetInstance().myCopyBuffer;
 	}
 }

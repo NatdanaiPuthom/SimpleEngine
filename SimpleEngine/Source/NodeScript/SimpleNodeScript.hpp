@@ -1,7 +1,5 @@
 #pragma once
-#include "NodeScript/SimpleScript/Core/ScriptFoundation.h"
 #include "NodeScript/SimpleScriptEditor/VisualScriptingWindow.h"
-#include "NodeScript/SimpleScript/Core/Serialization/ScriptLoader.h"
 #include "NodeScript/SimpleScript/SimpleGameNodes.h"
 
 namespace SCRIPT
@@ -16,8 +14,6 @@ namespace SCRIPT
 		void Update();
 
 		Editor::VisualScriptingWindow mySimpleScriptWindow;
-		SCRIPT::ScriptFoundation myScriptFoundation;
-		SCRIPT::ScriptManager* myScriptManager;
 		std::string myName;
 	};
 }

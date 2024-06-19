@@ -2,13 +2,16 @@
 
 namespace SCR
 {
-	std::unordered_map<DataTypeID, DataType> DataTypeManager::myDataTypes;
-	std::unordered_map<DataTypeID, TemplateDataType> DataTypeManager::myTemplateDataTypes;
-
-	const Color DataTypeManager::mySelectionTint = Color(0.2f, 0.2f, 0.2f, 0);
-	const Color DataTypeManager::myHoverTint = Color(0.1f, 0.1f, 0.1f, 0);
 
 	const std::string DataTypeManager::myNullNameStr;
+
+	DataTypeManager::DataTypeManager()
+	{
+	}
+
+	DataTypeManager::~DataTypeManager()
+	{
+	}
 
 	bool DataTypeManager::EditData(DataTypeID aDataTypeID, void* aDataPtr)
 	{
@@ -192,12 +195,6 @@ namespace SCR
 			return dataType.color - myHoverTint;
 		}
 		return DefaultColor - myHoverTint;
-	}
-
-	void DataTypeManager::Destroy()
-	{
-		myDataTypes.clear();
-		myTemplateDataTypes.clear();
 	}
 
 	DataType* DataTypeManager::Find(DataTypeID anID)

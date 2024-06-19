@@ -36,7 +36,7 @@ namespace SCR
 	template<typename T, eNodeOperatorTrait Operators, template<typename> typename... Templates> requires Scriptable<T, nlohmann::json> || Fundamental<T>
 	inline void DataTypeRegistry::Register(const std::string & aName, const Color& aColor)
 	{
-		DataTypeManager::Register<T>(aName, aColor);
+		Global::GetDataTypeManager().Register<T>(aName, aColor);
 
 		RegisterTemplateTypes<T, Templates...>(aName);
 		RegisterGetterNodeType<T>();
@@ -48,7 +48,7 @@ namespace SCR
 	template<typename T, eNodeOperatorTrait Operators>
 	inline void DataTypeRegistry::RegisterNonSerializableType(const std::string& aName, const Color& aColor)
 	{
-		DataTypeManager::RegisterNonSerializableType<T>(aName, aColor);
+		Global::GetDataTypeManager().RegisterNonSerializableType<T>(aName, aColor);
 
 		RegisterGetterNodeType<T>();
 		RegisterSetterNodeType<T>();
@@ -59,13 +59,13 @@ namespace SCR
 	template<template<typename> typename TemplateType>
 	inline void DataTypeRegistry::RegisterTemplateType(const std::string& aName)
 	{
-		DataTypeManager::RegisterTemplateType<TemplateType>(aName);
+		Global::GetDataTypeManager().RegisterTemplateType<TemplateType>(aName);
 	}
 
 	template<typename ClassType, typename PropertyType>
 	inline void DataTypeRegistry::RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName)
 	{
-		DataTypeManager::RegisterProperty(aProperty, aName);
+		Global::GetDataTypeManager().RegisterProperty(aProperty, aName);
 	}
 
 	template<typename T, template<typename> typename TemplateType>
@@ -73,9 +73,9 @@ namespace SCR
 	{
 		std::string templateTypeName;
 
-		if (DataTypeManager::myTemplateDataTypes.contains(typeid(TemplateType).hash_code()))
+		if (Global::GetDataTypeManager().myTemplateDataTypes.contains(typeid(TemplateType).hash_code()))
 		{
-			templateTypeName = DataTypeManager::myTemplateDataTypes.at(typeid(TemplateType).hash_code()).name;
+			templateTypeName = Global::GetDataTypeManager().myTemplateDataTypes.at(typeid(TemplateType).hash_code()).name;
 		}
 		else
 		{
@@ -84,7 +84,7 @@ namespace SCR
 
 		using Specification = TemplateType<T>;
 
-		DataTypeManager::RegisterTemplateSpecification<Specification>(templateTypeName + std::string("<") + aTemplateArgumentName + ">", DefaultColor);
+		Global::GetDataTypeManager().RegisterTemplateSpecification<Specification>(templateTypeName + std::string("<") + aTemplateArgumentName + ">", DefaultColor);
 		RegisterGetterNodeType<Specification>();
 		RegisterSetterNodeType<Specification>();
 		RegisterOperatorNodeTypes<Specification, eNodeOperatorTrait::All>();

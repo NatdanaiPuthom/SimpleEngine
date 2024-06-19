@@ -23,11 +23,11 @@ namespace SCR
 		myExecutionQueue.push(aNode);
 	}
 
-	void ExecutionQueue::Execute(NodeExecutor& aNodeExecutor)
+	void ExecutionQueue::Execute()
 	{
 		while (!myExecutionQueue.empty())
 		{
-			aNodeExecutor.ExecuteNode(myExecutionQueue.front());
+			ScriptProxy::GetNodeExecutor().ExecuteNode(myExecutionQueue.front());
 			myExecutionQueue.pop();
 		}
 	}

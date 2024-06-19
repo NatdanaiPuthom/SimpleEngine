@@ -8,9 +8,9 @@
 namespace SCR
 {
 
-	Script::Script(ScriptManager& aScriptManager, const std::string& aName)
-		: myName(aName)
-		, myScriptManager(aScriptManager)
+	Script::Script(const DataTypeID aTargetID, const std::string& aName)
+		: myTargetID(aTargetID)
+		, myName(aName)
 	{
 	}
 
@@ -28,12 +28,23 @@ namespace SCR
 		return myName;
 	}
 
-	ScriptInstance* Script::CreateScriptInstance()
+	ScriptInstance& Script::CreateScriptInstance()
 	{
 		std::unique_ptr<ScriptInstance>& scriptInstance = myScriptInstances.emplace_back(std::make_unique<ScriptInstance>());
-		scriptInstance->Compile(*this);
+		scriptInstance->Init(*this);
 		
-		return scriptInstance.get();
+		return *scriptInstance;
+	}
+
+	void Script::DestroyScriptInstance(ScriptInstance& aScriptInstance)
+	{
+		for (size_t i = 0; i < myScriptInstances.size(); ++i)
+		{
+			if (myScriptInstances[i].get() == &aScriptInstance)
+			{
+				myScriptInstances.erase(myScriptInstances.begin() + i);
+			}
+		}
 	}
 
 	EventGraph& Script::GetEventGraph()

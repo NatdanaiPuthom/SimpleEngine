@@ -16,7 +16,8 @@ namespace SCR
 
 	Script& ScriptManager::CreateScript(const std::string& aName)
 	{
-		myScripts.push_back(std::make_unique<Script>(*this, aName));
+		aName;
+		//myScripts.push_back(std::make_unique<Script>(*this, aName));
 		return *myScripts.back();
 	}
 

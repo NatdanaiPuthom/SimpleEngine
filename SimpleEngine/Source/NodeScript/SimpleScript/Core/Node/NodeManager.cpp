@@ -22,11 +22,11 @@ namespace SCR
 
 	TypeContainer<NodeID, Node, NodeType>::ConstIterator NodeManager::begin() const
 	{
-		return TypeContainer<NodeID, Node, NodeType>(myNodes, [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetNodeType(aNode.typeID); }).begin();
+		return TypeContainer<NodeID, Node, NodeType>(myNodes, [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(aNode.typeID); }).begin();
 	}
 
 	TypeContainer<NodeID, Node, NodeType>::ConstIterator NodeManager::end() const
 	{
-		return TypeContainer<NodeID, Node, NodeType>(myNodes, [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetNodeType(aNode.typeID); }).end();
+		return TypeContainer<NodeID, Node, NodeType>(myNodes, [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(aNode.typeID); }).end();
 	}
 }

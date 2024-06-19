@@ -5,6 +5,7 @@
 #include "SimpleScript/Core/DataType/DataTypeManager.h"
 #include "SimpleScript/Core/Utilities/ScriptProxy.h"
 #include "SimpleScript/Core/ScriptModifier.h"
+#include "SimpleScript/Core/Global/ScriptGlobal.h"
 
 namespace Editor
 {
@@ -42,7 +43,7 @@ namespace Editor
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(DataTypeManager::GetColor(variable.dataTypeID))));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Global::GetDataTypeManager().GetColor(variable.dataTypeID))));
 					ImGui::EndDisabled();
 
 					ModifyVariablePopup(i);
@@ -54,7 +55,7 @@ namespace Editor
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(DataTypeManager::GetColor(variable.dataTypeID))));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Global::GetDataTypeManager().GetColor(variable.dataTypeID))));
 					ImGui::EndDisabled();
 				}
 
@@ -89,7 +90,7 @@ namespace Editor
 		std::stringstream ss;
 
 		int i = 0;
-		for (const auto& [dataTypeID, obj] : DataTypeManager::GetObjectTypes())
+		for (const auto& [dataTypeID, obj] : Global::GetDataTypeManager().GetObjectTypes())
 		{
 			ss << obj.name << '\0';
 			dataTypeIDs.push_back(dataTypeID);

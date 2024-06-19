@@ -13,7 +13,7 @@ namespace SCR
 	using EditInterface = bool(*)(void*);
 	using SaveInterface = void(*)(nlohmann::json&, const void*);
 	using LoadInterface = void(*)(const nlohmann::json&, void*);
-	using AllocateInterface = void*(*)(MemoryManager&, const void*);
+	using AllocateInterface = void* (*)(MemoryManager&, const void*);
 	using CopyInterface = void(*)(void*, const void*);
 	using SwapInterface = void(*)(void*, void*);
 
@@ -253,60 +253,63 @@ namespace SCR
 		friend class DataTypeRegistry;
 	public:
 
-		static bool EditData(DataTypeID aDataTypeID, void* aDataPtr);
-		static bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr);
-		static bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr);
-		static void* AllocateData(DataTypeID aDataTypeID, MemoryManager& aMemoryManager, const void* aDefaultValue = nullptr);
-		static void CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource);
-		static void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2);
-		static const std::string& GetName(DataTypeID aDataTypeID);
+		DataTypeManager();
+		~DataTypeManager();
 
-		static DataTypeID GetDataTypeIDByName(const std::string& aName);
+		DataTypeManager& GetInstance();
 
-		static const std::unordered_map<DataTypeID, DataType>& GetObjectTypes();
-		static std::unordered_map<DataTypeID, const DataType*> GetFunctionObjectTypes();
+		bool EditData(DataTypeID aDataTypeID, void* aDataPtr);
+		bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr);
+		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr);
+		void* AllocateData(DataTypeID aDataTypeID, MemoryManager& aMemoryManager, const void* aDefaultValue = nullptr);
+		void CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource);
+		void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2);
+		const std::string& GetName(DataTypeID aDataTypeID);
 
-		static Color GetColor(const DataTypeID aDataTypeID);
-		static Color GetSelectionColor(const DataTypeID aDataTypeID);
-		static Color GetHoverColor(const DataTypeID aDataTypeID);
+		DataTypeID GetDataTypeIDByName(const std::string& aName);
 
-		static void Destroy();
+		const std::unordered_map<DataTypeID, DataType>& GetObjectTypes();
+		std::unordered_map<DataTypeID, const DataType*> GetFunctionObjectTypes();
 
-		static DataType* Find(DataTypeID anID);
+		Color GetColor(const DataTypeID aDataTypeID);
+		Color GetSelectionColor(const DataTypeID aDataTypeID);
+		Color GetHoverColor(const DataTypeID aDataTypeID);
+
+		DataType* Find(DataTypeID anID);
 
 		template<typename T>
-		static DataType* Find();
+		DataType* Find();
 
 	private:
 
 		template<Scriptable<nlohmann::json> T>
-		static void Register(const std::string& aName, const Color& aColor = DefaultColor);
+		void Register(const std::string& aName, const Color& aColor = DefaultColor);
 
 		template<Fundamental T>
-		static void Register(const std::string& aName, const Color& aColor = DefaultColor);
+		void Register(const std::string& aName, const Color& aColor = DefaultColor);
 
 		template<typename T>
-		static void RegisterNonSerializableType(const std::string& aName, const Color& aColor);
+		void RegisterNonSerializableType(const std::string& aName, const Color& aColor);
 
 		template<template<typename> typename TemplateType>
-		static void RegisterTemplateType(const std::string& aName);
+		void RegisterTemplateType(const std::string& aName);
 
 		template<typename T>
-		static void RegisterTemplateSpecification(const std::string& aName, const Color& aColor = DefaultColor);
+		void RegisterTemplateSpecification(const std::string& aName, const Color& aColor = DefaultColor);
 
 		template<CleanType T>
-		static void RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface);
+		void RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface);
 
 		template<CleanType ClassType, CleanType PropertyType>
-		static void RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName);
+		void RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName);
 
 	private:
 
-		static std::unordered_map<DataTypeID, DataType> myDataTypes;
-		static std::unordered_map<DataTypeID, TemplateDataType> myTemplateDataTypes;
+		std::unordered_map<DataTypeID, DataType> myDataTypes;
+		std::unordered_map<DataTypeID, TemplateDataType> myTemplateDataTypes;
 
-		static const Color mySelectionTint;
-		static const Color myHoverTint;
+		const Color mySelectionTint = Color(0.2f, 0.2f, 0.2f, 0);
+		const Color myHoverTint = Color(0.1f, 0.1f, 0.1f, 0);
 
 		static const std::string myNullNameStr;
 	};

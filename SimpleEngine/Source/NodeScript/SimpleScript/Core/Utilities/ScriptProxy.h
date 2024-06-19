@@ -39,18 +39,14 @@ namespace SCR
 		ScriptProxy() = delete;
 	public:
 		
-		static ScriptFoundation& GetFoundation(Script& aScript);
+		/*static ScriptFoundation& GetFoundation(Script& aScript);
 		static const ScriptFoundation& GetFoundation(const Script& aScript);
 
 		static CallStack& GetCallStack(Script& aScript);
-		static const CallStack& GetCallStack(const Script& aScript);
+		static const CallStack& GetCallStack(const Script& aScript);*/
 
 		static MemoryPool& GetGlobalMemoryPool();
 
-		static ScriptManager& GetScriptManager(Script& aScript);
-		static const ScriptManager& GetScriptManager(const Script& aScript);
-
-		static const std::vector<std::unique_ptr<ScriptManager>>& GetScriptManagers(ScriptFoundation& aFoundation);
 
 		//static MemoryPool& GetGraphMemoryPool(NodeGraph& aNodeGraph);
 		//static const MemoryPool& GetGraphMemoryPool(const NodeGraph& aNodeGraph);
@@ -65,7 +61,7 @@ namespace SCR
 		static NodeGraph& GetEventGraph(Script& aScript);
 		static const NodeGraph& GetEventGraph(const Script& aScript);
 
-		static NodeExecutor& GetNodeExecutor(Script& aScript);
+		//static NodeExecutor& GetNodeExecutor(Script& aScript);
 		static NodeExecutor& GetNodeExecutor();
 
 		static VariableManager& GetVariableManager(Script& aScript);
@@ -92,11 +88,6 @@ namespace SCR
 		}
 
 #pragma region Types
-
-		inline static const NodeType& GetNodeType(NodeTypeID anID)
-		{
-			return NodeTypeManager::myNodeTypes[anID];
-		}
 		
 	public:
 
@@ -113,7 +104,7 @@ namespace SCR
 
 		static std::unordered_map<NodeID, VarID>& GetNodeIDToVarIDMap(Script& aScript);
 
-		static CopyBuffer& GetGlobalCopyBufferRef(Script& aScript);
+		static CopyBuffer& GetGlobalCopyBufferRef();
 
 	};
 }

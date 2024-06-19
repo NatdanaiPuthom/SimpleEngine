@@ -10,6 +10,8 @@
 #include "SimpleScript/Core/ScriptModifier.h"
 #include "SimpleScript/Core/CustomEvent/CustomEvent.h"
 #include "SimpleScript/Core/Command/ScriptCommandTracker.h"
+#include "SimpleScript/Core/ScriptFoundation.h"
+#include "SimpleScript/Core/Instance/ScriptInstance.h"
 
 #include "Editor/Menu/MainMenuBar.hpp" //NOTE(v10.0.2): Remove this once we no longer use static bool of MainMenuBar class
 
@@ -25,38 +27,50 @@ namespace Editor
 		, myFunctionWindow(*this)
 	{
 		myCommandTracker = std::make_unique<CommandTracker>();
-		myCurrentIndex = 0;
+		myCurrentNodeGraph = nullptr;
+
 	}
 
 	VisualScriptingWindow::~VisualScriptingWindow()
 	{
-		for (size_t i = 0; i < myContexts.size(); ++i)
+		for (auto& [nodeGraph, imNodesContext] : myImNodesContexts)
 		{
-			if (myContexts[i] != nullptr)
-			{
-				ImNodes::DestroyContext(myContexts[i]);
-			}
+			ImNodes::DestroyContext(imNodesContext);
+
 		}
+
+		ImNodes::CreateContext();
 
 		ScriptLoader::Clear();
 	}
 
 	NodeContext VisualScriptingWindow::GetCurrentContext() const
 	{
-		Script& currentScript = *myCurrentScriptManager->GetScripts()[myCurrentIndex];
-		return { &currentScript, &currentScript.GetEventGraph().myNodeGraph, myContexts[myCurrentIndex]};
+		return { myCurrentScript, myCurrentNodeGraph, myImNodesContexts.at(myCurrentNodeGraph) };
 	}
 
 	void VisualScriptingWindow::UpdateContext()
 	{
-		size_t contextAmount = myContexts.size();
-
-		for (size_t i = contextAmount; i < myCurrentScriptManager->GetScripts().size(); i++)
+		if (!myCurrentNodeGraph)
 		{
-			myContexts.push_back(ImNodes::CreateContext());
+			if (ScriptFoundation::GetInstance().GetScripts().empty())
+			{
+				ScriptFoundation::GetInstance().CreateScript(0);
+			}
+
+			if (ScriptFoundation::GetInstance().GetScripts().begin()->second.empty())
+			{
+				ScriptFoundation::GetInstance().CreateScript(ScriptFoundation::GetInstance().GetScripts().begin()->first);
+			}
+
+			Script& script = *ScriptFoundation::GetInstance().GetScripts().begin()->second.front();
+			myCurrentNodeGraph = &script.GetEventGraph();
+			myCurrentScript = &script;
+			myImNodesContexts.emplace(myCurrentNodeGraph, ImNodes::CreateContext());
 		}
 
-		ImNodes::SetCurrentContext(myContexts[myCurrentIndex]);
+
+		ImNodes::SetCurrentContext(myImNodesContexts.at(myCurrentNodeGraph));
 
 		ImNodesStyle& style = ImNodes::GetStyle();
 
@@ -72,15 +86,8 @@ namespace Editor
 		style.Colors[ImNodesCol_GridBackground] = ToImGuiColor(Color{ 0.03f,0.03f, 0.03f, 1.f });
 	}
 
-	void VisualScriptingWindow::Update(SCRIPT::ScriptManager& aScriptManager, const std::string& LevelName)
+	void VisualScriptingWindow::Update(const std::string& LevelName)
 	{
-		myCurrentScriptManager = &aScriptManager;
-
-		if (myCurrentIndex >= myCurrentScriptManager->GetScripts().size())
-		{
-			myCurrentIndex = 0;
-		}
-
 		ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/" + LevelName;
 		UpdateContext();
 
@@ -155,9 +162,9 @@ namespace Editor
 
 	void VisualScriptingWindow::ScriptSelectionMenu()
 	{
-		Script& currentScript = *GetCurrentContext().script;
+		//Script& currentScript = *GetCurrentContext().script;
 
-		ImGui::SetNextItemWidth(200);
+		/*ImGui::SetNextItemWidth(200);
 
 		if (ImGui::BeginCombo("##ScriptSelectionCombo", currentScript.Name().c_str()))
 		{
@@ -168,6 +175,7 @@ namespace Editor
 
 				if (ImGui::Selectable(script.Name().c_str(), isSelected))
 				{
+					myCurrentScript = &script;
 					myCurrentIndex = i;
 				}
 
@@ -180,7 +188,7 @@ namespace Editor
 			ImGui::EndCombo();
 		}
 
-		ImGui::SameLine();
+		ImGui::SameLine();*/
 
 		char buffer[35]{};
 		strcpy_s(buffer, GetCurrentContext().script->Name().c_str());
@@ -210,8 +218,7 @@ namespace Editor
 
 		if (ImGui::Button("Reload All"))
 		{
-			ScriptLoader::LoadAll(*myCurrentScriptManager);
-			myCurrentIndex = 0;
+			ScriptLoader::LoadAll();
 		}
 
 		ImGui::SameLine();
@@ -226,27 +233,27 @@ namespace Editor
 			ImGui::InputText("##", myScriptNameText, IM_ARRAYSIZE(myScriptNameText), ImGuiInputTextFlags_AutoSelectAll);
 			ImGui::Separator();
 
-			auto it = std::find_if(myCurrentScriptManager->GetScripts().begin(), myCurrentScriptManager->GetScripts().end(), [&](const std::unique_ptr<Script>& aScript) -> bool
+			/*auto it = std::find_if(myCurrentScriptManager->GetScripts().begin(), myCurrentScriptManager->GetScripts().end(), [&](const std::unique_ptr<Script>& aScript) -> bool
 				{
 					return aScript->Name() == std::string(myScriptNameText);
 				});
 
-			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, it != myCurrentScriptManager->GetScripts().end());
+			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, it != myCurrentScriptManager->GetScripts().end());*/
 
 			if (ImGui::Button("Create", ImVec2(120, 0)))
 			{
-
-				myCurrentScriptManager->CreateScript(myScriptNameText);
+				Script& script = ScriptFoundation::GetInstance().CreateScript(0, myScriptNameText);
+				//myCurrentScriptManager->CreateScript(myScriptNameText);
 				myScriptNameText[0] = (char)0;
 
-				myContexts.push_back(ImNodes::CreateContext());
-				myCurrentIndex = myCurrentScriptManager->GetScripts().size() - 1;
+				myImNodesContexts.emplace(&script.GetEventGraph(), ImNodes::CreateContext());
+				//myCurrentIndex = myCurrentScriptManager->GetScripts().size() - 1;
 
 
 				ImGui::CloseCurrentPopup();
 			}
 
-			ImGui::PopItemFlag();
+			//ImGui::PopItemFlag();
 
 			ImGui::SetItemDefaultFocus();
 			ImGui::SameLine();
@@ -271,17 +278,17 @@ namespace Editor
 			ImGui::InputText("##", myScriptNameText, IM_ARRAYSIZE(myScriptNameText), ImGuiInputTextFlags_AutoSelectAll);
 			ImGui::Separator();
 
-			auto it = std::find_if(myCurrentScriptManager->GetScripts().begin(), myCurrentScriptManager->GetScripts().end(), [&](const std::unique_ptr<Script>& aScript) -> bool
+			/*auto it = std::find_if(myCurrentScriptManager->GetScripts().begin(), myCurrentScriptManager->GetScripts().end(), [&](const std::unique_ptr<Script>& aScript) -> bool
 				{
 					return aScript->Name() == std::string(myScriptNameText);
 				});
 
-			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, it != myCurrentScriptManager->GetScripts().end());
+			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, it != myCurrentScriptManager->GetScripts().end());*/
 
-			if (ImGui::Button("Create Copy", ImVec2(120, 0)))
+			/*if (ImGui::Button("Create Copy", ImVec2(120, 0)))
 			{
 				ScriptLoader::CreateCopy(*GetCurrentContext().script, myScriptNameText);
-				ScriptLoader::LoadAll(*myCurrentScriptManager);
+				ScriptLoader::LoadAll();
 
 				for (size_t i = 0; i < myCurrentScriptManager->GetScripts().size(); i++)
 				{
@@ -294,9 +301,9 @@ namespace Editor
 				myScriptNameText[0] = (char)0;
 
 				ImGui::CloseCurrentPopup();
-			}
+			}*/
 
-			ImGui::PopItemFlag();
+			//ImGui::PopItemFlag();
 			ImGui::SetItemDefaultFocus();
 			ImGui::SameLine();
 
@@ -324,7 +331,11 @@ namespace Editor
 
 		if (ImGui::Button("Trigger Event"))
 		{
-			//ExecutionContextBase c;
+			ScriptInstance& scriptInstance = myCurrentScript->CreateScriptInstance();
+			ExecutionContextBase c;
+			scriptInstance.ExecuteEvent(static_cast<eNodeEventType>(currentEvent + 1), c);
+
+			myCurrentScript->DestroyScriptInstance(scriptInstance);
 			//GetCurrentContext().script->ExecuteEvent(static_cast<eNodeEventType>(currentEvent + 1), c);
 		}
 
@@ -332,7 +343,7 @@ namespace Editor
 
 		if (ImGui::Button("Create Instance"))
 		{
-			ScriptInstance* instance = GetCurrentContext().script->CreateScriptInstance();
+			ScriptInstance& instance = GetCurrentContext().script->CreateScriptInstance();
 			instance;
 		}
 	}
@@ -378,7 +389,7 @@ namespace Editor
 				ImNodes::BeginNodeTitleBar();
 
 				std::string nodeName = !HasFlag(nodeType->nodeRecipe.traits, eNodeTrait::Accessor)
-					? NodeTypeManager::GetShortName(node->typeID)
+					? NodeTypeManager::GetInstance().GetShortName(node->typeID)
 					: HasFlag(nodeType->nodeRecipe.traits, eNodeTrait::Getter)
 					? "Get " + ScriptProxy::GetVariable(currentScript, variableManager.GetVariableIDByNodeID(nodeID)).name
 					: "Set " + ScriptProxy::GetVariable(currentScript, variableManager.GetVariableIDByNodeID(nodeID)).name;
@@ -430,8 +441,8 @@ namespace Editor
 				const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, pinID);
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
-				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(DataTypeManager::GetColor(pinType.dataTypeID)));
-				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(DataTypeManager::GetHoverColor(pinType.dataTypeID)));
+				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
+				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinType.dataTypeID)));
 
 				bool shouldBeHighlighted = std::find(myPinIDsToHighlight.begin(), myPinIDsToHighlight.end(), pinID) != myPinIDsToHighlight.end();
 
@@ -468,8 +479,8 @@ namespace Editor
 				const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, pinID);
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
-				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(DataTypeManager::GetColor(pinType.dataTypeID)));
-				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(DataTypeManager::GetHoverColor(pinType.dataTypeID)));
+				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
+				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinType.dataTypeID)));
 
 				bool shouldBeHighlighted = std::find(myPinIDsToHighlight.begin(), myPinIDsToHighlight.end(), pinID) != myPinIDsToHighlight.end();
 
@@ -504,9 +515,9 @@ namespace Editor
 			if (!pin.connectedPinIDs.empty())
 			{
 
-				ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(DataTypeManager::GetColor(pinType.dataTypeID)));
-				ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(DataTypeManager::GetSelectionColor(pinType.dataTypeID)));
-				ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(DataTypeManager::GetHoverColor(pinType.dataTypeID)));
+				ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
+				ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(Global::GetDataTypeManager().GetSelectionColor(pinType.dataTypeID)));
+				ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinType.dataTypeID)));
 
 				ImNodes::Link(inputPinID, inputPinID, pin.connectedPinIDs[0]);
 
@@ -647,9 +658,9 @@ namespace Editor
 
 			auto nodeTypePopulationFunc = [&](NodeTypeCategory& aMainCategory) -> void
 				{
-					const std::vector<NodeType>& nodeTypes = NodeTypeManager::GetNodeTypes();
+					const std::vector<NodeType>& nodeTypes = NodeTypeManager::GetInstance().GetNodeTypes();
 
-					const std::vector<NodeTypeID> filtered = IndexStream<NodeType, NodeTypeID>(nodeTypes, [](NodeTypeID anID) -> const NodeType& { return NodeTypeManager::GetNodeType(anID); })
+					const std::vector<NodeTypeID> filtered = IndexStream<NodeType, NodeTypeID>(nodeTypes, [](NodeTypeID anID) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(anID); })
 						.Filter([&](const NodeType& aNodeType) -> bool
 							{
 								size_t size = 0;
@@ -683,7 +694,7 @@ namespace Editor
 
 					for (NodeTypeID nodeTypeID : filtered)
 					{
-						PopulateCategories(NodeTypeManager::GetFullName(nodeTypeID), nodeTypeID, aMainCategory);
+						PopulateCategories(NodeTypeManager::GetInstance().GetFullName(nodeTypeID), nodeTypeID, aMainCategory);
 
 					}
 				};
@@ -739,7 +750,7 @@ namespace Editor
 	{
 		for (const NodeTypeID nodeTypeID : aNodeTypeIDs)
 		{
-			if (ImGui::MenuItem(NodeTypeManager::GetShortName(nodeTypeID).c_str()))
+			if (ImGui::MenuItem(NodeTypeManager::GetInstance().GetShortName(nodeTypeID).c_str()))
 			{
 				aOnClickFunc(nodeTypeID);
 			}
@@ -798,12 +809,12 @@ namespace Editor
 		{
 			auto categoryFunc = [&](NodeTypeCategory& aMainCategory) -> void
 				{
-					const std::vector<NodeType>& nodeTypes = NodeTypeManager::GetNodeTypes();
+					const std::vector<NodeType>& nodeTypes = NodeTypeManager::GetInstance().GetNodeTypes();
 
 					if (myNodeTypeSearch[0] == '\0')
 					{
 
-						std::vector<NodeTypeID> nodeTypeIDs = IndexStream<NodeType>(nodeTypes, [](const NodeTypeID anID) -> const NodeType& { return NodeTypeManager::GetNodeType(anID); })
+						std::vector<NodeTypeID> nodeTypeIDs = IndexStream<NodeType>(nodeTypes, [](const NodeTypeID anID) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(anID); })
 							.Filter([](const NodeType& aNodeType) -> bool
 								{
 									if (HasFlag(aNodeType.nodeRecipe.traits, eNodeTrait::NonTrivial))
@@ -815,7 +826,7 @@ namespace Editor
 							).Get();
 						for (NodeTypeID nodeTypeID : nodeTypeIDs)
 						{
-							PopulateCategories(NodeTypeManager::GetFullName(nodeTypeID), nodeTypeID, aMainCategory);
+							PopulateCategories(NodeTypeManager::GetInstance().GetFullName(nodeTypeID), nodeTypeID, aMainCategory);
 						}
 					}
 					else

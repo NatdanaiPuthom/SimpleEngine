@@ -14,13 +14,10 @@ struct ImNodesContext;
 namespace SCRIPT
 {
 	struct Color;
-}
-
-namespace SCRIPT
-{
 	class ScriptManager;
 	class Script;
 	class CommandTracker;
+	class NodeGraph;
 }
 
 namespace Editor
@@ -61,7 +58,7 @@ namespace Editor
 		NodeContext GetCurrentContext() const;
 		void UpdateContext();
 
-		void Update(SCRIPT::ScriptManager& aScriptManager, const std::string& LevelName);
+		void Update(const std::string& LevelName);
 
 		void ScriptSelectionMenu();
 		void ScriptLoadingMenu();
@@ -84,11 +81,14 @@ namespace Editor
 		char myScriptNameText[TEXT_MAX_LENGTH] = "";
 		char myNodeTypeSearch[TEXT_MAX_LENGTH] = "";
 
-		SCRIPT::ScriptManager* myCurrentScriptManager;
 		std::unique_ptr<SCRIPT::CommandTracker> myCommandTracker;
 
-		size_t myCurrentIndex;
-		std::vector<ImNodesContext*> myContexts;
+		SCRIPT::NodeGraph* myCurrentNodeGraph = nullptr;
+		SCRIPT::Script* myCurrentScript = nullptr;
+
+		//size_t myCurrentIndex;
+		//std::vector<ImNodesContext*> myContexts;
+		std::unordered_map<SCRIPT::NodeGraph*, ImNodesContext*> myImNodesContexts;
 
 		SCRIPT::PinID myLinkCreationPinID;
 		SCRIPT::PinID myStartedLinkPinID;

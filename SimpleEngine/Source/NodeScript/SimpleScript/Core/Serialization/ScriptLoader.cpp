@@ -12,6 +12,7 @@
 #include "../Utilities/ScriptFilter.h"
 #include "../Command/ScriptCommandTracker.h"
 #include "../ScriptModifier.h"
+#include "../ScriptFoundation.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -67,7 +68,7 @@ namespace SCR
 			cleanedNodeIDs.emplace(nodeID, static_cast<NodeID>(cleanedNodeIDs.size()));
 
 			nodeJson["ID"] = cleanedNodeIDs.at(nodeID);
-			nodeJson["Name"] = NodeTypeManager::GetShortName(node->typeID);
+			nodeJson["Name"] = NodeTypeManager::GetInstance().GetShortName(node->typeID);
 			nodeJson["Pos"]["x"] = node->position.x;
 			nodeJson["Pos"]["y"] = node->position.y;
 
@@ -100,12 +101,12 @@ namespace SCR
 			{
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
-				pinDataJson["DataType"] = DataTypeManager::GetName(pinType.dataTypeID);
+				pinDataJson["DataType"] = Global::GetDataTypeManager().GetName(pinType.dataTypeID);
 
 				//const MemoryPoolID memoryID = pin.memoryID;
 
 				json valueJson = json::object();
-				DataTypeManager::SaveData(pinType.dataTypeID, valueJson, pin.dataPtr);
+				Global::GetDataTypeManager().SaveData(pinType.dataTypeID, valueJson, pin.dataPtr);
 				pinDataJson["Value"] = valueJson;
 			}
 
@@ -127,12 +128,12 @@ namespace SCR
 			json variableJson;
 
 			variableJson["Name"] = variable.name;
-			variableJson["DataType"] = DataTypeManager::GetName(variable.dataTypeID);
+			variableJson["DataType"] = Global::GetDataTypeManager().GetName(variable.dataTypeID);
 
 			json defaultValueJson = json::object();
 			DataTypeID dataTypeID = variable.dataTypeID;
 
-			DataTypeManager::SaveData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
+			Global::GetDataTypeManager().SaveData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
 
 			variableJson["DefaultValue"] = defaultValueJson;
 
@@ -243,7 +244,7 @@ namespace SCR
 
 
 			const json& valueJson = pinData["Value"];
-			DataTypeManager::LoadData(pinType.dataTypeID, valueJson, pin.dataPtr);
+			Global::GetDataTypeManager().LoadData(pinType.dataTypeID, valueJson, pin.dataPtr);
 		}
 
 		const json& variableDataJson = dataJson["Variables"];
@@ -262,15 +263,15 @@ namespace SCR
 			const json& defaultValueJson = variableJson["DefaultValue"];
 
 
-			DataTypeID dataTypeID = DataTypeManager::GetDataTypeIDByName(dataTypeStr);
+			DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeStr);
 
 			if (dataTypeID != InvalidID<DataTypeID>())
 			{
 				
 				Modify::SetVariableDataType(varID, dataTypeID, aScript, nullptr);
 
-				DataTypeManager::LoadData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
-				DataTypeManager::CopyData(dataTypeID, variable.runtimeDataPtr, variable.defaultValueDataPtr);
+				Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
+				Global::GetDataTypeManager().CopyData(dataTypeID, variable.runtimeDataPtr, variable.defaultValueDataPtr);
 
 			}
 
@@ -292,9 +293,8 @@ namespace SCR
 		//ScriptProxy::GetCommandTracker(aScript).IsTracking() = true;
 	}
 
-	void ScriptLoader::LoadAll(ScriptManager& aScriptManager)
+	void ScriptLoader::LoadAll()
 	{
-		aScriptManager.Clear();
 		using namespace std::filesystem;
 
 		std::string fileDirectory = SavePath + "/";
@@ -314,16 +314,16 @@ namespace SCR
 
 					std::string fileName = entry.path().filename().string();
 					std::string name = fileName.substr(0, fileName.find_last_of('.'));
-					Script& script = aScriptManager.CreateScript(name);
-
+					//Script& script = aScriptManager.CreateScript(name);
+					Script& script = ScriptFoundation::GetInstance().CreateScript(0, name);
 					Load(script);
 				}
 			}
 		}
 
-		if (aScriptManager.GetScripts().empty())
+		if (ScriptFoundation::GetInstance().GetScripts().empty())
 		{
-			aScriptManager.CreateScript();
+			ScriptFoundation::GetInstance().CreateScript(0);
 		}
 	}
 
@@ -360,15 +360,15 @@ namespace SCR
 		json jsonDoc = json::object();
 		json customEventsJson = json::array();
 
-		const std::vector<CustomEvent>& customEventNodeTypes = NodeTypeManager::GetCustomEvents();
+		const std::vector<CustomEvent>& customEventNodeTypes = NodeTypeManager::GetInstance().GetCustomEvents();
 
 		for (const CustomEvent& customEventNodeType : customEventNodeTypes)
 		{
-			const NodeType& executorNodeType = NodeTypeManager::GetNodeType(customEventNodeType.GetExecutorTypeID());
+			const NodeType& executorNodeType = NodeTypeManager::GetInstance().GetNodeType(customEventNodeType.GetExecutorTypeID());
 
 			json customEventJson;
 
-			customEventJson["Name"] = NodeTypeManager::GetShortName(customEventNodeType.GetExecutorTypeID());
+			customEventJson["Name"] = NodeTypeManager::GetInstance().GetShortName(customEventNodeType.GetExecutorTypeID());
 
 
 			json pinArrayJson = json::array();
@@ -382,7 +382,7 @@ namespace SCR
 				const PinType& pinType = PinTypeManager::GetPinType(pinTypeID);
 
 				customEventPinJson["Name"] = pinType.name;
-				customEventPinJson["DataType"] = DataTypeManager::GetName(pinType.dataTypeID);
+				customEventPinJson["DataType"] = Global::GetDataTypeManager().GetName(pinType.dataTypeID);
 
 				pinArrayJson.push_back(customEventPinJson);
 			}
@@ -431,7 +431,7 @@ namespace SCR
 				const std::string& pinName = pinJson["Name"];
 				const std::string& dataTypeName = pinJson["DataType"];
 
-				DataTypeID dataTypeID = DataTypeManager::GetDataTypeIDByName(dataTypeName);
+				DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeName);
 
 				Modify::AddPinToCustomEvent(dataTypeID, customEventNodeTypeID, pinName);
 			}

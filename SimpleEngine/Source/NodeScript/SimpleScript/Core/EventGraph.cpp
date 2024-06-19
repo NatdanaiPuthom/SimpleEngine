@@ -12,8 +12,8 @@ namespace SCR
 	}
 	void EventGraph::BindNodeToEvent(const NodeID aNodeID)
 	{
-		const Node& node = myNodeGraph.myNodeManager->myNodes.at(aNodeID);
-		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
+		const Node& node = myNodeManager->myNodes.at(aNodeID);
+		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(node.typeID);
 
 		const EventID eventID = nodeType.nodeRecipe.eventID;
 
@@ -40,9 +40,14 @@ namespace SCR
 
 	void EventGraph::UnbindNodeFromEvent(NodeID aNodeID)
 	{
-		const Node& node = myNodeGraph.myNodeManager->myNodes.at(aNodeID);
-		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
+		const Node& node = myNodeManager->myNodes.at(aNodeID);
+		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(node.typeID);
 
-		std::erase(myEventNodes.at(nodeType.nodeRecipe.eventID), aNodeID);
+		auto it = myEventNodes.find(nodeType.nodeRecipe.eventID);
+
+		if (it != myEventNodes.end())
+		{
+			std::erase(it->second, aNodeID);
+		}
 	}
 }

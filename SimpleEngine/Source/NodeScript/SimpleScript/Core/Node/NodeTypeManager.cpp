@@ -4,17 +4,32 @@
 #include "Core/ScriptManager.h"
 #include "Core/Utilities/ScriptUtilities.h"
 #include "Core/Node/NodeTypeRegistry.h"
+#include "Core/Type/ScriptTypeManager.h"
 
 namespace SCR
 {
-	std::vector<CustomEvent> NodeTypeManager::myCustomEvents = {};
+	/*std::vector<CustomEvent> NodeTypeManager::myCustomEvents = {};
 	std::vector<Function*> NodeTypeManager::myFunctions = {};
 	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::myGetterNodeTypeIDs = {};
 	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::mySetterNodeTypeIDs = {};
 	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToCustomEventID = {};
 	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToFunctionID = {};
 	std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> NodeTypeManager::myOperatorNodeTypeIDs = {};
-	std::vector<NodeType> NodeTypeManager::myNodeTypes = { CreateInvalidNodeType() };
+	std::vector<NodeType> NodeTypeManager::myNodeTypes = { CreateInvalidNodeType() };*/
+
+	NodeTypeManager::NodeTypeManager()
+	{
+	}
+
+	NodeTypeManager::~NodeTypeManager()
+	{
+		
+	}
+
+	NodeTypeManager& NodeTypeManager::GetInstance()
+	{
+		return ScriptFoundation::GetInstance().GetTypeManager().GetNodeTypeManager();
+	}
 
 	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
 	{
@@ -108,7 +123,7 @@ namespace SCR
 		return *myFunctions.at(anID);
 	}
 
-	const std::vector<Function*>& NodeTypeManager::GetFunctions()
+	const std::vector<std::unique_ptr<Function>>& NodeTypeManager::GetFunctions()
 	{
 		return myFunctions;
 	}
@@ -195,7 +210,7 @@ namespace SCR
 		};
 	}
 
-	void NodeTypeManager::Destroy()
+	/*void NodeTypeManager::Destroy()
 	{
 		for (Function* function : myFunctions)
 		{
@@ -210,5 +225,5 @@ namespace SCR
 		mySetterNodeTypeIDs.clear();
 		myOperatorNodeTypeIDs.clear();
 		myToCustomEventID.clear();
-	}
+	}*/
 }

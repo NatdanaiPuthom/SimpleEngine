@@ -333,7 +333,7 @@ namespace SCR
 
 		if constexpr (!IsSameType<T, Wildcard>)
 		{
-			const std::string& customTypeName = DataTypeManager::GetName(dataTypeID);
+			const std::string& customTypeName = Global::GetDataTypeManager().GetName(dataTypeID);
 			if (!customTypeName.empty())
 			{
 				aDefaultNodeName += " (" + customTypeName + ")";
@@ -351,7 +351,7 @@ namespace SCR
 
 		NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits, eNodeEventType::None, OperatorTrait>(func, aDefaultNodeName);
 
-		NodeTypeManager::SetOperatorNodeTypeID(dataTypeID, OperatorTrait, nodeTypeID);
+		NodeTypeManager::GetInstance().SetOperatorNodeTypeID(dataTypeID, OperatorTrait, nodeTypeID);
 	}
 
 	template<CleanType T, eNodeOperatorTrait OperatorTrait, eNodeOperatorTrait RegisteredTraits, eNodeTrait ExtraTraits = eNodeTrait::None>

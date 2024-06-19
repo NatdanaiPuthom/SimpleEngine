@@ -21,6 +21,7 @@ namespace SCR
 	{
 		myExecutionContext.script = aScriptInstance.myScript;
 		myExecutionContext.executionContext = &anExecutionContext;
+		myExecutionContext.scriptInstance = &aScriptInstance;
 
 		auto it = anEventGraph.myEventNodes.find(anEventHash);
 
@@ -28,7 +29,7 @@ namespace SCR
 		{
 			for (NodeID nodeID : it->second)
 			{
-				ExecuteNode(NodeExecutionData{ NodeRef{.nodeID = nodeID, .nodeGraph = &anEventGraph.myNodeGraph }, eNodeTriggerReason::Event });
+				ExecuteNode(NodeExecutionData{ NodeRef{.nodeID = nodeID, .nodeGraph = &anEventGraph }, eNodeTriggerReason::Event });
 			}
 		}
 
@@ -45,7 +46,7 @@ namespace SCR
 	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
 	{
 		const Node& node = ScriptProxy::GetNode(*aNodeExecutionData.nodeRef.nodeGraph, aNodeExecutionData.nodeRef.nodeID);
-		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
+		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(node.typeID);
 		nodeType.nodeRecipe.executeFunction(aNodeExecutionData, myExecutionContext);
 	}
 

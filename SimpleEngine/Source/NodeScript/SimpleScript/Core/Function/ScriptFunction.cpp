@@ -9,8 +9,8 @@ namespace SCR
 	{
 		const Node& callerNode = aContext->GetCurrentNode();
 
-		const FunctionID functionID = NodeTypeManager::GetFunctionID(callerNode.typeID);
-		Function& function = NodeTypeManager::GetFunction(functionID);
+		const FunctionID functionID = NodeTypeManager::GetInstance().GetFunctionID(callerNode.typeID);
+		Function& function = NodeTypeManager::GetInstance().GetFunction(functionID);
 		function.SetCaller({ aContext->GetNodeData().nodeRef.nodeID, aContext->nodeData.nodeRef.nodeGraph });
 		const Node& inputNode = ScriptProxy::GetNode(*aContext->nodeData.nodeRef.nodeGraph, function.GetInputNodeID());
 
@@ -30,8 +30,8 @@ namespace SCR
 	{
 		const Node& outputNode = aContext->GetCurrentNode();
 
-		const FunctionID functionID = NodeTypeManager::GetFunctionID(outputNode.typeID);
-		const Function& function = NodeTypeManager::GetFunction(functionID);
+		const FunctionID functionID = NodeTypeManager::GetInstance().GetFunctionID(outputNode.typeID);
+		const Function& function = NodeTypeManager::GetInstance().GetFunction(functionID);
 		function;
 
 		const auto& caller = function.GetCaller();

@@ -1,5 +1,6 @@
 #include "PinType.h"
 #include "../DataType/DataTypeManager.h"
+#include "../Global/ScriptGlobal.h"
 
 namespace SCR
 {
@@ -38,7 +39,7 @@ namespace SCR
 		std::string pinLabel = aPinType.name;
 		if (pinLabel == "#T")
 		{
-			pinLabel = DataTypeManager::GetName(aPinType.dataTypeID);
+			pinLabel = Global::GetDataTypeManager().GetName(aPinType.dataTypeID);
 		}
 		return pinLabel;
 	}

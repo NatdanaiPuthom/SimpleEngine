@@ -10,6 +10,7 @@
 #include "Node/NodeExecutor.h"
 #include "Utilities/ScriptLinker.h"
 #include "ScriptModifier.h"
+#include "Global/ScriptGlobal.h"
 
 namespace SCR
 {
@@ -18,8 +19,8 @@ namespace SCR
 	{
 		CustomEvent customEvent(aName);
 
-		std::vector<CustomEvent>& customEvents = NodeTypeManager::myCustomEvents;
-		std::unordered_multimap<NodeTypeID, CustomEventID>& map = NodeTypeManager::myToCustomEventID;
+		std::vector<CustomEvent>& customEvents = NodeTypeManager::GetInstance().myCustomEvents;
+		std::unordered_multimap<NodeTypeID, CustomEventID>& map = NodeTypeManager::GetInstance().myToCustomEventID;
 		CustomEventID id = customEvents.size();
 		customEvents.push_back(customEvent);
 		map.emplace(customEvent.GetCallerTypeID(), id);
@@ -30,12 +31,12 @@ namespace SCR
 
 	FunctionID InternalModifier::CreateFunction(const std::string& aName)
 	{
-		Function* function = new Function(aName);
 
-		std::vector<Function*>& functions = NodeTypeManager::myFunctions;
-		std::unordered_multimap<NodeTypeID, FunctionID>& map = NodeTypeManager::myToFunctionID;
+		std::vector<std::unique_ptr<Function>>& functions = NodeTypeManager::GetInstance().myFunctions;
+		std::unordered_multimap<NodeTypeID, FunctionID>& map = NodeTypeManager::GetInstance().myToFunctionID;
 		FunctionID id = functions.size();
-		functions.push_back(function);
+		std::unique_ptr<Function>& function = functions.emplace_back(std::make_unique<Function>(aName));
+
 		map.emplace(function->GetCallerNodeTypeID(), id);
 		map.emplace(function->GetInputNodeTypeID(), id);
 		map.emplace(function->GetOutputNodeTypeID(), id);
@@ -46,13 +47,13 @@ namespace SCR
 	NodeID InternalModifier::CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, CommandTracker* aCommandTracker)
 	{
 		const NodeID id = GetCurrentNodeID(aNodeGraph);
-		AddNode(aNodeGraph, NodeTypeManager::CreateInstance(aNodeGraph, id, aNodeTypeID), id, aCommandTracker);
+		AddNode(aNodeGraph, NodeTypeManager::GetInstance().CreateInstance(aNodeGraph, id, aNodeTypeID), id, aCommandTracker);
 		return id;
 	}
 
 	NodeID InternalModifier::CreateNode(NodeGraph& aNodeGraph, const std::string& aName, bool& aSuccess, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker)
 	{
-		NodeTypeID typeID = NodeTypeManager::GetTypeID(aName);
+		NodeTypeID typeID = NodeTypeManager::GetInstance().GetTypeID(aName);
 		aSuccess = typeID != 0;
 		if (!aCreateIfNameNotFound && !aSuccess)
 		{
@@ -64,21 +65,21 @@ namespace SCR
 	NodeID InternalModifier::CreateGetterNode(NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
 	{
 		const NodeID id = GetCurrentNodeID(aNodeGraph);
-		AddNode(aNodeGraph, NodeTypeManager::CreateInstance_Getter(aNodeGraph, id, aDataTypeID), id, aCommandTracker);
+		AddNode(aNodeGraph, NodeTypeManager::GetInstance().CreateInstance_Getter(aNodeGraph, id, aDataTypeID), id, aCommandTracker);
 		return id;
 	}
 
 	NodeID InternalModifier::CreateSetterNode(NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
 	{
 		const NodeID id = GetCurrentNodeID(aNodeGraph);
-		AddNode(aNodeGraph, NodeTypeManager::CreateInstance_Setter(aNodeGraph, id, aDataTypeID), id, aCommandTracker);
+		AddNode(aNodeGraph, NodeTypeManager::GetInstance().CreateInstance_Setter(aNodeGraph, id, aDataTypeID), id, aCommandTracker);
 		return id;
 	}
 
 	NodeID InternalModifier::CreateOperatorNode(NodeGraph& aNodeGraph, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
 	{
 		const NodeID id = GetCurrentNodeID(aNodeGraph);
-		AddNode(aNodeGraph, NodeTypeManager::CreateInstance_Operator(aNodeGraph, id, aOperatorTrait, aDataTypeID), id, aCommandTracker);
+		AddNode(aNodeGraph, NodeTypeManager::GetInstance().CreateInstance_Operator(aNodeGraph, id, aOperatorTrait, aDataTypeID), id, aCommandTracker);
 		return id;
 	}
 
@@ -89,7 +90,7 @@ namespace SCR
 
 		nodes.emplace_back(std::move(aNode));
 
-		nodeIDsByTypeID.resize(NodeTypeManager::GetNodeTypes().size());
+		nodeIDsByTypeID.resize(NodeTypeManager::GetInstance().GetNodeTypes().size());
 		Node& createdNode = nodes.back();
 		nodeIDsByTypeID[createdNode.typeID].push_back(aNodeID);
 
@@ -139,13 +140,13 @@ namespace SCR
 
 		//MemoryPoolID memoryPoolID = DataTypeManager::AllocateData(dataTypeID, ScriptProxy::GetGraphMemoryPool(aNodeGraph));
 		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
-		void* dataPtr = DataTypeManager::AllocateData(dataTypeID, memoryManager);
+		void* dataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryManager);
 		return CreateInputPin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}
 
 	std::vector<PinID> InternalModifier::CreateInputPins(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID, size_t aStartIndex)
 	{
-		const NodeType& nodeType = NodeTypeManager::GetNodeType(aNodeTypeID);
+		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID);
 		const std::vector<PinTypeID>& pinTypeIDs = nodeType.nodeRecipe.inputPinTypeIDs;
 		std::vector<PinID> pinsIDs;
 
@@ -164,7 +165,7 @@ namespace SCR
 		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
 
 		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(aNodeGraph);
-		void* dataPtr = DataTypeManager::AllocateData(dataTypeID, memoryManager);
+		void* dataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryManager);
 
 		return CreateOutputPin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}
@@ -172,7 +173,7 @@ namespace SCR
 
 	std::vector<PinID> InternalModifier::CreateOutputPins(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID, const size_t aStartIndex)
 	{
-		const NodeType& nodeType = NodeTypeManager::GetNodeType(aNodeTypeID);
+		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID);
 		const std::vector<PinTypeID>& pinTypeIDs = nodeType.nodeRecipe.outputPinTypeIDs;
 		std::vector<PinID> pinsIDs;
 
@@ -291,7 +292,7 @@ namespace SCR
 
 	void InternalModifier::UpdateNodeTypeIDSize(NodeGraph& aNodeGraph)
 	{
-		ScriptProxy::GetNodeIDsByNodeTypeContainer(aNodeGraph).resize(NodeTypeManager::GetNodeTypes().size());
+		ScriptProxy::GetNodeIDsByNodeTypeContainer(aNodeGraph).resize(NodeTypeManager::GetInstance().GetNodeTypes().size());
 	}
 
 	void InternalModifier::BindVariable(Script& aScript, const NodeID aNodeID, const VarID aVarID, CommandTracker* aCommandTracker)
@@ -380,13 +381,13 @@ namespace SCR
 		const NodeID replaceNodeID = replacePin.nodeID;
 		Node& replaceNode = ScriptProxy::GetNodeRef(aNodeGraph, replaceNodeID);
 
-		const NodeType& nodeType = NodeTypeManager::GetNodeType(replaceNode.typeID);
+		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(replaceNode.typeID);
 
 		if (nodeType.nodeRecipe.operatorTrait != eNodeOperatorTrait::None)
 		{
 			const PinType& replacePinType = PinTypeManager::GetPinType(replacePin.typeID);
 			const PinType& connectedPinType = PinTypeManager::GetPinType(connectedPin.typeID);
-			bool canReplace = NodeTypeManager::CanCreateOperatorNode(nodeType.nodeRecipe.operatorTrait, connectedPinType.dataTypeID);
+			bool canReplace = NodeTypeManager::GetInstance().CanCreateOperatorNode(nodeType.nodeRecipe.operatorTrait, connectedPinType.dataTypeID);
 			if (!canReplace)
 			{
 				return Link{};

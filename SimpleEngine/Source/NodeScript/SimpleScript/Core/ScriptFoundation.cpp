@@ -6,28 +6,21 @@
 #include "ScriptCopyBuffer.h"
 #include "Node/NodeExecutor.h"
 #include "Command/ScriptCommandTracker.h"
+#include "Type/ScriptTypeManager.h"
 
 namespace SCR
 {
 
-	MemoryPool ScriptFoundation::myGlobalMemoryPool = MemoryPool(10000);
-
 	ScriptFoundation::ScriptFoundation()
-		: myCopyBuffer(std::make_unique<CopyBuffer>())
+		: myMemoryPool(10000)
+		, myTypeManager(std::make_unique<TypeManager>())
 		, myNodeExecutor(std::make_unique<NodeExecutor>())
-		, myCommandTracker(std::make_unique<CommandTracker>())
+		, myCopyBuffer(std::make_unique<CopyBuffer>())
 	{
-		myFoundationPtr = this;
 	}
 
 	ScriptFoundation::~ScriptFoundation()
 	{
-		NodeTypeManager::Destroy();
-		PinTypeManager::Destroy();
-		DataTypeManager::Destroy();
-
-		myGlobalMemoryPool.Clear();
-		myGlobalMemoryPool.~MemoryPool();
 	}
 
 	void ScriptFoundation::InitializeSystemTypes()
@@ -36,30 +29,34 @@ namespace SCR
 		RegisterSystemNodes();
 
 		ScriptLoader::LoadCustomEvents();
-		NodeTypeManager::Assert();
+		myTypeManager->GetNodeTypeManager().Assert();
 	}
 
-	ScriptManager& ScriptFoundation::CreateScriptManager()
+	void ScriptFoundation::ClearScripts()
 	{
-		myScriptManagers.emplace_back(std::make_unique<ScriptManager>(*this));
-		return *myScriptManagers.back();
+		myScripts.clear();
 	}
 
-	void ScriptFoundation::DestroyScriptManager(ScriptManager& aScriptManager)
+	Script& ScriptFoundation::CreateScript(const DataTypeID aTargetID, const std::string& aName)
 	{
-		for (size_t i = 0; i < myScriptManagers.size(); i++)
-		{
-			if (myScriptManagers[i].get() == &aScriptManager)
-			{
-				myScriptManagers.erase(myScriptManagers.begin() + i);
-				
-				return;
-			}
-		}
+		std::vector<std::unique_ptr<Script>>& scriptsByTarget = myScripts[aTargetID];
+		return *scriptsByTarget.emplace_back(std::make_unique<Script>(aTargetID, aName));
 	}
 
-	void ScriptFoundation::Clear()
+	void ScriptFoundation::DestroyScript(Script& aScript)
 	{
-		myScriptManagers.clear();
+		auto& scriptsByTargetID = myScripts.at(aScript.GetTargetID());
+
+		std::erase_if(scriptsByTargetID, [&aScript](std::unique_ptr<Script>& scriptIter) -> bool { return &aScript == scriptIter.get(); });
+	}
+
+	const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Script>>>& ScriptFoundation::GetScripts()
+	{
+		return myScripts;
+	}
+
+	TypeManager& ScriptFoundation::GetTypeManager()
+	{
+		return *myTypeManager;
 	}
 }

@@ -11,6 +11,11 @@ namespace SCR
 	{
 	public:
 
+		PinTypeManager();
+		~PinTypeManager();
+
+		static PinTypeManager& GetInstance();
+
 		static PinTypeID Create(const std::string& aName, ePinFlowType aFlowType, DataTypeID aHashID, PinSetFunction aSetFunction);
 
 		template<ePinFlowType FlowType, typename T>
@@ -20,9 +25,8 @@ namespace SCR
 		}
 
 		static PinType& GetPinType(const PinTypeID anID);
-		static void Destroy();
 
 	private:
-		static std::vector<PinType> myPinTypes;
+		std::vector<PinType> myPinTypes;
 	};
 }

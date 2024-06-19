@@ -23,7 +23,8 @@ namespace SCR
 		friend class ScriptProxy;
 	public:
 
-		Script(ScriptManager& aScriptManager, const std::string& aName = "Default Script");
+		//Script(ScriptManager& aScriptManager, const std::string& aName = "Default Script");
+		Script(const DataTypeID aTargetID, const std::string& aName = "Default Script");
 		~Script();
 
 		Script(const Script&) = delete;
@@ -34,23 +35,27 @@ namespace SCR
 		std::string& Name();
 		const std::string& Name() const;
 
-		ScriptInstance* CreateScriptInstance();
+		ScriptInstance& CreateScriptInstance();
+		void DestroyScriptInstance(ScriptInstance& aScriptInstance);
 
 		EventGraph& GetEventGraph();
+		DataTypeID GetTargetID() const
+		{
+			return myTargetID;
+		}
 
 	private:
 
 		std::string myName;
 		EventGraph myEventGraph;
-		DataTypeID myTargetID;
+		const DataTypeID myTargetID;
 
 		//NodeGraph myNodeGraph;
 
 		VariableManager myVariableManager;
 
 		std::vector<std::unique_ptr<ScriptInstance>> myScriptInstances;
-
-		ScriptManager& myScriptManager;
+		//ScriptManager& myScriptManager;
 	};
 }
 

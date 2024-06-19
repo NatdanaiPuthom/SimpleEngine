@@ -15,7 +15,7 @@ namespace SCR
 	{
 	}
 
-	void ScriptInstance::Compile(Script& aScript)
+	void ScriptInstance::Init(Script& aScript)
 	{
 		myScript = &aScript;
 		myVariableManagerInstance.Compile(ScriptProxy::GetVariableManager(aScript));

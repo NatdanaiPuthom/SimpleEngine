@@ -10,13 +10,13 @@ namespace SCR
 	class NodeManager;
 	class PinManager;
 
-	class NodeGraph final
+	class NodeGraph
 	{
 		friend class ScriptProxy;
 	public:
 
 		NodeGraph();
-		~NodeGraph();
+		virtual ~NodeGraph();
 
 		NodeGraph(const NodeGraph&);
 		NodeGraph(NodeGraph&&) = default;

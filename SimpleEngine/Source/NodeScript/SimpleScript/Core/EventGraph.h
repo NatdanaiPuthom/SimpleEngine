@@ -5,7 +5,7 @@
 namespace SCR
 {
 
-	class EventGraph final
+	class EventGraph final : public NodeGraph
 	{
 	public:
 
@@ -17,7 +17,7 @@ namespace SCR
 
 	public:
 
-		NodeGraph myNodeGraph;
+		//NodeGraph myNodeGraph;
 		std::unordered_map<EventID, std::vector<NodeID>> myEventNodes;
 
 	};

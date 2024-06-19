@@ -6,6 +6,7 @@
 #include "SimpleScript/Core/DataType/DataTypeManager.h"
 #include "SimpleScript/Core/Utilities/ScriptProxy.h"
 #include "SimpleScript/Core/ScriptModifier.h"
+#include "SimpleScript/Core/Global/ScriptGlobal.h"
 
 using namespace SCRIPT;
 
@@ -29,10 +30,10 @@ namespace Editor
 				Modify::CreateCustomEvent("CustomEvent");
 			}
 
-			for (CustomEventID id = 0; id < NodeTypeManager::GetCustomEvents().size(); ++id)
+			for (CustomEventID id = 0; id < NodeTypeManager::GetInstance().GetCustomEvents().size(); ++id)
 			{
-				const CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(id);
-				if (ImGui::TreeNode(std::to_string(id).c_str(), NodeTypeManager::GetShortName(customEvent.GetExecutorTypeID()).c_str()))
+				const CustomEvent& customEvent = NodeTypeManager::GetInstance().GetCustomEvent(id);
+				if (ImGui::TreeNode(std::to_string(id).c_str(), NodeTypeManager::GetInstance().GetShortName(customEvent.GetExecutorTypeID()).c_str()))
 				{
 					EditInputs(id);
 					ImGui::TreePop();
@@ -51,14 +52,14 @@ namespace Editor
 
 	void NodeCreatorWindow::EditInputs(SCRIPT::CustomEventID anID)
 	{
-		const CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(anID);
+		const CustomEvent& customEvent = NodeTypeManager::GetInstance().GetCustomEvent(anID);
 		NodeTypeID executorTypeID = customEvent.GetExecutorTypeID();
 		NodeTypeID callerTypeID = customEvent.GetCallerTypeID();
-		NodeType& executorNodeType = NodeTypeManager::GetNodeType(executorTypeID);
-		NodeType& callerNodeType = NodeTypeManager::GetNodeType(callerTypeID);
+		NodeType& executorNodeType = NodeTypeManager::GetInstance().GetNodeType(executorTypeID);
+		NodeType& callerNodeType = NodeTypeManager::GetInstance().GetNodeType(callerTypeID);
 
-		std::string shortName = NodeTypeManager::GetShortName(executorTypeID);
-		std::string nameDirectory = NodeTypeManager::GetNameDirectory(executorTypeID);
+		std::string shortName = NodeTypeManager::GetInstance().GetShortName(executorTypeID);
+		std::string nameDirectory = NodeTypeManager::GetInstance().GetNameDirectory(executorTypeID);
 
 		char nodeTypeNameBuffer[35]{};
 		strcpy_s(nodeTypeNameBuffer, shortName.c_str());
@@ -87,7 +88,7 @@ namespace Editor
 			std::stringstream ss;
 
 			int it = 0;
-			for (const auto& [dataTypeID, dataType] : DataTypeManager::GetFunctionObjectTypes())
+			for (const auto& [dataTypeID, dataType] : Global::GetDataTypeManager().GetFunctionObjectTypes())
 			{
 				ss << dataType->name << '\0';
 				dataTypeIDs.push_back(dataTypeID);
@@ -128,7 +129,7 @@ namespace Editor
 			ImGui::SameLine();
 
 			ImGui::BeginDisabled();
-			ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(DataTypeManager::GetColor(dataTypeIDs.at(currentSelectedIndex)))));
+			ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Global::GetDataTypeManager().GetColor(dataTypeIDs.at(currentSelectedIndex)))));
 			ImGui::EndDisabled();
 		}
 

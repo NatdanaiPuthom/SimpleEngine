@@ -11,9 +11,9 @@ namespace SCR
 		NodeID callerNodeID = aContext->GetNodeData().nodeRef.nodeID;
 
 		const Node& callerNode = ScriptProxy::GetNode(*aContext->nodeData.nodeRef.nodeGraph, callerNodeID);
-		CustomEventID customEventID = NodeTypeManager::GetCustomEventID(callerNode.typeID);
+		CustomEventID customEventID = NodeTypeManager::GetInstance().GetCustomEventID(callerNode.typeID);
 
-		const CustomEvent& customEvent = NodeTypeManager::GetCustomEvent(customEventID);
+		const CustomEvent& customEvent = NodeTypeManager::GetInstance().GetCustomEvent(customEventID);
 
 		const std::vector<NodeID>& executorNodeIDs = ScriptProxy::GetNodeIDsByNodeType(*aContext->nodeData.nodeRef.nodeGraph, customEvent.GetExecutorTypeID());
 		for (NodeID executorNodeID : executorNodeIDs)

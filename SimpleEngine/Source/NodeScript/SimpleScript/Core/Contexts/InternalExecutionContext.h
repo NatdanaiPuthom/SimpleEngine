@@ -40,7 +40,7 @@ namespace SCR
 		~ExecutionQueue();
 
 		void Push(const NodeExecutionData& aNode);
-		void Execute(NodeExecutor& aNodeExecutor);
+		void Execute();
 
 	private:
 
@@ -52,6 +52,7 @@ namespace SCR
 	class Script;
 	class InternalModifier;
 	struct ExecutionContextBase;
+	class ScriptInstance;
 
 	struct InternalExecutionContext final
 	{
@@ -62,6 +63,7 @@ namespace SCR
 		NodeExecutionData nodeData;
 		ExecutionQueue* executionQueue = nullptr;
 		void* owner = nullptr;
+		ScriptInstance* scriptInstance;
 
 		const NodeExecutionData& GetNodeData() const
 		{

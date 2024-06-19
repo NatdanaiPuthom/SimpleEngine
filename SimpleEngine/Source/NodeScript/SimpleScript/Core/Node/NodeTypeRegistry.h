@@ -24,7 +24,7 @@ namespace SCR
 		{
 			PinTypeManager::GetPinType(aNodeRecipe.outputPinTypeIDs[i]).name = aDescription.outputPinNames[i];
 		}
-		return NodeTypeManager::Register(NodeType{ std::move(aNodeRecipe), aNodeName });
+		return NodeTypeManager::GetInstance().Register(NodeType{std::move(aNodeRecipe), aNodeName});
 	}
 
 	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
@@ -65,16 +65,16 @@ namespace SCR
 	template<typename T>/* requires IsValidScriptObjectType<T, nlohmann::json> || Fundamental<T>*/
 	inline void RegisterGetterNodeType()
 	{
-		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>), "Get " + DataTypeManager::GetName(typeid(T).hash_code()));
-		NodeTypeManager::SetGetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
+		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>), "Get " + Global::GetDataTypeManager().GetName(typeid(T).hash_code()));
+		NodeTypeManager::GetInstance().SetGetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
 	}
 
 
 	template<typename T>/* requires IsValidScriptObjectType<T, nlohmann::json> || Fundamental<T>*/
 	inline void RegisterSetterNodeType()
 	{
-		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>), "Set " + DataTypeManager::GetName(typeid(T).hash_code()));
-		NodeTypeManager::SetSetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
+		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>), "Set " + Global::GetDataTypeManager().GetName(typeid(T).hash_code()));
+		NodeTypeManager::GetInstance().SetSetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
 	}
 
 	template<typename T>
@@ -105,7 +105,7 @@ namespace SCR
 		{
 			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aDescription);
 
-			if (DataType* dataType = DataTypeManager::Find<ClassType>())
+			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType>())
 			{
 				dataType->functions.push_back(nodeTypeID);
 			}
@@ -116,7 +116,7 @@ namespace SCR
 		{
 			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aDescription);
 
-			if (DataType* dataType = DataTypeManager::Find<ClassType>())
+			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType>())
 			{
 				dataType->functions.push_back(nodeTypeID);
 			}

@@ -16,6 +16,7 @@
 #include "../SystemTypes/ScriptWildcard.h"
 #include "../SystemTypes/ScriptFlow.h"
 #include "../Utilities/MetaScript.h"
+#include "../Global/ScriptGlobal.h"
 
 namespace SCR
 {
@@ -145,7 +146,7 @@ namespace SCR
 		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
 		void* dataPtr = &memoryManager.Allocate<CleanType>();
 
-		const PinTypeID pinTypeID = NodeTypeManager::GetNodeType(aNodeTypeID).nodeRecipe.inputPinTypeIDs[anIndex];
+		const PinTypeID pinTypeID = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID).nodeRecipe.inputPinTypeIDs[anIndex];
 
 		return InternalModifier::CreateInputPin(aNodeGraph, aNodeID, pinTypeID, dataPtr);
 
@@ -191,7 +192,7 @@ namespace SCR
 		if constexpr (Index < OutputSize)
 		{
 
-			const NodeType& nodeType = NodeTypeManager::GetNodeType(aNodeTypeID);
+			const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID);
 			const PinTypeID pinTypeID = nodeType.nodeRecipe.outputPinTypeIDs.at(Index);
 
 			aPinIDs[Index] = CreateOutputPin<OutputType>(aNodeID, pinTypeID, aNodeGraph);
@@ -386,7 +387,7 @@ namespace SCR
 		// Node internal functionality
 
 		const Node& node = ScriptProxy::GetNode(*aContext.nodeData.nodeRef.nodeGraph, aContext.nodeData.nodeRef.nodeID);
-		const NodeType& nodeType = NodeTypeManager::GetNodeType(node.typeID);
+		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(node.typeID);
 
 		MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
 
@@ -490,7 +491,7 @@ namespace SCR
 				SetOutputValues(std::forward<std::tuple<OutputTypes...>>(outputValues), node.outputPins, aContext);
 
 				aContext.executionQueue = nullptr;
-				executionQueue.Execute(ScriptProxy::GetNodeExecutor(*aContext.script));
+				executionQueue.Execute();
 			};
 	}
 

@@ -29,10 +29,10 @@ namespace Editor
 				//SCRIPT::ScriptModifier::CreateFunction("Function");
 			}
 
-			const std::vector<SCRIPT::Function*>& functions = SCRIPT::NodeTypeManager::GetFunctions();
+			const std::vector<std::unique_ptr<SCRIPT::Function>>& functions = SCRIPT::NodeTypeManager::GetInstance().GetFunctions();
 			for (SCRIPT::FunctionID functionID = 0; functionID < functions.size(); ++functionID)
 			{
-				SCRIPT::Function* function = functions[functionID];
+				SCRIPT::Function* function = functions[functionID].get();
 
 				if (ImGui::Button("Create Caller"))
 				{

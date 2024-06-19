@@ -17,7 +17,7 @@ namespace SCR
 
 				void* destination = pin.dataPtr;
 
-				DataTypeManager::CopyData(pinType.dataTypeID, destination, aPinSetData.value);
+				Global::GetDataTypeManager().CopyData(pinType.dataTypeID, destination, aPinSetData.value);
 
 				if (pinType.dataTypeID == Flow::typeID)
 				{
@@ -84,11 +84,11 @@ namespace SCR
 				const NodeID connectedNodeID = connectedOutputPin.nodeID;
 
 				const Node& connectedNode = ScriptProxy::GetNode(*aContext.nodeData.nodeRef.nodeGraph, connectedNodeID);
-				const NodeType& connectedNodeType = NodeTypeManager::GetNodeType(connectedNode.typeID);
+				const NodeType& connectedNodeType = NodeTypeManager::GetInstance().GetNodeType(connectedNode.typeID);
 
 				if (!HasFlag(connectedNodeType.nodeRecipe.traits, eNodeTrait::HasFlow))
 				{
-					ScriptProxy::GetNodeExecutor(*aContext.script).ExecuteNode({ NodeRef{ connectedNodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Read});
+					ScriptProxy::GetNodeExecutor().ExecuteNode({ NodeRef{ connectedNodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Read});
 				}
 
 				const Pin& pin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, inputPinID);

@@ -17,7 +17,7 @@ namespace SCR
 		static void Save(const Script& aScript);
 		static void Load(Script& aScript);
 		
-		static void LoadAll(ScriptManager& aScriptManager);
+		static void LoadAll();
 
 		static void CreateCopy(const Script& aScript, const std::string& aCopyName);
 
