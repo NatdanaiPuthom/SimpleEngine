@@ -256,8 +256,6 @@ namespace SCR
 		DataTypeManager();
 		~DataTypeManager();
 
-		DataTypeManager& GetInstance();
-
 		bool EditData(DataTypeID aDataTypeID, void* aDataPtr);
 		bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr);
 		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr);
@@ -311,7 +309,7 @@ namespace SCR
 		const Color mySelectionTint = Color(0.2f, 0.2f, 0.2f, 0);
 		const Color myHoverTint = Color(0.1f, 0.1f, 0.1f, 0);
 
-		static const std::string myNullNameStr;
+		const std::string myNullNameStr;
 	};
 
 	template<Scriptable<nlohmann::json> T>

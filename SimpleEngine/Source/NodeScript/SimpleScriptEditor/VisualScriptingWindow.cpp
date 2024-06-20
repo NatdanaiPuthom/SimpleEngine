@@ -39,8 +39,6 @@ namespace Editor
 
 		}
 
-		ImNodes::CreateContext();
-
 		ScriptLoader::Clear();
 	}
 

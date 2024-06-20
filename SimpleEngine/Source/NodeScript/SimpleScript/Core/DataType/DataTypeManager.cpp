@@ -3,8 +3,6 @@
 namespace SCR
 {
 
-	const std::string DataTypeManager::myNullNameStr;
-
 	DataTypeManager::DataTypeManager()
 	{
 	}

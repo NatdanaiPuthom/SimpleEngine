@@ -198,7 +198,7 @@ namespace SCR
 
 	void NodeTypeManager::Assert()
 	{
-		std::unordered_set<std::string> shortNames;
+		/*std::unordered_set<std::string> shortNames;
 		for (NodeTypeID id = 0; id < myNodeTypes.size(); ++id)
 		{
 			std::string shortName = GetShortName(id);
@@ -207,7 +207,7 @@ namespace SCR
 			{
 				throw std::runtime_error("Cannot have nodes with same name" + shortName);
 			}
-		};
+		};*/
 	}
 
 	/*void NodeTypeManager::Destroy()
