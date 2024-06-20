@@ -40,6 +40,7 @@ namespace SimpleTracker
 		static int AllocHook(int aAllocType, void* aUserData, size_t aSize, int aBlockType, long aRequestNumber, const unsigned char*, int);
 		static void PrintTopLeaks(std::unordered_map<StackTrace, int>& aMap);
 		static void PrintShortLivedToOutput();
+		static void WriteToTxtFile(const std::vector<std::pair<StackTrace, int>>& aStackTraces);
 	private:
 		inline static std::mutex myStaticAllocationMapMutex = {};
 		inline static std::unordered_map<StackTrace, int> myStaticStackTraceToAllocationCount = {};

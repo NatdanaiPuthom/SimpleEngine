@@ -1,5 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/MemoryTracker/MemoryTracker.h"
+#include "Engine/SimpleUtilities/Utility.hpp"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
 #include <iostream>
@@ -186,6 +187,8 @@ namespace SimpleTracker
 
 			i++;
 		}
+
+		WriteToTxtFile(pairs);
 	}
 
 	void SimpleMemoryTracker::Destory()
@@ -333,10 +336,40 @@ namespace SimpleTracker
 
 		SimpleMemoryTracker::myStaticIsAllocationInProgress = false;
 	}
+
+	void SimpleMemoryTracker::WriteToTxtFile(const std::vector<std::pair<StackTrace, int>>& aStackTraces)
+	{
+		const std::string filePath = SimpleUtilities::GetAbsolutePath(SIMPLE_FILENAME_STACKTRACES);
+		const std::string fileNameWithCounter = SimpleUtilities::AppendCounterIfAlreadyExist(filePath);
+
+		std::ofstream writeFile(fileNameWithCounter);
+		assert(writeFile.is_open() && "Failed to open the file");
+
+		writeFile << "================================================================================" << "\n";
+
+		for (const auto& traces : aStackTraces)
+		{
+			char buffer[100];
+			sprintf_s(buffer, "Count: %d\n, Stack Trace:", traces.second);
+			writeFile << buffer << "\n";
+
+			const std::vector<const char*> lines = traces.first.GetLines(); //NOTE(v11.2.0): Guaranteed to not be nullptr
+
+			for (const auto& line : lines)
+			{
+				writeFile << line << "\n";
+			}
+
+			writeFile << "================================================================================" << "\n";
+		}
+
+		writeFile.close();
+	}
+
 #else 
 	void SimpleMemoryTracker::Init(const MemoryTrackingSettings& /*aTrackingSettings*/) {};
 	void SimpleMemoryTracker::Destory() {};
 	void SimpleMemoryTracker::StartMemoryTracking(const bool /*aShowAdvanced*/, const std::string& /*aCallerName*/) {}
 	void SimpleMemoryTracker::StopMemoryTracking() {}
 #endif 
-}
+	}
