@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <algorithm>
 #include <cctype>
+#include <filesystem>
 
 namespace SimpleUtilities
 {
@@ -124,5 +125,22 @@ namespace SimpleUtilities
 		}
 
 		return false;
+	}
+
+	static inline const std::string AppendCounterIfAlreadyExist(const std::string& aFileName)
+	{
+		std::string fileName = aFileName;
+		const size_t dotPosition = aFileName.find_last_of('.');
+		const std::string extension = aFileName.substr(dotPosition);
+
+		int index = 0;
+
+		do
+		{
+			fileName = aFileName.substr(0, dotPosition) + "(" + std::to_string(index++) + ")" + extension;
+
+		} while (std::filesystem::exists(fileName));
+
+		return fileName;
 	}
 }
