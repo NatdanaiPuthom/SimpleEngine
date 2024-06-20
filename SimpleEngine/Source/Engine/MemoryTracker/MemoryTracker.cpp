@@ -367,7 +367,7 @@ namespace SimpleTracker
 	}
 
 #else 
-	void SimpleMemoryTracker::Init(const MemoryTrackingSettings& /*aTrackingSettings*/) {};
+	void SimpleMemoryTracker::Init() {};
 	void SimpleMemoryTracker::Destory() {};
 	void SimpleMemoryTracker::StartMemoryTracking(const bool /*aShowAdvanced*/, const std::string& /*aCallerName*/) {}
 	void SimpleMemoryTracker::StopMemoryTracking() {}
