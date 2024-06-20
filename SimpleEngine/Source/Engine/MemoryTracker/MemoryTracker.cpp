@@ -72,18 +72,18 @@ namespace SimpleTracker
 			entry.size = aSize;
 			SimpleMemoryTracker::myStaticTotalAllocationCount++;
 
-			if (myScopedTrackerData != nullptr && myScopedTrackerData->hasStarted)
+			if (TemporaryScopedMemoryTrackerData::GetInstance().hasStarted)
 			{
-				Allocation& entry2 = myScopedTrackerData->allocationMap[aRequestNumber];
+				Allocation& entry2 = TemporaryScopedMemoryTrackerData::GetInstance().allocationMap[aRequestNumber];
 
-				if (myScopedTrackerData->memoryTrackingSettings.shouldStoreStackTraces)
+				if (TemporaryScopedMemoryTrackerData::GetInstance().memoryTrackingSettings.shouldStoreStackTraces)
 				{
 					entry2.stackTrace = StackTrace::CaptureStackTrace(1);
-					myScopedTrackerData->stackTraceToAllocationCount[entry2.stackTrace]++;
+					TemporaryScopedMemoryTrackerData::GetInstance().stackTraceToAllocationCount[entry2.stackTrace]++;
 				}
 
 				entry2.size = aSize;
-				myScopedTrackerData->totalAllocationCount++;
+				TemporaryScopedMemoryTrackerData::GetInstance().totalAllocationCount++;
 			}
 		}
 
@@ -101,14 +101,14 @@ namespace SimpleTracker
 			myStaticStackTraceToAllocationCount.erase(myStaticAllocationMap[freeRequestNumber].stackTrace);
 			myStaticAllocationMap.erase(freeRequestNumber);
 
-			if (myScopedTrackerData != nullptr && myScopedTrackerData->hasStarted)
+			if (TemporaryScopedMemoryTrackerData::GetInstance().hasStarted)
 			{
 				if (myStaticMemoryTrackingSettings.shouldStoreStackTraces)
 				{
-					myScopedTrackerData->stackTraceToAllocationCount.erase(myScopedTrackerData->allocationMap[freeRequestNumber].stackTrace);
+					TemporaryScopedMemoryTrackerData::GetInstance().stackTraceToAllocationCount.erase(TemporaryScopedMemoryTrackerData::GetInstance().allocationMap[freeRequestNumber].stackTrace);
 				}
 
-				myScopedTrackerData->allocationMap.erase(freeRequestNumber);
+				TemporaryScopedMemoryTrackerData::GetInstance().allocationMap.erase(freeRequestNumber);
 			}
 		}
 
@@ -191,11 +191,10 @@ namespace SimpleTracker
 			return;
 		}
 
-		if (myScopedTrackerData != nullptr)
-		{
-			delete myScopedTrackerData;
-			myScopedTrackerData = nullptr;
-		}
+		TemporaryScopedMemoryTrackerData::GetInstance().hasStarted = false;
+		TemporaryScopedMemoryTrackerData::GetInstance().allocationMap.clear();
+		TemporaryScopedMemoryTrackerData::GetInstance().stackTraceToAllocationCount.clear();
+		TemporaryScopedMemoryTrackerData::GetInstance().totalAllocationCount = 0;
 
 		std::lock_guard<std::mutex> guard(myStaticAllocationMapMutex);
 
@@ -260,19 +259,21 @@ namespace SimpleTracker
 			return;
 		}
 
-		if (myScopedTrackerData == nullptr)
-		{
-			myScopedTrackerData = new TemporaryScopedMemoryTrackerData();
-		}
-		else
-		{
-			return; //TO-DO(v10.0.0): Better error and warning messages
-		}
+		TemporaryScopedMemoryTrackerData::GetInstance();
+
+		//if (myScopedTrackerData == nullptr)
+		//{
+		//	myScopedTrackerData = new TemporaryScopedMemoryTrackerData();
+		//}
+		//else
+		//{
+		//	return; //TO-DO(v10.0.0): Better error and warning messages
+		//}
 
 		sprintf_s(localBuffer, std::string("== " + aCallerName).c_str());
 
-		myScopedTrackerData->hasStarted = true;
-		myScopedTrackerData->memoryTrackingSettings = { aShowAdvanced, true };
+		TemporaryScopedMemoryTrackerData::GetInstance().hasStarted = true;
+		TemporaryScopedMemoryTrackerData::GetInstance().memoryTrackingSettings = { aShowAdvanced, true };
 	}
 
 	void SimpleMemoryTracker::StopMemoryTracking()
@@ -282,15 +283,14 @@ namespace SimpleTracker
 			return;
 		}
 
-		if (myScopedTrackerData != nullptr)
+		if (TemporaryScopedMemoryTrackerData::GetInstance().hasStarted == false)
 		{
-			myScopedTrackerData->hasStarted = false;
-
-			PrintShortLivedToOutput();
-
-			delete myScopedTrackerData;
-			myScopedTrackerData = nullptr;
+			return;
 		}
+
+		PrintShortLivedToOutput();
+
+		TemporaryScopedMemoryTrackerData::GetInstance().hasStarted = false;
 	}
 
 
@@ -300,24 +300,24 @@ namespace SimpleTracker
 
 		std::lock_guard<std::mutex> guard(myStaticAllocationMapMutex);
 
-		if (myScopedTrackerData->allocationMap.size() == 0)
+		if (TemporaryScopedMemoryTrackerData::GetInstance().allocationMap.size() == 0)
 		{
 			OutputDebugStringA("\n================================================================================\n");
 			OutputDebugStringA(localBuffer);
 			char buffer[100];
-			sprintf_s(buffer, "\n== Total Allocation Count: %d\n", myScopedTrackerData->totalAllocationCount);
+			sprintf_s(buffer, "\n== Total Allocation Count: %d\n", TemporaryScopedMemoryTrackerData::GetInstance().totalAllocationCount);
 			OutputDebugStringA(buffer);
 			OutputDebugStringA("== No memory leaks found! \n");
 			OutputDebugStringA("================================================================================\n");
 		}
 		else
 		{
-			if (myScopedTrackerData->memoryTrackingSettings.shouldStoreStackTraces)
+			if (TemporaryScopedMemoryTrackerData::GetInstance().memoryTrackingSettings.shouldStoreStackTraces)
 			{
 				OutputDebugStringA("\n================================================================================\n");
 				std::unordered_map<StackTrace, int> stackTraceToLeakCountMap;
 
-				for (const auto& p : myScopedTrackerData->allocationMap)
+				for (const auto& p : TemporaryScopedMemoryTrackerData::GetInstance().allocationMap)
 				{
 					stackTraceToLeakCountMap[p.second.stackTrace]++;
 				}
@@ -328,23 +328,23 @@ namespace SimpleTracker
 
 			OutputDebugStringA(localBuffer);
 
-			if (myScopedTrackerData->memoryTrackingSettings.shouldTrackAllAllocations)
+			if (TemporaryScopedMemoryTrackerData::GetInstance().memoryTrackingSettings.shouldTrackAllAllocations)
 			{
 				OutputDebugStringA("\n");
 				char buffer[100];
-				sprintf_s(buffer, "== Total Allocation Count: %d\n", myScopedTrackerData->totalAllocationCount);
+				sprintf_s(buffer, "== Total Allocation Count: %d\n", TemporaryScopedMemoryTrackerData::GetInstance().totalAllocationCount);
 				OutputDebugStringA(buffer);
 			}
 
 			char buffer[100];
-			sprintf_s(buffer, "== Number of Memory Leaks: %d\n", (int)myScopedTrackerData->allocationMap.size());
+			sprintf_s(buffer, "== Number of Memory Leaks: %d\n", (int)TemporaryScopedMemoryTrackerData::GetInstance().allocationMap.size());
 			OutputDebugStringA(buffer);
 			OutputDebugStringA("================================================================================\n\n");
 		}
 
-		myScopedTrackerData->allocationMap.clear();
-		myScopedTrackerData->stackTraceToAllocationCount.clear();
-		myScopedTrackerData->totalAllocationCount = 0;
+		TemporaryScopedMemoryTrackerData::GetInstance().allocationMap.clear();
+		TemporaryScopedMemoryTrackerData::GetInstance().stackTraceToAllocationCount.clear();
+		TemporaryScopedMemoryTrackerData::GetInstance().totalAllocationCount = 0;
 
 		myStaticIsAllocationInProgress = false;
 	}
@@ -399,4 +399,4 @@ namespace SimpleTracker
 	void SimpleMemoryTracker::StartMemoryTracking(const bool /*aShowAdvanced*/, const std::string& /*aCallerName*/) {}
 	void SimpleMemoryTracker::StopMemoryTracking() {}
 #endif 
-}
+	}
