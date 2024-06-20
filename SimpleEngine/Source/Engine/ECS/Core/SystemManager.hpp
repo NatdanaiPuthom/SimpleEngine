@@ -7,13 +7,14 @@
 namespace ECS
 {
 	class System;
-
+	class EntityComponentSystem;
+	
 	class SystemManager final
 	{
 		using SystemHashCode = size_t;
+
+		friend class ECS::EntityComponentSystem;
 	public:
-		SystemManager(EntityComponentSystem* aEntityComponentSystem);
-		~SystemManager();
 
 		void Init();
 		void Update();
@@ -25,6 +26,9 @@ namespace ECS
 		void AddSystem(EntityComponentSystem* aEntityComponentSystem);
 
 	private:
+		explicit SystemManager(EntityComponentSystem* aEntityComponentSystem);
+		~SystemManager();
+
 		std::unordered_map<SystemHashCode, std::shared_ptr<System>> mySystems;
 		std::shared_ptr<RenderLightSystem> mySkyBoxAndDirectionalLightSystem;
 

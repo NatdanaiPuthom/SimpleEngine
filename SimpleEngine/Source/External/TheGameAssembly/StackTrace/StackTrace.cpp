@@ -53,6 +53,28 @@ SimpleTracker::StackTrace SimpleTracker::StackTrace::CaptureStackTrace(int aSkip
 	return StackTrace(*it);
 }
 
+const std::vector<const char*> SimpleTracker::StackTrace::GetLines() const
+{
+	std::vector<const char*> lines;
+
+	if (myImpl == nullptr)
+	{
+		return lines;
+	}
+
+	for (const auto& line : myImpl->myLines)
+	{
+		if (line == nullptr)
+		{
+			break;
+		}
+
+		lines.push_back(line);
+	}
+
+	return lines;
+}
+
 void SimpleTracker::StackTrace::Print() const
 {
 	if (myImpl == nullptr)

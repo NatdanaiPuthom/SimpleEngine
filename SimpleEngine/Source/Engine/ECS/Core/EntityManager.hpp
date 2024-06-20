@@ -42,7 +42,7 @@ namespace ECS
 		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap(const EntityID aEntityID);
 
 	private:
-		EntityManager(ComponentManager* aComponentManager);
+		explicit EntityManager(ComponentManager* aComponentManager);
 		~EntityManager();
 
 		void Init(const size_t aEntityAmountToReserved = 8);

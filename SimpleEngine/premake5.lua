@@ -13,15 +13,17 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 
 	local bin_dir = path.join(_SCRIPT_DIR, "Bin/") -- Returns absolute path to where this premake file is plus "Bin/" example -> C:\Users\panda\Desktop\SimpleEngine\Bin\
 	local shader_dir = path.join(_SCRIPT_DIR, "Bin/Shaders/") 
-	local profiler_dir = path.join(_SCRIPT_DIR, "Temp/Profilers/")
 	local settings_dir = path.join(_SCRIPT_DIR, "Bin/Settings/")
 	local minidump_dir = path.join(_SCRIPT_DIR, "Temp/Minidumps/")
+	local profiler_dir = path.join(_SCRIPT_DIR, "Temp/Profilers/")
+	local stacktraces_dir = path.join(_SCRIPT_DIR, "Temp/StackTraces/")
 
 	os.mkdir(bin_dir)  -- Create these folders on call "generate_project.bat" (current .bat file name)
 	os.mkdir(shader_dir)
-	os.mkdir(profiler_dir)
 	os.mkdir(settings_dir)
+	os.mkdir(profiler_dir)
 	os.mkdir(minidump_dir)
+	os.mkdir(stacktraces_dir)
 	
 	dirs = {} -- Absolute path to specific folder
 	dirs["root"]				= os.realpath("/")
@@ -40,7 +42,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		'SIMPLE_DIR_DEPENDENCIES="' .."../Dependencies/" .. '"',
 		'SIMPLE_DIR_DEPENDENCIES_FORCE="' .."../Dependencies/Settings/Always_Force_Copy/" .. '"',
 		'SIMPLE_DIR_DEPENDENCIES_SETTINGS="' .."../Dependencies/Settings/" .. '"',
-		'SIMPLE_DIR_MINIDUMP="' .."../Temp/Minidumps/".. '"',
 		'SIMPLE_DIR_ASSETS="' .. "Assets" .. '"',
 		'SIMPLE_DIR_SETTINGS="' .."Settings/" .. '"',
 		'SIMPLE_DIR_SHADERS="' .. "Shaders/" .. '"',
@@ -55,6 +56,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		'SIMPLE_SETTINGS_DEBUG="' .. "Settings/debug_settings.json" .. '"',
 		'SIMPLE_SETTINGS_ENGINE="' .. "Settings/engine_settings.json" .. '"',
 		
+		'SIMPLE_DIR_MINIDUMP="' .."../Temp/Minidumps/".. '"',
+		'SIMPLE_FILENAME_STACKTRACES="' .."../Temp/StackTraces/stack_traces.txt".. '"',
 		'SIMPLE_FILENAME_PROFILER="'  .. "../Temp/Profilers/profiler_data.prof" .. '"'
 	}
 
