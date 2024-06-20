@@ -43,6 +43,8 @@ namespace SimpleTracker
 		void Print() const;
 		std::size_t ComputeHash() const;
 		static StackTrace CaptureStackTrace(int aSkipDepth);
+
+		const std::vector<const char*> GetLines() const;
 	private:
 		StackTrace(const StackTraceImpl&);
 		const StackTraceImpl* myImpl;
