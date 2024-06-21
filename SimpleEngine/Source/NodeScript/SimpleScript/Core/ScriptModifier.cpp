@@ -485,11 +485,11 @@ namespace SCR
 		{
 			Variable& variable = ScriptProxy::GetVariableRef(aScript, aVarID);
 
-			void* runtimeDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryManager(aScript));
+			//void* runtimeDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryManager(aScript));
 			void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryManager(aScript));
 
 			variable.dataTypeID = aDataTypeID;
-			variable.runtimeDataPtr = runtimeDataPtr;
+			//variable.runtimeDataPtr = runtimeDataPtr;
 			variable.defaultValueDataPtr = defaultValueDataPtr;
 
 			DestroyVariableNodes(aVarID, aScript, aScript.GetEventGraph(), aCommandTracker);

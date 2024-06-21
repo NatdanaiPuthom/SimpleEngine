@@ -6,6 +6,7 @@
 #include "../Utilities/MetaScript.h"
 #include "../Pin/PinTypeManager.h"
 #include "../DataType/DataTypeManager.h"
+#include "ScriptInstance.h"
 
 namespace SCR
 {
@@ -41,24 +42,26 @@ namespace SCR
 
 		VarID varID = variableManager.GetVariableIDByNodeID(nodeID);
 
-		const void* runtimeDataPtr = ScriptProxy::GetVariable(*aContext->script, varID).runtimeDataPtr;
-
+		//const void* runtimeDataPtr = ScriptProxy::GetVariable(*aContext->script, varID).runtimeDataPtr;
+		const void* runtimeDataPtr = aContext->scriptInstance->myVariableManagerInstance.myVariables[varID].runtimeDataPtr;
 		//MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(*aContext->script);
 		const T& output = *reinterpret_cast<const T*>(runtimeDataPtr);
 		return output;
 	}
 
 	template<typename T>
-	inline void SetterNode(const InternalExecutionContext* aContext, const T aValue)
+	inline void SetterNode(const InternalExecutionContext* aContext, const T& aValue)
 	{
 		const NodeID nodeID = aContext->GetNodeData().nodeRef.nodeID;
 		VariableManager& variableManager = ScriptProxy::GetVariableManager(*aContext->script);
 
 		VarID varID = variableManager.GetVariableIDByNodeID(nodeID);
 
-		const Variable& variable = ScriptProxy::GetVariable(*aContext->script, varID);
+		const VariableInstance& variableInstance = aContext->scriptInstance->myVariableManagerInstance.myVariables[varID];
+		//const Variable& variable = ScriptProxy::GetVariable(*aContext->script, varID);
 		
-		T& runtimeValue = *reinterpret_cast<T*>(variable.runtimeDataPtr);
+		T& runtimeValue = *reinterpret_cast<T*>(variableInstance.runtimeDataPtr);
+		//T& runtimeValue = *reinterpret_cast<T*>(variable.runtimeDataPtr);
 		runtimeValue = aValue;
 	}
 

@@ -271,7 +271,7 @@ namespace SCR
 				Modify::SetVariableDataType(varID, dataTypeID, aScript, nullptr);
 
 				Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
-				Global::GetDataTypeManager().CopyData(dataTypeID, variable.runtimeDataPtr, variable.defaultValueDataPtr);
+				//Global::GetDataTypeManager().CopyData(dataTypeID, variable.runtimeDataPtr, variable.defaultValueDataPtr);
 
 			}
 

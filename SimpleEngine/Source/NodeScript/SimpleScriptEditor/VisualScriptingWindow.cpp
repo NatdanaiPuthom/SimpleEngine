@@ -334,7 +334,6 @@ namespace Editor
 			scriptInstance.ExecuteEvent(static_cast<eNodeEventType>(currentEvent + 1), c);
 
 			myCurrentScript->DestroyScriptInstance(scriptInstance);
-			//GetCurrentContext().script->ExecuteEvent(static_cast<eNodeEventType>(currentEvent + 1), c);
 		}
 
 		ImGui::SameLine();

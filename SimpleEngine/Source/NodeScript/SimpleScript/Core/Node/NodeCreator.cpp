@@ -98,7 +98,7 @@ namespace SCR
 
 				//const void* value = memoryPool.MemoryAt(connectedOutputPin.memoryID);
 
-				pinType.setFunction(PinSetData{ inputPinID, pin.dataPtr,
+				pinType.setFunction(PinSetData{ inputPinID, connectedOutputPin.dataPtr,
 #ifdef _DEBUG
 					PinTypeManager::GetPinType(connectedOutputPin.typeID).dataTypeID
 #endif

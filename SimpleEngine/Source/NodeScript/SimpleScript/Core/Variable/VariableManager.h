@@ -11,7 +11,6 @@ namespace SCR
 	struct Variable
 	{
 		DataTypeID dataTypeID = InvalidID<DataTypeID>();
-		void* runtimeDataPtr = nullptr;
 		void* defaultValueDataPtr = nullptr;
 		std::string name = "Var";
 		bool isDestroyed = false;

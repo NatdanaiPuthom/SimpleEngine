@@ -213,7 +213,6 @@ namespace SCR
 		}
 		~MemoryArena()
 		{
-			std::cout << "Destroyed Arena" << std::endl;
 		}
 
 		MemoryArena(const MemoryArena& aOther)
