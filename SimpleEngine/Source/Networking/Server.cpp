@@ -114,15 +114,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE, _In_ LPW
 		});
 
 	// If we got this far we should now have an open socket ready to receive information from the network.
-	std::cout << "Press Enter to exit..." << std::endl;
+	std::cout << "Press \"q\" to exit..." << std::endl;
 	while (localIsRunning)
 	{
-		if (GetAsyncKeyState(VK_ESCAPE))
-		{
-			localIsRunning = false;
-			break;
-		}
-
 		// Clear the buffer.
 		ZeroMemory(socketBuffer, NETMESSAGE_SIZE);
 
