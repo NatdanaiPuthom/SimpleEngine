@@ -1,6 +1,6 @@
 #define WIN32_LEAN_AND_MEAN //NOTE(v11.2.1): Fuck you Microsoft
 
-#include "Engine/MemoryTracker/MemoryTracker.h"
+#include "Engine/Debugger/MemoryTracker/MemoryTracker.h"
 #include "Engine/Engine.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/Global.hpp"

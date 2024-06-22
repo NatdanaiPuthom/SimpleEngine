@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/MemoryTracker/MemoryTracker.h"
+#include "Engine/Debugger/MemoryTracker/MemoryTracker.h"
 #include "External/TheGameAssembly/StackTrace/StackTrace.h"
 #include <Windows.h>
 #include <mutex>
