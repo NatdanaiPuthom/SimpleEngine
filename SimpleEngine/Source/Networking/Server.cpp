@@ -17,7 +17,7 @@
 struct ClientUser
 {
 	std::string name = "Client";
-	sockaddr_in address;
+	sockaddr_in address{};
 	bool isConnected = true;
 };
 
@@ -37,10 +37,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE, _In_ LPW
 	Simple::Console console;
 
 	// We'll need a socket to communicate on.
-	SOCKET udpSocket;
+	SOCKET udpSocket{};
 
 	// And we'll need the Winsock data object.
-	WSADATA winsockData;
+	WSADATA winsockData{};
 
 	// Address information we'll use to bind.
 	sockaddr_in addrServer{};
@@ -49,10 +49,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE, _In_ LPW
 	sockaddr_in addrClient{};
 
 	// We also need the size when receiving.
-	int addrCLientSize = sizeof(addrClient); addrCLientSize;
+	int addrClientSize = sizeof(addrClient);
 
 	// Data buffer that we'll receive data into.
-	char socketBuffer[NETMESSAGE_SIZE]; socketBuffer;
+	char socketBuffer[NETMESSAGE_SIZE];
 
 	std::cout << "Starting Winsock...";
 	if (WSAStartup(MAKEWORD(2, 2), &winsockData) != 0)
@@ -115,21 +115,120 @@ int APIENTRY wWinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE, _In_ LPW
 
 	// If we got this far we should now have an open socket ready to receive information from the network.
 	std::cout << "Press Enter to exit..." << std::endl;
-	while (true)
+	while (localIsRunning)
 	{
-		if (GetAsyncKeyState(VK_RETURN))
+		if (GetAsyncKeyState(VK_ESCAPE))
 		{
 			localIsRunning = false;
 			break;
 		}
+
+		// Clear the buffer.
+		ZeroMemory(socketBuffer, NETMESSAGE_SIZE);
+
+		// blocking receive. This function will block until a message is received.
+		const int recv_len = recvfrom(udpSocket, socketBuffer, NETMESSAGE_SIZE, 0, (sockaddr*)&addrClient, &addrClientSize);
+		if (recv_len == SOCKET_ERROR)
+		{
+			std::cout << "Failed receiving data from socket." << std::endl;
+			std::cout << "Error: " << WSAGetLastError() << std::endl;
+			const int clientPort = ntohs(addrClient.sin_port);
+			localClients.erase(clientPort);
+
+		}
+
+		if (recv_len > 0)
+		{
+			// Extract the address information from the incoming data.
+			// 16 bytes is enough for an IPv4 address.
+			// i.e. "xxx.xxx.xxx.xxx" + string terminator
+
+			char clientMessage[NETMESSAGE_SIZE]{};
+
+			strcpy_s(clientMessage, socketBuffer);
+
+			char clientAddress[16]{ '\0'};
+			inet_ntop(AF_INET, &addrClient.sin_addr, &clientAddress[0], sizeof(clientAddress));
+			const int clientPort = ntohs(addrClient.sin_port);
+
+			auto it = localClients.find(clientPort);
+
+			ClientUser* fromClient = nullptr;
+			if (it != localClients.end())
+			{
+				Message msg;
+				strcpy_s(msg.message, socketBuffer);
+
+				if (strstr(ExitMessage, socketBuffer))
+				{
+					std::cout << "Disconnect!" << std::endl;
+					localClients.at(clientPort).isConnected = false;;
+
+				}
+				std::string name = localClients.at(clientPort).name;
+
+				std::cout << "Packet from " << name << " Port:" << clientPort << std::endl;
+				std::cout << "Data: " << socketBuffer << std::endl;
+
+				fromClient = &localClients.at(clientPort);
+
+				msg.client = &localClients.at(clientPort);
+
+				std::string tempMessage = socketBuffer;
+
+				ZeroMemory(socketBuffer, NETMESSAGE_SIZE);
+
+				tempMessage = "From: " + fromClient->name + " Data: " + tempMessage;
+
+				strcpy_s(socketBuffer, tempMessage.c_str());
+
+				localMessageHistory.push_back(msg);
+
+			}
+			else
+			{
+				ClientUser clientUser;
+				clientUser.name = socketBuffer;
+				clientUser.address = addrClient;
+				localClients.emplace(clientPort, clientUser);
+				std::cout << "Welcome " << socketBuffer << "! ClientPort:" << clientPort << std::endl;
+
+				fromClient = &localClients.at(clientPort);
+
+				std::string tempMessage = socketBuffer;
+
+				ZeroMemory(socketBuffer, NETMESSAGE_SIZE);
+
+				tempMessage = "Welcome " + tempMessage + "!";
+
+				strcpy_s(socketBuffer, tempMessage.c_str());
+
+			}
+
+			for (const auto& [port, client] : localClients)
+			{
+				// Send it back
+				if (!client.isConnected)
+				{
+					continue;
+				}
+				if (sendto(udpSocket, socketBuffer, NETMESSAGE_SIZE, 0, reinterpret_cast<const sockaddr*>(&client.address), sizeof(client.address)) == SOCKET_ERROR)
+				{
+					std::cout << "Error: " << WSAGetLastError() << std::endl;
+					localIsRunning = false;
+					break;
+				}
+			}
+		}
+
+		if (inputThread.joinable())
+		{
+			inputThread.join();
+		}
+
+		WSACleanup();
+
 	}
 
-	if (inputThread.joinable())
-	{
-		inputThread.join();
-	}
-
-	WSACleanup();
-
-	return 0;
+		return 0;
 }

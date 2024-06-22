@@ -457,7 +457,9 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Game",
 			"NodeScript",
 			"Editor",
-			"DbgHelp"
+
+			"DbgHelp",
+			"ws2_32"
 		}
 
 		postbuildcommands { 
