@@ -14,10 +14,11 @@ namespace Simple
 		~Client();
 
 		bool Init();
-		bool Update();
+		bool Update(const bool aIsRunning);
 
 	private:
 		void CheckInput();
+		bool CheckMessage();
 		void PrintCommands();
 		void CreateCommands();
 	private:

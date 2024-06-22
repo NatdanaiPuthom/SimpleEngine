@@ -121,34 +121,13 @@ namespace Simple
 		return true;
 	}
 
-	bool Client::Update()
+	bool Client::Update(const bool aIsRunning)
 	{
-		if (myHasMessage)
+		myIsRunning = aIsRunning;
+
+		if (CheckMessage() == false)
 		{
-			if (strcmp(myMessage, "quit") == 0)
-			{
-				myIsRunning = false;
-				myHasMessage = false;
-				return false;
-			}
-			else if (strcmp(myMessage, "clear") == 0)
-			{
-				system("cls");
-				std::cout << "help - show commands" << std::endl;
-			}
-			else if (strcmp(myMessage, "help") == 0)
-			{
-				PrintCommands();
-			}
-
-			if (sendto(myUDPSocket, myMessage, NETMESSAGE_SIZE, 0, reinterpret_cast<sockaddr*>(&myAddressServer), sizeof(myAddressServer)) == SOCKET_ERROR)
-			{
-				std::cout << "\nError: " << WSAGetLastError() << std::endl;
-				myIsRunning = false;
-				return false;
-			}
-
-			myHasMessage = false;
+			return false;
 		}
 
 		ZeroMemory(mySocketBuffer, NETMESSAGE_SIZE);
@@ -190,6 +169,45 @@ namespace Simple
 		};
 	}
 
+	bool Client::CheckMessage()
+	{
+		if (myIsRunning == false)
+		{
+			myHasMessage = false;
+			return false;
+		}
+
+		if (myHasMessage)
+		{
+			if (strcmp(myMessage, "quit") == 0)
+			{
+				myIsRunning = false;
+				myHasMessage = false;
+				return false;
+			}
+			else if (strcmp(myMessage, "clear") == 0)
+			{
+				system("cls");
+				std::cout << "help - show commands" << std::endl;
+			}
+			else if (strcmp(myMessage, "help") == 0)
+			{
+				PrintCommands();
+			}
+
+			if (sendto(myUDPSocket, myMessage, NETMESSAGE_SIZE, 0, reinterpret_cast<sockaddr*>(&myAddressServer), sizeof(myAddressServer)) == SOCKET_ERROR)
+			{
+				std::cout << "\nError: " << WSAGetLastError() << std::endl;
+				myIsRunning = false;
+				return false;
+			}
+
+			myHasMessage = false;
+		}
+
+		return true;
+	}
+
 	void Client::PrintCommands()
 	{
 		for (size_t i = 0; i < myCommandTexts.size(); ++i)
@@ -201,7 +219,7 @@ namespace Simple
 	void Client::CreateCommands()
 	{
 		myCommandTexts[0] = "\nCommands";
-		myCommandTexts[1] = "\n Quit -  exit the application";
-		myCommandTexts[2] = "\n Clear - clear console";
+		myCommandTexts[1] = "\n quit -  exit the application";
+		myCommandTexts[2] = "\n clear - clear console";
 	}
 }

@@ -51,7 +51,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_BEGIN("SimpleEngine Core Class Constructors");
 	Simple::Engine engine;
 	Graphics::GraphicsEngine graphicsEngine;
-	//Editor::EditorEngine editor;
+	Editor::EditorEngine editor;
 
 	engine.SetGlobalPointerToThis();
 	graphicsEngine.SetGlobalGraphicsEngineToThis();
@@ -60,7 +60,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_BEGIN("SimpleEngine Core Class Initialize");
 	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetEngineHWND(), Global::GetWindowSize());
-	//	editor.Init();
+	editor.Init();
 	PROFILER_END();
 
 	PROFILER_BEGIN("MainSingleton Initialize");
@@ -68,13 +68,13 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_END();
 
 	PROFILER_BEGIN("GameWorld Initialize");
-	//Simple::GameWorld gameWorld;
-	//gameWorld.Init();
+	Simple::GameWorld gameWorld;
+	gameWorld.Init();
 	PROFILER_END();
 
 	PROFILER_BEGIN("SimpleScript Initialize");
-	//SCRIPT::SimpleNodeScript simpleScript;
-	//simpleScript.Init();
+	SCRIPT::SimpleNodeScript simpleScript;
+	simpleScript.Init();
 	PROFILER_END();
 
 	Simple::Client client;
@@ -84,7 +84,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		return;
 	}
 
-	while (Global::GetGameIsRunning())
+	while (const bool isRunning = Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
 
@@ -100,48 +100,47 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		engine.Update();
 		PROFILER_END();
 
-		if (client.Update() == false)
+		if (client.Update(isRunning) == false)
 		{
 			Global::SetGameShouldClose(true);
 		}
 
-		/*
-			PROFILER_BEGIN("Editor Update");
-			simpleScript.Update();
-			editor.Update();
-			PROFILER_END();
+		PROFILER_BEGIN("Editor Update");
+		simpleScript.Update();
+		editor.Update();
+		PROFILER_END();
 
-			PROFILER_BEGIN("Game Update");
-			gameWorld.Update();
-			PROFILER_END();
+		PROFILER_BEGIN("Game Update");
+		gameWorld.Update();
+		PROFILER_END();
 
-			PROFILER_BEGIN("Render To GBuffer");
-			graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
-			gameWorld.Render();
-			PROFILER_END();
+		PROFILER_BEGIN("Render To GBuffer");
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
+		gameWorld.Render();
+		PROFILER_END();
 
-			PROFILER_BEGIN("Render To DeferredBuffer");
-			graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred);
-			graphicsEngine.ApplyAmbientAndDirectionalLightDeferred(Graphics::eRenderTargetType::GBuffer);
+		PROFILER_BEGIN("Render To DeferredBuffer");
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred);
+		graphicsEngine.ApplyAmbientAndDirectionalLightDeferred(Graphics::eRenderTargetType::GBuffer);
 
-			graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
-			gameWorld.LateRender();
-			PROFILER_END();
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
+		gameWorld.LateRender();
+		PROFILER_END();
 
-			PROFILER_BEGIN("Render To BloomRenderTarget");
-			graphicsEngine.ApplyBloom();
-			PROFILER_END();
+		PROFILER_BEGIN("Render To BloomRenderTarget");
+		graphicsEngine.ApplyBloom();
+		PROFILER_END();
 
-			PROFILER_BEGIN("Render To PostProcessingBuffer");
-			graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
-			graphicsEngine.ApplyPostProcessing(Graphics::eRenderTargetType::Bloom);
-			PROFILER_END();
+		PROFILER_BEGIN("Render To PostProcessingBuffer");
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::PostProcessing);
+		graphicsEngine.ApplyPostProcessing(Graphics::eRenderTargetType::Bloom);
+		PROFILER_END();
 
-			PROFILER_BEGIN("Render to BackBuffer");
-			graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
-			graphicsEngine.RenderFullScreenCopy(Graphics::eRenderTargetType::PostProcessing);
-			editor.Render();
-			PROFILER_END();*/
+		PROFILER_BEGIN("Render to BackBuffer");
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Backbuffer);
+		graphicsEngine.RenderFullScreenCopy(Graphics::eRenderTargetType::PostProcessing);
+		editor.Render();
+		PROFILER_END();
 
 		PROFILER_BEGIN("Endframe");
 		graphicsEngine.EndFrame();
