@@ -1,4 +1,7 @@
+#define WIN32_LEAN_AND_MEAN //NOTE(v11.2.1): Fuck you Microsoft
+
 #include "Networking/NetworkShared.hpp"
+#include "Networking/Console/Console.hpp"
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <Windows.h>
@@ -9,8 +12,6 @@
 #include <unordered_map>
 #include <vector>
 #include <thread>
-
-#include "Networking/RemoveMee/Console.hpp" //NOTE(v11.2.0): remove this later
 
 #define LISTEN_PORT 42000
 
