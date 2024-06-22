@@ -115,6 +115,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE, _In_ LPW
 
 	// If we got this far we should now have an open socket ready to receive information from the network.
 	std::cout << "Press \"q\" to exit..." << std::endl;
+
 	while (localIsRunning)
 	{
 		// Clear the buffer.
@@ -122,13 +123,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE, _In_ LPW
 
 		// blocking receive. This function will block until a message is received.
 		const int recv_len = recvfrom(udpSocket, socketBuffer, NETMESSAGE_SIZE, 0, (sockaddr*)&addrClient, &addrClientSize);
+
 		if (recv_len == SOCKET_ERROR)
 		{
-			std::cout << "Failed receiving data from socket." << std::endl;
+			std::cout << "\nFailed receiving data from socket." << std::endl;
 			std::cout << "Error: " << WSAGetLastError() << std::endl;
+
 			const int clientPort = ntohs(addrClient.sin_port);
 			localClients.erase(clientPort);
-
 		}
 
 		if (recv_len > 0)
@@ -141,7 +143,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE, _In_ LPW
 
 			strcpy_s(clientMessage, socketBuffer);
 
-			char clientAddress[16]{ '\0'};
+			char clientAddress[16]{ '\0' };
 			inet_ntop(AF_INET, &addrClient.sin_addr, &clientAddress[0], sizeof(clientAddress));
 			const int clientPort = ntohs(addrClient.sin_port);
 
@@ -157,8 +159,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE, _In_ LPW
 				{
 					std::cout << "Disconnect!" << std::endl;
 					localClients.at(clientPort).isConnected = false;;
-
 				}
+
 				std::string name = localClients.at(clientPort).name;
 
 				std::cout << "Packet from " << name << " Port:" << clientPort << std::endl;
@@ -202,10 +204,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE, _In_ LPW
 			for (const auto& [port, client] : localClients)
 			{
 				// Send it back
-				if (!client.isConnected)
+				if (client.isConnected == false)
 				{
 					continue;
 				}
+
 				if (sendto(udpSocket, socketBuffer, NETMESSAGE_SIZE, 0, reinterpret_cast<const sockaddr*>(&client.address), sizeof(client.address)) == SOCKET_ERROR)
 				{
 					std::cout << "Error: " << WSAGetLastError() << std::endl;
@@ -214,15 +217,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE, _In_ LPW
 				}
 			}
 		}
-
-		if (inputThread.joinable())
-		{
-			inputThread.join();
-		}
-
-		WSACleanup();
-
 	}
 
-		return 0;
+	if (inputThread.joinable())
+	{
+		inputThread.join();
+	}
+
+	WSACleanup();
+
+	return 0;
 }
