@@ -1,0 +1,61 @@
+#pragma once
+#include "Networking/NetworkShared.hpp"
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include <thread>
+
+namespace Simple
+{
+	class Server final
+	{
+		struct ClientUser
+		{
+			std::string name = "Client";
+			sockaddr_in address{};
+			bool isConnected = true;
+		};
+
+		struct Message
+		{
+			ClientUser* client;
+			char message[NETMESSAGE_SIZE];
+		};
+
+	public:
+		Server();
+		~Server();
+
+		bool Init();
+		bool Update();
+
+	private:
+		void CheckInput();
+
+	private:
+		char mySocketBuffer[NETMESSAGE_SIZE];
+
+		// We'll need a socket to communicate on.
+		SOCKET myUDPSocket;
+
+		// And we'll need the Winsock data object.
+		WSADATA myWinsockData;
+
+		// Address information we'll use to bind.
+		sockaddr_in myAddressServer;
+
+		// Address information of connecting client.
+		sockaddr_in myAddressClient;
+
+		// We also need the size when receiving.
+		int myAddressClientSize;
+
+
+		std::unordered_map<int, ClientUser> myClients;
+		std::vector<Message> myMessageHistory;
+		std::thread myInputThread;
+		std::atomic<bool> myIsRunning;
+	};
+}

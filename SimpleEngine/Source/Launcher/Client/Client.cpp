@@ -36,6 +36,9 @@ namespace Simple
 
 	Client::~Client()
 	{
+		// Clear the buffer.
+		ZeroMemory(mySocketBuffer, NETMESSAGE_SIZE);
+
 		if (myInputThread.joinable())
 		{
 			myInputThread.join();
