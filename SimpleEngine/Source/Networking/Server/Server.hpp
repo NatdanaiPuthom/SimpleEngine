@@ -52,7 +52,6 @@ namespace Simple
 		// We also need the size when receiving.
 		int myAddressClientSize;
 
-
 		std::unordered_map<int, ClientUser> myClients;
 		std::vector<Message> myMessageHistory;
 		std::thread myInputThread;

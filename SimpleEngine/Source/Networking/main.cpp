@@ -1,4 +1,5 @@
 #define WIN32_LEAN_AND_MEAN //NOTE(v11.2.1): Fuck you Microsoft
+
 #include "Networking/Console/Console.hpp"
 #include "Networking/Server/Server.hpp"
 #include <Windows.h>

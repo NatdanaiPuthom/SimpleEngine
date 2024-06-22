@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cassert>
 
-#define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN //NOTE(v11.2.2): Fuck you Microsoft
 #include <Windows.h>
 
 #define LISTEN_PORT 42000
