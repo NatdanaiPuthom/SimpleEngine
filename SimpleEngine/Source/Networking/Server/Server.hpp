@@ -36,6 +36,7 @@ namespace Simple
 
 	private:
 		char mySocketBuffer[NETMESSAGE_SIZE];
+		char myMessage[NETMESSAGE_SIZE];
 
 		// We'll need a socket to communicate on.
 		SOCKET myUDPSocket;

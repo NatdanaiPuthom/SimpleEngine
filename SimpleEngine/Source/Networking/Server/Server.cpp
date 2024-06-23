@@ -19,6 +19,7 @@ namespace Simple
 		, myIsRunning(true)
 	{
 		std::memset(mySocketBuffer, '\0', sizeof(mySocketBuffer));
+		std::memset(myMessage, '\0', sizeof(myMessage));
 	}
 
 	Server::~Server()
@@ -37,7 +38,7 @@ namespace Simple
 	{
 		myAddressClientSize = sizeof(myAddressClient);
 
-		std::cout << "\nStarting Winsock...";
+		std::cout << "Starting Winsock...";
 
 		if (WSAStartup(MAKEWORD(2, 2), &myWinsockData) != 0)
 		{
@@ -87,7 +88,7 @@ namespace Simple
 		myInputThread = std::thread(&Server::CheckInput, this);	
 
 		// If we got this far we should now have an open socket ready to receive information from the network.
-		std::cout << "\nPress \"q\" to exit..." << std::endl;
+		std::cout << "\nType \"quit\" to exit..." << std::endl;
 
 		return true;
 	}
@@ -160,7 +161,6 @@ namespace Simple
 				strcpy_s(mySocketBuffer, tempMessage.c_str());
 
 				myMessageHistory.push_back(msg);
-
 			}
 			else
 			{
@@ -205,13 +205,11 @@ namespace Simple
 	{
 		while (myIsRunning)
 		{
-			char c;
-			std::cin.get(c);
+			std::cin.getline(myMessage, NETMESSAGE_SIZE);
 
-			if (c == 'q')
+			if (strcmp(myMessage, "quit") == 0)
 			{
 				myIsRunning = false;
-
 				// This will cause the socket operations to abort and release the socket.
 				// It will fire a SOCKET_ERROR result from recvfrom if it's presently waiting.
 				closesocket(myUDPSocket);
