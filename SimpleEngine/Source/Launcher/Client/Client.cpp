@@ -7,18 +7,6 @@
 #define SERVER_ADDRESS "127.0.0.1"
 #define SERVER_PORT 42000
 
-//static int ReceiveFrom(
-//	_In_ SOCKET s,
-//	_Out_writes_bytes_to_(len, return) __out_data_source(NETWORK) char FAR* buf,
-//	_In_ int len,
-//	_In_ int flags,
-//	_Out_writes_bytes_to_opt_(*fromlen, *fromlen) struct sockaddr FAR* from,
-//	_Inout_opt_ int FAR* fromlen
-//)
-//{
-//	return recvfrom(s, buf, len, flags, from, fromlen);
-//}
-
 namespace Simple
 {
 	Client::Client()

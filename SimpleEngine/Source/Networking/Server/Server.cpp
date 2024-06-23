@@ -132,27 +132,14 @@ namespace Simple
 
 			if (it != myClients.end())
 			{
-				DisconnectUser(clientPort);
+				CheckMessageFromClient(clientPort);
 			}
 			else
 			{
 				ConnectUser(clientPort);
 			}
 
-			for (const auto& [port, client] : myClients)
-			{
-				if (client.isConnected == false)
-				{
-					continue;
-				}
-
-				if (sendto(myUDPSocket, mySocketBuffer, NETMESSAGE_SIZE, 0, reinterpret_cast<const sockaddr*>(&client.address), sizeof(client.address)) == SOCKET_ERROR)
-				{
-					std::cout << "Error: " << WSAGetLastError() << std::endl;
-					myIsRunning = false;
-					return false;
-				}
-			}
+			SendMessageToAllClients();
 		}
 
 		return true;
@@ -194,12 +181,15 @@ namespace Simple
 	void Server::DisconnectUser(const int aClientPort)
 	{
 		const ClientUser* fromClient = &myClients.at(aClientPort);
+		std::cout << "User: " << fromClient->name << " has disconnected." << std::endl;
+		myClients.erase(aClientPort);
+	}
 
-		if (strstr(Global_ExitMessage, mySocketBuffer))
-		{
-			myClients.at(aClientPort).isConnected = false;;
-			std::cout << "User: " << fromClient->name << " has disconnected." << std::endl;
-		}
+	void Server::CheckMessageFromClient(const int aClientPort)
+	{
+		const ClientUser* fromClient = &myClients.at(aClientPort);
+
+		const bool disconnected = strstr(Global_ExitMessage, mySocketBuffer);
 
 		std::cout << "Packet from: " << fromClient->name << " ClientPort:" << aClientPort << " Data: " << mySocketBuffer << std::endl;
 
@@ -207,9 +197,21 @@ namespace Simple
 		ZeroMemory(mySocketBuffer, NETMESSAGE_SIZE);
 		strcpy_s(mySocketBuffer, tempMessage.c_str());
 
-		if (fromClient->isConnected == false)
+		if (disconnected)
 		{
-			myClients.erase(aClientPort);
+			DisconnectUser(aClientPort);
+		}
+	}
+
+	void Server::SendMessageToAllClients()
+	{
+		for (const auto& [port, client] : myClients)
+		{
+			if (sendto(myUDPSocket, mySocketBuffer, NETMESSAGE_SIZE, 0, reinterpret_cast<const sockaddr*>(&client.address), sizeof(client.address)) == SOCKET_ERROR)
+			{
+				DisconnectUser(port);
+				std::cout << "\nError: " << WSAGetLastError() << std::endl;
+			}
 		}
 	}
 }
