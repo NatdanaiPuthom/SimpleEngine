@@ -15,13 +15,7 @@ namespace Simple
 		{
 			std::string name = "Client";
 			sockaddr_in address{};
-			bool isConnected = true;
-		};
-
-		struct Message
-		{
-			ClientUser* client;
-			char message[NETMESSAGE_SIZE];
+			bool isConnected = false;
 		};
 
 	public:
@@ -54,7 +48,6 @@ namespace Simple
 		int myAddressClientSize;
 
 		std::unordered_map<int, ClientUser> myClients;
-		std::vector<Message> myMessageHistory;
 		std::thread myInputThread;
 		std::atomic<bool> myIsRunning;
 	};

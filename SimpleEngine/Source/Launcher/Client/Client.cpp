@@ -45,7 +45,7 @@ namespace Simple
 			myInputThread.join();
 		}
 
-		if (sendto(myUDPSocket, ExitMessage, sizeof(ExitMessage), 0, reinterpret_cast<sockaddr*>(&myAddressServer), sizeof(myAddressServer)) == SOCKET_ERROR)
+		if (sendto(myUDPSocket, Global_ExitMessage, sizeof(Global_ExitMessage), 0, reinterpret_cast<sockaddr*>(&myAddressServer), sizeof(myAddressServer)) == SOCKET_ERROR)
 		{
 			std::cout << "Error: " << WSAGetLastError() << std::endl;
 			assert(false && "something went wrong in client destructor");

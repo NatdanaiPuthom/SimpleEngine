@@ -132,52 +132,40 @@ namespace Simple
 			auto it = myClients.find(clientPort);
 
 			ClientUser* fromClient = nullptr;
+
 			if (it != myClients.end())
 			{
-				Message msg;
-				strcpy_s(msg.message, mySocketBuffer);
+				const std::string name = myClients.at(clientPort).name;
 
-				if (strstr(ExitMessage, mySocketBuffer))
+				if (strstr(Global_ExitMessage, mySocketBuffer))
 				{
-					std::cout << "Disconnect!" << std::endl;
 					myClients.at(clientPort).isConnected = false;;
+					std::cout << "User: " << name << " has disconnected." << std::endl;
 				}
 
-				std::string name = myClients.at(clientPort).name;
-
-				std::cout << "Packet from " << name << " Port:" << clientPort << std::endl;
-				std::cout << "Data: " << mySocketBuffer << std::endl;
+				std::cout << "Packet from: " << name << " ClientPort:" << clientPort << " Data: " << mySocketBuffer <<  std::endl;
 
 				fromClient = &myClients.at(clientPort);
 
-				msg.client = &myClients.at(clientPort);
-
-				std::string tempMessage = mySocketBuffer;
-
+				const std::string tempMessage = "From: " + fromClient->name + " Data: " + std::string(mySocketBuffer);
 				ZeroMemory(mySocketBuffer, NETMESSAGE_SIZE);
-
-				tempMessage = "From: " + fromClient->name + " Data: " + tempMessage;
-
 				strcpy_s(mySocketBuffer, tempMessage.c_str());
-
-				myMessageHistory.push_back(msg);
 			}
 			else
 			{
 				ClientUser clientUser;
 				clientUser.name = mySocketBuffer;
 				clientUser.address = myAddressClient;
+				clientUser.isConnected = true;
+
 				myClients.emplace(clientPort, clientUser);
+
 				std::cout << "\nUser: " << mySocketBuffer << " has logged in. ClientPort: " << clientPort << std::endl;
 
 				fromClient = &myClients.at(clientPort);
 
-				std::string tempMessage = mySocketBuffer;
-
+				const std::string tempMessage = "Welcome " + std::string(mySocketBuffer) + "!";
 				ZeroMemory(mySocketBuffer, NETMESSAGE_SIZE);
-
-				tempMessage = "Welcome " + tempMessage + "!";
-
 				strcpy_s(mySocketBuffer, tempMessage.c_str());
 			}
 
