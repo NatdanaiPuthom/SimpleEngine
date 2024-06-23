@@ -29,7 +29,7 @@ namespace Simple
 		SOCKET myUDPSocket; // We'll need a udpSocket to communicate on.
 		sockaddr_in myAddressServer; // Address information where we'll send our data. i.e. the container for the server address.
 		
-		std::array<const char*, 3> myCommandTexts;
+		std::array<const char*, 5> myCommandTexts;
 		std::thread myInputThread;
 		std::atomic<bool> myHasMessage;
 		std::atomic<bool> myIsRunning;

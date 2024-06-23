@@ -191,7 +191,9 @@ namespace Simple
 			else if (strcmp(myMessage, "clear") == 0)
 			{
 				system("cls");
+				std::cout << "----------------------------------------" << std::endl;
 				std::cout << "help - show commands" << std::endl;
+				std::cout << "----------------------------------------" << std::endl;
 			}
 			else if (strcmp(myMessage, "help") == 0)
 			{
@@ -221,8 +223,10 @@ namespace Simple
 
 	void Client::CreateCommands()
 	{
-		myCommandTexts[0] = "\nCommands";
-		myCommandTexts[1] = "\n quit -  exit the application";
-		myCommandTexts[2] = "\n clear - clear console";
+		myCommandTexts[0] = "\n----------------------------------------";
+		myCommandTexts[1] = "\nCommands";
+		myCommandTexts[2] = "\n quit -  exit the application";
+		myCommandTexts[3] = "\n clear - clear console";
+		myCommandTexts[4] = "\n----------------------------------------";
 	}
 }
