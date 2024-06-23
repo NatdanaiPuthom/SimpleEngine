@@ -122,56 +122,25 @@ namespace Simple
 			// i.e. "xxx.xxx.xxx.xxx" + string terminator
 
 			char clientMessage[NETMESSAGE_SIZE]{};
-
 			strcpy_s(clientMessage, mySocketBuffer);
 
 			char clientAddress[16]{ '\0' };
 			inet_ntop(AF_INET, &myAddressClient.sin_addr, &clientAddress[0], sizeof(clientAddress));
 			const int clientPort = ntohs(myAddressClient.sin_port);
 
-			auto it = myClients.find(clientPort);
-
-			ClientUser* fromClient = nullptr;
+			const auto it = myClients.find(clientPort);
 
 			if (it != myClients.end())
 			{
-				const std::string name = myClients.at(clientPort).name;
-
-				if (strstr(Global_ExitMessage, mySocketBuffer))
-				{
-					myClients.at(clientPort).isConnected = false;;
-					std::cout << "User: " << name << " has disconnected." << std::endl;
-				}
-
-				std::cout << "Packet from: " << name << " ClientPort:" << clientPort << " Data: " << mySocketBuffer <<  std::endl;
-
-				fromClient = &myClients.at(clientPort);
-
-				const std::string tempMessage = "From: " + fromClient->name + " Data: " + std::string(mySocketBuffer);
-				ZeroMemory(mySocketBuffer, NETMESSAGE_SIZE);
-				strcpy_s(mySocketBuffer, tempMessage.c_str());
+				DisconnectUser(clientPort);
 			}
 			else
 			{
-				ClientUser clientUser;
-				clientUser.name = mySocketBuffer;
-				clientUser.address = myAddressClient;
-				clientUser.isConnected = true;
-
-				myClients.emplace(clientPort, clientUser);
-
-				std::cout << "\nUser: " << mySocketBuffer << " has logged in. ClientPort: " << clientPort << std::endl;
-
-				fromClient = &myClients.at(clientPort);
-
-				const std::string tempMessage = "Welcome " + std::string(mySocketBuffer) + "!";
-				ZeroMemory(mySocketBuffer, NETMESSAGE_SIZE);
-				strcpy_s(mySocketBuffer, tempMessage.c_str());
+				ConnectUser(clientPort);
 			}
 
 			for (const auto& [port, client] : myClients)
 			{
-				// Send it back
 				if (client.isConnected == false)
 				{
 					continue;
@@ -202,6 +171,45 @@ namespace Simple
 				// It will fire a SOCKET_ERROR result from recvfrom if it's presently waiting.
 				closesocket(myUDPSocket);
 			}
+		}
+	}
+
+	void Server::ConnectUser(const int aClientPort)
+	{
+		ClientUser clientUser;
+		clientUser.name = mySocketBuffer;
+		clientUser.address = myAddressClient;
+		clientUser.isConnected = true;
+
+		myClients.emplace(aClientPort, clientUser);
+
+		std::cout << "\nUser: " << mySocketBuffer << " has logged in. ClientPort: " << aClientPort << std::endl;
+
+		const std::string tempMessage = "Welcome " + std::string(mySocketBuffer) + "!";
+
+		ZeroMemory(mySocketBuffer, NETMESSAGE_SIZE);
+		strcpy_s(mySocketBuffer, tempMessage.c_str());
+	}
+
+	void Server::DisconnectUser(const int aClientPort)
+	{
+		const ClientUser* fromClient = &myClients.at(aClientPort);
+
+		if (strstr(Global_ExitMessage, mySocketBuffer))
+		{
+			myClients.at(aClientPort).isConnected = false;;
+			std::cout << "User: " << fromClient->name << " has disconnected." << std::endl;
+		}
+
+		std::cout << "Packet from: " << fromClient->name << " ClientPort:" << aClientPort << " Data: " << mySocketBuffer << std::endl;
+
+		const std::string tempMessage = "From: " + fromClient->name + " Data: " + std::string(mySocketBuffer);
+		ZeroMemory(mySocketBuffer, NETMESSAGE_SIZE);
+		strcpy_s(mySocketBuffer, tempMessage.c_str());
+
+		if (fromClient->isConnected == false)
+		{
+			myClients.erase(aClientPort);
 		}
 	}
 }

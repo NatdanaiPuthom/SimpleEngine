@@ -27,7 +27,8 @@ namespace Simple
 
 	private:
 		void CheckInput();
-
+		void ConnectUser(const int aClientPort);
+		void DisconnectUser(const int aClientPort);
 	private:
 		char mySocketBuffer[NETMESSAGE_SIZE];
 		char myMessage[NETMESSAGE_SIZE];
