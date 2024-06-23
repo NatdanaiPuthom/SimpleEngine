@@ -33,5 +33,7 @@ namespace Simple
 		std::thread myInputThread;
 		std::atomic<bool> myHasMessage;
 		std::atomic<bool> myIsRunning;
+
+		std::atomic<bool> myHasLoggedIn;
 	};
 }

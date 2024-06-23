@@ -168,7 +168,7 @@ namespace Simple
 				clientUser.name = mySocketBuffer;
 				clientUser.address = myAddressClient;
 				myClients.emplace(clientPort, clientUser);
-				std::cout << "Welcome " << mySocketBuffer << "! ClientPort:" << clientPort << std::endl;
+				std::cout << "\nUser: " << mySocketBuffer << " has logged in. ClientPort: " << clientPort << std::endl;
 
 				fromClient = &myClients.at(clientPort);
 

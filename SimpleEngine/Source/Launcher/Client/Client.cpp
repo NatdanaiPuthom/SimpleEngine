@@ -29,6 +29,7 @@ namespace Simple
 	{
 		myHasMessage = false;
 		myIsRunning = true;
+		myHasLoggedIn = false;
 
 		std::memset(mySocketBuffer, '\0', sizeof(mySocketBuffer));
 		std::memset(myMessage, '\0', sizeof(myMessage));
@@ -103,29 +104,21 @@ namespace Simple
 		// This then allows us to use recvfrom as we please because the udpSocket
 		// is already bound for us in an appropriate way.
 
-		std::cout << "Enter username: ";
-		myInputThread = std::thread(&Client::CheckInput, this);
-
 		// send a first message to bind the udpSocket
 		// after this we will be able to receive messages
-
-		while (myHasMessage == false) {}
-
-		if (sendto(myUDPSocket, myMessage, NETMESSAGE_SIZE, 0, reinterpret_cast<sockaddr*>(&myAddressServer), sizeof(myAddressServer)) == SOCKET_ERROR)
-		{
-			std::cout << "\nError: " << WSAGetLastError() << std::endl;
-			assert(false && "Something went wrong");
-			return false;
-		}
-
-		CreateCommands();
-		PrintCommands();
+		std::cout << "Enter username: ";
+		myInputThread = std::thread(&Client::CheckInput, this);
 
 		return true;
 	}
 
 	bool Client::Update(const bool aIsRunning)
 	{
+		if (myHasLoggedIn == false)
+		{
+			return true;
+		}
+
 		myIsRunning = aIsRunning;
 
 		if (CheckMessage() == false)
@@ -154,6 +147,24 @@ namespace Simple
 
 	void Client::CheckInput()
 	{
+		while (myHasLoggedIn == false)
+		{
+			std::cin.getline(myMessage, NETMESSAGE_SIZE);
+
+			if (sendto(myUDPSocket, myMessage, NETMESSAGE_SIZE, 0, reinterpret_cast<sockaddr*>(&myAddressServer), sizeof(myAddressServer)) == SOCKET_ERROR)
+			{
+				std::cout << "\nError: " << WSAGetLastError() << std::endl;
+				assert(false && "Something went wrong");
+				myIsRunning = false;
+				return;
+			}
+
+			CreateCommands();
+			PrintCommands();
+
+			myHasLoggedIn = true;
+		}
+
 		// very basic async input setup... we read input on a different thread
 		while (myIsRunning)
 		{
