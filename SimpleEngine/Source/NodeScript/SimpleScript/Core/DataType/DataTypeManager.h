@@ -278,6 +278,10 @@ namespace SCR
 		template<typename T>
 		DataType* Find();
 
+
+		template<typename T>
+		void RegisterNonSerializableType(const std::string& aName, const Color& aColor = DefaultColor);
+
 	private:
 
 		template<Scriptable<nlohmann::json> T>
@@ -286,8 +290,6 @@ namespace SCR
 		template<Fundamental T>
 		void Register(const std::string& aName, const Color& aColor = DefaultColor);
 
-		template<typename T>
-		void RegisterNonSerializableType(const std::string& aName, const Color& aColor);
 
 		template<template<typename> typename TemplateType>
 		void RegisterTemplateType(const std::string& aName);

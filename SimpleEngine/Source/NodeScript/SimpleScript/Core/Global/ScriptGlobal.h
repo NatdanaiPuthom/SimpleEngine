@@ -8,6 +8,7 @@ namespace SCR
 	class DataTypeManager;
 	class NodeTypeManager;
 	class PinTypeManager;
+	class MemoryManager;
 
 	namespace Global
 	{
@@ -17,6 +18,14 @@ namespace SCR
 		DataTypeManager& GetDataTypeManager();
 		NodeTypeManager& GetNodeTypeManager();
 		PinTypeManager& GetPinTypeManager();
+
+		bool& IsDebugging();
+
+		namespace Internal
+		{
+			MemoryManager& GetFrameBuffer();
+			MemoryManager& GetEditBuffer();
+		}
 	}
 
 

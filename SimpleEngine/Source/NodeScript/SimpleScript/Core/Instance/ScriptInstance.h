@@ -2,6 +2,7 @@
 #include "../ScriptDefines.h"
 #include "NodeTrait.h"
 #include "VariableManagerInstance.h"
+#include "NodeGraphInstance.h"
 
 namespace SCR
 {
@@ -23,13 +24,9 @@ namespace SCR
 
 		Script* myScript;
 		VariableManagerInstance myVariableManagerInstance;
+		NodeGraphInstance myEventGraphInstance;
 
 	private:
-
-
-
-
-
 
 	};
 }

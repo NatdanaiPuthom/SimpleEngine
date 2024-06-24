@@ -11,28 +11,33 @@
 
 namespace SCR
 {
-	using ScriptID = int;
-	using NodeID = ScriptID;
-	using PinID = ScriptID;
-	using LinkID = ScriptID;
+	using NodeID = int;
+	using PinID = int;
+	using LinkID = int;
 
-	using ScriptID_size_t = size_t;
-	using NodeTypeID = ScriptID_size_t;
-	using CustomEventID = ScriptID_size_t;
-	using FunctionID = ScriptID_size_t;
-	using PinTypeID = ScriptID_size_t;
-	using VarID = ScriptID_size_t;
+	using NodeTypeID = size_t;
+	using CustomEventID = size_t;
+	using FunctionID = size_t;
+	using PinTypeID = size_t;
+	using VarID = size_t;
 	using MemoryPoolID = size_t;
-	using DataTypeID = ScriptID_size_t;
-	using ObjectTypeID = ScriptID_size_t;
-	using EventID = ScriptID_size_t;
+	using DataTypeID = size_t;
+	using ObjectTypeID = size_t;
+	using EventID = size_t;
 
 	constexpr size_t NodeBufferCapacity = 1024;
+	constexpr DataTypeID GlobalDataTypeID = 0;
 
 	template<std::integral IDType>
 	inline constexpr IDType InvalidID()
 	{
 		return std::numeric_limits<IDType>::max();
+	}
+
+	template<typename T>
+	inline constexpr DataTypeID GetDataTypeID()
+	{
+		return typeid(T).hash_code();
 	}
 
 	template<typename Output, typename... Inputs>

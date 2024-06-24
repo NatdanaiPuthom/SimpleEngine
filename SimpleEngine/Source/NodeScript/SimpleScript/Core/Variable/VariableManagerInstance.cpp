@@ -1,6 +1,6 @@
 #include "VariableManagerInstance.h"
 #include "Variable/VariableManager.h"
-#include "DataTypeManager.h"
+#include "../DataType/DataTypeManager.h"
 #include "../Global/ScriptGlobal.h"
 
 namespace SCR
@@ -38,7 +38,7 @@ namespace SCR
 		return *this;
 	}
 
-	void VariableManagerInstance::Compile(VariableManager& aVariableManager)
+	void VariableManagerInstance::Init(VariableManager& aVariableManager)
 	{
 		myMemoryManager->Clear();
 		myVariables.resize(aVariableManager.myVariables.size());

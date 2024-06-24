@@ -8,6 +8,7 @@ namespace SCR
 {
 
 	ScriptInstance::ScriptInstance()
+		: myScript(nullptr)
 	{
 	}
 
@@ -18,7 +19,9 @@ namespace SCR
 	void ScriptInstance::Init(Script& aScript)
 	{
 		myScript = &aScript;
-		myVariableManagerInstance.Compile(ScriptProxy::GetVariableManager(aScript));
+		myVariableManagerInstance.Init(ScriptProxy::GetVariableManager(aScript));
+		// TODO Fix
+		myEventGraphInstance.Init(aScript.GetEventGraph());
 	}
 
 	void ScriptInstance::ExecuteEvent(eNodeEventType anExecutionTrait, const ExecutionContextBase& aContext)

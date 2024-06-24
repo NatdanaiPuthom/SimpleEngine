@@ -16,6 +16,7 @@
 #include "Editor/Menu/MainMenuBar.hpp" //NOTE(v10.0.2): Remove this once we no longer use static bool of MainMenuBar class
 
 #include <imnodes/imnodes_internal.h>
+#include <ScriptLinker.h>
 
 namespace Editor
 {
@@ -130,11 +131,11 @@ namespace Editor
 				//GetCurrentContext().script->GetModifier().PasteCopyBuffer(mousePos);
 			}
 
-			bool& isDebug = myCommandTracker->IsDebugPrinting();
+			bool& isDebugging = Global::IsDebugging();
 
-			ImGui::Checkbox("Debug Commands", &isDebug);
+			ImGui::Checkbox("Debug", &isDebugging);
 
-			if (isDebug)
+			if (isDebugging)
 			{
 
 				ImGui::Text((std::string("Undo Stack size: ") + std::to_string(myCommandTracker->GetUndoSize())).c_str());
@@ -335,14 +336,6 @@ namespace Editor
 
 			myCurrentScript->DestroyScriptInstance(scriptInstance);
 		}
-
-		ImGui::SameLine();
-
-		if (ImGui::Button("Create Instance"))
-		{
-			ScriptInstance& instance = GetCurrentContext().script->CreateScriptInstance();
-			instance;
-		}
 	}
 
 	void VisualScriptingWindow::VisualizeNodes()
@@ -391,6 +384,10 @@ namespace Editor
 					? "Get " + ScriptProxy::GetVariable(currentScript, variableManager.GetVariableIDByNodeID(nodeID)).name
 					: "Set " + ScriptProxy::GetVariable(currentScript, variableManager.GetVariableIDByNodeID(nodeID)).name;
 
+				if (Global::IsDebugging())
+				{
+					nodeName += ", ID: " + std::to_string(nodeID);
+				}
 				std::string nodeLabel = nodeName;
 				ImGui::TextUnformatted(nodeLabel.c_str());
 
@@ -432,7 +429,7 @@ namespace Editor
 			}
 
 			// Render input pins
-			for (int i = 0; i < node->inputPins.size(); ++i)
+			for (size_t i = 0; i < node->inputPins.size(); ++i)
 			{
 				const PinID pinID = node->inputPins[i];
 				const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, pinID);
@@ -449,6 +446,10 @@ namespace Editor
 				std::string pinLabel = GetPinLabel(pinType);
 				if (!pinLabel.empty())
 				{
+					if (Global::IsDebugging())
+					{
+						pinLabel += ", " + std::to_string(pinID);
+					}
 					ImGui::TextUnformatted(pinLabel.c_str());
 				}
 
@@ -466,6 +467,7 @@ namespace Editor
 				ImNodes::PopColorStyle();
 				ImNodes::PopColorStyle();
 			}
+
 
 			ImGui::SetCursorPos(cursorPos);
 
@@ -492,6 +494,10 @@ namespace Editor
 					const float plusWidth = std::max(nodeWidthLeft + extraWidth, nodeNameWidth - nodeWidthRight);
 					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + plusWidth + extraWidth + nodeWidthRight - ImGui::CalcTextSize(pinLabel.c_str()).x);
 
+					if (Global::IsDebugging())
+					{
+						pinLabel += ", " + std::to_string(pinID);
+					}
 					ImGui::TextUnformatted(pinLabel.c_str());
 				}
 
@@ -504,24 +510,27 @@ namespace Editor
 		}
 
 		// Render links
-		for (PinID inputPinID : ScriptFilter::GetInputPins(*GetCurrentContext().nodeGraph))
+		for (LinkID linkID = 0; const Link& link : myCurrentNodeGraph->myLinks)
 		{
-			const Pin& pin = ScriptProxy::GetPin(ScriptProxy::GetEventGraph(currentScript), inputPinID);
-			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-
-			if (!pin.connectedPinIDs.empty())
+			if (link.isDestroyed)
 			{
-
-				ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
-				ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(Global::GetDataTypeManager().GetSelectionColor(pinType.dataTypeID)));
-				ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinType.dataTypeID)));
-
-				ImNodes::Link(inputPinID, inputPinID, pin.connectedPinIDs[0]);
-
-				ImNodes::PopColorStyle();
-				ImNodes::PopColorStyle();
-				ImNodes::PopColorStyle();
+				linkID++;
+				continue;
 			}
+			const Pin& pin = ScriptProxy::GetPin(*myCurrentNodeGraph, link.inputPinID);
+			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.typeID);
+
+			ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
+			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(Global::GetDataTypeManager().GetSelectionColor(pinType.dataTypeID)));
+			ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinType.dataTypeID)));
+
+			ImNodes::Link(linkID, link.inputPinID, link.outputPinID);
+
+			ImNodes::PopColorStyle();
+			ImNodes::PopColorStyle();
+			ImNodes::PopColorStyle();
+
+			linkID++;
 		}
 
 		ImNodes::MiniMap(.2f, ImNodesMiniMapLocation_BottomRight);
@@ -532,7 +541,6 @@ namespace Editor
 	{
 		Script& currentScript = *GetCurrentContext().script;
 		const NodeManager& nodeManager = *GetCurrentContext().nodeGraph->myNodeManager;
-		//ScriptModifier& modifier = currentScript.GetModifier();
 
 		bool dragStarted = ImGui::IsKeyDown(ImGuiKey_MouseLeft) && !myIsDraggingNode;
 		if (dragStarted)
@@ -549,8 +557,6 @@ namespace Editor
 			myIsDraggingNode = false;
 		}
 
-		std::vector<NodeDragData> endNodeDragData;
-
 		// Update node positions
 		for (auto& [nodeID, node, nodeType] : nodeManager)
 		{
@@ -563,19 +569,28 @@ namespace Editor
 			ScriptVec2 oldPos = node->position;
 			if (dragStarted && ImNodes::IsNodeSelected(nodeID))
 			{
-				//Modify::BeginNodeDrag(nodeID, oldPos);
+				myNodeDragData.emplace(nodeID, NodeDragData{ .startPos = oldPos });
 			}
 			else if (dragEnded)
 			{
-				endNodeDragData.emplace_back(nodeID, newPos);
+				auto it = myNodeDragData.find(nodeID);
+
+				if (it != myNodeDragData.end())
+				{
+					it->second.endPos = newPos;
+				}
 			}
 			if (newPos != oldPos)
 			{
-				Modify::SetNodePosition(nodeID, { newPos.x, newPos.y }, *GetCurrentContext().nodeGraph, myCommandTracker.get());
+				Modify::SetNodePosition(nodeID, newPos, *GetCurrentContext().nodeGraph);
 			}
 		}
 
-		Modify::CommitNodeDrag(endNodeDragData, *GetCurrentContext().nodeGraph, myCommandTracker.get());
+		if (dragEnded)
+		{
+			Modify::CommitNodeDrag(myNodeDragData, *GetCurrentContext().nodeGraph, myCommandTracker.get());
+			myNodeDragData.clear();
+		}
 
 		// See if links should be created
 
@@ -592,7 +607,7 @@ namespace Editor
 
 		if (ImGui::IsKeyPressed(ImGuiKey_Delete))
 		{
-			std::vector<PinID> selectedLinks(ImNodes::NumSelectedLinks());
+			std::vector<LinkID> selectedLinks(ImNodes::NumSelectedLinks());
 			std::vector<NodeID> selectedNodes(ImNodes::NumSelectedNodes());
 
 			if (!selectedLinks.empty())
@@ -614,6 +629,7 @@ namespace Editor
 			ImNodes::ClearLinkSelection();
 		}
 
+		// Highlight pins
 		PinID startedPinID = InvalidID<PinID>();
 		if (ImNodes::IsLinkStarted(&startedPinID))
 		{
@@ -634,10 +650,10 @@ namespace Editor
 			}
 		}
 
+		// Dropped link
 		PinID droppedPinID = InvalidID<PinID>();
 
 		if (ImNodes::IsLinkDropped(&droppedPinID))
-
 		{
 			ImGui::OpenPopup("Node Create Popup");
 			myLinkCreationPinID = droppedPinID;
@@ -649,13 +665,20 @@ namespace Editor
 		// Drop link create popup
 		if (ImGui::BeginPopup("Node Create Popup"))
 		{
-			const Pin& pin = ScriptProxy::GetPin(ScriptProxy::GetEventGraph(currentScript), myLinkCreationPinID);
+			const Pin& pin = ScriptProxy::GetPin(*myCurrentNodeGraph, myLinkCreationPinID);
 
 			DataTypeID droppedPinDataTypeID = PinTypeManager::GetPinType(pin.typeID).dataTypeID;
 
 			auto nodeTypePopulationFunc = [&](NodeTypeCategory& aMainCategory) -> void
 				{
 					const std::vector<NodeType>& nodeTypes = NodeTypeManager::GetInstance().GetNodeTypes();
+
+					/*auto filtered = Global::GetNodeTypeManager().GetNodeTypeIDsFiltered(
+						[this](const NodeType& aNodeType) -> bool
+						{
+							return aNodeType.nodeRecipe.ownerDataTypeID == GetDataTypeID<bool>();
+						}
+					);*/
 
 					const std::vector<NodeTypeID> filtered = IndexStream<NodeType, NodeTypeID>(nodeTypes, [](NodeTypeID anID) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(anID); })
 						.Filter([&](const NodeType& aNodeType) -> bool
@@ -709,6 +732,48 @@ namespace Editor
 			ShowNodeCreationMenu(nodeTypePopulationFunc, onClickCallback);
 
 			ImGui::EndPopup();
+		}
+
+		if (Global::IsDebugging())
+		{
+
+			if (ImGui::Begin("Debug Data"))
+			{
+
+				ImGui::Text("Links:");
+
+				for (const Link& link : myCurrentNodeGraph->myLinks)
+				{
+					if (link.isDestroyed)
+					{
+						continue;
+					}
+					ImGui::Separator();
+					ImGui::Text("In: %d, Out: %d", link.inputPinID, link.outputPinID);
+				}
+
+				ImGui::Separator();
+
+				if (myHoveredPinID != InvalidID<PinID>())
+				{
+					ImGui::Text("Hovered PinID: %d", myHoveredPinID);
+					const Pin& hoveredPin = ScriptProxy::GetPin(*myCurrentNodeGraph, myHoveredPinID);
+					ImGui::Text("Connections:");
+					for (PinID connectionID : hoveredPin.connectedPinIDs)
+					{
+						ImGui::Text("%d", connectionID);
+					}
+				}
+
+			}
+			ImGui::End();
+		}
+
+		ImNodes::GetStyle().PinCircleRadius = 5.f;
+
+		if (!ImNodes::IsPinHovered(&myHoveredPinID))
+		{
+			myHoveredPinID = InvalidID<PinID>();
 		}
 	}
 

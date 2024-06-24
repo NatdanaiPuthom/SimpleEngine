@@ -23,10 +23,6 @@ namespace SCR
 
 		void Clear();
 
-		//bool& IsTracking();
-		bool& IsDebugPrinting();
-		const bool& IsDebugPrinting() const;
-
 		size_t GetUndoSize() const;
 		size_t GetRedoSize() const;
 
@@ -53,9 +49,6 @@ namespace SCR
 		std::stack<std::shared_ptr<Command>> myRedoStack;
 
 		std::shared_ptr<CompositeCommand> myCurrentCompositeCommand;
-
-		bool myIsTracking;
-		bool myIsDebugPrinting;
 
 	};
 

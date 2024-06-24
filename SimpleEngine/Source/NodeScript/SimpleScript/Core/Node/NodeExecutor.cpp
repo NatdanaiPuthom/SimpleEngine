@@ -22,6 +22,7 @@ namespace SCR
 		myExecutionContext.script = aScriptInstance.myScript;
 		myExecutionContext.executionContext = &anExecutionContext;
 		myExecutionContext.scriptInstance = &aScriptInstance;
+		myExecutionContext.nodeGraphInstance = &aScriptInstance.myEventGraphInstance;
 
 		auto it = anEventGraph.myEventNodes.find(anEventHash);
 

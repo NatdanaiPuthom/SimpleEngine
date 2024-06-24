@@ -4,8 +4,6 @@
 namespace SCR
 {
 	CommandTracker::CommandTracker()
-		: myIsTracking(true)
-		, myIsDebugPrinting(false)
 	{
 	}
 
@@ -41,7 +39,7 @@ namespace SCR
 	void CommandTracker::EndComposite()
 	{
 		CompositeCommand::eEndCode endCode = myCurrentCompositeCommand->End();
-		
+
 		if (endCode == CompositeCommand::eEndCode::Ended)
 		{
 			std::shared_ptr<CompositeCommand> composite = myCurrentCompositeCommand;
@@ -53,22 +51,6 @@ namespace SCR
 			myCurrentCompositeCommand.reset();
 		}
 	}
-
-	/*bool& CommandTracker::IsTracking()
-	{
-		return myIsTracking;
-	}*/
-
-	bool& CommandTracker::IsDebugPrinting()
-	{
-		return myIsDebugPrinting;
-	}
-
-	const bool& CommandTracker::IsDebugPrinting() const
-	{
-		return myIsDebugPrinting;
-	}
-
 
 	size_t CommandTracker::GetUndoSize() const
 	{
@@ -82,7 +64,7 @@ namespace SCR
 
 	void CommandTracker::DoCommand(std::shared_ptr<Command> aCommand, bool aExecuteCommand)
 	{
-		if (myIsTracking && myCurrentCompositeCommand)
+		if (myCurrentCompositeCommand)
 		{
 			myCurrentCompositeCommand->AddCommand(aCommand);
 			return;
@@ -92,15 +74,13 @@ namespace SCR
 			aCommand->DoInternal();
 		}
 
-		if (myIsTracking)
-		{
-			myUndoStack.push(aCommand);
+		myUndoStack.push(aCommand);
 
-			while (!myRedoStack.empty())
-			{
-				myRedoStack.pop();
-			}
+		while (!myRedoStack.empty())
+		{
+			myRedoStack.pop();
 		}
+
 	}
 
 	void CommandTracker::UndoCommand()

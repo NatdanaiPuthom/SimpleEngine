@@ -214,14 +214,14 @@ namespace SCR
 		{ static_cast<CastTo>(a) } -> std::same_as<CastTo>;
 	};
 
-	template<typename Callable, typename ReturnType>
-	concept ReturnsType = requires (Callable aCallable)
+	template<typename Callable, typename ReturnType, typename... Args>
+	concept ReturnsType = requires (Callable aCallable, Args&&... args)
 	{
-		{ aCallable() } -> std::same_as<ReturnType>;
+		{ aCallable(std::forward<Args>(args)...) } -> std::same_as<ReturnType>;
 	};
 
-	template<typename T>
-	concept Predicate = ReturnsType<T, bool>;
+	template<typename T, typename... Args>
+	concept Predicate = ReturnsType<T, bool, Args...>;
 
 	template<typename T, typename Base>
 	concept IsBaseOf = std::is_base_of_v<Base, T>;

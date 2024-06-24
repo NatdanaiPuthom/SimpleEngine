@@ -29,8 +29,6 @@ namespace SCR
 		std::vector<Node> myNodes;
 		std::vector<std::vector<NodeID>> myNodeIDsByNodeTypeID;
 
-		std::unordered_map<NodeID, std::any> myInternalNodeData;
-
 	};
 
 }

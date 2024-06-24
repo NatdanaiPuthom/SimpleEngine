@@ -52,36 +52,10 @@ namespace SCR
 					);
 				}
 			}
-
-			/*static NodeID CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, ScriptVec2 aPosition, CommandTracker* aCommandTracker)
-			{
-				const NodeType& nodeType = NodeTypeManager::GetNodeType(aNodeTypeID);
-				assert(nodeType.nodeRecipe.eventID == EnumCast(eNodeEventType::None));
-
-				if (aCommandTracker)
-				{
-					aCommandTracker->BeginComposite("Create Node + Set Node Pos");
-				}
-
-				NodeID nodeID = InternalModifier::CreateNode(aNodeGraph, aNodeTypeID, aCommandTracker);
-
-
-
-				SetNodePosition(nodeID, aPosition, aNodeGraph, aCommandTracker);
-
-				if (aCommandTracker)
-				{
-					aCommandTracker->EndComposite();
-				}
-
-				return nodeID;
-			}*/
 		}
 
 		NodeID CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, ScriptVec2 aPosition, CommandTracker* aCommandTracker)
 		{
-			//const NodeType& nodeType = NodeTypeManager::GetNodeType(aNodeTypeID);
-			//assert(nodeType.nodeRecipe.eventID == EnumCast(eNodeEventType::None));
 
 			if (aCommandTracker)
 			{
@@ -122,7 +96,7 @@ namespace SCR
 
 			for (PinID pinID : pinIDs)
 			{
-				if (TryCreateLink(pinID, aConnection, aNodeGraph, aCommandTracker))
+				if (TryCreateLink(pinID, aConnection, aNodeGraph, aCommandTracker) != InvalidID<LinkID>())
 				{
 					break;
 				}
@@ -191,12 +165,12 @@ namespace SCR
 			return nodeID;
 		}
 
-		Link TryCreateLink(PinID aPinID1, PinID aPinID2, /*Script& aScript, */NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+		LinkID TryCreateLink(PinID aPinID1, PinID aPinID2, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
 			Link createdLink = ScriptLinker::ArePinsLinkable(aNodeGraph, aPinID1, aPinID2);
 			if (!createdLink)
 			{
-				// Check if we can replace node with overloaded opearator node
+				// Check if we can replace node with overloaded operator node
 				const Pin& pin1 = ScriptProxy::GetPin(aNodeGraph, aPinID1);
 				const Pin& pin2 = ScriptProxy::GetPin(aNodeGraph, aPinID2);
 
@@ -205,28 +179,23 @@ namespace SCR
 
 				if (pinType1.dataTypeID == typeid(Wildcard).hash_code())
 				{
-					return InternalModifier::ReplaceOperatorNode(/*aScript, */aNodeGraph, aPinID1, aPinID2, aCommandTracker);
+					InternalModifier::ReplaceOperatorNode(aNodeGraph, aPinID1, aPinID2, aCommandTracker);
 
 				}
 				else if (pinType2.dataTypeID == typeid(Wildcard).hash_code())
 				{
-					return InternalModifier::ReplaceOperatorNode(/*aScript, */aNodeGraph, aPinID2, aPinID1, aCommandTracker);
+					InternalModifier::ReplaceOperatorNode(aNodeGraph, aPinID2, aPinID1, aCommandTracker);
 				}
-				else
-				{
-					return Link{};
-				}
+
+				return InvalidID<LinkID>();
 			}
 
-			InternalModifier::RebindLink(aNodeGraph, createdLink.inputPinID, createdLink.outputPinID, aCommandTracker);
-
-
-			return Link{ aPinID2, aPinID1 };
+			return InternalModifier::CreateLink(aNodeGraph, createdLink.inputPinID, createdLink.outputPinID, aCommandTracker);
 		}
 
-		void DestroyLink(const PinID aInputPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+		void DestroyLink(const LinkID aLinkID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
-			InternalModifier::RebindLink(aNodeGraph, aInputPinID, InvalidID<PinID>(), aCommandTracker);
+			InternalModifier::DestroyLink(aNodeGraph, aLinkID, aCommandTracker);
 		}
 
 		void DestoryLinksByOutputPinID(const PinID aOutputPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
@@ -239,7 +208,7 @@ namespace SCR
 			}
 			for (PinID connectedInputPin : outputPin.connectedPinIDs)
 			{
-				DestroyLink(connectedInputPin, aNodeGraph, aCommandTracker);
+				DestroyLink(Link{ connectedInputPin, aOutputPinID }, aNodeGraph, aCommandTracker);
 			}
 
 			if (aCommandTracker)
@@ -248,7 +217,7 @@ namespace SCR
 			}
 		}
 
-		void DestroyNode(const NodeID aNodeID, /*Script& aScript, */NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+		void DestroyNode(const NodeID aNodeID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
 			struct DestroyNodeData
 			{
@@ -269,7 +238,6 @@ namespace SCR
 				{
 					Node& node = aData.nodeGraph->myNodeManager->myNodes[aData.nodeID];
 					node.isDestroyed = true;
-					//ScriptProxy::GetNodeExecutor().UnbindFromEvent(NodeRef{ aData.nodeID, aData.nodeGraph });
 				};
 
 			if (!aCommandTracker)
@@ -285,26 +253,13 @@ namespace SCR
 						Node& node = aData.nodeGraph->myNodeManager->myNodes[aData.nodeID];
 						node.isDestroyed = false;
 
-						//ScriptProxy::GetNodeExecutor().BindToEvent(NodeRef{ aData.nodeID, aData.nodeGraph });
 					}, "Destroy Node"
 				);
 			}
 
-			//InternalModifier::UnbindVariable(aScript, aNodeID);
-
-			for (PinID inputPinID : ScriptProxy::GetNode(aNodeGraph, aNodeID).inputPins)
+			for (LinkID linkID : ScriptLinker::GetLinkIDsByNode(aNodeGraph, aNodeID))
 			{
-				DestroyLink(inputPinID, aNodeGraph, aCommandTracker);
-			}
-
-			for (PinID outputPinID : ScriptProxy::GetNode(aNodeGraph, aNodeID).outputPins)
-			{
-				const Pin& outputPin = ScriptProxy::GetPin(aNodeGraph, outputPinID);
-
-				for (PinID connectedInputPin : outputPin.connectedPinIDs)
-				{
-					DestroyLink(connectedInputPin, aNodeGraph, aCommandTracker);
-				}
+				DestroyLink(linkID, aNodeGraph, aCommandTracker);
 			}
 
 
@@ -386,16 +341,20 @@ namespace SCR
 			}
 		}
 
-		void CommitNodeDrag(const std::vector<NodeDragData>& aDragData, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+		void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aDragData, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
+			if (aDragData.empty())
+			{
+				return;
+			}
 			if (aCommandTracker)
 			{
 				aCommandTracker->BeginComposite("Drag nodes");
 			}
 
-			for (const NodeDragData& dragData : aDragData)
+			for (const auto& [nodeID, dragData] : aDragData)
 			{
-				SetNodePosition(dragData.nodeID, dragData.pos, aNodeGraph, aCommandTracker);
+				SetNodePosition(nodeID, dragData.endPos, dragData.startPos, aNodeGraph, aCommandTracker);
 			}
 
 			if (aCommandTracker)
@@ -460,14 +419,49 @@ namespace SCR
 
 		}
 
-		void EditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker*)
+		void EditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
 			const Pin& pin = aNodeGraph.myPinManager->myPins[aPinID];
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
+			void* tempDataPtr = Global::GetDataTypeManager().AllocateData(pinType.dataTypeID, Global::Internal::GetFrameBuffer(), pin.dataPtr);
 			if (Global::GetDataTypeManager().EditData(pinType.dataTypeID, pin.dataPtr))
 			{
+				if (!aCommandTracker)
+				{
+					return;
+				}
 
+				void* previousDataPtr = Global::GetDataTypeManager().AllocateData(pinType.dataTypeID, Global::Internal::GetEditBuffer(), tempDataPtr);
+
+				struct EditPinData
+				{
+					PinID pinID = InvalidID<PinID>();
+					void* previousDataPtr = nullptr;
+					NodeGraph* nodeGraph = nullptr;
+				} data;
+
+				data.pinID = aPinID;
+				data.previousDataPtr = previousDataPtr;
+				data.nodeGraph = &aNodeGraph;
+
+				aCommandTracker->RegisterCommand<FunctionCommand<EditPinData>>(data, 
+					[](const EditPinData& aData) -> void
+					{
+						const Pin& pin = aData.nodeGraph->myPinManager->myPins[aData.pinID];
+						const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
+
+						Global::GetDataTypeManager().CopyData(pinType.dataTypeID, pin.dataPtr, aData.previousDataPtr);
+					},
+					[](const EditPinData& aData) -> void
+					{
+
+						const Pin& pin = aData.nodeGraph->myPinManager->myPins[aData.pinID];
+						const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
+
+						Global::GetDataTypeManager().SwapData(pinType.dataTypeID, pin.dataPtr, aData.previousDataPtr);
+					}
+				);
 			}
 		}
 
@@ -485,11 +479,9 @@ namespace SCR
 		{
 			Variable& variable = ScriptProxy::GetVariableRef(aScript, aVarID);
 
-			//void* runtimeDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryManager(aScript));
 			void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryManager(aScript));
 
 			variable.dataTypeID = aDataTypeID;
-			//variable.runtimeDataPtr = runtimeDataPtr;
 			variable.defaultValueDataPtr = defaultValueDataPtr;
 
 			DestroyVariableNodes(aVarID, aScript, aScript.GetEventGraph(), aCommandTracker);
@@ -686,6 +678,11 @@ namespace SCR
 		FunctionID CreateGlobalFunction(const std::string& aName)
 		{
 			return InternalModifier::CreateFunction(aName);
+		}
+
+		void BeginFrame()
+		{
+			Global::Internal::GetFrameBuffer().Clear();
 		}
 
 	}

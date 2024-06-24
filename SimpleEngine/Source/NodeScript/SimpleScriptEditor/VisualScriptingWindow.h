@@ -4,6 +4,7 @@
 #include "SimpleScriptEditor/NodeCreatorWindow.h"
 #include "SimpleScriptEditor/FunctionWindow.h"
 #include "SimpleScript/Core/SystemTypes/ScriptVec2.h"
+#include "SimpleScript/Core/ScriptModifier.h"
 #include <External/imgui.h>
 #include <vector>
 #include <string>
@@ -86,13 +87,12 @@ namespace Editor
 		SCRIPT::NodeGraph* myCurrentNodeGraph = nullptr;
 		SCRIPT::Script* myCurrentScript = nullptr;
 
-		//size_t myCurrentIndex;
-		//std::vector<ImNodesContext*> myContexts;
 		std::unordered_map<SCRIPT::NodeGraph*, ImNodesContext*> myImNodesContexts;
 
 		SCRIPT::PinID myLinkCreationPinID;
 		SCRIPT::PinID myStartedLinkPinID;
 		std::vector<SCRIPT::PinID> myPinIDsToHighlight;
+		std::unordered_map<SCRIPT::NodeID, SCRIPT::NodeDragData> myNodeDragData;
 
 		VariableWindow myVariableWindow;
 		NodeCreatorWindow myNodeCreatorWindow;
@@ -104,6 +104,9 @@ namespace Editor
 		ImVec2 myDragStartPos;
 		ImVec2 myDragEndPos;
 
-		int myHoveredLinkID = SCRIPT::InvalidID<SCRIPT::PinID>();
+		SCRIPT::PinID myHoveredLinkID = SCRIPT::InvalidID<SCRIPT::PinID>();
+		SCRIPT::PinID myHoveredPinID = SCRIPT::InvalidID<SCRIPT::PinID>();
+
+		bool myIsContextSensitive = false;
 	};
 }

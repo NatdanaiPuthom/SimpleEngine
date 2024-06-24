@@ -9,8 +9,8 @@ namespace SCR
 
 	struct NodeDragData
 	{
-		NodeID nodeID;
-		ScriptVec2 pos;
+		ScriptVec2 startPos;
+		ScriptVec2 endPos;
 	};
 
 	class Script;
@@ -21,21 +21,20 @@ namespace SCR
 	namespace Modify
 	{
 		NodeID CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
-		//NodeID CreateNode(EventGraph& anEventGraph, const NodeTypeID aNodeTypeID, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeID CreateNodeAutoLink(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, PinID aConnection, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeID CreateNode(NodeGraph& aNodeGraph, const std::string& aName, bool& aSuccess, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);
 		NodeID CreateGetterNode(Script& aScript, NodeGraph& aNodeGraph, DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeID CreateSetterNode(Script& aScript, NodeGraph& aNodeGraph, DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
 
-		Link TryCreateLink(PinID aPinID1, PinID aPinID2, /*Script& aScript, */NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
-		void DestroyLink(const PinID aInputPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		LinkID TryCreateLink(PinID aPinID1, PinID aPinID2, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void DestroyLink(const LinkID aLinkID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 		void DestoryLinksByOutputPinID(const PinID aOutputPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
-		void DestroyNode(const NodeID aNodeID, /*Script& aScript, */NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void DestroyNode(const NodeID aNodeID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 		void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
-		void SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker = nullptr);
 		void SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, ScriptVec2 aOldPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
-		void CommitNodeDrag(const std::vector<NodeDragData>& aDragData, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aDragData, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
 		VarID CreateVariable(Script& aScript, DataTypeID aDataTypeID = typeid(bool).hash_code(), CommandTracker* aCommandTracker = nullptr);
 		void DestroyVariable(VarID aVarID, Script& aScript, CommandTracker* aCommandTracker);
@@ -57,6 +56,8 @@ namespace SCR
 		void DeletePinAtIndexCustomEvent(const size_t anIndex, const CustomEventID aNodeTypeID);
 
 		FunctionID CreateGlobalFunction(const std::string& aName);
+
+		void BeginFrame();
 	}
 
 	//class ScriptModifier

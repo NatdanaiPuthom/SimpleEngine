@@ -13,10 +13,11 @@ namespace SCR
 		const eNodeTrait traits = eNodeTrait::None;
 		const EventID eventID = 0;
 		const eNodeOperatorTrait operatorTrait = eNodeOperatorTrait::None;
+		const DataTypeID ownerDataTypeID = GlobalDataTypeID;
 		std::vector<PinTypeID> inputPinTypeIDs;
 		std::vector<PinTypeID> outputPinTypeIDs;
-		//const MemoryPoolID tupleMemoryID = InvalidID<MemoryPoolID>();
 		const MemoryPoolID functionMemoryID = InvalidID<MemoryPoolID>();
+		const DataTypeID nodeStateDataTypeID = InvalidID<DataTypeID>();
 	};
 
 	struct NodeType

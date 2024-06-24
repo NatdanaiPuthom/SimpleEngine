@@ -48,65 +48,100 @@ namespace SCR
 		return InvalidID<size_t>();
 	}
 
-	bool ScriptLinker::AreDataPinsLinkable(const NodeGraph& aNodeGraph, const PinID aOutputPinID, const PinID aInputPinID)
+	static bool ArePinsLinkableByDataType(const NodeGraph& aNodeGraph, const PinID aPinID1, const PinID aPinID2)
 	{
-		const Pin& outputPin = ScriptProxy::GetPin(aNodeGraph, aOutputPinID);
-		const Pin& inputPin = ScriptProxy::GetPin(aNodeGraph, aInputPinID);
-		return PinTypeManager::GetPinType(outputPin.typeID).dataTypeID == PinTypeManager::GetPinType(inputPin.typeID).dataTypeID;
+		const Pin& pin1 = ScriptProxy::GetPin(aNodeGraph, aPinID1);
+		const Pin& pin2 = ScriptProxy::GetPin(aNodeGraph, aPinID2);
+		return PinTypeManager::GetPinType(pin1.typeID).dataTypeID == PinTypeManager::GetPinType(pin2.typeID).dataTypeID;
 	}
 
-	Link ScriptLinker::ArePinsLinkable(const NodeGraph& aNodeGraph, PinID aOutputPinID, PinID aInputPinID)
+	Link ScriptLinker::ArePinsLinkable(const NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2)
 	{
-		const Pin& outputPin = ScriptProxy::GetPin(aNodeGraph, aOutputPinID);
-		const Pin& inputPin = ScriptProxy::GetPin(aNodeGraph, aInputPinID);
+		const Pin& pin1 = ScriptProxy::GetPin(aNodeGraph, aPinID1);
+		const Pin& pin2 = ScriptProxy::GetPin(aNodeGraph, aPinID2);
+		const PinType& pinType1 = Global::GetPinTypeManager().GetPinType(pin1.typeID);
+		const PinType& pinType2 = Global::GetPinTypeManager().GetPinType(pin2.typeID);
 
-		switch (PinTypeManager::GetPinType(outputPin.typeID).flowType)
+		Link outputLink;
+
+		switch (pinType1.flowType)
 		{
 		case ePinFlowType::Input:
-			if (PinTypeManager::GetPinType(inputPin.typeID).flowType == ePinFlowType::Output)
+			if (pinType2.flowType == ePinFlowType::Output)
 			{
-				if (AreDataPinsLinkable(aNodeGraph, aInputPinID, aOutputPinID))
+				if (ArePinsLinkableByDataType(aNodeGraph, aPinID1, aPinID2))
 				{
-					std::swap(aOutputPinID, aInputPinID);
-					return { aInputPinID, aOutputPinID };
+					outputLink.inputPinID = aPinID1;
+					outputLink.outputPinID = aPinID2;
 				}
 			}
 			break;
 		case ePinFlowType::Output:
-			if (PinTypeManager::GetPinType(inputPin.typeID).flowType == ePinFlowType::Input)
+			if (pinType2.flowType == ePinFlowType::Input)
 			{
-				bool linkable = AreDataPinsLinkable(aNodeGraph, aOutputPinID, aInputPinID);
-				return linkable ? Link{ aInputPinID, aOutputPinID } : Link{};
+				if (ArePinsLinkableByDataType(aNodeGraph, aPinID1, aPinID2))
+				{
+					outputLink.inputPinID = aPinID2;
+					outputLink.outputPinID = aPinID1;
+				}
 			}
 			break;
 		default:
 			break;
 		}
-		return Link{};
+		return outputLink;
 	}
 
-	std::vector<Link> ScriptLinker::GetNodeLinks(const NodeGraph& aNodeGraph, const NodeID aNodeID)
+	LinkID ScriptLinker::GetLinkIDByPinIDs(const NodeGraph& aNodeGraph, const PinID aPinID1, const PinID aPinID2, bool aIncludeDestroyed)
 	{
+		for (LinkID id = 0; id < aNodeGraph.myLinks.size(); ++id)
+		{
+			const Link& link = aNodeGraph.myLinks[id];
+			if (!aIncludeDestroyed && link.isDestroyed)
+			{
+				continue;
+			}
+			if (link == Link{ aPinID1, aPinID2 } || link == Link{ aPinID2, aPinID1 })
+			{
+				return id;
+			}
+		}
+		return InvalidID<LinkID>();
+	}
+
+	std::vector<LinkID> ScriptLinker::GetLinkIDsByPin(const NodeGraph& aNodeGraph, const PinID aPinID)
+	{
+		std::vector<LinkID> linkIDs;
+		const Pin& pin = ScriptProxy::GetPin(aNodeGraph, aPinID);
+
+		for (PinID connectedPinID : pin.connectedPinIDs)
+		{
+			LinkID linkID = GetLinkIDByPinIDs(aNodeGraph, aPinID, connectedPinID);
+			assert(linkID != InvalidID<LinkID>());
+
+			linkIDs.push_back(linkID);
+		}
+
+		return linkIDs;
+	}
+
+	std::vector<LinkID> ScriptLinker::GetLinkIDsByNode(const NodeGraph& aNodeGraph, const NodeID aNodeID)
+	{
+		std::vector<LinkID> linkIDs;
 		const Node& node = ScriptProxy::GetNode(aNodeGraph, aNodeID);
 
-		std::vector<Link> links;
 		for (PinID inputPinID : node.inputPins)
 		{
-			const Pin& inputPin = ScriptProxy::GetPin(aNodeGraph, inputPinID);
-			for (PinID connectedOutputPinID : inputPin.connectedPinIDs)
-			{
-				links.emplace_back(inputPinID, connectedOutputPinID);
-			}
+			std::vector<LinkID> inputLinks = GetLinkIDsByPin(aNodeGraph, inputPinID);
+			linkIDs.insert(linkIDs.end(), inputLinks.begin(), inputLinks.end());
 		}
 		for (PinID outputPinID : node.outputPins)
 		{
-			const Pin& outputPin = ScriptProxy::GetPin(aNodeGraph, outputPinID);
-
-			for (PinID connectedInputPinID : outputPin.connectedPinIDs)
-			{
-				links.emplace_back(connectedInputPinID, outputPinID);
-			}
+			std::vector<LinkID> outputLinks = GetLinkIDsByPin(aNodeGraph, outputPinID);
+			linkIDs.insert(linkIDs.end(), outputLinks.begin(), outputLinks.end());
 		}
-		return links;
+
+
+		return linkIDs;
 	}
 }

@@ -24,7 +24,7 @@ namespace SCR
 		VariableManagerInstance& operator=(const VariableManagerInstance& aOther);
 		VariableManagerInstance& operator=(VariableManagerInstance&&) noexcept = default;
 
-		void Compile(VariableManager& aVariableManager);
+		void Init(VariableManager& aVariableManager);
 
 	
 		std::vector<VariableInstance> myVariables;

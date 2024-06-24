@@ -16,7 +16,6 @@ namespace SCR
 	NodeManager::NodeManager(const NodeManager& aOther)
 		: myNodes(aOther.myNodes)
 		, myNodeIDsByNodeTypeID(aOther.myNodeIDsByNodeTypeID)
-		, myInternalNodeData(aOther.myInternalNodeData)
 	{
 	}
 

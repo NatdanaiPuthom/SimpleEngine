@@ -3,6 +3,7 @@
 #include "Core/Node/NodeType.h"
 #include "Core/CustomEvent/CustomEvent.h"
 #include "Core/Function/ScriptFunction.h"
+#include "Core/Utilities/MetaScript.h"
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -41,6 +42,9 @@ namespace SCR
 
 		NodeType& GetNodeType(const NodeTypeID anID);
 		const std::vector<NodeType>& GetNodeTypes();
+		
+		template<Predicate<const NodeType&> FilterPredicate>
+		std::vector<NodeTypeID> GetNodeTypeIDsFiltered(FilterPredicate&& aPredicate);
 
 		CustomEvent& GetCustomEvent(const CustomEventID anID);
 		const std::vector<CustomEvent>& GetCustomEvents();
@@ -58,7 +62,6 @@ namespace SCR
 		std::string GetNameDirectory(const NodeTypeID anID);
 
 		void Assert();
-		//static void Destroy();
 
 	private:
 
@@ -75,4 +78,22 @@ namespace SCR
 		std::unordered_map<DataTypeID, NodeTypeID> mySetterNodeTypeIDs;
 		std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> myOperatorNodeTypeIDs;
 	};
+
+	template<Predicate<const NodeType&> FilterPredicate>
+	inline std::vector<NodeTypeID> NodeTypeManager::GetNodeTypeIDsFiltered(FilterPredicate&& aPredicate)
+	{
+		std::vector<NodeTypeID> nodeTypeIDs;
+		nodeTypeIDs.reserve(myNodeTypes.size());
+
+		for (NodeTypeID id = 0; const NodeType& nodeType : myNodeTypes)
+		{
+			if (aPredicate(nodeType))
+			{
+				nodeTypeIDs.push_back(id);
+			}
+			id++;
+		}
+
+		return nodeTypeIDs;
+	}
 }

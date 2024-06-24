@@ -28,6 +28,7 @@ namespace SCR
 
 		std::unique_ptr<NodeManager> myNodeManager;
 		std::unique_ptr<PinManager> myPinManager;
+		std::vector<Link> myLinks;
 
 		MemoryManager myMemoryManager;
 		//MemoryPool myMemoryPool;

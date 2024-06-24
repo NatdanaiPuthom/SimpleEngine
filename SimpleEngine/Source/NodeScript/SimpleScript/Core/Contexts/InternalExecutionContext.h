@@ -53,17 +53,19 @@ namespace SCR
 	class InternalModifier;
 	struct ExecutionContextBase;
 	class ScriptInstance;
+	class NodeGraphInstance;
 
 	struct InternalExecutionContext final
 	{
 		friend class NodeExecutor;
 
-		Script* script;
+		Script* script = nullptr;
 		const ExecutionContextBase* executionContext = nullptr;
 		NodeExecutionData nodeData;
 		ExecutionQueue* executionQueue = nullptr;
 		void* owner = nullptr;
-		ScriptInstance* scriptInstance;
+		ScriptInstance* scriptInstance = nullptr;
+		NodeGraphInstance* nodeGraphInstance = nullptr;
 
 		const NodeExecutionData& GetNodeData() const
 		{

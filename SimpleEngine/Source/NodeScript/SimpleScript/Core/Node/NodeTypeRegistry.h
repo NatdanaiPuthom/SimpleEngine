@@ -15,7 +15,7 @@ namespace SCR
 		const std::string defaultPinNames = aDescription.showDataTypePinNames ? "#T" : "";
 		aDescription.inputPinNames.resize(aNodeRecipe.inputPinTypeIDs.size(), defaultPinNames);
 		aDescription.outputPinNames.resize(aNodeRecipe.outputPinTypeIDs.size(), defaultPinNames);
-		
+
 
 		for (size_t i = 0; i < aDescription.inputPinNames.size(); ++i)
 		{
@@ -25,7 +25,7 @@ namespace SCR
 		{
 			PinTypeManager::GetPinType(aNodeRecipe.outputPinTypeIDs[i]).name = aDescription.outputPinNames[i];
 		}
-		return NodeTypeManager::GetInstance().Register(NodeType{std::move(aNodeRecipe), aNodeName});
+		return NodeTypeManager::GetInstance().Register(NodeType{ std::move(aNodeRecipe), aNodeName });
 	}
 
 	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
@@ -59,7 +59,7 @@ namespace SCR
 
 		const VariableInstance& variableInstance = aContext->scriptInstance->myVariableManagerInstance.myVariables[varID];
 		//const Variable& variable = ScriptProxy::GetVariable(*aContext->script, varID);
-		
+
 		T& runtimeValue = *reinterpret_cast<T*>(variableInstance.runtimeDataPtr);
 		//T& runtimeValue = *reinterpret_cast<T*>(variable.runtimeDataPtr);
 		runtimeValue = aValue;
@@ -136,22 +136,31 @@ namespace SCR
 					}
 					return anObject->*aVariable;
 				};
-			;
-			RegisterInternal(CreateNodeRecipe(getterFunc, TypeList<std::remove_const_t<MemberType>>(), TypeList<ClassType*>()), aDirectory + "Get " + aVariableName);
+			NodeTypeID getterNodeTypeID = RegisterInternal(CreateNodeRecipe(getterFunc, TypeList<std::remove_const_t<MemberType>>(), TypeList<ClassType*>()), aDirectory + "Get " + aVariableName);
+
+			DataType* dataType = Global::GetDataTypeManager().Find<ClassType>();
+			if (dataType)
+			{
+				dataType->functions.push_back(getterNodeTypeID);
+			}
 
 			if constexpr (!std::is_const_v<MemberType>)
-			{ 
-				auto setterFunc = [aVariable](Flow, ClassType* anObject, MemberType aValue) -> Flow
+			{
+				auto setterFunc = [aVariable](Flow, ClassType* anObject, const MemberType& aValue) -> Flow
 					{
-						if (!anObject)
+						if (anObject)
 						{
-							return true;
+							anObject->*aVariable = aValue;
 						}
-						anObject->*aVariable = aValue;
 						return true;
 					};
 				;
-				RegisterInternal(CreateNodeRecipe(setterFunc, TypeList<Flow>(), TypeList<Flow, ClassType*, std::remove_const_t<MemberType>>()), aDirectory + "Set " + aVariableName);
+				NodeTypeID setterNodeTypeID = RegisterInternal(CreateNodeRecipe(setterFunc, TypeList<Flow>(), TypeList<Flow, ClassType*, std::remove_const_t<MemberType>>()), aDirectory + "Set " + aVariableName);
+
+				if (dataType)
+				{
+					dataType->functions.push_back(setterNodeTypeID);
+				}
 			}
 		}
 	};

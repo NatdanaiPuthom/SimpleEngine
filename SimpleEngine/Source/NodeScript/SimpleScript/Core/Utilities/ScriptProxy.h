@@ -5,8 +5,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include "NodeTypeManager.h"
-
 namespace SCR
 {
 
@@ -38,30 +36,18 @@ namespace SCR
 		friend class InternalModifier;
 		ScriptProxy() = delete;
 	public:
-		
-		/*static ScriptFoundation& GetFoundation(Script& aScript);
-		static const ScriptFoundation& GetFoundation(const Script& aScript);
-
-		static CallStack& GetCallStack(Script& aScript);
-		static const CallStack& GetCallStack(const Script& aScript);*/
+	
 
 		static MemoryPool& GetGlobalMemoryPool();
 
-
-		//static MemoryPool& GetGraphMemoryPool(NodeGraph& aNodeGraph);
-		//static const MemoryPool& GetGraphMemoryPool(const NodeGraph& aNodeGraph);
-
 		static MemoryManager& GetNodeGraphMemoryManager(NodeGraph& aNodeGraph);
 
-		//static MemoryPool& GetVariableMemoryPool(Script& aScript);
-		//static const MemoryPool& GetVariableMemoryPool(const Script& aScript);
 		static MemoryManager& GetVariableMemoryManager(Script& aScript);
 		static const MemoryManager& GetVariableMemoryManager(const Script& aScript);
 
 		static NodeGraph& GetEventGraph(Script& aScript);
 		static const NodeGraph& GetEventGraph(const Script& aScript);
 
-		//static NodeExecutor& GetNodeExecutor(Script& aScript);
 		static NodeExecutor& GetNodeExecutor();
 
 		static VariableManager& GetVariableManager(Script& aScript);
@@ -76,16 +62,6 @@ namespace SCR
 
 		static const std::vector<NodeID>& GetNodeIDsByNodeType(const NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID);
 		static std::vector<std::vector<NodeID>>& GetNodeIDsByNodeTypeContainer(NodeGraph& aNodeGraph);
-
-		static std::unordered_map<NodeID, std::any>& GetNodeStateMap(NodeGraph& aNodeGraph);
-
-		template<typename T>
-		static T& GetNodeState(NodeGraph& aNodeGraph, NodeID aNodeID)
-		{
-			std::any& anyData = GetNodeStateMap(aNodeGraph).at(aNodeID);
-			T& data = std::any_cast<T&>(anyData);
-			return data;
-		}
 
 #pragma region Types
 		

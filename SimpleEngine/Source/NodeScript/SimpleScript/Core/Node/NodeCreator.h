@@ -17,6 +17,7 @@
 #include "../SystemTypes/ScriptFlow.h"
 #include "../Utilities/MetaScript.h"
 #include "../Global/ScriptGlobal.h"
+#include "../Instance/ScriptInstance.h"
 
 namespace SCR
 {
@@ -44,7 +45,6 @@ namespace SCR
 
 				const Pin& pin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, aPinSetData.id);
 
-				//T& memoryValue = ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph).At<T>(pin.memoryID);
 				T& memoryValue = *reinterpret_cast<T*>(pin.dataPtr);
 				memoryValue = value;
 
@@ -54,12 +54,10 @@ namespace SCR
 					{
 						if constexpr (FlowType == ePinFlowType::Output)
 						{
-							//NodeExecutor& executor = ScriptProxy::GetNodeExecutor(*aContext.script);
 
 							for (PinID connectedInputPinID : pin.connectedPinIDs)
 							{
 								const Pin& connectedInputPin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, connectedInputPinID);
-								//executor.Push({ NodeRef{connectedInputPin.nodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
 								aContext.executionQueue->Push({ NodeRef{connectedInputPin.nodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
 							}
 						}
@@ -239,70 +237,6 @@ namespace SCR
 		}
 	}
 
-	/*template<size_t Size>
-	std::array<std::tuple<MemoryPoolID>, Size> ToArray(const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
-	{
-		std::array<std::tuple<MemoryPoolID>, Size> idArray;
-		for (size_t i = 0; i < Size; ++i)
-		{
-			const Pin& pin = ScriptProxy::GetPin(aContext.script, aPinIDs[i]);
-			idArray[i] = std::tuple<MemoryPoolID>{ pin.memoryID };
-		}
-		return idArray;
-	}
-
-	template<size_t Size>
-	std::array<MemoryPoolID, Size> ToArrayNew(const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
-	{
-		std::array<MemoryPoolID, Size> idArray{};
-		for (size_t i = 0; i < Size; ++i)
-		{
-			const Pin& pin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, aPinIDs[i]);
-			idArray[i] = pin.memoryID;
-		}
-		return idArray;
-	}*/
-
-	//template<typename TupleType, size_t Index, typename Arg, typename... Args>
-	//void CreateInputPackInternal(TupleType& aTuple, const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
-	//{
-	//	if constexpr (Index < std::tuple_size_v<TupleType>)
-	//	{
-	//		const Pin& pin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, aPinIDs[Index]);
-	//		std::get<Index>(aTuple) = *reinterpret_cast<Arg*>(pin.dataPtr);
-	//		CreateInputPackInternal<TupleType, Index + 1, Args...>(aPinIDs, aContext);
-	//	}
-	//}
-
-	//template<typename... Args>
-	//std::tuple<ReferenceWrapper<Args>...> CreateInputPack(const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
-	//{
-	//	std::tuple<ReferenceWrapper<Args>...> tuple;
-	//	CreateInputPackInternal<std::tuple<ReferenceWrapper<Args>...>, 0, Args...>(tuple, aPinIDs, aContext);
-	//	return tuple;
-	//}
-
-	//// Internal recursive function
-	//template <typename TupleType, size_t Index = 0, typename... Args>
-	//void CreateInputPackInternal(TupleType& aTuple, const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext) 
-	//{
-	//	if constexpr (Index < std::tuple_size_v<TupleType>) 
-	//	{
-	//		const Pin& pin = ScriptProxy::GetPin(aContext.nodeData.nodeRef.nodeGraph, aPinIDs[Index]);
-	//		std::get<Index>(aTuple) = ReferenceWrapper(*reinterpret_cast<Args*>(pin.dataPtr));
-	//		CreateInputPackInternal<TupleType, Index + 1, Args...>(aTuple, aPinIDs, aContext);
-	//	}
-	//}
-
-	//// Entry point function
-	//template <typename... Args>
-	//std::tuple<ReferenceWrapper<Args>...> CreateInputPack(const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext) 
-	//{
-	//	std::tuple<ReferenceWrapper<Args>...> tuple;
-	//	CreateInputPackInternal<std::tuple<ReferenceWrapper<Args>...>, 0, Args...>(tuple, aPinIDs, aContext);
-	//	return tuple;
-	//}
-
 	// Function definitions.
 	template<typename TupleType, size_t Index, typename Arg, typename... Args>
 	void CreateInputPackInternal(TupleType& aTuple, const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
@@ -342,7 +276,7 @@ namespace SCR
 	template<typename...>
 	struct TypeList {};
 
-	template<bool TakesNodeState, typename NodeStateDataType, typename... OutputTypes, typename... InputTypes>
+	template<typename... OutputTypes, typename... InputTypes>
 	CreateNodeSignature CreateCreateNodeFunction(TypeList<OutputTypes...>, TypeList<InputTypes...>)
 	{
 		return [](const NodeID aNodeID, const NodeTypeID aNodeTypeID, NodeGraph& aNodeGraph) -> Node
@@ -352,11 +286,6 @@ namespace SCR
 				constexpr size_t PinOutputSize = sizeof...(OutputTypes);
 
 				// Create Node Function
-
-				if constexpr (TakesNodeState)
-				{
-					InternalModifier::AddNodeState<NodeStateDataType>(aNodeGraph, aNodeID);
-				}
 
 				// Input pins
 				std::array<PinID, PinInputSize> preExistingInputPinIDs = CreateInputPins<InputTypes...>(aNodeID, aNodeTypeID, aNodeGraph);
@@ -380,25 +309,14 @@ namespace SCR
 	template<bool TakesExecutionContext, bool TakesNodeState, bool TakesInternalExecutionContext, typename NodeExecutionContextType, typename NodeStateDataType, typename Callable, typename... OutputTypes, typename... InputTypes>
 	std::tuple<OutputTypes...> CallFunction(InternalExecutionContext& aContext, TypeList<OutputTypes...>, TypeList<InputTypes...>)
 	{
-		//constexpr size_t PinInputSize = sizeof...(InputTypes);
-
-		using MemoryTupleType = MemoryTupleNew<InputTypes...>;
-
-		// Node internal functionality
 
 		const Node& node = ScriptProxy::GetNode(*aContext.nodeData.nodeRef.nodeGraph, aContext.nodeData.nodeRef.nodeID);
 		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(node.typeID);
 
 		MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
 
-		//MemoryPoolID memoryTupleMemoryID = nodeType.nodeRecipe.tupleMemoryID;
-		//MemoryTupleType& memoryTuple = foundationMemoryPool.At<MemoryTupleType>(memoryTupleMemoryID);
-
 		MemoryPoolID functionMemoryID = nodeType.nodeRecipe.functionMemoryID;
 		Callable& callable = foundationMemoryPool.At<Callable>(functionMemoryID);
-
-
-		//MemoryPool* memoryPool = &ScriptProxy::GetGraphMemoryPool(*aContext.nodeData.nodeRef.nodeGraph);
 
 		std::tuple<ReferenceWrapper<InputTypes>...> inputTuple = CreateInputPack<InputTypes...>(node.inputPins, aContext);
 		inputTuple;
@@ -407,7 +325,7 @@ namespace SCR
 		{
 			NodeState<NodeStateDataType> nodeState
 			{
-				ScriptProxy::GetNodeState<NodeStateDataType>(*aContext.nodeData.nodeRef.nodeGraph, aContext.nodeData.nodeRef.nodeID)
+				aContext.nodeGraphInstance->myNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.nodeData.nodeRef.nodeID)
 			};
 
 			NodeExecutionContext<NodeExecutionContextType> executionContext
@@ -415,7 +333,6 @@ namespace SCR
 				*reinterpret_cast<const NodeExecutionContextType*>(aContext.executionContext)
 			};
 			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(executionContext, nodeState), inputTuple));
-			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), executionContext, nodeState);
 		}
 		else if constexpr (TakesExecutionContext)
 		{
@@ -424,38 +341,31 @@ namespace SCR
 				*reinterpret_cast<const NodeExecutionContextType*>(aContext.executionContext)
 			};
 			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(executionContext), inputTuple));
-			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), executionContext);
 		}
 		else if constexpr (TakesNodeState && TakesInternalExecutionContext)
 		{
 			NodeState<NodeStateDataType> nodeState
-			{
-				ScriptProxy::GetNodeState<NodeStateDataType>(*aContext.nodeData.nodeRef.nodeGraph, aContext.nodeData.nodeRef.nodeID)
+			{ 
+				aContext.nodeGraphInstance->myNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.nodeData.nodeRef.nodeID)
 			};
 			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(&aContext, nodeState), inputTuple));
-
-			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), &aContext, nodeState);
 
 		}
 		else if constexpr (TakesNodeState)
 		{
 			NodeState<NodeStateDataType> nodeState
 			{
-				ScriptProxy::GetNodeState<NodeStateDataType>(*aContext.nodeData.nodeRef.nodeGraph, aContext.nodeData.nodeRef.nodeID)
+				aContext.nodeGraphInstance->myNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.nodeData.nodeRef.nodeID)
 			};
 			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(nodeState), inputTuple));
-
-			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), nodeState);
 		}
 		else if constexpr (TakesInternalExecutionContext)
 		{
 			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(&aContext), inputTuple));
-			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext), &aContext);
 		}
 		else
 		{
 			return std::apply(callable, inputTuple);
-			//return memoryTuple.Call(callable, memoryPool, ToArrayNew<PinInputSize>(node.inputPins, aContext));
 		}
 	}
 
@@ -488,15 +398,20 @@ namespace SCR
 					NodeExecutionContextType, NodeStateDataType, Callable>(aContext, TypeList<OutputTypes...>{}, TypeList<InputTypes...>{});
 
 				// Set output of function
-				SetOutputValues(std::forward<std::tuple<OutputTypes...>>(outputValues), node.outputPins, aContext);
+				SetOutputValues(std::forward<std::tuple<OutputTypes...>>(std::move(outputValues)), node.outputPins, aContext);
 
 				aContext.executionQueue = nullptr;
 				executionQueue.Execute();
 			};
 	}
 
+	struct NodeCreationData
+	{
+		DataTypeID ownerDataTypeID = GlobalDataTypeID;
+	};
+
 	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename NodeExecutionContextType = Wildcard, typename NodeStateDataType = Wildcard, typename Callable, typename... OutputTypes, typename... InputTypes>
-	NodeRecipe CreateNodeRecipe(Callable aCallable, TypeList<OutputTypes...> aOutputList, TypeList<InputTypes...>)
+	NodeRecipe CreateNodeRecipe(Callable aCallable, TypeList<OutputTypes...> aOutputList, TypeList<InputTypes...>, const NodeCreationData& aNodeCreationData = NodeCreationData())
 	{
 		static_assert(sizeof...(OutputTypes) > 0, "A node must always have an output pin, have you considered registering it as a flow node type?");
 
@@ -505,35 +420,37 @@ namespace SCR
 		constexpr bool TakesInternalExecutionContext = HasFlag(Traits, eNodeTrait::TakesInternalExecutionContext);
 		constexpr bool HasFlow = TypeExists<Flow, OutputTypes...> || TypeExists<Flow, InputTypes...>;
 
+		DataTypeID nodeStateDataTypeID = InvalidID<DataTypeID>();
+		if constexpr (TakesNodeState)
+		{
+			Global::GetDataTypeManager().RegisterNonSerializableType<NodeStateDataType>(typeid(NodeStateDataType).name());
+			nodeStateDataTypeID = typeid(NodeStateDataType).hash_code();
+		}
+
 		eNodeTrait traits = Traits;
 		if constexpr (HasFlow)
 		{
 			traits |= eNodeTrait::HasFlow;
 		}
 
-		//static_assert(false);
-
-		//using CleanInputTypes = RemoveReferences<InputTypes...>;
-		//using MemoryTupleType = AccessorTupleNew<std::remove_cvref_t<InputTypes>...>;
-		//MemoryTupleType memoryTupleTest;
-		std::vector<PinTypeID> inputPinTypes = CreatePinTypes<ePinFlowType::Input, std::remove_cvref_t<InputTypes>...>();
-		std::vector<PinTypeID> outputPinTypes = CreatePinTypes<ePinFlowType::Output, OutputTypes...>();
+		std::vector<PinTypeID> inputPinTypeIDs = CreatePinTypes<ePinFlowType::Input, std::remove_cvref_t<InputTypes>...>();
+		std::vector<PinTypeID> outputPinTypeIDs = CreatePinTypes<ePinFlowType::Output, OutputTypes...>();
 
 		MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
 		MemoryPoolID functionMemoryID = foundationMemoryPool.Allocate<Callable>(aCallable);
-		//MemoryPoolID tupleMemoryID = foundationMemoryPool.Allocate<MemoryTupleType>(memoryTupleTest);
 
 		return NodeRecipe
 		{
-			CreateCreateNodeFunction<TakesNodeState, NodeStateDataType>(aOutputList, TypeList<std::remove_cvref_t<InputTypes>...>{}),
-			CreateExecuteNodeFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext, NodeExecutionContextType, NodeStateDataType, Callable>(aOutputList,  TypeList<std::remove_cvref_t<InputTypes>...>{}),
-			traits,
-			EnumCast(EventType),
-			OperatorTrait,
-			inputPinTypes,
-			outputPinTypes,
-			//tupleMemoryID,
-			functionMemoryID
+			.createFunction = CreateCreateNodeFunction(aOutputList, TypeList<std::remove_cvref_t<InputTypes>...>{}),
+			.executeFunction = CreateExecuteNodeFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext, NodeExecutionContextType, NodeStateDataType, Callable>(aOutputList,  TypeList<std::remove_cvref_t<InputTypes>...>{}),
+			.traits = traits,
+			.eventID = EnumCast(EventType),
+			.operatorTrait = OperatorTrait,
+			.ownerDataTypeID = aNodeCreationData.ownerDataTypeID,
+			.inputPinTypeIDs = inputPinTypeIDs,
+			.outputPinTypeIDs = outputPinTypeIDs,
+			.functionMemoryID = functionMemoryID,
+			.nodeStateDataTypeID = nodeStateDataTypeID
 		};
 	}
 
@@ -905,7 +822,7 @@ namespace SCR
 			{
 				return (aClassType->*aFuncPtr)(std::forward<InputTypes>(aInputTypes)...);
 			};
-		return CreateNodeRecipe(callable, TypeList<OutputType>(), TypeList<ClassType*, InputTypes...>());
+		return CreateNodeRecipe(callable, TypeList<OutputType>(), TypeList<ClassType*, InputTypes...>(), NodeCreationData{ .ownerDataTypeID = GetDataTypeID<ClassType>() });
 	}
 
 	template<typename ClassType, typename OutputType, typename... InputTypes> requires IsSameType<OutputType, void>
@@ -916,7 +833,7 @@ namespace SCR
 				(aClassType->*aFuncPtr)(std::forward<InputTypes>(aInputTypes)...);
 				return true;
 			};
-		return CreateNodeRecipe<eNodeTrait::HasImplicitFlow>(callable, TypeList<Flow>(), TypeList<Flow, ClassType*, InputTypes...>());
+		return CreateNodeRecipe<eNodeTrait::HasImplicitFlow>(callable, TypeList<Flow>(), TypeList<Flow, ClassType*, InputTypes...>(), NodeCreationData{ .ownerDataTypeID = GetDataTypeID<ClassType>() });
 	}
 
 	template<typename ClassType, typename OutputType, typename... InputTypes>
@@ -926,6 +843,6 @@ namespace SCR
 			{
 				return (aClassType->*aFuncPtr)(std::forward<InputTypes>(aInputTypes)...);
 			};
-		return CreateNodeRecipe(callable, TypeList<OutputType>(), TypeList<ClassType*, InputTypes...>());
+		return CreateNodeRecipe(callable, TypeList<OutputType>(), TypeList<ClassType*, InputTypes...>(), NodeCreationData{ .ownerDataTypeID = GetDataTypeID<ClassType>() });
 	}
 }

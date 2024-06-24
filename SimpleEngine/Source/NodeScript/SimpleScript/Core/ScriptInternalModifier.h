@@ -60,10 +60,8 @@ namespace SCR
 		static PinID CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, void* aDataPtr);
 		static PinID CreateOutputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, void* aDataPtr);
 
-		//static PinID CreateInputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID);
-		//static PinID CreateOutputPin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, const MemoryPoolID aMemoryPoolID);
-
-		static void RebindLink(NodeGraph& aNodeGraph, const PinID aInputPinID, const PinID aNewOutputPinID, CommandTracker* aCommandTracker);
+		static LinkID CreateLink(NodeGraph& aNodeGraph, const PinID aInputPinID, const PinID aOutputPinID, CommandTracker* aCommandTracker);
+		static void DestroyLink(NodeGraph& aNodeGraph, const LinkID aLinkID, CommandTracker* aCommandTracker);
 
 #pragma endregion
 
@@ -78,21 +76,10 @@ namespace SCR
 
 	public:
 
-		static Link ReplaceOperatorNode(/*Script& aScript, */NodeGraph& aNodeGraph, PinID aUndefinedPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);
+		static void ReplaceOperatorNode(NodeGraph& aNodeGraph, PinID aUndefinedPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);
 
 		static NodeID GetCurrentNodeID(NodeGraph& aNodeGraph);
-
-	public:
-
-		template<typename DataType>
-		static void AddNodeState(NodeGraph& aNodeGraph, const NodeID aNodeID);
 	};
-
-	template<typename DataType>
-	inline void InternalModifier::AddNodeState(NodeGraph& aNodeGraph, NodeID aNodeID)
-	{
-		ScriptProxy::GetNodeStateMap(aNodeGraph).emplace(aNodeID, DataType());
-	}
 
 
 }

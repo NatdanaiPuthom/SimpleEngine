@@ -203,14 +203,16 @@ namespace SCR
 	template<size_t BufferCapacity>
 	class MemoryArena final
 	{
-
 		using MemoryBuffer = MemoryBuffer<BufferCapacity>;
+
 	public:
+
 		MemoryArena()
 			: myCurrentBufferIndex(0)
 		{
 			AllocateNewBuffer();
 		}
+
 		~MemoryArena()
 		{
 		}

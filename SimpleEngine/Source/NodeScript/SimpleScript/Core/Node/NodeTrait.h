@@ -34,7 +34,7 @@ namespace SCR
 		Custom,
 	};
 
-	enum class eNodeOperatorTrait : size_t
+	enum class eNodeOperatorTrait : unsigned int
 	{
 		None = 0,
 		Equal = 1 << 0,

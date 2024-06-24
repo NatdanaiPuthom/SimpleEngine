@@ -12,12 +12,6 @@ namespace SCR
 	{
 	}
 
-	PinManager::PinManager(const PinManager& aOther)
-		: myPins(aOther.myPins)
-	{
-
-	}
-
 	TypeContainer<PinID, Pin, PinType>::ConstIterator PinManager::begin() const
 	{
 		const TypeContainer<PinID, Pin, PinType> tC(myPins, [](const Pin& aPin) -> const PinType& { return PinTypeManager::GetPinType(aPin.typeID); });

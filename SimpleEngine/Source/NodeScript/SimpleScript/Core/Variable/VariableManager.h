@@ -27,9 +27,9 @@ namespace SCR
 		VariableManager();
 		~VariableManager();
 
-		VariableManager(const VariableManager& aOther);
+		VariableManager(const VariableManager&) = delete;
 		VariableManager(VariableManager&&) = default;
-		VariableManager& operator=(const VariableManager&) = default;
+		VariableManager& operator=(const VariableManager&) = delete;
 		VariableManager& operator=(VariableManager&&) = default;
 
 

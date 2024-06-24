@@ -10,7 +10,6 @@ namespace SCR
 		NodeID nodeID;
 		PinTypeID typeID;
 		void* dataPtr;
-		//const MemoryPoolID memoryID;
 		std::vector<PinID> connectedPinIDs;
 	};
 
@@ -18,16 +17,16 @@ namespace SCR
 	{
 		PinID inputPinID = InvalidID<PinID>();
 		PinID outputPinID = InvalidID<PinID>();
-
-		bool operator<(const Link& aLink) const
-		{
-			return inputPinID < aLink.inputPinID;
-		}
+		bool isDestroyed = false;
 
 		operator bool() const
 		{
-			return inputPinID != InvalidID<PinID>();
+			return inputPinID != InvalidID<PinID>() && outputPinID != InvalidID<PinID>();
 		}
 	};
 
+	inline bool operator==(const Link& aLink1, const Link& aLink2)
+	{
+		return aLink1.inputPinID == aLink2.inputPinID && aLink1.outputPinID == aLink2.outputPinID;
+	}
 }

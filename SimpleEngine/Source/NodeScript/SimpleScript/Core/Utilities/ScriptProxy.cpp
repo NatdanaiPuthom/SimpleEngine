@@ -14,25 +14,10 @@ namespace SCR
 		return ScriptFoundation::GetInstance().myMemoryPool;
 	}
 
-	/*MemoryPool& ScriptProxy::GetGraphMemoryPool(NodeGraph& aNodeGraph)
-	{
-		return aNodeGraph.myMemoryPool;
-	}
-
-	const MemoryPool& ScriptProxy::GetGraphMemoryPool(const NodeGraph& aNodeGraph)
-	{
-		return aNodeGraph.myMemoryPool;
-	}*/
-
 	MemoryManager& ScriptProxy::GetNodeGraphMemoryManager(NodeGraph& aNodeGraph)
 	{
 		return aNodeGraph.myMemoryManager;
 	}
-
-	/*MemoryPool& ScriptProxy::GetVariableMemoryPool(Script& aScript)
-	{
-		return *aScript.myVariableManager.myMemoryPool;
-	}*/
 
 	MemoryManager& ScriptProxy::GetVariableMemoryManager(Script& aScript)
 	{
@@ -128,11 +113,6 @@ namespace SCR
 	Variable& ScriptProxy::GetVariableRef(Script& aScript, const VarID aVarID)
 	{
 		return aScript.myVariableManager.myVariables[aVarID];
-	}
-
-	std::unordered_map<NodeID, std::any>& ScriptProxy::GetNodeStateMap(NodeGraph& aNodeGraph)
-	{
-		return aNodeGraph.myNodeManager->myInternalNodeData;
 	}
 
 	std::unordered_map<NodeID, VarID>& ScriptProxy::GetNodeIDToVarIDMap(Script& aScript)

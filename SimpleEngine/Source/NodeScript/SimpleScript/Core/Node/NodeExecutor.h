@@ -33,18 +33,12 @@ namespace SCR
 
 		void ExecuteNode(const NodeExecutionData& aNodeExecutionData);
 
-		/*void BindToEvent(const NodeRef& aNodeRef, const size_t anEventHash);
-		void BindToEvent(const NodeRef& aNodeRef);
-		void UnbindFromEvent(const NodeRef& aNodeRef, const size_t anEventHash);
-		void UnbindFromEvent(const NodeRef& aNodeRef);*/
-
 		void RegisterAutoTickNode(const NodeRef& aNodeRef);
 		void UnregisterAutoTickNode(const NodeRef& aNodeRef);
 
 
 	private:
 
-		//std::unordered_map<size_t, std::vector<NodeExecutionData>> myEventNodes;
 		std::unordered_set<NodeExecutionData> myAutoTickNodes;
 
 		InternalExecutionContext myExecutionContext;
