@@ -72,18 +72,21 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		symbols "On"
 		optimize "Off"
 		runtime "Debug"
+		libdirs { dirs.Lib	}
 
 	filter "configurations:Release"
 		defines { "_RELEASE" }
 		symbols "On"
 		optimize "Speed"
 		runtime "Release"
+		libdirs { dirs.Lib	}
 
 	filter "configurations:Simple"
 		defines { "_SIMPLE" }
 		symbols "Off"
 		optimize "Full"
 		runtime "Release"
+		libdirs { dirs.Lib	}
 
 	filter "system:windows"
 		systemversion "latest"
@@ -116,10 +119,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/External/**.cpp",
 			"Source/External/**.hpp" 
 		}
-
-		libdirs { 
-				dirs.Lib
-			}
 
 		links {
 			"Lib/Common/easy_profiler"
@@ -168,14 +167,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/MainSingleton/**.cpp",
 		}
 
-		libdirs {
-			dirs.Lib
-		}
-
-		links {
-
-		}
-
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	project "Engine"
@@ -202,13 +193,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/Engine/**.hpp", 
 			"Source/Engine/**.cpp"
 		} 
-
-		libdirs {
-			dirs.Lib
-		}
-
-		links { -- Linking these Libraries during build
-		}
 			
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -301,13 +285,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/External/"
 		}
 
-		libdirs {
-			dirs.Lib
-		}
-
-		links {
-		}
-
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	project "NodeScript"
@@ -337,13 +314,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/NodeScript/**"
 		}
 
-		libdirs {
-			dirs.Lib
-		}
-
-		links {
-		}
-
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	project "Editor"
@@ -371,14 +341,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/Editor/"
 		}
 
-		libdirs {
-			dirs.lib
-		}
-
-		links {
-
-		}
-
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	project "Networking"
@@ -401,10 +363,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/",
 			"Source/External/",
 			"Source/External/**", 
-		}
-
-		libdirs {
-			dirs.lib
 		}
 
 		links {
@@ -444,10 +402,6 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/External/"
 		}
 
-		libdirs {
-			dirs.Lib
-		}
-
 		links {
 			"External", 
 			"MainSingleton",
@@ -457,7 +411,9 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Game",
 			"NodeScript",
 			"Editor",
-			"DbgHelp"
+
+			"DbgHelp",
+			"ws2_32"
 		}
 
 		postbuildcommands { 

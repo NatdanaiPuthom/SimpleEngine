@@ -1,14 +1,17 @@
-#include "Engine/MemoryTracker/MemoryTracker.h"
+#define WIN32_LEAN_AND_MEAN //NOTE(v11.2.1): Fuck you Microsoft
+
+#include "Engine/Debugger/MemoryTracker/MemoryTracker.h"
 #include "Engine/Engine.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/Global.hpp"
 #include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
+#include "Engine/Debugger/ErrorCatcher/ErrorCatcher.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #include "Editor/Editor.hpp"
 #include "NodeScript/SimpleNodeScript.hpp"
-#include "Launcher/ErrorCatcher.hpp"
+#include "Launcher/Client/Client.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 static void RunWithSEH(HINSTANCE& hInstance, int nCmdShow);
@@ -74,7 +77,14 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	simpleScript.Init();
 	PROFILER_END();
 
-	while (Global::GetGameIsRunning())
+	Simple::Client client;
+	if (client.Init() == false)
+	{
+		assert(false && "Failed to connect. The program will now close.");
+		return;
+	}
+
+	while (const bool isRunning = Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
 
@@ -89,6 +99,11 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_BEGIN("Engine Update");
 		engine.Update();
 		PROFILER_END();
+
+		if (client.Update(isRunning) == false)
+		{
+			Global::SetGameShouldClose(true);
+		}
 
 		PROFILER_BEGIN("Editor Update");
 		simpleScript.Update();

@@ -2,7 +2,7 @@
 #pragma message("---------Never give up on your dreams!---------------")
 
 #ifdef _DEBUG
-#include "Engine/MemoryTracker/MemoryTracker.h"
+#include "Engine/Debugger/MemoryTracker/MemoryTracker.h"
 #endif
 
 #pragma message("---------Never give up on your dreams!---------------")

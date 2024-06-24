@@ -1,5 +1,5 @@
 #include "Engine/Precomplied/EnginePch.hpp"
-#include "Engine/MemoryTracker/MemoryTracker.h"
+#include "Engine/Debugger/MemoryTracker/MemoryTracker.h"
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
