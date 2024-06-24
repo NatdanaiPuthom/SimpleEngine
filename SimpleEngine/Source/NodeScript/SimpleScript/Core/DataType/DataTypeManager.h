@@ -10,12 +10,12 @@ namespace SCR
 	template<typename T>
 	concept Fundamental = std::is_fundamental_v<T>;
 
-	using EditInterface = bool(*)(void*);
-	using SaveInterface = void(*)(nlohmann::json&, const void*);
-	using LoadInterface = void(*)(const nlohmann::json&, void*);
-	using AllocateInterface = void* (*)(MemoryManager&, const void*);
-	using CopyInterface = void(*)(void*, const void*);
-	using SwapInterface = void(*)(void*, void*);
+	using EditInterface = bool(*)(void* aDataPtr);
+	using SaveInterface = void(*)(nlohmann::json& aSaveObject, const void* aDataPtr);
+	using LoadInterface = void(*)(const nlohmann::json& aLoadObject, void* aDataPtr);
+	using AllocateInterface = void (*)(void* aDataPtr, const void* aDefaultValue);
+	using CopyInterface = void(*)(void* aDestination, const void* aSource);
+	using SwapInterface = void(*)(void* aDataPtr1, void* aDataPtr2);
 
 	template<Editable T>
 	EditInterface CreateEditInterface()
@@ -107,18 +107,17 @@ namespace SCR
 			};
 	}
 
-
 	template<DefaultConstructible T>
 	AllocateInterface CreateAllocateInterface()
 	{
-		return [](MemoryManager& aMemoryPool, const void* aDefaultValue) -> void*
+		return [](void* aDataPtr, const void* aDefaultValue) -> void
 			{
 				if (aDefaultValue != nullptr)
 				{
 					const T& defaultValue = *reinterpret_cast<const T*>(aDefaultValue);
-					return &aMemoryPool.Allocate<T>(defaultValue);
+					new(aDataPtr)T(defaultValue);
 				}
-				return &aMemoryPool.Allocate<T>();
+				new(aDataPtr)T();
 			};
 	}
 
@@ -185,9 +184,9 @@ namespace SCR
 	{
 		return FunctionInterface
 		{
-			CreateEditInterface<T>(),
-			CreateSaveInterface<T>(),
-			CreateLoadInterface<T>()
+			.edit = CreateEditInterface<T>(),
+			.save = CreateSaveInterface<T>(),
+			.load = CreateLoadInterface<T>()
 		};
 	}
 
@@ -196,9 +195,9 @@ namespace SCR
 	{
 		return CreationInterface
 		{
-			CreateAllocateInterface<T>(),
-			CreateCopyInterface<T>(),
-			CreateSwapInterface<T>()
+			.allocate = CreateAllocateInterface<T>(),
+			.copy = CreateCopyInterface<T>(),
+			.swap = CreateSwapInterface<T>()
 		};
 	}
 
@@ -209,16 +208,16 @@ namespace SCR
 		{
 			return DataTypeInterface
 			{
-				CreateFunctionInterface<T>(),
-				CreateCreationInterface<T>()
+				.function = CreateFunctionInterface<T>(),
+				.creation = CreateCreationInterface<T>()
 			};
 		}
 		else
 		{
 			return DataTypeInterface
 			{
-				FunctionInterface{},
-				CreateCreationInterface<T>()
+				.function = FunctionInterface{},
+				.creation = CreateCreationInterface<T>()
 			};
 		}
 	}
@@ -234,6 +233,7 @@ namespace SCR
 	struct DataType
 	{
 		const std::string name;
+		const size_t size;
 		const Color color;
 		const std::type_info* typeInfo;
 		const DataTypeInterface typeInterface;
@@ -259,7 +259,10 @@ namespace SCR
 		bool EditData(DataTypeID aDataTypeID, void* aDataPtr);
 		bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr);
 		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr);
-		void* AllocateData(DataTypeID aDataTypeID, MemoryManager& aMemoryManager, const void* aDefaultValue = nullptr);
+
+		template<size_t BufferCapacity>
+		void* AllocateData(DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* aDefaultValue = nullptr);
+
 		void CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource);
 		void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2);
 		const std::string& GetName(DataTypeID aDataTypeID);
@@ -348,13 +351,13 @@ namespace SCR
 		DataTypeInterface dataTypeInterface
 		{
 			.function = {
-				CreateEditTemplateInterface<T>(),
-				CreateSaveTemplateInterface<T>(),
-				CreateLoadTemplateInterface<T>()
+				.edit = CreateEditTemplateInterface<T>(),
+				.save = CreateSaveTemplateInterface<T>(),
+				.load = CreateLoadTemplateInterface<T>()
 			},
 			.creation = {
-				CreateAllocateInterface<T>(),
-				CreateCopyInterface<T>()
+				.allocate = CreateAllocateInterface<T>(),
+				.copy = CreateCopyInterface<T>(),
 			}
 		};
 		RegisterInternal<T>(aName, aColor, dataTypeInterface);
@@ -368,6 +371,7 @@ namespace SCR
 		DataType dataType
 		{
 			.name = aName,
+			.size = sizeof(T),
 			.color = aColor,
 			.typeInfo = &typeInfo,
 			.typeInterface = anInterface,
@@ -398,6 +402,22 @@ namespace SCR
 		{
 			classDataType->properties.push_back(property);
 		}
+	}
+
+	template<size_t BufferCapacity>
+	inline void* DataTypeManager::AllocateData(DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* aDefaultValue)
+	{
+		if (DataType* dataType = Find(aDataTypeID))
+		{
+			if (dataType->typeInterface.creation.allocate)
+			{
+				void* dataPtr = anArena.Allocate(dataType->size);
+				dataType->typeInterface.creation.allocate(dataPtr, aDefaultValue);
+
+				return dataPtr;
+			}
+		}
+		return nullptr;
 	}
 
 	template<typename T>

@@ -44,7 +44,7 @@ namespace SCR
 		myVariables.resize(aVariableManager.myVariables.size());
 		for (size_t i = 0; const Variable& variable : aVariableManager.myVariables)
 		{
-			myVariables[i].runtimeDataPtr = Global::GetDataTypeManager().AllocateData(variable.dataTypeID, *myMemoryManager, variable.defaultValueDataPtr);
+			myVariables[i].runtimeDataPtr = Global::GetDataTypeManager().AllocateData(variable.dataTypeID, myMemoryManager->GetMemory(), variable.defaultValueDataPtr);
 			++i;
 		}
 	}

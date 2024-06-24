@@ -26,7 +26,7 @@ namespace SCR
 			{
 				continue;
 			}
-			void* dataPtr = Global::GetDataTypeManager().AllocateData(nodeType->nodeRecipe.nodeStateDataTypeID, myMemoryManager);
+			void* dataPtr = Global::GetDataTypeManager().AllocateData(nodeType->nodeRecipe.nodeStateDataTypeID, myMemoryManager.GetMemory());
 			assert(dataPtr != nullptr);
 			myNodeStateMap.emplace(nodeID, dataPtr);
 		}

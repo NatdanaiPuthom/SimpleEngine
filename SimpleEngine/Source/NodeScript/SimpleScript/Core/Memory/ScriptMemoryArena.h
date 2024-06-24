@@ -145,18 +145,27 @@ namespace SCR
 		template<MemSizeLessEqual<Capacity> T, typename... Args>
 		T& Allocate(Args&&... aArgs)
 		{
-			void* currentMemory = (&myBuffer[0]) + myCurrentSize;
+			void* currentMemory = Allocate(sizeof(T));
+			//void* currentMemory = (&myBuffer[0]) + myCurrentSize;
 			new (currentMemory) T(std::forward<Args>(aArgs)...);
 
-			myCurrentSize += sizeof(T);
+			//myCurrentSize += sizeof(T);
 
 			T* value = reinterpret_cast<T*>(currentMemory);
 
 			if constexpr (!std::is_fundamental_v<T>)
 			{
-				myMemoryObjects.emplace_back(value);
+				myMemoryObjects.emplace_back(MemoryObject(value));
 			}
 			return *value;
+		}
+
+		void* Allocate(size_t aSize)
+		{
+			void* currentMemory = (&myBuffer[0]) + myCurrentSize;
+			myCurrentSize += aSize;
+
+			return currentMemory;
 		}
 
 		template<MemSizeLessEqual<Capacity> T, typename... Args>
@@ -207,95 +216,129 @@ namespace SCR
 
 	public:
 
-		MemoryArena()
-			: myCurrentBufferIndex(0)
-		{
-			AllocateNewBuffer();
-		}
-
-		~MemoryArena()
-		{
-		}
-
-		MemoryArena(const MemoryArena& aOther)
-			: myCurrentBufferIndex(aOther.myCurrentBufferIndex)
-		{
-			for (const std::unique_ptr<MemoryBuffer>& buffer : aOther.myMemoryBuffers)
-			{
-				myMemoryBuffers.emplace_back(std::make_unique<MemoryBuffer>(*buffer));
-			}
-		}
-
+		MemoryArena();
+		~MemoryArena();
+		MemoryArena(const MemoryArena& aOther);
 		MemoryArena(MemoryArena&&) noexcept = default;
-
-		MemoryArena& operator=(const MemoryArena& aOther)
-		{
-			for (const std::unique_ptr<MemoryBuffer>& buffer : aOther.myMemoryBuffers)
-			{
-				myMemoryBuffers.emplace_back(std::make_unique<MemoryBuffer>(*buffer));
-			}
-			myCurrentBufferIndex = aOther.myCurrentBufferIndex;
-			return *this;
-		}
-
-
+		MemoryArena& operator=(const MemoryArena& aOther);
 		MemoryArena& operator=(MemoryArena&&) = default;
 
 
 		template<MemSizeLessEqual<BufferCapacity> T, typename... Args>
-		T& Allocate(Args&&... aArgs)
-		{
-			constexpr size_t allocSize = sizeof(T);
-			if (GetCurrentBuffer().SizeLeft() < allocSize)
-			{
-				AllocateNewBuffer();
-			}
+		T& Allocate(Args&&... aArgs);
 
-			MemoryBuffer& currentBuffer = GetCurrentBuffer();
-			T& value = currentBuffer.Allocate<T>(std::forward<Args>(aArgs)...);
+		void* Allocate(size_t aSize);
 
+		void* GetRenewedPointer(void* aPtr, const MemoryArena& aPrevious) const;
 
-			return value;
-		}
+		void Clear();
 
-		void* GetRenewedPointer(void* aPtr, const MemoryArena& aPrevious) const
-		{
-			for (size_t i = 0; const std::unique_ptr<MemoryBuffer>& buffer : aPrevious.myMemoryBuffers)
-			{
-				size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->Data());
-				if (ptrDiff < BufferCapacity)
-				{
-					return reinterpret_cast<void*>(reinterpret_cast<size_t>(myMemoryBuffers[i]->Data()) + ptrDiff);
-
-				}
-
-				i++;
-			}
-
-			return nullptr;
-		}
-
-		void Clear()
-		{
-			*this = MemoryArena();
-		}
 	private:
 
 
-		void AllocateNewBuffer()
-		{
-			myCurrentBufferIndex = myMemoryBuffers.size();
-			myMemoryBuffers.emplace_back(std::make_unique<MemoryBuffer>());
-		}
-
-		MemoryBuffer& GetCurrentBuffer()
-		{
-			return *myMemoryBuffers.back();
-		}
+		void AllocateNewBuffer();
+		MemoryBuffer& GetCurrentBuffer();
 
 	private:
 
 		std::vector<std::unique_ptr<MemoryBuffer>> myMemoryBuffers;
 		size_t myCurrentBufferIndex;
 	};
+
+	template<size_t BufferCapacity>
+	inline MemoryArena<BufferCapacity>::MemoryArena()
+		: myCurrentBufferIndex(0)
+	{
+		AllocateNewBuffer();
+	}
+
+	template<size_t BufferCapacity>
+	inline MemoryArena<BufferCapacity>::~MemoryArena()
+	{
+	}
+
+	template<size_t BufferCapacity>
+	inline MemoryArena<BufferCapacity>::MemoryArena(const MemoryArena& aOther)
+		: myCurrentBufferIndex(aOther.myCurrentBufferIndex)
+	{
+		for (const std::unique_ptr<MemoryBuffer>& buffer : aOther.myMemoryBuffers)
+		{
+			myMemoryBuffers.emplace_back(std::make_unique<MemoryBuffer>(*buffer));
+		}
+	}
+
+	template<size_t BufferCapacity>
+	inline MemoryArena<BufferCapacity>& MemoryArena<BufferCapacity>::operator=(const MemoryArena<BufferCapacity>& aOther)
+	{
+		for (const std::unique_ptr<MemoryBuffer>& buffer : aOther.myMemoryBuffers)
+		{
+			myMemoryBuffers.emplace_back(std::make_unique<MemoryBuffer>(*buffer));
+		}
+		myCurrentBufferIndex = aOther.myCurrentBufferIndex;
+		return *this;
+	}
+
+	template<size_t BufferCapacity>
+	template<MemSizeLessEqual<BufferCapacity> T, typename ...Args>
+	inline T& MemoryArena<BufferCapacity>::Allocate(Args && ...aArgs)
+	{
+		constexpr size_t allocSize = sizeof(T);
+		if (GetCurrentBuffer().SizeLeft() < allocSize)
+		{
+			AllocateNewBuffer();
+		}
+
+		MemoryBuffer& currentBuffer = GetCurrentBuffer();
+		T& value = currentBuffer.Allocate<T>(std::forward<Args>(aArgs)...);
+
+
+		return value;
+	}
+
+	template<size_t BufferCapacity>
+	inline void* MemoryArena<BufferCapacity>::Allocate(size_t aSize)
+	{
+		return GetCurrentBuffer().Allocate(aSize);
+	}
+
+	template<size_t BufferCapacity>
+	inline void* MemoryArena<BufferCapacity>::GetRenewedPointer(void* aPtr, const MemoryArena& aPrevious) const
+	{
+		for (size_t i = 0; const std::unique_ptr<MemoryBuffer>&buffer : aPrevious.myMemoryBuffers)
+		{
+			size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->Data());
+			if (ptrDiff < BufferCapacity)
+			{
+				return reinterpret_cast<void*>(reinterpret_cast<size_t>(myMemoryBuffers[i]->Data()) + ptrDiff);
+
+			}
+
+			i++;
+		}
+
+		return nullptr;
+	}
+
+	template<size_t BufferCapacity>
+	inline void MemoryArena<BufferCapacity>::Clear()
+	{
+		*this = MemoryArena();
+	}
+
+	template<size_t BufferCapacity>
+	inline void MemoryArena<BufferCapacity>::AllocateNewBuffer()
+	{
+		myCurrentBufferIndex = myMemoryBuffers.size();
+		myMemoryBuffers.emplace_back(std::make_unique<MemoryBuffer>());
+	}
+
+
+	template<size_t BufferCapacity>
+	inline MemoryBuffer<BufferCapacity>& MemoryArena<BufferCapacity>::GetCurrentBuffer()
+	{
+		return *myMemoryBuffers.back();
+	}
+
+
+
 }

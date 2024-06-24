@@ -90,18 +90,6 @@ namespace SCR
 		return false;
 	}
 
-	void* DataTypeManager::AllocateData(DataTypeID aDataTypeID, MemoryManager& aMemoryManager, const void* aDefaultValue)
-	{
-		if (const DataType* dataType = Find(aDataTypeID))
-		{
-			if (dataType->typeInterface.creation.allocate)
-			{
-				return dataType->typeInterface.creation.allocate(aMemoryManager, aDefaultValue);
-			}
-		}
-		return nullptr;
-	}
-
 	void DataTypeManager::CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource)
 	{
 		if (const DataType* dataType = Find(aDataTypeID))

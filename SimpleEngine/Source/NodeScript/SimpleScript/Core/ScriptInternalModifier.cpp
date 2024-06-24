@@ -138,7 +138,7 @@ namespace SCR
 		DataTypeID dataTypeID = PinTypeManager::GetPinType(aPinTypeID).dataTypeID;
 
 		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
-		void* dataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryManager);
+		void* dataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryManager.GetMemory());
 		return CreateInputPin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}
 
@@ -162,7 +162,7 @@ namespace SCR
 
 		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
 
-		void* dataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryManager);
+		void* dataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryManager.GetMemory());
 
 		return CreateOutputPin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}

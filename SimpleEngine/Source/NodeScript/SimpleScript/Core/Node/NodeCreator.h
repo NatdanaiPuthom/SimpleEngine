@@ -142,7 +142,7 @@ namespace SCR
 
 		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(aNodeGraph);
 		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
-		void* dataPtr = &memoryManager.Allocate<CleanType>();
+		void* dataPtr = &memoryManager.GetMemory().Allocate<CleanType>();
 
 		const PinTypeID pinTypeID = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID).nodeRecipe.inputPinTypeIDs[anIndex];
 
@@ -180,7 +180,7 @@ namespace SCR
 		static_assert(!std::is_same_v<void, OutputType>, "Return type can't be void");
 
 		//MemoryPoolID memoryPoolID = ScriptProxy::GetGraphMemoryPool(aNodeGraph).Allocate<OutputType>();
-		void* dataPtr = &ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph).Allocate<OutputType>();
+		void* dataPtr = &ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph).GetMemory().Allocate<OutputType>();
 		return InternalModifier::CreateOutputPin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}
 

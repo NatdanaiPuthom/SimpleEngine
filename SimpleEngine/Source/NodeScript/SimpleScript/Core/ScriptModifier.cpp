@@ -424,7 +424,7 @@ namespace SCR
 			const Pin& pin = aNodeGraph.myPinManager->myPins[aPinID];
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
-			void* tempDataPtr = Global::GetDataTypeManager().AllocateData(pinType.dataTypeID, Global::Internal::GetFrameBuffer(), pin.dataPtr);
+			void* tempDataPtr = Global::GetDataTypeManager().AllocateData(pinType.dataTypeID, Global::Internal::GetFrameMemoryArena(), pin.dataPtr);
 			if (Global::GetDataTypeManager().EditData(pinType.dataTypeID, pin.dataPtr))
 			{
 				if (!aCommandTracker)
@@ -432,7 +432,7 @@ namespace SCR
 					return;
 				}
 
-				void* previousDataPtr = Global::GetDataTypeManager().AllocateData(pinType.dataTypeID, Global::Internal::GetEditBuffer(), tempDataPtr);
+				void* previousDataPtr = Global::GetDataTypeManager().AllocateData(pinType.dataTypeID, Global::Internal::GetEditMemoryArena(), tempDataPtr);
 
 				struct EditPinData
 				{
@@ -479,7 +479,7 @@ namespace SCR
 		{
 			Variable& variable = ScriptProxy::GetVariableRef(aScript, aVarID);
 
-			void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryManager(aScript));
+			void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryManager(aScript).GetMemory());
 
 			variable.dataTypeID = aDataTypeID;
 			variable.defaultValueDataPtr = defaultValueDataPtr;
@@ -682,7 +682,7 @@ namespace SCR
 
 		void BeginFrame()
 		{
-			Global::Internal::GetFrameBuffer().Clear();
+			Global::Internal::GetFrameMemoryArena().Clear();
 		}
 
 	}

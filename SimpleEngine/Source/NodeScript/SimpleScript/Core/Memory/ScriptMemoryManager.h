@@ -11,13 +11,12 @@ namespace SCR
 		MemoryManager() = default;
 		~MemoryManager() = default;
 
-		template<typename T, typename... Args>
-		T& Allocate(Args&&... aArgs)
+		const MemoryArena<NodeBufferCapacity>& GetMemory() const
 		{
-			return myMemory.Allocate<T>(std::forward<Args>(aArgs)...);
+			return myMemory;
 		}
 
-		const MemoryArena<1024>& GetMemory() const
+		MemoryArena<NodeBufferCapacity>& GetMemory()
 		{
 			return myMemory;
 		}
@@ -31,7 +30,7 @@ namespace SCR
 	private:
 
 
-		MemoryArena<1024> myMemory;
+		MemoryArena<NodeBufferCapacity> myMemory;
 
 
 	};

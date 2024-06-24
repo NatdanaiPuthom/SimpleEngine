@@ -11,8 +11,8 @@ namespace SCR
 	{
 
 		bool g_sDebugging = false;
-		MemoryManager g_FrameBuffer;
-		MemoryManager g_EditBuffer;
+		MemoryArena<1024> g_FrameArena;
+		MemoryArena<10000> g_EditArena;
 
 		ScriptFoundation& GetFoundation()
 		{
@@ -41,14 +41,14 @@ namespace SCR
 
 		namespace Internal
 		{
-			MemoryManager& GetFrameBuffer()
+			MemoryArena<1024>& GetFrameMemoryArena()
 			{
-				return g_FrameBuffer;
+				return g_FrameArena;
 			}
 
-			MemoryManager& GetEditBuffer()
+			MemoryArena<10000>& GetEditMemoryArena()
 			{
-				return g_EditBuffer;
+				return g_EditArena;
 			}
 		}
 	}

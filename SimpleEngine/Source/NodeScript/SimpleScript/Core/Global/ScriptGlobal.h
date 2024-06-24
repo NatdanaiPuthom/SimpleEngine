@@ -9,6 +9,9 @@ namespace SCR
 	class NodeTypeManager;
 	class PinTypeManager;
 	class MemoryManager;
+	
+	template<size_t>
+	class MemoryArena;
 
 	namespace Global
 	{
@@ -23,8 +26,8 @@ namespace SCR
 
 		namespace Internal
 		{
-			MemoryManager& GetFrameBuffer();
-			MemoryManager& GetEditBuffer();
+			MemoryArena<1024>& GetFrameMemoryArena();
+			MemoryArena<10000>& GetEditMemoryArena();
 		}
 	}
 
