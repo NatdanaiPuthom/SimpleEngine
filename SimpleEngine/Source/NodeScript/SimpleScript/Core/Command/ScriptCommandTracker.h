@@ -8,11 +8,10 @@ namespace SCR
 {
 
 	class CompositeCommand;
+	class CompositeCommandNew;
 
 	class CommandTracker final
 	{
-		friend class ScriptModifier;
-		friend class InternalModifier;
 	public:
 
 		CommandTracker();
@@ -29,26 +28,40 @@ namespace SCR
 	public:
 
 
-		template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
+		/*template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
 		void DoCommand(Args&&... args);
 
 		template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
-		void RegisterCommand(Args&&... args);
+		void RegisterCommand(Args&&... args);*/
+
+
+		void DoCommandNew(CommandNew&& aCommand);
+		void RegisterCommand(CommandNew&& aCommand);
 
 		void BeginComposite(const std::string& aName);
 		void EndComposite();
 
-		void DoCommand(std::shared_ptr<Command> aCommand, bool aExecuteCommand);
+		//void DoCommand(std::unique_ptr<Command> aCommand, bool aExecuteCommand);
 
 		void UndoCommand();
 		void RedoCommand();
 
 	private:
 
-		std::stack<std::shared_ptr<Command>> myUndoStack;
-		std::stack<std::shared_ptr<Command>> myRedoStack;
+		void DoCommandInternal(CommandNew&& aCommand, bool aExecute);
 
-		std::shared_ptr<CompositeCommand> myCurrentCompositeCommand;
+	private:
+
+		/*std::stack<std::unique_ptr<Command>> myUndoStack;
+		std::stack<std::unique_ptr<Command>> myRedoStack;
+
+
+		std::unique_ptr<CompositeCommand> myCurrentCompositeCommand;*/
+
+
+		std::stack<CommandNew> myUndoStackNew;
+		std::stack<CommandNew> myRedoStackNew;
+		std::unique_ptr<CompositeCommandNew> myCurrentCompositeCommandNew;
 
 	};
 
@@ -65,17 +78,17 @@ namespace SCR
 		}
 	}
 
-	template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
-	inline void CommandTracker::DoCommand(Args&&... args)
-	{
-		std::shared_ptr<Command> command = std::make_shared<CommandType>(std::forward<Args>(args)...);
-		DoCommand(command, true);
-	}
+	//template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
+	//inline void CommandTracker::DoCommand(Args&&... args)
+	//{
+	//	std::unique_ptr<Command> command = std::make_unique<CommandType>(std::forward<Args>(args)...);
+	//	DoCommand(std::move(command), true);
+	//}
 
-	template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
-	inline void CommandTracker::RegisterCommand(Args&&... args)
-	{
-		std::shared_ptr<Command> command = std::make_shared<CommandType>(std::forward<Args>(args)...);
-		DoCommand(command, false);
-	}
+	//template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
+	//inline void CommandTracker::RegisterCommand(Args&&... args)
+	//{
+	//	std::unique_ptr<Command> command = std::make_unique<CommandType>(std::forward<Args>(args)...);
+	//	DoCommand(std::move(command), false);
+	//}
 }

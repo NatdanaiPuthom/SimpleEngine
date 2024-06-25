@@ -25,7 +25,7 @@ namespace SCR
 		template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
 		void AddCommand(Args&&... args);
 
-		void AddCommand(std::shared_ptr<Command> aCommand);
+		void AddCommand(std::unique_ptr<Command> aCommand);
 
 		void Begin(const std::string& aName);
 		eEndCode End();
@@ -38,7 +38,7 @@ namespace SCR
 	private:
 
 		std::unique_ptr<CompositeCommand> myCurrentChild;
-		std::vector<std::shared_ptr<Command>> myCommands;
+		std::vector<std::unique_ptr<Command>> myCommands;
 	};
 
 	template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
@@ -46,4 +46,61 @@ namespace SCR
 	{
 		AddCommand(std::make_shared<CommandType>(std::forward<Args>(args)...));
 	}
+
+
+	class CompositeCommandNew final
+	{
+	public:
+		enum class eEndCode
+		{
+			Ended,
+			InProgress,
+			Ended_Empty,
+		};
+	public:
+
+		CompositeCommandNew(const std::string& aName = std::string());
+
+		~CompositeCommandNew();
+
+		CompositeCommandNew(const CompositeCommandNew& aOther);
+		CompositeCommandNew(CompositeCommandNew&& aOther) noexcept;
+
+
+		void AddCommand(CommandNew&& aCommand);
+
+		void operator()(eCommandType aCommandType) const;
+
+		void Begin(const std::string& aName);
+		eEndCode End();
+
+		const std::string& GetName()
+		{
+			return myName;
+		}
+
+	private:
+
+		void Do() const
+		{
+			for (const CommandNew& command : myCommands)
+			{
+				command(eCommandType::Do);
+			}
+		}
+
+		void Undo() const
+		{
+			for (int i = static_cast<int>(myCommands.size()) - 1; i >= 0; --i)
+			{
+				myCommands.at(i)(eCommandType::Undo);
+			}
+		}
+
+	private:
+
+		std::unique_ptr<CompositeCommandNew> myCurrentChild;
+		std::vector<CommandNew> myCommands;
+		std::string myName;
+	};
 }

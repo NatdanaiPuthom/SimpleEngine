@@ -12,7 +12,7 @@ namespace SCR
 		friend class CommandTracker;
 		friend class CompositeCommand;
 	public:
-		
+
 		Command();
 		Command(const std::string& aName);
 		virtual ~Command() = default;
@@ -30,4 +30,47 @@ namespace SCR
 		const std::string myName;
 
 	};
+
+	enum class eCommandType
+	{
+		Do,
+		Undo
+	};
+
+	class CommandNew final
+	{
+	public:
+
+		using CommandFunction = std::function<void(eCommandType)>;
+
+		template<typename CallableCommand>
+		CommandNew(CallableCommand&& aCallableCommand, const std::string& aName)
+			: myName(aName)
+			, myCommandFunction(aCallableCommand)
+		{
+		}
+
+		CommandNew(const CommandNew& aOther)
+			: myName(aOther.myName)
+			, myCommandFunction(aOther.myCommandFunction)
+		{
+
+		}
+
+		CommandNew(CommandNew&& aOther)
+			: myName(std::move(aOther.myName))
+			, myCommandFunction(std::move(aOther.myCommandFunction))
+		{
+
+		}
+
+		void operator()(eCommandType aCommandType) const;
+
+	private:
+
+		std::string myName;
+		CommandFunction myCommandFunction;
+
+	};
+
 }

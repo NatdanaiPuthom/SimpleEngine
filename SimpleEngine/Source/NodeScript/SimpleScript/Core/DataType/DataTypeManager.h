@@ -117,7 +117,10 @@ namespace SCR
 					const T& defaultValue = *reinterpret_cast<const T*>(aDefaultValue);
 					new(aDataPtr)T(defaultValue);
 				}
-				new(aDataPtr)T();
+				else
+				{
+					new(aDataPtr)T();
+				}
 			};
 	}
 

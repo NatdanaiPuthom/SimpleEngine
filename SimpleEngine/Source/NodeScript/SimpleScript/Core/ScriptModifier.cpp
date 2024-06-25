@@ -32,24 +32,34 @@ namespace SCR
 				data.eventGraph = &anEventGraph;
 
 
-				auto bindToEventAction = [](const BindData& aData) -> void
+				//auto bindToEventAction = [](const BindData& aData) -> void
+				//	{
+				//		aData.eventGraph->BindNodeToEvent(aData.nodeID);
+				//	};
+
+				auto commandFunction = [data](eCommandType aCommandType) -> void
 					{
-						aData.eventGraph->BindNodeToEvent(aData.nodeID);
+						void (EventGraph::* func)(NodeID) = aCommandType == eCommandType::Do ? &EventGraph::BindNodeToEvent : &EventGraph::UnbindNodeFromEvent;
+
+						(data.eventGraph->*func)(data.nodeID);
+						//data.eventGraph->UnbindNodeFromEvent(data.nodeID);
 					};
 
 				if (!aCommandTracker)
 				{
-					bindToEventAction(data);
+					//bindToEventAction(data);
+					commandFunction(eCommandType::Do);
 				}
 				else
 				{
-					aCommandTracker->DoCommand<FunctionCommand<BindData>>(data,
+					aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Bind Node To Event"));
+					/*aCommandTracker->DoCommand<FunctionCommand<BindData>>(data,
 						bindToEventAction,
 						[](const BindData& aData) -> void
 						{
 							aData.eventGraph->UnbindNodeFromEvent(aData.nodeID);
 						}, "Bind Event Node"
-					);
+					);*/
 				}
 			}
 		}
@@ -219,6 +229,14 @@ namespace SCR
 
 		void DestroyNode(const NodeID aNodeID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
+			
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Destroy Node + Conncected Links");
+
+			}
+
 			struct DestroyNodeData
 			{
 				NodeID nodeID = InvalidID<NodeID>();
@@ -228,25 +246,27 @@ namespace SCR
 			data.nodeID = aNodeID;
 			data.nodeGraph = &aNodeGraph;
 
-			if (aCommandTracker)
-			{
-				aCommandTracker->BeginComposite("Destroy Node + Conncected Links");
-
-			}
-
-			auto doAction = [](const DestroyNodeData& aData) -> void
+			/*auto doAction = [](const DestroyNodeData& aData) -> void
 				{
 					Node& node = aData.nodeGraph->myNodeManager->myNodes[aData.nodeID];
 					node.isDestroyed = true;
+				};*/
+
+			auto commandFunction = [data](eCommandType aCommandType) -> void
+				{
+					Node& node = data.nodeGraph->myNodeManager->myNodes[data.nodeID];
+					node.isDestroyed = aCommandType == eCommandType::Do;
 				};
 
 			if (!aCommandTracker)
 			{
-				doAction(data);
+				//doAction(data);
+				commandFunction(eCommandType::Do);
 			}
 			else
 			{
-				aCommandTracker->DoCommand<FunctionCommand<DestroyNodeData>>(data,
+				aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Destroy Node"));
+				/*aCommandTracker->DoCommand<FunctionCommand<DestroyNodeData>>(data,
 					doAction,
 					[](const DestroyNodeData& aData) -> void
 					{
@@ -254,7 +274,7 @@ namespace SCR
 						node.isDestroyed = false;
 
 					}, "Destroy Node"
-				);
+				);*/
 			}
 
 			for (LinkID linkID : ScriptLinker::GetLinkIDsByNode(aNodeGraph, aNodeID))
@@ -316,26 +336,35 @@ namespace SCR
 				data.newPos = aPosition;
 				data.nodeGraph = &aNodeGraph;
 
-				auto doAction = [](const SetNodePositionData& aData) -> void
+				/*auto doAction = [](const SetNodePositionData& aData) -> void
 					{
 						Node& node = aData.nodeGraph->myNodeManager->myNodes.at(aData.nodeID);
 						node.position = aData.newPos;
+					};*/
+
+				auto commandFunction = [data](eCommandType aCommandType) -> void
+					{
+						Node& node = data.nodeGraph->myNodeManager->myNodes.at(data.nodeID);
+						const ScriptVec2& pos = aCommandType == eCommandType::Do ? data.newPos : data.oldPos;
+						node.position = pos;
 					};
 
 				if (!aCommandTracker)
 				{
-					doAction(data);
+					//doAction(data);
+					commandFunction(eCommandType::Do);
 				}
 				else
 				{
-					aCommandTracker->DoCommand<FunctionCommand<SetNodePositionData>>(data,
+					aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Set Node Position"));
+					/*aCommandTracker->DoCommand<FunctionCommand<SetNodePositionData>>(data,
 						doAction,
 						[](const SetNodePositionData& aData) -> void
 						{
 							Node& node = aData.nodeGraph->myNodeManager->myNodes.at(aData.nodeID);
 							node.position = aData.oldPos;
 						}, "Set Node Position"
-					);
+					);*/
 				}
 
 			}
@@ -388,25 +417,34 @@ namespace SCR
 			data.varID = aVarID;
 			data.script = &aScript;
 
-			auto doAction = [](const DestroyVariableData& aData) -> void
+			/*auto doAction = [](const DestroyVariableData& aData) -> void
 				{
 					ScriptProxy::GetVariableRef(*aData.script, aData.varID).isDestroyed = true;
-				};
+				};*/
 
+
+			auto commandFunction = [data](eCommandType aCommandType) -> void
+				{
+					bool isDestroyed = aCommandType == eCommandType::Do;
+					ScriptProxy::GetVariableRef(*data.script, data.varID).isDestroyed = isDestroyed;
+				};
 
 			if (!aCommandTracker)
 			{
-				doAction(data);
+				commandFunction(eCommandType::Do);
+				//doAction(data);
 			}
 			else
 			{
-				aCommandTracker->DoCommand<FunctionCommand<DestroyVariableData>>(data,
+				aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Destroy Variable"));
+
+				/*aCommandTracker->DoCommand<FunctionCommand<DestroyVariableData>>(data,
 					doAction,
 					[](const DestroyVariableData& aData) -> void
 					{
 						ScriptProxy::GetVariableRef(*aData.script, aData.varID).isDestroyed = false;
-					}
-				);
+					}, "Destroy Variable"
+				);*/
 			}
 
 			const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
@@ -445,7 +483,26 @@ namespace SCR
 				data.previousDataPtr = previousDataPtr;
 				data.nodeGraph = &aNodeGraph;
 
-				aCommandTracker->RegisterCommand<FunctionCommand<EditPinData>>(data, 
+				auto commandFunction = [data](eCommandType aCommandType) -> void
+					{
+						if (aCommandType == eCommandType::Do)
+						{
+							const Pin& pin = data.nodeGraph->myPinManager->myPins[data.pinID];
+							const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
+
+							Global::GetDataTypeManager().SwapData(pinType.dataTypeID, pin.dataPtr, data.previousDataPtr);
+						}
+						else
+						{
+							const Pin& pin = data.nodeGraph->myPinManager->myPins[data.pinID];
+							const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
+
+							Global::GetDataTypeManager().SwapData(pinType.dataTypeID, pin.dataPtr, data.previousDataPtr);
+						}
+					};
+
+				aCommandTracker->RegisterCommand(CommandNew(commandFunction, "Edit Pin"));
+				/*aCommandTracker->RegisterCommand<FunctionCommand<EditPinData>>(data,
 					[](const EditPinData& aData) -> void
 					{
 						const Pin& pin = aData.nodeGraph->myPinManager->myPins[aData.pinID];
@@ -461,7 +518,7 @@ namespace SCR
 
 						Global::GetDataTypeManager().SwapData(pinType.dataTypeID, pin.dataPtr, aData.previousDataPtr);
 					}
-				);
+				);*/
 			}
 		}
 
@@ -659,7 +716,7 @@ namespace SCR
 						Node& node = ScriptProxy::GetNodeRef(eventGraph, nodeID);
 						DestoryLinksByOutputPinID(node.outputPins[anIndex], eventGraph, nullptr);
 
-						node.outputPins.erase(node.outputPins.begin() + anIndex);
+						node.outputPins.erase(begin(node.outputPins) + anIndex);
 					}
 
 
@@ -668,7 +725,7 @@ namespace SCR
 						Node& node = ScriptProxy::GetNodeRef(eventGraph, nodeID);
 
 						DestroyLink(node.inputPins[anIndex], eventGraph, nullptr);
-						node.inputPins.erase(node.inputPins.begin() + anIndex);
+						node.inputPins.erase(begin(node.inputPins) + anIndex);
 					}
 				}
 			}

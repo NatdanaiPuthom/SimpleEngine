@@ -104,21 +104,30 @@ namespace SCR
 		data.nodeID = aNodeID;
 		data.nodeGraph = &aNodeGraph;
 
-		auto doAction = [](const CreateNodeData& aData) -> void
+		//auto doAction = [](const CreateNodeData& aData) -> void
+		//	{
+		//		Node& node = ScriptProxy::GetNodeRef(*aData.nodeGraph, aData.nodeID);
+
+		//		node.isDestroyed = false;
+
+		//	};
+
+		auto commandFunction = [data](eCommandType aCommandType) -> void
 			{
-				Node& node = ScriptProxy::GetNodeRef(*aData.nodeGraph, aData.nodeID);
+				Node& node = ScriptProxy::GetNodeRef(*data.nodeGraph, data.nodeID);
 
-				node.isDestroyed = false;
-
+				node.isDestroyed = aCommandType == eCommandType::Undo;
 			};
 
 		if (!aCommandTracker)
 		{
-			doAction(data);
+			commandFunction(eCommandType::Do);
+			//doAction(data);
 		}
 		else
 		{
-			aCommandTracker->DoCommand<FunctionCommand<CreateNodeData>>(data,
+			aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Create Node"));
+			/*aCommandTracker->DoCommand<FunctionCommand<CreateNodeData>>(data,
 				doAction,
 				[](const CreateNodeData& aData) -> void
 				{
@@ -127,7 +136,7 @@ namespace SCR
 					node.isDestroyed = true;
 
 				}, "Create Node"
-			);
+			);*/
 		}
 
 
@@ -296,13 +305,37 @@ namespace SCR
 				ActivateLink(*aData.nodeGraph, aData.createdLinkID);
 			};
 
+		auto commandFunction = [data](eCommandType aCommandType)
+			{
+				if (aCommandType == eCommandType::Do)
+				{
+
+					if (data.previousLinkID != InvalidID<LinkID>())
+					{
+						DeactivateLink(*data.nodeGraph, data.previousLinkID);
+					}
+
+					ActivateLink(*data.nodeGraph, data.createdLinkID);
+				}
+				else
+				{
+					DeactivateLink(*data.nodeGraph, data.createdLinkID);
+					if (data.previousLinkID != InvalidID<LinkID>())
+					{
+						ActivateLink(*data.nodeGraph, data.previousLinkID);
+					}
+				}
+			};
+
 		if (!aCommandTracker)
 		{
-			doAction(data);
+			commandFunction(eCommandType::Do);
+			//doAction(data);
 		}
 		else
 		{
-			aCommandTracker->DoCommand<FunctionCommand<CreateLinkData>>(data, doAction,
+			aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Create Link"));
+			/*aCommandTracker->DoCommand<FunctionCommand<CreateLinkData>>(data, doAction,
 				[](const CreateLinkData& aData) -> void
 				{
 					DeactivateLink(*aData.nodeGraph, aData.createdLinkID);
@@ -311,7 +344,7 @@ namespace SCR
 						ActivateLink(*aData.nodeGraph, aData.previousLinkID);
 					}
 				}
-			);
+			);*/
 		}
 
 		return data.createdLinkID;
@@ -331,23 +364,32 @@ namespace SCR
 		data.destroyedLinkID = aLinkID;
 		data.nodeGraph = &aNodeGraph;
 
-		auto doCommand = [](const DestroyLinkData& aData) -> void
+		/*auto doCommand = [](const DestroyLinkData& aData) -> void
 			{
 				DeactivateLink(*aData.nodeGraph, aData.destroyedLinkID);
+			};*/
+
+		auto commandFunction = [data](eCommandType aCommandType) -> void
+			{
+				void (*func) (NodeGraph&, LinkID) = aCommandType == eCommandType::Do ? DeactivateLink : ActivateLink;
+
+				func(*data.nodeGraph, data.destroyedLinkID);
 			};
 
 		if (!aCommandTracker)
 		{
-			doCommand(data);
+			commandFunction(eCommandType::Do);
+			//doCommand(data);
 		}
 		else
 		{
-			aCommandTracker->DoCommand<FunctionCommand<DestroyLinkData>>(data, doCommand,
+			aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Destory Link"));
+			/*aCommandTracker->DoCommand<FunctionCommand<DestroyLinkData>>(data, doCommand,
 				[](const DestroyLinkData& aData) -> void
 				{
 					ActivateLink(*aData.nodeGraph, aData.destroyedLinkID);
 				}
-			);
+			);*/
 		}
 	}
 
@@ -369,26 +411,39 @@ namespace SCR
 		data.varID = aVarID;
 		data.script = &aScript;
 
-		auto doAction = [](const BindVarData& aData) -> void
+		/*auto doAction = [](const BindVarData& aData) -> void
 			{
 				ScriptProxy::GetNodeIDToVarIDMap(*aData.script)[aData.nodeID] = aData.varID;
+			};*/
+
+		auto commandFunction = [data](eCommandType aCommandType) -> void
+			{
+				if (aCommandType == eCommandType::Do)
+				{
+					ScriptProxy::GetNodeIDToVarIDMap(*data.script)[data.nodeID] = data.varID;
+				}
+				else
+				{
+					ScriptProxy::GetNodeIDToVarIDMap(*data.script).erase(data.nodeID);
+				}
 			};
 
 		if (!aCommandTracker)
 		{
-			doAction(data);
+			commandFunction(eCommandType::Do);
+			//doAction(data);
 		}
 		else
 		{
-
-			aCommandTracker->DoCommand<FunctionCommand<BindVarData>>(data,
+			aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Bind Node To Variable"));
+			/*aCommandTracker->DoCommand<FunctionCommand<BindVarData>>(data,
 				doAction,
 				[](const BindVarData& aData) -> void
 				{
 					ScriptProxy::GetNodeIDToVarIDMap(*aData.script).erase(aData.nodeID);
 
 				}, "Bind Node To Variable"
-			);
+			);*/
 		}
 	}
 
@@ -410,24 +465,40 @@ namespace SCR
 		data.varID = ScriptProxy::GetNodeIDToVarIDMap(aScript).at(data.nodeID);
 		data.script = &aScript;
 
-		auto doAction = [](const UnbindVarData& aData) -> void
+		/*auto doAction = [](const UnbindVarData& aData) -> void
 			{
 				ScriptProxy::GetNodeIDToVarIDMap(*aData.script).erase(aData.nodeID);
+			};*/
+
+		auto commandFunction = [data](eCommandType aCommandType) -> void
+			{
+				if (aCommandType == eCommandType::Do)
+				{
+					ScriptProxy::GetNodeIDToVarIDMap(*data.script).erase(data.nodeID);
+				}
+				else
+				{
+					ScriptProxy::GetNodeIDToVarIDMap(*data.script)[data.nodeID] = data.varID;
+				}
 			};
 
 		if (!aCommandTracker)
 		{
-			doAction(data);
+			commandFunction(eCommandType::Do);
+			//doAction(data);
 		}
 		else
 		{
-			aCommandTracker->DoCommand<FunctionCommand<UnbindVarData>>(data,
+			aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Unbind Variable"));
+
+
+			/*aCommandTracker->DoCommand<FunctionCommand<UnbindVarData>>(data,
 				doAction,
 				[](const UnbindVarData& aData) -> void
 				{
 					ScriptProxy::GetNodeIDToVarIDMap(*aData.script)[aData.nodeID] = aData.varID;
 				}
-			);
+			);*/
 		}
 	}
 
