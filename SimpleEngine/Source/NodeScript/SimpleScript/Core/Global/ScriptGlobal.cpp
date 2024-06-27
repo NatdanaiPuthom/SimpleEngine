@@ -4,6 +4,7 @@
 #include "NodeTypeManager.h"
 #include "PinTypeManager.h"
 #include "Type/ScriptTypeManager.h"
+#include "../ScriptCopyBuffer.h"
 
 namespace SCR
 {
@@ -13,6 +14,7 @@ namespace SCR
 		bool g_sDebugging = false;
 		MemoryArena<1024> g_FrameArena;
 		MemoryArena<10000> g_EditArena;
+		CopyBuffer g_CopyBuffer;
 
 		ScriptFoundation& GetFoundation()
 		{
@@ -49,6 +51,10 @@ namespace SCR
 			MemoryArena<10000>& GetEditMemoryArena()
 			{
 				return g_EditArena;
+			}
+			CopyBuffer& GetCopyBuffer()
+			{
+				return g_CopyBuffer;
 			}
 		}
 	}

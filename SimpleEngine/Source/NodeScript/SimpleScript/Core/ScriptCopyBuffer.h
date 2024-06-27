@@ -10,15 +10,16 @@ namespace SCR
 
 	struct NodeCopy
 	{
+		NodeTypeID typeID = InvalidID<NodeTypeID>();
 		MemoryPool data;
 		std::vector<PinCopy> inputPinCopies;
 		std::vector<PinCopy> outputPinCopies;
-		NodeTypeID typeID = InvalidID<NodeTypeID>();
 		ScriptVec2 diffFromAvg;
 	};
 
 	struct CopyBuffer
 	{
-		std::vector<NodeCopy> nodes;
+		//std::vector<NodeCopy> nodes;
+		NodeGraph nodeGraph;
 	};
 }

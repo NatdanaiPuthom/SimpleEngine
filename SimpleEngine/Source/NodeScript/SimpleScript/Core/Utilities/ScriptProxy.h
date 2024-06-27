@@ -80,7 +80,5 @@ namespace SCR
 
 		static std::unordered_map<NodeID, VarID>& GetNodeIDToVarIDMap(Script& aScript);
 
-		static CopyBuffer& GetGlobalCopyBufferRef();
-
 	};
 }

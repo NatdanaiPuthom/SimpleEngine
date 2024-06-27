@@ -119,9 +119,4 @@ namespace SCR
 	{
 		return aScript.myVariableManager.myNodeIDToVarID;
 	}
-
-	CopyBuffer& ScriptProxy::GetGlobalCopyBufferRef()
-	{
-		return *ScriptFoundation::GetInstance().myCopyBuffer;
-	}
 }

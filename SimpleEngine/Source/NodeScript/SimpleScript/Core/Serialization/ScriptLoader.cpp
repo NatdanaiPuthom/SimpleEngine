@@ -85,7 +85,7 @@ namespace SCR
 			json pinDataJson;
 
 			pinDataJson["NodeID"] = cleanedNodeIDs.at(pin.nodeID);
-			pinDataJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, inputPinID, ePinFlowType::Input);
+			pinDataJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, inputPinID);
 
 			pinDataJson["Connection"] = json::object();
 			bool connectionExists = !pin.connectedPinIDs.empty();
@@ -95,7 +95,7 @@ namespace SCR
 			{
 				const Pin& connectedPin = ScriptProxy::GetPin(eventGraph, pin.connectedPinIDs[0]);
 				pinDataJson["Connection"]["NodeID"] = cleanedNodeIDs.at(connectedPin.nodeID);
-				pinDataJson["Connection"]["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, pin.connectedPinIDs[0], ePinFlowType::Output);
+				pinDataJson["Connection"]["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, pin.connectedPinIDs[0]);
 			}
 			else
 			{

@@ -9,9 +9,8 @@ namespace SCR
 	class NodeTypeManager;
 	class PinTypeManager;
 	class MemoryManager;
-	
-	template<size_t>
-	class MemoryArena;
+	template<size_t> class MemoryArena;
+	struct CopyBuffer;
 
 	namespace Global
 	{
@@ -28,6 +27,7 @@ namespace SCR
 		{
 			MemoryArena<1024>& GetFrameMemoryArena();
 			MemoryArena<10000>& GetEditMemoryArena();
+			CopyBuffer& GetCopyBuffer();
 		}
 	}
 

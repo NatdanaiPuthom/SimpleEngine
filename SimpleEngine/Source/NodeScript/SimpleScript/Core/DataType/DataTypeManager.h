@@ -414,7 +414,7 @@ namespace SCR
 		{
 			if (dataType->typeInterface.creation.allocate)
 			{
-				void* dataPtr = anArena.Allocate(dataType->size);
+				void* dataPtr = anArena.AllocateSize(dataType->size);
 				dataType->typeInterface.creation.allocate(dataPtr, aDefaultValue);
 
 				return dataPtr;

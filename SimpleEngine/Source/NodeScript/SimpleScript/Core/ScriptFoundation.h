@@ -2,17 +2,15 @@
 #include "ScriptDefines.h"
 #include "Memory/ScriptMemoryPool.h"
 #include <memory>
-#include "ScriptManager.h"
 #include "ScriptCallStack.h"
 
 namespace SCR
 {
-	class ScriptManager;
 	class Function;
-	struct CopyBuffer;
 	class NodeExecutor;
 	class CommandTracker;
 	class TypeManager;
+	class Script;
 
 	class ScriptFoundation final
 	{
@@ -67,8 +65,6 @@ namespace SCR
 		std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Script>>> myScripts;
 
 		CallStack myCallStack;
-
-		std::unique_ptr<CopyBuffer> myCopyBuffer;
 
 	};
 }

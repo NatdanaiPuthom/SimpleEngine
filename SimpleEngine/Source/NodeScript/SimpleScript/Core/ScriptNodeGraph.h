@@ -22,7 +22,7 @@ namespace SCR
 		NodeGraph(NodeGraph&&) = default;
 
 		NodeGraph& operator=(const NodeGraph&) = delete;
-		NodeGraph& operator=(NodeGraph&&) = delete;
+		NodeGraph& operator=(NodeGraph&&) = default;
 
 	public:
 

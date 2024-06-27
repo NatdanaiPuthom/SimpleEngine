@@ -31,35 +31,20 @@ namespace SCR
 				data.nodeID = aNodeID;
 				data.eventGraph = &anEventGraph;
 
-
-				//auto bindToEventAction = [](const BindData& aData) -> void
-				//	{
-				//		aData.eventGraph->BindNodeToEvent(aData.nodeID);
-				//	};
-
 				auto commandFunction = [data](eCommandType aCommandType) -> void
 					{
-						void (EventGraph::* func)(NodeID) = aCommandType == eCommandType::Do ? &EventGraph::BindNodeToEvent : &EventGraph::UnbindNodeFromEvent;
+						void (EventGraph:: * func)(NodeID) = aCommandType == eCommandType::Do ? &EventGraph::BindNodeToEvent : &EventGraph::UnbindNodeFromEvent;
 
 						(data.eventGraph->*func)(data.nodeID);
-						//data.eventGraph->UnbindNodeFromEvent(data.nodeID);
 					};
 
 				if (!aCommandTracker)
 				{
-					//bindToEventAction(data);
 					commandFunction(eCommandType::Do);
 				}
 				else
 				{
 					aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Bind Node To Event"));
-					/*aCommandTracker->DoCommand<FunctionCommand<BindData>>(data,
-						bindToEventAction,
-						[](const BindData& aData) -> void
-						{
-							aData.eventGraph->UnbindNodeFromEvent(aData.nodeID);
-						}, "Bind Event Node"
-					);*/
 				}
 			}
 		}
@@ -229,7 +214,7 @@ namespace SCR
 
 		void DestroyNode(const NodeID aNodeID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
-			
+
 
 			if (aCommandTracker)
 			{
@@ -246,12 +231,6 @@ namespace SCR
 			data.nodeID = aNodeID;
 			data.nodeGraph = &aNodeGraph;
 
-			/*auto doAction = [](const DestroyNodeData& aData) -> void
-				{
-					Node& node = aData.nodeGraph->myNodeManager->myNodes[aData.nodeID];
-					node.isDestroyed = true;
-				};*/
-
 			auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
 					Node& node = data.nodeGraph->myNodeManager->myNodes[data.nodeID];
@@ -260,21 +239,11 @@ namespace SCR
 
 			if (!aCommandTracker)
 			{
-				//doAction(data);
 				commandFunction(eCommandType::Do);
 			}
 			else
 			{
 				aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Destroy Node"));
-				/*aCommandTracker->DoCommand<FunctionCommand<DestroyNodeData>>(data,
-					doAction,
-					[](const DestroyNodeData& aData) -> void
-					{
-						Node& node = aData.nodeGraph->myNodeManager->myNodes[aData.nodeID];
-						node.isDestroyed = false;
-
-					}, "Destroy Node"
-				);*/
 			}
 
 			for (LinkID linkID : ScriptLinker::GetLinkIDsByNode(aNodeGraph, aNodeID))
@@ -328,46 +297,34 @@ namespace SCR
 				NodeGraph* nodeGraph = nullptr;
 			} data;
 
-			if (aPosition != aOldPosition)
+			if (aPosition == aOldPosition)
 			{
-
-				data.nodeID = aNodeID;
-				data.oldPos = aOldPosition;
-				data.newPos = aPosition;
-				data.nodeGraph = &aNodeGraph;
-
-				/*auto doAction = [](const SetNodePositionData& aData) -> void
-					{
-						Node& node = aData.nodeGraph->myNodeManager->myNodes.at(aData.nodeID);
-						node.position = aData.newPos;
-					};*/
-
-				auto commandFunction = [data](eCommandType aCommandType) -> void
-					{
-						Node& node = data.nodeGraph->myNodeManager->myNodes.at(data.nodeID);
-						const ScriptVec2& pos = aCommandType == eCommandType::Do ? data.newPos : data.oldPos;
-						node.position = pos;
-					};
-
-				if (!aCommandTracker)
-				{
-					//doAction(data);
-					commandFunction(eCommandType::Do);
-				}
-				else
-				{
-					aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Set Node Position"));
-					/*aCommandTracker->DoCommand<FunctionCommand<SetNodePositionData>>(data,
-						doAction,
-						[](const SetNodePositionData& aData) -> void
-						{
-							Node& node = aData.nodeGraph->myNodeManager->myNodes.at(aData.nodeID);
-							node.position = aData.oldPos;
-						}, "Set Node Position"
-					);*/
-				}
-
+				return;
 			}
+
+
+			data.nodeID = aNodeID;
+			data.oldPos = aOldPosition;
+			data.newPos = aPosition;
+			data.nodeGraph = &aNodeGraph;
+
+			auto commandFunction = [data](eCommandType aCommandType) -> void
+				{
+					Node& node = data.nodeGraph->myNodeManager->myNodes.at(data.nodeID);
+					const ScriptVec2& pos = aCommandType == eCommandType::Do ? data.newPos : data.oldPos;
+					node.position = pos;
+				};
+
+			if (!aCommandTracker)
+			{
+				commandFunction(eCommandType::Do);
+			}
+			else
+			{
+				aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Set Node Position"));
+			}
+
+
 		}
 
 		void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aDragData, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
@@ -417,12 +374,6 @@ namespace SCR
 			data.varID = aVarID;
 			data.script = &aScript;
 
-			/*auto doAction = [](const DestroyVariableData& aData) -> void
-				{
-					ScriptProxy::GetVariableRef(*aData.script, aData.varID).isDestroyed = true;
-				};*/
-
-
 			auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
 					bool isDestroyed = aCommandType == eCommandType::Do;
@@ -432,19 +383,10 @@ namespace SCR
 			if (!aCommandTracker)
 			{
 				commandFunction(eCommandType::Do);
-				//doAction(data);
 			}
 			else
 			{
 				aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Destroy Variable"));
-
-				/*aCommandTracker->DoCommand<FunctionCommand<DestroyVariableData>>(data,
-					doAction,
-					[](const DestroyVariableData& aData) -> void
-					{
-						ScriptProxy::GetVariableRef(*aData.script, aData.varID).isDestroyed = false;
-					}, "Destroy Variable"
-				);*/
 			}
 
 			const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
@@ -462,65 +404,55 @@ namespace SCR
 			const Pin& pin = aNodeGraph.myPinManager->myPins[aPinID];
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
-			void* tempDataPtr = Global::GetDataTypeManager().AllocateData(pinType.dataTypeID, Global::Internal::GetFrameMemoryArena(), pin.dataPtr);
-			if (Global::GetDataTypeManager().EditData(pinType.dataTypeID, pin.dataPtr))
+			DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
+
+			const void* copyDataPtr = [aCommandTracker, &dataTypeManager, &pinType, &pin]() -> const void*
+				{
+					return aCommandTracker != nullptr ? dataTypeManager.AllocateData(pinType.dataTypeID, Global::Internal::GetFrameMemoryArena(), pin.dataPtr) : nullptr;
+				}();
+
+			bool wasEdited = dataTypeManager.EditData(pinType.dataTypeID, pin.dataPtr);
+
+			if (!wasEdited || !aCommandTracker)
 			{
-				if (!aCommandTracker)
-				{
-					return;
-				}
-
-				void* previousDataPtr = Global::GetDataTypeManager().AllocateData(pinType.dataTypeID, Global::Internal::GetEditMemoryArena(), tempDataPtr);
-
-				struct EditPinData
-				{
-					PinID pinID = InvalidID<PinID>();
-					void* previousDataPtr = nullptr;
-					NodeGraph* nodeGraph = nullptr;
-				} data;
-
-				data.pinID = aPinID;
-				data.previousDataPtr = previousDataPtr;
-				data.nodeGraph = &aNodeGraph;
-
-				auto commandFunction = [data](eCommandType aCommandType) -> void
-					{
-						if (aCommandType == eCommandType::Do)
-						{
-							const Pin& pin = data.nodeGraph->myPinManager->myPins[data.pinID];
-							const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-
-							Global::GetDataTypeManager().SwapData(pinType.dataTypeID, pin.dataPtr, data.previousDataPtr);
-						}
-						else
-						{
-							const Pin& pin = data.nodeGraph->myPinManager->myPins[data.pinID];
-							const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-
-							Global::GetDataTypeManager().SwapData(pinType.dataTypeID, pin.dataPtr, data.previousDataPtr);
-						}
-					};
-
-				aCommandTracker->RegisterCommand(CommandNew(commandFunction, "Edit Pin"));
-				/*aCommandTracker->RegisterCommand<FunctionCommand<EditPinData>>(data,
-					[](const EditPinData& aData) -> void
-					{
-						const Pin& pin = aData.nodeGraph->myPinManager->myPins[aData.pinID];
-						const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-
-						Global::GetDataTypeManager().CopyData(pinType.dataTypeID, pin.dataPtr, aData.previousDataPtr);
-					},
-					[](const EditPinData& aData) -> void
-					{
-
-						const Pin& pin = aData.nodeGraph->myPinManager->myPins[aData.pinID];
-						const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-
-						Global::GetDataTypeManager().SwapData(pinType.dataTypeID, pin.dataPtr, aData.previousDataPtr);
-					}
-				);*/
+				return;
 			}
+
+
+			void* previousDataPtr = Global::GetDataTypeManager().AllocateData(pinType.dataTypeID, Global::Internal::GetEditMemoryArena(), copyDataPtr);
+
+			struct EditPinData
+			{
+				PinID pinID = InvalidID<PinID>();
+				void* previousDataPtr = nullptr;
+				NodeGraph* nodeGraph = nullptr;
+			} data;
+
+			data.pinID = aPinID;
+			data.previousDataPtr = previousDataPtr;
+			data.nodeGraph = &aNodeGraph;
+
+			auto commandFunction = [data](eCommandType aCommandType) -> void
+				{
+					if (aCommandType == eCommandType::Do)
+					{
+						const Pin& pin = data.nodeGraph->myPinManager->myPins[data.pinID];
+						const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
+
+						Global::GetDataTypeManager().SwapData(pinType.dataTypeID, pin.dataPtr, data.previousDataPtr);
+					}
+					else
+					{
+						const Pin& pin = data.nodeGraph->myPinManager->myPins[data.pinID];
+						const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
+
+						Global::GetDataTypeManager().SwapData(pinType.dataTypeID, pin.dataPtr, data.previousDataPtr);
+					}
+				};
+
+			aCommandTracker->RegisterCommand(CommandNew(commandFunction, "Edit Pin"));
 		}
+
 
 		void EditVariableDefaultValue(VarID aVarID, Script& aScript, CommandTracker*)
 		{
@@ -556,16 +488,129 @@ namespace SCR
 			DestroySelection(ScriptProxy::GetVariableManager(aScript).GetNodeIDsByVarID(aVarID), {}, aNodeGraph, aCommandTracker);
 		}
 
-		void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, NodeGraph& aNodeGraph)
+		void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraph& aNodeGraph)
 		{
-			aNodeIDs;
-			aNodeGraph;
+			if (aNodeIDs.empty())
+			{
+				return;
+			}
+			CopyBuffer& copyBuffer = Global::Internal::GetCopyBuffer();
+			copyBuffer = CopyBuffer{};
+
+			std::vector<NodeID> createdNodeIDs;
+			std::unordered_map<NodeID, NodeID> nodeConverter;
+			createdNodeIDs.reserve(aNodeIDs.size());
+
+			ScriptVec2 avgPos;
+			for (NodeID nodeID : aNodeIDs)
+			{
+				const Node& node = ScriptProxy::GetNode(aNodeGraph, nodeID);
+
+				const NodeID createdNodeID = CreateNode(copyBuffer.nodeGraph, node.typeID, node.position, nullptr);
+				avgPos += node.position;
+
+				createdNodeIDs.push_back(createdNodeID);
+				nodeConverter.emplace(nodeID, createdNodeID);
+			}
+
+			avgPos /= static_cast<float>(aNodeIDs.size());
+
+			for (Node& node : copyBuffer.nodeGraph.myNodeManager->myNodes)
+			{
+				node.position = node.position - avgPos;
+			}
+
+			// Create links
+			for (NodeID copiedNodeID : aNodeIDs)
+			{
+				const Node& copiedNode = ScriptProxy::GetNode(aNodeGraph, copiedNodeID);
+				for (PinID copiedInputPinID : copiedNode.inputPins)
+				{
+					const Pin& copiedInputPin = ScriptProxy::GetPin(aNodeGraph, copiedInputPinID);
+					const PinType& copiedInputPinType = Global::GetPinTypeManager().GetPinType(copiedInputPin.typeID);
+
+					const NodeID createdNodeID = nodeConverter.at(copiedNodeID);
+					const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(aNodeGraph, copiedInputPinID, copyBuffer.nodeGraph, createdNodeID);
+					assert(createdInputPinID != InvalidID<PinID>());
+
+					const std::vector<LinkID> connectedLinks = ScriptLinker::GetLinkIDsByPin(aNodeGraph, copiedInputPinID);
+
+					for (const LinkID connectedLinkID : connectedLinks)
+					{
+						const Link& connectedLink = aNodeGraph.myLinks[connectedLinkID];
+
+						const PinID connectedOutputPinID = connectedLink.outputPinID;
+						const Pin& connectedOutputPin = ScriptProxy::GetPin(aNodeGraph, connectedOutputPinID);
+
+						auto it = nodeConverter.find(connectedOutputPin.nodeID);
+						if (it == nodeConverter.end())
+						{
+							continue;
+						}
+						const NodeID newConnectedNodeID = it->second;
+						const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(aNodeGraph, connectedOutputPinID, copyBuffer.nodeGraph, newConnectedNodeID);
+
+						TryCreateLink(createdInputPinID, createdOutputPinID, copyBuffer.nodeGraph, nullptr);
+					}
+
+					const Pin& createdInputPin = ScriptProxy::GetPin(copyBuffer.nodeGraph, createdInputPinID);
+
+					Global::GetDataTypeManager().CopyData(copiedInputPinType.dataTypeID, createdInputPin.dataPtr, copiedInputPin.dataPtr);
+				}
+			}
+
+			// Copy Data
+
 		}
 
 		void PasteCopyBuffer(ScriptVec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
-			aPosition; aNodeGraph;
-			aCommandTracker;
+			CopyBuffer& copyBuffer = Global::Internal::GetCopyBuffer();
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Paste Nodes");
+			}
+
+			std::unordered_map<NodeID, NodeID> nodeConverter;
+
+			for (NodeID sourceNodeID = 0; sourceNodeID < copyBuffer.nodeGraph.myNodeManager->myNodes.size(); sourceNodeID++)
+			{
+				const Node& node = copyBuffer.nodeGraph.myNodeManager->myNodes[sourceNodeID];
+				NodeID createdNodeID = CreateNode(aNodeGraph, node.typeID, aPosition + node.position, aCommandTracker);
+				nodeConverter.emplace(sourceNodeID, createdNodeID);
+
+				const Node& createdNode = ScriptProxy::GetNode(aNodeGraph, createdNodeID);
+				DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
+				for (const PinID createdInputPinID : createdNode.inputPins)
+				{
+					const Pin& createdInputPin = ScriptProxy::GetPin(aNodeGraph, createdInputPinID);
+					const PinType& createdInputPinType = Global::GetPinTypeManager().GetPinType(createdInputPin.typeID);
+
+					const PinID sourcePinID = ScriptLinker::GetOpposingPinID(aNodeGraph, createdInputPinID, copyBuffer.nodeGraph, sourceNodeID);
+					const Pin& sourcePin = ScriptProxy::GetPin(copyBuffer.nodeGraph, sourcePinID);
+					dataTypeManager.CopyData(createdInputPinType.dataTypeID, createdInputPin.dataPtr, sourcePin.dataPtr);
+				}
+			}
+
+			for (const Link& link : copyBuffer.nodeGraph.myLinks)
+			{
+				const Pin& inputPin = copyBuffer.nodeGraph.myPinManager->myPins[link.inputPinID];
+				const Pin& outputPin = copyBuffer.nodeGraph.myPinManager->myPins[link.outputPinID];
+				const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(copyBuffer.nodeGraph, link.inputPinID, aNodeGraph, nodeConverter.at(inputPin.nodeID));
+				const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(copyBuffer.nodeGraph, link.outputPinID, aNodeGraph, nodeConverter.at(outputPin.nodeID));
+				LinkID createdLinkID = TryCreateLink(createdInputPinID, createdOutputPinID, aNodeGraph, aCommandTracker);
+
+				assert(createdLinkID != InvalidID<LinkID>());
+			}
+
+
+
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
 		}
 
 		CustomEventID CreateCustomEvent(const std::string& aName)

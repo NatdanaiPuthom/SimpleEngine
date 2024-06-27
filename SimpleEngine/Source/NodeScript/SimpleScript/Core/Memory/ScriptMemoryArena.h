@@ -145,7 +145,7 @@ namespace SCR
 		template<MemSizeLessEqual<Capacity> T, typename... Args>
 		T& Allocate(Args&&... aArgs)
 		{
-			void* currentMemory = Allocate(sizeof(T));
+			void* currentMemory = AllocateSize(sizeof(T));
 			//void* currentMemory = (&myBuffer[0]) + myCurrentSize;
 			new (currentMemory) T(std::forward<Args>(aArgs)...);
 
@@ -160,7 +160,7 @@ namespace SCR
 			return *value;
 		}
 
-		void* Allocate(size_t aSize)
+		void* AllocateSize(size_t aSize)
 		{
 			void* currentMemory = (&myBuffer[0]) + myCurrentSize;
 			myCurrentSize += aSize;
@@ -227,9 +227,9 @@ namespace SCR
 		template<MemSizeLessEqual<BufferCapacity> T, typename... Args>
 		T& Allocate(Args&&... aArgs);
 
-		void* Allocate(size_t aSize);
+		void* AllocateSize(size_t aSize);
 
-		void* GetRenewedPointer(void* aPtr, const MemoryArena& aPrevious) const;
+		void* GetRenewedPointer(const void* aPtr, const MemoryArena& aPrevious) const;
 
 		void Clear();
 
@@ -296,24 +296,27 @@ namespace SCR
 	}
 
 	template<size_t BufferCapacity>
-	inline void* MemoryArena<BufferCapacity>::Allocate(size_t aSize)
+	inline void* MemoryArena<BufferCapacity>::AllocateSize(size_t aSize)
 	{
-		return GetCurrentBuffer().Allocate(aSize);
+		if (GetCurrentBuffer().SizeLeft() < aSize)
+		{
+			AllocateNewBuffer();
+		}
+		return GetCurrentBuffer().AllocateSize(aSize);
 	}
 
 	template<size_t BufferCapacity>
-	inline void* MemoryArena<BufferCapacity>::GetRenewedPointer(void* aPtr, const MemoryArena& aPrevious) const
+	inline void* MemoryArena<BufferCapacity>::GetRenewedPointer(const void* aPtr, const MemoryArena& aPrevious) const
 	{
-		for (size_t i = 0; const std::unique_ptr<MemoryBuffer>&buffer : aPrevious.myMemoryBuffers)
+		for (size_t i = 0; i < aPrevious.myMemoryBuffers.size(); ++i)
 		{
+			const std::unique_ptr<MemoryBuffer>& buffer = aPrevious.myMemoryBuffers[i];
 			size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->Data());
 			if (ptrDiff < BufferCapacity)
 			{
 				return reinterpret_cast<void*>(reinterpret_cast<size_t>(myMemoryBuffers[i]->Data()) + ptrDiff);
 
 			}
-
-			i++;
 		}
 
 		return nullptr;

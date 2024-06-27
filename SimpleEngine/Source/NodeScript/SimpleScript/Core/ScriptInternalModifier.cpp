@@ -537,7 +537,7 @@ namespace SCR
 
 
 			{ // Link new pin
-				size_t pinIndex = ScriptLinker::GetPinIndex(aNodeGraph, aReplacePinID, replacePinType.flowType);
+				size_t pinIndex = ScriptLinker::GetPinIndex(aNodeGraph, aReplacePinID);
 
 				const PinID createdPinConnectedID = replacePinType.flowType == ePinFlowType::Input ? createdNode.inputPins[pinIndex] : createdNode.outputPins[pinIndex];
 

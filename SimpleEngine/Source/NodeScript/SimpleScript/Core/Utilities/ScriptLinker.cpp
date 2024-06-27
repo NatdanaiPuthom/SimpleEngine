@@ -31,12 +31,13 @@ namespace SCR
 		return InvalidID<PinID>();
 	}
 
-	size_t ScriptLinker::GetPinIndex(const NodeGraph& aNodeGraph, const PinID aPinID, const ePinFlowType aPinFlowType)
+	size_t ScriptLinker::GetPinIndex(const NodeGraph& aNodeGraph, const PinID aPinID)
 	{
-		const NodeID nodeID = ScriptProxy::GetPin(aNodeGraph, aPinID).nodeID;
-		const Node& node = ScriptProxy::GetNode(aNodeGraph, nodeID);
+		const Pin& pin = ScriptProxy::GetPin(aNodeGraph, aPinID);
+		const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.typeID);
+		const Node& node = ScriptProxy::GetNode(aNodeGraph, pin.nodeID);
 
-		const std::vector<PinID>& pinIDs = aPinFlowType == ePinFlowType::Output ? node.outputPins : node.inputPins;
+		const std::vector<PinID>& pinIDs = pinType.flowType == ePinFlowType::Output ? node.outputPins : node.inputPins;
 
 		for (size_t i = 0; i < pinIDs.size(); ++i)
 		{
@@ -46,6 +47,14 @@ namespace SCR
 			}
 		}
 		return InvalidID<size_t>();
+	}
+
+	PinID ScriptLinker::GetOpposingPinID(const NodeGraph& aPreviousNodeGraph, const PinID aPreviousPinID, const NodeGraph& aNewNodeGraph, const NodeID aNodeID)
+	{
+		size_t pinIndex = GetPinIndex(aPreviousNodeGraph, aPreviousPinID);
+		const Pin& pin = ScriptProxy::GetPin(aPreviousNodeGraph, aPreviousPinID);
+		const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.typeID);
+		return GetPinID(aNewNodeGraph, aNodeID, pinIndex, pinType.flowType);
 	}
 
 	static bool ArePinsLinkableByDataType(const NodeGraph& aNodeGraph, const PinID aPinID1, const PinID aPinID2)
@@ -109,14 +118,14 @@ namespace SCR
 		return InvalidID<LinkID>();
 	}
 
-	std::vector<LinkID> ScriptLinker::GetLinkIDsByPin(const NodeGraph& aNodeGraph, const PinID aPinID)
+	std::vector<LinkID> ScriptLinker::GetLinkIDsByPin(const NodeGraph& aNodeGraph, const PinID aPinID, bool aIncludeDestroyed)
 	{
 		std::vector<LinkID> linkIDs;
 		const Pin& pin = ScriptProxy::GetPin(aNodeGraph, aPinID);
 
 		for (PinID connectedPinID : pin.connectedPinIDs)
 		{
-			LinkID linkID = GetLinkIDByPinIDs(aNodeGraph, aPinID, connectedPinID);
+			LinkID linkID = GetLinkIDByPinIDs(aNodeGraph, aPinID, connectedPinID, aIncludeDestroyed);
 			assert(linkID != InvalidID<LinkID>());
 
 			linkIDs.push_back(linkID);

@@ -1,7 +1,6 @@
 #include "ScriptCommand.h"
-#include "../Script.h"
-#include "Utilities/ScriptProxy.h"
 #include "ScriptCommandTracker.h"
+#include "../Global/ScriptGlobal.h"
 
 namespace SCR
 {
@@ -17,26 +16,27 @@ namespace SCR
 
 	void Command::DoInternal()
 	{
-		//std::cout << "Do Command: " << myName << std::endl;
 		Do();
 	}
 
 	void Command::UndoInternal()
 	{
-		//std::cout << "Undo Command: " << myName << std::endl;
 		Undo();
 	}
 
 
 	void CommandNew::operator()(eCommandType aCommandType) const
 	{
-		if (aCommandType == eCommandType::Do)
+		if (Global::IsDebugging())
 		{
-			std::cout << "Do Command: " << myName << std::endl;
-		}
-		else
-		{
-			std::cout << "Undo Command: " << myName << std::endl;
+			if (aCommandType == eCommandType::Do)
+			{
+				std::cout << "Do Command: " << myName << std::endl;
+			}
+			else
+			{
+				std::cout << "Undo Command: " << myName << std::endl;
+			}
 		}
 		myCommandFunction(aCommandType);
 	}

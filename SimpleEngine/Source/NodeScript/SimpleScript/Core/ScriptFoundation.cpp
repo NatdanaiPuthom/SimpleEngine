@@ -1,9 +1,8 @@
 #include "ScriptFoundation.h"
-#include "ScriptManager.h"
+#include "Script.h"
 #include "NodeTypes/SystemNodes.h"
 #include "Serialization/ScriptLoader.h"
 #include "SystemDataTypes.h"
-#include "ScriptCopyBuffer.h"
 #include "Node/NodeExecutor.h"
 #include "Command/ScriptCommandTracker.h"
 #include "Type/ScriptTypeManager.h"
@@ -15,7 +14,6 @@ namespace SCR
 		: myMemoryPool(10000)
 		, myTypeManager(std::make_unique<TypeManager>())
 		, myNodeExecutor(std::make_unique<NodeExecutor>())
-		, myCopyBuffer(std::make_unique<CopyBuffer>())
 	{
 	}
 
