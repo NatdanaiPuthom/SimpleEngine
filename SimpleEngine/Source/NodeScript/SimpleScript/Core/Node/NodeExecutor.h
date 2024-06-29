@@ -26,10 +26,10 @@ namespace SCR
 		NodeExecutor();
 		~NodeExecutor();
 
-		void ExecuteEvent(size_t anEventHash, ScriptInstance& aScriptInstance, const ExecutionContextBase& anExecutionContext, bool aExecuteAutoTickers = false);
+		void ExecuteEvent(EventID anEventID, ScriptInstance& aScriptInstance, void* aOwner, const ExecutionContextBase& anExecutionContext, bool aExecuteAutoTickers = false);
 
 		template<typename EventFunction>
-		void ExecuteEvent(EventFunction, ScriptInstance& aScriptInstance, const ExecutionContextBase& aContext, bool aExecuteAutoTickers = false);
+		void ExecuteEvent(EventFunction, ScriptInstance& aScriptInstance, void* aOwner, const ExecutionContextBase& aContext, bool aExecuteAutoTickers = false);
 
 		void ExecuteNode(const NodeExecutionData& aNodeExecutionData);
 
@@ -47,9 +47,9 @@ namespace SCR
 	};
 
 	template<typename EventFunction>
-	inline void NodeExecutor::ExecuteEvent(EventFunction aFunction, ScriptInstance& aScriptInstance, const ExecutionContextBase& aContext, const bool aExecuteAutoTickers)
+	inline void NodeExecutor::ExecuteEvent(EventFunction aFunction, ScriptInstance& aScriptInstance, void* const aOwner, const ExecutionContextBase& aContext, const bool aExecuteAutoTickers)
 	{
 		EventID eventID = std::hash<EventFunction>()(aFunction);
-		ExecuteEvent(eventID, aScriptInstance, aContext, aExecuteAutoTickers);
+		ExecuteEvent(eventID, aScriptInstance, aOwner, aContext, aExecuteAutoTickers);
 	}
 }

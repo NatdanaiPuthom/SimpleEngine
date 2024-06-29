@@ -1,6 +1,6 @@
 #pragma once
-#include "ScriptDefines.h"
-#include "ScriptMemoryManager.h"
+#include "../ScriptDefines.h"
+#include "../Memory/ScriptMemoryManager.h"
 
 namespace SCR
 {

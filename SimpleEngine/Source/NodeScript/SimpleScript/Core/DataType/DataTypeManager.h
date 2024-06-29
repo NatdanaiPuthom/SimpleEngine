@@ -240,12 +240,22 @@ namespace SCR
 		const size_t byteOffset;
 	};
 
+	enum class eDataTypeTrait
+	{
+		None = 0,
+		Fundamental = 1 << 0,
+		Editable = 1 << 1,
+		SaveLoadable = 1 << 2,
+		All = Fundamental | Editable | SaveLoadable
+	};
+
 	struct DataType
 	{
 		const std::string name;
 		const size_t size;
 		const Color color;
 		const std::type_info* typeInfo;
+		const eDataTypeTrait typeTraits;
 		const DataTypeInterface typeInterface;
 		std::vector<Property> properties;
 		std::vector<NodeTypeID> functions;
@@ -279,8 +289,9 @@ namespace SCR
 
 		DataTypeID GetDataTypeIDByName(const std::string& aName);
 
-		const std::unordered_map<DataTypeID, DataType>& GetObjectTypes();
-		std::unordered_map<DataTypeID, const DataType*> GetFunctionObjectTypes();
+		const std::unordered_map<DataTypeID, DataType>& GetDataTypes();
+		std::unordered_map<DataTypeID, const DataType*> GetFunctionDataTypes();
+		std::unordered_map<DataTypeID, const DataType*> GetDataTypesFiltered(eDataTypeTrait aTrait, eBitwiseType aBitwiseType);
 
 		Color GetColor(const DataTypeID aDataTypeID);
 		Color GetSelectionColor(const DataTypeID aDataTypeID);
@@ -359,6 +370,19 @@ namespace SCR
 	template<CleanType T>
 	inline void DataTypeManager::RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface)
 	{
+		eDataTypeTrait typeTraits = eDataTypeTrait::None;
+		if constexpr (Fundamental<T>)
+		{
+			typeTraits |= eDataTypeTrait::Fundamental;
+		}
+		if constexpr (Editable<T>)
+		{
+			typeTraits |= eDataTypeTrait::Editable;
+		}
+		if constexpr (Loadable<T, nlohmann::json> && Savable<T, nlohmann::json>)
+		{
+			typeTraits |= eDataTypeTrait::SaveLoadable;
+		}
 
 		const std::type_info& typeInfo = typeid(T);
 		DataType dataType
@@ -367,6 +391,7 @@ namespace SCR
 			.size = sizeof(T),
 			.color = aColor,
 			.typeInfo = &typeInfo,
+			.typeTraits = typeTraits,
 			.typeInterface = anInterface,
 		};
 

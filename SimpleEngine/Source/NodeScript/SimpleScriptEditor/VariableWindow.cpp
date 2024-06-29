@@ -90,7 +90,7 @@ namespace Editor
 		std::stringstream ss;
 
 		int i = 0;
-		for (const auto& [dataTypeID, obj] : Global::GetDataTypeManager().GetObjectTypes())
+		for (const auto& [dataTypeID, obj] : Global::GetDataTypeManager().GetDataTypes())
 		{
 			ss << obj.name << '\0';
 			dataTypeIDs.push_back(dataTypeID);

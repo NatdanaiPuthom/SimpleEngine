@@ -6,3 +6,4 @@
 #include "Engine/ECS/Components/Core/SkyBoxComponent.hpp"
 #include "Engine/ECS/Components/Core/DirectionalLightComponent.hpp"
 #include "Engine/ECS/Components/Core/NullComponent.hpp"
+#include "Engine/ECS/Components/Core/ScriptComponent.hpp"

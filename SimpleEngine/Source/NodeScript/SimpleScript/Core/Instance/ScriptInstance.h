@@ -1,6 +1,5 @@
 #pragma once
 #include "../ScriptDefines.h"
-#include "NodeTrait.h"
 #include "VariableManagerInstance.h"
 #include "NodeGraphInstance.h"
 

@@ -264,4 +264,5 @@ namespace ECS
 
 //TO-DO(v11.0.3): maybe figure out a more modular way to register different type of const, pointers and array of different sizes
 #define REGISTER_DATATYPE_CONST_POINTER(aDataType) inline ECS::__RegisterDataType<const aDataType*> Global_ECS_Registered_Datatype_Const_Pointer_##aDataType;
+#define REGISTER_DATATYPE_POINTER(aDataType) inline ECS::__RegisterDataType<aDataType*> Global_ECS_Registered_Datatype_Pointer_##aDataType;
 #define REGISTER_DATATYPE_ARRAY_CONST_POINTER(aArray, aDataType, aSize) inline ECS::__RegisterDataType<aArray<const aDataType*, aSize>> Global_ECS_Registered_Datatype_Array_Const_Pointer_##aArray;

@@ -5,6 +5,11 @@
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
 #include "Editor/FileManager/FileManager.hpp"
+#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
+#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.h"
+#include "NodeScript/SimpleScript/Core/Script.h"
+#include "NodeScript/SimpleScript/Core/Instance/ScriptInstance.h"
+#include "NodeScript/SimpleScript/Core/ScriptFoundation.h"
 #include "External/imgui.h"
 
 namespace ECS
@@ -237,6 +242,59 @@ namespace ECS
 		}
 
 		return isValid;
+	}
+
+	bool ViewAndEditValue(SCRIPT::ScriptInstance*& aScriptInstance, const std::string& /*aVariableName*/)
+	{
+
+		SCRIPT::DataTypeManager& dataTypeManager = SCRIPT::Global::GetDataTypeManager();
+		SCRIPT::ScriptFoundation& scriptFoundation = SCRIPT::Global::GetFoundation();
+
+		const auto& scripts = scriptFoundation.GetScripts();
+
+		bool wasChanged = false;
+
+		if (ImGui::BeginCombo("Script", "None"))
+		{
+			for (auto& [dataTypeID, scriptsByTypeID] : scripts)
+			{
+				const SCRIPT::DataType* dataType = dataTypeManager.Find(dataTypeID);
+				if (dataType == nullptr)
+				{
+					continue;
+				}
+				ImGui::Text("%s Scripts:", dataType->name.c_str());
+				for (auto& script : scriptsByTypeID)
+				{
+					bool isSelected = false;
+					if (aScriptInstance != nullptr)
+					{
+						isSelected = aScriptInstance->myScript == script.get();
+					}
+					if (ImGui::Selectable(script->Name().c_str(), isSelected))
+					{
+						if (aScriptInstance != nullptr)
+						{
+							script->DestroyScriptInstance(*aScriptInstance);
+
+						}
+
+						aScriptInstance = &script->CreateScriptInstance();
+						
+						wasChanged = true;
+					}
+				}
+
+				ImGui::Separator();
+
+
+			}
+
+
+			ImGui::EndCombo();
+		}
+
+		return wasChanged;
 	}
 
 	bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& /*aVariableName*/)

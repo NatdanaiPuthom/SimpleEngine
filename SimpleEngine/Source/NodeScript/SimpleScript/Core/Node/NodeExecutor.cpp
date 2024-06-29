@@ -17,15 +17,23 @@ namespace SCR
 	{
 	}
 
-	void NodeExecutor::ExecuteEvent(const size_t anEventHash, ScriptInstance& aScriptInstance, const ExecutionContextBase& anExecutionContext, const bool aExecuteAutoTickers)
+	void NodeExecutor::ExecuteEvent(const EventID anEventID, ScriptInstance& aScriptInstance, void* const aOwner, const ExecutionContextBase& anExecutionContext, const bool aExecuteAutoTickers)
 	{
 		myExecutionContext.script = aScriptInstance.myScript;
 		myExecutionContext.executionContext = &anExecutionContext;
 		myExecutionContext.scriptInstance = &aScriptInstance;
 		myExecutionContext.nodeGraphInstance = &aScriptInstance.myEventGraphInstance;
+		myExecutionContext.owner = aOwner;
+
+#ifdef FLY_DEBUG
+		if (aOwner == nullptr)
+		{
+			assert(aScriptInstance.myScript->GetTargetID() == GlobalDataTypeID);
+		}
+#endif
 
 		EventGraph& eventGraph = aScriptInstance.myScript->GetEventGraph();
-		auto it = eventGraph.myEventNodes.find(anEventHash);
+		auto it = eventGraph.myEventNodes.find(anEventID);
 
 		if (it != eventGraph.myEventNodes.end())
 		{

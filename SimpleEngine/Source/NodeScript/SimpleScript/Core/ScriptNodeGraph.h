@@ -1,7 +1,7 @@
 #pragma once
 #include "ScriptDefines.h"
-#include "NodeManager.h"
-#include "PinManager.h"
+#include "Node/NodeManager.h"
+#include "Pin/PinManager.h"
 #include "Memory/ScriptMemoryManager.h"
 
 namespace SCR

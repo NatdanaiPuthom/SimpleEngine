@@ -376,13 +376,13 @@ namespace Editor
 				switch (currentEventIndex)
 				{
 				case 0:
-					Global::GetNodeExecutor().ExecuteEvent(SCRIPT::BeginPlay, scriptInstance, c);
+					Global::GetNodeExecutor().ExecuteEvent(SCRIPT::BeginPlay, scriptInstance, nullptr, c);
 					break;
 				case 1:
-					Global::GetNodeExecutor().ExecuteEvent(SCRIPT::Tick, scriptInstance, c);
+					Global::GetNodeExecutor().ExecuteEvent(SCRIPT::Tick, scriptInstance, nullptr, c);
 					break;
 				case 2:
-					Global::GetNodeExecutor().ExecuteEvent(SCRIPT::EndPlay, scriptInstance, c);
+					Global::GetNodeExecutor().ExecuteEvent(SCRIPT::EndPlay, scriptInstance, nullptr, c);
 					break;
 				default:
 					break;

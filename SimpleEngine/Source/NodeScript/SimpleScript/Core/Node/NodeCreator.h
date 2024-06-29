@@ -265,11 +265,11 @@ namespace SCR
 	}
 
 	template<typename Return, typename A, typename B>
-	Return AppendContainers(const A& a, const B& b)
+	Return AppendContainers(A&& a, B&& b)
 	{
 		Return r{};
-		r.insert(r.begin(), a.begin(), a.end());
-		r.insert(r.end(), b.begin(), b.end());
+		r.insert(begin(r), begin(a), end(a));
+		r.insert(end(r), begin(b), end(b));
 		return r;
 	}
 
@@ -292,14 +292,14 @@ namespace SCR
 
 				std::vector<PinID> addedInputPinIDs = InternalModifier::CreateInputPins(aNodeGraph, aNodeID, aNodeTypeID, preExistingInputPinIDs.size());
 
-				std::vector<PinID> totalInputPinIDs = AppendContainers<std::vector<PinID>>(preExistingInputPinIDs, addedInputPinIDs);
+				const std::vector<PinID> totalInputPinIDs = AppendContainers<std::vector<PinID>>(std::move(preExistingInputPinIDs), std::move(addedInputPinIDs));
 
 				// Output pins
 				std::array<PinID, PinOutputSize> preExistingOutputPinIDs = CreateOutputPins<OutputTypes...>(aNodeID, aNodeTypeID, aNodeGraph);
 
 				std::vector<PinID> addedOutputPinIDs = InternalModifier::CreateOutputPins(aNodeGraph, aNodeID, aNodeTypeID, preExistingOutputPinIDs.size());
 
-				std::vector<PinID> totalOutputPinIDs = AppendContainers<std::vector<PinID>>(preExistingOutputPinIDs, addedOutputPinIDs);
+				const std::vector<PinID> totalOutputPinIDs = AppendContainers<std::vector<PinID>>(std::move(preExistingOutputPinIDs), std::move(addedOutputPinIDs));
 
 				return Node(aNodeTypeID, totalInputPinIDs, totalOutputPinIDs);
 			};

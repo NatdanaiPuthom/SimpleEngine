@@ -24,6 +24,11 @@ namespace SCR
 		}
 	};
 
+	enum class eBitwiseType
+	{
+		HasFlag,
+		Equals
+	};
 
 	template<typename T>
 	concept Enumerable = std::is_enum_v<T>;
@@ -48,6 +53,12 @@ namespace SCR
 	}
 
 	template<Enumerable T>
+	constexpr T operator^(const T aValue1, const T aValue2)
+	{
+		return static_cast<T>(static_cast<std::underlying_type_t<T>>(aValue1) ^ static_cast<std::underlying_type_t<T>>(aValue2));
+	}
+
+	template<Enumerable T>
 	constexpr void operator|=(T& aValue1, const T aValue2)
 	{
 		aValue1 = aValue1 | aValue2;
@@ -60,7 +71,13 @@ namespace SCR
 	}
 
 	template<Enumerable T>
-	constexpr std::underlying_type_t<T> EnumToInt(T aValue)
+	constexpr bool Equals(const T aValue1, const T aValue2)
+	{
+		return aValue1 == aValue2;
+	}
+
+	template<Enumerable T>
+	constexpr std::underlying_type_t<T> EnumToInt(const T aValue)
 	{
 		return static_cast<std::underlying_type_t<T>>(aValue);
 	}

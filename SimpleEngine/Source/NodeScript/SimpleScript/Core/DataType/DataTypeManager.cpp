@@ -133,24 +133,41 @@ namespace SCR
 		return InvalidID<DataTypeID>();
 	}
 
-	const std::unordered_map<DataTypeID, DataType>& DataTypeManager::GetObjectTypes()
+	const std::unordered_map<DataTypeID, DataType>& DataTypeManager::GetDataTypes()
 	{
 		return myDataTypes;
 	}
 
-	std::unordered_map<DataTypeID, const DataType*> DataTypeManager::GetFunctionObjectTypes()
+	std::unordered_map<DataTypeID, const DataType*> DataTypeManager::GetFunctionDataTypes()
 	{
-		std::unordered_map<DataTypeID, const DataType*> funcObjectTypes;
+		std::unordered_map<DataTypeID, const DataType*> dataTypes;
 
 		for (const auto& [dataTypeID, dataType] : myDataTypes)
 		{
 			if (dataType.typeInterface)
 			{
-				funcObjectTypes.emplace(dataTypeID, &dataType);
+				dataTypes.emplace(dataTypeID, &dataType);
 			}
 		}
 
-		return funcObjectTypes;
+		return dataTypes;
+	}
+
+	std::unordered_map<DataTypeID, const DataType*> DataTypeManager::GetDataTypesFiltered(const eDataTypeTrait aTrait, const eBitwiseType aBitwiseType)
+	{
+		std::unordered_map<DataTypeID, const DataType*> dataTypes;
+
+		bool(*const predicate)(eDataTypeTrait, eDataTypeTrait) = aBitwiseType == eBitwiseType::HasFlag ? HasFlag<eDataTypeTrait> : Equals<eDataTypeTrait>;
+
+		for (const auto& [dataTypeID, dataType] : myDataTypes)
+		{
+			if (predicate(dataType.typeTraits, aTrait))
+			{
+				dataTypes.emplace(dataTypeID, &dataType);
+			}
+		}
+
+		return dataTypes;
 	}
 
 	Color DataTypeManager::GetColor(const DataTypeID aDataTypeID)
