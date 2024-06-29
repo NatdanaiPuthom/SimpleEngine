@@ -5,13 +5,13 @@ namespace SCR
 {
 
 	template<typename T, typename U>
-	static U CastValueNode(T aValue)
+	static U CastValue(T aValue)
 	{
 		return static_cast<U>(aValue);
 	}
 
 	template<typename T>
-	static T ClampNode(T aValue, T aMin, T aMax)
+	static T Clamp(T aValue, T aMin, T aMax)
 	{
 		return std::clamp(aValue, aMin, aMax);
 	}
@@ -20,42 +20,28 @@ namespace SCR
 #undef max
 
 	template<typename T>
-	static T MinNode(T aValue1, T aValue2)
+	static T Min(T aValue1, T aValue2)
 	{
 		return std::min(aValue1, aValue2);
 	}
 
 	template<typename T>
-	static T MaxNode(T aValue1, T aValue2)
+	static T Max(T aValue1, T aValue2)
 	{
 		return std::max(aValue1, aValue2);
 	}
 
-	void RegisterUtilityNodes()
-	{
-		NodeTypeRegistry::RegisterNodeType(CastValueNode<int, float>, "Utility/Cast/Cast Int To Float");
-		NodeTypeRegistry::RegisterNodeType(CastValueNode<float, int>, "Utility/Cast/Cast Float To Int");
-		NodeTypeRegistry::RegisterNodeType(CastValueNode<int, unsigned int>, "Utility/Cast/Cast Int To Unsigned Int");
-		NodeTypeRegistry::RegisterNodeType(CastValueNode<short, int>, "Utility/Cast/Cast Short To Int");
-		NodeTypeRegistry::RegisterNodeType(CastValueNode<unsigned int, int>, "Utility/Cast/Cast Unsigned Int To Int");
-		NodeTypeRegistry::RegisterNodeType(CastValueNode<unsigned int, unsigned long long>, "Utility/Cast/Cast Unsigned Int To Unsigned Long Long");
-		NodeTypeRegistry::RegisterNodeType(CastValueNode<int, unsigned long long>, "Utility/Cast/Cast Int To Unsigned Long Long");
-		NodeTypeRegistry::RegisterNodeType(CastValueNode<unsigned long long, int>, "Utility/Cast/Cast Unsigned Long Long To Int");
-		NodeTypeRegistry::RegisterNodeType(CastValueNode<unsigned long long, unsigned int>, "Utility/Cast/Cast Unsigned Long Long To Unsigned Int");
+	REGISTER_FUNCTION(Clamp<int>, "Utility/Function/");
+	REGISTER_FUNCTION(Clamp<float>, "Utility/Function/");
+	REGISTER_FUNCTION(Clamp<unsigned long long>, "Utility/Function/");
 
-		NodeTypeRegistry::RegisterNodeType(ClampNode<int>, "Utility/Functions/Clamp (Int)");
-		NodeTypeRegistry::RegisterNodeType(ClampNode<unsigned int>, "Utility/Functions/Clamp (Unsigned Int)");
-		NodeTypeRegistry::RegisterNodeType(ClampNode<unsigned long long>, "Utility/Functions/Clamp (Unsigned Long Long)");
-		NodeTypeRegistry::RegisterNodeType(ClampNode<float>, "Utility/Functions/Clamp (Float)");
+	REGISTER_FUNCTION(Min<int>, "Utility/Function");
+	REGISTER_FUNCTION(Min<float>, "Utility/Function");
+	REGISTER_FUNCTION(Min<unsigned long long>, "Utility/Function");
 
-		NodeTypeRegistry::RegisterNodeType(MinNode<int>, "Utility/Functions/Min (Int)");
-		NodeTypeRegistry::RegisterNodeType(MinNode<float>, "Utility/Functions/Min (Float)");
-		NodeTypeRegistry::RegisterNodeType(MinNode<unsigned long long>, "Utility/Functions/Min (Unsigned Long Long)");
 
-		NodeTypeRegistry::RegisterNodeType(MaxNode<int>, "Utility/Functions/Max (Int)");
-		NodeTypeRegistry::RegisterNodeType(MaxNode<float>, "Utility/Functions/Max (Float)");
-		NodeTypeRegistry::RegisterNodeType(MaxNode<unsigned long long>, "Utility/Functions/Max (Unsigned Long Long)");
-
-	}
+	REGISTER_FUNCTION(Max<int>, "Utility/Function");
+	REGISTER_FUNCTION(Max<float>, "Utility/Function");
+	REGISTER_FUNCTION(Max<unsigned long long>, "Utility/Function");
 }
 

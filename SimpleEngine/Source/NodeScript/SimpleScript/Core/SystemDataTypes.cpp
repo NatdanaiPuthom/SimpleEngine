@@ -60,52 +60,6 @@ static void Load(const nlohmann::json& aJson, float& aValue)
 	aValue = aJson["Value"];
 }
 
-// Double
-static bool Edit(double& aValue)
-{
-	float floatValue = static_cast<float>(aValue);
-
-	if (ImGui::DragFloat("##", &floatValue, 0.01f, -FLT_MAX, FLT_MAX))
-	{
-		aValue = static_cast<double>(floatValue);
-		return true;
-	}
-	return false;
-}
-
-static void Save(nlohmann::json& aJson, const double& aValue)
-{
-	aJson["Value"] = aValue;
-}
-
-
-static void Load(const nlohmann::json& aJson, double& aValue)
-{
-	aValue = aJson["Value"];
-}
-
-// Short
-static bool Edit(short& aValue)
-{
-	int intValue = static_cast<int>(aValue);
-	if (ImGui::DragInt("##", &intValue, 1.f, 0, static_cast<int>(std::numeric_limits<short>::max())))
-	{
-		aValue = static_cast<short>(intValue);
-		return true;
-	}
-	return false;
-}
-
-static void Save(nlohmann::json& aJson, const short& aValue)
-{
-	aJson["Value"] = aValue;
-}
-
-static void Load(const nlohmann::json& aJson, short& aValue)
-{
-	aValue = aJson["Value"];
-}
-
 // Unsigned Int
 static bool Edit(unsigned int& aValue)
 {
@@ -203,85 +157,33 @@ namespace std
 	}
 }
 
-template<typename T>
-struct RegisterType
-{
-	RegisterType(const char* aName, SCRIPT::Color aColor = SCRIPT::DefaultColor)
-	{
-		SCRIPT::DataTypeRegistry::RegisterNonSerializableType<T>(aName, aColor);
-	}
-};
-
-#define FLY_DATATYPE(type, color) inline static RegisterType<type> registerType##type = RegisterType<type>("type", color);
-
-
-
-struct RegisterProperty
-{
-	template<typename StructType, typename MemberType>
-	RegisterProperty(MemberType StructType::* aMember)
-	{
-		SCRIPT::DataTypeRegistry::RegisterProperty(aMember, "");
-		//SCRIPT::NodeTypeRegistry::RegisterMemberVariable(aMember, );
-	}
-};
-
-#define FLY_PROPERTY(member) inline static RegisterProperty prop(member);
 
 namespace SCR
 {
 
-	/*struct EmilComponent
-	{
-		int a;
-		bool b;
-		float c;
-	};
+	/*constexpr bool s = SCRIPT::Fundamental<UINT64>;
+	constexpr bool a = SCRIPT::Editable<bool>;*/
 
-	static EmilComponent EmilNode(EmilComponent a)
+	using String = std::string;
+
+	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.f, 0.f, 0.f));
+	FLY_DATATYPE(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f));
+
+	FLY_DATATYPE(bool, eNodeOperatorTrait::All, Color(1.f, 0.1f, 0.1f));
+	FLY_DATATYPE(int, eNodeOperatorTrait::All, Color(0.f, 0.2f, 1.f));
+	FLY_DATATYPE(float, eNodeOperatorTrait::All, Color(0.55f, 0.2f, 0.65f));
+	FLY_DATATYPE(UINT, eNodeOperatorTrait::All, Color(0.f, 0.4f, 1.f));
+	FLY_DATATYPE(UINT64, eNodeOperatorTrait::All, Color(0.1f, 0.5f, 1.f));
+	FLY_DATATYPE(char, eNodeOperatorTrait::All, Color(0.2f, 0.7f, 0.4f));
+	FLY_DATATYPE(String, eNodeOperatorTrait::All, Color(0.3f, 0.8f, 0.2f));
+
+	//constexpr bool a = SCRIPT::Scriptable<String, nlohmann::json>;
+
+	void Do()
 	{
-		return a;
+
 	}
-
-	static EmilComponent* EmilNode2(EmilComponent* a)
-	{
-		return a;
-	}*/
-
-
-
-	/*template<SCRIPT::IsPointer T>
-	static bool Edit(T& aValue)
-	{
-		aValue;
-		ImGui::Button(typeid(T).name());
-		if (ImGui::BeginDragDropSource())
-		{
-
-			ImGui::EndDragDropSource();
-		}
-
-
-		return false;
-	}
-
-	template<SCRIPT::IsPointer T>
-	static void Save(nlohmann::json& aJson, const T& aValue)
-	{
-		aJson;
-		aValue;
-	}
-
-	template<SCRIPT::IsPointer T>
-	static void Load(const nlohmann::json& aJson, T& aValue)
-	{
-		aJson;
-		aValue;
-	}*/
-
-	//FLY_DATATYPE(int, Color{});
-
-	void RegisterSystemDataTypes()
+	/*	void RegisterSystemDataTypes()
 	{
 		DataTypeRegistry::RegisterTemplateType<std::vector>("Array");
 
@@ -292,22 +194,9 @@ namespace SCR
 		DataTypeRegistry::Register<int>("Int", Color(0.f, 0.2f, 1.f));
 		DataTypeRegistry::Register<float, eNodeOperatorTrait::All, std::vector>("Float", Color(0.55f, 0.2f, 0.65f));
 		DataTypeRegistry::Register<double, eNodeOperatorTrait::All, std::vector>("Double", Color(0.57f, 0.4f, 0.9f));
-		DataTypeRegistry::Register<short, eNodeOperatorTrait::All, std::vector>("Short", Color(0.f, 0.1f, 1.f));
 		DataTypeRegistry::Register<unsigned int, eNodeOperatorTrait::All, std::vector>("Unsigned Int", Color(0.f, 0.4f, 1.f));
 		DataTypeRegistry::Register<unsigned long long, eNodeOperatorTrait::All, std::vector>("Unsigned Long Long", Color(0.1f, 0.5f, 1.f));
 		DataTypeRegistry::Register<char, eNodeOperatorTrait::All, std::vector>("Char", Color(0.2f, 0.7f, 0.4f));
 		DataTypeRegistry::Register<std::string>("String", Color(0.3f, 0.8f, 0.2f));
-
-		//NodeTypeRegistry::RegisterNodeType(EmilNode, "Test/Emil");
-		//NodeTypeRegistry::RegisterNodeType(EmilNode2, "Test/Emil2");
-
-		//DataTypeRegistry::RegisterNonSerializableType<EmilComponent>("Emil");
-		////DataTypeRegistry::Register<EmilComponent*>("Emil*");
-
-		//DataTypeRegistry::RegisterProperty(&EmilComponent::a, "A");
-		//DataTypeRegistry::RegisterProperty(&EmilComponent::b, "B");
-		//DataTypeRegistry::RegisterProperty(&EmilComponent::c, "C");
-	}
+	}*/
 }
-
-

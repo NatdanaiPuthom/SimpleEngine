@@ -74,28 +74,12 @@ namespace SCR
 		void Begin(const std::string& aName);
 		eEndCode End();
 
-		const std::string& GetName()
-		{
-			return myName;
-		}
+		const std::string& GetName();
 
 	private:
 
-		void Do() const
-		{
-			for (const CommandNew& command : myCommands)
-			{
-				command(eCommandType::Do);
-			}
-		}
-
-		void Undo() const
-		{
-			for (int i = static_cast<int>(myCommands.size()) - 1; i >= 0; --i)
-			{
-				myCommands.at(i)(eCommandType::Undo);
-			}
-		}
+		void Do() const;
+		void Undo() const;
 
 	private:
 

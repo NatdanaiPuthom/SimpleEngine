@@ -11,11 +11,8 @@ namespace SCR
 	{
 	public:
 
-		template<typename T, eNodeOperatorTrait Operators = eNodeOperatorTrait::All, template<typename> typename... Templates> requires Scriptable<T, nlohmann::json> || Fundamental<T>
+		template<typename T, eNodeOperatorTrait Operators = eNodeOperatorTrait::All, template<typename> typename... Templates>
 		static void Register(const std::string & aName, const Color & aColor = DefaultColor);
-
-		template<typename T, eNodeOperatorTrait Operators = eNodeOperatorTrait::All>
-		static void RegisterNonSerializableType(const std::string& aName, const Color& aColor = DefaultColor);
 
 		template<template<typename> typename TemplateType>
 		static void RegisterTemplateType(const std::string& aName);
@@ -33,7 +30,7 @@ namespace SCR
 
 	};
 
-	template<typename T, eNodeOperatorTrait Operators, template<typename> typename... Templates> requires Scriptable<T, nlohmann::json> || Fundamental<T>
+	template<typename T, eNodeOperatorTrait Operators, template<typename> typename... Templates>
 	inline void DataTypeRegistry::Register(const std::string & aName, const Color & aColor)
 	{
 		Global::GetDataTypeManager().Register<T>(aName, aColor);
@@ -48,17 +45,6 @@ namespace SCR
 			NodeTypeRegistry::RegisterNodeType(GetSelfNode<T>, aName + "/" + aName + "::Get Self");
 
 		}
-	}
-
-	template<typename T, eNodeOperatorTrait Operators>
-	inline void DataTypeRegistry::RegisterNonSerializableType(const std::string& aName, const Color& aColor)
-	{
-		Global::GetDataTypeManager().RegisterNonSerializableType<T>(aName, aColor);
-
-		RegisterGetterNodeType<T>();
-		RegisterSetterNodeType<T>();
-		RegisterOperatorNodeTypes<T, Operators>();
-		NodeTypeRegistry::RegisterNodeType(GetSelfNode<T>, aName + "/" + aName + "::Get Self");
 	}
 
 	template<template<typename> typename TemplateType>
@@ -101,4 +87,43 @@ namespace SCR
 	{
 		(RegisterTemplateSpecification<T, TemplateTypes>(aTemplateName), ...);
 	}
+
+	enum class eDataTypeSetting
+	{
+		Serializable,
+
+	};
+
+	template<typename T>
+	struct RegisterType
+	{
+		/*template<eNodeOperatorTrait Operators>
+		constexpr RegisterType(const char* aName, const Color& aColor = DefaultColor)
+		{
+			DataTypeRegistry::Register<T, Operators>(aName, aColor);
+		}*/
+
+		template<eNodeOperatorTrait Operators>
+		constexpr static RegisterType<T> Register(const char* aName, const Color& aColor = DefaultColor)
+		{
+			DataTypeRegistry::Register<T, Operators>(aName, aColor);
+
+			return RegisterType<T>();
+		}
+	};
+
+
+
+	struct RegisterProperty
+	{
+		template<typename StructType, typename MemberType>
+		constexpr RegisterProperty(MemberType StructType::* aMember, const std::string& aName)
+		{
+			DataTypeRegistry::RegisterProperty(aMember, aName);
+			//SCRIPT::NodeTypeRegistry::RegisterMemberVariable(aMember, );
+		}
+	};
 }
+
+#define FLY_DATATYPE(type, operators, color) inline static SCR::RegisterType<type> fly_registeredType##type = SCR::RegisterType<type>::Register<operators>(#type, color);
+#define FLY_PROPERTY(member) inline static SCR::RegisterProperty prop(member, #member);

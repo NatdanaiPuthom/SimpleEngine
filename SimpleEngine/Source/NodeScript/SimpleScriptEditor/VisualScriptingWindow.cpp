@@ -12,6 +12,7 @@
 #include "SimpleScript/Core/Command/ScriptCommandTracker.h"
 #include "SimpleScript/Core/ScriptFoundation.h"
 #include "SimpleScript/Core/Instance/ScriptInstance.h"
+#include "SimpleScript/Core/NodeTypes/ExecutionNodes.h"
 
 #include "Editor/Menu/MainMenuBar.hpp" //NOTE(v10.0.2): Remove this once we no longer use static bool of MainMenuBar class
 
@@ -28,8 +29,6 @@ namespace Editor
 		, myFunctionWindow(*this)
 	{
 		myCommandTracker = std::make_unique<CommandTracker>();
-		myCurrentNodeGraph = nullptr;
-
 	}
 
 	VisualScriptingWindow::~VisualScriptingWindow()
@@ -45,12 +44,33 @@ namespace Editor
 
 	NodeContext VisualScriptingWindow::GetCurrentContext() const
 	{
-		return { myCurrentScript, myCurrentNodeGraph, myImNodesContexts.at(myCurrentNodeGraph) };
+		return myNodeContextHistory.history[myNodeContextHistory.currentIndex];
+	}
+
+	void VisualScriptingWindow::CreateNodeContext(const SCRIPT::NodeGraph& aNodeGraph)
+	{
+		myImNodesContexts.emplace(&aNodeGraph, ImNodes::CreateContext());
+	}
+
+	void VisualScriptingWindow::SetNodeContext(SCRIPT::NodeGraph& aNodeGraph, SCRIPT::Script* aScript)
+	{
+		NodeContext nodeContext
+		{
+			aScript,
+			&aNodeGraph,
+		};
+		myNodeContextHistory.history.push_back(nodeContext);
+		myNodeContextHistory.currentIndex++;
+	}
+
+	eScriptMode VisualScriptingWindow::GetCurrentMode() const
+	{
+		return GetCurrentContext().script ? eScriptMode::Class : eScriptMode::Global;
 	}
 
 	void VisualScriptingWindow::UpdateContext()
 	{
-		if (!myCurrentNodeGraph)
+		if (myNodeContextHistory.currentIndex == -1)
 		{
 			if (ScriptFoundation::GetInstance().GetScripts().empty())
 			{
@@ -63,13 +83,12 @@ namespace Editor
 			}
 
 			Script& script = *ScriptFoundation::GetInstance().GetScripts().begin()->second.front();
-			myCurrentNodeGraph = &script.GetEventGraph();
-			myCurrentScript = &script;
-			myImNodesContexts.emplace(myCurrentNodeGraph, ImNodes::CreateContext());
+			CreateNodeContext(script.GetEventGraph());
+			SetNodeContext(script.GetEventGraph(), &script);
 		}
 
 
-		ImNodes::SetCurrentContext(myImNodesContexts.at(myCurrentNodeGraph));
+		ImNodes::SetCurrentContext(myImNodesContexts.at(GetCurrentContext().nodeGraph));
 
 		ImNodesStyle& style = ImNodes::GetStyle();
 
@@ -189,12 +208,32 @@ namespace Editor
 
 		ImGui::SameLine();*/
 
-		char buffer[35]{};
-		strcpy_s(buffer, GetCurrentContext().script->Name().c_str());
-
-		if (ImGui::InputText("##", buffer, IM_ARRAYSIZE(buffer)))
+		ImGui::BeginDisabled(myNodeContextHistory.currentIndex == 0);
+		if (ImGui::ArrowButton("NodeContextHistoryLeft", ImGuiDir_Left))
 		{
-			GetCurrentContext().script->Name() = buffer;
+			myNodeContextHistory.currentIndex--;
+		}
+		ImGui::EndDisabled();
+
+		ImGui::SameLine();
+
+		ImGui::BeginDisabled(myNodeContextHistory.currentIndex + 1 == myNodeContextHistory.history.size());
+		if (ImGui::ArrowButton("NodeContextHistoryRight", ImGuiDir_Right))
+		{
+			myNodeContextHistory.currentIndex++;
+		}
+		ImGui::EndDisabled();
+
+		if (GetCurrentMode() == eScriptMode::Class)
+		{
+			ImGui::SameLine();
+			char buffer[35]{};
+			strcpy_s(buffer, GetCurrentContext().script->Name().c_str());
+
+			if (ImGui::InputText("##", buffer, IM_ARRAYSIZE(buffer)))
+			{
+				GetCurrentContext().script->Name() = buffer;
+			}
 		}
 	}
 
@@ -242,11 +281,9 @@ namespace Editor
 			if (ImGui::Button("Create", ImVec2(120, 0)))
 			{
 				Script& script = ScriptFoundation::GetInstance().CreateScript(0, myScriptNameText);
-				//myCurrentScriptManager->CreateScript(myScriptNameText);
 				myScriptNameText[0] = (char)0;
 
 				myImNodesContexts.emplace(&script.GetEventGraph(), ImNodes::CreateContext());
-				//myCurrentIndex = myCurrentScriptManager->GetScripts().size() - 1;
 
 
 				ImGui::CloseCurrentPopup();
@@ -264,7 +301,6 @@ namespace Editor
 			ImGui::EndPopup();
 		}
 
-		ImGui::SameLine();
 		ImGui::SameLine();
 
 		if (ImGui::Button("Create Copy"))
@@ -322,19 +358,38 @@ namespace Editor
 			ScriptLoader::SaveCustomEvents("Assets/VisualScripting");
 		}
 
-		static int currentEvent = 0;
-		const char* events[] = { "Begin Play", "Tick", "End Play", };
-
-		ImGui::Combo("Event Type", &currentEvent, events, IM_ARRAYSIZE(events));
-		ImGui::SameLine();
-
-		if (ImGui::Button("Trigger Event"))
+		if (GetCurrentMode() == eScriptMode::Class)
 		{
-			ScriptInstance& scriptInstance = myCurrentScript->CreateScriptInstance();
-			ExecutionContextBase c;
-			scriptInstance.ExecuteEvent(static_cast<eNodeEventType>(currentEvent + 1), c);
 
-			myCurrentScript->DestroyScriptInstance(scriptInstance);
+			static int currentEventIndex = 0;
+			const char* events[] = { "Begin Play", "Tick", "End Play", };
+
+			ImGui::Combo("Event Type", &currentEventIndex, events, IM_ARRAYSIZE(events));
+			ImGui::SameLine();
+
+
+			if (ImGui::Button("Trigger Event"))
+			{
+				ScriptInstance& scriptInstance = GetCurrentContext().script->CreateScriptInstance();
+				ExecutionContextBase c;
+
+				switch (currentEventIndex)
+				{
+				case 0:
+					Global::GetNodeExecutor().ExecuteEvent(SCRIPT::BeginPlay, scriptInstance, c);
+					break;
+				case 1:
+					Global::GetNodeExecutor().ExecuteEvent(SCRIPT::Tick, scriptInstance, c);
+					break;
+				case 2:
+					Global::GetNodeExecutor().ExecuteEvent(SCRIPT::EndPlay, scriptInstance, c);
+					break;
+				default:
+					break;
+				}
+
+				GetCurrentContext().script->DestroyScriptInstance(scriptInstance);
+			}
 		}
 	}
 
@@ -356,7 +411,7 @@ namespace Editor
 
 			ImNodesStyle& style = ImNodes::GetStyle();
 
-			if (nodeType->nodeRecipe.eventID == EnumCast(eNodeEventType::None))
+			if (nodeType->nodeRecipe.eventID == InvalidID<EventID>())
 			{
 				style.Colors[ImNodesCol_TitleBar] = ToImGuiColor(Color{ 0.1f, 0.3f, 0.6f, 1.f });
 				style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(Color{ 0.1f, 0.3f, 0.7f, 1.f });
@@ -510,14 +565,14 @@ namespace Editor
 		}
 
 		// Render links
-		for (LinkID linkID = 0; const Link& link : myCurrentNodeGraph->myLinks)
+		for (LinkID linkID = 0; const Link & link : GetCurrentContext().nodeGraph->myLinks)
 		{
 			if (link.isDestroyed)
 			{
 				linkID++;
 				continue;
 			}
-			const Pin& pin = ScriptProxy::GetPin(*myCurrentNodeGraph, link.inputPinID);
+			const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, link.inputPinID);
 			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.typeID);
 
 			ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
@@ -539,7 +594,6 @@ namespace Editor
 
 	void VisualScriptingWindow::UpdateNodes()
 	{
-		Script& currentScript = *GetCurrentContext().script;
 		const NodeManager& nodeManager = *GetCurrentContext().nodeGraph->myNodeManager;
 
 		bool dragStarted = ImGui::IsKeyDown(ImGuiKey_MouseLeft) && !myIsDraggingNode;
@@ -635,14 +689,14 @@ namespace Editor
 		{
 			myStartedLinkPinID = startedPinID;
 
-			const Pin& pin = ScriptProxy::GetPin(ScriptProxy::GetEventGraph(currentScript), myStartedLinkPinID);
+			const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, myStartedLinkPinID);
 
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 			myPinIDsToHighlight = ScriptFilter::GetNonConnectedPinsOfTypeAndHash(*GetCurrentContext().nodeGraph, InvertPinType(pinType.flowType), pinType.dataTypeID);
 
 			for (PinID i = 0; i < myPinIDsToHighlight.size(); i++)
 			{
-				if (ScriptProxy::GetPin(ScriptProxy::GetEventGraph(currentScript), myPinIDsToHighlight[i]).nodeID == pin.nodeID)
+				if (ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, myPinIDsToHighlight[i]).nodeID == pin.nodeID)
 				{
 					myPinIDsToHighlight.erase(myPinIDsToHighlight.begin() + i);
 					i--;
@@ -665,7 +719,7 @@ namespace Editor
 		// Drop link create popup
 		if (ImGui::BeginPopup("Node Create Popup"))
 		{
-			const Pin& pin = ScriptProxy::GetPin(*myCurrentNodeGraph, myLinkCreationPinID);
+			const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, myLinkCreationPinID);
 
 			DataTypeID droppedPinDataTypeID = PinTypeManager::GetPinType(pin.typeID).dataTypeID;
 
@@ -742,7 +796,7 @@ namespace Editor
 
 				ImGui::Text("Links:");
 
-				for (const Link& link : myCurrentNodeGraph->myLinks)
+				for (const Link& link : GetCurrentContext().nodeGraph->myLinks)
 				{
 					if (link.isDestroyed)
 					{
@@ -757,7 +811,7 @@ namespace Editor
 				if (myHoveredPinID != InvalidID<PinID>())
 				{
 					ImGui::Text("Hovered PinID: %d", myHoveredPinID);
-					const Pin& hoveredPin = ScriptProxy::GetPin(*myCurrentNodeGraph, myHoveredPinID);
+					const Pin& hoveredPin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, myHoveredPinID);
 					ImGui::Text("Connections:");
 					for (PinID connectionID : hoveredPin.connectedPinIDs)
 					{
@@ -928,7 +982,9 @@ namespace Editor
 
 	ImVec2 VisualScriptingWindow::GetMiddlePos() const
 	{
-		return GetCurrentContext().imNodesContext->CanvasOriginScreenSpace + ImNodes::EditorContextGetPanning() / 2.f;
+		NodeContext currentContext = GetCurrentContext();
+		ImNodesContext* currentImNodesContext = myImNodesContexts.at(currentContext.nodeGraph);
+		return currentImNodesContext->CanvasOriginScreenSpace + ImNodes::EditorContextGetPanning() / 2.f;
 	}
 
 
@@ -939,6 +995,8 @@ namespace Editor
 
 	ImVec2 VisualScriptingWindow::GetMousePos() const
 	{
-		return ImGui::GetMousePosOnOpeningCurrentPopup() - GetCurrentContext().imNodesContext->CanvasOriginScreenSpace - ImNodes::EditorContextGetPanning();
+		NodeContext currentContext = GetCurrentContext();
+		ImNodesContext* currentImNodesContext = myImNodesContexts.at(currentContext.nodeGraph);
+		return ImGui::GetMousePosOnOpeningCurrentPopup() - currentImNodesContext->CanvasOriginScreenSpace - ImNodes::EditorContextGetPanning();
 	}
 }

@@ -13,6 +13,16 @@ namespace SCR
 		Function(const std::string& aName);
 		~Function();
 
+		const std::string& GetName() const
+		{
+			return myName;
+		}
+
+		void SetName(const std::string& aName)
+		{
+			myName = aName;
+		}
+
 		const NodeTypeID& GetCallerNodeTypeID() const
 		{
 			return myCallerNodeTypeID;
@@ -40,8 +50,8 @@ namespace SCR
 
 		struct FunctionCaller
 		{
-			NodeID nodeID;
-			NodeGraph* nodeGraph;
+			NodeID nodeID = InvalidID<NodeID>();
+			NodeGraph* nodeGraph = nullptr;
 		};
 
 		const FunctionCaller& GetCaller() const
@@ -54,6 +64,16 @@ namespace SCR
 			myCaller = aCaller;
 		}
 
+		NodeGraph& GetNodeGraph()
+		{
+			return myNodeGraph;
+		}
+
+		const NodeGraph& GetNodeGraph() const
+		{
+			return myNodeGraph;
+		}
+
 	private:
 
 		std::string myName;
@@ -62,8 +82,8 @@ namespace SCR
 		NodeTypeID myInputNodeTypeID;
 		NodeTypeID myOutputNodeTypeID;
 
-		NodeID myInputNodeID;
-		NodeID myOutputNodeID;
+		NodeID myInputNodeID = InvalidID<NodeID>();
+		NodeID myOutputNodeID = InvalidID<NodeID>();
 
 		// Temp
 		FunctionCaller myCaller;

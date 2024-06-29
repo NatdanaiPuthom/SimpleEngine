@@ -8,7 +8,6 @@ namespace SCR
 {
 	class Function;
 	class NodeExecutor;
-	class CommandTracker;
 	class TypeManager;
 	class Script;
 
@@ -30,7 +29,6 @@ namespace SCR
 		{
 			if (myInstance)
 			{
-
 				delete myInstance;
 				myInstance = nullptr;
 			}
@@ -50,6 +48,7 @@ namespace SCR
 		const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Script>>>& GetScripts();
 
 		TypeManager& GetTypeManager();
+		NodeExecutor& GetNodeExecutor();
 
 	private:
 

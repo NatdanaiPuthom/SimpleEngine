@@ -18,7 +18,7 @@ namespace SCR
 	using SwapInterface = void(*)(void* aDataPtr1, void* aDataPtr2);
 
 	template<Editable T>
-	EditInterface CreateEditInterface()
+	constexpr EditInterface CreateEditInterface()
 	{
 		return [](void* aDataPtr) -> bool
 			{
@@ -28,7 +28,7 @@ namespace SCR
 	}
 
 	template<Savable<nlohmann::json> T>
-	SaveInterface CreateSaveInterface()
+	constexpr SaveInterface CreateSaveInterface()
 	{
 		return [](nlohmann::json& aJson, const void* aDataPtr) -> void
 			{
@@ -38,7 +38,7 @@ namespace SCR
 	}
 
 	template<Loadable<nlohmann::json> T>
-	LoadInterface CreateLoadInterface()
+	constexpr LoadInterface CreateLoadInterface()
 	{
 		return [](const nlohmann::json& aJson, void* aDataPtr) -> void
 			{
@@ -48,7 +48,7 @@ namespace SCR
 	}
 
 	template<typename T>
-	EditInterface CreateEditTemplateInterface()
+	constexpr EditInterface CreateEditTemplateInterface()
 	{
 		return [](void* aDataPtr) -> bool
 			{
@@ -58,7 +58,7 @@ namespace SCR
 	}
 
 	template<typename T>
-	SaveInterface CreateSaveTemplateInterface()
+	constexpr SaveInterface CreateSaveTemplateInterface()
 	{
 		return [](nlohmann::json& aJson, const void* aDataPtr) -> void
 			{
@@ -68,7 +68,7 @@ namespace SCR
 	}
 
 	template<typename T>
-	LoadInterface CreateLoadTemplateInterface()
+	constexpr LoadInterface CreateLoadTemplateInterface()
 	{
 		return [](const nlohmann::json& aJson, void* aDataPtr) -> void
 			{
@@ -78,7 +78,7 @@ namespace SCR
 	}
 
 	template<Fundamental T>
-	EditInterface CreateEditInterface()
+	constexpr EditInterface CreateEditInterface()
 	{
 		return [](void* aDataPtr) -> bool
 			{
@@ -88,7 +88,7 @@ namespace SCR
 	}
 
 	template<Fundamental T>
-	SaveInterface CreateSaveInterface()
+	constexpr SaveInterface CreateSaveInterface()
 	{
 		return [](nlohmann::json& aJson, const void* aDataPtr) -> void
 			{
@@ -98,7 +98,7 @@ namespace SCR
 	}
 
 	template<Fundamental T>
-	LoadInterface CreateLoadInterface()
+	constexpr LoadInterface CreateLoadInterface()
 	{
 		return [](const nlohmann::json& aJson, void* aDataPtr) -> void
 			{
@@ -107,8 +107,26 @@ namespace SCR
 			};
 	}
 
+	template<typename T>
+	constexpr EditInterface CreateEditInterface()
+	{
+		return nullptr;
+	}
+
+	template<typename T>
+	constexpr SaveInterface CreateSaveInterface()
+	{
+		return nullptr;
+	}
+
+	template<typename T>
+	constexpr LoadInterface CreateLoadInterface()
+	{
+		return nullptr;
+	}
+
 	template<DefaultConstructible T>
-	AllocateInterface CreateAllocateInterface()
+	constexpr AllocateInterface CreateAllocateInterface()
 	{
 		return [](void* aDataPtr, const void* aDefaultValue) -> void
 			{
@@ -125,7 +143,7 @@ namespace SCR
 	}
 
 	template<Copyable T>
-	CopyInterface CreateCopyInterface()
+	constexpr CopyInterface CreateCopyInterface()
 	{
 		return [](void* aDestination, const void* aSource)
 			{
@@ -136,7 +154,7 @@ namespace SCR
 	}
 
 	template<Copyable T>
-	SwapInterface CreateSwapInterface()
+	constexpr SwapInterface CreateSwapInterface()
 	{
 		return [](void* aDataPtr1, void* aDataPtr2)
 			{
@@ -183,7 +201,7 @@ namespace SCR
 	};
 
 	template<typename T>
-	FunctionInterface CreateFunctionInterface()
+	constexpr FunctionInterface CreateFunctionInterface()
 	{
 		return FunctionInterface
 		{
@@ -194,7 +212,7 @@ namespace SCR
 	}
 
 	template<typename T>
-	CreationInterface CreateCreationInterface()
+	constexpr CreationInterface CreateCreationInterface()
 	{
 		return CreationInterface
 		{
@@ -204,25 +222,14 @@ namespace SCR
 		};
 	}
 
-	template<typename T, bool HasFunctions>
-	DataTypeInterface CreateDataTypeInterface()
+	template<typename T>
+	constexpr DataTypeInterface CreateDataTypeInterface()
 	{
-		if constexpr (HasFunctions)
+		return DataTypeInterface
 		{
-			return DataTypeInterface
-			{
-				.function = CreateFunctionInterface<T>(),
-				.creation = CreateCreationInterface<T>()
-			};
-		}
-		else
-		{
-			return DataTypeInterface
-			{
-				.function = FunctionInterface{},
-				.creation = CreateCreationInterface<T>()
-			};
-		}
+			.function = CreateFunctionInterface<T>(),
+			.creation = CreateCreationInterface<T>()
+		};
 	}
 
 
@@ -286,16 +293,9 @@ namespace SCR
 
 
 		template<typename T>
-		void RegisterNonSerializableType(const std::string& aName, const Color& aColor = DefaultColor);
+		void Register(const std::string& aName, const Color& aColor = DefaultColor);
 
 	private:
-
-		template<Scriptable<nlohmann::json> T>
-		void Register(const std::string& aName, const Color& aColor = DefaultColor);
-
-		template<Fundamental T>
-		void Register(const std::string& aName, const Color& aColor = DefaultColor);
-
 
 		template<template<typename> typename TemplateType>
 		void RegisterTemplateType(const std::string& aName);
@@ -320,22 +320,10 @@ namespace SCR
 		const std::string myNullNameStr;
 	};
 
-	template<Scriptable<nlohmann::json> T>
-	inline void DataTypeManager::Register(const std::string& aName, const Color& aColor)
-	{
-		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T, true>());
-	}
-
-	template<Fundamental T>
-	inline void DataTypeManager::Register(const std::string& aName, const Color& aColor)
-	{
-		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T, true>());
-	}
-
 	template<typename T>
-	inline void DataTypeManager::RegisterNonSerializableType(const std::string& aName, const Color& aColor)
+	inline void DataTypeManager::Register(const std::string& aName, const Color& aColor)
 	{
-		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T, false>());
+		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T>());
 	}
 
 	template<template<typename> typename TemplateType>
@@ -353,12 +341,14 @@ namespace SCR
 	{
 		DataTypeInterface dataTypeInterface
 		{
-			.function = {
+			.function = FunctionInterface
+			{
 				.edit = CreateEditTemplateInterface<T>(),
 				.save = CreateSaveTemplateInterface<T>(),
 				.load = CreateLoadTemplateInterface<T>()
 			},
-			.creation = {
+			.creation = CreationInterface
+			{
 				.allocate = CreateAllocateInterface<T>(),
 				.copy = CreateCopyInterface<T>(),
 			}

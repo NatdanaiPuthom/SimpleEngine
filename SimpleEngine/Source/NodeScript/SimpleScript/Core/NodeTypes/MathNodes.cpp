@@ -50,7 +50,7 @@ namespace SCR
 		return y * scaledAmplitude;
 	}
 
-	static float Wave(eWaveType aWaveType, float aValue)
+	static float CalculateFrequencyByType(eWaveType aWaveType, float aValue)
 	{
 		switch (aWaveType)
 		{
@@ -99,21 +99,19 @@ namespace SCR
 		aData.waveType = aJson["waveType"];
 	}
 
-	static float WaveNode(NodeExecutionContext<ExecutionContextBase> aContext, NodeState<WaveData> aData, float aFrequency, float anAmplitude, float anEquilibrium, WaveTypeData aWaveType)
+	static float Wave(NodeExecutionContext<ExecutionContextBase> aContext, NodeState<WaveData> aData, float aFrequency, float anAmplitude, float anEquilibrium, WaveTypeData aWaveType)
 	{
 		aData.value.t += aContext.context.deltaTime;
-		return anEquilibrium + Wave(aWaveType.waveType, aData.value.t * aFrequency) * anAmplitude;
+		return anEquilibrium + CalculateFrequencyByType(aWaveType.waveType, aData.value.t * aFrequency) * anAmplitude;
 	}
 
+	REGISTER_FUNCTION(Wave, "Utility/Math");
+	REGISTER_FUNCTION(sinf, "Utility/Math");
+	REGISTER_FUNCTION(cosf, "Utility/Math");
+	REGISTER_FUNCTION(asinf, "Utility/Math");
+	REGISTER_FUNCTION(acosf, "Utility/Math");
+	REGISTER_FUNCTION(Wave, "Utility/Math");
 
-	void RegisterMathNodes()
-	{
-		DataTypeRegistry::Register<WaveTypeData>("Wave Type");
-		NodeTypeRegistry::RegisterNodeType(WaveNode, "Utility/Math/Wave", NodeTypeDesc{ { "Frequency", "Amplitude", "Equilibrium", "Wave Function" }, { "Value" } });
-		NodeTypeRegistry::RegisterNodeType(std::sinf, "Utility/Math/Sin");
-		NodeTypeRegistry::RegisterNodeType(std::cosf, "Utility/Math/Cos");
-		NodeTypeRegistry::RegisterNodeType(std::asinf, "Utility/Math/Asin");
-		NodeTypeRegistry::RegisterNodeType(std::acosf, "Utility/Math/Acos");
-	}
+	FLY_DATATYPE(WaveTypeData, SCRIPT::eNodeOperatorTrait::None, SCRIPT::DefaultColor);
 }
 

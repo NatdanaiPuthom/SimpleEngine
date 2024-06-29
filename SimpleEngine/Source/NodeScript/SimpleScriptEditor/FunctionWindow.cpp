@@ -4,6 +4,7 @@
 #include "ScriptModifier.h"
 #include "NodeTypeManager.h"
 #include "Script.h"
+#include "ScriptGlobal.h"
 
 namespace Editor
 {
@@ -25,28 +26,45 @@ namespace Editor
 
 			if (ImGui::Button("Create Function"))
 			{
-				SCRIPT::Modify::CreateGlobalFunction("Function");
+				SCRIPT::FunctionID createdFunctionID = SCRIPT::Modify::CreateGlobalFunction("Function");
+
+				const SCRIPT::Function& createdFunction = SCRIPT::Global::GetNodeTypeManager().GetFunction(createdFunctionID);
 				//SCRIPT::ScriptModifier::CreateFunction("Function");
+				myParentWindow.CreateNodeContext(createdFunction.GetNodeGraph());
 			}
+
+			ImGui::Separator();
 
 			const std::vector<std::unique_ptr<SCRIPT::Function>>& functions = SCRIPT::NodeTypeManager::GetInstance().GetFunctions();
 			for (SCRIPT::FunctionID functionID = 0; functionID < functions.size(); ++functionID)
 			{
-				SCRIPT::Function* function = functions[functionID].get();
+				SCRIPT::Function& function = *functions[functionID];
+
+				char functionNameBuffer[32]{};
+				strcpy_s(functionNameBuffer, function.GetName().c_str());
+				if (ImGui::InputText("Name", functionNameBuffer, 32))
+				{
+					function.SetName(functionNameBuffer);
+				}
+
+				if (ImGui::Selectable(function.GetName().c_str()))
+				{
+					myParentWindow.SetNodeContext(function.GetNodeGraph(), nullptr);
+				}
 
 				if (ImGui::Button("Create Caller"))
 				{
-					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function->GetCallerNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function.GetCallerNodeTypeID());
 				}
 
 				if (ImGui::Button("Create Input"))
 				{
-					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function->GetInputNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function.GetInputNodeTypeID());
 				}
 
 				if (ImGui::Button("Create Output"))
 				{
-					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function->GetOutputNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function.GetOutputNodeTypeID());
 				}
 
 				ImGui::Separator();

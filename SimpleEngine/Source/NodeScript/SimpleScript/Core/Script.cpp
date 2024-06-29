@@ -4,9 +4,13 @@
 #include "Command/ScriptCommandTracker.h"
 #include "ScriptUtilities.h"
 #include "Instance/ScriptInstance.h"
+#include "Function/ScriptFunction.h"
+#include "ExecutionContextBase.h"
 
 namespace SCR
 {
+
+
 
 	Script::Script(const DataTypeID aTargetID, const std::string& aName)
 		: myTargetID(aTargetID)
@@ -38,18 +42,22 @@ namespace SCR
 
 	void Script::DestroyScriptInstance(ScriptInstance& aScriptInstance)
 	{
-		for (size_t i = 0; i < myScriptInstances.size(); ++i)
-		{
-			if (myScriptInstances[i].get() == &aScriptInstance)
+		std::erase_if(myScriptInstances,
+			[&aScriptInstance](const std::unique_ptr<ScriptInstance>& scriptInstanceIter) -> bool
 			{
-				myScriptInstances.erase(myScriptInstances.begin() + i);
+				return &aScriptInstance == scriptInstanceIter.get();
 			}
-		}
+		);
 	}
 
 	EventGraph& Script::GetEventGraph()
 	{
 		return myEventGraph;
+	}
+
+	DataTypeID Script::GetTargetID() const
+	{
+		return myTargetID;
 	}
 }
 

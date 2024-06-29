@@ -23,9 +23,4 @@ namespace SCR
 		// TODO Fix
 		myEventGraphInstance.Init(aScript.GetEventGraph());
 	}
-
-	void ScriptInstance::ExecuteEvent(eNodeEventType anExecutionTrait, const ExecutionContextBase& aContext)
-	{
-		ScriptProxy::GetNodeExecutor().ExecuteEvent(EnumCast(anExecutionTrait), myScript->GetEventGraph(), *this, aContext);
-	}
 }

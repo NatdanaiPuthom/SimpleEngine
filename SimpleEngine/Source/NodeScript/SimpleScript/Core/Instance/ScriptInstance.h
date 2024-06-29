@@ -19,7 +19,6 @@ namespace SCR
 		~ScriptInstance();
 
 		void Init(Script& aScript);
-		void ExecuteEvent(eNodeEventType aNodeEvent, const ExecutionContextBase& aContext);
 
 
 		Script* myScript;

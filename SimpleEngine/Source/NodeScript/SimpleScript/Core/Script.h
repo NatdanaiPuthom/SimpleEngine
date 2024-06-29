@@ -8,22 +8,15 @@ namespace SCR
 {
 
 	class CommandTracker;
-	class ScriptManager;
-	struct ExecutionContextBase;
-
+	class Function;
 	class ScriptInstance;
-
-	struct MoveNodeData
-	{
-		ScriptVec2 startPos, endPos;
-	};
 
 	class Script final
 	{
 		friend class ScriptProxy;
 	public:
 
-		Script(const DataTypeID aTargetID, const std::string& aName = "Default Script");
+		Script(DataTypeID aTargetID, const std::string& aName = "Default Script");
 		~Script();
 
 		Script(const Script&) = delete;
@@ -38,20 +31,18 @@ namespace SCR
 		void DestroyScriptInstance(ScriptInstance& aScriptInstance);
 
 		EventGraph& GetEventGraph();
-		DataTypeID GetTargetID() const
-		{
-			return myTargetID;
-		}
+		DataTypeID GetTargetID() const;
 
 	private:
 
-		std::string myName;
 		EventGraph myEventGraph;
-		const DataTypeID myTargetID;
-
 		VariableManager myVariableManager;
 
+		std::vector<std::unique_ptr<Function>> myMemberFunctions;
 		std::vector<std::unique_ptr<ScriptInstance>> myScriptInstances;
+
+		DataTypeID myTargetID;
+		std::string myName;
 	};
 }
 

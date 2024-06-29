@@ -168,4 +168,25 @@ namespace SCR
 
 		return eEndCode::Ended;
 	}
+
+	const std::string& CompositeCommandNew::GetName()
+	{
+		return myName;
+	}
+
+	void CompositeCommandNew::Do() const
+	{
+		for (const CommandNew& command : myCommands)
+		{
+			command(eCommandType::Do);
+		}
+	}
+
+	void CompositeCommandNew::Undo() const
+	{
+		for (int i = static_cast<int>(myCommands.size()) - 1; i >= 0; --i)
+		{
+			myCommands.at(i)(eCommandType::Undo);
+		}
+	}
 }

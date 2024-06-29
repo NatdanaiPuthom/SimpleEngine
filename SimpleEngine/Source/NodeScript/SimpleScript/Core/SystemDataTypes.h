@@ -135,9 +135,3 @@ namespace std
 	}
 
 }
-
-namespace SCR
-{
-
-	void RegisterSystemDataTypes();
-}

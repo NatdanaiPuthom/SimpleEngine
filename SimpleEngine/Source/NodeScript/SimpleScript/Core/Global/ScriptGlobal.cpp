@@ -21,6 +21,11 @@ namespace SCR
 			return ScriptFoundation::GetInstance();
 		}
 
+		NodeExecutor& GetNodeExecutor()
+		{
+			return GetFoundation().GetNodeExecutor();
+		}
+
 		DataTypeManager& GetDataTypeManager()
 		{
 			return GetFoundation().GetTypeManager().GetDataTypeManager();

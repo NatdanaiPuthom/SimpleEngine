@@ -126,7 +126,7 @@ namespace SCR
 		}
 		else
 		{
-			aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Create Node"));
+			aCommandTracker->DoCommand(CommandNew(commandFunction, "Create Node"));
 			/*aCommandTracker->DoCommand<FunctionCommand<CreateNodeData>>(data,
 				doAction,
 				[](const CreateNodeData& aData) -> void
@@ -334,7 +334,7 @@ namespace SCR
 		}
 		else
 		{
-			aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Create Link"));
+			aCommandTracker->DoCommand(CommandNew(commandFunction, "Create Link"));
 			/*aCommandTracker->DoCommand<FunctionCommand<CreateLinkData>>(data, doAction,
 				[](const CreateLinkData& aData) -> void
 				{
@@ -383,7 +383,7 @@ namespace SCR
 		}
 		else
 		{
-			aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Destory Link"));
+			aCommandTracker->DoCommand(CommandNew(commandFunction, "Destory Link"));
 			/*aCommandTracker->DoCommand<FunctionCommand<DestroyLinkData>>(data, doCommand,
 				[](const DestroyLinkData& aData) -> void
 				{
@@ -435,7 +435,7 @@ namespace SCR
 		}
 		else
 		{
-			aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Bind Node To Variable"));
+			aCommandTracker->DoCommand(CommandNew(commandFunction, "Bind Node To Variable"));
 			/*aCommandTracker->DoCommand<FunctionCommand<BindVarData>>(data,
 				doAction,
 				[](const BindVarData& aData) -> void
@@ -489,7 +489,7 @@ namespace SCR
 		}
 		else
 		{
-			aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Unbind Variable"));
+			aCommandTracker->DoCommand(CommandNew(commandFunction, "Unbind Variable"));
 
 
 			/*aCommandTracker->DoCommand<FunctionCommand<UnbindVarData>>(data,

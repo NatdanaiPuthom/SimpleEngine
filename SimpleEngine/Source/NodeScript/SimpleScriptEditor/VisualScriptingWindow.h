@@ -39,7 +39,12 @@ namespace Editor
 	{
 		SCRIPT::Script* script;
 		SCRIPT::NodeGraph* nodeGraph;
-		ImNodesContext* imNodesContext;
+	};
+
+	struct NodeContextHistory
+	{
+		int currentIndex = -1;
+		std::vector<NodeContext> history;
 	};
 
 	inline SCRIPT::ScriptVec2 ToScriptVec2(ImVec2 aVec)
@@ -49,6 +54,12 @@ namespace Editor
 
 	constexpr size_t TEXT_MAX_LENGTH = 40;
 
+	enum class eScriptMode
+	{
+		Class,
+		Global
+	};
+
 	class VisualScriptingWindow
 	{
 	public:
@@ -57,6 +68,10 @@ namespace Editor
 		~VisualScriptingWindow();
 
 		NodeContext GetCurrentContext() const;
+		void CreateNodeContext(const SCRIPT::NodeGraph& aNodeGraph);
+		void SetNodeContext(SCRIPT::NodeGraph& aNodeGraph, SCRIPT::Script* aScript);
+		eScriptMode GetCurrentMode() const;
+
 		void UpdateContext();
 
 		void Update(const std::string& LevelName);
@@ -84,10 +99,7 @@ namespace Editor
 
 		std::unique_ptr<SCRIPT::CommandTracker> myCommandTracker;
 
-		SCRIPT::NodeGraph* myCurrentNodeGraph = nullptr;
-		SCRIPT::Script* myCurrentScript = nullptr;
-
-		std::unordered_map<SCRIPT::NodeGraph*, ImNodesContext*> myImNodesContexts;
+		std::unordered_map<const SCRIPT::NodeGraph*, ImNodesContext*> myImNodesContexts;
 
 		SCRIPT::PinID myLinkCreationPinID;
 		SCRIPT::PinID myStartedLinkPinID;
@@ -97,6 +109,8 @@ namespace Editor
 		VariableWindow myVariableWindow;
 		NodeCreatorWindow myNodeCreatorWindow;
 		FunctionWindow myFunctionWindow;
+
+		NodeContextHistory myNodeContextHistory;
 
 		ImVec2 myNodeCreationClickPos;
 
@@ -108,5 +122,6 @@ namespace Editor
 		SCRIPT::PinID myHoveredPinID = SCRIPT::InvalidID<SCRIPT::PinID>();
 
 		bool myIsContextSensitive = false;
+
 	};
 }

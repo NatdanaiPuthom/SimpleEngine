@@ -1,6 +1,7 @@
 #include "ScriptFunction.h"
 #include "NodeTypeRegistry.h"
 #include "Script.h"
+#include "ScriptModifier.h"
 
 namespace SCR
 {
@@ -16,7 +17,7 @@ namespace SCR
 
 		CopyPinData(*aContext, inputNode.outputPins, callerNode.inputPins, 1);
 
-		aContext->executionQueue->Push({ NodeRef{function.GetInputNodeID(), &ScriptProxy::GetEventGraph(*aContext->script) }, eNodeTriggerReason::Flow });
+		aContext->executionQueue->Push({ NodeRef{function.GetInputNodeID(), &function.GetNodeGraph() }, eNodeTriggerReason::Flow});
 
 		return true;
 	}
@@ -50,6 +51,9 @@ namespace SCR
 		myCallerNodeTypeID = RegisterSystemNodeType(CallerNode, "Function/Call Function");
 		myInputNodeTypeID = RegisterSystemNodeType(InputNode, "Function/Input Function");
 		myOutputNodeTypeID = RegisterSystemNodeType(OutputNode, "Function/Output Function");
+
+		myInputNodeID = Modify::CreateNode(myNodeGraph, myInputNodeTypeID);
+		myOutputNodeID = Modify::CreateNode(myNodeGraph, myOutputNodeTypeID);
 	}
 
 	Function::~Function() = default;

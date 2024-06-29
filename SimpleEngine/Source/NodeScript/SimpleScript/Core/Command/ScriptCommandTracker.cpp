@@ -32,7 +32,7 @@ namespace SCR
 		}
 	}
 
-	void CommandTracker::DoCommandNew(CommandNew&& aCommand)
+	void CommandTracker::DoCommand(CommandNew&& aCommand)
 	{
 		DoCommandInternal(std::move(aCommand), true);
 	}
@@ -70,7 +70,7 @@ namespace SCR
 		{
 			std::unique_ptr<CompositeCommandNew> composite = std::move(myCurrentCompositeCommandNew);
 			myCurrentCompositeCommandNew.reset();
-			DoCommandNew(CommandNew(std::move(*composite), composite->GetName()));
+			DoCommand(CommandNew(std::move(*composite), composite->GetName()));
 		}
 		else if (endCode == CompositeCommandNew::eEndCode::Ended_Empty)
 		{
@@ -127,8 +127,9 @@ namespace SCR
 	{
 		if (!myUndoStackNew.empty())
 		{
-			myUndoStackNew.top()(eCommandType::Undo);
-			myRedoStackNew.push(std::move(myUndoStackNew.top()));
+			std::unique_ptr<CommandNew>& topCommand = myUndoStackNew.top();
+			(*topCommand)(eCommandType::Undo);
+			myRedoStackNew.push(std::move(topCommand));
 			myUndoStackNew.pop();
 		}
 		/*if (!myUndoStack.empty())
@@ -144,8 +145,9 @@ namespace SCR
 	{
 		if (!myRedoStackNew.empty())
 		{
-			myRedoStackNew.top()(eCommandType::Do);
-			myUndoStackNew.push(myRedoStackNew.top());
+			std::unique_ptr<CommandNew>& topCommand = myRedoStackNew.top();
+			(*topCommand)(eCommandType::Do);
+			myUndoStackNew.push(std::move(topCommand));
 			myRedoStackNew.pop();
 		}
 		/*if (!myRedoStack.empty())
@@ -160,7 +162,7 @@ namespace SCR
 	{
 		if (myCurrentCompositeCommandNew)
 		{
-			myCurrentCompositeCommandNew->AddCommand(std::move(aCommand));
+			myCurrentCompositeCommandNew->AddCommand(std::forward<CommandNew>(aCommand));
 			return;
 		}
 
@@ -169,7 +171,7 @@ namespace SCR
 			aCommand(eCommandType::Do);
 		}
 
-		myUndoStackNew.push(std::move(aCommand));
+		myUndoStackNew.push(std::make_unique<CommandNew>(std::forward<CommandNew>(aCommand)));
 
 		while (!myRedoStackNew.empty())
 		{

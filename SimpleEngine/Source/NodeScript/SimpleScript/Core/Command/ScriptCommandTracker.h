@@ -35,7 +35,7 @@ namespace SCR
 		void RegisterCommand(Args&&... args);*/
 
 
-		void DoCommandNew(CommandNew&& aCommand);
+		void DoCommand(CommandNew&& aCommand);
 		void RegisterCommand(CommandNew&& aCommand);
 
 		void BeginComposite(const std::string& aName);
@@ -59,8 +59,8 @@ namespace SCR
 		std::unique_ptr<CompositeCommand> myCurrentCompositeCommand;*/
 
 
-		std::stack<CommandNew> myUndoStackNew;
-		std::stack<CommandNew> myRedoStackNew;
+		std::stack<std::unique_ptr<CommandNew>> myUndoStackNew;
+		std::stack<std::unique_ptr<CommandNew>> myRedoStackNew;
 		std::unique_ptr<CompositeCommandNew> myCurrentCompositeCommandNew;
 
 	};

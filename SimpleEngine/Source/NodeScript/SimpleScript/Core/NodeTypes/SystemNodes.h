@@ -5,17 +5,3 @@
 #include "UtilityNodes.h"
 #include "MathNodes.h"
 #include "RandomNodes.h"
-
-namespace SCR
-{
-
-	class NodeTypeRegistry;
-	
-	inline void RegisterSystemNodes()
-	{
-		RegisterExecutionNodes();
-		RegisterUtilityNodes();
-		RegisterMathNodes();
-		RegisterRandomNodes();
-	}
-}

@@ -5,6 +5,7 @@ namespace SCR
 {
 
 	class ScriptFoundation;
+	class NodeExecutor;
 	class DataTypeManager;
 	class NodeTypeManager;
 	class PinTypeManager;
@@ -17,6 +18,7 @@ namespace SCR
 
 
 		ScriptFoundation& GetFoundation();
+		NodeExecutor& GetNodeExecutor();
 		DataTypeManager& GetDataTypeManager();
 		NodeTypeManager& GetNodeTypeManager();
 		PinTypeManager& GetPinTypeManager();

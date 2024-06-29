@@ -23,8 +23,6 @@ namespace SCR
 
 	void ScriptFoundation::InitializeSystemTypes()
 	{
-		RegisterSystemDataTypes();
-		RegisterSystemNodes();
 
 		ScriptLoader::LoadCustomEvents();
 		myTypeManager->GetNodeTypeManager().Assert();
@@ -56,5 +54,10 @@ namespace SCR
 	TypeManager& ScriptFoundation::GetTypeManager()
 	{
 		return *myTypeManager;
+	}
+
+	NodeExecutor& ScriptFoundation::GetNodeExecutor()
+	{
+		return *myNodeExecutor;
 	}
 }

@@ -28,10 +28,10 @@ namespace SCR
 		return NodeTypeManager::GetInstance().Register(NodeType{ std::move(aNodeRecipe), aNodeName });
 	}
 
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeEventType EventType = eNodeEventType::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
+	template<eNodeTrait Traits = eNodeTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
 	inline NodeTypeID RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
 	{
-		return RegisterInternal(FilterNodeType<Traits, EventType, OperatorTrait>(aFunction), aNodeName, aDescription);
+		return RegisterInternal(FilterNodeType<Traits>(aFunction, NodeCreationData{ .operatorTrait = OperatorTrait }), aNodeName, aDescription);
 	}
 
 	template<typename T>
@@ -68,7 +68,7 @@ namespace SCR
 	template<typename T>/* requires IsValidScriptObjectType<T, nlohmann::json> || Fundamental<T>*/
 	inline void RegisterGetterNodeType()
 	{
-		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>), "Get " + Global::GetDataTypeManager().GetName(typeid(T).hash_code()));
+		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>, NodeCreationData{}), "Get " + Global::GetDataTypeManager().GetName(typeid(T).hash_code()));
 		NodeTypeManager::GetInstance().SetGetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
 	}
 
@@ -76,7 +76,7 @@ namespace SCR
 	template<typename T>/* requires IsValidScriptObjectType<T, nlohmann::json> || Fundamental<T>*/
 	inline void RegisterSetterNodeType()
 	{
-		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>), "Set " + Global::GetDataTypeManager().GetName(typeid(T).hash_code()));
+		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>, NodeCreationData{}), "Set " + Global::GetDataTypeManager().GetName(typeid(T).hash_code()));
 		NodeTypeManager::GetInstance().SetSetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
 	}
 
@@ -91,22 +91,22 @@ namespace SCR
 	{
 	public:
 
-		template<eNodeEventType EventType = eNodeEventType::None, IsNotVoid OutputType, typename... InputTypes>
-		static void RegisterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
+		template<IsNotVoid OutputType, typename... InputTypes>
+		static void RegisterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, const NodeCreationData& aCreationData = NodeCreationData())
 		{
-			RegisterInternal(FilterNodeType<eNodeTrait::None, EventType>(aFunction), aNodeName, aDescription);
+			RegisterInternal(FilterNodeType<eNodeTrait::None>(aFunction, aCreationData), aNodeName, aCreationData.desc);
 		}
 
-		template<typename OutputType, typename... InputTypes> /*requires NoArgsReference<InputTypes...>*/
-		static void RegisterFlowNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
+		template<typename OutputType, typename... InputTypes>
+		static void RegisterFlowNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, const NodeCreationData& aCreationData = NodeCreationData())
 		{
-			RegisterInternal(FilterNodeType<eNodeTrait::HasImplicitFlow>(aFunction), aNodeName, aDescription);
+			RegisterInternal(FilterNodeType<eNodeTrait::HasImplicitFlow>(aFunction, aCreationData), aNodeName, aCreationData.desc);
 		}
 
 		template<typename ClassType, typename OutputType, typename... InputTypes> requires NoArgsReference<InputTypes...>
-		static void RegisterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
+		static void RegisterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aNodeName, const NodeCreationData& aCreationData = NodeCreationData())
 		{
-			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aDescription);
+			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aCreationData.desc);
 
 			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType>())
 			{
@@ -186,6 +186,10 @@ namespace SCR
 	struct RegisterFunctionNode<FuncPtr<OutputType, InputTypes...>>
 	{
 
+		constexpr static eNodeRegTrait UnpackTraits()
+		{
+			return eNodeRegTrait::None;
+		}
 
 		template<typename CurrentTrait, typename... Traits>
 		constexpr static eNodeRegTrait UnpackTraits()
@@ -194,27 +198,44 @@ namespace SCR
 			{
 				return eNodeRegTrait::Event;
 			}
-			return eNodeRegTrait::None;
+			else
+			{
+				return eNodeRegTrait::None;
+			}
 		}
 
+		volatile inline RegisterFunctionNode(FuncPtr<OutputType, InputTypes...> function, const std::string& functionName)
+		{
+			NodeCreationData nodeCreationData;
+			SCRIPT::NodeTypeRegistry::RegisterNodeType(function, functionName, nodeCreationData);
+		}
 
 		template<typename... Traits>
 		volatile inline RegisterFunctionNode(FuncPtr<OutputType, InputTypes...> function, const std::string& functionName, TypeList<Traits...>)
 		{
-			constexpr eNodeRegTrait traits = UnpackTraits<Traits...>();
-			if constexpr (HasFlag(traits, eNodeRegTrait::Event))
+			eNodeRegTrait traits = eNodeRegTrait::None;
+			if constexpr (sizeof...(Traits) > 0)
 			{
-				int a = 4;
-				a;
+				traits = UnpackTraits<Traits...>();
 			}
-			SCRIPT::NodeTypeRegistry::RegisterNodeType(function, functionName);
+			NodeCreationData nodeCreationData;
+			if (HasFlag(traits, eNodeRegTrait::Event))
+			{
+				EventID eventID = std::hash<decltype(function)>()(function);
+				nodeCreationData.eventID = eventID;
+			}
+			SCRIPT::NodeTypeRegistry::RegisterNodeType(function, functionName, nodeCreationData);
 		}
 	};
 
 
 
 }
+#define FLY_CONCATENATE_DETAIL(x, y) x##y
+#define FLY_CONCATENATE(x, y) FLY_CONCATENATE_DETAIL(x, y)
 
+// Macro to generate a unique name using __COUNTER__
+#define FLY_UNIQUE_NAME(base) FLY_CONCATENATE(base, __COUNTER__)
 
-#define REGISTER_FUNCTION(function, ...) \
-    inline static SCRIPT::RegisterFunctionNode<decltype(&function)> __##function##RegisterFunctionNode(function, "Test/" #function, SCRIPT::TypeList<__VA_ARGS__>());
+#define REGISTER_FUNCTION(function, directory, ...) \
+    inline static SCRIPT::RegisterFunctionNode<decltype(&function)> FLY_UNIQUE_NAME(fly_function)(function, directory"/"#function, SCRIPT::TypeList<__VA_ARGS__>());

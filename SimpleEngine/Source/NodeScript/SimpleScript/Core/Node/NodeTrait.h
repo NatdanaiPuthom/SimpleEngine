@@ -14,24 +14,15 @@ namespace SCR
 		Operator = 1 << 5,
 		CustomEvent = 1 << 6,
 		HasFlow = 1 << 7,
+		TakesInternalExecutionContext = 1 << 8,
 		NonTrivial = Invalid | Getter | Setter | Operator | CustomEvent,
 		Accessor = Getter | Setter,
-		TakesInternalExecutionContext = 1 << 8
 	};
 
 	enum class eCreationNodeTrait : unsigned int
 	{
 		HasImplicitFlow,
 		TakesExecutionContext
-	};
-
-	enum class eNodeEventType : unsigned int
-	{
-		None,
-		BeginPlay,
-		Tick,
-		EndPlay,
-		Custom,
 	};
 
 	enum class eNodeOperatorTrait : unsigned int

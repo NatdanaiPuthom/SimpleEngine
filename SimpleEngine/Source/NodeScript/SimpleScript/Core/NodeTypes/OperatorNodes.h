@@ -321,7 +321,7 @@ namespace SCR
 
 	struct NodeTypeDesc;
 
-	template<eNodeTrait, eNodeEventType, typename OutputType, typename... InputTypes>
+	template<eNodeTrait, typename OutputType, typename... InputTypes>
 	constexpr void RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...>, const std::string&, NodeTypeDesc);
 
 
@@ -349,7 +349,7 @@ namespace SCR
 
 		auto func = GetFunctionByOperator<T, OperatorTrait>();
 
-		NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits, eNodeEventType::None, OperatorTrait>(func, aDefaultNodeName);
+		NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits, OperatorTrait>(func, aDefaultNodeName);
 
 		NodeTypeManager::GetInstance().SetOperatorNodeTypeID(dataTypeID, OperatorTrait, nodeTypeID);
 	}

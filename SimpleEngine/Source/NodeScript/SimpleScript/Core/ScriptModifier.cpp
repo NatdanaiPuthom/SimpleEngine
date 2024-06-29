@@ -20,7 +20,7 @@ namespace SCR
 		namespace Internal
 		{
 
-			static void BindNodeToEvent(const NodeID aNodeID, EventGraph& anEventGraph, CommandTracker* aCommandTracker)
+			static void BindNodeToEvent(const NodeID aNodeID, EventGraph& anEventGraph, CommandTracker* const aCommandTracker)
 			{
 				struct BindData
 				{
@@ -44,12 +44,12 @@ namespace SCR
 				}
 				else
 				{
-					aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Bind Node To Event"));
+					aCommandTracker->DoCommand(CommandNew(commandFunction, "Bind Node To Event"));
 				}
 			}
 		}
 
-		NodeID CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, ScriptVec2 aPosition, CommandTracker* aCommandTracker)
+		NodeID CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, const ScriptVec2 aPosition, CommandTracker* const aCommandTracker)
 		{
 
 			if (aCommandTracker)
@@ -75,7 +75,7 @@ namespace SCR
 		}
 
 
-		NodeID CreateNodeAutoLink(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, PinID aConnection, ScriptVec2 aPosition, CommandTracker* aCommandTracker)
+		NodeID CreateNodeAutoLink(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, const PinID aConnection, const ScriptVec2 aPosition, CommandTracker* const aCommandTracker)
 		{
 			if (aCommandTracker)
 			{
@@ -105,7 +105,7 @@ namespace SCR
 			return nodeID;
 		}
 
-		NodeID CreateNode(NodeGraph& aNodeGraph, const std::string& aName, bool& aSuccess, ScriptVec2 aPosition, CommandTracker* aCommandTracker, bool aCreateIfNameNotFound)
+		NodeID CreateNode(NodeGraph& aNodeGraph, const std::string& aName, bool& aSuccess, const ScriptVec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
 		{
 			if (aCommandTracker)
 			{
@@ -124,7 +124,7 @@ namespace SCR
 			return nodeID;
 		}
 
-		NodeID CreateGetterNode(Script& aScript, NodeGraph& aNodeGraph, DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition, CommandTracker* aCommandTracker)
+		NodeID CreateGetterNode(Script& aScript, NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, const VarID aVarID, const ScriptVec2 aPosition, CommandTracker* const aCommandTracker)
 		{
 			if (aCommandTracker)
 			{
@@ -142,7 +142,7 @@ namespace SCR
 			return nodeID;
 		}
 
-		NodeID CreateSetterNode(Script& aScript, NodeGraph& aNodeGraph, DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition, CommandTracker* aCommandTracker)
+		NodeID CreateSetterNode(Script& aScript, NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, const VarID aVarID, const ScriptVec2 aPosition, CommandTracker* const aCommandTracker)
 		{
 			if (aCommandTracker)
 			{
@@ -243,7 +243,7 @@ namespace SCR
 			}
 			else
 			{
-				aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Destroy Node"));
+				aCommandTracker->DoCommand(CommandNew(commandFunction, "Destroy Node"));
 			}
 
 			for (LinkID linkID : ScriptLinker::GetLinkIDsByNode(aNodeGraph, aNodeID))
@@ -321,7 +321,7 @@ namespace SCR
 			}
 			else
 			{
-				aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Set Node Position"));
+				aCommandTracker->DoCommand(CommandNew(commandFunction, "Set Node Position"));
 			}
 
 
@@ -386,7 +386,7 @@ namespace SCR
 			}
 			else
 			{
-				aCommandTracker->DoCommandNew(CommandNew(commandFunction, "Destroy Variable"));
+				aCommandTracker->DoCommand(CommandNew(commandFunction, "Destroy Variable"));
 			}
 
 			const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
@@ -399,19 +399,19 @@ namespace SCR
 
 		}
 
-		void EditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+		void EditPin(const PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
 			const Pin& pin = aNodeGraph.myPinManager->myPins[aPinID];
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 			DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
 
-			const void* copyDataPtr = [aCommandTracker, &dataTypeManager, &pinType, &pin]() -> const void*
+			const void* const copyDataPtr = [aCommandTracker, &dataTypeManager, &pinType, &pin]() -> const void*
 				{
 					return aCommandTracker != nullptr ? dataTypeManager.AllocateData(pinType.dataTypeID, Global::Internal::GetFrameMemoryArena(), pin.dataPtr) : nullptr;
 				}();
 
-			bool wasEdited = dataTypeManager.EditData(pinType.dataTypeID, pin.dataPtr);
+			const bool wasEdited = dataTypeManager.EditData(pinType.dataTypeID, pin.dataPtr);
 
 			if (!wasEdited || !aCommandTracker)
 			{
@@ -454,7 +454,7 @@ namespace SCR
 		}
 
 
-		void EditVariableDefaultValue(VarID aVarID, Script& aScript, CommandTracker*)
+		void EditVariableDefaultValue(const VarID aVarID, Script& aScript, CommandTracker*)
 		{
 			const Variable& variable = ScriptProxy::GetVariable(aScript, aVarID);
 
@@ -464,7 +464,7 @@ namespace SCR
 			}
 		}
 
-		void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID, Script& aScript, CommandTracker* aCommandTracker)
+		void SetVariableDataType(const VarID aVarID, const DataTypeID aDataTypeID, Script& aScript, CommandTracker* const aCommandTracker)
 		{
 			Variable& variable = ScriptProxy::GetVariableRef(aScript, aVarID);
 
@@ -483,7 +483,7 @@ namespace SCR
 			variable.name = aName;
 		}
 
-		void DestroyVariableNodes(const VarID aVarID, Script& aScript, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+		void DestroyVariableNodes(const VarID aVarID, Script& aScript, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
 		{
 			DestroySelection(ScriptProxy::GetVariableManager(aScript).GetNodeIDsByVarID(aVarID), {}, aNodeGraph, aCommandTracker);
 		}
@@ -563,7 +563,7 @@ namespace SCR
 
 		}
 
-		void PasteCopyBuffer(ScriptVec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+		void PasteCopyBuffer(const ScriptVec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
 		{
 			CopyBuffer& copyBuffer = Global::Internal::GetCopyBuffer();
 

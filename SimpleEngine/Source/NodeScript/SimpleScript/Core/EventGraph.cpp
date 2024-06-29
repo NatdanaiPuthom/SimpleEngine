@@ -17,24 +17,27 @@ namespace SCR
 
 		const EventID eventID = nodeType.nodeRecipe.eventID;
 
-		if (eventID != EnumCast(eNodeEventType::None))
+		if (eventID == InvalidID<EventID>())
 		{
-			bool alreadyExists = false;
-			std::vector<NodeID>& nodeIDsByEvent = myEventNodes[eventID];
-			for (const NodeID nodeID : nodeIDsByEvent)
-			{
-				if (nodeID == aNodeID)
-				{
-					alreadyExists = true;
-					break;
-				}
-			}
+			return;
+		}
 
-			if (!alreadyExists)
+		bool alreadyExists = false;
+		std::vector<NodeID>& nodeIDsByEvent = myEventNodes[eventID];
+		for (const NodeID nodeID : nodeIDsByEvent)
+		{
+			if (nodeID == aNodeID)
 			{
-				nodeIDsByEvent.push_back(aNodeID);
+				alreadyExists = true;
+				break;
 			}
 		}
+
+		if (!alreadyExists)
+		{
+			nodeIDsByEvent.push_back(aNodeID);
+		}
+
 	}
 
 

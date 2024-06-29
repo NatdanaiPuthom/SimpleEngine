@@ -17,24 +17,25 @@ namespace SCR
 	{
 	}
 
-	void NodeExecutor::ExecuteEvent(const size_t anEventHash, EventGraph& anEventGraph, ScriptInstance& aScriptInstance, const ExecutionContextBase& anExecutionContext)
+	void NodeExecutor::ExecuteEvent(const size_t anEventHash, ScriptInstance& aScriptInstance, const ExecutionContextBase& anExecutionContext, const bool aExecuteAutoTickers)
 	{
 		myExecutionContext.script = aScriptInstance.myScript;
 		myExecutionContext.executionContext = &anExecutionContext;
 		myExecutionContext.scriptInstance = &aScriptInstance;
 		myExecutionContext.nodeGraphInstance = &aScriptInstance.myEventGraphInstance;
 
-		auto it = anEventGraph.myEventNodes.find(anEventHash);
+		EventGraph& eventGraph = aScriptInstance.myScript->GetEventGraph();
+		auto it = eventGraph.myEventNodes.find(anEventHash);
 
-		if (it != anEventGraph.myEventNodes.end())
+		if (it != eventGraph.myEventNodes.end())
 		{
 			for (NodeID nodeID : it->second)
 			{
-				ExecuteNode(NodeExecutionData{ NodeRef{.nodeID = nodeID, .nodeGraph = &anEventGraph }, eNodeTriggerReason::Event });
+				ExecuteNode(NodeExecutionData{ NodeRef{.nodeID = nodeID, .nodeGraph = &eventGraph }, eNodeTriggerReason::Event });
 			}
 		}
 
-		if (anEventHash == EnumCast(eNodeEventType::Tick))
+		if (aExecuteAutoTickers)
 		{
 			for (const NodeExecutionData& executionData : myAutoTickNodes)
 			{
