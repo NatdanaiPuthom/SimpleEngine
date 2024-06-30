@@ -11,7 +11,8 @@
 #include "MainSingleton/MainSingleton.hpp"
 #include "Editor/Editor.hpp"
 #include "NodeScript/SimpleNodeScript.hpp"
-#include "Launcher/Client/Client.hpp"
+
+//#include "Launcher/Client/Client.hpp"
 
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 static void RunWithSEH(HINSTANCE& hInstance, int nCmdShow);
@@ -77,12 +78,12 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	simpleScript.Init();
 	PROFILER_END();
 
-	Simple::Client client;
+	/*Simple::Client client;
 	if (client.Init() == false)
 	{
 		assert(false && "Failed to connect. The program will now close.");
 		return;
-	}
+	}*/
 
 	while (const bool isRunning = Global::GetGameIsRunning())
 	{
@@ -100,10 +101,10 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		engine.Update();
 		PROFILER_END();
 
-		if (client.Update(isRunning) == false)
+		/*if (client.Update(isRunning) == false)
 		{
 			Global::SetGameShouldClose(true);
-		}
+		}*/
 
 		PROFILER_BEGIN("Editor Update");
 		simpleScript.Update();
