@@ -37,18 +37,10 @@
 #include "Engine/Math/Matrix4x4.hpp"
 #include "Engine/Math/Transform.hpp"
 #include "Engine/Math/Math.hpp"
-#include "Engine/Math/Intersection.hpp"
 
-#include "Engine/SimpleUtilities/HashStuff.hpp"
-#include "Engine/SimpleUtilities/Ray.hpp"
-#include "Engine/SimpleUtilities/Plane.hpp"
-#include "Engine/SimpleUtilities/AABB2D.hpp"
-#include "Engine/SimpleUtilities/AABB3D.hpp"
-#include "Engine/SimpleUtilities/Bounds.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
 
 #include "Engine/Global.hpp"
-#include "Game/World.hpp"
 
 #pragma message("---------Never give up on your dreams!---------------")
 
