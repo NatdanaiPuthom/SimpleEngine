@@ -14,7 +14,7 @@ namespace ECS
 	};
 }
 
-#include "Engine/ECS/Components/Core/MeshComponent.hpp"
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 
 namespace ECS
 {
