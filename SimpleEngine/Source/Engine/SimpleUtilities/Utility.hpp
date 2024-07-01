@@ -31,20 +31,44 @@ namespace SimpleUtilities
 		return aNameFromTypeIndex;
 	}
 
-	static inline std::string ConvertFilePathToPrettyName(const std::string& aFilePath)
+	static inline std::string ConvertFilePathToPrettyName(const std::string& aFilePath, const bool aWithExtension = true)
 	{
 		size_t pos = aFilePath.find_last_of("/"); //NOTE(v9.34.0): I mostly use '/'
 
 		if (pos != std::string::npos && pos + 1 < aFilePath.length())
 		{
-			return aFilePath.substr(pos + 1);
+			std::string newFilePath = aFilePath.substr(pos + 1);
+
+			if (aWithExtension == false)
+			{
+				pos = newFilePath.find_last_of('.');
+
+				if (pos != std::string::npos)
+				{
+					newFilePath = newFilePath.substr(0, pos);
+				}
+			}
+
+			return newFilePath;
 		}
 
 		pos = aFilePath.find_last_of("\\"); //NOTE(v9.35.0): Microsoft sure loves to use '\'
 
 		if (pos != std::string::npos && pos + 1 < aFilePath.length())
 		{
-			return aFilePath.substr(pos + 1);
+			std::string newFilePath = aFilePath.substr(pos + 1);
+
+			if (aWithExtension == false)
+			{
+				pos = newFilePath.find_last_of('.');
+
+				if (pos != std::string::npos)
+				{
+					newFilePath = newFilePath.substr(0, pos);
+				}
+			}
+
+			return newFilePath;
 		}
 
 		return aFilePath;
