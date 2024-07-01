@@ -35,6 +35,8 @@ namespace Graphics
 		bool BeginFrame();
 		void EndFrame();
 
+		void ClearAllRenderTargets();
+
 		bool IsVSyncActive() const;
 
 		void ApplyAmbientAndDirectionalLightDeferred(const eRenderTargetType aRenderTargetType);

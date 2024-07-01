@@ -100,8 +100,7 @@ namespace Graphics
 	void GraphicsEngine::PrepareFrame()
 	{
 		ClearDepthStencilView();
-		ClearRenderTarget(eRenderTargetType::GBuffer);
-		ClearRenderTarget(eRenderTargetType::PostProcessing);
+		ClearAllRenderTargets();
 		ClearPointLightCount();
 
 		UpdateTimeConstantBuffer();
@@ -157,6 +156,14 @@ namespace Graphics
 		PROFILER_BEGIN("Present frame");
 		mySwapChain->Present(myFPSLevelCap, 0);
 		PROFILER_END();
+	}
+
+	void GraphicsEngine::ClearAllRenderTargets()
+	{
+		for (size_t i = 0; i < static_cast<size_t>(eRenderTargetType::Count); ++i)
+		{
+			ClearRenderTarget(static_cast<eRenderTargetType>(i));
+		}
 	}
 
 	void GraphicsEngine::LoadSettingsFromJson()
