@@ -59,6 +59,27 @@ namespace Simpleton
 		myCurrentSceneInfo = &mySceneInfos[aSceneName];
 	}
 
+	void SceneManager::ChangeSceneName(const std::string& aNewSceneName)
+	{
+		Simpleton::SceneInfo newSceneInfo;
+		
+		newSceneInfo.id = myCurrentSceneInfo->id;
+		newSceneInfo.name = aNewSceneName;
+		newSceneInfo.relativePath = std::string(SIMPLE_DIR_SCENES) + "\\" + std::string(newSceneInfo.name).c_str() + std::string(".scene").c_str();
+		newSceneInfo.absolutePath = SimpleUtilities::GetAbsolutePath(newSceneInfo.relativePath);
+
+		if (std::rename(myCurrentSceneInfo->absolutePath.c_str(), newSceneInfo.absolutePath.c_str()) != 0)
+		{
+			assert(false && "Failed to rename the scene");
+			return;
+		}
+
+		mySceneInfos.erase(myCurrentSceneInfo->relativePath);
+		mySceneInfos[newSceneInfo.relativePath] = newSceneInfo;
+
+		myCurrentSceneInfo = &mySceneInfos[newSceneInfo.relativePath];
+	}
+
 	void SceneManager::CreateNewScene(const std::string& aFilePath)
 	{
 		std::ofstream writeFile(aFilePath);

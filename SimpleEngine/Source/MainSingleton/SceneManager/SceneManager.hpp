@@ -11,7 +11,7 @@ namespace Simpleton
 
 	struct SceneInfo
 	{
-		SceneID id;
+		SceneID id = static_cast<size_t>(-1);
 		std::string name;
 		std::string absolutePath;
 		std::string relativePath;
@@ -31,6 +31,7 @@ namespace Simpleton
 		void LateRender();
 
 		void ChangeScene(const std::string& aSceneName);
+		void ChangeSceneName(const std::string& aNewSceneName);
 		void CreateNewScene(const std::string& aFilePath);
 
 		const SceneInfo* GetCurrentSceneInfo() const;

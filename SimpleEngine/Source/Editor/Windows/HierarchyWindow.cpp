@@ -187,19 +187,15 @@ namespace Editor
 	{
 		ImGui::Separator();
 
-		const std::string activeSceneName = SimpleUtilities::ConvertFilePathToPrettyName(MainSingleton::GetSceneManager().GetCurrentSceneInfo()->relativePath);
-		std::string sceneNameInput = activeSceneName;
+		const Simpleton::SceneInfo* sceneInfo = MainSingleton::GetSceneManager().GetCurrentSceneInfo();
+		std::string sceneNameInput = sceneInfo->name;
 
 		if (ImGui::InputTextWithHint("##SceneNameHierachy", "Name", &sceneNameInput[0], sceneNameInput.capacity() + 1))
 		{
-			/*if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
+			if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
 			{
-				if (std::rename(SimpleUtilities::GetAbsolutePath(std::string(SIMPLE_DIR_SCENES) + "\\" + activeSceneName).c_str(), SimpleUtilities::GetAbsolutePath(std::string(SIMPLE_DIR_SCENES) + "\\" + sceneNameInput).c_str()) != 0)
-				{
-					assert(false && "Failed to rename the scene");
-					return;
-				}
-			}*/
+				MainSingleton::GetSceneManager().ChangeSceneName(sceneNameInput);
+			}
 		}
 
 		ImGui::Separator();
