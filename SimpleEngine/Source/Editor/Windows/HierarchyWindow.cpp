@@ -190,7 +190,7 @@ namespace Editor
 		const Simpleton::SceneInfo* sceneInfo = MainSingleton::GetSceneManager().GetCurrentSceneInfo();
 		std::string sceneNameInput = sceneInfo->name;
 
-		if (ImGui::InputTextWithHint("##SceneNameHierachy", "Name", &sceneNameInput[0], sceneNameInput.capacity() + 1))
+		if (ImGui::InputTextWithHint("Scene##SceneNameHierachy", "Name", &sceneNameInput[0], sceneNameInput.capacity() + 1))
 		{
 			if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
 			{
