@@ -11,6 +11,7 @@ namespace Simpleton
 	SceneManager::SceneManager()
 		: myNextSceneID(0)
 		, myCurrentSceneInfo(nullptr)
+		, myIsPlaying(false)
 	{
 	}
 
@@ -35,7 +36,12 @@ namespace Simpleton
 
 	void SceneManager::Update()
 	{
-		myECSs[myCurrentSceneInfo->id].Update();
+		if (myIsPlaying)
+		{
+			myECSs[myCurrentSceneInfo->id].Update();
+		}
+
+		myECSs[myCurrentSceneInfo->id].UpdateRenderSystem();
 	}
 
 	void SceneManager::Render()
@@ -62,7 +68,7 @@ namespace Simpleton
 	void SceneManager::ChangeSceneName(const std::string& aNewSceneName)
 	{
 		Simpleton::SceneInfo newSceneInfo;
-		
+
 		newSceneInfo.id = myCurrentSceneInfo->id;
 		newSceneInfo.name = aNewSceneName;
 		newSceneInfo.relativePath = std::string(SIMPLE_DIR_SCENES) + "\\" + std::string(newSceneInfo.name).c_str() + std::string(".scene").c_str();
@@ -162,5 +168,15 @@ namespace Simpleton
 		}
 
 		return success;
+	}
+
+	void SceneManager::TogglePlay()
+	{
+		myIsPlaying = !myIsPlaying;
+	}
+
+	bool SceneManager::GetIsPlaying() const
+	{
+		return myIsPlaying;
 	}
 }

@@ -9,6 +9,7 @@ namespace ECS
 		, myTimer(0.0f)
 	{
 		mySkyBoxAndDirectionalLightSystem = std::make_shared<RenderLightSystem>(aEntityComponentSystem);
+		myRenderSystem = std::make_shared<RenderSystem>(aEntityComponentSystem);
 	}
 
 	SystemManager::~SystemManager()
@@ -23,6 +24,7 @@ namespace ECS
 		}
 
 		mySkyBoxAndDirectionalLightSystem->Init();
+		myRenderSystem->Init();
 	}
 
 	void SystemManager::Update()
@@ -35,33 +37,69 @@ namespace ECS
 			myTimer = 0.0f;
 		}
 
+		EarlyUpdate();
+
+		if (shouldUpdate)
+		{
+			FixedUpdate();
+		}
+
+		NormalUpdate();
+
+		LateUpdate();
+	}
+
+	void SystemManager::EarlyUpdate()
+	{
 		for (const auto& [key, system] : mySystems)
 		{
 			system->EarlyUpdate();
 		}
 
+		mySkyBoxAndDirectionalLightSystem->EarlyUpdate();
+		myRenderSystem->EarlyUpdate();
+	}
+
+	void SystemManager::FixedUpdate()
+	{
 		for (const auto& [key, system] : mySystems)
 		{
-			if (shouldUpdate)
-			{
-				system->FixedUpdate();
-			}
+			system->FixedUpdate();
 		}
 
-		for (const auto& [key, system] : mySystems)
-		{
-			system->Update();
-			mySkyBoxAndDirectionalLightSystem->Update();
-		}
+		mySkyBoxAndDirectionalLightSystem->FixedUpdate();
+		myRenderSystem->FixedUpdate();
+	}
 
+	void SystemManager::LateUpdate()
+	{
 		for (const auto& [key, system] : mySystems)
 		{
 			system->LateUpdate();
 		}
+
+		mySkyBoxAndDirectionalLightSystem->LateUpdate();
+		myRenderSystem->LateUpdate();
+	}
+
+	void SystemManager::NormalUpdate()
+	{
+		for (const auto& [key, system] : mySystems)
+		{
+			system->Update();
+		}
+	}
+
+	void SystemManager::UpdateRenderSystem()
+	{
+		mySkyBoxAndDirectionalLightSystem->Update();
+		myRenderSystem->Update();
 	}
 
 	void SystemManager::Render()
 	{
+		myRenderSystem->Render();
+
 		for (const auto& [key, system] : mySystems)
 		{
 			system->Render();

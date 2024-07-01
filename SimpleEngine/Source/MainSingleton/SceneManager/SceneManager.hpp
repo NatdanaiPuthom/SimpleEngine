@@ -37,6 +37,10 @@ namespace Simpleton
 		const SceneInfo* GetCurrentSceneInfo() const;
 		ECS::EntityComponentSystem& GetCurrentECS();
 
+		void TogglePlay();
+
+		bool GetIsPlaying() const;
+
 	private:
 		void LoadSettingsFromJson();
 		void LoadDefaultScene(const std::string& aDefaultScenePath);
@@ -62,6 +66,7 @@ namespace Simpleton
 		std::unordered_map<SceneID, ECS::EntityComponentSystem> myECSs;
 		SceneInfo* myCurrentSceneInfo;
 		size_t myNextSceneID;
+		bool myIsPlaying;
 		const int myPaddings[4] = { -4 };
 	};
 }

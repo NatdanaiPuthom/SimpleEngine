@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/ECS/Systems/RenderLightSystem.hpp"
+#include "Engine/ECS/Systems/RenderSystem.hpp"
 #include <memory>
 #include <unordered_map>
 #include <cassert>
@@ -18,6 +19,7 @@ namespace ECS
 
 		void Init();
 		void Update();
+		void UpdateRenderSystem();
 		void Render();
 		void RenderPointLights();
 		void RenderSkyBoxAndDirectionalLight();
@@ -26,11 +28,18 @@ namespace ECS
 		void AddSystem(EntityComponentSystem* aEntityComponentSystem);
 
 	private:
+		void EarlyUpdate();
+		void FixedUpdate();
+		void LateUpdate();
+		void NormalUpdate();
+
+	private:
 		explicit SystemManager(EntityComponentSystem* aEntityComponentSystem);
 		~SystemManager();
 
 		std::unordered_map<SystemHashCode, std::shared_ptr<System>> mySystems;
 		std::shared_ptr<RenderLightSystem> mySkyBoxAndDirectionalLightSystem;
+		std::shared_ptr<RenderSystem> myRenderSystem;
 
 		float myFixedUpdateTime;
 		float myTimer;

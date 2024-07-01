@@ -22,15 +22,17 @@ namespace ECS
 	{
 		constexpr size_t entitiesToReserve = 16; //NOTE(v9.30.10):Small number for experimental purposes for now
 		myEntityManager.Init(entitiesToReserve);
-
-		mySystemManager.AddSystem<RenderSystem>(this);
-
 		mySystemManager.Init();
 	}
 
 	void EntityComponentSystem::Update()
 	{
 		mySystemManager.Update();
+	}
+
+	void EntityComponentSystem::UpdateRenderSystem()
+	{
+		mySystemManager.UpdateRenderSystem();
 	}
 
 	void EntityComponentSystem::Render()

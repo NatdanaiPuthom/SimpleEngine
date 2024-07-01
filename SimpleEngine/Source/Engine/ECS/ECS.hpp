@@ -26,6 +26,7 @@ namespace ECS
 
 		void Init();
 		void Update();
+		void UpdateRenderSystem();
 		void Render();
 		void RenderPointLights();
 		void RenderSkyBoxAndDirectionalLight();

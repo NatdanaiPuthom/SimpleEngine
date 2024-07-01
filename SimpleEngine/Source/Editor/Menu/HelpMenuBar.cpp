@@ -24,10 +24,7 @@ namespace Editor
 	void HelpMenuBar::Update()
 	{
 		myCameraHelpWindow->Update();
-	}
 
-	void HelpMenuBar::Draw()
-	{
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu("Help"))
@@ -38,7 +35,10 @@ namespace Editor
 
 			ImGui::EndMainMenuBar();
 		}
+	}
 
+	void HelpMenuBar::Draw()
+	{
 		if (myCameraHelpWindow->myIsActive == true)
 		{
 			myCameraHelpWindow->Draw();
