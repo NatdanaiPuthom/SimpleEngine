@@ -22,7 +22,6 @@ namespace Simple
 		void LoadFronts();
 		void LoadColors();
 		void LoadStyle();
-		void ShowFAIcons();
 	private:
 		static ImGuiStyle myStyle;
 		static ImVec4 myColors;

@@ -1,6 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/PlayMenuBar.hpp"
-#include "Engine/ImGui/IconFontDefines.h"
 
 namespace Editor
 {

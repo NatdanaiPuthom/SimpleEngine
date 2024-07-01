@@ -9,6 +9,7 @@
 #define ICON_MIN_FA 0xe005
 #define ICON_MAX_16_FA 0xf8ff
 #define ICON_MAX_FA 0xf8ff
+
 #define ICON_FA_AD                                  "\xef\x99\x81"	// U+f641
 #define ICON_FA_ADDRESS_BOOK                        "\xef\x8a\xb9"	// U+f2b9
 #define ICON_FA_ADDRESS_CARD                        "\xef\x8a\xbb"	// U+f2bb
