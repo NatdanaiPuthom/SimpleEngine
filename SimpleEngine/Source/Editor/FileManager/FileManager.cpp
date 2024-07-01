@@ -2,6 +2,7 @@
 #include "Editor/FileManager/FileManager.hpp"
 #include "Graphics/Defines.hpp"
 #include "External/imgui.h"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
 {
@@ -200,6 +201,11 @@ namespace Editor
 				{
 					myStaticCurrentDirectory = aDirectory + "\\" + fileNames[i];
 					break;
+				}
+				else if (textureID == sceneIcon)
+				{
+					const std::string scenePath = "Assets\\Scenes\\" + fileNames[i]; //TO-DO(v11.2.3): Fix so it doesnt become hardcoded
+					MainSingleton::GetSceneManager().ChangeScene(scenePath);
 				}
 			}
 

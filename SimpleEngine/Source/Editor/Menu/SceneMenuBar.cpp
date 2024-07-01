@@ -74,7 +74,7 @@ namespace Editor
 		{
 			if (ImGui::Selectable(name.c_str()))
 			{
-				const std::string scenePath = "Assets\\Scenes\\" + name;
+				const std::string scenePath = "Assets\\Scenes\\" + name; //TO-DO(v11.2.3): Fix so it doesnt become hardcoded path
 				MainSingleton::GetSceneManager().ChangeScene(scenePath);
 				break;
 			}
