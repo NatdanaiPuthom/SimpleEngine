@@ -3,11 +3,11 @@
 
 namespace Editor
 {
-	class FileMenuBar : public Editor::ToolInterface
+	class SceneMenuBar : public Editor::ToolInterface
 	{
 	public:
-		FileMenuBar();
-		~FileMenuBar();
+		SceneMenuBar();
+		~SceneMenuBar();
 
 		void Init() override;
 		void Update() override;

@@ -4,7 +4,7 @@
 #ifndef _SIMPLE
 #include "Editor/Menu/MainMenuBar.hpp"
 #include "Editor/Menu/HelpMenuBar.hpp"
-#include "Editor/Menu/FileMenuBar.hpp"
+#include "Editor/Menu/SceneMenuBar.hpp"
 #endif
 
 namespace Editor
@@ -14,7 +14,7 @@ namespace Editor
 #ifndef _SIMPLE
 	EditorEngine::EditorEngine()
 	{
-		AddTool(std::move(std::make_unique<FileMenuBar>()));
+		AddTool(std::move(std::make_unique<SceneMenuBar>()));
 		AddTool(std::move(std::make_unique<MainMenuBar>()));
 		AddTool(std::move(std::make_unique<HelpMenuBar>()));
 	}

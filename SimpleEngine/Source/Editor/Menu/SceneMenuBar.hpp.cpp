@@ -1,22 +1,22 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Menu/FileMenuBar.hpp"
+#include "Editor/Menu/SceneMenuBar.hpp"
 #include "Game/World.hpp"
 
 namespace Editor
 {
-	FileMenuBar::FileMenuBar()
+	SceneMenuBar::SceneMenuBar()
 	{
 	}
 
-	FileMenuBar::~FileMenuBar()
+	SceneMenuBar::~SceneMenuBar()
 	{
 	}
 
-	void FileMenuBar::Init()
+	void SceneMenuBar::Init()
 	{
 	}
 
-	void FileMenuBar::Update()
+	void SceneMenuBar::Update()
 	{
 		if (MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL))
 		{
@@ -42,11 +42,11 @@ namespace Editor
 		}
 	}
 
-	void FileMenuBar::Draw()
+	void SceneMenuBar::Draw()
 	{
 	}
 
-	void FileMenuBar::SaveActiveScene()
+	void SceneMenuBar::SaveActiveScene()
 	{
 		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
 		ECS::EntityComponentSystem::SaveData(ecs, MainSingleton::GetSceneManager().GetCurrentScenePath());
