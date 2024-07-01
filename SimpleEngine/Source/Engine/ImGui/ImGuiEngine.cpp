@@ -81,13 +81,14 @@ namespace Simple
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.WindowBorderSize = 0;
 		style.TabBarBorderSize = 0;
-		style.TabBorderSize = 1;
+		style.TabBorderSize = 0;
 		style.WindowMenuButtonPosition = ImGuiDir_None;
 		style.DockingSeparatorSize = 1;
 		style.DisplaySafeAreaPadding.x = 10;
 		style.PopupBorderSize = 0;
-		//style.FrameBorderSize = 1.0f;
+		style.FrameBorderSize = 0.0f;
 		style.ChildRounding = 5.0f;
+		style.TabRounding = 0;
 
 		myStyle = style;
 		myColors = *colors;
