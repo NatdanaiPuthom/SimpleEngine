@@ -123,7 +123,7 @@ namespace Simpleton
 		{
 			myECSs[aSceneName].Init();
 
-			const std::string name = "ECS Load " + aSceneName;
+			const std::string name = "ECS LoadScene: " + aSceneName;
 
 			PROFILER_BEGIN(name);
 			ECS::EntityComponentSystem::LoadData(myECSs[aSceneName], aSceneName);

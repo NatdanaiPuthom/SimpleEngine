@@ -59,7 +59,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		
 		'SIMPLE_DIR_MINIDUMP="' .."../Temp/Minidumps/".. '"',
 		'SIMPLE_FILENAME_STACKTRACES="' .."../Temp/StackTraces/stack_traces.txt".. '"',
-		'SIMPLE_FILENAME_PROFILER="'  .. "../Temp/Profilers/profiler_data.prof" .. '"'
+		'SIMPLE_FILENAME_PROFILER="'  .. "../Temp/Profilers/profiler_data.prof" .. '"',
+		'SIMPLE_FILENAME_NEWSCENE="NewScene.scene"'
 	}
 
 	configurations { -- Create Configurations For This WorkSpace

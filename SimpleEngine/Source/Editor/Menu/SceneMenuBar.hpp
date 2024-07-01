@@ -15,5 +15,6 @@ namespace Editor
 	private:
 		void SaveActiveScene();
 		void ShowSceneList();
+		void CreateNewScene();
 	};
 }

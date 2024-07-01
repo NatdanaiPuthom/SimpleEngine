@@ -42,14 +42,9 @@ namespace Editor
 					ImGui::EndMenu();
 				}
 				
-				if (ImGui::MenuItem("Create"))
+				if (ImGui::MenuItem("Create##SceneMenuItem"))
 				{
-					Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
-
-					const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SimpleUtilities::AppendCounterIfAlreadyExist("Assets\\Scenes\\NewScene.scene"));
-					const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(absolutePath);
-					sceneManager.CreateNewScene(absolutePath);
-					sceneManager.ChangeScene(relativePath);
+					CreateNewScene();
 				}
 
 				ImGui::EndMenu();
@@ -77,10 +72,20 @@ namespace Editor
 		{
 			if (ImGui::Selectable(name.c_str()))
 			{
-				const std::string scenePath = "Assets\\Scenes\\" + name; //TO-DO(v11.2.3): Fix so it doesnt become hardcoded path
+				const std::string scenePath = std::string(SIMPLE_DIR_SCENES) + "\\" + name;
 				MainSingleton::GetSceneManager().ChangeScene(scenePath);
 				break;
 			}
 		}
+	}
+
+	void SceneMenuBar::CreateNewScene()
+	{
+		Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
+
+		const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SimpleUtilities::AppendCounterIfAlreadyExist(std::string(SIMPLE_DIR_SCENES) + "\\" + std::string(SIMPLE_FILENAME_NEWSCENE)));
+		const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(absolutePath);
+		sceneManager.CreateNewScene(absolutePath);
+		sceneManager.ChangeScene(relativePath);
 	}
 }
