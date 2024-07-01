@@ -61,7 +61,7 @@ namespace SimpleUtilities
 		return outputPath;
 	}
 
-	static inline const std::string KeepStringAfterAssets(const std::string& aFilePath)
+	static inline const std::string ConvertAbsolutePathToRelativePath(const std::string& aFilePath)
 	{
 		const size_t pos = aFilePath.rfind("Assets");
 

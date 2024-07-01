@@ -233,7 +233,7 @@ namespace ECS
 
 				if (extension == ".dds")
 				{
-					const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
+					const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
 					aTexture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
 				}
 			}
@@ -344,7 +344,7 @@ namespace ECS
 
 					if (extension == ".dds")
 					{
-						const std::string fileName = SimpleUtilities::KeepStringAfterAssets(payloadData);
+						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
 						aTextures[i] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
 					}
 				}

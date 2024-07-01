@@ -128,7 +128,7 @@ namespace Editor
 			}
 			else if (extension == ".dds")
 			{
-				const std::string texturePath = SimpleUtilities::KeepStringAfterAssets(aDirectory) + "\\" + fileNames[i];
+				const std::string texturePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(aDirectory) + "\\" + fileNames[i];
 				const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(texturePath.c_str());
 
 				if (texture->GetSlot() != Graphics::Global_Slot_CubeMap)
