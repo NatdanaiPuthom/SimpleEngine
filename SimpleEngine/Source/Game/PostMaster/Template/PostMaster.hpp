@@ -2,6 +2,7 @@
 #include <any>
 #include <unordered_map>
 #include <unordered_set>
+#include <functional>
 
 #include "Game/PostMaster/EventTypes.hpp"
 
