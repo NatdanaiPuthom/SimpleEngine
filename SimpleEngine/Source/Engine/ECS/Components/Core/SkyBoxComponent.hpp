@@ -12,6 +12,8 @@ namespace ECS
 		const Graphics::Mesh* mesh = nullptr;
 		const Graphics::Texture* texture = nullptr;
 		const Graphics::Shader* shader = nullptr;
+
+		SkyBoxComponent();
 	};
 }
 
