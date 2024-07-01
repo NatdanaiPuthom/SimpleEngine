@@ -23,86 +23,9 @@ namespace Editor
 
 		if (ImGui::Begin("Hierarchy"))
 		{
-			ImVec2 windowSize = ImGui::GetWindowSize();
-
-			if (ImGui::Button("Add"))
-			{
-				ImGui::OpenPopup("Add Scene Object");
-			}
-
-			/*
-			* 
-			* TO-DO(v11.0.6): implement name search filter which will require how ecs work i assume?
-			* 
-			ImGui::SameLine(ImGui::GetWindowWidth() - 135);
-			ImGui::PushItemWidth(125);
-
-			std::string sceneSearch = "";
-			if (ImGui::InputTextWithHint("##SearchScene", "Search", &sceneSearch[0], sceneSearch.capacity() + 1))
-			{
-			}
-
-			ImGui::PopItemWidth();
-			*/
-
-			if (ImGui::BeginPopup("Add Scene Object"))
-			{
-				if (ImGui::MenuItem("Add Entity"))
-				{
-					activeECS.CreateEntity();
-					selected = static_cast<int>(entities.GetEntityCount()) - 1;
-				}
-
-				if (ImGui::MenuItem("Add Cube"))
-				{
-					ECS::Entity entity = activeECS.CreateEntity();
-
-					entity->AddComponent<ECS::TransformComponent>();
-					entity->AddComponent<ECS::MeshComponent>();
-			
-					selected = static_cast<int>(entities.GetEntityCount()) - 1;
-				}
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::Separator();
-			const std::string activeSceneName = SimpleUtilities::ConvertFilePathToPrettyName(MainSingleton::GetSceneManager().GetCurrentScenePath());
-			ImGui::Text(activeSceneName.c_str());
-			ImGui::Separator();
-
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
-			ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
-			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
-
-			ImVec2 parentSize = ImGui::GetContentRegionAvail();
-
-			if (ImGui::BeginListBox("##SceneEntities", parentSize))
-			{
-				for (int i = 0; i < entities.GetEntityCount(); ++i)
-				{
-					const bool isSelected = (selected == i);
-
-					if (ImGui::Selectable(entities[i]->GetName().c_str(), isSelected))
-					{
-						selected = i;
-					}
-
-					if (isSelected)
-					{
-						ImGui::SetItemDefaultFocus();
-					}
-
-				}
-
-				ImGui::EndListBox();
-			}
-
-			ImGui::PopStyleVar();
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
+			ShowAddPopUps(activeECS, entities, selected);
+			ShowActiveSceneName();
+			ShowSceneEntities(entities, selected);
 		}
 
 		ImGui::End();
@@ -254,5 +177,92 @@ namespace Editor
 	void HierarchyWindow::Draw()
 	{
 
+	}
+
+	void HierarchyWindow::ShowActiveSceneName()
+	{
+		ImGui::Separator();
+		const std::string activeSceneName = SimpleUtilities::ConvertFilePathToPrettyName(MainSingleton::GetSceneManager().GetCurrentScenePath());
+		ImGui::Text(activeSceneName.c_str());
+		ImGui::Separator();
+	}
+
+	void HierarchyWindow::ShowSceneEntities(ECS::Entities& aEntities, int& aSelected)
+	{
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
+		ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+
+		ImVec2 parentSize = ImGui::GetContentRegionAvail();
+
+		if (ImGui::BeginListBox("##SceneEntities", parentSize))
+		{
+			for (int i = 0; i < aEntities.GetEntityCount(); ++i)
+			{
+				const bool isSelected = (aSelected == i);
+
+				if (ImGui::Selectable(aEntities[i]->GetName().c_str(), isSelected))
+				{
+					aSelected = i;
+				}
+
+				if (isSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+	}
+
+	void HierarchyWindow::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, ECS::Entities& aEntities, int& aSelected)
+	{
+		if (ImGui::Button("Add"))
+		{
+			ImGui::OpenPopup("Add Scene Object");
+		}
+
+		/*
+		*
+		* TO-DO(v11.0.6): implement name search filter which will require how ecs work i assume?
+		*
+		ImGui::SameLine(ImGui::GetWindowWidth() - 135);
+		ImGui::PushItemWidth(125);
+
+		std::string sceneSearch = "";
+		if (ImGui::InputTextWithHint("##SearchScene", "Search", &sceneSearch[0], sceneSearch.capacity() + 1))
+		{
+		}
+
+		ImGui::PopItemWidth();
+		*/
+
+		if (ImGui::BeginPopup("Add Scene Object"))
+		{
+			if (ImGui::MenuItem("Add Entity"))
+			{
+				aActiveECS.CreateEntity();
+				aSelected = static_cast<int>(aEntities.GetEntityCount()) - 1;
+			}
+
+			if (ImGui::MenuItem("Add Cube"))
+			{
+				ECS::Entity entity = aActiveECS.CreateEntity();
+
+				entity->AddComponent<ECS::TransformComponent>();
+				entity->AddComponent<ECS::MeshComponent>();
+
+				aSelected = static_cast<int>(aEntities.GetEntityCount()) - 1;
+			}
+
+			ImGui::EndPopup();
+		}
 	}
 }
