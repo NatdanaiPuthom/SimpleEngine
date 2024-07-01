@@ -6,7 +6,6 @@
 namespace World
 {
 	Simple::EventManager* localEventManager = nullptr;
-	ECS::EntityComponentSystem* localECS = nullptr;
 }
 
 namespace World
@@ -14,11 +13,6 @@ namespace World
 	Simple::EventManager* GetEventmanager()
 	{
 		return localEventManager;
-	}
-
-	ECS::EntityComponentSystem* GetECS()
-	{
-		return localECS;
 	}
 }
 
@@ -30,10 +24,5 @@ namespace Impl
 			assert(false && "localEventManager is already set. Is this a mistake?");
 
 		World::localEventManager = aLevelManager;
-	}
-
-	void SimpleWorldECS::SetECS(ECS::EntityComponentSystem* aECS)
-	{
-		World::localECS = aECS;
 	}
 }

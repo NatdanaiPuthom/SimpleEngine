@@ -1,5 +1,6 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/Test/TestForECS.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace Test
 {
@@ -15,7 +16,8 @@ namespace Test
 
 	void ECSTestStuff::Init()
 	{
-		ECS::Entity entity = World::GetECS()->CreateEntity();
+		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
+		ECS::Entity entity = ecs.CreateEntity();
 
 		entity->AddComponent<ECS::TransformComponent>();
 		entity->AddComponent<ECS::MeshComponent>();
@@ -42,7 +44,7 @@ namespace Test
 
 		myEntityID = entity->GetID();
 
-		ECS::Entity e = World::GetECS()->CreateEntity();
+		ECS::Entity e = ecs.CreateEntity();
 		e->AddComponent<ECS::MeshComponent>();
 		e->AddComponent<ECS::TransformComponent>();
 		e->GetComponent<ECS::MeshComponent>()->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
@@ -51,7 +53,8 @@ namespace Test
 
 	void ECSTestStuff::Update()
 	{
-		ECS::Entity entity = World::GetECS()->GetEntity(myEntityID);
+		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
+		ECS::Entity entity = ecs.GetEntity(myEntityID);
 
 		if (entity != nullptr)
 		{
@@ -63,7 +66,8 @@ namespace Test
 
 	void ECSTestStuff::Render() const
 	{
-		ECS::Entity entity = World::GetECS()->GetEntity(myEntityID);
+		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
+		ECS::Entity entity = ecs.GetEntity(myEntityID);
 
 		if (entity != nullptr)
 		{
@@ -74,7 +78,8 @@ namespace Test
 			Global::GetRenderer()->RenderAnimatedModel(transformComponent, meshComponent, animatedComponent);
 		}
 
-		ECS::Entity e = World::GetECS()->GetEntity(myTestEntityID);
+		ECS::Entity e = ecs.GetEntity(myTestEntityID);
+
 		if (e != nullptr)
 		{
 			ECS::MeshComponent* meshComponent = e->GetComponent<ECS::MeshComponent>();

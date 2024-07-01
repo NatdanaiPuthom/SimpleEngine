@@ -49,13 +49,13 @@ namespace Editor
 			{
 				if (ImGui::MenuItem("Add Entity"))
 				{
-					World::GetECS()->CreateEntity();
+					activeECS.CreateEntity();
 					selected = static_cast<int>(entities.GetEntityCount()) - 1;
 				}
 
 				if (ImGui::MenuItem("Add Cube"))
 				{
-					ECS::Entity entity = World::GetECS()->CreateEntity();
+					ECS::Entity entity = activeECS.CreateEntity();
 
 					entity->AddComponent<ECS::TransformComponent>();
 					entity->AddComponent<ECS::MeshComponent>();

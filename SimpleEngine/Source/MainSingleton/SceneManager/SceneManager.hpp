@@ -1,13 +1,9 @@
 #pragma once
+#include "Engine/ECS/ECS.hpp"
 #include <unordered_map>
 #include <string>
 
 class MainSingleton;
-
-namespace ECS
-{
-	class EntityComponentSystem;
-}
 
 namespace Simpleton
 {

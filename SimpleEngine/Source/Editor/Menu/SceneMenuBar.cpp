@@ -1,6 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/SceneMenuBar.hpp"
-#include "Game/World.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
 {
@@ -34,6 +34,13 @@ namespace Editor
 				{
 					SaveActiveScene();
 				}
+
+				ImGui::BeginDisabled();
+				if (ImGui::MenuItem("Load"))
+				{
+					
+				}
+				ImGui::EndDisabled();
 
 				ImGui::EndMenu();
 			}
