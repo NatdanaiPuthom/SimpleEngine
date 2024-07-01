@@ -44,8 +44,6 @@ namespace ECS
 		template<typename T>
 		const std::unordered_set<EntityID>& GetEntityIDsWithThisComponent();
 
-	public:
-		void SetGlobalPointerToThis();
 	private:
 		EntityManager myEntityManager;
 		ComponentManager myComponentManager;

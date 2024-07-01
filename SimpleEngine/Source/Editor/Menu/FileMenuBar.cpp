@@ -22,19 +22,17 @@ namespace Editor
 		{
 			if (MainSingleton::GetInputManager().IsKeyPressed('S'))
 			{
-				auto ecs = World::GetECS();
-				ECS::EntityComponentSystem::SaveData(*ecs, "Assets/Scenes/Test_Scene.scene");
+				SaveActiveScene();
 			}
 		}
 
 		if (ImGui::BeginMainMenuBar())
 		{
-			if (ImGui::BeginMenu("File##FileMenuBar"))
+			if (ImGui::BeginMenu("Scene##SceneMenuBar"))
 			{
 				if (ImGui::MenuItem("Save", "Ctrl + S"))
 				{
-					auto ecs = World::GetECS();
-					ECS::EntityComponentSystem::SaveData(*ecs, "Assets/Scenes/Test_Scene.scene"); //TO-DO(v11.1.0): save current active scene
+					SaveActiveScene();
 				}
 
 				ImGui::EndMenu();
@@ -46,5 +44,11 @@ namespace Editor
 
 	void FileMenuBar::Draw()
 	{
+	}
+
+	void FileMenuBar::SaveActiveScene()
+	{
+		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
+		ECS::EntityComponentSystem::SaveData(ecs, MainSingleton::GetSceneManager().GetCurrentScenePath());
 	}
 }

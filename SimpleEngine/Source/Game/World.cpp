@@ -34,9 +34,6 @@ namespace Impl
 
 	void SimpleWorldECS::SetECS(ECS::EntityComponentSystem* aECS)
 	{
-		if (World::localECS != nullptr)
-			assert(false && "localLevelManager is already set. Is this a mistake?");
-
 		World::localECS = aECS;
 	}
 }

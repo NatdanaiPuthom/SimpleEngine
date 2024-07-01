@@ -17,7 +17,9 @@ namespace Editor
 	void HierarchyWindow::Update()
 	{
 		static int selected = 0;
-		ECS::Entities entities = World::GetECS()->GetAllEntities();
+
+		ECS::EntityComponentSystem& activeECS = MainSingleton::GetSceneManager().GetCurrentECS();
+		ECS::Entities entities = activeECS.GetAllEntities();
 
 		if (ImGui::Begin("Hierarchy"))
 		{
@@ -65,8 +67,8 @@ namespace Editor
 			}
 
 			ImGui::Separator();
-			//ImGui::Text(World::GetActiveScene()->GetSceneName().c_str()); //TO-DO(v11.1.1): Fix this once SceneManager is done
-			ImGui::Text("????");
+			const std::string activeSceneName = SimpleUtilities::ConvertFilePathToPrettyName(MainSingleton::GetSceneManager().GetCurrentScenePath());
+			ImGui::Text(activeSceneName.c_str());
 			ImGui::Separator();
 
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
@@ -156,7 +158,7 @@ namespace Editor
 					}
 
 					const std::string& componentName = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentName;
-					void* componentPointer = World::GetECS()->GetComponentPointerByComponentID(componentID);
+					void* componentPointer = activeECS.GetComponentPointerByComponentID(componentID);
 
 					const bool isOpen = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
 

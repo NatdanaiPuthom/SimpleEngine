@@ -21,6 +21,11 @@ namespace Simpleton
 		void Render();
 		void LateRender();
 
+		void ChangeScene(const std::string& aSceneName);
+
+		const std::string& GetCurrentScenePath() const;
+		ECS::EntityComponentSystem& GetCurrentECS();
+
 	private:
 		void LoadSettingsFromJson();
 		void LoadDefaultScene();
@@ -34,6 +39,12 @@ namespace Simpleton
 		SceneManager();
 		~SceneManager();
 
+		SceneManager(const SceneManager&) = delete;
+		SceneManager(const SceneManager&&) = delete;
+		SceneManager operator=(const SceneManager&) = delete;
+		SceneManager operator=(const SceneManager&&) = delete;
+
+		bool AddScene(const std::string& aSceneName);
 		void Destroy();
 	private:
 		std::unordered_map<std::string, ECS::EntityComponentSystem> myECSs;

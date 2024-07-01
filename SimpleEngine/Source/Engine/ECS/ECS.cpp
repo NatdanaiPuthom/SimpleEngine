@@ -58,11 +58,6 @@ namespace ECS
 		return myEntityManager.DestroyEntity(aEntityID);
 	}
 
-	void EntityComponentSystem::SetGlobalPointerToThis()
-	{
-		Impl::SimpleWorldECS::SetECS(this);
-	}
-
 	Entity EntityComponentSystem::GetEntity(const EntityID aID)
 	{
 		return myEntityManager.GetEntity(aID);

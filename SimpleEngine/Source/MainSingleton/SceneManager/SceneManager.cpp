@@ -4,6 +4,7 @@
 #include "External/profiler.h"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
+#include "MainSingleton.hpp"
 
 namespace Simpleton
 {
@@ -33,6 +34,11 @@ namespace Simpleton
 	void SceneManager::Update()
 	{
 		myECSs[myCurrentScene].Update();
+
+		if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
+		{
+			ChangeScene("Assets\\Scenes\\Test_Scene.scene");
+		}
 	}
 
 	void SceneManager::Render()
@@ -44,6 +50,26 @@ namespace Simpleton
 	{
 		myECSs[myCurrentScene].RenderPointLights();
 		myECSs[myCurrentScene].RenderSkyBoxAndDirectionalLight();
+	}
+
+	void SceneManager::ChangeScene(const std::string& aSceneName)
+	{
+		if (myECSs.contains(aSceneName) == false)
+		{
+			AddScene(aSceneName);
+		}
+
+		myCurrentScene = aSceneName;
+	}
+
+	const std::string& SceneManager::GetCurrentScenePath() const
+	{
+		return myCurrentScene;
+	}
+
+	ECS::EntityComponentSystem& SceneManager::GetCurrentECS()
+	{
+		return myECSs[myCurrentScene];
 	}
 
 	void SceneManager::LoadSettingsFromJson()
@@ -77,11 +103,28 @@ namespace Simpleton
 	{
 		myECSs.try_emplace(myCurrentScene);
 
-		myECSs[myCurrentScene].SetGlobalPointerToThis();
 		myECSs[myCurrentScene].Init();
 
 		PROFILER_BEGIN("ECS Load DefaultScene");
 		ECS::EntityComponentSystem::LoadData(myECSs[myCurrentScene], myCurrentScene);
 		PROFILER_END();
+	}
+
+	bool SceneManager::AddScene(const std::string& aSceneName)
+	{
+		const bool success = myECSs.try_emplace(aSceneName).second;
+
+		if (success)
+		{
+			myECSs[aSceneName].Init();
+
+			const std::string name = "ECS Load " + aSceneName;
+
+			PROFILER_BEGIN(name);
+			ECS::EntityComponentSystem::LoadData(myECSs[aSceneName], aSceneName);
+			PROFILER_END();
+		}
+
+		return success;
 	}
 }
