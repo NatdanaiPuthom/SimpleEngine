@@ -34,6 +34,10 @@ namespace Editor
 		{
 			return;
 		}
+		else if (selected >= static_cast<int>(entities.GetEntityCount()))
+		{
+			selected = static_cast<int>(entities.GetEntityCount() - 1);
+		}
 
 		if (ImGui::Begin("Inspector"))
 		{
@@ -210,6 +214,34 @@ namespace Editor
 				if (isSelected)
 				{
 					ImGui::SetItemDefaultFocus();
+
+					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+					{
+						ImGui::OpenPopup("Entity Property##SceneHierachy");
+					}
+
+					if (ImGui::BeginPopup("Entity Property##SceneHierachy"))
+					{
+						if (ImGui::MenuItem("Remove##SceneHierachy"))
+						{
+							aEntities[aSelected]->DestroyThis();
+
+							if (aSelected >= static_cast<int>(aEntities.GetEntityCount() - 1))
+							{
+								aSelected--;
+							}
+
+							if (aSelected < 0 && aEntities.GetEntityCount() > 0)
+							{
+								aSelected = 0;
+							}
+
+							ImGui::EndPopup();
+							break;
+						}
+
+						ImGui::EndPopup();
+					}
 				}
 			}
 
@@ -224,9 +256,9 @@ namespace Editor
 
 	void HierarchyWindow::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, ECS::Entities& aEntities, int& aSelected)
 	{
-		if (ImGui::Button("Add"))
+		if (ImGui::Button("Add##SceneHierachy"))
 		{
-			ImGui::OpenPopup("Add Scene Object");
+			ImGui::OpenPopup("Add Scene Object##SceneHierachy");
 		}
 
 		/*
@@ -244,15 +276,15 @@ namespace Editor
 		ImGui::PopItemWidth();
 		*/
 
-		if (ImGui::BeginPopup("Add Scene Object"))
+		if (ImGui::BeginPopup("Add Scene Object##SceneHierachy"))
 		{
-			if (ImGui::MenuItem("Add Entity"))
+			if (ImGui::MenuItem("Add Entity##SceneHierachy"))
 			{
 				aActiveECS.CreateEntity();
 				aSelected = static_cast<int>(aEntities.GetEntityCount()) - 1;
 			}
 
-			if (ImGui::MenuItem("Add Cube"))
+			if (ImGui::MenuItem("Add Cube##SceneHierachy"))
 			{
 				ECS::Entity entity = aActiveECS.CreateEntity();
 
