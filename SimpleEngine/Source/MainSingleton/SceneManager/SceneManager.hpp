@@ -7,11 +7,24 @@ class MainSingleton;
 
 namespace Simpleton
 {
+	using SceneID = size_t;
+
+	struct SceneInfo
+	{
+		SceneID id;
+		std::string name;
+		std::string absolutePath;
+		std::string relativePath;
+	};
+
 	class SceneManager
 	{
+		using SceneRelativePath = std::string;
+
 		friend class MainSingleton;
+
 	public:
-	
+
 		void Init();
 		void Update();
 		void Render();
@@ -20,12 +33,12 @@ namespace Simpleton
 		void ChangeScene(const std::string& aSceneName);
 		void CreateNewScene(const std::string& aFilePath);
 
-		const std::string& GetCurrentScenePath() const;
+		const SceneInfo* GetCurrentSceneInfo() const;
 		ECS::EntityComponentSystem& GetCurrentECS();
 
 	private:
 		void LoadSettingsFromJson();
-		void LoadDefaultScene();
+		void LoadDefaultScene(const std::string& aDefaultScenePath);
 	private:
 		static SceneManager& GetInstance()
 		{
@@ -44,8 +57,10 @@ namespace Simpleton
 		bool AddScene(const std::string& aSceneName);
 		void Destroy();
 	private:
-		std::unordered_map<std::string, ECS::EntityComponentSystem> myECSs;
-		std::string myCurrentScene;
-		const int myPadding[2] = { INT_MIN };
+		std::unordered_map<SceneRelativePath, SceneInfo> mySceneInfos;
+		std::unordered_map<SceneID, ECS::EntityComponentSystem> myECSs;
+		SceneInfo* myCurrentSceneInfo;
+		size_t myNextSceneID;
+		const int myPaddings[4] = { -4 };
 	};
 }

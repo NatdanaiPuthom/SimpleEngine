@@ -187,7 +187,7 @@ namespace Editor
 	{
 		ImGui::Separator();
 
-		const std::string activeSceneName = SimpleUtilities::ConvertFilePathToPrettyName(MainSingleton::GetSceneManager().GetCurrentScenePath());
+		const std::string activeSceneName = SimpleUtilities::ConvertFilePathToPrettyName(MainSingleton::GetSceneManager().GetCurrentSceneInfo()->relativePath);
 		std::string sceneNameInput = activeSceneName;
 
 		if (ImGui::InputTextWithHint("##SceneNameHierachy", "Name", &sceneNameInput[0], sceneNameInput.capacity() + 1))

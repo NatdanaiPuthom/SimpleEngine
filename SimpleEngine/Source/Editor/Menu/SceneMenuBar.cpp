@@ -61,7 +61,7 @@ namespace Editor
 	void SceneMenuBar::SaveActiveScene()
 	{
 		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
-		ECS::EntityComponentSystem::SaveData(ecs, MainSingleton::GetSceneManager().GetCurrentScenePath());
+		ECS::EntityComponentSystem::SaveData(ecs, MainSingleton::GetSceneManager().GetCurrentSceneInfo()->relativePath);
 	}
 
 	void SceneMenuBar::ShowSceneList()

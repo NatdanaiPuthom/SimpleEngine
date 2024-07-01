@@ -9,6 +9,8 @@
 namespace Simpleton
 {
 	SceneManager::SceneManager()
+		: myNextSceneID(0)
+		, myCurrentSceneInfo(nullptr)
 	{
 	}
 
@@ -19,12 +21,12 @@ namespace Simpleton
 	void SceneManager::Destroy()
 	{
 		myECSs.clear();
+		myCurrentSceneInfo = nullptr;
 	}
 
 	void SceneManager::Init()
 	{
 		LoadSettingsFromJson();
-		LoadDefaultScene();
 
 		auto camera = Global::GetGraphicsEngine()->GetEditorCamera();
 		camera->SetRotation(Math::Vector3f(30, 0, 0));
@@ -33,32 +35,32 @@ namespace Simpleton
 
 	void SceneManager::Update()
 	{
-		myECSs[myCurrentScene].Update();
+		myECSs[myCurrentSceneInfo->id].Update();
 	}
 
 	void SceneManager::Render()
 	{
-		myECSs[myCurrentScene].Render();
+		myECSs[myCurrentSceneInfo->id].Render();
 	}
 
 	void SceneManager::LateRender()
 	{
-		myECSs[myCurrentScene].RenderPointLights();
-		myECSs[myCurrentScene].RenderSkyBoxAndDirectionalLight();
+		myECSs[myCurrentSceneInfo->id].RenderPointLights();
+		myECSs[myCurrentSceneInfo->id].RenderSkyBoxAndDirectionalLight();
 	}
 
 	void SceneManager::ChangeScene(const std::string& aSceneName)
 	{
-		if (myECSs.contains(aSceneName) == false)
+		if (mySceneInfos.contains(aSceneName) == false)
 		{
 			AddScene(aSceneName);
 		}
 
-		myCurrentScene = aSceneName;
+		myCurrentSceneInfo = &mySceneInfos[aSceneName];
 	}
 
 	void SceneManager::CreateNewScene(const std::string& aFilePath)
-	{		
+	{
 		std::ofstream writeFile(aFilePath);
 		assert(writeFile.is_open() && "Failed to open the file");
 
@@ -67,14 +69,14 @@ namespace Simpleton
 		writeFile.close();
 	}
 
-	const std::string& SceneManager::GetCurrentScenePath() const
+	const SceneInfo* SceneManager::GetCurrentSceneInfo() const
 	{
-		return myCurrentScene;
+		return myCurrentSceneInfo;
 	}
 
 	ECS::EntityComponentSystem& SceneManager::GetCurrentECS()
 	{
-		return myECSs[myCurrentScene];
+		return myECSs[myCurrentSceneInfo->id];
 	}
 
 	void SceneManager::LoadSettingsFromJson()
@@ -88,12 +90,12 @@ namespace Simpleton
 		const nlohmann::json gameSettings = jsonData["Game_Settings"];
 		file.close();
 
-		const std::string levelFileName = SimpleUtilities::GetAbsolutePath(gameSettings["Start_Scene"]);
-		std::ifstream levelJsonFile(levelFileName);
+		const std::string sceneFilePath = SimpleUtilities::GetAbsolutePath(gameSettings["Start_Scene_RelativePath"]);
+		std::ifstream sceneFile(sceneFilePath);
 
-		if (levelJsonFile.is_open() == false)
+		if (sceneFile.is_open() == false)
 		{
-			std::ofstream writeFile(levelFileName);
+			std::ofstream writeFile(sceneFilePath);
 			assert(writeFile.is_open() && "Failed to create the file");
 
 			const nlohmann::json emptyJson = {};
@@ -101,33 +103,41 @@ namespace Simpleton
 			writeFile.close();
 		}
 
-		myCurrentScene = gameSettings["Start_Scene"];
+		LoadDefaultScene(gameSettings["Start_Scene_RelativePath"]);
 	}
 
-	void SceneManager::LoadDefaultScene()
+	void SceneManager::LoadDefaultScene(const std::string& aDefaultScenePath)
 	{
-		myECSs.try_emplace(myCurrentScene);
-
-		myECSs[myCurrentScene].Init();
-
-		PROFILER_BEGIN("ECS Load DefaultScene");
-		ECS::EntityComponentSystem::LoadData(myECSs[myCurrentScene], myCurrentScene);
-		PROFILER_END();
+		ChangeScene(aDefaultScenePath);
 	}
 
 	bool SceneManager::AddScene(const std::string& aSceneName)
 	{
-		const bool success = myECSs.try_emplace(aSceneName).second;
+		SceneInfo sceneInfo;
+
+		sceneInfo.id = myNextSceneID++;
+		sceneInfo.name = SimpleUtilities::ConvertFilePathToPrettyName(aSceneName, false);
+		sceneInfo.relativePath = aSceneName;
+		sceneInfo.absolutePath = SimpleUtilities::GetAbsolutePath(aSceneName);
+
+		mySceneInfos[aSceneName] = sceneInfo;
+
+		const bool success = myECSs.try_emplace(mySceneInfos[aSceneName].id).second;
 
 		if (success)
 		{
-			myECSs[aSceneName].Init();
+			ECS::EntityComponentSystem& ecs = myECSs[mySceneInfos[aSceneName].id];
+			ecs.Init();
 
-			const std::string name = "ECS LoadScene: " + aSceneName;
+			const std::string name = "ECS LoadScene: " + mySceneInfos[aSceneName].name;
 
 			PROFILER_BEGIN(name);
-			ECS::EntityComponentSystem::LoadData(myECSs[aSceneName], aSceneName);
+			ECS::EntityComponentSystem::LoadData(ecs, mySceneInfos[aSceneName].relativePath);
 			PROFILER_END();
+		}
+		else
+		{
+			assert(false && "Failed to AddScene");
 		}
 
 		return success;

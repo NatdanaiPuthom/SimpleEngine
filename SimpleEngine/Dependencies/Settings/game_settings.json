@@ -9,6 +9,6 @@
       "y": 720
     },
     "VSync": false,
-    "Start_Scene": "Assets\\Scenes\\Test_Scene.scene"
+    "Start_Scene_RelativePath": "Assets\\Scenes\\Test_Scene.scene"
   }
 }
