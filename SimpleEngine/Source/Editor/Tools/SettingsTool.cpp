@@ -134,7 +134,6 @@ namespace Editor
 			ImGui::Separator();
 			ImGui::Dummy(ImVec2(0, heightPadding));
 
-			//AdjustActiveScene(); //TO-DO(v11.1.1): fix when SceneManager is complete
 			AdjustEditorStyle();
 
 			ImGui::Dummy(ImVec2(0, heightPadding));
@@ -254,12 +253,10 @@ namespace Editor
 		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::WireframeNoCulling)] = "WireframeNoCulling";
 		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::FrontFaceCulling)] = "FrontFaceCulling";
 
-		ImGui::BeginDisabled();
 		if (ImGui::Combo("RasterizerState", &mySelectedRasterizerState, rasterizerStates.data(), static_cast<int>(rasterizerStates.size())))
 		{
 			Global::GetGraphicsEngine()->SetRasterizerState(static_cast<Graphics::eRasterizerState>(mySelectedRasterizerState));
 		}
-		ImGui::EndDisabled();
 	}
 
 	void SettingsTool::AdjustEditorStyle()
