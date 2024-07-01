@@ -21,14 +21,7 @@ namespace Editor
 		ECS::EntityComponentSystem& activeECS = MainSingleton::GetSceneManager().GetCurrentECS();
 		ECS::Entities entities = activeECS.GetAllEntities();
 
-		if (ImGui::Begin("Hierarchy"))
-		{
-			ShowAddPopUps(activeECS, entities, selected);
-			ShowActiveSceneName();
-			ShowSceneEntities(entities, selected);
-		}
-
-		ImGui::End();
+		ShowSceneHierachy(activeECS, entities, selected);
 
 		if (selected < 0)
 		{
@@ -39,120 +32,7 @@ namespace Editor
 			selected = static_cast<int>(entities.GetEntityCount() - 1);
 		}
 
-		if (ImGui::Begin("Inspector"))
-		{
-			ECS::Entity selectedEntity = entities[selected];
-
-			if (selectedEntity == nullptr)
-			{
-				ImGui::End();
-				return;
-			}
-
-			std::string selectedEntityName = selectedEntity->GetName();
-
-			ImGui::PushItemWidth(200);
-
-			if (ImGui::InputTextWithHint("Name", "Entity Name", &selectedEntityName[0], selectedEntityName.capacity() + 1))
-			{
-				if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
-				{
-					selectedEntity->SetName(selectedEntityName);
-				}
-			}
-
-			ImGui::PopItemWidth();
-
-			ImGui::SameLine(ImGui::GetWindowWidth() - 70);
-			ImGui::Text(std::string("ID: " + std::to_string(selectedEntity->GetID())).c_str());
-			ImGui::Separator();
-
-			if (entities.GetEntityCount() > 0)
-			{
-				const size_t id = selectedEntity->GetID(); id;
-
-				const std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = selectedEntity->GetComponentMap();
-
-				for (const auto& [componentType, componentID] : componentMap)
-				{
-					ImGui::AlignTextToFramePadding();
-
-					const size_t componentHashCode = componentType.hash_code();
-
-					if (MainSingleton::GetComponentRegistry()->myTypeErasureComponents.contains(componentHashCode) == false)
-					{
-						continue;
-					}
-
-					const std::string& componentName = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentName;
-					void* componentPointer = activeECS.GetComponentPointerByComponentID(componentID);
-
-					const bool isOpen = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
-
-					ImGui::SameLine(ImGui::GetWindowWidth() - 50);
-
-					if (ImGui::Button("..."))
-					{
-						ImGui::OpenPopup(std::string("ElementList" + std::to_string(id)).c_str());
-					}
-
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::SetTooltip("More Options");
-					}
-
-					if (isOpen)
-					{
-						MainSingleton::GetComponentRegistry()->InspectComponentProperties(componentHashCode, componentPointer);
-					}
-
-					if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(id)).c_str()))
-					{
-						if (ImGui::MenuItem("Remove Component"))
-						{
-							selectedEntity->RemoveComponentByTypeIndex(componentType);
-							ImGui::EndPopup();
-
-							if (isOpen)
-							{
-								ImGui::TreePop();
-							}
-
-							break;
-						}
-
-						ImGui::EndPopup();
-					}
-
-					if (isOpen)
-					{
-						ImGui::TreePop();
-					}
-
-					ImGui::Separator();
-				}
-
-				if (ImGui::Button("Add Component"))
-				{
-					ImGui::OpenPopup("Add Component");
-				}
-
-				if (ImGui::BeginPopup("Add Component"))
-				{
-					for (const auto& [hashCode, componentType] : MainSingleton::GetComponentRegistry()->myTypeErasureComponents)
-					{
-						if (ImGui::Selectable(componentType.myComponentName.c_str()))
-						{
-							componentType.AddComponentFunctionPointer(selectedEntity);
-						}
-					}
-
-					ImGui::EndPopup();
-				}
-			}
-		}
-
-		ImGui::End();
+		ShowInspector(activeECS, entities, selected);
 
 		if (MainSingleton::GetInputManager().IsKeyPressed(VK_DELETE))
 		{
@@ -160,18 +40,7 @@ namespace Editor
 			{
 				if (selected >= 0)
 				{
-					entities[selected]->DestroyThis();
-
-					if (selected >= static_cast<int>(count - 1))
-					{
-						selected--;
-					}
-
-					if (selected < 0 && entities.GetEntityCount() > 0)
-					{
-						selected = 0;
-					}
-
+					RemoveEntity(entities, selected);
 					return;
 				}
 			}
@@ -199,6 +68,75 @@ namespace Editor
 		}
 
 		ImGui::Separator();
+	}
+
+	void HierarchyWindow::ShowInspector(ECS::EntityComponentSystem& aActiveECS, ECS::Entities& aEntities, int& aSelected)
+	{
+		if (ImGui::Begin("Inspector"))
+		{
+			ECS::Entity selectedEntity = aEntities[aSelected];
+
+			if (selectedEntity == nullptr)
+			{
+				ImGui::End();
+				return;
+			}
+
+			std::string selectedEntityName = selectedEntity->GetName();
+
+			ImGui::PushItemWidth(200);
+
+			if (ImGui::InputTextWithHint("Name", "Entity Name", &selectedEntityName[0], selectedEntityName.capacity() + 1))
+			{
+				if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
+				{
+					selectedEntity->SetName(selectedEntityName);
+				}
+			}
+
+			ImGui::PopItemWidth();
+
+			ImGui::SameLine(ImGui::GetWindowWidth() - 70);
+			ImGui::Text(std::string("ID: " + std::to_string(selectedEntity->GetID())).c_str());
+			ImGui::Separator();
+
+			if (aEntities.GetEntityCount() > 0)
+			{
+				ShowComponents(selectedEntity, aActiveECS);
+
+				if (ImGui::Button("Add Component"))
+				{
+					ImGui::OpenPopup("Add Component");
+				}
+
+				if (ImGui::BeginPopup("Add Component"))
+				{
+					for (const auto& [hashCode, componentType] : MainSingleton::GetComponentRegistry()->myTypeErasureComponents)
+					{
+						if (ImGui::Selectable(componentType.myComponentName.c_str()))
+						{
+							componentType.AddComponentFunctionPointer(selectedEntity);
+						}
+					}
+
+					ImGui::EndPopup();
+				}
+			}
+		}
+
+		ImGui::End();
+	}
+
+	void HierarchyWindow::ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, ECS::Entities& aEntities, int& aSelected)
+	{
+		if (ImGui::Begin("Hierarchy"))
+		{
+			ShowAddPopUps(aActiveECS, aEntities, aSelected);
+			ShowActiveSceneName();
+			ShowSceneEntities(aEntities, aSelected);
+		}
+
+		ImGui::End();
 	}
 
 	void HierarchyWindow::ShowSceneEntities(ECS::Entities& aEntities, int& aSelected)
@@ -234,18 +172,7 @@ namespace Editor
 					{
 						if (ImGui::MenuItem("Remove##SceneHierachy"))
 						{
-							aEntities[aSelected]->DestroyThis();
-
-							if (aSelected >= static_cast<int>(aEntities.GetEntityCount() - 1))
-							{
-								aSelected--;
-							}
-
-							if (aSelected < 0 && aEntities.GetEntityCount() > 0)
-							{
-								aSelected = 0;
-							}
-
+							RemoveEntity(aEntities, aSelected);
 							ImGui::EndPopup();
 							break;
 						}
@@ -305,6 +232,86 @@ namespace Editor
 			}
 
 			ImGui::EndPopup();
+		}
+	}
+
+	void HierarchyWindow::ShowComponents(ECS::Entity aSelectedEntity, ECS::EntityComponentSystem& aActiveECS)
+	{
+		const ECS::EntityID entityID = aSelectedEntity->GetID();
+		const std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = aSelectedEntity->GetComponentMap();
+
+		for (const auto& [componentType, componentID] : componentMap)
+		{
+			ImGui::AlignTextToFramePadding();
+
+			const size_t componentHashCode = componentType.hash_code();
+
+			if (MainSingleton::GetComponentRegistry()->myTypeErasureComponents.contains(componentHashCode) == false)
+			{
+				continue;
+			}
+
+			const std::string& componentName = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentName;
+			void* componentPointer = aActiveECS.GetComponentPointerByComponentID(componentID);
+
+			const bool isOpen = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
+
+			ImGui::SameLine(ImGui::GetWindowWidth() - 50);
+
+			if (ImGui::Button("..."))
+			{
+				ImGui::OpenPopup(std::string("ElementList" + std::to_string(entityID)).c_str());
+			}
+
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("More Options");
+			}
+
+			if (isOpen)
+			{
+				MainSingleton::GetComponentRegistry()->InspectComponentProperties(componentHashCode, componentPointer);
+			}
+
+			if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(entityID)).c_str()))
+			{
+				if (ImGui::MenuItem("Remove Component"))
+				{
+					aSelectedEntity->RemoveComponentByTypeIndex(componentType);
+					ImGui::EndPopup();
+
+					if (isOpen)
+					{
+						ImGui::TreePop();
+					}
+
+					break;
+				}
+
+				ImGui::EndPopup();
+			}
+
+			if (isOpen)
+			{
+				ImGui::TreePop();
+			}
+
+			ImGui::Separator();
+		}
+	}
+
+	void HierarchyWindow::RemoveEntity(ECS::Entities& aEntities, int& aSelected)
+	{
+		aEntities[aSelected]->DestroyThis();
+
+		if (aSelected >= static_cast<int>(aEntities.GetEntityCount() - 1))
+		{
+			aSelected--;
+		}
+
+		if (aSelected < 0 && aEntities.GetEntityCount() > 0)
+		{
+			aSelected = 0;
 		}
 	}
 }
