@@ -20,7 +20,9 @@ namespace Simple
 		static void SetLightStyle();
 	private:
 		void LoadFronts();
-
+		void LoadColors();
+		void LoadStyle();
+		void ShowFAIcons();
 	private:
 		static ImGuiStyle myStyle;
 		static ImVec4 myColors;
