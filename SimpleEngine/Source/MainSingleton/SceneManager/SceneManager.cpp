@@ -57,6 +57,16 @@ namespace Simpleton
 		myCurrentScene = aSceneName;
 	}
 
+	void SceneManager::CreateNewScene(const std::string& aFilePath)
+	{		
+		std::ofstream writeFile(aFilePath);
+		assert(writeFile.is_open() && "Failed to open the file");
+
+		nlohmann::json json;
+		writeFile << json.dump(-1);
+		writeFile.close();
+	}
+
 	const std::string& SceneManager::GetCurrentScenePath() const
 	{
 		return myCurrentScene;

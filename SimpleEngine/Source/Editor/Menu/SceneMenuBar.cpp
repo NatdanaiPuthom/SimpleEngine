@@ -41,13 +41,16 @@ namespace Editor
 					ShowSceneList();
 					ImGui::EndMenu();
 				}
-
-				ImGui::BeginDisabled();
+				
 				if (ImGui::MenuItem("Create"))
 				{
-			
+					Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
+
+					const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SimpleUtilities::AppendCounterIfAlreadyExist("Assets\\Scenes\\NewScene.scene"));
+					const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(absolutePath);
+					sceneManager.CreateNewScene(absolutePath);
+					sceneManager.ChangeScene(relativePath);
 				}
-				ImGui::EndDisabled();
 
 				ImGui::EndMenu();
 			}

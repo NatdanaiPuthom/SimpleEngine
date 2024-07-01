@@ -18,6 +18,7 @@ namespace Simpleton
 		void LateRender();
 
 		void ChangeScene(const std::string& aSceneName);
+		void CreateNewScene(const std::string& aFilePath);
 
 		const std::string& GetCurrentScenePath() const;
 		ECS::EntityComponentSystem& GetCurrentECS();
