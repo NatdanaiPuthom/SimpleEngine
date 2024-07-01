@@ -186,8 +186,22 @@ namespace Editor
 	void HierarchyWindow::ShowActiveSceneName()
 	{
 		ImGui::Separator();
+
 		const std::string activeSceneName = SimpleUtilities::ConvertFilePathToPrettyName(MainSingleton::GetSceneManager().GetCurrentScenePath());
-		ImGui::Text(activeSceneName.c_str());
+		std::string sceneNameInput = activeSceneName;
+
+		if (ImGui::InputTextWithHint("##SceneNameHierachy", "Name", &sceneNameInput[0], sceneNameInput.capacity() + 1))
+		{
+			/*if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
+			{
+				if (std::rename(SimpleUtilities::GetAbsolutePath(std::string(SIMPLE_DIR_SCENES) + "\\" + activeSceneName).c_str(), SimpleUtilities::GetAbsolutePath(std::string(SIMPLE_DIR_SCENES) + "\\" + sceneNameInput).c_str()) != 0)
+				{
+					assert(false && "Failed to rename the scene");
+					return;
+				}
+			}*/
+		}
+
 		ImGui::Separator();
 	}
 
