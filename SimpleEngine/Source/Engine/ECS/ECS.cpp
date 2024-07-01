@@ -95,7 +95,6 @@ namespace ECS
 
 				const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(componentType.name());
 				jsonData["Entities"][i]["Components"][count]["Name"] = componentName;
-				jsonData["Entities"][i]["Components"][count]["ComponentHash"] = componentType.hash_code();
 
 				for (const ECS::ComponentProperty& componentProperty : componentProperties)
 				{
@@ -154,11 +153,13 @@ namespace ECS
 				continue;
 			}
 
+			ECS::ComponentRegistry* componentRegistry = MainSingleton::GetComponentRegistry();
+
 			for (const auto& componentDataJSON : entityData["Components"])
 			{
-				const size_t componentHashCode = componentDataJSON["ComponentHash"];
-				const std::vector<ComponentProperty>& componentProperties = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentProperties;
-				const ComponentID componentID = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].AddComponentFunctionPointer(entity);
+				const size_t componentHashCode = componentRegistry->myComponentNameToHashCode[componentDataJSON["Name"]];
+				const std::vector<ComponentProperty>& componentProperties = componentRegistry->myTypeErasureComponents[componentHashCode].myComponentProperties;
+				const ComponentID componentID = componentRegistry->myTypeErasureComponents[componentHashCode].AddComponentFunctionPointer(entity);
 				const auto& componentPropertiesJSON = componentDataJSON["Properties"];
 				const size_t propertySize = componentPropertiesJSON.size();
 
@@ -173,7 +174,7 @@ namespace ECS
 				for (size_t i = 0; i < propertySize; ++i)
 				{
 					const ComponentProperty& property = componentProperties[i];
-					const TypeErasureObject& typeErasedData = MainSingleton::GetComponentRegistry()->myTypeErasureDataTypes[property.id];
+					const TypeErasureObject& typeErasedData = componentRegistry->myTypeErasureDataTypes[property.id];
 					void* propertyPointer = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + property.byteOffset));
 
 					if (const auto& loadDataFromJSONFunction = typeErasedData.LoadDataFromJSON)

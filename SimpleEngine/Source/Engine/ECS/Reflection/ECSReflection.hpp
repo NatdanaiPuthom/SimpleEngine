@@ -64,14 +64,18 @@ namespace ECS
 
 	class ComponentRegistry final
 	{
+		using ComponentHashCode = size_t;
+		using ComponentName = std::string;
+
 		friend class MainSingleton;
 		friend class __RegisterProperty;
 		template<typename T> friend class __RegisterComponent;
 		template<typename T> friend class __RegisterDataType;
 
 	public:
-		std::unordered_map<size_t, TypeErasureObject> myTypeErasureComponents;
-		std::unordered_map<size_t, TypeErasureObject> myTypeErasureDataTypes;
+		std::unordered_map<ComponentHashCode, TypeErasureObject> myTypeErasureComponents;
+		std::unordered_map<ComponentHashCode, TypeErasureObject> myTypeErasureDataTypes;
+		std::unordered_map<ComponentName, ComponentHashCode> myComponentNameToHashCode;
 		std::unordered_map<std::type_index, void(*)(void*)> myTypeErasureComponentDestructorInvoker;
 	public:
 		void InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "");
@@ -105,19 +109,20 @@ namespace ECS
 		~ComponentRegistry();
 	private:
 		inline static ComponentRegistry* myPtr = nullptr;
-		const int myPaddings[4];
 	};
 
 	template<typename T>
 	inline void ComponentRegistry::RegisterComponentType()
 	{
-		const bool alreadyExistOrHashCollision = myTypeErasureComponents.contains(typeid(T).hash_code());
+		const ComponentHashCode hashCode = typeid(T).hash_code();
+		const bool alreadyExistOrHashCollision = myTypeErasureComponents.contains(hashCode);
 
 		if (alreadyExistOrHashCollision == true)
 		{
 			assert(false && "Component already exist or has hash collision!");
 			return;
 		}
+
 
 		TypeErasureObject typeErasureComponent;
 
@@ -137,12 +142,14 @@ namespace ECS
 				};
 		}
 
-		myTypeErasureComponents[typeid(T).hash_code()] = typeErasureComponent;
+		myTypeErasureComponents[hashCode] = typeErasureComponent;
 
 		myTypeErasureComponentDestructorInvoker[typeid(T)] = [](void* aPointer) -> void
 			{
 				static_cast<T*>(aPointer)->~T();
 			};
+
+		myComponentNameToHashCode[typeErasureComponent.myComponentName] = hashCode;
 	}
 
 	template<typename T>
