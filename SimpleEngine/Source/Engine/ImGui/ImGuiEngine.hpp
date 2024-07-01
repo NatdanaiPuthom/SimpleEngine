@@ -19,6 +19,9 @@ namespace Simple
 		static void SetDarkStyle();
 		static void SetLightStyle();
 	private:
+		void LoadFronts();
+
+	private:
 		static ImGuiStyle myStyle;
 		static ImVec4 myColors;
 	};

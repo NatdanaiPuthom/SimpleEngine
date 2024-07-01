@@ -1,9 +1,9 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ImGui/ImGuiEngine.hpp"
-
-#include <External/dearimgui/imgui/imgui_impl_dx11.h>
-#include <External/dearimgui/imgui/imgui_impl_win32.h>
-#include <External/dearimgui/imnodes/imnodes.h>
+#include "Engine/ImGui/IconFontDefines.h"
+#include "External/dearimgui/imgui/imgui_impl_dx11.h"
+#include "External/dearimgui/imgui/imgui_impl_win32.h"
+#include "External/dearimgui/imnodes/imnodes.h"
 #include <shellapi.h>
 
 namespace Simple
@@ -92,6 +92,8 @@ namespace Simple
 
 		myStyle = style;
 		myColors = *colors;
+
+		LoadFronts();
 	}
 
 	void ImGuiEngine::BeginFrame()
@@ -137,5 +139,20 @@ namespace Simple
 	void ImGuiEngine::SetLightStyle()
 	{
 		ImGui::StyleColorsLight();
+	}
+
+	void ImGuiEngine::LoadFronts()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.Fonts->AddFontDefault();
+
+		constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+
+		ImFontConfig icons_config;
+		icons_config.MergeMode = true;
+		icons_config.PixelSnapH = true;
+
+		io.Fonts->AddFontFromFileTTF(SimpleUtilities::GetAbsolutePath("Assets\\Fonts\\fa-solid-900.ttf").c_str(), 11.0f, &icons_config, icons_ranges);
+		io.Fonts->Build();
 	}
 }
