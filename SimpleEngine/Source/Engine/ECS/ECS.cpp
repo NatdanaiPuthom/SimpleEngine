@@ -6,6 +6,8 @@
 #include "External/nlohmann/json.hpp"
 #include <fstream>
 
+#include "Engine/ECS/Systems/TestSystem.hpp"
+
 namespace ECS
 {
 	EntityComponentSystem::EntityComponentSystem()
@@ -22,6 +24,9 @@ namespace ECS
 	{
 		constexpr size_t entitiesToReserve = 16; //NOTE(v9.30.10):Small number for experimental purposes for now
 		myEntityManager.Init(entitiesToReserve);
+
+		mySystemManager.AddSystem<TestSystem>(this);
+
 		mySystemManager.Init();
 	}
 
