@@ -49,6 +49,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		'SIMPLE_DIR_NAVMESH="' .. "Assets/Navmesh/" .. '"',
 		'SIMPLE_DIR_AUDIO="' .. "Assets/Audio/" .. '"',
 		'SIMPLE_DIR_MODELS="' .. "Assets/Models/" .. '"',
+		'SIMPLE_DIR_SCENES="' .. "Assets\\\\Scenes" .. '"',
 
 		'SIMPLE_SETTINGS_IMGUI="' .."Settings/imgui.ini" .. '"',
 		'SIMPLE_SETTINGS_GAME="' .. "Settings/game_settings.json" .. '"',

@@ -34,11 +34,6 @@ namespace Simpleton
 	void SceneManager::Update()
 	{
 		myECSs[myCurrentScene].Update();
-
-		if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
-		{
-			ChangeScene("Assets\\Scenes\\Test_Scene.scene");
-		}
 	}
 
 	void SceneManager::Render()

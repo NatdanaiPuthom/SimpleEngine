@@ -14,5 +14,6 @@ namespace Editor
 		void Draw() override;
 	private:
 		void SaveActiveScene();
+		void ShowSceneList();
 	};
 }

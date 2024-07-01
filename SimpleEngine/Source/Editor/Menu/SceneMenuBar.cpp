@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/SceneMenuBar.hpp"
+#include "Editor/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
@@ -35,12 +36,11 @@ namespace Editor
 					SaveActiveScene();
 				}
 
-				ImGui::BeginDisabled();
-				if (ImGui::MenuItem("Load"))
+				if (ImGui::BeginMenu("Load##SceneMenuItem"))
 				{
-					
+					ShowSceneList();
+					ImGui::EndMenu();
 				}
-				ImGui::EndDisabled();
 
 				ImGui::EndMenu();
 			}
@@ -57,5 +57,20 @@ namespace Editor
 	{
 		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
 		ECS::EntityComponentSystem::SaveData(ecs, MainSingleton::GetSceneManager().GetCurrentScenePath());
+	}
+
+	void SceneMenuBar::ShowSceneList()
+	{
+		const std::vector<std::string> sceneNames = FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
+
+		for (const auto& name : sceneNames)
+		{
+			if (ImGui::Selectable(name.c_str()))
+			{
+				const std::string scenePath = "Assets\\Scenes\\" + name;
+				MainSingleton::GetSceneManager().ChangeScene(scenePath);
+				break;
+			}
+		}
 	}
 }
