@@ -34,4 +34,40 @@ namespace Simple
 		SetConsoleTitle(L"Simple, it's just that easy");
 #pragma warning( pop )
 	}
+
+	void Console::Print(const char* aText, const ConsoleTextColor aColor, const bool aShouldEndline)
+	{
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		CONSOLE_SCREEN_BUFFER_INFO defaultInfo;
+		GetConsoleScreenBufferInfo(hConsole, &defaultInfo);
+		const WORD defaultAttributes = defaultInfo.wAttributes;
+
+		switch (aColor)
+		{
+		case ConsoleTextColor::Red:
+			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
+			break;
+		case ConsoleTextColor::Green:
+			SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			break;
+		case ConsoleTextColor::Blue:
+			SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			break;
+		case ConsoleTextColor::White:
+			SetConsoleTextAttribute(hConsole, defaultAttributes);
+			break;
+		default:
+			SetConsoleTextAttribute(hConsole, defaultAttributes);
+			break;
+		}
+
+		std::cout << aText;
+
+		if (aShouldEndline)
+		{
+			std::cout << std::endl;
+		}
+
+		SetConsoleTextAttribute(hConsole, defaultAttributes);
+	}
 }

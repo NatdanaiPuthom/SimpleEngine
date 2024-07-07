@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/FileManager/FileManager.hpp"
+#include "Engine/Console/Console.hpp"
 #include "Graphics/Defines.hpp"
 #include "External/imgui.h"
 #include "MainSingleton/MainSingleton.hpp"
@@ -22,25 +23,19 @@ namespace Editor
 				const std::string name = GetFileName(filePath);
 				const std::string destinationPath = myStaticCurrentDirectory + "\\" + name;
 
-				if (CopyFileA(filePath, destinationPath.c_str(), FALSE))
+				if (CopyFileA(filePath, destinationPath.c_str(), TRUE))
 				{
-					HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-					CONSOLE_SCREEN_BUFFER_INFO defaultInfo;
-					GetConsoleScreenBufferInfo(hConsole, &defaultInfo);
-					WORD defaultAttributes = defaultInfo.wAttributes;
-
-					std::cout << "File: ";
-
-					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-					std::cout << name;
-
-					SetConsoleTextAttribute(hConsole, defaultAttributes);
-					std::cout << " has been copied to ";
-
-					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-					std::cout << myStaticCurrentDirectory << std::endl;
-
-					SetConsoleTextAttribute(hConsole, defaultAttributes);
+					Simple::Console::Print("File ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(name.c_str(), Simple::ConsoleTextColor::Green, false);
+					Simple::Console::Print(" has been copied to ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(myStaticCurrentDirectory.c_str(), Simple::ConsoleTextColor::Green, true);
+				}
+				else
+				{
+					Simple::Console::Print("File ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(name.c_str(), Simple::ConsoleTextColor::Red, false);
+					Simple::Console::Print(" already exist at ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(myStaticCurrentDirectory.c_str(), Simple::ConsoleTextColor::Red, true);
 				}
 			}
 		}

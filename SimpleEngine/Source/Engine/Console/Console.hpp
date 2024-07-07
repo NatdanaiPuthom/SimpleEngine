@@ -5,6 +5,14 @@
 
 namespace Simple
 {
+	enum class ConsoleTextColor
+	{
+		White,
+		Red,
+		Green,
+		Blue
+	};
+
 	class Console final
 	{
 	public:
@@ -20,5 +28,7 @@ namespace Simple
 		// Default move constructor and move assignment operator
 		Console(Console&&) = delete;
 		Console& operator=(Console&&) = delete;
+
+		static void Print(const char* aText, const ConsoleTextColor aColor, const bool aShouldEndline = true);
 	};
 }

@@ -129,11 +129,8 @@ namespace Simple
 
 		for (const std::string& name : forceDependenciesSettingsFileNames)
 		{
-			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_FORCE) + name;
-			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS) + name;
-			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
-
-			std::cout << "Force Copied: " << name << std::endl;
+			const std::string text = "Force copied: " + name;
+			Console::Print(text.c_str(), ConsoleTextColor::Green);
 		}
 	}
 
