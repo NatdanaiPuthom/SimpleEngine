@@ -124,7 +124,8 @@ namespace Simple
 			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS) + name;
 			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
 
-			std::cout << "Copied: " << name << std::endl;
+			Console::Print("Copied: ", ConsoleTextColor::White, false);
+			Console::Print(name.c_str(), ConsoleTextColor::Green, true);
 		}
 
 		for (const std::string& name : forceDependenciesSettingsFileNames)
