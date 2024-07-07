@@ -21,5 +21,7 @@ namespace Editor
 		void ShowComponents(ECS::Entity aSelectedEntity, ECS::EntityComponentSystem& aActiveECS);
 
 		void RemoveEntity(ECS::Entities& aEntities, int& aSelected);
+	private:
+		bool myShowAdvanced;
 	};
 }

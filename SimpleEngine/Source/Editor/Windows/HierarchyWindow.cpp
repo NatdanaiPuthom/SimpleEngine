@@ -7,6 +7,7 @@
 namespace Editor
 {
 	HierarchyWindow::HierarchyWindow()
+		: myShowAdvanced(false)
 	{
 	}
 
@@ -98,6 +99,7 @@ namespace Editor
 
 			ImGui::SameLine(ImGui::GetWindowWidth() - 70);
 			ImGui::Text(std::string("ID: " + std::to_string(selectedEntity->GetID())).c_str());
+			ImGui::Checkbox("Show Advanced", &myShowAdvanced);
 			ImGui::Separator();
 
 			if (aEntities.GetEntityCount() > 0)
@@ -252,9 +254,16 @@ namespace Editor
 			}
 
 			const std::string& componentName = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentName;
+			const std::string componentIDAsText = "ID:" + std::to_string(componentID);
 			void* componentPointer = aActiveECS.GetComponentPointerByComponentID(componentID);
 
 			const bool isOpen = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
+
+			if (myShowAdvanced)
+			{
+				ImGui::SameLine();
+				ImGui::Text(componentIDAsText.c_str());
+			}
 
 			ImGui::SameLine(ImGui::GetWindowWidth() - 50);
 
