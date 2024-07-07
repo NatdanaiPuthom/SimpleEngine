@@ -40,8 +40,8 @@ namespace Editor
 		}
 
 		ImGui::SameLine();
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.60f, 0.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.60f, 0.0f, 1.0f));
 		const std::string y = "Y##" + std::string(aLabel);
 		const char* yy = y.c_str();
 		ImGui::Button(yy);
