@@ -10,6 +10,9 @@ namespace Editor
 	bool FileManager::myStaticHasDragDropBegin = false;
 	std::string FileManager::myStaticCurrentDirectory = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS);
 
+	std::string localFilePopUpID;
+	std::string localFileToRemove;
+
 	void FileManager::DropFiles(HDROP aHDROP)
 	{
 		char filePath[MAX_PATH]{};
@@ -188,17 +191,26 @@ namespace Editor
 				ImGui::EndDragDropSource();
 			}
 
-			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			if (ImGui::IsItemHovered())
 			{
-				if (extension[0] != '.')
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 				{
-					myStaticCurrentDirectory = aDirectory + "\\" + fileNames[i];
-					break;
+					if (extension[0] != '.')
+					{
+						myStaticCurrentDirectory = aDirectory + "\\" + fileNames[i];
+						break;
+					}
+					else if (textureID == sceneIcon)
+					{
+						const std::string scenePath = "Assets\\Scenes\\" + fileNames[i]; //TO-DO(v11.2.3): Fix so it doesnt become hardcoded
+						MainSingleton::GetSceneManager().ChangeScene(scenePath);
+					}
 				}
-				else if (textureID == sceneIcon)
+				else if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) &&  extension[0] == '.')
 				{
-					const std::string scenePath = "Assets\\Scenes\\" + fileNames[i]; //TO-DO(v11.2.3): Fix so it doesnt become hardcoded
-					MainSingleton::GetSceneManager().ChangeScene(scenePath);
+					localFilePopUpID = "Delete##" + fileNames[i];
+					localFileToRemove = aDirectory + "\\" + fileNames[i];
+					ImGui::OpenPopup(localFilePopUpID.c_str());
 				}
 			}
 
@@ -209,6 +221,21 @@ namespace Editor
 		ImGui::Columns();
 
 		ImGui::PopStyleColor();
+
+
+		if (ImGui::BeginPopup(localFilePopUpID.c_str()))
+		{
+			if (ImGui::MenuItem("Delete##FileManagerPopUp"))
+			{
+				if (std::remove(localFileToRemove.c_str()) == 0)
+				{
+					Simple::Console::Print("Removed ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(localFileToRemove.c_str(), Simple::ConsoleTextColor::Green, true);
+				}
+			}
+
+			ImGui::EndPopup();
+		}
 	}
 
 	const std::string FileManager::GetFileExtension(const std::string& aFilePath)

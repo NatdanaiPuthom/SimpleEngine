@@ -111,8 +111,6 @@ namespace Editor
 
 	void MainMenuBar::Draw()
 	{
-		DrawTools();
-
 		if (myEditorWindowActive == true)
 		{
 			if (ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize))
@@ -123,6 +121,8 @@ namespace Editor
 			}
 			ImGui::End();
 		}
+
+		DrawTools();
 	}
 
 	void MainMenuBar::MenuItemFullScreen()

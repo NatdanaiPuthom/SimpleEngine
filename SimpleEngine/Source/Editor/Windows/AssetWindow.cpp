@@ -57,7 +57,6 @@ namespace Editor
 
 				ImGui::EndChild();
 			}
-
 		}
 
 		ImGui::End();
@@ -65,6 +64,5 @@ namespace Editor
 
 	void AssetWindow::Draw()
 	{
-		
 	}
 }
