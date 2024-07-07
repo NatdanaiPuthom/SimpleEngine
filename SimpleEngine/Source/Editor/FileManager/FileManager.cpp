@@ -113,8 +113,6 @@ namespace Editor
 		ImGui::Columns(columnCount, 0, false);
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor(1.0f, 0.0f, 1.0f, 1.0f).Value);
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImColor(1.0f, 0.8f, 0.0f, 1.0f).Value);
 
 		for (size_t i = 0; i < fileNames.size(); ++i)
 		{
@@ -215,8 +213,6 @@ namespace Editor
 
 		ImGui::Columns();
 
-		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();
 	}
 
