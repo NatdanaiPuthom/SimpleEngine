@@ -12,6 +12,80 @@
 #include "NodeScript/SimpleScript/Core/ScriptFoundation.h"
 #include "External/imgui.h"
 
+namespace Editor
+{
+	static bool CustomDragFloat3(const char* aLabel, Math::Vector3f& aVector3)
+	{
+		bool edited = false;
+
+		const float width = ImGui::GetContentRegionAvail().x / 5.0f;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, (ImVec2(0, 0)));
+	
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+		const std::string x = "X##" + std::string(aLabel);
+		const char* xx = x.c_str();
+		ImGui::Button(xx);
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(width);
+		const std::string floatX = "##X" + std::string(aLabel);
+		const char* floatXX = floatX.c_str();
+		if (ImGui::DragFloat(floatXX, &aVector3.x, 0.1f))
+		{
+			edited = true;
+		}
+
+		ImGui::SameLine();
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+		const std::string y = "Y##" + std::string(aLabel);
+		const char* yy = y.c_str();
+		ImGui::Button(yy);
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(width);
+		const std::string floatY = "##Y" + std::string(aLabel);
+		const char* floatYY = floatY.c_str();
+		if (ImGui::DragFloat(floatYY, &aVector3.y, 0.1f))
+		{
+			edited = true;
+		}
+
+		ImGui::SameLine();
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+		const std::string z = "Z##" + std::string(aLabel);
+		const char* zz = z.c_str();
+		ImGui::Button(zz);
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(width);
+		const std::string floatZ = "##Z" + std::string(aLabel);
+		const char* floatZZ = floatZ.c_str();
+		if (ImGui::DragFloat(floatZZ, &aVector3.z, 0.1f))
+		{
+			edited = true;
+		}
+		ImGui::PopStyleVar();
+
+		ImGui::SameLine();
+		const std::string label = std::string(aLabel) + "CustomDragFloat3";
+		ImGui::PushID(label.c_str());
+		ImGui::Text(aLabel);
+		ImGui::PopID();
+
+		return edited;
+	}
+}
+
 namespace ECS
 {
 	static std::string ExtractStringFromImGuiIDFullName(const std::string& aString)
@@ -98,21 +172,21 @@ namespace ECS
 		bool edited = false;
 
 		Math::Vector3f position = aValue.GetPosition();
-		if (ImGui::DragFloat3("Position##Transform", &position.x, 0.1f))
+		if (Editor::CustomDragFloat3("Position", position))
 		{
 			edited = true;
 			aValue.SetPosition(position);
 		}
 
 		Math::Vector3f rotation = aValue.GetRotation();
-		if (ImGui::DragFloat3("Rotation##Transform", &rotation.x, 1.0f))
+		if (Editor::CustomDragFloat3("Rotation", rotation))
 		{
 			edited = true;
 			aValue.SetRotation(rotation);
 		}
 
 		Math::Vector3f scale = aValue.GetScale();
-		if (ImGui::DragFloat3("Scale##Transform", &scale.x, 0.01f, 0.001f))
+		if (Editor::CustomDragFloat3("Scale", scale))
 		{
 			if (scale.x < 0.001f)
 			{
