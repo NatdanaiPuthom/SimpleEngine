@@ -41,11 +41,17 @@ namespace Editor
 					ShowSceneList();
 					ImGui::EndMenu();
 				}
-				
+
 				if (ImGui::MenuItem("Create##SceneMenuItem"))
 				{
 					CreateNewScene();
 				}
+
+				if (ImGui::MenuItem("Reload##SceneMenuItem"))
+				{
+					ReloadScene();
+				}
+				ShowReloadTooltips();
 
 				ImGui::EndMenu();
 			}
@@ -87,5 +93,34 @@ namespace Editor
 		const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(absolutePath);
 		sceneManager.CreateNewScene(absolutePath);
 		sceneManager.ChangeScene(relativePath);
+	}
+
+	void SceneMenuBar::ReloadScene()
+	{
+		Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
+		sceneManager.ReloadSceneFromFile(sceneManager.GetCurrentSceneInfo()->relativePath);
+	}
+
+	void SceneMenuBar::ShowReloadTooltips()
+	{
+		static float timer = 0.0f;
+
+		if (ImGui::IsItemHovered())
+		{
+			timer += Global::GetDeltaTime();
+
+			if (timer > 0.33f)
+			{
+				if (ImGui::BeginTooltip())
+				{
+					ImGui::Text("Reset and reload current scene");
+					ImGui::EndTooltip();
+				}
+			}
+		}
+		else
+		{
+			timer = 0.0f;
+		}
 	}
 }

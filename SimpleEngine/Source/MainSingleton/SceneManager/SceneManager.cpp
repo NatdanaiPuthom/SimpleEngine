@@ -96,6 +96,15 @@ namespace Simpleton
 		writeFile.close();
 	}
 
+	void SceneManager::ReloadSceneFromFile(const std::string& aSceneName)
+	{
+		if (mySceneInfos.contains(aSceneName))
+		{
+			myECSs.erase(mySceneInfos[aSceneName].id);
+			LoadAndInitScene(aSceneName);
+		}
+	}
+
 	const SceneInfo* SceneManager::GetCurrentSceneInfo() const
 	{
 		return myCurrentSceneInfo;
@@ -138,17 +147,8 @@ namespace Simpleton
 		ChangeScene(aDefaultScenePath);
 	}
 
-	bool SceneManager::AddScene(const std::string& aSceneName)
+	bool SceneManager::LoadAndInitScene(const std::string& aSceneName)
 	{
-		SceneInfo sceneInfo;
-
-		sceneInfo.id = myNextSceneID++;
-		sceneInfo.name = SimpleUtilities::ConvertFilePathToPrettyName(aSceneName, false);
-		sceneInfo.relativePath = aSceneName;
-		sceneInfo.absolutePath = SimpleUtilities::GetAbsolutePath(aSceneName);
-
-		mySceneInfos[aSceneName] = sceneInfo;
-
 		const bool success = myECSs.try_emplace(mySceneInfos[aSceneName].id).second;
 
 		if (success)
@@ -168,6 +168,20 @@ namespace Simpleton
 		}
 
 		return success;
+	}
+
+	bool SceneManager::AddScene(const std::string& aSceneName)
+	{
+		SceneInfo sceneInfo;
+
+		sceneInfo.id = myNextSceneID++;
+		sceneInfo.name = SimpleUtilities::ConvertFilePathToPrettyName(aSceneName, false);
+		sceneInfo.relativePath = aSceneName;
+		sceneInfo.absolutePath = SimpleUtilities::GetAbsolutePath(aSceneName);
+
+		mySceneInfos[aSceneName] = sceneInfo;
+
+		return LoadAndInitScene(aSceneName);
 	}
 
 	void SceneManager::TogglePlay()

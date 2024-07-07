@@ -34,6 +34,8 @@ namespace Simpleton
 		void ChangeSceneName(const std::string& aNewSceneName);
 		void CreateNewScene(const std::string& aFilePath);
 
+		void ReloadSceneFromFile(const std::string& aSceneName);
+
 		const SceneInfo* GetCurrentSceneInfo() const;
 		ECS::EntityComponentSystem& GetCurrentECS();
 
@@ -44,6 +46,7 @@ namespace Simpleton
 	private:
 		void LoadSettingsFromJson();
 		void LoadDefaultScene(const std::string& aDefaultScenePath);
+		bool LoadAndInitScene(const std::string& aSceneName);
 	private:
 		static SceneManager& GetInstance()
 		{
