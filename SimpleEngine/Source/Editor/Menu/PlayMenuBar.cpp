@@ -25,13 +25,11 @@ namespace Editor
 
 			Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
 
-			if (sceneManager.GetIsPlaying() == true)
+			const bool isPlaying = sceneManager.GetIsPlaying();
+			if (isPlaying == true)
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, ImColor(1.0f, 0.0f, 0.0f, 1.0f).Value);
-			}
-			else
-			{
-				ImGui::PushStyleColor(ImGuiCol_Button, ImColor(0.0f, 0.0f, 1.0f, 1.0f).Value);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor(0.6f, 0.0f, 0.0f, 1.0f).Value);
 			}
 
 			if (ImGui::Button(ICON_FA_PLAY))
@@ -39,16 +37,18 @@ namespace Editor
 				sceneManager.TogglePlay();
 			}
 
-			ImGui::PopStyleColor();
+			if (isPlaying == true)
+			{
+				ImGui::PopStyleColor();
+				ImGui::PopStyleColor();
+			}
 
-			ImGui::PushStyleColor(ImGuiCol_Button, ImColor(0.0f, 0.0f, 1.0f, 1.0f).Value);
 			ImGui::BeginDisabled();
 			if (ImGui::Button(ICON_FA_STOP))
 			{
 
 			}
 			ImGui::EndDisabled();
-			ImGui::PopStyleColor();
 
 			ImGui::EndMainMenuBar();
 		}

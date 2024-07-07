@@ -237,7 +237,7 @@ namespace Editor
 		}
 	}
 
-	void HierarchyWindow::ShowComponents(ECS::Entity aSelectedEntity, ECS::EntityComponentSystem& aActiveECS)
+	void HierarchyWindow::ShowComponents(ECS::Entity aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const
 	{
 		const ECS::EntityID entityID = aSelectedEntity->GetID();
 		const std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = aSelectedEntity->GetComponentMap();

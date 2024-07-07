@@ -18,7 +18,7 @@ namespace Editor
 		void ShowActiveSceneName();
 		void ShowSceneEntities(ECS::Entities& aEntities, int& aSelected);
 		void ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, ECS::Entities& aEntities, int& aSelected);
-		void ShowComponents(ECS::Entity aSelectedEntity, ECS::EntityComponentSystem& aActiveECS);
+		void ShowComponents(ECS::Entity aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const;
 
 		void RemoveEntity(ECS::Entities& aEntities, int& aSelected);
 	private:
