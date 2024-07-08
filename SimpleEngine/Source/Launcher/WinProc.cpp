@@ -18,7 +18,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_SETCURSOR:
-		::SetCursor(Global::GetCustomCursor());
+		::SetCursor(Global::GetCurrentCustomCursor());
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);

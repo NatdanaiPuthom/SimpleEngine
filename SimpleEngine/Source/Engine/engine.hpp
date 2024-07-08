@@ -23,12 +23,14 @@ namespace Simple
 
 	public:
 		void SetGlobalPointerToThis();
+		void SetCustomCursor(const std::string& aCursorName);
 	public:
 		HWND& GetEngineHWND();
-		const HCURSOR& GetCustomCursor();
+		const HCURSOR& GetCurrentCustomCursor();
 		const DWORD GetOriginalWindowStyle() const;
 		double GetTotalTime() const;
 		float GetDeltaTime() const;
+		const std::unordered_map<std::string, const HCURSOR>& GetLoadedCustomCursors() const;
 	private:
 		HWND SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
 		void LoadSettingsFromJson();

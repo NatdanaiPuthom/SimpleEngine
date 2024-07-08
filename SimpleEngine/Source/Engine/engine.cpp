@@ -21,11 +21,6 @@ namespace Simple
 	{
 	}
 
-	void Engine::SetGlobalPointerToThis()
-	{
-		Impl::SimpleGlobalEngine::SetEngine(this);
-	}
-
 	void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	{
 #ifndef _SIMPLE
@@ -50,6 +45,14 @@ namespace Simple
 		MainSingleton::GetInputManager().SetHWND(myHWND);
 
 		myOriginalWindowStyle = GetWindowLong(myHWND, GWL_STYLE);
+	}
+
+	void Engine::Update()
+	{
+		myTimer->Update();
+
+		MainSingleton::GetInputManager().Update();
+		MainSingleton::GetAudioManager().Update();
 	}
 
 	void Engine::LoadSettingsFromJson()
@@ -79,6 +82,9 @@ namespace Simple
 
 	void Engine::LoadCustomCursors()
 	{
+		myCustomCursors.emplace("DefaultCursor", LoadCursor(nullptr, IDC_ARROW));
+		assert(myCustomCursors["DefaultCursor"] && "Failed to load Custom Cursor");
+
 		const std::vector<std::string> absolutePaths = SimpleUtilities::FileManager::GetAbsoluteFilePathsFromDirectory(SimpleUtilities::CheckAndReturnAsAbsolutePath("Assets\\Cursors"));
 
 		for (const std::string& path : absolutePaths)
@@ -219,17 +225,27 @@ namespace Simple
 			nullptr);
 	}
 
-	void Engine::Update()
+	void Engine::SetGlobalPointerToThis()
 	{
-		myTimer->Update();
+		Impl::SimpleGlobalEngine::SetEngine(this);
+	}
 
-		MainSingleton::GetInputManager().Update();
-		MainSingleton::GetAudioManager().Update();
+	void Engine::SetCustomCursor(const std::string& aCursorName)
+	{
+		if (myCustomCursors.contains(aCursorName))
+		{
+			myCurrentCustomCursor = &myCustomCursors[aCursorName];
+		}
 	}
 
 	float Engine::GetDeltaTime() const
 	{
 		return myTimer->GetDeltaTime();
+	}
+
+	const std::unordered_map<std::string, const HCURSOR>& Engine::GetLoadedCustomCursors() const
+	{
+		return myCustomCursors;
 	}
 
 	double Engine::GetTotalTime() const
@@ -242,7 +258,7 @@ namespace Simple
 		return myHWND;
 	}
 
-	const HCURSOR& Engine::GetCustomCursor()
+	const HCURSOR& Engine::GetCurrentCustomCursor()
 	{
 		return *myCurrentCustomCursor;
 	}
