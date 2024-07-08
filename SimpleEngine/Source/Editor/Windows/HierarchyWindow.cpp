@@ -73,7 +73,7 @@ namespace Editor
 
 	void HierarchyWindow::ShowInspector(ECS::EntityComponentSystem& aActiveECS, ECS::Entities& aEntities, int& aSelected)
 	{
-		if (ImGui::Begin("Inspector"))
+		if (ImGui::Begin("Inspector##HierachyWindow"))
 		{
 			ECS::Entity selectedEntity = aEntities[aSelected];
 
