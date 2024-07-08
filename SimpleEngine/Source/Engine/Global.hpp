@@ -11,8 +11,8 @@ namespace Global
 	Drawer::Renderer* GetRenderer();
 
 	HWND& GetEngineHWND();
-	DWORD GetOriginalWindowStyle();
-	HCURSOR& GetCustomCursor();
+	const DWORD GetOriginalWindowStyle();
+	const HCURSOR& GetCustomCursor();
 
 	Math::Vector2ui GetResolution();
 	Math::Vector2ui GetWindowSize();

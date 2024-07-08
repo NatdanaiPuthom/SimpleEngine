@@ -11,7 +11,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 namespace Simple
 {
 	Engine::Engine()
-		: myCustomCursor(nullptr)
+		: myCurrentCustomCursor(nullptr)
 	{
 		myOriginalWindowStyle = {};
 		myHWND = {};
@@ -45,8 +45,7 @@ namespace Simple
 		ShowWindow(myHWND, nCmdShow);
 		UpdateWindow(myHWND);
 
-		myCustomCursor = LoadCursorFromFile(L"Assets/Cursors/White-Cat.cur");
-		assert(myCustomCursor && "Failed to load Custom Cursor");
+		LoadCustomCursors();
 
 		MainSingleton::GetInputManager().SetHWND(myHWND);
 
@@ -76,6 +75,23 @@ namespace Simple
 
 		Impl::SimpleGlobalEngine::SetResolution(resolution);
 		Impl::SimpleGlobalEngine::SetWindowSize(windowSize);
+	}
+
+	void Engine::LoadCustomCursors()
+	{
+		const std::vector<std::string> absolutePaths = SimpleUtilities::FileManager::GetAbsoluteFilePathsFromDirectory(SimpleUtilities::CheckAndReturnAsAbsolutePath("Assets\\Cursors"));
+
+		for (const std::string& path : absolutePaths)
+		{
+			const std::string name = SimpleUtilities::FileManager::GetFileName(path);
+			const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(path);
+			const std::wstring relativePathW = SimpleUtilities::ToWString(relativePath);
+
+			myCustomCursors.emplace(name, LoadCursorFromFile(relativePathW.c_str()));
+			assert(myCustomCursors[name] && "Failed to load Custom Cursor");
+		}
+
+		myCurrentCustomCursor = &myCustomCursors["White-Cat.cur"];
 	}
 
 	void Engine::CheckAndCopySettingsFiles()
@@ -226,12 +242,12 @@ namespace Simple
 		return myHWND;
 	}
 
-	HCURSOR& Engine::GetCustomCursor()
+	const HCURSOR& Engine::GetCustomCursor()
 	{
-		return myCustomCursor;
+		return *myCurrentCustomCursor;
 	}
 
-	DWORD Engine::GetOriginalWindowStyle() const
+	const DWORD Engine::GetOriginalWindowStyle() const
 	{
 		return myOriginalWindowStyle;
 	}

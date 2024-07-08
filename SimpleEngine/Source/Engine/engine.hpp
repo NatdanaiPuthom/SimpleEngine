@@ -2,6 +2,8 @@
 #include "Engine/Debugger/Console/Console.hpp"
 #include <Windows.h>
 #include <memory>
+#include <unordered_map>
+#include <string>
 
 namespace SimpleUtilities
 {
@@ -23,19 +25,22 @@ namespace Simple
 		void SetGlobalPointerToThis();
 	public:
 		HWND& GetEngineHWND();
-		HCURSOR& GetCustomCursor();
-		DWORD GetOriginalWindowStyle() const;
+		const HCURSOR& GetCustomCursor();
+		const DWORD GetOriginalWindowStyle() const;
 		double GetTotalTime() const;
 		float GetDeltaTime() const;
 	private:
 		HWND SetupMainWindow(HINSTANCE& hInstance, const int aWidth, const int aHeight);
 		void LoadSettingsFromJson();
+		void LoadCustomCursors();
 		void CheckAndCopySettingsFiles();
 	private:
-		HWND myHWND;
+		std::unordered_map<std::string, const HCURSOR> myCustomCursors;
+		const HCURSOR* myCurrentCustomCursor;
+
 		std::unique_ptr<SimpleUtilities::Timer> myTimer;
 
-		HCURSOR myCustomCursor;
+		HWND myHWND;
 		DWORD myOriginalWindowStyle;
 
 		Simple::Console myConsole;

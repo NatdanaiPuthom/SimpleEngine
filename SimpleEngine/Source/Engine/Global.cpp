@@ -111,12 +111,12 @@ namespace Global
 		return localEngine->GetEngineHWND();
 	}
 
-	DWORD GetOriginalWindowStyle()
+	const DWORD GetOriginalWindowStyle()
 	{
 		return localEngine->GetOriginalWindowStyle();
 	}
 
-	HCURSOR& GetCustomCursor()
+	const HCURSOR& GetCustomCursor()
 	{
 		return localEngine->GetCustomCursor();
 	}
