@@ -49,15 +49,8 @@ namespace Simpleton
 		float GetSFXVolume() const;
 
 	private:
-		static AudioManager& GetInstance()
-		{
-			static AudioManager myInstance;
-			return myInstance;
-		}
-
 		AudioManager();
 		~AudioManager();
-
 	private:
 		std::string myFilePathRoot;
 
