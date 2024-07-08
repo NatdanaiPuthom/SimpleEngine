@@ -32,10 +32,13 @@ namespace Editor
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor(0.6f, 0.0f, 0.0f, 1.0f).Value);
 			}
 
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10);
 			if (ImGui::Button(ICON_FA_PLAY))
 			{
 				sceneManager.TogglePlay();
 			}
+			ImGui::PopStyleVar();
 
 			if (isPlaying == true)
 			{
@@ -44,10 +47,12 @@ namespace Editor
 			}
 
 			ImGui::BeginDisabled();
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10);
 			if (ImGui::Button(ICON_FA_STOP))
 			{
 
 			}
+			ImGui::PopStyleVar();
 			ImGui::EndDisabled();
 
 			ImGui::EndMainMenuBar();
