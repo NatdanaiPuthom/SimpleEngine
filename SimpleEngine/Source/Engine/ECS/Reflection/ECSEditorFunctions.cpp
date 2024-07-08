@@ -1,10 +1,10 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Reflection/ECSEditorFunctions.hpp"
+#include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "Graphics/Defines.hpp"
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
-#include "Editor/FileManager/FileManager.hpp"
 #include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
 #include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.h"
 #include "NodeScript/SimpleScript/Core/Script.h"
@@ -232,7 +232,7 @@ namespace ECS
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
 			{
 				const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
-				const std::string extension = Editor::FileManager::GetFileExtension(payloadData);
+				const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
 
 				if (extension == ".fbx")
 				{
@@ -303,7 +303,7 @@ namespace ECS
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
 			{
 				const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
-				const std::string extension = Editor::FileManager::GetFileExtension(payloadData);
+				const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
 
 				if (extension == ".dds")
 				{
@@ -414,7 +414,7 @@ namespace ECS
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
 				{
 					const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
-					const std::string extension = Editor::FileManager::GetFileExtension(payloadData);
+					const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
 
 					if (extension == ".dds")
 					{

@@ -1,6 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/SceneMenuBar.hpp"
-#include "Editor/FileManager/FileManager.hpp"
+#include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
@@ -72,7 +72,7 @@ namespace Editor
 
 	void SceneMenuBar::ShowSceneList()
 	{
-		const std::vector<std::string> sceneNames = FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
+		const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
 
 		for (const auto& name : sceneNames)
 		{
