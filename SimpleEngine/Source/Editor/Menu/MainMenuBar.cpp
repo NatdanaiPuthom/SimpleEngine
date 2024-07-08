@@ -116,15 +116,16 @@ namespace Editor
 			if (ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize))
 			{
 				Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+				const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetCurrentRasterizerState();
+
 				ImTextureID textureID = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::PostProcessing).Get();
 
-				const Graphics::eRasterizerState currentRasterizerState =  graphicsEngine->GetCurrentRasterizerState();
 				if (currentRasterizerState != Graphics::eRasterizerState::BackfaceCulling
-					|| currentRasterizerState != Graphics::eRasterizerState::NoFaceCulling)
+					&& currentRasterizerState != Graphics::eRasterizerState::NoFaceCulling)
 				{
 					textureID = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::Deferred).Get();
 				}
-					
+
 				ImVec2 size = ImGui::GetContentRegionAvail();
 				ImGui::Image(textureID, size);
 			}
