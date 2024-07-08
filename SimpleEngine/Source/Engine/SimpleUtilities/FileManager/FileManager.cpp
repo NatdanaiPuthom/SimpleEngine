@@ -1,6 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
-#include "Engine/Console/Console.hpp"
+#include "Engine/Debugger/Console/Console.hpp"
 
 namespace SimpleUtilities
 {

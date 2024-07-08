@@ -1,7 +1,7 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Windows/AssetWindow.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
-#include "Engine/Console/Console.hpp"
+#include "Engine/Debugger/Console/Console.hpp"
 
 namespace Editor
 {
