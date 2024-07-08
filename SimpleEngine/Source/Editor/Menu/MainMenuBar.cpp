@@ -113,7 +113,7 @@ namespace Editor
 	{
 		if (myEditorWindowActive == true)
 		{
-			if (ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize))
+			if (ImGui::Begin("Scene##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
 			{
 				Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 				const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetCurrentRasterizerState();
