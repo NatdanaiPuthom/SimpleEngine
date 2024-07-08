@@ -15,6 +15,7 @@ namespace SimpleUtilities
 
 		static const std::string GetFileExtension(const std::string& aFilePath);
 		static const std::string GetFileName(const std::string& aFilePath);
-		static std::vector<std::string> GetFileNamesFromDirectory(const std::string& aAbsolutePath, const bool aIncludeFolders = false);
+		static const std::vector<std::string> GetFileNamesFromDirectory(const std::string& aAbsolutePath, const bool aIncludeFolders = false);
+		static const std::vector<std::string> GetAbsoluteFilePathsFromDirectory(const std::string& aAbsolutePath, const bool aIncludeFolders = false);
 	};
 }

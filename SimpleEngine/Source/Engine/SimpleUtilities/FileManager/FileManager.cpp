@@ -73,7 +73,7 @@ namespace SimpleUtilities
 		return aFilePath;
 	}
 
-	std::vector<std::string> FileManager::GetFileNamesFromDirectory(const std::string& aAbsolutePath, const bool aIncludeFolders)
+	const std::vector<std::string> FileManager::GetFileNamesFromDirectory(const std::string& aAbsolutePath, const bool aIncludeFolders)
 	{
 		std::vector<std::string> fileNames;
 
@@ -85,6 +85,23 @@ namespace SimpleUtilities
 			}
 
 			fileNames.push_back(entry.path().filename().string());
+		}
+
+		return fileNames;
+	}
+
+	const std::vector<std::string> FileManager::GetAbsoluteFilePathsFromDirectory(const std::string& aAbsolutePath, const bool aIncludeFolders)
+	{
+		std::vector<std::string> fileNames;
+
+		for (const auto& entry : std::filesystem::directory_iterator(aAbsolutePath))
+		{
+			if (!aIncludeFolders && !entry.is_regular_file())
+			{
+				continue;
+			}
+
+			fileNames.push_back(entry.path().string());
 		}
 
 		return fileNames;
