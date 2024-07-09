@@ -12,6 +12,8 @@ namespace Graphics
 	{
 		Math::Matrix4x4f jointTransforms[Global_Max_Joints];
 		size_t count;
+	private:
+		const char padding[56] = "Never in my life would I cry this much! But believe!!!\0";
 	};
 
 	//Relative model's coordinate
@@ -19,6 +21,8 @@ namespace Graphics
 	{
 		Math::Matrix4x4f jointTransforms[Global_Max_Joints];
 		size_t count;
+	private:
+		const char padding[56] = "Never in my life would I cry this much! But believe!!!\0";
 	};
 
 	class Joint final
@@ -26,8 +30,8 @@ namespace Graphics
 	public:
 		Math::Matrix4x4f myBindPoseInverse;
 		std::string myName;
-		int myParent;
 		std::vector<unsigned int> myChildren;
+		int myParent;
 	public:
 		Joint();
 		~Joint();
@@ -41,6 +45,8 @@ namespace Graphics
 
 			return (a && b && c && d);
 		}
+	private:
+		char myPadding[48] = "Never give up on your dreams! Believe!!!!!!!!\0";
 	};
 
 	class Skeleton final
@@ -65,5 +71,7 @@ namespace Graphics
 		void ApplyBindPoseInverse(const LocalSpacePose& aInPose, Math::Matrix4x4f* aOutMatrix) const;
 	private:
 		void ConvertToLocalSpacePose(const ModelSpacePose& aInPose, LocalSpacePose& aOutPose, unsigned aBoneID, const Math::Matrix4x4f& aParentTransform) const;
+	private:
+		const char myPadding[8] = "Believe";
 	};
 }
