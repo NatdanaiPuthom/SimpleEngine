@@ -1,5 +1,4 @@
 #pragma once
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
 
 namespace ECS
 {
@@ -9,6 +8,8 @@ namespace ECS
 		bool dontTouchMe = true;
 	};
 }
+
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 
 namespace ECS
 {
