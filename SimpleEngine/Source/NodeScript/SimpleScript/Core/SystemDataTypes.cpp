@@ -7,7 +7,7 @@
 
 
 // Bool
-static bool Edit(bool& aValue)
+bool Edit(bool& aValue)
 {
 	bool prev = aValue;
 	ImGui::Checkbox("##", &aValue);
@@ -15,14 +15,13 @@ static bool Edit(bool& aValue)
 	return prev != aValue;
 }
 
-
-static void Save(nlohmann::json& aJson, const bool& aValue)
+void Save(nlohmann::json& aJson, const bool& aValue)
 {
 	aJson["Value"] = aValue;
 }
 
 
-static void Load(const nlohmann::json& aJson, bool& aValue)
+void Load(const nlohmann::json& aJson, bool& aValue)
 {
 	aValue = aJson["Value"];
 }
@@ -161,9 +160,6 @@ namespace std
 namespace SCR
 {
 
-	/*constexpr bool s = SCRIPT::Fundamental<UINT64>;
-	constexpr bool a = SCRIPT::Editable<bool>;*/
-
 	using String = std::string;
 
 	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.f, 0.f, 0.f));
@@ -177,26 +173,7 @@ namespace SCR
 	FLY_DATATYPE(char, eNodeOperatorTrait::All, Color(0.2f, 0.7f, 0.4f));
 	FLY_DATATYPE(String, eNodeOperatorTrait::All, Color(0.3f, 0.8f, 0.2f));
 
-	//constexpr bool a = SCRIPT::Scriptable<String, nlohmann::json>;
-
-	void Do()
+	void Test123()
 	{
-
 	}
-	/*	void RegisterSystemDataTypes()
-	{
-		DataTypeRegistry::RegisterTemplateType<std::vector>("Array");
-
-		DataTypeRegistry::RegisterNonSerializableType<Wildcard>("Wildcard", Color(0.f, 0.f, 0.f));
-		DataTypeRegistry::RegisterNonSerializableType<Flow>("Flow", Color(0.9f, 0.9f, 0.9f));
-
-		DataTypeRegistry::Register<bool>("Bool", Color(1.f, 0.1f, 0.1f));
-		DataTypeRegistry::Register<int>("Int", Color(0.f, 0.2f, 1.f));
-		DataTypeRegistry::Register<float, eNodeOperatorTrait::All, std::vector>("Float", Color(0.55f, 0.2f, 0.65f));
-		DataTypeRegistry::Register<double, eNodeOperatorTrait::All, std::vector>("Double", Color(0.57f, 0.4f, 0.9f));
-		DataTypeRegistry::Register<unsigned int, eNodeOperatorTrait::All, std::vector>("Unsigned Int", Color(0.f, 0.4f, 1.f));
-		DataTypeRegistry::Register<unsigned long long, eNodeOperatorTrait::All, std::vector>("Unsigned Long Long", Color(0.1f, 0.5f, 1.f));
-		DataTypeRegistry::Register<char, eNodeOperatorTrait::All, std::vector>("Char", Color(0.2f, 0.7f, 0.4f));
-		DataTypeRegistry::Register<std::string>("String", Color(0.3f, 0.8f, 0.2f));
-	}*/
 }

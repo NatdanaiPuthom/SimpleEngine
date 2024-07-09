@@ -17,7 +17,7 @@ namespace SCR
 
 		for (PinID i = 0; i < ScriptProxy::GetPins(aNodeGraph).size(); i++)
 		{
-			if (PinTypeManager::GetPinType(ScriptProxy::GetPin(aNodeGraph, i).typeID).flowType == ePinFlowType::Input)
+			if (PinTypeManager::GetPinType(ScriptProxy::GetPin(aNodeGraph, i).typeID).flowType == eFlowType::Input)
 			{
 				const NodeID nodeID = ScriptProxy::GetPin(aNodeGraph, i).nodeID;
 
@@ -37,7 +37,7 @@ namespace SCR
 		for (PinID i = 0; i < ScriptProxy::GetPins(aNodeGraph).size(); i++)
 		{
 			const Pin& pin = ScriptProxy::GetPin(aNodeGraph, i);
-			if (PinTypeManager::GetPinType(pin.typeID).flowType == ePinFlowType::Output)
+			if (PinTypeManager::GetPinType(pin.typeID).flowType == eFlowType::Output)
 			{
 
 				if (!ScriptProxy::GetNode(aNodeGraph, pin.nodeID).isDestroyed)
@@ -73,14 +73,14 @@ namespace SCR
 
 	}
 
-	std::vector<PinID> ScriptFilter::GetNonConnectedPinsOfType(const NodeGraph& aNodeGraph, const ePinFlowType aFlowType)
+	std::vector<PinID> ScriptFilter::GetNonConnectedPinsOfType(const NodeGraph& aNodeGraph, const eFlowType aFlowType)
 	{
 		switch (aFlowType)
 		{
-		case ePinFlowType::Input:
+		case eFlowType::Input:
 			return GetNonConnectedInputPins(aNodeGraph);
 			break;
-		case ePinFlowType::Output:
+		case eFlowType::Output:
 			return GetNonConnectedOutputPins(aNodeGraph);
 			break;
 		default:
@@ -89,13 +89,13 @@ namespace SCR
 		return std::vector<PinID>();
 	}
 
-	std::vector<PinID> ScriptFilter::GetNonConnectedPinsOfTypeAndHash(const NodeGraph& aNodeGraph, const ePinFlowType aFlowType, const DataTypeID aDataTypeID)
+	std::vector<PinID> ScriptFilter::GetNonConnectedPinsOfTypeAndHash(const NodeGraph& aNodeGraph, const eFlowType aFlowType, const DataTypeID aDataTypeID)
 	{
 		std::vector<PinID> pinIDs;
 		std::vector<PinID> pinTypeFilter = GetNonConnectedPinsOfType(aNodeGraph, aFlowType);
 		switch (aFlowType)
 		{
-		case ePinFlowType::Input:
+		case eFlowType::Input:
 
 			for (PinID id : pinTypeFilter)
 			{
@@ -106,7 +106,7 @@ namespace SCR
 			}
 			break;
 
-		case ePinFlowType::Output:
+		case eFlowType::Output:
 			for (PinID id : pinTypeFilter)
 			{
 				if (PinTypeManager::GetPinType(ScriptProxy::GetPin(aNodeGraph, id).typeID).dataTypeID == aDataTypeID)

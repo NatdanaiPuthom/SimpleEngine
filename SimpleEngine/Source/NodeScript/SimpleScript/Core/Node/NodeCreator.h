@@ -30,9 +30,9 @@ namespace SCR
 
 	PinSetFunction CreatePinSetFunction();
 
-	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, const size_t aStartIndex);
+	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, const NodeGraph& aDestinationNodeGraph, const NodeGraph& aSourceNodeGraph, const size_t aStartIndex);
 
-	template<CleanType T, ePinFlowType FlowType>
+	template<CleanType T, eFlowType FlowType>
 	PinSetFunction CreatePinSetFunction()
 	{
 		return [](const PinSetData& aPinSetData, const InternalExecutionContext& aContext) -> void
@@ -52,7 +52,7 @@ namespace SCR
 				{
 					if (value)
 					{
-						if constexpr (FlowType == ePinFlowType::Output)
+						if constexpr (FlowType == eFlowType::Output)
 						{
 
 							for (PinID connectedInputPinID : pin.connectedPinIDs)
@@ -66,7 +66,7 @@ namespace SCR
 			};
 	}
 
-	template<size_t Index, size_t Size, ePinFlowType FlowType, typename MemoryTupleType, typename Type, typename... Types>
+	template<size_t Index, size_t Size, eFlowType FlowType, typename MemoryTupleType, typename Type, typename... Types>
 	void CreatePinTypesInternal(std::vector<PinTypeID>& aPinTypeIDArray, MemoryTupleType& aMemoryTuple, const std::array<std::string, Size>& aPinNames)
 	{
 		if constexpr (Index < Size)
@@ -88,7 +88,7 @@ namespace SCR
 		}
 	}
 
-	template< ePinFlowType FlowType, typename MemoryTupleType, typename... Types>
+	template< eFlowType FlowType, typename MemoryTupleType, typename... Types>
 	std::vector<PinTypeID> CreatePinTypes(MemoryTupleType& aMemoryTuple, const std::array<std::string, sizeof...(Types)>& aPinNames = std::array<std::string, sizeof...(Types)>())
 	{
 		constexpr size_t Size = sizeof...(Types);
@@ -101,7 +101,7 @@ namespace SCR
 		return pinTypeIDArray;
 	}
 
-	template<size_t Index, size_t Size, ePinFlowType FlowType, typename Type, typename... Types>
+	template<size_t Index, size_t Size, eFlowType FlowType, typename Type, typename... Types>
 	void CreatePinTypesInternal(std::vector<PinTypeID>& aPinTypeIDArray, const std::array<std::string, Size>& aPinNames)
 	{
 		if constexpr (Index < Size)
@@ -119,7 +119,7 @@ namespace SCR
 		}
 	}
 
-	template<ePinFlowType FlowType, typename... Types>
+	template<eFlowType FlowType, typename... Types>
 	std::vector<PinTypeID> CreatePinTypes(const std::array<std::string, sizeof...(Types)>& aPinNames = std::array<std::string, sizeof...(Types)>())
 	{
 		constexpr size_t Size = sizeof...(Types);
@@ -140,13 +140,12 @@ namespace SCR
 
 		using CleanType = CleanType_V<InputType>;
 
-		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(aNodeGraph);
-		MemoryManager& memoryManager = ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph);
-		void* dataPtr = &memoryManager.GetMemory().Allocate<CleanType>();
+		MemoryArena<NodeBufferCapacity>& memoryArena = ScriptProxy::GetNodeGraphMemoryArena(aNodeGraph);
+		void* dataPtr = &memoryArena.Allocate<CleanType>();
 
 		const PinTypeID pinTypeID = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID).nodeRecipe.inputPinTypeIDs[anIndex];
 
-		return InternalModifier::CreateInputPin(aNodeGraph, aNodeID, pinTypeID, dataPtr);
+		return InternalModifier::CreatePin(aNodeGraph, aNodeID, pinTypeID, dataPtr);
 
 	}
 	template<size_t Index, size_t InputSize, typename InputType, typename... InputTypes>
@@ -180,8 +179,8 @@ namespace SCR
 		static_assert(!std::is_same_v<void, OutputType>, "Return type can't be void");
 
 		//MemoryPoolID memoryPoolID = ScriptProxy::GetGraphMemoryPool(aNodeGraph).Allocate<OutputType>();
-		void* dataPtr = &ScriptProxy::GetNodeGraphMemoryManager(aNodeGraph).GetMemory().Allocate<OutputType>();
-		return InternalModifier::CreateOutputPin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
+		void* dataPtr = &ScriptProxy::GetNodeGraphMemoryArena(aNodeGraph).Allocate<OutputType>();
+		return InternalModifier::CreatePin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}
 
 	template<size_t Index, size_t OutputSize, typename OutputType, typename... OutputTypes>
@@ -221,7 +220,7 @@ namespace SCR
 			const PinID outputPinID = aOutputPinIDs[Index];
 			const Pin& pin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, outputPinID);
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-			assert(pinType.flowType == ePinFlowType::Output);
+			assert(pinType.flowType == eFlowType::Output);
 
 			const void* value = &std::get<Index>(aOutputValues);
 
@@ -436,8 +435,8 @@ namespace SCR
 			traits |= eNodeTrait::HasFlow;
 		}
 
-		std::vector<PinTypeID> inputPinTypeIDs = CreatePinTypes<ePinFlowType::Input, std::remove_cvref_t<InputTypes>...>();
-		std::vector<PinTypeID> outputPinTypeIDs = CreatePinTypes<ePinFlowType::Output, OutputTypes...>();
+		std::vector<PinTypeID> inputPinTypeIDs = CreatePinTypes<eFlowType::Input, std::remove_cvref_t<InputTypes>...>();
+		std::vector<PinTypeID> outputPinTypeIDs = CreatePinTypes<eFlowType::Output, OutputTypes...>();
 
 		MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
 		MemoryPoolID functionMemoryID = foundationMemoryPool.Allocate<Callable>(aCallable);
@@ -472,7 +471,7 @@ namespace SCR
 					[aFunction](Flow, InputTypes... someInputs) -> Flow
 					{
 						aFunction(std::forward<InputTypes>(someInputs)...);
-						return true;
+						return Flow(true);
 					},
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(),
@@ -482,10 +481,10 @@ namespace SCR
 			else
 			{
 				return CreateNodeRecipe<Traits>(
-					[aFunction](Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
+					[aFunction](Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(std::forward<InputTypes>(someInputs)...);
-						return { aFlow, output };
+						return { Flow(true), output};
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
@@ -516,10 +515,10 @@ namespace SCR
 			if constexpr (IsOutputTypeVoid)
 			{
 				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionContextType>(
-					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow>
+					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, Flow, InputTypes&&... someInputs) -> std::tuple<Flow>
 					{
 						aFunction(aContext, std::forward<InputTypes>(someInputs)...);
-						return { aFlow };
+						return { Flow(true) };
 					},
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(),
@@ -529,10 +528,10 @@ namespace SCR
 			else
 			{
 				return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionContextType>(
-					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
+					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(aContext, std::forward<InputTypes>(someInputs)...);
-						return { aFlow, output };
+						return { Flow(true), output};
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
@@ -564,10 +563,10 @@ namespace SCR
 			if constexpr (IsOutputVoid)
 			{
 				return CreateNodeRecipe<Traits, Wildcard, NodeStateDataType>(
-					[aFunction](NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow>
+					[aFunction](NodeState<NodeStateDataType> aInternalData, Flow, InputTypes&&... someInputs) -> std::tuple<Flow>
 					{
 						aFunction(aInternalData, someInputs...);
-						return { aFlow };
+						return { Flow(true) };
 					},
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(),
@@ -577,10 +576,10 @@ namespace SCR
 			else
 			{
 				return CreateNodeRecipe<Traits, Wildcard, NodeStateDataType>(
-					[aFunction](NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
+					[aFunction](NodeState<NodeStateDataType> aInternalData, Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(aInternalData, someInputs...);
-						return { aFlow, output };
+						return { Flow(true), output};
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
@@ -612,10 +611,10 @@ namespace SCR
 			if constexpr (IsOutputVoid)
 			{
 				return CreateNodeRecipe<Traits, ExecutionContextType, NodeStateDataType>(
-					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow>
+					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, NodeState<NodeStateDataType> aInternalData, Flow, InputTypes&&... someInputs) -> std::tuple<Flow>
 					{
 						aFunction(aContext, aInternalData, std::forward<InputTypes>(someInputs)...);
-						return { aFlow };
+						return { Flow(true) };
 					},
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(), aCreationData);
@@ -623,10 +622,10 @@ namespace SCR
 			else
 			{
 				return CreateNodeRecipe<Traits, ExecutionContextType, NodeStateDataType>(
-					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
+					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, NodeState<NodeStateDataType> aInternalData, Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(aContext, aInternalData, std::forward<InputTypes>(someInputs)...);
-						return { aFlow, output };
+						return { Flow(true), output};
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(), aCreationData);
@@ -653,9 +652,9 @@ namespace SCR
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
 			return CreateNodeRecipe<Traits>(
-				[aFunction](Flow aFlow, InputTypes... someInputs) -> std::tuple<Flow, OutputTypes...>
+				[aFunction](Flow, InputTypes... someInputs) -> std::tuple<Flow, OutputTypes...>
 				{
-					return std::tuple_cat(std::make_tuple(aFlow), aFunction(std::forward<InputTypes>(someInputs)...));
+					return std::tuple_cat(std::make_tuple(Flow(true)), aFunction(std::forward<InputTypes>(someInputs)...));
 				},
 				TypeList<Flow, OutputTypes...>(),
 				TypeList<Flow, InputTypes...>(), aCreationData);
@@ -676,9 +675,9 @@ namespace SCR
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
 			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionContextType>(
-				[aFunction](NodeExecutionContext<ExecutionContextType> aContext, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputTypes...>
+				[aFunction](NodeExecutionContext<ExecutionContextType> aContext, Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputTypes...>
 				{
-					return std::tuple_cat(std::make_tuple(aFlow), aFunction(aContext, std::forward<InputTypes>(someInputs)...));
+					return std::tuple_cat(std::make_tuple(Flow(true)), aFunction(aContext, std::forward<InputTypes>(someInputs)...));
 				},
 				TypeList<Flow, OutputTypes...>(),
 				TypeList<Flow, InputTypes...>(),
@@ -703,9 +702,9 @@ namespace SCR
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
 			return CreateNodeRecipe<Traits, Wildcard, NodeStateDataType>(
-				[aFunction](NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputTypes...>
+				[aFunction](NodeState<NodeStateDataType> aInternalData, Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputTypes...>
 				{
-					return std::tuple_cat(std::make_tuple(aFlow), aFunction(aInternalData, std::forward<InputTypes>(someInputs)...));
+					return std::tuple_cat(std::make_tuple(Flow(true)), aFunction(aInternalData, std::forward<InputTypes>(someInputs)...));
 				},
 				TypeList<Flow, OutputTypes...>(),
 				TypeList<Flow, InputTypes...>(),
@@ -726,9 +725,9 @@ namespace SCR
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
 			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionContextType, NodeStateDataType>(
-				[aFunction](NodeExecutionContext<ExecutionContextType> aContext, NodeState<NodeStateDataType> aInternalData, Flow aFlow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputTypes...>
+				[aFunction](NodeExecutionContext<ExecutionContextType> aContext, NodeState<NodeStateDataType> aInternalData, Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputTypes...>
 				{
-					return std::tuple_cat(std::make_tuple(aFlow), aFunction(aContext, aInternalData, std::forward<InputTypes>(someInputs)...));
+					return std::tuple_cat(std::make_tuple(Flow(true)), aFunction(aContext, aInternalData, std::forward<InputTypes>(someInputs)...));
 				},
 				TypeList<Flow, OutputTypes...>(),
 				TypeList<Flow, InputTypes...>(),
@@ -759,7 +758,7 @@ namespace SCR
 					[aFunction](const InternalExecutionContext* aContext, Flow, InputTypes... aInputs) -> Flow
 					{
 						aFunction(aContext, std::forward<InputTypes>(aInputs)...);
-						return true;
+						return Flow(true);
 					}, TypeList<Flow>(), TypeList<Flow, InputTypes...>(), aCreationData
 						);
 			}
@@ -768,7 +767,7 @@ namespace SCR
 				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext>(
 					[aFunction](const InternalExecutionContext* aContext, Flow, InputTypes... aInputs) -> std::tuple<Flow, OutputType>
 					{
-						return { true, aFunction(aContext, std::forward<InputTypes>(aInputs)...) };
+						return { Flow(true), aFunction(aContext, std::forward<InputTypes>(aInputs)...) };
 					}, TypeList<Flow, OutputType>(), TypeList<Flow, InputTypes...>(), aCreationData
 						);
 			}
@@ -810,7 +809,7 @@ namespace SCR
 					[aFunction](const InternalExecutionContext* aContext, NodeState<NodeStateDataType> aNodeState, Flow, InputTypes... aInputs) -> Flow
 					{
 						aFunction(aContext, aNodeState, std::forward<InputTypes>(aInputs)...);
-						return true;
+						return Flow(true);
 					}, 
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(),
@@ -822,7 +821,7 @@ namespace SCR
 				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext, Wildcard, NodeStateDataType>(
 					[aFunction](const InternalExecutionContext* aContext, NodeState<NodeStateDataType> aNodeState, Flow, InputTypes... aInputs) -> std::tuple<Flow, OutputType>
 					{
-						return { true, aFunction(aContext, aNodeState, std::forward<InputTypes>(aInputs)...) };
+						return { Flow(true), aFunction(aContext, aNodeState, std::forward<InputTypes>(aInputs)...) };
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
@@ -875,7 +874,7 @@ namespace SCR
 		auto callable = [aFuncPtr](Flow, ClassType* aClassType, InputTypes&&... aInputTypes) -> Flow
 			{
 				(aClassType->*aFuncPtr)(std::forward<InputTypes>(aInputTypes)...);
-				return true;
+				return Flow(true);
 			};
 		return CreateNodeRecipe<eNodeTrait::HasImplicitFlow>(callable, TypeList<Flow>(), TypeList<Flow, ClassType*, InputTypes...>(), NodeCreationData{ .ownerDataTypeID = GetDataTypeID<ClassType>() });
 	}

@@ -5,12 +5,9 @@
 #include "ScriptUtilities.h"
 #include "Instance/ScriptInstance.h"
 #include "Function/ScriptFunction.h"
-#include "ExecutionContextBase.h"
 
 namespace SCR
 {
-
-
 
 	Script::Script(const DataTypeID aTargetID, const std::string& aName)
 		: myTargetID(aTargetID)
@@ -58,6 +55,16 @@ namespace SCR
 	DataTypeID Script::GetTargetID() const
 	{
 		return myTargetID;
+	}
+
+	void Script::BindFunction(FunctionID aFunctionID)
+	{
+		myMemberFunctionIDs.push_back(aFunctionID);
+	}
+
+	const std::vector<FunctionID>& Script::GetMemberFunctionIDs()
+	{
+		return myMemberFunctionIDs;
 	}
 }
 

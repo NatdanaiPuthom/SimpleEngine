@@ -5,7 +5,7 @@ namespace SCR
 {
 	struct Flow final
 	{
-		Flow(const bool aState = false)
+		explicit Flow(const bool aState = false)
 			: myState(aState) {}
 
 		operator bool() const
@@ -13,7 +13,7 @@ namespace SCR
 			return myState;
 		}
 
-		inline static size_t typeID = typeid(Flow()).hash_code();
+		inline static size_t typeID = typeid(int).hash_code();
 	private:
 
 		bool myState;
@@ -21,17 +21,17 @@ namespace SCR
 
 	inline Flow operator&&(Flow aFlow1, Flow aFlow2)
 	{
-		return aFlow1.operator bool() && aFlow2.operator bool();
+		return Flow(aFlow1.operator bool() && aFlow2.operator bool());
 	}
 
 	inline Flow operator||(Flow aFlow1, Flow aFlow2)
 	{
-		return aFlow1.operator bool() || aFlow2.operator bool();
+		return Flow(aFlow1.operator bool() || aFlow2.operator bool());
 	}
 
 	inline Flow operator!(Flow aFlow)
 	{
-		return !aFlow.operator bool();
+		return Flow(!aFlow.operator bool());
 	}
 
 }

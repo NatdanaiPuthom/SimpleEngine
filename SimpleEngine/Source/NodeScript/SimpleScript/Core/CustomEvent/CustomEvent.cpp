@@ -8,21 +8,23 @@ namespace SCR
 		// Sets the values of the custom 
 
 
-		NodeID callerNodeID = aContext->GetNodeData().nodeRef.nodeID;
+		const NodeID callerNodeID = aContext->GetNodeData().nodeRef.nodeID;
 
 		const Node& callerNode = ScriptProxy::GetNode(*aContext->nodeData.nodeRef.nodeGraph, callerNodeID);
-		CustomEventID customEventID = NodeTypeManager::GetInstance().GetCustomEventID(callerNode.typeID);
+		const CustomEventID customEventID = NodeTypeManager::GetInstance().GetCustomEventID(callerNode.typeID);
 
 		const CustomEvent& customEvent = NodeTypeManager::GetInstance().GetCustomEvent(customEventID);
 
-		const std::vector<NodeID>& executorNodeIDs = ScriptProxy::GetNodeIDsByNodeType(*aContext->nodeData.nodeRef.nodeGraph, customEvent.GetExecutorTypeID());
-		for (NodeID executorNodeID : executorNodeIDs)
+		const NodeType& executorNodeType = Global::GetNodeTypeManager().GetNodeType(customEvent.GetExecutorTypeID());
+		const std::vector<NodeRef>& executorNodeRefs = executorNodeType.nodeRefs;
+
+		for (const NodeRef& executorNodeRef : executorNodeRefs)
 		{
-			aContext->executionQueue->Push({ NodeRef{ executorNodeID, aContext->nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
+			aContext->executionQueue->Push(NodeExecutionData{ executorNodeRef, eNodeTriggerReason::Flow });
 
-			const Node& executorNode = ScriptProxy::GetNode(*aContext->nodeData.nodeRef.nodeGraph, executorNodeID);
+			const Node& executorNode = ScriptProxy::GetNode(*executorNodeRef.nodeGraph, executorNodeRef.nodeID);
 
-			CopyPinData(*aContext, executorNode.outputPins, callerNode.inputPins, 1);
+			CopyPinData(*aContext, executorNode.outputPins, callerNode.inputPins, *executorNodeRef.nodeGraph, *aContext->nodeData.nodeRef.nodeGraph, 1);
 
 		}
 	}
@@ -30,7 +32,7 @@ namespace SCR
 
 	static Flow CustomEventExecutorNode()
 	{
-		return true;
+		return Flow(true);
 	}
 
 	CustomEvent::CustomEvent(const std::string& aName)

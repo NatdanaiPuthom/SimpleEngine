@@ -21,13 +21,15 @@ namespace SCR
 
 		NodeManager(const NodeManager&);
 
-		TypeContainer<NodeID, Node, NodeType>::ConstIterator begin() const;
-		TypeContainer<NodeID, Node, NodeType>::ConstIterator end() const;
+		TypeContainer<NodeID, const Node, const NodeType>::Iterator begin() const;
+		TypeContainer<NodeID, const Node, const NodeType>::Iterator end() const;
+
+		TypeContainer<NodeID, Node, NodeType>::Iterator begin();
+		TypeContainer<NodeID, Node, NodeType>::Iterator end();
 
 	public:
 
 		std::vector<Node> myNodes;
-		std::vector<std::vector<NodeID>> myNodeIDsByNodeTypeID;
 
 	};
 

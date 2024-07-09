@@ -28,9 +28,7 @@ namespace Editor
 			{
 				SCRIPT::FunctionID createdFunctionID = SCRIPT::Modify::CreateGlobalFunction("Function");
 
-				const SCRIPT::Function& createdFunction = SCRIPT::Global::GetNodeTypeManager().GetFunction(createdFunctionID);
-				//SCRIPT::ScriptModifier::CreateFunction("Function");
-				myParentWindow.CreateNodeContext(createdFunction.GetNodeGraph());
+				SCRIPT::Global::GetNodeTypeManager().GetFunction(createdFunctionID);
 			}
 
 			ImGui::Separator();
@@ -54,17 +52,17 @@ namespace Editor
 
 				if (ImGui::Button("Create Caller"))
 				{
-					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function.GetCallerNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, function.GetCallerNodeTypeID());
 				}
 
 				if (ImGui::Button("Create Input"))
 				{
-					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function.GetInputNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, function.GetInputNodeTypeID());
 				}
 
 				if (ImGui::Button("Create Output"))
 				{
-					SCRIPT::Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, function.GetOutputNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, function.GetOutputNodeTypeID());
 				}
 
 				ImGui::Separator();

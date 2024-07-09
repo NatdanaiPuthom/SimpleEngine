@@ -6,14 +6,14 @@ namespace SCR
 {
 
 
-	std::string PinFlowTypeToString(const ePinFlowType aPinType)
+	std::string PinFlowTypeToString(const eFlowType aPinType)
 	{
 		switch (aPinType)
 		{
-		case ePinFlowType::Input:
+		case eFlowType::Input:
 			return "Input";
 			break;
-		case ePinFlowType::Output:
+		case eFlowType::Output:
 			return "Output";
 			break;
 		default:
@@ -21,17 +21,18 @@ namespace SCR
 			break;
 		}
 	}
-	ePinFlowType StringToPinFlowType(const std::string& aName)
+	eFlowType StringToPinFlowType(const std::string& aName)
 	{
 		if (aName == "Output")
 		{
-			return ePinFlowType::Output;
+			return eFlowType::Output;
 		}
 		else if (aName == "Input")
 		{
-			return ePinFlowType::Input;
+			return eFlowType::Input;
 		}
-		return ePinFlowType::NotSet;
+		assert(false);
+		return eFlowType::Input;
 	}
 
 	std::string GetPinLabel(const PinType& aPinType)

@@ -15,17 +15,30 @@ namespace SCR
 
 	NodeManager::NodeManager(const NodeManager& aOther)
 		: myNodes(aOther.myNodes)
-		, myNodeIDsByNodeTypeID(aOther.myNodeIDsByNodeTypeID)
 	{
 	}
 
-	TypeContainer<NodeID, Node, NodeType>::ConstIterator NodeManager::begin() const
+	TypeContainer<NodeID, const Node, const NodeType>::Iterator NodeManager::begin() const
 	{
-		return TypeContainer<NodeID, Node, NodeType>(myNodes, [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(aNode.typeID); }).begin();
+		auto f = [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(aNode.typeID); };
+		return TypeContainer<NodeID, const Node, const NodeType>(myNodes, f).begin();
 	}
 
-	TypeContainer<NodeID, Node, NodeType>::ConstIterator NodeManager::end() const
+	TypeContainer<NodeID, const Node, const NodeType>::Iterator NodeManager::end() const
 	{
-		return TypeContainer<NodeID, Node, NodeType>(myNodes, [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(aNode.typeID); }).end();
+		auto f = [](const Node& aNode) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(aNode.typeID); };
+		return TypeContainer<NodeID, const Node, const NodeType>(myNodes, f).end();
+	}
+
+	TypeContainer<NodeID, Node, NodeType>::Iterator NodeManager::begin()
+	{
+		auto f = [](const Node& aNode) -> NodeType& { return NodeTypeManager::GetInstance().GetNodeType(aNode.typeID); };
+		return TypeContainer<NodeID, Node, NodeType>(myNodes, f).begin();
+	}
+
+	TypeContainer<NodeID, Node, NodeType>::Iterator NodeManager::end()
+	{
+		auto f = [](const Node& aNode) -> NodeType& { return NodeTypeManager::GetInstance().GetNodeType(aNode.typeID); };
+		return TypeContainer<NodeID, Node, NodeType>(myNodes, f).end();
 	}
 }

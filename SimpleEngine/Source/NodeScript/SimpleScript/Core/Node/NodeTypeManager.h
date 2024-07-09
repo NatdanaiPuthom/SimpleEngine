@@ -40,7 +40,9 @@ namespace SCR
 
 		bool CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID);
 
-		NodeType& GetNodeType(const NodeTypeID anID);
+		NodeType& GetNodeType(NodeTypeID anID);
+		const NodeType& GetNodeType(NodeTypeID anID) const;
+
 		const std::vector<NodeType>& GetNodeTypes();
 		
 		template<Predicate<const NodeType&> FilterPredicate>
@@ -51,15 +53,16 @@ namespace SCR
 
 		CustomEventID GetCustomEventID(const NodeTypeID aNodeTypeID);
 
-		Function& GetFunction(const FunctionID aFunctionID);
+		Function& GetFunction(FunctionID aFunctionID);
+		const Function& GetFunction(FunctionID aFunctionID) const;
 		const std::vector<std::unique_ptr<Function>>& GetFunctions();
-		FunctionID GetFunctionID(const NodeTypeID aNodeTypeID);
+		FunctionID GetFunctionID(NodeTypeID aNodeTypeID);
 
 		NodeTypeID GetTypeID(const std::string& aName);
 
-		const std::string& GetFullName(const NodeTypeID anID);
-		std::string GetShortName(const NodeTypeID anID);
-		std::string GetNameDirectory(const NodeTypeID anID);
+		const std::string& GetFullName(NodeTypeID anID);
+		std::string GetShortName(NodeTypeID anID);
+		std::string GetNameDirectory(NodeTypeID anID);
 
 		void Assert();
 

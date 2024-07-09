@@ -1,8 +1,14 @@
 #pragma once
 #include "ScriptDefines.h"
 #include <ImGui/imgui.h>
-#include "DataType/DataTypeManager.h"
+#include "DataType/DataTypeRegistry.h"
+#include "../ScriptDefines.h"
+#include "../Contexts/ExecutionContextBase.h"
+#include "../SystemTypes/ScriptFlow.h"
 
+bool Edit(bool& aValue);
+void Save(nlohmann::json& aJson, const bool& aValue);
+void Load(const nlohmann::json& aJson, bool& aValue);
 
 template<typename T>
 static bool EditVectorImpl(std::vector<T>& aData, bool(*anEditFunc)(T&))
@@ -134,4 +140,9 @@ namespace std
 		return aOStream;
 	}
 
+}
+
+namespace SCR
+{
+	void Test123();
 }

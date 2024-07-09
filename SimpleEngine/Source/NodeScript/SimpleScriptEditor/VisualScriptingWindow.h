@@ -3,6 +3,7 @@
 #include "SimpleScriptEditor/VariableWindow.h"
 #include "SimpleScriptEditor/NodeCreatorWindow.h"
 #include "SimpleScriptEditor/FunctionWindow.h"
+#include "SimpleScriptEditor/FunctionSettingsWindow.h"
 #include "SimpleScript/Core/SystemTypes/ScriptVec2.h"
 #include "SimpleScript/Core/ScriptModifier.h"
 #include <External/imgui.h>
@@ -39,6 +40,11 @@ namespace Editor
 	{
 		SCRIPT::Script* script;
 		SCRIPT::NodeGraph* nodeGraph;
+
+		std::vector<SCRIPT::PinID> myPinIDsToHighlight;
+		std::unordered_map<SCRIPT::NodeID, SCRIPT::NodeDragData> myNodeDragData;
+		SCRIPT::PinID myLinkCreationPinID;
+		SCRIPT::PinID myStartedLinkPinID;
 	};
 
 	struct NodeContextHistory
@@ -67,8 +73,8 @@ namespace Editor
 		VisualScriptingWindow();
 		~VisualScriptingWindow();
 
-		NodeContext GetCurrentContext() const;
-		void CreateNodeContext(const SCRIPT::NodeGraph& aNodeGraph);
+		NodeContext& GetNodeContext();
+		const NodeContext& GetNodeContext() const;
 		void SetNodeContext(SCRIPT::NodeGraph& aNodeGraph, SCRIPT::Script* aScript);
 		eScriptMode GetCurrentMode() const;
 
@@ -83,6 +89,8 @@ namespace Editor
 		void NodeCreation();
 
 		ImVec2 GetMiddlePos() const;
+
+		SCRIPT::FunctionID GetCurrentFunctionID() const;
 
 	private:
 		void ShowNodeTypeCreationMenu(const std::vector<SCRIPT::NodeTypeID>& aNodeTypeIDs, const std::function<void(SCRIPT::NodeTypeID)>& aOnClickFunc);
@@ -101,14 +109,12 @@ namespace Editor
 
 		std::unordered_map<const SCRIPT::NodeGraph*, ImNodesContext*> myImNodesContexts;
 
-		SCRIPT::PinID myLinkCreationPinID;
-		SCRIPT::PinID myStartedLinkPinID;
-		std::vector<SCRIPT::PinID> myPinIDsToHighlight;
-		std::unordered_map<SCRIPT::NodeID, SCRIPT::NodeDragData> myNodeDragData;
+		
 
 		VariableWindow myVariableWindow;
 		NodeCreatorWindow myNodeCreatorWindow;
 		FunctionWindow myFunctionWindow;
+		FunctionSettingsWindow myFunctionSettingsWindow;
 
 		NodeContextHistory myNodeContextHistory;
 
@@ -122,6 +128,8 @@ namespace Editor
 		SCRIPT::PinID myHoveredPinID = SCRIPT::InvalidID<SCRIPT::PinID>();
 
 		bool myIsContextSensitive = false;
+
+		SCRIPT::FunctionID mySelectedFunctionID = SCRIPT::InvalidID<SCRIPT::FunctionID>();
 
 	};
 }

@@ -16,15 +16,15 @@ namespace SCR
 
 		static PinTypeManager& GetInstance();
 
-		static PinTypeID Create(const std::string& aName, ePinFlowType aFlowType, DataTypeID aHashID, PinSetFunction aSetFunction);
+		static PinTypeID Create(const std::string& aName, eFlowType aFlowType, DataTypeID aDataTypeID, PinSetFunction aSetFunction);
 
-		template<ePinFlowType FlowType, typename T>
+		template<eFlowType FlowType, typename T>
 		static PinTypeID Create(const std::string& aName, PinSetFunction aSetFunction)
 		{
 			return Create(aName, FlowType, typeid(T).hash_code(), aSetFunction);
 		}
 
-		static PinType& GetPinType(const PinTypeID anID);
+		static PinType& GetPinType(PinTypeID anID);
 
 	private:
 		std::vector<PinType> myPinTypes;

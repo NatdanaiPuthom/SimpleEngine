@@ -61,6 +61,14 @@ namespace SCR
 	// Struct for color - values between 0 and 1
 	struct Color
 	{
+		Color(float aR, float aG, float aB, float aA = 1.f)
+			: r(aR)
+			, g(aG)
+			, b(aB)
+			, a(aA)
+		{
+
+		}
 		float r = 0, g = 0, b = 0, a = 1;
 
 		void Clamp()

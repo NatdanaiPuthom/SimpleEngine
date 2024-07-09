@@ -27,6 +27,7 @@ namespace Editor
 		: myVariableWindow(*this)
 		, myNodeCreatorWindow(*this)
 		, myFunctionWindow(*this)
+		, myFunctionSettingsWindow(*this)
 	{
 		myCommandTracker = std::make_unique<CommandTracker>();
 	}
@@ -41,16 +42,18 @@ namespace Editor
 
 		ScriptLoader::Clear();
 	}
-
-	NodeContext VisualScriptingWindow::GetCurrentContext() const
+	
+	NodeContext& VisualScriptingWindow::GetNodeContext()
 	{
 		return myNodeContextHistory.history[myNodeContextHistory.currentIndex];
 	}
 
-	void VisualScriptingWindow::CreateNodeContext(const SCRIPT::NodeGraph& aNodeGraph)
+	const NodeContext& VisualScriptingWindow::GetNodeContext() const
 	{
-		myImNodesContexts.emplace(&aNodeGraph, ImNodes::CreateContext());
+		return myNodeContextHistory.history[myNodeContextHistory.currentIndex];
 	}
+
+	
 
 	void VisualScriptingWindow::SetNodeContext(SCRIPT::NodeGraph& aNodeGraph, SCRIPT::Script* aScript)
 	{
@@ -61,11 +64,19 @@ namespace Editor
 		};
 		myNodeContextHistory.history.push_back(nodeContext);
 		myNodeContextHistory.currentIndex++;
+
+		if (!myImNodesContexts.contains(&aNodeGraph))
+		{
+			myImNodesContexts.emplace(&aNodeGraph, ImNodes::CreateContext());
+
+		}
+
+		ImNodes::SetCurrentContext(myImNodesContexts.at(&aNodeGraph));
 	}
 
 	eScriptMode VisualScriptingWindow::GetCurrentMode() const
 	{
-		return GetCurrentContext().script ? eScriptMode::Class : eScriptMode::Global;
+		return GetNodeContext().script ? eScriptMode::Class : eScriptMode::Global;
 	}
 
 	void VisualScriptingWindow::UpdateContext()
@@ -74,21 +85,21 @@ namespace Editor
 		{
 			if (ScriptFoundation::GetInstance().GetScripts().empty())
 			{
-				ScriptFoundation::GetInstance().CreateScript(0);
+				Modify::CreateScript(0, "Default Script");
 			}
 
 			if (ScriptFoundation::GetInstance().GetScripts().begin()->second.empty())
 			{
-				ScriptFoundation::GetInstance().CreateScript(ScriptFoundation::GetInstance().GetScripts().begin()->first);
+				Modify::CreateScript(ScriptFoundation::GetInstance().GetScripts().begin()->first, "Default Script");
 			}
 
+
 			Script& script = *ScriptFoundation::GetInstance().GetScripts().begin()->second.front();
-			CreateNodeContext(script.GetEventGraph());
 			SetNodeContext(script.GetEventGraph(), &script);
 		}
 
 
-		ImNodes::SetCurrentContext(myImNodesContexts.at(GetCurrentContext().nodeGraph));
+		ImNodes::SetCurrentContext(myImNodesContexts.at(GetNodeContext().nodeGraph));
 
 		ImNodesStyle& style = ImNodes::GetStyle();
 
@@ -106,7 +117,10 @@ namespace Editor
 
 	void VisualScriptingWindow::Update(const std::string& LevelName)
 	{
-		ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/" + LevelName;
+		SCRIPT::Modify::BeginFrame();
+
+
+		ScriptLoader::SavePath = "f" + LevelName;
 		UpdateContext();
 
 		if (Editor::MainMenuBar::myStaticNodeScriptWindowActive == false) //TO-DO(v10.0.2): May move this somehow?
@@ -116,38 +130,48 @@ namespace Editor
 
 		if (ImGui::Begin("Node Scripting"))
 		{
-			myCommandTracker->Update(
-				[]() -> bool
-				{
-					return ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_Z);
-				},
-				[]() -> bool
-				{
-					return  ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_Y);
-				}
-			);
+			if (ImGui::IsKeyDown(ImGuiMod_Ctrl) && ImGui::IsKeyPressed(ImGuiKey_Z))
+			{
+				myCommandTracker->UndoCommand();
+			}
+			else if (ImGui::IsKeyDown(ImGuiMod_Ctrl) && ImGui::IsKeyPressed(ImGuiKey_Y))
+			{
+				myCommandTracker->RedoCommand();
+			}
 
 			if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_C))
 			{
-				int numSelectedNodes = ImNodes::NumSelectedNodes();
+				const int numSelectedNodes = ImNodes::NumSelectedNodes();
 
 				if (numSelectedNodes > 0)
 				{
-					std::vector<NodeID> copyNodes(numSelectedNodes);
+					std::vector<NodeID> selectedNodes(numSelectedNodes);
 
-					ImNodes::GetSelectedNodes(copyNodes.data());
+					ImNodes::GetSelectedNodes(selectedNodes.data());
 
-					Modify::CreateCopyBuffer(copyNodes, *GetCurrentContext().nodeGraph);
-					//GetCurrentContext().script->GetModifier().CreateCopyBuffer(copyNodes);
+					Modify::CreateCopyBuffer(selectedNodes, *GetNodeContext().nodeGraph);
 				}
 			}
 			else if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_V))
 			{
 
-				ScriptVec2 mousePos = ScriptVec2{ GetMousePos().x, GetMousePos().y };
+				const ScriptVec2 mousePos = ScriptVec2{ GetMousePos().x, GetMousePos().y };
 
-				Modify::PasteCopyBuffer(mousePos, *GetCurrentContext().nodeGraph, myCommandTracker.get());
-				//GetCurrentContext().script->GetModifier().PasteCopyBuffer(mousePos);
+				Modify::PasteCopyBuffer(mousePos, *GetNodeContext().nodeGraph, myCommandTracker.get());
+			}
+			else if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_X))
+			{
+				const int numSelectedNodes = ImNodes::NumSelectedNodes();
+
+				if (numSelectedNodes > 0)
+				{
+					std::vector<NodeID> selectedNodes(numSelectedNodes);
+
+					ImNodes::GetSelectedNodes(selectedNodes.data());
+
+					Modify::CreateCopyBuffer(selectedNodes, *GetNodeContext().nodeGraph);
+					Modify::DestroySelection(selectedNodes, {}, *GetNodeContext().nodeGraph, nullptr);
+				}
 			}
 
 			bool& isDebugging = Global::IsDebugging();
@@ -173,45 +197,53 @@ namespace Editor
 			myVariableWindow.Update();
 			myNodeCreatorWindow.Update();
 			myFunctionWindow.Update();
+
+
+			if (ImGui::Begin("Member Functions"))
+			{
+				Script& currentScript = *GetNodeContext().script;
+				if (ImGui::Button("Create Member Function"))
+				{
+					Modify::CreateMemberFunction("Function1", currentScript);
+				}
+
+				const std::vector<FunctionID>& memberFunctionIDs = currentScript.GetMemberFunctionIDs();
+
+				for (const FunctionID memberFunctionID : memberFunctionIDs)
+				{
+					Function& memberFunction = Global::GetNodeTypeManager().GetFunction(memberFunctionID);
+					
+					if (ImGui::Selectable(memberFunction.GetName().c_str(), &memberFunction.GetNodeGraph() == GetNodeContext().nodeGraph))
+					{
+						SetNodeContext(memberFunction.GetNodeGraph(), GetNodeContext().script);
+						mySelectedFunctionID = memberFunctionID;
+						break;
+					}
+				}
+			}
+
+			if (GetNodeContext().nodeGraph->GetType() == eNodeGraphType::Function)
+			{
+				myFunctionSettingsWindow.Update();
+			}
+
+			ImGui::End();
+
+			
 		}
 
 		ImGui::End();
+
 	}
 
 	void VisualScriptingWindow::ScriptSelectionMenu()
 	{
-		//Script& currentScript = *GetCurrentContext().script;
-
-		/*ImGui::SetNextItemWidth(200);
-
-		if (ImGui::BeginCombo("##ScriptSelectionCombo", currentScript.Name().c_str()))
-		{
-			for (size_t i = 0; i < myCurrentScriptManager->GetScripts().size(); ++i)
-			{
-				const Script& script = *myCurrentScriptManager->GetScripts()[i];
-				bool isSelected = &currentScript == &script;
-
-				if (ImGui::Selectable(script.Name().c_str(), isSelected))
-				{
-					myCurrentScript = &script;
-					myCurrentIndex = i;
-				}
-
-				if (isSelected)
-				{
-					ImGui::SetItemDefaultFocus();
-				}
-			}
-
-			ImGui::EndCombo();
-		}
-
-		ImGui::SameLine();*/
 
 		ImGui::BeginDisabled(myNodeContextHistory.currentIndex == 0);
 		if (ImGui::ArrowButton("NodeContextHistoryLeft", ImGuiDir_Left))
 		{
 			myNodeContextHistory.currentIndex--;
+			UpdateContext();
 		}
 		ImGui::EndDisabled();
 
@@ -220,7 +252,8 @@ namespace Editor
 		ImGui::BeginDisabled(myNodeContextHistory.currentIndex + 1 == myNodeContextHistory.history.size());
 		if (ImGui::ArrowButton("NodeContextHistoryRight", ImGuiDir_Right))
 		{
-			myNodeContextHistory.currentIndex++;
+			myNodeContextHistory.currentIndex++;	
+			UpdateContext();
 		}
 		ImGui::EndDisabled();
 
@@ -228,18 +261,18 @@ namespace Editor
 		{
 			ImGui::SameLine();
 			char buffer[35]{};
-			strcpy_s(buffer, GetCurrentContext().script->Name().c_str());
+			strcpy_s(buffer, GetNodeContext().script->Name().c_str());
 
 			if (ImGui::InputText("##", buffer, IM_ARRAYSIZE(buffer)))
 			{
-				GetCurrentContext().script->Name() = buffer;
+				GetNodeContext().script->Name() = buffer;
 			}
 		}
 	}
 
 	void VisualScriptingWindow::ScriptLoadingMenu()
 	{
-		Script& currentScript = *GetCurrentContext().script;
+		Script& currentScript = *GetNodeContext().script;
 
 		bool canSave = myCommandTracker->GetUndoSize() == 0;
 
@@ -266,17 +299,10 @@ namespace Editor
 			ImGui::OpenPopup("Create New Script");
 		}
 
-		if (ImGui::BeginPopupModal("Create New Script", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::BeginPopupModal("Create New Script", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			ImGui::InputText("##", myScriptNameText, IM_ARRAYSIZE(myScriptNameText), ImGuiInputTextFlags_AutoSelectAll);
 			ImGui::Separator();
-
-			/*auto it = std::find_if(myCurrentScriptManager->GetScripts().begin(), myCurrentScriptManager->GetScripts().end(), [&](const std::unique_ptr<Script>& aScript) -> bool
-				{
-					return aScript->Name() == std::string(myScriptNameText);
-				});
-
-			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, it != myCurrentScriptManager->GetScripts().end());*/
 
 			if (ImGui::Button("Create", ImVec2(120, 0)))
 			{
@@ -289,7 +315,6 @@ namespace Editor
 				ImGui::CloseCurrentPopup();
 			}
 
-			//ImGui::PopItemFlag();
 
 			ImGui::SetItemDefaultFocus();
 			ImGui::SameLine();
@@ -313,32 +338,6 @@ namespace Editor
 			ImGui::InputText("##", myScriptNameText, IM_ARRAYSIZE(myScriptNameText), ImGuiInputTextFlags_AutoSelectAll);
 			ImGui::Separator();
 
-			/*auto it = std::find_if(myCurrentScriptManager->GetScripts().begin(), myCurrentScriptManager->GetScripts().end(), [&](const std::unique_ptr<Script>& aScript) -> bool
-				{
-					return aScript->Name() == std::string(myScriptNameText);
-				});
-
-			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, it != myCurrentScriptManager->GetScripts().end());*/
-
-			/*if (ImGui::Button("Create Copy", ImVec2(120, 0)))
-			{
-				ScriptLoader::CreateCopy(*GetCurrentContext().script, myScriptNameText);
-				ScriptLoader::LoadAll();
-
-				for (size_t i = 0; i < myCurrentScriptManager->GetScripts().size(); i++)
-				{
-					if (myCurrentScriptManager->GetScripts()[i]->Name() == myScriptNameText)
-					{
-						myCurrentIndex = i;
-					}
-				}
-
-				myScriptNameText[0] = (char)0;
-
-				ImGui::CloseCurrentPopup();
-			}*/
-
-			//ImGui::PopItemFlag();
 			ImGui::SetItemDefaultFocus();
 			ImGui::SameLine();
 
@@ -370,7 +369,7 @@ namespace Editor
 
 			if (ImGui::Button("Trigger Event"))
 			{
-				ScriptInstance& scriptInstance = GetCurrentContext().script->CreateScriptInstance();
+				ScriptInstance& scriptInstance = GetNodeContext().script->CreateScriptInstance();
 				ExecutionContextBase c;
 
 				switch (currentEventIndex)
@@ -388,15 +387,16 @@ namespace Editor
 					break;
 				}
 
-				GetCurrentContext().script->DestroyScriptInstance(scriptInstance);
+				GetNodeContext().script->DestroyScriptInstance(scriptInstance);
 			}
 		}
 	}
 
 	void VisualScriptingWindow::VisualizeNodes()
 	{
-		Script& currentScript = *GetCurrentContext().script;
-		const NodeManager& nodeManager = *GetCurrentContext().nodeGraph->myNodeManager;
+		NodeContext& currentNodeContext = GetNodeContext();
+		const Script& currentScript = *GetNodeContext().script;
+		const NodeManager& nodeManager = *GetNodeContext().nodeGraph->myNodeManager;
 		const VariableManager& variableManager = ScriptProxy::GetVariableManager(currentScript);
 
 		ImNodes::BeginNodeEditor();
@@ -459,7 +459,7 @@ namespace Editor
 			{
 				const PinID pinID = node->inputPins[i];
 
-				std::string pinLabel = GetPinLabel(PinTypeManager::GetPinType(ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, pinID).typeID));
+				std::string pinLabel = GetPinLabel(PinTypeManager::GetPinType(ScriptProxy::GetPin(*GetNodeContext().nodeGraph, pinID).typeID));
 				const float labelWidth = ImGui::CalcTextSize(pinLabel.c_str()).x;
 
 				nodeWidthLeft = std::max(nodeWidthLeft, labelWidth);
@@ -470,7 +470,7 @@ namespace Editor
 			for (int i = 0; i < node->outputPins.size(); ++i)
 			{
 				const PinID pinID = node->outputPins[i];
-				const std::string& pinLabel = GetPinLabel(PinTypeManager::GetPinType(ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, pinID).typeID));
+				const std::string& pinLabel = GetPinLabel(PinTypeManager::GetPinType(ScriptProxy::GetPin(*GetNodeContext().nodeGraph, pinID).typeID));
 				const float labelWidth = ImGui::CalcTextSize(pinLabel.c_str()).x;
 
 				nodeWidthRight = std::max(nodeWidthRight, labelWidth);
@@ -487,13 +487,13 @@ namespace Editor
 			for (size_t i = 0; i < node->inputPins.size(); ++i)
 			{
 				const PinID pinID = node->inputPins[i];
-				const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, pinID);
+				const Pin& pin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, pinID);
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
 				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinType.dataTypeID)));
 
-				bool shouldBeHighlighted = std::find(myPinIDsToHighlight.begin(), myPinIDsToHighlight.end(), pinID) != myPinIDsToHighlight.end();
+				bool shouldBeHighlighted = std::find(currentNodeContext.myPinIDsToHighlight.begin(), currentNodeContext.myPinIDsToHighlight.end(), pinID) != currentNodeContext.myPinIDsToHighlight.end();
 
 				ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
 				ImNodes::BeginInputAttribute(pinID, shape);
@@ -513,7 +513,7 @@ namespace Editor
 					const float itemWidth = std::max(20.f, nodeWidthLeft);
 					ImGui::PushItemWidth(itemWidth);
 
-					Modify::EditPin(pinID, *GetCurrentContext().nodeGraph, myCommandTracker.get());
+					Modify::EditPin(pinID, *GetNodeContext().nodeGraph, myCommandTracker.get());
 
 					ImGui::PopItemWidth();
 				}
@@ -530,13 +530,13 @@ namespace Editor
 			for (int i = 0; i < node->outputPins.size(); ++i)
 			{
 				const PinID pinID = node->outputPins[i];
-				const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, pinID);
+				const Pin& pin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, pinID);
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
 				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinType.dataTypeID)));
 
-				bool shouldBeHighlighted = std::find(myPinIDsToHighlight.begin(), myPinIDsToHighlight.end(), pinID) != myPinIDsToHighlight.end();
+				bool shouldBeHighlighted = std::find(currentNodeContext.myPinIDsToHighlight.begin(), currentNodeContext.myPinIDsToHighlight.end(), pinID) != currentNodeContext.myPinIDsToHighlight.end();
 
 				ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
 
@@ -565,14 +565,14 @@ namespace Editor
 		}
 
 		// Render links
-		for (LinkID linkID = 0; const Link & link : GetCurrentContext().nodeGraph->myLinks)
+		for (LinkID linkID = 0; const Link & link : GetNodeContext().nodeGraph->myLinks)
 		{
 			if (link.isDestroyed)
 			{
 				linkID++;
 				continue;
 			}
-			const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, link.inputPinID);
+			const Pin& pin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, link.inputPinID);
 			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.typeID);
 
 			ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
@@ -594,7 +594,8 @@ namespace Editor
 
 	void VisualScriptingWindow::UpdateNodes()
 	{
-		const NodeManager& nodeManager = *GetCurrentContext().nodeGraph->myNodeManager;
+		NodeContext& currentNodeContext = GetNodeContext();
+		const NodeManager& nodeManager = *GetNodeContext().nodeGraph->myNodeManager;
 
 		bool dragStarted = ImGui::IsKeyDown(ImGuiKey_MouseLeft) && !myIsDraggingNode;
 		if (dragStarted)
@@ -623,27 +624,28 @@ namespace Editor
 			ScriptVec2 oldPos = node->position;
 			if (dragStarted && ImNodes::IsNodeSelected(nodeID))
 			{
-				myNodeDragData.emplace(nodeID, NodeDragData{ .startPos = oldPos });
+				currentNodeContext.myNodeDragData.emplace(nodeID, NodeDragData{ .startPos = oldPos });
+				std::cout << nodeID << std::endl;
 			}
 			else if (dragEnded)
 			{
-				auto it = myNodeDragData.find(nodeID);
+				auto it = currentNodeContext.myNodeDragData.find(nodeID);
 
-				if (it != myNodeDragData.end())
+				if (it != currentNodeContext.myNodeDragData.end())
 				{
 					it->second.endPos = newPos;
 				}
 			}
 			if (newPos != oldPos)
 			{
-				Modify::SetNodePosition(nodeID, newPos, *GetCurrentContext().nodeGraph);
+				Modify::SetNodePosition(nodeID, newPos, *GetNodeContext().nodeGraph);
 			}
 		}
 
 		if (dragEnded)
 		{
-			Modify::CommitNodeDrag(myNodeDragData, *GetCurrentContext().nodeGraph, myCommandTracker.get());
-			myNodeDragData.clear();
+			Modify::CommitNodeDrag(currentNodeContext.myNodeDragData, *GetNodeContext().nodeGraph, myCommandTracker.get());
+			currentNodeContext.myNodeDragData.clear();
 		}
 
 		// See if links should be created
@@ -653,8 +655,8 @@ namespace Editor
 
 		if (ImNodes::IsLinkCreated(&createdLinkPinID1, &createdLinkPinID2))
 		{
-			Modify::TryCreateLink(createdLinkPinID1, createdLinkPinID2, *GetCurrentContext().nodeGraph, myCommandTracker.get());
-			myPinIDsToHighlight.clear();
+			Modify::TryCreateLink(createdLinkPinID1, createdLinkPinID2, *GetNodeContext().nodeGraph, myCommandTracker.get());
+			currentNodeContext.myPinIDsToHighlight.clear();
 		}
 
 		// See if links or nodes should be destroyed
@@ -676,7 +678,7 @@ namespace Editor
 
 			if (!selectedLinks.empty() || !selectedNodes.empty())
 			{
-				Modify::DestroySelection(selectedNodes, selectedLinks, *GetCurrentContext().nodeGraph, myCommandTracker.get());
+				Modify::DestroySelection(selectedNodes, selectedLinks, *GetNodeContext().nodeGraph, myCommandTracker.get());
 			}
 
 			ImNodes::ClearNodeSelection();
@@ -687,18 +689,18 @@ namespace Editor
 		PinID startedPinID = InvalidID<PinID>();
 		if (ImNodes::IsLinkStarted(&startedPinID))
 		{
-			myStartedLinkPinID = startedPinID;
+			currentNodeContext.myStartedLinkPinID = startedPinID;
 
-			const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, myStartedLinkPinID);
+			const Pin& pin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, currentNodeContext.myStartedLinkPinID);
 
 			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-			myPinIDsToHighlight = ScriptFilter::GetNonConnectedPinsOfTypeAndHash(*GetCurrentContext().nodeGraph, InvertPinType(pinType.flowType), pinType.dataTypeID);
+			currentNodeContext.myPinIDsToHighlight = ScriptFilter::GetNonConnectedPinsOfTypeAndHash(*GetNodeContext().nodeGraph, InvertFlowType(pinType.flowType), pinType.dataTypeID);
 
-			for (PinID i = 0; i < myPinIDsToHighlight.size(); i++)
+			for (PinID i = 0; i < currentNodeContext.myPinIDsToHighlight.size(); i++)
 			{
-				if (ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, myPinIDsToHighlight[i]).nodeID == pin.nodeID)
+				if (ScriptProxy::GetPin(*GetNodeContext().nodeGraph, currentNodeContext.myPinIDsToHighlight[i]).nodeID == pin.nodeID)
 				{
-					myPinIDsToHighlight.erase(myPinIDsToHighlight.begin() + i);
+					currentNodeContext.myPinIDsToHighlight.erase(currentNodeContext.myPinIDsToHighlight.begin() + i);
 					i--;
 				}
 			}
@@ -710,8 +712,8 @@ namespace Editor
 		if (ImNodes::IsLinkDropped(&droppedPinID))
 		{
 			ImGui::OpenPopup("Node Create Popup");
-			myLinkCreationPinID = droppedPinID;
-			myPinIDsToHighlight.clear();
+			currentNodeContext.myLinkCreationPinID = droppedPinID;
+			currentNodeContext.myPinIDsToHighlight.clear();
 
 			UpdateClickPos();
 		}
@@ -719,7 +721,7 @@ namespace Editor
 		// Drop link create popup
 		if (ImGui::BeginPopup("Node Create Popup"))
 		{
-			const Pin& pin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, myLinkCreationPinID);
+			const Pin& pin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, currentNodeContext.myLinkCreationPinID);
 
 			DataTypeID droppedPinDataTypeID = PinTypeManager::GetPinType(pin.typeID).dataTypeID;
 
@@ -740,7 +742,7 @@ namespace Editor
 								size_t size = 0;
 								switch (PinTypeManager::GetPinType(pin.typeID).flowType)
 								{
-								case ePinFlowType::Input:
+								case eFlowType::Input:
 								{
 									size = Stream<PinTypeID>(aNodeType.nodeRecipe.outputPinTypeIDs).Filter([&droppedPinDataTypeID](const PinTypeID aPinTypeID) -> bool
 										{
@@ -749,7 +751,7 @@ namespace Editor
 									).Size();
 									break;
 								}
-								case ePinFlowType::Output:
+								case eFlowType::Output:
 								{
 									size = Stream<PinTypeID>(aNodeType.nodeRecipe.inputPinTypeIDs).Filter([&droppedPinDataTypeID](const PinTypeID aPinTypeID) -> bool
 										{
@@ -776,10 +778,10 @@ namespace Editor
 			auto onClickCallback = [&](NodeTypeID aNodeTypeID) -> void
 				{
 
-					Modify::CreateNodeAutoLink(*GetCurrentContext().nodeGraph, aNodeTypeID, myLinkCreationPinID, ScriptVec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
+					Modify::CreateNodeAutoLink(*GetNodeContext().nodeGraph, aNodeTypeID, currentNodeContext.myLinkCreationPinID, ScriptVec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 
-					myPinIDsToHighlight.clear();
+					currentNodeContext.myPinIDsToHighlight.clear();
 					myNodeTypeSearch[0] = '\0';
 				};
 
@@ -796,7 +798,7 @@ namespace Editor
 
 				ImGui::Text("Links:");
 
-				for (const Link& link : GetCurrentContext().nodeGraph->myLinks)
+				for (const Link& link : GetNodeContext().nodeGraph->myLinks)
 				{
 					if (link.isDestroyed)
 					{
@@ -811,7 +813,7 @@ namespace Editor
 				if (myHoveredPinID != InvalidID<PinID>())
 				{
 					ImGui::Text("Hovered PinID: %d", myHoveredPinID);
-					const Pin& hoveredPin = ScriptProxy::GetPin(*GetCurrentContext().nodeGraph, myHoveredPinID);
+					const Pin& hoveredPin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, myHoveredPinID);
 					ImGui::Text("Connections:");
 					for (PinID connectionID : hoveredPin.connectedPinIDs)
 					{
@@ -967,11 +969,12 @@ namespace Editor
 
 			auto onClickCallback = [&](NodeTypeID aNodeTypeID) -> void
 				{
+					NodeContext& currentNodeContext = GetNodeContext();
 
-					Modify::CreateNode(*GetCurrentContext().nodeGraph, aNodeTypeID, ScriptVec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
+					Modify::CreateNode(*GetNodeContext().nodeGraph, aNodeTypeID, ScriptVec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 
-					myPinIDsToHighlight.clear();
+					currentNodeContext.myPinIDsToHighlight.clear();
 					myNodeTypeSearch[0] = '\0';
 				};
 
@@ -982,9 +985,14 @@ namespace Editor
 
 	ImVec2 VisualScriptingWindow::GetMiddlePos() const
 	{
-		NodeContext currentContext = GetCurrentContext();
+		const NodeContext& currentContext = GetNodeContext();
 		ImNodesContext* currentImNodesContext = myImNodesContexts.at(currentContext.nodeGraph);
 		return currentImNodesContext->CanvasOriginScreenSpace + ImNodes::EditorContextGetPanning() / 2.f;
+	}
+
+	SCRIPT::FunctionID VisualScriptingWindow::GetCurrentFunctionID() const
+	{
+		return mySelectedFunctionID;
 	}
 
 
@@ -995,7 +1003,7 @@ namespace Editor
 
 	ImVec2 VisualScriptingWindow::GetMousePos() const
 	{
-		NodeContext currentContext = GetCurrentContext();
+		NodeContext currentContext = GetNodeContext();
 		ImNodesContext* currentImNodesContext = myImNodesContexts.at(currentContext.nodeGraph);
 		return ImGui::GetMousePosOnOpeningCurrentPopup() - currentImNodesContext->CanvasOriginScreenSpace - ImNodes::EditorContextGetPanning();
 	}

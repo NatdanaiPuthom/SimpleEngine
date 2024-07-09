@@ -6,25 +6,35 @@
 namespace SCR
 {
 
-	NodeGraph::NodeGraph()
+	NodeGraph::NodeGraph(const eNodeGraphType aType)
 		: myNodeManager(std::make_unique<NodeManager>())
 		, myPinManager(std::make_unique<PinManager>())
+		, myType(aType)
 	{
 	}
 
 	NodeGraph::~NodeGraph()
 	{
+		for (auto& [nodeID, node, nodeType] : *myNodeManager)
+		{
+			std::erase(nodeType->nodeRefs, NodeRef{ .nodeID = nodeID, .nodeGraph = this });
+		}
 	}
 
 	NodeGraph::NodeGraph(const NodeGraph& aOther)
 		: myNodeManager(std::make_unique<NodeManager>(*aOther.myNodeManager))
 		, myPinManager(std::make_unique<PinManager>(*aOther.myPinManager))
-		, myMemoryManager(aOther.myMemoryManager)
+		, myMemoryArena(aOther.myMemoryArena)
+		, myType(aOther.myType)
 	{
 
 		for (Pin& pin : myPinManager->myPins)
 		{
-			pin.dataPtr = myMemoryManager.GetMemory().GetRenewedPointer(pin.dataPtr, aOther.myMemoryManager.GetMemory());
+			pin.dataPtr = myMemoryArena.GetRenewedPointer(pin.dataPtr, aOther.myMemoryArena);
 		}
+	}
+	eNodeGraphType NodeGraph::GetType() const
+	{
+		return myType;
 	}
 }

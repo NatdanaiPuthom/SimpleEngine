@@ -18,15 +18,14 @@ namespace Editor
 
 	void VariableWindow::Update()
 	{
-		Script& currentScript = *myParentWindow.GetCurrentContext().script;
-		//ScriptModifier& modifier = currentScript.GetModifier();
+		Script& currentScript = *myParentWindow.GetNodeContext().script;
 
 		if (ImGui::Begin("VariableWindow"))
 		{
 			if (ImGui::Button("Create Variable"))
 			{
 				
-				Modify::CreateVariable(*myParentWindow.GetCurrentContext().script);
+				Modify::CreateVariable(*myParentWindow.GetNodeContext().script);
 			}
 
 			ImGui::Separator();
@@ -71,7 +70,7 @@ namespace Editor
 
 	void VariableWindow::ModifyVariablePopup(VarID aVarID)
 	{
-		Script& currentScript = *myParentWindow.GetCurrentContext().script;
+		Script& currentScript = *myParentWindow.GetNodeContext().script;
 		const Variable& variable = ScriptProxy::GetVariable(currentScript, aVarID);
 		std::string variableName = ScriptProxy::GetVariable(currentScript, aVarID).name;
 
@@ -81,7 +80,7 @@ namespace Editor
 		if (ImGui::InputText("##VariableName", buffer, IM_ARRAYSIZE(buffer)))
 		{
 			variableName = buffer;
-			Modify::SetVariableName(aVarID, variableName, *myParentWindow.GetCurrentContext().script);
+			Modify::SetVariableName(aVarID, variableName, *myParentWindow.GetNodeContext().script);
 		}
 
 		int currentSelectedIndex = 0;
@@ -107,18 +106,18 @@ namespace Editor
 
 		if (ImGui::Combo("##ChangeDataType", &currentSelectedIndex, names.c_str()))
 		{
-			Modify::SetVariableDataType(aVarID, dataTypeIDs.at(currentSelectedIndex), *myParentWindow.GetCurrentContext().script, nullptr);
+			Modify::SetVariableDataType(aVarID, dataTypeIDs.at(currentSelectedIndex), *myParentWindow.GetNodeContext().script, nullptr);
 		}
 
 		ImGui::Text("Default value:");
 		ImGui::SameLine();
-		Modify::EditVariableDefaultValue(aVarID, *myParentWindow.GetCurrentContext().script, nullptr);
+		Modify::EditVariableDefaultValue(aVarID, *myParentWindow.GetNodeContext().script, nullptr);
 
 		ImGui::Separator();
 
 		if (ImGui::Button("Create Getter"))
 		{
-			Modify::CreateGetterNode(*myParentWindow.GetCurrentContext().script, *myParentWindow.GetCurrentContext().nodeGraph, variable.dataTypeID, aVarID);
+			Modify::CreateGetterNode(*myParentWindow.GetNodeContext().script, *myParentWindow.GetNodeContext().nodeGraph, variable.dataTypeID, aVarID);
 			ImGui::CloseCurrentPopup();
 
 		}
@@ -127,12 +126,12 @@ namespace Editor
 
 		if (ImGui::Button("Create Setter"))
 		{
-			Modify::CreateGetterNode(*myParentWindow.GetCurrentContext().script, *myParentWindow.GetCurrentContext().nodeGraph, variable.dataTypeID, aVarID);
+			Modify::CreateGetterNode(*myParentWindow.GetNodeContext().script, *myParentWindow.GetNodeContext().nodeGraph, variable.dataTypeID, aVarID);
 		}
 
 		if (ImGui::Button("Delete Variable"))
 		{
-			Modify::DestroyVariable(aVarID, *myParentWindow.GetCurrentContext().script, nullptr);
+			Modify::DestroyVariable(aVarID, *myParentWindow.GetNodeContext().script, nullptr);
 		}
 	}
 }

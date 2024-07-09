@@ -1,10 +1,9 @@
 #include "ScriptFoundation.h"
 #include "Script.h"
 #include "NodeTypes/SystemNodes.h"
-#include "Serialization/ScriptLoader.h"
 #include "SystemDataTypes.h"
+#include "Serialization/ScriptLoader.h"
 #include "Node/NodeExecutor.h"
-#include "Command/ScriptCommandTracker.h"
 #include "Type/ScriptTypeManager.h"
 
 namespace SCR
@@ -33,7 +32,7 @@ namespace SCR
 		myScripts.clear();
 	}
 
-	Script& ScriptFoundation::CreateScript(const DataTypeID aTargetID, const std::string& aName)
+	Script& ScriptFoundation::CreateScript(DataTypeID aTargetID, const std::string& aName)
 	{
 		std::vector<std::unique_ptr<Script>>& scriptsByTarget = myScripts[aTargetID];
 		return *scriptsByTarget.emplace_back(std::make_unique<Script>(aTargetID, aName));

@@ -16,8 +16,7 @@ namespace SCR
 		bool isDestroyed = false;
 	};
 
-	class MemoryPool;
-	class MemoryManager;
+	template<size_t> class MemoryArena;
 
 	class VariableManager
 	{
@@ -42,7 +41,7 @@ namespace SCR
 
 		std::unordered_map<NodeID, VarID> myNodeIDToVarID;
 
-		std::unique_ptr<MemoryManager> myMemoryManager;
+		std::unique_ptr<MemoryArena<NodeBufferCapacity>> myMemoryArena;
 
 	};
 	

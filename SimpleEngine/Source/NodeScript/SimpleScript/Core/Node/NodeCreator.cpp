@@ -23,7 +23,7 @@ namespace SCR
 
 					if (flow)
 					{
-						if (pinType.flowType == ePinFlowType::Output)
+						if (pinType.flowType == eFlowType::Output)
 						{
 							assert(aContext.executionQueue);
 							for (PinID connectedInputPinID : pin.connectedPinIDs)
@@ -37,19 +37,19 @@ namespace SCR
 			};
 	}
 
-	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, const size_t aStartIndex)
+	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, const NodeGraph& aDestinationNodeGraph, const NodeGraph& aSourceNodeGraph, const size_t aStartIndex)
 	{
 		assert(aDestination.size() == aSource.size());
 		for (size_t i = aStartIndex; i < aDestination.size(); i++)
 		{
-			PinID destinationPinID = aDestination[i];
+			const PinID destinationPinID = aDestination[i];
 
-			const Pin& destinationPin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, destinationPinID);
+			const Pin& destinationPin = ScriptProxy::GetPin(aDestinationNodeGraph, destinationPinID);
 
 			const PinType& outputPinType = PinTypeManager::GetPinType(destinationPin.typeID);
 
 			const PinID sourcePinID = aSource[i];
-			const Pin& sourcePin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, sourcePinID);
+			const Pin& sourcePin = ScriptProxy::GetPin(aSourceNodeGraph, sourcePinID);
 
 
 			outputPinType.setFunction(PinSetData{ destinationPinID, sourcePin.dataPtr,

@@ -2,6 +2,7 @@
 #include "ScriptDefines.h"
 #include "SystemTypes/ScriptVec2.h"
 #include "Pin/Pin.h"
+#include "Pin/PinType.h"
 #include <unordered_map>
 
 namespace SCR
@@ -17,9 +18,13 @@ namespace SCR
 	class ScriptFoundation;
 	class MoveNodesCommand;
 	class CommandTracker;
+	class Function;
 
 	namespace Modify
 	{
+
+		Script& CreateScript(DataTypeID aTarget, const std::string& aName);
+
 		NodeID CreateNode(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeID CreateNodeAutoLink(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, PinID aConnection, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeID CreateNode(NodeGraph& aNodeGraph, const std::string& aName, bool& aSuccess, ScriptVec2 aPosition = ScriptVec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);
@@ -39,7 +44,9 @@ namespace SCR
 		VarID CreateVariable(Script& aScript, DataTypeID aDataTypeID = typeid(bool).hash_code(), CommandTracker* aCommandTracker = nullptr);
 		void DestroyVariable(VarID aVarID, Script& aScript, CommandTracker* aCommandTracker);
 
-		void EditPin(PinID anPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void EditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void SplitPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+
 		void EditVariableDefaultValue(VarID aVarID, Script& aScript, CommandTracker* aCommandTracker);
 		void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID, Script& aScript, CommandTracker* aCommandTracker);
 		void SetVariableName(VarID aVarID, const std::string& aName, Script& aScript);
@@ -51,74 +58,19 @@ namespace SCR
 
 		CustomEventID CreateCustomEvent(const std::string& aName);
 
-		void AddPinToCustomEvent(DataTypeID aDataTypeID, CustomEventID aNodeTypeID, const std::string& aName = "Pin");
-		void SetPinAtIndexCustomEvent(size_t anIndex, DataTypeID aDataTypeID, CustomEventID aNodeTypeID);
-		void DeletePinAtIndexCustomEvent(size_t anIndex, CustomEventID aNodeTypeID);
+		void AddPinToCustomEvent(DataTypeID aDataTypeID, CustomEventID aCustomEventID, const std::string& aPinName = "Pin");
+		void SetPinAtIndexCustomEvent(size_t anIndex, DataTypeID aDataTypeID, CustomEventID aCustomEventID);
+		void DeletePinAtIndexCustomEvent(size_t anIndex, CustomEventID aCustomEventID);
 
 		FunctionID CreateGlobalFunction(const std::string& aName);
+		FunctionID CreateMemberFunction(const std::string& aName, Script& aScript);
+
+		void AddPinToFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, eFlowType aFlowType, const std::string& aPinName = "Pin");
+		void SetPinAtIndexFunction(FunctionID aFunctionID, size_t anIndex, DataTypeID aDataTypeID, eFlowType aFlowType);
+		void DeletePinAtIndexFunction(FunctionID aFunctionID, size_t anIndex, eFlowType aFlowType);
 
 		void BeginFrame();
+
+		int GetPinID(PinID aPinID, const NodeGraph& aNodeGraph);
 	}
-
-	//class ScriptModifier
-	//{
-	//	friend class Script;
-
-	//	ScriptModifier(Script& aScript);
-	//	~ScriptModifier();
-	//public:
-
-
-	//	/*NodeID CreateNode(const NodeTypeID aNodeTypeID, ScriptVec2 aPosition = ScriptVec2());
-	//	NodeID CreateNodeAutoLink(const NodeTypeID aNodeTypeID, PinID aConnection, ScriptVec2 aPosition = ScriptVec2());
-	//	NodeID CreateNode(const std::string& aName, bool& aSuccess, ScriptVec2 aPosition = ScriptVec2(), bool aTrackChange = false, bool aCreateIfNameNotFound = true);
-	//	NodeID CreateGetterNode(DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition = ScriptVec2());
-	//	NodeID CreateSetterNode(DataTypeID aDataTypeID, VarID aVarID, ScriptVec2 aPosition = ScriptVec2());
-
-	//	Link TryCreateLink(PinID aPinID1, PinID aPinID2);
-	//	void DestroyLink(const PinID aInputPinID);
-	//	void DestoryLinksByOutputPinID(const PinID aOutputPinID);
-	//	void DestroyNode(const NodeID aNodeID);
-	//	void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs);
-	//	void SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, bool aTrackChange = false);
-	//	void SetNodePosition(const NodeID aNodeID, ScriptVec2 aPosition, ScriptVec2 aOldPosition, bool aTrackChange = false);
-
-	//	void BeginNodeDrag(const std::vector<NodeDragData>& aDragData);
-	//	void EndNodeDrag(const std::vector<NodeDragData>& aDragData);
-	//	void BeginNodeDrag(const NodeID aNodeID, ScriptVec2 aStartPos);
-	//	void EndNodeDrag(const NodeID aNodeID, ScriptVec2 aEndPos);
-
-	//	VarID CreateVariable(DataTypeID aDataTypeID = typeid(bool).hash_code());
-	//	void DestroyVariable(VarID aVarID);
-
-	//	void EditPin(PinID anPinID);
-	//	void EditVariableDefaultValue(VarID aVarID);
-	//	void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID);
-	//	void SetVariableName(VarID aVarID, const std::string& aName);
-
-	//	void DestroyVariableNodes(const VarID aVarID);
-
-	//	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs);
-	//	void PasteCopyBuffer(ScriptVec2 aPosition);
-
-	//	static CustomEventID CreateNodeType_CustomEvent(const std::string& aName);
-
-	//	static void AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, const std::string& aName = "Pin", ScriptFoundation* aFoundation = nullptr);
-	//	static void SetPinAtIndexCustomEvent(const size_t anIndex, const DataTypeID aDataTypeID, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation = nullptr);
-	//	static void DeletePinAtIndexCustomEvent(const size_t anIndex, const CustomEventID aNodeTypeID, ScriptFoundation* aFoundation = nullptr);
-
-	//	static FunctionID CreateFunction(const std::string& aName);
-
-	//	void SetCurrentNodeGraph(NodeGraph* aNodeGraph);
-	//	NodeGraph* GetCurrentNodeGraph() const;*/
-
-	//private:
-
-	//	Script& myScript;
-	//	NodeGraph* myCurrentNodeGraph;
-
-	//	//std::unordered_map<NodeID, MoveNodeData> myMoveNodesData;
-	//};
-
-
 }

@@ -231,6 +231,9 @@ namespace SCR
 
 		void* GetRenewedPointer(const void* aPtr, const MemoryArena& aPrevious) const;
 
+		template<std::integral T>
+		T GetID(const void* aPtr) const;
+
 		void Clear();
 
 	private:
@@ -320,6 +323,24 @@ namespace SCR
 		}
 
 		return nullptr;
+	}
+
+	template<size_t BufferCapacity>
+	template<std::integral T>
+	inline T MemoryArena<BufferCapacity>::GetID(const void* aPtr) const
+	{
+		for (size_t i = 0; i < myMemoryBuffers.size(); ++i)
+		{
+			const std::unique_ptr<MemoryBuffer>& buffer = myMemoryBuffers[i];
+			size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->Data());
+			if (ptrDiff < BufferCapacity)
+			{
+				return static_cast<T>(i * BufferCapacity + (reinterpret_cast<size_t>(myMemoryBuffers[i]->Data()) + ptrDiff));
+
+			}
+		}
+
+		return InvalidID<T>();
 	}
 
 	template<size_t BufferCapacity>

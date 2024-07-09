@@ -12,15 +12,17 @@ namespace SCR
 	{
 	}
 
-	TypeContainer<PinID, Pin, PinType>::ConstIterator PinManager::begin() const
+	TypeContainer<PinID, const Pin, const PinType>::Iterator PinManager::begin() const
 	{
-		const TypeContainer<PinID, Pin, PinType> tC(myPins, [](const Pin& aPin) -> const PinType& { return PinTypeManager::GetPinType(aPin.typeID); });
-			return tC.begin();
+		auto f = [](const Pin& aPin) -> const PinType& { return PinTypeManager::GetPinType(aPin.typeID); };
+		const TypeContainer<PinID, const Pin, const PinType> tC(myPins, f);
+		return tC.begin();
 	}
 
-	TypeContainer<PinID, Pin, PinType>::ConstIterator PinManager::end() const
+	TypeContainer<PinID, const Pin, const PinType>::Iterator PinManager::end() const
 	{
-		const TypeContainer<PinID, Pin, PinType> tC(myPins, [](const Pin& aPin) -> const PinType& { return PinTypeManager::GetPinType(aPin.typeID); });
+		auto f = [](const Pin& aPin) -> const PinType& { return PinTypeManager::GetPinType(aPin.typeID); };
+		const TypeContainer<PinID, const Pin, const PinType> tC(myPins, f);
 		return tC.end();
 	}
 }

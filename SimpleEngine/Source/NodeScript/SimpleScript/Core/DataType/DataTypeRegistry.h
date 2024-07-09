@@ -97,11 +97,6 @@ namespace SCR
 	template<typename T>
 	struct RegisterType
 	{
-		/*template<eNodeOperatorTrait Operators>
-		constexpr RegisterType(const char* aName, const Color& aColor = DefaultColor)
-		{
-			DataTypeRegistry::Register<T, Operators>(aName, aColor);
-		}*/
 
 		template<eNodeOperatorTrait Operators>
 		constexpr static RegisterType<T> Register(const char* aName, const Color& aColor = DefaultColor)

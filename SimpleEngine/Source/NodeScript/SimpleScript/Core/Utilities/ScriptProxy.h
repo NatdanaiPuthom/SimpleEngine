@@ -15,7 +15,7 @@ namespace SCR
 	class PinTypeManager;
 	class DataTypeManager;
 	class MemoryPool;
-	class MemoryManager;
+	template<size_t> class MemoryArena;
 	class NodeManager;
 	class PinManager;
 	class NodeExecutor;
@@ -40,10 +40,10 @@ namespace SCR
 
 		static MemoryPool& GetGlobalMemoryPool();
 
-		static MemoryManager& GetNodeGraphMemoryManager(NodeGraph& aNodeGraph);
+		static MemoryArena<NodeBufferCapacity>& GetNodeGraphMemoryArena(NodeGraph& aNodeGraph);
 
-		static MemoryManager& GetVariableMemoryManager(Script& aScript);
-		static const MemoryManager& GetVariableMemoryManager(const Script& aScript);
+		static MemoryArena<NodeBufferCapacity>& GetVariableMemoryArena(Script& aScript);
+		static const MemoryArena<NodeBufferCapacity>& GetVariableMemoryArena(const Script& aScript);
 
 		static NodeGraph& GetEventGraph(Script& aScript);
 		static const NodeGraph& GetEventGraph(const Script& aScript);
@@ -59,11 +59,6 @@ namespace SCR
 		static const Node& GetNode(const NodeGraph& aNodeGraph, NodeID aNodeID);
 		static const Pin& GetPin(const NodeGraph& aNodeGraph, PinID aPinID);
 		static const Variable& GetVariable(const Script& aScript, const VarID aVarID);
-
-		static const std::vector<NodeID>& GetNodeIDsByNodeType(const NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID);
-		static std::vector<std::vector<NodeID>>& GetNodeIDsByNodeTypeContainer(NodeGraph& aNodeGraph);
-
-#pragma region Types
 		
 	public:
 

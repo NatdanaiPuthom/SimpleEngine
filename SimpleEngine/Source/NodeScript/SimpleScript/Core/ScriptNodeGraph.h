@@ -2,7 +2,7 @@
 #include "ScriptDefines.h"
 #include "Node/NodeManager.h"
 #include "Pin/PinManager.h"
-#include "Memory/ScriptMemoryManager.h"
+#include "Memory/ScriptMemoryArena.h"
 
 namespace SCR
 {
@@ -10,12 +10,19 @@ namespace SCR
 	class NodeManager;
 	class PinManager;
 
+	enum class eNodeGraphType
+	{
+		Event,
+		Function,
+		Other
+	};
+
 	class NodeGraph
 	{
 		friend class ScriptProxy;
 	public:
 
-		NodeGraph();
+		NodeGraph(eNodeGraphType aType);
 		virtual ~NodeGraph();
 
 		NodeGraph(const NodeGraph&);
@@ -24,13 +31,18 @@ namespace SCR
 		NodeGraph& operator=(const NodeGraph&) = delete;
 		NodeGraph& operator=(NodeGraph&&) = default;
 
+		eNodeGraphType GetType() const;
+
 	public:
 
 		std::unique_ptr<NodeManager> myNodeManager;
 		std::unique_ptr<PinManager> myPinManager;
 		std::vector<Link> myLinks;
 
-		MemoryManager myMemoryManager;
-		//MemoryPool myMemoryPool;
+		MemoryArena<NodeBufferCapacity> myMemoryArena;
+
+	private:
+
+		eNodeGraphType myType;
 	};
 }

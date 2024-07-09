@@ -8,18 +8,18 @@
 namespace SCR
 {
 
-	PinID ScriptLinker::GetPinID(const NodeGraph& aNodeGraph, const NodeID aNodeID, const size_t aPinIndex, const ePinFlowType aPinFlowType)
+	PinID ScriptLinker::GetPinID(const NodeGraph& aNodeGraph, const NodeID aNodeID, const size_t aPinIndex, const eFlowType aPinFlowType)
 	{
 		const Node& node = ScriptProxy::GetNode(aNodeGraph, aNodeID);
 		switch (aPinFlowType)
 		{
-		case ePinFlowType::Input:
+		case eFlowType::Input:
 			if (aPinIndex < node.inputPins.size())
 			{
 				return node.inputPins.at(aPinIndex);
 			}
 			break;
-		case ePinFlowType::Output:
+		case eFlowType::Output:
 			if (aPinIndex < node.outputPins.size())
 			{
 				return node.outputPins.at(aPinIndex);
@@ -37,7 +37,7 @@ namespace SCR
 		const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.typeID);
 		const Node& node = ScriptProxy::GetNode(aNodeGraph, pin.nodeID);
 
-		const std::vector<PinID>& pinIDs = pinType.flowType == ePinFlowType::Output ? node.outputPins : node.inputPins;
+		const std::vector<PinID>& pinIDs = pinType.flowType == eFlowType::Output ? node.outputPins : node.inputPins;
 
 		for (size_t i = 0; i < pinIDs.size(); ++i)
 		{
@@ -75,8 +75,8 @@ namespace SCR
 
 		switch (pinType1.flowType)
 		{
-		case ePinFlowType::Input:
-			if (pinType2.flowType == ePinFlowType::Output)
+		case eFlowType::Input:
+			if (pinType2.flowType == eFlowType::Output)
 			{
 				if (ArePinsLinkableByDataType(aNodeGraph, aPinID1, aPinID2))
 				{
@@ -85,8 +85,8 @@ namespace SCR
 				}
 			}
 			break;
-		case ePinFlowType::Output:
-			if (pinType2.flowType == ePinFlowType::Input)
+		case eFlowType::Output:
+			if (pinType2.flowType == eFlowType::Input)
 			{
 				if (ArePinsLinkableByDataType(aNodeGraph, aPinID1, aPinID2))
 				{

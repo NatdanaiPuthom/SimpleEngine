@@ -7,7 +7,7 @@ namespace SCR
 {
 
 	VariableManager::VariableManager()
-		: myMemoryManager(std::make_unique<MemoryManager>())
+		: myMemoryArena(std::make_unique<MemoryArena<NodeBufferCapacity>>())
 	{
 	}
 

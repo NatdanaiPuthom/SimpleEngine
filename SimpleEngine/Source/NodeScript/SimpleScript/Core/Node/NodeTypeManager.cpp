@@ -93,6 +93,11 @@ namespace SCR
 		return myNodeTypes.at(anID);
 	}
 
+	const NodeType& NodeTypeManager::GetNodeType(const NodeTypeID anID) const
+	{
+		return myNodeTypes.at(anID);
+	}
+
 	const std::vector<NodeType>& NodeTypeManager::GetNodeTypes()
 	{
 		return myNodeTypes;
@@ -119,6 +124,11 @@ namespace SCR
 	}
 
 	Function& NodeTypeManager::GetFunction(const FunctionID anID)
+	{
+		return *myFunctions.at(anID);
+	}
+
+	const Function& NodeTypeManager::GetFunction(const FunctionID anID) const
 	{
 		return *myFunctions.at(anID);
 	}

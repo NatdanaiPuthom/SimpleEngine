@@ -7,7 +7,9 @@ namespace SCR
 {
 
 
-	class CompositeCommand final : public Command
+
+
+	class CompositeCommand final
 	{
 	public:
 		enum class eEndCode
@@ -16,58 +18,17 @@ namespace SCR
 			InProgress,
 			Ended_Empty,
 		};
-
 	public:
 
-		CompositeCommand(const std::string& aName);
+		CompositeCommand(const std::string& aName = std::string());
+
 		~CompositeCommand();
 
-		template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
-		void AddCommand(Args&&... args);
-
-		void AddCommand(std::unique_ptr<Command> aCommand);
-
-		void Begin(const std::string& aName);
-		eEndCode End();
-
-	private:
-
-		void Do() override;
-		void Undo() override;
-
-	private:
-
-		std::unique_ptr<CompositeCommand> myCurrentChild;
-		std::vector<std::unique_ptr<Command>> myCommands;
-	};
-
-	template<IsBaseOf<Command> CommandType, typename... Args> requires HasArgsConstructor<CommandType, Args...>
-	inline void CompositeCommand::AddCommand(Args&&... args)
-	{
-		AddCommand(std::make_shared<CommandType>(std::forward<Args>(args)...));
-	}
+		CompositeCommand(const CompositeCommand& aOther);
+		CompositeCommand(CompositeCommand&& aOther) noexcept;
 
 
-	class CompositeCommandNew final
-	{
-	public:
-		enum class eEndCode
-		{
-			Ended,
-			InProgress,
-			Ended_Empty,
-		};
-	public:
-
-		CompositeCommandNew(const std::string& aName = std::string());
-
-		~CompositeCommandNew();
-
-		CompositeCommandNew(const CompositeCommandNew& aOther);
-		CompositeCommandNew(CompositeCommandNew&& aOther) noexcept;
-
-
-		void AddCommand(CommandNew&& aCommand);
+		void AddCommand(Command&& aCommand);
 
 		void operator()(eCommandType aCommandType) const;
 
@@ -83,8 +44,8 @@ namespace SCR
 
 	private:
 
-		std::unique_ptr<CompositeCommandNew> myCurrentChild;
-		std::vector<CommandNew> myCommands;
+		std::unique_ptr<CompositeCommand> myCurrentChild;
+		std::vector<Command> myCommands;
 		std::string myName;
 	};
 }

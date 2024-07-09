@@ -83,6 +83,8 @@ namespace SCR
 		const NodeTypeID typeID;
 		std::vector<PinID> inputPins;
 		std::vector<PinID> outputPins;
+		//std::vector<Pin> inputPinsNew;
+		//std::vector<Pin> outputPinsNew;
 
 		ScriptVec2 position;
 		bool isDestroyed = false;

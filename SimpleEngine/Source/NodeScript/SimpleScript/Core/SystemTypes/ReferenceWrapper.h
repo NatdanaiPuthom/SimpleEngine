@@ -20,6 +20,11 @@ namespace SCR
 		{
 		}
 
+		ReferenceWrapper& operator=(T&& aValue)
+		{
+			Set(aValue);
+		}
+
 		constexpr operator Ref() const noexcept
 		{
 			return *myPtr;

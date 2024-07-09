@@ -11,6 +11,7 @@ namespace SCR
 		PinTypeID typeID;
 		void* dataPtr;
 		std::vector<PinID> connectedPinIDs;
+		std::vector<Pin> subPins;
 	};
 
 	struct Link

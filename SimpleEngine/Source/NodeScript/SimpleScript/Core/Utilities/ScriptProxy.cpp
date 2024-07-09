@@ -14,14 +14,19 @@ namespace SCR
 		return ScriptFoundation::GetInstance().myMemoryPool;
 	}
 
-	MemoryManager& ScriptProxy::GetNodeGraphMemoryManager(NodeGraph& aNodeGraph)
+	MemoryArena<NodeBufferCapacity>& ScriptProxy::GetNodeGraphMemoryArena(NodeGraph& aNodeGraph)
 	{
-		return aNodeGraph.myMemoryManager;
+		return aNodeGraph.myMemoryArena;
 	}
 
-	MemoryManager& ScriptProxy::GetVariableMemoryManager(Script& aScript)
+	MemoryArena<NodeBufferCapacity>& ScriptProxy::GetVariableMemoryArena(Script& aScript)
 	{
-		return *aScript.myVariableManager.myMemoryManager;
+		return *aScript.myVariableManager.myMemoryArena;
+	}
+
+	const MemoryArena<NodeBufferCapacity>& ScriptProxy::GetVariableMemoryArena(const Script& aScript)
+	{
+		return *aScript.myVariableManager.myMemoryArena;
 	}
 
 	NodeGraph& ScriptProxy::GetEventGraph(Script& aScript)
@@ -73,16 +78,6 @@ namespace SCR
 	const Variable& ScriptProxy::GetVariable(const Script& aScript, const VarID aVarID)
 	{
 		return aScript.myVariableManager.myVariables[aVarID];
-	}
-
-	const std::vector<NodeID>& ScriptProxy::GetNodeIDsByNodeType(const NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID)
-	{
-		return aNodeGraph.myNodeManager->myNodeIDsByNodeTypeID[aNodeTypeID];
-	}
-
-	std::vector<std::vector<NodeID>>& ScriptProxy::GetNodeIDsByNodeTypeContainer(NodeGraph& aNodeGraph)
-	{
-		return aNodeGraph.myNodeManager->myNodeIDsByNodeTypeID;
 	}
 
 	std::vector<Node>& ScriptProxy::GetNodes(NodeGraph& aNodeGraph)

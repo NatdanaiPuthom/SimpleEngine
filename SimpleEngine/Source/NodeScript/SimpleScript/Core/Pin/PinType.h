@@ -4,9 +4,8 @@
 
 namespace SCR
 {
-	enum class ePinFlowType
+	enum class eFlowType
 	{
-		NotSet,
 		Input,
 		Output,
 	};
@@ -26,21 +25,27 @@ namespace SCR
 	struct PinType
 	{
 		std::string name;
-		const ePinFlowType flowType = ePinFlowType::NotSet;
+		const eFlowType flowType = eFlowType::Input;
 		const DataTypeID dataTypeID = InvalidID<DataTypeID>();
 		const PinSetFunction setFunction = nullptr;
 	};
 
 
-	constexpr ePinFlowType InvertPinType(const ePinFlowType aPinType)
+	constexpr eFlowType InvertFlowType(const eFlowType aPinType)
 	{
-		return aPinType == ePinFlowType::Input ? ePinFlowType::Output : ePinFlowType::Input;
+		return aPinType == eFlowType::Input ? eFlowType::Output : eFlowType::Input;
 	}
 
-	std::string PinFlowTypeToString(const ePinFlowType aPinType);
+	std::string PinFlowTypeToString(const eFlowType aPinType);
 
-	ePinFlowType StringToPinFlowType(const std::string& aName);
+	eFlowType StringToPinFlowType(const std::string& aName);
 
 	std::string GetPinLabel(const PinType& aPinType);
+
+	template<typename T>
+	decltype(auto) TernaryFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
+	{
+		return aFlowType == eFlowType::Input ? aInputValue : aOutputValue;
+	}
 
 }

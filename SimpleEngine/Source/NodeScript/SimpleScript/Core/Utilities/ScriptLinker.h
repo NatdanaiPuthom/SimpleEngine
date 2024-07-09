@@ -13,7 +13,7 @@ namespace SCR
 	{
 	public:
 
-		static PinID GetPinID(const NodeGraph& aNodeGraph, const NodeID aNodeID, const size_t aPinIndex, const ePinFlowType aPinFlowType);
+		static PinID GetPinID(const NodeGraph& aNodeGraph, const NodeID aNodeID, const size_t aPinIndex, const eFlowType aPinFlowType);
 		static size_t GetPinIndex(const NodeGraph& aNodeGraph, const PinID aPinID);
 		static PinID GetOpposingPinID(const NodeGraph& aPreviousNodeGraph, const PinID aPreviousPinID, const NodeGraph& aNewNodeGraph, const NodeID aNodeID);
 

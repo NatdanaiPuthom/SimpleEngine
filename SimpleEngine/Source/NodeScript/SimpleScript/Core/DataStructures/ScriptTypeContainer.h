@@ -9,20 +9,20 @@ namespace SCR
 	class TypeContainer
 	{
 	public:
-		class ConstIterator
+		class Iterator
 		{
-			using Tuple = std::tuple<IDType, const T*, const Type*>;
+			using Tuple = std::tuple<IDType, T*, Type*>;
 		public:
-			ConstIterator(const IDType anID, const T* aObject, const TypeContainer& aContainer)
+			Iterator(const IDType anID, T* aObject, const TypeContainer& aContainer)
 				: myTuple(Tuple{ anID, aObject, nullptr })
-				, myContainer(aContainer)
+				, myContainer(&aContainer)
 			{
-				if (anID < myContainer.myObjects.size())
+				if (anID < myContainer->myObjects.size())
 				{
 					std::get<2>(myTuple) = &aContainer.myToTypeConverter(*aObject);
 				}
 			}
-			~ConstIterator()
+			~Iterator()
 			{
 
 			}
@@ -32,7 +32,100 @@ namespace SCR
 				return myTuple;
 			}
 
-			ConstIterator& operator++()
+			Iterator& operator++()
+			{
+				IDType& id = std::get<0>(myTuple);
+				T*& object = std::get<1>(myTuple);
+				Type*& objectType = std::get<2>(myTuple);
+				++id;
+				if (id < myContainer->myObjects.size())
+				{
+					object = &myContainer->myObjects[id];
+					objectType = &myContainer->myToTypeConverter(*object);
+				}
+				return *this;
+			}
+
+			bool operator==(const Iterator& aOther) const
+			{
+				return std::get<0>(myTuple) == std::get<0>(aOther.myTuple);
+			}
+
+			bool operator!=(const Iterator& aOther) const
+			{
+				return !(*this == aOther);
+			}
+
+
+		private:
+
+			Tuple myTuple;
+			const TypeContainer* myContainer;
+		};
+
+
+	public:
+
+		using ConverterFunction = std::function<Type& (const T&)>;
+		
+		TypeContainer(std::vector<T>& aObjects, const ConverterFunction& aToTypeConverter)
+			: myObjects(aObjects)
+			, myToTypeConverter(aToTypeConverter)
+		{
+		}
+		~TypeContainer()
+		{
+
+		}
+
+		Iterator begin() const
+		{
+			if (myObjects.empty())
+			{
+				return Iterator(0, nullptr, *this);
+			}
+			return Iterator(0, &myObjects[0], *this);
+		}
+		Iterator end() const
+		{
+			return Iterator(static_cast<IDType>(myObjects.size()), nullptr, *this);
+		}
+
+	private:
+
+
+		std::vector<T>& myObjects;
+		ConverterFunction myToTypeConverter;
+	};
+
+	template<typename IDType, typename T, typename Type>
+	class TypeContainer<IDType, const T, const Type>
+	{
+	public:
+		class Iterator
+		{
+			using Tuple = std::tuple<IDType, const T*, const Type*>;
+		public:
+			Iterator(const IDType anID, const T* aObject, const TypeContainer& aContainer)
+				: myTuple(Tuple{ anID, aObject, nullptr })
+				, myContainer(aContainer)
+			{
+				if (anID < myContainer.myObjects.size())
+				{
+					std::get<2>(myTuple) = &aContainer.myToTypeConverter(*aObject);
+				}
+			}
+			~Iterator()
+			{
+
+			}
+
+			const Tuple& operator*()
+			{
+				return myTuple;
+			}
+
+			Iterator& operator++()
 			{
 				IDType& id = std::get<0>(myTuple);
 				const T*& object = std::get<1>(myTuple);
@@ -46,12 +139,12 @@ namespace SCR
 				return *this;
 			}
 
-			bool operator==(const ConstIterator& aOther) const
+			bool operator==(const Iterator& aOther) const
 			{
 				return std::get<0>(myTuple) == std::get<0>(aOther.myTuple);
 			}
 
-			bool operator!=(const ConstIterator& aOther) const
+			bool operator!=(const Iterator& aOther) const
 			{
 				return !(*this == aOther);
 			}
@@ -66,38 +159,36 @@ namespace SCR
 
 	public:
 
-		
-		TypeContainer(const std::vector<T>& aObjects, const std::function<const Type&(const T&)>& aToTypeConverter);
-		~TypeContainer();
+		using ConverterFunction = std::function<const Type& (const T&)>;
 
-		ConstIterator begin() const
+		TypeContainer(const std::vector<T>& aObjects, const ConverterFunction& aToTypeConverter)
+			: myObjects(aObjects)
+			, myToTypeConverter(aToTypeConverter)
+		{
+		}
+
+		~TypeContainer()
+		{
+
+		}
+
+		Iterator begin() const
 		{
 			if (myObjects.empty())
 			{
-				return ConstIterator(0, nullptr, *this);
+				return end();
 			}
-			return ConstIterator(0, &myObjects[0], *this);
+			return Iterator(0, &myObjects[0], *this);
 		}
-		ConstIterator end() const
+		Iterator end() const
 		{
-			return ConstIterator(static_cast<IDType>(myObjects.size()), nullptr, *this);
+			return Iterator(static_cast<IDType>(myObjects.size()), nullptr, *this);
 		}
 
 	private:
 
 
 		const std::vector<T>& myObjects;
-		std::function<const Type&(const T&)> myToTypeConverter;
+		ConverterFunction myToTypeConverter;
 	};
-
-	template<typename IDType, typename T, typename Type>
-	inline TypeContainer<IDType, T, Type>::TypeContainer(const std::vector<T>& aObjects, const std::function<const Type&(const T&)>& aToTypeConverter)
-		: myObjects(aObjects)
-		, myToTypeConverter(aToTypeConverter)
-	{
-	}
-	template<typename IDType, typename T, typename Type>
-	inline TypeContainer<IDType, T, Type>::~TypeContainer()
-	{
-	}
 }

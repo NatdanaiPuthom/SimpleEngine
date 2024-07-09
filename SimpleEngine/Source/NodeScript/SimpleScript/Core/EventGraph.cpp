@@ -5,11 +5,14 @@
 namespace SCR
 {
 	EventGraph::EventGraph()
+		: NodeGraph(eNodeGraphType::Event)
 	{
 	}
+
 	EventGraph::~EventGraph()
 	{
 	}
+
 	void EventGraph::BindNodeToEvent(const NodeID aNodeID)
 	{
 		const Node& node = myNodeManager->myNodes.at(aNodeID);

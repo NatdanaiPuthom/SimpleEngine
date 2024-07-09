@@ -21,7 +21,7 @@ namespace SCR
 
 	static std::tuple<Flow, Flow> Branch(Flow, bool aCondition)
 	{
-		return { aCondition, !aCondition };
+		return { Flow(aCondition), Flow(!aCondition) };
 	}
 
 	struct FlipFlopNodeData
@@ -32,7 +32,7 @@ namespace SCR
 	static std::tuple<Flow, Flow> FlipFlop(NodeState<FlipFlopNodeData> aData, Flow)
 	{
 		aData.value.myState = !aData.value.myState;
-		return { !aData.value.myState, aData.value.myState };
+		return { Flow(!aData.value.myState), Flow(aData.value.myState) };
 	}
 
 	struct DelayNodeData
@@ -55,9 +55,9 @@ namespace SCR
 		{
 			aState.value.time = 0.f;
 			ScriptProxy::GetNodeExecutor().UnregisterAutoTickNode(aContext->GetNodeData().nodeRef);
-			return true;
+			return Flow(true);
 		}
-		return false;
+		return Flow(false);
 	}
 
 	REGISTER_FUNCTION(BeginPlay, "Events", Event);

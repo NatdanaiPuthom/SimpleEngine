@@ -22,7 +22,7 @@ using json = nlohmann::json;
 
 namespace SCR
 {
-	std::string ScriptLoader::SavePath = "../Source/NodeScript/data/SimpleScripts";
+	std::string ScriptLoader::SavePath = "FlyScripts";
 
 	void ScriptLoader::Clear()
 	{
@@ -45,7 +45,6 @@ namespace SCR
 		}
 
 		const NodeGraph& eventGraph = ScriptProxy::GetEventGraph(aScript);
-		//const MemoryPool& eventGraphMemoryPool = ScriptProxy::GetGraphMemoryPool(eventGraph);
 		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
 
 		json jsonDoc;
@@ -102,8 +101,6 @@ namespace SCR
 				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
 				pinDataJson["DataType"] = Global::GetDataTypeManager().GetName(pinType.dataTypeID);
-
-				//const MemoryPoolID memoryID = pin.memoryID;
 
 				json valueJson = json::object();
 				Global::GetDataTypeManager().SaveData(pinType.dataTypeID, valueJson, pin.dataPtr);
@@ -178,9 +175,6 @@ namespace SCR
 		const json jsonDoc = json::parse(file);
 
 		NodeGraph& eventGraph = ScriptProxy::GetEventGraph(aScript);
-		//MemoryPool& memoryPool = ScriptProxy::GetGraphMemoryPool(eventGraph);
-		//ScriptModifier& modifier = aScript.GetModifier();
-		//ScriptProxy::GetCommandTracker(aScript).IsTracking() = false;
 
 		const json& dataJson = jsonDoc["Data"];
 
@@ -212,7 +206,7 @@ namespace SCR
 				continue;
 			}
 			const size_t pinIndex = pinData["PinIndex"];
-			const PinID pinID = ScriptLinker::GetPinID(eventGraph, nodeID, pinIndex, ePinFlowType::Input);
+			const PinID pinID = ScriptLinker::GetPinID(eventGraph, nodeID, pinIndex, eFlowType::Input);
 
 			if (pinID == InvalidID<PinID>())
 			{
@@ -233,7 +227,7 @@ namespace SCR
 
 				size_t connectedPinIndex = connectionJson["PinIndex"];
 
-				PinID connectionID = ScriptLinker::GetPinID(eventGraph, connectionNodeID, connectedPinIndex, ePinFlowType::Output);
+				PinID connectionID = ScriptLinker::GetPinID(eventGraph, connectionNodeID, connectedPinIndex, eFlowType::Output);
 
 				if (connectionID != InvalidID<PinID>())
 				{
@@ -271,7 +265,6 @@ namespace SCR
 				Modify::SetVariableDataType(varID, dataTypeID, aScript, nullptr);
 
 				Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
-				//Global::GetDataTypeManager().CopyData(dataTypeID, variable.runtimeDataPtr, variable.defaultValueDataPtr);
 
 			}
 
@@ -289,8 +282,6 @@ namespace SCR
 				}
 			}
 		}
-
-		//ScriptProxy::GetCommandTracker(aScript).IsTracking() = true;
 	}
 
 	void ScriptLoader::LoadAll()
@@ -314,16 +305,10 @@ namespace SCR
 
 					std::string fileName = entry.path().filename().string();
 					std::string name = fileName.substr(0, fileName.find_last_of('.'));
-					//Script& script = aScriptManager.CreateScript(name);
-					Script& script = ScriptFoundation::GetInstance().CreateScript(0, name);
+					Script& script = Modify::CreateScript(0, name);
 					Load(script);
 				}
 			}
-		}
-
-		if (ScriptFoundation::GetInstance().GetScripts().empty())
-		{
-			ScriptFoundation::GetInstance().CreateScript(0);
 		}
 	}
 

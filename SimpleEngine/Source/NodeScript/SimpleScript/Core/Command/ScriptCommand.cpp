@@ -4,28 +4,19 @@
 
 namespace SCR
 {
-	Command::Command()
-		: Command(typeid(*this).name())
+	Command::Command(const Command& aOther)
+		: myName(aOther.myName)
+		, myCommandFunction(aOther.myCommandFunction)
 	{
 	}
 
-	Command::Command(const std::string& aName)
-		: myName(aName)
+	Command::Command(Command&& aOther)
+		: myName(std::move(aOther.myName))
+		, myCommandFunction(std::move(aOther.myCommandFunction))
 	{
 	}
 
-	void Command::DoInternal()
-	{
-		Do();
-	}
-
-	void Command::UndoInternal()
-	{
-		Undo();
-	}
-
-
-	void CommandNew::operator()(eCommandType aCommandType) const
+	void Command::operator()(eCommandType aCommandType) const
 	{
 		if (Global::IsDebugging())
 		{

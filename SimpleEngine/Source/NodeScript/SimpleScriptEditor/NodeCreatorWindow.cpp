@@ -137,14 +137,14 @@ namespace Editor
 
 		if (ImGui::Button("Create Caller"))
 		{
-			Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, callerTypeID);
+			Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, callerTypeID);
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Create Executor"))
 		{
-			Modify::CreateNode(*myParentWindow.GetCurrentContext().nodeGraph, executorTypeID);
+			Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, executorTypeID);
 		}
 	}
 }

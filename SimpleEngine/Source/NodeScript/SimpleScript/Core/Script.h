@@ -33,12 +33,15 @@ namespace SCR
 		EventGraph& GetEventGraph();
 		DataTypeID GetTargetID() const;
 
+		void BindFunction(FunctionID aFunctionID);
+		const std::vector<FunctionID>& GetMemberFunctionIDs();
+
 	private:
 
 		EventGraph myEventGraph;
 		VariableManager myVariableManager;
 
-		std::vector<std::unique_ptr<Function>> myMemberFunctions;
+		std::vector<FunctionID> myMemberFunctionIDs;
 		std::vector<std::unique_ptr<ScriptInstance>> myScriptInstances;
 
 		DataTypeID myTargetID;
