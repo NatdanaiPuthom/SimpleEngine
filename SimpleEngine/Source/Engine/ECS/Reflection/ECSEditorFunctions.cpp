@@ -338,6 +338,21 @@ namespace ECS
 		return true;
 	}
 
+	bool ViewAndEditValue(const Graphics::Animation& aAnimation, const std::string& /*aVariableName*/)
+	{
+		std::string name = aAnimation.name;
+
+		ImGui::AlignTextToFramePadding();
+
+		ImGui::Text("Animation:");
+		ImGui::SameLine();
+		ImGui::BeginDisabled();
+		ImGui::InputText("", name.data(), name.size());
+		ImGui::EndDisabled();
+
+		return true;
+	}
+
 	bool ViewAndEditValue(SCRIPT::ScriptInstance*& aScriptInstance, const std::string& /*aVariableName*/)
 	{
 		SCRIPT::DataTypeManager& dataTypeManager = SCRIPT::Global::GetDataTypeManager();

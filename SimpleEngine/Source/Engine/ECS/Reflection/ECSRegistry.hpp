@@ -8,6 +8,7 @@
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
 #include "Graphics/Model/Skeleton.hpp"
+#include "Graphics/Animation/Animation.hpp"
 
 #include <string>
 #include <array>
@@ -35,6 +36,8 @@ namespace Math
 
 namespace Graphics
 {
+	REGISTER_DATATYPE(Animation);
+
 	REGISTER_DATATYPE_CONST_POINTER(Mesh);
 	REGISTER_DATATYPE_CONST_POINTER(Shader);
 	REGISTER_DATATYPE_CONST_POINTER(Texture);

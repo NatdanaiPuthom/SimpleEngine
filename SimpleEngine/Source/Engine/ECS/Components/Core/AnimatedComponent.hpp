@@ -23,6 +23,7 @@ namespace ECS
 namespace ECS
 {
 	REGISTER_COMPONENT(AnimatedComponent);
+	REGISTER_AND_EXPOSE_PROPERTY(&AnimatedComponent::animation, true, false);
 	REGISTER_AND_EXPOSE_PROPERTY(&AnimatedComponent::skeleton, true, false);
 	REGISTER_AND_EXPOSE_PROPERTY(&AnimatedComponent::shader, true, false);
 }
