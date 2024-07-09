@@ -14,10 +14,10 @@
 
 #include "Engine/ECS/Reflection/ECSReflection.hpp"
 
-REGISTER_DATATYPE(float);
-REGISTER_DATATYPE(int);
-REGISTER_DATATYPE(bool);
-REGISTER_DATATYPE(char);
+inline ECS::__RegisterDataType<float> Global_ECS_Registered_Datatype_float;
+inline ECS::__RegisterDataType<int> Global_ECS_Registered_Datatype_int;;
+inline ECS::__RegisterDataType<bool> Global_ECS_Registered_Datatype_bool;;
+inline ECS::__RegisterDataType<char> Global_ECS_Registered_Datatype_char;;
 
 namespace std
 {
