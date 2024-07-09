@@ -55,7 +55,7 @@ namespace Editor
 
 	void SettingsTool::Draw()
 	{
-		if (ImGui::Begin("Settings"))
+		if (ImGui::Begin("Settings##SettingTools"))
 		{
 			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 			static constexpr unsigned int heightPadding = 2;
@@ -139,6 +139,12 @@ namespace Editor
 			ImGui::Dummy(ImVec2(0, heightPadding));
 			ImGui::Separator();
 			ImGui::Dummy(ImVec2(0, heightPadding));
+
+			SetCustomCursorIcon();
+
+			ImGui::Dummy(ImVec2(0, heightPadding));
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0, heightPadding));
 		}
 
 		ImGui::End();
@@ -166,6 +172,29 @@ namespace Editor
 
 		const nlohmann::json editorSettings = editorJson["Editor_Settings"];
 		myMusicIsActive = editorSettings["MusicActive"];
+	}
+
+	void SettingsTool::CheckCursorIndexOnce(const std::unordered_map<std::string, const HCURSOR>& aLoadedCursors, int& aSelectedCursor)
+	{
+		const HCURSOR currentCursor = Global::GetCurrentCustomCursor();
+
+		static bool alreadyRunOnce = false;
+
+		if (alreadyRunOnce == false)
+		{
+			unsigned int index = 0;
+
+			for (const auto& [name, cursor] : aLoadedCursors)
+			{
+				if (currentCursor == cursor)
+				{
+					aSelectedCursor = index;
+					break;
+				}
+
+				index++;
+			}
+		}
 	}
 
 	void SettingsTool::ToggleConsole()
@@ -338,6 +367,33 @@ namespace Editor
 				else
 					aGraphicsEngine->SetFPSLevelCap(selectedFPSLevelCap);
 			}
+		}
+	}
+
+	void SettingsTool::SetCustomCursorIcon()
+	{
+		const std::unordered_map<std::string, const HCURSOR>& loadedCursors = Global::GetLoadedCustomCursors();
+		std::vector<std::string> cursorNames;
+		std::string cursors;
+
+		for (const auto& [name, cursor] : loadedCursors)
+		{
+			cursorNames.push_back(name);
+			cursors += name;
+			cursors += '\0';
+		}
+
+		cursors += '\0';
+
+		static int selectedCursor = 0;
+
+		CheckCursorIndexOnce(loadedCursors, selectedCursor);
+
+		ImGui::SetNextItemWidth(200);
+
+		if (ImGui::Combo("Cursors##SettingTool", &selectedCursor, cursors.c_str()))
+		{
+			Global::SetCustomCursor(cursorNames[selectedCursor]);
 		}
 	}
 }

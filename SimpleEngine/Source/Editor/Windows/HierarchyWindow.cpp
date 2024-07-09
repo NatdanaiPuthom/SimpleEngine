@@ -1,12 +1,13 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Windows/HierarchyWindow.hpp"
-#include "Editor/FileManager/FileManager.hpp"
 #include "Engine/ECS/Components/AllEngineComponents.hpp"
+#include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
 {
 	HierarchyWindow::HierarchyWindow()
+		: myShowAdvanced(false)
 	{
 	}
 
@@ -72,7 +73,7 @@ namespace Editor
 
 	void HierarchyWindow::ShowInspector(ECS::EntityComponentSystem& aActiveECS, ECS::Entities& aEntities, int& aSelected)
 	{
-		if (ImGui::Begin("Inspector"))
+		if (ImGui::Begin("Inspector##HierachyWindow"))
 		{
 			ECS::Entity selectedEntity = aEntities[aSelected];
 
@@ -98,6 +99,7 @@ namespace Editor
 
 			ImGui::SameLine(ImGui::GetWindowWidth() - 70);
 			ImGui::Text(std::string("ID: " + std::to_string(selectedEntity->GetID())).c_str());
+			ImGui::Checkbox("Show Advanced", &myShowAdvanced);
 			ImGui::Separator();
 
 			if (aEntities.GetEntityCount() > 0)
@@ -235,7 +237,7 @@ namespace Editor
 		}
 	}
 
-	void HierarchyWindow::ShowComponents(ECS::Entity aSelectedEntity, ECS::EntityComponentSystem& aActiveECS)
+	void HierarchyWindow::ShowComponents(ECS::Entity aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const
 	{
 		const ECS::EntityID entityID = aSelectedEntity->GetID();
 		const std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = aSelectedEntity->GetComponentMap();
@@ -252,9 +254,16 @@ namespace Editor
 			}
 
 			const std::string& componentName = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentName;
+			const std::string componentIDAsText = "ID:" + std::to_string(componentID);
 			void* componentPointer = aActiveECS.GetComponentPointerByComponentID(componentID);
 
 			const bool isOpen = ImGui::TreeNodeEx(componentName.c_str(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen);
+
+			if (myShowAdvanced)
+			{
+				ImGui::SameLine();
+				ImGui::Text(componentIDAsText.c_str());
+			}
 
 			ImGui::SameLine(ImGui::GetWindowWidth() - 50);
 

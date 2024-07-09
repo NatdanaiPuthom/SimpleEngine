@@ -24,9 +24,14 @@ namespace Editor
 		void AdjustRasterizerState();
 		void AdjustEditorStyle();
 		void AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine);
+
+		void SetCustomCursorIcon();
 	private:
 		void UpdateAndFetchCurrentMonitorResolution();
 		void LoadDataFromJson();
+
+		//NOTE(v11.2.5): Ugly but works for now until future
+		void CheckCursorIndexOnce(const std::unordered_map<std::string, const HCURSOR>& aLoadedCursors, int& aSelectedCursor);
 	private:
 		Math::Vector2ui myMonitorResolution;
 

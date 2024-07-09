@@ -1,7 +1,7 @@
 #include "MainSingleton/MainSingleton.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/Global.hpp"
-#include "Editor/FileManager/FileManager.hpp"
+#include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include <External/imgui.h>
 #include <dwmapi.h>
 
@@ -18,7 +18,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_SETCURSOR:
-		::SetCursor(Global::GetCustomCursor());
+		::SetCursor(Global::GetCurrentCustomCursor());
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
@@ -43,7 +43,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DROPFILES:
 	{
 		HDROP hDrop = reinterpret_cast<HDROP>(wParam);
-		Editor::FileManager::DropFiles(hDrop);
+		SimpleUtilities::FileManager::DropFiles(hDrop);
 		break;
 	}
 	default:

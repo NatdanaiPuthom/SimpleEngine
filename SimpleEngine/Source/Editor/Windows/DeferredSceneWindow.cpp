@@ -15,15 +15,18 @@ namespace Editor
 	{
 	}
 
-	void Editor::DeferredSceneWindow::Draw()
+	void Editor::DeferredSceneWindow::Draw() //NOTE(v11.2.5): a lot of magic numbers but at this point I dont care anymore, it works fine for now. When I get less depressed from aligning windows properly I may try again
 	{
 		static constexpr float aspectRatio = 16.0f / 9.0f; //TO-DO(v10.0.4): should read from some json file
 
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
-		const ImVec2 screenSize = {static_cast<float>(Global::GetResolution().x), static_cast<float>(Global::GetResolution().y)};
+		const ImVec2 screenSize = { static_cast<float>(Global::GetResolution().x), static_cast<float>(Global::GetResolution().y) };
 		const float quadWidth = screenSize.x / 3.0f;
 		const float quadHeight = screenSize.y / 2.0f;
+
+		ImVec2 nextWindowPosition = ImGui::GetMainViewport()->WorkPos;
+		const ImGuiWindowFlags imguiFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus;
 
 		for (size_t i = 0; i < Graphics::Global_GBuffer_Count; ++i)
 		{
@@ -34,11 +37,11 @@ namespace Editor
 			case 0:
 				name = "Albedo";
 				break;
-			case 2:
-				name = "Material";
-				break;
 			case 1:
 				name = "Normal";
+				break;
+			case 2:
+				name = "Material";
 				break;
 			case 3:
 				name = "Position";
@@ -51,9 +54,33 @@ namespace Editor
 				break;
 			}
 
-			ImGui::SetNextWindowSize(ImVec2(quadWidth, quadHeight));
+			ImGui::SetNextWindowSize(ImVec2(quadWidth + 2, quadHeight), ImGuiCond_Always);
+			ImGui::SetNextWindowPos(nextWindowPosition);
 
-			if (ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+			if ((i + 1) % 3 == 2)
+			{
+				nextWindowPosition.x += quadWidth - 1;
+			}
+			else if ((i + 1) % 3 != 0)
+			{
+				nextWindowPosition.x += quadWidth;
+			}
+			else
+			{
+				nextWindowPosition.x = ImGui::GetMainViewport()->WorkPos.x;
+				nextWindowPosition.y += quadHeight - 19;
+			}
+
+			if (i < 3)
+			{
+				ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.18f, 0.18f, 0.18f, 1.0f));
+			}
+			else
+			{
+				ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.18f, 0.18f, 0.18f, 0.8f));
+			}
+
+			if (ImGui::Begin(name.c_str(), nullptr, imguiFlags))
 			{
 				float newWidth = quadWidth;
 				float newHeight = newWidth / aspectRatio;
@@ -67,13 +94,15 @@ namespace Editor
 				ImTextureID texture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::GBuffer, i).Get();
 				ImGui::Image(texture, ImVec2(newWidth, newHeight));
 			}
+			ImGui::PopStyleColor();
 
 			ImGui::End();
 		}
 
-		ImGui::SetNextWindowSize(ImVec2(quadWidth, quadHeight), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(quadWidth + 2, quadHeight), ImGuiCond_Always);
+		ImGui::SetNextWindowPos(nextWindowPosition);
 
-		if (ImGui::Begin("Deferred", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+		if (ImGui::Begin("Deferred", nullptr, imguiFlags))
 		{
 			float newWidth = quadWidth;
 			float newHeight = newWidth / aspectRatio;

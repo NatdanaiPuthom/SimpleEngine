@@ -1,5 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Reflection/ECSReflection.hpp"
+#include "External/imgui.h"
 
 namespace ECS
 {
@@ -48,7 +49,17 @@ namespace ECS
 					continue;
 				}
 
+				if (componentProperty.canEdit == false)
+				{
+					ImGui::BeginDisabled();
+				}
+
 				ExposeProperty(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.name);
+
+				if (componentProperty.canEdit == false)
+				{
+					ImGui::EndDisabled();
+				}
 			}
 		}
 	}

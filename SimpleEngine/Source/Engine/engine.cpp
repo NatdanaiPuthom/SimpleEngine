@@ -11,7 +11,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 namespace Simple
 {
 	Engine::Engine()
-		: myCustomCursor(nullptr)
+		: myCurrentCustomCursor(nullptr)
 	{
 		myOriginalWindowStyle = {};
 		myHWND = {};
@@ -19,11 +19,6 @@ namespace Simple
 
 	Engine::~Engine()
 	{
-	}
-
-	void Engine::SetGlobalPointerToThis()
-	{
-		Impl::SimpleGlobalEngine::SetEngine(this);
 	}
 
 	void Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
@@ -45,12 +40,19 @@ namespace Simple
 		ShowWindow(myHWND, nCmdShow);
 		UpdateWindow(myHWND);
 
-		myCustomCursor = LoadCursorFromFile(L"Assets/Cursors/White-Cat.cur");
-		assert(myCustomCursor && "Failed to load Custom Cursor");
+		LoadCustomCursors();
 
 		MainSingleton::GetInputManager().SetHWND(myHWND);
 
 		myOriginalWindowStyle = GetWindowLong(myHWND, GWL_STYLE);
+	}
+
+	void Engine::Update()
+	{
+		myTimer->Update();
+
+		MainSingleton::GetInputManager().Update();
+		MainSingleton::GetAudioManager().Update();
 	}
 
 	void Engine::LoadSettingsFromJson()
@@ -76,6 +78,26 @@ namespace Simple
 
 		Impl::SimpleGlobalEngine::SetResolution(resolution);
 		Impl::SimpleGlobalEngine::SetWindowSize(windowSize);
+	}
+
+	void Engine::LoadCustomCursors()
+	{
+		myCustomCursors.emplace("DefaultCursor", LoadCursor(nullptr, IDC_ARROW));
+		assert(myCustomCursors["DefaultCursor"] && "Failed to load Custom Cursor");
+
+		const std::vector<std::string> absolutePaths = SimpleUtilities::FileManager::GetAbsoluteFilePathsFromDirectory(SimpleUtilities::CheckAndReturnAsAbsolutePath("Assets\\Cursors"));
+
+		for (const std::string& path : absolutePaths)
+		{
+			const std::string name = SimpleUtilities::FileManager::GetFileName(path);
+			const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(path);
+			const std::wstring relativePathW = SimpleUtilities::ToWString(relativePath);
+
+			myCustomCursors.emplace(name, LoadCursorFromFile(relativePathW.c_str()));
+			assert(myCustomCursors[name] && "Failed to load Custom Cursor");
+		}
+
+		myCurrentCustomCursor = &myCustomCursors["White-Cat.cur"];
 	}
 
 	void Engine::CheckAndCopySettingsFiles()
@@ -124,7 +146,8 @@ namespace Simple
 			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS) + name;
 			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
 
-			std::cout << "Copied: " << name << std::endl;
+			Console::Print("Copied: ", ConsoleTextColor::White, false);
+			Console::Print(name.c_str(), ConsoleTextColor::Green, true);
 		}
 
 		for (const std::string& name : forceDependenciesSettingsFileNames)
@@ -133,7 +156,8 @@ namespace Simple
 			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS) + name;
 			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
 
-			std::cout << "Force Copied: " << name << std::endl;
+			Console::Print("Force copied: ", ConsoleTextColor::White, false);
+			Console::Print(name.c_str(), ConsoleTextColor::Green, true);
 		}
 	}
 
@@ -201,17 +225,27 @@ namespace Simple
 			nullptr);
 	}
 
-	void Engine::Update()
+	void Engine::SetGlobalPointerToThis()
 	{
-		myTimer->Update();
+		Impl::SimpleGlobalEngine::SetEngine(this);
+	}
 
-		MainSingleton::GetInputManager().Update();
-		MainSingleton::GetAudioManager().Update();
+	void Engine::SetCustomCursor(const std::string& aCursorName)
+	{
+		if (myCustomCursors.contains(aCursorName))
+		{
+			myCurrentCustomCursor = &myCustomCursors[aCursorName];
+		}
 	}
 
 	float Engine::GetDeltaTime() const
 	{
 		return myTimer->GetDeltaTime();
+	}
+
+	const std::unordered_map<std::string, const HCURSOR>& Engine::GetLoadedCustomCursors() const
+	{
+		return myCustomCursors;
 	}
 
 	double Engine::GetTotalTime() const
@@ -224,12 +258,12 @@ namespace Simple
 		return myHWND;
 	}
 
-	HCURSOR& Engine::GetCustomCursor()
+	const HCURSOR& Engine::GetCurrentCustomCursor()
 	{
-		return myCustomCursor;
+		return *myCurrentCustomCursor;
 	}
 
-	DWORD Engine::GetOriginalWindowStyle() const
+	const DWORD Engine::GetOriginalWindowStyle() const
 	{
 		return myOriginalWindowStyle;
 	}

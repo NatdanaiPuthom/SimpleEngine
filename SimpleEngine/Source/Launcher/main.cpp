@@ -5,7 +5,7 @@
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/Global.hpp"
 #include "Engine/NoClueWhatToName/EasyProfilerOutput.hpp"
-#include "Engine/Debugger/ErrorCatcher/ErrorCatcher.hpp"
+#include "Engine/Debugger/RuntimeCrashCatcher/RuntimeCrashCatcher.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
 #include "MainSingleton/MainSingleton.hpp"

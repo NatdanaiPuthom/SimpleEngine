@@ -2,29 +2,32 @@
 
 void MainSingleton::Init()
 {
-	Simpleton::AudioManager::GetInstance().Init();
-	Simpleton::SceneManager::GetInstance().Init();
+	GetAudioManager().Init();
+	GetSceneManager().Init();
 }
 
 void MainSingleton::Destroy()
 {
-	Simpleton::SceneManager::GetInstance().Destroy();
+	GetSceneManager().Destroy();
 	ECS::ComponentRegistry::GetInstance()->Destroy();
 }
 
 Simpleton::InputManager& MainSingleton::GetInputManager()
 {
-	return Simpleton::InputManager::GetInstance();
+	static Simpleton::InputManager inputManager;
+	return inputManager;
 }
 
 Simpleton::AudioManager& MainSingleton::GetAudioManager()
 {
-	return Simpleton::AudioManager::GetInstance();
+	static Simpleton::AudioManager audioManager;
+	return audioManager;
 }
 
 Simpleton::SceneManager& MainSingleton::GetSceneManager()
 {
-	return Simpleton::SceneManager::GetInstance();
+	static Simpleton::SceneManager sceneManager;
+	return sceneManager;
 }
 
 ECS::ComponentRegistry* MainSingleton::GetComponentRegistry()

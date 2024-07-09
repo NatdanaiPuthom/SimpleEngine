@@ -9,7 +9,7 @@ namespace Test
 		~ECSTestStuff();
 
 		void Init();
-		void Update();
+		void Update() const;
 		void Render() const;
 
 		ECS::EntityID myEntityID;

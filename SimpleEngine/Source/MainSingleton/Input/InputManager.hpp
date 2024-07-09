@@ -42,18 +42,10 @@ namespace Simpleton
 		bool GetMouseIsHidden() const;
 	public:
 		void SetHWND(HWND& aWindowHandle);
-	private:
 		void SetCapturedMousePosition();
 	private:
-		static InputManager& GetInstance()
-		{
-			static InputManager myInstance;
-			return myInstance;
-		}
-
 		InputManager();
 		~InputManager() = default;
-
 	private:
 		HWND myOwnerHWND = {};
 
@@ -76,6 +68,6 @@ namespace Simpleton
 		bool myAKeyIsPressed;
 		bool myMouseIsCaptured;
 
-		const int myPadding[6] = {INT_MIN};
+		const char myPadding[24] = "Never Give Up!!!!!!!!!\0";
 	};
 }

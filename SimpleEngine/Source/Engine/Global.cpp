@@ -111,14 +111,19 @@ namespace Global
 		return localEngine->GetEngineHWND();
 	}
 
-	DWORD GetOriginalWindowStyle()
+	const DWORD GetOriginalWindowStyle()
 	{
 		return localEngine->GetOriginalWindowStyle();
 	}
 
-	HCURSOR& GetCustomCursor()
+	const HCURSOR& GetCurrentCustomCursor()
 	{
-		return localEngine->GetCustomCursor();
+		return localEngine->GetCurrentCustomCursor();
+	}
+
+	const std::unordered_map<std::string, const HCURSOR>& GetLoadedCustomCursors()
+	{
+		return localEngine->GetLoadedCustomCursors();
 	}
 
 	Math::Vector2ui GetResolution()
@@ -164,6 +169,11 @@ namespace Global
 	void SetGameShouldClose(const bool aShouldClose)
 	{
 		localShouldClose.store(aShouldClose);
+	}
+
+	void SetCustomCursor(const std::string& aCursorName)
+	{
+		localEngine->SetCustomCursor(aCursorName);
 	}
 
 	void SetWindowSizeNextFrame(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen)

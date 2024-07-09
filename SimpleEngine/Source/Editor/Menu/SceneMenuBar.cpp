@@ -1,6 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/SceneMenuBar.hpp"
-#include "Editor/FileManager/FileManager.hpp"
+#include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
@@ -41,11 +41,17 @@ namespace Editor
 					ShowSceneList();
 					ImGui::EndMenu();
 				}
-				
+
 				if (ImGui::MenuItem("Create##SceneMenuItem"))
 				{
 					CreateNewScene();
 				}
+
+				if (ImGui::MenuItem("Reload##SceneMenuItem"))
+				{
+					ReloadScene();
+				}
+				ShowReloadTooltips();
 
 				ImGui::EndMenu();
 			}
@@ -66,7 +72,7 @@ namespace Editor
 
 	void SceneMenuBar::ShowSceneList()
 	{
-		const std::vector<std::string> sceneNames = FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
+		const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
 
 		for (const auto& name : sceneNames)
 		{
@@ -87,5 +93,34 @@ namespace Editor
 		const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(absolutePath);
 		sceneManager.CreateNewScene(absolutePath);
 		sceneManager.ChangeScene(relativePath);
+	}
+
+	void SceneMenuBar::ReloadScene()
+	{
+		Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
+		sceneManager.ReloadSceneFromFile(sceneManager.GetCurrentSceneInfo()->relativePath);
+	}
+
+	void SceneMenuBar::ShowReloadTooltips()
+	{
+		static float timer = 0.0f;
+
+		if (ImGui::IsItemHovered())
+		{
+			timer += Global::GetDeltaTime();
+
+			if (timer > 0.33f)
+			{
+				if (ImGui::BeginTooltip())
+				{
+					ImGui::Text("Reset and reload current scene");
+					ImGui::EndTooltip();
+				}
+			}
+		}
+		else
+		{
+			timer = 0.0f;
+		}
 	}
 }

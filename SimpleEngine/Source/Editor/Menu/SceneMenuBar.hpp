@@ -16,5 +16,7 @@ namespace Editor
 		void SaveActiveScene();
 		void ShowSceneList();
 		void CreateNewScene();
+		void ReloadScene();
+		void ShowReloadTooltips();
 	};
 }

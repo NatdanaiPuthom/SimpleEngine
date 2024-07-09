@@ -111,18 +111,32 @@ namespace Editor
 
 	void MainMenuBar::Draw()
 	{
-		DrawTools();
-
 		if (myEditorWindowActive == true)
 		{
-			if (ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize))
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 3));
+			if (ImGui::Begin("Scene##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
 			{
-				ImTextureID textureID = Global::GetGraphicsEngine()->GetShaderResourceView(Graphics::eRenderTargetType::PostProcessing).Get();
+				Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+				const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetCurrentRasterizerState();
+
+				ImTextureID textureID = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::PostProcessing).Get();
+
+				if (currentRasterizerState != Graphics::eRasterizerState::BackfaceCulling
+					&& currentRasterizerState != Graphics::eRasterizerState::NoFaceCulling)
+				{
+					textureID = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::Deferred).Get();
+				}
+
 				ImVec2 size = ImGui::GetContentRegionAvail();
 				ImGui::Image(textureID, size);
 			}
 			ImGui::End();
+			ImGui::PopStyleVar();
+			ImGui::PopStyleVar();
 		}
+
+		DrawTools();
 	}
 
 	void MainMenuBar::MenuItemFullScreen()

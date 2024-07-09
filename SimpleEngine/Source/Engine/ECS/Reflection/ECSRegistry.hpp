@@ -7,16 +7,18 @@
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
+#include "Graphics/Model/Skeleton.hpp"
+#include "Graphics/Animation/Animation.hpp"
 
 #include <string>
 #include <array>
 
 #include "Engine/ECS/Reflection/ECSReflection.hpp"
 
-REGISTER_DATATYPE(float);
-REGISTER_DATATYPE(int);
-REGISTER_DATATYPE(bool);
-REGISTER_DATATYPE(char);
+inline ECS::__RegisterDataType<float> Global_ECS_Registered_Datatype_float;
+inline ECS::__RegisterDataType<int> Global_ECS_Registered_Datatype_int;;
+inline ECS::__RegisterDataType<bool> Global_ECS_Registered_Datatype_bool;;
+inline ECS::__RegisterDataType<char> Global_ECS_Registered_Datatype_char;;
 
 namespace std
 {
@@ -34,7 +36,10 @@ namespace Math
 
 namespace Graphics
 {
+	REGISTER_DATATYPE(Animation);
+
 	REGISTER_DATATYPE_CONST_POINTER(Mesh);
 	REGISTER_DATATYPE_CONST_POINTER(Shader);
 	REGISTER_DATATYPE_CONST_POINTER(Texture);
+	REGISTER_DATATYPE_CONST_POINTER(Skeleton);
 }

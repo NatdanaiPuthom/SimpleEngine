@@ -16,8 +16,9 @@ namespace SimpleTracker
 	};
 }
 
-//inline static std::vector<int> example = []
+//#include <vector>
+//inline static std::vector<int> example = []() -> std::vector<int>
 //	{
 //		SimpleTracker::InlineLogger logger("example");
-//		return std::vector<int>();
+//		return {};
 //	}();

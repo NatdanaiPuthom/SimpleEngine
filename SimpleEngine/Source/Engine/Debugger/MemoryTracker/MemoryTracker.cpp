@@ -124,12 +124,10 @@ namespace SimpleTracker
 
 		if (file.is_open() == false)
 		{
-			const std::string fileName = "debug_settings.json";
+			const std::string fileName = SIMPLE_FILENAME_DEBUGJSON;
 			const std::string source = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_DEPENDENCIES_SETTINGS) + fileName;
 			const std::string destination = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SETTINGS) + fileName;
 			std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing);
-
-			std::cout << "Copied: " << fileName << std::endl;
 		}
 
 		file.open(filename);

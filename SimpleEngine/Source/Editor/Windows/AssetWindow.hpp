@@ -12,5 +12,11 @@ namespace Editor
 		void Init() override;
 		void Update() override;
 		void Draw() override;
+	private:
+		void ViewFolders(const std::string& aStartDirectory, const std::string& aWindowName);
+		void DrawFilesInFolder(const std::string& aDirectory);
+	private:
+		std::string myFilePopUpID;
+		std::string myFileToRemove;
 	};
 }

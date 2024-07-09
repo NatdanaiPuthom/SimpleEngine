@@ -24,6 +24,10 @@ namespace Simpleton
 		friend class MainSingleton;
 
 	public:
+		SceneManager(const SceneManager&) = delete;
+		SceneManager(const SceneManager&&) = delete;
+		SceneManager operator=(const SceneManager&) = delete;
+		SceneManager operator=(const SceneManager&&) = delete;
 
 		void Init();
 		void Update();
@@ -33,6 +37,8 @@ namespace Simpleton
 		void ChangeScene(const std::string& aSceneName);
 		void ChangeSceneName(const std::string& aNewSceneName);
 		void CreateNewScene(const std::string& aFilePath);
+
+		void ReloadSceneFromFile(const std::string& aSceneName);
 
 		const SceneInfo* GetCurrentSceneInfo() const;
 		ECS::EntityComponentSystem& GetCurrentECS();
@@ -44,20 +50,10 @@ namespace Simpleton
 	private:
 		void LoadSettingsFromJson();
 		void LoadDefaultScene(const std::string& aDefaultScenePath);
+		bool LoadAndInitScene(const std::string& aSceneName);
 	private:
-		static SceneManager& GetInstance()
-		{
-			static SceneManager instance;
-			return instance;
-		}
-
 		SceneManager();
 		~SceneManager();
-
-		SceneManager(const SceneManager&) = delete;
-		SceneManager(const SceneManager&&) = delete;
-		SceneManager operator=(const SceneManager&) = delete;
-		SceneManager operator=(const SceneManager&&) = delete;
 
 		bool AddScene(const std::string& aSceneName);
 		void Destroy();
@@ -67,6 +63,6 @@ namespace Simpleton
 		SceneInfo* myCurrentSceneInfo;
 		size_t myNextSceneID;
 		bool myIsPlaying;
-		const int myPaddings[4] = { -4 };
+		const char myPaddings[8] = "Believe";
 	};
 }

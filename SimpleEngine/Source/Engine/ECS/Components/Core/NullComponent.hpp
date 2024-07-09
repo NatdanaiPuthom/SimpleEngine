@@ -1,5 +1,4 @@
 #pragma once
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
 
 namespace ECS
 {
@@ -10,9 +9,11 @@ namespace ECS
 	};
 }
 
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
+
 namespace ECS
 {
 	REGISTER_COMPONENT(NullComponent);
-	REGISTER_AND_EXPOSE_PROPERTY(&NullComponent::iAmYourSolution);
-	REGISTER_AND_EXPOSE_PROPERTY(&NullComponent::dontTouchMe);
+	REGISTER_AND_EXPOSE_PROPERTY(&NullComponent::iAmYourSolution, true, false);
+	REGISTER_AND_EXPOSE_PROPERTY(&NullComponent::dontTouchMe, true, false);
 }
