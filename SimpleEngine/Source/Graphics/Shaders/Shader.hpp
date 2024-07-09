@@ -44,5 +44,7 @@ namespace Graphics
 		ComPtr<ID3D11VertexShader> myVertexShader;
 		ComPtr<ID3D11PixelShader> myPixelShader;
 		ComPtr<ID3D11InputLayout> myInputLayout;
+
+		const char myPadding[8] = "Believe";
 	};
 }
