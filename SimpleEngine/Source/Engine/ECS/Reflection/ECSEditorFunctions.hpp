@@ -12,6 +12,7 @@ namespace Graphics
 	class Mesh;
 	class Shader;
 	class Texture;
+	class Skeleton;
 }
 
 namespace SCRIPT
@@ -54,6 +55,7 @@ namespace ECS
 	bool ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& aVariableName);
 	bool ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& aVariableName);
 	bool ViewAndEditValue(const Graphics::Texture*& aTexture, const std::string& aVariableName);
+	bool ViewAndEditValue(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName);
 
 	bool ViewAndEditValue(SCRIPT::ScriptInstance*& aScriptInstance, const std::string& aVariableName);
 

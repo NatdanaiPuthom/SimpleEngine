@@ -318,9 +318,28 @@ namespace ECS
 		return isValid;
 	}
 
+	bool ViewAndEditValue(const Graphics::Skeleton*& aSkeleton, const std::string& /*aVariableName*/)
+	{
+		std::string name;
+
+		if (aSkeleton != nullptr)
+		{
+			name = aSkeleton->myName;
+		}
+
+		ImGui::AlignTextToFramePadding();
+
+		ImGui::Text("Skeleton:");
+		ImGui::SameLine();
+		ImGui::BeginDisabled();
+		ImGui::InputText("", name.data(), name.size());
+		ImGui::EndDisabled();
+
+		return true;
+	}
+
 	bool ViewAndEditValue(SCRIPT::ScriptInstance*& aScriptInstance, const std::string& /*aVariableName*/)
 	{
-
 		SCRIPT::DataTypeManager& dataTypeManager = SCRIPT::Global::GetDataTypeManager();
 		SCRIPT::ScriptFoundation& scriptFoundation = SCRIPT::Global::GetFoundation();
 
@@ -361,9 +380,7 @@ namespace ECS
 
 				ImGui::Separator();
 
-
 			}
-
 
 			ImGui::EndCombo();
 		}

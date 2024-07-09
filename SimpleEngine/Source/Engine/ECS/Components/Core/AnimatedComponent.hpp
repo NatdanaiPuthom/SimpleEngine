@@ -15,3 +15,12 @@ namespace ECS
 		const Graphics::Shader* shader;
 	};
 }
+
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
+
+namespace ECS
+{
+	REGISTER_COMPONENT(AnimatedComponent);
+	REGISTER_AND_EXPOSE_PROPERTY(&AnimatedComponent::skeleton, true, false);
+	REGISTER_AND_EXPOSE_PROPERTY(&AnimatedComponent::shader, true, false);
+}

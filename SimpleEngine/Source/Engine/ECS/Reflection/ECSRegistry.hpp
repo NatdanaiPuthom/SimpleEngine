@@ -7,6 +7,7 @@
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
+#include "Graphics/Model/Skeleton.hpp"
 
 #include <string>
 #include <array>
@@ -37,4 +38,5 @@ namespace Graphics
 	REGISTER_DATATYPE_CONST_POINTER(Mesh);
 	REGISTER_DATATYPE_CONST_POINTER(Shader);
 	REGISTER_DATATYPE_CONST_POINTER(Texture);
+	REGISTER_DATATYPE_CONST_POINTER(Skeleton);
 }
