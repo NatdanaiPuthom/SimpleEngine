@@ -11,6 +11,8 @@ namespace Graphics
 		struct Frame
 		{
 			std::unordered_map<std::string, Math::Matrix4x4f> jointNameToModelSpaceMatrix;
+		private:
+			const char padding[48] = "Never give up on your dreams! Believe!!!!!!!!!\0";
 		};
 
 		std::vector<Frame> frames;
@@ -20,5 +22,8 @@ namespace Graphics
 		float framesPerSecond = 0.0f;
 
 		unsigned int length = 0;
+
+	private:
+		char padding[40] = "Never give up on your dreams! Believe!\0";
 	};
 }

@@ -11,8 +11,10 @@ namespace ECS
 	{
 		Math::Matrix4x4f jointMatrices[Graphics::Global_Max_Joints];
 		Graphics::Animation animation;
-		const Graphics::Skeleton* skeleton;
-		const Graphics::Shader* shader;
+		const Graphics::Skeleton* skeleton = nullptr;
+		const Graphics::Shader* shader = nullptr;
+	private:
+		char padding[48] = "Never give up on your dreams! Just believeeeee\0";
 	};
 }
 

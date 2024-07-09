@@ -51,7 +51,7 @@ namespace Test
 		myTestEntityID = e->GetID();
 	}
 
-	void ECSTestStuff::Update()
+	void ECSTestStuff::Update() const
 	{
 		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
 		ECS::Entity entity = ecs.GetEntity(myEntityID);
