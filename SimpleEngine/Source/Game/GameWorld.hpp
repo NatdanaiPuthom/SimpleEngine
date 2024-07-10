@@ -13,8 +13,6 @@ namespace Simple
 		void Render();
 		void LateRender();
 
-	private:
-		void NormalUpdate();
 		void EarlyUpdate();
 		void LateUpdate();
 		void FixedUpdate();

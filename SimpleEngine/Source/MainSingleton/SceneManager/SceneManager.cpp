@@ -49,6 +49,30 @@ namespace Simpleton
 		myECSs[myCurrentSceneInfo->id].Render();
 	}
 
+	void SceneManager::EarlyUpdate()
+	{
+		if (myIsPlaying)
+		{
+			myECSs[myCurrentSceneInfo->id].EarlyUpdate();
+		}
+	}
+
+	void SceneManager::FixedUpdate()
+	{
+		if (myIsPlaying)
+		{
+			myECSs[myCurrentSceneInfo->id].FixedUpdate();
+		}
+	}
+
+	void SceneManager::LateUpdate()
+	{
+		if (myIsPlaying)
+		{
+			myECSs[myCurrentSceneInfo->id].LateUpdate();
+		}
+	}
+
 	void SceneManager::LateRender()
 	{
 		myECSs[myCurrentSceneInfo->id].RenderPointLights();

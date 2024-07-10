@@ -18,34 +18,9 @@ namespace Simple
 	{
 	}
 
-	void GameWorld::Update()
-	{
-		EarlyUpdate();
-
-		FixedUpdate();
-
-		NormalUpdate();
-
-		LateUpdate();
-	}
-
-	void GameWorld::Render()
-	{
-		MainSingleton::GetSceneManager().Render();
-	}
-
-	void GameWorld::LateRender()
-	{
-		MainSingleton::GetSceneManager().LateRender();
-	}
-
-	void GameWorld::NormalUpdate()
-	{
-		MainSingleton::GetSceneManager().Update();
-	}
-
 	void GameWorld::EarlyUpdate()
 	{
+		MainSingleton::GetSceneManager().EarlyUpdate();
 	}
 
 	void GameWorld::FixedUpdate()
@@ -58,9 +33,27 @@ namespace Simple
 		}
 
 		myFixedUpdateTimer = 0.0f;
+
+		MainSingleton::GetSceneManager().FixedUpdate();
+	}
+
+	void GameWorld::Update()
+	{
+		MainSingleton::GetSceneManager().Update();
 	}
 
 	void GameWorld::LateUpdate()
 	{
+		MainSingleton::GetSceneManager().LateUpdate();
+	}
+
+	void GameWorld::Render()
+	{
+		MainSingleton::GetSceneManager().Render();
+	}
+
+	void GameWorld::LateRender()
+	{
+		MainSingleton::GetSceneManager().LateRender();
 	}
 }

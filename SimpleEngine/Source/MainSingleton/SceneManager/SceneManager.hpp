@@ -32,6 +32,10 @@ namespace Simpleton
 		void Init();
 		void Update();
 		void Render();
+
+		void EarlyUpdate();
+		void FixedUpdate();
+		void LateUpdate();
 		void LateRender();
 
 		void ChangeScene(const std::string& aSceneName);

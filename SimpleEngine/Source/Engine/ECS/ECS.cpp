@@ -45,6 +45,21 @@ namespace ECS
 		mySystemManager.Render();
 	}
 
+	void EntityComponentSystem::EarlyUpdate()
+	{
+		mySystemManager.EarlyUpdate();
+	}
+
+	void EntityComponentSystem::FixedUpdate()
+	{
+		mySystemManager.FixedUpdate();
+	}
+
+	void EntityComponentSystem::LateUpdate()
+	{
+		mySystemManager.LateUpdate();
+	}
+
 	void EntityComponentSystem::RenderPointLights()
 	{
 		mySystemManager.RenderPointLights();
