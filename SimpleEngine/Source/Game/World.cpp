@@ -5,24 +5,12 @@
 
 namespace World
 {
-	Simple::EventManager* localEventManager = nullptr;
 }
 
 namespace World
 {
-	Simple::EventManager* GetEventmanager()
-	{
-		return localEventManager;
-	}
 }
 
 namespace Impl
 {
-	void SimpleWorldEventManager::SetEventManager(Simple::EventManager* aLevelManager)
-	{
-		if (World::localEventManager != nullptr)
-			assert(false && "localEventManager is already set. Is this a mistake?");
-
-		World::localEventManager = aLevelManager;
-	}
 }

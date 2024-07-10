@@ -52,6 +52,5 @@
 #pragma message("---------Never give up on your dreams!---------------")
 
 #include "Game/PostMaster/Template/PostMaster.hpp"
-#include "Game/Managers/EventManager/EventManager.hpp"
 
 #pragma message("---------Never give up on your dreams!---------------")
