@@ -31,7 +31,7 @@ namespace ECS
 * 
 * //__RegisterProperty(DataType Component::* aVariable, const char* aVariableName, const bool aShouldExpose = true, const bool aCanEdit = true)
 * 
-* Go to Game/Components/IncludeMe/AllGameComponents
+* Go to Game/Components/IncludeComponentHere/AllGameComponents
 * 
 * Add:	#include "Game/Components/Example/ExampleComponent.hpp
 */
