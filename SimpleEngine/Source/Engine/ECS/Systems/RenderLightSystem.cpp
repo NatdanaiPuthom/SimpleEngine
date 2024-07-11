@@ -47,8 +47,8 @@ namespace ECS
 		else
 		{
 			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-			graphicsEngine->SetDirectionalLightDirection({ 0.0f,0.0f,0.0f });
-			graphicsEngine->SetDirectionalLightColor({ 0.0f, 0.0f, 0.0f,0.0f });
+			graphicsEngine->SetDirectionalLightDirection({ 0.0f,0.0f, -1.0f });
+			graphicsEngine->SetDirectionalLightColor({ 0.2f, 0.2f, 0.2f,0.2f });
 		}
 
 		{
@@ -162,7 +162,6 @@ namespace ECS
 
 		if (myEntityWithDirectionalLightID != (static_cast<size_t>(-1)))
 		{
-
 			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(myEntityWithDirectionalLightID);
 			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
@@ -191,6 +190,11 @@ namespace ECS
 			const ECS::Entity skyBox = myEntityComponentSystem->GetEntity(myEntityWithSkyBoxID);
 			const SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
 			renderer->RenderUnlit(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
+		}
+		else
+		{
+			ID3D11ShaderResourceView* nullSRV = nullptr; 
+			Global::GetGraphicsEngine()->GetContext()->PSSetShaderResources(Graphics::Global_Slot_CubeMap, 1, &nullSRV);
 		}
 
 		if (myEntityWithDirectionalLightID != (static_cast<size_t>(-1)))
