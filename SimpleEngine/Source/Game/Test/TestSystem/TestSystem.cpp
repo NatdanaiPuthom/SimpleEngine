@@ -1,5 +1,5 @@
-#include "Engine/Precomplied/EnginePch.hpp"
-#include "TestSystem.hpp"
+#include "Game/Precomplied/GamePch.hpp"
+#include "Game/Test/TestSystem/TestSystem.hpp"
 
 namespace ECS
 {

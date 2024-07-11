@@ -1,6 +1,6 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/GameWorld.hpp"
-#include "Game/Components/IncludeComponentHere/AllGameComponents.hpp"
+#include "Game/Components/AddComponentHere/AllGameComponents.hpp"
 #include "Game/Systems/AddSystemHere/AllGameSystems.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
