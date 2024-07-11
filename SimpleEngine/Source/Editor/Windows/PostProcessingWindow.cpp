@@ -131,5 +131,25 @@ namespace Editor
 		}
 
 		ImGui::End();
+
+		if (ImGui::Begin("BloomUpDownScale##PostProcessImage"))
+		{
+			for (size_t i = 0; i < 5; ++i)
+			{
+				ImTextureID texture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::BloomDownAndUpScale, 0).Get();
+				ImGui::Image(texture, ImVec2(325, 325));
+
+				if ((i + 1 ) % 3 != 0)
+				{
+					ImGui::SameLine();
+				}
+			}
+		
+			ImGui::SameLine();
+
+			ImTextureID bloomTexture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::Bloom, 0).Get();
+			ImGui::Image(bloomTexture, ImVec2(325, 325));
+		}
+		ImGui::End();
 	}
 }

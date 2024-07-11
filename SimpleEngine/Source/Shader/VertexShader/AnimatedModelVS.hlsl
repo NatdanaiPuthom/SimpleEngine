@@ -33,9 +33,9 @@ PixelInputType main(VertexInputType aInput)
     output.worldPosition = vertexWorldPos.xyzw;
     output.uv = float2(aInput.uv.x, 1.0f -  aInput.uv.y);
     
-    output.normal = aInput.normal;
-    output.tangent = aInput.tangent;
-    output.bitangent = aInput.bitangent;
+    output.normal = mul((float3x3) modelWorld, aInput.normal);
+    output.tangent = mul((float3x3) modelWorld, aInput.tangent);
+    output.bitangent = mul((float3x3) modelWorld, aInput.bitangent);
     
     output.color = aInput.color;
     
