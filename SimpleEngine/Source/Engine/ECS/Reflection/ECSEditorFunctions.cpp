@@ -453,6 +453,8 @@ namespace ECS
 						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
 						const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str());
 
+						bool isCubeMap = false;
+
 						ID3D11ShaderResourceView* shaderResourceView = texture.get()->GetShaderResourceView().Get();
 
 						ID3D11Resource* resource = nullptr;
@@ -468,8 +470,7 @@ namespace ECS
 
 								if (desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
 								{
-									ImGui::EndDragDropTarget();
-									return isValid;
+									isCubeMap = true;
 								}
 
 								texture2D->Release();
@@ -478,7 +479,10 @@ namespace ECS
 							resource->Release();
 						}
 
-						aTextures[i] = texture.get();
+						if (isCubeMap == false)
+						{
+							aTextures[i] = texture.get();
+						}
 					}
 				}
 
