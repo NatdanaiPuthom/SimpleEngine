@@ -194,7 +194,7 @@ namespace Drawer
 			}
 			else
 			{
-				static ID3D11ShaderResourceView* nullview[1] = { NULL };
+				static ID3D11ShaderResourceView* nullview[1] = { nullptr };
 				aContext->PSSetShaderResources(static_cast<unsigned int>(i), 1, nullview);
 			}
 		}

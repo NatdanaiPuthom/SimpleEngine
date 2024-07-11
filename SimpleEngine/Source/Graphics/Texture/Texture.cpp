@@ -21,17 +21,17 @@ namespace Graphics
 		
 	}
 
-	void Texture::Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot) const
+	void Texture::Bind(ID3D11DeviceContext* aContext, const unsigned int aSlot) const
 	{
 		aContext->PSSetShaderResources(aSlot, 1, myShaderResourceView.GetAddressOf());
 	}
 
-	void Texture::Bind(ComPtr<ID3D11DeviceContext> aContext) const
+	void Texture::Bind(ID3D11DeviceContext* aContext) const
 	{
 		aContext->PSSetShaderResources(mySlot, 1, myShaderResourceView.GetAddressOf());
 	}
 
-	void Texture::Unbind(ComPtr<ID3D11DeviceContext> aContext) const
+	void Texture::Unbind(ID3D11DeviceContext* aContext) const
 	{
 		ID3D11ShaderResourceView* nullSRV = nullptr;
 		aContext->PSSetShaderResources(mySlot, 1, &nullSRV);
