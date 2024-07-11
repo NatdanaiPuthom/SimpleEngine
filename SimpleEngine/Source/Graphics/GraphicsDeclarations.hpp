@@ -52,9 +52,9 @@ namespace Graphics
 	enum class eShaderType
 	{
 		Unlit_Default,
-		Unlit_Animated,
+		PBR_Default,
+		Animated,
 		SkyBox,
-		GBuffer,
 		Deferred,
 		PointLight,
 		PostProcessing,
@@ -68,6 +68,9 @@ namespace Graphics
 	enum class eTextureType
 	{
 		Default,
+		Default_Albedo,
+		Default_Normal,
+		Default_Material,
 		Simple,
 		DirectionalLight
 	};

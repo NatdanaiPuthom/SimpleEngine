@@ -49,21 +49,21 @@ namespace ECS
 
 					animatedComponent->animation = Global::GetModelFactory()->LoadAnimationFBX(absolutePathAnimation.c_str());
 					animatedComponent->skeleton = Global::GetModelFactory()->LoadSkeleton(absolutePathModel);
-					animatedComponent->shader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Unlit_Animated).get();
+
+					if (animationPlayerComponent != nullptr)
+					{
+						animationPlayerComponent->animationPlayer.Init(animatedComponent->animation, animatedComponent->skeleton);
+						animationPlayerComponent->animationPlayer.Play(true);
+					}
 				}
 			}
 
 			if (animationPlayerComponent != nullptr)
 			{
-				static bool doOnce = true;
-				if (doOnce)
+				if (animatedComponent != nullptr)
 				{
-					doOnce = false;
-					animationPlayerComponent->animationPlayer.Init(animatedComponent->animation, animatedComponent->skeleton);
-					animationPlayerComponent->animationPlayer.Play(true);
+					animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
 				}
-
-				animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
 			}
 		}
 	}

@@ -815,6 +815,15 @@ namespace Graphics
 		case eTextureType::Default:
 			texture = GetTexture("Assets\\Textures\\T_SimpleTexture_C.dds");
 			break;
+		case eTextureType::Default_Albedo:
+			texture = GetTexture("Assets\\Textures\\Materials\\T_DefaultMaterial_C.dds");
+			break;
+		case eTextureType::Default_Normal:
+			texture = GetTexture("Assets\\Textures\\Materials\\T_DefaultMaterial_N.dds");
+			break;
+		case eTextureType::Default_Material:
+			texture = GetTexture("Assets\\Textures\\Materials\\T_DefaultMaterial_M.dds");
+			break;
 		case eTextureType::Simple:
 			texture = GetTexture("Assets\\Textures\\T_Hamster_C.dds");
 			break;
@@ -925,14 +934,14 @@ namespace Graphics
 		case eShaderType::Unlit_Default:
 			shader = GetShader("Shaders\\DefaultPS.cso", "Shaders\\DefaultVS.cso");
 			break;
-		case eShaderType::Unlit_Animated:
-			shader = GetShader("Shaders\\DefaultPS.cso", "Shaders\\AnimatedModelVS.cso");
+		case eShaderType::PBR_Default:
+			shader = GetShader("Shaders\\GBufferPS.cso", "Shaders\\DefaultVS.cso");
+			break;
+		case eShaderType::Animated:
+			shader = GetShader("Shaders\\GBufferPS.cso", "Shaders\\AnimatedModelVS.cso");
 			break;
 		case eShaderType::SkyBox:
 			shader = GetShader("Shaders\\SkyBoxPS.cso", "Shaders\\DefaultVS.cso");
-			break;
-		case eShaderType::GBuffer:
-			shader = GetShader("Shaders\\GBufferPS.cso", "Shaders\\DefaultVS.cso");
 			break;
 		case eShaderType::Deferred:
 			shader = GetShader("Shaders\\DeferredPS.cso", "Shaders\\FullScreenVS.cso");
