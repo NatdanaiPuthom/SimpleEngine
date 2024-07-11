@@ -48,7 +48,7 @@ namespace ECS
 		{
 			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 			graphicsEngine->SetDirectionalLightDirection({ 0.0f,0.0f, -1.0f });
-			graphicsEngine->SetDirectionalLightColor({ 0.2f, 0.2f, 0.2f,0.2f });
+			graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
 		}
 
 		{

@@ -5,8 +5,6 @@
 namespace ECS
 {
 	SystemManager::SystemManager(EntityComponentSystem* aEntityComponentSystem)
-		: myFixedUpdateTime(1.0f / 60.0f)
-		, myTimer(0.0f)
 	{
 		mySkyBoxAndDirectionalLightSystem = std::make_shared<RenderLightSystem>(aEntityComponentSystem);
 		myRenderSystem = std::make_shared<RenderSystem>(aEntityComponentSystem);
@@ -29,24 +27,10 @@ namespace ECS
 
 	void SystemManager::Update()
 	{
-		myTimer += Global::GetDeltaTime();
-		const bool shouldUpdate = myTimer > myFixedUpdateTime;
-
-		if (shouldUpdate == true)
+		for (const auto& [key, system] : mySystems)
 		{
-			myTimer = 0.0f;
+			system->Update();
 		}
-
-		EarlyUpdate();
-
-		if (shouldUpdate)
-		{
-			FixedUpdate();
-		}
-
-		NormalUpdate();
-
-		LateUpdate();
 	}
 
 	void SystemManager::EarlyUpdate()
@@ -80,14 +64,6 @@ namespace ECS
 
 		mySkyBoxAndDirectionalLightSystem->LateUpdate();
 		myRenderSystem->LateUpdate();
-	}
-
-	void SystemManager::NormalUpdate()
-	{
-		for (const auto& [key, system] : mySystems)
-		{
-			system->Update();
-		}
 	}
 
 	void SystemManager::UpdateRenderSystem()

@@ -3,6 +3,13 @@
 
 namespace ECS
 {
+	/* NOTE (v11.3.0)
+	*
+	* Go to Game/Systems/AddSystemHere/AllGameSystems.hpp
+	*
+	* Add:	 Game/Systems/Example/ExampleSystem.hpp
+	*/
+
 	class ExampleSystem final : public ECS::System
 	{
 	public:

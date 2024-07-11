@@ -31,19 +31,13 @@ namespace ECS
 		void EarlyUpdate();
 		void FixedUpdate();
 		void LateUpdate();
-		void NormalUpdate();
-
 	private:
 		explicit SystemManager(EntityComponentSystem* aEntityComponentSystem);
 		~SystemManager();
 	private:
-
 		std::unordered_map<SystemHashCode, std::shared_ptr<System>> mySystems;
 		std::shared_ptr<RenderLightSystem> mySkyBoxAndDirectionalLightSystem;
 		std::shared_ptr<RenderSystem> myRenderSystem;
-
-		float myFixedUpdateTime;
-		float myTimer;
 	};
 
 	template<typename T>

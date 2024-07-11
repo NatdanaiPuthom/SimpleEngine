@@ -185,12 +185,13 @@ namespace Simpleton
 		if (success)
 		{
 			ECS::EntityComponentSystem& ecs = myECSs[mySceneInfos[aSceneName].id];
-			ecs.Init();
 
 			for (const auto& [hashCode, system] : ECS::ECSGameSystem::mySystems)
 			{
 				ecs.AddClonedSystem(hashCode, system->Clone(&ecs));
 			}
+
+			ecs.Init();
 
 			const std::string name = "ECS LoadScene: " + mySceneInfos[aSceneName].name;
 

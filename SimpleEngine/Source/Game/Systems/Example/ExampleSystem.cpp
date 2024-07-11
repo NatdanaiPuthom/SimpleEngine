@@ -23,18 +23,22 @@ namespace ECS
 
 	void ExampleSystem::Render()
 	{
+		std::cout << "ExampleSystem is begin rendered!" << std::endl;
 	}
 
 	void ExampleSystem::EarlyUpdate()
 	{
+		std::cout << "ExampleSystem is begin early updated!" << std::endl;
 	}
 
 	void ExampleSystem::FixedUpdate()
 	{
+		std::cout << "ExampleSystem is begin fixed updated!" << std::endl;
 	}
 
 	void ExampleSystem::LateUpdate()
 	{
+		std::cout << "ExampleSystem is begin late updated!" << std::endl;
 	}
 
 	std::unique_ptr<System> ExampleSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
