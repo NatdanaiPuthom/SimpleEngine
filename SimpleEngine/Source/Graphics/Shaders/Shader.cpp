@@ -15,7 +15,7 @@ namespace Graphics
 	{
 	}
 
-	const bool Shader::Init(ComPtr<ID3D11Device>& aDevice, const std::string& aPSFilePath, const std::string& aVSFilePath)
+	const bool Shader::Init(ID3D11Device* aDevice, const std::string& aPSFilePath, const std::string& aVSFilePath)
 	{
 		HRESULT result;
 		std::string vsData;
@@ -73,13 +73,13 @@ namespace Graphics
 		aContext->IASetInputLayout(myInputLayout.Get());
 	}
 
-	void Shader::BindOnlyThisPixelShader(ComPtr<ID3D11DeviceContext> aContext) const
+	void Shader::BindOnlyThisPixelShader(ID3D11DeviceContext* aContext) const
 	{
 		aContext->PSSetShader(myPixelShader.Get(), nullptr, 0);
 		aContext->IASetInputLayout(myInputLayout.Get());
 	}
 
-	void Shader::BindOnlyThisVertexShader(ComPtr<ID3D11DeviceContext> aContext) const
+	void Shader::BindOnlyThisVertexShader(ID3D11DeviceContext* aContext) const
 	{
 		aContext->VSSetShader(myVertexShader.Get(), nullptr, 0);
 		aContext->IASetInputLayout(myInputLayout.Get());

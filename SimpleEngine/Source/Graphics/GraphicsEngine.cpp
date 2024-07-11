@@ -407,7 +407,7 @@ namespace Graphics
 
 		std::shared_ptr<Shader> shader = std::make_shared<Shader>();
 
-		if (!shader->Init(myDevice, PSKey, VSKey))
+		if (!shader->Init(myDevice.Get(), PSKey, VSKey))
 			return false;
 
 		myLoadedShaders.emplace(std::make_pair(PSKey, VSKey), shader);

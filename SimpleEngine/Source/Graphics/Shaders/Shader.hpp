@@ -19,11 +19,11 @@ namespace Graphics
 		Shader();
 		~Shader();
 
-		const bool Init(ComPtr<ID3D11Device>& aDevice, const std::string& aPSFilePath, const std::string& aVSFilePath);
+		const bool Init(ID3D11Device* aDevice, const std::string& aPSFilePath, const std::string& aVSFilePath);
 
 		void BindThisShader(ID3D11DeviceContext* aContext) const;
-		void BindOnlyThisPixelShader(ComPtr<ID3D11DeviceContext> aContext) const;
-		void BindOnlyThisVertexShader(ComPtr<ID3D11DeviceContext> aContext) const;
+		void BindOnlyThisPixelShader(ID3D11DeviceContext* aContext) const;
+		void BindOnlyThisVertexShader(ID3D11DeviceContext* aContext) const;
 
 		const std::string& GetPixelShaderName() const;
 		const std::string& GetVertexShaderName() const;
