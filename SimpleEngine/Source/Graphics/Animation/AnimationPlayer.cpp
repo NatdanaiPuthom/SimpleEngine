@@ -12,6 +12,7 @@ namespace Graphics
 		, myFPS(0.0f)
 		, myIsLooping(false)
 		, myState(eAnimationState::NoAnimation)
+		, mySkeleton(nullptr)
 	{
 	}
 

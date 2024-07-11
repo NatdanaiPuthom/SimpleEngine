@@ -33,11 +33,13 @@ namespace ECS
 
 		if (human != nullptr)
 		{
-			auto animated = human->GetComponent<ECS::AnimatedComponent>();
+			ECS::AnimatedComponent* animatedComponent = human->GetComponent<ECS::AnimatedComponent>();
+			ECS::AnimationPlayerComponent* animationPlayerComponent = human->GetComponent<ECS::AnimationPlayerComponent>();
 
-			if (animated != nullptr)
+			if (animatedComponent != nullptr)
 			{
 				static bool doOnce = true;
+
 				if (doOnce)
 				{
 					doOnce = false;
@@ -45,10 +47,23 @@ namespace ECS
 					const std::string absolutePathAnimation = SimpleUtilities::GetAbsolutePath("Assets\\Models\\Animations\\SimpleHuman3_Idle.fbx");
 					const std::string absolutePathModel = SimpleUtilities::GetAbsolutePath("Assets\\Models\\AnimatedModels\\SimpleHuman3.fbx");
 
-					animated->animation = Global::GetModelFactory()->LoadAnimationFBX(absolutePathAnimation.c_str());
-					animated->skeleton = Global::GetModelFactory()->LoadSkeleton(absolutePathModel);
-					animated->shader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Unlit_Animated).get();
+					animatedComponent->animation = Global::GetModelFactory()->LoadAnimationFBX(absolutePathAnimation.c_str());
+					animatedComponent->skeleton = Global::GetModelFactory()->LoadSkeleton(absolutePathModel);
+					animatedComponent->shader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Unlit_Animated).get();
 				}
+			}
+
+			if (animationPlayerComponent != nullptr)
+			{
+				static bool doOnce = true;
+				if (doOnce)
+				{
+					doOnce = false;
+					animationPlayerComponent->animationPlayer.Init(animatedComponent->animation, animatedComponent->skeleton);
+					animationPlayerComponent->animationPlayer.Play(true);
+				}
+
+				animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
 			}
 		}
 	}

@@ -54,29 +54,17 @@ namespace Drawer
 		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
 		aMeshComponent->shader->BindThisShader(context);
-
-		for (size_t i = 0; i < aMeshComponent->textures.size(); ++i)
-		{
-			if (const Graphics::Texture* texture = aMeshComponent->textures[i]) //To-DO(9.36.4): Disgusting, pls fix
-			{
-				texture->Bind(context);
-			}
-			else
-			{
-				static ID3D11ShaderResourceView* nullview[1] = { NULL };
-				context->PSSetShaderResources(static_cast<unsigned int>(i), 1, nullview);
-			}
-		}
+		BindTextures(aMeshComponent, context);
 
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
-	void Renderer::RenderUnlit(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTextures) const
+	void Renderer::RenderUnlit(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTexture) const
 	{
 		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
 		aShader->BindThisShader(context);
-		aTextures->Bind(context);
+		aTexture->Bind(context);
 
 		RenderModel(aTransformMatrix, aMesh, context);
 	}
@@ -100,39 +88,24 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderAnimatedModel(ECS::TransformComponent* aTransformComponent, ECS::MeshComponent* aMeshComponent, ECS::AnimatedComponent* aSkeletonComponent)
+	void Renderer::RenderAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimatedComponent* aAnimatedComponent) const
 	{
-		const auto context = Global::GetGraphicsEngine()->GetContext();
-
-		TransformBufferData objectBuffer = {};
-		objectBuffer.modelWorldMatrix = aTransformComponent->transform.GetMatrix();
-
-		myTransformBuffer->Bind(myTransformBuffer->GetSlot());
-		myTransformBuffer->Update(sizeof(TransformBufferData), &objectBuffer);
+		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
 		JointsBufferData boneBufferData = {};
 
 		for (size_t i = 0; i < Graphics::Global_Max_Joints; ++i)
 		{
-			boneBufferData.bonesTransform[i] = aSkeletonComponent->jointMatrices[i];;
+			boneBufferData.bonesTransform[i] = aAnimatedComponent->jointMatrices[i];;
 		}
 
 		myJointBuffer->Bind(myJointBuffer->GetSlot());
 		myJointBuffer->Update(sizeof(JointsBufferData), &boneBufferData);
 
-		aSkeletonComponent->shader->BindThisShader(context.Get());
-		aMeshComponent->textures[0]->Bind(context);
+		aAnimatedComponent->shader->BindThisShader(context);
+		BindTextures(aMeshComponent, context);
 
-		UINT stride = sizeof(Graphics::Vertex);
-		UINT offset = 0;
-
-		context->IASetVertexBuffers(0, 1, aMeshComponent->mesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		context->IASetIndexBuffer(aMeshComponent->mesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		context->DrawIndexed(static_cast<UINT>(aMeshComponent->mesh->myMeshData.indices.size()), 0, 0);
-
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
 	void Renderer::RenderLine(const Drawer::Line& aLine) const
@@ -209,5 +182,21 @@ namespace Drawer
 
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();*/
+	}
+
+	void Renderer::BindTextures(const ECS::MeshComponent* aMeshComponent, ID3D11DeviceContext* aContext) const
+	{
+		for (size_t i = 0; i < aMeshComponent->textures.size(); ++i)
+		{
+			if (const Graphics::Texture* texture = aMeshComponent->textures[i]) //To-DO(9.36.4): Disgusting, pls fix
+			{
+				texture->Bind(aContext);
+			}
+			else
+			{
+				static ID3D11ShaderResourceView* nullview[1] = { NULL };
+				aContext->PSSetShaderResources(static_cast<unsigned int>(i), 1, nullview);
+			}
+		}
 	}
 }

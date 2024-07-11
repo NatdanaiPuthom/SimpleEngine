@@ -4,6 +4,7 @@
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
+#include "Engine/ECS/Components/Core/AnimatedComponent.hpp"
 
 namespace ECS
 {
@@ -69,7 +70,23 @@ namespace ECS
 				continue;
 			}
 
-			renderer->RenderStaticModel(transform, mesh);
+			const AnimatedComponent* animated = entities[i]->GetComponent<ECS::AnimatedComponent>();
+
+			if (animated != nullptr)
+			{
+				if (animated->skeleton != nullptr && animated->shader != nullptr)
+				{
+					renderer->RenderAnimatedModel(transform, mesh, animated);
+				}
+				else
+				{
+					renderer->RenderStaticModel(transform, mesh);
+				}
+			}
+			else
+			{
+				renderer->RenderStaticModel(transform, mesh);
+			}
 		}
 	}
 }
