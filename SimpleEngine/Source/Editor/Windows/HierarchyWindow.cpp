@@ -24,8 +24,7 @@ namespace Editor
 
 		ShowSceneHierachy(activeECS, entities, selected);
 
-		
-		 if (selected >= static_cast<int>(entities.GetEntityCount()))
+		if (selected >= static_cast<int>(entities.GetEntityCount()))
 		{
 			selected = static_cast<int>(entities.GetEntityCount() - 1);
 		}
