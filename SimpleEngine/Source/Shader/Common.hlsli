@@ -9,7 +9,6 @@ Texture2D GlobalNormalTexture               : register(t1);
 Texture2D GlobalMaterialTexture             : register(t2);
 Texture2D GlobalAmbientOcclusionAndCustom   : register(t3);
 TextureCube GlobalCubeMap                   : register(t4);
-Texture2D GlobalDirectionalLightShadowMap   : register(t5);
 
 Texture2D GlobalBufferAlbedoTexture             : register(t5);
 Texture2D GlobalBufferNormalTexture             : register(t6);
