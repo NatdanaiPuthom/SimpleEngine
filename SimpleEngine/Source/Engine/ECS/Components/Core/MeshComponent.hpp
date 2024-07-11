@@ -8,6 +8,8 @@ namespace ECS
 {
 	struct MeshComponent final
 	{
+		MeshComponent();
+
 		std::array<const Graphics::Texture*, 3> textures;
 		const Graphics::Mesh* mesh;
 		const Graphics::Shader* shader;
