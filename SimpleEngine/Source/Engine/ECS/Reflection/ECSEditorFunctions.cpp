@@ -21,7 +21,7 @@ namespace Editor
 		const float width = ImGui::GetContentRegionAvail().x / 5.0f;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, (ImVec2(0, 0)));
-	
+
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 		const std::string x = "X##" + std::string(aLabel);
@@ -388,7 +388,7 @@ namespace ECS
 						}
 
 						aScriptInstance = &script->CreateScriptInstance();
-						
+
 						wasChanged = true;
 					}
 				}
@@ -416,11 +416,11 @@ namespace ECS
 
 		for (size_t i = 0; i < aTextures.size(); ++i)
 		{
-			std::string texture;
+			std::string textureName;
 
 			if (aTextures[i] != nullptr)
 			{
-				texture = aTextures[i]->GetTextureName();
+				textureName = aTextures[i]->GetTextureName();
 			}
 
 			switch (i)
@@ -438,7 +438,7 @@ namespace ECS
 
 			ImGui::SameLine();
 			ImGui::BeginDisabled();
-			ImGui::InputText("", texture.data(), texture.size());
+			ImGui::InputText("", textureName.data(), textureName.size());
 			ImGui::EndDisabled();
 
 			if (ImGui::BeginDragDropTarget())
@@ -451,7 +451,34 @@ namespace ECS
 					if (extension == ".dds")
 					{
 						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
-						aTextures[i] = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+						const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str());
+
+						ID3D11ShaderResourceView* shaderResourceView = texture.get()->GetShaderResourceView().Get();
+
+						ID3D11Resource* resource = nullptr;
+						shaderResourceView->GetResource(&resource);
+
+						if (resource)
+						{
+							ID3D11Texture2D* texture2D = nullptr;
+							if (SUCCEEDED(resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&texture2D)))
+							{
+								D3D11_TEXTURE2D_DESC desc;
+								texture2D->GetDesc(&desc);
+
+								if (desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
+								{
+									ImGui::EndDragDropTarget();
+									return isValid;
+								}
+
+								texture2D->Release();
+							}
+
+							resource->Release();
+						}
+
+						aTextures[i] = texture.get();
 					}
 				}
 
