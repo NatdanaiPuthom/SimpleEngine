@@ -208,4 +208,8 @@ namespace ECS
 		}
 	}
 
+	void EntityComponentSystem::AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem)
+	{
+		mySystemManager.mySystems[aSystemHashCode] = std::move(aSystem);
+	}
 }

@@ -36,6 +36,7 @@ namespace ECS
 	private:
 		explicit SystemManager(EntityComponentSystem* aEntityComponentSystem);
 		~SystemManager();
+	private:
 
 		std::unordered_map<SystemHashCode, std::shared_ptr<System>> mySystems;
 		std::shared_ptr<RenderLightSystem> mySkyBoxAndDirectionalLightSystem;

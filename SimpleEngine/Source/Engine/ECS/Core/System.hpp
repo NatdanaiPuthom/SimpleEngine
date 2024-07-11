@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 namespace ECS
 {
@@ -18,6 +19,8 @@ namespace ECS
 		virtual void EarlyUpdate() {};
 		virtual void FixedUpdate() {};
 		virtual void LateUpdate() {};
+
+		virtual std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const = 0;
 
 	protected:
 		EntityComponentSystem* myEntityComponentSystem;

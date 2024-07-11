@@ -14,5 +14,10 @@ namespace ECS
 		void Init() override;
 		void Update() override;
 		void Render() override;
+
+		virtual std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const
+		{
+			return std::make_unique<RenderSystem>(aEntityComponentSystem);
+		}
 	};
 }

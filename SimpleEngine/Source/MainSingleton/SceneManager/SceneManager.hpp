@@ -53,6 +53,7 @@ namespace Simpleton
 
 	private:
 		void LoadSettingsFromJson();
+		void LoadSystems();
 		void LoadDefaultScene(const std::string& aDefaultScenePath);
 		bool LoadAndInitScene(const std::string& aSceneName);
 	private:

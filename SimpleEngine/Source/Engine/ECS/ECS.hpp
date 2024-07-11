@@ -36,8 +36,7 @@ namespace ECS
 		void RenderPointLights();
 		void RenderSkyBoxAndDirectionalLight();
 
-		template<typename T>
-		void AddSystem();
+		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
 
 		Entity CreateEntity(const EntityID aEntityID = 0);
 		bool RemoveEntity(const EntityID aEntityID);
@@ -55,12 +54,6 @@ namespace ECS
 		ComponentManager myComponentManager;
 		SystemManager mySystemManager;
 	};
-
-	template<typename T>
-	inline void EntityComponentSystem::AddSystem()
-	{
-			mySystemManager.AddSystem<T>(*this);	
-	}
 
 	template<typename T>
 	inline const std::unordered_set<EntityID>& EntityComponentSystem::GetEntityIDsWithThisComponent()

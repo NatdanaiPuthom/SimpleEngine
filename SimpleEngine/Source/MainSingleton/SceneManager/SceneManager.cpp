@@ -3,8 +3,9 @@
 #include "Engine/Global.hpp"
 #include "External/profiler.h"
 #include "External/nlohmann/json.hpp"
+#include "MainSingleton/MainSingleton.hpp"
+#include "Game/Systems/AddSystemHere/AllGameSystems.hpp"
 #include <fstream>
-#include "MainSingleton.hpp"
 
 namespace Simpleton
 {
@@ -27,6 +28,7 @@ namespace Simpleton
 
 	void SceneManager::Init()
 	{
+		LoadSystems();
 		LoadSettingsFromJson();
 
 		auto camera = Global::GetGraphicsEngine()->GetEditorCamera();
@@ -166,6 +168,11 @@ namespace Simpleton
 		LoadDefaultScene(gameSettings["Start_Scene_RelativePath"]);
 	}
 
+	void SceneManager::LoadSystems()
+	{
+		ECS::IECSGameSystem::AddSystems();
+	}
+
 	void SceneManager::LoadDefaultScene(const std::string& aDefaultScenePath)
 	{
 		ChangeScene(aDefaultScenePath);
@@ -179,6 +186,11 @@ namespace Simpleton
 		{
 			ECS::EntityComponentSystem& ecs = myECSs[mySceneInfos[aSceneName].id];
 			ecs.Init();
+
+			for (const auto& [hashCode, system] : ECS::ECSGameSystem::mySystems)
+			{
+				ecs.AddClonedSystem(hashCode, system->Clone(&ecs));
+			}
 
 			const std::string name = "ECS LoadScene: " + mySceneInfos[aSceneName].name;
 
