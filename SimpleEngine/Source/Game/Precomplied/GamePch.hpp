@@ -47,7 +47,6 @@
 #include "Engine/SimpleUtilities/Utility.hpp"
 
 #include "Engine/Global.hpp"
-#include "Game/World.hpp"
 
 #pragma message("---------Never give up on your dreams!---------------")
 

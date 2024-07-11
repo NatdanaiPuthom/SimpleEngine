@@ -5,7 +5,6 @@
 #include "Engine/ImGui/ImGuiEngine.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
-#include "Game/World.hpp"
 #include <External/imgui.h>
 #include <External/nlohmann/json.hpp>
 #include <fstream>

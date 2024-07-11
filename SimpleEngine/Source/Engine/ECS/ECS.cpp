@@ -2,11 +2,8 @@
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/ECS/Systems/RenderSystem.hpp"
 #include "MainSingleton/MainSingleton.hpp"
-#include "Game/WorldImpl/SimpleWorldImpl.hpp"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
-
-#include "Engine/ECS/Systems/TestSystem.hpp"
 
 namespace ECS
 {
@@ -23,10 +20,8 @@ namespace ECS
 	void EntityComponentSystem::Init()
 	{
 		constexpr size_t entitiesToReserve = 16; //NOTE(v9.30.10):Small number for experimental purposes for now
+
 		myEntityManager.Init(entitiesToReserve);
-
-		mySystemManager.AddSystem<TestSystem>(this);
-
 		mySystemManager.Init();
 	}
 

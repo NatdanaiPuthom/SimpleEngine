@@ -5,7 +5,6 @@
 #include "Engine/Global.hpp"
 #include "Engine/Math/Math.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
-#include "Game/World.hpp"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
 #include <cassert>
