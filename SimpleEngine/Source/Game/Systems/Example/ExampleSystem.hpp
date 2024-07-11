@@ -5,9 +5,9 @@ namespace ECS
 {
 	/* NOTE (v11.3.0)
 	*
-	* Go to Game/Systems/AddSystemHere/AllGameSystems.hpp
-	*
-	* Add:	 Game/Systems/Example/ExampleSystem.hpp
+	* 1. Go to Game/Systems/AddSystemHere/AllGameSystems.hpp
+	* 2. Include this file:	#include "Game/Systems/Example/ExampleSystem.hpp"
+	* 
 	*/
 
 	class ExampleSystem final : public ECS::System
