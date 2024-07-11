@@ -210,41 +210,10 @@ namespace Graphics
 
 	void GraphicsEngine::PreloadShaders()
 	{
-		if (!AddShader("Shaders\\DefaultPS.cso", "Shaders\\DefaultVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\DefaultPS.cso", "Shaders\\AnimatedModelVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\LinePS.cso", "Shaders\\Line2DVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\SkyBoxPS.cso", "Shaders\\DefaultVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\GBufferPS.cso", "Shaders\\GBufferVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\DeferredPS.cso", "Shaders\\FullScreenVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\PointLightCullPS.cso", "Shaders\\DefaultVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\PostProcessingPS.cso", "Shaders\\FullScreenVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\FullScreenCopyPS.cso", "Shaders\\FullScreenVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\GaussianBlurPS.cso", "Shaders\\FullScreenVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\BloomPixelFilterPS.cso", "Shaders\\FullScreenVS.cso"))
-			assert(false && "Failed to add Shader");
-
-		if (!AddShader("Shaders\\BloomPS.cso", "Shaders\\FullScreenVS.cso"))
-			assert(false && "Failed to add Shader");
+		for (size_t i = 0; i < static_cast<size_t>(eShaderType::Count); ++i)
+		{
+			GetShader(static_cast<eShaderType>(i));
+		}
 	}
 
 	void GraphicsEngine::FilterPixelForBloom()
@@ -959,17 +928,11 @@ namespace Graphics
 		case eShaderType::Unlit_Animated:
 			shader = GetShader("Shaders\\DefaultPS.cso", "Shaders\\AnimatedModelVS.cso");
 			break;
-		case eShaderType::PBR_Default:
-			shader = GetShader("Shaders\\DefaultPBRPS.cso", "Shaders\\DefaultVS.cso");
-			break;
-		case eShaderType::PBR_Animated:
-			shader = GetShader("Shaders\\DefaultPBRPS.cso", "Shaders\\AnimatedModelVS.cso");
-			break;
 		case eShaderType::SkyBox:
 			shader = GetShader("Shaders\\SkyBoxPS.cso", "Shaders\\DefaultVS.cso");
 			break;
 		case eShaderType::GBuffer:
-			shader = GetShader("Shaders\\GBufferPS.cso", "Shaders\\GBufferVS.cso");
+			shader = GetShader("Shaders\\GBufferPS.cso", "Shaders\\DefaultVS.cso");
 			break;
 		case eShaderType::Deferred:
 			shader = GetShader("Shaders\\DeferredPS.cso", "Shaders\\FullScreenVS.cso");

@@ -53,8 +53,6 @@ namespace Graphics
 	{
 		Unlit_Default,
 		Unlit_Animated,
-		PBR_Default,
-		PBR_Animated,
 		SkyBox,
 		GBuffer,
 		Deferred,
@@ -63,7 +61,8 @@ namespace Graphics
 		GaussianBlur,
 		Bloom,
 		BloomPixelFilter,
-		Copy
+		Copy,
+		Count
 	};
 
 	enum class eTextureType
