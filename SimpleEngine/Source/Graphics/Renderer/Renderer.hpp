@@ -35,19 +35,19 @@ namespace Drawer
 		void RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const;
 		void RenderAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimatedComponent* aAnimatedComponent) const;
 
-		void RenderUnlit(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTexture) const; //To-DO(v9.37.1): For testing SkyBox will need to refactor how rendering work later
+		//To-DO(v9.37.1): For testing SkyBox will need to refactor how rendering work later
+		void RenderUnlitModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTexture) const;
 
 		void RenderLine(const Drawer::Line& aLine) const;
 		void RenderLine(const std::vector<Drawer::Line>& aLines) const;
 		void RenderSphere(const Drawer::Sphere& aSphere) const;
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
-
+	private:
+		void RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const;
+		void BindTextures(const ECS::MeshComponent* aMeshComponent, ID3D11DeviceContext* aContext) const;
 	private:
 		const bool CreateObjectBuffer();
 		const bool CreateBoneBuffer();
-		void LoadSettingsFromJson();
-		void RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const;
-		void BindTextures(const ECS::MeshComponent* aMeshComponent, ID3D11DeviceContext* aContext) const;
 	private:
 		std::unique_ptr<Drawer::LineDrawer> myLineDrawer;
 		std::unique_ptr<Drawer::SphereDrawer> mySphereDrawer;

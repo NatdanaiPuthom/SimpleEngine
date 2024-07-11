@@ -134,7 +134,7 @@ namespace ECS
 			transform.SetPosition(pointLightBuffer[i].position);
 			transform.SetScale(pointLightBuffer[i].radius);
 
-			renderer->RenderUnlit(transform.GetMatrix(), mesh, shader.get(), texture.get());
+			renderer->RenderUnlitModel(transform.GetMatrix(), mesh, shader.get(), texture.get());
 		}
 
 		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Less_Equal);
@@ -189,7 +189,7 @@ namespace ECS
 		{
 			const ECS::Entity skyBox = myEntityComponentSystem->GetEntity(myEntityWithSkyBoxID);
 			const SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
-			renderer->RenderUnlit(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
+			renderer->RenderUnlitModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
 		}
 		else
 		{
@@ -201,7 +201,7 @@ namespace ECS
 		{
 			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(myEntityWithDirectionalLightID);
 			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
-			renderer->RenderUnlit(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
+			renderer->RenderUnlitModel(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
 		}
 	}
 

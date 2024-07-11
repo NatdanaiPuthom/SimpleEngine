@@ -5,13 +5,12 @@
 #include "Engine/Global.hpp"
 #include "Engine/Math/Math.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
-#include "External/nlohmann/json.hpp"
-#include <fstream>
-#include <cassert>
-
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
 #include "Engine/ECS/Components/Core/AnimatedComponent.hpp"
+#include "External/nlohmann/json.hpp"
+#include <fstream>
+#include <cassert>
 
 namespace Drawer
 {
@@ -35,8 +34,6 @@ namespace Drawer
 		mySphereDrawer = std::make_unique<Drawer::SphereDrawer>();
 		mySpriteDrawer = std::make_unique<Drawer::SpriteDrawer>();
 
-		LoadSettingsFromJson();
-
 		if (!CreateObjectBuffer())
 			assert(false && "Failed to create ObjectBuffer");
 
@@ -59,7 +56,7 @@ namespace Drawer
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
-	void Renderer::RenderUnlit(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTexture) const
+	void Renderer::RenderUnlitModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTexture) const
 	{
 		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
@@ -171,17 +168,6 @@ namespace Drawer
 			return false;
 
 		return true;
-	}
-
-	void Renderer::LoadSettingsFromJson()
-	{
-		/*const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME);
-
-		std::ifstream file(filename);
-		assert(file.is_open() && "Failed To Open File");
-
-		const nlohmann::json json = nlohmann::json::parse(file);
-		file.close();*/
 	}
 
 	void Renderer::BindTextures(const ECS::MeshComponent* aMeshComponent, ID3D11DeviceContext* aContext) const
