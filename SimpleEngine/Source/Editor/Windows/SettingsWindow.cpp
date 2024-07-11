@@ -1,5 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Tools/SettingsTool.hpp"
+#include "Editor/Windows/SettingsWindow.hpp"
 #include "Editor/Editor.hpp"
 #include "Engine/ImGui/ImGuiEngine.hpp"
 #include "MainSingleton/MainSingleton.hpp"
@@ -7,7 +7,7 @@
 
 namespace Editor
 {
-	SettingsTool::SettingsTool()
+	SettingsWindow::SettingsWindow()
 		: mySelectedWindowSize(0)
 		, mySelectedRasterizerState(0)
 		, myConsoleIsOpen(true)
@@ -15,7 +15,7 @@ namespace Editor
 	{
 	}
 
-	void SettingsTool::Init()
+	void SettingsWindow::Init()
 	{
 		LoadDataFromJson();
 		UpdateAndFetchCurrentMonitorResolution();
@@ -36,7 +36,7 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::Update()
+	void SettingsWindow::Update()
 	{
 		Math::Vector2ui resolution = Global::GetResolution();
 
@@ -53,7 +53,7 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::Draw()
+	void SettingsWindow::Draw()
 	{
 		if (ImGui::Begin("Settings##SettingTools"))
 		{
@@ -150,7 +150,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void SettingsTool::UpdateAndFetchCurrentMonitorResolution()
+	void SettingsWindow::UpdateAndFetchCurrentMonitorResolution()
 	{
 		HMONITOR hMonitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY);
 
@@ -161,7 +161,7 @@ namespace Editor
 		myMonitorResolution.y = static_cast<unsigned int>(monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top);
 	}
 
-	void SettingsTool::LoadDataFromJson()
+	void SettingsWindow::LoadDataFromJson()
 	{
 		const std::string editorJsonFileName = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR);
 		std::ifstream editorFile(editorJsonFileName);
@@ -174,7 +174,7 @@ namespace Editor
 		myMusicIsActive = editorSettings["MusicActive"];
 	}
 
-	void SettingsTool::CheckCursorIndexOnce(const std::unordered_map<std::string, const HCURSOR>& aLoadedCursors, int& aSelectedCursor)
+	void SettingsWindow::CheckCursorIndexOnce(const std::unordered_map<std::string, const HCURSOR>& aLoadedCursors, int& aSelectedCursor)
 	{
 		const HCURSOR currentCursor = Global::GetCurrentCustomCursor();
 
@@ -197,7 +197,7 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::ToggleConsole()
+	void SettingsWindow::ToggleConsole()
 	{
 		if (ImGui::Checkbox("Show Console", &myConsoleIsOpen))
 		{
@@ -210,7 +210,7 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine)
+	void SettingsWindow::ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
 		bool vsync = aGraphicsEngine->IsVSyncActive();
 
@@ -220,19 +220,19 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::ShowDrawCalls()
+	void SettingsWindow::ShowDrawCalls()
 	{
 		std::string drawCalls = "DrawCalls: " + std::to_string(Global::GetDrawCalls());
 		ImGui::Text(drawCalls.c_str());
 	}
 
-	void SettingsTool::ShowFPS()
+	void SettingsWindow::ShowFPS()
 	{
 		std::string fps = "FPS: " + std::to_string(Global::GetFPS());
 		ImGui::Text(fps.c_str());
 	}
 
-	void SettingsTool::AdjustWindowSize()
+	void SettingsWindow::AdjustWindowSize()
 	{
 		ImGui::SetNextItemWidth(200);
 
@@ -271,7 +271,7 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::AdjustRasterizerState()
+	void SettingsWindow::AdjustRasterizerState()
 	{
 		ImGui::SetNextItemWidth(200);
 
@@ -288,7 +288,7 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::AdjustEditorStyle()
+	void SettingsWindow::AdjustEditorStyle()
 	{
 		std::vector<const char*> editorStyles(3);
 
@@ -316,7 +316,7 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine)
+	void SettingsWindow::AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
 		int monitorUpdateFrequency = 0;
 
@@ -370,7 +370,7 @@ namespace Editor
 		}
 	}
 
-	void SettingsTool::SetCustomCursorIcon()
+	void SettingsWindow::SetCustomCursorIcon()
 	{
 		const std::unordered_map<std::string, const HCURSOR>& loadedCursors = Global::GetLoadedCustomCursors();
 		std::vector<std::string> cursorNames;

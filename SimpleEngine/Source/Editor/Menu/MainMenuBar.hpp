@@ -1,11 +1,12 @@
 #pragma once
 #include "Editor/Template/ToolInterface.hpp"
+#include <memory>
 
 namespace Editor
 {
 	class HierarchyWindow;
 	class AssetWindow;
-	class SettingsTool;
+	class SettingsWindow;
 	class DeferredSceneWindow;
 	class PostProcessingWindow;
 }
@@ -28,11 +29,11 @@ namespace Editor
 		void DrawTools();
 		void LoadSettingsFromJson();
 	private:
-		std::unique_ptr<SettingsTool> mySettingsTool;
-		std::unique_ptr<Editor::HierarchyWindow> myHierarchyWindow;
-		std::unique_ptr<Editor::AssetWindow> myAssetWindow;
-		std::unique_ptr<Editor::DeferredSceneWindow> myDeferredSceneWindow;
-		std::unique_ptr<Editor::PostProcessingWindow> myPostProcessWindow;
+		std::unique_ptr<SettingsWindow> mySettingsWindow;
+		std::unique_ptr<HierarchyWindow> myHierarchyWindow;
+		std::unique_ptr<AssetWindow> myAssetWindow;
+		std::unique_ptr<DeferredSceneWindow> myDeferredSceneWindow;
+		std::unique_ptr<PostProcessingWindow> myPostProcessWindow;
 
 		bool myEditorWindowActive;
 		bool myDeferredWindowActive;

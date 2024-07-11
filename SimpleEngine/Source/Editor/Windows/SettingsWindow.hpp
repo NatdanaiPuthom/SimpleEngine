@@ -3,13 +3,19 @@
 #include "Engine/Math/Vector2.hpp"
 #include <string>
 #include <vector>
+#include <windef.h>
+
+namespace Graphics
+{
+	class GraphicsEngine;
+}
 
 namespace Editor
 {
-	class SettingsTool final : public Editor::ToolInterface
+	class SettingsWindow final : public Editor::ToolInterface
 	{
 	public:
-		SettingsTool();
+		SettingsWindow();
 
 		void Init() override;
 		void Update() override;
