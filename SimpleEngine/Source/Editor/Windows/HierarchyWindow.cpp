@@ -50,7 +50,13 @@ namespace Editor
 
 	void HierarchyWindow::Draw()
 	{
+		static bool doOnce = true;
 
+		if (doOnce == true)
+		{
+			doOnce = false;
+			ImGui::SetWindowFocus("Inspector##HierachyWindow");
+		}
 	}
 
 	void HierarchyWindow::ShowActiveSceneName()
