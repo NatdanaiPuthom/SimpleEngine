@@ -31,6 +31,12 @@ namespace Graphics
 		aContext->PSSetShaderResources(mySlot, 1, myShaderResourceView.GetAddressOf());
 	}
 
+	void Texture::Unbind(ComPtr<ID3D11DeviceContext> aContext) const
+	{
+		ID3D11ShaderResourceView* nullSRV = nullptr;
+		aContext->PSSetShaderResources(mySlot, 1, &nullSRV);
+	}
+
 	void Texture::SetSlot(const unsigned int aSlot)
 	{
 		mySlot = aSlot;

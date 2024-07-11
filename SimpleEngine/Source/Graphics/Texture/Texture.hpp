@@ -18,6 +18,7 @@ namespace Graphics
 
 		void Bind(ComPtr<ID3D11DeviceContext> aContext, const unsigned int aSlot) const;
 		void Bind(ComPtr<ID3D11DeviceContext> aContext) const;
+		void Unbind(ComPtr<ID3D11DeviceContext> aContext) const;
 
 		bool LoadDDS(const char* aFileName);
 		bool LoadNonDDS(const char* aFileName);
