@@ -13,7 +13,7 @@ namespace ECS
 		virtual ~System() {};
 
 		virtual void Init() {};
-		virtual void Update() = 0;
+		virtual void Update() {};
 		virtual void Render() {};
 
 		virtual void EarlyUpdate() {};
