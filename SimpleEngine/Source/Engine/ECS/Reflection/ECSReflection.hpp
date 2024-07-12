@@ -262,7 +262,7 @@ namespace ECS
 	};
 }
 
-#include "Engine/ECS/Reflection/ECSMacros.hpp"
+#include "Engine/SimpleUtilities/MacroUtility.hpp"
 
 #define REGISTER_DATATYPE(aDataType) inline ECS::__RegisterDataType<aDataType> Global_ECS_Registered_Datatype_##aDataType;
 #define REGISTER_COMPONENT(aComponent) inline ECS::__RegisterComponent<aComponent> Global_ECS_Registered_Component_##aComponent;
