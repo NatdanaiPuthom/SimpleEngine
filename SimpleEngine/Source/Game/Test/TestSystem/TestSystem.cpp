@@ -71,4 +71,9 @@ namespace ECS
 	void TestSystem::Render()
 	{
 	}
+
+	std::unique_ptr<System> TestSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	{
+		return std::make_unique<TestSystem>(aEntityComponentSystem);
+	}
 }

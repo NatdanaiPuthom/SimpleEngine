@@ -8,7 +8,7 @@ namespace ECS
 	class System
 	{
 	public:
-		System(EntityComponentSystem* aEntityComponentSystem): myEntityComponentSystem(aEntityComponentSystem) {};
+		explicit System(EntityComponentSystem* aEntityComponentSystem): myEntityComponentSystem(aEntityComponentSystem) {};
 
 		virtual ~System() {};
 

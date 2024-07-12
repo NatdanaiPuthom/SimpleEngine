@@ -205,6 +205,11 @@ namespace ECS
 		}
 	}
 
+	std::unique_ptr<System> RenderLightSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	{
+		return std::make_unique<RenderLightSystem>(aEntityComponentSystem);
+	}
+
 	bool RenderLightSystem::FindAndSetSkyBox()
 	{
 		myEntityWithSkyBoxID = static_cast<size_t>(-1);

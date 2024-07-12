@@ -7,7 +7,7 @@ namespace SimpleTracker
 {
 	struct InlineLogger
 	{
-		InlineLogger(const std::string& aString)
+		explicit InlineLogger(const std::string& aString)
 		{
 			OutputDebugStringA("\n");
 			OutputDebugStringA("=========================================================== ");
@@ -19,7 +19,7 @@ namespace SimpleTracker
 
 #define INLINELOGGER(TYPE, NAME, RETURN) inline static TYPE NAME = []() -> TYPE {SimpleTracker::InlineLogger logger(CONVERT_TO_STRING(NAME)); return RETURN; }();
 
-/*
+/* NOTE(v11.3.0)
 * #include <vector>
 *
 * Example 1
@@ -31,4 +31,7 @@ namespace SimpleTracker
 * 		SimpleTracker::InlineLogger logger("example2");
 * 		return std::vector<int>();
 * 	}();
+* 
+* Example 3
+* class Example3 : public InlineLogger { Example3("Example3"); }
 */

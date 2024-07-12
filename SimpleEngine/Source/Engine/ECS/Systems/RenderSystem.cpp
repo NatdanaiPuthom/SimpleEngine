@@ -89,4 +89,9 @@ namespace ECS
 			}
 		}
 	}
+
+	std::unique_ptr<System> RenderSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	{
+		return std::make_unique<RenderSystem>(aEntityComponentSystem);
+	}
 }

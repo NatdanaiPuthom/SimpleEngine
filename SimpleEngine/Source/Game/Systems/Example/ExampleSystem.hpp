@@ -18,7 +18,7 @@ namespace ECS
 		* Example: ExampleSystem(EntityComponentSystem* aEntityComponentSystem, int aValue);
 		*/
 
-		ExampleSystem(EntityComponentSystem* aEntityComponentSystem);
+		explicit ExampleSystem(EntityComponentSystem* aEntityComponentSystem);
 
 		/* NOTE (v11.3.0)
 		* These functions below are pure-virtual which is required for every System

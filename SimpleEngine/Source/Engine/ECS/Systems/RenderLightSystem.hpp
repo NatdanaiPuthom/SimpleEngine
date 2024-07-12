@@ -6,7 +6,7 @@ namespace ECS
 	class RenderLightSystem final : public ECS::System
 	{
 	public:
-		RenderLightSystem(EntityComponentSystem* aEntityComponentSystem);
+		explicit RenderLightSystem(EntityComponentSystem* aEntityComponentSystem);
 		~RenderLightSystem();
 
 		void Init() override;
@@ -14,10 +14,7 @@ namespace ECS
 		void Render() override;
 		void RenderSkyBoxAndDirectionalLight() const;
 
-		virtual std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const
-		{
-			return std::make_unique<RenderLightSystem>(aEntityComponentSystem);
-		}
+		std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const;
 
 	private:
 		bool FindAndSetSkyBox();

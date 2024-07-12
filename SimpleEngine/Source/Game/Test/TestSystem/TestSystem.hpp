@@ -8,16 +8,13 @@ namespace ECS
 	class TestSystem : public ECS::System
 	{
 	public:
-		TestSystem(EntityComponentSystem* aEntityComponentSystem);
+		explicit TestSystem(EntityComponentSystem* aEntityComponentSystem);
 		~TestSystem() override;
 
 		void Init() override;
 		void Update() override;
 		void Render() override;
 
-		virtual std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const
-		{
-			return std::make_unique<TestSystem>(aEntityComponentSystem);
-		}
+		std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const;
 	};
 }
