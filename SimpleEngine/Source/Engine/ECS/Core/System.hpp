@@ -14,7 +14,7 @@ namespace ECS
 
 		virtual void Init() {};
 		virtual void Update() = 0;
-		virtual void Render() = 0;
+		virtual void Render() {};
 
 		virtual void EarlyUpdate() {};
 		virtual void FixedUpdate() {};
