@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/PlayMenuBar.hpp"
+#include "Engine/ImGui/ImGuiEngine.hpp"
 
 namespace Editor
 {
@@ -26,12 +27,17 @@ namespace Editor
 			Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
 
 			const bool isPlaying = sceneManager.GetIsPlaying();
+
 			if (isPlaying == true)
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, ImColor(1.0f, 0.0f, 0.0f, 1.0f).Value);
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor(0.6f, 0.0f, 0.0f, 1.0f).Value);
+				Simple::ImGuiEngine::SetPlayingModeBackground(Simple::eImGuiEditorMode::Playing);
 			}
-
+			else
+			{
+				Simple::ImGuiEngine::SetPlayingModeBackground(Simple::eImGuiEditorMode::Paused);
+			}
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10);
 			if (ImGui::Button(ICON_FA_PLAY))

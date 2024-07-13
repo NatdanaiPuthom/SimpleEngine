@@ -10,6 +10,8 @@ namespace Simple
 {
 	ImGuiStyle ImGuiEngine::myStyle = {};
 	ImVec4 ImGuiEngine::myColors = {};
+	ImVec4 ImGuiEngine::myPlayModeBackgroundColor = {};
+	ImVec4 ImGuiEngine::myPausedModeBackgroundColor = {};
 
 	ImGuiEngine::ImGuiEngine()
 	{
@@ -79,6 +81,24 @@ namespace Simple
 		ImGui::SaveIniSettingsToDisk(output.c_str());
 	}
 
+	void ImGuiEngine::SetPlayingModeBackground(const eImGuiEditorMode aMode)
+	{
+		ImVec4* colors = ImGui::GetStyle().Colors;
+
+		switch (aMode)
+		{
+		case eImGuiEditorMode::Playing:
+			colors[ImGuiCol_WindowBg] = myPlayModeBackgroundColor;
+			break;
+		case eImGuiEditorMode::Paused:
+			colors[ImGuiCol_WindowBg] = myPausedModeBackgroundColor;
+			break;
+		default:
+			colors[ImGuiCol_WindowBg] = myPausedModeBackgroundColor;
+			break;
+		}
+	}
+
 	void ImGuiEngine::SetSimpleStyle()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -115,6 +135,9 @@ namespace Simple
 
 	void ImGuiEngine::LoadColors()
 	{
+		myPlayModeBackgroundColor = ImVec4(0.25f, 0.00f, 0.00f, 1.0f);
+		myPausedModeBackgroundColor = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
+
 		ImVec4* colors = ImGui::GetStyle().Colors;
 		colors[ImGuiCol_MenuBarBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
 		colors[ImGuiCol_WindowBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);

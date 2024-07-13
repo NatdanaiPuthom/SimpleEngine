@@ -3,6 +3,12 @@
 
 namespace Simple
 {
+	enum class eImGuiEditorMode
+	{
+		Playing,
+		Paused
+	};
+
 	class ImGuiEngine final
 	{
 	public:
@@ -15,6 +21,7 @@ namespace Simple
 		void Save();
 
 	public:
+		static void SetPlayingModeBackground(const eImGuiEditorMode aMode);
 		static void SetSimpleStyle();
 		static void SetDarkStyle();
 		static void SetLightStyle();
@@ -25,5 +32,7 @@ namespace Simple
 	private:
 		static ImGuiStyle myStyle;
 		static ImVec4 myColors;
+		static ImVec4 myPlayModeBackgroundColor;
+		static ImVec4 myPausedModeBackgroundColor;
 	};
 }
