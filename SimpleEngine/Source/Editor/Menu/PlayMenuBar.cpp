@@ -32,11 +32,11 @@ namespace Editor
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, ImColor(1.0f, 0.0f, 0.0f, 1.0f).Value);
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor(0.6f, 0.0f, 0.0f, 1.0f).Value);
-				Simple::ImGuiEngine::SetPlayingModeBackground(Simple::eImGuiEditorMode::Playing);
+				Simple::ImGuiEngine::SetEditorMode(Simple::eImGuiEditorMode::Playing);
 			}
 			else
 			{
-				Simple::ImGuiEngine::SetPlayingModeBackground(Simple::eImGuiEditorMode::Paused);
+				Simple::ImGuiEngine::SetEditorMode(Simple::eImGuiEditorMode::Default);
 			}
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10);

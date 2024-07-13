@@ -3,10 +3,19 @@
 
 namespace Simple
 {
+	enum class eImGuiEditorStyle
+	{
+		Simple,
+		Dark,
+		Light,
+		Count
+	};
+
 	enum class eImGuiEditorMode
 	{
+		Default,
 		Playing,
-		Paused
+		Count
 	};
 
 	class ImGuiEngine final
@@ -21,18 +30,16 @@ namespace Simple
 		void Save();
 
 	public:
-		static void SetPlayingModeBackground(const eImGuiEditorMode aMode);
-		static void SetSimpleStyle();
-		static void SetDarkStyle();
-		static void SetLightStyle();
+		static void SetEditorStyle(const eImGuiEditorStyle aStyle);
+		static void SetEditorMode(const eImGuiEditorMode aMode);
 	private:
 		void LoadFronts();
 		void LoadColors();
 		void LoadStyle();
 	private:
 		static ImGuiStyle myStyle;
-		static ImVec4 myColors;
+		static ImVec4 myColors[static_cast<size_t>(ImGuiCol_COUNT)];
 		static ImVec4 myPlayModeBackgroundColor;
-		static ImVec4 myPausedModeBackgroundColor;
+		static eImGuiEditorStyle myCurrentColorStyle;
 	};
 }

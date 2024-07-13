@@ -304,13 +304,16 @@ namespace Editor
 			switch (selectedStyle)
 			{
 			case 0:
-				Simple::ImGuiEngine::SetSimpleStyle();
+				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Simple);
 				break;
 			case 1:
-				Simple::ImGuiEngine::SetDarkStyle();
+				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Dark);
 				break;
 			case 2:
-				Simple::ImGuiEngine::SetLightStyle();
+				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Light);
+				break;
+			default:
+				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Simple);
 				break;
 			}
 		}
