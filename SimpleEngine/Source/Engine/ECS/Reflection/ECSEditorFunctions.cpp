@@ -227,20 +227,22 @@ namespace ECS
 		ImGui::InputText("", mesh.data(), mesh.size());
 		ImGui::EndDisabled();
 
-		if (ImGui::BeginDragDropTarget())
+		if (const ImGuiPayload* currentPayload = ImGui::GetDragDropPayload())
 		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
-			{
-				const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
-				const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
+			const std::string payloadData = reinterpret_cast<const char*>(currentPayload->Data);
+			const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
 
-				if (extension == ".fbx")
+			if (extension == ".fbx")
+			{
+				if (ImGui::BeginDragDropTarget())
 				{
-					aMesh = Global::GetModelFactory()->LoadMesh(payloadData);
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+					{
+						aMesh = Global::GetModelFactory()->LoadMesh(payloadData);
+					}
+					ImGui::EndDragDropTarget();
 				}
 			}
-
-			ImGui::EndDragDropTarget();
 		}
 
 		return true;
