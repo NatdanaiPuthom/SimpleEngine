@@ -366,21 +366,23 @@ namespace ECS
 		ImGui::InputText("", texture.data(), texture.size());
 		ImGui::EndDisabled();
 
-		if (ImGui::BeginDragDropTarget())
+		if (const ImGuiPayload* currentPayload = ImGui::GetDragDropPayload())
 		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
-			{
-				const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
-				const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
+			const std::string payloadData = reinterpret_cast<const char*>(currentPayload->Data);
+			const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
 
-				if (extension == ".dds")
+			if (extension == ".dds")
+			{
+				if (ImGui::BeginDragDropTarget())
 				{
-					const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
-					aTexture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+					{
+						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
+						aTexture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+					}
+					ImGui::EndDragDropTarget();
 				}
 			}
-
-			ImGui::EndDragDropTarget();
 		}
 
 		return isValid;
@@ -509,52 +511,55 @@ namespace ECS
 			ImGui::InputText("", textureName.data(), textureName.size());
 			ImGui::EndDisabled();
 
-			if (ImGui::BeginDragDropTarget())
+			if (const ImGuiPayload* currentPayload = ImGui::GetDragDropPayload())
 			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+				const std::string payloadData = reinterpret_cast<const char*>(currentPayload->Data);
+				const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
+
+				if (extension == ".dds")
 				{
-					const std::string payloadData = reinterpret_cast<const char*>(payload->Data);
-					const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
-
-					if (extension == ".dds")
+					if (ImGui::BeginDragDropTarget())
 					{
-						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
-						const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str());
-
-						bool isCubeMap = false;
-
-						ID3D11ShaderResourceView* shaderResourceView = texture.get()->GetShaderResourceView().Get();
-
-						ID3D11Resource* resource = nullptr;
-						shaderResourceView->GetResource(&resource);
-
-						if (resource)
+						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
 						{
-							ID3D11Texture2D* texture2D = nullptr;
-							if (SUCCEEDED(resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&texture2D)))
-							{
-								D3D11_TEXTURE2D_DESC desc;
-								texture2D->GetDesc(&desc);
+							const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
+							const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str());
 
-								if (desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
+							bool isCubeMap = false;
+
+							ID3D11ShaderResourceView* shaderResourceView = texture.get()->GetShaderResourceView().Get();
+
+							ID3D11Resource* resource = nullptr;
+							shaderResourceView->GetResource(&resource);
+
+							if (resource)
+							{
+								ID3D11Texture2D* texture2D = nullptr;
+								if (SUCCEEDED(resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&texture2D)))
 								{
-									isCubeMap = true;
+									D3D11_TEXTURE2D_DESC desc;
+									texture2D->GetDesc(&desc);
+
+									if (desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
+									{
+										isCubeMap = true;
+									}
+
+									texture2D->Release();
 								}
 
-								texture2D->Release();
+								resource->Release();
 							}
 
-							resource->Release();
+							if (isCubeMap == false)
+							{
+								aTextures[i] = texture.get();
+							}
 						}
 
-						if (isCubeMap == false)
-						{
-							aTextures[i] = texture.get();
-						}
+						ImGui::EndDragDropTarget();
 					}
 				}
-
-				ImGui::EndDragDropTarget();
 			}
 		}
 
