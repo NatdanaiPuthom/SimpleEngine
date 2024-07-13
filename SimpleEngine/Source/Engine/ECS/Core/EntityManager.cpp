@@ -48,7 +48,7 @@ namespace ECS
 		ECS::Entities entities = GetAllEntities();
 		const size_t count = entities.GetEntityCount();
 
-		PROFILER_BEGIN("Search and remove entity");
+		PROFILER_BEGIN("Search and remove entity EntityManager.cpp");
 		for (size_t i = 0; i < count; ++i) //TO-DO(v9.31.1): Faster remove algoritm as this is O(2) operation. I tried spatial half and half but got some error, may look into this in the future
 		{
 			if (entities[i]->GetID() == aEntityID)
@@ -62,7 +62,6 @@ namespace ECS
 		auto it = myEntities.find(aEntityID);
 		if (it != myEntities.end())
 		{
-			PROFILER_BEGIN("Search and remove components from entity");
 			std::unordered_map<ComponentType, ComponentID>& entityComponents = myEntityComponents[aEntityID];
 
 			for (const auto& [typeIndex, componentID] : entityComponents)
@@ -71,7 +70,6 @@ namespace ECS
 			}
 
 			entityComponents.clear();
-			PROFILER_END();
 
 			it->second = nullptr;
 
@@ -81,7 +79,7 @@ namespace ECS
 		return false;
 	}
 
-	bool EntityManager::RemoveComponentByTypeIndex(const std::type_index& aTypeIndex, const EntityID aEntityID)
+	bool EntityManager::FindAndRemoveComponent(const ComponentType& aComponentType, const EntityID aEntityID)
 	{
 		if (myEntityComponents.contains(aEntityID) == false)
 		{
@@ -91,18 +89,23 @@ namespace ECS
 
 		std::unordered_map<ComponentType, ComponentID>& entityComponents = myEntityComponents[aEntityID];
 
-		auto component = entityComponents.find(aTypeIndex);
+		auto component = entityComponents.find(aComponentType);
 
 		if (component != entityComponents.end())
 		{
 			const ComponentID componentID = component->second;
-			const bool removed = myComponentManager->RemoveComponentByTypeIndex(aTypeIndex, aEntityID, componentID);
+			const bool removed = myComponentManager->RemoveComponentByTypeIndex(aComponentType, aEntityID, componentID);
 			entityComponents.erase(component);
 
 			return removed;
 		}
 
 		return false;
+	}
+
+	bool EntityManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const EntityID aEntityID)
+	{
+		return FindAndRemoveComponent(aComponentType, aEntityID);
 	}
 
 	Entity EntityManager::GetEntity(const EntityID aEntityID)
