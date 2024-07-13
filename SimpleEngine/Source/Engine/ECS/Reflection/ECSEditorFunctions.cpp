@@ -249,9 +249,19 @@ namespace ECS
 	bool ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& /*aVariableName*/)
 	{
 		bool isValid = false;
+		bool changed = false;
+
+		static int selectedPixelShader = 0;
+		static int selectedVertexShader = 0;
 
 		std::string pixelShader;
 		std::string vertexShader;
+		std::string pixelShaderNames;
+		std::string vertexShaderNames;
+
+		std::vector<std::string> shaderFileNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SHADERS));
+		std::vector<std::string> pixelShaderFileNames = SimpleUtilities::ReturnOnlyStringContaining("PS", shaderFileNames);
+		std::vector<std::string> vertexShaderFileNames = SimpleUtilities::ReturnOnlyStringContaining("VS", shaderFileNames);
 
 		if (aShader != nullptr)
 		{
@@ -260,19 +270,75 @@ namespace ECS
 			isValid = true;
 		}
 
+		for (size_t i = 0; i < pixelShaderFileNames.size(); ++i)
+		{
+			if (pixelShader == pixelShaderFileNames[i])
+			{
+				selectedPixelShader = static_cast<int>(i);
+				break;
+			}
+		}
+
+		for (size_t i = 0; i < vertexShaderFileNames.size(); ++i)
+		{
+			if (vertexShader == vertexShaderFileNames[i])
+			{
+				selectedVertexShader = static_cast<int>(i);
+				break;
+			}
+		}
+
+		for (const std::string& name : pixelShaderFileNames)
+		{
+			pixelShaderNames += name;
+			pixelShaderNames += '\0';
+		}
+
+		for (const std::string& name : vertexShaderFileNames)
+		{
+			vertexShaderNames += name;
+			vertexShaderNames += '\0';
+		}
+
+		pixelShaderNames += '\0';
+		vertexShaderNames += '\0';
+
+		SimpleUtilities::AppendStringsInFront("Shaders\\", shaderFileNames);
+
 		ImGui::AlignTextToFramePadding();
 
 		ImGui::Text("PixelShader:");
 		ImGui::SameLine();
-		ImGui::BeginDisabled();
-		ImGui::InputText("", pixelShader.data(), pixelShader.size());
-		ImGui::EndDisabled();
+		ImGui::SetNextItemWidth(200);
+
+		if (ImGui::Combo("##PixelShaderECSEditorFunction", &selectedPixelShader, pixelShaderNames.c_str()))
+		{
+			changed = true;
+			pixelShader = pixelShaderFileNames[selectedPixelShader];
+		}
 
 		ImGui::Text("VertexShader:");
 		ImGui::SameLine();
-		ImGui::BeginDisabled();
-		ImGui::InputText("", vertexShader.data(), vertexShader.size());
-		ImGui::EndDisabled();
+		ImGui::SetNextItemWidth(200);
+
+		if (ImGui::Combo("##VertexShaderECSEditorFunction", &selectedVertexShader, vertexShaderNames.c_str()))
+		{
+			changed = true;
+			vertexShader = vertexShaderFileNames[selectedVertexShader];
+		}
+
+		if (changed == true)
+		{
+			SimpleUtilities::AppendStringInFront("Shaders\\", pixelShader);
+			SimpleUtilities::AppendStringInFront("Shaders\\", vertexShader);
+
+			const Graphics::Shader* shader = Global::GetGraphicsEngine()->GetShader(pixelShader.c_str(), vertexShader.c_str()).get();
+
+			if (shader != nullptr)
+			{
+				aShader = shader;
+			}
+		}
 
 		return isValid;
 	}

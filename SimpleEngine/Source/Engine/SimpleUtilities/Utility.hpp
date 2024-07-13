@@ -167,4 +167,34 @@ namespace SimpleUtilities
 
 		return fileName;
 	}
+
+	static inline void AppendStringsInFront(const std::string& aStringToAdd, std::vector<std::string>& aOriginalString)
+	{
+		for (size_t i = 0; i < aOriginalString.size(); ++i)
+		{
+			aOriginalString[i] = aStringToAdd + aOriginalString[i];
+		}
+	}
+
+	static inline void AppendStringInFront(const std::string& aStringToAdd, std::string& aOriginalString)
+	{
+		aOriginalString = aStringToAdd + aOriginalString;
+	}
+
+	static inline std::vector<std::string> ReturnOnlyStringContaining(const std::string& aStringToSearch, const std::vector<std::string>& aOriginalString)
+	{
+		std::vector<std::string> filteredString;
+
+		for (size_t i = 0; i < aOriginalString.size(); ++i)
+		{
+			const size_t pos = aOriginalString[i].find(aStringToSearch);
+
+			if (pos != std::string::npos)
+			{
+				filteredString.push_back(aOriginalString[i]);
+			}
+		}
+
+		return filteredString;
+	}
 }
