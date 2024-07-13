@@ -1,5 +1,8 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/MemoryPools/ComponentPool.hpp"
+#include "MainSingleton/MainSingleton.hpp"
+#include <cassert>
+#include <algorithm>
 
 namespace ECS
 {
@@ -36,43 +39,85 @@ namespace ECS
 		myEndMemoryAddress = myStartMemoryAddress + newMemoryCapacity;
 	}
 
-	bool ComponentPool::SwapWithLastAndRemoveEditor(const size_t aComponentID)
+	void ComponentPool::Remap(const std::vector<ComponentID>& aComponentIDs, const size_t aSize)
 	{
-		const size_t componentIDIndex = GetComponentIndexFromComponentID(aComponentID); //TO-DO(v11.0.6): What was these indexes for? Rewrite whole this function please, if it even needed anymore
-		const int indexToRemove = GetComponentIndexByMemoryAddress(myStartMemoryAddress + componentIDIndex * myComponentTypeSize, myComponentTypeSize);
+		myIDToPointer = std::unordered_map<ComponentID, char*>();
+		myPointerToID = std::unordered_map<char*, ComponentID>();
 
-		if (indexToRemove == -1)
+		for (size_t i = 0; i < aComponentIDs.size(); ++i)
 		{
-			return false;
+			char* newAddress = myStartMemoryAddress + i * aSize;
+			myIDToPointer[aComponentIDs[i]] = newAddress;
+			myPointerToID[newAddress] = aComponentIDs[i];
+		}
+	}
+
+	std::vector<ComponentID> ComponentPool::SortMemoryAddressesAndReturnSortedComponentIDs()
+	{
+		if (myPointerToID.size() <= 0)
+		{
+			return std::vector<ComponentID>();
 		}
 
-		if (myComponentIDs.size() > 1)
+		std::vector<char*> oldPointerAddresses;
+		std::vector<ComponentID> oldComponentIDs;
+
+		oldComponentIDs.reserve(myPointerToID.size());
+		oldPointerAddresses.reserve(myIDToPointer.size());
+
+		for (auto& [id, pointer] : myIDToPointer)
 		{
-			std::memcpy(myStartMemoryAddress + componentIDIndex * myComponentTypeSize, myCurrentMemoryAddress - myComponentTypeSize, myComponentTypeSize);
-			myComponentIDs[indexToRemove] = myComponentIDs.back();
+			oldPointerAddresses.push_back(pointer);
+		}
+
+		bool swapped;
+
+		do
+		{
+			swapped = false;
+
+			for (int i = 0; i < oldPointerAddresses.size() - 1; ++i)
+			{
+				if (oldPointerAddresses[i] > oldPointerAddresses[static_cast<size_t>(i) + 1])
+				{
+					std::swap(oldPointerAddresses[i], oldPointerAddresses[static_cast<size_t>(i) + 1]);
+					swapped = true;
+				}
+			}
+		} while (swapped);
+
+		for (auto& pointer : oldPointerAddresses)
+		{
+			oldComponentIDs.push_back(myPointerToID[pointer]);
+		}
+
+		return oldComponentIDs;
+	}
+
+	bool ComponentPool::SwapWithLastAndRemoveEditor(const size_t aComponentID, const std::type_index& aTypeIndex)
+	{
+		MainSingleton::GetComponentRegistry()->myTypeErasureComponentDestructorInvoker[aTypeIndex](static_cast<void*>(myIDToPointer[aComponentID]));
+
+		if (myIDToPointer[aComponentID] == (myCurrentMemoryAddress - myComponentTypeSize))
+		{
+			//NOTE(v11.3.0): Should refactor in future as the code is duplicate
+
+			memset(myCurrentMemoryAddress - myComponentTypeSize, '\0', myComponentTypeSize);
+			myPointerToID.erase(myIDToPointer[aComponentID]);
+			myIDToPointer.erase(aComponentID);
+			return true;
 		}
 
 		myCurrentMemoryAddress -= myComponentTypeSize;
-		memset(myCurrentMemoryAddress, 0, myComponentTypeSize);
-		myComponentIDs.pop_back();
+
+		//std::memcpy(myIDToPointer[aComponentID], myCurrentMemoryAddress, myComponentTypeSize); //NOTE(v11.3.0): Fuck you memcpy, I couldn't slept for 2 days because of you
+		std::swap(myIDToPointer[aComponentID], myCurrentMemoryAddress);
+		memset(myCurrentMemoryAddress, '\0', myComponentTypeSize);
+
+		myPointerToID.erase(myIDToPointer[aComponentID]);
+		myIDToPointer.erase(aComponentID);
 
 		return true;
-	}
-
-	size_t ComponentPool::GetComponentIndexFromComponentID(const size_t aComponentID) const
-	{
-		size_t index = 0;
-
-		for (size_t i = 0; i < myComponentIDs.size(); ++i)
-		{
-			if (aComponentID == myComponentIDs[i])
-			{
-				index = i;
-				break;
-			}
-		}
-
-		return index;
 	}
 
 	size_t ComponentPool::GetCapacity() const
@@ -82,7 +127,7 @@ namespace ECS
 
 	size_t ComponentPool::GetComponentCount() const
 	{
-		return myComponentIDs.size();
+		return myIDToPointer.size();
 	}
 
 	size_t ComponentPool::GetComponentTypeSize() const
@@ -100,21 +145,14 @@ namespace ECS
 		return myEndMemoryAddress - myCurrentMemoryAddress;
 	}
 
-	int ComponentPool::GetComponentIndexByMemoryAddress(char* aAddress, const size_t aSize) const
+	size_t ComponentPool::GetComponentIndexByMemoryAddress(char* aAddress) const
 	{
-		if (aSize == 0)
-		{
-			return -1;
-		}
+		return static_cast<int>((aAddress - myStartMemoryAddress)) / static_cast<int>(myComponentTypeSize);
+	}
 
-		const int index = static_cast<int>((aAddress - myStartMemoryAddress)) / static_cast<int>(aSize);
-
-		if (index < 0)
-		{
-			return -1;
-		}
-
-		return index;
+	std::unordered_map<size_t, char*>& ComponentPool::GetComponentIDToPointerMap()
+	{
+		return myIDToPointer;
 	}
 
 	char* ComponentPool::GetStartMemoryAddress()
@@ -124,7 +162,12 @@ namespace ECS
 
 	char* ComponentPool::GetComponentAddressByID(const size_t aComponentID)
 	{
-		const size_t index = GetComponentIndexFromComponentID(aComponentID);
-		return myStartMemoryAddress + index * myComponentTypeSize;
+		if (myIDToPointer.contains(aComponentID))
+		{
+			return myIDToPointer[aComponentID];
+		}
+
+		assert(false && "ComponentID does not exist");
+		return nullptr;
 	}
 }

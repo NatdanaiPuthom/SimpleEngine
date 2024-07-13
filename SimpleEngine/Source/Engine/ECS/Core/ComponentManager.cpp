@@ -20,7 +20,7 @@ namespace ECS
 				continue;
 			}
 
-			const size_t sizeOfComponentType = componentPool.GetOccupiedMemorySpace() / componentCount;
+			const size_t sizeOfComponentType = componentPool.GetComponentTypeSize();
 			char* component = componentPool.GetStartMemoryAddress();
 
 			for (size_t i = 0; i < componentCount; ++i)
@@ -33,24 +33,31 @@ namespace ECS
 	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const EntityID aEntityID, const ComponentID aComponentID)
 	{
 		ComponentPool& pool = myComponents[aComponentType];
-		char* component = pool.GetComponentAddressByID(aComponentID);
 
-		MainSingleton::GetComponentRegistry()->myTypeErasureComponentDestructorInvoker[aComponentType](static_cast<void*>(component));
-		myAllComponents.erase(aComponentID);
 		myComponentTypeToEntityIDs[aComponentType].erase(aEntityID);
+		myComponentIDToComponentTypeMap.erase(aComponentID);
 
-		return pool.SwapWithLastAndRemoveEditor(aComponentID);
+		return pool.SwapWithLastAndRemoveEditor(aComponentID, aComponentType);
 	}
 
 	void* ComponentManager::GetComponentByComponentID(const ComponentID aID)
 	{
-		auto it = myAllComponents.find(aID);
+		const auto& componentType = myComponentIDToComponentTypeMap.find(aID);
 
-		if (it != myAllComponents.end())
+		if (componentType == myComponentIDToComponentTypeMap.end())
+		{
+			return nullptr;
+		}
+
+		auto& componentMap = myComponents[componentType->second].GetComponentIDToPointerMap();
+		
+		auto it = componentMap.find(aID);
+
+		if (it != componentMap.end())
 		{
 			return reinterpret_cast<void*>(it->second);
 		}
-
+		
 		return nullptr;
 	}
 }

@@ -21,9 +21,6 @@ namespace ECS
 		template<typename T>
 		const ComponentID AddComponent();
 
-		template<typename T>
-		bool RemoveComponent();
-
 		bool RemoveComponentByTypeIndex(const std::type_index& aTypeIndex);
 
 		bool DestroyThis();
@@ -51,12 +48,6 @@ namespace ECS
 	inline const ComponentID IEntity::AddComponent()
 	{
 		return myEntityManager->AddComponent<T>(myID);
-	}
-
-	template<typename T>
-	inline bool IEntity::RemoveComponent()
-	{
-		return myEntityManager->RemoveComponent<T>(myID);
 	}
 
 	template<typename T>

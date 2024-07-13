@@ -27,9 +27,6 @@ namespace ECS
 		template<typename T>
 		const ComponentID AddComponent(const EntityID aEntityID);
 
-		template<typename T>
-		bool RemoveComponent(const EntityID aEntityID);
-
 		bool RemoveComponentByTypeIndex(const std::type_index& aTypeIndex, const EntityID aEntityID);
 
 	public:
@@ -78,24 +75,6 @@ namespace ECS
 		}
 
 		return static_cast<ComponentID>(-1);
-	}
-
-	template<typename T>
-	inline bool EntityManager::RemoveComponent(const EntityID aEntityID)
-	{
-		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
-
-		auto it = components.find(typeid(T));
-
-		if (it != components.end())
-		{
-			const ComponentID id = it->second;
-			components.erase(it);
-
-			return myComponentManager->RemoveComponent<T>(id);
-		}
-
-		return false;
 	}
 
 	template<typename T>
