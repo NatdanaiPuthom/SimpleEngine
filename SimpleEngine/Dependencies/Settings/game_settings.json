@@ -1,14 +1,1 @@
-{
-  "Game_Settings": {
-    "Window_Size": {
-      "x": 1280,
-      "y": 720
-    },
-    "Resolution": {
-      "x": 1280,
-      "y": 720
-    },
-    "VSync": false,
-    "Start_Scene_RelativePath": "Assets\\Scenes\\Test_Scene.scene"
-  }
-}
+{"Game_Settings":{"Resolution":{"x":1280,"y":720},"Start_Scene_RelativePath":"Assets\\Scenes\\Pointlight_Test.scene","VSync":false,"Window_Size":{"x":1280,"y":720}}}
