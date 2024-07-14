@@ -153,7 +153,8 @@ namespace Graphics
 		PROFILER_END();
 
 		PROFILER_BEGIN("Present frame");
-		mySwapChain->Present(myFPSLevelCap, 0);
+		const HRESULT result = mySwapChain->Present(myFPSLevelCap, 0);
+		assert(SUCCEEDED(result) && "Failed to present frame");
 		PROFILER_END();
 	}
 
