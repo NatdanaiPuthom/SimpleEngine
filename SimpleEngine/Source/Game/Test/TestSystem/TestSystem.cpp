@@ -28,16 +28,20 @@ namespace ECS
 			e->transform.SetPosition(t);
 		}*/
 
+		const auto& entityIDs = myEntityComponentSystem->GetEntityIDsWithThisComponent<ECS::AnimationComponent>();
 
-		ECS::Entity human = myEntityComponentSystem->GetEntity(3);
-
-		if (human != nullptr)
+		for (auto& id : entityIDs)
 		{
-			ECS::AnimationComponent* animationPlayerComponent = human->GetComponent<ECS::AnimationComponent>();
+			ECS::Entity entity = myEntityComponentSystem->GetEntity(id);
 
-			if (animationPlayerComponent != nullptr)
+			if (entity != nullptr)
 			{
-				animationPlayerComponent->animationPlayer.UpdateTest(animationPlayerComponent->jointMatrices, animationPlayerComponent);
+				ECS::AnimationComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationComponent>();
+
+				if (animationPlayerComponent != nullptr)
+				{
+					animationPlayerComponent->animationPlayer.UpdateTest(animationPlayerComponent->jointMatrices, animationPlayerComponent);
+				}
 			}
 		}
 	}

@@ -416,8 +416,8 @@ namespace ECS
 				{
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
 					{
-						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
-						aSkeleton = Global::GetModelFactory()->LoadSkeleton(fileName);
+						const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
+						aSkeleton = Global::GetModelFactory()->LoadSkeleton(relativePath);
 					}
 					ImGui::EndDragDropTarget();
 				}
@@ -427,7 +427,7 @@ namespace ECS
 		return true;
 	}
 
-	bool ViewAndEditValue(const Graphics::Animation& aAnimation, const std::string& /*aVariableName*/)
+	bool ViewAndEditValue(Graphics::Animation& aAnimation, const std::string& /*aVariableName*/)
 	{
 		std::string name = SimpleUtilities::FileManager::GetFileName(aAnimation.relativePath);
 
@@ -438,6 +438,25 @@ namespace ECS
 		ImGui::BeginDisabled();
 		ImGui::InputText("", name.data(), name.size());
 		ImGui::EndDisabled();
+
+		if (const ImGuiPayload* currentPayload = ImGui::GetDragDropPayload())
+		{
+			const std::string payloadData = reinterpret_cast<const char*>(currentPayload->Data);
+			const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
+
+			if (extension == ".fbx")
+			{
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+					{
+						const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
+						aAnimation = Global::GetModelFactory()->LoadAnimationFBX(relativePath);
+					}
+					ImGui::EndDragDropTarget();
+				}
+			}
+		}
 
 		return true;
 	}
