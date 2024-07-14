@@ -92,6 +92,13 @@ namespace ECS
 
 	bool LoadAndSetDataFromJSON(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
+		const std::string skeletonRelativeFilePath = aJSONData[aVariableName];
+
+		if (skeletonRelativeFilePath.empty())
+		{
+			return false;
+		}
+
 		const Graphics::Skeleton* skeleton = Global::GetModelFactory()->LoadSkeleton(aJSONData[aVariableName]);
 
 		if (skeleton != nullptr)
