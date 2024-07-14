@@ -53,14 +53,16 @@ namespace Graphics
 	{
 	public:
 		std::string myName;
+		std::string myRelativePath;
 		std::unordered_map<std::string, size_t> myJointNameToIndex;
 		std::vector<std::string> myJointNames;
 		std::vector<Joint> myJoints;
 	public:
-		Skeleton();
+		Skeleton(const std::string& aRelativePath);
 		~Skeleton();
 
 		const Joint* GetRoot() const;
+		const std::string& GetRelativePath() const;
 
 		bool operator==(const Skeleton& aSkeleton) const
 		{
@@ -72,6 +74,6 @@ namespace Graphics
 	private:
 		void ConvertToLocalSpacePose(const ModelSpacePose& aInPose, LocalSpacePose& aOutPose, unsigned aBoneID, const Math::Matrix4x4f& aParentTransform) const;
 	private:
-		const char myPadding[8] = "Believe";
+		const char myPadding[30] = "Never give up on your dreams\0";
 	};
 }

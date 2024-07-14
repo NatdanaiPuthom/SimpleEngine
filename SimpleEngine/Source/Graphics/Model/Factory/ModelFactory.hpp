@@ -39,7 +39,7 @@ namespace Graphics
 		void Init();
 
 		const Mesh* LoadMesh(const std::string& aFileName);
-		const Skeleton* LoadSkeleton(const std::string& aFileName);
+		const Skeleton* LoadSkeleton(const std::string& aRelativePath);
 		Animation LoadAnimationFBX(const char* aFileName);
 
 		const Mesh* GetPrimitiveShape(const ePrimitiveShape aShape);
@@ -53,7 +53,7 @@ namespace Graphics
 		void LoadSkeletonData(Skeleton& aSkeletonData, const TGA::FBX::Mesh& aTGAMesh) const;
 		void LoadAndCacheMesh(const std::string& aFileName);
 		void LoadAndCacheMesh(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh);
-		void LoadAndCacheSkeleton(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh);
+		void LoadAndCacheSkeleton(const std::string& aRelativePath, TGA::FBX::Mesh& aTGAMesh);
 	private:
 		std::mutex myFBXLoaderMutex;
 		std::atomic<bool> myIsCachingInProgress;

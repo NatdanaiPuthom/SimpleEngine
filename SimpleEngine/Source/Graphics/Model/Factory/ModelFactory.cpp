@@ -83,18 +83,18 @@ namespace Graphics
 		return mesh;
 	}
 
-	const Skeleton* ModelFactory::LoadSkeleton(const std::string& aFileName)
+	const Skeleton* ModelFactory::LoadSkeleton(const std::string& aRelativePath)
 	{
-		const Skeleton* skeleton = GetSkeleton(aFileName.c_str());
+		const Skeleton* skeleton = GetSkeleton(aRelativePath.c_str());
 
 		if (skeleton == nullptr)
 		{
 			TGA::FBX::Mesh tgaMesh;
-			TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(aFileName, tgaMesh);
+			TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(SimpleUtilities::CheckAndReturnAsAbsolutePath(aRelativePath), tgaMesh);
 			assert(status && "Failed to LoadMesh from FBXImporter");
 
-			LoadAndCacheSkeleton(aFileName, tgaMesh);
-			skeleton = GetSkeleton(aFileName.c_str());
+			LoadAndCacheSkeleton(aRelativePath, tgaMesh);
+			skeleton = GetSkeleton(aRelativePath.c_str());
 
 			if (skeleton == nullptr)
 			{
@@ -302,13 +302,13 @@ namespace Graphics
 		AddMesh(aFilePath, std::move(newMesh));
 	}
 
-	void ModelFactory::LoadAndCacheSkeleton(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh)
+	void ModelFactory::LoadAndCacheSkeleton(const std::string& aRelativePath, TGA::FBX::Mesh& aTGAMesh)
 	{
-		std::unique_ptr<Skeleton> skeletonData = std::make_unique<Skeleton>();
+		std::unique_ptr<Skeleton> skeletonData = std::make_unique<Skeleton>(aRelativePath);
 
 		LoadSkeletonData(*skeletonData.get(), aTGAMesh);
 
-		AddSkeleton(aFileName, std::move(skeletonData));
+		AddSkeleton(aRelativePath, std::move(skeletonData));
 	}
 
 	void ModelFactory::LoadMeshData(MeshData& aMeshData, const TGA::FBX::Mesh& aTGAMesh) const

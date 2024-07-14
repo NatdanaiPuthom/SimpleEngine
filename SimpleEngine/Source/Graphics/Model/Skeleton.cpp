@@ -12,8 +12,9 @@ namespace Graphics
 	{
 	}
 
-	Skeleton::Skeleton()
+	Skeleton::Skeleton(const std::string& aRelativePath)
 	{
+		myRelativePath = aRelativePath;
 	}
 
 	Skeleton::~Skeleton()
@@ -28,6 +29,11 @@ namespace Graphics
 		}
 
 		return &myJoints[0];
+	}
+
+	const std::string& Skeleton::GetRelativePath() const
+	{
+		return myRelativePath;
 	}
 
 	void Skeleton::ConvertModelSpacePoseToLocalSpacePose(const ModelSpacePose& aInPose, LocalSpacePose& aOutPose) const
