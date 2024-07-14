@@ -26,7 +26,7 @@ namespace Graphics
 	public:
 
 		//Will lerp active animation and setpose directly
-		void UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimationComponent* aAnimationPlayerComponent);
+		void UpdateTest(ECS::AnimationComponent* aAnimationPlayerComponent);
 
 		void LerpAnimationTest(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta);
 

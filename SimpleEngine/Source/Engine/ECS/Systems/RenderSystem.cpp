@@ -58,8 +58,10 @@ namespace ECS
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
-			const MeshComponent* mesh = entities[i]->GetComponent<ECS::MeshComponent>(); //To-DO(v9.37.2): Disgusting, fix pls
-			const TransformComponent* transform = entities[i]->GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
+			const ECS::Entity entity = entities[i];
+
+			const MeshComponent* mesh = entity->GetComponent<ECS::MeshComponent>(); //To-DO(v9.37.2): Disgusting, fix pls
+			const TransformComponent* transform = entity->GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
 
 			if (mesh == nullptr || transform == nullptr)
 			{
@@ -70,18 +72,11 @@ namespace ECS
 				continue;
 			}
 
-			const AnimationComponent* animated = entities[i]->GetComponent<ECS::AnimationComponent>();
+			const AnimationComponent* animated = entity->GetComponent<ECS::AnimationComponent>();
 
-			if (animated != nullptr)
+			if (animated != nullptr && animated->skeleton != nullptr && animated->shader != nullptr)
 			{
-				if (animated->skeleton != nullptr && animated->shader != nullptr)
-				{
-					renderer->RenderAnimatedModel(transform, mesh, animated);
-				}
-				else
-				{
-					renderer->RenderStaticModel(transform, mesh);
-				}
+				renderer->RenderAnimatedModel(transform, mesh, animated);
 			}
 			else
 			{

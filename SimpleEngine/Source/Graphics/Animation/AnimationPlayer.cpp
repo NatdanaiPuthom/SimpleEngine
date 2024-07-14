@@ -28,7 +28,7 @@ namespace Graphics
 		myTime = 0.0f;
 	}
 
-	void AnimationPlayer::UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimationComponent* aAnimationPlayerComponent)
+	void AnimationPlayer::UpdateTest(ECS::AnimationComponent* aAnimationPlayerComponent)
 	{
 		if (myState == eAnimationState::Playing)
 		{
@@ -96,7 +96,7 @@ namespace Graphics
 
 			LocalSpacePose localSpacePose;
 			skeleton->ConvertModelSpacePoseToLocalSpacePose(myModelSpacePose, localSpacePose);
-			skeleton->ApplyBindPoseInverse(localSpacePose, aMatrix);
+			skeleton->ApplyBindPoseInverse(localSpacePose, aAnimationPlayerComponent->jointMatrices);
 		}
 	}
 
