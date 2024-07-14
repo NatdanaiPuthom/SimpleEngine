@@ -4,7 +4,7 @@
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
-#include "Engine/ECS/Components/Core/AnimatedComponent.hpp"
+#include "Engine/ECS/Components/Core/AnimationPlayerComponent.hpp"
 
 namespace ECS
 {
@@ -70,7 +70,7 @@ namespace ECS
 				continue;
 			}
 
-			const AnimatedComponent* animated = entities[i]->GetComponent<ECS::AnimatedComponent>();
+			const AnimationPlayerComponent* animated = entities[i]->GetComponent<ECS::AnimationPlayerComponent>();
 
 			if (animated != nullptr)
 			{

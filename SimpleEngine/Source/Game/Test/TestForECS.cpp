@@ -21,11 +21,11 @@ namespace Test
 
 		entity->AddComponent<ECS::TransformComponent>();
 		entity->AddComponent<ECS::MeshComponent>();
-		entity->AddComponent<ECS::AnimatedComponent>();
+		entity->AddComponent<ECS::AnimationPlayerComponent>();
 		entity->AddComponent<ECS::AnimationPlayerComponent>();
 
 		ECS::MeshComponent* meshComponent = entity->GetComponent<ECS::MeshComponent>();
-		ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
+		ECS::AnimationPlayerComponent* animatedComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
 		ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
 
 		Graphics::ModelFactory* modelFactory = Global::GetModelFactory();
@@ -58,7 +58,7 @@ namespace Test
 
 		if (entity != nullptr)
 		{
-			ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
+			ECS::AnimationPlayerComponent* animatedComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
 			ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
 			animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
 		}
@@ -73,7 +73,7 @@ namespace Test
 		{
 			ECS::MeshComponent* meshComponent = entity->GetComponent<ECS::MeshComponent>();
 			ECS::TransformComponent* transformComponent = entity->GetComponent<ECS::TransformComponent>();
-			ECS::AnimatedComponent* animatedComponent = entity->GetComponent<ECS::AnimatedComponent>();
+			ECS::AnimationPlayerComponent* animatedComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
 
 			Global::GetRenderer()->RenderAnimatedModel(transformComponent, meshComponent, animatedComponent);
 		}

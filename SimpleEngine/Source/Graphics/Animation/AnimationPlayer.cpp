@@ -2,7 +2,7 @@
 #include "Graphics/Animation/AnimationPlayer.hpp"
 #include "Engine/Global.hpp"
 
-#include "Engine/ECS/Components/Core/AnimatedComponent.hpp"
+#include "Engine/ECS/Components/Core/AnimationPlayerComponent.hpp"
 
 namespace Graphics
 {
@@ -31,29 +31,29 @@ namespace Graphics
 		myState = eAnimationState::Playing;
 	}
 
-	void AnimationPlayer::UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimatedComponent* aAnimatedComponent)
+	void AnimationPlayer::UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimationPlayerComponent* aAnimationPlayerComponent)
 	{
 		if (myState == eAnimationState::Playing)
 		{
 			myTime += Global::GetDeltaTime();
 
-			if (myTime >= aAnimatedComponent->animation.duration)
+			if (myTime >= aAnimationPlayerComponent->animation.duration)
 			{
 				if (myIsLooping)
 				{
-					while (myTime >= aAnimatedComponent->animation.duration)
+					while (myTime >= aAnimationPlayerComponent->animation.duration)
 					{
-						myTime -= aAnimatedComponent->animation.duration;
+						myTime -= aAnimationPlayerComponent->animation.duration;
 					}
 				}
 				else
 				{
-					myTime = aAnimatedComponent->animation.duration;
+					myTime = aAnimationPlayerComponent->animation.duration;
 					myState = eAnimationState::Finished;
 				}
 			}
 
-			const float frameRate = 1.0f / aAnimatedComponent->animation.framesPerSecond;
+			const float frameRate = 1.0f / aAnimationPlayerComponent->animation.framesPerSecond;
 			const float result = myTime / frameRate;
 			const size_t currentFrame = static_cast<size_t>(std::floor(result));
 			const float delta = result - static_cast<float>(currentFrame);
@@ -64,18 +64,18 @@ namespace Graphics
 			{
 				nextFrame = currentFrame;
 			}
-			else if (nextFrame > aAnimatedComponent->animation.length)
+			else if (nextFrame > aAnimationPlayerComponent->animation.length)
 			{
 				nextFrame = 0;
 			}
 
-			const Skeleton* skeleton = aAnimatedComponent->skeleton;
+			const Skeleton* skeleton = aAnimationPlayerComponent->skeleton;
 			myModelSpacePose.count = skeleton->myJoints.size();
 
 			for (size_t i = 0; i < myModelSpacePose.count; i++)
 			{
-				const Math::Matrix4x4f currentMatrix = aAnimatedComponent->animation.frames[currentFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
-				const Math::Matrix4x4f nextMatrix = aAnimatedComponent->animation.frames[nextFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
+				const Math::Matrix4x4f currentMatrix = aAnimationPlayerComponent->animation.frames[currentFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
+				const Math::Matrix4x4f nextMatrix = aAnimationPlayerComponent->animation.frames[nextFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
 
 				Math::Vector3f currentPosition;
 				Math::Vector3f nextPosition;

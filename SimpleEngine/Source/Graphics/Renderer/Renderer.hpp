@@ -11,7 +11,7 @@ namespace ECS
 {
 	struct MeshComponent;
 	struct TransformComponent;
-	struct AnimatedComponent;
+	struct AnimationPlayerComponent;
 }
 
 namespace Graphics
@@ -33,7 +33,7 @@ namespace Drawer
 		void Init();
 
 		void RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const;
-		void RenderAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimatedComponent* aAnimatedComponent) const;
+		void RenderAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationPlayerComponent* aAnimationPlayerComponent) const;
 
 		//To-DO(v9.37.1): For testing SkyBox will need to refactor how rendering work later
 		void RenderUnlitModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTexture) const;

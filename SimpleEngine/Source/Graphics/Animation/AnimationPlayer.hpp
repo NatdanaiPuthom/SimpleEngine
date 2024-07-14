@@ -6,7 +6,7 @@
 
 namespace ECS
 {
-	struct AnimatedComponent;
+	struct AnimationPlayerComponent;
 }
 
 enum class eAnimationState
@@ -27,7 +27,7 @@ namespace Graphics
 		void Init(Animation& aAnimation, const Skeleton* aSkeleton);
 
 		//Will lerp active animation and setpose directly
-		void UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimatedComponent* aAnimatedComponent);
+		void UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimationPlayerComponent* aAnimationPlayerComponent);
 
 		void LerpAnimationTest(const size_t aCurrentFrame, const size_t aNextFrame, const float aDelta);
 

@@ -7,7 +7,7 @@
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
-#include "Engine/ECS/Components/Core/AnimatedComponent.hpp"
+#include "Engine/ECS/Components/Core/AnimationPlayerComponent.hpp"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
 #include <cassert>
@@ -85,7 +85,7 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimatedComponent* aAnimatedComponent) const
+	void Renderer::RenderAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationPlayerComponent* aAnimationPlayerComponent) const
 	{
 		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
@@ -93,13 +93,13 @@ namespace Drawer
 
 		for (size_t i = 0; i < Graphics::Global_Max_Joints; ++i)
 		{
-			boneBufferData.bonesTransform[i] = aAnimatedComponent->jointMatrices[i];;
+			boneBufferData.bonesTransform[i] = aAnimationPlayerComponent->jointMatrices[i];;
 		}
 
 		myJointBuffer->Bind(myJointBuffer->GetSlot());
 		myJointBuffer->Update(sizeof(JointsBufferData), &boneBufferData);
 
-		aAnimatedComponent->shader->BindThisShader(context);
+		aAnimationPlayerComponent->shader->BindThisShader(context);
 		BindTextures(aMeshComponent, context);
 
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);

@@ -193,6 +193,7 @@ namespace ECS
 
 					writeFile << newData;
 					writeFile.close();
+					continue;
 				}
 
 				const size_t componentHashCode = componentRegistry->myComponentNameToHashCode[componentDataJSON["Name"]];
