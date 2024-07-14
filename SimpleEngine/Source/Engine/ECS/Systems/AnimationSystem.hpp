@@ -5,15 +5,13 @@ namespace ECS
 {
 	class EntityComponentSystem;
 
-	class RenderSystem : public ECS::System
+	class AnimationSystem : public ECS::System
 	{
 	public:
-		explicit RenderSystem(EntityComponentSystem* aEntityComponentSystem);
-		~RenderSystem() override;
+		explicit AnimationSystem(EntityComponentSystem* aEntityComponentSystem);
+		~AnimationSystem() override;
 
-		void Init() override;
 		void Update() override;
-		void Render() override;
 
 		std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const override;
 	};

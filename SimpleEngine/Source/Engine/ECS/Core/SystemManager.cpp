@@ -1,6 +1,7 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Core/SystemManager.hpp"
 #include "Engine/ECS/Core/System.hpp"
+#include "Engine/ECS/Systems/AnimationSystem.hpp"
 
 namespace ECS
 {
@@ -8,6 +9,8 @@ namespace ECS
 	{
 		mySkyBoxAndDirectionalLightSystem = std::make_shared<RenderLightSystem>(aEntityComponentSystem);
 		myRenderSystem = std::make_shared<RenderSystem>(aEntityComponentSystem);
+
+		AddSystem<AnimationSystem>(aEntityComponentSystem);
 	}
 
 	SystemManager::~SystemManager()
