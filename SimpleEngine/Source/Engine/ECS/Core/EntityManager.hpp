@@ -21,7 +21,7 @@ namespace ECS
 		using ComponentType = std::type_index;
 		friend class ECS::EntityComponentSystem;
 	public:
-		Entity CreateEntity(EntityID aEntityID = 0);
+		Entity CreateEntity(EntityID aEntityID);
 		bool DestroyEntity(const EntityID aID);
 
 		template<typename T>

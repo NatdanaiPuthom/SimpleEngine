@@ -26,18 +26,18 @@ namespace ECS
 
 	Entity EntityManager::CreateEntity(EntityID aEntityID)
 	{
-		if (aEntityID <= myCurrentEntityID)
+		if (aEntityID == 0)
 		{
-			++myCurrentEntityID;
 			aEntityID = myCurrentEntityID;
 		}
-		else
+		else if (aEntityID > myCurrentEntityID)
 		{
-			++myCurrentEntityID;
+			myCurrentEntityID = aEntityID;
 		}
 
 		myEntities[aEntityID] = myEntityPool.CreateEntity(aEntityID, myEntities, this);
 		myAllEntities.push_back(&myEntities[aEntityID]);
+		++myCurrentEntityID;
 
 		return reinterpret_cast<Entity>(myEntities[aEntityID]);
 	}
