@@ -157,8 +157,12 @@ namespace ECS
 			return;
 		}
 
-		for (const auto& entityData : jsonData["Entities"])
+		ECS::ComponentRegistry* componentRegistry = MainSingleton::GetComponentRegistry();
+
+		for (size_t i = 0; i < jsonData["Entities"].size(); ++i)
 		{
+			const auto& entityData = jsonData["Entities"][i];
+
 			const EntityID id = entityData["ID"];
 			const std::string name = entityData["Name"];
 
@@ -170,10 +174,27 @@ namespace ECS
 				continue;
 			}
 
-			ECS::ComponentRegistry* componentRegistry = MainSingleton::GetComponentRegistry();
-
-			for (const auto& componentDataJSON : entityData["Components"])
+			for (size_t j = 0; j < jsonData["Entities"][i]["Components"].size(); ++j)
 			{
+				const auto& componentDataJSON = entityData["Components"][j];
+
+				if (componentRegistry->myComponentNameToHashCode.contains(componentDataJSON["Name"]) == false)
+				{
+					nlohmann::json newData = jsonData;
+					const auto& entityJson = newData["Entities"][i];
+
+					nlohmann::json entityComponentJson = entityJson["Components"];
+					entityComponentJson.erase(j);
+
+					newData["Entities"][i] = entityComponentJson;
+
+					std::ofstream writeFile(filePath);
+					assert(writeFile.is_open() && "Failed to open the file");
+
+					writeFile << newData;
+					writeFile.close();
+				}
+
 				const size_t componentHashCode = componentRegistry->myComponentNameToHashCode[componentDataJSON["Name"]];
 				const std::vector<ComponentProperty>& componentProperties = componentRegistry->myTypeErasureComponents[componentHashCode].myComponentProperties;
 				const ComponentID componentID = componentRegistry->myTypeErasureComponents[componentHashCode].AddComponentFunctionPointer(entity);
@@ -182,15 +203,9 @@ namespace ECS
 
 				void* componentPointer = aECS.GetComponentPointerByComponentID(componentID);
 
-				/*if (componentProperties.size() != propertySize)
+				for (size_t k = 0; k < propertySize; ++k)
 				{
-					assert(false && "Registered Component Properties doesn't match between Component and JSON data");
-					continue;
-				}*/
-
-				for (size_t i = 0; i < propertySize; ++i)
-				{
-					const ComponentProperty& property = componentProperties[i];
+					const ComponentProperty& property = componentProperties[k];
 					const TypeErasureObject& typeErasedData = componentRegistry->myTypeErasureDataTypes[property.id];
 					void* propertyPointer = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + property.byteOffset));
 

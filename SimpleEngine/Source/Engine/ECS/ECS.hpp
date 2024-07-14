@@ -41,14 +41,12 @@ namespace ECS
 		Entity CreateEntity(const EntityID aEntityID = 0);
 		bool RemoveEntity(const EntityID aEntityID);
 	public:
-
 		Entity GetEntity(const EntityID aID);
 		Entities GetAllEntities();
 		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
 
 		template<typename T>
 		const std::unordered_set<EntityID>& GetEntityIDsWithThisComponent();
-
 	private:
 		EntityManager myEntityManager;
 		ComponentManager myComponentManager;
