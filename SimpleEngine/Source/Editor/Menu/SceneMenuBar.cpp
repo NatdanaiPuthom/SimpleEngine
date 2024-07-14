@@ -51,7 +51,15 @@ namespace Editor
 				{
 					ReloadScene();
 				}
+
 				ShowReloadTooltips();
+
+				if (ImGui::MenuItem("Set As Start##SceneMenuItem"))
+				{
+					SetActiveSceneAsStart();
+				}
+
+				ShowSetStartToolTips();
 
 				ImGui::EndMenu();
 			}
@@ -113,7 +121,7 @@ namespace Editor
 			{
 				if (ImGui::BeginTooltip())
 				{
-					ImGui::Text("Reset and reload current scene");
+					ImGui::Text("Reset current scene");
 					ImGui::EndTooltip();
 				}
 			}
@@ -122,5 +130,40 @@ namespace Editor
 		{
 			timer = 0.0f;
 		}
+	}
+
+	void SceneMenuBar::ShowSetStartToolTips()
+	{
+		static float timer = 0.0f;
+
+		if (ImGui::IsItemHovered())
+		{
+			timer += Global::GetDeltaTime();
+
+			if (timer > 0.33f)
+			{
+				if (ImGui::BeginTooltip())
+				{
+					ImGui::Text("Open this scene on startup");
+					ImGui::EndTooltip();
+				}
+			}
+		}
+		else
+		{
+			timer = 0.0f;
+		}
+	}
+
+	void SceneMenuBar::SetActiveSceneAsStart()
+	{
+		nlohmann::json jsonData = SimpleUtilities::FileManager::GetDataAsJson(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME));
+		jsonData["Game_Settings"]["Start_Scene_RelativePath"] = MainSingleton::GetSceneManager().GetCurrentSceneInfo()->relativePath;
+
+		std::ofstream writeFile(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME));
+		assert(writeFile.is_open() && "Failed to open the file");
+
+		writeFile << jsonData;
+		writeFile.close();
 	}
 }

@@ -18,5 +18,7 @@ namespace Editor
 		void CreateNewScene();
 		void ReloadScene();
 		void ShowReloadTooltips();
+		void ShowSetStartToolTips();
+		void SetActiveSceneAsStart();
 	};
 }

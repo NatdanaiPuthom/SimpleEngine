@@ -1,6 +1,8 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "Engine/Debugger/Console/Console.hpp"
+#include <fstream>
+#include <cassert>
 
 namespace SimpleUtilities
 {
@@ -105,5 +107,21 @@ namespace SimpleUtilities
 		}
 
 		return fileNames;
+	}
+
+	const nlohmann::json FileManager::GetDataAsJson(const std::string& aAbsolutePath)
+	{
+		std::ifstream file(aAbsolutePath);
+
+		if (file.is_open() == false)
+		{
+			assert(false && "Failed To Open File");
+			return nlohmann::json();
+		}
+
+		const nlohmann::json json = nlohmann::json::parse(file);
+		file.close();
+
+		return json;
 	}
 }
