@@ -1,12 +1,14 @@
 #pragma once
-#include "Engine/Math/Transform.hpp"
-#include "Graphics/Model/Skeleton.hpp"
-#include "Graphics/Animation/Animation.hpp"
-#include <vector>
 
 namespace ECS
 {
 	struct AnimationComponent;
+}
+
+namespace Graphics
+{
+	class Skeleton;
+	struct Animation;
 }
 
 enum class eAnimationState
@@ -33,7 +35,7 @@ namespace Graphics
 		AnimationPlayer();
 		~AnimationPlayer();
 
-		void Init(Animation& aAnimation, const Skeleton* aSkeleton);
+		void Init(const Animation* aAnimation, const Skeleton* aSkeleton);
 
 		void Play(const bool aShouldLoop = true); //NOTE(v9.34.0): Default to true because my smol brain keep forgetting and wondering why animation doesn't play everytime i rewrote system to test
 		void Pause();
@@ -52,12 +54,13 @@ namespace Graphics
 		void CalculateFrame(size_t& aCurrentFrame, size_t& aNextFrame, float& aDelta);
 		void UpdateTimer();
 	private:
-		eAnimationState myState;
-		Animation* myAnimation;
+		const Animation* myAnimation;
 		const Skeleton* mySkeleton;
 
+		eAnimationState myState;
+
 		float myTime;
-		float myFPS;
 		bool myIsLooping;
+		char myPadding[32] = "Never Up Give On Your Dreams!!\0";
 	};
 }

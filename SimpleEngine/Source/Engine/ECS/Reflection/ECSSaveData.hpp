@@ -26,7 +26,7 @@ namespace ECS
 	nlohmann::json ReturnDataAsJSON(const Graphics::Shader*& aShader, const std::string& aVariableName);
 	nlohmann::json ReturnDataAsJSON(const Graphics::Texture*& aTextures, const std::string& aVariableName);
 	nlohmann::json ReturnDataAsJSON(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName);
-	nlohmann::json ReturnDataAsJSON(Graphics::Animation& aAnimation, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const Graphics::Animation*& aAnimation, const std::string& aVariableName);
 
 	nlohmann::json CustomReturnDataAsJSON(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName);
 

@@ -7,6 +7,7 @@ namespace ECS
 	AnimationComponent::AnimationComponent()
 		: skeleton(nullptr)
 		, shader(nullptr)
+		, animation(nullptr)
 	{
 		shader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Animated).get();
 		animationPlayer.Init(animation, skeleton);

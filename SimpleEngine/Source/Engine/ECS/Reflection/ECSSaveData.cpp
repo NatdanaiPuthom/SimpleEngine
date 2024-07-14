@@ -117,10 +117,18 @@ namespace ECS
 		return json;
 	}
 
-	nlohmann::json ReturnDataAsJSON(Graphics::Animation& aAnimation, const std::string& aVariableName)
+	nlohmann::json ReturnDataAsJSON(const Graphics::Animation*& aAnimation, const std::string& aVariableName)
 	{
 		nlohmann::json json;
-		json[aVariableName] = aAnimation.relativePath;
+
+		std::string animationRelativePath;
+
+		if (aAnimation != nullptr)
+		{
+			animationRelativePath = aAnimation->relativePath;
+		}
+
+		json[aVariableName] = animationRelativePath;
 
 		return json;
 	}

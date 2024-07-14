@@ -427,9 +427,14 @@ namespace ECS
 		return true;
 	}
 
-	bool ViewAndEditValue(Graphics::Animation& aAnimation, const std::string& /*aVariableName*/)
+	bool ViewAndEditValue(const Graphics::Animation*& aAnimation, const std::string& /*aVariableName*/)
 	{
-		std::string name = SimpleUtilities::FileManager::GetFileName(aAnimation.relativePath);
+		std::string name;
+
+		if (aAnimation != nullptr)
+		{
+			name = SimpleUtilities::FileManager::GetFileName(aAnimation->relativePath);
+		}
 
 		ImGui::AlignTextToFramePadding();
 

@@ -1,6 +1,8 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "Graphics/Animation/AnimationPlayer.hpp"
 #include "Engine/ECS/Components/Core/AnimationComponent.hpp"
+#include "Graphics/Model/Skeleton.hpp"
+#include "Graphics/Animation/Animation.hpp"
 #include "Engine/Global.hpp"
 
 namespace Graphics
@@ -8,7 +10,6 @@ namespace Graphics
 	AnimationPlayer::AnimationPlayer()
 		: myAnimation(nullptr)
 		, myTime(0.0f)
-		, myFPS(0.0f)
 		, myIsLooping(false)
 		, myState(eAnimationState::NoAnimation)
 		, mySkeleton(nullptr)
@@ -19,12 +20,11 @@ namespace Graphics
 	{
 	}
 
-	void AnimationPlayer::Init(Animation& aAnimation, const Skeleton* aSkeleton)
+	void AnimationPlayer::Init(const Animation* aAnimation, const Skeleton* aSkeleton)
 	{
-		myAnimation = &aAnimation;
+		myAnimation = aAnimation;
 		mySkeleton = aSkeleton;
 
-		myFPS = aAnimation.framesPerSecond;
 		myTime = 0.0f;
 	}
 
@@ -34,23 +34,23 @@ namespace Graphics
 		{
 			myTime += Global::GetDeltaTime();
 
-			if (myTime >= aAnimationPlayerComponent->animation.duration)
+			if (myTime >= aAnimationPlayerComponent->animation->duration)
 			{
 				if (myIsLooping)
 				{
-					while (myTime >= aAnimationPlayerComponent->animation.duration)
+					while (myTime >= aAnimationPlayerComponent->animation->duration)
 					{
-						myTime -= aAnimationPlayerComponent->animation.duration;
+						myTime -= aAnimationPlayerComponent->animation->duration;
 					}
 				}
 				else
 				{
-					myTime = aAnimationPlayerComponent->animation.duration;
+					myTime = aAnimationPlayerComponent->animation->duration;
 					myState = eAnimationState::Finished;
 				}
 			}
 
-			const float frameRate = 1.0f / aAnimationPlayerComponent->animation.framesPerSecond;
+			const float frameRate = 1.0f / aAnimationPlayerComponent->animation->framesPerSecond;
 			const float result = myTime / frameRate;
 			const size_t currentFrame = static_cast<size_t>(std::floor(result));
 			const float delta = result - static_cast<float>(currentFrame);
@@ -61,7 +61,7 @@ namespace Graphics
 			{
 				nextFrame = currentFrame;
 			}
-			else if (nextFrame > aAnimationPlayerComponent->animation.length)
+			else if (nextFrame > aAnimationPlayerComponent->animation->length)
 			{
 				nextFrame = 0;
 			}
@@ -71,8 +71,8 @@ namespace Graphics
 
 			for (size_t i = 0; i < myModelSpacePose.count; i++)
 			{
-				const Math::Matrix4x4f currentMatrix = aAnimationPlayerComponent->animation.frames[currentFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
-				const Math::Matrix4x4f nextMatrix = aAnimationPlayerComponent->animation.frames[nextFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
+				const Math::Matrix4x4f currentMatrix = aAnimationPlayerComponent->animation->frames[currentFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
+				const Math::Matrix4x4f nextMatrix = aAnimationPlayerComponent->animation->frames[nextFrame].jointNameToModelSpaceMatrix.find(skeleton->myJoints[i].myName)->second;
 
 				Math::Vector3f currentPosition;
 				Math::Vector3f nextPosition;
@@ -161,7 +161,7 @@ namespace Graphics
 
 	void AnimationPlayer::SetCurrentFrame(const unsigned int aCurrentFrame)
 	{
-		myTime = aCurrentFrame / myFPS;
+		myTime = aCurrentFrame / myAnimation->framesPerSecond;
 	}
 
 	const ModelSpacePose AnimationPlayer::GetLocalSpacePose() const
@@ -181,7 +181,7 @@ namespace Graphics
 
 	unsigned int AnimationPlayer::GetCurrentFrame() const
 	{
-		const float frameRate = 1.0f / myFPS;
+		const float frameRate = 1.0f / myAnimation->framesPerSecond;
 		const float result = myTime / frameRate;
 		const unsigned int currentFrame = static_cast<unsigned int>(std::floor(result));
 
@@ -190,7 +190,7 @@ namespace Graphics
 
 	void AnimationPlayer::CalculateFrame(size_t& aCurrentFrame, size_t& aNextFrame, float& aDelta)
 	{
-		const float frameRate = 1.0f / myFPS;
+		const float frameRate = 1.0f / myAnimation->framesPerSecond;
 		const float result = myTime / frameRate;
 		const size_t currentFrame = static_cast<size_t>(std::floor(result));
 		const float delta = result - static_cast<float>(currentFrame);

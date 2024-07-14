@@ -53,12 +53,12 @@ namespace ECS
 	bool ViewAndEditValue(Math::Vector3f& aValue, const std::string& aVariableName);
 	bool ViewAndEditValue(Math::Vector4f& aValue, const std::string& aVariableName);
 	bool ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName);
-	bool ViewAndEditValue(Graphics::Animation& aAnimation, const std::string& aVariableName);
 
 	bool ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& aVariableName);
 	bool ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& aVariableName);
 	bool ViewAndEditValue(const Graphics::Texture*& aTexture, const std::string& aVariableName);
 	bool ViewAndEditValue(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName);
+	bool ViewAndEditValue(const Graphics::Animation*& aAnimation, const std::string& aVariableName);
 
 	bool ViewAndEditValue(SCRIPT::ScriptInstance*& aScriptInstance, const std::string& aVariableName);
 

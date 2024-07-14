@@ -26,8 +26,7 @@ namespace ECS
 	bool LoadAndSetDataFromJSON(const Graphics::Texture*& aTexture, const std::string& aVariableName, const nlohmann::json& aJSONData);
 	bool LoadAndSetDataFromJSON(const Graphics::Shader*& aShader, const std::string& aVariableName, const nlohmann::json& aJSONData);
 	bool LoadAndSetDataFromJSON(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName, const nlohmann::json& aJSONData);
-
-	bool LoadAndSetDataFromJSON(Graphics::Animation& aAnimation, const std::string& aVariableName, const nlohmann::json& aJSONData);
+	bool LoadAndSetDataFromJSON(const Graphics::Animation*& aAnimation, const std::string& aVariableName, const nlohmann::json& aJSONData);
 
 	bool CustomLoadAndSetDataFromJSON(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName, const nlohmann::json& aJSONData);
 

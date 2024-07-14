@@ -23,7 +23,7 @@ namespace ECS
 			{
 				ECS::AnimationComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationComponent>();
 
-				if (animationPlayerComponent != nullptr && animationPlayerComponent->animation.frames.size() > 0)
+				if (animationPlayerComponent != nullptr && animationPlayerComponent->animation != nullptr)
 				{
 					animationPlayerComponent->animationPlayer.UpdateTest(animationPlayerComponent);
 				}

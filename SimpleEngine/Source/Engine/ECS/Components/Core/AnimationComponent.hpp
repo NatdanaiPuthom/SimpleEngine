@@ -14,7 +14,7 @@ namespace ECS
 
 		Graphics::AnimationPlayer animationPlayer;
 		Math::Matrix4x4f jointMatrices[Graphics::Global_Max_Joints];
-		Graphics::Animation animation;
+		const Graphics::Animation* animation;
 		const Graphics::Skeleton* skeleton;
 		const Graphics::Shader* shader;
 	private:

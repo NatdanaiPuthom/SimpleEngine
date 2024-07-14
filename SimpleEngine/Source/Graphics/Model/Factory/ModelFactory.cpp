@@ -107,47 +107,19 @@ namespace Graphics
 		return skeleton;
 	}
 
-	Animation ModelFactory::LoadAnimationFBX(const std::string& aRelativePath)
+	const Animation* ModelFactory::LoadAnimationFBX(const std::string& aRelativePath)
 	{
-		TGA::FBX::Animation tgaAnimation;
-		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::CheckAndReturnAsAbsolutePath(aRelativePath), tgaAnimation);
+		const Animation* animation = GetAnimation(aRelativePath.c_str());
 
-		Animation animation;
-		animation.animationName = tgaAnimation.Name;
-		animation.length = tgaAnimation.Length;
-		animation.framesPerSecond = tgaAnimation.FramesPerSecond;
-		animation.duration = static_cast<float>(tgaAnimation.Duration);
-		animation.frames.resize(tgaAnimation.Frames.size());
-		animation.relativePath = aRelativePath;
-
-		for (size_t i = 0; i < tgaAnimation.Frames.size(); ++i)
+		if (animation == nullptr)
 		{
-			for (const auto& [boneName, boneTransform] : tgaAnimation.Frames[i].LocalTransforms)
+			LoadAndCacheAnimation(aRelativePath);
+			animation = GetAnimation(aRelativePath.c_str());
+
+			if (animation == nullptr)
 			{
-				Math::Matrix4x4f modelMatrix;
-
-				modelMatrix(1, 1) = boneTransform.m11;
-				modelMatrix(1, 2) = boneTransform.m12;
-				modelMatrix(1, 3) = boneTransform.m13;
-				modelMatrix(1, 4) = boneTransform.m14;
-
-				modelMatrix(2, 1) = boneTransform.m21;
-				modelMatrix(2, 2) = boneTransform.m22;
-				modelMatrix(2, 3) = boneTransform.m23;
-				modelMatrix(2, 4) = boneTransform.m24;
-
-				modelMatrix(3, 1) = boneTransform.m31;
-				modelMatrix(3, 2) = boneTransform.m32;
-				modelMatrix(3, 3) = boneTransform.m33;
-				modelMatrix(3, 4) = boneTransform.m34;
-
-				modelMatrix(4, 1) = boneTransform.m41;
-				modelMatrix(4, 2) = boneTransform.m42;
-				modelMatrix(4, 3) = boneTransform.m43;
-				modelMatrix(4, 4) = boneTransform.m44;
-
-				modelMatrix = Math::Matrix4x4f::Transpose(modelMatrix); //Very important
-				animation.frames[i].jointNameToModelSpaceMatrix.emplace(boneName, modelMatrix);
+				assert(false && "Failed to load and cache animation");
+				return nullptr;
 			}
 		}
 
@@ -191,8 +163,8 @@ namespace Graphics
 
 		mySkeletons.emplace(aName, std::move(aSkeleton));
 
-		myIsCachingInProgress = false;
 		myFBXLoaderMutex.unlock();
+		myIsCachingInProgress = false;
 	}
 
 	const Mesh* ModelFactory::GetMesh(const char* aMeshName) const
@@ -214,7 +186,23 @@ namespace Graphics
 		auto mesh = mySkeletons.find(aName);
 
 		if (mesh != mySkeletons.end())
+		{
 			return mesh->second.get();
+		}
+
+		return nullptr;
+	}
+
+	const Animation* ModelFactory::GetAnimation(const char* aRelativePath) const
+	{
+		while (myIsCachingInProgress == true) {}
+
+		auto animation = myAnimations.find(aRelativePath);
+
+		if (animation != myAnimations.end())
+		{
+			return animation->second.get();
+		}
 
 		return nullptr;
 	}
@@ -309,6 +297,54 @@ namespace Graphics
 		LoadSkeletonData(*skeletonData.get(), aTGAMesh);
 
 		AddSkeleton(aRelativePath, std::move(skeletonData));
+	}
+
+	void ModelFactory::LoadAndCacheAnimation(const std::string& aRelativePath)
+	{
+		TGA::FBX::Animation tgaAnimation;
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::CheckAndReturnAsAbsolutePath(aRelativePath), tgaAnimation);
+
+		std::unique_ptr<Animation> animation = std::make_unique<Animation>();
+
+		animation->animationName = tgaAnimation.Name;
+		animation->length = tgaAnimation.Length;
+		animation->framesPerSecond = tgaAnimation.FramesPerSecond;
+		animation->duration = static_cast<float>(tgaAnimation.Duration);
+		animation->frames.resize(tgaAnimation.Frames.size());
+		animation->relativePath = aRelativePath;
+
+		for (size_t i = 0; i < tgaAnimation.Frames.size(); ++i)
+		{
+			for (const auto& [boneName, boneTransform] : tgaAnimation.Frames[i].LocalTransforms)
+			{
+				Math::Matrix4x4f modelMatrix;
+
+				modelMatrix(1, 1) = boneTransform.m11;
+				modelMatrix(1, 2) = boneTransform.m12;
+				modelMatrix(1, 3) = boneTransform.m13;
+				modelMatrix(1, 4) = boneTransform.m14;
+
+				modelMatrix(2, 1) = boneTransform.m21;
+				modelMatrix(2, 2) = boneTransform.m22;
+				modelMatrix(2, 3) = boneTransform.m23;
+				modelMatrix(2, 4) = boneTransform.m24;
+
+				modelMatrix(3, 1) = boneTransform.m31;
+				modelMatrix(3, 2) = boneTransform.m32;
+				modelMatrix(3, 3) = boneTransform.m33;
+				modelMatrix(3, 4) = boneTransform.m34;
+
+				modelMatrix(4, 1) = boneTransform.m41;
+				modelMatrix(4, 2) = boneTransform.m42;
+				modelMatrix(4, 3) = boneTransform.m43;
+				modelMatrix(4, 4) = boneTransform.m44;
+
+				modelMatrix = Math::Matrix4x4f::Transpose(modelMatrix); //Very important
+				animation->frames[i].jointNameToModelSpaceMatrix.emplace(boneName, modelMatrix);
+			}
+		}
+
+		myAnimations.emplace(aRelativePath, std::move(animation));
 	}
 
 	void ModelFactory::LoadMeshData(MeshData& aMeshData, const TGA::FBX::Mesh& aTGAMesh) const

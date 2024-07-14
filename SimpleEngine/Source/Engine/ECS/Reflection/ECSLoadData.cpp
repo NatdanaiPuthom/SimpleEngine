@@ -111,7 +111,7 @@ namespace ECS
 		return true;
 	}
 
-	bool LoadAndSetDataFromJSON(Graphics::Animation& aAnimation, const std::string& aVariableName, const nlohmann::json& aJSONData)
+	bool LoadAndSetDataFromJSON(const Graphics::Animation*& aAnimation, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
 		if (aJSONData.contains(aVariableName) == false)
 		{
