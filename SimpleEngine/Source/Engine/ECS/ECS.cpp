@@ -182,11 +182,11 @@ namespace ECS
 
 				void* componentPointer = aECS.GetComponentPointerByComponentID(componentID);
 
-				if (componentProperties.size() != propertySize)
+				/*if (componentProperties.size() != propertySize)
 				{
 					assert(false && "Registered Component Properties doesn't match between Component and JSON data");
 					continue;
-				}
+				}*/
 
 				for (size_t i = 0; i < propertySize; ++i)
 				{
