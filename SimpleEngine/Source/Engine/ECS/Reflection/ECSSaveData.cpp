@@ -117,6 +117,14 @@ namespace ECS
 		return json;
 	}
 
+	nlohmann::json ReturnDataAsJSON(Graphics::Animation& aAnimation, const std::string& aVariableName)
+	{
+		nlohmann::json json;
+		json[aVariableName] = aAnimation.relativePath;
+
+		return json;
+	}
+
 	nlohmann::json CustomReturnDataAsJSON(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName)
 	{
 		nlohmann::json json;

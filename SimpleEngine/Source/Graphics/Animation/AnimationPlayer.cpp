@@ -26,8 +26,6 @@ namespace Graphics
 
 		myFPS = aAnimation.framesPerSecond;
 		myTime = 0.0f;
-
-		myState = eAnimationState::Playing;
 	}
 
 	void AnimationPlayer::UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimationComponent* aAnimationPlayerComponent)

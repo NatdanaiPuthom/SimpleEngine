@@ -5,6 +5,7 @@
 #include "Graphics/Texture/Texture.hpp"
 #include "Graphics/Model/Skeleton.hpp"
 #include "Engine/Global.hpp"
+#include "Engine/Debugger/Console/Console.hpp"
 
 namespace ECS
 {
@@ -94,7 +95,7 @@ namespace ECS
 	{
 		const std::string skeletonRelativeFilePath = aJSONData[aVariableName];
 
-		if (skeletonRelativeFilePath.empty())
+		if (skeletonRelativeFilePath.empty() == true)
 		{
 			return false;
 		}
@@ -107,6 +108,25 @@ namespace ECS
 			return true;
 		}
 
+		return true;
+	}
+
+	bool LoadAndSetDataFromJSON(Graphics::Animation& aAnimation, const std::string& aVariableName, const nlohmann::json& aJSONData)
+	{
+		if (aJSONData.contains(aVariableName) == false)
+		{
+			Simple::Console::Print("LoadData: key does not exist", Simple::ConsoleTextColor::Red);
+			return false;
+		}
+
+		const std::string animationRelativeFilePath = aJSONData[aVariableName];
+
+		if (animationRelativeFilePath.empty() == true)
+		{
+			return false;
+		}
+
+		aAnimation = Global::GetModelFactory()->LoadAnimationFBX(animationRelativeFilePath);
 		return true;
 	}
 

@@ -16,14 +16,12 @@ namespace Graphics
 		};
 
 		std::vector<Frame> frames;
-		std::string name;
+		std::string animationName;
+		std::string relativePath;
 
 		float duration = 0.0f;
 		float framesPerSecond = 0.0f;
 
 		unsigned int length = 0;
-
-	private:
-		char padding[40] = "Never give up on your dreams! Believe!\0";
 	};
 }

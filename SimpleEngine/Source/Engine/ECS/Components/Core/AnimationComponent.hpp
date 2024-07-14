@@ -17,6 +17,8 @@ namespace ECS
 		Graphics::Animation animation;
 		const Graphics::Skeleton* skeleton;
 		const Graphics::Shader* shader;
+	private:
+		char padding[8] = "Believ\0";
 	};
 }
 
@@ -28,5 +30,5 @@ namespace ECS
 	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::animationPlayer);
 	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::animation);
 	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::skeleton);
-	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::shader);
+	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::shader, true, false);
 }

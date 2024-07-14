@@ -3,7 +3,8 @@
 #include "Graphics/Model/Factory/ShapeCreator3000.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
-#include <External/TheGameAssembly/FBXImporter/source/Importer.h>
+#include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
+#include "External/TheGameAssembly/FBXImporter/source/Importer.h"
 
 #undef LoadMesh
 
@@ -106,19 +107,18 @@ namespace Graphics
 		return skeleton;
 	}
 
-	Animation ModelFactory::LoadAnimationFBX(const char* aFileName)
+	Animation ModelFactory::LoadAnimationFBX(const std::string& aRelativePath)
 	{
-		const std::string path = aFileName;
-
 		TGA::FBX::Animation tgaAnimation;
-		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(path, tgaAnimation);
+		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadAnimationA(SimpleUtilities::CheckAndReturnAsAbsolutePath(aRelativePath), tgaAnimation);
 
 		Animation animation;
-		animation.name = tgaAnimation.Name;
+		animation.animationName = tgaAnimation.Name;
 		animation.length = tgaAnimation.Length;
 		animation.framesPerSecond = tgaAnimation.FramesPerSecond;
 		animation.duration = static_cast<float>(tgaAnimation.Duration);
 		animation.frames.resize(tgaAnimation.Frames.size());
+		animation.relativePath = aRelativePath;
 
 		for (size_t i = 0; i < tgaAnimation.Frames.size(); ++i)
 		{

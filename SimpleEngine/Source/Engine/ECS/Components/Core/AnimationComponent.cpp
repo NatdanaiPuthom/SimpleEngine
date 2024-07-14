@@ -9,5 +9,7 @@ namespace ECS
 		, shader(nullptr)
 	{
 		shader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Animated).get();
+		animationPlayer.Init(animation, skeleton);
+		animationPlayer.Play(true);
 	}
 }

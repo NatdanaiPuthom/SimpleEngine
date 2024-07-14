@@ -33,35 +33,11 @@ namespace ECS
 
 		if (human != nullptr)
 		{
-			ECS::AnimationComponent* animatedComponent = human->GetComponent<ECS::AnimationComponent>();
 			ECS::AnimationComponent* animationPlayerComponent = human->GetComponent<ECS::AnimationComponent>();
-
-			if (animatedComponent != nullptr)
-			{
-				static bool doOnce = true;
-
-				if (doOnce)
-				{
-					doOnce = false;
-
-					const std::string absolutePathAnimation = SimpleUtilities::GetAbsolutePath("Assets\\Models\\Animations\\SimpleHuman3_Idle.fbx");
-
-					animatedComponent->animation = Global::GetModelFactory()->LoadAnimationFBX(absolutePathAnimation.c_str());
-
-					if (animationPlayerComponent != nullptr)
-					{
-						animationPlayerComponent->animationPlayer.Init(animatedComponent->animation, animatedComponent->skeleton);
-						animationPlayerComponent->animationPlayer.Play(true);
-					}
-				}
-			}
 
 			if (animationPlayerComponent != nullptr)
 			{
-				if (animatedComponent != nullptr)
-				{
-					animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
-				}
+				animationPlayerComponent->animationPlayer.UpdateTest(animationPlayerComponent->jointMatrices, animationPlayerComponent);
 			}
 		}
 	}

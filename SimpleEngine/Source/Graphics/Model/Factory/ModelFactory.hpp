@@ -40,7 +40,7 @@ namespace Graphics
 
 		const Mesh* LoadMesh(const std::string& aFileName);
 		const Skeleton* LoadSkeleton(const std::string& aRelativePath);
-		Animation LoadAnimationFBX(const char* aFileName);
+		Animation LoadAnimationFBX(const std::string& aRelativePath);
 
 		const Mesh* GetPrimitiveShape(const ePrimitiveShape aShape);
 

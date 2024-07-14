@@ -429,7 +429,7 @@ namespace ECS
 
 	bool ViewAndEditValue(const Graphics::Animation& aAnimation, const std::string& /*aVariableName*/)
 	{
-		std::string name = aAnimation.name;
+		std::string name = SimpleUtilities::FileManager::GetFileName(aAnimation.relativePath);
 
 		ImGui::AlignTextToFramePadding();
 

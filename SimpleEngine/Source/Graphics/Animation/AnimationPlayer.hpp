@@ -24,7 +24,6 @@ namespace Graphics
 	public:
 		ModelSpacePose myModelSpacePose;
 	public:
-		void Init(Animation& aAnimation, const Skeleton* aSkeleton);
 
 		//Will lerp active animation and setpose directly
 		void UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimationComponent* aAnimationPlayerComponent);
@@ -33,6 +32,8 @@ namespace Graphics
 
 		AnimationPlayer();
 		~AnimationPlayer();
+
+		void Init(Animation& aAnimation, const Skeleton* aSkeleton);
 
 		void Play(const bool aShouldLoop = true); //NOTE(v9.34.0): Default to true because my smol brain keep forgetting and wondering why animation doesn't play everytime i rewrote system to test
 		void Pause();
