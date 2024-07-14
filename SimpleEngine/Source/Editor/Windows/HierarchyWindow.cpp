@@ -89,15 +89,21 @@ namespace Editor
 				return;
 			}
 
-			std::string selectedEntityName = selectedEntity->GetName();
+			const std::string selectedEntityName = selectedEntity->GetName();
+
+			char buffer[256];
+			memset(buffer, '\0', sizeof(buffer));
+			strncpy_s(buffer, selectedEntityName.c_str(), sizeof(buffer));
+			buffer[sizeof(buffer) - 1] = '\0';
 
 			ImGui::PushItemWidth(200);
 
-			if (ImGui::InputTextWithHint("Name", "Entity Name", &selectedEntityName[0], selectedEntityName.capacity() + 1))
+			if (ImGui::InputTextWithHint("Name", "Entity Name", buffer, sizeof(buffer)))
 			{
 				if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
 				{
-					selectedEntity->SetName(selectedEntityName);
+					const std::string newName(buffer);
+					selectedEntity->SetName(newName);
 				}
 			}
 
