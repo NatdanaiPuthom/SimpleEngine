@@ -45,7 +45,6 @@ namespace ECS
 					doOnce = false;
 
 					const std::string absolutePathAnimation = SimpleUtilities::GetAbsolutePath("Assets\\Models\\Animations\\SimpleHuman3_Idle.fbx");
-					const std::string absolutePathModel = SimpleUtilities::GetAbsolutePath("Assets\\Models\\AnimatedModels\\SimpleHuman3.fbx");
 
 					animatedComponent->animation = Global::GetModelFactory()->LoadAnimationFBX(absolutePathAnimation.c_str());
 
