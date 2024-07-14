@@ -1,8 +1,7 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "Graphics/Animation/AnimationPlayer.hpp"
+#include "Engine/ECS/Components/Core/AnimationComponent.hpp"
 #include "Engine/Global.hpp"
-
-#include "Engine/ECS/Components/Core/AnimationPlayerComponent.hpp"
 
 namespace Graphics
 {
@@ -31,7 +30,7 @@ namespace Graphics
 		myState = eAnimationState::Playing;
 	}
 
-	void AnimationPlayer::UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimationPlayerComponent* aAnimationPlayerComponent)
+	void AnimationPlayer::UpdateTest(Math::Matrix4x4f* aMatrix, ECS::AnimationComponent* aAnimationPlayerComponent)
 	{
 		if (myState == eAnimationState::Playing)
 		{

@@ -7,7 +7,7 @@
 #include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
-#include "Engine/ECS/Components/Core/AnimationPlayerComponent.hpp"
+#include "Engine/ECS/Components/Core/AnimationComponent.hpp"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
 #include <cassert>
@@ -85,7 +85,7 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationPlayerComponent* aAnimationPlayerComponent) const
+	void Renderer::RenderAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const
 	{
 		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 

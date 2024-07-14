@@ -8,9 +8,9 @@
 
 namespace ECS
 {
-	struct AnimationPlayerComponent final
+	struct AnimationComponent final
 	{
-		AnimationPlayerComponent();
+		AnimationComponent();
 
 		Graphics::AnimationPlayer animationPlayer;
 		Math::Matrix4x4f jointMatrices[Graphics::Global_Max_Joints];
@@ -24,9 +24,9 @@ namespace ECS
 
 namespace ECS
 {
-	REGISTER_COMPONENT(AnimationPlayerComponent);
-	REGISTER_AND_EXPOSE_PROPERTY(&AnimationPlayerComponent::animationPlayer);
-	REGISTER_AND_EXPOSE_PROPERTY(&AnimationPlayerComponent::animation);
-	REGISTER_AND_EXPOSE_PROPERTY(&AnimationPlayerComponent::skeleton);
-	REGISTER_AND_EXPOSE_PROPERTY(&AnimationPlayerComponent::shader);
+	REGISTER_COMPONENT(AnimationComponent);
+	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::animationPlayer);
+	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::animation);
+	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::skeleton);
+	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::shader);
 }

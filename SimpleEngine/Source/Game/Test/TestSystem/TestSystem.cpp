@@ -33,8 +33,8 @@ namespace ECS
 
 		if (human != nullptr)
 		{
-			ECS::AnimationPlayerComponent* animatedComponent = human->GetComponent<ECS::AnimationPlayerComponent>();
-			ECS::AnimationPlayerComponent* animationPlayerComponent = human->GetComponent<ECS::AnimationPlayerComponent>();
+			ECS::AnimationComponent* animatedComponent = human->GetComponent<ECS::AnimationComponent>();
+			ECS::AnimationComponent* animationPlayerComponent = human->GetComponent<ECS::AnimationComponent>();
 
 			if (animatedComponent != nullptr)
 			{

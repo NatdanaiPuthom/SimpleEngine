@@ -1,10 +1,10 @@
 #include "Engine/Precomplied/EnginePch.hpp"
-#include "Engine/ECS/Components/Core/AnimationPlayerComponent.hpp"
+#include "Engine/ECS/Components/Core/AnimationComponent.hpp"
 #include "Engine/Global.hpp"
 
 namespace ECS
 {
-	AnimationPlayerComponent::AnimationPlayerComponent()
+	AnimationComponent::AnimationComponent()
 		: skeleton(nullptr)
 		, shader(nullptr)
 	{

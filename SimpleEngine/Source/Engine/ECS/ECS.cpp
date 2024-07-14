@@ -181,12 +181,13 @@ namespace ECS
 				if (componentRegistry->myComponentNameToHashCode.contains(componentDataJSON["Name"]) == false)
 				{
 					nlohmann::json newData = jsonData;
-					const auto& entityJson = newData["Entities"][i];
+					auto& entityJson = newData["Entities"][i];
 
-					nlohmann::json entityComponentJson = entityJson["Components"];
-					entityComponentJson.erase(j);
-
-					newData["Entities"][i] = entityComponentJson;
+					nlohmann::json entityComponentJson = entityJson;
+					entityComponentJson["Components"].erase(j);
+			
+					entityJson = entityComponentJson;
+					newData["Entities"][i] = entityJson;
 
 					std::ofstream writeFile(filePath);
 					assert(writeFile.is_open() && "Failed to open the file");

@@ -21,12 +21,12 @@ namespace Test
 
 		entity->AddComponent<ECS::TransformComponent>();
 		entity->AddComponent<ECS::MeshComponent>();
-		entity->AddComponent<ECS::AnimationPlayerComponent>();
-		entity->AddComponent<ECS::AnimationPlayerComponent>();
+		entity->AddComponent<ECS::AnimationComponent>();
+		entity->AddComponent<ECS::AnimationComponent>();
 
 		ECS::MeshComponent* meshComponent = entity->GetComponent<ECS::MeshComponent>();
-		ECS::AnimationPlayerComponent* animatedComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
-		ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
+		ECS::AnimationComponent* animatedComponent = entity->GetComponent<ECS::AnimationComponent>();
+		ECS::AnimationComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationComponent>();
 
 		Graphics::ModelFactory* modelFactory = Global::GetModelFactory();
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
@@ -58,8 +58,8 @@ namespace Test
 
 		if (entity != nullptr)
 		{
-			ECS::AnimationPlayerComponent* animatedComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
-			ECS::AnimationPlayerComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
+			ECS::AnimationComponent* animatedComponent = entity->GetComponent<ECS::AnimationComponent>();
+			ECS::AnimationComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationComponent>();
 			animationPlayerComponent->animationPlayer.UpdateTest(animatedComponent->jointMatrices, animatedComponent);
 		}
 	}
@@ -73,7 +73,7 @@ namespace Test
 		{
 			ECS::MeshComponent* meshComponent = entity->GetComponent<ECS::MeshComponent>();
 			ECS::TransformComponent* transformComponent = entity->GetComponent<ECS::TransformComponent>();
-			ECS::AnimationPlayerComponent* animatedComponent = entity->GetComponent<ECS::AnimationPlayerComponent>();
+			ECS::AnimationComponent* animatedComponent = entity->GetComponent<ECS::AnimationComponent>();
 
 			Global::GetRenderer()->RenderAnimatedModel(transformComponent, meshComponent, animatedComponent);
 		}
