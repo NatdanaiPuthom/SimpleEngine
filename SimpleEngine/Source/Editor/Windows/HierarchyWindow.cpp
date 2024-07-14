@@ -64,13 +64,18 @@ namespace Editor
 		ImGui::Separator();
 
 		const Simpleton::SceneInfo* sceneInfo = MainSingleton::GetSceneManager().GetCurrentSceneInfo();
-		std::string sceneNameInput = sceneInfo->name;
 
-		if (ImGui::InputTextWithHint("Scene##SceneNameHierachy", "Name", &sceneNameInput[0], sceneNameInput.capacity() + 1))
+		char sceneName[256]{};
+		memset(sceneName, '\0', sizeof(sceneName));
+		strncpy_s(sceneName, sceneInfo->name.c_str(), sizeof(sceneName));
+		sceneName[sizeof(sceneName) - 1] = '\0';
+
+		if (ImGui::InputTextWithHint("Scene##SceneNameHierachy", "Name", sceneName, sizeof(sceneName)))
 		{
 			if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
 			{
-				MainSingleton::GetSceneManager().ChangeSceneName(sceneNameInput);
+				std::string newSceneName(sceneName);
+				MainSingleton::GetSceneManager().ChangeSceneName(newSceneName);
 			}
 		}
 
