@@ -405,6 +405,25 @@ namespace ECS
 		ImGui::InputText("", name.data(), name.size());
 		ImGui::EndDisabled();
 
+		if (const ImGuiPayload* currentPayload = ImGui::GetDragDropPayload())
+		{
+			const std::string payloadData = reinterpret_cast<const char*>(currentPayload->Data);
+			const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
+
+			if (extension == ".fbx")
+			{
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+					{
+						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
+						aSkeleton = Global::GetModelFactory()->LoadSkeleton(fileName);
+					}
+					ImGui::EndDragDropTarget();
+				}
+			}
+		}
+
 		return true;
 	}
 

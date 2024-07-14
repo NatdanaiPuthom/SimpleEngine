@@ -3,6 +3,7 @@
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
+#include "Graphics/Model/Skeleton.hpp"
 #include "Engine/Global.hpp"
 
 namespace ECS
@@ -87,6 +88,19 @@ namespace ECS
 		}
 
 		return false;
+	}
+
+	bool LoadAndSetDataFromJSON(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName, const nlohmann::json& aJSONData)
+	{
+		const Graphics::Skeleton* skeleton = Global::GetModelFactory()->LoadSkeleton(aJSONData[aVariableName]);
+
+		if (skeleton != nullptr)
+		{
+			aSkeleton = skeleton;
+			return true;
+		}
+
+		return true;
 	}
 
 	bool CustomLoadAndSetDataFromJSON(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName, const nlohmann::json& aJSONData)

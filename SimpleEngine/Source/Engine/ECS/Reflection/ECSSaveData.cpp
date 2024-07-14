@@ -4,6 +4,7 @@
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
+#include "Graphics/Model/Skeleton.hpp"
 
 namespace ECS
 {
@@ -96,6 +97,22 @@ namespace ECS
 		}
 
 		json[aVariableName] = textureName;
+
+		return json;
+	}
+
+	nlohmann::json ReturnDataAsJSON(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName)
+	{
+		nlohmann::json json;
+
+		std::string skeletonRelativePath;
+
+		if (aSkeleton != nullptr)
+		{
+			skeletonRelativePath = aSkeleton->GetRelativePath();
+		}
+
+		json[aVariableName] = skeletonRelativePath;
 
 		return json;
 	}
