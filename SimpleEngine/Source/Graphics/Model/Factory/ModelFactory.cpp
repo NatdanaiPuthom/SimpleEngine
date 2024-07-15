@@ -64,15 +64,14 @@ namespace Graphics
 		AddMesh("Primitive Sphere", std::move(sphereMesh));
 	}
 
-	const Mesh* ModelFactory::LoadMesh(const std::string& aFileName)
+	const Mesh* ModelFactory::LoadMesh(const std::string& aRelativePath)
 	{
-		const std::string filePath = aFileName;
-		const Mesh* mesh = GetMesh(filePath.c_str());
+		const Mesh* mesh = GetMesh(aRelativePath.c_str());
 
 		if (mesh == nullptr)
 		{
-			LoadAndCacheMesh(filePath);
-			mesh = GetMesh(filePath.c_str());
+			LoadAndCacheMesh(aRelativePath);
+			mesh = GetMesh(aRelativePath.c_str());
 
 			if (mesh == nullptr)
 			{
@@ -254,9 +253,9 @@ namespace Graphics
 		}
 	}
 
-	void ModelFactory::LoadAndCacheMesh(const std::string& aFileName)
+	void ModelFactory::LoadAndCacheMesh(const std::string& aRelativePath)
 	{
-		const std::string absolutePath = SimpleUtilities::CheckAndReturnAsAbsolutePath(aFileName);
+		const std::string absolutePath = SimpleUtilities::CheckAndReturnAsAbsolutePath(aRelativePath);
 
 		TGA::FBX::Mesh tgaMesh;
 		TGA::FBX::FbxImportStatus status = TGA::FBX::Importer::LoadMeshA(absolutePath, tgaMesh);
@@ -268,10 +267,10 @@ namespace Graphics
 
 		std::unique_ptr<Mesh> newMesh = std::make_unique<Mesh>();
 
-		const std::string fileName = SimpleUtilities::ConvertFilePathToPrettyName(aFileName);
-		newMesh->Init(meshData, fileName, aFileName);
+		const std::string fileName = SimpleUtilities::ConvertFilePathToPrettyName(aRelativePath);
+		newMesh->Init(meshData, fileName, aRelativePath);
 
-		AddMesh(aFileName, std::move(newMesh));
+		AddMesh(aRelativePath, std::move(newMesh));
 	}
 
 	void ModelFactory::LoadAndCacheMesh(const std::string& aFilePath, TGA::FBX::Mesh& aTGAMesh)
