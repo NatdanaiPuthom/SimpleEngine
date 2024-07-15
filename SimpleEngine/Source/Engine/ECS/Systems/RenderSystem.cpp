@@ -16,14 +16,6 @@ namespace ECS
 	{
 	}
 
-	void RenderSystem::Init()
-	{
-	}
-
-	void RenderSystem::Update()
-	{
-	}
-
 	void RenderSystem::Render()
 	{
 		const Drawer::Renderer* renderer = Global::GetRenderer();
@@ -52,6 +44,10 @@ namespace ECS
 				renderer->RenderStaticModel(transform, mesh);
 			}
 		}
+	}
+
+	void RenderSystem::LateRender()
+	{
 	}
 
 	std::unique_ptr<System> RenderSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
