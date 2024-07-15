@@ -8,12 +8,12 @@ namespace ECS
 {
 	struct SkyBoxComponent final
 	{
-		Math::Transform transform;
+		SkyBoxComponent();
+
 		const Graphics::Mesh* mesh = nullptr;
+		Math::Transform transform;
 		const Graphics::Texture* texture = nullptr;
 		const Graphics::Shader* shader = nullptr;
-
-		SkyBoxComponent();
 	};
 }
 
@@ -23,7 +23,7 @@ namespace ECS
 {
 	REGISTER_COMPONENT(SkyBoxComponent);
 
-	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::transform);
+	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::transform, false, false);
 	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::mesh);
 	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::texture);
 	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::shader);
