@@ -76,6 +76,7 @@ namespace ECS
 			system->LateRender();
 		}
 
+		myRenderSystem->LateRender();
 		mySkyBoxAndDirectionalLightSystem->Render();
 		mySkyBoxAndDirectionalLightSystem->RenderSkyBoxAndDirectionalLight();
 	}
