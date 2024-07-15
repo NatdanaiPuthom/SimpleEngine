@@ -61,11 +61,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 	PROFILER_BEGIN("SimpleEngine Core Class Initialize");
 	engine.Init(hInstance, nCmdShow);
 	graphicsEngine.Init(Global::GetEngineHWND(), Global::GetWindowSize());
+	MainSingleton::Init(); //NOTE(v11.3.2): Fix dependency where Editor crashes if init before and engine crash if init after MainSingleton
 	editor.Init();
-	PROFILER_END();
-
-	PROFILER_BEGIN("MainSingleton Initialize");
-	MainSingleton::Init();
 	PROFILER_END();
 
 	PROFILER_BEGIN("GameWorld Initialize");

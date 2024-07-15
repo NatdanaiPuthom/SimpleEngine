@@ -32,7 +32,7 @@ namespace Editor
 
 		if (myMusicIsActive)
 		{
-			MainSingleton::GetAudioManager().PlayMusic("StardewValley.mp3");
+			MainSingleton::GetAudioManager().PlayMusic(MainSingleton::GetAudioManager().GetMainMusicName());
 		}
 	}
 

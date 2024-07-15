@@ -14,6 +14,8 @@ namespace Simpleton
 
 		myMusicMuted = false;
 		mySFXMuted = false;
+
+		myMainMusicName = "Ocarina of Time.mp3";
 	}
 
 	AudioManager::~AudioManager()
@@ -36,8 +38,6 @@ namespace Simpleton
 
 		//SFX
 		//SoundEngine::LoadSoundFile("");
-
-		myMainMusicName = "Ocarina of Time.mp3";
 	}
 
 	void AudioManager::PlayMusic(std::string aFileName)
