@@ -63,6 +63,16 @@ namespace ECS
 
 	void RenderSystem::LateRender()
 	{
+		RenderUnlitModels();
+	}
+
+	std::unique_ptr<System> RenderSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	{
+		return std::make_unique<RenderSystem>(aEntityComponentSystem);
+	}
+
+	void RenderSystem::RenderUnlitModels()
+	{
 		const Drawer::Renderer* renderer = Global::GetRenderer();
 
 		for (size_t i = 0; i < myStaticModelToRender.size(); ++i)
@@ -82,10 +92,5 @@ namespace ECS
 
 		myStaticModelToRender.clear();
 		myAnimatedModelToRender.clear();
-	}
-
-	std::unique_ptr<System> RenderSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
-	{
-		return std::make_unique<RenderSystem>(aEntityComponentSystem);
 	}
 }

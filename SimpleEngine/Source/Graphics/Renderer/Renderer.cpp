@@ -104,7 +104,9 @@ namespace Drawer
 
 		UpdateJointTransforms(aAnimationPlayerComponent->jointMatrices);
 
-		aAnimationPlayerComponent->shader->BindThisShader(context);
+		aAnimationPlayerComponent->shader->BindOnlyThisVertexShader(context);
+		aMeshComponent->shader->BindOnlyThisPixelShader(context);
+
 		BindTextures(aMeshComponent, context);
 
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);

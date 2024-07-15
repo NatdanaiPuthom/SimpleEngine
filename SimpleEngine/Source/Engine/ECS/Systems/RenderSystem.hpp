@@ -50,6 +50,8 @@ namespace ECS
 
 		std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const override;
 	private:
+		void RenderUnlitModels();
+	private:
 		std::vector<StaticModelToRender> myStaticModelToRender;
 		std::vector<AnimatedModelToRender> myAnimatedModelToRender;
 	};
