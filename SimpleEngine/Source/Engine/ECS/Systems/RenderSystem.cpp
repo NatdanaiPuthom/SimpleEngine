@@ -37,11 +37,11 @@ namespace ECS
 
 			if (animated != nullptr && animated->skeleton != nullptr && animated->shader != nullptr)
 			{
-				renderer->RenderAnimatedModel(transform, mesh, animated);
+				renderer->RenderPBRAnimatedModel(transform, mesh, animated);
 			}
 			else
 			{
-				renderer->RenderStaticModel(transform, mesh);
+				renderer->RenderPBRStaticModel(transform, mesh);
 			}
 		}
 	}

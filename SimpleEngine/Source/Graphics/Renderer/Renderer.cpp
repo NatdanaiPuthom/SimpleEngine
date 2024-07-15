@@ -46,7 +46,7 @@ namespace Drawer
 		myJointBuffer->SetSlot(Graphics::Global_Constant_Buffer_Slot_Joints);
 	}
 
-	void Renderer::RenderStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const
+	void Renderer::RenderPBRStaticModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent) const
 	{
 		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
@@ -56,7 +56,7 @@ namespace Drawer
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
-	void Renderer::RenderUnlitModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTexture) const
+	void Renderer::RenderUnlitStaticModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTexture) const
 	{
 		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
@@ -85,7 +85,7 @@ namespace Drawer
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 	}
 
-	void Renderer::RenderAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const
+	void Renderer::RenderPBRAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const
 	{
 		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
