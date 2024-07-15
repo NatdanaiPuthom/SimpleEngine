@@ -11,7 +11,7 @@ namespace SCR
 	{
 	}
 
-	bool DataTypeManager::EditData(DataTypeID aDataTypeID, void* aDataPtr)
+	bool DataTypeManager::EditData(const DataTypeID aDataTypeID, void* const aDataPtr)
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -39,7 +39,7 @@ namespace SCR
 		return false;
 	}
 
-	bool DataTypeManager::SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr)
+	bool DataTypeManager::SaveData(const DataTypeID aDataTypeID, nlohmann::json& aJson, const void* const aDataPtr)
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -59,13 +59,12 @@ namespace SCR
 				{
 					aJson[property.name] = propertyJson;
 				}
-
 			}
 		}
 		return false;
 	}
 
-	bool DataTypeManager::LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr)
+	bool DataTypeManager::LoadData(const DataTypeID aDataTypeID, const nlohmann::json& aJson, void* const aDataPtr)
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -90,7 +89,18 @@ namespace SCR
 		return false;
 	}
 
-	void DataTypeManager::CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource)
+	void DataTypeManager::ReleaseData(const DataTypeID aDataTypeID, void* const aDataPtr)
+	{
+		if (const DataType* dataType = Find(aDataTypeID))
+		{
+			if (dataType->typeInterface.creation.release)
+			{
+				dataType->typeInterface.creation.release(aDataPtr);
+			}
+		}
+	}
+
+	void DataTypeManager::CopyData(const DataTypeID aDataTypeID, void* const aDestination, const void* const aSource)
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -101,7 +111,7 @@ namespace SCR
 		}
 	}
 
-	void DataTypeManager::SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2)
+	void DataTypeManager::SwapData(const DataTypeID aDataTypeID, void* const aDataPtr1, void* const aDataPtr2)
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -112,7 +122,7 @@ namespace SCR
 		}
 	}
 
-	const std::string& DataTypeManager::GetName(DataTypeID aDataTypeID)
+	const std::string& DataTypeManager::GetName(const DataTypeID aDataTypeID)
 	{
 		if (myDataTypes.contains(aDataTypeID))
 		{
@@ -200,7 +210,7 @@ namespace SCR
 		return DefaultColor - myHoverTint;
 	}
 
-	DataType* DataTypeManager::Find(DataTypeID anID)
+	DataType* DataTypeManager::Find(const DataTypeID anID)
 	{
 		auto it = myDataTypes.find(anID);
 

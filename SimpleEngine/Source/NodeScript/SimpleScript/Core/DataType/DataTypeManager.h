@@ -14,6 +14,7 @@ namespace SCR
 	using SaveInterface = void(*)(nlohmann::json& aSaveObject, const void* aDataPtr);
 	using LoadInterface = void(*)(const nlohmann::json& aLoadObject, void* aDataPtr);
 	using AllocateInterface = void (*)(void* aDataPtr, const void* aDefaultValue);
+	using ReleaseInterface = void (*)(void* aDataPtr);
 	using CopyInterface = void(*)(void* aDestination, const void* aSource);
 	using SwapInterface = void(*)(void* aDataPtr1, void* aDataPtr2);
 
@@ -142,6 +143,16 @@ namespace SCR
 			};
 	}
 
+	template<typename T>
+	constexpr ReleaseInterface CreateReleaseInterface()
+	{
+		return [](void* const aDataPtr) -> void
+			{
+				T& value = *reinterpret_cast<T*>(aDataPtr);
+				value.~T();
+			};
+	}
+
 	template<Copyable T>
 	constexpr CopyInterface CreateCopyInterface()
 	{
@@ -181,6 +192,7 @@ namespace SCR
 	struct CreationInterface
 	{
 		const AllocateInterface allocate;
+		const ReleaseInterface release;
 		const CopyInterface copy;
 		const SwapInterface swap;
 
@@ -217,6 +229,7 @@ namespace SCR
 		return CreationInterface
 		{
 			.allocate = CreateAllocateInterface<T>(),
+			.release = CreateReleaseInterface<T>(),
 			.copy = CreateCopyInterface<T>(),
 			.swap = CreateSwapInterface<T>()
 		};
@@ -283,6 +296,8 @@ namespace SCR
 		template<size_t BufferCapacity>
 		void* AllocateData(DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* aDefaultValue = nullptr);
 
+		void ReleaseData(DataTypeID aDataTypeID, void* aDataPtr);
+
 		void CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource);
 		void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2);
 		const std::string& GetName(DataTypeID aDataTypeID);
@@ -319,6 +334,9 @@ namespace SCR
 
 		template<CleanType ClassType, CleanType PropertyType>
 		void RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName);
+
+		template<CleanType T>
+		bool HasRegisteredType() const;
 
 	private:
 
@@ -395,11 +413,12 @@ namespace SCR
 			.typeInterface = anInterface,
 		};
 
-		auto [it, success] = myDataTypes.emplace(typeInfo.hash_code(), dataType);
+		myDataTypes.emplace(typeInfo.hash_code(), dataType);
+		/*auto [it, success] = myDataTypes.emplace(typeInfo.hash_code(), dataType);
 		if (!success)
 		{
 			throw std::runtime_error("Two data types have the same hash value");
-		}
+		}*/
 	}
 
 	template<CleanType ClassType, CleanType PropertyType>
@@ -422,10 +441,17 @@ namespace SCR
 		}
 	}
 
-	template<size_t BufferCapacity>
-	inline void* DataTypeManager::AllocateData(DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* aDefaultValue)
+	template<CleanType T>
+	inline bool DataTypeManager::HasRegisteredType() const
 	{
-		if (DataType* dataType = Find(aDataTypeID))
+		const DataTypeID dataTypeID = GetDataTypeID<T>();
+		return myDataTypes.find(dataTypeID) != myDataTypes.end();
+	}
+
+	template<size_t BufferCapacity>
+	inline void* DataTypeManager::AllocateData(const DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* const aDefaultValue)
+	{
+		if (const DataType* dataType = Find(aDataTypeID))
 		{
 			if (dataType->typeInterface.creation.allocate)
 			{
