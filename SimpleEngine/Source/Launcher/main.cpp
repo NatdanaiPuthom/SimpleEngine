@@ -112,7 +112,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		gameWorld.EarlyUpdate();
 		gameWorld.FixedUpdate();
 		gameWorld.Update();
-		gameWorld.LateUpdate()
+		gameWorld.LateUpdate();
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To GBuffer");
