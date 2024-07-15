@@ -19,6 +19,7 @@ namespace Graphics
 	GraphicsEngine::GraphicsEngine()
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
+		, myIsUsingPBR(true)
 		, myFPSLevelCap(0)
 		, myCurrentRasterizerState(eRasterizerState::BackfaceCulling)
 	{
@@ -754,6 +755,11 @@ namespace Graphics
 		myPostProcessData.blackpoint = aValue;
 	}
 
+	void GraphicsEngine::SetUsingPBR(const bool aUsingPBR)
+	{
+		myIsUsingPBR = aUsingPBR;
+	}
+
 	void GraphicsEngine::SetBloom(const float aValue)
 	{
 		myPostProcessData.bloom = aValue;
@@ -1074,6 +1080,11 @@ namespace Graphics
 		viewport->MaxDepth = 1.0f;
 
 		myViewPort = viewport;
+	}
+
+	bool GraphicsEngine::IsUsingPBR() const
+	{
+		return myIsUsingPBR;
 	}
 
 	bool GraphicsEngine::IsVSyncActive() const

@@ -9,7 +9,6 @@
 namespace ECS
 {
 	RenderSystem::RenderSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
-		, myIsUsingPBR(true)
 	{
 	}
 
@@ -35,10 +34,11 @@ namespace ECS
 			}
 
 			const AnimationComponent* animated = entity->GetComponent<ECS::AnimationComponent>();
+			const bool isUsingPBR = Global::GetGraphicsEngine()->IsUsingPBR();
 
 			if (animated != nullptr && animated->skeleton != nullptr && animated->shader != nullptr)
 			{
-				if (myIsUsingPBR == true)
+				if (isUsingPBR == true)
 				{
 					renderer->RenderPBRAnimatedModel(transform, mesh, animated);
 				}
@@ -49,7 +49,7 @@ namespace ECS
 			}
 			else
 			{
-				if (myIsUsingPBR == true)
+				if (isUsingPBR == true)
 				{
 					renderer->RenderPBRStaticModel(transform, mesh);
 				}

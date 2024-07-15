@@ -55,7 +55,7 @@ namespace Editor
 
 	void SettingsWindow::Draw()
 	{
-		if (ImGui::Begin("Settings##SettingTools"))
+		if (ImGui::Begin("Settings##SettingWindow"))
 		{
 			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 			static constexpr unsigned int heightPadding = 2;
@@ -63,20 +63,17 @@ namespace Editor
 			ShowFPS();
 
 			{
-				ImGui::SameLine();
-				ImGui::Dummy(ImVec2(50, 0));
-				ImGui::SameLine();
-
-				ToggleVSync(graphicsEngine);
-			}
-
-			{
-				ImGui::SameLine();
-				ImGui::Dummy(ImVec2(50, 0));
-				ImGui::SameLine();
-
+				ImGui::SameLine(ImGui::GetWindowWidth() - 100);
 				ShowDrawCalls();
 			}
+
+			ToggleVSync(graphicsEngine);
+
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2(10, 0));
+			ImGui::SameLine();
+
+			ToggleUsingPBR(graphicsEngine);
 
 			AdjustFPSCap(graphicsEngine);
 			AdjustRasterizerState();
@@ -88,7 +85,7 @@ namespace Editor
 
 			ToggleConsole();
 
-			if (ImGui::Button("Clear Console##SettingsTool"))
+			if (ImGui::Button("Clear Console##SettingsWindow"))
 			{
 				system("CLS");
 			}
@@ -109,7 +106,7 @@ namespace Editor
 
 			const std::string musicName = "StardewValley.mp3";
 
-			if (ImGui::Checkbox("Play Music", &myMusicIsActive))
+			if (ImGui::Checkbox("Play Music##SettingWindow", &myMusicIsActive))
 			{
 				if (myMusicIsActive == true)
 				{
@@ -125,7 +122,7 @@ namespace Editor
 			ImGui::Text(musicNameAsText.c_str());
 
 			float musicVolume = audioManager.GetMusicVolume();
-			if (ImGui::DragFloat("Music Volume", &musicVolume, 0.01f, 0.0f, 1.0f))
+			if (ImGui::DragFloat("Music Volume##SettingWindow", &musicVolume, 0.01f, 0.0f, 1.0f))
 			{
 				audioManager.ChangeMusicVolume(musicVolume);
 			}
@@ -199,7 +196,7 @@ namespace Editor
 
 	void SettingsWindow::ToggleConsole()
 	{
-		if (ImGui::Checkbox("Show Console", &myConsoleIsOpen))
+		if (ImGui::Checkbox("Show Console##SettingWindow", &myConsoleIsOpen))
 		{
 			HWND consoleWindow = GetConsoleWindow();
 
@@ -210,11 +207,21 @@ namespace Editor
 		}
 	}
 
+	void SettingsWindow::ToggleUsingPBR(Graphics::GraphicsEngine* aGraphicsEngine)
+	{
+		bool isUsingPBR = aGraphicsEngine->IsUsingPBR();
+
+		if (ImGui::Checkbox("PBR Render##SettingWindow", &isUsingPBR))
+		{
+			aGraphicsEngine->SetUsingPBR(isUsingPBR);
+		}
+	}
+
 	void SettingsWindow::ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
 		bool vsync = aGraphicsEngine->IsVSyncActive();
 
-		if (ImGui::Checkbox("VSync", &vsync))
+		if (ImGui::Checkbox("VSync##SettingWindow", &vsync))
 		{
 			aGraphicsEngine->SetVSync(vsync);
 		}
@@ -249,7 +256,7 @@ namespace Editor
 			windowSizeAsChar.push_back(string.c_str());
 		}
 
-		if (ImGui::Combo("WindowSize", &mySelectedWindowSize, windowSizeAsChar.data(), static_cast<int>(myWindowSizes.size())))
+		if (ImGui::Combo("WindowSize##SettingWindow", &mySelectedWindowSize, windowSizeAsChar.data(), static_cast<int>(myWindowSizes.size())))
 		{
 			const auto currentWindowSize = Global::GetWindowSize();
 
@@ -282,7 +289,7 @@ namespace Editor
 		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::WireframeNoCulling)] = "WireframeNoCulling";
 		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::FrontFaceCulling)] = "FrontFaceCulling";
 
-		if (ImGui::Combo("RasterizerState", &mySelectedRasterizerState, rasterizerStates.data(), static_cast<int>(rasterizerStates.size())))
+		if (ImGui::Combo("RasterizerState##SettingWindow", &mySelectedRasterizerState, rasterizerStates.data(), static_cast<int>(rasterizerStates.size())))
 		{
 			Global::GetGraphicsEngine()->SetRasterizerState(static_cast<Graphics::eRasterizerState>(mySelectedRasterizerState));
 		}
@@ -299,7 +306,7 @@ namespace Editor
 		static int selectedStyle = 0;
 
 		ImGui::SetNextItemWidth(200);
-		if (ImGui::Combo("Editor Style##SettingTool", &selectedStyle, editorStyles.data(), static_cast<int>(editorStyles.size())))
+		if (ImGui::Combo("Editor Style##SettingWindow", &selectedStyle, editorStyles.data(), static_cast<int>(editorStyles.size())))
 		{
 			switch (selectedStyle)
 			{
@@ -363,7 +370,7 @@ namespace Editor
 		{
 			ImGui::SetNextItemWidth(200);
 
-			if (ImGui::Combo("FPS Cap", &selectedFPSLevelCap, fpsCapAsConstChar.data(), static_cast<int>(fpsCapAsConstChar.size())))
+			if (ImGui::Combo("FPS Cap##SettingWindow", &selectedFPSLevelCap, fpsCapAsConstChar.data(), static_cast<int>(fpsCapAsConstChar.size())))
 			{
 				if (selectedFPSLevelCap == 1)
 					aGraphicsEngine->SetVSync(true);
@@ -394,7 +401,7 @@ namespace Editor
 
 		ImGui::SetNextItemWidth(200);
 
-		if (ImGui::Combo("Cursors##SettingTool", &selectedCursor, cursors.c_str()))
+		if (ImGui::Combo("Cursors##SettingWindow", &selectedCursor, cursors.c_str()))
 		{
 			Global::SetCustomCursor(cursorNames[selectedCursor]);
 		}

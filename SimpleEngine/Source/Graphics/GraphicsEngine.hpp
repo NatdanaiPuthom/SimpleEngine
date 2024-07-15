@@ -35,10 +35,6 @@ namespace Graphics
 		bool BeginFrame();
 		void EndFrame();
 
-		void ClearAllRenderTargets();
-
-		bool IsVSyncActive() const;
-
 		void ApplyAmbientAndDirectionalLightDeferred(const eRenderTargetType aRenderTargetType);
 		void ApplyPostProcessing(const eRenderTargetType aRenderTargetType);
 		void ApplyBloom();
@@ -46,44 +42,44 @@ namespace Graphics
 		void RenderFullScreenQuad();
 		void RenderFullScreenCopy(const eRenderTargetType aRenderTargetType);
 
-		void AddPointLight(const PointLightData& aPointLightData);
+		void ClearAllRenderTargets();
 
+		void AddPointLight(const PointLightData& aPointLightData);
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 
 		//TO-DO(v10.0.3): Fix this properly. This quick fix right now
 		void UpdateLightBuffer(const size_t aLightIndex);
 
+		bool IsUsingPBR() const;
+		bool IsVSyncActive() const;
 	public:
-		void SetGlobalGraphicsEngineToThis();
-		void SetDirectionalLightDirection(const Math::Vector3f& aDirection);
-		void SetDirectionalLightColor(const Math::Vector4f& aColor);
-		void SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity);
-		void SetUseToneMapping(const bool aShouldUseToneMapping);
-		void SetUseBloom(const bool aShouldUseBloom);
-		void SetBloomPixelThreshold(const float aValue);
-		void SetSaturation(const float aValue);
+		void SetToDefaultCamera();
+		void SetBloom(const float aValue);
 		void SetExposure(const float aValue);
 		void SetContrast(const float aValue);
+		void SetGlobalGraphicsEngineToThis();
+		void SetSaturation(const float aValue);
 		void SetBlackPoint(const float aValue);
-		void SetBloom(const float aValue);
-		void SetTint(const Math::Vector3f& aColor);
+		void SetUsingPBR(const bool aUsingPBR);
 		void SetVSync(const bool aShouldTurnOn);
+		void SetTint(const Math::Vector3f& aColor);
+		void SetUseBloom(const bool aShouldUseBloom);
+		void SetBloomPixelThreshold(const float aValue);
+		void SetCamera(std::shared_ptr<Camera> aCamera);
 		void SetFPSLevelCap(const unsigned int aCapLevel);
-
-		//TO-DO(v10.0.4): Fix some of states not working since I switched to deferred rendering
-		void SetRasterizerState(const eRasterizerState aRasterizerState);
-
 		void SetBlendState(const eBlendState aBlendState);
-		void SetDepthStencilState(const eDepthStencilState aDepthStencilState);
 		void SetSamplerState(const eSamplerState aSamplerState);
+		void SetUseToneMapping(const bool aShouldUseToneMapping);
+		void SetDirectionalLightColor(const Math::Vector4f& aColor);
+		void SetRasterizerState(const eRasterizerState aRasterizerState);
+		void SetDirectionalLightDirection(const Math::Vector3f& aDirection);
+		void SetDepthStencilState(const eDepthStencilState aDepthStencilState);
+		void SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity);
+		void SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer = nullptr);
 
 		//NOTE(v9.37.0?): Call SetWindowSizeNextFrame instead.
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
-
-		void SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer = nullptr);
-		void SetCamera(std::shared_ptr<Camera> aCamera);
-		void SetToDefaultCamera();
 	public:
 		std::vector<RenderTarget>& GetRenderTargets(const eRenderTargetType aRenderTargetType);
 
@@ -208,5 +204,6 @@ namespace Graphics
 
 		unsigned int myFPSLevelCap;
 		bool myVSync;
+		bool myIsUsingPBR;
 	};
 }

@@ -52,6 +52,5 @@ namespace ECS
 	private:
 		std::vector<StaticModelToRender> myStaticModelToRender;
 		std::vector<AnimatedModelToRender> myAnimatedModelToRender;
-		bool myIsUsingPBR;
 	};
 }
