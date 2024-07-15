@@ -66,6 +66,19 @@ namespace Drawer
 		RenderModel(aTransformMatrix, aMesh, context);
 	}
 
+	void Renderer::RenderUnlitStaticAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const
+	{
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		ID3D11DeviceContext* context = graphicsEngine->GetContext().Get();
+
+		graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default)->BindOnlyThisPixelShader(context);
+		aAnimationPlayerComponent->shader->BindOnlyThisVertexShader(context);
+		aMeshComponent->textures[Graphics::Global_Slot_Albedo]->Bind(context);
+
+		UpdateJointTransforms(aAnimationPlayerComponent->jointMatrices);
+		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
+	}
+
 	void Renderer::RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const
 	{
 		TransformBufferData objectBuffer = {};
@@ -89,15 +102,7 @@ namespace Drawer
 	{
 		ID3D11DeviceContext* context = Global::GetGraphicsEngine()->GetContext().Get();
 
-		JointsBufferData boneBufferData = {};
-
-		for (size_t i = 0; i < Graphics::Global_Max_Joints; ++i)
-		{
-			boneBufferData.bonesTransform[i] = aAnimationPlayerComponent->jointMatrices[i];;
-		}
-
-		myJointBuffer->Bind(myJointBuffer->GetSlot());
-		myJointBuffer->Update(sizeof(JointsBufferData), &boneBufferData);
+		UpdateJointTransforms(aAnimationPlayerComponent->jointMatrices);
 
 		aAnimationPlayerComponent->shader->BindThisShader(context);
 		BindTextures(aMeshComponent, context);
@@ -184,5 +189,18 @@ namespace Drawer
 				aContext->PSSetShaderResources(static_cast<unsigned int>(i), 1, nullview);
 			}
 		}
+	}
+
+	void Renderer::UpdateJointTransforms(const Math::Matrix4x4f* aJointMatrices) const
+	{
+		JointsBufferData boneBufferData = {};
+
+		for (size_t i = 0; i < Graphics::Global_Max_Joints; ++i)
+		{
+			boneBufferData.bonesTransform[i] = aJointMatrices[i];
+		}
+
+		myJointBuffer->Bind(myJointBuffer->GetSlot());
+		myJointBuffer->Update(sizeof(JointsBufferData), &boneBufferData);
 	}
 }

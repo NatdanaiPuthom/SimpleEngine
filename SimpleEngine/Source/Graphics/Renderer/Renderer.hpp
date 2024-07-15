@@ -36,6 +36,7 @@ namespace Drawer
 		void RenderPBRAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const;
 
 		void RenderUnlitStaticModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTexture) const;
+		void RenderUnlitStaticAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const;
 
 		void RenderLine(const Drawer::Line& aLine) const;
 		void RenderLine(const std::vector<Drawer::Line>& aLines) const;
@@ -44,6 +45,7 @@ namespace Drawer
 	private:
 		void RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const;
 		void BindTextures(const ECS::MeshComponent* aMeshComponent, ID3D11DeviceContext* aContext) const;
+		void UpdateJointTransforms(const Math::Matrix4x4f* aJointMatrices) const;
 	private:
 		const bool CreateObjectBuffer();
 		const bool CreateBoneBuffer();

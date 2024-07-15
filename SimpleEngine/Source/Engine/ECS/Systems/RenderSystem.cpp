@@ -9,6 +9,7 @@
 namespace ECS
 {
 	RenderSystem::RenderSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
+		, myIsUsingPBR(true)
 	{
 	}
 
@@ -37,17 +38,50 @@ namespace ECS
 
 			if (animated != nullptr && animated->skeleton != nullptr && animated->shader != nullptr)
 			{
-				renderer->RenderPBRAnimatedModel(transform, mesh, animated);
+				if (myIsUsingPBR == true)
+				{
+					renderer->RenderPBRAnimatedModel(transform, mesh, animated);
+				}
+				else
+				{
+					myAnimatedModelToRender.emplace_back(AnimatedModelToRender(transform, mesh, animated)); //NOTE(v11.3.2): Because deferred rendering so it has to be rendered after lightning pass, it works but may need to refactor in future
+				}
 			}
 			else
 			{
-				renderer->RenderPBRStaticModel(transform, mesh);
+				if (myIsUsingPBR == true)
+				{
+					renderer->RenderPBRStaticModel(transform, mesh);
+				}
+				else
+				{
+					myStaticModelToRender.emplace_back(StaticModelToRender(transform, mesh)); //NOTE(v11.3.2): Because deferred rendering so it has to be rendered after lightning pass, it works but may need to refactor in future
+				}
 			}
 		}
 	}
 
 	void RenderSystem::LateRender()
 	{
+		const Drawer::Renderer* renderer = Global::GetRenderer();
+
+		for (size_t i = 0; i < myStaticModelToRender.size(); ++i)
+		{
+			const TransformComponent* transform = myStaticModelToRender[i].transformComponent;
+			const MeshComponent* mesh = myStaticModelToRender[i].meshComponent;
+			renderer->RenderUnlitStaticModel(transform->transform.GetMatrix(), mesh->mesh, mesh->shader, mesh->textures[Graphics::Global_Slot_Albedo]);
+		}
+
+		for (size_t i = 0; i < myAnimatedModelToRender.size(); ++i)
+		{
+			const TransformComponent* transform = myAnimatedModelToRender[i].transformComponent;
+			const MeshComponent* mesh = myAnimatedModelToRender[i].meshComponent;
+			const AnimationComponent* animated = myAnimatedModelToRender[i].animationComponent;
+			renderer->RenderUnlitStaticAnimatedModel(transform, mesh, animated);
+		}
+
+		myStaticModelToRender.clear();
+		myAnimatedModelToRender.clear();
 	}
 
 	std::unique_ptr<System> RenderSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
