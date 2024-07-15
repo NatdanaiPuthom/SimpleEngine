@@ -664,7 +664,7 @@ namespace SCR
 			{
 				Node& node = ScriptProxy::GetNodeRef(*nodeRef.nodeGraph, nodeRef.nodeID);
 
-				std::vector<PinID>& pinIDs = TernaryFlowType(aFlowType, node.inputPins, node.outputPins);
+				std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.inputPins, node.outputPins);
 				const PinID createdPinID = InternalModifier::CreatePin(*nodeRef.nodeGraph, nodeRef.nodeID, createdPinTypeID);
 
 				pinIDs.push_back(createdPinID);
@@ -680,7 +680,7 @@ namespace SCR
 			PinTypeManager& pinTypeManager = Global::GetPinTypeManager();
 
 			NodeType& nodeType = nodeTypeManager.GetNodeType(aNodeTypeID);
-			std::vector<PinTypeID>& pinTypeIDs = TernaryFlowType(aFlowType, nodeType.nodeRecipe.inputPinTypeIDs, nodeType.nodeRecipe.outputPinTypeIDs);
+			std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, nodeType.nodeRecipe.inputPinTypeIDs, nodeType.nodeRecipe.outputPinTypeIDs);
 			const PinTypeID oldPinTypeID = pinTypeIDs.at(anIndex);
 			const PinType& oldPinType = pinTypeManager.GetPinType(oldPinTypeID);
 
@@ -693,7 +693,7 @@ namespace SCR
 			{
 				Node& node = ScriptProxy::GetNodeRef(*nodeRef.nodeGraph, nodeRef.nodeID);
 
-				std::vector<PinID>& pinIDs = TernaryFlowType(aFlowType, node.inputPins, node.outputPins);
+				std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.inputPins, node.outputPins);
 				const PinID createdPinID = InternalModifier::CreatePin(*nodeRef.nodeGraph, nodeRef.nodeID, newPinTypeID);
 				pinIDs.at(anIndex) = createdPinID;
 			}
@@ -703,7 +703,7 @@ namespace SCR
 		{
 			NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID);
 
-			std::vector<PinTypeID>& pinTypeIDs = TernaryFlowType(aFlowType, nodeType.nodeRecipe.inputPinTypeIDs, nodeType.nodeRecipe.outputPinTypeIDs);
+			std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, nodeType.nodeRecipe.inputPinTypeIDs, nodeType.nodeRecipe.outputPinTypeIDs);
 
 			assert(anIndex < pinTypeIDs.size());
 
@@ -713,7 +713,7 @@ namespace SCR
 			{
 				Node& node = ScriptProxy::GetNodeRef(*nodeRef.nodeGraph, nodeRef.nodeID);
 
-				std::vector<PinID>& pinIDs = TernaryFlowType(aFlowType, node.inputPins, node.outputPins);
+				std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.inputPins, node.outputPins);
 				pinIDs.erase(pinIDs.begin() + anIndex);
 			}
 		}
@@ -773,7 +773,7 @@ namespace SCR
 
 			AddPinToNodeType(aDataTypeID, function.GetCallerNodeTypeID(), aFlowType, aPinName);
 
-			const NodeTypeID inputOutputNodeTypeID = TernaryFlowType(aFlowType, function.GetInputNodeTypeID(), function.GetOutputNodeTypeID());
+			const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.GetInputNodeTypeID(), function.GetOutputNodeTypeID());
 			AddPinToNodeType(aDataTypeID, inputOutputNodeTypeID, InvertFlowType(aFlowType), aPinName);
 		}
 
@@ -783,17 +783,17 @@ namespace SCR
 
 			SetPinAtIndexNodeType(function.GetCallerNodeTypeID(), anIndex, aDataTypeID, aFlowType);
 
-			const NodeTypeID inputOutputNodeTypeID = TernaryFlowType(aFlowType, function.GetInputNodeTypeID(), function.GetOutputNodeTypeID());
+			const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.GetInputNodeTypeID(), function.GetOutputNodeTypeID());
 			SetPinAtIndexNodeType(inputOutputNodeTypeID, anIndex, aDataTypeID, InvertFlowType(aFlowType));
 		}
 
 		void DeletePinAtIndexFunction(const FunctionID aFunctionID, const size_t anIndex, const eFlowType aFlowType)
 		{
-			Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionID);
+			const Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionID);
 
 			DeletePinAtIndexNodeType(function.GetCallerNodeTypeID(), anIndex, aFlowType);
 
-			const NodeTypeID inputOutputNodeTypeID = TernaryFlowType(aFlowType, function.GetInputNodeTypeID(), function.GetOutputNodeTypeID());
+			const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.GetInputNodeTypeID(), function.GetOutputNodeTypeID());
 			DeletePinAtIndexNodeType(inputOutputNodeTypeID, anIndex, InvertFlowType(aFlowType));
 		}
 

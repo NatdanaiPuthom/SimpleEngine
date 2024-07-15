@@ -145,11 +145,9 @@ namespace SCR
 		template<MemSizeLessEqual<Capacity> T, typename... Args>
 		T& Allocate(Args&&... aArgs)
 		{
-			void* currentMemory = AllocateSize(sizeof(T));
-			//void* currentMemory = (&myBuffer[0]) + myCurrentSize;
-			new (currentMemory) T(std::forward<Args>(aArgs)...);
-
-			//myCurrentSize += sizeof(T);
+			void* currentMemory = GetCurrentPtr();
+			AllocateSize(sizeof(T));
+			::new (currentMemory) T(std::forward<Args>(aArgs)...);
 
 			T* value = reinterpret_cast<T*>(currentMemory);
 
@@ -160,29 +158,9 @@ namespace SCR
 			return *value;
 		}
 
-		void* AllocateSize(size_t aSize)
+		void AllocateSize(size_t aSize)
 		{
-			void* currentMemory = (&myBuffer[0]) + myCurrentSize;
 			myCurrentSize += aSize;
-
-			return currentMemory;
-		}
-
-		template<MemSizeLessEqual<Capacity> T, typename... Args>
-		T& EmplaceAllocate(Args&&... args)
-		{
-			void* currentMemory = (&myBuffer[0]) + myCurrentSize;
-			new (currentMemory) T(std::forward<Args>(args)...);
-
-			myCurrentSize += sizeof(T);
-
-			T* value = reinterpret_cast<T*>(currentMemory);
-
-			if constexpr (!std::is_fundamental_v<T>)
-			{
-				myMemoryObjects.emplace_back(value);
-			}
-			return *value;
 		}
 
 		size_t SizeLeft() const
@@ -190,14 +168,24 @@ namespace SCR
 			return Capacity - myCurrentSize;
 		}
 
-		void* Data()
+		void* GetDataPtr()
 		{
 			return &myBuffer[0];
 		}
 
-		const void* Data() const
+		const void* GetDataPtr() const
 		{
 			return &myBuffer[0];
+		}
+
+		void* GetCurrentPtr()
+		{
+			return (&myBuffer[0]) + myCurrentSize;
+		}
+
+		const void* GetCurrentPtr() const
+		{
+			return (&myBuffer[0]) + myCurrentSize;
 		}
 	private:
 
@@ -221,7 +209,7 @@ namespace SCR
 		MemoryArena(const MemoryArena& aOther);
 		MemoryArena(MemoryArena&&) noexcept = default;
 		MemoryArena& operator=(const MemoryArena& aOther);
-		MemoryArena& operator=(MemoryArena&&) = default;
+		MemoryArena& operator=(MemoryArena&&) noexcept = default;
 
 
 		template<MemSizeLessEqual<BufferCapacity> T, typename... Args>
@@ -305,7 +293,10 @@ namespace SCR
 		{
 			AllocateNewBuffer();
 		}
-		return GetCurrentBuffer().AllocateSize(aSize);
+		MemoryBuffer& buffer = GetCurrentBuffer();
+		void* dataPtr = buffer.GetCurrentPtr();
+		buffer.AllocateSize(aSize);
+		return dataPtr;
 	}
 
 	template<size_t BufferCapacity>
@@ -314,14 +305,12 @@ namespace SCR
 		for (size_t i = 0; i < aPrevious.myMemoryBuffers.size(); ++i)
 		{
 			const std::unique_ptr<MemoryBuffer>& buffer = aPrevious.myMemoryBuffers[i];
-			size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->Data());
+			const size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->GetDataPtr());
 			if (ptrDiff < BufferCapacity)
 			{
-				return reinterpret_cast<void*>(reinterpret_cast<size_t>(myMemoryBuffers[i]->Data()) + ptrDiff);
-
+				return reinterpret_cast<void*>(reinterpret_cast<size_t>(myMemoryBuffers[i]->GetDataPtr()) + ptrDiff);
 			}
 		}
-
 		return nullptr;
 	}
 
@@ -332,11 +321,10 @@ namespace SCR
 		for (size_t i = 0; i < myMemoryBuffers.size(); ++i)
 		{
 			const std::unique_ptr<MemoryBuffer>& buffer = myMemoryBuffers[i];
-			size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->Data());
+			const size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->GetDataPtr());
 			if (ptrDiff < BufferCapacity)
 			{
-				return static_cast<T>(i * BufferCapacity + (reinterpret_cast<size_t>(myMemoryBuffers[i]->Data()) + ptrDiff));
-
+				return static_cast<T>(i * BufferCapacity + (reinterpret_cast<size_t>(myMemoryBuffers[i]->GetDataPtr()) + ptrDiff));
 			}
 		}
 

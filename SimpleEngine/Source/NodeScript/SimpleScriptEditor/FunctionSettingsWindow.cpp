@@ -66,14 +66,14 @@ namespace Editor
 		const SCRIPT::NodeTypeID callerNodeTypeID = function.GetCallerNodeTypeID();
 		const SCRIPT::NodeType& callerNodeType = nodeTypeManager.GetNodeType(callerNodeTypeID);
 
-		const std::vector<SCRIPT::PinTypeID>& pinTypeIDs = SCRIPT::TernaryFlowType(aFlowType, callerNodeType.nodeRecipe.inputPinTypeIDs, callerNodeType.nodeRecipe.outputPinTypeIDs);
+		const std::vector<SCRIPT::PinTypeID>& pinTypeIDs = SCRIPT::SelectByFlowType(aFlowType, callerNodeType.nodeRecipe.inputPinTypeIDs, callerNodeType.nodeRecipe.outputPinTypeIDs);
 		for (size_t i = 0; i < pinTypeIDs.size(); ++i)
 		{
 			const SCRIPT::PinTypeID pinTypeID = pinTypeIDs[i];
 			const SCRIPT::PinType& inputPinType = pinTypeManager.GetPinType(pinTypeID);
 			const SCRIPT::DataType* pinTypeDataType = dataTypeManager.Find(inputPinType.dataTypeID);
 			constexpr static const char* comboLabel1 = "Data Type##FunctionSettings_";
-			const std::string inputOutputLabel = SCRIPT::TernaryFlowType(aFlowType, std::string("Input"), std::string("Output"));
+			const std::string inputOutputLabel = SCRIPT::SelectByFlowType(aFlowType, std::string("Input"), std::string("Output"));
 			const std::string comboLabel = comboLabel1 + inputOutputLabel + std::to_string(i);
 			if (ImGui::BeginCombo(comboLabel.c_str(), pinTypeDataType->name.c_str()))
 			{

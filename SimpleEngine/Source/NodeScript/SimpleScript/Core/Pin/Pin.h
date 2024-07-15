@@ -5,16 +5,15 @@
 namespace SCR
 {
 
-	struct Pin
+	struct Pin final
 	{
 		NodeID nodeID;
 		PinTypeID typeID;
 		void* dataPtr;
 		std::vector<PinID> connectedPinIDs;
-		std::vector<Pin> subPins;
 	};
 
-	struct Link
+	struct Link final
 	{
 		PinID inputPinID = InvalidID<PinID>();
 		PinID outputPinID = InvalidID<PinID>();

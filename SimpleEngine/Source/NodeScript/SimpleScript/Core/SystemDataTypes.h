@@ -10,6 +10,34 @@ bool Edit(bool& aValue);
 void Save(nlohmann::json& aJson, const bool& aValue);
 void Load(const nlohmann::json& aJson, bool& aValue);
 
+bool Edit(int& aValue);
+void Save(nlohmann::json& aJson, const int& aValue);
+void Load(const nlohmann::json& aJson, int& aValue);
+
+bool Edit(float& aValue);
+void Save(nlohmann::json& aJson, const float& aValue);
+void Load(const nlohmann::json& aJson, float& aValue);
+
+bool Edit(UINT& aValue);
+void Save(nlohmann::json& aJson, const UINT& aValue);
+void Load(const nlohmann::json& aJson, UINT& aValue);
+
+bool Edit(UINT64& aValue);
+void Save(nlohmann::json& aJson, const UINT64& aValue);
+void Load(const nlohmann::json& aJson, UINT64& aValue);
+
+bool Edit(char& aValue);
+void Save(nlohmann::json& aJson, const char& aValue);
+void Load(const nlohmann::json& aJson, char& aValue);
+
+
+namespace std
+{
+	bool Edit(std::string& aValue);
+	void Save(nlohmann::json& aJson, const std::string& aValue);
+	void Load(const nlohmann::json& aJson, std::string& aValue);
+}
+
 template<typename T>
 static bool EditVectorImpl(std::vector<T>& aData, bool(*anEditFunc)(T&))
 {
@@ -144,5 +172,20 @@ namespace std
 
 namespace SCR
 {
+
+	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.f, 0.f, 0.f));
+	FLY_DATATYPE(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f));
+
+	using String = std::string;
+
+
+	FLY_DATATYPE(bool, eNodeOperatorTrait::All, Color(1.f, 0.1f, 0.1f));
+	FLY_DATATYPE(int, eNodeOperatorTrait::All, Color(0.f, 0.2f, 1.f));
+	FLY_DATATYPE(float, eNodeOperatorTrait::All, Color(0.55f, 0.2f, 0.65f));
+	FLY_DATATYPE(UINT, eNodeOperatorTrait::All, Color(0.f, 0.4f, 1.f));
+	FLY_DATATYPE(UINT64, eNodeOperatorTrait::All, Color(0.1f, 0.5f, 1.f));
+	FLY_DATATYPE(char, eNodeOperatorTrait::All, Color(0.2f, 0.7f, 0.4f));
+	FLY_DATATYPE(String, eNodeOperatorTrait::All, Color(0.3f, 0.8f, 0.2f));
+
 	void Test123();
 }

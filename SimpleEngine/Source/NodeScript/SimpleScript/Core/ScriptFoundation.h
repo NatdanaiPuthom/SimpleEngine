@@ -6,7 +6,6 @@
 
 namespace SCR
 {
-	class Function;
 	class NodeExecutor;
 	class TypeManager;
 	class Script;
@@ -56,13 +55,9 @@ namespace SCR
 
 		MemoryPool myMemoryPool;
 		std::unique_ptr<TypeManager> myTypeManager;
-
-		std::unique_ptr<NodeExecutor> myNodeExecutor;
-
-		std::vector<std::unique_ptr<Function>> myGlobalFunctions;
-
 		std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Script>>> myScripts;
 
+		std::unique_ptr<NodeExecutor> myNodeExecutor;
 		CallStack myCallStack;
 
 	};

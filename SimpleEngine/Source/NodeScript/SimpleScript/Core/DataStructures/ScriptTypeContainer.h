@@ -15,9 +15,9 @@ namespace SCR
 		public:
 			Iterator(const IDType anID, T* aObject, const TypeContainer& aContainer)
 				: myTuple(Tuple{ anID, aObject, nullptr })
-				, myContainer(&aContainer)
+				, myContainer(aContainer)
 			{
-				if (anID < myContainer->myObjects.size())
+				if (anID < myContainer.myObjects.size())
 				{
 					std::get<2>(myTuple) = &aContainer.myToTypeConverter(*aObject);
 				}
@@ -38,10 +38,10 @@ namespace SCR
 				T*& object = std::get<1>(myTuple);
 				Type*& objectType = std::get<2>(myTuple);
 				++id;
-				if (id < myContainer->myObjects.size())
+				if (id < myContainer.myObjects.size())
 				{
-					object = &myContainer->myObjects[id];
-					objectType = &myContainer->myToTypeConverter(*object);
+					object = &myContainer.myObjects[id];
+					objectType = &myContainer.myToTypeConverter(*object);
 				}
 				return *this;
 			}
@@ -60,7 +60,7 @@ namespace SCR
 		private:
 
 			Tuple myTuple;
-			const TypeContainer* myContainer;
+			const TypeContainer myContainer;
 		};
 
 

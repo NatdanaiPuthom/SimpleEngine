@@ -33,7 +33,13 @@ namespace SCR
 	template<typename T, eNodeOperatorTrait Operators, template<typename> typename... Templates>
 	inline void DataTypeRegistry::Register(const std::string & aName, const Color & aColor)
 	{
-		Global::GetDataTypeManager().Register<T>(aName, aColor);
+		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
+
+		if (dataTypeManager.HasRegisteredType<T>())
+		{
+			return;
+		}
+		dataTypeManager.Register<T>(aName, aColor);
 
 		RegisterTemplateTypes<T, Templates...>(aName);
 		RegisterGetterNodeType<T>();
