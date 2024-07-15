@@ -22,33 +22,6 @@ namespace ECS
 
 	void RenderSystem::Update()
 	{
-		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
-		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-
-		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
-		{
-			MeshComponent* mesh = entities[i]->GetComponent<ECS::MeshComponent>();
-
-			if (mesh == nullptr)
-			{
-				continue;
-			}
-
-			if (mesh->mesh == nullptr)
-			{
-				mesh->mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
-			}
-
-			if (mesh->textures[0] == nullptr)
-			{
-				mesh->textures[0] = graphicsEngine->GetTexture(Graphics::eTextureType::Default).get();
-			}
-
-			if (mesh->shader == nullptr)
-			{
-				mesh->shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
-			}
-		}
 	}
 
 	void RenderSystem::Render()
@@ -64,10 +37,6 @@ namespace ECS
 			const TransformComponent* transform = entity->GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
 
 			if (mesh == nullptr || transform == nullptr)
-			{
-				continue;
-			}
-			else if (mesh->textures[0] == nullptr)
 			{
 				continue;
 			}

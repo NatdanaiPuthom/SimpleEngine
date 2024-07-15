@@ -31,10 +31,9 @@ namespace ECS
 		void EarlyUpdate();
 		void FixedUpdate();
 		void LateUpdate();
+		void LateRender();
 
 		void UpdateRenderSystem();
-		void RenderPointLights();
-		void RenderSkyBoxAndDirectionalLight();
 
 		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
 

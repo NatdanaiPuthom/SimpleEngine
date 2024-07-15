@@ -80,8 +80,7 @@ namespace Simpleton
 
 	void SceneManager::LateRender()
 	{
-		myECSs[myCurrentSceneInfo->id].RenderPointLights();
-		myECSs[myCurrentSceneInfo->id].RenderSkyBoxAndDirectionalLight();
+		myECSs[myCurrentSceneInfo->id].LateRender();
 	}
 
 	void SceneManager::ChangeScene(const std::string& aSceneName)

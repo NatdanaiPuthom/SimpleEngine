@@ -19,6 +19,7 @@ namespace ECS
 		virtual void EarlyUpdate() {};
 		virtual void FixedUpdate() {};
 		virtual void LateUpdate() {};
+		virtual void LateRender() {};
 
 		virtual std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const = 0;
 

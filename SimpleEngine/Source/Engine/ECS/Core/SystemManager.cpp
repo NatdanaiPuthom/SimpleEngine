@@ -69,6 +69,17 @@ namespace ECS
 		myRenderSystem->LateUpdate();
 	}
 
+	void SystemManager::LateRender()
+	{
+		for (const auto& [key, system] : mySystems)
+		{
+			system->LateRender();
+		}
+
+		mySkyBoxAndDirectionalLightSystem->Render();
+		mySkyBoxAndDirectionalLightSystem->RenderSkyBoxAndDirectionalLight();
+	}
+
 	void SystemManager::UpdateRenderSystem()
 	{
 		mySkyBoxAndDirectionalLightSystem->Update();
@@ -83,15 +94,5 @@ namespace ECS
 		{
 			system->Render();
 		}
-	}
-
-	void SystemManager::RenderPointLights()
-	{
-		mySkyBoxAndDirectionalLightSystem->Render();
-	}
-
-	void SystemManager::RenderSkyBoxAndDirectionalLight()
-	{
-		mySkyBoxAndDirectionalLightSystem->RenderSkyBoxAndDirectionalLight();
 	}
 }

@@ -21,8 +21,6 @@ namespace ECS
 		void Update();
 		void UpdateRenderSystem();
 		void Render();
-		void RenderPointLights();
-		void RenderSkyBoxAndDirectionalLight();
 
 		template<typename T>
 		void AddSystem(EntityComponentSystem* aEntityComponentSystem);
@@ -31,6 +29,7 @@ namespace ECS
 		void EarlyUpdate();
 		void FixedUpdate();
 		void LateUpdate();
+		void LateRender();
 	private:
 		explicit SystemManager(EntityComponentSystem* aEntityComponentSystem);
 		~SystemManager();

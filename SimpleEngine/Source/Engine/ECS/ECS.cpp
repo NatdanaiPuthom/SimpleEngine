@@ -55,14 +55,9 @@ namespace ECS
 		mySystemManager.LateUpdate();
 	}
 
-	void EntityComponentSystem::RenderPointLights()
+	void EntityComponentSystem::LateRender()
 	{
-		mySystemManager.RenderPointLights();
-	}
-
-	void EntityComponentSystem::RenderSkyBoxAndDirectionalLight()
-	{
-		mySystemManager.RenderSkyBoxAndDirectionalLight();
+		mySystemManager.LateRender();
 	}
 
 	Entity EntityComponentSystem::CreateEntity(const EntityID aEntityID)
