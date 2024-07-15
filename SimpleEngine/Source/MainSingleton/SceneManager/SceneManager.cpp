@@ -14,6 +14,9 @@ namespace Simpleton
 		, myCurrentSceneInfo(nullptr)
 		, myIsPlaying(false)
 	{
+#ifdef _SIMPLE
+		myIsPlaying = true;
+#endif
 	}
 
 	SceneManager::~SceneManager()
