@@ -102,30 +102,7 @@ namespace Editor
 			ImGui::Separator();
 			ImGui::Dummy(ImVec2(0, heightPadding));
 
-			Simpleton::AudioManager& audioManager = MainSingleton::GetAudioManager();
-
-			const std::string musicName = "StardewValley.mp3";
-
-			if (ImGui::Checkbox("Play Music##SettingWindow", &myMusicIsActive))
-			{
-				if (myMusicIsActive == true)
-				{
-					audioManager.PlayMusic(musicName);
-				}
-				else
-				{
-					audioManager.StopAllMusic();
-				}
-			}
-
-			const std::string musicNameAsText = "Music: " + musicName;
-			ImGui::Text(musicNameAsText.c_str());
-
-			float musicVolume = audioManager.GetMusicVolume();
-			if (ImGui::DragFloat("Music Volume##SettingWindow", &musicVolume, 0.01f, 0.0f, 1.0f))
-			{
-				audioManager.ChangeMusicVolume(musicVolume);
-			}
+			ShowMusic();
 
 			ImGui::Dummy(ImVec2(0, heightPadding));
 			ImGui::Separator();
@@ -237,6 +214,67 @@ namespace Editor
 	{
 		std::string fps = "FPS: " + std::to_string(Global::GetFPS());
 		ImGui::Text(fps.c_str());
+	}
+
+	void SettingsWindow::ShowMusic()
+	{
+		Simpleton::AudioManager& audioManager = MainSingleton::GetAudioManager();
+
+		const std::string musicName = audioManager.GetMainMusicName();
+
+		if (ImGui::Checkbox("Play Music##SettingWindow", &myMusicIsActive))
+		{
+			if (myMusicIsActive == true)
+			{
+				audioManager.PlayMusic(musicName);
+			}
+			else
+			{
+				audioManager.StopAllMusic();
+			}
+		}
+
+		char buffer[256];
+		memset(buffer, '\0', sizeof(buffer));
+		strncpy_s(buffer, musicName.c_str(), sizeof(buffer));
+		buffer[sizeof(buffer) - 1] = '\0';
+
+		ImGui::AlignTextToFramePadding();
+
+		ImGui::Text("Music:");
+		ImGui::SameLine();
+		ImGui::PushItemWidth(200);
+
+		ImGui::BeginDisabled();
+		if (ImGui::InputTextWithHint("##MusicSettingWindow", "Drag Drop Music File", buffer, sizeof(buffer)))
+		{
+		}
+		ImGui::EndDisabled();
+
+		if (const ImGuiPayload* currentPayload = ImGui::GetDragDropPayload())
+		{
+			const std::string payloadData = reinterpret_cast<const char*>(currentPayload->Data);
+			const std::string extension = SimpleUtilities::FileManager::GetFileExtension(payloadData);
+
+			if (extension == ".mp3")
+			{
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
+					{
+						const std::string newMusicName = SimpleUtilities::FileManager::GetFileName(payloadData);
+						audioManager.SetMainMusic(newMusicName);
+					}
+					ImGui::EndDragDropTarget();
+				}
+			}
+		}
+
+		float musicVolume = audioManager.GetMusicVolume();
+		if (ImGui::DragFloat("Music Volume##SettingWindow", &musicVolume, 0.01f, 0.0f, 1.0f))
+		{
+			audioManager.ChangeMusicVolume(musicVolume);
+		}
 	}
 
 	void SettingsWindow::AdjustWindowSize()

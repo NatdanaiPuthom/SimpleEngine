@@ -31,10 +31,13 @@ namespace Simpleton
 		SoundEngine::Init(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_AUDIO));
 
 		//Music
-		SoundEngine::LoadSoundFile("StardewValley.mp3", false, false, true);
+		SoundEngine::LoadSoundFile("StardewValley.mp3", false, false, true); 
+		SoundEngine::LoadSoundFile("Ocarina of Time.mp3", false, false, true);
 
 		//SFX
 		//SoundEngine::LoadSoundFile("");
+
+		myMainMusicName = "Ocarina of Time.mp3";
 	}
 
 	void AudioManager::PlayMusic(std::string aFileName)
@@ -116,6 +119,11 @@ namespace Simpleton
 		return mySFXVolume;
 	}
 
+	const std::string& AudioManager::GetMainMusicName() const
+	{
+		return myMainMusicName;
+	}
+
 	void AudioManager::ChangeSFXVolume(const float aVolume)
 	{
 		mySFXVolume = aVolume;
@@ -139,6 +147,13 @@ namespace Simpleton
 		{
 			SoundEngine::SetVolume(static_cast<int>(myMusicChannels[i].myChannelIndex), myMusicVolume);
 		}
+	}
+
+	void AudioManager::SetMainMusic(const std::string& aMusicFileName)
+	{
+		StopMusic(myMainMusicName);
+		myMainMusicName = aMusicFileName;
+		PlayMusic(myMainMusicName);
 	}
 
 	void AudioManager::Update()

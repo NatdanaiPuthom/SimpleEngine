@@ -38,21 +38,24 @@ namespace Simpleton
 		void StopSFX(std::string aFileName);
 		void StopMusic(std::string aFileName);
 		void StopAllMusic();
-
+	public:
 		//Range: 0 - 1f.
 		void ChangeSFXVolume(float aVolume);
 
 		//Range: 0 - 1f.
 		void ChangeMusicVolume(float aVolume);
 
+		void SetMainMusic(const std::string& aMusicFileName);
+	public:
 		float GetMusicVolume() const;
 		float GetSFXVolume() const;
-
+		const std::string& GetMainMusicName() const;
 	private:
 		AudioManager();
 		~AudioManager();
 	private:
 		std::string myFilePathRoot;
+		std::string myMainMusicName;
 
 		float mySFXVolume;
 		float myMusicVolume;
