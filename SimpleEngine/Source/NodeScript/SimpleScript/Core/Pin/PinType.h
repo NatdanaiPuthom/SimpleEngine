@@ -43,7 +43,7 @@ namespace SCR
 	std::string GetPinLabel(const PinType& aPinType);
 
 	template<typename T>
-	decltype(auto) TernaryFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
+	decltype(auto) SelectByFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
 	{
 		return aFlowType == eFlowType::Input ? aInputValue : aOutputValue;
 	}

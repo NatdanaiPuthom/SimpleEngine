@@ -27,84 +27,83 @@ void Load(const nlohmann::json& aJson, bool& aValue)
 }
 
 // Int
-static bool Edit(int& aValue)
+bool Edit(int& aValue)
 {
 	return ImGui::DragInt("##", &aValue);
 }
 
-static void Save(nlohmann::json& aJson, const int& aValue)
+void Save(nlohmann::json& aJson, const int& aValue)
 {
 	aJson["Value"] = aValue;
 }
 
-static void Load(const nlohmann::json& aJson, int& aValue)
+void Load(const nlohmann::json& aJson, int& aValue)
 {
 	aValue = aJson["Value"];
 }
 
 // Float
-static bool Edit(float& aValue)
+bool Edit(float& aValue)
 {
 	return ImGui::DragFloat("##", &aValue);
 }
 
-static void Save(nlohmann::json& aJson, const float& aValue)
+void Save(nlohmann::json& aJson, const float& aValue)
 {
 	aJson["Value"] = aValue;
 }
 
-
-static void Load(const nlohmann::json& aJson, float& aValue)
+void Load(const nlohmann::json& aJson, float& aValue)
 {
 	aValue = aJson["Value"];
 }
 
 // Unsigned Int
-static bool Edit(unsigned int& aValue)
+bool Edit(UINT& aValue)
 {
 	int intValue = static_cast<int>(aValue);
 	if (ImGui::DragInt("##", &intValue, 1.f, 0, INT_MAX))
 	{
-		aValue = static_cast<unsigned int>(intValue);
+		aValue = static_cast<UINT>(intValue);
 		return true;
 	}
 	return false;
 }
 
-static void Save(nlohmann::json& aJson, const unsigned int& aValue)
+void Save(nlohmann::json& aJson, const UINT& aValue)
 {
 	aJson["Value"] = aValue;
 }
 
-static void Load(const nlohmann::json& aJson, unsigned int& aValue)
+void Load(const nlohmann::json& aJson, UINT& aValue)
 {
 	aValue = aJson["Value"];
 }
 
 // Unsigned Long Long
-static bool Edit(unsigned long long& aValue)
+bool Edit(UINT64& aValue)
 {
 	int intValue = static_cast<int>(aValue);
 	if (ImGui::DragInt("##", &intValue, 1.f, 0, INT_MAX))
 	{
-		aValue = static_cast<unsigned long long>(intValue);
+		aValue = static_cast<UINT64>(intValue);
 		return true;
 	}
 	return false;
 }
 
-static void Save(nlohmann::json& aJson, const unsigned long long& aValue)
+void Save(nlohmann::json& aJson, const UINT64& aValue)
 {
 	aJson["Value"] = aValue;
 }
 
-static void Load(const nlohmann::json& aJson, unsigned long long& aValue)
+void Load(const nlohmann::json& aJson, UINT64& aValue)
 {
 	aValue = aJson["Value"];
 }
 
 // Char
-static bool Edit(char& aValue)
+bool Edit(char& aValue)
 {
 	char c[2] = { aValue, '\0' };
 
@@ -116,13 +115,13 @@ static bool Edit(char& aValue)
 	return false;
 }
 
-static void Save(nlohmann::json& aJson, const char& aValue)
+void Save(nlohmann::json& aJson, const char& aValue)
 {
 	int i = aValue;
 	aJson["char"] = i;
 }
 
-static void Load(const nlohmann::json& aJson, char& aValue)
+void Load(const nlohmann::json& aJson, char& aValue)
 {
 	int i = aJson["char"];
 	aValue = (char)i;
@@ -131,7 +130,7 @@ static void Load(const nlohmann::json& aJson, char& aValue)
 namespace std
 {
 
-	static bool Edit(std::string& aValue)
+	bool Edit(std::string& aValue)
 	{
 		char buffer[32]{};
 		strcpy_s(buffer, aValue.c_str());
@@ -145,12 +144,12 @@ namespace std
 
 	}
 
-	static void Save(nlohmann::json& aJson, const std::string& aValue)
+	void Save(nlohmann::json& aJson, const std::string& aValue)
 	{
 		aJson["Value"] = aValue;
 	}
 
-	static void Load(const nlohmann::json& aJson, std::string& aValue)
+	void Load(const nlohmann::json& aJson, std::string& aValue)
 	{
 		aValue = aJson["Value"];
 	}
@@ -160,18 +159,7 @@ namespace std
 namespace SCR
 {
 
-	using String = std::string;
-
-	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.f, 0.f, 0.f));
-	FLY_DATATYPE(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f));
-
-	FLY_DATATYPE(bool, eNodeOperatorTrait::All, Color(1.f, 0.1f, 0.1f));
-	FLY_DATATYPE(int, eNodeOperatorTrait::All, Color(0.f, 0.2f, 1.f));
-	FLY_DATATYPE(float, eNodeOperatorTrait::All, Color(0.55f, 0.2f, 0.65f));
-	FLY_DATATYPE(UINT, eNodeOperatorTrait::All, Color(0.f, 0.4f, 1.f));
-	FLY_DATATYPE(UINT64, eNodeOperatorTrait::All, Color(0.1f, 0.5f, 1.f));
-	FLY_DATATYPE(char, eNodeOperatorTrait::All, Color(0.2f, 0.7f, 0.4f));
-	FLY_DATATYPE(String, eNodeOperatorTrait::All, Color(0.3f, 0.8f, 0.2f));
+	
 
 	void Test123()
 	{
