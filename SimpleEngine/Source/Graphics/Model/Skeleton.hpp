@@ -11,7 +11,7 @@ namespace Graphics
 	struct ModelSpacePose
 	{
 		Math::Matrix4x4f jointTransforms[Global_Max_Joints];
-		size_t count;
+		size_t count = 0;
 	private:
 		const char padding[56] = "Never in my life would I cry this much! But believe!!!\0";
 	};
