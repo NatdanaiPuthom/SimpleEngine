@@ -16,14 +16,18 @@ namespace ECS
 	{
 	}
 
-	void RenderSystem::Update()
-	{
-	}
-
 	void RenderSystem::Render()
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+
+		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
+
+		if (entitiesWithSkyBoxComponent.empty())
+		{
+			static ID3D11ShaderResourceView* nullview[1] = { nullptr };
+			graphicsEngine->GetContext()->PSSetShaderResources(static_cast<unsigned int>(Graphics::Global_Slot_CubeMap), 1, nullview);
+		}
 
 		if (entitiesWithDirectionalLightComponent.empty() == false)
 		{
@@ -40,7 +44,7 @@ namespace ECS
 			graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
 		}
 
-		const Drawer::Renderer* renderer = Global::GetRenderer();
+		const Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
 		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
@@ -122,6 +126,7 @@ namespace ECS
 			const ECS::Entity skyBox = myEntityComponentSystem->GetEntity(*entitiesWithSkyBoxComponent.begin());
 			SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
 			skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
+
 			renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
 		}
 
