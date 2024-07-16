@@ -124,4 +124,42 @@ namespace SimpleUtilities
 
 		return json;
 	}
+
+	const bool FileManager::IsJSONDataDifferentFromPropertyData(const std::vector<ECS::ComponentProperty>& aComponentProperties, nlohmann::json& aPropertyJson)
+	{
+		if (aComponentProperties.size() == aPropertyJson.size())
+		{
+			return false;
+		}
+
+		auto propertyItems = aPropertyJson.items();
+
+		std::vector<std::string> itemKeys;
+		std::vector<std::string> allPropertyKeys;
+
+		for (auto& keyName : propertyItems)
+		{
+			itemKeys.emplace_back(keyName.key());
+		}
+
+		for (auto& keyName : aComponentProperties)
+		{
+			allPropertyKeys.emplace_back(keyName.name);
+		}
+
+		const std::vector<std::string> missingKeys = SimpleUtilities::ReturnDifferenceBetweenVectors(itemKeys, allPropertyKeys);
+		nlohmann::json allProperties = aPropertyJson;
+
+		for (size_t h = 0; h < missingKeys.size(); ++h)
+		{
+			if (allProperties.contains(missingKeys[h]))
+			{
+				allProperties.erase(missingKeys[h]);
+			}
+		}
+
+		aPropertyJson = allProperties;
+
+		return true;
+	}
 }

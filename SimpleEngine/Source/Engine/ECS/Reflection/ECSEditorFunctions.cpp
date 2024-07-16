@@ -238,7 +238,8 @@ namespace ECS
 				{
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
 					{
-						aMesh = Global::GetModelFactory()->LoadMesh(payloadData);
+						const std::string meshRelativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(SimpleUtilities::CheckAndReturnAsAbsolutePath(payloadData));
+						aMesh = Global::GetModelFactory()->LoadMesh(meshRelativePath);
 					}
 					ImGui::EndDragDropTarget();
 				}
