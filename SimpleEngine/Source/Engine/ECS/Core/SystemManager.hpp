@@ -36,7 +36,6 @@ namespace ECS
 	private:
 		std::unordered_map<SystemHashCode, std::shared_ptr<System>> mySystems;
 		std::shared_ptr<RenderLightSystem> mySkyBoxAndDirectionalLightSystem;
-		std::shared_ptr<RenderSystem> myRenderSystem;
 	};
 
 	template<typename T>
