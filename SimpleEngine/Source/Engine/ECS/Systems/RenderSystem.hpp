@@ -45,6 +45,7 @@ namespace ECS
 		explicit RenderSystem(EntityComponentSystem* aEntityComponentSystem);
 		~RenderSystem() override;
 
+		void Update() override;
 		void Render() override;
 		void LateRender() override;
 

@@ -7,9 +7,8 @@ namespace ECS
 {
 	SystemManager::SystemManager(EntityComponentSystem* aEntityComponentSystem)
 	{
-		mySkyBoxAndDirectionalLightSystem = std::make_shared<RenderLightSystem>(aEntityComponentSystem);
-
 		AddSystem<RenderSystem>(aEntityComponentSystem);
+		AddSystem<RenderLightSystem>(aEntityComponentSystem);
 		AddSystem<AnimationSystem>(aEntityComponentSystem);
 	}
 
@@ -23,8 +22,6 @@ namespace ECS
 		{
 			system->Init();
 		}
-
-		mySkyBoxAndDirectionalLightSystem->Init();
 	}
 
 	void SystemManager::Update()
@@ -41,8 +38,6 @@ namespace ECS
 		{
 			system->EarlyUpdate();
 		}
-
-		mySkyBoxAndDirectionalLightSystem->EarlyUpdate();
 	}
 
 	void SystemManager::FixedUpdate()
@@ -51,8 +46,6 @@ namespace ECS
 		{
 			system->FixedUpdate();
 		}
-
-		mySkyBoxAndDirectionalLightSystem->FixedUpdate();
 	}
 
 	void SystemManager::LateUpdate()
@@ -61,8 +54,6 @@ namespace ECS
 		{
 			system->LateUpdate();
 		}
-
-		mySkyBoxAndDirectionalLightSystem->LateUpdate();
 	}
 
 	void SystemManager::LateRender()
@@ -71,11 +62,6 @@ namespace ECS
 		{
 			system->LateRender();
 		}
-	}
-
-	void SystemManager::UpdateRenderSystem()
-	{
-		mySkyBoxAndDirectionalLightSystem->Update();
 	}
 
 	void SystemManager::Render()

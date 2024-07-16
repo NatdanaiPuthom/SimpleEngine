@@ -16,6 +16,27 @@ namespace ECS
 	{
 	}
 
+	void RenderSystem::Update()
+	{
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
+
+		if (entitiesWithDirectionalLightComponent.empty() == false)
+		{
+			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
+			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
+			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
+
+			graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
+			graphicsEngine->SetDirectionalLightColor({ 1.0f, 1.0f, 1.0f,1.0f }); //TO-DO(v11.1.0): add color to the component to retrieve data instead of hardcoded
+		}
+		else
+		{
+			graphicsEngine->SetDirectionalLightDirection({ 0.0f,0.0f, -1.0f });
+			graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
+		}
+	}
+
 	void RenderSystem::Render()
 	{
 		const Drawer::Renderer* renderer = Global::GetRenderer();
@@ -73,8 +94,9 @@ namespace ECS
 
 	void RenderSystem::RenderUnlitModels()
 	{
-		const Drawer::Renderer* renderer = Global::GetRenderer();
-		const Graphics::Shader* unlitShader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Unlit_Default).get();
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		const Drawer::Renderer* renderer = graphicsEngine->GetRenderer();;
+		const Graphics::Shader* unlitShader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 
 		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
@@ -97,47 +119,14 @@ namespace ECS
 		if (entitiesWithSkyBoxComponent.empty() == false)
 		{
 			const ECS::Entity skyBox = myEntityComponentSystem->GetEntity(*entitiesWithSkyBoxComponent.begin());
-			const SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
+			SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
+			skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
 			renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
 		}
 
 		if (entitiesWithDirectionalLightComponent.empty() == false)
 		{
 			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
-			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
-			renderer->RenderUnlitStaticModel(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
-		}
-
-		myStaticModelToRender.clear();
-		myAnimatedModelToRender.clear();
-
-		//if (FindAndSetSkyBox())
-		//{
-		//	const Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-		//	const ECS::Entity skyboxEntity = myEntityComponentSystem->GetEntity(myEntityWithSkyBoxID);
-		//	SkyBoxComponent* skyBoxComponent = skyboxEntity->GetComponent<SkyBoxComponent>();
-		//	skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
-		//}
-
-		//if (FindAndSetDirectionalLight())
-		//{
-		//	Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-		//	const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(myEntityWithDirectionalLightID);
-		//	const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
-		//	const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
-		//	graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
-		//	graphicsEngine->SetDirectionalLightColor({ 1.0f, 1.0f, 1.0f,1.0f }); //TO-DO(v11.1.0): add color to the component to retrieve data instead of hardcoded
-		//}
-		//else
-		//{
-		//	Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-		//	graphicsEngine->SetDirectionalLightDirection({ 0.0f,0.0f, -1.0f });
-		//	graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
-		//}
-
-		/*if (myEntityWithDirectionalLightID != (static_cast<size_t>(-1)))
-		{
-			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(myEntityWithDirectionalLightID);
 			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
@@ -153,6 +142,10 @@ namespace ECS
 
 			renderer->RenderSphere(sphere);
 			renderer->RenderLine(line);
-		}*/
+			renderer->RenderUnlitStaticModel(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
+		}
+
+		myStaticModelToRender.clear();
+		myAnimatedModelToRender.clear();
 	}
 }

@@ -31,11 +31,6 @@ namespace ECS
 		mySystemManager.Update();
 	}
 
-	void EntityComponentSystem::UpdateRenderSystem()
-	{
-		mySystemManager.UpdateRenderSystem();
-	}
-
 	void EntityComponentSystem::Render()
 	{
 		mySystemManager.Render();

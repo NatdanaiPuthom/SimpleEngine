@@ -45,8 +45,6 @@ namespace Simpleton
 		{
 			myECSs[myCurrentSceneInfo->id].Update();
 		}
-
-		myECSs[myCurrentSceneInfo->id].UpdateRenderSystem();
 	}
 
 	void SceneManager::Render()

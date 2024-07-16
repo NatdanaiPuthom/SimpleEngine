@@ -33,24 +33,6 @@ namespace ECS
 			graphicsEngine->AddPointLight(pointLight1);
 		}
 
-		/*if (ImGui::Begin("DirectionalLight"))
-		{
-			Math::Transform& transform = directionalLightComponent->transform;
-			Math::Vector3f position = transform.GetPosition();
-			Math::Vector3f rotation = transform.GetRotation();
-
-			if (ImGui::DragFloat3("Position", &position.x))
-			{
-				transform.SetPosition(position);
-			}
-
-			if (ImGui::DragFloat3("Rotation", &rotation.x))
-			{
-				transform.SetRotation(rotation);
-			}
-		}
-		ImGui::End();*/
-
 		/*
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
@@ -68,6 +50,72 @@ namespace ECS
 	}
 
 	void RenderLightSystem::Render()
+	{
+		//Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		//ID3D11DeviceContext* context = graphicsEngine->GetContext().Get(); context;
+		//const Drawer::Renderer* renderer = Global::GetRenderer();
+
+		//std::vector<Graphics::RenderTarget>& gBuffers = graphicsEngine->GetRenderTargets(Graphics::eRenderTargetType::GBuffer);
+
+		//ID3D11ShaderResourceView* shaderResources[5] = {};
+
+		//for (size_t i = 0; i < gBuffers.size(); ++i)
+		//{
+		//	shaderResources[i] = gBuffers[i].shaderResourceView.Get();
+		//}
+
+		//context->PSSetShaderResources(5, 5, shaderResources);
+
+		//const Graphics::Mesh* mesh = Global::GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Sphere);
+		//std::shared_ptr<const Graphics::Shader> shader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::PointLight);
+		//std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(Graphics::eTextureType::Default);
+		//Math::Transform transform;
+
+		//const Graphics::eRasterizerState previousRasterizerState = graphicsEngine->GetCurrentRasterizerState();
+
+		//graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
+		//graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Greater);
+		//graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
+
+		//PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
+
+		//graphicsEngine->UpdateLightBuffer(static_cast<size_t>(-1)); //TO-DO(v11.0.6): Refactor somehow, maybe seperate directionalLight buffer from pointlights?
+
+		//for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
+		//{
+		//	graphicsEngine->UpdateLightBuffer(i);
+
+		//	transform.SetPosition(pointLightBuffer[i].position);
+		//	transform.SetScale(pointLightBuffer[i].radius);
+
+		//	renderer->RenderUnlitStaticModel(transform.GetMatrix(), mesh, shader.get(), texture.get());
+		//}
+
+		//graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Less_Equal);
+		//graphicsEngine->SetRasterizerState(previousRasterizerState);
+		//graphicsEngine->SetBlendState(Graphics::eBlendState::Disabled);
+
+		//ID3D11ShaderResourceView* nullSRVs[5] = { NULL };
+		//context->PSSetShaderResources(5, 5, nullSRVs);
+
+		//if (Editor::EditorEngine::myStaticShouldRenderDebugLines == true)
+		//{
+		//	Drawer::Sphere pointLightDebugSpheres;
+		//	pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+		//	for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
+		//	{
+		//		pointLightDebugSpheres.position = pointLightBuffer[i].position;
+		//		pointLightDebugSpheres.radius = pointLightBuffer[i].radius;
+		//		renderer->RenderSphere(pointLightDebugSpheres);
+
+		//		pointLightDebugSpheres.radius = 0.1f;
+		//		renderer->RenderSphere(pointLightDebugSpheres);
+		//	}
+		//}
+	}
+
+	void RenderLightSystem::LateRender()
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		ID3D11DeviceContext* context = graphicsEngine->GetContext().Get(); context;

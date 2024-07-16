@@ -19,7 +19,6 @@ namespace ECS
 
 		void Init();
 		void Update();
-		void UpdateRenderSystem();
 		void Render();
 
 		template<typename T>
@@ -35,7 +34,6 @@ namespace ECS
 		~SystemManager();
 	private:
 		std::unordered_map<SystemHashCode, std::shared_ptr<System>> mySystems;
-		std::shared_ptr<RenderLightSystem> mySkyBoxAndDirectionalLightSystem;
 	};
 
 	template<typename T>

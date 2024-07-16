@@ -33,8 +33,6 @@ namespace ECS
 		void LateUpdate();
 		void LateRender();
 
-		void UpdateRenderSystem();
-
 		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
 
 		Entity CreateEntity(const EntityID aEntityID = 0);
