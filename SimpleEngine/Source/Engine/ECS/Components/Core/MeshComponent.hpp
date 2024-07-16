@@ -23,5 +23,5 @@ namespace ECS
 	REGISTER_COMPONENT(MeshComponent);
 	REGISTER_AND_EXPOSE_PROPERTY(&MeshComponent::mesh);
 	REGISTER_AND_EXPOSE_PROPERTY(&MeshComponent::textures);
-	REGISTER_AND_EXPOSE_PROPERTY(&MeshComponent::shader);
+	//REGISTER_AND_EXPOSE_PROPERTY(&MeshComponent::shader);
 }

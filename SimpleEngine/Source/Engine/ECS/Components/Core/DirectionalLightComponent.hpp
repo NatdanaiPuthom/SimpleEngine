@@ -25,5 +25,5 @@ namespace ECS
 	REGISTER_AND_EXPOSE_PROPERTY(&DirectionalLightComponent::transform);
 	REGISTER_AND_EXPOSE_PROPERTY(&DirectionalLightComponent::mesh);
 	REGISTER_AND_EXPOSE_PROPERTY(&DirectionalLightComponent::texture);
-	REGISTER_AND_EXPOSE_PROPERTY(&DirectionalLightComponent::shader);
+	//REGISTER_AND_EXPOSE_PROPERTY(&DirectionalLightComponent::shader);
 }
