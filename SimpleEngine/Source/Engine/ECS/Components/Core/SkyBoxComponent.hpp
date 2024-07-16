@@ -23,8 +23,8 @@ namespace ECS
 {
 	REGISTER_COMPONENT(SkyBoxComponent);
 
-	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::transform, false, false);
+	//REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::transform, false, false);
 	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::mesh);
 	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::texture);
-	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::shader);
+	//REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::shader);
 }

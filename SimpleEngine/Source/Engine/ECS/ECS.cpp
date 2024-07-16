@@ -1,6 +1,7 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/ECS/Systems/RenderSystem.hpp"
+#include "Engine/Debugger/Console/Console.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
@@ -185,7 +186,11 @@ namespace ECS
 				nlohmann::json componentPropertiesJSON = componentDataJSON["Properties"];
 
 				void* componentPointer = aECS.GetComponentPointerByComponentID(componentID);
-				shouldUpdateJSON = SimpleUtilities::FileManager::IsJSONDataDifferentFromPropertyData(componentProperties, componentPropertiesJSON);
+
+				if (SimpleUtilities::FileManager::IsJSONDataDifferentFromPropertyData(componentProperties, componentPropertiesJSON) == true)
+				{
+					shouldUpdateJSON = true;
+				}
 
 				LoadComponentData(componentPropertiesJSON, componentProperties, componentRegistry, componentPointer);
 			}
@@ -194,6 +199,8 @@ namespace ECS
 		if (shouldUpdateJSON)
 		{
 			SaveData(aECS, aFileName);
+			Simple::Console::Print(SimpleUtilities::ConvertFilePathToPrettyName(aFileName).c_str(), Simple::ConsoleTextColor::Red, false);
+			Simple::Console::Print(" has been updated due to changes in the source code", Simple::ConsoleTextColor::White, true);
 		}
 	}
 
