@@ -18,6 +18,10 @@ namespace ECS
 
 	void RenderSystem::Update()
 	{
+	}
+
+	void RenderSystem::Render()
+	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 
@@ -35,10 +39,7 @@ namespace ECS
 			graphicsEngine->SetDirectionalLightDirection({ 0.0f,0.0f, -1.0f });
 			graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
 		}
-	}
 
-	void RenderSystem::Render()
-	{
 		const Drawer::Renderer* renderer = Global::GetRenderer();
 		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
 
