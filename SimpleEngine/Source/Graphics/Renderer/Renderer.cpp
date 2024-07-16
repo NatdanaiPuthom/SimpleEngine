@@ -79,6 +79,44 @@ namespace Drawer
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
+	void Renderer::RenderStaticSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const
+	{
+		const std::vector<Graphics::Joint>& joints = aAnimationPlayerComponent->skeleton->myJoints;
+		const Math::Vector3f position = aTransformComponent->transform.GetPosition();
+		const Math::Vector3f scale = aTransformComponent->transform.GetScale();
+
+		std::vector<Drawer::Line> staticSkeletonLines(joints.size());
+
+		Drawer::Line line;
+		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+		Drawer::Sphere sphere;
+		sphere.radius = 0.05f;
+
+		for (size_t index = 0; index < joints.size(); ++index)
+		{
+			Graphics::Joint joint = joints[index];
+
+			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joint.myBindPoseInverse);
+
+			sphere.position = boneWorldTransform.GetPosition() + position;
+
+			mySphereDrawer->Render(sphere);
+
+			if (joint.myParent == -1)
+				continue;
+
+			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(joints[joint.myParent].myBindPoseInverse);
+
+			line.startPosition = boneWorldTransform.GetPosition() * scale + position;
+			line.endPosition = boneWorldTransformNext.GetPosition() * scale + position;
+
+			staticSkeletonLines[index] = line;
+		}
+
+		myLineDrawer->RenderInstance(staticSkeletonLines);
+	}
+
 	void Renderer::RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const
 	{
 		TransformBufferData objectBuffer = {};

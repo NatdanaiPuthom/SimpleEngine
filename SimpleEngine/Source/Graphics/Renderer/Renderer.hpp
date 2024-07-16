@@ -40,6 +40,8 @@ namespace Drawer
 
 		void RenderLine(const Drawer::Line& aLine) const;
 		void RenderLine(const std::vector<Drawer::Line>& aLines) const;
+		void RenderStaticSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const;
+
 		void RenderSphere(const Drawer::Sphere& aSphere) const;
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
 	private:
