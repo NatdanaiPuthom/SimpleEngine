@@ -45,13 +45,8 @@ namespace ECS
 		}
 
 		const Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
-
-		if (renderer->GetShouldRenderMesh() == false)
-		{
-			return;
-		}
-
 		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
+		const bool shouldRenderMesh = renderer->GetShouldRenderMesh();
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
@@ -70,6 +65,13 @@ namespace ECS
 
 			if (animated != nullptr && animated->skeleton != nullptr && animated->shader != nullptr)
 			{
+				renderer->RenderStaticSkeletonLines(transform, animated);
+
+				if (shouldRenderMesh == false)
+				{
+					continue;
+				}
+
 				if (isUsingPBR == true)
 				{
 					renderer->RenderPBRAnimatedModel(transform, mesh, animated);
@@ -81,6 +83,11 @@ namespace ECS
 			}
 			else
 			{
+				if (shouldRenderMesh == false)
+				{
+					continue;
+				}
+
 				if (isUsingPBR == true)
 				{
 					renderer->RenderPBRStaticModel(transform, mesh);
