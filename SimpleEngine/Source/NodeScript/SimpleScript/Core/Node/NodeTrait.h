@@ -6,24 +6,26 @@ namespace SCR
 	enum class eNodeTrait : size_t
 	{
 		None = 0,
-		HasImplicitFlow = 1 << 0,
-		TakesExecutionContext = 1 << 1,
-		Invalid = 1 << 2,
-		Getter = 1 << 3,
-		Setter = 1 << 4,
-		Operator = 1 << 5,
-		CustomEvent = 1 << 6,
-		HasFlow = 1 << 7,
-		TakesInternalExecutionContext = 1 << 8,
+		Invalid = 1 << 0,
+		Getter = 1 << 1,
+		Setter = 1 << 2,
+		Operator = 1 << 3,
+		Wildcard = 1 << 4,
+		CustomEvent = 1 << 5,
+		HasFlow = 1 << 6,
+		HasImplicitFlow = 1 << 7,
+		TakesExecutionContext = 1 << 8,
+		TakesInternalExecutionContext = 1 << 9,
 		NonTrivial = Invalid | Getter | Setter | Operator | CustomEvent,
 		Accessor = Getter | Setter,
+		All = Invalid | Getter | Setter | Operator | CustomEvent | HasFlow | TakesExecutionContext | TakesInternalExecutionContext | HasImplicitFlow
 	};
 
-	enum class eCreationNodeTrait : unsigned int
+	/*enum class eCreationNodeTrait : unsigned int
 	{
 		HasImplicitFlow,
 		TakesExecutionContext
-	};
+	};*/
 
 	enum class eNodeOperatorTrait : unsigned int
 	{

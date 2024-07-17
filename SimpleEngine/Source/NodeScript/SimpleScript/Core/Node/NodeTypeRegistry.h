@@ -28,23 +28,21 @@ namespace SCR
 		return NodeTypeManager::GetInstance().Register(NodeType{ std::move(aNodeRecipe), aNodeName });
 	}
 
-	template<eNodeTrait Traits = eNodeTrait::None, eNodeOperatorTrait OperatorTrait = eNodeOperatorTrait::None, typename OutputType, typename... InputTypes>
-	inline NodeTypeID RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
+	template<eNodeTrait Traits = eNodeTrait::None, typename OutputType, typename... InputTypes>
+	inline NodeTypeID RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, const NodeCreationData& aCreationData = NodeCreationData())
 	{
-		return RegisterInternal(FilterNodeType<Traits>(aFunction, NodeCreationData{ .operatorTrait = OperatorTrait }), aNodeName, aDescription);
+		return RegisterInternal(FilterNodeType<Traits>(aFunction, aCreationData), aNodeName, aCreationData.desc);
 	}
 
 	template<typename T>
 	inline T GetterNode(const InternalExecutionContext* aContext)
 	{
-		const NodeID nodeID = aContext->GetNodeData().nodeRef.nodeID;
+		const NodeRef& nodeRef = aContext->GetNodeData().nodeRef;
 		const VariableManager& variableManager = ScriptProxy::GetVariableManager(*aContext->script);
 
-		VarID varID = variableManager.GetVariableIDByNodeID(nodeID);
+		const VarID varID = variableManager.GetVariableIDByNodeRef(nodeRef);
 
-		//const void* runtimeDataPtr = ScriptProxy::GetVariable(*aContext->script, varID).runtimeDataPtr;
 		const void* runtimeDataPtr = aContext->scriptInstance->myVariableManagerInstance.myVariables[varID].runtimeDataPtr;
-		//MemoryPool& memoryPool = ScriptProxy::GetVariableMemoryPool(*aContext->script);
 		const T& output = *reinterpret_cast<const T*>(runtimeDataPtr);
 		return output;
 	}
@@ -52,38 +50,36 @@ namespace SCR
 	template<typename T>
 	inline void SetterNode(const InternalExecutionContext* aContext, const T& aValue)
 	{
-		const NodeID nodeID = aContext->GetNodeData().nodeRef.nodeID;
-		VariableManager& variableManager = ScriptProxy::GetVariableManager(*aContext->script);
+		const NodeRef& nodeRef = aContext->GetNodeData().nodeRef;
+		const VariableManager& variableManager = ScriptProxy::GetVariableManager(*aContext->script);
 
-		VarID varID = variableManager.GetVariableIDByNodeID(nodeID);
+		const VarID varID = variableManager.GetVariableIDByNodeRef(nodeRef);
 
 		const VariableInstance& variableInstance = aContext->scriptInstance->myVariableManagerInstance.myVariables[varID];
-		//const Variable& variable = ScriptProxy::GetVariable(*aContext->script, varID);
 
 		T& runtimeValue = *reinterpret_cast<T*>(variableInstance.runtimeDataPtr);
-		//T& runtimeValue = *reinterpret_cast<T*>(variable.runtimeDataPtr);
 		runtimeValue = aValue;
 	}
 
-	template<typename T>/* requires IsValidScriptObjectType<T, nlohmann::json> || Fundamental<T>*/
+	template<typename T>
 	inline void RegisterGetterNodeType()
 	{
-		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>, NodeCreationData{}), "Get " + Global::GetDataTypeManager().GetName(typeid(T).hash_code()));
-		NodeTypeManager::GetInstance().SetGetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
+		const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>, NodeCreationData{}), "Get " + Global::GetDataTypeManager().GetName(typeid(T).hash_code()));
+		NodeTypeManager::GetInstance().SetGetterNodeTypeID(GetDataTypeID<T>(), nodeTypeID);
 	}
 
 
-	template<typename T>/* requires IsValidScriptObjectType<T, nlohmann::json> || Fundamental<T>*/
+	template<typename T>
 	inline void RegisterSetterNodeType()
 	{
-		NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>, NodeCreationData{}), "Set " + Global::GetDataTypeManager().GetName(typeid(T).hash_code()));
-		NodeTypeManager::GetInstance().SetSetterNodeTypeID(typeid(T).hash_code(), nodeTypeID);
+		const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>, NodeCreationData{ /*.hasImplicitFlow = true*/ }), "Set " + Global::GetDataTypeManager().GetName(typeid(T).hash_code()));
+		NodeTypeManager::GetInstance().SetSetterNodeTypeID(GetDataTypeID<T>(), nodeTypeID);
 	}
 
 	template<typename T>
 	static T* GetSelfNode(const InternalExecutionContext* aContext)
 	{
-		return (T*)aContext->owner;
+		return reinterpret_cast<T*>(aContext->owner);
 	}
 
 
@@ -94,17 +90,18 @@ namespace SCR
 		template<IsNotVoid OutputType, typename... InputTypes>
 		static void RegisterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, const NodeCreationData& aCreationData = NodeCreationData())
 		{
-			RegisterInternal(FilterNodeType<eNodeTrait::None>(aFunction, aCreationData), aNodeName, aCreationData.desc);
+			RegisterInternal(FilterNodeType(aFunction, aCreationData), aNodeName, aCreationData.desc);
 		}
 
 		template<typename OutputType, typename... InputTypes>
 		static void RegisterFlowNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, const NodeCreationData& aCreationData = NodeCreationData())
 		{
+			//aCreationData.hasImplicitFlow = true;
 			RegisterInternal(FilterNodeType<eNodeTrait::HasImplicitFlow>(aFunction, aCreationData), aNodeName, aCreationData.desc);
 		}
 
 		template<typename ClassType, typename OutputType, typename... InputTypes> requires NoArgsReference<InputTypes...>
-		static void RegisterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aNodeName, const NodeCreationData& aCreationData = NodeCreationData())
+		static void RegisterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeCreationData&& aCreationData = NodeCreationData())
 		{
 			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aCreationData.desc);
 

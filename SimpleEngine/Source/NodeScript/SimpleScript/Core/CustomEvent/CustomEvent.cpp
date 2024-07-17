@@ -35,10 +35,10 @@ namespace SCR
 		return Flow(true);
 	}
 
-	CustomEvent::CustomEvent(const std::string& aName)
+	CustomEvent::CustomEvent(std::string_view aName)
 	{
-		myCallerTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent | eNodeTrait::HasImplicitFlow>(CustomEventCallerNode, "CustomEvent/Call " + aName);
-		myExecutorTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent>(CustomEventExecutorNode, "CustomEvent/" + aName);
+		myCallerTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent | eNodeTrait::HasImplicitFlow>(CustomEventCallerNode, "CustomEvent/Call " + std::string(aName), NodeCreationData{ /*.hasImplicitFlow = true*/ });
+		myExecutorTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent>(CustomEventExecutorNode, "CustomEvent/" + std::string(aName));
 	}
 
 	CustomEvent::~CustomEvent()

@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include "../Node/NodeRef.h"
 
 namespace SCR
 {
@@ -18,7 +19,7 @@ namespace SCR
 
 	template<size_t> class MemoryArena;
 
-	class VariableManager
+	class VariableManager final
 	{
 		friend class ScriptProxy;
 	public:
@@ -32,14 +33,14 @@ namespace SCR
 		VariableManager& operator=(VariableManager&&) = default;
 
 
-		VarID GetVariableIDByNodeID(const NodeID aNodeID) const;
-		std::vector<NodeID> GetNodeIDsByVarID(const VarID aVarID) const;
+		VarID GetVariableIDByNodeRef(const NodeRef& aNodeRef) const;
+		std::vector<NodeRef> GetNodeRefsByVarID(const VarID aVarID) const;
 
 	public:
 
 		std::vector<Variable> myVariables;
 
-		std::unordered_map<NodeID, VarID> myNodeIDToVarID;
+		std::unordered_map<NodeRef, VarID, NodeRefHasher> myNodeRefToVarID;
 
 		std::unique_ptr<MemoryArena<NodeBufferCapacity>> myMemoryArena;
 

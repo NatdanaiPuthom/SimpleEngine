@@ -137,13 +137,13 @@ namespace SCR
 			variableJson["Nodes"] = json::array();
 			json& variableNodesJson = variableJson["Nodes"];
 
-			for (NodeID nodeID : variableManager.GetNodeIDsByVarID(i))
+			for (const NodeRef& nodeRef : variableManager.GetNodeRefsByVarID(i))
 			{
-				const Node& node = ScriptProxy::GetNode(eventGraph, nodeID);
+				const Node& node = ScriptProxy::GetNode(*nodeRef.nodeGraph, nodeRef.nodeID);
 
 				if (!node.isDestroyed)
 				{
-					NodeID cleanNodeID = cleanedNodeIDs.at(nodeID);
+					const NodeID cleanNodeID = cleanedNodeIDs.at(nodeRef.nodeID);
 					variableNodesJson.push_back(cleanNodeID);
 				}
 			}
@@ -268,19 +268,19 @@ namespace SCR
 
 			}
 
-			const json& variableNodesJson = variableJson["Nodes"];
+			/*const json& variableNodesJson = variableJson["Nodes"];
 
-			for (NodeID nodeID : variableNodesJson)
+			for (const NodeID nodeID : variableNodesJson)
 			{
 				if (!failedNodeIDs.contains(nodeID))
 				{
-					InternalModifier::BindVariable(aScript, nodeID, varID, nullptr);
+					InternalModifier::BindVariable(aScript, NodeRef{.nodeID = nodeID, .nodeGraph = , varID, nullptr);
 				}
 				else
 				{
 					std::cout << "Couldn't bind node to variable" << std::endl;
 				}
-			}
+			}*/
 		}
 	}
 

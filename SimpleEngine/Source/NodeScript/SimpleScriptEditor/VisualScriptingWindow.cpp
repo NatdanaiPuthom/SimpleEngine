@@ -1,10 +1,6 @@
 #include "SimpleScriptEditor/VisualScriptingWindow.h"
-#include "SimpleScript/Core/ScriptManager.h"
 #include "SimpleScript/Core/Script.h"
-#include "SimpleScript/Core/Node/NodeTypeRegistry.h"
-#include "SimpleScript/Core/Node/NodeTypeManager.h"
 #include "SimpleScript/Core/DataType/DataTypeManager.h"
-#include "SimpleScript/Core/Node/NodeManager.h"
 #include "SimpleScript/Core/Serialization/ScriptLoader.h"
 #include "SimpleScript/Core/Utilities/ScriptFilter.h"
 #include "SimpleScript/Core/ScriptModifier.h"
@@ -13,6 +9,8 @@
 #include "SimpleScript/Core/ScriptFoundation.h"
 #include "SimpleScript/Core/Instance/ScriptInstance.h"
 #include "SimpleScript/Core/NodeTypes/ExecutionNodes.h"
+#include "SimpleScript/Core/Node/NodeExecutor.h"
+#include "SimpleScript/Core/Global/ScriptGlobal.h"
 
 #include "Editor/Menu/MainMenuBar.hpp" //NOTE(v10.0.2): Remove this once we no longer use static bool of MainMenuBar class
 
@@ -42,7 +40,7 @@ namespace Editor
 
 		ScriptLoader::Clear();
 	}
-	
+
 	NodeContext& VisualScriptingWindow::GetNodeContext()
 	{
 		return myNodeContextHistory.history[myNodeContextHistory.currentIndex];
@@ -53,7 +51,7 @@ namespace Editor
 		return myNodeContextHistory.history[myNodeContextHistory.currentIndex];
 	}
 
-	
+
 
 	void VisualScriptingWindow::SetNodeContext(SCRIPT::NodeGraph& aNodeGraph, SCRIPT::Script* aScript)
 	{
@@ -211,8 +209,8 @@ namespace Editor
 
 				for (const FunctionID memberFunctionID : memberFunctionIDs)
 				{
-					Function& memberFunction = Global::GetNodeTypeManager().GetFunction(memberFunctionID);
-					
+					FunctionView memberFunction(memberFunctionID);
+
 					if (ImGui::Selectable(memberFunction.GetName().c_str(), &memberFunction.GetNodeGraph() == GetNodeContext().nodeGraph))
 					{
 						SetNodeContext(memberFunction.GetNodeGraph(), GetNodeContext().script);
@@ -229,7 +227,7 @@ namespace Editor
 
 			ImGui::End();
 
-			
+
 		}
 
 		ImGui::End();
@@ -252,7 +250,7 @@ namespace Editor
 		ImGui::BeginDisabled(myNodeContextHistory.currentIndex + 1 == myNodeContextHistory.history.size());
 		if (ImGui::ArrowButton("NodeContextHistoryRight", ImGuiDir_Right))
 		{
-			myNodeContextHistory.currentIndex++;	
+			myNodeContextHistory.currentIndex++;
 			UpdateContext();
 		}
 		ImGui::EndDisabled();
@@ -274,7 +272,7 @@ namespace Editor
 	{
 		Script& currentScript = *GetNodeContext().script;
 
-		bool canSave = myCommandTracker->GetUndoSize() == 0;
+		const bool canSave = myCommandTracker->GetUndoSize() == 0;
 
 		ImGui::BeginDisabled(canSave);
 
@@ -396,22 +394,21 @@ namespace Editor
 	{
 		NodeContext& currentNodeContext = GetNodeContext();
 		const Script& currentScript = *GetNodeContext().script;
-		const NodeManager& nodeManager = *GetNodeContext().nodeGraph->myNodeManager;
-		const VariableManager& variableManager = ScriptProxy::GetVariableManager(currentScript);
 
 		ImNodes::BeginNodeEditor();
 
-		// Render nodes
-		for (auto& [nodeID, node, nodeType] : nodeManager)
+		const std::vector<NodeView> nodeViews = Modify::GetNodes(*GetNodeContext().nodeGraph);
+
+		for (const NodeView& nodeView : nodeViews)
 		{
-			if (node->isDestroyed)
+			if (nodeView.IsDestroyed())
 			{
 				continue;
 			}
 
 			ImNodesStyle& style = ImNodes::GetStyle();
 
-			if (nodeType->nodeRecipe.eventID == InvalidID<EventID>())
+			if (nodeView.GetEventID() == InvalidID<EventID>())
 			{
 				style.Colors[ImNodesCol_TitleBar] = ToImGuiColor(Color{ 0.1f, 0.3f, 0.6f, 1.f });
 				style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(Color{ 0.1f, 0.3f, 0.7f, 1.f });
@@ -424,8 +421,8 @@ namespace Editor
 				style.Colors[ImNodesCol_TitleBarSelected] = ToImGuiColor(Color{ 1.f, 0.1f, 0.1f, 1.f });
 			}
 
-			ImNodes::SetNodeGridSpacePos(nodeID, { node->position.x, node->position.y });
-			ImNodes::BeginNode(nodeID);
+			ImNodes::SetNodeGridSpacePos(nodeView.GetID(), ImVec2{ nodeView.GetPosition().x, nodeView.GetPosition().y });
+			ImNodes::BeginNode(nodeView.GetID());
 
 			float nodeNameWidth = 0;
 
@@ -433,17 +430,24 @@ namespace Editor
 
 				ImNodes::BeginNodeTitleBar();
 
-				std::string nodeName = !HasFlag(nodeType->nodeRecipe.traits, eNodeTrait::Accessor)
-					? NodeTypeManager::GetInstance().GetShortName(node->typeID)
-					: HasFlag(nodeType->nodeRecipe.traits, eNodeTrait::Getter)
-					? "Get " + ScriptProxy::GetVariable(currentScript, variableManager.GetVariableIDByNodeID(nodeID)).name
-					: "Set " + ScriptProxy::GetVariable(currentScript, variableManager.GetVariableIDByNodeID(nodeID)).name;
+				std::string nodeLabel;
+
+				if (HasFlag(nodeView.GetTraits(), eNodeTrait::Accessor))
+				{
+					const VarID varID = Modify::GetVarIDByNodeID(nodeView.GetID(), *currentNodeContext.nodeGraph, currentScript);
+					const bool isGetter = HasFlag(nodeView.GetTraits(), eNodeTrait::Getter);
+					const char* const prefixLabel = isGetter ? "Get" : "Set";
+					nodeLabel = prefixLabel + VariableView(varID, currentScript).GetName();
+				}
+				else
+				{
+					nodeLabel = nodeView.GetShortName();
+				}
 
 				if (Global::IsDebugging())
 				{
-					nodeName += ", ID: " + std::to_string(nodeID);
+					nodeLabel += ", ID: " + std::to_string(nodeView.GetID());
 				}
-				std::string nodeLabel = nodeName;
 				ImGui::TextUnformatted(nodeLabel.c_str());
 
 				nodeNameWidth = ImGui::CalcTextSize(nodeLabel.c_str()).x;
@@ -453,13 +457,13 @@ namespace Editor
 
 			ImVec2 cursorPos = ImGui::GetCursorPos();
 
-			float nodeWidthLeft = node->inputPins.empty() ? 0.f : 100.f;
+			const std::vector<PinView> inputPins = nodeView.GetInputPins();
+			float nodeWidthLeft = inputPins.empty() ? 0.f : 100.f;
 
-			for (int i = 0; i < node->inputPins.size(); ++i)
+			for (const PinView& pinView : inputPins)
 			{
-				const PinID pinID = node->inputPins[i];
 
-				std::string pinLabel = GetPinLabel(PinTypeManager::GetPinType(ScriptProxy::GetPin(*GetNodeContext().nodeGraph, pinID).typeID));
+				const std::string& pinLabel = pinView.GetPinTypeName();
 				const float labelWidth = ImGui::CalcTextSize(pinLabel.c_str()).x;
 
 				nodeWidthLeft = std::max(nodeWidthLeft, labelWidth);
@@ -467,10 +471,11 @@ namespace Editor
 
 			float nodeWidthRight = 0.f;
 
-			for (int i = 0; i < node->outputPins.size(); ++i)
+			std::vector<PinView> outputPins = nodeView.GetOutputPins();
+
+			for (const PinView& pinView : outputPins)
 			{
-				const PinID pinID = node->outputPins[i];
-				const std::string& pinLabel = GetPinLabel(PinTypeManager::GetPinType(ScriptProxy::GetPin(*GetNodeContext().nodeGraph, pinID).typeID));
+				const std::string& pinLabel = pinView.GetPinTypeName();
 				const float labelWidth = ImGui::CalcTextSize(pinLabel.c_str()).x;
 
 				nodeWidthRight = std::max(nodeWidthRight, labelWidth);
@@ -484,36 +489,33 @@ namespace Editor
 			}
 
 			// Render input pins
-			for (size_t i = 0; i < node->inputPins.size(); ++i)
+			for (const PinView& inputPinView : inputPins)
 			{
-				const PinID pinID = node->inputPins[i];
-				const Pin& pin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, pinID);
-				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
-				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
-				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinType.dataTypeID)));
+				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(Global::GetDataTypeManager().GetColor(inputPinView.GetDataTypeID())));
+				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(inputPinView.GetDataTypeID())));
 
-				bool shouldBeHighlighted = std::find(currentNodeContext.myPinIDsToHighlight.begin(), currentNodeContext.myPinIDsToHighlight.end(), pinID) != currentNodeContext.myPinIDsToHighlight.end();
+				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinIDsToHighlight.begin(), currentNodeContext.myPinIDsToHighlight.end(), inputPinView.GetID()) != currentNodeContext.myPinIDsToHighlight.end();
 
-				ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
-				ImNodes::BeginInputAttribute(pinID, shape);
+				const ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
+				ImNodes::BeginInputAttribute(inputPinView.GetID(), shape);
 
-				std::string pinLabel = GetPinLabel(pinType);
+				std::string pinLabel = inputPinView.GetPinTypeName();
 				if (!pinLabel.empty())
 				{
 					if (Global::IsDebugging())
 					{
-						pinLabel += ", " + std::to_string(pinID);
+						pinLabel += ", " + std::to_string(inputPinView.GetID());
 					}
 					ImGui::TextUnformatted(pinLabel.c_str());
 				}
 
-				if (pin.connectedPinIDs.empty())
+				if (inputPinView.GetConnectedPinIDs().empty())
 				{
 					const float itemWidth = std::max(20.f, nodeWidthLeft);
 					ImGui::PushItemWidth(itemWidth);
 
-					Modify::EditPin(pinID, *GetNodeContext().nodeGraph, myCommandTracker.get());
+					Modify::EditPin(inputPinView.GetID(), *GetNodeContext().nodeGraph, myCommandTracker.get());
 
 					ImGui::PopItemWidth();
 				}
@@ -527,22 +529,19 @@ namespace Editor
 			ImGui::SetCursorPos(cursorPos);
 
 			// Render output pins
-			for (int i = 0; i < node->outputPins.size(); ++i)
+			for (const PinView& outputPinView : outputPins)
 			{
-				const PinID pinID = node->outputPins[i];
-				const Pin& pin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, pinID);
-				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
 
-				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
-				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinType.dataTypeID)));
+				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(Global::GetDataTypeManager().GetColor(outputPinView.GetDataTypeID())));
+				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(outputPinView.GetDataTypeID())));
 
-				bool shouldBeHighlighted = std::find(currentNodeContext.myPinIDsToHighlight.begin(), currentNodeContext.myPinIDsToHighlight.end(), pinID) != currentNodeContext.myPinIDsToHighlight.end();
+				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinIDsToHighlight.begin(), currentNodeContext.myPinIDsToHighlight.end(), outputPinView.GetID()) != currentNodeContext.myPinIDsToHighlight.end();
 
-				ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
+				const ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
 
-				ImNodes::BeginOutputAttribute(pinID, shape);
+				ImNodes::BeginOutputAttribute(outputPinView.GetID(), shape);
 
-				std::string pinLabel = GetPinLabel(PinTypeManager::GetPinType(pin.typeID));
+				std::string pinLabel = outputPinView.GetPinTypeName();
 
 				if (!pinLabel.empty())
 				{
@@ -551,7 +550,7 @@ namespace Editor
 
 					if (Global::IsDebugging())
 					{
-						pinLabel += ", " + std::to_string(pinID);
+						pinLabel += ", " + std::to_string(outputPinView.GetID());
 					}
 					ImGui::TextUnformatted(pinLabel.c_str());
 				}
@@ -564,28 +563,25 @@ namespace Editor
 			ImNodes::EndNode();
 		}
 
-		// Render links
-		for (LinkID linkID = 0; const Link & link : GetNodeContext().nodeGraph->myLinks)
+		std::vector<LinkView> linkViews = Modify::GetLinks(*currentNodeContext.nodeGraph);
+
+		for (const LinkView& linkView : linkViews)
 		{
-			if (link.isDestroyed)
+			if (linkView.IsDestroyed())
 			{
-				linkID++;
 				continue;
 			}
-			const Pin& pin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, link.inputPinID);
-			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.typeID);
+			const PinView pinView = linkView.GetInputPin();
 
-			ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinType.dataTypeID)));
-			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(Global::GetDataTypeManager().GetSelectionColor(pinType.dataTypeID)));
-			ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinType.dataTypeID)));
+			ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(Global::GetDataTypeManager().GetColor(pinView.GetDataTypeID())));
+			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(Global::GetDataTypeManager().GetSelectionColor(pinView.GetDataTypeID())));
+			ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(Global::GetDataTypeManager().GetHoverColor(pinView.GetDataTypeID())));
 
-			ImNodes::Link(linkID, link.inputPinID, link.outputPinID);
+			ImNodes::Link(linkView.GetID(), linkView.GetInputPin().GetID(), linkView.GetOutputPin().GetID());
 
 			ImNodes::PopColorStyle();
 			ImNodes::PopColorStyle();
 			ImNodes::PopColorStyle();
-
-			linkID++;
 		}
 
 		ImNodes::MiniMap(.2f, ImNodesMiniMapLocation_BottomRight);
@@ -595,7 +591,6 @@ namespace Editor
 	void VisualScriptingWindow::UpdateNodes()
 	{
 		NodeContext& currentNodeContext = GetNodeContext();
-		const NodeManager& nodeManager = *GetNodeContext().nodeGraph->myNodeManager;
 
 		bool dragStarted = ImGui::IsKeyDown(ImGuiKey_MouseLeft) && !myIsDraggingNode;
 		if (dragStarted)
@@ -612,24 +607,24 @@ namespace Editor
 			myIsDraggingNode = false;
 		}
 
-		// Update node positions
-		for (auto& [nodeID, node, nodeType] : nodeManager)
+		std::vector<NodeView> nodeViews = Modify::GetNodes(*currentNodeContext.nodeGraph);
+
+		for (const NodeView& nodeView : nodeViews)
 		{
-			if (node->isDestroyed)
+			if (nodeView.IsDestroyed())
 			{
 				continue;
 			}
 
-			ScriptVec2 newPos = ToScriptVec2(ImNodes::GetNodeGridSpacePos(nodeID));
-			ScriptVec2 oldPos = node->position;
-			if (dragStarted && ImNodes::IsNodeSelected(nodeID))
+			const ScriptVec2 newPos = ToScriptVec2(ImNodes::GetNodeGridSpacePos(nodeView.GetID()));
+			ScriptVec2 oldPos = nodeView.GetPosition();
+			if (dragStarted && ImNodes::IsNodeSelected(nodeView.GetID()))
 			{
-				currentNodeContext.myNodeDragData.emplace(nodeID, NodeDragData{ .startPos = oldPos });
-				std::cout << nodeID << std::endl;
+				currentNodeContext.myNodeDragData.emplace(nodeView.GetID(), NodeDragData{ .startPos = oldPos });
 			}
 			else if (dragEnded)
 			{
-				auto it = currentNodeContext.myNodeDragData.find(nodeID);
+				auto it = currentNodeContext.myNodeDragData.find(nodeView.GetID());
 
 				if (it != currentNodeContext.myNodeDragData.end())
 				{
@@ -638,9 +633,39 @@ namespace Editor
 			}
 			if (newPos != oldPos)
 			{
-				Modify::SetNodePosition(nodeID, newPos, *GetNodeContext().nodeGraph);
+				Modify::SetNodePosition(nodeView.GetID(), newPos, *GetNodeContext().nodeGraph);
 			}
 		}
+
+		//// Update node positions
+		//for (auto& [nodeID, node, nodeType] : nodeManager)
+		//{
+		//	if (node->isDestroyed)
+		//	{
+		//		continue;
+		//	}
+
+		//	ScriptVec2 newPos = ToScriptVec2(ImNodes::GetNodeGridSpacePos(nodeID));
+		//	ScriptVec2 oldPos = node->position;
+		//	if (dragStarted && ImNodes::IsNodeSelected(nodeID))
+		//	{
+		//		currentNodeContext.myNodeDragData.emplace(nodeID, NodeDragData{ .startPos = oldPos });
+		//		std::cout << nodeID << std::endl;
+		//	}
+		//	else if (dragEnded)
+		//	{
+		//		auto it = currentNodeContext.myNodeDragData.find(nodeID);
+
+		//		if (it != currentNodeContext.myNodeDragData.end())
+		//		{
+		//			it->second.endPos = newPos;
+		//		}
+		//	}
+		//	if (newPos != oldPos)
+		//	{
+		//		Modify::SetNodePosition(nodeID, newPos, *GetNodeContext().nodeGraph);
+		//	}
+		//}
 
 		if (dragEnded)
 		{
@@ -691,14 +716,13 @@ namespace Editor
 		{
 			currentNodeContext.myStartedLinkPinID = startedPinID;
 
-			const Pin& pin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, currentNodeContext.myStartedLinkPinID);
+			const PinView pin(startedPinID, *currentNodeContext.nodeGraph);
 
-			const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
-			currentNodeContext.myPinIDsToHighlight = ScriptFilter::GetNonConnectedPinsOfTypeAndHash(*GetNodeContext().nodeGraph, InvertFlowType(pinType.flowType), pinType.dataTypeID);
+			currentNodeContext.myPinIDsToHighlight = ScriptFilter::GetNonConnectedPinsOfTypeAndHash(*GetNodeContext().nodeGraph, InvertFlowType(pin.GetFlowType()), pin.GetDataTypeID());
 
 			for (PinID i = 0; i < currentNodeContext.myPinIDsToHighlight.size(); i++)
 			{
-				if (ScriptProxy::GetPin(*GetNodeContext().nodeGraph, currentNodeContext.myPinIDsToHighlight[i]).nodeID == pin.nodeID)
+				if (PinView(currentNodeContext.myPinIDsToHighlight[i], *currentNodeContext.nodeGraph).GetNodeID() == pin.GetNodeID())
 				{
 					currentNodeContext.myPinIDsToHighlight.erase(currentNodeContext.myPinIDsToHighlight.begin() + i);
 					i--;
@@ -721,64 +745,23 @@ namespace Editor
 		// Drop link create popup
 		if (ImGui::BeginPopup("Node Create Popup"))
 		{
-			const Pin& pin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, currentNodeContext.myLinkCreationPinID);
-
-			DataTypeID droppedPinDataTypeID = PinTypeManager::GetPinType(pin.typeID).dataTypeID;
+			const PinView pinView(currentNodeContext.myLinkCreationPinID, *GetNodeContext().nodeGraph);
 
 			auto nodeTypePopulationFunc = [&](NodeTypeCategory& aMainCategory) -> void
 				{
-					const std::vector<NodeType>& nodeTypes = NodeTypeManager::GetInstance().GetNodeTypes();
 
-					/*auto filtered = Global::GetNodeTypeManager().GetNodeTypeIDsFiltered(
-						[this](const NodeType& aNodeType) -> bool
-						{
-							return aNodeType.nodeRecipe.ownerDataTypeID == GetDataTypeID<bool>();
-						}
-					);*/
+					const std::vector<NodeTypeView> filteredNodeTypesByDataTypeAndFlowType = Modify::GetNodeTypesFilteredByDataTypeAndFlowType(pinView.GetDataTypeID(), InvertFlowType(pinView.GetFlowType()));
 
-					const std::vector<NodeTypeID> filtered = IndexStream<NodeType, NodeTypeID>(nodeTypes, [](NodeTypeID anID) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(anID); })
-						.Filter([&](const NodeType& aNodeType) -> bool
-							{
-								size_t size = 0;
-								switch (PinTypeManager::GetPinType(pin.typeID).flowType)
-								{
-								case eFlowType::Input:
-								{
-									size = Stream<PinTypeID>(aNodeType.nodeRecipe.outputPinTypeIDs).Filter([&droppedPinDataTypeID](const PinTypeID aPinTypeID) -> bool
-										{
-											return PinTypeManager::GetPinType(aPinTypeID).dataTypeID == droppedPinDataTypeID;
-										}
-									).Size();
-									break;
-								}
-								case eFlowType::Output:
-								{
-									size = Stream<PinTypeID>(aNodeType.nodeRecipe.inputPinTypeIDs).Filter([&droppedPinDataTypeID](const PinTypeID aPinTypeID) -> bool
-										{
-											return PinTypeManager::GetPinType(aPinTypeID).dataTypeID == droppedPinDataTypeID;
-										}
-									).Size();
-									break;
-								}
-								default:
-									break;
-								}
-
-								return size > 0;
-							}
-						).Get();
-
-					for (NodeTypeID nodeTypeID : filtered)
+					for (const NodeTypeView& nodeType : filteredNodeTypesByDataTypeAndFlowType)
 					{
-						PopulateCategories(NodeTypeManager::GetInstance().GetFullName(nodeTypeID), nodeTypeID, aMainCategory);
-
+						PopulateCategories(nodeType.GetName(), nodeType, aMainCategory);
 					}
 				};
 
-			auto onClickCallback = [&](NodeTypeID aNodeTypeID) -> void
+			auto onClickCallback = [&](const NodeTypeView& aNodeType) -> void
 				{
 
-					Modify::CreateNodeAutoLink(*GetNodeContext().nodeGraph, aNodeTypeID, currentNodeContext.myLinkCreationPinID, ScriptVec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
+					Modify::CreateNodeAutoLink(*GetNodeContext().nodeGraph, aNodeType.GetID(), currentNodeContext.myLinkCreationPinID, ScriptVec2{myNodeCreationClickPos.x, myNodeCreationClickPos.y}, myCommandTracker.get());
 
 
 					currentNodeContext.myPinIDsToHighlight.clear();
@@ -798,14 +781,16 @@ namespace Editor
 
 				ImGui::Text("Links:");
 
-				for (const Link& link : GetNodeContext().nodeGraph->myLinks)
+				const std::vector<LinkView> linkViews = Modify::GetLinks(*GetNodeContext().nodeGraph);
+
+				for (const LinkView& linkView : linkViews)
 				{
-					if (link.isDestroyed)
+					if (linkView.IsDestroyed())
 					{
 						continue;
 					}
 					ImGui::Separator();
-					ImGui::Text("In: %d, Out: %d", link.inputPinID, link.outputPinID);
+					ImGui::Text("In: %d, Out: %d", linkView.GetInputPin().GetID(), linkView.GetOutputPin().GetID());
 				}
 
 				ImGui::Separator();
@@ -813,9 +798,9 @@ namespace Editor
 				if (myHoveredPinID != InvalidID<PinID>())
 				{
 					ImGui::Text("Hovered PinID: %d", myHoveredPinID);
-					const Pin& hoveredPin = ScriptProxy::GetPin(*GetNodeContext().nodeGraph, myHoveredPinID);
+					const PinView hoveredPin = PinView(myHoveredPinID, *GetNodeContext().nodeGraph);
 					ImGui::Text("Connections:");
-					for (PinID connectionID : hoveredPin.connectedPinIDs)
+					for (const PinID connectionID : hoveredPin.GetConnectedPinIDs())
 					{
 						ImGui::Text("%d", connectionID);
 					}
@@ -833,14 +818,14 @@ namespace Editor
 		}
 	}
 
-	void VisualScriptingWindow::PopulateCategories(const std::string& aName, const size_t aNodeTypeID, NodeTypeCategory& aCategory)
+	void VisualScriptingWindow::PopulateCategories(const std::string& aName, const NodeTypeView& aNodeType, NodeTypeCategory& aCategory)
 	{
 		std::string categoryName = aName.substr(0, aName.find_first_of('/'));
 		std::string rest = aName.substr(categoryName.length(), aName.length() - 1);
 
 		if (rest.empty())
 		{
-			aCategory.nodeTypesIDs.push_back(aNodeTypeID);
+			aCategory.nodeTypes.push_back(aNodeType);
 			return;
 		}
 
@@ -851,7 +836,7 @@ namespace Editor
 		{
 			if (childCategory.name == categoryName)
 			{
-				PopulateCategories(rest, aNodeTypeID, childCategory);
+				PopulateCategories(rest, aNodeType, childCategory);
 				hasFoundCategory = true;
 				break;
 			}
@@ -860,22 +845,22 @@ namespace Editor
 		if (!hasFoundCategory)
 		{
 			aCategory.childCategories.emplace_back(categoryName);
-			PopulateCategories(rest, aNodeTypeID, aCategory.childCategories.back());
+			PopulateCategories(rest, aNodeType, aCategory.childCategories.back());
 		}
 	}
 
-	void VisualScriptingWindow::ShowNodeTypeCreationMenu(const std::vector<NodeTypeID>& aNodeTypeIDs, const std::function<void(NodeTypeID)>& aOnClickFunc)
+	void VisualScriptingWindow::ShowNodeTypeCreationMenu(const std::vector<NodeTypeView>& aNodeTypes, const std::function<void(const NodeTypeView&)>& aOnClickFunc)
 	{
-		for (const NodeTypeID nodeTypeID : aNodeTypeIDs)
+		for (const NodeTypeView& nodeType : aNodeTypes)
 		{
-			if (ImGui::MenuItem(NodeTypeManager::GetInstance().GetShortName(nodeTypeID).c_str()))
+			if (ImGui::MenuItem(nodeType.GetShortName().c_str()))
 			{
-				aOnClickFunc(nodeTypeID);
+				aOnClickFunc(nodeType);
 			}
 		}
 	}
 
-	void VisualScriptingWindow::ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(NodeTypeID)>& aOnClickFunc)
+	void VisualScriptingWindow::ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(const NodeTypeView&)>& aOnClickFunc)
 	{
 		if (ImGui::BeginMenu(aCategory.name.c_str()))
 		{
@@ -885,13 +870,13 @@ namespace Editor
 				ShowNodeCreationMenuByCategory(childCategory, aOnClickFunc);
 			}
 
-			ShowNodeTypeCreationMenu(aCategory.nodeTypesIDs, aOnClickFunc);
+			ShowNodeTypeCreationMenu(aCategory.nodeTypes, aOnClickFunc);
 
 			ImGui::EndMenu();
 		}
 	}
 
-	void VisualScriptingWindow::ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(NodeTypeID)>& aOnClickFunction)
+	void VisualScriptingWindow::ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(const NodeTypeView&)>& aOnClickFunction)
 	{
 		NodeTypeCategory mainCategory{ "Create Node" };
 		aCategoryFunction(mainCategory);
@@ -911,7 +896,7 @@ namespace Editor
 		}
 		else
 		{
-			ShowNodeTypeCreationMenu(mainCategory.nodeTypesIDs, aOnClickFunction);
+			ShowNodeTypeCreationMenu(mainCategory.nodeTypes, aOnClickFunction);
 		}
 	}
 
@@ -927,51 +912,42 @@ namespace Editor
 		{
 			auto categoryFunc = [&](NodeTypeCategory& aMainCategory) -> void
 				{
-					const std::vector<NodeType>& nodeTypes = NodeTypeManager::GetInstance().GetNodeTypes();
 
 					if (myNodeTypeSearch[0] == '\0')
 					{
 
-						std::vector<NodeTypeID> nodeTypeIDs = IndexStream<NodeType>(nodeTypes, [](const NodeTypeID anID) -> const NodeType& { return NodeTypeManager::GetInstance().GetNodeType(anID); })
-							.Filter([](const NodeType& aNodeType) -> bool
-								{
-									if (HasFlag(aNodeType.nodeRecipe.traits, eNodeTrait::NonTrivial))
-									{
-										return false;
-									}
-									return true;
-								}
-							).Get();
-						for (NodeTypeID nodeTypeID : nodeTypeIDs)
+						const std::vector<NodeTypeView> filteredNodeTypes = Modify::GetNodeTypesFilteredByTrait(eNodeTrait::NonTrivial, HasNotFlag);
+
+						for (const NodeTypeView& nodeType : filteredNodeTypes)
 						{
-							PopulateCategories(NodeTypeManager::GetInstance().GetFullName(nodeTypeID), nodeTypeID, aMainCategory);
+							PopulateCategories(nodeType.GetName(), nodeType, aMainCategory);
 						}
 					}
 					else
 					{
-						for (NodeTypeID i = 0; i < nodeTypes.size(); ++i)
+						const std::vector<NodeTypeView> nodeTypes = Modify::GetNodeTypes();
+						for (const NodeTypeView& nodeType : nodeTypes)
 						{
-							const NodeType& nodeType = nodeTypes[i];
 
-							if (HasFlag(nodeType.nodeRecipe.traits, eNodeTrait::NonTrivial))
+							if (HasFlag(nodeType.GetTraits(), eNodeTrait::NonTrivial))
 							{
 								continue;
 							}
 
-							bool isSearched = std::strstr(nodeType.name.c_str(), myNodeTypeSearch);
+							bool isSearched = std::strstr(nodeType.GetName().c_str(), myNodeTypeSearch);
 							if (isSearched)
 							{
-								aMainCategory.nodeTypesIDs.push_back(i);
+								aMainCategory.nodeTypes.push_back(nodeType);
 							}
 						}
 					}
 				};
 
-			auto onClickCallback = [&](NodeTypeID aNodeTypeID) -> void
+			auto onClickCallback = [&](const NodeTypeView& aNodeType) -> void
 				{
 					NodeContext& currentNodeContext = GetNodeContext();
 
-					Modify::CreateNode(*GetNodeContext().nodeGraph, aNodeTypeID, ScriptVec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
+					Modify::CreateNode(*GetNodeContext().nodeGraph, aNodeType.GetID(), ScriptVec2{myNodeCreationClickPos.x, myNodeCreationClickPos.y}, myCommandTracker.get());
 
 
 					currentNodeContext.myPinIDsToHighlight.clear();

@@ -259,8 +259,8 @@ namespace SCR
 	template<typename... Args>
 	concept NoArgsReference = !HasReference<Args...>::value;
 
-	template<typename T, typename... Args>
-	concept TypeExists = (std::is_same_v<T, Args> || ...);
+	template<typename T, typename... Types>
+	concept ContainsType = (std::same_as<T, Types> || ...);
 
 	template<typename Find, size_t Index>
 	constexpr size_t GetIndexOfTypeFromArgsImpl()

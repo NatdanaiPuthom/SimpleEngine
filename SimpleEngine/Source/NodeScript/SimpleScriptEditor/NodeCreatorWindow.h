@@ -1,6 +1,11 @@
 #pragma once
 #include "SimpleScript/Core/ScriptDefines.h"
 
+namespace SCRIPT
+{
+	class CustomEventView;
+}
+
 namespace Editor
 {
 	class VisualScriptingWindow;
@@ -14,8 +19,11 @@ namespace Editor
 		void Update();
 
 	private:
-		void EditInputs(SCRIPT::CustomEventID anID);
+
+		void EditInputs(const SCRIPT::CustomEventView& aCustomEventView);
+
 	private:
+
 		VisualScriptingWindow& myParentWindow;
 	};
 }

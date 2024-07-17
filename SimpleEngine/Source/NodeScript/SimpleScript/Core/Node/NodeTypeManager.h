@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/ScriptDefines.h"
 #include "Core/Node/NodeType.h"
+#include "Core/View/NodeTypeView.h"
 #include "Core/CustomEvent/CustomEvent.h"
 #include "Core/Function/ScriptFunction.h"
 #include "Core/Utilities/MetaScript.h"
@@ -46,7 +47,7 @@ namespace SCR
 		const std::vector<NodeType>& GetNodeTypes();
 		
 		template<Predicate<const NodeType&> FilterPredicate>
-		std::vector<NodeTypeID> GetNodeTypeIDsFiltered(FilterPredicate&& aPredicate);
+		std::vector<NodeTypeView> GetNodeTypesFiltered(FilterPredicate&& aPredicate);
 
 		CustomEvent& GetCustomEvent(const CustomEventID anID);
 		const std::vector<CustomEvent>& GetCustomEvents();
@@ -58,7 +59,7 @@ namespace SCR
 		const std::vector<std::unique_ptr<Function>>& GetFunctions();
 		FunctionID GetFunctionID(NodeTypeID aNodeTypeID);
 
-		NodeTypeID GetTypeID(const std::string& aName);
+		NodeTypeID GetTypeID(std::string_view aName);
 
 		const std::string& GetFullName(NodeTypeID anID);
 		std::string GetShortName(NodeTypeID anID);
@@ -83,20 +84,20 @@ namespace SCR
 	};
 
 	template<Predicate<const NodeType&> FilterPredicate>
-	inline std::vector<NodeTypeID> NodeTypeManager::GetNodeTypeIDsFiltered(FilterPredicate&& aPredicate)
+	inline std::vector<NodeTypeView> NodeTypeManager::GetNodeTypesFiltered(FilterPredicate&& aPredicate)
 	{
-		std::vector<NodeTypeID> nodeTypeIDs;
-		nodeTypeIDs.reserve(myNodeTypes.size());
+		std::vector<NodeTypeView> nodeTypes;
+		nodeTypes.reserve(myNodeTypes.size());
 
-		for (NodeTypeID id = 0; const NodeType& nodeType : myNodeTypes)
+		for (NodeTypeID nodeTypeID = 0; nodeTypeID < myNodeTypes.size(); ++nodeTypeID)
 		{
+			const NodeType& nodeType = myNodeTypes[nodeTypeID];
 			if (aPredicate(nodeType))
 			{
-				nodeTypeIDs.push_back(id);
+				nodeTypes.push_back(NodeTypeView(nodeTypeID));
 			}
-			id++;
 		}
 
-		return nodeTypeIDs;
+		return nodeTypes;
 	}
 }

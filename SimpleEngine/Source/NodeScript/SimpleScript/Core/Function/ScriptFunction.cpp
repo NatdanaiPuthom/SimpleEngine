@@ -44,7 +44,7 @@ namespace SCR
 		return Wildcard();
 	}
 
-	Function::Function(const std::string& aName)
+	Function::Function(std::string_view aName)
 		: myName(aName)
 		, myNodeGraph(eNodeGraphType::Function)
 	{

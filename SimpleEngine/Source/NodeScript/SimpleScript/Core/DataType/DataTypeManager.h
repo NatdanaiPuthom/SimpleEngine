@@ -259,7 +259,8 @@ namespace SCR
 		Fundamental = 1 << 0,
 		Editable = 1 << 1,
 		SaveLoadable = 1 << 2,
-		All = Fundamental | Editable | SaveLoadable
+		Targetable = 1 << 3,
+		All = Fundamental | Editable | SaveLoadable | Targetable
 	};
 
 	struct DataType
@@ -319,7 +320,7 @@ namespace SCR
 
 
 		template<typename T>
-		void Register(const std::string& aName, const Color& aColor = DefaultColor);
+		void Register(const std::string& aName, const Color& aColor, bool aIsTargetable);
 
 	private:
 
@@ -330,7 +331,7 @@ namespace SCR
 		void RegisterTemplateSpecification(const std::string& aName, const Color& aColor = DefaultColor);
 
 		template<CleanType T>
-		void RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface);
+		void RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface, bool aIsTargetable);
 
 		template<CleanType ClassType, CleanType PropertyType>
 		void RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName);
@@ -350,9 +351,9 @@ namespace SCR
 	};
 
 	template<typename T>
-	inline void DataTypeManager::Register(const std::string& aName, const Color& aColor)
+	inline void DataTypeManager::Register(const std::string& aName, const Color& aColor, const bool aIsTargetable)
 	{
-		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T>());
+		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T>(), aIsTargetable);
 	}
 
 	template<template<typename> typename TemplateType>
@@ -386,7 +387,7 @@ namespace SCR
 	}
 
 	template<CleanType T>
-	inline void DataTypeManager::RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface)
+	inline void DataTypeManager::RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface, const bool aIsTargetable)
 	{
 		eDataTypeTrait typeTraits = eDataTypeTrait::None;
 		if constexpr (Fundamental<T>)
@@ -400,6 +401,10 @@ namespace SCR
 		if constexpr (Loadable<T, nlohmann::json> && Savable<T, nlohmann::json>)
 		{
 			typeTraits |= eDataTypeTrait::SaveLoadable;
+		}
+		if (aIsTargetable)
+		{
+			typeTraits |= eDataTypeTrait::Targetable;
 		}
 
 		const std::type_info& typeInfo = typeid(T);

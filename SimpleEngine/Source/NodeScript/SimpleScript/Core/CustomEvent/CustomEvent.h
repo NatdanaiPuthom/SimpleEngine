@@ -8,7 +8,7 @@ namespace SCR
 	{
 	public:
 
-		CustomEvent(const std::string& aName);
+		CustomEvent(std::string_view aName);
 		~CustomEvent();
 
 		inline const NodeTypeID& GetExecutorTypeID() const

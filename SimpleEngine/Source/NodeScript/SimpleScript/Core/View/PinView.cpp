@@ -2,6 +2,7 @@
 #include "../ScriptNodeGraph.h"
 #include "../Global/ScriptGlobal.h"
 #include "../Pin/PinTypeManager.h"
+#include "../DataType/DataTypeManager.h"
 
 namespace SCR
 {
@@ -23,7 +24,27 @@ namespace SCR
 
 	const std::string& PinView::GetPinTypeName() const
 	{
-		return GetPinType().name;
+		const PinType& pinType = GetPinType();
+		if (pinType.name == "#T")
+		{
+			return Global::GetDataTypeManager().GetName(pinType.dataTypeID);
+		}
+		return pinType.name;
+	}
+
+	eFlowType PinView::GetFlowType() const
+	{
+		return GetPinType().flowType;
+	}
+
+	NodeID PinView::GetNodeID() const
+	{
+		return GetPin().nodeID;
+	}
+
+	PinID PinView::GetID() const
+	{
+		return myPinID;
 	}
 
 	const Pin& PinView::GetPin() const

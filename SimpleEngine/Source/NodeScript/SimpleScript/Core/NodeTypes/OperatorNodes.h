@@ -329,7 +329,7 @@ namespace SCR
 	constexpr inline void RegisterOperatorNode(std::string aDefaultNodeName)
 	{
 
-		const size_t dataTypeID = typeid(T).hash_code();
+		const DataTypeID dataTypeID = typeid(T).hash_code();
 
 		if constexpr (!IsSameType<T, Wildcard>)
 		{
@@ -345,17 +345,17 @@ namespace SCR
 			}
 		}
 
-		constexpr eNodeTrait Traits = (IsSameType<T, Wildcard> ? eNodeTrait::None : eNodeTrait::Operator) | ExtraTraits;
+		constexpr eNodeTrait Traits = (std::same_as<T, Wildcard> ? eNodeTrait::None : eNodeTrait::Operator) | ExtraTraits;
 
-		auto func = GetFunctionByOperator<T, OperatorTrait>();
+		auto operatorFunc = GetFunctionByOperator<T, OperatorTrait>();
 
-		NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits, OperatorTrait>(func, aDefaultNodeName);
+		const NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits>(operatorFunc, aDefaultNodeName, NodeCreationData{ .operatorTrait = OperatorTrait });
 
 		NodeTypeManager::GetInstance().SetOperatorNodeTypeID(dataTypeID, OperatorTrait, nodeTypeID);
 	}
 
 	template<CleanType T, eNodeOperatorTrait OperatorTrait, eNodeOperatorTrait RegisteredTraits, eNodeTrait ExtraTraits = eNodeTrait::None>
-	constexpr inline void TryRegisterOperatorNode(std::string aDefaultNodeName)
+	constexpr inline void TryRegisterOperatorNode(const std::string& aDefaultNodeName)
 	{
 		if constexpr (HasFlag(OperatorTrait, RegisteredTraits))
 		{

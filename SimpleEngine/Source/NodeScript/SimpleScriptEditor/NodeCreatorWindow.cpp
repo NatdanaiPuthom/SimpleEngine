@@ -30,12 +30,13 @@ namespace Editor
 				Modify::CreateCustomEvent("CustomEvent");
 			}
 
-			for (CustomEventID id = 0; id < NodeTypeManager::GetInstance().GetCustomEvents().size(); ++id)
+			const std::vector<CustomEventView> customEvents = Modify::GetCustomEvents();
+
+			for (const CustomEventView& customEvent : customEvents)
 			{
-				const CustomEvent& customEvent = NodeTypeManager::GetInstance().GetCustomEvent(id);
-				if (ImGui::TreeNode(std::to_string(id).c_str(), NodeTypeManager::GetInstance().GetShortName(customEvent.GetExecutorTypeID()).c_str()))
+				if (ImGui::TreeNode(std::to_string(customEvent.GetID()).c_str(), customEvent.GetExecutorNodeType().GetShortName().c_str()))
 				{
-					EditInputs(id);
+					EditInputs(customEvent);
 					ImGui::TreePop();
 
 				}
@@ -50,38 +51,33 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void NodeCreatorWindow::EditInputs(SCRIPT::CustomEventID anID)
+	void NodeCreatorWindow::EditInputs(const SCRIPT::CustomEventView& aCustomEventView)
 	{
-		const CustomEvent& customEvent = NodeTypeManager::GetInstance().GetCustomEvent(anID);
-		NodeTypeID executorTypeID = customEvent.GetExecutorTypeID();
-		NodeTypeID callerTypeID = customEvent.GetCallerTypeID();
-		NodeType& executorNodeType = NodeTypeManager::GetInstance().GetNodeType(executorTypeID);
-		NodeType& callerNodeType = NodeTypeManager::GetInstance().GetNodeType(callerTypeID);
+		const NodeTypeView executorNodeType = aCustomEventView.GetExecutorNodeType();
+		const NodeTypeView callerNodeType = aCustomEventView.GetCallerNodeType();
+		std::string shortName = executorNodeType.GetShortName();
 
-		std::string shortName = NodeTypeManager::GetInstance().GetShortName(executorTypeID);
-		std::string nameDirectory = NodeTypeManager::GetInstance().GetNameDirectory(executorTypeID);
+		char nameBuffer[35]{};
+		strcpy_s(nameBuffer, shortName.c_str());
 
-		char nodeTypeNameBuffer[35]{};
-		strcpy_s(nodeTypeNameBuffer, shortName.c_str());
-
-		if (ImGui::InputText(std::string("##" + std::to_string(anID)).c_str(), nodeTypeNameBuffer, IM_ARRAYSIZE(nodeTypeNameBuffer)))
+		if (ImGui::InputText(std::string("##" + std::to_string(aCustomEventView.GetID())).c_str(), nameBuffer, IM_ARRAYSIZE(nameBuffer)))
 		{
-			executorNodeType.name = nameDirectory + nodeTypeNameBuffer;
-			callerNodeType.name = nameDirectory + "Call " + nodeTypeNameBuffer;
+			SCRIPT::Modify::SetCustomEventName(aCustomEventView.GetID(), nameBuffer);
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Add Pin"))
 		{
-			Modify::AddPinToCustomEvent(typeid(bool).hash_code(), anID, "Pin");
+			Modify::AddPinToCustomEvent(GetDataTypeID<bool>(), aCustomEventView.GetID(), "Pin");
 		}
 
 		ImGui::Separator();
-
-		for (size_t i = 1; i < executorNodeType.nodeRecipe.outputPinTypeIDs.size(); ++i)
+		
+		const std::vector<PinTypeView> outputPinTypes = executorNodeType.GetOutputPinTypes();
+		for (size_t i = 1; i < outputPinTypes.size(); ++i)
 		{
-			PinType& pinType = PinTypeManager::GetPinType(executorNodeType.nodeRecipe.outputPinTypeIDs[i]);
+			const PinTypeView& pinType = outputPinTypes.at(i);
 			int currentSelectedIndex = 0;
 
 			std::vector<DataTypeID> dataTypeIDs;
@@ -92,7 +88,7 @@ namespace Editor
 			{
 				ss << dataType->name << '\0';
 				dataTypeIDs.push_back(dataTypeID);
-				if (PinTypeManager::GetPinType(executorNodeType.nodeRecipe.outputPinTypeIDs[i]).dataTypeID == dataTypeID)
+				if (pinType.GetDataTypeID()  == dataTypeID)
 				{
 					currentSelectedIndex = it;
 				}
@@ -105,25 +101,25 @@ namespace Editor
 			ImGui::SameLine();
 
 			char buffer[35]{};
-			strcpy_s(buffer, pinType.name.c_str());
+			strcpy_s(buffer, pinType.GetName().c_str());
 
 			if (ImGui::InputText(("##" + std::to_string(i)).c_str(), buffer, IM_ARRAYSIZE(buffer)))
 			{
-				pinType.name = buffer;
-				PinType& callerPinType = PinTypeManager::GetPinType(callerNodeType.nodeRecipe.inputPinTypeIDs[i]);
-				callerPinType.name = pinType.name;
+				Modify::SetPinTypeName(pinType.GetID(), buffer);
+				const std::vector<PinTypeView> callerInputPinTypes = callerNodeType.GetInputPinTypes();
+				Modify::SetPinTypeName(callerInputPinTypes.at(i).GetID(), buffer);
 			}
 
 			ImGui::SameLine();
 			if (ImGui::Button(std::string("Delete##" + std::to_string(i)).c_str()))
 			{
-				Modify::DeletePinAtIndexCustomEvent(i, anID);
+				Modify::DeletePinAtIndexCustomEvent(i, aCustomEventView.GetID());
 			}
 
 			if (ImGui::Combo(std::string("##CustomEventPinType" + std::to_string(i)).c_str(), &currentSelectedIndex, names.c_str()))
 			{
 
-				Modify::SetPinAtIndexCustomEvent(i, dataTypeIDs.at(currentSelectedIndex), anID);
+				Modify::SetPinAtIndexCustomEvent(i, dataTypeIDs.at(currentSelectedIndex), aCustomEventView.GetID());
 			}
 
 			ImGui::SameLine();
@@ -137,14 +133,14 @@ namespace Editor
 
 		if (ImGui::Button("Create Caller"))
 		{
-			Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, callerTypeID);
+			Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, aCustomEventView.GetCallerNodeType().GetID());
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Create Executor"))
 		{
-			Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, executorTypeID);
+			Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, aCustomEventView.GetExecutorNodeType().GetID());
 		}
 	}
 }

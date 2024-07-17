@@ -30,15 +30,15 @@ namespace SCR
 
 #pragma region NodeType
 
-		static CustomEventID CreateCustomEvent(const std::string& aName);
-		static FunctionID CreateFunction(const std::string& aName);
+		static CustomEventID CreateCustomEvent(std::string_view aName);
+		static FunctionID CreateFunction(std::string_view aName);
 
 #pragma endregion
 
 #pragma region Node
 
 		static NodeID CreateNode(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, CommandTracker* aCommandTracker);
-		static NodeID CreateNode(NodeGraph& aNodeGraph, const std::string& aName, bool& aSuccess, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker);
+		static NodeID CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker);
 		static NodeID CreateGetterNode(NodeGraph& aNodeGraph, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 		static NodeID CreateSetterNode(NodeGraph& aNodeGraph, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 		static NodeID CreateOperatorNode(NodeGraph& aNodeGraph, eNodeOperatorTrait aOperatorTrait, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
@@ -47,7 +47,6 @@ namespace SCR
 		static void AddNode(NodeGraph& aNodeGraph, Node&& aNode, NodeID aNodeID, CommandTracker* aCommandTracker);
 
 	public:
-		//static void UpdateNodeTypeIDSize(NodeGraph& aNodeGraph);
 
 #pragma endregion
 
@@ -67,8 +66,8 @@ namespace SCR
 
 #pragma region Variable
 
-		static void BindVariable(Script& aScript, NodeID aNodeID, VarID aVarID, CommandTracker* aCommandTracker);
-		static void UnbindVariable(Script& aScript, NodeID aNodeID, CommandTracker* aCommandTracker);
+		static void BindVariable(Script& aScript, const NodeRef& aNodeRef, VarID aVarID, CommandTracker* aCommandTracker);
+		static void UnbindVariable(Script& aScript, const NodeRef& aNodeRef, CommandTracker* aCommandTracker);
 
 
 #pragma endregion

@@ -16,6 +16,10 @@ namespace SCR
 		const std::vector<PinID>& GetConnectedPinIDs() const;
 		DataTypeID GetDataTypeID() const;
 		const std::string& GetPinTypeName() const;
+		eFlowType GetFlowType() const;
+		NodeID GetNodeID() const;
+
+		PinID GetID() const;
 		
 	private:
 

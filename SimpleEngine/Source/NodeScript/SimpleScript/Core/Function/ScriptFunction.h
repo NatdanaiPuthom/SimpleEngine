@@ -10,7 +10,7 @@ namespace SCR
 	{
 	public:
 
-		Function(const std::string& aName);
+		Function(std::string_view aName);
 		~Function();
 
 		const std::string& GetName() const
@@ -18,7 +18,7 @@ namespace SCR
 			return myName;
 		}
 
-		void SetName(const std::string& aName)
+		void SetName(std::string_view aName)
 		{
 			myName = aName;
 		}

@@ -12,7 +12,7 @@ namespace SCR
 	public:
 
 		template<typename T, eNodeOperatorTrait Operators = eNodeOperatorTrait::All, template<typename> typename... Templates>
-		static void Register(const std::string & aName, const Color & aColor = DefaultColor);
+		static void Register(const std::string & aName, const Color& aColor, bool aIsTargetable);
 
 		template<template<typename> typename TemplateType>
 		static void RegisterTemplateType(const std::string& aName);
@@ -31,7 +31,7 @@ namespace SCR
 	};
 
 	template<typename T, eNodeOperatorTrait Operators, template<typename> typename... Templates>
-	inline void DataTypeRegistry::Register(const std::string & aName, const Color & aColor)
+	inline void DataTypeRegistry::Register(const std::string & aName, const Color & aColor, const bool aIsTargetable)
 	{
 		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
 
@@ -39,14 +39,14 @@ namespace SCR
 		{
 			return;
 		}
-		dataTypeManager.Register<T>(aName, aColor);
+		dataTypeManager.Register<T>(aName, aColor, aIsTargetable);
 
 		RegisterTemplateTypes<T, Templates...>(aName);
 		RegisterGetterNodeType<T>();
 		RegisterSetterNodeType<T>();
 		RegisterOperatorNodeTypes<T, Operators>();
 
-		if constexpr (!Fundamental<T>)
+		if (aIsTargetable)
 		{
 			NodeTypeRegistry::RegisterNodeType(GetSelfNode<T>, aName + "/" + aName + "::Get Self");
 
@@ -100,14 +100,19 @@ namespace SCR
 
 	};
 
+	struct Targetable
+	{
+	};
+
 	template<typename T>
 	struct RegisterType
 	{
 
-		template<eNodeOperatorTrait Operators>
+		template<eNodeOperatorTrait Operators, typename... Traits>
 		constexpr static RegisterType<T> Register(const char* aName, const Color& aColor = DefaultColor)
 		{
-			DataTypeRegistry::Register<T, Operators>(aName, aColor);
+			constexpr bool isTargetable = ContainsType<Targetable, Traits...>;
+			DataTypeRegistry::Register<T, Operators>(aName, aColor, isTargetable);
 
 			return RegisterType<T>();
 		}
@@ -126,5 +131,5 @@ namespace SCR
 	};
 }
 
-#define FLY_DATATYPE(type, operators, color) inline static SCR::RegisterType<type> fly_registeredType##type = SCR::RegisterType<type>::Register<operators>(#type, color);
+#define FLY_DATATYPE(type, operators, color, ...) inline static SCR::RegisterType<type> fly_registeredType##type = SCR::RegisterType<type>::Register<operators, __VA_ARGS__>(#type, color);
 #define FLY_PROPERTY(member) inline static SCR::RegisterProperty prop(member, #member);

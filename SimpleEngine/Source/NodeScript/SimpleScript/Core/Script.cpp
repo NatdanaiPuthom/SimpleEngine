@@ -62,9 +62,14 @@ namespace SCR
 		myMemberFunctionIDs.push_back(aFunctionID);
 	}
 
-	const std::vector<FunctionID>& Script::GetMemberFunctionIDs()
+	const std::vector<FunctionID>& Script::GetMemberFunctionIDs() const
 	{
 		return myMemberFunctionIDs;
+	}
+
+	const VariableManager& Script::GetVariableManager() const
+	{
+		return myVariableManager;
 	}
 }
 

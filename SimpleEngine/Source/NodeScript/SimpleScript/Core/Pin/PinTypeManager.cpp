@@ -18,11 +18,11 @@ namespace SCR
 		return ScriptFoundation::GetInstance().GetTypeManager().GetPinTypeManager();
 	}
 
-	PinTypeID PinTypeManager::Create(const std::string& aName, eFlowType aFlowType, DataTypeID aDataTypeID, PinSetFunction aSetFunction)
+	PinTypeID PinTypeManager::Create(std::string_view aName, eFlowType aFlowType, DataTypeID aDataTypeID, PinSetFunction aSetFunction)
 	{
 		PinTypeManager& pinTypeManager = GetInstance();
 		PinTypeID id = pinTypeManager.myPinTypes.size();
-		pinTypeManager.myPinTypes.emplace_back(aName, aFlowType, aDataTypeID, aSetFunction);
+		pinTypeManager.myPinTypes.emplace_back(std::string(aName), aFlowType, aDataTypeID, aSetFunction);
 		return id;
 	}
 

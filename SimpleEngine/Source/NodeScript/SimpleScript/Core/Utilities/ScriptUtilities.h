@@ -71,6 +71,12 @@ namespace SCR
 	}
 
 	template<Enumerable T>
+	constexpr bool HasNotFlag(const T aValue1, const T aValue2)
+	{
+		return !HasFlag(aValue1, aValue2);
+	}
+
+	template<Enumerable T>
 	constexpr bool Equals(const T aValue1, const T aValue2)
 	{
 		return aValue1 == aValue2;

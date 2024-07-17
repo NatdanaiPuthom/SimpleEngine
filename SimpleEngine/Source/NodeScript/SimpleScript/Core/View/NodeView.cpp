@@ -6,7 +6,7 @@
 namespace SCR
 {
 
-	NodeView::NodeView(NodeID aNodeID, const NodeGraph& aNodeGraph)
+	NodeView::NodeView(const NodeID aNodeID, const NodeGraph& aNodeGraph)
 		: myNodeID(aNodeID)
 		, myNodeGraph(&aNodeGraph)
 	{
@@ -15,6 +15,11 @@ namespace SCR
 	const std::string& NodeView::GetNodeTypeName() const
 	{
 		return GetNodeType().name;
+	}
+
+	std::string NodeView::GetShortName() const
+	{
+		return Global::GetNodeTypeManager().GetShortName(GetNode().typeID);
 	}
 
 	ScriptVec2 NodeView::GetPosition() const
@@ -62,5 +67,25 @@ namespace SCR
 		}
 
 		return pinViews;
+	}
+
+	NodeID NodeView::GetID() const
+	{
+		return myNodeID;
+	}
+
+	eNodeTrait NodeView::GetTraits() const
+	{
+		return GetNodeType().nodeRecipe.traits;
+	}
+
+	EventID NodeView::GetEventID() const
+	{
+		return GetNodeType().nodeRecipe.eventID;
+	}
+
+	const NodeGraph& NodeView::GetNodeGraph() const
+	{
+		return *myNodeGraph;
 	}
 }

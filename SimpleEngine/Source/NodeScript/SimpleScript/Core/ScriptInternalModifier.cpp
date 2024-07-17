@@ -16,21 +16,20 @@
 namespace SCR
 {
 
-	CustomEventID InternalModifier::CreateCustomEvent(const std::string& aName)
+	CustomEventID InternalModifier::CreateCustomEvent(std::string_view aName)
 	{
-		CustomEvent customEvent(aName);
-
 		std::vector<CustomEvent>& customEvents = Global::GetNodeTypeManager().myCustomEvents;
+		const CustomEventID id = customEvents.size();
+		const CustomEvent& customEvent = customEvents.emplace_back(CustomEvent(aName));
+
 		std::unordered_multimap<NodeTypeID, CustomEventID>& map = Global::GetNodeTypeManager().myToCustomEventID;
-		CustomEventID id = customEvents.size();
-		customEvents.push_back(customEvent);
 		map.emplace(customEvent.GetCallerTypeID(), id);
 		map.emplace(customEvent.GetExecutorTypeID(), id);
 
 		return id;
 	}
 
-	FunctionID InternalModifier::CreateFunction(const std::string& aName)
+	FunctionID InternalModifier::CreateFunction(std::string_view aName)
 	{
 
 		std::vector<std::unique_ptr<Function>>& functions = Global::GetNodeTypeManager().myFunctions;
@@ -52,9 +51,9 @@ namespace SCR
 		return id;
 	}
 
-	NodeID InternalModifier::CreateNode(NodeGraph& aNodeGraph, const std::string& aName, bool& aSuccess, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker)
+	NodeID InternalModifier::CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker)
 	{
-		NodeTypeID typeID = NodeTypeManager::GetInstance().GetTypeID(aName);
+		const NodeTypeID typeID = NodeTypeManager::GetInstance().GetTypeID(aName);
 		aSuccess = typeID != 0;
 		if (!aCreateIfNameNotFound && !aSuccess)
 		{
@@ -87,13 +86,10 @@ namespace SCR
 	void InternalModifier::AddNode(NodeGraph& aNodeGraph, Node&& aNode, const NodeID aNodeID, CommandTracker* aCommandTracker)
 	{
 		std::vector<Node>& nodes = ScriptProxy::GetNodes(aNodeGraph);
-		//std::vector<std::vector<NodeID>>& nodeIDsByTypeID = ScriptProxy::GetNodeIDsByNodeTypeContainer(aNodeGraph);
 
 		nodes.emplace_back(std::move(aNode));
 
-		//nodeIDsByTypeID.resize(NodeTypeManager::GetInstance().GetNodeTypes().size());
 		Node& createdNode = nodes.back();
-		//nodeIDsByTypeID[createdNode.typeID].push_back(aNodeID);
 
 		NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(createdNode.typeID);
 		nodeType.nodeRefs.push_back(NodeRef{ .nodeID = aNodeID, .nodeGraph = &aNodeGraph });
@@ -335,21 +331,16 @@ namespace SCR
 		}
 	}
 
-	//void InternalModifier::UpdateNodeTypeIDSize(NodeGraph& aNodeGraph)
-	//{
-	//	ScriptProxy::GetNodeIDsByNodeTypeContainer(aNodeGraph).resize(NodeTypeManager::GetInstance().GetNodeTypes().size());
-	//}
-
-	void InternalModifier::BindVariable(Script& aScript, const NodeID aNodeID, const VarID aVarID, CommandTracker* aCommandTracker)
+	void InternalModifier::BindVariable(Script& aScript, const NodeRef& aNodeRef, const VarID aVarID, CommandTracker* aCommandTracker)
 	{
 		struct BindVarData
 		{
-			NodeID nodeID = InvalidID<NodeID>();
+			NodeRef nodeRef;
 			VarID varID = InvalidID<VarID>();
 			Script* script = nullptr;
 		} data;
 
-		data.nodeID = aNodeID;
+		data.nodeRef = aNodeRef;
 		data.varID = aVarID;
 		data.script = &aScript;
 
@@ -357,11 +348,11 @@ namespace SCR
 			{
 				if (aCommandType == eCommandType::Do)
 				{
-					ScriptProxy::GetNodeIDToVarIDMap(*data.script)[data.nodeID] = data.varID;
+					ScriptProxy::GetNodeRefToVarIDMap(*data.script)[data.nodeRef] = data.varID;
 				}
 				else
 				{
-					ScriptProxy::GetNodeIDToVarIDMap(*data.script).erase(data.nodeID);
+					ScriptProxy::GetNodeRefToVarIDMap(*data.script).erase(data.nodeRef);
 				}
 			};
 
@@ -375,33 +366,33 @@ namespace SCR
 		}
 	}
 
-	void InternalModifier::UnbindVariable(Script& aScript, const NodeID aNodeID, CommandTracker* aCommandTracker)
+	void InternalModifier::UnbindVariable(Script& aScript, const NodeRef& aNodeRef, CommandTracker* aCommandTracker)
 	{
-		if (!ScriptProxy::GetNodeIDToVarIDMap(aScript).contains(aNodeID))
+		if (!ScriptProxy::GetNodeRefToVarIDMap(aScript).contains(aNodeRef))
 		{
 			return;
 		}
 
 		struct UnbindVarData
 		{
-			NodeID nodeID = InvalidID<NodeID>();
+			NodeRef nodeRef;
 			VarID varID = InvalidID<VarID>();
 			Script* script = nullptr;
 		} data;
 
-		data.nodeID = aNodeID;
-		data.varID = ScriptProxy::GetNodeIDToVarIDMap(aScript).at(data.nodeID);
+		data.nodeRef = aNodeRef;
+		data.varID = ScriptProxy::GetNodeRefToVarIDMap(aScript).at(data.nodeRef);
 		data.script = &aScript;
 
 		auto commandFunction = [data](eCommandType aCommandType) -> void
 			{
 				if (aCommandType == eCommandType::Do)
 				{
-					ScriptProxy::GetNodeIDToVarIDMap(*data.script).erase(data.nodeID);
+					ScriptProxy::GetNodeRefToVarIDMap(*data.script).erase(data.nodeRef);
 				}
 				else
 				{
-					ScriptProxy::GetNodeIDToVarIDMap(*data.script)[data.nodeID] = data.varID;
+					ScriptProxy::GetNodeRefToVarIDMap(*data.script)[data.nodeRef] = data.varID;
 				}
 			};
 

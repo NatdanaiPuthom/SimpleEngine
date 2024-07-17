@@ -15,19 +15,19 @@ namespace SCR
 	{
 	}
 
-	VarID VariableManager::GetVariableIDByNodeID(const NodeID aNodeID) const
+	VarID VariableManager::GetVariableIDByNodeRef(const NodeRef& aNodeRef) const
 	{
-		return myNodeIDToVarID.at(aNodeID);
+		return myNodeRefToVarID.at(aNodeRef);
 	}
 
-	std::vector<NodeID> VariableManager::GetNodeIDsByVarID(const VarID aVarID) const
+	std::vector<NodeRef> VariableManager::GetNodeRefsByVarID(const VarID aVarID) const
 	{
-		std::vector<NodeID> nodeIDs;
-		for (auto& [nodeID, varID] : myNodeIDToVarID)
+		std::vector<NodeRef> nodeIDs;
+		for (auto& [nodeRef, varID] : myNodeRefToVarID)
 		{
 			if (varID == aVarID)
 			{
-				nodeIDs.push_back(nodeID);
+				nodeIDs.push_back(nodeRef);
 			}
 		}
 		return nodeIDs;

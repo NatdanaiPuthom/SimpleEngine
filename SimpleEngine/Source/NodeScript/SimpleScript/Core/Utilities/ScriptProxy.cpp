@@ -110,8 +110,8 @@ namespace SCR
 		return aScript.myVariableManager.myVariables[aVarID];
 	}
 
-	std::unordered_map<NodeID, VarID>& ScriptProxy::GetNodeIDToVarIDMap(Script& aScript)
+	std::unordered_map<NodeRef, VarID, NodeRefHasher>& ScriptProxy::GetNodeRefToVarIDMap(Script& aScript)
 	{
-		return aScript.myVariableManager.myNodeIDToVarID;
+		return aScript.myVariableManager.myNodeRefToVarID;
 	}
 }

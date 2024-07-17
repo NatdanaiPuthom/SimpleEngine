@@ -1,6 +1,7 @@
 #pragma once
 #include "../ScriptDefines.h"
 #include "../Node/Node.h"
+#include "../Node/NodeTrait.h"
 #include "PinView.h"
 
 namespace SCR
@@ -14,11 +15,19 @@ namespace SCR
 		NodeView(NodeID aNodeID, const NodeGraph& aNodeGraph);
 
 		const std::string& GetNodeTypeName() const;
+		std::string GetShortName() const;
 		ScriptVec2 GetPosition() const;
 		bool IsDestroyed() const;
 
 		std::vector<PinView> GetInputPins() const;
 		std::vector<PinView> GetOutputPins() const;
+
+		NodeID GetID() const;
+
+		eNodeTrait GetTraits() const;
+		EventID GetEventID() const;
+
+		const NodeGraph& GetNodeGraph() const;
 
 	private:
 

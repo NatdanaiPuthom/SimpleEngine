@@ -34,7 +34,9 @@ namespace SCR
 		DataTypeID GetTargetID() const;
 
 		void BindFunction(FunctionID aFunctionID);
-		const std::vector<FunctionID>& GetMemberFunctionIDs();
+		const std::vector<FunctionID>& GetMemberFunctionIDs() const;
+
+		const VariableManager& GetVariableManager() const;
 
 	private:
 

@@ -31,21 +31,19 @@ namespace SCR
 	};
 
 
-	constexpr eFlowType InvertFlowType(const eFlowType aPinType)
+	constexpr eFlowType InvertFlowType(const eFlowType aFlowType)
 	{
-		return aPinType == eFlowType::Input ? eFlowType::Output : eFlowType::Input;
+		return aFlowType == eFlowType::Input ? eFlowType::Output : eFlowType::Input;
 	}
 
 	std::string PinFlowTypeToString(const eFlowType aPinType);
 
 	eFlowType StringToPinFlowType(const std::string& aName);
 
-	std::string GetPinLabel(const PinType& aPinType);
-
 	template<typename T>
 	decltype(auto) SelectByFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
 	{
-		return aFlowType == eFlowType::Input ? aInputValue : aOutputValue;
+		return aFlowType == eFlowType::Input ? std::forward<T>(aInputValue) : std::forward<T>(aOutputValue);
 	}
 
 }

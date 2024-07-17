@@ -44,7 +44,7 @@ namespace SCR
 	}
 
 
-	void EventGraph::UnbindNodeFromEvent(NodeID aNodeID)
+	void EventGraph::UnbindNodeFromEvent(const NodeID aNodeID)
 	{
 		const Node& node = myNodeManager->myNodes.at(aNodeID);
 		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(node.typeID);

@@ -4,6 +4,7 @@
 #include <any>
 #include <vector>
 #include <unordered_map>
+#include "Node/NodeRef.h"
 
 namespace SCR
 {
@@ -71,9 +72,7 @@ namespace SCR
 		static Pin& GetPinRef(NodeGraph& aNodeGraph, const PinID aPinID);
 		static Variable& GetVariableRef(Script& aScript, const VarID aVarID);
 
-
-
-		static std::unordered_map<NodeID, VarID>& GetNodeIDToVarIDMap(Script& aScript);
+		static std::unordered_map<NodeRef, VarID, NodeRefHasher>& GetNodeRefToVarIDMap(Script& aScript);
 
 	};
 }

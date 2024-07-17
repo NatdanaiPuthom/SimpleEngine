@@ -33,36 +33,35 @@ namespace Editor
 
 			ImGui::Separator();
 
-			const std::vector<std::unique_ptr<SCRIPT::Function>>& functions = SCRIPT::NodeTypeManager::GetInstance().GetFunctions();
-			for (SCRIPT::FunctionID functionID = 0; functionID < functions.size(); ++functionID)
+			std::vector<SCRIPT::FunctionView> functions = SCRIPT::Modify::GetFunctions();
+			for (SCRIPT::FunctionView& functionView : functions)
 			{
-				SCRIPT::Function& function = *functions[functionID];
 
 				char functionNameBuffer[32]{};
-				strcpy_s(functionNameBuffer, function.GetName().c_str());
+				strcpy_s(functionNameBuffer, functionView.GetName().c_str());
 				if (ImGui::InputText("Name", functionNameBuffer, 32))
 				{
-					function.SetName(functionNameBuffer);
+					SCRIPT::Modify::SetFunctionName(functionView.GetID(), functionNameBuffer);
 				}
 
-				if (ImGui::Selectable(function.GetName().c_str()))
+				if (ImGui::Selectable(functionView.GetName().c_str()))
 				{
-					myParentWindow.SetNodeContext(function.GetNodeGraph(), nullptr);
+					myParentWindow.SetNodeContext(functionView.GetNodeGraph(), nullptr);
 				}
 
 				if (ImGui::Button("Create Caller"))
 				{
-					SCRIPT::Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, function.GetCallerNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetCallerNodeType().GetID());
 				}
 
 				if (ImGui::Button("Create Input"))
 				{
-					SCRIPT::Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, function.GetInputNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetInputNodeType().GetID());
 				}
 
 				if (ImGui::Button("Create Output"))
 				{
-					SCRIPT::Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, function.GetOutputNodeTypeID());
+					SCRIPT::Modify::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetOutputNodeType().GetID());
 				}
 
 				ImGui::Separator();

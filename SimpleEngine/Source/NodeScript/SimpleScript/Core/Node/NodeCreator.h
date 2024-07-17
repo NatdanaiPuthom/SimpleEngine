@@ -409,6 +409,7 @@ namespace SCR
 		EventID eventID = InvalidID<EventID>();
 		eNodeOperatorTrait operatorTrait = eNodeOperatorTrait::None;
 		DataTypeID ownerDataTypeID = GlobalDataTypeID;
+		//bool hasImplicitFlow = false;
 		NodeTypeDesc desc;
 	};
 
@@ -417,16 +418,17 @@ namespace SCR
 	{
 		static_assert(sizeof...(OutputTypes) > 0, "A node must always have an output pin, have you considered registering it as a flow node type?");
 
+
 		constexpr bool TakesExecutionContext = HasFlag(Traits, eNodeTrait::TakesExecutionContext);
 		constexpr bool TakesNodeState = !IsSameType<Wildcard, NodeStateDataType>;
 		constexpr bool TakesInternalExecutionContext = HasFlag(Traits, eNodeTrait::TakesInternalExecutionContext);
-		constexpr bool HasFlow = TypeExists<Flow, OutputTypes...> || TypeExists<Flow, InputTypes...>;
+		constexpr bool HasFlow = ContainsType<Flow, OutputTypes...> || ContainsType<Flow, InputTypes...>;
 
 		DataTypeID nodeStateDataTypeID = InvalidID<DataTypeID>();
 		if constexpr (TakesNodeState)
 		{
-			Global::GetDataTypeManager().Register<NodeStateDataType>(typeid(NodeStateDataType).name());
-			nodeStateDataTypeID = typeid(NodeStateDataType).hash_code();
+			Global::GetDataTypeManager().Register<NodeStateDataType>(typeid(NodeStateDataType).name(), DefaultColor, false);
+			nodeStateDataTypeID = GetDataTypeID<NodeStateDataType>();
 		}
 
 		eNodeTrait traits = Traits;
@@ -435,11 +437,11 @@ namespace SCR
 			traits |= eNodeTrait::HasFlow;
 		}
 
-		std::vector<PinTypeID> inputPinTypeIDs = CreatePinTypes<eFlowType::Input, std::remove_cvref_t<InputTypes>...>();
-		std::vector<PinTypeID> outputPinTypeIDs = CreatePinTypes<eFlowType::Output, OutputTypes...>();
+		const std::vector<PinTypeID> inputPinTypeIDs = CreatePinTypes<eFlowType::Input, std::remove_cvref_t<InputTypes>...>();
+		const std::vector<PinTypeID> outputPinTypeIDs = CreatePinTypes<eFlowType::Output, OutputTypes...>();
 
 		MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
-		MemoryPoolID functionMemoryID = foundationMemoryPool.Allocate<Callable>(aCallable);
+		const MemoryPoolID functionMemoryID = foundationMemoryPool.Allocate<Callable>(aCallable);
 
 		return NodeRecipe
 		{
@@ -484,7 +486,7 @@ namespace SCR
 					[aFunction](Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(std::forward<InputTypes>(someInputs)...);
-						return { Flow(true), output};
+						return { Flow(true), output };
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
@@ -531,7 +533,7 @@ namespace SCR
 					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(aContext, std::forward<InputTypes>(someInputs)...);
-						return { Flow(true), output};
+						return { Flow(true), output };
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
@@ -579,7 +581,7 @@ namespace SCR
 					[aFunction](NodeState<NodeStateDataType> aInternalData, Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(aInternalData, someInputs...);
-						return { Flow(true), output};
+						return { Flow(true), output };
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
@@ -625,7 +627,7 @@ namespace SCR
 					[aFunction](NodeExecutionContext<ExecutionContextType> aContext, NodeState<NodeStateDataType> aInternalData, Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(aContext, aInternalData, std::forward<InputTypes>(someInputs)...);
-						return { Flow(true), output};
+						return { Flow(true), output };
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(), aCreationData);
@@ -759,8 +761,9 @@ namespace SCR
 					{
 						aFunction(aContext, std::forward<InputTypes>(aInputs)...);
 						return Flow(true);
-					}, TypeList<Flow>(), TypeList<Flow, InputTypes...>(), aCreationData
-						);
+					},
+					TypeList<Flow>(), TypeList<Flow, InputTypes...>(), aCreationData
+				);
 			}
 			else
 			{
@@ -768,8 +771,9 @@ namespace SCR
 					[aFunction](const InternalExecutionContext* aContext, Flow, InputTypes... aInputs) -> std::tuple<Flow, OutputType>
 					{
 						return { Flow(true), aFunction(aContext, std::forward<InputTypes>(aInputs)...) };
-					}, TypeList<Flow, OutputType>(), TypeList<Flow, InputTypes...>(), aCreationData
-						);
+					},
+					TypeList<Flow, OutputType>(), TypeList<Flow, InputTypes...>(), aCreationData
+				);
 			}
 		}
 		else
@@ -789,8 +793,9 @@ namespace SCR
 					[aFunction](const InternalExecutionContext* aContext, InputTypes... aInputs) -> OutputType
 					{
 						return aFunction(aContext, std::forward<InputTypes>(aInputs)...);
-					}, TypeList<OutputType>(), TypeList<InputTypes...>(), aCreationData
-						);
+					}, 
+					TypeList<OutputType>(), TypeList<InputTypes...>(), aCreationData
+				);
 			}
 		}
 	}
@@ -810,7 +815,7 @@ namespace SCR
 					{
 						aFunction(aContext, aNodeState, std::forward<InputTypes>(aInputs)...);
 						return Flow(true);
-					}, 
+					},
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(),
 					aCreationData
@@ -876,7 +881,7 @@ namespace SCR
 				(aClassType->*aFuncPtr)(std::forward<InputTypes>(aInputTypes)...);
 				return Flow(true);
 			};
-		return CreateNodeRecipe<eNodeTrait::HasImplicitFlow>(callable, TypeList<Flow>(), TypeList<Flow, ClassType*, InputTypes...>(), NodeCreationData{ .ownerDataTypeID = GetDataTypeID<ClassType>() });
+		return CreateNodeRecipe(callable, TypeList<Flow>(), TypeList<Flow, ClassType*, InputTypes...>(), NodeCreationData{ .ownerDataTypeID = GetDataTypeID<ClassType>(), .hasImplicitFlow = true });
 	}
 
 	template<typename ClassType, typename OutputType, typename... InputTypes>

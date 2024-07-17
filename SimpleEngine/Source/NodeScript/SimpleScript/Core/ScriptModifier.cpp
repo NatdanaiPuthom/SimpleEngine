@@ -110,7 +110,7 @@ namespace SCR
 			return nodeID;
 		}
 
-		NodeID CreateNode(NodeGraph& aNodeGraph, const std::string& aName, bool& aSuccess, const ScriptVec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
+		NodeID CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, const ScriptVec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
 		{
 			if (aCommandTracker)
 			{
@@ -138,7 +138,7 @@ namespace SCR
 
 			NodeID nodeID = InternalModifier::CreateGetterNode(aNodeGraph, aDataTypeID, aCommandTracker);
 			SetNodePosition(nodeID, aPosition, aNodeGraph, aCommandTracker);
-			InternalModifier::BindVariable(aScript, nodeID, aVarID, aCommandTracker);
+			InternalModifier::BindVariable(aScript, NodeRef{ .nodeID = nodeID, .nodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
 
 			if (aCommandTracker)
 			{
@@ -154,9 +154,9 @@ namespace SCR
 				aCommandTracker->BeginComposite("Create Setter Node");
 			}
 
-			NodeID nodeID = InternalModifier::CreateSetterNode(aNodeGraph, aDataTypeID, aCommandTracker);
+			const NodeID nodeID = InternalModifier::CreateSetterNode(aNodeGraph, aDataTypeID, aCommandTracker);
 			SetNodePosition(nodeID, aPosition, aNodeGraph, aCommandTracker);
-			InternalModifier::BindVariable(aScript, nodeID, aVarID, aCommandTracker);
+			InternalModifier::BindVariable(aScript, NodeRef{ .nodeID = nodeID, .nodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
 
 			if (aCommandTracker)
 			{
@@ -167,7 +167,7 @@ namespace SCR
 
 		LinkID TryCreateLink(PinID aPinID1, PinID aPinID2, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 		{
-			Link createdLink = ScriptLinker::ArePinsLinkable(aNodeGraph, aPinID1, aPinID2);
+			const Link createdLink = ScriptLinker::ArePinsLinkable(aNodeGraph, aPinID1, aPinID2);
 			if (!createdLink)
 			{
 				// Check if we can replace node with overloaded operator node
@@ -270,14 +270,32 @@ namespace SCR
 				aCommandTracker->BeginComposite("Destroy Selection");
 			}
 
-			for (LinkID linkID : aLinkIDs)
+			for (const LinkID linkID : aLinkIDs)
 			{
 				DestroyLink(linkID, aNodeGraph, aCommandTracker);
 			}
 
-			for (NodeID nodeID : aNodeIDs)
+			for (const NodeID nodeID : aNodeIDs)
 			{
 				DestroyNode(nodeID, aNodeGraph, aCommandTracker);
+			}
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+		}
+
+		void DestroyNodes(const std::vector<NodeRef>& aNodeRefs, CommandTracker* aCommandTracker)
+		{
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Destroy Nodes");
+			}
+
+			for (const NodeRef& nodeRef : aNodeRefs)
+			{
+				DestroyNode(nodeRef.nodeID, *nodeRef.nodeGraph, aCommandTracker);
 			}
 
 			if (aCommandTracker)
@@ -395,7 +413,7 @@ namespace SCR
 			}
 
 			const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
-			DestroySelection(variableManager.GetNodeIDsByVarID(aVarID), {}, aScript.GetEventGraph(), aCommandTracker);
+			DestroyNodes(variableManager.GetNodeRefsByVarID(aVarID), aCommandTracker);
 
 			if (aCommandTracker)
 			{
@@ -509,7 +527,7 @@ namespace SCR
 			variable.dataTypeID = aDataTypeID;
 			variable.defaultValueDataPtr = defaultValueDataPtr;
 
-			DestroyVariableNodes(aVarID, aScript, aScript.GetEventGraph(), aCommandTracker);
+			DestroyVariableNodes(aVarID, aScript, aCommandTracker);
 		}
 
 		void SetVariableName(VarID aVarID, const std::string& aName, Script& aScript)
@@ -519,9 +537,16 @@ namespace SCR
 			variable.name = aName;
 		}
 
-		void DestroyVariableNodes(const VarID aVarID, Script& aScript, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
+		void DestroyVariableNodes(const VarID aVarID, Script& aScript, CommandTracker* const aCommandTracker)
 		{
-			DestroySelection(ScriptProxy::GetVariableManager(aScript).GetNodeIDsByVarID(aVarID), {}, aNodeGraph, aCommandTracker);
+			DestroyNodes(aScript.GetVariableManager().GetNodeRefsByVarID(aVarID), aCommandTracker);
+		}
+
+		void SetPinTypeName(PinTypeID aPinTypeID, std::string_view aName)
+		{
+			PinType& pinType = Global::GetPinTypeManager().GetPinType(aPinTypeID);
+
+			pinType.name = aName;
 		}
 
 		void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraph& aNodeGraph)
@@ -651,7 +676,7 @@ namespace SCR
 			return InternalModifier::CreateCustomEvent(aName);
 		}
 
-		static PinTypeID AddPinToNodeType(const DataTypeID aDataTypeID, const NodeTypeID aNodeTypeID, const eFlowType aFlowType, const std::string& aPinName)
+		static PinTypeID AddPinToNodeType(const DataTypeID aDataTypeID, const NodeTypeID aNodeTypeID, const eFlowType aFlowType, std::string_view aPinName)
 		{
 			NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID);
 
@@ -718,7 +743,7 @@ namespace SCR
 			}
 		}
 
-		void AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aCustomEventID, const std::string& aPinName)
+		void AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aCustomEventID, std::string_view aPinName)
 		{
 			CustomEvent& customEvent = NodeTypeManager::GetInstance().GetCustomEvent(aCustomEventID);
 
@@ -751,6 +776,16 @@ namespace SCR
 			DeletePinAtIndexNodeType(customEvent.GetExecutorTypeID(), anIndex, eFlowType::Output);
 		}
 
+		void SetCustomEventName(const CustomEventID aCustomEventID, std::string_view aName)
+		{
+			const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventID);
+			NodeType& executorNodeType = Global::GetNodeTypeManager().GetNodeType(customEvent.GetExecutorTypeID());
+			NodeType& callerNodeType = Global::GetNodeTypeManager().GetNodeType(customEvent.GetCallerTypeID());
+
+			const std::string nameDirectory = Global::GetNodeTypeManager().GetNameDirectory(customEvent.GetExecutorTypeID());
+			executorNodeType.name = nameDirectory + std::string(aName);
+			callerNodeType.name = nameDirectory + "Call " + std::string(aName);
+		}
 
 		FunctionID CreateGlobalFunction(const std::string& aName)
 		{
@@ -765,7 +800,7 @@ namespace SCR
 			return id;
 		}
 
-		void AddPinToFunction(const FunctionID aFunctionID, const DataTypeID aDataTypeID, const eFlowType aFlowType, const std::string& aPinName)
+		void AddPinToFunction(const FunctionID aFunctionID, const DataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName)
 		{
 			const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
 			const Function& function = nodeTypeManager.GetFunction(aFunctionID);
@@ -797,15 +832,141 @@ namespace SCR
 			DeletePinAtIndexNodeType(inputOutputNodeTypeID, anIndex, InvertFlowType(aFlowType));
 		}
 
+		void SetFunctionName(const FunctionID aFunctionID, std::string_view aName)
+		{
+			Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionID);
+
+			function.SetName(aName);
+		}
+
 		void BeginFrame()
 		{
 			Global::Internal::GetFrameMemoryArena().Clear();
 		}
 
-		int GetPinID(const PinID aPinID, const NodeGraph& aNodeGraph)
+		/*int GetPinID(const PinID aPinID, const NodeGraph& aNodeGraph)
 		{
 			const Pin& pin = ScriptProxy::GetPin(aNodeGraph, aPinID);
 			return aNodeGraph.myMemoryArena.GetID<int>(pin.dataPtr);
+		}*/
+
+		VarID GetVarIDByNodeID(const NodeID aNodeID, NodeGraph& aNodeGraph, const Script& aScript)
+		{
+			const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
+			return variableManager.GetVariableIDByNodeRef(NodeRef{ .nodeID = aNodeID, .nodeGraph = &aNodeGraph });
+		}
+
+		std::vector<NodeView> GetNodes(const NodeGraph& aNodeGraph, bool aIncludeDestroyed)
+		{
+			const std::vector<Node>& nodes = aNodeGraph.myNodeManager->myNodes;
+			std::vector<NodeView> nodeViews;
+
+			nodeViews.reserve(nodes.size());
+
+			for (NodeID nodeID = 0; nodeID < nodes.size(); ++nodeID)
+			{
+				if (!aIncludeDestroyed)
+				{
+					const Node& node = aNodeGraph.myNodeManager->myNodes.at(nodeID);
+					if (node.isDestroyed)
+					{
+						continue;
+					}
+				}
+				nodeViews.push_back(NodeView(nodeID, aNodeGraph));
+			}
+			return nodeViews;
+		}
+
+		std::vector<LinkView> GetLinks(const NodeGraph& aNodeGraph, bool aIncludeDestroyed)
+		{
+			const std::vector<Link>& links = aNodeGraph.myLinks;
+			std::vector<LinkView> linkViews;
+
+			linkViews.reserve(links.size());
+
+			for (LinkID linkID = 0; linkID < links.size(); ++linkID)
+			{
+				if (!aIncludeDestroyed)
+				{
+					const Link& link = aNodeGraph.myLinks.at(linkID);
+					if (link.isDestroyed)
+					{
+						continue;
+					}
+				}
+				linkViews.push_back(LinkView(linkID, aNodeGraph));
+			}
+			return linkViews;
+		}
+
+		std::vector<NodeTypeView> GetNodeTypes()
+		{
+			const auto& nodeTypes = Global::GetNodeTypeManager().GetNodeTypes();
+			std::vector<NodeTypeView> nodeTypeViews;
+			nodeTypeViews.reserve(nodeTypes.size());
+
+			for (NodeTypeID nodeTypeID = 0; nodeTypeID < nodeTypes.size(); ++nodeTypeID)
+			{
+				nodeTypeViews.push_back(NodeTypeView(nodeTypeID));
+			}
+
+			return nodeTypeViews;
+		}
+
+		std::vector<FunctionView> GetFunctions()
+		{
+			const auto& functions = Global::GetNodeTypeManager().GetFunctions();
+			std::vector<FunctionView> functionViews;
+			functionViews.reserve(functions.size());
+
+			for (FunctionID functionID = 0; functionID < functions.size(); ++functionID)
+			{
+				functionViews.push_back(FunctionView(functionID));
+			}
+
+			return functionViews;
+		}
+
+		std::vector<CustomEventView> GetCustomEvents()
+		{
+			const auto& customEvents = Global::GetNodeTypeManager().GetCustomEvents();
+			std::vector<CustomEventView> customEventViews;
+			customEventViews.reserve(customEvents.size());
+
+			for (CustomEventID customEventID = 0; customEventID < customEvents.size(); ++customEventID)
+			{
+				customEventViews.push_back(CustomEventView(customEventID));
+			}
+
+			return customEventViews;
+		}
+
+		std::vector<NodeTypeView> GetNodeTypesFilteredByDataTypeAndFlowType(const DataTypeID aDataTypeID, const eFlowType aFlowType)
+		{
+			return Global::GetNodeTypeManager().GetNodeTypesFiltered([aDataTypeID, aFlowType](const NodeType& aNodeType) -> bool
+				{
+					const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, aNodeType.nodeRecipe.inputPinTypeIDs, aNodeType.nodeRecipe.outputPinTypeIDs);
+					for (const PinTypeID pinTypeID : pinTypeIDs)
+					{
+						const PinType& pinType = Global::GetPinTypeManager().GetPinType(pinTypeID);
+						if (pinType.dataTypeID == aDataTypeID)
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+			);
+		}
+
+		std::vector<NodeTypeView> GetNodeTypesFilteredByTrait(const eNodeTrait aNodeTrait, const bool(*aBitOperation)(eNodeTrait, eNodeTrait))
+		{
+			return Global::GetNodeTypeManager().GetNodeTypesFiltered([aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
+				{
+					return aBitOperation(aNodeTrait, aNodeType.nodeRecipe.traits);
+				}
+			);
 		}
 
 	}

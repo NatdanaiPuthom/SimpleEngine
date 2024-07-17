@@ -148,7 +148,7 @@ namespace SCR
 		return InvalidID<FunctionID>();
 	}
 
-	NodeTypeID NodeTypeManager::GetTypeID(const std::string& aName)
+	NodeTypeID NodeTypeManager::GetTypeID(std::string_view aName)
 	{
 		for (NodeTypeID id = 0; id < myNodeTypes.size(); ++id)
 		{

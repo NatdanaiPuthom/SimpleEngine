@@ -34,14 +34,4 @@ namespace SCR
 		assert(false);
 		return eFlowType::Input;
 	}
-
-	std::string GetPinLabel(const PinType& aPinType)
-	{
-		std::string pinLabel = aPinType.name;
-		if (pinLabel == "#T")
-		{
-			pinLabel = Global::GetDataTypeManager().GetName(aPinType.dataTypeID);
-		}
-		return pinLabel;
-	}
 }

@@ -28,7 +28,7 @@ namespace Editor
 	{
 		const std::string name;
 		std::vector<NodeTypeCategory> childCategories;
-		std::vector<SCRIPT::NodeTypeID> nodeTypesIDs;
+		std::vector<SCRIPT::NodeTypeView> nodeTypes;
 	};
 
 	inline static unsigned int ToImGuiColor(const SCRIPT::Color& aColor)
@@ -93,10 +93,10 @@ namespace Editor
 		SCRIPT::FunctionID GetCurrentFunctionID() const;
 
 	private:
-		void ShowNodeTypeCreationMenu(const std::vector<SCRIPT::NodeTypeID>& aNodeTypeIDs, const std::function<void(SCRIPT::NodeTypeID)>& aOnClickFunc);
-		void ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(SCRIPT::NodeTypeID)>& aOnClickFunc);
-		void ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(SCRIPT::NodeTypeID)>& aOnClickFunction);
-		void PopulateCategories(const std::string& aName, const size_t aNodeTypeID, NodeTypeCategory& aCategory);
+		void ShowNodeTypeCreationMenu(const std::vector<SCRIPT::NodeTypeView>& aNodeTypeIDs, const std::function<void(const SCRIPT::NodeTypeView&)>& aOnClickFunc);
+		void ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(const SCRIPT::NodeTypeView&)>& aOnClickFunc);
+		void ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(const SCRIPT::NodeTypeView&)>& aOnClickFunction);
+		void PopulateCategories(const std::string& aName, const SCRIPT::NodeTypeView& aNodeType, NodeTypeCategory& aCategory);
 
 		void UpdateClickPos();
 		ImVec2 GetMousePos() const;
