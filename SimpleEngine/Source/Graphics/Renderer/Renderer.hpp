@@ -38,8 +38,9 @@ namespace Drawer
 		void RenderUnlitStaticModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, const Graphics::Shader* aShader, const Graphics::Texture* aTexture) const;
 		void RenderUnlitStaticAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const;
 
-		void RenderLine(const Drawer::Line& aLine) const;
-		void RenderLine(const std::vector<Drawer::Line>& aLines) const;
+		void Push(const Drawer::Line& aLine);
+		void Push(const std::vector<Drawer::Line>& aLines);
+		void RenderDebugLines();
 		void RenderStaticSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const;
 		void RenderAnimatedSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const;
 
@@ -61,6 +62,8 @@ namespace Drawer
 		const bool CreateObjectBuffer();
 		const bool CreateBoneBuffer();
 	private:
+		std::vector<Drawer::Line> myDebugLines;
+
 		std::unique_ptr<Drawer::LineDrawer> myLineDrawer;
 		std::unique_ptr<Drawer::SphereDrawer> mySphereDrawer;
 		std::unique_ptr<Drawer::SpriteDrawer> mySpriteDrawer;

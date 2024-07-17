@@ -113,9 +113,9 @@ namespace ECS
 	void RenderSystem::RenderUnlitModels()
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-		const Drawer::Renderer* renderer = graphicsEngine->GetRenderer();;
-		const Graphics::Shader* unlitShader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
+		Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
 
+		const Graphics::Shader* unlitShader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 
@@ -160,9 +160,17 @@ namespace ECS
 			sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 			renderer->RenderSphere(sphere);
-			renderer->RenderLine(line);
+			renderer->Push(line);
 			renderer->RenderUnlitStaticModel(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
 		}
+
+		PROFILER_FUNCTION(profiler::colors::Red);
+		PROFILER_BEGIN("Render Debug Lines");
+		if (renderer->GetShouldRenderDebugLines() == true)
+		{
+			graphicsEngine->GetRenderer()->RenderDebugLines();
+		}
+		PROFILER_END();
 
 		myStaticModelToRender.clear();
 		myAnimatedModelToRender.clear();

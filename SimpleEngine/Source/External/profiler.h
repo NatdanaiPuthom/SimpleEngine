@@ -7,6 +7,9 @@
 #include <easy/profiler.h>
 
 #ifndef _SIMPLE
+/*
+* NOTE(v11.3.3): Does not always write file properly in Debug so use Release, run application then close application, switch to Debug and retry may fix it
+*/
 #define PROFILER_ENABLED 0 //NOTE(v9.36.4): Enable profiler will cause "Process Memory" in Visual Studio to go up more or less. In case of memory constantly going up, try to disable this to check if this is the cause
 #else
 #define PROFILER_ENABLED 0

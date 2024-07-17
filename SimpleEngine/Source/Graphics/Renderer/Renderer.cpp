@@ -16,7 +16,7 @@ namespace Drawer
 {
 	using namespace Simple;
 
-	Renderer::Renderer() 
+	Renderer::Renderer()
 		: myIsUsingPBR(true)
 		, myShouldRenderMesh(true)
 		, myShouldRenderDebugLines(true)
@@ -121,7 +121,7 @@ namespace Drawer
 	}
 
 	void Renderer::RenderAnimatedSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const
-	{	
+	{
 		const Graphics::Skeleton* skeleton = aAnimationPlayerComponent->skeleton;
 		const Graphics::ModelSpacePose& modelSpacePose = aAnimationPlayerComponent->animationPlayer.myModelSpacePose;
 		const Math::Matrix4x4f modelTransform = aTransformComponent->transform.GetMatrix();
@@ -197,34 +197,50 @@ namespace Drawer
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
-	void Renderer::RenderLine(const Drawer::Line& aLine) const
+	void Renderer::Push(const Drawer::Line& aLine)
 	{
-		myLineDrawer->Render(aLine);
-
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		myDebugLines.push_back(aLine);
 	}
 
-	void Renderer::RenderLine(const std::vector<Drawer::Line>& aLines) const
+	void Renderer::RenderDebugLines()
 	{
-		const size_t sizeLimit = myLineDrawer->GetInstanceSizeLimit();
-
-		if (aLines.size() * 2 < sizeLimit)
+		for (size_t i = 0; i < myDebugLines.size(); i++)
 		{
-			myLineDrawer->RenderInstance(aLines);
+			myLineDrawer->Render(myDebugLines[i]);
+			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		}
+
+		//NOTE(v11.3.3): Somehow RenderInstance is much more expensive, will check later
+
+		/*const size_t sizeLimit = myLineDrawer->GetInstanceSizeLimit();
+
+		if (myDebugLines.size() * 2 < sizeLimit)
+		{
+			myLineDrawer->RenderInstance(myDebugLines);
 
 			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 		}
 		else
 		{
-			std::vector<std::vector<Drawer::Line>> lineSplit = Math::SplitVector(aLines, sizeLimit / 2);
+			std::vector<std::vector<Drawer::Line>> lineSplit = Math::SplitVector(myDebugLines, sizeLimit / 2);
 
 			while (lineSplit.empty() == false)
 			{
-				myLineDrawer->RenderInstance(aLines);
+				myLineDrawer->RenderInstance(myDebugLines);
 				lineSplit.erase(lineSplit.begin());
 
 				Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 			}
+		}*/
+
+		myDebugLines.clear();
+	}
+
+	void Renderer::Push(const std::vector<Drawer::Line>& aLines)
+	{
+		for (size_t i = 0; i < aLines.size(); ++i)
+		{
+			myDebugLines.push_back(aLines[i]);
 		}
 	}
 
