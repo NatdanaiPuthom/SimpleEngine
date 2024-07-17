@@ -960,7 +960,7 @@ namespace SCR
 			);
 		}
 
-		std::vector<NodeTypeView> GetNodeTypesFilteredByTrait(const eNodeTrait aNodeTrait, const bool(*aBitOperation)(eNodeTrait, eNodeTrait))
+		std::vector<NodeTypeView> GetNodeTypesFilteredByTrait(const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
 		{
 			return Global::GetNodeTypeManager().GetNodeTypesFiltered([aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
 				{

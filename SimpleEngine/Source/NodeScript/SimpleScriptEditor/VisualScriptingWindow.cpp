@@ -900,6 +900,16 @@ namespace Editor
 		}
 	}
 
+	bool StringCompare(std::string_view aStr1, std::string_view aStr2)
+	{
+		auto it = std::search(
+			aStr1.begin(), aStr1.end(),
+			aStr2.begin(), aStr2.end(),
+			[](unsigned char ch1, unsigned char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
+		);
+		return it != aStr1.end();
+	}
+
 	void VisualScriptingWindow::NodeCreation()
 	{
 		if (ImGui::IsKeyPressed(ImGuiKey_MouseRight))
@@ -934,7 +944,8 @@ namespace Editor
 								continue;
 							}
 
-							bool isSearched = std::strstr(nodeType.GetName().c_str(), myNodeTypeSearch);
+							const bool isSearched = StringCompare(nodeType.GetName(), myNodeTypeSearch);
+							//const bool isSearched = std::strstr(nodeType.GetName().c_str(), myNodeTypeSearch);
 							if (isSearched)
 							{
 								aMainCategory.nodeTypes.push_back(nodeType);
