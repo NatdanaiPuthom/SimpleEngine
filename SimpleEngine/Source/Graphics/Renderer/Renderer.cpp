@@ -19,6 +19,7 @@ namespace Drawer
 	Renderer::Renderer() 
 		: myIsUsingPBR(true)
 		, myShouldRenderMesh(true)
+		, myShouldRenderDebugLines(true)
 	{
 	}
 
@@ -246,6 +247,11 @@ namespace Drawer
 		myShouldRenderMesh = aShouldRender;
 	}
 
+	void Renderer::SetShouldRenderDebugLines(const bool aShouldRender)
+	{
+		myShouldRenderDebugLines = aShouldRender;
+	}
+
 	void Renderer::SetIsUsingPBR(const bool aIsUsingPBR)
 	{
 		myIsUsingPBR = aIsUsingPBR;
@@ -254,6 +260,11 @@ namespace Drawer
 	bool Renderer::GetShouldRenderMesh() const
 	{
 		return myShouldRenderMesh;
+	}
+
+	bool Renderer::GetShouldRenderDebugLines() const
+	{
+		return myShouldRenderDebugLines;
 	}
 
 	bool Renderer::GetIsUsingPBR() const

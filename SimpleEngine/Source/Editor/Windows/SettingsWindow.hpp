@@ -27,7 +27,7 @@ namespace Editor
 	private:
 		void ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleConsole();
-		void ToggleRenderDebugLines();
+		void ToggleRenderDebugLines(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleUsingPBR(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleShouldRenderMesh(Graphics::GraphicsEngine* aGraphicsEngine);
 		void AdjustWindowSize();

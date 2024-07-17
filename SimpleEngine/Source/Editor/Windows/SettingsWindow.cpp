@@ -80,7 +80,7 @@ namespace Editor
 			ImGui::SameLine();
 
 			ToggleShouldRenderMesh(graphicsEngine);
-			ToggleRenderDebugLines();
+			ToggleRenderDebugLines(graphicsEngine);
 
 			ImGui::Dummy(ImVec2(0, heightPadding));
 			ImGui::Separator();
@@ -187,10 +187,14 @@ namespace Editor
 		}
 	}
 
-	void SettingsWindow::ToggleRenderDebugLines()
+	void SettingsWindow::ToggleRenderDebugLines(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
-		if (ImGui::Checkbox("Render Debug Lines", &EditorEngine::myStaticShouldRenderDebugLines))
+		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
+		bool shouldRenderDebugLines = renderer->GetShouldRenderDebugLines();
+
+		if (ImGui::Checkbox("Render Debug Lines##SettingWindow", &shouldRenderDebugLines))
 		{
+			renderer->SetShouldRenderDebugLines(shouldRenderDebugLines);
 		}
 	}
 

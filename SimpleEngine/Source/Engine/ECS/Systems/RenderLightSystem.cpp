@@ -98,7 +98,7 @@ namespace ECS
 		ID3D11ShaderResourceView* nullSRVs[5] = { NULL };
 		context->PSSetShaderResources(5, 5, nullSRVs);
 
-		if (Editor::EditorEngine::myStaticShouldRenderDebugLines == true)
+		if (renderer->GetShouldRenderDebugLines() == true)
 		{
 			Drawer::Sphere pointLightDebugSpheres;
 			pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };

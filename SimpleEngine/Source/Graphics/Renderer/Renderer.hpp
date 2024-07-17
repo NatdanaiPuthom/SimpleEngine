@@ -47,9 +47,11 @@ namespace Drawer
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
 	public:
 		void SetShouldRenderMesh(const bool aShouldRender);
+		void SetShouldRenderDebugLines(const bool aShouldRender);
 		void SetIsUsingPBR(const bool aIsUsingPBR);
 	public:
 		bool GetShouldRenderMesh() const;
+		bool GetShouldRenderDebugLines() const;
 		bool GetIsUsingPBR() const;
 	private:
 		void RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const;
@@ -69,5 +71,6 @@ namespace Drawer
 
 		bool myShouldRenderMesh;
 		bool myIsUsingPBR;
+		bool myShouldRenderDebugLines;
 	};
 }

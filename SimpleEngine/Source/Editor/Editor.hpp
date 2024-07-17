@@ -12,8 +12,6 @@ namespace Editor
 	class EditorEngine final
 	{
 	public:
-		static bool myStaticShouldRenderDebugLines;
-	public:
 		EditorEngine();
 		~EditorEngine();
 
