@@ -221,9 +221,9 @@ namespace Simpleton
 		return LoadAndInitScene(aSceneName);
 	}
 
-	void SceneManager::TogglePlay()
+	void SceneManager::SetIsPlaying(const bool aIsPlaying)
 	{
-		myIsPlaying = !myIsPlaying;
+		myIsPlaying = aIsPlaying;
 	}
 
 	bool SceneManager::GetIsPlaying() const

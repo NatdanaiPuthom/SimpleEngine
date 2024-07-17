@@ -38,19 +38,17 @@ namespace Simpleton
 		void LateUpdate();
 		void LateRender();
 
+		void ReloadSceneFromFile(const std::string& aSceneName);
+
 		void ChangeScene(const std::string& aSceneName);
 		void ChangeSceneName(const std::string& aNewSceneName);
 		void CreateNewScene(const std::string& aFilePath);
-
-		void ReloadSceneFromFile(const std::string& aSceneName);
-
+	public:
+		void SetIsPlaying(const bool aIsPlaying);
+	public:
 		const SceneInfo* GetCurrentSceneInfo() const;
 		ECS::EntityComponentSystem& GetCurrentECS();
-
-		void TogglePlay();
-
 		bool GetIsPlaying() const;
-
 	private:
 		void LoadSettingsFromJson();
 		void LoadSystems();

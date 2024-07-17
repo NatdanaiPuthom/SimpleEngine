@@ -42,7 +42,7 @@ namespace Editor
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10);
 			if (ImGui::Button(ICON_FA_PLAY))
 			{
-				sceneManager.TogglePlay();
+				sceneManager.SetIsPlaying(!isPlaying);
 			}
 			ImGui::PopStyleVar();
 
