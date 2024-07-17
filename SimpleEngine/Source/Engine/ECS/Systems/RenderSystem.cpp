@@ -63,6 +63,11 @@ namespace ECS
 			const AnimationComponent* animated = entity->GetComponent<ECS::AnimationComponent>();
 			const bool isUsingPBR = renderer->GetIsUsingPBR();
 
+			if (renderer->GetShouldRenderBoundingBox() == true)
+			{
+				renderer->Push(Drawer::BoundingBox3DData(transform->transform.GetMatrix(), mesh->mesh->GetBoundingBox()));
+			}
+
 			if (animated != nullptr && animated->skeleton != nullptr && animated->shader != nullptr)
 			{
 				renderer->RenderStaticSkeletonLines(transform, animated);

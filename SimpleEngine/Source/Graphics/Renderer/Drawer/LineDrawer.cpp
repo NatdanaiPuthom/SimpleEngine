@@ -102,9 +102,7 @@ namespace Drawer
 
 		context->IASetVertexBuffers(0, 1, myInstanceData->vertexBuffer.GetAddressOf(), &stride, &offset);
 		context->IASetIndexBuffer(myInstanceData->indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-
 		context->DrawIndexed(static_cast<UINT>(myInstanceData->meshData.indices.size()), 0, 0);
 	}
 

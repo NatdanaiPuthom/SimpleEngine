@@ -5,6 +5,7 @@
 #include "Engine/Global.hpp"
 #include "Engine/Math/Math.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/SimpleUtilities/Bounds.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
 #include "Engine/ECS/Components/Core/AnimationComponent.hpp"
@@ -20,6 +21,7 @@ namespace Drawer
 		: myIsUsingPBR(true)
 		, myShouldRenderMesh(true)
 		, myShouldRenderDebugLines(true)
+		, myShouldRenderBoundingBox(true)
 	{
 	}
 
@@ -233,8 +235,15 @@ namespace Drawer
 			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 		}
 
+		for (size_t i = 0; i < myBoundingBoxesData.size(); i++)
+		{
+			myBoundingBoxDrawer->Render(myBoundingBoxesData[i].boundingBox, myBoundingBoxesData[i].modelToWorld);
+			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		}
+
 		myDebugLines.clear();
 		myDebugSpheres.clear();
+		myBoundingBoxesData.clear();
 	}
 
 	void Renderer::Push(const std::vector<Drawer::Line>& aLines)
@@ -248,6 +257,11 @@ namespace Drawer
 	void Renderer::Push(const Drawer::Sphere& aSphere)
 	{
 		myDebugSpheres.push_back(aSphere);
+	}
+
+	void Renderer::Push(const Drawer::BoundingBox3DData& aBoundingBoxData)
+	{
+		myBoundingBoxesData.push_back(aBoundingBoxData);
 	}
 
 	void Renderer::RenderSprite2D(const Drawer::Sprite2D& aSprite)
@@ -267,6 +281,11 @@ namespace Drawer
 		myShouldRenderDebugLines = aShouldRender;
 	}
 
+	void Renderer::SetShouldRenderBoundingBox(const bool aShouldRender)
+	{
+		myShouldRenderBoundingBox = aShouldRender;
+	}
+
 	void Renderer::SetIsUsingPBR(const bool aIsUsingPBR)
 	{
 		myIsUsingPBR = aIsUsingPBR;
@@ -280,6 +299,11 @@ namespace Drawer
 	bool Renderer::GetShouldRenderDebugLines() const
 	{
 		return myShouldRenderDebugLines;
+	}
+
+	bool Renderer::GetShouldRenderBoundingBox() const
+	{
+		return myShouldRenderBoundingBox;
 	}
 
 	bool Renderer::GetIsUsingPBR() const
