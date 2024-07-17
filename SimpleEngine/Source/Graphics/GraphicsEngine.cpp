@@ -19,7 +19,6 @@ namespace Graphics
 	GraphicsEngine::GraphicsEngine()
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
-		, myIsUsingPBR(true)
 		, myFPSLevelCap(0)
 		, myCurrentRasterizerState(eRasterizerState::BackfaceCulling)
 	{
@@ -36,9 +35,11 @@ namespace Graphics
 		myJointsConstantBuffer = std::make_unique<ConstantBuffer>();
 		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
 		myPostProcessConstantBuffer = std::make_unique<ConstantBuffer>();
+		myPointLightConstantBuffer = std::make_unique<ConstantBuffer>();
 
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 		myLightBufferData = std::make_unique<LightBufferData>();
+		myPointLightBufferData = std::make_unique<PointLightBufferData>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
 
 		myEditorCamera = std::make_shared<Graphics::Camera>();
@@ -88,6 +89,7 @@ namespace Graphics
 		myTimeConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Time);
 		myLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Light);
 		myJointsConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Joints);
+		myPointLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Pointlight);
 		myPostProcessConstantBuffer->SetSlot(5);
 
 		myLightBufferData->directionalLightDirection.x = 0.0f;
@@ -348,7 +350,7 @@ namespace Graphics
 
 	void GraphicsEngine::ClearPointLightCount()
 	{
-		myLightBufferData->currentPointLightCount = 0;
+		myPointLightBufferData->currentPointLightCount = 0;
 	}
 
 	void GraphicsEngine::ClearRenderTarget(const eRenderTargetType aRenderTargetType)
@@ -503,18 +505,18 @@ namespace Graphics
 
 	void GraphicsEngine::AddPointLight(const PointLightData& aPointLightData)
 	{
-		myLightBufferData->pointLightData[myLightBufferData->currentPointLightCount] = aPointLightData;
-		++myLightBufferData->currentPointLightCount;
+		myPointLightBufferData->pointLightData[myPointLightBufferData->currentPointLightCount] = aPointLightData;
+		++myPointLightBufferData->currentPointLightCount;
 	}
 
 	PointLightData* GraphicsEngine::GetPointLightDataArray() const
 	{
-		return myLightBufferData->pointLightData;
+		return myPointLightBufferData->pointLightData;
 	}
 
 	size_t GraphicsEngine::GetPointLightCount() const
 	{
-		return myLightBufferData->currentPointLightCount;
+		return myPointLightBufferData->currentPointLightCount;
 	}
 
 	void GraphicsEngine::UnbindAllRenderTargets()
@@ -544,20 +546,28 @@ namespace Graphics
 		myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 	}
 
-	void GraphicsEngine::UpdateLightBuffer(const size_t aLightIndex)
+	void GraphicsEngine::UpdatePointlights(const size_t aLightIndex)
+	{
+		PointLightBufferData pointLightData;
+		pointLightData.currentPointLightCount = myPointLightBufferData->currentPointLightCount;
+
+		for (size_t i = 0; i < myPointLightBufferData->currentPointLightCount; i++)
+		{
+			pointLightData.pointLightData[i] = myPointLightBufferData->pointLightData[aLightIndex];
+		}
+
+		myPointLightConstantBuffer->Bind(myPointLightConstantBuffer->GetSlot());
+		myPointLightConstantBuffer->Update(sizeof(PointLightBufferData), &pointLightData);
+	}
+
+	void GraphicsEngine::UpdateLightBuffer()
 	{
 		LightBufferData lightBufferData;
 
 		lightBufferData.ambientLightColorAndIntensity = myLightBufferData->ambientLightColorAndIntensity;
 		lightBufferData.directionalLightColorAndIntensity = myLightBufferData->directionalLightColorAndIntensity;
 		lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
-		lightBufferData.currentPointLightCount = myLightBufferData->currentPointLightCount;
-
-		for (size_t i = 0; i < myLightBufferData->currentPointLightCount; i++)
-		{
-			lightBufferData.pointLightData[i] = myLightBufferData->pointLightData[aLightIndex];
-		}
-
+		
 		myLightConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
 		myLightConstantBuffer->Update(sizeof(LightBufferData), &lightBufferData);
 	}
@@ -753,11 +763,6 @@ namespace Graphics
 	void GraphicsEngine::SetBlackPoint(const float aValue)
 	{
 		myPostProcessData.blackpoint = aValue;
-	}
-
-	void GraphicsEngine::SetUsingPBR(const bool aUsingPBR)
-	{
-		myIsUsingPBR = aUsingPBR;
 	}
 
 	void GraphicsEngine::SetBloom(const float aValue)
@@ -1080,11 +1085,6 @@ namespace Graphics
 		viewport->MaxDepth = 1.0f;
 
 		myViewPort = viewport;
-	}
-
-	bool GraphicsEngine::IsUsingPBR() const
-	{
-		return myIsUsingPBR;
 	}
 
 	bool GraphicsEngine::IsVSyncActive() const
@@ -1492,6 +1492,13 @@ namespace Graphics
 		if (myLightConstantBuffer->Init(sizeof(LightBufferData), &lightBufferData) == false)
 		{
 			assert(false && "Failed to create LightConstantBuffer");
+		}
+
+		PointLightBufferData pointLightBufferData;
+
+		if (myPointLightConstantBuffer->Init(sizeof(PointLightBufferData), &pointLightBufferData) == false)
+		{
+			assert(false && "Failed to create PointLightConstantBuffer");
 		}
 	}
 

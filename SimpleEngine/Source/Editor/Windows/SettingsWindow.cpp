@@ -62,18 +62,39 @@ namespace Editor
 
 			ShowFPS();
 
-			{
-				ImGui::SameLine(ImGui::GetWindowWidth() - 100);
-				ShowDrawCalls();
-			}
+			ImGui::SameLine(ImGui::GetWindowWidth() - 100);
+			ShowDrawCalls();
+
+			ImGui::Dummy(ImVec2(0, heightPadding));
+			ImGui::AlignTextToFramePadding();
+			ImGui::SeparatorText("Render");
+			ImGui::Dummy(ImVec2(0, heightPadding));
 
 			ToggleVSync(graphicsEngine);
+
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2(3, 0));
+			ImGui::SameLine();
+
+			ToggleRenderDebugLines(graphicsEngine);
+
+			ToggleShouldRenderMesh(graphicsEngine);
 
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(10, 0));
 			ImGui::SameLine();
 
 			ToggleUsingPBR(graphicsEngine);
+
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2(10, 0));
+			ImGui::SameLine();
+
+			ToggleShouldRenderSkeletonLine(graphicsEngine);
+
+			ImGui::Dummy(ImVec2(0, heightPadding));
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0, heightPadding));
 
 			AdjustFPSCap(graphicsEngine);
 			AdjustRasterizerState();
@@ -88,14 +109,6 @@ namespace Editor
 			if (ImGui::Button("Clear Console##SettingsWindow"))
 			{
 				system("CLS");
-			}
-
-			ImGui::Dummy(ImVec2(0, heightPadding));
-			ImGui::Separator();
-			ImGui::Dummy(ImVec2(0, heightPadding));
-
-			if (ImGui::Checkbox("Render Debug Lines", &EditorEngine::myStaticShouldRenderDebugLines))
-			{
 			}
 
 			ImGui::Dummy(ImVec2(0, heightPadding));
@@ -184,13 +197,47 @@ namespace Editor
 		}
 	}
 
+	void SettingsWindow::ToggleRenderDebugLines(Graphics::GraphicsEngine* aGraphicsEngine)
+	{
+		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
+		bool shouldRenderDebugLines = renderer->GetShouldRenderDebugLines();
+
+		if (ImGui::Checkbox("DebugLines##SettingWindow", &shouldRenderDebugLines))
+		{
+			renderer->SetShouldRenderDebugLines(shouldRenderDebugLines);
+		}
+	}
+
 	void SettingsWindow::ToggleUsingPBR(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
-		bool isUsingPBR = aGraphicsEngine->IsUsingPBR();
+		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
+		bool isUsingPBR = renderer->GetIsUsingPBR();
 
-		if (ImGui::Checkbox("PBR Render##SettingWindow", &isUsingPBR))
+		if (ImGui::Checkbox("PBR##SettingWindow", &isUsingPBR))
 		{
-			aGraphicsEngine->SetUsingPBR(isUsingPBR);
+			renderer->SetIsUsingPBR(isUsingPBR);
+		}
+	}
+
+	void SettingsWindow::ToggleShouldRenderMesh(Graphics::GraphicsEngine* aGraphicsEngine)
+	{
+		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
+		bool shouldRenderMesh = renderer->GetShouldRenderMesh();
+
+		if (ImGui::Checkbox("Mesh##SettingWindow", &shouldRenderMesh))
+		{
+			renderer->SetShouldRenderMesh(shouldRenderMesh);
+		}
+	}
+
+	void SettingsWindow::ToggleShouldRenderSkeletonLine(Graphics::GraphicsEngine* aGraphicsEngine)
+	{
+		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
+		bool shouldRenderSkeleton = renderer->GetShouldRenderSkeletonLines();
+
+		if (ImGui::Checkbox("Skeleton##SettingWindow", &shouldRenderSkeleton))
+		{
+			renderer->SetShouldRenderSkeletonLines(shouldRenderSkeleton);
 		}
 	}
 

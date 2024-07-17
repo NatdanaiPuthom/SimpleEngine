@@ -4,6 +4,11 @@
 #include <string>
 #include <shellapi.h>
 
+namespace ECS
+{
+	struct ComponentProperty;
+}
+
 namespace SimpleUtilities
 {
 	class FileManager final
@@ -19,5 +24,7 @@ namespace SimpleUtilities
 		static const std::vector<std::string> GetFileNamesFromDirectory(const std::string& aAbsolutePath, const bool aIncludeFolders = false);
 		static const std::vector<std::string> GetAbsoluteFilePathsFromDirectory(const std::string& aAbsolutePath, const bool aIncludeFolders = false);
 		static const nlohmann::json GetDataAsJson(const std::string& aAbsolutePath);
+
+		static const bool IsJSONDataDifferentFromPropertyData(const std::vector<ECS::ComponentProperty>& aComponentProperties, nlohmann::json& aPropertyJson);
 	};
 }

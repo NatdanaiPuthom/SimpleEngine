@@ -18,8 +18,35 @@ namespace ECS
 
 	void RenderSystem::Render()
 	{
-		const Drawer::Renderer* renderer = Global::GetRenderer();
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
+
+		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
+		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
+
+		if (entitiesWithSkyBoxComponent.empty())
+		{
+			static ID3D11ShaderResourceView* nullview[1] = { nullptr };
+			graphicsEngine->GetContext()->PSSetShaderResources(static_cast<unsigned int>(Graphics::Global_Slot_CubeMap), 1, nullview);
+		}
+
+		if (entitiesWithDirectionalLightComponent.empty() == false)
+		{
+			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
+			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
+			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
+
+			graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
+			graphicsEngine->SetDirectionalLightColor({ 1.0f, 1.0f, 1.0f,1.0f }); //TO-DO(v11.1.0): add color to the component to retrieve data instead of hardcoded
+		}
+		else
+		{
+			graphicsEngine->SetDirectionalLightDirection({ 0.0f,0.0f, -1.0f });
+			graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
+		}
+
 		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
+		const bool shouldRenderMesh = renderer->GetShouldRenderMesh();
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
 		{
@@ -34,10 +61,32 @@ namespace ECS
 			}
 
 			const AnimationComponent* animated = entity->GetComponent<ECS::AnimationComponent>();
-			const bool isUsingPBR = Global::GetGraphicsEngine()->IsUsingPBR();
+			const bool isUsingPBR = renderer->GetIsUsingPBR();
+
+			if (renderer->GetShouldRenderBoundingBox() == true)
+			{
+				renderer->Push(Drawer::BoundingBox3DData(transform->transform.GetMatrix(), mesh->mesh->GetBoundingBox()));
+			}
 
 			if (animated != nullptr && animated->skeleton != nullptr && animated->shader != nullptr)
 			{
+				if (renderer->GetShouldRenderSkeletonLines() == true)
+				{
+					if (animated->animationPlayer.myModelSpacePose.count > 0)
+					{
+						renderer->RenderAnimatedSkeletonLines(transform, animated);
+					}
+					else
+					{
+						renderer->RenderStaticSkeletonLines(transform, animated);
+					}
+				}
+
+				if (shouldRenderMesh == false)
+				{
+					continue;
+				}
+
 				if (isUsingPBR == true)
 				{
 					renderer->RenderPBRAnimatedModel(transform, mesh, animated);
@@ -49,6 +98,11 @@ namespace ECS
 			}
 			else
 			{
+				if (shouldRenderMesh == false)
+				{
+					continue;
+				}
+
 				if (isUsingPBR == true)
 				{
 					renderer->RenderPBRStaticModel(transform, mesh);
@@ -73,13 +127,18 @@ namespace ECS
 
 	void RenderSystem::RenderUnlitModels()
 	{
-		const Drawer::Renderer* renderer = Global::GetRenderer();
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
+
+		const Graphics::Shader* unlitShader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
+		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
+		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 
 		for (size_t i = 0; i < myStaticModelToRender.size(); ++i)
 		{
 			const TransformComponent* transform = myStaticModelToRender[i].transformComponent;
 			const MeshComponent* mesh = myStaticModelToRender[i].meshComponent;
-			renderer->RenderUnlitStaticModel(transform->transform.GetMatrix(), mesh->mesh, mesh->shader, mesh->textures[Graphics::Global_Slot_Albedo]);
+			renderer->RenderUnlitStaticModel(transform->transform.GetMatrix(), mesh->mesh, unlitShader, mesh->textures[Graphics::Global_Slot_Albedo]);
 		}
 
 		for (size_t i = 0; i < myAnimatedModelToRender.size(); ++i)
@@ -89,6 +148,44 @@ namespace ECS
 			const AnimationComponent* animated = myAnimatedModelToRender[i].animationComponent;
 			renderer->RenderUnlitStaticAnimatedModel(transform, mesh, animated);
 		}
+
+		if (entitiesWithSkyBoxComponent.empty() == false)
+		{
+			const ECS::Entity skyBox = myEntityComponentSystem->GetEntity(*entitiesWithSkyBoxComponent.begin());
+			SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
+			skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
+
+			renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
+		}
+
+		if (entitiesWithDirectionalLightComponent.empty() == false)
+		{
+			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
+			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
+			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
+
+			Drawer::Line line;
+			line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+			line.startPosition = directionalLightComponent->transform.GetPosition();
+			line.endPosition = line.startPosition + forward * 5.0f;
+
+			Drawer::Sphere sphere;
+			sphere.radius = 0.25f;
+			sphere.position = line.endPosition;
+			sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+			renderer->Push(sphere);
+			renderer->Push(line);
+			renderer->RenderUnlitStaticModel(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
+		}
+
+		PROFILER_FUNCTION(profiler::colors::Red);
+		PROFILER_BEGIN("Render Debug Lines");
+		if (renderer->GetShouldRenderDebugLines() == true)
+		{
+			graphicsEngine->GetRenderer()->RenderDebugLines();
+		}
+		PROFILER_END();
 
 		myStaticModelToRender.clear();
 		myAnimatedModelToRender.clear();

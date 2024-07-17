@@ -5,6 +5,7 @@
 #include "Engine/Global.hpp"
 #include "Engine/Math/Math.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/SimpleUtilities/Bounds.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
 #include "Engine/ECS/Components/Core/AnimationComponent.hpp"
@@ -17,6 +18,11 @@ namespace Drawer
 	using namespace Simple;
 
 	Renderer::Renderer()
+		: myIsUsingPBR(true)
+		, myShouldRenderMesh(true)
+		, myShouldRenderDebugLines(true)
+		, myShouldRenderBoundingBox(true)
+		, myShouldRenderSkeletonLines(false)
 	{
 	}
 
@@ -79,6 +85,90 @@ namespace Drawer
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
+	void Renderer::RenderStaticSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent)
+	{
+		const std::vector<Graphics::Joint>& joints = aAnimationPlayerComponent->skeleton->myJoints;
+		const Math::Vector3f position = aTransformComponent->transform.GetPosition();
+		const Math::Vector3f scale = aTransformComponent->transform.GetScale();
+
+		std::vector<Drawer::Line> staticSkeletonLines(joints.size());
+
+		Drawer::Line line;
+		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+		Drawer::Sphere sphere;
+		sphere.radius = 0.05f;
+		sphere.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+		for (size_t index = 0; index < joints.size(); ++index)
+		{
+			Graphics::Joint joint = joints[index];
+
+			const Math::Matrix4x4 boneWorldTransform = Math::Matrix4x4f::GetInverse(joint.myBindPoseInverse);
+
+			sphere.position = boneWorldTransform.GetPosition() + position;
+
+			Push(sphere);
+
+			if (joint.myParent == -1)
+				continue;
+
+			const Math::Matrix4x4 boneWorldTransformNext = Math::Matrix4x4f::GetInverse(joints[joint.myParent].myBindPoseInverse);
+
+			line.startPosition = boneWorldTransform.GetPosition() * scale + position;
+			line.endPosition = boneWorldTransformNext.GetPosition() * scale + position;
+
+			staticSkeletonLines[index] = line;
+		}
+
+		Push(staticSkeletonLines);
+	}
+
+	void Renderer::RenderAnimatedSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent)
+	{
+		const Graphics::Skeleton* skeleton = aAnimationPlayerComponent->skeleton;
+		const Graphics::ModelSpacePose& modelSpacePose = aAnimationPlayerComponent->animationPlayer.myModelSpacePose;
+		const Math::Matrix4x4f modelTransform = aTransformComponent->transform.GetMatrix();
+		const Math::Vector3f position = aTransformComponent->transform.GetPosition();
+		const Math::Vector3f scale = aTransformComponent->transform.GetScale();
+		const size_t jointSize = aAnimationPlayerComponent->skeleton->myJoints.size();
+
+		std::vector<Drawer::Line> animatedkeletonLines(jointSize);
+		Graphics::LocalSpacePose pose;
+
+		skeleton->ConvertModelSpacePoseToLocalSpacePose(modelSpacePose, pose);
+
+		Drawer::Sphere sphere;
+		sphere.radius = 0.05f;
+		sphere.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+		Drawer::Line line;
+		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+		for (size_t index = 0; index < jointSize; ++index)
+		{
+			Graphics::Joint joint = skeleton->myJoints[index];
+
+			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
+
+			sphere.position = boneWorldTransform.GetPosition();
+
+			Push(sphere);
+
+			if (joint.myParent == -1)
+				continue;
+
+			const Math::Matrix4x4 boneWorldTransformNext = pose.jointTransforms[joint.myParent] * modelTransform;
+
+			line.startPosition = boneWorldTransform.GetPosition();
+			line.endPosition = boneWorldTransformNext.GetPosition();
+
+			animatedkeletonLines[index] = line;
+		}
+
+		Push(animatedkeletonLines);
+	}
+
 	void Renderer::RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const
 	{
 		TransformBufferData objectBuffer = {};
@@ -112,42 +202,65 @@ namespace Drawer
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
-	void Renderer::RenderLine(const Drawer::Line& aLine) const
+	void Renderer::Push(const Drawer::Line& aLine)
 	{
-		myLineDrawer->Render(aLine);
-
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		myDebugLines.push_back(aLine);
 	}
 
-	void Renderer::RenderLine(const std::vector<Drawer::Line>& aLines) const
+	void Renderer::RenderDebugLines()
 	{
 		const size_t sizeLimit = myLineDrawer->GetInstanceSizeLimit();
 
-		if (aLines.size() * 2 < sizeLimit)
+		if (myDebugLines.size() < sizeLimit)
 		{
-			myLineDrawer->RenderInstance(aLines);
-
+			myLineDrawer->RenderInstance(myDebugLines);
 			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 		}
 		else
 		{
-			std::vector<std::vector<Drawer::Line>> lineSplit = Math::SplitVector(aLines, sizeLimit / 2);
+			std::vector<std::vector<Drawer::Line>> lineSplit = Math::SplitVector(myDebugLines, sizeLimit / 2);
 
 			while (lineSplit.empty() == false)
 			{
-				myLineDrawer->RenderInstance(aLines);
+				myLineDrawer->RenderInstance(lineSplit[0]);
 				lineSplit.erase(lineSplit.begin());
-
 				Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 			}
 		}
+
+		for (size_t i = 0; i < myDebugSpheres.size(); i++)
+		{
+			mySphereDrawer->Render(myDebugSpheres[i]);
+			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		}
+
+		for (size_t i = 0; i < myBoundingBoxesData.size(); i++)
+		{
+			myBoundingBoxDrawer->Render(myBoundingBoxesData[i].boundingBox, myBoundingBoxesData[i].modelToWorld);
+			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		}
+
+		myDebugLines.clear();
+		myDebugSpheres.clear();
+		myBoundingBoxesData.clear();
 	}
 
-	void Renderer::RenderSphere(const Drawer::Sphere& aSphere) const
+	void Renderer::Push(const std::vector<Drawer::Line>& aLines)
 	{
-		mySphereDrawer->Render(aSphere);
+		for (size_t i = 0; i < aLines.size(); ++i)
+		{
+			myDebugLines.push_back(aLines[i]);
+		}
+	}
 
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	void Renderer::Push(const Drawer::Sphere& aSphere)
+	{
+		myDebugSpheres.push_back(aSphere);
+	}
+
+	void Renderer::Push(const Drawer::BoundingBox3DData& aBoundingBoxData)
+	{
+		myBoundingBoxesData.push_back(aBoundingBoxData);
 	}
 
 	void Renderer::RenderSprite2D(const Drawer::Sprite2D& aSprite)
@@ -155,6 +268,56 @@ namespace Drawer
 		mySpriteDrawer->Render(aSprite);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
+	void Renderer::SetShouldRenderMesh(const bool aShouldRender)
+	{
+		myShouldRenderMesh = aShouldRender;
+	}
+
+	void Renderer::SetShouldRenderDebugLines(const bool aShouldRender)
+	{
+		myShouldRenderDebugLines = aShouldRender;
+	}
+
+	void Renderer::SetShouldRenderBoundingBox(const bool aShouldRender)
+	{
+		myShouldRenderBoundingBox = aShouldRender;
+	}
+
+	void Renderer::SetShouldRenderSkeletonLines(const bool aShouldRender)
+	{
+		myShouldRenderSkeletonLines = aShouldRender;
+	}
+
+	void Renderer::SetIsUsingPBR(const bool aIsUsingPBR)
+	{
+		myIsUsingPBR = aIsUsingPBR;
+	}
+
+	bool Renderer::GetShouldRenderMesh() const
+	{
+		return myShouldRenderMesh;
+	}
+
+	bool Renderer::GetShouldRenderDebugLines() const
+	{
+		return myShouldRenderDebugLines;
+	}
+
+	bool Renderer::GetShouldRenderBoundingBox() const
+	{
+		return myShouldRenderBoundingBox;
+	}
+
+	bool Renderer::GetShouldRenderSkeletonLines() const
+	{
+		return myShouldRenderSkeletonLines;
+	}
+
+	bool Renderer::GetIsUsingPBR() const
+	{
+		return myIsUsingPBR;
 	}
 
 	const bool Renderer::CreateObjectBuffer()

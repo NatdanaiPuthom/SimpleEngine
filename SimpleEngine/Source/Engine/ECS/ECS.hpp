@@ -33,8 +33,6 @@ namespace ECS
 		void LateUpdate();
 		void LateRender();
 
-		void UpdateRenderSystem();
-
 		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
 
 		Entity CreateEntity(const EntityID aEntityID = 0);
@@ -46,6 +44,9 @@ namespace ECS
 
 		template<typename T>
 		const std::unordered_set<EntityID>& GetEntityIDsWithThisComponent();
+	private:
+		static void EraseMissingElementFromJSON(const nlohmann::json& aJsonData, const std::string& aAbsolutePath, const size_t aEntityIndex, const size_t aComponentIndex);
+		static void LoadComponentData(nlohmann::json& aPropertiesJSON, const std::vector<ComponentProperty>& aComponentProperties,const ComponentRegistry* aComponentRegistry, void* aComponentPointer);
 	private:
 		EntityManager myEntityManager;
 		ComponentManager myComponentManager;

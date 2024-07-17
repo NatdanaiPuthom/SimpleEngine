@@ -58,14 +58,17 @@ struct alignas(16) LightBufferData final
 
 	Math::Vector3f directionalLightDirection = { 0.0f, 0.0f, 1.0f };
 	const float paddingDirectionalLightDirection = -1.0f;
+};
 
+struct alignas(16) PointLightBufferData final
+{
 	PointLightData pointLightData[Graphics::Global_Max_PointLights];
 
 	unsigned int currentPointLightCount = 0;
 	const float paddingPointLightCount[3] = { -1.0f };
 };
 
-struct alignas(16) JointsBufferData
+struct alignas(16) JointsBufferData final
 {
 	Math::Matrix4x4f bonesTransform[Graphics::Global_Max_Joints];
 };

@@ -135,7 +135,7 @@ namespace Simple
 	void Pathfinder::RenderFunnelPath() const
 	{
 		auto renderer = Global::GetRenderer();
-		renderer->RenderLine(myLines);
+		renderer->Push(myLines);
 	}
 
 	void Pathfinder::RenderStartEndPosition() const
@@ -166,13 +166,13 @@ namespace Simple
 		endSphere.color = { 0.0f, 1.0f, 1.0f, 1.0f };
 		endSphere.radius = 0.1f;
 
-		auto renderer = Global::GetRenderer();
+		Drawer::Renderer* renderer = Global::GetRenderer();
 
-		renderer->RenderLine(startLine);
-		renderer->RenderLine(endLine);
+		renderer->Push(startLine);
+		renderer->Push(endLine);
 
-		renderer->RenderSphere(startSphere);
-		renderer->RenderSphere(endSphere);
+		renderer->Push(startSphere);
+		renderer->Push(endSphere);
 	}
 
 	void Pathfinder::RenderAStarPath() const
@@ -202,8 +202,8 @@ namespace Simple
 			lines.push_back(line);
 		}
 
-		auto renderer = Global::GetRenderer();
-		renderer->RenderLine(lines);
+		Drawer::Renderer* renderer = Global::GetRenderer();
+		renderer->Push(lines);
 	}
 
 	void Pathfinder::SetNavmesh(Simple::Navmesh* aNavmeshData)

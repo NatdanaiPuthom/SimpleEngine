@@ -5,13 +5,10 @@
 #include "Engine/ECS/Components/Core/SkyBoxComponent.hpp"
 #include "Engine/ECS/Components/Core/DirectionalLightComponent.hpp"
 #include "Editor/Editor.hpp"
-#include "External/imgui.h"
 
 namespace ECS
 {
 	RenderLightSystem::RenderLightSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
-		, myEntityWithSkyBoxID(static_cast<size_t>(-1))
-		, myEntityWithDirectionalLightID(static_cast<size_t>(-1))
 	{
 	}
 
@@ -21,64 +18,10 @@ namespace ECS
 
 	void RenderLightSystem::Init()
 	{
-		FindAndSetSkyBox();
-		FindAndSetDirectionalLight();
 	}
 
 	void RenderLightSystem::Update()
 	{
-		if (FindAndSetSkyBox())
-		{
-			const Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-			const ECS::Entity skyboxEntity = myEntityComponentSystem->GetEntity(myEntityWithSkyBoxID);
-			SkyBoxComponent* skyBoxComponent = skyboxEntity->GetComponent<SkyBoxComponent>();
-			skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
-		}
-
-		if (FindAndSetDirectionalLight())
-		{
-			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(myEntityWithDirectionalLightID);
-			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
-			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
-			graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
-			graphicsEngine->SetDirectionalLightColor({ 1.0f, 1.0f, 1.0f,1.0f }); //TO-DO(v11.1.0): add color to the component to retrieve data instead of hardcoded
-		}
-		else
-		{
-			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-			graphicsEngine->SetDirectionalLightDirection({ 0.0f,0.0f, -1.0f });
-			graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
-		}
-
-		{
-			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-
-			PointLightData pointLight1;
-			pointLight1.color = { 1.0f, 0.0f,0.0f, 5.0f };
-			pointLight1.position = { 2.75f, 1.7f, 1.25f };
-			pointLight1.radius = 3.0f;
-			graphicsEngine->AddPointLight(pointLight1);
-		}
-
-		/*if (ImGui::Begin("DirectionalLight"))
-		{
-			Math::Transform& transform = directionalLightComponent->transform;
-			Math::Vector3f position = transform.GetPosition();
-			Math::Vector3f rotation = transform.GetRotation();
-
-			if (ImGui::DragFloat3("Position", &position.x))
-			{
-				transform.SetPosition(position);
-			}
-
-			if (ImGui::DragFloat3("Rotation", &rotation.x))
-			{
-				transform.SetRotation(rotation);
-			}
-		}
-		ImGui::End();*/
-
 		/*
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
@@ -98,8 +41,19 @@ namespace ECS
 	void RenderLightSystem::Render()
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+
+		PointLightData pointLight1;
+		pointLight1.color = { 1.0f, 0.0f,0.0f, 5.0f };
+		pointLight1.position = { 2.75f, 1.7f, 1.25f };
+		pointLight1.radius = 3.0f;
+		graphicsEngine->AddPointLight(pointLight1);
+	}
+
+	void RenderLightSystem::LateRender()
+	{
+		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		ID3D11DeviceContext* context = graphicsEngine->GetContext().Get(); context;
-		const Drawer::Renderer* renderer = Global::GetRenderer();
+		Drawer::Renderer* renderer = Global::GetRenderer();
 
 		std::vector<Graphics::RenderTarget>& gBuffers = graphicsEngine->GetRenderTargets(Graphics::eRenderTargetType::GBuffer);
 
@@ -122,14 +76,13 @@ namespace ECS
 		graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
 		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Greater);
 		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
+		graphicsEngine->UpdateLightBuffer();
 
 		PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
 
-		graphicsEngine->UpdateLightBuffer(static_cast<size_t>(-1)); //TO-DO(v11.0.6): Refactor somehow, maybe seperate directionalLight buffer from pointlights?
-
 		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
 		{
-			graphicsEngine->UpdateLightBuffer(i);
+			graphicsEngine->UpdatePointlights(i);
 
 			transform.SetPosition(pointLightBuffer[i].position);
 			transform.SetScale(pointLightBuffer[i].radius);
@@ -144,7 +97,7 @@ namespace ECS
 		ID3D11ShaderResourceView* nullSRVs[5] = { NULL };
 		context->PSSetShaderResources(5, 5, nullSRVs);
 
-		if (Editor::EditorEngine::myStaticShouldRenderDebugLines == true)
+		if (renderer->GetShouldRenderDebugLines() == true)
 		{
 			Drawer::Sphere pointLightDebugSpheres;
 			pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -153,90 +106,16 @@ namespace ECS
 			{
 				pointLightDebugSpheres.position = pointLightBuffer[i].position;
 				pointLightDebugSpheres.radius = pointLightBuffer[i].radius;
-				renderer->RenderSphere(pointLightDebugSpheres);
+				renderer->Push(pointLightDebugSpheres);
 
 				pointLightDebugSpheres.radius = 0.1f;
-				renderer->RenderSphere(pointLightDebugSpheres);
+				renderer->Push(pointLightDebugSpheres);
 			}
-		}
-
-		if (myEntityWithDirectionalLightID != (static_cast<size_t>(-1)))
-		{
-			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(myEntityWithDirectionalLightID);
-			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
-			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
-
-			Drawer::Line line;
-			line.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-			line.startPosition = directionalLightComponent->transform.GetPosition();
-			line.endPosition = line.startPosition + forward * 5.0f;
-
-			Drawer::Sphere sphere;
-			sphere.radius = 0.25f;
-			sphere.position = line.endPosition;
-			sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-
-			renderer->RenderSphere(sphere);
-			renderer->RenderLine(line);
-		}
-	}
-
-	void RenderLightSystem::RenderSkyBoxAndDirectionalLight() const
-	{
-		const Drawer::Renderer* renderer = Global::GetRenderer();
-
-		if (myEntityWithSkyBoxID != (static_cast<size_t>(-1)))
-		{
-			const ECS::Entity skyBox = myEntityComponentSystem->GetEntity(myEntityWithSkyBoxID);
-			const SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
-			renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
-		}
-		else
-		{
-			ID3D11ShaderResourceView* nullSRV = nullptr; 
-			Global::GetGraphicsEngine()->GetContext()->PSSetShaderResources(Graphics::Global_Slot_CubeMap, 1, &nullSRV);
-		}
-
-		if (myEntityWithDirectionalLightID != (static_cast<size_t>(-1)))
-		{
-			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(myEntityWithDirectionalLightID);
-			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
-			renderer->RenderUnlitStaticModel(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
 		}
 	}
 
 	std::unique_ptr<System> RenderLightSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
 	{
 		return std::make_unique<RenderLightSystem>(aEntityComponentSystem);
-	}
-
-	bool RenderLightSystem::FindAndSetSkyBox()
-	{
-		myEntityWithSkyBoxID = static_cast<size_t>(-1);
-
-		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
-
-		if (entitiesWithSkyBoxComponent.empty() == false)
-		{
-			myEntityWithSkyBoxID = *entitiesWithSkyBoxComponent.begin();
-			return true;
-		}
-
-		return false;
-	}
-
-	bool RenderLightSystem::FindAndSetDirectionalLight()
-	{
-		myEntityWithDirectionalLightID = static_cast<size_t>(-1);
-
-		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
-
-		if (entitiesWithDirectionalLightComponent.empty() == false)
-		{
-			myEntityWithDirectionalLightID = *entitiesWithDirectionalLightComponent.begin();
-			return true;
-		}
-
-		return false;
 	}
 }

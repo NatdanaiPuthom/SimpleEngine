@@ -1,6 +1,7 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/ECS.hpp"
 #include "Engine/ECS/Systems/RenderSystem.hpp"
+#include "Engine/Debugger/Console/Console.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #include "External/nlohmann/json.hpp"
 #include <fstream>
@@ -30,11 +31,6 @@ namespace ECS
 		mySystemManager.Update();
 	}
 
-	void EntityComponentSystem::UpdateRenderSystem()
-	{
-		mySystemManager.UpdateRenderSystem();
-	}
-
 	void EntityComponentSystem::Render()
 	{
 		mySystemManager.Render();
@@ -58,6 +54,11 @@ namespace ECS
 	void EntityComponentSystem::LateRender()
 	{
 		mySystemManager.LateRender();
+	}
+
+	void EntityComponentSystem::AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem)
+	{
+		mySystemManager.mySystems[aSystemHashCode] = std::move(aSystem);
 	}
 
 	Entity EntityComponentSystem::CreateEntity(const EntityID aEntityID)
@@ -140,28 +141,23 @@ namespace ECS
 
 	void EntityComponentSystem::LoadData(EntityComponentSystem& aECS, const std::string& aFileName)
 	{
-		const std::string filePath = SimpleUtilities::GetAbsolutePath(aFileName);
-		std::ifstream readFile(filePath);
-		assert(readFile.is_open() && "Failed to open the file");
+		const std::string absoluteFilePath = SimpleUtilities::GetAbsolutePath(aFileName);
+		const nlohmann::json jsonData = SimpleUtilities::FileManager::GetDataAsJson(absoluteFilePath);
 
-		const nlohmann::json jsonData = nlohmann::json::parse(readFile);
-		readFile.close();
-
-		if (jsonData.contains("Entities") == false)
+		if (jsonData.contains("Entities") == false || jsonData.is_null() == true)
 		{
 			return;
 		}
 
-		ECS::ComponentRegistry* componentRegistry = MainSingleton::GetComponentRegistry();
+		const ComponentRegistry* componentRegistry = MainSingleton::GetComponentRegistry();
+		bool shouldUpdateJSON = false;
 
 		for (size_t i = 0; i < jsonData["Entities"].size(); ++i)
 		{
-			const auto& entityData = jsonData["Entities"][i];
-
+			const nlohmann::json& entityData = jsonData["Entities"][i];
 			const EntityID id = entityData["ID"];
 			const std::string name = entityData["Name"];
-
-			Entity entity = aECS.CreateEntity(id);
+			const Entity entity = aECS.CreateEntity(id);
 			entity->SetName(name);
 
 			if (entityData.contains("Components") == false)
@@ -171,52 +167,87 @@ namespace ECS
 
 			for (size_t j = 0; j < jsonData["Entities"][i]["Components"].size(); ++j)
 			{
-				const auto& componentDataJSON = entityData["Components"][j];
+				const nlohmann::json& componentDataJSON = entityData["Components"][j];
 
 				if (componentRegistry->myComponentNameToHashCode.contains(componentDataJSON["Name"]) == false)
 				{
-					nlohmann::json newData = jsonData;
-					auto& entityJson = newData["Entities"][i];
-
-					nlohmann::json entityComponentJson = entityJson;
-					entityComponentJson["Components"].erase(j);
-			
-					entityJson = entityComponentJson;
-					newData["Entities"][i] = entityJson;
-
-					std::ofstream writeFile(filePath);
-					assert(writeFile.is_open() && "Failed to open the file");
-
-					writeFile << newData;
-					writeFile.close();
+					EraseMissingElementFromJSON(jsonData, absoluteFilePath, i, j); //NOTE(v11.3.2): Maybe not needed but works for now
 					continue;
 				}
 
-				const size_t componentHashCode = componentRegistry->myComponentNameToHashCode[componentDataJSON["Name"]];
-				const std::vector<ComponentProperty>& componentProperties = componentRegistry->myTypeErasureComponents[componentHashCode].myComponentProperties;
-				const ComponentID componentID = componentRegistry->myTypeErasureComponents[componentHashCode].AddComponentFunctionPointer(entity);
-				const auto& componentPropertiesJSON = componentDataJSON["Properties"];
-				const size_t propertySize = componentPropertiesJSON.size();
+				const size_t componentHashCode = componentRegistry->myComponentNameToHashCode.at(componentDataJSON["Name"]);
+				const std::vector<ComponentProperty>& componentProperties = componentRegistry->myTypeErasureComponents.at(componentHashCode).myComponentProperties;
+				const ComponentID componentID = componentRegistry->myTypeErasureComponents.at(componentHashCode).AddComponentFunctionPointer(entity);
+				nlohmann::json componentPropertiesJSON = componentDataJSON["Properties"];
 
 				void* componentPointer = aECS.GetComponentPointerByComponentID(componentID);
 
-				for (size_t k = 0; k < propertySize; ++k)
+				if (SimpleUtilities::FileManager::IsJSONDataDifferentFromPropertyData(componentProperties, componentPropertiesJSON) == true)
 				{
-					const ComponentProperty& property = componentProperties[k];
-					const TypeErasureObject& typeErasedData = componentRegistry->myTypeErasureDataTypes[property.id];
-					void* propertyPointer = reinterpret_cast<void*>((reinterpret_cast<size_t>(componentPointer) + property.byteOffset));
-
-					if (const auto& loadDataFromJSONFunction = typeErasedData.LoadDataFromJSON)
-					{
-						loadDataFromJSONFunction(propertyPointer, property.name, componentPropertiesJSON);
-					}
+					shouldUpdateJSON = true;
 				}
+
+				LoadComponentData(componentPropertiesJSON, componentProperties, componentRegistry, componentPointer);
 			}
+		}
+
+		if (shouldUpdateJSON)
+		{
+			SaveData(aECS, aFileName);
+			Simple::Console::Print(SimpleUtilities::ConvertFilePathToPrettyName(aFileName).c_str(), Simple::ConsoleTextColor::Red, false);
+			Simple::Console::Print(" has been updated due to changes in the source code", Simple::ConsoleTextColor::White, true);
 		}
 	}
 
-	void EntityComponentSystem::AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem)
+	void EntityComponentSystem::EraseMissingElementFromJSON(const nlohmann::json& aJsonData, const std::string& aAbsolutePath, const size_t aEntityIndex, const size_t aComponentIndex)
 	{
-		mySystemManager.mySystems[aSystemHashCode] = std::move(aSystem);
+		nlohmann::json newData = aJsonData;
+		auto& entityJson = newData["Entities"][aEntityIndex];
+
+		nlohmann::json entityComponentJson = entityJson;
+		entityComponentJson["Components"].erase(aComponentIndex);
+
+		entityJson = entityComponentJson;
+		newData["Entities"][aEntityIndex] = entityJson;
+
+		std::ofstream writeFile(aAbsolutePath);
+		assert(writeFile.is_open() && "Failed to open the file");
+
+		writeFile << newData;
+		writeFile.close();
+	}
+
+	void EntityComponentSystem::LoadComponentData(nlohmann::json& aPropertiesJSON, const std::vector<ComponentProperty>& aComponentProperties, const ComponentRegistry* aComponentRegistry, void* aComponentPointer)
+	{
+		for (auto it = aPropertiesJSON.begin(); it != aPropertiesJSON.end(); )
+		{
+			bool found = false;
+
+			for (const auto& prop : aComponentProperties)
+			{
+				if (it.key() == prop.name)
+				{
+					const TypeErasureObject& typeErasedData = aComponentRegistry->myTypeErasureDataTypes.at(prop.id);
+					void* propertyPointer = reinterpret_cast<void*>((reinterpret_cast<size_t>(aComponentPointer) + prop.byteOffset));
+
+					if (const auto& loadDataFromJSONFunction = typeErasedData.LoadDataFromJSON)
+					{
+						loadDataFromJSONFunction(propertyPointer, prop.name, aPropertiesJSON);
+					}
+
+					found = true;
+					break;
+				}
+			}
+
+			if (found)
+			{
+				it = aPropertiesJSON.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
 	}
 }

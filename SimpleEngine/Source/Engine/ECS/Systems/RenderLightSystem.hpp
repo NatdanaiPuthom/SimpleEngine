@@ -12,15 +12,8 @@ namespace ECS
 		void Init() override;
 		void Update() override;
 		void Render() override;
-		void RenderSkyBoxAndDirectionalLight() const;
+		void LateRender() override;
 
 		std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const override;
-
-	private:
-		bool FindAndSetSkyBox();
-		bool FindAndSetDirectionalLight();
-	private:
-		EntityID myEntityWithSkyBoxID;
-		EntityID myEntityWithDirectionalLightID;
 	};
 }

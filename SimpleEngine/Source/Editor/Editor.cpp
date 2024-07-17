@@ -10,8 +10,6 @@
 
 namespace Editor
 {
-	bool EditorEngine::myStaticShouldRenderDebugLines = false;
-
 #ifndef _SIMPLE
 	EditorEngine::EditorEngine()
 	{

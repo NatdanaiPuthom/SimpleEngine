@@ -28,6 +28,9 @@ namespace Editor
 		void ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleConsole();
 		void ToggleUsingPBR(Graphics::GraphicsEngine* aGraphicsEngine);
+		void ToggleRenderDebugLines(Graphics::GraphicsEngine* aGraphicsEngine);
+		void ToggleShouldRenderMesh(Graphics::GraphicsEngine* aGraphicsEngine);
+		void ToggleShouldRenderSkeletonLine(Graphics::GraphicsEngine* aGraphicsEngine);
 		void AdjustWindowSize();
 		void AdjustRasterizerState();
 		void AdjustEditorStyle();

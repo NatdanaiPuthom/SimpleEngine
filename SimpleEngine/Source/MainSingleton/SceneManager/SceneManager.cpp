@@ -45,8 +45,6 @@ namespace Simpleton
 		{
 			myECSs[myCurrentSceneInfo->id].Update();
 		}
-
-		myECSs[myCurrentSceneInfo->id].UpdateRenderSystem();
 	}
 
 	void SceneManager::Render()
@@ -223,9 +221,9 @@ namespace Simpleton
 		return LoadAndInitScene(aSceneName);
 	}
 
-	void SceneManager::TogglePlay()
+	void SceneManager::SetIsPlaying(const bool aIsPlaying)
 	{
-		myIsPlaying = !myIsPlaying;
+		myIsPlaying = aIsPlaying;
 	}
 
 	bool SceneManager::GetIsPlaying() const

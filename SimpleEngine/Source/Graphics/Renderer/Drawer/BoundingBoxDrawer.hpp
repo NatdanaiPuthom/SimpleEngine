@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Math/Matrix4x4.hpp"
 #include "Graphics/Model/Mesh.hpp"
 
 struct ID3D11Buffer;
@@ -19,8 +20,7 @@ namespace Drawer
 		~BoundingBoxDrawer();
 
 		void Init();
-
-		void Render(const std::shared_ptr<const Graphics::Model> aModelInstance);
+		void Render(const Simple::BoundingBox3D& aBoundingBox3D, const Math::Matrix4x4f& aModelToWorldMatrix);
 
 	private:
 		void InitMeshData2D();
@@ -33,8 +33,9 @@ namespace Drawer
 		ComPtr<ID3D11Buffer> myVertexBuffer;
 		ComPtr<ID3D11Buffer> myIndexBuffer;
 
-		std::unique_ptr<Graphics::ConstantBuffer> myTransformBuffer;
 		std::shared_ptr<const Graphics::Shader> myShader3D;
 		std::shared_ptr<const Graphics::Shader> myShader2D;
+
+		std::unique_ptr<Graphics::ConstantBuffer> myTransformBuffer;
 	};
 }

@@ -4,9 +4,38 @@
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
+#include <vector>
+#include <unordered_set>
 
 namespace SimpleUtilities
 {
+	template<typename T>
+	static inline std::vector<T> ReturnDifferenceBetweenVectors(const std::vector<T>& aVector1, const std::vector<T>& aVector2)
+	{
+		const std::unordered_set<T> setVec1(aVector1.begin(), aVector1.end());
+		const std::unordered_set<T> setVec2(aVector2.begin(), aVector2.end());
+
+		std::vector<T> missingElements;
+
+		for (const auto& str : aVector1)
+		{
+			if (setVec2.find(str) == setVec2.end())
+			{
+				missingElements.push_back(str);
+			}
+		}
+
+		for (const auto& str : aVector2)
+		{
+			if (setVec1.find(str) == setVec1.end())
+			{
+				missingElements.push_back(str);
+			}
+		}
+
+		return missingElements;
+	}
+
 	static inline std::wstring ToWString(const std::string& aString)
 	{
 		return std::wstring(aString.begin(), aString.end());

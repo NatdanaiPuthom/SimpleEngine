@@ -120,14 +120,14 @@ namespace Simple
 	{
 		auto renderer = Global::GetRenderer();
 
-		renderer->RenderLine(myNavmeshLines);
-		renderer->RenderLine(myOffsetLines);
+		renderer->Push(myNavmeshLines);
+		renderer->Push(myOffsetLines);
 	}
 
 	void Navmesh::RenderConnections() const
 	{
 		auto renderer = Global::GetRenderer();
-		renderer->RenderLine(myConnectionLines);
+		renderer->Push(myConnectionLines);
 	}
 
 	std::vector<Node>& Navmesh::GetNodes()

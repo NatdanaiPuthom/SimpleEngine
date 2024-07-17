@@ -39,7 +39,7 @@ namespace Graphics
 
 		void Init();
 
-		const Mesh* LoadMesh(const std::string& aFileName);
+		const Mesh* LoadMesh(const std::string& aRelativePath);
 		const Skeleton* LoadSkeleton(const std::string& aRelativePath);
 		const Animation* LoadAnimationFBX(const std::string& aRelativePath);
 
@@ -55,7 +55,7 @@ namespace Graphics
 
 		void LoadMeshData(MeshData& aMeshData, const TGA::FBX::Mesh& aTGAMesh) const;
 		void LoadSkeletonData(Skeleton& aSkeletonData, const TGA::FBX::Mesh& aTGAMesh) const;
-		void LoadAndCacheMesh(const std::string& aFileName);
+		void LoadAndCacheMesh(const std::string& aRelativePath);
 		void LoadAndCacheMesh(const std::string& aFileName, TGA::FBX::Mesh& aTGAMesh);
 		void LoadAndCacheSkeleton(const std::string& aRelativePath, TGA::FBX::Mesh& aTGAMesh);
 		void LoadAndCacheAnimation(const std::string& aRelativePath);
