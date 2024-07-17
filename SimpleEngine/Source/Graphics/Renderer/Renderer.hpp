@@ -68,11 +68,13 @@ namespace Drawer
 		void SetShouldRenderMesh(const bool aShouldRender);
 		void SetShouldRenderDebugLines(const bool aShouldRender);
 		void SetShouldRenderBoundingBox(const bool aShouldRender);
+		void SetShouldRenderSkeletonLines(const bool aShouldRender);
 		void SetIsUsingPBR(const bool aIsUsingPBR);
 	public:
 		bool GetShouldRenderMesh() const;
 		bool GetShouldRenderDebugLines() const;
 		bool GetShouldRenderBoundingBox() const;
+		bool GetShouldRenderSkeletonLines() const;
 		bool GetIsUsingPBR() const;
 	private:
 		void RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const;
@@ -94,9 +96,10 @@ namespace Drawer
 		std::unique_ptr<Graphics::ConstantBuffer> myTransformBuffer;
 		std::unique_ptr<Graphics::ConstantBuffer> myJointBuffer;
 
-		bool myShouldRenderMesh;
 		bool myIsUsingPBR;
+		bool myShouldRenderMesh;
 		bool myShouldRenderDebugLines;
 		bool myShouldRenderBoundingBox;
+		bool myShouldRenderSkeletonLines;
 	};
 }

@@ -86,6 +86,12 @@ namespace Editor
 
 			ToggleUsingPBR(graphicsEngine);
 
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2(10, 0));
+			ImGui::SameLine();
+
+			ToggleShouldRenderSkeletonLine(graphicsEngine);
+
 			ImGui::Dummy(ImVec2(0, heightPadding));
 			ImGui::Separator();
 			ImGui::Dummy(ImVec2(0, heightPadding));
@@ -221,6 +227,17 @@ namespace Editor
 		if (ImGui::Checkbox("Mesh##SettingWindow", &shouldRenderMesh))
 		{
 			renderer->SetShouldRenderMesh(shouldRenderMesh);
+		}
+	}
+
+	void SettingsWindow::ToggleShouldRenderSkeletonLine(Graphics::GraphicsEngine* aGraphicsEngine)
+	{
+		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
+		bool shouldRenderSkeleton = renderer->GetShouldRenderSkeletonLines();
+
+		if (ImGui::Checkbox("Skeleton##SettingWindow", &shouldRenderSkeleton))
+		{
+			renderer->SetShouldRenderSkeletonLines(shouldRenderSkeleton);
 		}
 	}
 

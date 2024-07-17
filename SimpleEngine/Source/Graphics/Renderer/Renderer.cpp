@@ -22,6 +22,7 @@ namespace Drawer
 		, myShouldRenderMesh(true)
 		, myShouldRenderDebugLines(true)
 		, myShouldRenderBoundingBox(true)
+		, myShouldRenderSkeletonLines(false)
 	{
 	}
 
@@ -139,7 +140,7 @@ namespace Drawer
 
 		Drawer::Sphere sphere;
 		sphere.radius = 0.05f;
-		sphere.color = { 0.0f, 1.0f, 1.0f, 1.0f };
+		sphere.color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
 		Drawer::Line line;
 		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
@@ -286,6 +287,11 @@ namespace Drawer
 		myShouldRenderBoundingBox = aShouldRender;
 	}
 
+	void Renderer::SetShouldRenderSkeletonLines(const bool aShouldRender)
+	{
+		myShouldRenderSkeletonLines = aShouldRender;
+	}
+
 	void Renderer::SetIsUsingPBR(const bool aIsUsingPBR)
 	{
 		myIsUsingPBR = aIsUsingPBR;
@@ -304,6 +310,11 @@ namespace Drawer
 	bool Renderer::GetShouldRenderBoundingBox() const
 	{
 		return myShouldRenderBoundingBox;
+	}
+
+	bool Renderer::GetShouldRenderSkeletonLines() const
+	{
+		return myShouldRenderSkeletonLines;
 	}
 
 	bool Renderer::GetIsUsingPBR() const

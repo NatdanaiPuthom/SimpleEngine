@@ -70,7 +70,17 @@ namespace ECS
 
 			if (animated != nullptr && animated->skeleton != nullptr && animated->shader != nullptr)
 			{
-				renderer->RenderStaticSkeletonLines(transform, animated);
+				if (renderer->GetShouldRenderSkeletonLines() == true)
+				{
+					if (animated->animationPlayer.myModelSpacePose.count > 0)
+					{
+						renderer->RenderAnimatedSkeletonLines(transform, animated);
+					}
+					else
+					{
+						renderer->RenderStaticSkeletonLines(transform, animated);
+					}
+				}
 
 				if (shouldRenderMesh == false)
 				{
