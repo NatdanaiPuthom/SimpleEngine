@@ -45,6 +45,12 @@ namespace ECS
 		}
 
 		const Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
+
+		if (renderer->GetShouldRenderMesh() == false)
+		{
+			return;
+		}
+
 		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
 
 		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
