@@ -81,7 +81,13 @@ namespace Drawer
 		}
 
 		auto context = Global::GetGraphicsEngine()->GetContext();
-		context->UpdateSubresource(myVertexBuffer.Get(), 0, nullptr, myMeshData3D.vertices.data(), 0, 0);
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		context->Map(myVertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		memcpy(mappedResource.pData, myMeshData3D.vertices.data(), sizeof(Vertex) * myMeshData3D.vertices.size());
+		context->Unmap(myVertexBuffer.Get(), 0);
+
+		//context->UpdateSubresource(myVertexBuffer.Get(), 0, nullptr, myMeshData3D.vertices.data(), 0, 0);
 
 		TransformBufferData objectBuffer = {};
 		objectBuffer.modelWorldMatrix = aModelToWorldMatrix;
@@ -119,10 +125,10 @@ namespace Drawer
 		}
 
 		D3D11_BUFFER_DESC vertexBufferDesc = {};
-		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.ByteWidth = sizeof(Vertex) * static_cast<int>(myMeshData3D.vertices.size());
-		vertexBufferDesc.CPUAccessFlags = 0;
+		vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		vertexBufferDesc.MiscFlags = 0;
 		vertexBufferDesc.StructureByteStride = 0;
 
@@ -137,10 +143,10 @@ namespace Drawer
 			assert(false && "failed to create VertexBuffer");
 
 		D3D11_BUFFER_DESC indexBufferDesc = {};
-		indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		indexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 		indexBufferDesc.ByteWidth = sizeof(unsigned int) * static_cast<int>(myMeshData3D.indices.size());
 		indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		indexBufferDesc.CPUAccessFlags = 0;
+		indexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		indexBufferDesc.MiscFlags = 0;
 		indexBufferDesc.StructureByteStride = 0;
 

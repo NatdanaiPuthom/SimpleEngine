@@ -211,10 +211,9 @@ namespace Drawer
 	{
 		const size_t sizeLimit = myLineDrawer->GetInstanceSizeLimit();
 
-		if (myDebugLines.size() * 2 < sizeLimit)
+		if (myDebugLines.size() < sizeLimit)
 		{
 			myLineDrawer->RenderInstance(myDebugLines);
-
 			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 		}
 		else
@@ -223,9 +222,8 @@ namespace Drawer
 
 			while (lineSplit.empty() == false)
 			{
-				myLineDrawer->RenderInstance(myDebugLines);
+				myLineDrawer->RenderInstance(lineSplit[0]);
 				lineSplit.erase(lineSplit.begin());
-
 				Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 			}
 		}
