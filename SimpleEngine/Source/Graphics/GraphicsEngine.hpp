@@ -48,8 +48,8 @@ namespace Graphics
 		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 
-		//TO-DO(v10.0.3): Fix this properly. This quick fix right now
-		void UpdateLightBuffer(const size_t aLightIndex);
+		void UpdatePointlights(const size_t aLightIndex);
+		void UpdateLightBuffer();
 
 		bool IsVSyncActive() const;
 	public:
@@ -190,9 +190,11 @@ namespace Graphics
 		std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myJointsConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myLightConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myPointLightConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myPostProcessConstantBuffer;
 
 		std::unique_ptr<LightBufferData> myLightBufferData;
+		std::unique_ptr<PointLightBufferData> myPointLightBufferData;
 
 		std::unique_ptr<ModelFactory> myModelFactory;
 		std::unique_ptr<Drawer::Renderer> myRenderer;

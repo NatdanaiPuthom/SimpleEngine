@@ -76,14 +76,13 @@ namespace ECS
 		graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
 		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Greater);
 		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
+		graphicsEngine->UpdateLightBuffer();
 
 		PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
 
-		graphicsEngine->UpdateLightBuffer(static_cast<size_t>(-1)); //TO-DO(v11.0.6): Refactor somehow, maybe seperate directionalLight buffer from pointlights?
-
 		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
 		{
-			graphicsEngine->UpdateLightBuffer(i);
+			graphicsEngine->UpdatePointlights(i);
 
 			transform.SetPosition(pointLightBuffer[i].position);
 			transform.SetScale(pointLightBuffer[i].radius);

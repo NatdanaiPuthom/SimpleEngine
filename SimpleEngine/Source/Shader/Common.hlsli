@@ -45,16 +45,6 @@ cbuffer LightBuffer : register(b3)
 
     float3      directionLightDirection;
     float       paddingDirectionalLightDirection;
-    
-    struct PointLightData
-    {
-        float4 color;
-        float3 position;
-        float range;
-    } pointLights[SIMPLE_MAX_POINTLIGHTS];
-    
-    uint currentPointLightCount;
-    float3 paddingPointLightCount;
 };
 
 cbuffer JointBuffer : register(b4)
@@ -76,6 +66,19 @@ cbuffer PostProcessingBuffer : register(b5)
     uint useToneMapping;
     uint useBloom;
     int paddingPostProcess;
+}
+
+cbuffer PointLightBufferData : register(b6)
+{
+    struct PointLightData
+    {
+        float4 color;
+        float3 position;
+        float range;
+    } pointLights[SIMPLE_MAX_POINTLIGHTS];
+    
+    uint currentPointLightCount;
+    float3 paddingPointLightCount;
 }
 
 struct FullScreenVertexInput
