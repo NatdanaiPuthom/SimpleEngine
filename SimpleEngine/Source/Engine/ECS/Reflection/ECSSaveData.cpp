@@ -52,6 +52,17 @@ namespace ECS
 		return json;
 	}
 
+	nlohmann::json ReturnDataAsJSON(Math::Vector3f& aVector, const std::string& aVariableName)
+	{
+		nlohmann::json json;
+
+		json[aVariableName]["x"] = aVector.x;
+		json[aVariableName]["y"] = aVector.y;
+		json[aVariableName]["z"] = aVector.z;
+
+		return json;
+	}
+
 	nlohmann::json ReturnDataAsJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName)
 	{
 		nlohmann::json json;
