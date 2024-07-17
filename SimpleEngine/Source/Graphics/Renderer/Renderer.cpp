@@ -16,7 +16,9 @@ namespace Drawer
 {
 	using namespace Simple;
 
-	Renderer::Renderer()
+	Renderer::Renderer() 
+		: myIsUsingPBR(true)
+		, myShouldRenderMesh(true)
 	{
 	}
 
@@ -237,6 +239,26 @@ namespace Drawer
 		mySpriteDrawer->Render(aSprite);
 
 		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
+
+	void Renderer::SetShouldRenderMesh(const bool aShouldRender)
+	{
+		myShouldRenderMesh = aShouldRender;
+	}
+
+	void Renderer::SetIsUsingPBR(const bool aIsUsingPBR)
+	{
+		myIsUsingPBR = aIsUsingPBR;
+	}
+
+	bool Renderer::GetShouldRenderMesh() const
+	{
+		return myShouldRenderMesh;
+	}
+
+	bool Renderer::GetIsUsingPBR() const
+	{
+		return myIsUsingPBR;
 	}
 
 	const bool Renderer::CreateObjectBuffer()

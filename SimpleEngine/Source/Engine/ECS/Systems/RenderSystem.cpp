@@ -60,7 +60,7 @@ namespace ECS
 			}
 
 			const AnimationComponent* animated = entity->GetComponent<ECS::AnimationComponent>();
-			const bool isUsingPBR = Global::GetGraphicsEngine()->IsUsingPBR();
+			const bool isUsingPBR = renderer->GetIsUsingPBR();
 
 			if (animated != nullptr && animated->skeleton != nullptr && animated->shader != nullptr)
 			{

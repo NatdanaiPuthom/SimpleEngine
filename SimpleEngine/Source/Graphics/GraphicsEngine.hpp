@@ -51,7 +51,6 @@ namespace Graphics
 		//TO-DO(v10.0.3): Fix this properly. This quick fix right now
 		void UpdateLightBuffer(const size_t aLightIndex);
 
-		bool IsUsingPBR() const;
 		bool IsVSyncActive() const;
 	public:
 		void SetToDefaultCamera();
@@ -61,7 +60,6 @@ namespace Graphics
 		void SetGlobalGraphicsEngineToThis();
 		void SetSaturation(const float aValue);
 		void SetBlackPoint(const float aValue);
-		void SetUsingPBR(const bool aUsingPBR);
 		void SetVSync(const bool aShouldTurnOn);
 		void SetTint(const Math::Vector3f& aColor);
 		void SetUseBloom(const bool aShouldUseBloom);
@@ -204,6 +202,5 @@ namespace Graphics
 
 		unsigned int myFPSLevelCap;
 		bool myVSync;
-		bool myIsUsingPBR;
 	};
 }

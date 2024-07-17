@@ -45,6 +45,12 @@ namespace Drawer
 
 		void RenderSphere(const Drawer::Sphere& aSphere) const;
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
+	public:
+		void SetShouldRenderMesh(const bool aShouldRender);
+		void SetIsUsingPBR(const bool aIsUsingPBR);
+	public:
+		bool GetShouldRenderMesh() const;
+		bool GetIsUsingPBR() const;
 	private:
 		void RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const;
 		void BindTextures(const ECS::MeshComponent* aMeshComponent, ID3D11DeviceContext* aContext) const;
@@ -60,5 +66,8 @@ namespace Drawer
 
 		std::unique_ptr<Graphics::ConstantBuffer> myTransformBuffer;
 		std::unique_ptr<Graphics::ConstantBuffer> myJointBuffer;
+
+		bool myShouldRenderMesh;
+		bool myIsUsingPBR;
 	};
 }

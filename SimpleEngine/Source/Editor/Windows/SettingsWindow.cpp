@@ -186,11 +186,12 @@ namespace Editor
 
 	void SettingsWindow::ToggleUsingPBR(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
-		bool isUsingPBR = aGraphicsEngine->IsUsingPBR();
+		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
+		bool isUsingPBR = renderer->GetIsUsingPBR();
 
 		if (ImGui::Checkbox("PBR Render##SettingWindow", &isUsingPBR))
 		{
-			aGraphicsEngine->SetUsingPBR(isUsingPBR);
+			renderer->SetIsUsingPBR(isUsingPBR);
 		}
 	}
 
