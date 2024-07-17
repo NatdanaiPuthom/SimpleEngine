@@ -105,7 +105,7 @@ namespace Drawer
 
 			sphere.position = boneWorldTransform.GetPosition() + position;
 
-			mySphereDrawer->Render(sphere);
+			Push(sphere);
 
 			if (joint.myParent == -1)
 				continue;
@@ -150,7 +150,7 @@ namespace Drawer
 
 			sphere.position = boneWorldTransform.GetPosition();
 
-			mySphereDrawer->Render(sphere);
+			Push(sphere);
 
 			if (joint.myParent == -1)
 				continue;
