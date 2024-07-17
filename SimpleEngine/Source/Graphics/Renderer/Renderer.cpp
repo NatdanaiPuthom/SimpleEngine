@@ -117,6 +117,50 @@ namespace Drawer
 		myLineDrawer->RenderInstance(staticSkeletonLines);
 	}
 
+	void Renderer::RenderAnimatedSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const
+	{	
+		const Graphics::Skeleton* skeleton = aAnimationPlayerComponent->skeleton;
+		const Graphics::ModelSpacePose& modelSpacePose = aAnimationPlayerComponent->animationPlayer.myModelSpacePose;
+		const Math::Matrix4x4f modelTransform = aTransformComponent->transform.GetMatrix();
+		const Math::Vector3f position = aTransformComponent->transform.GetPosition();
+		const Math::Vector3f scale = aTransformComponent->transform.GetScale();
+		const size_t jointSize = aAnimationPlayerComponent->skeleton->myJoints.size();
+
+		std::vector<Drawer::Line> animatedkeletonLines(jointSize);
+		Graphics::LocalSpacePose pose;
+
+		skeleton->ConvertModelSpacePoseToLocalSpacePose(modelSpacePose, pose);
+
+		Drawer::Sphere sphere;
+		sphere.radius = 0.05f;
+
+		Drawer::Line line;
+		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+		for (size_t index = 0; index < jointSize; ++index)
+		{
+			Graphics::Joint joint = skeleton->myJoints[index];
+
+			const Math::Matrix4x4 boneWorldTransform = pose.jointTransforms[index] * modelTransform;
+
+			sphere.position = boneWorldTransform.GetPosition();
+
+			mySphereDrawer->Render(sphere);
+
+			if (joint.myParent == -1)
+				continue;
+
+			const Math::Matrix4x4 boneWorldTransformNext = pose.jointTransforms[joint.myParent] * modelTransform;
+
+			line.startPosition = boneWorldTransform.GetPosition();
+			line.endPosition = boneWorldTransformNext.GetPosition();
+
+			animatedkeletonLines[index] = line;
+		}
+
+		myLineDrawer->RenderInstance(animatedkeletonLines);
+	}
+
 	void Renderer::RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const
 	{
 		TransformBufferData objectBuffer = {};
