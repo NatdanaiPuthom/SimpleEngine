@@ -62,25 +62,29 @@ namespace Editor
 
 			ShowFPS();
 
-			{
-				ImGui::SameLine(ImGui::GetWindowWidth() - 100);
-				ShowDrawCalls();
-			}
+			ImGui::SameLine(ImGui::GetWindowWidth() - 100);
+			ShowDrawCalls();
+
+			ImGui::Dummy(ImVec2(0, heightPadding));
+			ImGui::AlignTextToFramePadding();
+			ImGui::SeparatorText("Render");
+			ImGui::Dummy(ImVec2(0, heightPadding));
 
 			ToggleVSync(graphicsEngine);
+
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2(3, 0));
+			ImGui::SameLine();
+
+			ToggleRenderDebugLines(graphicsEngine);
+
+			ToggleShouldRenderMesh(graphicsEngine);
 
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(10, 0));
 			ImGui::SameLine();
 
 			ToggleUsingPBR(graphicsEngine);
-
-			ImGui::SameLine();
-			ImGui::Dummy(ImVec2(10, 0));
-			ImGui::SameLine();
-
-			ToggleShouldRenderMesh(graphicsEngine);
-			ToggleRenderDebugLines(graphicsEngine);
 
 			ImGui::Dummy(ImVec2(0, heightPadding));
 			ImGui::Separator();
@@ -192,7 +196,7 @@ namespace Editor
 		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
 		bool shouldRenderDebugLines = renderer->GetShouldRenderDebugLines();
 
-		if (ImGui::Checkbox("Render Debug Lines##SettingWindow", &shouldRenderDebugLines))
+		if (ImGui::Checkbox("DebugLines##SettingWindow", &shouldRenderDebugLines))
 		{
 			renderer->SetShouldRenderDebugLines(shouldRenderDebugLines);
 		}
@@ -203,7 +207,7 @@ namespace Editor
 		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
 		bool isUsingPBR = renderer->GetIsUsingPBR();
 
-		if (ImGui::Checkbox("PBR Render##SettingWindow", &isUsingPBR))
+		if (ImGui::Checkbox("PBR##SettingWindow", &isUsingPBR))
 		{
 			renderer->SetIsUsingPBR(isUsingPBR);
 		}
@@ -214,7 +218,7 @@ namespace Editor
 		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
 		bool shouldRenderMesh = renderer->GetShouldRenderMesh();
 
-		if (ImGui::Checkbox("Mesh Render##SettingWindow", &shouldRenderMesh))
+		if (ImGui::Checkbox("Mesh##SettingWindow", &shouldRenderMesh))
 		{
 			renderer->SetShouldRenderMesh(shouldRenderMesh);
 		}

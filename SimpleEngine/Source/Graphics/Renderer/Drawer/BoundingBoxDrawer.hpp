@@ -11,11 +11,6 @@ namespace Graphics
 	class Model;
 }
 
-namespace Simple
-{
-	struct BoundingBox3D;
-}
-
 namespace Drawer
 {
 	class BoundingBoxDrawer final
