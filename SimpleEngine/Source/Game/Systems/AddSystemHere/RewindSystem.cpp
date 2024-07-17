@@ -36,11 +36,11 @@ namespace ECS
 			{
 				Math::Vector3f position = thisEntityTransformComponent->transform.GetPosition();
 
-				Math::Vector3f destination = thisRewindComponent->wayPoint1 - position;
+				Math::Vector3f direction = thisRewindComponent->wayPoint1 - position;
 
-				destination.Normalize();
+				direction.Normalize();
 
-				position += destination * 0.5f * Global::GetDeltaTime();
+				position += direction * 0.5f * Global::GetDeltaTime();
 
 				thisEntityTransformComponent->transform.SetPosition(position);
 
@@ -50,6 +50,38 @@ namespace ECS
 
 				thisEntityTransformComponent->transform.SetRotation(rotation);
 
+				float distance = Math::Distance(position, thisRewindComponent->wayPoint1);
+
+				if (distance <=  Math::Vector3f(direction * 0.5f * Global::GetDeltaTime()).Length())
+				{
+					thisRewindComponent->goToFirstPoint = false;
+				}
+			}
+			else
+			{
+
+				Math::Vector3f position = thisEntityTransformComponent->transform.GetPosition();
+
+				Math::Vector3f direction = thisRewindComponent->wayPoint2 - position;
+
+				direction.Normalize();
+
+				position += direction * 0.5f * Global::GetDeltaTime();
+
+				thisEntityTransformComponent->transform.SetPosition(position);
+
+				Math::Vector3f rotation = thisEntityTransformComponent->transform.GetRotation();
+
+				rotation += thisRewindComponent->addRotation * Global::GetDeltaTime();
+
+				thisEntityTransformComponent->transform.SetRotation(rotation);
+
+				float distance = Math::Distance(position, thisRewindComponent->wayPoint1);
+
+				if (distance <= Math::Vector3f(direction * 0.5f * Global::GetDeltaTime()).Length())
+				{
+					thisRewindComponent->goToFirstPoint = true;
+				}
 
 			}
 

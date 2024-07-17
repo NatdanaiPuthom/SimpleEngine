@@ -51,6 +51,15 @@ namespace ECS
 		return true;
 	}
 
+	bool LoadAndSetDataFromJSON(Math::Vector3f& aVector, const std::string& aVariableName, const nlohmann::json& aJSONData)
+	{
+		aVector.x = aJSONData[aVariableName]["x"];
+		aVector.y = aJSONData[aVariableName]["y"];
+		aVector.z = aJSONData[aVariableName]["z"];
+
+		return true;
+	}
+
 	bool LoadAndSetDataFromJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
 		const std::string filePath = aJSONData[aVariableName];
