@@ -75,6 +75,17 @@ namespace Editor
 
 			ToggleUsingPBR(graphicsEngine);
 
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2(10, 0));
+			ImGui::SameLine();
+
+			ToggleShouldRenderMesh(graphicsEngine);
+			ToggleRenderDebugLines();
+
+			ImGui::Dummy(ImVec2(0, heightPadding));
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0, heightPadding));
+
 			AdjustFPSCap(graphicsEngine);
 			AdjustRasterizerState();
 			AdjustWindowSize();
@@ -88,14 +99,6 @@ namespace Editor
 			if (ImGui::Button("Clear Console##SettingsWindow"))
 			{
 				system("CLS");
-			}
-
-			ImGui::Dummy(ImVec2(0, heightPadding));
-			ImGui::Separator();
-			ImGui::Dummy(ImVec2(0, heightPadding));
-
-			if (ImGui::Checkbox("Render Debug Lines", &EditorEngine::myStaticShouldRenderDebugLines))
-			{
 			}
 
 			ImGui::Dummy(ImVec2(0, heightPadding));
@@ -184,6 +187,13 @@ namespace Editor
 		}
 	}
 
+	void SettingsWindow::ToggleRenderDebugLines()
+	{
+		if (ImGui::Checkbox("Render Debug Lines", &EditorEngine::myStaticShouldRenderDebugLines))
+		{
+		}
+	}
+
 	void SettingsWindow::ToggleUsingPBR(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
 		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
@@ -192,6 +202,17 @@ namespace Editor
 		if (ImGui::Checkbox("PBR Render##SettingWindow", &isUsingPBR))
 		{
 			renderer->SetIsUsingPBR(isUsingPBR);
+		}
+	}
+
+	void SettingsWindow::ToggleShouldRenderMesh(Graphics::GraphicsEngine* aGraphicsEngine)
+	{
+		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
+		bool shouldRenderMesh = renderer->GetShouldRenderMesh();
+
+		if (ImGui::Checkbox("Mesh Render##SettingWindow", &shouldRenderMesh))
+		{
+			renderer->SetShouldRenderMesh(shouldRenderMesh);
 		}
 	}
 
