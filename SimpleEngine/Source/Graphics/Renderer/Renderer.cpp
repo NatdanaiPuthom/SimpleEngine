@@ -82,7 +82,7 @@ namespace Drawer
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
-	void Renderer::RenderStaticSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const
+	void Renderer::RenderStaticSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent)
 	{
 		const std::vector<Graphics::Joint>& joints = aAnimationPlayerComponent->skeleton->myJoints;
 		const Math::Vector3f position = aTransformComponent->transform.GetPosition();
@@ -95,6 +95,7 @@ namespace Drawer
 
 		Drawer::Sphere sphere;
 		sphere.radius = 0.05f;
+		sphere.color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
 		for (size_t index = 0; index < joints.size(); ++index)
 		{
@@ -117,10 +118,10 @@ namespace Drawer
 			staticSkeletonLines[index] = line;
 		}
 
-		myLineDrawer->RenderInstance(staticSkeletonLines);
+		Push(staticSkeletonLines);
 	}
 
-	void Renderer::RenderAnimatedSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const
+	void Renderer::RenderAnimatedSkeletonLines(const ECS::TransformComponent* aTransformComponent, const ECS::AnimationComponent* aAnimationPlayerComponent)
 	{
 		const Graphics::Skeleton* skeleton = aAnimationPlayerComponent->skeleton;
 		const Graphics::ModelSpacePose& modelSpacePose = aAnimationPlayerComponent->animationPlayer.myModelSpacePose;
@@ -136,6 +137,7 @@ namespace Drawer
 
 		Drawer::Sphere sphere;
 		sphere.radius = 0.05f;
+		sphere.color = { 0.0f, 1.0f, 1.0f, 1.0f };
 
 		Drawer::Line line;
 		line.color = { 0.0f, 1.0f, 0.0f, 1.0f };
@@ -161,7 +163,7 @@ namespace Drawer
 			animatedkeletonLines[index] = line;
 		}
 
-		myLineDrawer->RenderInstance(animatedkeletonLines);
+		Push(animatedkeletonLines);
 	}
 
 	void Renderer::RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const
@@ -204,15 +206,7 @@ namespace Drawer
 
 	void Renderer::RenderDebugLines()
 	{
-		for (size_t i = 0; i < myDebugLines.size(); i++)
-		{
-			myLineDrawer->Render(myDebugLines[i]);
-			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
-		}
-
-		//NOTE(v11.3.3): Somehow RenderInstance is much more expensive, will check later
-
-		/*const size_t sizeLimit = myLineDrawer->GetInstanceSizeLimit();
+		const size_t sizeLimit = myLineDrawer->GetInstanceSizeLimit();
 
 		if (myDebugLines.size() * 2 < sizeLimit)
 		{
@@ -231,9 +225,16 @@ namespace Drawer
 
 				Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 			}
-		}*/
+		}
+
+		for (size_t i = 0; i < myDebugSpheres.size(); i++)
+		{
+			mySphereDrawer->Render(myDebugSpheres[i]);
+			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		}
 
 		myDebugLines.clear();
+		myDebugSpheres.clear();
 	}
 
 	void Renderer::Push(const std::vector<Drawer::Line>& aLines)
@@ -244,11 +245,9 @@ namespace Drawer
 		}
 	}
 
-	void Renderer::RenderSphere(const Drawer::Sphere& aSphere) const
+	void Renderer::Push(const Drawer::Sphere& aSphere)
 	{
-		mySphereDrawer->Render(aSphere);
-
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		myDebugSpheres.push_back(aSphere);
 	}
 
 	void Renderer::RenderSprite2D(const Drawer::Sprite2D& aSprite)

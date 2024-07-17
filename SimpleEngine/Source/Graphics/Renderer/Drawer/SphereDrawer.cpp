@@ -97,13 +97,9 @@ namespace Drawer
 
 		myShader->BindThisShader(context.Get());
 
-		Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::Unlit_Default)->BindThisShader(context.Get());
-
 		context->IASetVertexBuffers(0, 1, myVertexBuffer.GetAddressOf(), &stride, &offset);
 		context->IASetIndexBuffer(myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-
 		context->DrawIndexed(static_cast<UINT>(myMeshData->indices.size()), 0, 0);
 	}
 }

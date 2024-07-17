@@ -171,8 +171,8 @@ namespace Simple
 		renderer->Push(startLine);
 		renderer->Push(endLine);
 
-		renderer->RenderSphere(startSphere);
-		renderer->RenderSphere(endSphere);
+		renderer->Push(startSphere);
+		renderer->Push(endSphere);
 	}
 
 	void Pathfinder::RenderAStarPath() const

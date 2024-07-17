@@ -19,6 +19,7 @@ namespace ECS
 	void RenderSystem::Render()
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
 
 		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
@@ -44,7 +45,6 @@ namespace ECS
 			graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
 		}
 
-		const Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
 		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
 		const bool shouldRenderMesh = renderer->GetShouldRenderMesh();
 
@@ -159,7 +159,7 @@ namespace ECS
 			sphere.position = line.endPosition;
 			sphere.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
-			renderer->RenderSphere(sphere);
+			renderer->Push(sphere);
 			renderer->Push(line);
 			renderer->RenderUnlitStaticModel(directionalLightComponent->transform.GetMatrix(), directionalLightComponent->mesh, directionalLightComponent->shader, directionalLightComponent->texture);
 		}

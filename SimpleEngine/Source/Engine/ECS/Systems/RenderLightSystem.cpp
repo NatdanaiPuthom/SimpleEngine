@@ -53,7 +53,7 @@ namespace ECS
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		ID3D11DeviceContext* context = graphicsEngine->GetContext().Get(); context;
-		const Drawer::Renderer* renderer = Global::GetRenderer();
+		Drawer::Renderer* renderer = Global::GetRenderer();
 
 		std::vector<Graphics::RenderTarget>& gBuffers = graphicsEngine->GetRenderTargets(Graphics::eRenderTargetType::GBuffer);
 
@@ -107,10 +107,10 @@ namespace ECS
 			{
 				pointLightDebugSpheres.position = pointLightBuffer[i].position;
 				pointLightDebugSpheres.radius = pointLightBuffer[i].radius;
-				renderer->RenderSphere(pointLightDebugSpheres);
+				renderer->Push(pointLightDebugSpheres);
 
 				pointLightDebugSpheres.radius = 0.1f;
-				renderer->RenderSphere(pointLightDebugSpheres);
+				renderer->Push(pointLightDebugSpheres);
 			}
 		}
 	}
