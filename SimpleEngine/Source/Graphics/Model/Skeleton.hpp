@@ -13,7 +13,7 @@ namespace Graphics
 		Math::Matrix4x4f jointTransforms[Global_Max_Joints];
 		size_t count = 0;
 	private:
-		const char padding[56] = "Never in my life would I cry this much! But believe!!!\0";
+		char padding[56] = "Never in my life would I cry this much! But believe!!!\0";
 	};
 
 	//Relative model's coordinate
@@ -22,7 +22,7 @@ namespace Graphics
 		Math::Matrix4x4f jointTransforms[Global_Max_Joints];
 		size_t count;
 	private:
-		const char padding[56] = "Never in my life would I cry this much! But believe!!!\0";
+		char padding[56] = "Never in my life would I cry this much! But believe!!!\0";
 	};
 
 	class Joint final

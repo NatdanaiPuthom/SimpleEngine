@@ -96,26 +96,22 @@ namespace ECS
 
 	bool ComponentPool::SwapWithLastAndRemoveEditor(const size_t aComponentID, const std::type_index& aTypeIndex)
 	{
-		MainSingleton::GetComponentRegistry()->myTypeErasureComponentDestructorInvoker[aTypeIndex](static_cast<void*>(myIDToPointer[aComponentID]));
+		//NOTE(v11.3.3): May crash sometime, still havent figure out reason as it was hard to recreate the bug
 
-		if (myIDToPointer[aComponentID] == (myCurrentMemoryAddress - myComponentTypeSize))
-		{
-			//NOTE(v11.3.0): Should refactor in future as the code is duplicate
-
-			memset(myCurrentMemoryAddress - myComponentTypeSize, '\0', myComponentTypeSize);
-			myPointerToID.erase(myIDToPointer[aComponentID]);
-			myIDToPointer.erase(aComponentID);
-			return true;
-		}
-
+		char* componentToRemove = myIDToPointer.at(aComponentID);
 		myCurrentMemoryAddress -= myComponentTypeSize;
 
-		//std::memcpy(myIDToPointer[aComponentID], myCurrentMemoryAddress, myComponentTypeSize); //NOTE(v11.3.0): Fuck you memcpy, I couldn't slept for 2 days because of you
-		std::swap(myIDToPointer[aComponentID], myCurrentMemoryAddress);
+		const size_t lastComponentID = myPointerToID.at(myCurrentMemoryAddress);
+
+		MainSingleton::GetComponentRegistry()->myTypeErasureComponents.at(aTypeIndex.hash_code()).CopyFunctionPointer(componentToRemove, myCurrentMemoryAddress);
+		MainSingleton::GetComponentRegistry()->myTypeErasureComponentDestructorInvoker.at(aTypeIndex)(static_cast<void*>(myCurrentMemoryAddress));
 		memset(myCurrentMemoryAddress, '\0', myComponentTypeSize);
 
-		myPointerToID.erase(myIDToPointer[aComponentID]);
+		myPointerToID.erase(myCurrentMemoryAddress);
 		myIDToPointer.erase(aComponentID);
+
+		myPointerToID[componentToRemove] = lastComponentID;
+		myIDToPointer[lastComponentID] = componentToRemove;
 
 		return true;
 	}

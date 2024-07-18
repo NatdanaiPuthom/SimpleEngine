@@ -59,6 +59,8 @@ namespace ECS
 
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
 		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
+
+		void (*CopyFunctionPointer)(void* aDestination, const void* aSource) = nullptr;
 	private:
 		int padding[6] = { INT_MIN };
 	};
@@ -132,6 +134,20 @@ namespace ECS
 		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> const ComponentID
 			{
 				return aEntity->AddComponent<T>();
+			};
+
+		typeErasureComponent.CopyFunctionPointer = [](void* aDestination, const void* aSource) -> void
+			{
+				if constexpr (std::is_trivially_copyable_v<T>)
+				{
+					memcpy(aDestination, aSource, sizeof(T));
+				}
+				else
+				{
+					T& destination = *reinterpret_cast<T*>(aDestination);
+					const T& source = *reinterpret_cast<const T*>(aSource);
+					destination = source;
+				}
 			};
 
 		if constexpr (ECS::Editable<T>)
