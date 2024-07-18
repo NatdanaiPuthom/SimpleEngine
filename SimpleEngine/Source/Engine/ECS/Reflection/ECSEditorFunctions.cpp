@@ -1,15 +1,19 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Reflection/ECSEditorFunctions.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
+
 #include "Graphics/Defines.hpp"
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
+#include "Graphics/BufferData.hpp"
+
 #include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
 #include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.h"
 #include "NodeScript/SimpleScript/Core/Script.h"
 #include "NodeScript/SimpleScript/Core/Instance/ScriptInstance.h"
 #include "NodeScript/SimpleScript/Core/ScriptFoundation.h"
+
 #include "External/imgui.h"
 
 namespace Editor
@@ -208,6 +212,15 @@ namespace ECS
 		}
 
 		return edited;
+	}
+
+	bool ViewAndEditValue(Graphics::PointLightData& aValue, const std::string& /*aVariableName*/)
+	{
+		const bool editedColor = ImGui::DragFloat3("Color", &aValue.color.x, 0.1f, 0.0f);
+		const bool editedIntensity = ImGui::DragFloat("Intensity", &aValue.color.w, 0.1f, 0.0f);
+		const bool editedRadius = ImGui::DragFloat("Radius", &aValue.radius, 0.2f, 0.1f);
+
+		return (editedColor || editedIntensity || editedRadius);
 	}
 
 	bool ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& /*aVariableName*/)

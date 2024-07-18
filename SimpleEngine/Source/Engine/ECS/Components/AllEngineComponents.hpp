@@ -6,4 +6,5 @@
 #include "Engine/ECS/Components/Core/AnimationComponent.hpp"
 #include "Engine/ECS/Components/Core/SkyBoxComponent.hpp"
 #include "Engine/ECS/Components/Core/DirectionalLightComponent.hpp"
+#include "Engine/ECS/Components/Core/PointLightComponent.hpp"
 #include "Engine/ECS/Components/Core/ScriptComponent.hpp"

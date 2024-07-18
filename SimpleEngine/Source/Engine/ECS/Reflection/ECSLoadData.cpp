@@ -60,6 +60,17 @@ namespace ECS
 		return true;
 	}
 
+	bool LoadAndSetDataFromJSON(Graphics::PointLightData& aPointLight, const std::string& aVariableName, const nlohmann::json& aJSONData)
+	{
+		aPointLight.color.x = aJSONData[aVariableName]["Color"]["x"];
+		aPointLight.color.y = aJSONData[aVariableName]["Color"]["y"];
+		aPointLight.color.z = aJSONData[aVariableName]["Color"]["z"];
+		aPointLight.color.w = aJSONData[aVariableName]["Intensity"];
+		aPointLight.radius = aJSONData[aVariableName]["Radius"];
+
+		return true;
+	}
+
 	bool LoadAndSetDataFromJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
 		const std::string filePath = aJSONData[aVariableName];

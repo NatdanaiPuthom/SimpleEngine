@@ -14,6 +14,7 @@ namespace Graphics
 	class Texture;
 	class Skeleton;
 
+	struct PointLightData;
 	struct Animation;
 }
 
@@ -53,6 +54,7 @@ namespace ECS
 	bool ViewAndEditValue(Math::Vector3f& aValue, const std::string& aVariableName);
 	bool ViewAndEditValue(Math::Vector4f& aValue, const std::string& aVariableName);
 	bool ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName);
+	bool ViewAndEditValue(Graphics::PointLightData& aValue, const std::string& aVariableName);
 
 	bool ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& aVariableName);
 	bool ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& aVariableName);

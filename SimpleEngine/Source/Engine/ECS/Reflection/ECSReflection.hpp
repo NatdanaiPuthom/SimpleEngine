@@ -61,6 +61,8 @@ namespace ECS
 		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
 
 		void (*CopyFunctionPointer)(void* aDestination, const void* aSource) = nullptr;
+
+		bool hasBeenAdded = false;
 	private:
 		char myPadding[14] = "Believe!!!!!\0";
 	};
@@ -120,14 +122,13 @@ namespace ECS
 		const ComponentHashCode hashCode = typeid(T).hash_code();
 		const bool alreadyExistOrHashCollision = myTypeErasureComponents.contains(hashCode);
 
-		if (alreadyExistOrHashCollision == true)
+		if (alreadyExistOrHashCollision == true && myTypeErasureComponents[hashCode].hasBeenAdded)
 		{
-			assert(false && "Component already exist or has hash collision!");
 			return;
 		}
 
-
 		TypeErasureObject typeErasureComponent;
+		typeErasureComponent.hasBeenAdded = true;
 
 		typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
@@ -233,8 +234,7 @@ namespace ECS
 
 		if (componentDoesExist == false)
 		{
-			assert(false && "Component type does not exist in register. Please register the component first before it's properties");
-			return;
+			RegisterComponentType<Component>(); //NOTE(v11.3.4): In case the inline order happen to choose REGISTER_PROPERTY first :(
 		}
 
 		myTypeErasureComponents[typeid(Component).hash_code()].myComponentProperties.push_back(componentProperty);

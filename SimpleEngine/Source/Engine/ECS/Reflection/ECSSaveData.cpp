@@ -63,6 +63,19 @@ namespace ECS
 		return json;
 	}
 
+	nlohmann::json ReturnDataAsJSON(Graphics::PointLightData& aPointlight, const std::string& aVariableName)
+	{
+		nlohmann::json json;
+
+		json[aVariableName]["Color"]["x"] = aPointlight.color.x;
+		json[aVariableName]["Color"]["y"] = aPointlight.color.y;
+		json[aVariableName]["Color"]["z"] = aPointlight.color.z;
+		json[aVariableName]["Intensity"] = aPointlight.color.w;
+		json[aVariableName]["Radius"] = aPointlight.radius;
+
+		return json;
+	}
+
 	nlohmann::json ReturnDataAsJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName)
 	{
 		nlohmann::json json;
