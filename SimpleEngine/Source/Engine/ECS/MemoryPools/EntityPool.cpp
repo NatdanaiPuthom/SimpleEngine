@@ -18,16 +18,31 @@ namespace ECS
 		Clear();
 	}
 
+	EntityPool::EntityPool(const EntityPool& aOther)
+	{
+		const size_t size = aOther.myEndMemoryAddress - aOther.myStartMemoryAddress;
+		const size_t offset = aOther.myCurrentMemoryAddress - aOther.myStartMemoryAddress;
+
+		myStartMemoryAddress = new char[size];
+		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * size;
+		myCurrentMemoryAddress = myStartMemoryAddress + offset;
+
+		memset(myCurrentMemoryAddress, '\0', myEndMemoryAddress - myCurrentMemoryAddress);
+		memcpy(padding, aOther.padding, sizeof(padding));
+
+		myEntityIDs = aOther.myEntityIDs;
+	}
+
 	void EntityPool::Init(const size_t aEntityAmountToReserved)
 	{
 		Clear();
 
 		const size_t size = aEntityAmountToReserved * sizeof(IEntity);
 		myStartMemoryAddress = new char[size];
-		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * size;
+		myEndMemoryAddress = myStartMemoryAddress + size;
 		myCurrentMemoryAddress = myStartMemoryAddress;
 
-		memset(myStartMemoryAddress, '\0', sizeof(char) * size);
+		memset(myStartMemoryAddress, '\0', size);
 	}
 
 	char* EntityPool::CreateEntity(const EntityID aID, std::unordered_map<EntityID, char*>& aEntities, EntityManager* aEntityManager)

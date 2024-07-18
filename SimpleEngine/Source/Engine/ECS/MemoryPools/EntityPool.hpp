@@ -15,6 +15,10 @@ namespace ECS
 
 		friend class EntityManager;
 	public:
+		EntityPool(const EntityPool&&) = delete;
+		EntityPool& operator=(const EntityPool&) = delete;
+		EntityPool& operator=(const EntityPool&&) = delete;
+
 		void Init(const size_t aEntityAmountToReserved);
 
 		char* CreateEntity(const EntityID aID, std::unordered_map<EntityID, char*>& aEntities, EntityManager* aEntityManager);
@@ -28,6 +32,8 @@ namespace ECS
 	private:
 		EntityPool();
 		~EntityPool();
+
+		EntityPool(const EntityPool& aOther);
 
 		void Reallocate();
 		void Clear();

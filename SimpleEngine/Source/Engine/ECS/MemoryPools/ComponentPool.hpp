@@ -14,7 +14,8 @@ namespace ECS
 		ComponentPool(const size_t aDefaultSize = 16);
 		~ComponentPool();
 
-		ComponentPool(const ComponentPool&) = delete;
+		ComponentPool(const ComponentPool& aOther);
+		
 		ComponentPool(ComponentPool&&) = delete;
 		ComponentPool& operator=(const ComponentPool&) = delete;
 		ComponentPool& operator=(ComponentPool&&) = delete;
@@ -39,7 +40,7 @@ namespace ECS
 	private:
 		void Reallocate();
 		void Remap(const std::vector<ComponentID>& aComponentIDs, const size_t aSize);
-		std::vector<ComponentID> SortMemoryAddressesAndReturnSortedComponentIDs();
+		std::vector<ComponentID> ReturnComponentIDsSortedByAddress() const;
 	private:
 		char* myCurrentMemoryAddress;
 		char* myStartMemoryAddress;
@@ -62,7 +63,7 @@ namespace ECS
 
 		if (reallocated)
 		{
-			oldComponentIDs = SortMemoryAddressesAndReturnSortedComponentIDs();
+			oldComponentIDs = ReturnComponentIDsSortedByAddress();
 		}
 
 		while (sizeof(T) > GetAvailableMemorySpace())

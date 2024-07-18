@@ -19,12 +19,37 @@ namespace ECS
 	ComponentPool::~ComponentPool()
 	{
 		delete[] myStartMemoryAddress;
-		
+
 		memset(myStartMemoryAddress, '\0', myEndMemoryAddress - myStartMemoryAddress);
 
 		myStartMemoryAddress = nullptr;
 		myEndMemoryAddress = nullptr;
 		myCurrentMemoryAddress = nullptr;
+	}
+
+	ComponentPool::ComponentPool(const ComponentPool& aOther)
+	{
+		const size_t size = aOther.myEndMemoryAddress - aOther.myStartMemoryAddress;
+		const size_t offset = aOther.myCurrentMemoryAddress - aOther.myStartMemoryAddress;
+
+		myComponentTypeSize = aOther.myComponentTypeSize;
+
+		myStartMemoryAddress = new char[size];
+		myEndMemoryAddress = myStartMemoryAddress + size;
+		myCurrentMemoryAddress = myStartMemoryAddress + offset;
+
+		memset(myCurrentMemoryAddress, '\0', myEndMemoryAddress - myCurrentMemoryAddress);
+
+		std::vector<ComponentID> sortedComponentIDs = aOther.ReturnComponentIDsSortedByAddress();
+
+		for (size_t i = 0; i < sortedComponentIDs.size(); i++)
+		{
+			char* componentPointer = myStartMemoryAddress + i * myComponentTypeSize;
+			const size_t componentID = sortedComponentIDs[i];
+
+			myIDToPointer.emplace(componentID, componentPointer);
+			myPointerToID.emplace(componentPointer, componentID);
+		}
 	}
 
 	void ComponentPool::Reallocate()
@@ -58,7 +83,7 @@ namespace ECS
 		}
 	}
 
-	std::vector<ComponentID> ComponentPool::SortMemoryAddressesAndReturnSortedComponentIDs()
+	std::vector<ComponentID> ComponentPool::ReturnComponentIDsSortedByAddress() const
 	{
 		if (myPointerToID.size() <= 0)
 		{
@@ -71,7 +96,7 @@ namespace ECS
 		oldComponentIDs.reserve(myPointerToID.size());
 		oldPointerAddresses.reserve(myIDToPointer.size());
 
-		for (auto& [id, pointer] : myIDToPointer)
+		for (const auto& [id, pointer] : myIDToPointer)
 		{
 			oldPointerAddresses.push_back(pointer);
 		}
@@ -94,7 +119,7 @@ namespace ECS
 
 		for (auto& pointer : oldPointerAddresses)
 		{
-			oldComponentIDs.push_back(myPointerToID[pointer]);
+			oldComponentIDs.push_back(myPointerToID.at(pointer));
 		}
 
 		return oldComponentIDs;
