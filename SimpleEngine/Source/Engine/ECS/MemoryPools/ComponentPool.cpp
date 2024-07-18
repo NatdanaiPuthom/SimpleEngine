@@ -30,13 +30,14 @@ namespace ECS
 		const size_t size = aOther.myEndMemoryAddress - aOther.myStartMemoryAddress;
 		const size_t offset = aOther.myCurrentMemoryAddress - aOther.myStartMemoryAddress;
 
-		myComponentTypeSize = aOther.myComponentTypeSize;
+		this->myComponentTypeSize = aOther.myComponentTypeSize;
 
-		myStartMemoryAddress = new char[size];
-		myEndMemoryAddress = myStartMemoryAddress + size;
-		myCurrentMemoryAddress = myStartMemoryAddress + offset;
+		this->myStartMemoryAddress = new char[size];
+		this->myEndMemoryAddress = myStartMemoryAddress + size;
+		this->myCurrentMemoryAddress = myStartMemoryAddress + offset;
 
-		memset(myCurrentMemoryAddress, '\0', myEndMemoryAddress - myCurrentMemoryAddress);
+		memcpy(this->myStartMemoryAddress, aOther.myStartMemoryAddress, aOther.myCurrentMemoryAddress - aOther.myStartMemoryAddress);
+		memset(this->myCurrentMemoryAddress, '\0', myEndMemoryAddress - myCurrentMemoryAddress);
 
 		std::vector<ComponentID> sortedComponentIDs = aOther.ReturnComponentIDsSortedByAddress();
 
@@ -45,8 +46,8 @@ namespace ECS
 			char* componentPointer = myStartMemoryAddress + i * myComponentTypeSize;
 			const size_t componentID = sortedComponentIDs[i];
 
-			myIDToPointer.emplace(componentID, componentPointer);
-			myPointerToID.emplace(componentPointer, componentID);
+			this->myIDToPointer.emplace(componentID, componentPointer);
+			this->myPointerToID.emplace(componentPointer, componentID);
 		}
 	}
 
