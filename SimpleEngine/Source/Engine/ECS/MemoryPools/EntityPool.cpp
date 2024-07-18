@@ -122,8 +122,6 @@ namespace ECS
 
 		delete[] myStartMemoryAddress;
 
-		memset(myStartMemoryAddress, '\0', myEndMemoryAddress - myStartMemoryAddress);
-
 		myStartMemoryAddress = nullptr;
 		myEndMemoryAddress = nullptr;
 		myCurrentMemoryAddress = nullptr;
