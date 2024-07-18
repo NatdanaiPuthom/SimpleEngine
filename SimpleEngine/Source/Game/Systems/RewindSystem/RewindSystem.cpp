@@ -1,8 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "RewindSystem.hpp"
+#include "Game/Systems/RewindSystem/RewindSystem.hpp"
+#include "Game/Components/RewindTestComponent.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
-#include "Game/Components/AddComponentHere/RewindTestComponent.hpp"
-
 
 namespace ECS
 {
@@ -62,7 +61,7 @@ namespace ECS
 
 	void RewindSystem::Init()
 	{
-		std::cout << "Initialized RewindSystem!" << std::endl;
+	
 	}
 
 	void RewindSystem::Update()
@@ -139,26 +138,6 @@ namespace ECS
 		}
 
 
-	}
-
-	void RewindSystem::Render()
-	{
-		std::cout << "RewindSystem is begin rendered!" << std::endl;
-	}
-
-	void RewindSystem::EarlyUpdate()
-	{
-		std::cout << "RewindSystem is begin early updated!" << std::endl;
-	}
-
-	void RewindSystem::FixedUpdate()
-	{
-		std::cout << "RewindSystem is begin fixed updated!" << std::endl;
-	}
-
-	void RewindSystem::LateUpdate()
-	{
-		std::cout << "RewindSystem is begin late updated!" << std::endl;
 	}
 
 	std::unique_ptr<System> RewindSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
