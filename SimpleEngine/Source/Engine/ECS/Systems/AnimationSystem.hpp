@@ -8,11 +8,11 @@ namespace ECS
 	class AnimationSystem : public ECS::System
 	{
 	public:
-		explicit AnimationSystem(EntityComponentSystem* aEntityComponentSystem);
+		 AnimationSystem();
 		~AnimationSystem() override;
 
-		void Update() override;
+		void Update(EntityComponentSystem* aEntityComponentSystem) override;
 
-		std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const override;
+		std::unique_ptr<System> Clone() const override;
 	};
 }

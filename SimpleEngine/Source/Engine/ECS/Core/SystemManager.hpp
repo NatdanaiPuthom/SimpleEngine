@@ -16,29 +16,31 @@ namespace ECS
 
 		friend class ECS::EntityComponentSystem;
 	public:
+		SystemManager(const SystemManager& aOther);
+		SystemManager& operator=(const SystemManager& aOther);
 
 		void Init();
-		void Update();
-		void Render();
+		void Update(EntityComponentSystem* aEntityComponentSystem);
+		void Render(EntityComponentSystem* aEntityComponentSystem);
 
 		template<typename T>
-		void AddSystem(EntityComponentSystem* aEntityComponentSystem);
+		void AddSystem();
 
 	private:
-		void EarlyUpdate();
-		void FixedUpdate();
-		void LateUpdate();
-		void LateRender();
+		void EarlyUpdate(EntityComponentSystem* aEntityComponentSystem);
+		void FixedUpdate(EntityComponentSystem* aEntityComponentSystem);
+		void LateUpdate(EntityComponentSystem* aEntityComponentSystem);
+		void LateRender(EntityComponentSystem* aEntityComponentSystem);
 	private:
-		explicit SystemManager(EntityComponentSystem* aEntityComponentSystem);
+		 SystemManager();
 		~SystemManager();
 	private:
-		std::unordered_map<SystemHashCode, std::shared_ptr<System>> mySystems;
+		std::unordered_map<SystemHashCode, std::unique_ptr<System>> mySystems;
 		char myPadding[48] = "Never give up on your dreams! Gotta Believe!!!\0";
 	};
 
 	template<typename T>
-	inline void SystemManager::AddSystem(EntityComponentSystem* aEntityComponentSystem)
+	inline void SystemManager::AddSystem()
 	{
 		const SystemHashCode hashCode = typeid(T).hash_code();
 
@@ -48,6 +50,6 @@ namespace ECS
 			return;
 		}
 
-		mySystems[hashCode] = std::make_shared<T>(aEntityComponentSystem);
+		mySystems.emplace(hashCode, std::make_unique<T>());
 	}
 }

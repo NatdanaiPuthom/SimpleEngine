@@ -1,11 +1,10 @@
 #pragma once
 #include "Engine/ECS/Core/EntityManager.hpp"
-#include "Engine/ECS/ECSInterface.hpp"
 #include <string>
+#include <typeindex>
 
 namespace ECS
 {
-	class EntityPool;
 	class EntityManager;
 }
 
@@ -14,9 +13,12 @@ namespace ECS
 	class IEntity final
 	{
 		friend class ECS::EntityManager;
-		friend class ECS::EntityPool;
 	public:
 		~IEntity();
+
+		IEntity(const IEntity& aOther) = default;
+		IEntity& operator=(const IEntity& aOther) = default;
+		IEntity& operator=(IEntity&& aOther) = default;
 
 		template<typename T>
 		const ComponentID AddComponent();
@@ -36,15 +38,15 @@ namespace ECS
 
 		const size_t GetID() const;
 		const std::string& GetName() const;
-		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap();
+		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap() const;
 
 	private:
 		IEntity(const size_t aID, EntityManager* aEntityManager);
 	private:
-		const size_t myID;
+		size_t myID;
 		EntityManager* myEntityManager;
 		std::string myName;
-		const char padding[8];
+		char padding[8];
 	};
 
 	template<typename T>

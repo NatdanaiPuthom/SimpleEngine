@@ -9,13 +9,13 @@ namespace ECS
 	class RewindSystem final : public ECS::System
 	{
 	public:
-		explicit RewindSystem(EntityComponentSystem* aEntityComponentSystem);
+		 RewindSystem();
 		~RewindSystem() override;
 
-		virtual std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const override;
+		virtual std::unique_ptr<System> Clone() const override;
 
 		void Init() override;
-		void Update() override;
+		void Update(EntityComponentSystem* aEntityComponentSystem) override;
 
 		void GoToPoint(ECS::TransformComponent* aTransformComponent, ECS::RewindTestComponent* aRewindTestComponent);
 	};

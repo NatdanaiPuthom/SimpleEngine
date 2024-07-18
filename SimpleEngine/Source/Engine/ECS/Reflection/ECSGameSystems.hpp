@@ -20,7 +20,7 @@ namespace ECS
 				return;
 			}
 
-			mySystems.emplace(hashCode, std::make_unique<T>(nullptr));
+			mySystems.emplace(hashCode, std::make_unique<T>());
 		}
 
 		static std::unordered_map<size_t, const std::unique_ptr<ECS::System>> mySystems;

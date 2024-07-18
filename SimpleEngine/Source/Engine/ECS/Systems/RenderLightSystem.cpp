@@ -10,7 +10,7 @@
 
 namespace ECS
 {
-	RenderLightSystem::RenderLightSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
+	RenderLightSystem::RenderLightSystem()
 	{
 	}
 
@@ -22,7 +22,7 @@ namespace ECS
 	{
 	}
 
-	void RenderLightSystem::Update()
+	void RenderLightSystem::Update(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 		/*
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
@@ -40,23 +40,23 @@ namespace ECS
 		*/
 	}
 
-	void RenderLightSystem::Render()
+	void RenderLightSystem::Render(EntityComponentSystem* aEntityComponentSystem)
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
-		const std::unordered_set<EntityID>& entityIDsWithPointLight = myEntityComponentSystem->GetEntityIDsWithThisComponent<ECS::PointLightComponent>();
+		const std::unordered_set<EntityID>& entityIDsWithPointLight = aEntityComponentSystem->GetEntityIDsWithThisComponent<ECS::PointLightComponent>();
 
 		for (const EntityID& id : entityIDsWithPointLight)
 		{
-			Entity entity = myEntityComponentSystem->GetEntity(id);
-			ECS::TransformComponent* transformComponent = entity->GetComponent<ECS::TransformComponent>();
+			ECS::IEntity& entity = aEntityComponentSystem->GetEntity(id);
+			ECS::TransformComponent* transformComponent = entity.GetComponent<ECS::TransformComponent>();
 
 			if (transformComponent == nullptr)
 			{
 				continue;
 			}
 
-			ECS::PointLightComponent* pointLightComponent = entity->GetComponent<ECS::PointLightComponent>();
+			ECS::PointLightComponent* pointLightComponent = entity.GetComponent<ECS::PointLightComponent>();
 			Graphics::PointLightData pointLight;
 			pointLight.color = pointLightComponent->pointLightData.color;
 			pointLight.position = transformComponent->transform.GetPosition();
@@ -66,7 +66,7 @@ namespace ECS
 		}
 	}
 
-	void RenderLightSystem::LateRender()
+	void RenderLightSystem::LateRender(EntityComponentSystem* /*aEntityComponentSystem§*/)
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		ID3D11DeviceContext* context = graphicsEngine->GetContext().Get(); context;
@@ -131,8 +131,8 @@ namespace ECS
 		}
 	}
 
-	std::unique_ptr<System> RenderLightSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	std::unique_ptr<System> RenderLightSystem::Clone() const
 	{
-		return std::make_unique<RenderLightSystem>(aEntityComponentSystem);
+		return std::make_unique<RenderLightSystem>();
 	}
 }

@@ -10,7 +10,7 @@ namespace ECS
 {
 	EntityComponentSystem::EntityComponentSystem()
 		: myEntityManager(&myComponentManager)
-		, mySystemManager(this)
+		, mySystemManager()
 	{
 	}
 
@@ -18,50 +18,57 @@ namespace ECS
 	{
 	}
 
+	EntityComponentSystem& EntityComponentSystem::operator=(const EntityComponentSystem& aOther)
+	{
+		myEntityManager = aOther.myEntityManager;
+		mySystemManager = aOther.mySystemManager;
+		myComponentManager = aOther.myComponentManager;
+		myEntityManager.myComponentManager = &myComponentManager;
+
+		return *this;
+	}
+
 	EntityComponentSystem::EntityComponentSystem(const EntityComponentSystem& aOther)
 		: myEntityManager(aOther.myEntityManager)
 		, mySystemManager(aOther.mySystemManager)
 		, myComponentManager(aOther.myComponentManager)
 	{
-		
+		myEntityManager.myComponentManager = &myComponentManager;
 	}
 
 	void EntityComponentSystem::Init()
 	{
-		constexpr size_t entitiesToReserve = 16; //NOTE(v9.30.10):Small number for experimental purposes for now
-
-		myEntityManager.Init(entitiesToReserve);
 		mySystemManager.Init();
 	}
 
 	void EntityComponentSystem::Update()
 	{
-		mySystemManager.Update();
+		mySystemManager.Update(this);
 	}
 
 	void EntityComponentSystem::Render()
 	{
-		mySystemManager.Render();
+		mySystemManager.Render(this);
 	}
 
 	void EntityComponentSystem::EarlyUpdate()
 	{
-		mySystemManager.EarlyUpdate();
+		mySystemManager.EarlyUpdate(this);
 	}
 
 	void EntityComponentSystem::FixedUpdate()
 	{
-		mySystemManager.FixedUpdate();
+		mySystemManager.FixedUpdate(this);
 	}
 
 	void EntityComponentSystem::LateUpdate()
 	{
-		mySystemManager.LateUpdate();
+		mySystemManager.LateUpdate(this);
 	}
 
 	void EntityComponentSystem::LateRender()
 	{
-		mySystemManager.LateRender();
+		mySystemManager.LateRender(this);
 	}
 
 	void EntityComponentSystem::AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem)
@@ -69,7 +76,7 @@ namespace ECS
 		mySystemManager.mySystems[aSystemHashCode] = std::move(aSystem);
 	}
 
-	Entity EntityComponentSystem::CreateEntity(const EntityID aEntityID)
+	ECS::IEntity& EntityComponentSystem::CreateEntity(const EntityID aEntityID)
 	{
 		return myEntityManager.CreateEntity(aEntityID);
 	}
@@ -79,12 +86,12 @@ namespace ECS
 		return myEntityManager.DestroyEntity(aEntityID);
 	}
 
-	Entity EntityComponentSystem::GetEntity(const EntityID aID)
+	ECS::IEntity& EntityComponentSystem::GetEntity(const EntityID aID)
 	{
 		return myEntityManager.GetEntity(aID);
 	}
 
-	Entities EntityComponentSystem::GetAllEntities()
+	std::vector<ECS::IEntity>& EntityComponentSystem::GetAllEntities()
 	{
 		return myEntityManager.GetAllEntities();
 	}
@@ -96,17 +103,17 @@ namespace ECS
 
 	void EntityComponentSystem::SaveData(EntityComponentSystem& aECS, const std::string& aFileName)
 	{
-		const ECS::Entities entities = aECS.GetAllEntities();
+		const std::vector<IEntity>& entities = aECS.GetAllEntities();
 
 		nlohmann::ordered_json jsonData;
 
-		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
+		for (size_t i = 0; i < entities.size(); ++i)
 		{
-			const Entity entity = entities[i];
-			const std::unordered_map<ECS::ComponentType, ComponentID>& components = entity->GetComponentMap();
+			const ECS::IEntity& entity = entities[i];
+			const std::unordered_map<ECS::ComponentType, ComponentID>& components = entity.GetComponentMap();
 
-			jsonData["Entities"][i]["ID"] = entity->GetID();;
-			jsonData["Entities"][i]["Name"] = entity->GetName();;
+			jsonData["Entities"][i]["ID"] = entity.GetID();;
+			jsonData["Entities"][i]["Name"] = entity.GetName();;
 
 			size_t count = 0;
 			for (const auto& [componentType, componentID] : components)
@@ -165,8 +172,9 @@ namespace ECS
 			const nlohmann::json& entityData = jsonData["Entities"][i];
 			const EntityID id = entityData["ID"];
 			const std::string name = entityData["Name"];
-			const Entity entity = aECS.CreateEntity(id);
-			entity->SetName(name);
+
+			ECS::IEntity& entity = aECS.CreateEntity(id);
+			entity.SetName(name);
 
 			if (entityData.contains("Components") == false)
 			{

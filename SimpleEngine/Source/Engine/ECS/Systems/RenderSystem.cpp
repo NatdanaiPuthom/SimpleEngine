@@ -8,7 +8,7 @@
 
 namespace ECS
 {
-	RenderSystem::RenderSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
+	RenderSystem::RenderSystem()
 	{
 	}
 
@@ -16,13 +16,13 @@ namespace ECS
 	{
 	}
 
-	void RenderSystem::Render()
+	void RenderSystem::Render(EntityComponentSystem* aEntityComponentSystem)
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
 
-		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
-		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
+		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
+		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 
 		if (entitiesWithSkyBoxComponent.empty())
 		{
@@ -32,8 +32,8 @@ namespace ECS
 
 		if (entitiesWithDirectionalLightComponent.empty() == false)
 		{
-			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
-			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
+			ECS::IEntity& directionalLight = aEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
+			const DirectionalLightComponent* directionalLightComponent = directionalLight.GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
 			graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
@@ -45,22 +45,21 @@ namespace ECS
 			graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
 		}
 
-		const ECS::Entities entities = myEntityComponentSystem->GetAllEntities();
+		std::vector<IEntity>& entities = aEntityComponentSystem->GetAllEntities();
 		const bool shouldRenderMesh = renderer->GetShouldRenderMesh();
 
-		for (size_t i = 0; i < entities.GetEntityCount(); ++i)
+		for (size_t i = 0; i < entities.size(); ++i)
 		{
-			const ECS::Entity entity = entities[i];
-
-			const MeshComponent* mesh = entity->GetComponent<ECS::MeshComponent>(); //To-DO(v9.37.2): Disgusting, fix pls
-			const TransformComponent* transform = entity->GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
+			 ECS::IEntity& entity = entities[i];
+			const MeshComponent* mesh = entity.GetComponent<ECS::MeshComponent>(); //To-DO(v9.37.2): Disgusting, fix pls
+			const TransformComponent* transform = entity.GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
 
 			if (mesh == nullptr || transform == nullptr)
 			{
 				continue;
 			}
 
-			const AnimationComponent* animated = entity->GetComponent<ECS::AnimationComponent>();
+			const AnimationComponent* animated = entity.GetComponent<ECS::AnimationComponent>();
 			const bool isUsingPBR = renderer->GetIsUsingPBR();
 
 			if (renderer->GetShouldRenderBoundingBox() == true)
@@ -115,24 +114,24 @@ namespace ECS
 		}
 	}
 
-	void RenderSystem::LateRender()
+	void RenderSystem::LateRender(EntityComponentSystem* aEntityComponentSystem)
 	{
-		RenderUnlitModels();
+		RenderUnlitModels(aEntityComponentSystem);
 	}
 
-	std::unique_ptr<System> RenderSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	std::unique_ptr<System> RenderSystem::Clone() const
 	{
-		return std::make_unique<RenderSystem>(aEntityComponentSystem);
+		return std::make_unique<RenderSystem>();
 	}
 
-	void RenderSystem::RenderUnlitModels()
+	void RenderSystem::RenderUnlitModels(EntityComponentSystem* aEntityComponentSystem)
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
 
 		const Graphics::Shader* unlitShader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
-		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
-		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = myEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
+		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
+		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 
 		for (size_t i = 0; i < myStaticModelToRender.size(); ++i)
 		{
@@ -151,8 +150,8 @@ namespace ECS
 
 		if (entitiesWithSkyBoxComponent.empty() == false)
 		{
-			const ECS::Entity skyBox = myEntityComponentSystem->GetEntity(*entitiesWithSkyBoxComponent.begin());
-			SkyBoxComponent* skyBoxComponent = skyBox->GetComponent<SkyBoxComponent>();
+			ECS::IEntity skyBox = aEntityComponentSystem->GetEntity(*entitiesWithSkyBoxComponent.begin());
+			SkyBoxComponent* skyBoxComponent = skyBox.GetComponent<SkyBoxComponent>();
 			skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
 
 			renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
@@ -160,8 +159,8 @@ namespace ECS
 
 		if (entitiesWithDirectionalLightComponent.empty() == false)
 		{
-			const ECS::Entity directionalLight = myEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
-			const DirectionalLightComponent* directionalLightComponent = directionalLight->GetComponent<DirectionalLightComponent>();
+			ECS::IEntity directionalLight = aEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
+			const DirectionalLightComponent* directionalLightComponent = directionalLight.GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
 			Drawer::Line line;

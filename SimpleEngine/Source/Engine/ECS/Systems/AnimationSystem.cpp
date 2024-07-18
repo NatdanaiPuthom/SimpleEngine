@@ -3,7 +3,7 @@
 
 namespace ECS
 {
-	AnimationSystem::AnimationSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
+	AnimationSystem::AnimationSystem()
 	{
 	}
 
@@ -11,28 +11,24 @@ namespace ECS
 	{
 	}
 
-	void AnimationSystem::Update()
+	void AnimationSystem::Update(EntityComponentSystem* aEntityComponentSystem)
 	{
-		const std::unordered_set<EntityID>& entityIDs = myEntityComponentSystem->GetEntityIDsWithThisComponent<ECS::AnimationComponent>();
+		const std::unordered_set<EntityID>& entityIDs = aEntityComponentSystem->GetEntityIDsWithThisComponent<ECS::AnimationComponent>();
 
 		for (auto& id : entityIDs)
 		{
-			ECS::Entity entity = myEntityComponentSystem->GetEntity(id);
+			ECS::IEntity& entity = aEntityComponentSystem->GetEntity(id);
+			ECS::AnimationComponent* animationPlayerComponent = entity.GetComponent<ECS::AnimationComponent>();
 
-			if (entity != nullptr)
+			if (animationPlayerComponent != nullptr && animationPlayerComponent->animation != nullptr)
 			{
-				ECS::AnimationComponent* animationPlayerComponent = entity->GetComponent<ECS::AnimationComponent>();
-
-				if (animationPlayerComponent != nullptr && animationPlayerComponent->animation != nullptr)
-				{
-					animationPlayerComponent->animationPlayer.UpdateTest(animationPlayerComponent);
-				}
+				animationPlayerComponent->animationPlayer.UpdateTest(animationPlayerComponent);
 			}
 		}
 	}
 
-	std::unique_ptr<System> AnimationSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	std::unique_ptr<System> AnimationSystem::Clone() const
 	{
-		return std::make_unique<AnimationSystem>(aEntityComponentSystem);
+		return std::make_unique<AnimationSystem>();
 	}
 }

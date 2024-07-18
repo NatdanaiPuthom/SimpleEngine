@@ -5,7 +5,7 @@
 
 namespace ECS
 {
-	RewindSystem::RewindSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
+	RewindSystem::RewindSystem()
 	{
 	}
 
@@ -64,19 +64,19 @@ namespace ECS
 	
 	}
 
-	void RewindSystem::Update()
+	void RewindSystem::Update(EntityComponentSystem* aEntityComponentSystem)
 	{
-		auto& RewindComponentsIDs = myEntityComponentSystem->GetEntityIDsWithThisComponent<RewindTestComponent>();
+		auto& RewindComponentsIDs = aEntityComponentSystem->GetEntityIDsWithThisComponent<RewindTestComponent>();
 
 		for (auto& thisRewindComponentID : RewindComponentsIDs)
 		{
-			auto& thisEntity = myEntityComponentSystem->GetEntity(thisRewindComponentID);
+			auto& thisEntity = aEntityComponentSystem->GetEntity(thisRewindComponentID);
 
 			//auto& thisEntityTransformComponent = thisEntity->GetComponent<TransformComponent>();
 
-			ECS::TransformComponent* thisEntityTransformComponent = thisEntity->GetComponent<TransformComponent>();
+			ECS::TransformComponent* thisEntityTransformComponent = thisEntity.GetComponent<TransformComponent>();
 
-			ECS::RewindTestComponent* thisRewindComponent = thisEntity->GetComponent<RewindTestComponent>();
+			ECS::RewindTestComponent* thisRewindComponent = thisEntity.GetComponent<RewindTestComponent>();
 
 
 			GoToPoint(thisEntityTransformComponent, thisRewindComponent);
@@ -140,8 +140,8 @@ namespace ECS
 
 	}
 
-	std::unique_ptr<System> RewindSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	std::unique_ptr<System> RewindSystem::Clone() const
 	{
-		return std::make_unique<RewindSystem>(aEntityComponentSystem);
+		return std::make_unique<RewindSystem>();
 	}
 }

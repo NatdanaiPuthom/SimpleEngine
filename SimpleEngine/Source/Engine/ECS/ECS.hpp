@@ -21,6 +21,8 @@ namespace ECS
 		EntityComponentSystem();
 		~EntityComponentSystem();
 
+		EntityComponentSystem& operator=(const EntityComponentSystem& aOther);
+
 		//NOTE(v11.3.4): No clue if this is even correct to copy. Only EntityManager and EntityComponentSystem class doesnt have proper copy constructor
 		EntityComponentSystem(const EntityComponentSystem& aOther);
 
@@ -38,11 +40,11 @@ namespace ECS
 
 		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
 
-		Entity CreateEntity(const EntityID aEntityID = 0);
+		ECS::IEntity& CreateEntity(const EntityID aEntityID = 0);
 		bool RemoveEntity(const EntityID aEntityID);
 	public:
-		Entity GetEntity(const EntityID aID);
-		Entities GetAllEntities();
+		ECS::IEntity& GetEntity(const EntityID aID);
+		std::vector<ECS::IEntity>& GetAllEntities();
 		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
 
 		template<typename T>

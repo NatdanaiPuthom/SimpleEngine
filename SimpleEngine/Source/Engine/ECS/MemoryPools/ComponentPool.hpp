@@ -15,10 +15,9 @@ namespace ECS
 		~ComponentPool();
 
 		ComponentPool(const ComponentPool& aOther);
-		
-		ComponentPool(ComponentPool&&) = delete;
-		ComponentPool& operator=(const ComponentPool&) = delete;
-		ComponentPool& operator=(ComponentPool&&) = delete;
+		ComponentPool(ComponentPool&&) = default;
+		ComponentPool& operator=(const ComponentPool& aOther);
+		ComponentPool& operator=(ComponentPool&&) = default;
 
 		template<typename T>
 		char* CreateComponent(const size_t aComponentID, const T& aValue = T());
@@ -50,12 +49,15 @@ namespace ECS
 
 		std::unordered_map<ComponentID, char*> myIDToPointer;
 		std::unordered_map<char*, ComponentID> myPointerToID;
+
+		size_t test;
 	};
 
 	template<typename T>
 	inline char* ComponentPool::CreateComponent(const size_t aComponentID, const T& aValue)
 	{
 		myComponentTypeSize = sizeof(T); //NOTE(v9.30.10): Should only be call once somehow
+		test = typeid(T).hash_code();
 
 		std::vector<ComponentID> oldComponentIDs;
 

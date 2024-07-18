@@ -18,13 +18,13 @@ namespace ECS
 		* Example: ExampleSystem(EntityComponentSystem* aEntityComponentSystem, int aValue);
 		*/
 
-		explicit ExampleSystem(EntityComponentSystem* aEntityComponentSystem);
+		 ExampleSystem();
 
 		/* NOTE (v11.3.0)
 		* These functions below are pure-virtual which is required for every System
 		*/
 
-		virtual std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const override;
+		virtual std::unique_ptr<System> Clone() const override;
 
 		/* NOTE (v11.3.0)
 		* These virtual functions below doesn't have to be implemented if not needed
@@ -33,11 +33,11 @@ namespace ECS
 		~ExampleSystem() override;
 
 		void Init() override;
-		void Update() override;
-		void Render() override;
+		void Update(EntityComponentSystem* aEntityComponentSystem) override;
+		void Render(EntityComponentSystem* aEntityComponentSystem) override;
 
-		void EarlyUpdate() override;
-		void FixedUpdate() override;
-		void LateUpdate() override;
+		void EarlyUpdate(EntityComponentSystem* aEntityComponentSystem) override;
+		void FixedUpdate(EntityComponentSystem* aEntityComponentSystem) override;
+		void LateUpdate(EntityComponentSystem* aEntityComponentSystem) override;
 	};
 }

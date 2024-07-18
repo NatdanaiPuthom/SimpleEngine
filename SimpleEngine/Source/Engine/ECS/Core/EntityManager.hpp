@@ -1,7 +1,5 @@
 #pragma once
 #include "Engine/ECS/Core/ComponentManager.hpp"
-#include "Engine/ECS/MemoryPools/EntityPool.hpp"
-#include "Engine/ECS/Core/Entities.hpp"
 #include <unordered_map>
 #include <typeindex>
 #include <vector>
@@ -10,6 +8,7 @@
 namespace ECS
 {
 	class EntityComponentSystem;
+	class IEntity;
 }
 
 namespace ECS
@@ -21,7 +20,9 @@ namespace ECS
 		using ComponentType = std::type_index;
 		friend class ECS::EntityComponentSystem;
 	public:
-		Entity CreateEntity(EntityID aEntityID);
+		EntityManager& operator=(const EntityManager&) = default;
+
+		IEntity& CreateEntity(EntityID aEntityID);
 		bool DestroyEntity(const EntityID aID);
 
 		template<typename T>
@@ -36,8 +37,8 @@ namespace ECS
 		template<typename T>
 		T*& GetComponent(const EntityID aEntityID);
 
-		Entity GetEntity(const EntityID aEntityID);
-		Entities GetAllEntities();
+		IEntity& GetEntity(const EntityID aEntityID);
+		std::vector<IEntity>& GetAllEntities();
 
 		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap(const EntityID aEntityID);
 
@@ -45,18 +46,16 @@ namespace ECS
 		explicit EntityManager(ComponentManager* aComponentManager);
 		~EntityManager();
 
-		void Init(const size_t aEntityAmountToReserved = 8);
 		bool FindAndRemoveComponent(const ComponentType& aComponentType, const EntityID aEntityID);
 	private:
-		std::unordered_map<EntityID, char*> myEntities;
+		std::vector<IEntity> myAllEntities;
+		std::unordered_map<EntityID, size_t> myEntityIDToIndex;
+		std::unordered_map<EntityID, size_t> myIndexToEntityID;
 		std::unordered_map<EntityID, std::unordered_map<ComponentType, ComponentID>> myEntityComponents;
-		std::vector<char**> myAllEntities;
-
-		EntityPool myEntityPool;
 
 		ComponentManager* myComponentManager;
 		size_t myCurrentEntityID;
-		char padding[48];
+		char myPadding[48] = "Never Give Up!!Never Give Up!!Never Give Up!!!\0";
 	};
 
 	template<typename T>
@@ -90,7 +89,7 @@ namespace ECS
 	template<typename T>
 	inline T*& EntityManager::GetComponent(const EntityID aEntityID)
 	{
-		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
+		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents.at(aEntityID);
 
 		auto it = components.find(typeid(T));
 

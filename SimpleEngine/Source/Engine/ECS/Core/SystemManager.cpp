@@ -6,16 +6,36 @@
 
 namespace ECS
 {
-	SystemManager::SystemManager(EntityComponentSystem* aEntityComponentSystem)
+	SystemManager::SystemManager()
 	{
-		AddSystem<RenderSystem>(aEntityComponentSystem);
-		AddSystem<RenderLightSystem>(aEntityComponentSystem);
-		AddSystem<AnimationSystem>(aEntityComponentSystem);
-		AddSystem<ScriptSystem>(aEntityComponentSystem);
+		AddSystem<RenderSystem>();
+		AddSystem<RenderLightSystem>();
+		AddSystem<AnimationSystem>();
+		AddSystem<ScriptSystem>();
 	}
 
 	SystemManager::~SystemManager()
 	{
+	}
+
+	SystemManager::SystemManager(const SystemManager& aOther)
+	{
+		for (const auto& [key,system] : aOther.mySystems)
+		{
+			mySystems.emplace(key, system->Clone());
+		}
+	}
+
+	SystemManager& SystemManager::operator=(const SystemManager& aOther)
+	{
+		mySystems.clear();
+
+		for (const auto& [key, system] : aOther.mySystems)
+		{
+			mySystems.emplace(key, system->Clone());
+		}
+
+		return *this;
 	}
 
 	void SystemManager::Init()
@@ -26,51 +46,51 @@ namespace ECS
 		}
 	}
 
-	void SystemManager::Update()
+	void SystemManager::Update(EntityComponentSystem* aEntityComponentSystem)
 	{
 		for (const auto& [key, system] : mySystems)
 		{
-			system->Update();
+			system->Update(aEntityComponentSystem);
 		}
 	}
 
-	void SystemManager::EarlyUpdate()
+	void SystemManager::EarlyUpdate(EntityComponentSystem* aEntityComponentSystem)
 	{
 		for (const auto& [key, system] : mySystems)
 		{
-			system->EarlyUpdate();
+			system->EarlyUpdate(aEntityComponentSystem);
 		}
 	}
 
-	void SystemManager::FixedUpdate()
+	void SystemManager::FixedUpdate(EntityComponentSystem* aEntityComponentSystem)
 	{
 		for (const auto& [key, system] : mySystems)
 		{
-			system->FixedUpdate();
+			system->FixedUpdate(aEntityComponentSystem);
 		}
 	}
 
-	void SystemManager::LateUpdate()
+	void SystemManager::LateUpdate(EntityComponentSystem* aEntityComponentSystem)
 	{
 		for (const auto& [key, system] : mySystems)
 		{
-			system->LateUpdate();
+			system->LateUpdate(aEntityComponentSystem);
 		}
 	}
 
-	void SystemManager::LateRender()
+	void SystemManager::LateRender(EntityComponentSystem* aEntityComponentSystem)
 	{
 		for (const auto& [key, system] : mySystems)
 		{
-			system->LateRender();
+			system->LateRender(aEntityComponentSystem);
 		}
 	}
 
-	void SystemManager::Render()
+	void SystemManager::Render(EntityComponentSystem* aEntityComponentSystem)
 	{
 		for (const auto& [key, system] : mySystems)
 		{
-			system->Render();
+			system->Render(aEntityComponentSystem);
 		}
 	}
 }
