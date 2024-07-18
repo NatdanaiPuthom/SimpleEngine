@@ -236,7 +236,8 @@ namespace Editor
 		{
 			if (ImGui::MenuItem("Add Entity##SceneHierachy"))
 			{
-				aActiveECS.CreateEntity();
+				ECS::Entity entity = aActiveECS.CreateEntity();
+				entity->AddComponent<ECS::TransformComponent>();
 				aSelected = static_cast<int>(aEntities.GetEntityCount()) - 1;
 			}
 
