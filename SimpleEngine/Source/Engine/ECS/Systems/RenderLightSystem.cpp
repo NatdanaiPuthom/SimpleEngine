@@ -4,7 +4,9 @@
 #include "Engine/ECS/Core/Entity.hpp"
 #include "Engine/ECS/Components/Core/SkyBoxComponent.hpp"
 #include "Engine/ECS/Components/Core/DirectionalLightComponent.hpp"
+#include "Engine/ECS/Components/Core/PointLightComponent.hpp"
 #include "Editor/Editor.hpp"
+#include "Graphics/BufferData.hpp"
 
 namespace ECS
 {
@@ -42,11 +44,26 @@ namespace ECS
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
-		PointLightData pointLight1;
-		pointLight1.color = { 1.0f, 0.0f,0.0f, 5.0f };
-		pointLight1.position = { 2.75f, 1.7f, 1.25f };
-		pointLight1.radius = 3.0f;
-		graphicsEngine->AddPointLight(pointLight1);
+		const std::unordered_set<EntityID>& entityIDsWithPointLight = myEntityComponentSystem->GetEntityIDsWithThisComponent<ECS::PointLightComponent>();
+
+		for (const EntityID& id : entityIDsWithPointLight)
+		{
+			Entity entity = myEntityComponentSystem->GetEntity(id);
+			ECS::TransformComponent* transformComponent = entity->GetComponent<ECS::TransformComponent>();
+
+			if (transformComponent == nullptr)
+			{
+				continue;
+			}
+
+			ECS::PointLightComponent* pointLightComponent = entity->GetComponent<ECS::PointLightComponent>();
+			Graphics::PointLightData pointLight;
+			pointLight.color = pointLightComponent->pointLightData.color;
+			pointLight.position = transformComponent->transform.GetPosition();
+			pointLight.radius = pointLightComponent->pointLightData.radius;
+
+			graphicsEngine->AddPointLight(pointLight);
+		}
 	}
 
 	void RenderLightSystem::LateRender()
@@ -78,7 +95,7 @@ namespace ECS
 		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
 		graphicsEngine->UpdateLightBuffer();
 
-		PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
+		Graphics::PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
 
 		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
 		{

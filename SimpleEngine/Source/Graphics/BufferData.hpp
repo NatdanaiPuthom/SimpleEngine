@@ -5,12 +5,15 @@
 #include "Engine/Math/Matrix4x4.hpp"
 #include "Graphics/Defines.hpp"
 
-struct alignas(16) PointLightData final
+namespace Graphics
 {
-	Math::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	Math::Vector3f position = { 0.0f, 0.0f, 0.0f };
-	float radius = 0.0f;
-};
+	struct alignas(16) PointLightData final
+	{
+		Math::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		Math::Vector3f position = { 0.0f, 0.0f, 0.0f }; //NOTE(v11.3.4): Will be updated to sync with Entity's TransformComponent. May fix a better way in future
+		float radius = 0.0f;
+	};
+}
 
 struct alignas(16) PostProcessData final
 { //NOTE(v10.0.5): SimpleEngine default value
@@ -62,7 +65,7 @@ struct alignas(16) LightBufferData final
 
 struct alignas(16) PointLightBufferData final
 {
-	PointLightData pointLightData[Graphics::Global_Max_PointLights];
+	Graphics::PointLightData pointLightData[Graphics::Global_Max_PointLights];
 
 	unsigned int currentPointLightCount = 0;
 	const float paddingPointLightCount[3] = { -1.0f };
