@@ -32,7 +32,15 @@ namespace ECS
 
 	bool LoadAndSetDataFromJSON(std::string& aValue, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
-		aValue = aJSONData[aVariableName];
+		if (aJSONData[aVariableName].is_string())
+		{
+			aValue = aJSONData[aVariableName];
+		}
+		else
+		{
+			aValue = "";
+		}
+
 		return true;
 	}
 
