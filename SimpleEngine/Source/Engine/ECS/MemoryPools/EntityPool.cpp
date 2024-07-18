@@ -8,7 +8,7 @@ namespace ECS
 		: myStartMemoryAddress(nullptr)
 		, myEndMemoryAddress(nullptr)
 		, myCurrentMemoryAddress(nullptr)
-		, padding("Believ\0")
+		, myPadding("Believ\0")
 	{
 		Init(1);
 	}
@@ -23,14 +23,14 @@ namespace ECS
 		const size_t size = aOther.myEndMemoryAddress - aOther.myStartMemoryAddress;
 		const size_t offset = aOther.myCurrentMemoryAddress - aOther.myStartMemoryAddress;
 
-		myStartMemoryAddress = new char[size];
-		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * size;
-		myCurrentMemoryAddress = myStartMemoryAddress + offset;
+		this->myStartMemoryAddress = new char[size];
+		this->myEndMemoryAddress = this->myStartMemoryAddress + sizeof(char) * size;
+		this->myCurrentMemoryAddress = this->myStartMemoryAddress + offset;
 
-		memset(myCurrentMemoryAddress, '\0', myEndMemoryAddress - myCurrentMemoryAddress);
-		memcpy(padding, aOther.padding, sizeof(padding));
+		memset(this->myCurrentMemoryAddress, '\0', this->myEndMemoryAddress - this->myCurrentMemoryAddress);
+		memcpy(this->myPadding, aOther.myPadding, sizeof(this->myPadding));
 
-		myEntityIDs = aOther.myEntityIDs;
+		this->myEntityIDs = aOther.myEntityIDs;
 	}
 
 	void EntityPool::Init(const size_t aEntityAmountToReserved)

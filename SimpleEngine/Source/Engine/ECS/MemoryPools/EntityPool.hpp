@@ -42,6 +42,6 @@ namespace ECS
 		char* myStartMemoryAddress;
 		char* myEndMemoryAddress;
 		std::vector<size_t> myEntityIDs;
-		char padding[8];
+		char myPadding[8];
 	};
 }

@@ -42,7 +42,7 @@ namespace ECS
 	private:
 		ComponentManager();
 		~ComponentManager();
-		explicit ComponentManager(const ComponentManager& aOther);
+		ComponentManager(const ComponentManager& aOther);
 	private:
 		std::unordered_map<ComponentType, ComponentPool> myComponents;
 		std::unordered_map<ComponentType, std::unordered_set<EntityID>> myComponentTypeToEntityIDs;
