@@ -9,6 +9,11 @@
     "Windows": {
       "Show_Inspector": true
     },
-    "MusicActive":  false
+    "MusicActive": false,
+    "Render_DebugLine":  true,
+    "Render_PBR":  true,
+    "Render_Skeleton":  false,
+    "Render_Mesh":  true,
+    "Render_BoundingBox":  true
   }
 }

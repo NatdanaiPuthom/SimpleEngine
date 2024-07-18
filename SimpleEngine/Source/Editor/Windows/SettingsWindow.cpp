@@ -78,6 +78,12 @@ namespace Editor
 
 			ToggleRenderDebugLines(graphicsEngine);
 
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2(3, 0));
+			ImGui::SameLine();
+
+			ToggleShouldRenderBoundingBox(graphicsEngine);
+
 			ToggleShouldRenderMesh(graphicsEngine);
 
 			ImGui::SameLine();
@@ -238,6 +244,17 @@ namespace Editor
 		if (ImGui::Checkbox("Skeleton##SettingWindow", &shouldRenderSkeleton))
 		{
 			renderer->SetShouldRenderSkeletonLines(shouldRenderSkeleton);
+		}
+	}
+
+	void SettingsWindow::ToggleShouldRenderBoundingBox(Graphics::GraphicsEngine* aGraphicsEngine)
+	{
+		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
+		bool shouldRenderBoundingBox = renderer->GetShouldRenderBoundingBox();
+
+		if (ImGui::Checkbox("BoundingBox##SettingWindow", &shouldRenderBoundingBox))
+		{
+			renderer->SetShouldRenderBoundingBox(shouldRenderBoundingBox);
 		}
 	}
 

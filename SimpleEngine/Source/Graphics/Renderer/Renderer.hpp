@@ -80,6 +80,7 @@ namespace Drawer
 		void RenderModel(const Math::Matrix4x4f& aTransformMatrix, const Graphics::Mesh* aMesh, ID3D11DeviceContext* aContext) const;
 		void BindTextures(const ECS::MeshComponent* aMeshComponent, ID3D11DeviceContext* aContext) const;
 		void UpdateJointTransforms(const Math::Matrix4x4f* aJointMatrices) const;
+		void LoadSettingsFromJson();
 	private:
 		const bool CreateObjectBuffer();
 		const bool CreateBoneBuffer();

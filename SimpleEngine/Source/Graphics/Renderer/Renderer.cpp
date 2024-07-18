@@ -5,6 +5,7 @@
 #include "Engine/Global.hpp"
 #include "Engine/Math/Math.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
+#include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "Engine/SimpleUtilities/Bounds.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
@@ -39,6 +40,8 @@ namespace Drawer
 		myLineDrawer = std::make_unique<Drawer::LineDrawer>();
 		mySphereDrawer = std::make_unique<Drawer::SphereDrawer>();
 		mySpriteDrawer = std::make_unique<Drawer::SpriteDrawer>();
+
+		LoadSettingsFromJson();
 
 		if (!CreateObjectBuffer())
 			assert(false && "Failed to create ObjectBuffer");
@@ -367,5 +370,16 @@ namespace Drawer
 
 		myJointBuffer->Bind(myJointBuffer->GetSlot());
 		myJointBuffer->Update(sizeof(JointsBufferData), &boneBufferData);
+	}
+
+	void Renderer::LoadSettingsFromJson()
+	{
+ 		const nlohmann::json jsonData = SimpleUtilities::FileManager::GetDataAsJson(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR));
+
+		myShouldRenderDebugLines = jsonData["Editor_Settings"]["Render_DebugLine"];
+		myShouldRenderMesh = jsonData["Editor_Settings"]["Render_Mesh"];
+		myShouldRenderSkeletonLines = jsonData["Editor_Settings"]["Render_Skeleton"];
+		myShouldRenderBoundingBox = jsonData["Editor_Settings"]["Render_BoundingBox"];		
+		myIsUsingPBR = jsonData["Editor_Settings"]["Render_PBR"];		
 	}
 }

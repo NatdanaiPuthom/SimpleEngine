@@ -31,6 +31,7 @@ namespace Editor
 		void ToggleRenderDebugLines(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleShouldRenderMesh(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleShouldRenderSkeletonLine(Graphics::GraphicsEngine* aGraphicsEngine);
+		void ToggleShouldRenderBoundingBox(Graphics::GraphicsEngine* aGraphicsEngine);
 		void AdjustWindowSize();
 		void AdjustRasterizerState();
 		void AdjustEditorStyle();
