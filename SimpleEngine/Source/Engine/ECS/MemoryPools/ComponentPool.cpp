@@ -19,6 +19,8 @@ namespace ECS
 	ComponentPool::~ComponentPool()
 	{
 		delete[] myStartMemoryAddress;
+		
+		memset(myStartMemoryAddress, '\0', myEndMemoryAddress - myStartMemoryAddress);
 
 		myStartMemoryAddress = nullptr;
 		myEndMemoryAddress = nullptr;

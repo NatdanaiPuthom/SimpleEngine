@@ -26,6 +26,8 @@ namespace ECS
 		myStartMemoryAddress = new char[size];
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * size;
 		myCurrentMemoryAddress = myStartMemoryAddress;
+
+		memset(myStartMemoryAddress, '\0', sizeof(char) * size);
 	}
 
 	char* EntityPool::CreateEntity(const EntityID aID, std::unordered_map<EntityID, char*>& aEntities, EntityManager* aEntityManager)
@@ -92,6 +94,8 @@ namespace ECS
 
 		myCurrentMemoryAddress = myStartMemoryAddress + currentOccupiedMemorySpace;
 		myEndMemoryAddress = myStartMemoryAddress + newMemoryCapacity;
+
+		memset(myCurrentMemoryAddress, '\0', myEndMemoryAddress - myCurrentMemoryAddress);
 	}
 
 	void EntityPool::Clear()
@@ -102,6 +106,8 @@ namespace ECS
 		}
 
 		delete[] myStartMemoryAddress;
+
+		memset(myStartMemoryAddress, '\0', myEndMemoryAddress - myStartMemoryAddress);
 
 		myStartMemoryAddress = nullptr;
 		myEndMemoryAddress = nullptr;
