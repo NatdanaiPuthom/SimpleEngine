@@ -21,6 +21,7 @@ namespace ECS
 		EntityComponentSystem();
 		~EntityComponentSystem();
 
+		//NOTE(v11.3.4): No clue if this is even correct to copy. Only EntityManager and EntityComponentSystem class doesnt have proper copy constructor
 		EntityComponentSystem(const EntityComponentSystem& aOther);
 
 		static void SaveData(EntityComponentSystem& aECS, const std::string& aFileName);

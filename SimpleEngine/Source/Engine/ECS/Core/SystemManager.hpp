@@ -34,6 +34,7 @@ namespace ECS
 		~SystemManager();
 	private:
 		std::unordered_map<SystemHashCode, std::shared_ptr<System>> mySystems;
+		char myPadding[48] = "Never give up on your dreams! Gotta Believe!!!\0";
 	};
 
 	template<typename T>

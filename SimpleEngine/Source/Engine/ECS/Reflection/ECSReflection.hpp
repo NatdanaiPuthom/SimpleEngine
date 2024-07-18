@@ -51,8 +51,8 @@ namespace ECS
 	class TypeErasureObject final
 	{
 	public:
-		std::vector<ComponentProperty> myComponentProperties;
 		std::string myComponentName;
+		std::vector<ComponentProperty> myComponentProperties;
 
 		const ComponentID(*AddComponentFunctionPointer)(ECS::Entity aEntity) = nullptr;
 		bool(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
@@ -62,7 +62,7 @@ namespace ECS
 
 		void (*CopyFunctionPointer)(void* aDestination, const void* aSource) = nullptr;
 	private:
-		int padding[6] = { INT_MIN };
+		char myPadding[14] = "Believe!!!!!\0";
 	};
 
 	class ComponentRegistry final
@@ -88,9 +88,9 @@ namespace ECS
 		ComponentRegistry operator=(const ComponentRegistry&) = delete;
 		ComponentRegistry operator=(const ComponentRegistry&&) = delete;
 
+	private:
 		//NOTE(v11.1.2): Calling GetInstance first time is not thread safe but shouldn't matter since there should never be multiple threads calling GetInstance at the sametime during dynamic initialization phase...?
 		static ComponentRegistry* GetInstance();
-	private:
 
 		void Destroy();
 

@@ -1,5 +1,4 @@
 #pragma once
-#include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/ECS/MemoryPools/ComponentPool.hpp"
 #include <unordered_map>
 #include <unordered_set>
@@ -48,6 +47,7 @@ namespace ECS
 		std::unordered_map<ComponentType, std::unordered_set<EntityID>> myComponentTypeToEntityIDs;
 		std::unordered_map<ComponentID, ComponentType> myComponentIDToComponentTypeMap;
 		size_t myCurrentComponentID;
+		char myPadding[8] = "Believ\0";
 	};
 
 	template<typename T>
