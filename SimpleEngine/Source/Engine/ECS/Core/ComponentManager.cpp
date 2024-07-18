@@ -25,17 +25,18 @@ namespace ECS
 
 			for (size_t i = 0; i < componentCount; ++i)
 			{	
-				MainSingleton::GetComponentRegistry()->myTypeErasureComponentDestructorInvoker[componentType](&component[i * sizeOfComponentType]);;
+				MainSingleton::GetComponentRegistry()->myTypeErasureComponentDestructorInvoker.at(componentType)(&component[i * sizeOfComponentType]);;
 			}
 		}
 	}
 
 	ComponentManager::ComponentManager(const ComponentManager& aOther)
-		: myCurrentComponentID(aOther.myCurrentComponentID)
-		, myComponents(aOther.myComponents)
+		: myComponents(aOther.myComponents)
 		, myComponentTypeToEntityIDs (aOther.myComponentTypeToEntityIDs)
 		, myComponentIDToComponentTypeMap(aOther.myComponentIDToComponentTypeMap)
+		, myCurrentComponentID(aOther.myCurrentComponentID)
 	{
+		strcpy_s(myPadding, aOther.myPadding);
 	}
 
 	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const EntityID aEntityID, const ComponentID aComponentID)

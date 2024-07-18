@@ -26,6 +26,7 @@ namespace Simpleton
 	void SceneManager::Destroy()
 	{
 		myECSs.clear();
+		testEcs.clear();
 		myCurrentSceneInfo = nullptr;
 	}
 
@@ -39,9 +40,15 @@ namespace Simpleton
 		camera->SetPosition(Math::Vector3f(1, 9, -12));
 
 		ECS::EntityComponentSystem e1;
-		auto g = e1.CreateEntity();
-		g.AddComponent<ECS::TransformComponent>();
+		ECS::IEntity& g = e1.CreateEntity();
+
+		ECS::TransformComponent t;
+		t.transform.SetPosition(Math::Vector3f(10, 5, 7));
+		g.AddComponent<ECS::TransformComponent>(t);
 		g.SetName("hello");
+
+		ECS::TransformComponent* transform = g.GetComponent<ECS::TransformComponent>();
+		transform;
 
 		testEcs.push_back(e1);
 	}
@@ -56,16 +63,6 @@ namespace Simpleton
 		if (MainSingleton::GetInputManager().IsKeyPressed('G'))
 		{
 			myECSs.at(myCurrentSceneInfo->id) = testEcs.back();
-			std::vector<ECS::IEntity>& a = myECSs.at(myCurrentSceneInfo->id).GetAllEntities();
-			auto b = a[0].GetComponent<ECS::TransformComponent>();
-			if (b != nullptr)
-			{
-				std::cout << a.size() << std::endl;
-			}
-			else
-			{
-				std::cout << "he" << std::endl;
-			}
 		}
 	}
 

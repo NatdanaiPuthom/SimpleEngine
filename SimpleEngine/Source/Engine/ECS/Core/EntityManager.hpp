@@ -20,13 +20,13 @@ namespace ECS
 		using ComponentType = std::type_index;
 		friend class ECS::EntityComponentSystem;
 	public:
-		EntityManager& operator=(const EntityManager&) = default;
+		EntityManager& operator=(const EntityManager& aOther);
 
 		IEntity& CreateEntity(EntityID aEntityID);
 		bool DestroyEntity(const EntityID aID);
 
 		template<typename T>
-		const ComponentID AddComponent(const EntityID aEntityID);
+		const ComponentID AddComponent(const EntityID aEntityID, const T& aValue);
 
 		template<typename T>
 		bool RemoveComponent(const EntityID aEntityID);
@@ -35,7 +35,7 @@ namespace ECS
 
 	public:
 		template<typename T>
-		T*& GetComponent(const EntityID aEntityID);
+		T* GetComponent(const EntityID aEntityID);
 
 		IEntity& GetEntity(const EntityID aEntityID);
 		std::vector<IEntity>& GetAllEntities();
@@ -59,7 +59,7 @@ namespace ECS
 	};
 
 	template<typename T>
-	inline const ComponentID EntityManager::AddComponent(const EntityID aEntityID)
+	inline const ComponentID EntityManager::AddComponent(const EntityID aEntityID, const T& aValue)
 	{
 		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents[aEntityID];
 
@@ -68,7 +68,7 @@ namespace ECS
 			return static_cast<ComponentID>(-1);
 		}
 
-		const ComponentID componentID = myComponentManager->CreateComponent<T>(aEntityID);
+		const ComponentID componentID = myComponentManager->CreateComponent<T>(aEntityID, aValue);
 
 		myEntityComponents[aEntityID][typeid(T)] = componentID;
 
@@ -87,7 +87,7 @@ namespace ECS
 	}
 
 	template<typename T>
-	inline T*& EntityManager::GetComponent(const EntityID aEntityID)
+	inline T* EntityManager::GetComponent(const EntityID aEntityID)
 	{
 		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents.at(aEntityID);
 
@@ -98,7 +98,6 @@ namespace ECS
 			return myComponentManager->GetComponentByComponentID<T>(it->second);
 		}
 
-		static T* nullPointer = nullptr;
-		return std::ref(nullPointer);
+		return nullptr;
 	}
 }

@@ -52,10 +52,8 @@ namespace ECS
 
 			void* c = aOther.myStartMemoryAddress + componentOffset;
 			void* d = myStartMemoryAddress + componentOffset;
-			auto& f = MainSingleton::GetComponentRegistry()->myTypeErasureComponents.at(test);
-			f;
 
-			MainSingleton::GetComponentRegistry()->myTypeErasureComponents.at(test).CreateComponent(c, d);
+			MainSingleton::GetComponentRegistry()->myTypeErasureComponents.at(test).CreateComponent(d, c);
 		}
 
 		std::vector<ComponentID> sortedComponentIDs = aOther.ReturnComponentIDsSortedByAddress();

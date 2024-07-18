@@ -21,7 +21,7 @@ namespace ECS
 		IEntity& operator=(IEntity&& aOther) = default;
 
 		template<typename T>
-		const ComponentID AddComponent();
+		const ComponentID AddComponent(const T& aValue = T());
 
 		template<typename T>
 		bool RemoveComponent();
@@ -34,7 +34,7 @@ namespace ECS
 		void SetName(const std::string& aName);
 
 		template<typename T>
-		T*& GetComponent();
+		T* GetComponent();
 
 		const size_t GetID() const;
 		const std::string& GetName() const;
@@ -50,9 +50,9 @@ namespace ECS
 	};
 
 	template<typename T>
-	inline const ComponentID IEntity::AddComponent()
+	inline const ComponentID IEntity::AddComponent(const T& aValue)
 	{
-		return myEntityManager->AddComponent<T>(myID);
+		return myEntityManager->AddComponent<T>(myID, aValue);
 	}
 
 	template<typename T>
@@ -62,7 +62,7 @@ namespace ECS
 	}
 
 	template<typename T>
-	inline T*& IEntity::GetComponent()
+	inline T* IEntity::GetComponent()
 	{
 		return myEntityManager->GetComponent<T>(myID);
 	}

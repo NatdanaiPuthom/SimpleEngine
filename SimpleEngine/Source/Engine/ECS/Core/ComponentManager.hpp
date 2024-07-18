@@ -36,7 +36,7 @@ namespace ECS
 		const std::unordered_set<EntityID>& GetEntityIDsWithThisComponent();
 
 		template<typename T>
-		T*& GetComponentByComponentID(const ComponentID aID);
+		T* GetComponentByComponentID(const ComponentID aID);
 
 	private:
 		ComponentManager();
@@ -70,17 +70,17 @@ namespace ECS
 	}
 
 	template<typename T>
-	inline T*& ComponentManager::GetComponentByComponentID(const ComponentID aID)
+	inline T* ComponentManager::GetComponentByComponentID(const ComponentID aID)
 	{
-		auto& componentIDToPointerMap = myComponents[typeid(T)].GetComponentIDToPointerMap();
+		std::unordered_map<size_t, char*>& componentIDToPointerMap = myComponents[typeid(T)].GetComponentIDToPointerMap();
+
 		auto it = componentIDToPointerMap.find(aID);
 
 		if (it != componentIDToPointerMap.end())
 		{
-			return reinterpret_cast<T*&>(it->second);
+			return reinterpret_cast<T*>(it->second);
 		}
 
-		static T* nullPointer = nullptr;
-		return std::ref(nullPointer);
+		return nullptr;
 	}
 }
