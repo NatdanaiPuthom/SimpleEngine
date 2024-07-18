@@ -42,9 +42,10 @@ namespace Editor
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem("Create##SceneMenuItem"))
+				if (ImGui::BeginMenu("Create##SceneMenuItem"))
 				{
 					CreateNewScene();
+					ImGui::EndMenu();
 				}
 
 				if (ImGui::MenuItem("Reload##SceneMenuItem"))
@@ -95,12 +96,40 @@ namespace Editor
 
 	void SceneMenuBar::CreateNewScene()
 	{
+		const static std::vector<std::string> menuNames({ "New scene", "Copy scene" });
 		Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
 
-		const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SimpleUtilities::AppendCounterIfAlreadyExist(std::string(SIMPLE_DIR_SCENES) + "\\" + std::string(SIMPLE_FILENAME_NEWSCENE)));
-		const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(absolutePath);
-		sceneManager.CreateNewScene(absolutePath);
-		sceneManager.ChangeScene(relativePath);
+		for (size_t i = 0; i < menuNames.size(); i++)
+		{
+			if (ImGui::Selectable(menuNames[i].c_str()))
+			{
+				switch (i)
+				{
+				case 0:
+				{
+					const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SimpleUtilities::AppendCounterIfAlreadyExist(std::string(SIMPLE_DIR_SCENES) + "\\" + std::string(SIMPLE_FILENAME_NEWSCENE)));
+					const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(absolutePath);
+					sceneManager.CreateNewScene(absolutePath);
+					sceneManager.ChangeScene(relativePath);
+					break;
+				}
+				case 1:
+				{
+					const std::string absolutePath = sceneManager.GetCurrentSceneInfo()->absolutePath;
+					const std::string newCopyName = SimpleUtilities::AppendStringBeforeDot("_Copy", absolutePath);
+					const std::string newFileName = SimpleUtilities::AppendCounterIfAlreadyExist(newCopyName);
+					const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(newFileName);
+
+					std::filesystem::copy_file(absolutePath, newFileName, std::filesystem::copy_options::overwrite_existing);
+					sceneManager.ChangeScene(relativePath);
+					break;
+				}
+				default:
+					break;
+				}
+				break;
+			}
+		}
 	}
 
 	void SceneMenuBar::ReloadScene()

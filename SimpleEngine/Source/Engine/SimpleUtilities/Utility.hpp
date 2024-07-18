@@ -210,6 +210,18 @@ namespace SimpleUtilities
 		aOriginalString = aStringToAdd + aOriginalString;
 	}
 
+	static inline std::string AppendStringBeforeDot(const std::string& aStringToAdd, const std::string& aOriginalString)
+	{
+		const size_t dotPosition = aOriginalString.rfind('.');
+
+		if (dotPosition != std::string::npos)
+		{
+			return std::string(aOriginalString.substr(0, dotPosition) + aStringToAdd + aOriginalString.substr(dotPosition, aOriginalString.length()));
+		}
+
+		return aOriginalString;
+	}
+
 	static inline std::vector<std::string> ReturnOnlyStringContaining(const std::string& aStringToSearch, const std::vector<std::string>& aOriginalString)
 	{
 		std::vector<std::string> filteredString;
