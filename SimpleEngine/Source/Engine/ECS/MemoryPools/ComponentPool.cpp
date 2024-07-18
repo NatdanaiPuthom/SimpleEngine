@@ -12,6 +12,8 @@ namespace ECS
 		myStartMemoryAddress = new char[aDefaultSize];
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;
 		myCurrentMemoryAddress = myStartMemoryAddress;
+
+		memset(myStartMemoryAddress, '\0', sizeof(char) * aDefaultSize);
 	}
 
 	ComponentPool::~ComponentPool()
@@ -37,6 +39,8 @@ namespace ECS
 
 		myCurrentMemoryAddress = myStartMemoryAddress + currentOccupiedMemorySpace;
 		myEndMemoryAddress = myStartMemoryAddress + newMemoryCapacity;
+
+		memset(myCurrentMemoryAddress, '\0', myEndMemoryAddress - myCurrentMemoryAddress);
 	}
 
 	void ComponentPool::Remap(const std::vector<ComponentID>& aComponentIDs, const size_t aSize)
@@ -98,6 +102,12 @@ namespace ECS
 	{
 		//NOTE(v11.3.3): May crash sometime, still havent figure out reason as it was hard to recreate the bug
 
+		if (myCurrentMemoryAddress <= myStartMemoryAddress)
+		{
+			assert(false && "Invalid removal of component as there are no components allocated.");
+			return false;
+		}
+
 		char* componentToRemove = myIDToPointer.at(aComponentID);
 		myCurrentMemoryAddress -= myComponentTypeSize;
 
@@ -110,8 +120,11 @@ namespace ECS
 		myPointerToID.erase(myCurrentMemoryAddress);
 		myIDToPointer.erase(aComponentID);
 
-		myPointerToID[componentToRemove] = lastComponentID;
-		myIDToPointer[lastComponentID] = componentToRemove;
+		if (componentToRemove > myStartMemoryAddress)
+		{
+			myPointerToID[componentToRemove] = lastComponentID;
+			myIDToPointer[lastComponentID] = componentToRemove;
+		}
 
 		return true;
 	}
