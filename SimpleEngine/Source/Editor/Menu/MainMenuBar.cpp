@@ -115,7 +115,7 @@ namespace Editor
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 3));
-			if (ImGui::Begin("Scene##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
+			if (ImGui::Begin("Game##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
 			{
 				Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 				const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetCurrentRasterizerState();
