@@ -118,14 +118,20 @@ namespace ECS
 		return true;
 	}
 
-	bool ViewAndEditValue(const std::string& aValue, const std::string& aVariableName)
+	bool ViewAndEditValue(std::string& aValue, const std::string& aVariableName)
 	{
-		std::string variableNameWithoutImGuiID = ExtractStringFromImGuiIDFullName(aVariableName);
-		variableNameWithoutImGuiID += ": " + aValue;
+		char buffer[256]{};
+		memset(buffer, '\0', sizeof(buffer));
+		strncpy_s(buffer, aValue.c_str(), sizeof(buffer));
+		buffer[sizeof(buffer) - 1] = '\0';
 
-		ImGui::Text(variableNameWithoutImGuiID.c_str());
+		if (ImGui::InputTextWithHint(aVariableName.c_str(), "Text", buffer, sizeof(buffer)))
+		{
+			aValue = std::string(buffer);
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	bool ViewAndEditValue(int& aValue, const std::string& aVariableName)

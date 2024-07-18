@@ -43,12 +43,13 @@ namespace ECS
 namespace ECS
 {
 	bool ViewAndEditValue(char& aValue, const std::string& aVariableName);
-	bool ViewAndEditValue(const std::string& aValue, const std::string& aVariableName);
 
 	bool ViewAndEditValue(bool& aValue, const std::string& aVariableName);
 	bool ViewAndEditValue(int& aValue, const std::string& aVariableName);
 	bool ViewAndEditValue(int*& aValue, const std::string& aVariableName);
 	bool ViewAndEditValue(float& aValue, const std::string& aVariableName);
+
+	bool ViewAndEditValue(std::string& aValue, const std::string& aVariableName);
 
 	bool ViewAndEditValue(Math::Vector2f& aValue, const std::string& aVariableName);
 	bool ViewAndEditValue(Math::Vector3f& aValue, const std::string& aVariableName);

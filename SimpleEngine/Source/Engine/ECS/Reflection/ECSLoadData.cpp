@@ -1,11 +1,14 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Reflection/ECSLoadData.hpp"
+#include "Engine/Math/Transform.hpp"
+#include "Engine/Global.hpp"
+#include "Engine/Debugger/Console/Console.hpp"
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
 #include "Graphics/Model/Skeleton.hpp"
-#include "Engine/Global.hpp"
-#include "Engine/Debugger/Console/Console.hpp"
+#include "Graphics/Animation/Animation.hpp"
+#include "Graphics/BufferData.hpp"
 
 namespace ECS
 {
@@ -22,6 +25,12 @@ namespace ECS
 	}
 
 	bool LoadAndSetDataFromJSON(bool& aValue, const std::string& aVariableName, const nlohmann::json& aJSONData)
+	{
+		aValue = aJSONData[aVariableName];
+		return true;
+	}
+
+	bool LoadAndSetDataFromJSON(std::string& aValue, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
 		aValue = aJSONData[aVariableName];
 		return true;
@@ -51,11 +60,29 @@ namespace ECS
 		return true;
 	}
 
+	bool LoadAndSetDataFromJSON(Math::Vector2f& aVector, const std::string& aVariableName, const nlohmann::json& aJSONData)
+	{
+		aVector.x = aJSONData[aVariableName]["x"];
+		aVector.y = aJSONData[aVariableName]["y"];
+
+		return true;
+	}
+
 	bool LoadAndSetDataFromJSON(Math::Vector3f& aVector, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
 		aVector.x = aJSONData[aVariableName]["x"];
 		aVector.y = aJSONData[aVariableName]["y"];
 		aVector.z = aJSONData[aVariableName]["z"];
+
+		return true;
+	}
+
+	bool LoadAndSetDataFromJSON(Math::Vector4f& aVector, const std::string& aVariableName, const nlohmann::json& aJSONData)
+	{
+		aVector.x = aJSONData[aVariableName]["x"];
+		aVector.y = aJSONData[aVariableName]["y"];
+		aVector.z = aJSONData[aVariableName]["z"];
+		aVector.w = aJSONData[aVariableName]["w"];
 
 		return true;
 	}

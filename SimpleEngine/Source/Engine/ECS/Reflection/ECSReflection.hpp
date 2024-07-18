@@ -64,7 +64,7 @@ namespace ECS
 
 		bool hasBeenAdded = false;
 	private:
-		char myPadding[14] = "Believe!!!!!\0";
+		char myPadding[12] = "Believe!!!\0";
 	};
 
 	class ComponentRegistry final

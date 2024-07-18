@@ -1,8 +1,15 @@
 #pragma once
-#include "Engine/Math/Transform.hpp"
+#include "Engine/Math/Vector2.hpp"
+#include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/Vector4.hpp"
 #include "External/nlohmann/json.hpp"
 #include <string>
 #include <array>
+
+namespace Math
+{
+	class Transform;
+}
 
 namespace Graphics
 {
@@ -17,13 +24,16 @@ namespace Graphics
 
 namespace ECS
 {
-	nlohmann::json ReturnDataAsJSON(bool& aValue, const std::string& aVariableName);
-	nlohmann::json ReturnDataAsJSON(int& aValue, const std::string& aVariableName);
-	nlohmann::json ReturnDataAsJSON(float& aValue, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const bool& aValue, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const int& aValue, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const float& aValue, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const std::string& aValue, const std::string& aVariableName);
 
-	nlohmann::json ReturnDataAsJSON(Math::Transform& aTransform, const std::string& aVariableName);
-	nlohmann::json ReturnDataAsJSON(Math::Vector3f& aVector, const std::string& aVariableName);
-	nlohmann::json ReturnDataAsJSON(Graphics::PointLightData& aPointlight, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const Math::Transform& aTransform, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const Math::Vector2f& aVector, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const Math::Vector3f& aVector, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const Math::Vector4f& aVector, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const Graphics::PointLightData& aPointlight, const std::string& aVariableName);
 
 	nlohmann::json ReturnDataAsJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName);
 	nlohmann::json ReturnDataAsJSON(const Graphics::Shader*& aShader, const std::string& aVariableName);

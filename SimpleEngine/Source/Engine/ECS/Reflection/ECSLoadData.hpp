@@ -1,9 +1,15 @@
 #pragma once
-#include "Engine/Math/Transform.hpp"
+#include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/Vector4.hpp"
 #include "External/nlohmann/json.hpp"
 #include <string>
 #include <array>
+
+namespace Math
+{
+	class Transform;
+}
 
 namespace Graphics
 {
@@ -22,8 +28,13 @@ namespace ECS
 	bool LoadAndSetDataFromJSON(float& aValue, const std::string& aVariableName, const nlohmann::json& aJSONData);
 	bool LoadAndSetDataFromJSON(bool& aValue, const std::string& aVariableName, const nlohmann::json& aJSONData);
 
+	bool LoadAndSetDataFromJSON(std::string& aValue, const std::string& aVariableName, const nlohmann::json& aJSONData);
+
 	bool LoadAndSetDataFromJSON(Math::Transform& aTransform, const std::string& aVariableName, const nlohmann::json& aJSONData);
+	bool LoadAndSetDataFromJSON(Math::Vector2f& aVector, const std::string& aVariableName, const nlohmann::json& aJSONData);
 	bool LoadAndSetDataFromJSON(Math::Vector3f& aVector, const std::string& aVariableName, const nlohmann::json& aJSONData);
+	bool LoadAndSetDataFromJSON(Math::Vector4f& aVector, const std::string& aVariableName, const nlohmann::json& aJSONData);
+
 	bool LoadAndSetDataFromJSON(Graphics::PointLightData& aPointLight, const std::string& aVariableName, const nlohmann::json& aJSONData);
 
 	bool LoadAndSetDataFromJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName, const nlohmann::json& aJSONData);
