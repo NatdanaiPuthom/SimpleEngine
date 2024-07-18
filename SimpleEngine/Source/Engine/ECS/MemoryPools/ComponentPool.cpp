@@ -8,7 +8,7 @@ namespace ECS
 {
 	ComponentPool::ComponentPool(const size_t aDefaultSize)
 		: myComponentTypeSize(0)
-		, test(static_cast<size_t>(-1))
+		, myTypeHashCode(static_cast<size_t>(-1))
 	{
 		myStartMemoryAddress = new char[aDefaultSize];
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;
@@ -36,8 +36,7 @@ namespace ECS
 		this->myStartMemoryAddress = new char[size];
 		this->myEndMemoryAddress = myStartMemoryAddress + size;
 		this->myCurrentMemoryAddress = myStartMemoryAddress + offset;
-
-		this->test = aOther.test;
+		this->myTypeHashCode = aOther.myTypeHashCode;
 
 		size_t componentCount = offset;
 
@@ -50,10 +49,10 @@ namespace ECS
 		{
 			const size_t componentOffset = i * aOther.myComponentTypeSize;
 
-			void* c = aOther.myStartMemoryAddress + componentOffset;
-			void* d = myStartMemoryAddress + componentOffset;
-
-			MainSingleton::GetComponentRegistry()->myTypeErasureComponents.at(test).CreateComponent(d, c);
+			void* newAddress = myStartMemoryAddress + componentOffset;
+			const void* sourceAddress = aOther.myStartMemoryAddress + componentOffset;
+	
+			MainSingleton::GetComponentRegistry()->myTypeErasureComponents[myTypeHashCode].CreateComponent(newAddress, sourceAddress);
 		}
 
 		std::vector<ComponentID> sortedComponentIDs = aOther.ReturnComponentIDsSortedByAddress();
@@ -255,7 +254,7 @@ namespace ECS
 		for (size_t i = 0; i < b; i++)
 		{
 			const size_t componentOffset = i * aOther.myComponentTypeSize;
-			MainSingleton::GetComponentRegistry()->myTypeErasureComponents[test].CopyFunctionPointer(this->myStartMemoryAddress + componentOffset, aOther.myStartMemoryAddress + componentOffset);
+			MainSingleton::GetComponentRegistry()->myTypeErasureComponents.at(myTypeHashCode).CopyFunctionPointer(this->myStartMemoryAddress + componentOffset, aOther.myStartMemoryAddress + componentOffset);
 		}
 
 		std::vector<ComponentID> sortedComponentIDs = aOther.ReturnComponentIDsSortedByAddress();

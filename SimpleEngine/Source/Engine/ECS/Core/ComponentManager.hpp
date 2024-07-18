@@ -73,7 +73,6 @@ namespace ECS
 	inline T* ComponentManager::GetComponentByComponentID(const ComponentID aID)
 	{
 		std::unordered_map<size_t, char*>& componentIDToPointerMap = myComponents[typeid(T)].GetComponentIDToPointerMap();
-
 		auto it = componentIDToPointerMap.find(aID);
 
 		if (it != componentIDToPointerMap.end())

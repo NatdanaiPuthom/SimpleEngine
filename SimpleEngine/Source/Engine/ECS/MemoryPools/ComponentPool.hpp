@@ -45,19 +45,18 @@ namespace ECS
 		char* myStartMemoryAddress;
 		char* myEndMemoryAddress;
 
-		size_t myComponentTypeSize;
-
 		std::unordered_map<ComponentID, char*> myIDToPointer;
 		std::unordered_map<char*, ComponentID> myPointerToID;
 
-		size_t test;
+		size_t myComponentTypeSize;
+		size_t myTypeHashCode;
 	};
 
 	template<typename T>
 	inline char* ComponentPool::CreateComponent(const size_t aComponentID, const T& aValue)
 	{
 		myComponentTypeSize = sizeof(T); //NOTE(v9.30.10): Should only be call once somehow
-		test = typeid(T).hash_code();
+		myTypeHashCode = typeid(T).hash_code();
 
 		std::vector<ComponentID> oldComponentIDs;
 
