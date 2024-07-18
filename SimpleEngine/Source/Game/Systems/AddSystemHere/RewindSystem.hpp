@@ -11,6 +11,9 @@ namespace ECS
 	*
 	*/
 
+	struct TransformComponent;
+	struct RewindTestComponent;
+
 	class RewindSystem final : public ECS::System
 	{
 	public:
@@ -32,6 +35,8 @@ namespace ECS
 		*/
 
 		~RewindSystem() override;
+
+		void GoToPoint(ECS::TransformComponent* aTransformComponent,ECS::RewindTestComponent* aRewindTestComponent);
 
 		void Init() override;
 		void Update() override;

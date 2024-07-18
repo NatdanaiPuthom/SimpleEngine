@@ -14,6 +14,52 @@ namespace ECS
 	{
 	}
 
+	void RewindSystem::GoToPoint(ECS::TransformComponent* aTransformComponent, ECS::RewindTestComponent* aRewindTestComponent)
+	{
+
+		Math::Vector3f position = aTransformComponent->transform.GetPosition();
+
+		Math::Vector3f direction;
+
+		Math::Vector3f wayPoint;
+
+
+		bool goToFirstWayPoint = aRewindTestComponent->goToFirstPoint;
+
+		if (goToFirstWayPoint)
+		{
+			direction = aRewindTestComponent->wayPoint1 - position;
+			wayPoint = aRewindTestComponent->wayPoint1;
+		}
+		else
+		{
+			direction = aRewindTestComponent->wayPoint2 - position;
+			wayPoint = aRewindTestComponent->wayPoint2;
+		}
+
+		direction.Normalize();
+
+		Math::Vector3f velocity = direction * 0.5f * Global::GetDeltaTime();
+
+		position += velocity;
+
+		aTransformComponent->transform.SetPosition(position);
+
+		Math::Vector3f rotation = aTransformComponent->transform.GetRotation();
+
+		rotation += aRewindTestComponent->addRotation * 8.0f * Global::GetDeltaTime();
+
+		aTransformComponent->transform.SetRotation(rotation);
+
+		float distance = Math::Distance(position, wayPoint);
+
+		if (distance <= velocity.Length())
+		{
+			aRewindTestComponent->goToFirstPoint = !aRewindTestComponent->goToFirstPoint;
+		}
+
+	}
+
 	void RewindSystem::Init()
 	{
 		std::cout << "Initialized RewindSystem!" << std::endl;
@@ -27,12 +73,16 @@ namespace ECS
 		{
 			auto& thisEntity = myEntityComponentSystem->GetEntity(thisRewindComponentID);
 
-			auto& thisEntityTransformComponent = thisEntity->GetComponent<TransformComponent>();
+			//auto& thisEntityTransformComponent = thisEntity->GetComponent<TransformComponent>();
 
-			auto& thisRewindComponent = thisEntity->GetComponent<RewindTestComponent>();
+			ECS::TransformComponent* thisEntityTransformComponent = thisEntity->GetComponent<TransformComponent>();
+
+			ECS::RewindTestComponent* thisRewindComponent = thisEntity->GetComponent<RewindTestComponent>();
 
 
-			if (thisRewindComponent->goToFirstPoint == true)
+			GoToPoint(thisEntityTransformComponent, thisRewindComponent);
+
+			/*if (thisRewindComponent->goToFirstPoint == true)
 			{
 				Math::Vector3f position = thisEntityTransformComponent->transform.GetPosition();
 
@@ -52,7 +102,7 @@ namespace ECS
 
 				float distance = Math::Distance(position, thisRewindComponent->wayPoint1);
 
-				if (distance <=  Math::Vector3f(direction * 0.5f * Global::GetDeltaTime()).Length())
+				if (distance <= Math::Vector3f(direction * 0.5f * Global::GetDeltaTime()).Length())
 				{
 					thisRewindComponent->goToFirstPoint = false;
 				}
@@ -76,14 +126,14 @@ namespace ECS
 
 				thisEntityTransformComponent->transform.SetRotation(rotation);
 
-				float distance = Math::Distance(position, thisRewindComponent->wayPoint1);
+				float distance = Math::Distance(position, thisRewindComponent->wayPoint2);
 
 				if (distance <= Math::Vector3f(direction * 0.5f * Global::GetDeltaTime()).Length())
 				{
 					thisRewindComponent->goToFirstPoint = true;
 				}
 
-			}
+			}*/
 
 
 		}
