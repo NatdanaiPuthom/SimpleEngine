@@ -11,7 +11,7 @@ namespace ECS
 
 		Math::Vector3f wayPoint1;
 		Math::Vector3f wayPoint2;
-		Math::Vector3f addRotation{ 0,1,0 };
+		Math::Vector3f addRotation{ 0,10,0 };
 	};
 }
 
