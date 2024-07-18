@@ -186,6 +186,12 @@ namespace ECS
 				const size_t componentHashCode = componentRegistry->myComponentNameToHashCode.at(componentDataJSON["Name"]);
 				const std::vector<ComponentProperty>& componentProperties = componentRegistry->myTypeErasureComponents.at(componentHashCode).myComponentProperties;
 				const ComponentID componentID = componentRegistry->myTypeErasureComponents.at(componentHashCode).AddComponentFunctionPointer(entity);
+
+				if (componentDataJSON.contains("Properties") == false)
+				{
+					continue;
+				}
+
 				nlohmann::json componentPropertiesJSON = componentDataJSON["Properties"];
 
 				void* componentPointer = aECS.GetComponentPointerByComponentID(componentID);
