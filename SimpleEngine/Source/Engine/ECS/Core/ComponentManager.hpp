@@ -21,6 +21,9 @@ namespace ECS
 	{
 		friend class ECS::EntityComponentSystem;
 	public:
+		ComponentManager(const ComponentManager&&) = delete;
+		ComponentManager& operator=(const ComponentManager&) = delete;
+		ComponentManager& operator=(const ComponentManager&&) = delete;
 
 		template<typename T>
 		ComponentID CreateComponent(const EntityID aEntityID, const T& aComponent = T());
@@ -39,6 +42,7 @@ namespace ECS
 	private:
 		ComponentManager();
 		~ComponentManager();
+		explicit ComponentManager(const ComponentManager& aOther);
 	private:
 		std::unordered_map<ComponentType, ComponentPool> myComponents;
 		std::unordered_map<ComponentType, std::unordered_set<EntityID>> myComponentTypeToEntityIDs;

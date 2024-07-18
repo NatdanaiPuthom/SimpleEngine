@@ -30,6 +30,19 @@ namespace ECS
 		}
 	}
 
+	ComponentManager::ComponentManager(const ComponentManager& aOther)
+	{
+		this->myCurrentComponentID = aOther.myCurrentComponentID;
+
+		for (const auto& [componentType, componentPool] : aOther.myComponents)
+		{
+			this->myComponents.emplace(componentType, componentPool);
+		}
+
+		this->myComponentTypeToEntityIDs = aOther.myComponentTypeToEntityIDs;
+		this->myComponentIDToComponentTypeMap = aOther.myComponentIDToComponentTypeMap;
+	}
+
 	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const EntityID aEntityID, const ComponentID aComponentID)
 	{
 		ComponentPool& pool = myComponents[aComponentType];
