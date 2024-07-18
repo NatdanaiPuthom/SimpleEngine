@@ -86,10 +86,10 @@ namespace ECS
 
 			for (auto& [entity, structData] : rewindMap)
 			{
-				ECS::Entity& thisEntity = aEntityComponentSystem->GetEntity(entity);
+				ECS::IEntity& thisEntity = aEntityComponentSystem->GetEntity(entity);
 
-				thisEntity->GetComponent<TransformComponent>()->transform = structData.transform;;
-				thisEntity->GetComponent<RewindTestComponent>()->goToFirstPoint = structData.ThisBoolCheck;
+				thisEntity.GetComponent<TransformComponent>()->transform = structData.transform;;
+				thisEntity.GetComponent<RewindTestComponent>()->goToFirstPoint = structData.ThisBoolCheck;
 			}
 			rewindTimeQue.pop_back();
 
@@ -104,14 +104,14 @@ namespace ECS
 
 			for (auto& thisRewindComponentID : RewindComponentsIDs)
 			{
-				ECS::Entity thisEntity = aEntityComponentSystem->GetEntity(thisRewindComponentID);
+				ECS::IEntity& thisEntity = aEntityComponentSystem->GetEntity(thisRewindComponentID);
 
 
 				//auto& thisEntityTransformComponent = thisEntity->GetComponent<TransformComponent>();
 
-				ECS::TransformComponent* thisEntityTransformComponent = thisEntity->GetComponent<TransformComponent>();
+				ECS::TransformComponent* thisEntityTransformComponent = thisEntity.GetComponent<TransformComponent>();
 
-				ECS::RewindTestComponent* thisRewindComponent = thisEntity->GetComponent<RewindTestComponent>();
+				ECS::RewindTestComponent* thisRewindComponent = thisEntity.GetComponent<RewindTestComponent>();
 
 
 				GoToPoint(thisEntityTransformComponent, thisRewindComponent);
@@ -121,7 +121,7 @@ namespace ECS
 				structData.ThisBoolCheck = thisRewindComponent->goToFirstPoint;
 				structData.transform = thisEntityTransformComponent->transform;
 				
-				rewindMap.emplace(thisEntity->GetID(), structData);
+				rewindMap.emplace(thisEntity.GetID(), structData);
 			}
 			rewindTimeQue.push_back(rewindMap);
 
