@@ -21,6 +21,8 @@ namespace ECS
 		EntityComponentSystem();
 		~EntityComponentSystem();
 
+		EntityComponentSystem(const EntityComponentSystem& aOther);
+
 		static void SaveData(EntityComponentSystem& aECS, const std::string& aFileName);
 		static void LoadData(EntityComponentSystem& aECS, const std::string& aFileName);
 

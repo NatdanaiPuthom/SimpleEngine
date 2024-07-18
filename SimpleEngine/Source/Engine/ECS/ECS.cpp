@@ -18,6 +18,14 @@ namespace ECS
 	{
 	}
 
+	EntityComponentSystem::EntityComponentSystem(const EntityComponentSystem& aOther)
+		: myEntityManager(aOther.myEntityManager)
+		, mySystemManager(aOther.mySystemManager)
+		, myComponentManager(aOther.myComponentManager)
+	{
+		
+	}
+
 	void EntityComponentSystem::Init()
 	{
 		constexpr size_t entitiesToReserve = 16; //NOTE(v9.30.10):Small number for experimental purposes for now
