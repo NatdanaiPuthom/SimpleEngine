@@ -37,26 +37,48 @@ namespace Simpleton
 		auto camera = Global::GetGraphicsEngine()->GetEditorCamera();
 		camera->SetRotation(Math::Vector3f(30, 0, 0));
 		camera->SetPosition(Math::Vector3f(1, 9, -12));
+
+		ECS::EntityComponentSystem e1;
+		auto g = e1.CreateEntity();
+		g.AddComponent<ECS::TransformComponent>();
+		g.SetName("hello");
+
+		testEcs.push_back(e1);
 	}
 
 	void SceneManager::Update()
 	{
 		if (myIsPlaying)
 		{
-			myECSs[myCurrentSceneInfo->id].Update();
+			myECSs.at(myCurrentSceneInfo->id).Update();
+		}
+
+		if (MainSingleton::GetInputManager().IsKeyPressed('G'))
+		{
+			myECSs.at(myCurrentSceneInfo->id) = testEcs.back();
+			std::vector<ECS::IEntity>& a = myECSs.at(myCurrentSceneInfo->id).GetAllEntities();
+			auto b = a[0].GetComponent<ECS::TransformComponent>();
+			if (b != nullptr)
+			{
+				std::cout << a.size() << std::endl;
+			}
+			else
+			{
+				std::cout << "he" << std::endl;
+			}
 		}
 	}
 
 	void SceneManager::Render()
 	{
-		myECSs[myCurrentSceneInfo->id].Render();
+		myECSs.at(myCurrentSceneInfo->id).Render();
 	}
 
 	void SceneManager::EarlyUpdate()
 	{
 		if (myIsPlaying)
 		{
-			myECSs[myCurrentSceneInfo->id].EarlyUpdate();
+			myECSs.at(myCurrentSceneInfo->id).EarlyUpdate();
 		}
 	}
 
@@ -64,7 +86,7 @@ namespace Simpleton
 	{
 		if (myIsPlaying)
 		{
-			myECSs[myCurrentSceneInfo->id].FixedUpdate();
+			myECSs.at(myCurrentSceneInfo->id).FixedUpdate();
 		}
 	}
 
@@ -72,13 +94,13 @@ namespace Simpleton
 	{
 		if (myIsPlaying)
 		{
-			myECSs[myCurrentSceneInfo->id].LateUpdate();
+			myECSs.at(myCurrentSceneInfo->id).LateUpdate();
 		}
 	}
 
 	void SceneManager::LateRender()
 	{
-		myECSs[myCurrentSceneInfo->id].LateRender();
+		myECSs.at(myCurrentSceneInfo->id).LateRender();
 	}
 
 	void SceneManager::ChangeScene(const std::string& aSceneName)
@@ -88,7 +110,7 @@ namespace Simpleton
 			AddScene(aSceneName);
 		}
 
-		myCurrentSceneInfo = &mySceneInfos[aSceneName];
+		myCurrentSceneInfo = &mySceneInfos.at(aSceneName);
 	}
 
 	void SceneManager::ChangeSceneName(const std::string& aNewSceneName)
@@ -107,9 +129,9 @@ namespace Simpleton
 		}
 
 		mySceneInfos.erase(myCurrentSceneInfo->relativePath);
-		mySceneInfos[newSceneInfo.relativePath] = newSceneInfo;
+		mySceneInfos.emplace(newSceneInfo.relativePath, newSceneInfo);
 
-		myCurrentSceneInfo = &mySceneInfos[newSceneInfo.relativePath];
+		myCurrentSceneInfo = &mySceneInfos.at(newSceneInfo.relativePath);
 	}
 
 	void SceneManager::CreateNewScene(const std::string& aFilePath)
@@ -126,7 +148,7 @@ namespace Simpleton
 	{
 		if (mySceneInfos.contains(aSceneName))
 		{
-			myECSs.erase(mySceneInfos[aSceneName].id);
+			myECSs.erase(mySceneInfos.at(aSceneName).id);
 			LoadAndInitScene(aSceneName);
 		}
 	}
@@ -138,7 +160,7 @@ namespace Simpleton
 
 	ECS::EntityComponentSystem& SceneManager::GetCurrentECS()
 	{
-		return myECSs[myCurrentSceneInfo->id];
+		return myECSs.at(myCurrentSceneInfo->id);
 	}
 
 	void SceneManager::LoadSettingsFromJson()
@@ -180,23 +202,23 @@ namespace Simpleton
 
 	bool SceneManager::LoadAndInitScene(const std::string& aSceneName)
 	{
-		const bool success = myECSs.try_emplace(mySceneInfos[aSceneName].id).second;
+		const bool success = myECSs.try_emplace(mySceneInfos.at(aSceneName).id).second;
 
 		if (success)
 		{
-			ECS::EntityComponentSystem& ecs = myECSs[mySceneInfos[aSceneName].id];
+			ECS::EntityComponentSystem& ecs = myECSs.at(mySceneInfos.at(aSceneName).id);
 
 			for (const auto& [hashCode, system] : ECS::ECSGameSystem::mySystems)
 			{
-				ecs.AddClonedSystem(hashCode, system->Clone(&ecs));
+				ecs.AddClonedSystem(hashCode, system->Clone());
 			}
 
 			ecs.Init();
 
-			const std::string name = "ECS LoadScene: " + mySceneInfos[aSceneName].name;
+			const std::string name = "ECS LoadScene: " + mySceneInfos.at(aSceneName).name;
 
 			PROFILER_BEGIN(name);
-			ECS::EntityComponentSystem::LoadData(ecs, mySceneInfos[aSceneName].relativePath);
+			ECS::EntityComponentSystem::LoadData(ecs, mySceneInfos.at(aSceneName).relativePath);
 			PROFILER_END();
 		}
 		else

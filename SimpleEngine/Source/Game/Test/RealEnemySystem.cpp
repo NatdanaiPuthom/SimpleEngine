@@ -4,14 +4,13 @@
 
 namespace ECS
 {
-
-	RealEnemySystem::RealEnemySystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
+	RealEnemySystem::RealEnemySystem()
 	{
 	}
 
-	std::unique_ptr<System> RealEnemySystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	std::unique_ptr<System> RealEnemySystem::Clone() const
 	{
-		return std::make_unique<RealEnemySystem>(aEntityComponentSystem);
+		return std::make_unique<RealEnemySystem>();
 	}
 
 	RealEnemySystem::~RealEnemySystem()
@@ -22,14 +21,15 @@ namespace ECS
 	{
 	}
 
-	void RealEnemySystem::Update()
+	void RealEnemySystem::Update(EntityComponentSystem* aEntityComponentSystem)
 	{
-		const auto& enemies = myEntityComponentSystem->GetEntityIDsWithThisComponent<RealEnemyComponent>();
+		const auto& enemies = aEntityComponentSystem->GetEntityIDsWithThisComponent<RealEnemyComponent>();
+
 		for (auto& enemy : enemies)
 		{
-			Entity entity = myEntityComponentSystem->GetEntity(enemy);
-			auto transform = entity->GetComponent<TransformComponent>();
-			auto mesh = entity->GetComponent<MeshComponent>();
+			ECS::IEntity& entity = aEntityComponentSystem->GetEntity(enemy);
+			auto transform = entity.GetComponent<TransformComponent>();
+			auto mesh = entity.GetComponent<MeshComponent>();
 			auto pos = transform->transform.GetPosition();
 			pos.x += 10 * Global::GetDeltaTime();
 			transform->transform.SetPosition(pos);
@@ -40,11 +40,11 @@ namespace ECS
 				mesh->mesh = Global::GetModelFactory()->LoadMesh("Assets\\Models\\StaticModels\\SM_Particle_Chest.fbx");
 			}
 
-			auto entities = MainSingleton::GetSceneManager().GetCurrentECS().GetAllEntities();
-			//MainSingleton::GetInputManager().IsKeyPressed('A');
-			for (int i = 0; i < entities.GetEntityCount(); i++)
+			const std::vector<IEntity>& entities = MainSingleton::GetSceneManager().GetCurrentECS().GetAllEntities();
+			
+			for (int i = 0; i < entities.size(); i++)
 			{
-				std::cout << entities[i]->GetName() << std::endl;
+				std::cout << entities[i].GetName() << std::endl;
 			}
 
 		}

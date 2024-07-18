@@ -5,7 +5,7 @@
 
 namespace ECS
 {
-	RewindSystem::RewindSystem(EntityComponentSystem* aEntityComponentSystem) : System(aEntityComponentSystem)
+	RewindSystem::RewindSystem() : System()
 	{
 	}
 
@@ -13,9 +13,9 @@ namespace ECS
 	{
 	}
 
-	std::unique_ptr<System> RewindSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	std::unique_ptr<System> RewindSystem::Clone() const
 	{
-		return std::make_unique<RewindSystem>(aEntityComponentSystem);
+		return std::make_unique<RewindSystem>();
 	}
 
 	void RewindSystem::GoToPoint(ECS::TransformComponent* aTransformComponent, ECS::RewindTestComponent* aRewindTestComponent)
@@ -71,7 +71,7 @@ namespace ECS
 		rewindTimeQue.reserve(600);
 	}
 
-	void RewindSystem::Update()
+	void RewindSystem::Update(EntityComponentSystem* aEntityComponentSystem)
 	{
 
 		if (GetAsyncKeyState(VK_MBUTTON))
@@ -86,7 +86,7 @@ namespace ECS
 
 			for (auto& [entity, structData] : rewindMap)
 			{
-				auto& thisEntity = myEntityComponentSystem->GetEntity(entity);
+				ECS::Entity& thisEntity = aEntityComponentSystem->GetEntity(entity);
 
 				thisEntity->GetComponent<TransformComponent>()->transform = structData.transform;;
 				thisEntity->GetComponent<RewindTestComponent>()->goToFirstPoint = structData.ThisBoolCheck;
@@ -97,14 +97,14 @@ namespace ECS
 		}
 		else
 		{
-			auto& RewindComponentsIDs = myEntityComponentSystem->GetEntityIDsWithThisComponent<RewindTestComponent>();
+			auto& RewindComponentsIDs = aEntityComponentSystem->GetEntityIDsWithThisComponent<RewindTestComponent>();
 
 
 			std::unordered_map<ECS::EntityID, RewindDataToRightComponent> rewindMap;
 
 			for (auto& thisRewindComponentID : RewindComponentsIDs)
 			{
-				auto& thisEntity = myEntityComponentSystem->GetEntity(thisRewindComponentID);
+				ECS::Entity thisEntity = aEntityComponentSystem->GetEntity(thisRewindComponentID);
 
 
 				//auto& thisEntityTransformComponent = thisEntity->GetComponent<TransformComponent>();
@@ -129,9 +129,6 @@ namespace ECS
 			{
 				rewindTimeQue.erase(rewindTimeQue.begin() + 0);
 			}
-
-
 		}
-
 	}
 }

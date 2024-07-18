@@ -54,13 +54,15 @@ namespace ECS
 		std::string myComponentName;
 		std::vector<ComponentProperty> myComponentProperties;
 
-		const ComponentID(*AddComponentFunctionPointer)(ECS::Entity aEntity) = nullptr;
+		const ComponentID(*AddComponentFunctionPointer)(ECS::IEntity& aEntity) = nullptr;
 		bool(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
 
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
 		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
 
 		void (*CopyFunctionPointer)(void* aDestination, const void* aSource) = nullptr;
+
+		void (*CreateComponent)(void* aDestination, const void* aSource) = nullptr;
 
 		bool hasBeenAdded = false;
 	private:
@@ -132,9 +134,9 @@ namespace ECS
 
 		typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> const ComponentID
+		typeErasureComponent.AddComponentFunctionPointer = [](ECS::IEntity& aEntity) -> const ComponentID
 			{
-				return aEntity->AddComponent<T>();
+				return aEntity.AddComponent<T>();
 			};
 
 		typeErasureComponent.CopyFunctionPointer = [](void* aDestination, const void* aSource) -> void
@@ -149,6 +151,12 @@ namespace ECS
 					const T& source = *reinterpret_cast<const T*>(aSource);
 					destination = source;
 				}
+			};
+
+		typeErasureComponent.CreateComponent = [](void* aDestination, const void* aSource) -> void
+			{
+				const T& source = *reinterpret_cast<const T*>(aSource);
+				new(aDestination)T(source);
 			};
 
 		if constexpr (ECS::Editable<T>)
@@ -185,9 +193,9 @@ namespace ECS
 
 		dataType.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-		dataType.AddComponentFunctionPointer = [](ECS::Entity aEntity) -> const ComponentID
+		dataType.AddComponentFunctionPointer = [](ECS::IEntity& aEntity) -> const ComponentID
 			{
-				return aEntity->AddComponent<T>();
+				return aEntity.AddComponent<T>();
 			};
 
 		if constexpr (ECS::Editable<T>)

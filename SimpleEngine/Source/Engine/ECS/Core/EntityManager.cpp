@@ -10,13 +10,7 @@ namespace ECS
 	EntityManager::EntityManager(ComponentManager* aComponentManager)
 		: myCurrentEntityID(0)
 		, myComponentManager(aComponentManager)
-		, padding("Never Give Up!!Never Give Up!!Never Give Up!!!\0")
 	{
-	}
-
-	void EntityManager::Init(const size_t aEntityAmountToReserved)
-	{
-		myEntityPool.Init(aEntityAmountToReserved);
 	}
 
 	EntityManager::~EntityManager()
@@ -24,7 +18,7 @@ namespace ECS
 		myComponentManager = nullptr;
 	}
 
-	Entity EntityManager::CreateEntity(EntityID aEntityID)
+	IEntity& EntityManager::CreateEntity(EntityID aEntityID)
 	{
 		if (aEntityID == 0)
 		{
@@ -35,48 +29,41 @@ namespace ECS
 			myCurrentEntityID = aEntityID;
 		}
 
-		myEntities[aEntityID] = myEntityPool.CreateEntity(aEntityID, myEntities, this);
-		myAllEntities.push_back(&myEntities[aEntityID]);
+		myAllEntities.emplace_back(IEntity(aEntityID, this));
+
+		const size_t index = myAllEntities.size() - 1;
+
+		myEntityIDToIndex[aEntityID] = index;
+		myIndexToEntityID[index] = aEntityID;
+
 		++myCurrentEntityID;
 
-		return reinterpret_cast<Entity>(myEntities[aEntityID]);
+		return myAllEntities.back();
 	}
 
 	bool EntityManager::DestroyEntity(const EntityID aEntityID)
 	{
-		PROFILER_FUNCTION(profiler::colors::Red);
-		ECS::Entities entities = GetAllEntities();
-		const size_t count = entities.GetEntityCount();
+		const size_t entityToRemoveIndex = myEntityIDToIndex.at(aEntityID);
+		const size_t lastEntityIndex = myAllEntities.size() - 1;
+		const size_t lastEntityID = myIndexToEntityID.at(lastEntityIndex);
 
-		PROFILER_BEGIN("Search and remove entity EntityManager.cpp");
-		for (size_t i = 0; i < count; ++i) //TO-DO(v9.31.1): Faster remove algoritm as this is O(2) operation. I tried spatial half and half but got some error, may look into this in the future
+		myAllEntities[entityToRemoveIndex] = myAllEntities[lastEntityIndex];
+		myAllEntities.pop_back();
+
+		myIndexToEntityID[lastEntityIndex] = lastEntityID;
+		myEntityIDToIndex[lastEntityID] = lastEntityIndex;
+
+		myIndexToEntityID.erase(entityToRemoveIndex);
+		myEntityIDToIndex.erase(aEntityID);
+
+		const std::unordered_map<ComponentType, ComponentID>& entityComponents = myEntityComponents[aEntityID];
+
+		for (const auto& [typeIndex, componentID] : entityComponents)
 		{
-			if (entities[i]->GetID() == aEntityID)
-			{
-				myAllEntities.erase(myAllEntities.begin() + i);
-				break;
-			}
-		}
-		PROFILER_END();
-
-		auto it = myEntities.find(aEntityID);
-		if (it != myEntities.end())
-		{
-			std::unordered_map<ComponentType, ComponentID>& entityComponents = myEntityComponents[aEntityID];
-
-			for (const auto& [typeIndex, componentID] : entityComponents)
-			{
-				assert(myComponentManager->RemoveComponentByTypeIndex(typeIndex, aEntityID, componentID) && "Failed to remove component by type index");
-			}
-
-			entityComponents.clear();
-
-			it->second = nullptr;
-
-			return true;
+			assert(myComponentManager->RemoveComponentByTypeIndex(typeIndex, aEntityID, componentID) && "Failed to remove component by type index");
 		}
 
-		return false;
+		return true;
 	}
 
 	bool EntityManager::FindAndRemoveComponent(const ComponentType& aComponentType, const EntityID aEntityID)
@@ -108,14 +95,14 @@ namespace ECS
 		return FindAndRemoveComponent(aComponentType, aEntityID);
 	}
 
-	Entity EntityManager::GetEntity(const EntityID aEntityID)
+	IEntity& EntityManager::GetEntity(const EntityID aEntityID)
 	{
-		return reinterpret_cast<Entity>(myEntities[aEntityID]);
+		return myAllEntities[myEntityIDToIndex.at(aEntityID)];
 	}
 
-	Entities EntityManager::GetAllEntities()
+	std::vector<IEntity>& EntityManager::GetAllEntities()
 	{
-		return Entities(myAllEntities);
+		return myAllEntities;
 	}
 
 	const std::unordered_map<ComponentType, ComponentID>& EntityManager::GetComponentMap(const EntityID aEntityID)

@@ -20,7 +20,7 @@ namespace Editor
 		static int selected = 0;
 
 		ECS::EntityComponentSystem& activeECS = MainSingleton::GetSceneManager().GetCurrentECS();
-		ECS::Entities entities = activeECS.GetAllEntities();
+		std::vector<ECS::IEntity>& entities = activeECS.GetAllEntities();
 
 		ShowSceneHierachy(activeECS, entities, selected);
 
@@ -28,16 +28,16 @@ namespace Editor
 		{
 			selected = 0;
 		}
-		else if (selected >= static_cast<int>(entities.GetEntityCount()))
+		else if (selected >= static_cast<int>(entities.size()))
 		{
-			selected = static_cast<int>(entities.GetEntityCount() - 1);
+			selected = static_cast<int>(entities.size() - 1);
 		}
 
 		ShowInspector(activeECS, entities, selected);
 
 		if (MainSingleton::GetInputManager().IsKeyPressed(VK_DELETE))
 		{
-			if (const size_t count = entities.GetEntityCount() > 0)
+			if (const size_t count = entities.size() > 0)
 			{
 				if (selected >= 0)
 				{
@@ -82,19 +82,12 @@ namespace Editor
 		ImGui::Separator();
 	}
 
-	void HierarchyWindow::ShowInspector(ECS::EntityComponentSystem& aActiveECS, ECS::Entities& aEntities, int& aSelected)
+	void HierarchyWindow::ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::IEntity>& aEntities, int& aSelected)
 	{
 		if (ImGui::Begin("Inspector##HierachyWindow"))
 		{
-			ECS::Entity selectedEntity = aEntities[aSelected];
-
-			if (selectedEntity == nullptr)
-			{
-				ImGui::End();
-				return;
-			}
-
-			const std::string selectedEntityName = selectedEntity->GetName();
+			ECS::IEntity& selectedEntity = aEntities[aSelected];
+			const std::string selectedEntityName = selectedEntity.GetName();
 
 			char buffer[256];
 			memset(buffer, '\0', sizeof(buffer));
@@ -108,18 +101,18 @@ namespace Editor
 				if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
 				{
 					const std::string newName(buffer);
-					selectedEntity->SetName(newName);
+					selectedEntity.SetName(newName);
 				}
 			}
 
 			ImGui::PopItemWidth();
 
 			ImGui::SameLine(ImGui::GetWindowWidth() - 70);
-			ImGui::Text(std::string("ID: " + std::to_string(selectedEntity->GetID())).c_str());
+			ImGui::Text(std::string("ID: " + std::to_string(selectedEntity.GetID())).c_str());
 			ImGui::Checkbox("Show Advanced", &myShowAdvanced);
 			ImGui::Separator();
 
-			if (aEntities.GetEntityCount() > 0)
+			if (aEntities.size() > 0)
 			{
 				ShowComponents(selectedEntity, aActiveECS);
 
@@ -146,7 +139,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void HierarchyWindow::ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, ECS::Entities& aEntities, int& aSelected)
+	void HierarchyWindow::ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::IEntity>& aEntities, int& aSelected)
 	{
 		if (ImGui::Begin("Hierarchy"))
 		{
@@ -158,7 +151,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void HierarchyWindow::ShowSceneEntities(ECS::Entities& aEntities, int& aSelected)
+	void HierarchyWindow::ShowSceneEntities(std::vector<ECS::IEntity>& aEntities, int& aSelected)
 	{
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
@@ -169,11 +162,11 @@ namespace Editor
 
 		if (ImGui::BeginListBox("##SceneEntities", parentSize))
 		{
-			for (int i = 0; i < aEntities.GetEntityCount(); ++i)
+			for (int i = 0; i < aEntities.size(); ++i)
 			{
 				const bool isSelected = (aSelected == i);
 
-				if (ImGui::Selectable(aEntities[i]->GetName().c_str(), isSelected))
+				if (ImGui::Selectable(aEntities[i].GetName().c_str(), isSelected))
 				{
 					aSelected = i;
 				}
@@ -210,7 +203,7 @@ namespace Editor
 		ImGui::PopStyleColor();
 	}
 
-	void HierarchyWindow::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, ECS::Entities& aEntities, int& aSelected)
+	void HierarchyWindow::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::IEntity>& aEntities, int& aSelected)
 	{
 		if (ImGui::Button("Add##SceneHierachy"))
 		{
@@ -236,29 +229,29 @@ namespace Editor
 		{
 			if (ImGui::MenuItem("Add Entity##SceneHierachy"))
 			{
-				ECS::Entity entity = aActiveECS.CreateEntity();
-				entity->AddComponent<ECS::TransformComponent>();
-				aSelected = static_cast<int>(aEntities.GetEntityCount()) - 1;
+				ECS::IEntity& entity = aActiveECS.CreateEntity();
+				entity.AddComponent<ECS::TransformComponent>();
+				aSelected = static_cast<int>(aEntities.size()) - 1;
 			}
 
 			if (ImGui::MenuItem("Add Cube##SceneHierachy"))
 			{
-				ECS::Entity entity = aActiveECS.CreateEntity();
+				ECS::IEntity& entity = aActiveECS.CreateEntity();
 
-				entity->AddComponent<ECS::TransformComponent>();
-				entity->AddComponent<ECS::MeshComponent>();
+				entity.AddComponent<ECS::TransformComponent>();
+				entity.AddComponent<ECS::MeshComponent>();
 
-				aSelected = static_cast<int>(aEntities.GetEntityCount()) - 1;
+				aSelected = static_cast<int>(aEntities.size()) - 1;
 			}
 
 			ImGui::EndPopup();
 		}
 	}
 
-	void HierarchyWindow::ShowComponents(ECS::Entity aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const
+	void HierarchyWindow::ShowComponents(ECS::IEntity& aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const
 	{
-		const ECS::EntityID entityID = aSelectedEntity->GetID();
-		const std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = aSelectedEntity->GetComponentMap();
+		const ECS::EntityID entityID = aSelectedEntity.GetID();
+		const std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = aSelectedEntity.GetComponentMap();
 
 		for (const auto& [componentType, componentID] : componentMap)
 		{
@@ -304,7 +297,7 @@ namespace Editor
 			{
 				if (ImGui::MenuItem("Remove Component"))
 				{
-					aSelectedEntity->RemoveComponentByTypeIndex(componentType);
+					aSelectedEntity.RemoveComponentByTypeIndex(componentType);
 					ImGui::EndPopup();
 
 					if (isOpen)
@@ -327,16 +320,16 @@ namespace Editor
 		}
 	}
 
-	void HierarchyWindow::RemoveEntity(ECS::Entities& aEntities, int& aSelected)
+	void HierarchyWindow::RemoveEntity(std::vector<ECS::IEntity>& aEntities, int& aSelected)
 	{
-		aEntities[aSelected]->DestroyThis();
+		aEntities[aSelected].DestroyThis();
 
-		if (aSelected >= static_cast<int>(aEntities.GetEntityCount() - 1))
+		if (aSelected >= static_cast<int>(aEntities.size() - 1))
 		{
 			aSelected--;
 		}
 
-		if (aSelected < 0 && aEntities.GetEntityCount() > 0)
+		if (aSelected < 0 && aEntities.size() > 0)
 		{
 			aSelected = 0;
 		}

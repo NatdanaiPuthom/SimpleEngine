@@ -8,22 +8,19 @@ namespace ECS
 	class System
 	{
 	public:
-		explicit System(EntityComponentSystem* aEntityComponentSystem): myEntityComponentSystem(aEntityComponentSystem) {};
+		System() {};
 
 		virtual ~System() {};
 
 		virtual void Init() {};
-		virtual void Update() {};
-		virtual void Render() {};
+		virtual void Update(EntityComponentSystem* /*aEntityComponentSystem*/) {};
+		virtual void Render(EntityComponentSystem* /*aEntityComponentSystem*/) {};
 
-		virtual void EarlyUpdate() {};
-		virtual void FixedUpdate() {};
-		virtual void LateUpdate() {};
-		virtual void LateRender() {};
+		virtual void EarlyUpdate(EntityComponentSystem* /*aEntityComponentSystem*/) {};
+		virtual void FixedUpdate(EntityComponentSystem* /*aEntityComponentSystem*/ ) {};
+		virtual void LateUpdate(EntityComponentSystem* /*aEntityComponentSystem*/) {};
+		virtual void LateRender(EntityComponentSystem* /*aEntityComponentSystem*/) {};
 
-		virtual std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const = 0;
-
-	protected:
-		EntityComponentSystem* myEntityComponentSystem;
+		virtual std::unique_ptr<System> Clone() const = 0;
 	};
 }

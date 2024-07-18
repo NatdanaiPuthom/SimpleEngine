@@ -20,9 +20,9 @@ namespace ECS
 	{
 		friend class ECS::EntityComponentSystem;
 	public:
-		ComponentManager(const ComponentManager&&) = delete;
-		ComponentManager& operator=(const ComponentManager&) = delete;
-		ComponentManager& operator=(const ComponentManager&&) = delete;
+		ComponentManager& operator=(const ComponentManager&) = default;
+		ComponentManager(ComponentManager&&) = default;
+		ComponentManager& operator=(ComponentManager&&) = default;
 
 		template<typename T>
 		ComponentID CreateComponent(const EntityID aEntityID, const T& aComponent = T());
@@ -54,7 +54,9 @@ namespace ECS
 	inline ComponentID ComponentManager::CreateComponent(const EntityID aEntityID, const T& aComponent)
 	{
 		myCurrentComponentID++;
-		myComponents[typeid(T)].CreateComponent<T>(myCurrentComponentID, aComponent);;
+
+		myComponents[typeid(T)].CreateComponent<T>(myCurrentComponentID, aComponent);
+
 		myComponentTypeToEntityIDs[typeid(T)].insert(aEntityID);
 		myComponentIDToComponentTypeMap.emplace(myCurrentComponentID, typeid(T));
 

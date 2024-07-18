@@ -6,14 +6,14 @@ namespace ECS
 	class RenderLightSystem final : public ECS::System
 	{
 	public:
-		explicit RenderLightSystem(EntityComponentSystem* aEntityComponentSystem);
+		RenderLightSystem();
 		~RenderLightSystem();
 
 		void Init() override;
-		void Update() override;
-		void Render() override;
-		void LateRender() override;
+		void Update(EntityComponentSystem* aEntityComponentSystem) override;
+		void Render(EntityComponentSystem* aEntityComponentSystem) override;
+		void LateRender(EntityComponentSystem* aEntityComponentSystem) override;
 
-		std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const override;
+		std::unique_ptr<System> Clone() const override;
 	};
 }

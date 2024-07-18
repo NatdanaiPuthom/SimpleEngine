@@ -6,33 +6,32 @@
 
 namespace ECS
 {
-	ScriptSystem::ScriptSystem(EntityComponentSystem* const aECS)
-		: System(aECS)
+	ScriptSystem::ScriptSystem()
 	{
 	}
 
-	void ScriptSystem::Update()
+	void ScriptSystem::Update(EntityComponentSystem* aEntityComponentSystem)
 	{
-		auto& entityIDs = myEntityComponentSystem->GetEntityIDsWithThisComponent<ScriptComponent>();
+		auto& entityIDs = aEntityComponentSystem->GetEntityIDsWithThisComponent<ScriptComponent>();
 
 		for (auto& entityID : entityIDs)
 		{
-			ECS::Entity entity = myEntityComponentSystem->GetEntity(entityID);
+			ECS::IEntity& entity = aEntityComponentSystem->GetEntity(entityID);
 
-			ScriptComponent* const scriptComponent = entity->GetComponent<ScriptComponent>();
+			ScriptComponent* const scriptComponent = entity.GetComponent<ScriptComponent>();
 
 			const SCRIPT::ExecutionContextBase executionContext
 			{
 				.deltaTime = Global::GetDeltaTime()
 			};
 
-			SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::Tick, *scriptComponent->scriptInstance, entity, executionContext, true);
+			SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::Tick, *scriptComponent->scriptInstance, &entity, executionContext, true);
 		}
 	}
 
-	std::unique_ptr<System> ScriptSystem::Clone(EntityComponentSystem* aEntityComponentSystem) const
+	std::unique_ptr<System> ScriptSystem::Clone() const
 	{
-		return std::make_unique<ScriptSystem>(aEntityComponentSystem);
+		return std::make_unique<ScriptSystem>();
 	}
 }
 

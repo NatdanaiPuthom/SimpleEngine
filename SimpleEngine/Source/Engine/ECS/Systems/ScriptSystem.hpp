@@ -3,20 +3,13 @@
 
 namespace ECS
 {
-
 	class ScriptSystem final : public System
 	{
 	public:
 
-		ScriptSystem(EntityComponentSystem* aECS);
+		ScriptSystem();
+		void Update(EntityComponentSystem* aEntityComponentSystem) override;
 
-
-		void Update() override;
-
-		std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const override;
-
-	private:
-
-
+		std::unique_ptr<System> Clone() const override;
 	};
 }

@@ -42,15 +42,15 @@ namespace ECS
 		};
 
 	public:
-		explicit RenderSystem(EntityComponentSystem* aEntityComponentSystem);
+		RenderSystem();
 		~RenderSystem() override;
 
-		void Render() override;
-		void LateRender() override;
+		void Render(EntityComponentSystem* aEntityComponentSystem) override;
+		void LateRender(EntityComponentSystem* aEntityComponentSystem) override;
 
-		std::unique_ptr<System> Clone(EntityComponentSystem* aEntityComponentSystem) const override;
+		std::unique_ptr<System> Clone() const override;
 	private:
-		void RenderUnlitModels();
+		void RenderUnlitModels(EntityComponentSystem* aEntityComponentSystem);
 	private:
 		std::vector<StaticModelToRender> myStaticModelToRender;
 		std::vector<AnimatedModelToRender> myAnimatedModelToRender;
