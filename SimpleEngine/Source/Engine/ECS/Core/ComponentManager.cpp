@@ -37,7 +37,7 @@ namespace ECS
 		myComponentTypeToEntityIDs[aComponentType].erase(aEntityID);
 		myComponentIDToComponentTypeMap.erase(aComponentID);
 
-		return pool.SwapWithLastAndRemoveEditor(aComponentID, aComponentType);
+		return pool.SwapWithLastComponentAndRemove(aComponentID, aComponentType);
 	}
 
 	void* ComponentManager::GetComponentByComponentID(const ComponentID aID)

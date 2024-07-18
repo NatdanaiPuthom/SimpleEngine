@@ -98,7 +98,7 @@ namespace ECS
 		return oldComponentIDs;
 	}
 
-	bool ComponentPool::SwapWithLastAndRemoveEditor(const size_t aComponentID, const std::type_index& aTypeIndex)
+	bool ComponentPool::SwapWithLastComponentAndRemove(const size_t aComponentID, const std::type_index& aTypeIndex)
 	{
 		//NOTE(v11.3.3): May crash sometime, still havent figure out reason as it was hard to recreate the bug
 

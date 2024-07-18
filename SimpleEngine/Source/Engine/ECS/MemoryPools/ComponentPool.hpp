@@ -22,7 +22,7 @@ namespace ECS
 		template<typename T>
 		char* CreateComponent(const size_t aComponentID, const T& aValue = T());
 
-		bool SwapWithLastAndRemoveEditor(const size_t aComponentID, const std::type_index& aTypeIndex);
+		bool SwapWithLastComponentAndRemove(const size_t aComponentID, const std::type_index& aTypeIndex);
 
 		size_t GetCapacity() const;
 		size_t GetComponentCount() const;
