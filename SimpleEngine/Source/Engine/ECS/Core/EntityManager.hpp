@@ -21,6 +21,7 @@ namespace ECS
 		friend class ECS::EntityComponentSystem;
 	public:
 		EntityManager& operator=(const EntityManager& aOther);
+		EntityManager(const EntityManager& aOther);
 
 		IEntity& CreateEntity(EntityID aEntityID);
 		bool DestroyEntity(const EntityID aID);

@@ -34,6 +34,20 @@ namespace ECS
 		return *this;
 	}
 
+	EntityManager::EntityManager(const EntityManager& aOther)
+	{
+		this->myAllEntities = aOther.myAllEntities;
+		this->myEntityIDToIndex = aOther.myEntityIDToIndex;
+		this->myIndexToEntityID = aOther.myIndexToEntityID;
+		this->myEntityComponents = aOther.myEntityComponents;
+		this->myComponentManager = aOther.myComponentManager;
+
+		for (size_t i = 0; i < myAllEntities.size(); i++)
+		{
+			myAllEntities[i].myEntityManager = this;
+		}
+	}
+
 	IEntity& EntityManager::CreateEntity(EntityID aEntityID)
 	{
 		if (aEntityID == 0)

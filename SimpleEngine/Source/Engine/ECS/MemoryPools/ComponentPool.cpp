@@ -243,15 +243,16 @@ namespace ECS
 		this->myStartMemoryAddress = new char[size];
 		this->myEndMemoryAddress = myStartMemoryAddress + size;
 		this->myCurrentMemoryAddress = myStartMemoryAddress + offset;
+		this->myTypeHashCode = aOther.myTypeHashCode;
 
-		size_t b = aOther.myCurrentMemoryAddress - aOther.myStartMemoryAddress;
+		size_t componentCount = offset;
 
-		if (b != 0)
+		if (componentCount != 0)
 		{
-			b /= aOther.myComponentTypeSize;
+			componentCount /= aOther.myComponentTypeSize;
 		}
 
-		for (size_t i = 0; i < b; i++)
+		for (size_t i = 0; i < componentCount; i++)
 		{
 			const size_t componentOffset = i * aOther.myComponentTypeSize;
 			MainSingleton::GetComponentRegistry()->myTypeErasureComponents.at(myTypeHashCode).CopyFunctionPointer(this->myStartMemoryAddress + componentOffset, aOther.myStartMemoryAddress + componentOffset);
