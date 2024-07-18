@@ -2,6 +2,7 @@
 #include "Engine/ECS/Core/SystemManager.hpp"
 #include "Engine/ECS/Core/System.hpp"
 #include "Engine/ECS/Systems/AnimationSystem.hpp"
+#include "Engine/ECS/Systems/ScriptSystem.hpp"
 
 namespace ECS
 {
@@ -10,6 +11,7 @@ namespace ECS
 		AddSystem<RenderSystem>(aEntityComponentSystem);
 		AddSystem<RenderLightSystem>(aEntityComponentSystem);
 		AddSystem<AnimationSystem>(aEntityComponentSystem);
+		AddSystem<ScriptSystem>(aEntityComponentSystem);
 	}
 
 	SystemManager::~SystemManager()

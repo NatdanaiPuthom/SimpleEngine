@@ -49,7 +49,7 @@ namespace SCR
 	template<typename EventFunction>
 	inline void NodeExecutor::ExecuteEvent(EventFunction aFunction, ScriptInstance& aScriptInstance, void* const aOwner, const ExecutionContextBase& aContext, const bool aExecuteAutoTickers)
 	{
-		EventID eventID = std::hash<EventFunction>()(aFunction);
+		const EventID eventID = std::hash<EventFunction>()(aFunction);
 		ExecuteEvent(eventID, aScriptInstance, aOwner, aContext, aExecuteAutoTickers);
 	}
 }
