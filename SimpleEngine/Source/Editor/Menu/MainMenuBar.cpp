@@ -6,6 +6,8 @@
 #include "Editor/Windows/DeferredSceneWindow.hpp"
 #include "Editor/Windows/PostProcessingWindow.hpp"
 #include "MainSingleton/MainSingleton.hpp"
+#include "External/dearimgui/imguizmo/ImGuizmo.h"
+#include "Editor/Editor.hpp"
 
 namespace Editor
 {
@@ -115,6 +117,7 @@ namespace Editor
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 3));
+
 			if (ImGui::Begin("Game##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
 			{
 				Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
@@ -128,10 +131,37 @@ namespace Editor
 					textureID = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::Deferred).Get();
 				}
 
-				ImVec2 size = ImGui::GetContentRegionAvail();
+				const ImVec2 size = ImGui::GetContentRegionAvail();
 				ImGui::Image(textureID, size);
+
+				if (EditorEngine::mySelectedEntityID != static_cast<size_t>(-1))
+				{
+					const ImVec2 topLeft = ImGui::GetItemRectMin();
+					const ImVec2 bottomRight = ImGui::GetItemRectMax();
+					ImGuizmo::SetOrthographic(false);
+					ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
+					ImGuizmo::SetRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+
+					ECS::Entity& selectedEntity = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(EditorEngine::mySelectedEntityID);
+					ECS::TransformComponent* transformComponent = selectedEntity.GetComponent<ECS::TransformComponent>();
+					Math::Matrix4x4f objectMatrix = transformComponent->transform.GetMatrix();
+					const Math::Matrix4x4f view = Math::Matrix4x4f::GetFastInverse(Global::GetGraphicsEngine()->GetCurrentCamera()->GetMatrix());
+					const Math::Matrix4x4f proj = Global::GetGraphicsEngine()->GetCurrentCamera()->GetProjectionMatrix();
+
+					if (ImGuizmo::Manipulate( &view(1, 1),
+						&proj(1, 1),
+						ImGuizmo::OPERATION::TRANSLATE,
+						ImGuizmo::MODE::WORLD,
+						&objectMatrix(1, 1)
+					))
+					{
+						transformComponent->transform.SetPosition(objectMatrix.GetPosition());
+					}
+				}
+
 			}
 			ImGui::End();
+
 			ImGui::PopStyleVar();
 			ImGui::PopStyleVar();
 		}

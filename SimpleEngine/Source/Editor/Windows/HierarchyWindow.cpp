@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Windows/HierarchyWindow.hpp"
+#include "Editor/Editor.hpp"
 #include "Engine/ECS/Components/AllEngineComponents.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
@@ -31,6 +32,15 @@ namespace Editor
 		else if (selected >= static_cast<int>(entities.size()))
 		{
 			selected = static_cast<int>(entities.size() - 1);
+		}
+
+		if (entities.empty() == false)
+		{
+			EditorEngine::mySelectedEntityID = entities[selected].GetID();
+		}
+		else
+		{
+			EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
 		}
 
 		ShowInspector(activeECS, entities, selected);

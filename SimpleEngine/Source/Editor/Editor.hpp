@@ -12,6 +12,8 @@ namespace Editor
 	class EditorEngine final
 	{
 	public:
+		static size_t mySelectedEntityID;
+	public:
 		EditorEngine();
 		~EditorEngine();
 

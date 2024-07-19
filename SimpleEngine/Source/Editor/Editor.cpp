@@ -11,6 +11,8 @@
 
 namespace Editor
 {
+	size_t EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
+
 #ifndef _SIMPLE
 	EditorEngine::EditorEngine()
 	{
