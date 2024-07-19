@@ -1,6 +1,4 @@
 #pragma once
-#include "NodeScript/SimpleScriptEditor/VisualScriptingWindow.h"
-#include "NodeScript/SimpleScript/SimpleGameNodes.h"
 
 namespace SCRIPT
 {
@@ -11,9 +9,7 @@ namespace SCRIPT
 		~SimpleNodeScript();
 
 		void Init();
-		void Update();
 
-		Editor::VisualScriptingWindow mySimpleScriptWindow;
-		std::string myName;
+		static constexpr const char* SCRIPT_FILE_PATH = "Assets/Scripts/";
 	};
 }

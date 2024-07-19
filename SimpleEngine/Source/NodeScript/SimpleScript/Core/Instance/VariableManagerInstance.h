@@ -1,6 +1,5 @@
 #pragma once
 #include "../ScriptDefines.h"
-#include "../Memory/ScriptMemoryManager.h"
 
 namespace SCR
 {
@@ -11,6 +10,9 @@ namespace SCR
 	};
 
 	class VariableManager;
+	template<size_t> class MemoryArena;
+
+	constexpr size_t VariableArenaSize = 1024;
 
 	class VariableManagerInstance final
 	{
@@ -28,6 +30,6 @@ namespace SCR
 
 	
 		std::vector<VariableInstance> myVariables;
-		std::unique_ptr<MemoryManager> myMemoryManager;
+		std::unique_ptr<MemoryArena<VariableArenaSize>> myMemoryArena;
 	};
 }

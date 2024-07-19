@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/ScriptDefines.h"
+#include "../ScriptDefines.h"
 #include <string>
 
 namespace SCR
@@ -12,18 +12,16 @@ namespace SCR
 	{
 	public:
 
-		static void Clear();
 		
-		static void Save(const Script& aScript);
-		static void Load(Script& aScript);
+		static void SaveScript(const Script& aScript, std::string_view aFilePath);
+		static void LoadScript(Script& aScript, std::string_view aFilePath);
 		
-		static void LoadAll();
+		static void LoadAllScripts(std::string_view aFilePath);
 
-		static void CreateCopy(const Script& aScript, const std::string& aCopyName);
+		static void CreateCopy(const Script& aScript, std::string_view aFilePath, std::string_view aCopyName);
 
-		static void SaveCustomEvents(const std::string& aFilePath);
-		static void LoadCustomEvents();
+		static void SaveCustomEvents(std::string_view aFilePath);
+		static void LoadCustomEvents(std::string_view aFilePath);
 
-		static std::string SavePath;
 	};
 }

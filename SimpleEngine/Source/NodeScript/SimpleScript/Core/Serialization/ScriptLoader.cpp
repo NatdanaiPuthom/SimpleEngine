@@ -4,7 +4,6 @@
 #include "../Pin/PinManager.h"
 #include "../Utilities/ScriptUtilities.h"
 #include "../Node/NodeTypeRegistry.h"
-#include "../ScriptManager.h"
 #include "../Utilities/ScriptLinker.h"
 #include "../Pin/PinTypeManager.h"
 #include "../Utilities/ScriptProxy.h"
@@ -16,31 +15,42 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-constexpr const char* CUSTOM_EVENT_FILE_NAME = "CustomEvents.json";
+constexpr const char* FILE_EXTENSION = ".fly";
+constexpr const char* CUSTOM_EVENT_FILE_NAME = "CustomEvents.fly";
 
 using json = nlohmann::json;
 
 namespace SCR
 {
-	std::string ScriptLoader::SavePath = "FlyScripts";
 
-	void ScriptLoader::Clear()
+	static std::filesystem::path GetFileDirectory(const std::string_view aFilePath)
 	{
-		SavePath.~basic_string();
+		std::string fileDirectory = std::string(aFilePath);
+		if (!std::filesystem::is_directory(aFilePath))
+		{
+			fileDirectory += "/";
+		}
+
+		return fileDirectory;
 	}
 
-	void ScriptLoader::Save(const Script& aScript)
+	void ScriptLoader::SaveScript(const Script& aScript, const std::string_view aFilePath)
 	{
-		std::string fileDirectory = SavePath + "/";
-		std::string filePath = fileDirectory + aScript.Name() + ".json";
+		std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
+		std::filesystem::path filePath = fileDirectory.string() + aScript.Name() + FILE_EXTENSION;
 
-		std::filesystem::create_directories(fileDirectory);
+		if (!std::filesystem::create_directories(fileDirectory))
+		{
+			throw std::runtime_error("Failed to create directory: " + fileDirectory.string());
+			return;
+			
+		}
 
 		std::ofstream ofs(filePath, std::ios::out);
 
 		if (!ofs.is_open())
 		{
-			throw std::runtime_error("Failed to open file for writing: " + filePath);
+			throw std::runtime_error("Failed to open file for writing: " + filePath.string());
 			return;
 		}
 
@@ -155,18 +165,16 @@ namespace SCR
 		ofs.close();
 	}
 
-	void ScriptLoader::Load(Script& aScript)
+	void ScriptLoader::LoadScript(Script& aScript, const std::string_view aFilePath)
 	{
-		std::string filePath = SavePath + "/" + aScript.Name() + ".json";
+		const std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
+		const std::filesystem::path filePath = fileDirectory.string() + aScript.Name() + FILE_EXTENSION;
 		std::ifstream ifs(filePath);
-		std::string file(
-			(std::istreambuf_iterator<char>(ifs)),
-			(std::istreambuf_iterator<char>())
-		);
+		const std::string file((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 
 		if (!ifs.is_open())
 		{
-			throw std::runtime_error("Failed to open file for loading: " + filePath);
+			throw std::runtime_error("Failed to open file for loading: " + filePath.string());
 			return;
 		}
 
@@ -188,7 +196,7 @@ namespace SCR
 			float yPos = nodePosJson["y"];
 
 			bool success = true;
-			NodeID nodeID = Modify::CreateNode(eventGraph, nodeName, success, { xPos, yPos }, nullptr, true);
+			const NodeID nodeID = CreateNode(eventGraph, nodeName, success, { xPos, yPos }, nullptr, true);
 
 			if (!success)
 			{
@@ -231,7 +239,7 @@ namespace SCR
 
 				if (connectionID != InvalidID<PinID>())
 				{
-					Modify::TryCreateLink(pinID, connectionID, eventGraph, nullptr);
+					TryCreateLink(pinID, connectionID, eventGraph, nullptr);
 				}
 				continue;
 			}
@@ -245,14 +253,14 @@ namespace SCR
 
 		for (const json& variableJson : variableDataJson)
 		{
-			VarID varID = Modify::CreateVariable(aScript);
+			const VarID varID = CreateVariable(aScript);
 
 			const Variable& variable = ScriptProxy::GetVariable(aScript, varID);
 
 			const std::string& dataTypeStr = variableJson["DataType"];
 
 			const std::string variableName = variableJson["Name"];
-			Modify::SetVariableName(varID, variableName, aScript);
+			SetVariableName(varID, variableName, aScript);
 
 			const json& defaultValueJson = variableJson["DefaultValue"];
 
@@ -262,7 +270,7 @@ namespace SCR
 			if (dataTypeID != InvalidID<DataTypeID>())
 			{
 				
-				Modify::SetVariableDataType(varID, dataTypeID, aScript, nullptr);
+				SetVariableDataType(varID, dataTypeID, aScript, nullptr);
 
 				Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
 
@@ -284,11 +292,10 @@ namespace SCR
 		}
 	}
 
-	void ScriptLoader::LoadAll()
+	void ScriptLoader::LoadAllScripts(const std::string_view aFilePath)
 	{
-		using namespace std::filesystem;
 
-		std::string fileDirectory = SavePath + "/";
+		std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
 
 		if (!exists(fileDirectory) || !is_directory(fileDirectory))
 		{
@@ -296,27 +303,27 @@ namespace SCR
 		}
 		else
 		{
-			for (const directory_entry& entry : directory_iterator(fileDirectory))
+			for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(fileDirectory))
 			{
 
 				if (is_regular_file(entry.path()))
 				{
 					std::cout << "Found script file: " << entry.path() << std::endl;
 
-					std::string fileName = entry.path().filename().string();
-					std::string name = fileName.substr(0, fileName.find_last_of('.'));
-					Script& script = Modify::CreateScript(0, name);
-					Load(script);
+					const std::string fileName = entry.path().filename().string();
+					const std::string name = fileName.substr(0, fileName.find_last_of('.'));
+					Script& script = CreateScript(0, name);
+					LoadScript(script, aFilePath);
 				}
 			}
 		}
 	}
 
-	void ScriptLoader::CreateCopy(const Script& aScript, const std::string& aCopyName)
+	void ScriptLoader::CreateCopy(const Script& aScript, const std::string_view aFilePath, const std::string_view aCopyName)
 	{
-		std::string currentPath = std::filesystem::current_path().string();
-		std::string filePath = currentPath + "/" + SavePath + "/" + aScript.Name() + ".json";
-		std::string copyPath = currentPath + "/" + SavePath + "/" + aCopyName + ".json";
+		const std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
+		std::string filePath = fileDirectory.string() + aScript.Name() + FILE_EXTENSION;
+		std::string copyPath = fileDirectory.string() + std::string(aCopyName) + FILE_EXTENSION;
 
 		if (std::filesystem::copy_file(filePath, copyPath))
 		{
@@ -328,17 +335,21 @@ namespace SCR
 		}
 	}
 
-	void ScriptLoader::SaveCustomEvents(const std::string& aFilePath)
+	void ScriptLoader::SaveCustomEvents(const std::string_view aFilePath)
 	{
-		const std::string filePath = aFilePath + "/" + std::string(CUSTOM_EVENT_FILE_NAME);
+		const std::filesystem::path filePath = GetFileDirectory(aFilePath).string() + CUSTOM_EVENT_FILE_NAME;
 
-		std::filesystem::create_directories(aFilePath);
+		if (!std::filesystem::create_directories(aFilePath))
+		{
+			throw std::runtime_error("Failed to create directory for writing: " + filePath.string());
+			return;
+		}
 
 		std::ofstream ofs(filePath, std::ios::out);
 
 		if (!ofs.is_open())
 		{
-			throw std::runtime_error("Failed to open file for writing: " + filePath);
+			throw std::runtime_error("Failed to open file for writing: " + filePath.string());
 			return;
 		}
 
@@ -384,9 +395,9 @@ namespace SCR
 		ofs.close();
 	}
 
-	void ScriptLoader::LoadCustomEvents()
+	void ScriptLoader::LoadCustomEvents(const std::string_view aFilePath)
 	{
-		std::string filePath = SavePath + "/" + std::string(CUSTOM_EVENT_FILE_NAME);
+		const std::string filePath = GetFileDirectory(aFilePath).string() + CUSTOM_EVENT_FILE_NAME;
 		std::ifstream ifs(filePath);
 		std::string file(
 			(std::istreambuf_iterator<char>(ifs)),
@@ -407,7 +418,7 @@ namespace SCR
 		{
 			const std::string& nodeName = customEventJson["Name"];
 
-			CustomEventID customEventNodeTypeID = Modify::CreateCustomEvent(nodeName);
+			const CustomEventID customEventNodeTypeID = CreateCustomEvent(nodeName);
 
 			const json& pinsJson = customEventJson["Pins"];
 
@@ -418,7 +429,7 @@ namespace SCR
 
 				DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeName);
 
-				Modify::AddPinToCustomEvent(dataTypeID, customEventNodeTypeID, pinName);
+				AddPinToCustomEvent(dataTypeID, customEventNodeTypeID, pinName);
 			}
 		}
 	}

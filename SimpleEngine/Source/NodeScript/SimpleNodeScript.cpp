@@ -1,6 +1,7 @@
 #include "SimpleNodeScript.hpp"
 #include "ScriptFoundation.h"
 #include "ScriptLoader.h"
+#include "NodeScript/SimpleScript/SimpleGameNodes.h"
 
 namespace SCRIPT
 {
@@ -15,16 +16,9 @@ namespace SCRIPT
 
 	void SimpleNodeScript::Init()
 	{
-		ScriptFoundation::GetInstance().InitializeSystemTypes();
+		ScriptFoundation::GetInstance().Initialize();
 		RegisterSimpleGameNodes();
 
-		myName = "world_Middle";
-		SCRIPT::ScriptLoader::SavePath = "../Source/Script/data/SimpleScripts/" + std::string(myName);
-		SCRIPT::ScriptLoader::LoadAll();
-	}
-
-	void SimpleNodeScript::Update()
-	{
-		mySimpleScriptWindow.Update(myName);
+		SCRIPT::ScriptLoader::LoadAllScripts(SCRIPT_FILE_PATH);
 	}
 }

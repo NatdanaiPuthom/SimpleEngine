@@ -1,6 +1,5 @@
 #include "NodeManagerInstance.h"
 #include "../Node/NodeManager.h"
-#include "../Memory/ScriptMemoryManager.h"
 #include "../Global/ScriptGlobal.h"
 #include "../DataType/DataTypeManager.h"
 
@@ -19,14 +18,14 @@ namespace SCR
 	void NodeManagerInstance::Init(const NodeManager& aNodeManager)
 	{
 		myNodeStateMap.clear();
-		myMemoryManager.Clear();
+		myMemoryArena.Clear();
 		for (auto& [nodeID, node, nodeType] : aNodeManager)
 		{
 			if (nodeType->nodeRecipe.nodeStateDataTypeID == InvalidID<DataTypeID>())
 			{
 				continue;
 			}
-			void* dataPtr = Global::GetDataTypeManager().AllocateData(nodeType->nodeRecipe.nodeStateDataTypeID, myMemoryManager.GetMemory());
+			void* dataPtr = Global::GetDataTypeManager().AllocateData(nodeType->nodeRecipe.nodeStateDataTypeID, myMemoryArena);
 			assert(dataPtr != nullptr);
 			myNodeStateMap.emplace(nodeID, dataPtr);
 		}

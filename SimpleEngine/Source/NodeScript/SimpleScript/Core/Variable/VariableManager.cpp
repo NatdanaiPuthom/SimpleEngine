@@ -1,7 +1,5 @@
 #include "VariableManager.h"
-#include "../Script.h"
-#include "ScriptMemoryPool.h"
-#include "ScriptMemoryManager.h"
+#include "ScriptMemoryArena.h"
 
 namespace SCR
 {

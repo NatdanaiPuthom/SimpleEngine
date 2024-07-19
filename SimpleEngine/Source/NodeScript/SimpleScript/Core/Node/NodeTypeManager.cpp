@@ -1,21 +1,12 @@
 #include "Core/Node/NodeTypeManager.h"
 #include "Core/Script.h"
 #include "Core/ScriptFoundation.h"
-#include "Core/ScriptManager.h"
 #include "Core/Utilities/ScriptUtilities.h"
 #include "Core/Node/NodeTypeRegistry.h"
 #include "Core/Type/ScriptTypeManager.h"
 
 namespace SCR
 {
-	/*std::vector<CustomEvent> NodeTypeManager::myCustomEvents = {};
-	std::vector<Function*> NodeTypeManager::myFunctions = {};
-	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::myGetterNodeTypeIDs = {};
-	std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::mySetterNodeTypeIDs = {};
-	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToCustomEventID = {};
-	std::unordered_multimap<NodeTypeID, CustomEventID> NodeTypeManager::myToFunctionID = {};
-	std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> NodeTypeManager::myOperatorNodeTypeIDs = {};
-	std::vector<NodeType> NodeTypeManager::myNodeTypes = { CreateInvalidNodeType() };*/
 
 	NodeTypeManager::NodeTypeManager()
 	{

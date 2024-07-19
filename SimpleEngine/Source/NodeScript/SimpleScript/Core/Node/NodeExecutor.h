@@ -2,22 +2,13 @@
 #include "../ScriptDefines.h"
 #include "../Contexts/InternalExecutionContext.h"
 #include "../ScriptCallStack.h"
-#include "NodeTrait.h"
 #include <unordered_set>
-#include <unordered_map>
-#include <vector>
-#include <string>
-#include <queue>
 
 namespace SCR
 {
 
 	class EventGraph;
 	class ScriptInstance;
-
-	template<typename T>
-	concept IsFunction = std::is_function_v<T>;
-
 
 	class NodeExecutor final
 	{

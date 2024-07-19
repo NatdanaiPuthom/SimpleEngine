@@ -1,6 +1,6 @@
-#include "NodeScript/Precomplied/NodeScriptPch.hpp"
-#include "FunctionSettingsWindow.h"
-#include "VisualScriptingWindow.h"
+#include "Editor/Precomplied/EditorPch.hpp"
+#include "FunctionSettingsWindow.hpp"
+#include "NodeScriptingWindow.hpp"
 #include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
 #include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.h"
 #include "NodeScript/SimpleScript/Core/Node/NodeTypeManager.h"
@@ -11,7 +11,7 @@
 namespace Editor
 {
 
-	FunctionSettingsWindow::FunctionSettingsWindow(VisualScriptingWindow& aParent)
+	FunctionSettingsWindow::FunctionSettingsWindow(NodeScriptingWindow& aParent)
 		: myParent(aParent)
 	{
 	}
@@ -33,7 +33,7 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button("Add Input"))
 			{
-				SCRIPT::Modify::AddPinToFunction(myParent.GetCurrentFunctionID(), SCRIPT::GetDataTypeID<bool>(), SCRIPT::eFlowType::Input);
+				SCRIPT::AddPinToFunction(myParent.GetCurrentFunctionID(), SCRIPT::GetDataTypeID<bool>(), SCRIPT::eFlowType::Input);
 			}
 			ImGui::Separator();
 
@@ -45,7 +45,7 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button("Add Output"))
 			{
-				SCRIPT::Modify::AddPinToFunction(myParent.GetCurrentFunctionID(), SCRIPT::GetDataTypeID<bool>(), SCRIPT::eFlowType::Output);
+				SCRIPT::AddPinToFunction(myParent.GetCurrentFunctionID(), SCRIPT::GetDataTypeID<bool>(), SCRIPT::eFlowType::Output);
 			}
 			ImGui::Separator();
 
@@ -78,7 +78,7 @@ namespace Editor
 				{
 					if (ImGui::Selectable(dataType.name.c_str()))
 					{
-						SCRIPT::Modify::SetPinAtIndexFunction(myParent.GetCurrentFunctionID(), i, dataTypeID, aFlowType);
+						SCRIPT::SetPinAtIndexFunction(myParent.GetCurrentFunctionID(), i, dataTypeID, aFlowType);
 					}
 					++dataTypeIndex;
 				}

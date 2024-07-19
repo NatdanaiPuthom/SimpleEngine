@@ -8,7 +8,14 @@
 
 namespace SCR
 {
-
+	void ScriptFoundation::Destroy()
+	{
+		if (myInstance)
+		{
+			delete myInstance;
+			myInstance = nullptr;
+		}
+	}
 	ScriptFoundation::ScriptFoundation()
 		: myMemoryPool(10000)
 		, myTypeManager(std::make_unique<TypeManager>())
@@ -20,10 +27,8 @@ namespace SCR
 	{
 	}
 
-	void ScriptFoundation::InitializeSystemTypes()
+	void ScriptFoundation::Initialize()
 	{
-
-		ScriptLoader::LoadCustomEvents();
 		myTypeManager->GetNodeTypeManager().Assert();
 	}
 

@@ -6,6 +6,7 @@
 #include "Editor/Menu/HelpMenuBar.hpp"
 #include "Editor/Menu/SceneMenuBar.hpp"
 #include "Editor/Menu/PlayMenuBar.hpp"
+#include "Editor/FlyScript/NodeScriptingWindow.hpp"
 #endif
 
 namespace Editor
@@ -13,10 +14,11 @@ namespace Editor
 #ifndef _SIMPLE
 	EditorEngine::EditorEngine()
 	{
-		AddTool(std::move(std::make_unique<SceneMenuBar>()));
-		AddTool(std::move(std::make_unique<MainMenuBar>()));
-		AddTool(std::move(std::make_unique<HelpMenuBar>()));
-		AddTool(std::move(std::make_unique<PlayMenuBar>()));
+		AddTool(std::make_unique<SceneMenuBar>());
+		AddTool(std::make_unique<MainMenuBar>());
+		AddTool(std::make_unique<HelpMenuBar>());
+		AddTool(std::make_unique<PlayMenuBar>());
+		AddTool(std::make_unique<NodeScriptingWindow>());
 	}
 
 	EditorEngine::~EditorEngine()

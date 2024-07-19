@@ -2,12 +2,13 @@
 #include "Variable/VariableManager.h"
 #include "../DataType/DataTypeManager.h"
 #include "../Global/ScriptGlobal.h"
+#include "../Memory/ScriptMemoryArena.h"
 
 namespace SCR
 {
 
 	VariableManagerInstance::VariableManagerInstance()
-		: myMemoryManager(std::make_unique<MemoryManager>())
+		: myMemoryArena(std::make_unique<MemoryArena<VariableArenaSize>>())
 	{
 	}
 
@@ -17,22 +18,22 @@ namespace SCR
 
 	VariableManagerInstance::VariableManagerInstance(const VariableManagerInstance& aOther)
 		: myVariables(aOther.myVariables)
-		, myMemoryManager(std::make_unique<MemoryManager>(*aOther.myMemoryManager))
+		, myMemoryArena(std::make_unique<MemoryArena<VariableArenaSize>>(*aOther.myMemoryArena))
 	{
 		for (VariableInstance& variableInstance : myVariables)
 		{
-			variableInstance.runtimeDataPtr = myMemoryManager->GetMemory().GetRenewedPointer(variableInstance.runtimeDataPtr, aOther.myMemoryManager->GetMemory());
+			variableInstance.runtimeDataPtr = myMemoryArena->GetRenewedPointer(variableInstance.runtimeDataPtr, *aOther.myMemoryArena);
 		}
 	}
 
 	VariableManagerInstance& VariableManagerInstance::operator=(const VariableManagerInstance& aOther)
 	{
 		myVariables = aOther.myVariables;
-		myMemoryManager = std::make_unique<MemoryManager>(*aOther.myMemoryManager);
+		myMemoryArena = std::make_unique<MemoryArena<VariableArenaSize>>(*aOther.myMemoryArena);
 
 		for (VariableInstance& variableInstance : myVariables)
 		{
-			variableInstance.runtimeDataPtr = myMemoryManager->GetMemory().GetRenewedPointer(variableInstance.runtimeDataPtr, aOther.myMemoryManager->GetMemory());
+			variableInstance.runtimeDataPtr = myMemoryArena->GetRenewedPointer(variableInstance.runtimeDataPtr, *aOther.myMemoryArena);
 		}
 
 		return *this;
@@ -40,12 +41,12 @@ namespace SCR
 
 	void VariableManagerInstance::Init(VariableManager& aVariableManager)
 	{
-		myMemoryManager->Clear();
+		myMemoryArena->Clear();
 		myVariables.resize(aVariableManager.myVariables.size());
-		for (size_t i = 0; const Variable& variable : aVariableManager.myVariables)
+		for (VarID varID = 0; varID < aVariableManager.myVariables.size(); ++varID)
 		{
-			myVariables[i].runtimeDataPtr = Global::GetDataTypeManager().AllocateData(variable.dataTypeID, myMemoryManager->GetMemory(), variable.defaultValueDataPtr);
-			++i;
+			const Variable& variable = aVariableManager.myVariables[varID];
+			myVariables[varID].runtimeDataPtr = Global::GetDataTypeManager().AllocateData(variable.dataTypeID, *myMemoryArena, variable.defaultValueDataPtr);
 		}
 	}
 }

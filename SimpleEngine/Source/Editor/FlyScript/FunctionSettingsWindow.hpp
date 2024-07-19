@@ -4,12 +4,12 @@
 namespace Editor
 {
 
-	class VisualScriptingWindow;
+	class NodeScriptingWindow;
 
 	class FunctionSettingsWindow final
 	{
 	public:
-		FunctionSettingsWindow(VisualScriptingWindow& aParent);
+		FunctionSettingsWindow(NodeScriptingWindow& aParent);
 		~FunctionSettingsWindow();
 		
 		void Update();
@@ -20,7 +20,7 @@ namespace Editor
 
 	private:
 
-		VisualScriptingWindow& myParent;
+		NodeScriptingWindow& myParent;
 	};
 
 }

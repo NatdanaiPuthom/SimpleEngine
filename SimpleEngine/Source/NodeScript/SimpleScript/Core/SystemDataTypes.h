@@ -173,7 +173,7 @@ namespace std
 namespace SCR
 {
 
-	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.f, 0.f, 0.f));
+	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.75f, 0.75f, 0.75f));
 	FLY_DATATYPE(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f));
 
 	using String = std::string;

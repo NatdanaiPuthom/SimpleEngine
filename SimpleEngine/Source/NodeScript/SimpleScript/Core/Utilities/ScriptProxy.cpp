@@ -1,7 +1,6 @@
 #include "ScriptProxy.h"
 #include "../ScriptFoundation.h"
 #include "../Script.h"
-#include "../ScriptManager.h"
 #include "../ScriptInternalModifier.h"
 #include "../Node/NodeManager.h"
 #include "../Pin/PinManager.h"

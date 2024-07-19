@@ -104,7 +104,6 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		}*/
 
 		PROFILER_BEGIN("Editor Update");
-		simpleScript.Update();
 		editor.Update();
 		PROFILER_END();
 

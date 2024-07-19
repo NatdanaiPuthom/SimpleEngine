@@ -24,21 +24,14 @@ namespace SCR
 			return *myInstance;
 		}
 
-		void Destroy()
-		{
-			if (myInstance)
-			{
-				delete myInstance;
-				myInstance = nullptr;
-			}
-		}
+		static void Destroy();
 	private:
 		ScriptFoundation();
 		~ScriptFoundation();
 
 	public:
 
-		void InitializeSystemTypes();
+		void Initialize();
 
 		void ClearScripts();
 

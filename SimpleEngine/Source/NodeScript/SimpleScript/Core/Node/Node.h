@@ -86,7 +86,7 @@ namespace SCR
 		//std::vector<Pin> inputPinsNew;
 		//std::vector<Pin> outputPinsNew;
 
-		ScriptVec2 position;
+		Vec2 position;
 		bool isDestroyed = false;
 		
 	};

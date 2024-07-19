@@ -3,13 +3,13 @@
 namespace Editor
 {
 
-	class VisualScriptingWindow;
+	class NodeScriptingWindow;
 
 	class FunctionWindow
 	{
 	public:
 
-		FunctionWindow(VisualScriptingWindow& aParentWindow);
+		FunctionWindow(NodeScriptingWindow& aParentWindow);
 		~FunctionWindow();
 
 		void Update();
@@ -17,6 +17,6 @@ namespace Editor
 
 	private:
 
-		VisualScriptingWindow& myParentWindow;
+		NodeScriptingWindow& myParentWindow;
 	};
 }

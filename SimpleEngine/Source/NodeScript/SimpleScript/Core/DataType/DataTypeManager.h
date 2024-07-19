@@ -2,7 +2,7 @@
 #include "../ScriptDefines.h"
 #include "../Utilities/MetaScript.h"
 #include "../Utilities/ScriptUtilities.h"
-#include "../Memory/ScriptMemoryManager.h"
+#include "../Memory/ScriptMemoryArena.h"
 #include <nlohmann/json.hpp>
 
 namespace SCR
@@ -309,9 +309,9 @@ namespace SCR
 		std::unordered_map<DataTypeID, const DataType*> GetFunctionDataTypes();
 		std::unordered_map<DataTypeID, const DataType*> GetDataTypesFiltered(eDataTypeTrait aTrait, eBitwiseType aBitwiseType);
 
-		Color GetColor(const DataTypeID aDataTypeID);
-		Color GetSelectionColor(const DataTypeID aDataTypeID);
-		Color GetHoverColor(const DataTypeID aDataTypeID);
+		Color GetColor(DataTypeID aDataTypeID);
+		Color GetSelectionColor(DataTypeID aDataTypeID);
+		Color GetHoverColor(DataTypeID aDataTypeID);
 
 		DataType* Find(DataTypeID anID);
 

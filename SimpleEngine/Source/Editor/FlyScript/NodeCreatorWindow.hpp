@@ -1,5 +1,5 @@
 #pragma once
-#include "SimpleScript/Core/ScriptDefines.h"
+#include "NodeScript/SimpleScript/Core/ScriptDefines.h"
 
 namespace SCRIPT
 {
@@ -8,12 +8,12 @@ namespace SCRIPT
 
 namespace Editor
 {
-	class VisualScriptingWindow;
+	class NodeScriptingWindow;
 
 	class NodeCreatorWindow
 	{
 	public:
-		NodeCreatorWindow(VisualScriptingWindow& aParentWindow);
+		NodeCreatorWindow(NodeScriptingWindow& aParentWindow);
 		~NodeCreatorWindow();
 
 		void Update();
@@ -24,6 +24,6 @@ namespace Editor
 
 	private:
 
-		VisualScriptingWindow& myParentWindow;
+		NodeScriptingWindow& myParentWindow;
 	};
 }

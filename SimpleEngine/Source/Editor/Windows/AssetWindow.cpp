@@ -223,6 +223,10 @@ namespace Editor
 						const std::string scenePath = "Assets\\Scenes\\" + fileNames[i]; //TO-DO(v11.2.3): Fix so it doesnt become hardcoded
 						MainSingleton::GetSceneManager().ChangeScene(scenePath);
 					}
+					else if (extension == ".fly")
+					{
+
+					}
 				}
 				else if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && extension[0] == '.')
 				{

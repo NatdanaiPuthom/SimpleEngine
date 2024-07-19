@@ -16,7 +16,7 @@ namespace SCR
 
 		const std::string& GetNodeTypeName() const;
 		std::string GetShortName() const;
-		ScriptVec2 GetPosition() const;
+		Vec2 GetPosition() const;
 		bool IsDestroyed() const;
 
 		std::vector<PinView> GetInputPins() const;
@@ -28,6 +28,9 @@ namespace SCR
 		EventID GetEventID() const;
 
 		const NodeGraph& GetNodeGraph() const;
+
+		bool operator==(const NodeView& aOther) const;
+		bool operator!=(const NodeView& aOther) const;
 
 	private:
 

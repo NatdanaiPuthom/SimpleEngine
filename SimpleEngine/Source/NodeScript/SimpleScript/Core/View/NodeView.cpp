@@ -22,7 +22,7 @@ namespace SCR
 		return Global::GetNodeTypeManager().GetShortName(GetNode().typeID);
 	}
 
-	ScriptVec2 NodeView::GetPosition() const
+	Vec2 NodeView::GetPosition() const
 	{
 		return GetNode().position;
 	}
@@ -87,5 +87,15 @@ namespace SCR
 	const NodeGraph& NodeView::GetNodeGraph() const
 	{
 		return *myNodeGraph;
+	}
+
+	bool NodeView::operator==(const NodeView& aOther) const
+	{
+		return myNodeGraph == aOther.myNodeGraph && myNodeID == aOther.myNodeID;
+	}
+
+	bool NodeView::operator!=(const NodeView& aOther) const
+	{
+		return !(*this == aOther);
 	}
 }

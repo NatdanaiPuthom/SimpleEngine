@@ -1,6 +1,5 @@
 #include "ScriptInternalModifier.h"
 #include "Script.h"
-#include "ScriptManager.h"
 #include "CustomEvent/CustomEvent.h"
 #include "Node/NodeTypeManager.h"
 #include "Pin/PinTypeManager.h"
@@ -429,10 +428,10 @@ namespace SCR
 			{
 				aCommandTracker->BeginComposite("Replace node composite");
 			}
-			NodeID createdNodeID = CreateOperatorNode(aNodeGraph, nodeType.nodeRecipe.operatorTrait, connectedPinType.dataTypeID, aCommandTracker);
+			const NodeID createdNodeID = CreateOperatorNode(aNodeGraph, nodeType.nodeRecipe.operatorTrait, connectedPinType.dataTypeID, aCommandTracker);
 
 
-			Modify::DestroyNode(replaceNodeID, aNodeGraph, aCommandTracker);
+			DestroyNode(replaceNodeID, aNodeGraph, aCommandTracker);
 
 			Node& createdNode = ScriptProxy::GetNodeRef(aNodeGraph, createdNodeID);
 			createdNode.position = replaceNode.position;
@@ -445,7 +444,7 @@ namespace SCR
 
 				const PinID createdPinConnectedID = replacePinType.flowType == eFlowType::Input ? createdNode.inputPins[pinIndex] : createdNode.outputPins[pinIndex];
 
-				Modify::TryCreateLink(aConnectedPinID, createdPinConnectedID, aNodeGraph, aCommandTracker);
+				TryCreateLink(aConnectedPinID, createdPinConnectedID, aNodeGraph, aCommandTracker);
 			}
 
 			{ // Link previously linked pins
@@ -458,7 +457,7 @@ namespace SCR
 
 					if (!destroyedInputPin.connectedPinIDs.empty())
 					{
-						Modify::TryCreateLink(destroyedInputPin.connectedPinIDs[0], ScriptLinker::GetPinID(aNodeGraph, createdNodeID, pinIndex, eFlowType::Input), aNodeGraph, aCommandTracker);
+						TryCreateLink(destroyedInputPin.connectedPinIDs[0], ScriptLinker::GetPinID(aNodeGraph, createdNodeID, pinIndex, eFlowType::Input), aNodeGraph, aCommandTracker);
 					}
 
 				}
@@ -471,7 +470,7 @@ namespace SCR
 					{
 						if (connectedInputPinID != InvalidID<PinID>())
 						{
-							Modify::TryCreateLink(connectedInputPinID, ScriptLinker::GetPinID(aNodeGraph, createdNodeID, pinIndex, eFlowType::Output), aNodeGraph, aCommandTracker);
+							TryCreateLink(connectedInputPinID, ScriptLinker::GetPinID(aNodeGraph, createdNodeID, pinIndex, eFlowType::Output), aNodeGraph, aCommandTracker);
 						}
 					}
 				}

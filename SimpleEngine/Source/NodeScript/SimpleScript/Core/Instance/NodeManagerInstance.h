@@ -1,12 +1,11 @@
 #pragma once
 #include "../ScriptDefines.h"
-#include "../Memory/ScriptMemoryManager.h"
+#include "../Memory/ScriptMemoryArena.h"
 #include <unordered_map>
 
 namespace SCR
 {
 	class NodeManager;
-	class MemoryManager;
 
 	class NodeManagerInstance final
 	{
@@ -29,7 +28,7 @@ namespace SCR
 
 	private:
 
-		MemoryManager myMemoryManager;
+		MemoryArena<1024> myMemoryArena;
 	};
 
 	template<typename T>

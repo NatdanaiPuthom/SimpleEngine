@@ -4,23 +4,23 @@
 
 namespace SCR
 {
-	struct ScriptVec2
+	struct Vec2
 	{
 		float x = 0.f;
 		float y = 0.f;
 	};
 
-	inline ScriptVec2 operator+(ScriptVec2 a, ScriptVec2 b)
+	inline Vec2 operator+(Vec2 a, Vec2 b)
 	{
 		return { a.x + b.x, a.y + b.y };
 	}
 
-	inline ScriptVec2 operator-(ScriptVec2 a, ScriptVec2 b)
+	inline Vec2 operator-(Vec2 a, Vec2 b)
 	{
 		return { a.x - b.x, a.y - b.y };
 	}
 
-	inline ScriptVec2 operator/(ScriptVec2 a, float b)
+	inline Vec2 operator/(Vec2 a, float b)
 	{
 		if (b != 0.f)
 		{
@@ -28,32 +28,32 @@ namespace SCR
 		}
 		return a;
 	}
-	inline void operator+=(ScriptVec2& a, ScriptVec2 b)
+	inline void operator+=(Vec2& a, Vec2 b)
 	{
 		a = a + b;
 	}
 
-	inline void operator-=(ScriptVec2& a, ScriptVec2 b)
+	inline void operator-=(Vec2& a, Vec2 b)
 	{
 		a = a - b;
 	}
 
-	inline void operator/=(ScriptVec2& a, float b)
+	inline void operator/=(Vec2& a, float b)
 	{
 		a = a / b;
 	}
 
-	inline bool operator==(ScriptVec2 a, ScriptVec2 b)
+	inline bool operator==(Vec2 a, Vec2 b)
 	{
 		return a.x == b.x && a.y == b.y;
 	}
 
-	inline bool operator!=(ScriptVec2 a, ScriptVec2 b)
+	inline bool operator!=(Vec2 a, Vec2 b)
 	{
 		return !(a == b);
 	}
 
-	inline std::ostream& operator<<(std::ostream& os, const ScriptVec2& a)
+	inline std::ostream& operator<<(std::ostream& os, const Vec2& a)
 	{
 		os << "{ X: " << a.x << ", Y: " << a.y << " }";
 		return os;

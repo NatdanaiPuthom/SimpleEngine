@@ -1,11 +1,12 @@
 #pragma once
-#include "SimpleScript/Core/ScriptDefines.h"
-#include "SimpleScriptEditor/VariableWindow.h"
-#include "SimpleScriptEditor/NodeCreatorWindow.h"
-#include "SimpleScriptEditor/FunctionWindow.h"
-#include "SimpleScriptEditor/FunctionSettingsWindow.h"
-#include "SimpleScript/Core/SystemTypes/ScriptVec2.h"
-#include "SimpleScript/Core/ScriptModifier.h"
+#include "Editor/Template/ToolInterface.hpp"
+#include "NodeScript/SimpleScript/Core/ScriptDefines.h"
+#include "VariableWindow.hpp"
+#include "NodeCreatorWindow.hpp"
+#include "FunctionWindow.hpp"
+#include "FunctionSettingsWindow.hpp"
+#include "NodeScript/SimpleScript/Core/SystemTypes/ScriptVec2.h"
+#include "NodeScript/SimpleScript/Core/ScriptModifier.h"
 #include <External/imgui.h>
 #include <vector>
 #include <string>
@@ -53,7 +54,7 @@ namespace Editor
 		std::vector<NodeContext> history;
 	};
 
-	inline SCRIPT::ScriptVec2 ToScriptVec2(ImVec2 aVec)
+	inline SCRIPT::Vec2 ToScriptVec2(ImVec2 aVec)
 	{
 		return { aVec.x, aVec.y };
 	}
@@ -66,12 +67,12 @@ namespace Editor
 		Global
 	};
 
-	class VisualScriptingWindow
+	class NodeScriptingWindow : public ToolInterface
 	{
 	public:
 
-		VisualScriptingWindow();
-		~VisualScriptingWindow();
+		NodeScriptingWindow();
+		~NodeScriptingWindow();
 
 		NodeContext& GetNodeContext();
 		const NodeContext& GetNodeContext() const;
@@ -80,7 +81,7 @@ namespace Editor
 
 		void UpdateContext();
 
-		void Update(const std::string& LevelName);
+		void Draw() override;
 
 		void ScriptSelectionMenu();
 		void ScriptLoadingMenu();
@@ -130,6 +131,8 @@ namespace Editor
 		bool myIsContextSensitive = false;
 
 		SCRIPT::FunctionID mySelectedFunctionID = SCRIPT::InvalidID<SCRIPT::FunctionID>();
+
+		static constexpr const char* SCRIPT_FILE_PATH = "Assets/Scripts/";
 
 	};
 }
