@@ -18,22 +18,43 @@ namespace ECS
 	{
 	}
 
+	EntityComponentSystem::EntityComponentSystem(const EntityComponentSystem& aOther)
+		: myEntityManager(aOther.myEntityManager)
+		, myComponentManager(aOther.myComponentManager)
+		, mySystemManager(aOther.mySystemManager)
+	{
+		myEntityManager.myComponentManager = &myComponentManager;
+	}
+
+
+	EntityComponentSystem::EntityComponentSystem(EntityComponentSystem&& aOther) noexcept
+		: myEntityManager(std::move(aOther.myEntityManager))
+		, myComponentManager(std::move(myComponentManager))
+		, mySystemManager(std::move(aOther.mySystemManager))
+	{
+		myEntityManager.myComponentManager = &myComponentManager;
+	}
+
 	EntityComponentSystem& EntityComponentSystem::operator=(const EntityComponentSystem& aOther)
 	{
 		myEntityManager = aOther.myEntityManager;
-		mySystemManager = aOther.mySystemManager;
 		myComponentManager = aOther.myComponentManager;
+		mySystemManager = aOther.mySystemManager;
+
 		myEntityManager.myComponentManager = &myComponentManager;
 
 		return *this;
 	}
 
-	EntityComponentSystem::EntityComponentSystem(const EntityComponentSystem& aOther)
-		: myEntityManager(aOther.myEntityManager)
-		, mySystemManager(aOther.mySystemManager)
-		, myComponentManager(aOther.myComponentManager)
+	EntityComponentSystem& EntityComponentSystem::operator=(EntityComponentSystem&& aOther) noexcept
 	{
+		myEntityManager = std::move(aOther.myEntityManager);
+		myComponentManager = std::move(aOther.myComponentManager);
+		mySystemManager = std::move(aOther.mySystemManager);
+
 		myEntityManager.myComponentManager = &myComponentManager;
+
+		return *this;
 	}
 
 	void EntityComponentSystem::Init()

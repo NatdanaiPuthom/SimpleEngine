@@ -18,6 +18,38 @@ namespace ECS
 		myComponentManager = nullptr;
 	}
 
+
+	EntityManager::EntityManager(const EntityManager& aOther)
+		: myAllEntities(aOther.myAllEntities)
+		, myEntityIDToIndex(aOther.myEntityIDToIndex)
+		, myIndexToEntityID(aOther.myIndexToEntityID)
+		, myEntityComponents(aOther.myEntityComponents)
+		, myComponentManager(aOther.myComponentManager)
+		, myCurrentEntityID(aOther.myCurrentEntityID)
+	{
+		for (size_t i = 0; i < myAllEntities.size(); i++)
+		{
+			myAllEntities[i].myEntityManager = this;
+		}
+	}
+
+	EntityManager::EntityManager(EntityManager&& aOther) noexcept
+		: myAllEntities(std::move(aOther.myAllEntities))
+		, myEntityIDToIndex(std::move(aOther.myEntityIDToIndex))
+		, myIndexToEntityID(std::move(aOther.myIndexToEntityID))
+		, myEntityComponents(std::move(aOther.myEntityComponents))
+		, myComponentManager(aOther.myComponentManager)
+		, myCurrentEntityID(aOther.myCurrentEntityID)
+	{
+		for (size_t i = 0; i < myAllEntities.size(); i++)
+		{
+			myAllEntities[i].myEntityManager = this;
+		}
+
+		aOther.myComponentManager = nullptr;
+		aOther.myCurrentEntityID = 0;
+	}
+
 	EntityManager& EntityManager::operator=(const EntityManager& aOther)
 	{
 		this->myAllEntities = aOther.myAllEntities;
@@ -25,6 +57,7 @@ namespace ECS
 		this->myIndexToEntityID = aOther.myIndexToEntityID;
 		this->myEntityComponents = aOther.myEntityComponents;
 		this->myComponentManager = aOther.myComponentManager;
+		this->myCurrentEntityID = aOther.myCurrentEntityID;
 
 		for (size_t i = 0; i < myAllEntities.size(); i++)
 		{
@@ -34,18 +67,24 @@ namespace ECS
 		return *this;
 	}
 
-	EntityManager::EntityManager(const EntityManager& aOther)
+	EntityManager& EntityManager::operator=(EntityManager&& aOther) noexcept
 	{
-		this->myAllEntities = aOther.myAllEntities;
-		this->myEntityIDToIndex = aOther.myEntityIDToIndex;
-		this->myIndexToEntityID = aOther.myIndexToEntityID;
-		this->myEntityComponents = aOther.myEntityComponents;
+		this->myAllEntities = std::move(aOther.myAllEntities);
+		this->myEntityIDToIndex = std::move(aOther.myEntityIDToIndex);
+		this->myIndexToEntityID = std::move(aOther.myIndexToEntityID);
+		this->myEntityComponents = std::move(aOther.myEntityComponents);
 		this->myComponentManager = aOther.myComponentManager;
+		this->myCurrentEntityID = aOther.myCurrentEntityID;
 
 		for (size_t i = 0; i < myAllEntities.size(); i++)
 		{
 			myAllEntities[i].myEntityManager = this;
 		}
+
+		aOther.myComponentManager = nullptr;
+		aOther.myCurrentEntityID = 0;
+
+		return *this;
 	}
 
 	IEntity& EntityManager::CreateEntity(EntityID aEntityID)

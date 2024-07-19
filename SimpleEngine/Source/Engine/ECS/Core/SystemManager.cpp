@@ -26,6 +26,8 @@ namespace ECS
 		}
 	}
 
+	SystemManager::SystemManager(SystemManager&& aOther) noexcept = default;
+
 	SystemManager& SystemManager::operator=(const SystemManager& aOther)
 	{
 		mySystems.clear();
@@ -37,6 +39,8 @@ namespace ECS
 
 		return *this;
 	}
+
+	SystemManager& SystemManager::operator=(SystemManager&& aOther) noexcept = default;
 
 	void SystemManager::Init()
 	{

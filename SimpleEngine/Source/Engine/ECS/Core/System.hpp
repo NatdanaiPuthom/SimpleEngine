@@ -5,6 +5,7 @@ namespace ECS
 {
 	class EntityComponentSystem;
 
+
 	class System
 	{
 	public:
@@ -12,12 +13,17 @@ namespace ECS
 
 		virtual ~System() {};
 
+		System(const System&) = delete;
+		System(System&&) noexcept = delete;
+		System& operator=(const System&) = delete;
+		System& operator=(System&&) noexcept = delete;
+
 		virtual void Init() {};
 		virtual void Update(EntityComponentSystem* /*aEntityComponentSystem*/) {};
 		virtual void Render(EntityComponentSystem* /*aEntityComponentSystem*/) {};
 
 		virtual void EarlyUpdate(EntityComponentSystem* /*aEntityComponentSystem*/) {};
-		virtual void FixedUpdate(EntityComponentSystem* /*aEntityComponentSystem*/ ) {};
+		virtual void FixedUpdate(EntityComponentSystem* /*aEntityComponentSystem*/) {};
 		virtual void LateUpdate(EntityComponentSystem* /*aEntityComponentSystem*/) {};
 		virtual void LateRender(EntityComponentSystem* /*aEntityComponentSystem*/) {};
 

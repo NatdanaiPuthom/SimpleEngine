@@ -67,6 +67,98 @@ namespace ECS
 		}
 	}
 
+	ComponentPool::ComponentPool(ComponentPool&& aOther) noexcept
+		: myStartMemoryAddress(aOther.myStartMemoryAddress)
+		, myEndMemoryAddress(aOther.myEndMemoryAddress)
+		, myCurrentMemoryAddress(aOther.myCurrentMemoryAddress)
+		, myIDToPointer(std::move(aOther.myIDToPointer))
+		, myPointerToID(std::move(aOther.myPointerToID))
+		, myComponentTypeSize(aOther.myComponentTypeSize)
+		, myTypeHashCode(aOther.myTypeHashCode)
+	{
+
+		aOther.myStartMemoryAddress = nullptr;
+		aOther.myEndMemoryAddress = nullptr;
+		aOther.myCurrentMemoryAddress = nullptr;
+
+		aOther.myComponentTypeSize = 0;
+		aOther.myTypeHashCode = static_cast<size_t>(-1);
+	}
+
+
+	ComponentPool& ComponentPool::operator=(const ComponentPool& aOther)
+	{
+		delete[] this->myStartMemoryAddress;
+
+		this->myStartMemoryAddress = nullptr;
+		this->myEndMemoryAddress = nullptr;
+		this->myCurrentMemoryAddress = nullptr;
+
+		this->myIDToPointer.clear();
+		this->myPointerToID.clear();
+
+		this->myComponentTypeSize = aOther.myComponentTypeSize;
+
+		const size_t size = aOther.myEndMemoryAddress - aOther.myStartMemoryAddress;
+		const size_t offset = aOther.myCurrentMemoryAddress - aOther.myStartMemoryAddress;
+
+		this->myComponentTypeSize = aOther.myComponentTypeSize;
+
+		this->myStartMemoryAddress = new char[size];
+		this->myEndMemoryAddress = myStartMemoryAddress + size;
+		this->myCurrentMemoryAddress = myStartMemoryAddress + offset;
+		this->myTypeHashCode = aOther.myTypeHashCode;
+
+		size_t componentCount = offset;
+
+		if (componentCount != 0)
+		{
+			componentCount /= aOther.myComponentTypeSize;
+		}
+
+		for (size_t i = 0; i < componentCount; i++)
+		{
+			const size_t componentOffset = i * aOther.myComponentTypeSize;
+			MainSingleton::GetComponentRegistry()->myTypeErasureComponents.at(myTypeHashCode).CopyFunctionPointer(this->myStartMemoryAddress + componentOffset, aOther.myStartMemoryAddress + componentOffset);
+		}
+
+		std::vector<ComponentID> sortedComponentIDs = aOther.ReturnComponentIDsSortedByAddress();
+
+		for (size_t i = 0; i < sortedComponentIDs.size(); i++)
+		{
+			char* componentPointer = myStartMemoryAddress + i * myComponentTypeSize;
+			const size_t componentID = sortedComponentIDs[i];
+
+			this->myIDToPointer.emplace(componentID, componentPointer);
+			this->myPointerToID.emplace(componentPointer, componentID);
+		}
+
+		return *this;
+	}
+
+	ComponentPool& ComponentPool::operator=(ComponentPool&& aOther) noexcept
+	{
+		delete[] this->myStartMemoryAddress;
+
+		this->myStartMemoryAddress = aOther.myStartMemoryAddress;
+		this->myEndMemoryAddress = aOther.myEndMemoryAddress;
+		this->myCurrentMemoryAddress = aOther.myCurrentMemoryAddress;
+
+		this->myPointerToID = std::move(aOther.myPointerToID);
+		this->myIDToPointer = std::move(aOther.myIDToPointer);
+
+		this->myComponentTypeSize = aOther.myComponentTypeSize;
+		this->myTypeHashCode = aOther.myTypeHashCode;
+
+		aOther.myStartMemoryAddress = nullptr;
+		aOther.myEndMemoryAddress = nullptr;
+		aOther.myCurrentMemoryAddress = nullptr;
+		aOther.myTypeHashCode = static_cast<size_t>(-1);
+		aOther.myComponentTypeSize = 0;
+
+		return *this;
+	}
+
 	void ComponentPool::Reallocate()
 	{
 		char* oldMemoryArray = myStartMemoryAddress;
@@ -220,55 +312,5 @@ namespace ECS
 
 		assert(false && "ComponentID does not exist");
 		return nullptr;
-	}
-
-	ComponentPool& ComponentPool::operator=(const ComponentPool& aOther)
-	{
-		delete[] this->myStartMemoryAddress;
-
-		this->myStartMemoryAddress = nullptr;
-		this->myEndMemoryAddress = nullptr;
-		this->myCurrentMemoryAddress = nullptr;
-
-		this->myIDToPointer.clear();
-		this->myPointerToID.clear();
-
-		this->myComponentTypeSize = aOther.myComponentTypeSize;
-
-		const size_t size = aOther.myEndMemoryAddress - aOther.myStartMemoryAddress;
-		const size_t offset = aOther.myCurrentMemoryAddress - aOther.myStartMemoryAddress;
-
-		this->myComponentTypeSize = aOther.myComponentTypeSize;
-
-		this->myStartMemoryAddress = new char[size];
-		this->myEndMemoryAddress = myStartMemoryAddress + size;
-		this->myCurrentMemoryAddress = myStartMemoryAddress + offset;
-		this->myTypeHashCode = aOther.myTypeHashCode;
-
-		size_t componentCount = offset;
-
-		if (componentCount != 0)
-		{
-			componentCount /= aOther.myComponentTypeSize;
-		}
-
-		for (size_t i = 0; i < componentCount; i++)
-		{
-			const size_t componentOffset = i * aOther.myComponentTypeSize;
-			MainSingleton::GetComponentRegistry()->myTypeErasureComponents.at(myTypeHashCode).CopyFunctionPointer(this->myStartMemoryAddress + componentOffset, aOther.myStartMemoryAddress + componentOffset);
-		}
-
-		std::vector<ComponentID> sortedComponentIDs = aOther.ReturnComponentIDsSortedByAddress();
-
-		for (size_t i = 0; i < sortedComponentIDs.size(); i++)
-		{
-			char* componentPointer = myStartMemoryAddress + i * myComponentTypeSize;
-			const size_t componentID = sortedComponentIDs[i];
-
-			this->myIDToPointer.emplace(componentID, componentPointer);
-			this->myPointerToID.emplace(componentPointer, componentID);
-		}
-
-		return *this;
 	}
 }

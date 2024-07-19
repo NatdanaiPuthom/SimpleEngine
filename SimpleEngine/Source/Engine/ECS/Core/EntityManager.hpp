@@ -20,8 +20,10 @@ namespace ECS
 		using ComponentType = std::type_index;
 		friend class ECS::EntityComponentSystem;
 	public:
-		EntityManager& operator=(const EntityManager& aOther);
 		EntityManager(const EntityManager& aOther);
+		EntityManager(EntityManager&& aOther) noexcept;
+		EntityManager& operator=(const EntityManager& aOther);
+		EntityManager& operator=(EntityManager&& aOther) noexcept;
 
 		IEntity& CreateEntity(EntityID aEntityID);
 		bool DestroyEntity(const EntityID aID);

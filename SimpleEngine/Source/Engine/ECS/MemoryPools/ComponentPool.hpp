@@ -15,9 +15,9 @@ namespace ECS
 		~ComponentPool();
 
 		ComponentPool(const ComponentPool& aOther);
-		ComponentPool(ComponentPool&&) = default;
+		ComponentPool(ComponentPool&& aOther) noexcept;
 		ComponentPool& operator=(const ComponentPool& aOther);
-		ComponentPool& operator=(ComponentPool&&) = default;
+		ComponentPool& operator=(ComponentPool&& aOther) noexcept;
 
 		template<typename T>
 		char* CreateComponent(const size_t aComponentID, const T& aValue = T());

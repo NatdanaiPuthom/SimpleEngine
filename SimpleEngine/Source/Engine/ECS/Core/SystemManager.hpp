@@ -17,7 +17,9 @@ namespace ECS
 		friend class ECS::EntityComponentSystem;
 	public:
 		SystemManager(const SystemManager& aOther);
+		SystemManager(SystemManager&& aOther) noexcept;
 		SystemManager& operator=(const SystemManager& aOther);
+		SystemManager& operator=(SystemManager&& aOther) noexcept;
 
 		void Init();
 		void Update(EntityComponentSystem* aEntityComponentSystem);

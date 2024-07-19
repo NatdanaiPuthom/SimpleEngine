@@ -51,6 +51,8 @@ namespace Simpleton
 		transform;
 
 		testEcs.push_back(e1);
+
+		testEcs.emplace_back(ECS::EntityComponentSystem());
 	}
 
 	void SceneManager::Update()
