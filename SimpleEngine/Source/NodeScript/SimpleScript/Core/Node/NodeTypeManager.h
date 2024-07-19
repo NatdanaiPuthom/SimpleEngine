@@ -1,10 +1,10 @@
 #pragma once
-#include "Core/ScriptDefines.h"
-#include "Core/Node/NodeType.h"
-#include "Core/View/NodeTypeView.h"
-#include "Core/CustomEvent/CustomEvent.h"
-#include "Core/Function/ScriptFunction.h"
-#include "Core/Utilities/MetaScript.h"
+#include "../ScriptDefines.h"
+#include "NodeType.h"
+#include "../View/NodeTypeView.h"
+#include "../CustomEvent/CustomEvent.h"
+#include "../Function/ScriptFunction.h"
+#include "../Utilities/MetaScript.h"
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -72,9 +72,9 @@ namespace SCR
 		static NodeType CreateInvalidNodeType();
 
 	private:
+		std::vector<NodeType> myNodeTypes;
 		std::vector<CustomEvent> myCustomEvents;
 		std::vector<std::unique_ptr<Function>> myFunctions;
-		std::vector<NodeType> myNodeTypes;
 
 		std::unordered_multimap<NodeTypeID, CustomEventID> myToCustomEventID;
 		std::unordered_multimap<NodeTypeID, FunctionID> myToFunctionID;
