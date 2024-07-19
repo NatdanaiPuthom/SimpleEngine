@@ -9,7 +9,7 @@ namespace SCR
 	{
 	public:
 
-		CustomEventView(CustomEventID anID);
+		explicit CustomEventView(CustomEventID anID);
 
 
 		NodeTypeView GetCallerNodeType() const;

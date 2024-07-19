@@ -26,7 +26,8 @@ namespace SCR
 	static std::filesystem::path GetFileDirectory(const std::string_view aFilePath)
 	{
 		std::string fileDirectory = std::string(aFilePath);
-		if (!std::filesystem::is_directory(aFilePath))
+		const char lastChar = fileDirectory[fileDirectory.size() - 1];
+		if (lastChar != '/')
 		{
 			fileDirectory += "/";
 		}
@@ -43,7 +44,7 @@ namespace SCR
 		{
 			throw std::runtime_error("Failed to create directory: " + fileDirectory.string());
 			return;
-			
+
 		}
 
 		std::ofstream ofs(filePath, std::ios::out);
@@ -196,12 +197,12 @@ namespace SCR
 			float yPos = nodePosJson["y"];
 
 			bool success = true;
-			const NodeID nodeID = CreateNode(eventGraph, nodeName, success, { xPos, yPos }, nullptr, true);
+			const NodeView node = CreateNode(eventGraph, nodeName, success, { xPos, yPos }, nullptr, true);
 
 			if (!success)
 			{
 				std::cout << "Failed create node with name: " + nodeName << std::endl;
-				failedNodeIDs.insert(nodeID);
+				failedNodeIDs.insert(node.GetID());
 			}
 		}
 
@@ -253,9 +254,8 @@ namespace SCR
 
 		for (const json& variableJson : variableDataJson)
 		{
-			const VarID varID = CreateVariable(aScript);
-
-			const Variable& variable = ScriptProxy::GetVariable(aScript, varID);
+			const VarID varID = Internal::CreateVariable(aScript, GetDataTypeID<bool>(), nullptr);
+			const Variable& variable = aScript.GetVariableManager().myVariables.at(varID);
 
 			const std::string& dataTypeStr = variableJson["DataType"];
 
@@ -269,7 +269,7 @@ namespace SCR
 
 			if (dataTypeID != InvalidID<DataTypeID>())
 			{
-				
+
 				SetVariableDataType(varID, dataTypeID, aScript, nullptr);
 
 				Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
@@ -297,7 +297,7 @@ namespace SCR
 
 		std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
 
-		if (!exists(fileDirectory) || !is_directory(fileDirectory))
+		if (!std::filesystem::exists(fileDirectory) || !std::filesystem::is_directory(fileDirectory))
 		{
 			std::cerr << "Error: Directory does not exist or is not accessible: " << fileDirectory << std::endl;
 		}
@@ -306,7 +306,7 @@ namespace SCR
 			for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(fileDirectory))
 			{
 
-				if (is_regular_file(entry.path()))
+				if (std::filesystem::is_regular_file(entry.path()))
 				{
 					std::cout << "Found script file: " << entry.path() << std::endl;
 
@@ -418,7 +418,7 @@ namespace SCR
 		{
 			const std::string& nodeName = customEventJson["Name"];
 
-			const CustomEventID customEventNodeTypeID = CreateCustomEvent(nodeName);
+			const CustomEventView customEvent = CreateCustomEvent(nodeName);
 
 			const json& pinsJson = customEventJson["Pins"];
 
@@ -427,9 +427,9 @@ namespace SCR
 				const std::string& pinName = pinJson["Name"];
 				const std::string& dataTypeName = pinJson["DataType"];
 
-				DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeName);
+				const DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeName);
 
-				AddPinToCustomEvent(dataTypeID, customEventNodeTypeID, pinName);
+				AddPinToCustomEvent(dataTypeID, customEvent.GetID(), pinName);
 			}
 		}
 	}

@@ -12,7 +12,7 @@ namespace SCR
 	public:
 
 
-		FunctionView(FunctionID aFunctionID);
+		explicit FunctionView(FunctionID aFunctionID);
 
 		const std::string& GetName() const;
 		NodeView GetInputNode() const;

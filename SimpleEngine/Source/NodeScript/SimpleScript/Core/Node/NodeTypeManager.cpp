@@ -99,7 +99,12 @@ namespace SCR
 		return myCustomEvents.at(anID);
 	}
 
-	const std::vector<CustomEvent>& NodeTypeManager::GetCustomEvents()
+	std::vector<CustomEvent>& NodeTypeManager::GetCustomEvents()
+	{
+		return myCustomEvents;
+	}
+
+	const std::vector<CustomEvent>& NodeTypeManager::GetCustomEvents() const
 	{
 		return myCustomEvents;
 	}
@@ -184,6 +189,29 @@ namespace SCR
 		}
 	}
 
+	CustomEventID NodeTypeManager::CreateCustomEvent(std::string_view aName)
+	{
+		const CustomEventID id = myCustomEvents.size();
+		const CustomEvent& customEvent = myCustomEvents.emplace_back(CustomEvent(aName));
+
+		myToCustomEventID.emplace(customEvent.GetCallerTypeID(), id);
+		myToCustomEventID.emplace(customEvent.GetExecutorTypeID(), id);
+
+		return id;
+	}
+
+	FunctionID NodeTypeManager::CreateFunction(std::string_view aName)
+	{
+		const FunctionID id = myFunctions.size();
+		const std::unique_ptr<Function>& function = myFunctions.emplace_back(std::make_unique<Function>(aName));
+
+		myToFunctionID.emplace(function->GetCallerNodeTypeID(), id);
+		myToFunctionID.emplace(function->GetInputNodeTypeID(), id);
+		myToFunctionID.emplace(function->GetOutputNodeTypeID(), id);
+
+		return id;
+	}
+
 	NodeType NodeTypeManager::CreateInvalidNodeType()
 	{
 		NodeRecipe recipe
@@ -210,21 +238,4 @@ namespace SCR
 			}
 		};*/
 	}
-
-	/*void NodeTypeManager::Destroy()
-	{
-		for (Function* function : myFunctions)
-		{
-			delete function;
-		}
-
-	
-		myNodeTypes.clear();
-		myCustomEvents.clear();
-		myFunctions.clear();
-		myGetterNodeTypeIDs.clear();
-		mySetterNodeTypeIDs.clear();
-		myOperatorNodeTypeIDs.clear();
-		myToCustomEventID.clear();
-	}*/
 }

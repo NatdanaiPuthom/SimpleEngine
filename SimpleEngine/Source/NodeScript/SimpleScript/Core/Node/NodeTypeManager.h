@@ -13,12 +13,9 @@ namespace SCR
 {
 	class Script;
 	class ScriptFoundation;
-	struct NodeGraphContext;
 
 	class NodeTypeManager
 	{
-		friend class ScriptProxy;
-		friend class InternalModifier;
 	public:
 
 		NodeTypeManager();
@@ -50,7 +47,8 @@ namespace SCR
 		std::vector<NodeTypeView> GetNodeTypesFiltered(FilterPredicate&& aPredicate);
 
 		CustomEvent& GetCustomEvent(const CustomEventID anID);
-		const std::vector<CustomEvent>& GetCustomEvents();
+		std::vector<CustomEvent>& GetCustomEvents();
+		const std::vector<CustomEvent>& GetCustomEvents() const;
 
 		CustomEventID GetCustomEventID(const NodeTypeID aNodeTypeID);
 
@@ -64,6 +62,9 @@ namespace SCR
 		const std::string& GetFullName(NodeTypeID anID);
 		std::string GetShortName(NodeTypeID anID);
 		std::string GetNameDirectory(NodeTypeID anID);
+
+		CustomEventID CreateCustomEvent(std::string_view aName);
+		FunctionID CreateFunction(std::string_view aName);
 
 		void Assert();
 
