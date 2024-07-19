@@ -14,17 +14,17 @@ namespace ECS
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;
 		myCurrentMemoryAddress = myStartMemoryAddress;
 
-		memset(myCurrentMemoryAddress, '\0', sizeof(char) * aDefaultSize);
+		memset(myCurrentMemoryAddress, '\0', GetAvailableMemorySpace());
 	}
 
 	ComponentPool::~ComponentPool()
 	{
-		const size_t offset = myCurrentMemoryAddress - myStartMemoryAddress;
-		size_t componentCount = offset;
+		const size_t offset = GetOccupiedMemorySpace();
+		size_t componentCount = 0;
 
-		if (offset != 0)
+		if (myComponentTypeSize != 0)
 		{
-			componentCount /= myComponentTypeSize;
+			componentCount = offset / myComponentTypeSize;
 		}
 
 		const ECS::ComponentRegistry* componentRegistry = MainSingleton::GetComponentRegistry();
@@ -45,23 +45,23 @@ namespace ECS
 
 	ComponentPool::ComponentPool(const ComponentPool& aOther)
 	{
-		const size_t size = aOther.myEndMemoryAddress - aOther.myStartMemoryAddress;
-		const size_t offset = aOther.myCurrentMemoryAddress - aOther.myStartMemoryAddress;
+		const size_t size = aOther.GetCapacity();
+		const size_t offsetFromStart = aOther.GetOccupiedMemorySpace();
 
 		this->myComponentTypeSize = aOther.myComponentTypeSize;
 
 		this->myStartMemoryAddress = new char[size];
 		this->myEndMemoryAddress = this->myStartMemoryAddress + size;
-		this->myCurrentMemoryAddress = this->myStartMemoryAddress + offset;
+		this->myCurrentMemoryAddress = this->myStartMemoryAddress + offsetFromStart;
 		this->myTypeHashCode = aOther.myTypeHashCode;
 
-		memset(this->myCurrentMemoryAddress, '\0', this->myEndMemoryAddress - this->myCurrentMemoryAddress);
+		memset(this->myCurrentMemoryAddress, '\0', this->GetAvailableMemorySpace());
 
-		size_t componentCount = offset;
+		size_t componentCount = 0;
 
-		if (offset != 0)
+		if (aOther.myComponentTypeSize != 0)
 		{
-			componentCount /= aOther.myComponentTypeSize;
+			componentCount = offsetFromStart / aOther.myComponentTypeSize;
 		}
 
 		const ECS::ComponentRegistry* componentRegistry = MainSingleton::GetComponentRegistry();
@@ -118,25 +118,22 @@ namespace ECS
 		this->myIDToPointer.clear();
 		this->myPointerToID.clear();
 
-		this->myComponentTypeSize = aOther.myComponentTypeSize;
-
-		const size_t size = aOther.myEndMemoryAddress - aOther.myStartMemoryAddress;
-		const size_t offset = aOther.myCurrentMemoryAddress - aOther.myStartMemoryAddress;
+		const size_t size = aOther.GetCapacity();
+		const size_t offsetFromStart = aOther.GetOccupiedMemorySpace();
 
 		this->myComponentTypeSize = aOther.myComponentTypeSize;
-
 		this->myStartMemoryAddress = new char[size];
 		this->myEndMemoryAddress = this->myStartMemoryAddress + size;
-		this->myCurrentMemoryAddress = this->myStartMemoryAddress + offset;
+		this->myCurrentMemoryAddress = this->myStartMemoryAddress + offsetFromStart;
 		this->myTypeHashCode = aOther.myTypeHashCode;
 
-		memset(this->myCurrentMemoryAddress, '\0', this->myEndMemoryAddress - this->myCurrentMemoryAddress);
+		memset(this->myCurrentMemoryAddress, '\0', this->GetAvailableMemorySpace());
 
-		size_t componentCount = offset;
+		size_t componentCount = 0;
 
-		if (componentCount != 0)
+		if (aOther.myComponentTypeSize != 0)
 		{
-			componentCount /= aOther.myComponentTypeSize;
+			componentCount = offsetFromStart / aOther.myComponentTypeSize;
 		}
 
 		const ECS::ComponentRegistry* componentRegistry = MainSingleton::GetComponentRegistry();
@@ -199,7 +196,7 @@ namespace ECS
 		myCurrentMemoryAddress = myStartMemoryAddress + currentOccupiedMemorySpace;
 		myEndMemoryAddress = myStartMemoryAddress + newMemoryCapacity;
 
-		memset(myCurrentMemoryAddress, '\0', myEndMemoryAddress - myCurrentMemoryAddress);
+		memset(myCurrentMemoryAddress, '\0', GetAvailableMemorySpace());
 	}
 
 	void ComponentPool::Remap(const std::vector<ComponentID>& aComponentIDs, const size_t aSize)
