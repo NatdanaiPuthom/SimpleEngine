@@ -5,6 +5,12 @@ namespace ECS
 {
 	struct PointLightComponent final
 	{
+		PointLightComponent()
+		{
+			pointLightData.color.w = 10.0f;
+			pointLightData.radius = 5.0f;
+		};
+
 		Graphics::PointLightData pointLightData;
 	};
 }
