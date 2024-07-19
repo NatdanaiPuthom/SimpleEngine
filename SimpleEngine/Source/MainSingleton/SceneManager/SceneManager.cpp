@@ -26,7 +26,6 @@ namespace Simpleton
 	void SceneManager::Destroy()
 	{
 		myECSs.clear();
-		testEcs.clear();
 		myCurrentSceneInfo = nullptr;
 	}
 
@@ -38,21 +37,6 @@ namespace Simpleton
 		auto camera = Global::GetGraphicsEngine()->GetEditorCamera();
 		camera->SetRotation(Math::Vector3f(30, 0, 0));
 		camera->SetPosition(Math::Vector3f(1, 9, -12));
-
-		ECS::EntityComponentSystem e1;
-		ECS::IEntity& g = e1.CreateEntity();
-
-		ECS::TransformComponent t;
-		t.transform.SetPosition(Math::Vector3f(10, 5, 7));
-		g.AddComponent<ECS::TransformComponent>(t);
-		g.SetName("hello");
-
-		ECS::TransformComponent* transform = g.GetComponent<ECS::TransformComponent>();
-		transform;
-
-		testEcs.push_back(e1);
-
-		testEcs.emplace_back(ECS::EntityComponentSystem());
 	}
 
 	void SceneManager::Update()
@@ -60,11 +44,6 @@ namespace Simpleton
 		if (myIsPlaying)
 		{
 			myECSs.at(myCurrentSceneInfo->id).Update();
-		}
-
-		if (MainSingleton::GetInputManager().IsKeyPressed('G'))
-		{
-			myECSs.at(myCurrentSceneInfo->id) = testEcs.back();
 		}
 	}
 

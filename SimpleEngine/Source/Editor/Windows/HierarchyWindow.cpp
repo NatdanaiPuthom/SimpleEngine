@@ -86,6 +86,12 @@ namespace Editor
 	{
 		if (ImGui::Begin("Inspector##HierachyWindow"))
 		{
+			if (aEntities.empty() == true)
+			{
+				ImGui::End();
+				return;
+			}
+
 			ECS::IEntity& selectedEntity = aEntities[aSelected];
 			const std::string selectedEntityName = selectedEntity.GetName();
 

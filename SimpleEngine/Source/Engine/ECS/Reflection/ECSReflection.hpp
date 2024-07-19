@@ -83,7 +83,7 @@ namespace ECS
 		std::unordered_map<ComponentHashCode, TypeErasureObject> myTypeErasureComponents;
 		std::unordered_map<ComponentHashCode, TypeErasureObject> myTypeErasureDataTypes;
 		std::unordered_map<ComponentName, ComponentHashCode> myComponentNameToHashCode;
-		std::unordered_map<std::type_index, void(*)(void*)> myTypeErasureComponentDestructorInvoker;
+		std::unordered_map<ComponentHashCode, void(*)(void*)> myTypeErasureComponentDestructorInvoker;
 	public:
 		void InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "");
 
@@ -170,7 +170,7 @@ namespace ECS
 
 		myTypeErasureComponents[hashCode] = typeErasureComponent;
 
-		myTypeErasureComponentDestructorInvoker[typeid(T)] = [](void* aPointer) -> void
+		myTypeErasureComponentDestructorInvoker[typeid(T).hash_code()] = [](void* aPointer) -> void
 			{
 				static_cast<T*>(aPointer)->~T();
 			};

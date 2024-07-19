@@ -67,7 +67,5 @@ namespace Simpleton
 		size_t myNextSceneID;
 		bool myIsPlaying;
 		const char myPaddings[8] = "Believe";
-
-		std::vector<ECS::EntityComponentSystem> testEcs;
 	};
 }
