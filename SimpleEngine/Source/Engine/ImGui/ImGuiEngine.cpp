@@ -4,6 +4,7 @@
 #include "External/dearimgui/imgui/imgui_impl_win32.h"
 #include "External/dearimgui/imnodes/imnodes.h"
 #include "External/AwsomeFontIcons/IconFontDefines.h"
+#include "External/dearimgui/imguizmo/ImGuizmo.h"
 #include <shellapi.h>
 
 namespace Simple
@@ -67,6 +68,46 @@ namespace Simple
 
 	void ImGuiEngine::EndFrame()
 	{
+		Math::Matrix4x4f viewMatrix = Global::GetGraphicsEngine()->GetCurrentCamera()->GetViewMatrix();
+		Math::Matrix4x4f projectionMatrix = Global::GetGraphicsEngine()->GetCurrentCamera()->GetProjectionMatrix();
+		Math::Matrix4x4f objectMatrix = Math::Matrix4x4f::Identity();
+
+		ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
+		ImGuizmo::MODE mode = ImGuizmo::WORLD;
+
+		float testObject[16]{};
+		testObject[0] = objectMatrix(1, 1);
+		testObject[1] = objectMatrix(1, 2);
+		testObject[2] = objectMatrix(1, 3);
+		testObject[3] = objectMatrix(1, 4);
+
+		testObject[4] = objectMatrix(2, 4);
+		testObject[5] = objectMatrix(2, 4);
+		testObject[6] = objectMatrix(2, 4);
+		testObject[7] = objectMatrix(2, 4);
+
+		testObject[8] = objectMatrix(3, 4);
+		testObject[9] = objectMatrix(3, 4);
+		testObject[10] = objectMatrix(3, 4);
+		testObject[11] = objectMatrix(3, 4);
+
+		testObject[12] = objectMatrix(4, 4);
+		testObject[13] = objectMatrix(4, 4);
+		testObject[14] = objectMatrix(4, 4);
+		testObject[15] = objectMatrix(4, 4);
+
+		if (ImGui::Begin("testwindow##imguizmo"))
+		{
+			ImGuizmo::Manipulate(&viewMatrix(1, 1),
+				&projectionMatrix(1, 1),
+				operation,
+				mode,
+				&testObject[0],
+				nullptr
+			);
+		}
+		ImGui::End();
+
 		ImGui::Render();
 
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
