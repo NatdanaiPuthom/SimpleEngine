@@ -4,7 +4,7 @@
 #include "External/profiler.h"
 #include "External/nlohmann/json.hpp"
 #include "MainSingleton/MainSingleton.hpp"
-#include "Game/Systems/AddSystemHere/AllGameSystems.hpp"
+#include "Game/ECS/Systems/AddSystems/AllGameSystems.hpp"
 #include <fstream>
 
 namespace Simpleton

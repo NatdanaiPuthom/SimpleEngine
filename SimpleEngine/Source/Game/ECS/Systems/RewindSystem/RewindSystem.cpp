@@ -1,6 +1,6 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Systems/RewindSystem/RewindSystem.hpp"
-#include "Game/Components/RewindTestComponent.hpp"
+#include "Game/ECS/Systems/RewindSystem/RewindSystem.hpp"
+#include "Game/ECS/Components/RewindTestComponent.hpp"
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
 
 namespace ECS

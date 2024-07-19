@@ -1,5 +1,5 @@
 #include "Game/Precomplied/GamePch.hpp"
-#include "Game/Systems/Example/ExampleSystem.hpp"
+#include "Game/ECS/Systems/Example/ExampleSystem.hpp"
 
 namespace ECS
 {
