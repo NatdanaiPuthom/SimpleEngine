@@ -50,6 +50,8 @@ namespace ECS
 
 		size_t myComponentTypeSize;
 		size_t myTypeHashCode;
+
+		char myPadding[56] = "Never Give Up On Your Dreams! Believe!!!!!!!!!!!!!!!!!\0";
 	};
 
 	template<typename T>

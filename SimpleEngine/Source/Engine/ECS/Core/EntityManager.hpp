@@ -58,7 +58,7 @@ namespace ECS
 
 		ComponentManager* myComponentManager;
 		size_t myCurrentEntityID;
-		char myPadding[48] = "Never Give Up!!Never Give Up!!Never Give Up!!!\0";
+		char myPadding[32] = "Never Give Up On Your Dream!\0";
 	};
 
 	template<typename T>

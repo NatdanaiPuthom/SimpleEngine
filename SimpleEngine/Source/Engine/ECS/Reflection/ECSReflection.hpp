@@ -60,13 +60,12 @@ namespace ECS
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
 		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
 
-		void (*CopyFunctionPointer)(void* aDestination, const void* aSource) = nullptr;
-
 		void (*CreateComponent)(void* aDestination, const void* aSource) = nullptr;
+		void (*CopyFunctionPointer)(void* aDestination, const void* aSource) = nullptr;
 
 		bool hasBeenAdded = false;
 	private:
-		char myPadding[12] = "Believe!!!\0";
+		char myPadding[8] = "Believ\0";
 	};
 
 	class ComponentRegistry final
