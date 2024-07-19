@@ -27,7 +27,7 @@ namespace ECS
 
 		for (auto& enemy : enemies)
 		{
-			ECS::IEntity& entity = aEntityComponentSystem->GetEntity(enemy);
+			ECS::Entity& entity = aEntityComponentSystem->GetEntity(enemy);
 			auto transform = entity.GetComponent<TransformComponent>();
 			auto mesh = entity.GetComponent<MeshComponent>();
 			auto pos = transform->transform.GetPosition();
@@ -40,7 +40,7 @@ namespace ECS
 				mesh->mesh = Global::GetModelFactory()->LoadMesh("Assets\\Models\\StaticModels\\SM_Particle_Chest.fbx");
 			}
 
-			const std::vector<IEntity>& entities = MainSingleton::GetSceneManager().GetCurrentECS().GetAllEntities();
+			const std::vector<Entity>& entities = MainSingleton::GetSceneManager().GetCurrentECS().GetAllEntities();
 			
 			for (int i = 0; i < entities.size(); i++)
 			{

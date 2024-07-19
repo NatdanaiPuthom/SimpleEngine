@@ -1,7 +1,6 @@
 #include "SimpleScript/SimpleGameNodes.h"
 #include "SimpleScript/Core/Node/NodeTypeRegistry.h"
 #include "SimpleScript/Core/DataType/DataTypeRegistry.h"
-#include <ECS/ECSInterface.hpp>
 #include "ECS/Core/Entity.hpp"
 
 //template<typename T>

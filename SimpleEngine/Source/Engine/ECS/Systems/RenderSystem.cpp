@@ -32,7 +32,7 @@ namespace ECS
 
 		if (entitiesWithDirectionalLightComponent.empty() == false)
 		{
-			ECS::IEntity& directionalLight = aEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
+			ECS::Entity& directionalLight = aEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
 			const DirectionalLightComponent* directionalLightComponent = directionalLight.GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
@@ -45,12 +45,12 @@ namespace ECS
 			graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
 		}
 
-		std::vector<IEntity>& entities = aEntityComponentSystem->GetAllEntities();
+		std::vector<Entity>& entities = aEntityComponentSystem->GetAllEntities();
 		const bool shouldRenderMesh = renderer->GetShouldRenderMesh();
 
 		for (size_t i = 0; i < entities.size(); ++i)
 		{
-			 ECS::IEntity& entity = entities[i];
+			 ECS::Entity& entity = entities[i];
 			const MeshComponent* mesh = entity.GetComponent<ECS::MeshComponent>(); //To-DO(v9.37.2): Disgusting, fix pls
 			const TransformComponent* transform = entity.GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
 
@@ -150,7 +150,7 @@ namespace ECS
 
 		if (entitiesWithSkyBoxComponent.empty() == false)
 		{
-			ECS::IEntity skyBox = aEntityComponentSystem->GetEntity(*entitiesWithSkyBoxComponent.begin());
+			ECS::Entity skyBox = aEntityComponentSystem->GetEntity(*entitiesWithSkyBoxComponent.begin());
 			SkyBoxComponent* skyBoxComponent = skyBox.GetComponent<SkyBoxComponent>();
 			skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
 
@@ -159,7 +159,7 @@ namespace ECS
 
 		if (entitiesWithDirectionalLightComponent.empty() == false)
 		{
-			ECS::IEntity directionalLight = aEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
+			ECS::Entity directionalLight = aEntityComponentSystem->GetEntity(*entitiesWithDirectionalLightComponent.begin());
 			const DirectionalLightComponent* directionalLightComponent = directionalLight.GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 

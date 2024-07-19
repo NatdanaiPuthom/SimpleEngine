@@ -86,7 +86,7 @@ namespace ECS
 
 			for (auto& [entity, structData] : rewindMap)
 			{
-				ECS::IEntity& thisEntity = aEntityComponentSystem->GetEntity(entity);
+				ECS::Entity& thisEntity = aEntityComponentSystem->GetEntity(entity);
 
 				thisEntity.GetComponent<TransformComponent>()->transform = structData.transform;;
 				thisEntity.GetComponent<RewindTestComponent>()->goToFirstPoint = structData.ThisBoolCheck;
@@ -104,7 +104,7 @@ namespace ECS
 
 			for (auto& thisRewindComponentID : RewindComponentsIDs)
 			{
-				ECS::IEntity& thisEntity = aEntityComponentSystem->GetEntity(thisRewindComponentID);
+				ECS::Entity& thisEntity = aEntityComponentSystem->GetEntity(thisRewindComponentID);
 
 
 				//auto& thisEntityTransformComponent = thisEntity->GetComponent<TransformComponent>();

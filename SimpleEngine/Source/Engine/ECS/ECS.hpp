@@ -42,11 +42,11 @@ namespace ECS
 
 		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
 
-		ECS::IEntity& CreateEntity(const EntityID aEntityID = 0);
+		ECS::Entity& CreateEntity(const EntityID aEntityID = 0);
 		bool RemoveEntity(const EntityID aEntityID);
 	public:
-		ECS::IEntity& GetEntity(const EntityID aID);
-		std::vector<ECS::IEntity>& GetAllEntities();
+		ECS::Entity& GetEntity(const EntityID aID);
+		std::vector<ECS::Entity>& GetAllEntities();
 		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
 
 		template<typename T>

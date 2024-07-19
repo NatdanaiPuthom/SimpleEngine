@@ -48,7 +48,7 @@ namespace ECS
 
 		for (const EntityID& id : entityIDsWithPointLight)
 		{
-			ECS::IEntity& entity = aEntityComponentSystem->GetEntity(id);
+			ECS::Entity& entity = aEntityComponentSystem->GetEntity(id);
 			ECS::TransformComponent* transformComponent = entity.GetComponent<ECS::TransformComponent>();
 
 			if (transformComponent == nullptr)

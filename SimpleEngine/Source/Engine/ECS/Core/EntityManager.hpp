@@ -8,7 +8,7 @@
 namespace ECS
 {
 	class EntityComponentSystem;
-	class IEntity;
+	class Entity;
 }
 
 namespace ECS
@@ -25,7 +25,7 @@ namespace ECS
 		EntityManager& operator=(const EntityManager& aOther);
 		EntityManager& operator=(EntityManager&& aOther) noexcept;
 
-		IEntity& CreateEntity(EntityID aEntityID);
+		Entity& CreateEntity(EntityID aEntityID);
 		bool DestroyEntity(const EntityID aID);
 
 		template<typename T>
@@ -40,8 +40,8 @@ namespace ECS
 		template<typename T>
 		T* GetComponent(const EntityID aEntityID);
 
-		IEntity& GetEntity(const EntityID aEntityID);
-		std::vector<IEntity>& GetAllEntities();
+		Entity& GetEntity(const EntityID aEntityID);
+		std::vector<Entity>& GetAllEntities();
 
 		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap(const EntityID aEntityID);
 
@@ -51,7 +51,7 @@ namespace ECS
 
 		bool FindAndRemoveComponent(const ComponentType& aComponentType, const EntityID aEntityID);
 	private:
-		std::vector<IEntity> myAllEntities;
+		std::vector<Entity> myAllEntities;
 		std::unordered_map<EntityID, size_t> myEntityIDToIndex;
 		std::unordered_map<EntityID, size_t> myIndexToEntityID;
 		std::unordered_map<EntityID, std::unordered_map<ComponentType, ComponentID>> myEntityComponents;

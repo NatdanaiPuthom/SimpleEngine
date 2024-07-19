@@ -16,7 +16,7 @@ namespace ECS
 
 		for (auto& entityID : entityIDs)
 		{
-			ECS::IEntity& entity = aEntityComponentSystem->GetEntity(entityID);
+			ECS::Entity& entity = aEntityComponentSystem->GetEntity(entityID);
 
 			ScriptComponent* const scriptComponent = entity.GetComponent<ScriptComponent>();
 

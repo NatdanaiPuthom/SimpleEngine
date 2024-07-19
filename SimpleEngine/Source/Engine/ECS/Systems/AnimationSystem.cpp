@@ -17,7 +17,7 @@ namespace ECS
 
 		for (auto& id : entityIDs)
 		{
-			ECS::IEntity& entity = aEntityComponentSystem->GetEntity(id);
+			ECS::Entity& entity = aEntityComponentSystem->GetEntity(id);
 			ECS::AnimationComponent* animationPlayerComponent = entity.GetComponent<ECS::AnimationComponent>();
 
 			if (animationPlayerComponent != nullptr && animationPlayerComponent->animation != nullptr)

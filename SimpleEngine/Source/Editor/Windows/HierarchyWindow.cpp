@@ -20,7 +20,7 @@ namespace Editor
 		static int selected = 0;
 
 		ECS::EntityComponentSystem& activeECS = MainSingleton::GetSceneManager().GetCurrentECS();
-		std::vector<ECS::IEntity>& entities = activeECS.GetAllEntities();
+		std::vector<ECS::Entity>& entities = activeECS.GetAllEntities();
 
 		ShowSceneHierachy(activeECS, entities, selected);
 
@@ -82,7 +82,7 @@ namespace Editor
 		ImGui::Separator();
 	}
 
-	void HierarchyWindow::ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::IEntity>& aEntities, int& aSelected)
+	void HierarchyWindow::ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
 	{
 		if (ImGui::Begin("Inspector##HierachyWindow"))
 		{
@@ -92,7 +92,7 @@ namespace Editor
 				return;
 			}
 
-			ECS::IEntity& selectedEntity = aEntities[aSelected];
+			ECS::Entity& selectedEntity = aEntities[aSelected];
 			const std::string selectedEntityName = selectedEntity.GetName();
 
 			char buffer[256];
@@ -145,7 +145,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void HierarchyWindow::ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::IEntity>& aEntities, int& aSelected)
+	void HierarchyWindow::ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
 	{
 		if (ImGui::Begin("Hierarchy"))
 		{
@@ -157,7 +157,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void HierarchyWindow::ShowSceneEntities(std::vector<ECS::IEntity>& aEntities, int& aSelected)
+	void HierarchyWindow::ShowSceneEntities(std::vector<ECS::Entity>& aEntities, int& aSelected)
 	{
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
@@ -209,7 +209,7 @@ namespace Editor
 		ImGui::PopStyleColor();
 	}
 
-	void HierarchyWindow::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::IEntity>& aEntities, int& aSelected)
+	void HierarchyWindow::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
 	{
 		if (ImGui::Button("Add##SceneHierachy"))
 		{
@@ -235,14 +235,14 @@ namespace Editor
 		{
 			if (ImGui::MenuItem("Add Entity##SceneHierachy"))
 			{
-				ECS::IEntity& entity = aActiveECS.CreateEntity();
+				ECS::Entity& entity = aActiveECS.CreateEntity();
 				entity.AddComponent<ECS::TransformComponent>();
 				aSelected = static_cast<int>(aEntities.size()) - 1;
 			}
 
 			if (ImGui::MenuItem("Add Cube##SceneHierachy"))
 			{
-				ECS::IEntity& entity = aActiveECS.CreateEntity();
+				ECS::Entity& entity = aActiveECS.CreateEntity();
 
 				entity.AddComponent<ECS::TransformComponent>();
 				entity.AddComponent<ECS::MeshComponent>();
@@ -254,7 +254,7 @@ namespace Editor
 		}
 	}
 
-	void HierarchyWindow::ShowComponents(ECS::IEntity& aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const
+	void HierarchyWindow::ShowComponents(ECS::Entity& aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const
 	{
 		const ECS::EntityID entityID = aSelectedEntity.GetID();
 		const std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = aSelectedEntity.GetComponentMap();
@@ -326,7 +326,7 @@ namespace Editor
 		}
 	}
 
-	void HierarchyWindow::RemoveEntity(std::vector<ECS::IEntity>& aEntities, int& aSelected)
+	void HierarchyWindow::RemoveEntity(std::vector<ECS::Entity>& aEntities, int& aSelected)
 	{
 		aEntities[aSelected].DestroyThis();
 

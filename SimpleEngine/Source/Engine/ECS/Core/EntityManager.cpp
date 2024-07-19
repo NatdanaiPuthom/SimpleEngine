@@ -87,7 +87,7 @@ namespace ECS
 		return *this;
 	}
 
-	IEntity& EntityManager::CreateEntity(EntityID aEntityID)
+	Entity& EntityManager::CreateEntity(EntityID aEntityID)
 	{
 		if (aEntityID == 0)
 		{
@@ -98,7 +98,7 @@ namespace ECS
 			myCurrentEntityID = aEntityID;
 		}
 
-		myAllEntities.emplace_back(IEntity(aEntityID, this));
+		myAllEntities.emplace_back(Entity(aEntityID, this));
 
 		const size_t index = myAllEntities.size() - 1;
 
@@ -164,12 +164,12 @@ namespace ECS
 		return FindAndRemoveComponent(aComponentType, aEntityID);
 	}
 
-	IEntity& EntityManager::GetEntity(const EntityID aEntityID)
+	Entity& EntityManager::GetEntity(const EntityID aEntityID)
 	{
 		return myAllEntities[myEntityIDToIndex.at(aEntityID)];
 	}
 
-	std::vector<IEntity>& EntityManager::GetAllEntities()
+	std::vector<Entity>& EntityManager::GetAllEntities()
 	{
 		return myAllEntities;
 	}

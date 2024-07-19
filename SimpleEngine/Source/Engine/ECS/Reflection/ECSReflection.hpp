@@ -54,7 +54,7 @@ namespace ECS
 		std::string myComponentName;
 		std::vector<ComponentProperty> myComponentProperties;
 
-		const ComponentID(*AddComponentFunctionPointer)(ECS::IEntity& aEntity) = nullptr;
+		const ComponentID(*AddComponentFunctionPointer)(ECS::Entity& aEntity) = nullptr;
 		bool(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
 
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
@@ -134,7 +134,7 @@ namespace ECS
 
 		typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-		typeErasureComponent.AddComponentFunctionPointer = [](ECS::IEntity& aEntity) -> const ComponentID
+		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> const ComponentID
 			{
 				return aEntity.AddComponent<T>();
 			};
@@ -193,7 +193,7 @@ namespace ECS
 
 		dataType.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-		dataType.AddComponentFunctionPointer = [](ECS::IEntity& aEntity) -> const ComponentID
+		dataType.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> const ComponentID
 			{
 				return aEntity.AddComponent<T>();
 			};

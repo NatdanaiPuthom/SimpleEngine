@@ -10,15 +10,15 @@ namespace ECS
 
 namespace ECS
 {
-	class IEntity final
+	class Entity final
 	{
 		friend class ECS::EntityManager;
 	public:
-		~IEntity();
+		~Entity();
 
-		IEntity(const IEntity& aOther) = default;
-		IEntity& operator=(const IEntity& aOther) = default;
-		IEntity& operator=(IEntity&& aOther) = default;
+		Entity(const Entity& aOther) = default;
+		Entity& operator=(const Entity& aOther) = default;
+		Entity& operator=(Entity&& aOther) = default;
 
 		template<typename T>
 		const ComponentID AddComponent(const T& aValue = T());
@@ -41,7 +41,7 @@ namespace ECS
 		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap() const;
 
 	private:
-		IEntity(const size_t aID, EntityManager* aEntityManager);
+		Entity(const size_t aID, EntityManager* aEntityManager);
 	private:
 		size_t myID;
 		EntityManager* myEntityManager;
@@ -50,19 +50,19 @@ namespace ECS
 	};
 
 	template<typename T>
-	inline const ComponentID IEntity::AddComponent(const T& aValue)
+	inline const ComponentID Entity::AddComponent(const T& aValue)
 	{
 		return myEntityManager->AddComponent<T>(myID, aValue);
 	}
 
 	template<typename T>
-	inline bool IEntity::RemoveComponent()
+	inline bool Entity::RemoveComponent()
 	{
 		return myEntityManager->RemoveComponent<T>(myID);
 	}
 
 	template<typename T>
-	inline T* IEntity::GetComponent()
+	inline T* Entity::GetComponent()
 	{
 		return myEntityManager->GetComponent<T>(myID);
 	}

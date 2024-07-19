@@ -97,7 +97,7 @@ namespace ECS
 		mySystemManager.mySystems[aSystemHashCode] = std::move(aSystem);
 	}
 
-	ECS::IEntity& EntityComponentSystem::CreateEntity(const EntityID aEntityID)
+	ECS::Entity& EntityComponentSystem::CreateEntity(const EntityID aEntityID)
 	{
 		return myEntityManager.CreateEntity(aEntityID);
 	}
@@ -107,12 +107,12 @@ namespace ECS
 		return myEntityManager.DestroyEntity(aEntityID);
 	}
 
-	ECS::IEntity& EntityComponentSystem::GetEntity(const EntityID aID)
+	ECS::Entity& EntityComponentSystem::GetEntity(const EntityID aID)
 	{
 		return myEntityManager.GetEntity(aID);
 	}
 
-	std::vector<ECS::IEntity>& EntityComponentSystem::GetAllEntities()
+	std::vector<ECS::Entity>& EntityComponentSystem::GetAllEntities()
 	{
 		return myEntityManager.GetAllEntities();
 	}
@@ -124,13 +124,13 @@ namespace ECS
 
 	void EntityComponentSystem::SaveData(EntityComponentSystem& aECS, const std::string& aFileName)
 	{
-		const std::vector<IEntity>& entities = aECS.GetAllEntities();
+		const std::vector<Entity>& entities = aECS.GetAllEntities();
 
 		nlohmann::ordered_json jsonData;
 
 		for (size_t i = 0; i < entities.size(); ++i)
 		{
-			const ECS::IEntity& entity = entities[i];
+			const ECS::Entity& entity = entities[i];
 			const std::unordered_map<ECS::ComponentType, ComponentID>& components = entity.GetComponentMap();
 
 			jsonData["Entities"][i]["ID"] = entity.GetID();;
@@ -194,7 +194,7 @@ namespace ECS
 			const EntityID id = entityData["ID"];
 			const std::string name = entityData["Name"];
 
-			ECS::IEntity& entity = aECS.CreateEntity(id);
+			ECS::Entity& entity = aECS.CreateEntity(id);
 			entity.SetName(name);
 
 			if (entityData.contains("Components") == false)

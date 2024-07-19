@@ -3,7 +3,7 @@
 
 namespace ECS
 {
-	IEntity::IEntity(const size_t aID, EntityManager* aEntityManager)
+	Entity::Entity(const size_t aID, EntityManager* aEntityManager)
 		: myEntityManager(aEntityManager)
 		, myID(aID)
 		, padding("Believe")
@@ -11,37 +11,37 @@ namespace ECS
 		myName = "Entity " + std::to_string(aID);
 	}
 
-	IEntity::~IEntity()
+	Entity::~Entity()
 	{
 		myEntityManager = nullptr;
 	}
 
-	bool IEntity::RemoveComponentByTypeIndex(const std::type_index& aTypeIndex)
+	bool Entity::RemoveComponentByTypeIndex(const std::type_index& aTypeIndex)
 	{
 		return myEntityManager->RemoveComponentByTypeIndex(aTypeIndex, myID);
 	}
 
-	bool IEntity::DestroyThis()
+	bool Entity::DestroyThis()
 	{
 		return myEntityManager->DestroyEntity(myID);
 	}
 
-	void IEntity::SetName(const std::string& aName)
+	void Entity::SetName(const std::string& aName)
 	{
 		myName = aName;
 	}
 
-	const size_t IEntity::GetID() const
+	const size_t Entity::GetID() const
 	{
 		return myID;
 	}
 
-	const std::string& IEntity::GetName() const
+	const std::string& Entity::GetName() const
 	{
 		return myName;
 	}
 
-	const std::unordered_map<ComponentType, ComponentID>& IEntity::GetComponentMap() const
+	const std::unordered_map<ComponentType, ComponentID>& Entity::GetComponentMap() const
 	{
 		return myEntityManager->GetComponentMap(myID);
 	}
