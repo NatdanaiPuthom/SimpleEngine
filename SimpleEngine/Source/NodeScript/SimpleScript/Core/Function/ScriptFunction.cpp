@@ -52,8 +52,8 @@ namespace SCR
 		myInputNodeTypeID = RegisterSystemNodeType(InputNode, "Function/Input Function");
 		myOutputNodeTypeID = RegisterSystemNodeType(OutputNode, "Function/Output Function");
 
-		myInputNodeID = CreateNode(myNodeGraph, myInputNodeTypeID);
-		myOutputNodeID = CreateNode(myNodeGraph, myOutputNodeTypeID);
+		myInputNodeID = CreateNode(myNodeGraph, myInputNodeTypeID).GetID();
+		myOutputNodeID = CreateNode(myNodeGraph, myOutputNodeTypeID).GetID();
 	}
 
 	Function::~Function() = default;

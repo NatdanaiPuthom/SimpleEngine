@@ -145,7 +145,7 @@ namespace SCR
 
 		const PinTypeID pinTypeID = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID).nodeRecipe.inputPinTypeIDs[anIndex];
 
-		return InternalModifier::CreatePin(aNodeGraph, aNodeID, pinTypeID, dataPtr);
+		return Internal::CreatePin(aNodeGraph, aNodeID, pinTypeID, dataPtr);
 
 	}
 	template<size_t Index, size_t InputSize, typename InputType, typename... InputTypes>
@@ -180,7 +180,7 @@ namespace SCR
 
 		//MemoryPoolID memoryPoolID = ScriptProxy::GetGraphMemoryPool(aNodeGraph).Allocate<OutputType>();
 		void* dataPtr = &ScriptProxy::GetNodeGraphMemoryArena(aNodeGraph).Allocate<OutputType>();
-		return InternalModifier::CreatePin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
+		return Internal::CreatePin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}
 
 	template<size_t Index, size_t OutputSize, typename OutputType, typename... OutputTypes>
@@ -289,14 +289,14 @@ namespace SCR
 				// Input pins
 				std::array<PinID, PinInputSize> preExistingInputPinIDs = CreateInputPins<InputTypes...>(aNodeID, aNodeTypeID, aNodeGraph);
 
-				std::vector<PinID> addedInputPinIDs = InternalModifier::CreateInputPins(aNodeGraph, aNodeID, aNodeTypeID, preExistingInputPinIDs.size());
+				std::vector<PinID> addedInputPinIDs = Internal::CreateInputPins(aNodeGraph, aNodeID, aNodeTypeID, preExistingInputPinIDs.size());
 
 				const std::vector<PinID> totalInputPinIDs = AppendContainers<std::vector<PinID>>(std::move(preExistingInputPinIDs), std::move(addedInputPinIDs));
 
 				// Output pins
 				std::array<PinID, PinOutputSize> preExistingOutputPinIDs = CreateOutputPins<OutputTypes...>(aNodeID, aNodeTypeID, aNodeGraph);
 
-				std::vector<PinID> addedOutputPinIDs = InternalModifier::CreateOutputPins(aNodeGraph, aNodeID, aNodeTypeID, preExistingOutputPinIDs.size());
+				std::vector<PinID> addedOutputPinIDs = Internal::CreateOutputPins(aNodeGraph, aNodeID, aNodeTypeID, preExistingOutputPinIDs.size());
 
 				const std::vector<PinID> totalOutputPinIDs = AppendContainers<std::vector<PinID>>(std::move(preExistingOutputPinIDs), std::move(addedOutputPinIDs));
 

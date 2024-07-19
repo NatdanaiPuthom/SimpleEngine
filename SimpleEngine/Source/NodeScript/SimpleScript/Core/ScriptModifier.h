@@ -31,11 +31,11 @@ namespace SCR
 
 	Script& CreateScript(DataTypeID aTarget, const std::string& aName);
 
-	NodeID CreateNode(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-	NodeID CreateNodeAutoLink(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, PinID aConnection, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-	NodeID CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);
-	NodeID CreateGetterNode(Script& aScript, NodeGraph& aNodeGraph, VarID aVarID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-	NodeID CreateSetterNode(Script& aScript, NodeGraph& aNodeGraph, VarID aVarID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+	NodeView CreateNode(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+	NodeView CreateNodeAutoLink(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, PinID aConnection, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+	NodeView CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);
+	NodeView CreateGetterNode(Script& aScript, NodeGraph& aNodeGraph, VarID aVarID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+	NodeView CreateSetterNode(Script& aScript, NodeGraph& aNodeGraph, VarID aVarID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 
 	LinkID TryCreateLink(PinID aPinID1, PinID aPinID2, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 	void DestroyLink(LinkID aLinkID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
@@ -48,7 +48,7 @@ namespace SCR
 
 	void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aDragData, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
-	VarID CreateVariable(Script& aScript, DataTypeID aDataTypeID = typeid(bool).hash_code(), CommandTracker* aCommandTracker = nullptr);
+	VariableView CreateVariable(Script& aScript, DataTypeID aDataTypeID = typeid(bool).hash_code(), CommandTracker* aCommandTracker = nullptr);
 	void DestroyVariable(VarID aVarID, Script& aScript, CommandTracker* aCommandTracker);
 
 	void EditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
@@ -65,7 +65,7 @@ namespace SCR
 	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraph& aNodeGraph);
 	void PasteCopyBuffer(Vec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
-	CustomEventID CreateCustomEvent(std::string_view aName);
+	CustomEventView CreateCustomEvent(std::string_view aName);
 
 	void AddPinToCustomEvent(DataTypeID aDataTypeID, CustomEventID aCustomEventID, std::string_view aPinName = "Pin");
 	void SetPinAtIndexCustomEvent(size_t anIndex, DataTypeID aDataTypeID, CustomEventID aCustomEventID);
@@ -73,8 +73,8 @@ namespace SCR
 
 	void SetCustomEventName(CustomEventID aCustomEventID, std::string_view aName);
 
-	FunctionID CreateGlobalFunction(const std::string& aName);
-	FunctionID CreateMemberFunction(const std::string& aName, Script& aScript);
+	FunctionView CreateGlobalFunction(const std::string& aName);
+	FunctionView CreateMemberFunction(const std::string& aName, Script& aScript);
 
 	void AddPinToFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName = "Pin");
 	void SetPinAtIndexFunction(FunctionID aFunctionID, size_t anIndex, DataTypeID aDataTypeID, eFlowType aFlowType);

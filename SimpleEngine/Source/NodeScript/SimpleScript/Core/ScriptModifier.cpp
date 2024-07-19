@@ -44,6 +44,32 @@ namespace SCR
 				aCommandTracker->DoCommand(Command(commandFunction, "Bind Node To Event"));
 			}
 		}
+
+		static NodeID CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+		{
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Create Node + Set Node Pos");
+			}
+
+			const NodeID nodeID = Internal::CreateNode(aNodeGraph, aNodeTypeID, aCommandTracker);
+
+			SetNodePosition(nodeID, aPosition, aNodeGraph, aCommandTracker);
+
+			if (EventGraph* eventGraph = dynamic_cast<EventGraph*>(&aNodeGraph))
+			{
+				Internal::BindNodeToEvent(nodeID, *eventGraph, aCommandTracker);
+			}
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+
+			return nodeID;
+		}
+
 	}
 
 	void SaveScript(const Script& aScript, std::string_view aSavePath)
@@ -56,47 +82,29 @@ namespace SCR
 		return Global::GetFoundation().CreateScript(aTarget, aName);
 	}
 
-	NodeID CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+
+
+	NodeView CreateNode(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, Vec2 aPosition, CommandTracker* aCommandTracker)
 	{
-
-		if (aCommandTracker)
-		{
-			aCommandTracker->BeginComposite("Create Node + Set Node Pos");
-		}
-
-		NodeID nodeID = InternalModifier::CreateNode(aNodeGraph, aNodeTypeID, aCommandTracker);
-
-		SetNodePosition(nodeID, aPosition, aNodeGraph, aCommandTracker);
-
-		if (EventGraph* eventGraph = dynamic_cast<EventGraph*>(&aNodeGraph))
-		{
-			Internal::BindNodeToEvent(nodeID, *eventGraph, aCommandTracker);
-		}
-
-		if (aCommandTracker)
-		{
-			aCommandTracker->EndComposite();
-		}
-
-		return nodeID;
+		const NodeID nodeID = Internal::CreateNode(aNodeGraph, aNodeTypeID, aPosition, aCommandTracker);
+		return NodeView(nodeID, aNodeGraph);
 	}
 
-
-	NodeID CreateNodeAutoLink(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, const PinID aConnection, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeView CreateNodeAutoLink(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, const PinID aConnection, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Create Node + Auto Link");
 		}
 
-		NodeID nodeID = CreateNode(aNodeGraph, aNodeTypeID, aPosition, aCommandTracker);
+		const NodeID nodeID = Internal::CreateNode(aNodeGraph, aNodeTypeID, aPosition, aCommandTracker);
 
 		const Pin& createdFromPin = ScriptProxy::GetPin(aNodeGraph, aConnection);
 		const Node& createdNode = ScriptProxy::GetNode(aNodeGraph, nodeID);
 
 		const std::vector<PinID>& pinIDs = PinTypeManager::GetPinType(createdFromPin.typeID).flowType == eFlowType::Input ? createdNode.outputPins : createdNode.inputPins;
 
-		for (PinID pinID : pinIDs)
+		for (const PinID pinID : pinIDs)
 		{
 			if (TryCreateLink(pinID, aConnection, aNodeGraph, aCommandTracker) != InvalidID<LinkID>())
 			{
@@ -109,17 +117,17 @@ namespace SCR
 			aCommandTracker->EndComposite();
 		}
 
-		return nodeID;
+		return NodeView(nodeID, aNodeGraph);
 	}
 
-	NodeID CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, const Vec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
+	NodeView CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, const Vec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
 	{
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Create Node + Set Node Pos");
 		}
 
-		NodeID nodeID = InternalModifier::CreateNode(aNodeGraph, aName, aSuccess, aCreateIfNameNotFound, aCommandTracker);
+		const NodeID nodeID = Internal::CreateNode(aNodeGraph, aName, aSuccess, aCreateIfNameNotFound, aCommandTracker);
 
 		SetNodePosition(nodeID, aPosition, aNodeGraph, aCommandTracker);
 
@@ -128,10 +136,10 @@ namespace SCR
 			aCommandTracker->EndComposite();
 		}
 
-		return nodeID;
+		return NodeView(nodeID, aNodeGraph);
 	}
 
-	NodeID CreateGetterNode(Script& aScript, NodeGraph& aNodeGraph, const VarID aVarID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeView CreateGetterNode(Script& aScript, NodeGraph& aNodeGraph, const VarID aVarID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
@@ -140,18 +148,19 @@ namespace SCR
 
 		const Variable& variable = aScript.GetVariableManager().myVariables.at(aVarID);
 		
-		const NodeID nodeID = InternalModifier::CreateGetterNode(aNodeGraph, variable.dataTypeID, aCommandTracker);
+		const NodeID nodeID = Internal::CreateGetterNode(aNodeGraph, variable.dataTypeID, aCommandTracker);
 		SetNodePosition(nodeID, aPosition, aNodeGraph, aCommandTracker);
-		InternalModifier::BindVariable(aScript, NodeRef{ .nodeID = nodeID, .nodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
+		Internal::BindVariable(aScript, NodeRef{ .nodeID = nodeID, .nodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
 
 		if (aCommandTracker)
 		{
 			aCommandTracker->EndComposite();
 		}
-		return nodeID;
+
+		return NodeView(nodeID, aNodeGraph);
 	}
 
-	NodeID CreateSetterNode(Script& aScript, NodeGraph& aNodeGraph, const VarID aVarID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeView CreateSetterNode(Script& aScript, NodeGraph& aNodeGraph, const VarID aVarID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
@@ -160,15 +169,16 @@ namespace SCR
 
 		const Variable& variable = aScript.GetVariableManager().myVariables.at(aVarID);
 
-		const NodeID nodeID = InternalModifier::CreateSetterNode(aNodeGraph, variable.dataTypeID, aCommandTracker);
+		const NodeID nodeID = Internal::CreateSetterNode(aNodeGraph, variable.dataTypeID, aCommandTracker);
 		SetNodePosition(nodeID, aPosition, aNodeGraph, aCommandTracker);
-		InternalModifier::BindVariable(aScript, NodeRef{ .nodeID = nodeID, .nodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
+		Internal::BindVariable(aScript, NodeRef{ .nodeID = nodeID, .nodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
 
 		if (aCommandTracker)
 		{
 			aCommandTracker->EndComposite();
 		}
-		return nodeID;
+
+		return NodeView(nodeID, aNodeGraph);
 	}
 
 	LinkID TryCreateLink(PinID aPinID1, PinID aPinID2, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
@@ -185,23 +195,23 @@ namespace SCR
 
 			if (pinType1.dataTypeID == typeid(Wildcard).hash_code())
 			{
-				InternalModifier::ReplaceOperatorNode(aNodeGraph, aPinID1, aPinID2, aCommandTracker);
+				Internal::ReplaceOperatorNode(aNodeGraph, aPinID1, aPinID2, aCommandTracker);
 
 			}
 			else if (pinType2.dataTypeID == typeid(Wildcard).hash_code())
 			{
-				InternalModifier::ReplaceOperatorNode(aNodeGraph, aPinID2, aPinID1, aCommandTracker);
+				Internal::ReplaceOperatorNode(aNodeGraph, aPinID2, aPinID1, aCommandTracker);
 			}
 
 			return InvalidID<LinkID>();
 		}
 
-		return InternalModifier::CreateLink(aNodeGraph, createdLink.inputPinID, createdLink.outputPinID, aCommandTracker);
+		return Internal::CreateLink(aNodeGraph, createdLink.inputPinID, createdLink.outputPinID, aCommandTracker);
 	}
 
 	void DestroyLink(const LinkID aLinkID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 	{
-		InternalModifier::DestroyLink(aNodeGraph, aLinkID, aCommandTracker);
+		Internal::DestroyLink(aNodeGraph, aLinkID, aCommandTracker);
 	}
 
 	void DestoryLinksByOutputPinID(const PinID aOutputPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
@@ -378,13 +388,10 @@ namespace SCR
 		}
 	}
 
-	VarID CreateVariable(Script& aScript, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
+	VariableView CreateVariable(Script& aScript, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
 	{
-		std::vector<Variable>& variables = ScriptProxy::GetVariablesRef(aScript);
-		VarID id = variables.size();
-		variables.emplace_back();
-		SetVariableDataType(id, aDataTypeID, aScript, aCommandTracker);
-		return id;
+		const VarID varID = Internal::CreateVariable(aScript, aDataTypeID, aCommandTracker);
+		return VariableView(varID, aScript);
 	}
 
 	void DestroyVariable(VarID aVarID, Script& aScript, CommandTracker* aCommandTracker)
@@ -510,7 +517,7 @@ namespace SCR
 		for (const Property& property : properties)
 		{
 			const PinTypeID createdPinTypeID = Global::GetPinTypeManager().Create(property.name, pinType.flowType, property.typeID, CreatePinSetFunction());
-			InternalModifier::CreatePin(aNodeGraph, pin.nodeID, createdPinTypeID);
+			Internal::CreatePin(aNodeGraph, pin.nodeID, createdPinTypeID);
 		}
 	}
 
@@ -573,7 +580,7 @@ namespace SCR
 		{
 			const Node& node = ScriptProxy::GetNode(aNodeGraph, nodeID);
 
-			const NodeID createdNodeID = CreateNode(copyBuffer.nodeGraph, node.typeID, node.position, nullptr);
+			const NodeID createdNodeID = Internal::CreateNode(copyBuffer.nodeGraph, node.typeID, node.position, nullptr);
 			avgPos += node.position;
 
 			createdNodeIDs.push_back(createdNodeID);
@@ -644,7 +651,7 @@ namespace SCR
 		for (NodeID sourceNodeID = 0; sourceNodeID < copyBuffer.nodeGraph.myNodeManager->myNodes.size(); sourceNodeID++)
 		{
 			const Node& node = copyBuffer.nodeGraph.myNodeManager->myNodes[sourceNodeID];
-			NodeID createdNodeID = CreateNode(aNodeGraph, node.typeID, aPosition + node.position, aCommandTracker);
+			const NodeID createdNodeID = Internal::CreateNode(aNodeGraph, node.typeID, aPosition + node.position, aCommandTracker);
 			nodeConverter.emplace(sourceNodeID, createdNodeID);
 
 			const Node& createdNode = ScriptProxy::GetNode(aNodeGraph, createdNodeID);
@@ -677,9 +684,9 @@ namespace SCR
 		}
 	}
 
-	CustomEventID CreateCustomEvent(const std::string_view aName)
+	CustomEventView CreateCustomEvent(const std::string_view aName)
 	{
-		return InternalModifier::CreateCustomEvent(aName);
+		return CustomEventView(Internal::CreateCustomEvent(aName));
 	}
 
 	static PinTypeID AddPinToNodeType(const DataTypeID aDataTypeID, const NodeTypeID aNodeTypeID, const eFlowType aFlowType, std::string_view aPinName)
@@ -696,7 +703,7 @@ namespace SCR
 			Node& node = ScriptProxy::GetNodeRef(*nodeRef.nodeGraph, nodeRef.nodeID);
 
 			std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.inputPins, node.outputPins);
-			const PinID createdPinID = InternalModifier::CreatePin(*nodeRef.nodeGraph, nodeRef.nodeID, createdPinTypeID);
+			const PinID createdPinID = Internal::CreatePin(*nodeRef.nodeGraph, nodeRef.nodeID, createdPinTypeID);
 
 			pinIDs.push_back(createdPinID);
 		}
@@ -725,7 +732,7 @@ namespace SCR
 			Node& node = ScriptProxy::GetNodeRef(*nodeRef.nodeGraph, nodeRef.nodeID);
 
 			std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.inputPins, node.outputPins);
-			const PinID createdPinID = InternalModifier::CreatePin(*nodeRef.nodeGraph, nodeRef.nodeID, newPinTypeID);
+			const PinID createdPinID = Internal::CreatePin(*nodeRef.nodeGraph, nodeRef.nodeID, newPinTypeID);
 			pinIDs.at(anIndex) = createdPinID;
 		}
 	}
@@ -793,17 +800,17 @@ namespace SCR
 		callerNodeType.name = nameDirectory + "Call " + std::string(aName);
 	}
 
-	FunctionID CreateGlobalFunction(const std::string& aName)
+	FunctionView CreateGlobalFunction(const std::string& aName)
 	{
-		return InternalModifier::CreateFunction(aName);
+		return FunctionView(Internal::CreateFunction(aName));
 	}
 
-	FunctionID CreateMemberFunction(const std::string& aName, Script& aScript)
+	FunctionView CreateMemberFunction(const std::string& aName, Script& aScript)
 	{
-		FunctionID id = InternalModifier::CreateFunction(aName);
+		const FunctionID id = Internal::CreateFunction(aName);
 		aScript.BindFunction(id);
 
-		return id;
+		return FunctionView(id);
 	}
 
 	void AddPinToFunction(const FunctionID aFunctionID, const DataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName)
