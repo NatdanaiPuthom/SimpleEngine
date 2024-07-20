@@ -3,7 +3,7 @@
 #include <vector>
 #include <cassert>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	template<typename IDType>
 	class IDContainer

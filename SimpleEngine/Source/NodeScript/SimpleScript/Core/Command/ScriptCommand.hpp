@@ -2,7 +2,7 @@
 #include "../ScriptDefines.hpp"
 #include <string>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	enum class eCommandType

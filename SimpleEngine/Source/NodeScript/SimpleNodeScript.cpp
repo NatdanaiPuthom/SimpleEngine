@@ -3,22 +3,19 @@
 #include "ScriptLoader.hpp"
 #include "NodeScript/SimpleScript/SimpleGameNodes.hpp"
 
-namespace SCRIPT
+SimpleNodeScript::SimpleNodeScript()
 {
-	SimpleNodeScript::SimpleNodeScript()
-	{
-	}
+}
 
-	SimpleNodeScript::~SimpleNodeScript()
-	{
-		ScriptFoundation::GetInstance().Destroy();
-	}
+SimpleNodeScript::~SimpleNodeScript()
+{
+	Fly::ScriptFoundation::GetInstance().Destroy();
+}
 
-	void SimpleNodeScript::Init()
-	{
-		ScriptFoundation::GetInstance().Initialize();
-		RegisterSimpleGameNodes();
+void SimpleNodeScript::Init()
+{
+	Fly::ScriptFoundation::GetInstance().Initialize();
+	RegisterSimpleGameNodes();
 
-		SCRIPT::ScriptLoader::LoadAllClasses(SCRIPT_FILE_PATH);
-	}
+	Fly::ScriptLoader::LoadAllClasses(SCRIPT_FILE_PATH);
 }

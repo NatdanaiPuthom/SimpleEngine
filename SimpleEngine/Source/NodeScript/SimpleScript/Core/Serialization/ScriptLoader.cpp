@@ -20,7 +20,7 @@ constexpr const char* CUSTOM_EVENT_FILE_NAME = "CustomEvents.fly";
 
 using json = nlohmann::json;
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	static std::filesystem::path GetFileDirectory(const std::string_view aFilePath)

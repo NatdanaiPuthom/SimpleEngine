@@ -1,7 +1,7 @@
 #include "NodeManager.hpp"
 #include "NodeTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	NodeManager::NodeManager()

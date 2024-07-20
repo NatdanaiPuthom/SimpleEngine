@@ -1,5 +1,5 @@
 #pragma once
-#define SCR SCRIPT
+#define FLY_NAMESPACE Fly
 #if defined _DEBUG
 #define FLY_DEBUG
 #endif
@@ -9,7 +9,7 @@
 
 #undef max
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	using NodeID = int;
 	using PinID = int;

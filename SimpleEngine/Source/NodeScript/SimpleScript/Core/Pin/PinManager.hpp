@@ -2,7 +2,7 @@
 #include "../ScriptDefines.hpp"
 #include "Pin.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class PinManager final

@@ -4,7 +4,7 @@
 #include "../Node/NodeTypeRegistry.hpp"	
 #include "../NodeTypes/OperatorNodes.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class DataTypeRegistry
@@ -131,5 +131,5 @@ namespace SCR
 	};
 }
 
-#define FLY_DATATYPE(type, operators, color, ...) inline static SCR::RegisterType<type> fly_registeredType##type = SCR::RegisterType<type>::Register<operators, __VA_ARGS__>(#type, color);
-#define FLY_PROPERTY(member) inline static SCR::RegisterProperty prop(member, #member);
+#define FLY_DATATYPE(type, operators, color, ...) inline static FLY_NAMESPACE::RegisterType<type> fly_registeredType##type = FLY_NAMESPACE::RegisterType<type>::Register<operators, __VA_ARGS__>(#type, color);
+#define FLY_PROPERTY(member) inline static FLY_NAMESPACE::RegisterProperty prop(member, #member);

@@ -4,7 +4,7 @@
 #include "../Global/ScriptGlobal.hpp"
 #include "../Memory/ScriptMemoryArena.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	VariableManagerInstance::VariableManagerInstance()

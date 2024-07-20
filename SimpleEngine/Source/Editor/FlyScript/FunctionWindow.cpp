@@ -25,20 +25,20 @@ namespace Editor
 
 			if (ImGui::Button("Create Function"))
 			{
-				SCRIPT::CreateGlobalFunction("Function");
+				Fly::CreateGlobalFunction("Function");
 			}
 
 			ImGui::Separator();
 
-			std::vector<SCRIPT::FunctionView> functions = SCRIPT::GetFunctions();
-			for (SCRIPT::FunctionView& functionView : functions)
+			std::vector<Fly::FunctionView> functions = Fly::GetFunctions();
+			for (Fly::FunctionView& functionView : functions)
 			{
 
 				char functionNameBuffer[32]{};
 				strcpy_s(functionNameBuffer, functionView.GetName().c_str());
 				if (ImGui::InputText("Name", functionNameBuffer, 32))
 				{
-					SCRIPT::SetFunctionName(functionView.GetID(), functionNameBuffer);
+					Fly::SetFunctionName(functionView.GetID(), functionNameBuffer);
 				}
 
 				const std::string functionlabel = functionView.GetName() + "##function" + std::to_string(functionView.GetID());
@@ -49,17 +49,17 @@ namespace Editor
 
 				if (ImGui::Button("Create Caller"))
 				{
-					SCRIPT::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetCallerNodeType().GetID());
+					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetCallerNodeType().GetID());
 				}
 
 				if (ImGui::Button("Create Input"))
 				{
-					SCRIPT::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetInputNodeType().GetID());
+					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetInputNodeType().GetID());
 				}
 
 				if (ImGui::Button("Create Output"))
 				{
-					SCRIPT::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetOutputNodeType().GetID());
+					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetOutputNodeType().GetID());
 				}
 
 				ImGui::Separator();

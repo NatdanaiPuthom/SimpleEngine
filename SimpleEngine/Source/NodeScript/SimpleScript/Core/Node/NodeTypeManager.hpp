@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	class Class;
 	class ScriptFoundation;

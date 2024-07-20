@@ -6,7 +6,7 @@
 #include "Instance/FlyClassInstance.hpp"
 #include "Function/ScriptFunction.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	Class::Class(const DataTypeID aTargetID, const std::string& aName)

@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	using Byte = unsigned char;

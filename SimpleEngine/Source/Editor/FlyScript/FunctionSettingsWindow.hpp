@@ -16,7 +16,7 @@ namespace Editor
 
 	private:
 
-		void ShowInputOutput(SCRIPT::eFlowType aFlowType);
+		void ShowInputOutput(Fly::eFlowType aFlowType);
 
 	private:
 

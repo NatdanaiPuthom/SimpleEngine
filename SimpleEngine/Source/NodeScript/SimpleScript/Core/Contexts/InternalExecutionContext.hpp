@@ -3,7 +3,7 @@
 #include "NodeRef.hpp"
 #include <queue>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 
@@ -79,9 +79,9 @@ namespace SCR
 }
 
 template<>
-struct std::hash<SCR::NodeExecutionData>
+struct std::hash<FLY_NAMESPACE::NodeExecutionData>
 {
-	std::size_t operator()(const SCR::NodeExecutionData& aValue) const
+	std::size_t operator()(const FLY_NAMESPACE::NodeExecutionData& aValue) const
 	{
 		return static_cast<size_t>(aValue.mNodeRef.mNodeID);
 	}

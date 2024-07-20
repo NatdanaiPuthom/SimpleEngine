@@ -1,7 +1,7 @@
 #include "LinkView.hpp"
 #include "../ScriptNodeGraph.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 

@@ -2,7 +2,7 @@
 #include "ScriptProxy.hpp"
 #include "NodeExecutor.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	const Node& InternalExecutionContext::GetCurrentNode() const
 	{

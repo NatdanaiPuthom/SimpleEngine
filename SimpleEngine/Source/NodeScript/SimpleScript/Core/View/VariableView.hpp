@@ -2,7 +2,7 @@
 #include "../ScriptDefines.hpp"
 #include "../Variable/VariableManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class Class;

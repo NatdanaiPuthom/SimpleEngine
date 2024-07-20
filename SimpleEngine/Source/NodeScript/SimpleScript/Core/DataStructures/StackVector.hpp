@@ -2,7 +2,7 @@
 #include "ScriptDefines.h"
 #include <cassert>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	template<class T, size_t _Capacity>

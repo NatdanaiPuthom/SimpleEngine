@@ -4,7 +4,7 @@
 #include "../Pin/Pin.hpp"
 #include <vector>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	template<typename T, size_t Capacity>

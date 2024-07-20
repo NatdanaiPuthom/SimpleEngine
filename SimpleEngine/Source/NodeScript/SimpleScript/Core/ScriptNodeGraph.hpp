@@ -4,7 +4,7 @@
 #include "Pin/PinManager.hpp"
 #include "Memory/ScriptMemoryArena.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class NodeManager;

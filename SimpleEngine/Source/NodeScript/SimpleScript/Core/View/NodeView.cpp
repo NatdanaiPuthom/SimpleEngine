@@ -3,7 +3,7 @@
 #include "../Global/ScriptGlobal.hpp"
 #include "../Node/NodeTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	NodeView::NodeView(const NodeID aNodeID, const NodeGraph& aNodeGraph)

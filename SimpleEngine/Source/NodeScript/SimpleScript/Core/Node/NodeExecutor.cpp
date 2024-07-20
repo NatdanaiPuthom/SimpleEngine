@@ -7,7 +7,7 @@
 #include "FlyClassInstance.hpp"
 #include "../Global/ScriptGlobal.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	NodeExecutor::NodeExecutor()

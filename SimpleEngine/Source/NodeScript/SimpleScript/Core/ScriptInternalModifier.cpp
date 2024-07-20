@@ -11,7 +11,7 @@
 #include "Global/ScriptGlobal.hpp"
 #include "ScriptFlow.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	namespace Internal

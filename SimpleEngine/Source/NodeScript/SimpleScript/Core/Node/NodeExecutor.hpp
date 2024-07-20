@@ -4,7 +4,7 @@
 #include "../ScriptCallStack.hpp"
 #include <unordered_set>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class EventGraph;

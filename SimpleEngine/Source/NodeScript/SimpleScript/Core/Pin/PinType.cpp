@@ -2,7 +2,7 @@
 #include "../DataType/DataTypeManager.hpp"
 #include "../Global/ScriptGlobal.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 

@@ -486,10 +486,10 @@ namespace ECS
 		return true;
 	}
 
-	bool ViewAndEditValue(SCRIPT::ClassInstance*& aScriptInstance, const std::string& /*aVariableName*/)
+	bool ViewAndEditValue(Fly::ClassInstance*& aClassInstance, const std::string& /*aVariableName*/)
 	{
-		SCRIPT::DataTypeManager& dataTypeManager = SCRIPT::Global::GetDataTypeManager();
-		SCRIPT::ScriptFoundation& scriptFoundation = SCRIPT::Global::GetFoundation();
+		Fly::DataTypeManager& dataTypeManager = Fly::Global::GetDataTypeManager();
+		Fly::ScriptFoundation& scriptFoundation = Fly::Global::GetFoundation();
 
 		const auto& scripts = scriptFoundation.GetScripts();
 
@@ -499,7 +499,7 @@ namespace ECS
 		{
 			for (auto& [dataTypeID, classesByTarget] : scripts)
 			{
-				const SCRIPT::DataType* dataType = dataTypeManager.Find(dataTypeID);
+				const Fly::DataType* dataType = dataTypeManager.Find(dataTypeID);
 				if (dataType == nullptr)
 				{
 					continue;
@@ -508,19 +508,19 @@ namespace ECS
 				for (auto& flyClass : classesByTarget)
 				{
 					bool isSelected = false;
-					if (aScriptInstance != nullptr)
+					if (aClassInstance != nullptr)
 					{
-						isSelected = aScriptInstance->mClass == flyClass.get();
+						isSelected = aClassInstance->mClass == flyClass.get();
 					}
 					if (ImGui::Selectable(flyClass->Name().c_str(), isSelected))
 					{
-						if (aScriptInstance != nullptr)
+						if (aClassInstance != nullptr)
 						{
-							flyClass->DestroyClassInstance(*aScriptInstance);
+							flyClass->DestroyClassInstance(*aClassInstance);
 
 						}
 
-						aScriptInstance = &flyClass->CreateClassInstance();
+						aClassInstance = &flyClass->CreateClassInstance();
 
 						wasChanged = true;
 					}

@@ -14,7 +14,7 @@
 
 struct ImNodesContext;
 
-namespace SCRIPT
+namespace Fly
 {
 	struct Color;
 	class ScriptManager;
@@ -29,23 +29,23 @@ namespace Editor
 	{
 		const std::string name;
 		std::vector<NodeTypeCategory> childCategories;
-		std::vector<SCRIPT::NodeTypeView> nodeTypes;
+		std::vector<Fly::NodeTypeView> nodeTypes;
 	};
 
-	inline static unsigned int ToImGuiColor(const SCRIPT::Color& aColor)
+	inline static unsigned int ToImGuiColor(const Fly::Color& aColor)
 	{
 		return IM_COL32(aColor.r * 255, aColor.g * 255, aColor.b * 255, 255);
 	}
 
 	struct NodeContext
 	{
-		SCRIPT::Class* script;
-		SCRIPT::NodeGraph* nodeGraph;
+		Fly::Class* flyClass;
+		Fly::NodeGraph* nodeGraph;
 
-		std::vector<SCRIPT::PinID> myPinIDsToHighlight;
-		std::unordered_map<SCRIPT::NodeID, SCRIPT::NodeDragData> myNodeDragData;
-		SCRIPT::PinID myLinkCreationPinID;
-		SCRIPT::PinID myStartedLinkPinID;
+		std::vector<Fly::PinID> myPinIDsToHighlight;
+		std::unordered_map<Fly::NodeID, Fly::NodeDragData> myNodeDragData;
+		Fly::PinID myLinkCreationPinID;
+		Fly::PinID myStartedLinkPinID;
 	};
 
 	struct NodeContextHistory
@@ -54,7 +54,7 @@ namespace Editor
 		std::vector<NodeContext> history;
 	};
 
-	inline SCRIPT::Vec2 ToScriptVec2(ImVec2 aVec)
+	inline Fly::Vec2 ToScriptVec2(ImVec2 aVec)
 	{
 		return { aVec.x, aVec.y };
 	}
@@ -76,7 +76,7 @@ namespace Editor
 
 		NodeContext& GetNodeContext();
 		const NodeContext& GetNodeContext() const;
-		void SetNodeContext(SCRIPT::NodeGraph& aNodeGraph, SCRIPT::Class* aScript);
+		void SetNodeContext(Fly::NodeGraph& aNodeGraph, Fly::Class* aScript);
 		eScriptMode GetCurrentMode() const;
 
 		void UpdateContext();
@@ -91,13 +91,13 @@ namespace Editor
 
 		ImVec2 GetMiddlePos() const;
 
-		SCRIPT::FunctionID GetCurrentFunctionID() const;
+		Fly::FunctionID GetCurrentFunctionID() const;
 
 	private:
-		void ShowNodeTypeCreationMenu(const std::vector<SCRIPT::NodeTypeView>& aNodeTypeIDs, const std::function<void(const SCRIPT::NodeTypeView&)>& aOnClickFunc);
-		void ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(const SCRIPT::NodeTypeView&)>& aOnClickFunc);
-		void ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(const SCRIPT::NodeTypeView&)>& aOnClickFunction);
-		void PopulateCategories(const std::string& aName, const SCRIPT::NodeTypeView& aNodeType, NodeTypeCategory& aCategory);
+		void ShowNodeTypeCreationMenu(const std::vector<Fly::NodeTypeView>& aNodeTypeIDs, const std::function<void(const Fly::NodeTypeView&)>& aOnClickFunc);
+		void ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(const Fly::NodeTypeView&)>& aOnClickFunc);
+		void ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(const Fly::NodeTypeView&)>& aOnClickFunction);
+		void PopulateCategories(const std::string& aName, const Fly::NodeTypeView& aNodeType, NodeTypeCategory& aCategory);
 
 		void UpdateClickPos();
 		ImVec2 GetMousePos() const;
@@ -106,9 +106,9 @@ namespace Editor
 		char myScriptNameText[TEXT_MAX_LENGTH] = "";
 		char myNodeTypeSearch[TEXT_MAX_LENGTH] = "";
 
-		std::unique_ptr<SCRIPT::CommandTracker> myCommandTracker;
+		std::unique_ptr<Fly::CommandTracker> myCommandTracker;
 
-		std::unordered_map<const SCRIPT::NodeGraph*, ImNodesContext*> myImNodesContexts;
+		std::unordered_map<const Fly::NodeGraph*, ImNodesContext*> myImNodesContexts;
 
 		
 
@@ -125,12 +125,12 @@ namespace Editor
 		ImVec2 myDragStartPos;
 		ImVec2 myDragEndPos;
 
-		SCRIPT::PinID myHoveredLinkID = SCRIPT::InvalidID<SCRIPT::PinID>();
-		SCRIPT::PinID myHoveredPinID = SCRIPT::InvalidID<SCRIPT::PinID>();
+		Fly::PinID myHoveredLinkID = Fly::InvalidID<Fly::PinID>();
+		Fly::PinID myHoveredPinID = Fly::InvalidID<Fly::PinID>();
 
 		bool myIsContextSensitive = false;
 
-		SCRIPT::FunctionID mySelectedFunctionID = SCRIPT::InvalidID<SCRIPT::FunctionID>();
+		Fly::FunctionID mySelectedFunctionID = Fly::InvalidID<Fly::FunctionID>();
 
 		static constexpr const char* SCRIPT_FILE_PATH = "Assets/Scripts/";
 

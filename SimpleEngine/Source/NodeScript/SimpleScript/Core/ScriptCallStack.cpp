@@ -2,7 +2,7 @@
 #include "ScriptNodeGraph.hpp"
 #include "ScriptProxy.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	CallStack::CallStack()
 	{

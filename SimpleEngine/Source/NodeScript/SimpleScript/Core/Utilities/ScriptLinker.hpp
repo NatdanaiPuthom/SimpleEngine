@@ -3,7 +3,7 @@
 #include "../Pin/Pin.hpp"
 #include "../Pin/PinType.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class Class;

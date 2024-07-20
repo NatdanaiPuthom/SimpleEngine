@@ -2,7 +2,7 @@
 #include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
 #include "Engine/ECS/Reflection/ECSReflection.hpp"
 
-namespace SCRIPT
+namespace Fly
 {
 	REGISTER_DATATYPE_POINTER(ClassInstance);
 }
@@ -12,7 +12,7 @@ namespace ECS
 	
 	struct ScriptComponent final
 	{
-		SCRIPT::ClassInstance* classInstance;
+		Fly::ClassInstance* classInstance;
 	};
 }
 

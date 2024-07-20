@@ -3,7 +3,7 @@
 #include "Node.hpp"
 #include <vector>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class Class;

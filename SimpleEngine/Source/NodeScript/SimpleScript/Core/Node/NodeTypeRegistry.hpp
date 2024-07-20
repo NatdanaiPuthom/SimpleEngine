@@ -8,7 +8,7 @@
 #include "../DataType/DataTypeManager.hpp"
 #include "FlyClassInstance.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	inline NodeTypeID RegisterInternal(NodeRecipe&& aNodeRecipe, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
 	{
@@ -204,7 +204,7 @@ namespace SCR
 		volatile inline RegisterFunctionNode(FuncPtr<OutputType, InputTypes...> function, const std::string& functionName)
 		{
 			NodeCreationData nodeCreationData;
-			SCRIPT::NodeTypeRegistry::RegisterNodeType(function, functionName, nodeCreationData);
+			NodeTypeRegistry::RegisterNodeType(function, functionName, nodeCreationData);
 		}
 
 		template<typename... Traits>
@@ -221,7 +221,7 @@ namespace SCR
 				EventID mEventID = std::hash<decltype(function)>()(function);
 				nodeCreationData.mEventID = mEventID;
 			}
-			SCRIPT::NodeTypeRegistry::RegisterNodeType(function, functionName, nodeCreationData);
+			NodeTypeRegistry::RegisterNodeType(function, functionName, nodeCreationData);
 		}
 	};
 
@@ -235,4 +235,4 @@ namespace SCR
 #define FLY_UNIQUE_NAME(base) FLY_CONCATENATE(base, __COUNTER__)
 
 #define REGISTER_FUNCTION(function, directory, ...) \
-    inline static SCRIPT::RegisterFunctionNode<decltype(&function)> FLY_UNIQUE_NAME(fly_function)(function, directory"/"#function, SCRIPT::TypeList<__VA_ARGS__>());
+    inline static Fly::RegisterFunctionNode<decltype(&function)> FLY_UNIQUE_NAME(fly_function)(function, directory"/"#function, Fly::TypeList<__VA_ARGS__>());

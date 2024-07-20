@@ -4,7 +4,7 @@
 #include "../Pin/PinTypeManager.hpp"
 #include "ScriptProxy.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	PinID ScriptLinker::GetPinID(const NodeGraph& aNodeGraph, const NodeID aNodeID, const size_t aPinIndex, const eFlowType aPinFlowType)

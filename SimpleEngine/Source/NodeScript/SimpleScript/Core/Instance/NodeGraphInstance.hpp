@@ -2,7 +2,7 @@
 #include "../ScriptDefines.hpp"
 #include "NodeManagerInstance.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class NodeGraphInstance final

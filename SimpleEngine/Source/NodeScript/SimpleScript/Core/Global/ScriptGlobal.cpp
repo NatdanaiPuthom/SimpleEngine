@@ -6,7 +6,7 @@
 #include "Type/ScriptTypeManager.hpp"
 #include "../ScriptCopyBuffer.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	namespace Global
 	{

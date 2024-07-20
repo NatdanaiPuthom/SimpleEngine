@@ -4,7 +4,7 @@
 #include "../Pin/PinTypeManager.hpp"
 #include "../DataType/DataTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	PinView::PinView(const PinID aPinID, const NodeGraph& aNodeGraph)

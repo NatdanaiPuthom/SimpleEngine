@@ -1,7 +1,7 @@
 #include "CustomEvent.hpp"
 #include "../Node/NodeTypeRegistry.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	static void CustomEventCallerNode(const InternalExecutionContext* aContext)

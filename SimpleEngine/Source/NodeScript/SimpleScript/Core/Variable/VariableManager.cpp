@@ -1,7 +1,7 @@
 #include "VariableManager.hpp"
 #include "ScriptMemoryArena.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	VariableManager::VariableManager()

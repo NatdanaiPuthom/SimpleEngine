@@ -3,7 +3,7 @@
 #include "FlyClass.hpp"
 #include "ScriptModifier.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	static Flow CallerNode(const InternalExecutionContext* aContext, Flow)

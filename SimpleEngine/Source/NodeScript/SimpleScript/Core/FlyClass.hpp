@@ -4,7 +4,7 @@
 #include "ScriptNodeGraph.hpp"
 #include "EventGraph.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class CommandTracker;

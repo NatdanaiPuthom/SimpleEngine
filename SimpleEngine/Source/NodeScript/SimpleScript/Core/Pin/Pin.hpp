@@ -2,7 +2,7 @@
 #include "../ScriptDefines.hpp"
 #include <vector>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	struct Pin final

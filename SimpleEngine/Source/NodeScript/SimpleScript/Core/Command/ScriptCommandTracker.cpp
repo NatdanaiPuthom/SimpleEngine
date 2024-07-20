@@ -1,7 +1,7 @@
 #include "ScriptCommandTracker.hpp"
 #include "ScriptCompositeCommand.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	CommandTracker::CommandTracker()
 	{

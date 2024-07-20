@@ -1,6 +1,6 @@
 #include "NodeCreator.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	PinSetFunction CreatePinSetFunction()

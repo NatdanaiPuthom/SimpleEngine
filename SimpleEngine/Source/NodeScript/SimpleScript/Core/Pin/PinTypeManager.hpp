@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	class PinTypeManager
 	{

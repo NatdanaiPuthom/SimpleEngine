@@ -1,15 +1,13 @@
 #pragma once
 
-namespace SCRIPT
+
+class SimpleNodeScript final
 {
-	class SimpleNodeScript final
-	{
-	public:
-		SimpleNodeScript();
-		~SimpleNodeScript();
+public:
+	SimpleNodeScript();
+	~SimpleNodeScript();
 
-		void Init();
+	void Init();
 
-		static constexpr const char* SCRIPT_FILE_PATH = "Assets/Scripts/";
-	};
-}
+	static constexpr const char* SCRIPT_FILE_PATH = "Assets/Scripts/";
+};

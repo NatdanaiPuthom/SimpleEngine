@@ -3,7 +3,7 @@
 #include "../Memory/ScriptMemoryArena.hpp"
 #include <unordered_map>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	class NodeManager;
 

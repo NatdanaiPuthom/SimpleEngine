@@ -4,7 +4,7 @@
 #include "../DataType/DataTypeManager.hpp"
 #include "../Node/NodeTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	NodeManagerInstance::NodeManagerInstance()

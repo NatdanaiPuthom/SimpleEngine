@@ -4,7 +4,7 @@
 #include "NodeView.hpp"
 #include "NodeTypeView.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	
 	class FunctionView final

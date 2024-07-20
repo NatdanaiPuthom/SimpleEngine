@@ -9,7 +9,7 @@ concept Editable3 = requires(T & aValue)
 	{ Edit(aValue) } -> std::same_as<bool>;
 };
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	template <typename... Types>
 	concept EmptyParameterPack = sizeof...(Types) == 0;

@@ -2,7 +2,7 @@
 #include "Core/Node/NodeTypeRegistry.hpp"
 #include "Core/Type/ScriptTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	NodeTypeManager::NodeTypeManager()

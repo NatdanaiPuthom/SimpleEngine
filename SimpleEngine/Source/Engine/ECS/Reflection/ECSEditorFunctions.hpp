@@ -18,9 +18,9 @@ namespace Graphics
 	struct Animation;
 }
 
-namespace SCRIPT
+namespace Fly
 {
-	class ScriptInstance;
+	class ClassInstance;
 }
 
 namespace ECS
@@ -63,7 +63,7 @@ namespace ECS
 	bool ViewAndEditValue(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName);
 	bool ViewAndEditValue(const Graphics::Animation*& aAnimation, const std::string& aVariableName);
 
-	bool ViewAndEditValue(SCRIPT::ScriptInstance*& aScriptInstance, const std::string& aVariableName);
+	bool ViewAndEditValue(Fly::ClassInstance*& aClassInstance, const std::string& aVariableName);
 
 	bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName);
 

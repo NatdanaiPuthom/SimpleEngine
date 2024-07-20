@@ -2,7 +2,7 @@
 #include "ScriptDefines.hpp"
 #include "ScriptNodeGraph.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class EventGraph final : public NodeGraph

@@ -3,7 +3,7 @@
 #include "../Pin/Pin.hpp"
 #include "PinView.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class NodeGraph;

@@ -2,7 +2,7 @@
 #include "../ScriptDefines.h"
 #include "../SystemTypes/ReferenceWrapper.h"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	template<typename... Types>

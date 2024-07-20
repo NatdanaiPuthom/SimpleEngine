@@ -156,7 +156,7 @@ namespace std
 }
 
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	

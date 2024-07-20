@@ -21,7 +21,7 @@ namespace Editor
 
 	void FunctionSettingsWindow::Update()
 	{
-		if (myParent.GetCurrentFunctionID() == SCRIPT::InvalidID<SCRIPT::FunctionID>())
+		if (myParent.GetCurrentFunctionID() == Fly::InvalidID<Fly::FunctionID>())
 		{
 			return;
 		}
@@ -32,11 +32,11 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button("Add Input"))
 			{
-				SCRIPT::AddPinToFunction(myParent.GetCurrentFunctionID(), SCRIPT::GetDataTypeID<bool>(), SCRIPT::eFlowType::Input);
+				Fly::AddPinToFunction(myParent.GetCurrentFunctionID(), Fly::GetDataTypeID<bool>(), Fly::eFlowType::Input);
 			}
 			ImGui::Separator();
 
-			ShowInputOutput(SCRIPT::eFlowType::Input);
+			ShowInputOutput(Fly::eFlowType::Input);
 
 			ImGui::Separator();
 			ImGui::Spacing();
@@ -44,31 +44,31 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button("Add Output"))
 			{
-				SCRIPT::AddPinToFunction(myParent.GetCurrentFunctionID(), SCRIPT::GetDataTypeID<bool>(), SCRIPT::eFlowType::Output);
+				Fly::AddPinToFunction(myParent.GetCurrentFunctionID(), Fly::GetDataTypeID<bool>(), Fly::eFlowType::Output);
 			}
 			ImGui::Separator();
 
-			ShowInputOutput(SCRIPT::eFlowType::Output);
+			ShowInputOutput(Fly::eFlowType::Output);
 
 
 		}
 		ImGui::End();
 	}
 
-	void FunctionSettingsWindow::ShowInputOutput(const SCRIPT::eFlowType aFlowType)
+	void FunctionSettingsWindow::ShowInputOutput(const Fly::eFlowType aFlowType)
 	{
-		SCRIPT::DataTypeManager& dataTypeManager = SCRIPT::Global::GetDataTypeManager();
+		Fly::DataTypeManager& dataTypeManager = Fly::Global::GetDataTypeManager();
 
-		const SCRIPT::FunctionView function(myParent.GetCurrentFunctionID());
-		const SCRIPT::NodeTypeView callerNodeType = function.GetCallerNodeType();
+		const Fly::FunctionView function(myParent.GetCurrentFunctionID());
+		const Fly::NodeTypeView callerNodeType = function.GetCallerNodeType();
 
-		const std::vector<SCRIPT::PinTypeView> pinTypes = SCRIPT::SelectByFlowType(aFlowType, callerNodeType.GetInputPinTypes(), callerNodeType.GetOutputPinTypes());
+		const std::vector<Fly::PinTypeView> pinTypes = Fly::SelectByFlowType(aFlowType, callerNodeType.GetInputPinTypes(), callerNodeType.GetOutputPinTypes());
 		for (size_t i = 0; i < pinTypes.size(); ++i)
 		{
-			const SCRIPT::PinTypeView& pinType = pinTypes[i];
-			const SCRIPT::DataType* pinTypeDataType = dataTypeManager.Find(pinType.GetDataTypeID());
+			const Fly::PinTypeView& pinType = pinTypes[i];
+			const Fly::DataType* pinTypeDataType = dataTypeManager.Find(pinType.GetDataTypeID());
 			constexpr static const char* comboLabel1 = "Data Type##FunctionSettings_";
-			const std::string inputOutputLabel = SCRIPT::SelectByFlowType(aFlowType, std::string("Input"), std::string("Output"));
+			const std::string inputOutputLabel = Fly::SelectByFlowType(aFlowType, std::string("Input"), std::string("Output"));
 			const std::string comboLabel = comboLabel1 + inputOutputLabel + std::to_string(i);
 			if (ImGui::BeginCombo(comboLabel.c_str(), pinTypeDataType->mName.c_str()))
 			{
@@ -77,7 +77,7 @@ namespace Editor
 				{
 					if (ImGui::Selectable(dataType.mName.c_str()))
 					{
-						SCRIPT::SetPinAtIndexFunction(myParent.GetCurrentFunctionID(), i, dataTypeID, aFlowType);
+						Fly::SetPinAtIndexFunction(myParent.GetCurrentFunctionID(), i, dataTypeID, aFlowType);
 					}
 					++dataTypeIndex;
 				}

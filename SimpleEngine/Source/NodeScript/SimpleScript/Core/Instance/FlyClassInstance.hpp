@@ -3,7 +3,7 @@
 #include "VariableManagerInstance.hpp"
 #include "NodeGraphInstance.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class Class;

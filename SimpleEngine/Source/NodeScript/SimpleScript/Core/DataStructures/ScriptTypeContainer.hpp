@@ -2,7 +2,7 @@
 #include "../ScriptDefines.hpp"
 #include <functional>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	
 	template<typename IDType, typename T, typename Type>

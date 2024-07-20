@@ -1,7 +1,7 @@
 #include "VariableView.hpp"
 #include "FlyClass.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	VariableView::VariableView(VarID aVarID, const Class& aClass)

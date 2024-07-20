@@ -1,7 +1,7 @@
 #include "UtilityNodes.hpp"
 #include "../Node/NodeTypeRegistry.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	template<typename T, typename U>

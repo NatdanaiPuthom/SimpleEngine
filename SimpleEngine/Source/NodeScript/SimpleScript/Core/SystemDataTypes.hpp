@@ -156,7 +156,7 @@ namespace std
 		}
 	}
 
-	template<SCR::HasOperator_Print T>
+	template<FLY_NAMESPACE::HasOperator_Print T>
 	std::ostream& operator<<(std::ostream& aOStream, const std::vector<T>& aData)
 	{
 		for (const T& value : aData)
@@ -168,7 +168,7 @@ namespace std
 
 }
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.75f, 0.75f, 0.75f));

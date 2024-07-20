@@ -2,7 +2,7 @@
 #include "../Node/NodeTypeRegistry.hpp"
 #include <random>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	template<std::integral T>

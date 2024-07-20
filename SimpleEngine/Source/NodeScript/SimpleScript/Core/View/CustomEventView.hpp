@@ -3,7 +3,7 @@
 #include "../CustomEvent/CustomEvent.hpp"
 #include "NodeTypeView.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	class CustomEventView final
 	{

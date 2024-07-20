@@ -3,7 +3,7 @@
 #include "../ScriptNodeGraph.hpp"
 #include "../Node/NodeRef.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	class Class;
 

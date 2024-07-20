@@ -5,7 +5,7 @@
 #include "../Node/Node.hpp"
 #include "Global/ScriptGlobal.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	ScriptFilter::~ScriptFilter()

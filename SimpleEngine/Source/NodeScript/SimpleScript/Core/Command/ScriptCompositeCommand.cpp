@@ -1,6 +1,6 @@
 #include "ScriptCompositeCommand.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	CompositeCommand::CompositeCommand(const std::string& aName)

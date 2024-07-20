@@ -2,7 +2,7 @@
 #include "../FlyClass.hpp"
 #include "ScriptProxy.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	ClassInstance::ClassInstance()

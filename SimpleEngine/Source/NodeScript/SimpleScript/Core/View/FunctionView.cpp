@@ -2,7 +2,7 @@
 #include "../Global/ScriptGlobal.hpp"
 #include "../Node/NodeTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	FunctionView::FunctionView(const FunctionID aFunctionID)

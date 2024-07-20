@@ -3,7 +3,7 @@
 #include "Memory/ScriptMemoryArena.hpp"
 #include <memory>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	class NodeExecutor;
 	class TypeManager;

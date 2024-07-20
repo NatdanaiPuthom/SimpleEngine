@@ -4,7 +4,7 @@
 #include "../SystemTypes/ScriptFlow.hpp"
 #include "../Node/NodeState.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	std::tuple<Flow, float> Tick(NodeExecutionContext<ExecutionContextBase> aContext);
 	Flow BeginPlay();

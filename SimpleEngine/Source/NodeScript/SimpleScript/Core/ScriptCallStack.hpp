@@ -3,7 +3,7 @@
 #include "Node/NodeRef.hpp"
 #include <stack>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class NodeGraph;

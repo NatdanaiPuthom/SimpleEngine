@@ -10,7 +10,7 @@
 #include "ScriptFoundation.hpp"
 #include "Serialization/ScriptLoader.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	namespace Internal

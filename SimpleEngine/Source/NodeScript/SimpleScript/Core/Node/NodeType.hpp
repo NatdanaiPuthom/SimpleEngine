@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	struct NodeRecipe
 	{

@@ -18,7 +18,7 @@
 #include "../Instance/FlyClassInstance.hpp"
 #include "../SystemTypes/ReferenceWrapper.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	PinSetFunction CreatePinSetFunction();

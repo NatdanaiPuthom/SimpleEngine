@@ -4,7 +4,7 @@
 #include "../DataType/DataTypeRegistry.hpp"
 #include <imgui.h>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	struct WaveData
 	{
@@ -54,13 +54,13 @@ namespace SCR
 	{
 		switch (aWaveType)
 		{
-		case SCRIPT::eWaveType::Sine:
+		case eWaveType::Sine:
 			return std::sinf(aValue);
 			break;
-		case SCRIPT::eWaveType::Cos:
+		case eWaveType::Cos:
 			return std::cosf(aValue);
 			break;
-		case SCRIPT::eWaveType::Linear:
+		case eWaveType::Linear:
 			return aValue;
 			break;
 		case eWaveType::Triangle:
@@ -112,6 +112,6 @@ namespace SCR
 	REGISTER_FUNCTION(acosf, "Utility/Math");
 	REGISTER_FUNCTION(Wave, "Utility/Math");
 
-	FLY_DATATYPE(WaveTypeData, SCRIPT::eNodeOperatorTrait::None, SCRIPT::DefaultColor);
+	FLY_DATATYPE(WaveTypeData, eNodeOperatorTrait::None, DefaultColor);
 }
 

@@ -1,7 +1,7 @@
 #include "ScriptMemoryArena.hpp"
 #include <cassert>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	MemoryPool::MemoryPool(const size_t aDefaultCapacity)

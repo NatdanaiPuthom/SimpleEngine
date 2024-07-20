@@ -1,7 +1,7 @@
 #pragma once
 #include "../ScriptDefines.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	template<typename T>
 	struct NodeState final

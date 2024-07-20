@@ -2,7 +2,7 @@
 #include "../ScriptDefines.hpp"
 #include <iostream>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	struct Vec2
 	{

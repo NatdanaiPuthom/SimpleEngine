@@ -5,7 +5,7 @@
 #include "../Node/NodeManager.hpp"
 #include "../Pin/PinManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	MemoryPool& ScriptProxy::GetGlobalMemoryPool()

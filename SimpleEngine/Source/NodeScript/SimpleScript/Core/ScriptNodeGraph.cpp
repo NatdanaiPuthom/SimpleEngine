@@ -4,7 +4,7 @@
 #include "Global/ScriptGlobal.hpp"
 #include "Node/NodeTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	NodeGraph::NodeGraph(const eNodeGraphType aType)

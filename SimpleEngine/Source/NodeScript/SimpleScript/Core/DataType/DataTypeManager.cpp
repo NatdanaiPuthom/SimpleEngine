@@ -1,6 +1,6 @@
 #include "DataTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	DataTypeManager::DataTypeManager()

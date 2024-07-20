@@ -2,7 +2,7 @@
 #include "../Node/NodeTypeManager.hpp"
 #include "../Global/ScriptGlobal.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	CustomEventView::CustomEventView(CustomEventID anID)

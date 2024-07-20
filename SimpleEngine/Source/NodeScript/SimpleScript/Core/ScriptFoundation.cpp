@@ -6,7 +6,7 @@
 #include "Node/NodeExecutor.hpp"
 #include "Type/ScriptTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	void ScriptFoundation::Destroy()
 	{

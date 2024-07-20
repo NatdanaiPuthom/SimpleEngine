@@ -5,7 +5,7 @@
 #include "../Memory/ScriptMemoryArena.hpp"
 #include <nlohmann/json.hpp>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	template<typename T>
 	concept Fundamental = std::is_fundamental_v<T>;

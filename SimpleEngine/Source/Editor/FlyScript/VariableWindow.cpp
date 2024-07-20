@@ -18,20 +18,20 @@ namespace Editor
 
 	void VariableWindow::Update()
 	{
-		SCRIPT::Class& currentScript = *myParentWindow.GetNodeContext().script;
+		Fly::Class& currentScript = *myParentWindow.GetNodeContext().flyClass;
 
 		if (ImGui::Begin("VariableWindow"))
 		{
 			if (ImGui::Button("Create Variable"))
 			{
 				
-				SCRIPT::CreateVariable(*myParentWindow.GetNodeContext().script);
+				Fly::CreateVariable(*myParentWindow.GetNodeContext().flyClass);
 			}
 
 			ImGui::Separator();
 
-			std::vector<SCRIPT::VariableView> variables = SCRIPT::GetVariables(currentScript);
-			for (const SCRIPT::VariableView& variable : variables)
+			std::vector<Fly::VariableView> variables = Fly::GetVariables(currentScript);
+			for (const Fly::VariableView& variable : variables)
 			{
 				const std::string treeNodeStrID = std::string("##ScriptVariable" + std::to_string(variable.GetID()));
 				if (ImGui::TreeNode(treeNodeStrID.c_str(), variable.GetName().c_str()))
@@ -39,7 +39,7 @@ namespace Editor
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(SCRIPT::Global::GetDataTypeManager().GetColor(variable.GetDataTypeID()))));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::Global::GetDataTypeManager().GetColor(variable.GetDataTypeID()))));
 					ImGui::EndDisabled();
 
 					ModifyVariablePopup(variable);
@@ -51,7 +51,7 @@ namespace Editor
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(SCRIPT::Global::GetDataTypeManager().GetColor(variable.GetDataTypeID()))));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::Global::GetDataTypeManager().GetColor(variable.GetDataTypeID()))));
 					ImGui::EndDisabled();
 				}
 
@@ -65,23 +65,23 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void VariableWindow::ModifyVariablePopup(const SCRIPT::VariableView& aVariable)
+	void VariableWindow::ModifyVariablePopup(const Fly::VariableView& aVariable)
 	{
 		char buffer[35]{};
 		strcpy_s(buffer, aVariable.GetName().c_str());
 
 		if (ImGui::InputText("##VariableName", buffer, IM_ARRAYSIZE(buffer)))
 		{
-			SetVariableName(aVariable.GetID(), buffer, *myParentWindow.GetNodeContext().script);
+			SetVariableName(aVariable.GetID(), buffer, *myParentWindow.GetNodeContext().flyClass);
 		}
 
 		int currentSelectedIndex = 0;
 
-		std::vector<SCRIPT::DataTypeID> dataTypeIDs;
+		std::vector<Fly::DataTypeID> dataTypeIDs;
 		std::stringstream ss;
 
 		int i = 0;
-		for (const auto& [dataTypeID, obj] : SCRIPT::Global::GetDataTypeManager().GetDataTypes())
+		for (const auto& [dataTypeID, obj] : Fly::Global::GetDataTypeManager().GetDataTypes())
 		{
 			ss << obj.mName << '\0';
 			dataTypeIDs.push_back(dataTypeID);
@@ -98,18 +98,18 @@ namespace Editor
 
 		if (ImGui::Combo("##ChangeDataType", &currentSelectedIndex, names.c_str()))
 		{
-			SetVariableDataType(aVariable.GetID(), dataTypeIDs.at(currentSelectedIndex), *myParentWindow.GetNodeContext().script, nullptr);
+			SetVariableDataType(aVariable.GetID(), dataTypeIDs.at(currentSelectedIndex), *myParentWindow.GetNodeContext().flyClass, nullptr);
 		}
 
 		ImGui::Text("Default value:");
 		ImGui::SameLine();
-		EditVariableDefaultValue(aVariable.GetID(), *myParentWindow.GetNodeContext().script, nullptr);
+		EditVariableDefaultValue(aVariable.GetID(), *myParentWindow.GetNodeContext().flyClass, nullptr);
 
 		ImGui::Separator();
 
 		if (ImGui::Button("Create Getter"))
 		{
-			CreateGetterNode(*myParentWindow.GetNodeContext().script, *myParentWindow.GetNodeContext().nodeGraph, aVariable.GetID());
+			CreateGetterNode(*myParentWindow.GetNodeContext().flyClass, *myParentWindow.GetNodeContext().nodeGraph, aVariable.GetID());
 			ImGui::CloseCurrentPopup();
 
 		}
@@ -118,12 +118,12 @@ namespace Editor
 
 		if (ImGui::Button("Create Setter"))
 		{
-			CreateSetterNode(*myParentWindow.GetNodeContext().script, *myParentWindow.GetNodeContext().nodeGraph, aVariable.GetID());
+			CreateSetterNode(*myParentWindow.GetNodeContext().flyClass, *myParentWindow.GetNodeContext().nodeGraph, aVariable.GetID());
 		}
 
 		if (ImGui::Button("Delete Variable"))
 		{
-			DestroyVariable(aVariable.GetID(), *myParentWindow.GetNodeContext().script, nullptr);
+			DestroyVariable(aVariable.GetID(), *myParentWindow.GetNodeContext().flyClass, nullptr);
 		}
 	}
 }

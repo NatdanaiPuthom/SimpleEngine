@@ -1,7 +1,7 @@
 #pragma once
 #include "../ScriptDefines.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class ScriptFoundation;

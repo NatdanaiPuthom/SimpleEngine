@@ -1,7 +1,7 @@
 #pragma once
 #include "ScriptDefines.h"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	template<CleanType T>

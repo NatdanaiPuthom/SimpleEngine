@@ -1,6 +1,6 @@
 #include "ScriptTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	TypeManager::TypeManager()

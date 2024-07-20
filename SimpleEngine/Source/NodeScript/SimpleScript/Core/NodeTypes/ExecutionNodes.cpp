@@ -1,7 +1,7 @@
 #include "ExecutionNodes.hpp"
 #include "../Node/NodeTypeRegistry.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	std::tuple<Flow, float> Tick(NodeExecutionContext<ExecutionContextBase> aContext)

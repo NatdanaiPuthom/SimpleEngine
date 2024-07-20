@@ -11,7 +11,7 @@
 #include "View/CustomEventView.hpp"
 #include <unordered_map>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	struct NodeDragData

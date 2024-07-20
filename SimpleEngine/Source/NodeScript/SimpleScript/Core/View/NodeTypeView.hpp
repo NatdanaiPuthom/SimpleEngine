@@ -3,7 +3,7 @@
 #include "../Node/NodeType.hpp"
 #include "PinTypeView.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class NodeTypeView final

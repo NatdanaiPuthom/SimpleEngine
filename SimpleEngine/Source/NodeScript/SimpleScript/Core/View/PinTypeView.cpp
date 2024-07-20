@@ -2,7 +2,7 @@
 #include "../Global/ScriptGlobal.hpp"
 #include "../Pin/PinTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	PinTypeView::PinTypeView(PinTypeID anID)

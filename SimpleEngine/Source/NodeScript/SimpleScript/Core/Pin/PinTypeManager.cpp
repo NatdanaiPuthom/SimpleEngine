@@ -1,6 +1,6 @@
 #include "PinTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	PinTypeManager::PinTypeManager()

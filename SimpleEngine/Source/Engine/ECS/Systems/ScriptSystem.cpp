@@ -20,12 +20,12 @@ namespace ECS
 
 			ScriptComponent* const scriptComponent = entity.GetComponent<ScriptComponent>();
 
-			const SCRIPT::ExecutionContextBase executionContext
+			const Fly::ExecutionContextBase executionContext
 			{
 				.mDeltaTime = Global::GetDeltaTime()
 			};
 
-			SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::Tick, *scriptComponent->classInstance, &entity, executionContext, true);
+			Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::Tick, *scriptComponent->classInstance, &entity, executionContext, true);
 		}
 	}
 

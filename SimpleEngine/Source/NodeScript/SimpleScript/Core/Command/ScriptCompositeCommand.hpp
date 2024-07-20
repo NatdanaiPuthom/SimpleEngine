@@ -2,7 +2,7 @@
 #include "ScriptCommand.hpp"
 #include <vector>
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	class CompositeCommand final

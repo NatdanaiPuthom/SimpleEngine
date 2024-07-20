@@ -4,7 +4,7 @@
 #include "NodeTypeManager.hpp"
 #include "PinTypeManager.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 
 	

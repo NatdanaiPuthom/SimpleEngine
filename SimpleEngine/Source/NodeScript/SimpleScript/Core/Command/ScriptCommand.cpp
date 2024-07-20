@@ -2,7 +2,7 @@
 #include "ScriptCommandTracker.hpp"
 #include "../Global/ScriptGlobal.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	Command::Command(const Command& aOther)
 		: mName(aOther.mName)

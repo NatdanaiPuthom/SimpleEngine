@@ -1,7 +1,7 @@
 #include "NodeGraphInstance.hpp"
 #include "../ScriptNodeGraph.hpp"
 
-namespace SCR
+namespace FLY_NAMESPACE
 {
 	NodeGraphInstance::NodeGraphInstance()
 	{

@@ -1,7 +1,7 @@
 #pragma once
 #include "NodeScript/SimpleScript/Core/ScriptDefines.hpp"
 
-namespace SCRIPT
+namespace Fly
 {
 	class CustomEventView;
 }
@@ -20,7 +20,7 @@ namespace Editor
 
 	private:
 
-		void EditInputs(const SCRIPT::CustomEventView& aCustomEventView);
+		void EditInputs(const Fly::CustomEventView& aCustomEventView);
 
 	private:
 
