@@ -1,5 +1,6 @@
-#include "CustomEvent.h"
-#include "../Node/NodeTypeRegistry.h"
+#include "CustomEvent.hpp"
+#include "../Node/NodeTypeRegistry.hpp"
+
 namespace SCR
 {
 
@@ -8,23 +9,23 @@ namespace SCR
 		// Sets the values of the custom 
 
 
-		const NodeID callerNodeID = aContext->GetNodeData().nodeRef.nodeID;
+		const NodeID callerNodeID = aContext->GetNodeData().mNodeRef.mNodeID;
 
-		const Node& callerNode = ScriptProxy::GetNode(*aContext->nodeData.nodeRef.nodeGraph, callerNodeID);
-		const CustomEventID customEventID = NodeTypeManager::GetInstance().GetCustomEventID(callerNode.typeID);
+		const Node& callerNode = aContext->mNodeData.mNodeRef.mNodeGraph->mNodeManager->mNodes[callerNodeID];
+		const CustomEventID customEventID = Global::GetNodeTypeManager().GetCustomEventID(callerNode.mTypeID);
 
-		const CustomEvent& customEvent = NodeTypeManager::GetInstance().GetCustomEvent(customEventID);
+		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(customEventID);
 
 		const NodeType& executorNodeType = Global::GetNodeTypeManager().GetNodeType(customEvent.GetExecutorTypeID());
-		const std::vector<NodeRef>& executorNodeRefs = executorNodeType.nodeRefs;
+		const std::vector<NodeRef>& executorNodeRefs = executorNodeType.mNodeRefs;
 
 		for (const NodeRef& executorNodeRef : executorNodeRefs)
 		{
-			aContext->executionQueue->Push(NodeExecutionData{ executorNodeRef, eNodeTriggerReason::Flow });
+			aContext->mExecutionQueue->Push(NodeExecutionData{ executorNodeRef, eNodeTriggerReason::Flow });
 
-			const Node& executorNode = ScriptProxy::GetNode(*executorNodeRef.nodeGraph, executorNodeRef.nodeID);
+			const Node& executorNode = ScriptProxy::GetNode(*executorNodeRef.mNodeGraph, executorNodeRef.mNodeID);
 
-			CopyPinData(*aContext, executorNode.outputPins, callerNode.inputPins, *executorNodeRef.nodeGraph, *aContext->nodeData.nodeRef.nodeGraph, 1);
+			CopyPinData(*aContext, executorNode.mOutputPins, callerNode.mInputPins, *executorNodeRef.mNodeGraph, *aContext->mNodeData.mNodeRef.mNodeGraph, 1);
 
 		}
 	}
@@ -37,8 +38,8 @@ namespace SCR
 
 	CustomEvent::CustomEvent(std::string_view aName)
 	{
-		myCallerTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent | eNodeTrait::HasImplicitFlow>(CustomEventCallerNode, "CustomEvent/Call " + std::string(aName), NodeCreationData{ /*.hasImplicitFlow = true*/ });
-		myExecutorTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent>(CustomEventExecutorNode, "CustomEvent/" + std::string(aName));
+		mCallerTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent | eNodeTrait::HasImplicitFlow>(CustomEventCallerNode, "CustomEvent/Call " + std::string(aName), NodeCreationData{ /*.hasImplicitFlow = true*/ });
+		mExecutorTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent>(CustomEventExecutorNode, "CustomEvent/" + std::string(aName));
 	}
 
 	CustomEvent::~CustomEvent()

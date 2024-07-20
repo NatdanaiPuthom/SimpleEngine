@@ -1,5 +1,5 @@
-#include "UtilityNodes.h"
-#include "../Node/NodeTypeRegistry.h"
+#include "UtilityNodes.hpp"
+#include "../Node/NodeTypeRegistry.hpp"
 
 namespace SCR
 {

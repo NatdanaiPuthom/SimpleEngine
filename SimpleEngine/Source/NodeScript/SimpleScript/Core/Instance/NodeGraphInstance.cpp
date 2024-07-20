@@ -1,5 +1,5 @@
-#include "NodeGraphInstance.h"
-#include "../ScriptNodeGraph.h"
+#include "NodeGraphInstance.hpp"
+#include "../ScriptNodeGraph.hpp"
 
 namespace SCR
 {
@@ -13,7 +13,7 @@ namespace SCR
 
 	void NodeGraphInstance::Init(const NodeGraph& aNodeGraph)
 	{
-		myNodeManagerInstance.Init(*aNodeGraph.myNodeManager);
+		mNodeManagerInstance.Init(*aNodeGraph.mNodeManager);
 	}
 }
 

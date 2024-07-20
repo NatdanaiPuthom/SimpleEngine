@@ -1,0 +1,29 @@
+#pragma once
+#include "../ScriptDefines.hpp"
+#include <string>
+
+namespace SCR
+{
+	class CustomEvent final
+	{
+	public:
+
+		CustomEvent(std::string_view aName);
+		~CustomEvent();
+
+		inline const NodeTypeID& GetExecutorTypeID() const
+		{
+			return mExecutorTypeID;
+		}
+
+		inline const NodeTypeID& GetCallerTypeID() const
+		{
+			return mCallerTypeID;
+		}
+
+	private:
+
+		NodeTypeID mExecutorTypeID;
+		NodeTypeID mCallerTypeID;
+	};
+}

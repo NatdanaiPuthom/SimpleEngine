@@ -1,13 +1,12 @@
-//#include "NodeScript/Precomplied/NodeScriptPch.hpp"
-#include "InternalExecutionContext.h"
-#include "ScriptProxy.h"
-#include "NodeExecutor.h"
+#include "InternalExecutionContext.hpp"
+#include "ScriptProxy.hpp"
+#include "NodeExecutor.hpp"
 
 namespace SCR
 {
 	const Node& InternalExecutionContext::GetCurrentNode() const
 	{
-		return ScriptProxy::GetNode(*nodeData.nodeRef.nodeGraph, nodeData.nodeRef.nodeID);
+		return ScriptProxy::GetNode(*mNodeData.mNodeRef.mNodeGraph, mNodeData.mNodeRef.mNodeID);
 	}
 
 	ExecutionQueue::ExecutionQueue()
@@ -20,15 +19,15 @@ namespace SCR
 
 	void ExecutionQueue::Push(const NodeExecutionData& aNode)
 	{
-		myExecutionQueue.push(aNode);
+		mExecutionQueue.push(aNode);
 	}
 
 	void ExecutionQueue::Execute()
 	{
-		while (!myExecutionQueue.empty())
+		while (!mExecutionQueue.empty())
 		{
-			ScriptProxy::GetNodeExecutor().ExecuteNode(myExecutionQueue.front());
-			myExecutionQueue.pop();
+			ScriptProxy::GetNodeExecutor().ExecuteNode(mExecutionQueue.front());
+			mExecutionQueue.pop();
 		}
 	}
 }

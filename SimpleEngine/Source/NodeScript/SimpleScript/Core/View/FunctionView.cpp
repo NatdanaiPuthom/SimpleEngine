@@ -1,12 +1,12 @@
-#include "FunctionView.h"
-#include "../Global/ScriptGlobal.h"
-#include "../Node/NodeTypeManager.h"
+#include "FunctionView.hpp"
+#include "../Global/ScriptGlobal.hpp"
+#include "../Node/NodeTypeManager.hpp"
 
 namespace SCR
 {
 
 	FunctionView::FunctionView(const FunctionID aFunctionID)
-		: myFunctionID(aFunctionID)
+		: mFunctionID(aFunctionID)
 	{
 	}
 
@@ -52,16 +52,16 @@ namespace SCR
 
 	FunctionID FunctionView::GetID() const
 	{
-		return myFunctionID;
+		return mFunctionID;
 	}
 
 	Function& FunctionView::GetFunction()
 	{
-		return Global::GetNodeTypeManager().GetFunction(myFunctionID);
+		return Global::GetNodeTypeManager().GetFunction(mFunctionID);
 	}
 
 	const Function& FunctionView::GetFunction() const
 	{
-		return Global::GetNodeTypeManager().GetFunction(myFunctionID);
+		return Global::GetNodeTypeManager().GetFunction(mFunctionID);
 	}
 }

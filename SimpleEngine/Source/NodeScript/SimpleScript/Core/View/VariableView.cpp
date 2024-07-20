@@ -1,18 +1,18 @@
-#include "VariableView.h"
-#include "Script.h"
+#include "VariableView.hpp"
+#include "FlyClass.hpp"
 
 namespace SCR
 {
 
-	VariableView::VariableView(VarID aVarID, const Script& aScript)
+	VariableView::VariableView(VarID aVarID, const Class& aClass)
 		: myVarID(aVarID)
-		, myScript(&aScript)
+		, myClass(&aClass)
 	{
 	}
 
 	const std::string& VariableView::GetName() const
 	{
-		return GetVariable().name;
+		return GetVariable().mName;
 	}
 
 	DataTypeID VariableView::GetDataTypeID() const
@@ -22,7 +22,7 @@ namespace SCR
 
 	bool VariableView::IsDestroyed() const
 	{
-		return GetVariable().isDestroyed;
+		return GetVariable().mIsDestroyed;
 	}
 
 	VarID VariableView::GetID() const
@@ -32,6 +32,6 @@ namespace SCR
 
 	const Variable& VariableView::GetVariable() const
 	{
-		return myScript->GetVariableManager().myVariables.at(myVarID);
+		return myClass->GetVariableManager().mVariables.at(myVarID);
 	}
 }

@@ -1,9 +1,6 @@
-#include "Core/Node/NodeTypeManager.h"
-#include "Core/Script.h"
-#include "Core/ScriptFoundation.h"
-#include "Core/Utilities/ScriptUtilities.h"
-#include "Core/Node/NodeTypeRegistry.h"
-#include "Core/Type/ScriptTypeManager.h"
+#include "Core/Node/NodeTypeManager.hpp"
+#include "Core/Node/NodeTypeRegistry.hpp"
+#include "Core/Type/ScriptTypeManager.hpp"
 
 namespace SCR
 {
@@ -17,15 +14,10 @@ namespace SCR
 		
 	}
 
-	NodeTypeManager& NodeTypeManager::GetInstance()
-	{
-		return ScriptFoundation::GetInstance().GetTypeManager().GetNodeTypeManager();
-	}
-
 	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
 	{
-		NodeTypeID id = myNodeTypes.size();
-		myNodeTypes.emplace_back(std::move(aNodeType));
+		NodeTypeID id = mNodeTypes.size();
+		mNodeTypes.emplace_back(std::move(aNodeType));
 		Assert();
 
 		return id;
@@ -33,86 +25,86 @@ namespace SCR
 
 	void NodeTypeManager::SetGetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID)
 	{
-		myGetterNodeTypeIDs.emplace(aDataTypeID, anID);
+		mGetterNodeTypeIDs.emplace(aDataTypeID, anID);
 	}
 
 	void NodeTypeManager::SetSetterNodeTypeID(const DataTypeID aDataTypeID, const NodeTypeID anID)
 	{
-		mySetterNodeTypeIDs.emplace(aDataTypeID, anID);
+		mSetterNodeTypeIDs.emplace(aDataTypeID, anID);
 	}
 
-	void NodeTypeManager::SetOperatorNodeTypeID(const DataTypeID aDataTypeID, const eNodeOperatorTrait anOperatorTrait, const NodeTypeID anID)
+	void NodeTypeManager::SetOperatorNodeTypeID(const DataTypeID aDataTypeID, const eNodeOperatorTrait aOperatorTrait, const NodeTypeID aID)
 	{
-		myOperatorNodeTypeIDs[anOperatorTrait].emplace(aDataTypeID, anID);
+		mOperatorNodeTypeIDs[aOperatorTrait].emplace(aDataTypeID, aID);
 	}
 
-	Node NodeTypeManager::CreateInstance_Getter(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID)
+	Node NodeTypeManager::CreateGetterNode(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID)
 	{
-		NodeTypeID typeID = myGetterNodeTypeIDs.at(aDataTypeID);
-		return CreateInstance(aNodeGraph, aNodeID, typeID);
+		const NodeTypeID typeID = mGetterNodeTypeIDs.at(aDataTypeID);
+		return CreateNode(aNodeGraph, aNodeID, typeID);
 	}
 
-	Node NodeTypeManager::CreateInstance_Setter(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID)
+	Node NodeTypeManager::CreateSetterNode(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID)
 	{
-		NodeTypeID typeID = mySetterNodeTypeIDs.at(aDataTypeID);
-		return CreateInstance(aNodeGraph, aNodeID, typeID);
+		NodeTypeID typeID = mSetterNodeTypeIDs.at(aDataTypeID);
+		return CreateNode(aNodeGraph, aNodeID, typeID);
 	}
 
-	Node NodeTypeManager::CreateInstance_Operator(NodeGraph& aNodeGraph, const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID)
+	Node NodeTypeManager::CreateOperatorNode(NodeGraph& aNodeGraph, const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID)
 	{
-		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = myOperatorNodeTypeIDs.at(aOperatorTrait);
-		NodeTypeID typeID = operatorNodes.at(aDataTypeID);
-		return CreateInstance(aNodeGraph, aNodeID, typeID);
+		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = mOperatorNodeTypeIDs.at(aOperatorTrait);
+		const NodeTypeID typeID = operatorNodes.at(aDataTypeID);
+		return CreateNode(aNodeGraph, aNodeID, typeID);
 	}
 
-	Node NodeTypeManager::CreateInstance(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID)
+	Node NodeTypeManager::CreateNode(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID)
 	{
-		return myNodeTypes.at(aNodeTypeID).nodeRecipe.createFunction(aNodeID, aNodeTypeID, aNodeGraph);
+		return mNodeTypes.at(aNodeTypeID).mNodeRecipe.mCreateFunction(aNodeID, aNodeTypeID, aNodeGraph);
 	}
 
 	bool NodeTypeManager::CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID)
 	{
-		if (myOperatorNodeTypeIDs.contains(aTrait))
+		if (mOperatorNodeTypeIDs.contains(aTrait))
 		{
-			return myOperatorNodeTypeIDs.at(aTrait).contains(aDataTypeID);
+			return mOperatorNodeTypeIDs.at(aTrait).contains(aDataTypeID);
 		}
 		return false;
 	}
 
 	NodeType& NodeTypeManager::GetNodeType(const NodeTypeID anID)
 	{
-		return myNodeTypes.at(anID);
+		return mNodeTypes.at(anID);
 	}
 
 	const NodeType& NodeTypeManager::GetNodeType(const NodeTypeID anID) const
 	{
-		return myNodeTypes.at(anID);
+		return mNodeTypes.at(anID);
 	}
 
 	const std::vector<NodeType>& NodeTypeManager::GetNodeTypes()
 	{
-		return myNodeTypes;
+		return mNodeTypes;
 	}
 
 	CustomEvent& NodeTypeManager::GetCustomEvent(const CustomEventID anID)
 	{
-		return myCustomEvents.at(anID);
+		return mCustomEvents.at(anID);
 	}
 
 	std::vector<CustomEvent>& NodeTypeManager::GetCustomEvents()
 	{
-		return myCustomEvents;
+		return mCustomEvents;
 	}
 
 	const std::vector<CustomEvent>& NodeTypeManager::GetCustomEvents() const
 	{
-		return myCustomEvents;
+		return mCustomEvents;
 	}
 
-	CustomEventID NodeTypeManager::GetCustomEventID(const NodeTypeID aNodeTypeID)
+	CustomEventID NodeTypeManager::GetCustomEventID(const NodeTypeID aNodeTypeID) const
 	{
-		auto it = myToCustomEventID.find(aNodeTypeID);
-		if (it != myToCustomEventID.end())
+		auto it = mToCustomEventID.find(aNodeTypeID);
+		if (it != mToCustomEventID.end())
 		{
 			return it->second;
 		}
@@ -121,23 +113,23 @@ namespace SCR
 
 	Function& NodeTypeManager::GetFunction(const FunctionID anID)
 	{
-		return *myFunctions.at(anID);
+		return *mFunctions.at(anID);
 	}
 
 	const Function& NodeTypeManager::GetFunction(const FunctionID anID) const
 	{
-		return *myFunctions.at(anID);
+		return *mFunctions.at(anID);
 	}
 
 	const std::vector<std::unique_ptr<Function>>& NodeTypeManager::GetFunctions()
 	{
-		return myFunctions;
+		return mFunctions;
 	}
 
-	FunctionID NodeTypeManager::GetFunctionID(const NodeTypeID aNodeTypeID)
+	FunctionID NodeTypeManager::GetFunctionID(const NodeTypeID aNodeTypeID) const
 	{
-		auto it = myToFunctionID.find(aNodeTypeID);
-		if (it != myToFunctionID.end())
+		auto it = mToFunctionID.find(aNodeTypeID);
+		if (it != mToFunctionID.end())
 		{
 			return it->second;
 		}
@@ -146,7 +138,7 @@ namespace SCR
 
 	NodeTypeID NodeTypeManager::GetTypeID(std::string_view aName)
 	{
-		for (NodeTypeID id = 0; id < myNodeTypes.size(); ++id)
+		for (NodeTypeID id = 0; id < mNodeTypes.size(); ++id)
 		{
 			if (GetShortName(id) == aName)
 			{
@@ -156,12 +148,12 @@ namespace SCR
 		return 0;
 	}
 
-	const std::string& NodeTypeManager::GetFullName(const NodeTypeID anID)
+	const std::string& NodeTypeManager::GetFullName(const NodeTypeID anID) const
 	{
-		return myNodeTypes.at(anID).name;
+		return mNodeTypes.at(anID).mName;
 	}
 
-	std::string NodeTypeManager::GetShortName(const NodeTypeID anID)
+	std::string NodeTypeManager::GetShortName(const NodeTypeID anID) const
 	{
 		const std::string& fullName = GetFullName(anID);
 		if (fullName.find_last_of('/') != std::string::npos)
@@ -175,7 +167,7 @@ namespace SCR
 		}
 	}
 
-	std::string NodeTypeManager::GetNameDirectory(const NodeTypeID anID)
+	std::string NodeTypeManager::GetNameDirectory(const NodeTypeID anID) const
 	{
 		const std::string& fullName = GetFullName(anID);
 		if (fullName.find_last_of('/') != std::string::npos)
@@ -191,23 +183,23 @@ namespace SCR
 
 	CustomEventID NodeTypeManager::CreateCustomEvent(std::string_view aName)
 	{
-		const CustomEventID id = myCustomEvents.size();
-		const CustomEvent& customEvent = myCustomEvents.emplace_back(CustomEvent(aName));
+		const CustomEventID id = mCustomEvents.size();
+		const CustomEvent& customEvent = mCustomEvents.emplace_back(CustomEvent(aName));
 
-		myToCustomEventID.emplace(customEvent.GetCallerTypeID(), id);
-		myToCustomEventID.emplace(customEvent.GetExecutorTypeID(), id);
+		mToCustomEventID.emplace(customEvent.GetCallerTypeID(), id);
+		mToCustomEventID.emplace(customEvent.GetExecutorTypeID(), id);
 
 		return id;
 	}
 
 	FunctionID NodeTypeManager::CreateFunction(std::string_view aName)
 	{
-		const FunctionID id = myFunctions.size();
-		const std::unique_ptr<Function>& function = myFunctions.emplace_back(std::make_unique<Function>(aName));
+		const FunctionID id = mFunctions.size();
+		const std::unique_ptr<Function>& function = mFunctions.emplace_back(std::make_unique<Function>(aName));
 
-		myToFunctionID.emplace(function->GetCallerNodeTypeID(), id);
-		myToFunctionID.emplace(function->GetInputNodeTypeID(), id);
-		myToFunctionID.emplace(function->GetOutputNodeTypeID(), id);
+		mToFunctionID.emplace(function->GetCallerNodeTypeID(), id);
+		mToFunctionID.emplace(function->GetInputNodeTypeID(), id);
+		mToFunctionID.emplace(function->GetOutputNodeTypeID(), id);
 
 		return id;
 	}

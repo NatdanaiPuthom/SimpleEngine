@@ -1,5 +1,4 @@
-#include "NodeScript/Precomplied/NodeScriptPch.hpp"
-#include "ScriptTypeManager.h"
+#include "ScriptTypeManager.hpp"
 
 namespace SCR
 {
@@ -14,16 +13,16 @@ namespace SCR
 
 	DataTypeManager& TypeManager::GetDataTypeManager()
 	{
-		return myDataTypeManager;
+		return mDataTypeManager;
 	}
 
 	NodeTypeManager& TypeManager::GetNodeTypeManager()
 	{
-		return myNodeTypeManager;
+		return mNodeTypeManager;
 	}
 
 	PinTypeManager& TypeManager::GetPinTypeManager()
 	{
-		return myPinTypeManager;
+		return mPinTypeManager;
 	}
 }

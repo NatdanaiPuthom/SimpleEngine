@@ -1,12 +1,12 @@
-#include "ExecutionNodes.h"
-#include "../Node/NodeTypeRegistry.h"
+#include "ExecutionNodes.hpp"
+#include "../Node/NodeTypeRegistry.hpp"
 
 namespace SCR
 {
 
 	std::tuple<Flow, float> Tick(NodeExecutionContext<ExecutionContextBase> aContext)
 	{
-		return { Flow(true), aContext.context.deltaTime };
+		return { Flow(true), aContext.context.mDeltaTime };
 	}
 
 	Flow BeginPlay()
@@ -42,19 +42,19 @@ namespace SCR
 
 	static Flow Delay(const InternalExecutionContext* aContext, NodeState<DelayNodeData> aState, Flow, float aDuration, bool aResetOnFlow)
 	{
-		if (aContext->GetNodeData().triggerReason == eNodeTriggerReason::Flow)
+		if (aContext->GetNodeData().mTriggerReason == eNodeTriggerReason::Flow)
 		{
 			if (aResetOnFlow)
 			{
 				aState.value.time = 0.f;
 			}
-			ScriptProxy::GetNodeExecutor().RegisterAutoTickNode(aContext->GetNodeData().nodeRef);
+			ScriptProxy::GetNodeExecutor().RegisterAutoTickNode(aContext->GetNodeData().mNodeRef);
 		}
-		aState.value.time += aContext->executionContext->deltaTime;
+		aState.value.time += aContext->mExecutionContext->mDeltaTime;
 		if (aState.value.time > aDuration)
 		{
 			aState.value.time = 0.f;
-			ScriptProxy::GetNodeExecutor().UnregisterAutoTickNode(aContext->GetNodeData().nodeRef);
+			ScriptProxy::GetNodeExecutor().UnregisterAutoTickNode(aContext->GetNodeData().mNodeRef);
 			return Flow(true);
 		}
 		return Flow(false);

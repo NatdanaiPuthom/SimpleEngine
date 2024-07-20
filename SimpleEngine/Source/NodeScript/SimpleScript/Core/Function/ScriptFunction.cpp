@@ -1,7 +1,7 @@
-#include "ScriptFunction.h"
-#include "NodeTypeRegistry.h"
-#include "Script.h"
-#include "ScriptModifier.h"
+#include "ScriptFunction.hpp"
+#include "NodeTypeRegistry.hpp"
+#include "FlyClass.hpp"
+#include "ScriptModifier.hpp"
 
 namespace SCR
 {
@@ -10,14 +10,15 @@ namespace SCR
 	{
 		const Node& callerNode = aContext->GetCurrentNode();
 
-		const FunctionID functionID = NodeTypeManager::GetInstance().GetFunctionID(callerNode.typeID);
-		Function& function = NodeTypeManager::GetInstance().GetFunction(functionID);
-		function.SetCaller({ aContext->GetNodeData().nodeRef.nodeID, aContext->nodeData.nodeRef.nodeGraph });
+		NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
+		const FunctionID functionID = nodeTypeManager.GetFunctionID(callerNode.mTypeID);
+		Function& function = nodeTypeManager.GetFunction(functionID);
+		function.SetCaller({ aContext->GetNodeData().mNodeRef.mNodeID, aContext->mNodeData.mNodeRef.mNodeGraph });
 		const Node& inputNode = ScriptProxy::GetNode(function.GetNodeGraph(), function.GetInputNodeID());
 
-		CopyPinData(*aContext, inputNode.outputPins, callerNode.inputPins, function.GetNodeGraph(), *aContext->nodeData.nodeRef.nodeGraph, 1);
+		CopyPinData(*aContext, inputNode.mOutputPins, callerNode.mInputPins, function.GetNodeGraph(), *aContext->mNodeData.mNodeRef.mNodeGraph, 1);
 
-		aContext->executionQueue->Push({ NodeRef{function.GetInputNodeID(), &function.GetNodeGraph() }, eNodeTriggerReason::Flow});
+		aContext->mExecutionQueue->Push(NodeExecutionData{ NodeRef{function.GetInputNodeID(), &function.GetNodeGraph() }, eNodeTriggerReason::Flow});
 
 		return Flow(true);
 	}
@@ -31,29 +32,30 @@ namespace SCR
 	{
 		const Node& outputNode = aContext->GetCurrentNode();
 
-		const FunctionID functionID = NodeTypeManager::GetInstance().GetFunctionID(outputNode.typeID);
-		const Function& function = NodeTypeManager::GetInstance().GetFunction(functionID);
+		const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
+		const FunctionID functionID = nodeTypeManager.GetFunctionID(outputNode.mTypeID);
+		const Function& function = nodeTypeManager.GetFunction(functionID);
 
-		const Function::FunctionCaller& caller = function.GetCaller();
+		const NodeRef& caller = function.GetCaller();
 
 		// TODO: Fix node lookup
-		const Node& callerNode = ScriptProxy::GetNode(*caller.nodeGraph, caller.nodeID);
+		const Node& callerNode = ScriptProxy::GetNode(*caller.mNodeGraph, caller.mNodeID);
 
-		CopyPinData(*aContext, callerNode.outputPins, outputNode.inputPins, *caller.nodeGraph, function.GetNodeGraph(), 1);
+		CopyPinData(*aContext, callerNode.mOutputPins, outputNode.mInputPins, *caller.mNodeGraph, function.GetNodeGraph(), 1);
 
 		return Wildcard();
 	}
 
 	Function::Function(std::string_view aName)
-		: myName(aName)
-		, myNodeGraph(eNodeGraphType::Function)
+		: mName(aName)
+		, mNodeGraph(eNodeGraphType::Function)
 	{
-		myCallerNodeTypeID = RegisterSystemNodeType(CallerNode, "Function/Call Function");
-		myInputNodeTypeID = RegisterSystemNodeType(InputNode, "Function/Input Function");
-		myOutputNodeTypeID = RegisterSystemNodeType(OutputNode, "Function/Output Function");
+		mCallerNodeTypeID = RegisterSystemNodeType(CallerNode, "Function/Call Function");
+		mInputNodeTypeID = RegisterSystemNodeType(InputNode, "Function/Input Function");
+		mOutputNodeTypeID = RegisterSystemNodeType(OutputNode, "Function/Output Function");
 
-		myInputNodeID = CreateNode(myNodeGraph, myInputNodeTypeID).GetID();
-		myOutputNodeID = CreateNode(myNodeGraph, myOutputNodeTypeID).GetID();
+		mInputNodeID = CreateNode(mNodeGraph, mInputNodeTypeID).GetID();
+		mOutputNodeID = CreateNode(mNodeGraph, mOutputNodeTypeID).GetID();
 	}
 
 	Function::~Function() = default;

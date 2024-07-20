@@ -1,12 +1,11 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "FunctionSettingsWindow.hpp"
 #include "NodeScriptingWindow.hpp"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
-#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.h"
-#include "NodeScript/SimpleScript/Core/Node/NodeTypeManager.h"
-#include "NodeScript/SimpleScript/Core/Pin/PinTypeManager.h"
-#include "NodeScript/SimpleScript/Core/Script.h"
-#include "NodeScript/SimpleScript/Core/Function/ScriptFunction.h"
+#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
+#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/Node/NodeTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/Pin/PinTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/FlyClass.hpp"
 
 namespace Editor
 {
@@ -71,12 +70,12 @@ namespace Editor
 			constexpr static const char* comboLabel1 = "Data Type##FunctionSettings_";
 			const std::string inputOutputLabel = SCRIPT::SelectByFlowType(aFlowType, std::string("Input"), std::string("Output"));
 			const std::string comboLabel = comboLabel1 + inputOutputLabel + std::to_string(i);
-			if (ImGui::BeginCombo(comboLabel.c_str(), pinTypeDataType->name.c_str()))
+			if (ImGui::BeginCombo(comboLabel.c_str(), pinTypeDataType->mName.c_str()))
 			{
 				size_t dataTypeIndex = 0;
 				for (const auto& [dataTypeID, dataType] : dataTypeManager.GetDataTypes())
 				{
-					if (ImGui::Selectable(dataType.name.c_str()))
+					if (ImGui::Selectable(dataType.mName.c_str()))
 					{
 						SCRIPT::SetPinAtIndexFunction(myParent.GetCurrentFunctionID(), i, dataTypeID, aFlowType);
 					}

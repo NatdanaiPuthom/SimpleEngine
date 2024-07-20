@@ -1,4 +1,4 @@
-#include "NodeCreator.h"
+#include "NodeCreator.hpp"
 
 namespace SCR
 {
@@ -7,29 +7,29 @@ namespace SCR
 	{
 		return [](const PinSetData& aPinSetData, const InternalExecutionContext& aContext) -> void
 			{
-				const Pin& pin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, aPinSetData.id);
-				const PinType& pinType = PinTypeManager::GetPinType(pin.typeID);
+				const Pin& pin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, aPinSetData.mID);
+				const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 #ifdef FLY_DEBUG
-				assert(aPinSetData.dataTypeID == pinType.dataTypeID);
+				assert(aPinSetData.mDataTypeID == pinType.mDataTypeID);
 #endif
 
-				void* destination = pin.dataPtr;
+				void* destination = pin.mDataPtr;
 
-				Global::GetDataTypeManager().CopyData(pinType.dataTypeID, destination, aPinSetData.value);
+				Global::GetDataTypeManager().CopyData(pinType.mDataTypeID, destination, aPinSetData.mValue);
 
-				if (pinType.dataTypeID == Flow::typeID)
+				if (pinType.mDataTypeID == Flow::mTypeID)
 				{
-					const Flow& flow = *reinterpret_cast<const Flow*>(aPinSetData.value);
+					const Flow& flow = *reinterpret_cast<const Flow*>(aPinSetData.mValue);
 
 					if (flow)
 					{
-						if (pinType.flowType == eFlowType::Output)
+						if (pinType.mFlowType == eFlowType::Output)
 						{
-							assert(aContext.executionQueue);
-							for (PinID connectedInputPinID : pin.connectedPinIDs)
+							assert(aContext.mExecutionQueue);
+							for (PinID connectedInputPinID : pin.mConnectedPinIDs)
 							{
-								const Pin& connectedInputPin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, connectedInputPinID);
-								aContext.executionQueue->Push({ NodeRef{ connectedInputPin.nodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Flow });
+								const Pin& connectedInputPin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, connectedInputPinID);
+								aContext.mExecutionQueue->Push({ NodeRef{ connectedInputPin.mNodeID, aContext.mNodeData.mNodeRef.mNodeGraph }, eNodeTriggerReason::Flow });
 							}
 						}
 					}
@@ -46,15 +46,15 @@ namespace SCR
 
 			const Pin& destinationPin = ScriptProxy::GetPin(aDestinationNodeGraph, destinationPinID);
 
-			const PinType& outputPinType = PinTypeManager::GetPinType(destinationPin.typeID);
+			const PinType& outputPinType = Global::GetPinTypeManager().GetPinType(destinationPin.mTypeID);
 
 			const PinID sourcePinID = aSource[i];
 			const Pin& sourcePin = ScriptProxy::GetPin(aSourceNodeGraph, sourcePinID);
 
 
-			outputPinType.setFunction(PinSetData{ destinationPinID, sourcePin.dataPtr,
+			outputPinType.mSetFunction(PinSetData{ destinationPinID, sourcePin.mDataPtr,
 #ifdef FLY_DEBUG
-				PinTypeManager::GetPinType(sourcePin.typeID).dataTypeID
+				Global::GetPinTypeManager().GetPinType(sourcePin.mTypeID).mDataTypeID
 #endif
 				}, aContext);
 		}
@@ -68,33 +68,33 @@ namespace SCR
 
 			const PinID inputPinID = aInputPinIDs[i];
 
-			const Pin& inputPin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, inputPinID);
-			const PinType& inputPinType = PinTypeManager::GetPinType(inputPin.typeID);
+			const Pin& inputPin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, inputPinID);
+			const PinType& inputPinType = Global::GetPinTypeManager().GetPinType(inputPin.mTypeID);
 
-			if (inputPinType.dataTypeID == Flow::typeID)
+			if (inputPinType.mDataTypeID == Flow::mTypeID)
 			{
 				continue;
 			}
 
-			if (!inputPin.connectedPinIDs.empty())
+			if (!inputPin.mConnectedPinIDs.empty())
 			{
 
-				const PinID connectedOutputPinID = inputPin.connectedPinIDs.front();
+				const PinID connectedOutputPinID = inputPin.mConnectedPinIDs.front();
 
-				const Pin& connectedOutputPin = ScriptProxy::GetPin(*aContext.nodeData.nodeRef.nodeGraph, connectedOutputPinID);
-				const NodeID connectedNodeID = connectedOutputPin.nodeID;
+				const Pin& connectedOutputPin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, connectedOutputPinID);
+				const NodeID connectedNodeID = connectedOutputPin.mNodeID;
 
-				const Node& connectedNode = ScriptProxy::GetNode(*aContext.nodeData.nodeRef.nodeGraph, connectedNodeID);
-				const NodeType& connectedNodeType = NodeTypeManager::GetInstance().GetNodeType(connectedNode.typeID);
+				const Node& connectedNode = ScriptProxy::GetNode(*aContext.mNodeData.mNodeRef.mNodeGraph, connectedNodeID);
+				const NodeType& connectedNodeType = Global::GetNodeTypeManager().GetNodeType(connectedNode.mTypeID);
 
-				if (!HasFlag(connectedNodeType.nodeRecipe.traits, eNodeTrait::HasFlow))
+				if (!HasFlag(connectedNodeType.mNodeRecipe.mTraits, eNodeTrait::HasFlow))
 				{
-					ScriptProxy::GetNodeExecutor().ExecuteNode({ NodeRef{ connectedNodeID, aContext.nodeData.nodeRef.nodeGraph }, eNodeTriggerReason::Read });
+					ScriptProxy::GetNodeExecutor().ExecuteNode({ NodeRef{ connectedNodeID, aContext.mNodeData.mNodeRef.mNodeGraph }, eNodeTriggerReason::Read });
 				}
 
-				inputPinType.setFunction(PinSetData{ inputPinID, connectedOutputPin.dataPtr,
+				inputPinType.mSetFunction(PinSetData{ inputPinID, connectedOutputPin.mDataPtr,
 #ifdef _DEBUG
-					PinTypeManager::GetPinType(connectedOutputPin.typeID).dataTypeID
+					Global::GetPinTypeManager().GetPinType(connectedOutputPin.mTypeID).mDataTypeID
 #endif
 					}, aContext);
 			}

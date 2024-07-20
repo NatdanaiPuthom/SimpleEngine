@@ -1,12 +1,12 @@
-#include "CustomEventView.h"
-#include "../Node/NodeTypeManager.h"
-#include "../Global/ScriptGlobal.h"
+#include "CustomEventView.hpp"
+#include "../Node/NodeTypeManager.hpp"
+#include "../Global/ScriptGlobal.hpp"
 
 namespace SCR
 {
 
 	CustomEventView::CustomEventView(CustomEventID anID)
-		: myCustomEventID(anID)
+		: mCustomEventID(anID)
 	{
 	}
 
@@ -22,11 +22,11 @@ namespace SCR
 
 	CustomEventID CustomEventView::GetID() const
 	{
-		return myCustomEventID;
+		return mCustomEventID;
 	}
 
 	const CustomEvent& CustomEventView::GetCustomEvent() const
 	{
-		return Global::GetNodeTypeManager().GetCustomEvent(myCustomEventID);
+		return Global::GetNodeTypeManager().GetCustomEvent(mCustomEventID);
 	}
 }

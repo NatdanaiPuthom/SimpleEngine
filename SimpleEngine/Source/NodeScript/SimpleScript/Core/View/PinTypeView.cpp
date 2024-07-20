@@ -1,37 +1,37 @@
-#include "PinTypeView.h"
-#include "../Global/ScriptGlobal.h"
-#include "../Pin/PinTypeManager.h"
+#include "PinTypeView.hpp"
+#include "../Global/ScriptGlobal.hpp"
+#include "../Pin/PinTypeManager.hpp"
 
 namespace SCR
 {
 
 	PinTypeView::PinTypeView(PinTypeID anID)
-		: myPinTypeID(anID)
+		: mPinTypeID(anID)
 	{
 	}
 
 	const std::string& PinTypeView::GetName() const
 	{
-		return GetPinType().name;
+		return GetPinType().mName;
 	}
 
 	eFlowType PinTypeView::GetFlowType() const
 	{
-		return GetPinType().flowType;
+		return GetPinType().mFlowType;
 	}
 
 	DataTypeID PinTypeView::GetDataTypeID() const
 	{
-		return GetPinType().dataTypeID;
+		return GetPinType().mDataTypeID;
 	}
 
 	PinTypeID PinTypeView::GetID() const
 	{
-		return myPinTypeID;
+		return mPinTypeID;
 	}
 
 	const PinType& PinTypeView::GetPinType() const
 	{
-		return Global::GetPinTypeManager().GetPinType(myPinTypeID);
+		return Global::GetPinTypeManager().GetPinType(mPinTypeID);
 	}
 }

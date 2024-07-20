@@ -1,7 +1,7 @@
-#include "SystemDataTypes.h"
-#include "DataType/DataTypeRegistry.h"
-#include "SystemTypes/ScriptWildcard.h"
-#include "SystemTypes/ScriptFlow.h"
+#include "SystemDataTypes.hpp"
+#include "DataType/DataTypeRegistry.hpp"
+#include "SystemTypes/ScriptWildcard.hpp"
+#include "SystemTypes/ScriptFlow.hpp"
 #include <ImGui/imgui.h>
 #include <string>
 

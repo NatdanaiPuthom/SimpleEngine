@@ -1,6 +1,7 @@
-#include "EventGraph.h"
-#include "ScriptUtilities.h"
-#include <NodeTypeManager.h>
+#include "EventGraph.hpp"
+#include "Utilities/ScriptUtilities.hpp"
+#include "Node/NodeTypeManager.hpp"
+#include "Global/ScriptGlobal.hpp"
 
 namespace SCR
 {
@@ -15,21 +16,21 @@ namespace SCR
 
 	void EventGraph::BindNodeToEvent(const NodeID aNodeID)
 	{
-		const Node& node = myNodeManager->myNodes.at(aNodeID);
-		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(node.typeID);
+		const Node& node = mNodeManager->mNodes.at(aNodeID);
+		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
-		const EventID eventID = nodeType.nodeRecipe.eventID;
+		const EventID mEventID = nodeType.mNodeRecipe.mEventID;
 
-		if (eventID == InvalidID<EventID>())
+		if (mEventID == InvalidID<EventID>())
 		{
 			return;
 		}
 
 		bool alreadyExists = false;
-		std::vector<NodeID>& nodeIDsByEvent = myEventNodes[eventID];
-		for (const NodeID nodeID : nodeIDsByEvent)
+		std::vector<NodeID>& nodeIDsByEvent = myEventNodes[mEventID];
+		for (const NodeID mNodeID : nodeIDsByEvent)
 		{
-			if (nodeID == aNodeID)
+			if (mNodeID == aNodeID)
 			{
 				alreadyExists = true;
 				break;
@@ -46,10 +47,10 @@ namespace SCR
 
 	void EventGraph::UnbindNodeFromEvent(const NodeID aNodeID)
 	{
-		const Node& node = myNodeManager->myNodes.at(aNodeID);
-		const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(node.typeID);
+		const Node& node = mNodeManager->mNodes.at(aNodeID);
+		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
-		auto it = myEventNodes.find(nodeType.nodeRecipe.eventID);
+		auto it = myEventNodes.find(nodeType.mNodeRecipe.mEventID);
 
 		if (it != myEventNodes.end())
 		{

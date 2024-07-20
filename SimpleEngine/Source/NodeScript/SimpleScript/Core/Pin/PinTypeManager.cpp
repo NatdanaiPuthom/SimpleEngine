@@ -1,6 +1,4 @@
-#include "PinTypeManager.h"
-#include "ScriptFoundation.h"
-#include "Type/ScriptTypeManager.h"
+#include "PinTypeManager.hpp"
 
 namespace SCR
 {
@@ -13,22 +11,15 @@ namespace SCR
 	{
 	}
 
-	PinTypeManager& PinTypeManager::GetInstance()
-	{
-		return ScriptFoundation::GetInstance().GetTypeManager().GetPinTypeManager();
-	}
-
 	PinTypeID PinTypeManager::Create(std::string_view aName, eFlowType aFlowType, DataTypeID aDataTypeID, PinSetFunction aSetFunction)
 	{
-		PinTypeManager& pinTypeManager = GetInstance();
-		PinTypeID id = pinTypeManager.myPinTypes.size();
-		pinTypeManager.myPinTypes.emplace_back(std::string(aName), aFlowType, aDataTypeID, aSetFunction);
+		const PinTypeID id = mPinTypes.size();
+		mPinTypes.emplace_back(std::string(aName), aFlowType, aDataTypeID, aSetFunction);
 		return id;
 	}
 
 	PinType& PinTypeManager::GetPinType(const PinTypeID anID)
 	{
-		PinTypeManager& pinTypeManager = GetInstance();
-		return pinTypeManager.myPinTypes.at(anID);
+		return mPinTypes.at(anID);
 	}
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "NodeScript/SimpleScript/Core/Pin/PinType.h"
+#include "NodeScript/SimpleScript/Core/Pin/PinType.hpp"
 
 namespace Editor
 {

@@ -144,18 +144,23 @@ namespace Editor
 
 					ECS::Entity& selectedEntity = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(EditorEngine::mySelectedEntityID);
 					ECS::TransformComponent* transformComponent = selectedEntity.GetComponent<ECS::TransformComponent>();
-					Math::Matrix4x4f objectMatrix = transformComponent->transform.GetMatrix();
-					const Math::Matrix4x4f view = Math::Matrix4x4f::GetFastInverse(Global::GetGraphicsEngine()->GetCurrentCamera()->GetMatrix());
-					const Math::Matrix4x4f proj = Global::GetGraphicsEngine()->GetCurrentCamera()->GetProjectionMatrix();
 
-					if (ImGuizmo::Manipulate( &view(1, 1),
-						&proj(1, 1),
-						ImGuizmo::OPERATION::TRANSLATE,
-						ImGuizmo::MODE::WORLD,
-						&objectMatrix(1, 1)
-					))
+					if (transformComponent)
 					{
-						transformComponent->transform.SetPosition(objectMatrix.GetPosition());
+
+						Math::Matrix4x4f objectMatrix = transformComponent->transform.GetMatrix();
+						const Math::Matrix4x4f view = Math::Matrix4x4f::GetFastInverse(Global::GetGraphicsEngine()->GetCurrentCamera()->GetMatrix());
+						const Math::Matrix4x4f proj = Global::GetGraphicsEngine()->GetCurrentCamera()->GetProjectionMatrix();
+
+						if (ImGuizmo::Manipulate(&view(1, 1),
+							&proj(1, 1),
+							ImGuizmo::OPERATION::TRANSLATE,
+							ImGuizmo::MODE::WORLD,
+							&objectMatrix(1, 1)
+						))
+						{
+							transformComponent->transform.SetPosition(objectMatrix.GetPosition());
+						}
 					}
 				}
 

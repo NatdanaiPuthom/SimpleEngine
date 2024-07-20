@@ -1,5 +1,4 @@
-#include "ScriptCompositeCommand.h"
-#include "../Script.h"
+#include "ScriptCompositeCommand.hpp"
 
 namespace SCR
 {
@@ -77,12 +76,11 @@ namespace SCR
 			eEndCode endCode = myCurrentChild->End();
 			if (endCode == eEndCode::Ended)
 			{
-				//CommandNew c = *myCurrentChild;
 				const std::string compositeName = myCurrentChild->GetName();
 				myCommands.emplace_back(Command(std::move(*myCurrentChild), compositeName));
 				myCurrentChild.reset();
 			}
-			else if (endCode == eEndCode::Ended_Empty) // If the childs commands is empty we don't want to add the child to our commands
+			else if (endCode == eEndCode::Ended_Empty) // If the child's commands are empty we don't want to add the child to our commands
 			{
 				myCurrentChild.reset();
 			}

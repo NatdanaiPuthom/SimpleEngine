@@ -1,8 +1,8 @@
-#include "PinView.h"
-#include "../ScriptNodeGraph.h"
-#include "../Global/ScriptGlobal.h"
-#include "../Pin/PinTypeManager.h"
-#include "../DataType/DataTypeManager.h"
+#include "PinView.hpp"
+#include "../ScriptNodeGraph.hpp"
+#include "../Global/ScriptGlobal.hpp"
+#include "../Pin/PinTypeManager.hpp"
+#include "../DataType/DataTypeManager.hpp"
 
 namespace SCR
 {
@@ -14,32 +14,32 @@ namespace SCR
 	}
 	const std::vector<PinID>& PinView::GetConnectedPinIDs() const
 	{
-		return GetPin().connectedPinIDs;
+		return GetPin().mConnectedPinIDs;
 	}
 
 	DataTypeID PinView::GetDataTypeID() const
 	{
-		return GetPinType().dataTypeID;
+		return GetPinType().mDataTypeID;
 	}
 
 	const std::string& PinView::GetPinTypeName() const
 	{
 		const PinType& pinType = GetPinType();
-		if (pinType.name == "#T")
+		if (pinType.mName == "#T")
 		{
-			return Global::GetDataTypeManager().GetName(pinType.dataTypeID);
+			return Global::GetDataTypeManager().GetName(pinType.mDataTypeID);
 		}
-		return pinType.name;
+		return pinType.mName;
 	}
 
 	eFlowType PinView::GetFlowType() const
 	{
-		return GetPinType().flowType;
+		return GetPinType().mFlowType;
 	}
 
 	NodeID PinView::GetNodeID() const
 	{
-		return GetPin().nodeID;
+		return GetPin().mNodeID;
 	}
 
 	PinID PinView::GetID() const
@@ -49,12 +49,12 @@ namespace SCR
 
 	const Pin& PinView::GetPin() const
 	{
-		return myNodeGraph->myPinManager->myPins.at(myPinID);
+		return myNodeGraph->mPinManager->myPins.at(myPinID);
 	}
 
 	const PinType& PinView::GetPinType() const
 	{
 		const Pin& pin = GetPin();
-		return Global::GetPinTypeManager().GetPinType(pin.typeID);
+		return Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 	}
 }

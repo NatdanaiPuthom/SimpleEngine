@@ -1,7 +1,7 @@
-#include "MathNodes.h"
-#include "../Node/NodeTypeRegistry.h"
-#include "../Contexts/ExecutionContextBase.h"
-#include "../DataType/DataTypeRegistry.h"
+#include "MathNodes.hpp"
+#include "../Node/NodeTypeRegistry.hpp"
+#include "../Contexts/ExecutionContextBase.hpp"
+#include "../DataType/DataTypeRegistry.hpp"
 #include <imgui.h>
 
 namespace SCR
@@ -101,7 +101,7 @@ namespace SCR
 
 	static float Wave(NodeExecutionContext<ExecutionContextBase> aContext, NodeState<WaveData> aData, float aFrequency, float anAmplitude, float anEquilibrium, WaveTypeData aWaveType)
 	{
-		aData.value.t += aContext.context.deltaTime;
+		aData.value.t += aContext.context.mDeltaTime;
 		return anEquilibrium + CalculateFrequencyByType(aWaveType.waveType, aData.value.t * aFrequency) * anAmplitude;
 	}
 

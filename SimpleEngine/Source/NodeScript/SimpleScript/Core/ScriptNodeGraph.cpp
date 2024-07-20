@@ -1,40 +1,43 @@
-#include "ScriptNodeGraph.h"
-#include "Node/NodeManager.h"
-#include "Pin/PinManager.h"
-#include "ScriptProxy.h"
+#include "ScriptNodeGraph.hpp"
+#include "Node/NodeManager.hpp"
+#include "Pin/PinManager.hpp"
+#include "Global/ScriptGlobal.hpp"
+#include "Node/NodeTypeManager.hpp"
 
 namespace SCR
 {
 
 	NodeGraph::NodeGraph(const eNodeGraphType aType)
-		: myNodeManager(std::make_unique<NodeManager>())
-		, myPinManager(std::make_unique<PinManager>())
-		, myType(aType)
+		: mNodeManager(std::make_unique<NodeManager>())
+		, mPinManager(std::make_unique<PinManager>())
+		, mType(aType)
 	{
 	}
 
 	NodeGraph::~NodeGraph()
 	{
-		for (auto& [nodeID, node, nodeType] : *myNodeManager)
+		for (NodeID nodeID = 0; nodeID < mNodeManager->mNodes.size(); ++nodeID)
 		{
-			std::erase(nodeType->nodeRefs, NodeRef{ .nodeID = nodeID, .nodeGraph = this });
+			const Node& node = mNodeManager->mNodes[nodeID];
+			NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+			std::erase(nodeType.mNodeRefs, NodeRef{ .mNodeID = nodeID, .mNodeGraph = this });
 		}
 	}
 
 	NodeGraph::NodeGraph(const NodeGraph& aOther)
-		: myNodeManager(std::make_unique<NodeManager>(*aOther.myNodeManager))
-		, myPinManager(std::make_unique<PinManager>(*aOther.myPinManager))
-		, myMemoryArena(aOther.myMemoryArena)
-		, myType(aOther.myType)
+		: mNodeManager(std::make_unique<NodeManager>(*aOther.mNodeManager))
+		, mPinManager(std::make_unique<PinManager>(*aOther.mPinManager))
+		, mMemoryArena(aOther.mMemoryArena)
+		, mType(aOther.mType)
 	{
 
-		for (Pin& pin : myPinManager->myPins)
+		for (Pin& pin : mPinManager->myPins)
 		{
-			pin.dataPtr = myMemoryArena.GetRenewedPointer(pin.dataPtr, aOther.myMemoryArena);
+			pin.mDataPtr = mMemoryArena.GetRenewedPointer(pin.mDataPtr, aOther.mMemoryArena);
 		}
 	}
 	eNodeGraphType NodeGraph::GetType() const
 	{
-		return myType;
+		return mType;
 	}
 }

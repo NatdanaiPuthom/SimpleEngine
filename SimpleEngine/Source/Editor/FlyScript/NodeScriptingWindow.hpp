@@ -1,12 +1,12 @@
 #pragma once
 #include "Editor/Template/ToolInterface.hpp"
-#include "NodeScript/SimpleScript/Core/ScriptDefines.h"
+#include "NodeScript/SimpleScript/Core/ScriptDefines.hpp"
 #include "VariableWindow.hpp"
 #include "NodeCreatorWindow.hpp"
 #include "FunctionWindow.hpp"
 #include "FunctionSettingsWindow.hpp"
-#include "NodeScript/SimpleScript/Core/SystemTypes/ScriptVec2.h"
-#include "NodeScript/SimpleScript/Core/ScriptModifier.h"
+#include "NodeScript/SimpleScript/Core/SystemTypes/ScriptVec2.hpp"
+#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
 #include <External/imgui.h>
 #include <vector>
 #include <string>
@@ -18,7 +18,7 @@ namespace SCRIPT
 {
 	struct Color;
 	class ScriptManager;
-	class Script;
+	class Class;
 	class CommandTracker;
 	class NodeGraph;
 }
@@ -39,7 +39,7 @@ namespace Editor
 
 	struct NodeContext
 	{
-		SCRIPT::Script* script;
+		SCRIPT::Class* script;
 		SCRIPT::NodeGraph* nodeGraph;
 
 		std::vector<SCRIPT::PinID> myPinIDsToHighlight;
@@ -76,7 +76,7 @@ namespace Editor
 
 		NodeContext& GetNodeContext();
 		const NodeContext& GetNodeContext() const;
-		void SetNodeContext(SCRIPT::NodeGraph& aNodeGraph, SCRIPT::Script* aScript);
+		void SetNodeContext(SCRIPT::NodeGraph& aNodeGraph, SCRIPT::Class* aScript);
 		eScriptMode GetCurrentMode() const;
 
 		void UpdateContext();

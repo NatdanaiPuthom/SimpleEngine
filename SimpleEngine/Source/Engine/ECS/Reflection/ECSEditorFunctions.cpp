@@ -8,11 +8,11 @@
 #include "Graphics/Texture/Texture.hpp"
 #include "Graphics/BufferData.hpp"
 
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
-#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.h"
-#include "NodeScript/SimpleScript/Core/Script.h"
-#include "NodeScript/SimpleScript/Core/Instance/ScriptInstance.h"
-#include "NodeScript/SimpleScript/Core/ScriptFoundation.h"
+#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
+#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/FlyClass.hpp"
+#include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
+#include "NodeScript/SimpleScript/Core/ScriptFoundation.hpp"
 
 #include "External/imgui.h"
 
@@ -486,7 +486,7 @@ namespace ECS
 		return true;
 	}
 
-	bool ViewAndEditValue(SCRIPT::ScriptInstance*& aScriptInstance, const std::string& /*aVariableName*/)
+	bool ViewAndEditValue(SCRIPT::ClassInstance*& aScriptInstance, const std::string& /*aVariableName*/)
 	{
 		SCRIPT::DataTypeManager& dataTypeManager = SCRIPT::Global::GetDataTypeManager();
 		SCRIPT::ScriptFoundation& scriptFoundation = SCRIPT::Global::GetFoundation();
@@ -497,30 +497,30 @@ namespace ECS
 
 		if (ImGui::BeginCombo("Script", "None"))
 		{
-			for (auto& [dataTypeID, scriptsByTypeID] : scripts)
+			for (auto& [dataTypeID, classesByTarget] : scripts)
 			{
 				const SCRIPT::DataType* dataType = dataTypeManager.Find(dataTypeID);
 				if (dataType == nullptr)
 				{
 					continue;
 				}
-				ImGui::Text("%s Scripts:", dataType->name.c_str());
-				for (auto& script : scriptsByTypeID)
+				ImGui::Text("%s Scripts:", dataType->mName.c_str());
+				for (auto& flyClass : classesByTarget)
 				{
 					bool isSelected = false;
 					if (aScriptInstance != nullptr)
 					{
-						isSelected = aScriptInstance->myScript == script.get();
+						isSelected = aScriptInstance->mClass == flyClass.get();
 					}
-					if (ImGui::Selectable(script->Name().c_str(), isSelected))
+					if (ImGui::Selectable(flyClass->Name().c_str(), isSelected))
 					{
 						if (aScriptInstance != nullptr)
 						{
-							script->DestroyScriptInstance(*aScriptInstance);
+							flyClass->DestroyClassInstance(*aScriptInstance);
 
 						}
 
-						aScriptInstance = &script->CreateScriptInstance();
+						aScriptInstance = &flyClass->CreateClassInstance();
 
 						wasChanged = true;
 					}

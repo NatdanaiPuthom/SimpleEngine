@@ -1,6 +1,6 @@
-#include "PinType.h"
-#include "../DataType/DataTypeManager.h"
-#include "../Global/ScriptGlobal.h"
+#include "PinType.hpp"
+#include "../DataType/DataTypeManager.hpp"
+#include "../Global/ScriptGlobal.hpp"
 
 namespace SCR
 {

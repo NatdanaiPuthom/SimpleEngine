@@ -1,8 +1,9 @@
-#include "ScriptFilter.h"
-#include "../Script.h"
-#include "../Utilities/ScriptUtilities.h"
-#include "../Pin/PinTypeManager.h"
-#include "ScriptProxy.h"
+#include "ScriptFilter.hpp"
+#include "../Utilities/ScriptUtilities.hpp"
+#include "../Pin/PinTypeManager.hpp"
+#include "ScriptProxy.hpp"
+#include "../Node/Node.hpp"
+#include "Global/ScriptGlobal.hpp"
 
 namespace SCR
 {
@@ -17,11 +18,11 @@ namespace SCR
 
 		for (PinID i = 0; i < ScriptProxy::GetPins(aNodeGraph).size(); i++)
 		{
-			if (PinTypeManager::GetPinType(ScriptProxy::GetPin(aNodeGraph, i).typeID).flowType == eFlowType::Input)
+			if (Global::GetPinTypeManager().GetPinType(ScriptProxy::GetPin(aNodeGraph, i).mTypeID).mFlowType == eFlowType::Input)
 			{
-				const NodeID nodeID = ScriptProxy::GetPin(aNodeGraph, i).nodeID;
+				const NodeID mNodeID = ScriptProxy::GetPin(aNodeGraph, i).mNodeID;
 
-				if (!ScriptProxy::GetNode(aNodeGraph, nodeID).isDestroyed)
+				if (!ScriptProxy::GetNode(aNodeGraph, mNodeID).mIsDestroyed)
 				{
 					inputPinIDs.push_back(i);
 				}
@@ -37,10 +38,10 @@ namespace SCR
 		for (PinID i = 0; i < ScriptProxy::GetPins(aNodeGraph).size(); i++)
 		{
 			const Pin& pin = ScriptProxy::GetPin(aNodeGraph, i);
-			if (PinTypeManager::GetPinType(pin.typeID).flowType == eFlowType::Output)
+			if (Global::GetPinTypeManager().GetPinType(pin.mTypeID).mFlowType == eFlowType::Output)
 			{
 
-				if (!ScriptProxy::GetNode(aNodeGraph, pin.nodeID).isDestroyed)
+				if (!ScriptProxy::GetNode(aNodeGraph, pin.mNodeID).mIsDestroyed)
 				{
 					pinIDs.push_back(i);
 				}
@@ -55,7 +56,7 @@ namespace SCR
 
 		return Stream<PinID>(inputPinIDs).Filter([&](PinID aPinID) -> bool
 			{
-				return ScriptProxy::GetPin(aNodeGraph, aPinID).connectedPinIDs.empty();
+				return ScriptProxy::GetPin(aNodeGraph, aPinID).mConnectedPinIDs.empty();
 			})
 			.GetCopy();
 
@@ -67,7 +68,7 @@ namespace SCR
 
 		return Stream<PinID>(pinIDs).Filter([&](PinID aPinID) -> bool
 			{
-				return ScriptProxy::GetPin(aNodeGraph, aPinID).connectedPinIDs.empty();
+				return ScriptProxy::GetPin(aNodeGraph, aPinID).mConnectedPinIDs.empty();
 			})
 			.GetCopy();
 
@@ -99,7 +100,7 @@ namespace SCR
 
 			for (PinID id : pinTypeFilter)
 			{
-				if (PinTypeManager::GetPinType(ScriptProxy::GetPin(aNodeGraph, id).typeID).dataTypeID == aDataTypeID)
+				if (Global::GetPinTypeManager().GetPinType(ScriptProxy::GetPin(aNodeGraph, id).mTypeID).mDataTypeID == aDataTypeID)
 				{
 					pinIDs.push_back(id);
 				}
@@ -109,7 +110,7 @@ namespace SCR
 		case eFlowType::Output:
 			for (PinID id : pinTypeFilter)
 			{
-				if (PinTypeManager::GetPinType(ScriptProxy::GetPin(aNodeGraph, id).typeID).dataTypeID == aDataTypeID)
+				if (Global::GetPinTypeManager().GetPinType(ScriptProxy::GetPin(aNodeGraph, id).mTypeID).mDataTypeID == aDataTypeID)
 				{
 					pinIDs.push_back(id);
 				}

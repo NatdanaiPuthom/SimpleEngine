@@ -1,7 +1,7 @@
 #include "SimpleNodeScript.hpp"
-#include "ScriptFoundation.h"
-#include "ScriptLoader.h"
-#include "NodeScript/SimpleScript/SimpleGameNodes.h"
+#include "ScriptFoundation.hpp"
+#include "ScriptLoader.hpp"
+#include "NodeScript/SimpleScript/SimpleGameNodes.hpp"
 
 namespace SCRIPT
 {
@@ -19,6 +19,6 @@ namespace SCRIPT
 		ScriptFoundation::GetInstance().Initialize();
 		RegisterSimpleGameNodes();
 
-		SCRIPT::ScriptLoader::LoadAllScripts(SCRIPT_FILE_PATH);
+		SCRIPT::ScriptLoader::LoadAllClasses(SCRIPT_FILE_PATH);
 	}
 }

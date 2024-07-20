@@ -1,7 +1,6 @@
-#include "SimpleScript/SimpleGameNodes.h"
-#include "SimpleScript/Core/Node/NodeTypeRegistry.h"
-#include "SimpleScript/Core/DataType/DataTypeRegistry.h"
-#include "ECS/Core/Entity.hpp"
+#include "SimpleScript/SimpleGameNodes.hpp"
+#include "SimpleScript/Core/Node/NodeTypeRegistry.hpp"
+#include "SimpleScript/Core/DataType/DataTypeRegistry.hpp"
 
 //template<typename T>
 //std::string ToString(T a)

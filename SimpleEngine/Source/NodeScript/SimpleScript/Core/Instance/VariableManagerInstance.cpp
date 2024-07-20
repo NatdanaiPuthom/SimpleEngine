@@ -1,14 +1,14 @@
-#include "VariableManagerInstance.h"
-#include "Variable/VariableManager.h"
-#include "../DataType/DataTypeManager.h"
-#include "../Global/ScriptGlobal.h"
-#include "../Memory/ScriptMemoryArena.h"
+#include "VariableManagerInstance.hpp"
+#include "Variable/VariableManager.hpp"
+#include "../DataType/DataTypeManager.hpp"
+#include "../Global/ScriptGlobal.hpp"
+#include "../Memory/ScriptMemoryArena.hpp"
 
 namespace SCR
 {
 
 	VariableManagerInstance::VariableManagerInstance()
-		: myMemoryArena(std::make_unique<MemoryArena<VariableArenaSize>>())
+		: mMemoryArena(std::make_unique<MemoryArena<VariableArenaSize>>())
 	{
 	}
 
@@ -17,23 +17,23 @@ namespace SCR
 	}
 
 	VariableManagerInstance::VariableManagerInstance(const VariableManagerInstance& aOther)
-		: myVariables(aOther.myVariables)
-		, myMemoryArena(std::make_unique<MemoryArena<VariableArenaSize>>(*aOther.myMemoryArena))
+		: mVariables(aOther.mVariables)
+		, mMemoryArena(std::make_unique<MemoryArena<VariableArenaSize>>(*aOther.mMemoryArena))
 	{
-		for (VariableInstance& variableInstance : myVariables)
+		for (VariableInstance& variableInstance : mVariables)
 		{
-			variableInstance.runtimeDataPtr = myMemoryArena->GetRenewedPointer(variableInstance.runtimeDataPtr, *aOther.myMemoryArena);
+			variableInstance.mRuntimeDataPtr = mMemoryArena->GetRenewedPointer(variableInstance.mRuntimeDataPtr, *aOther.mMemoryArena);
 		}
 	}
 
 	VariableManagerInstance& VariableManagerInstance::operator=(const VariableManagerInstance& aOther)
 	{
-		myVariables = aOther.myVariables;
-		myMemoryArena = std::make_unique<MemoryArena<VariableArenaSize>>(*aOther.myMemoryArena);
+		mVariables = aOther.mVariables;
+		mMemoryArena = std::make_unique<MemoryArena<VariableArenaSize>>(*aOther.mMemoryArena);
 
-		for (VariableInstance& variableInstance : myVariables)
+		for (VariableInstance& variableInstance : mVariables)
 		{
-			variableInstance.runtimeDataPtr = myMemoryArena->GetRenewedPointer(variableInstance.runtimeDataPtr, *aOther.myMemoryArena);
+			variableInstance.mRuntimeDataPtr = mMemoryArena->GetRenewedPointer(variableInstance.mRuntimeDataPtr, *aOther.mMemoryArena);
 		}
 
 		return *this;
@@ -41,12 +41,12 @@ namespace SCR
 
 	void VariableManagerInstance::Init(VariableManager& aVariableManager)
 	{
-		myMemoryArena->Clear();
-		myVariables.resize(aVariableManager.myVariables.size());
-		for (VarID varID = 0; varID < aVariableManager.myVariables.size(); ++varID)
+		mMemoryArena->Clear();
+		mVariables.resize(aVariableManager.mVariables.size());
+		for (VarID varID = 0; varID < aVariableManager.mVariables.size(); ++varID)
 		{
-			const Variable& variable = aVariableManager.myVariables[varID];
-			myVariables[varID].runtimeDataPtr = Global::GetDataTypeManager().AllocateData(variable.dataTypeID, *myMemoryArena, variable.defaultValueDataPtr);
+			const Variable& variable = aVariableManager.mVariables[varID];
+			mVariables[varID].mRuntimeDataPtr = Global::GetDataTypeManager().AllocateData(variable.dataTypeID, *mMemoryArena, variable.defaultValueDataPtr);
 		}
 	}
 }

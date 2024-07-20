@@ -1,17 +1,15 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "NodeScriptingWindow.hpp"
-#include "NodeScript/SimpleScript/Core/Script.h"
-#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.h"
-#include "NodeScript/SimpleScript/Core/Serialization/ScriptLoader.h"
-#include "NodeScript/SimpleScript/Core/Utilities/ScriptFilter.h"
-#include "NodeScript/SimpleScript/Core/ScriptModifier.h"
-#include "NodeScript/SimpleScript/Core/Command/ScriptCommandTracker.h"
-#include "NodeScript/SimpleScript/Core/ScriptFoundation.h"
-#include "NodeScript/SimpleScript/Core/Instance/ScriptInstance.h"
-#include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.h"
-#include "NodeScript/SimpleScript/Core/Node/NodeExecutor.h"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
-#include "NodeScript/SimpleScript/Core/Utilities/ScriptLinker.h"
+#include "NodeScript/SimpleScript/Core/FlyClass.hpp"
+#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/Serialization/ScriptLoader.hpp"
+#include "NodeScript/SimpleScript/Core/Utilities/ScriptFilter.hpp"
+#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
+#include "NodeScript/SimpleScript/Core/Command/ScriptCommandTracker.hpp"
+#include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
+#include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
+#include "NodeScript/SimpleScript/Core/Node/NodeExecutor.hpp"
+#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
 
 #include "Editor/Menu/MainMenuBar.hpp" //NOTE(v10.0.2): Remove this once we no longer use static bool of MainMenuBar class
 
@@ -50,7 +48,7 @@ namespace Editor
 
 
 
-	void NodeScriptingWindow::SetNodeContext(SCRIPT::NodeGraph& aNodeGraph, SCRIPT::Script* aScript)
+	void NodeScriptingWindow::SetNodeContext(SCRIPT::NodeGraph& aNodeGraph, SCRIPT::Class* aScript)
 	{
 		NodeContext nodeContext
 		{
@@ -81,15 +79,15 @@ namespace Editor
 			auto& scripts = SCRIPT::GetScripts();
 			if (scripts.empty())
 			{
-				SCRIPT::CreateScript(0, "Default Script");
+				SCRIPT::CreateClass(0, "Default Script");
 			}
 
 			if (scripts.begin()->second.empty())
 			{
-				SCRIPT::CreateScript(SCRIPT::GetScripts().begin()->first, "Default Script");
+				SCRIPT::CreateClass(SCRIPT::GetScripts().begin()->first, "Default Script");
 			}
 
-			SCRIPT::Script& script = *scripts.begin()->second.front();
+			SCRIPT::Class& script = *scripts.begin()->second.front();
 			SetNodeContext(script.GetEventGraph(), &script);
 		}
 
@@ -195,7 +193,7 @@ namespace Editor
 
 			if (ImGui::Begin("Member Functions"))
 			{
-				SCRIPT::Script& currentScript = *GetNodeContext().script;
+				SCRIPT::Class& currentScript = *GetNodeContext().script;
 				if (ImGui::Button("Create Member Function"))
 				{
 					SCRIPT::CreateMemberFunction("Function1", currentScript);
@@ -266,7 +264,7 @@ namespace Editor
 
 	void NodeScriptingWindow::ScriptLoadingMenu()
 	{
-		SCRIPT::Script& currentScript = *GetNodeContext().script;
+		SCRIPT::Class& currentScript = *GetNodeContext().script;
 
 		const bool canSave = myCommandTracker->GetUndoSize() == 0;
 
@@ -274,7 +272,7 @@ namespace Editor
 
 		if (ImGui::Button("Save"))
 		{
-			SCRIPT::ScriptLoader::SaveScript(currentScript, SCRIPT_FILE_PATH);
+			SCRIPT::ScriptLoader::SaveClass(currentScript, SCRIPT_FILE_PATH);
 			myCommandTracker->Clear();
 		}
 
@@ -283,7 +281,7 @@ namespace Editor
 
 		if (ImGui::Button("Reload All"))
 		{
-			SCRIPT::ScriptLoader::LoadAllScripts(SCRIPT_FILE_PATH);
+			SCRIPT::ScriptLoader::LoadAllClasses(SCRIPT_FILE_PATH);
 		}
 
 		ImGui::SameLine();
@@ -300,7 +298,7 @@ namespace Editor
 
 			if (ImGui::Button("Create", ImVec2(120, 0)))
 			{
-				SCRIPT::Script& script = SCRIPT::CreateScript(0, myScriptNameText);
+				SCRIPT::Class& script = SCRIPT::CreateClass(0, myScriptNameText);
 				myScriptNameText[0] = (char)0;
 
 				myImNodesContexts.emplace(&script.GetEventGraph(), ImNodes::CreateContext());
@@ -363,25 +361,25 @@ namespace Editor
 
 			if (ImGui::Button("Trigger Event"))
 			{
-				SCRIPT::ScriptInstance& scriptInstance = GetNodeContext().script->CreateScriptInstance();
+				SCRIPT::ClassInstance& classInstance = GetNodeContext().script->CreateClassInstance();
 				SCRIPT::ExecutionContextBase c;
 
 				switch (currentEventIndex)
 				{
 				case 0:
-					SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::BeginPlay, scriptInstance, nullptr, c);
+					SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::BeginPlay, classInstance, nullptr, c);
 					break;
 				case 1:
-					SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::Tick, scriptInstance, nullptr, c);
+					SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::Tick, classInstance, nullptr, c);
 					break;
 				case 2:
-					SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::EndPlay, scriptInstance, nullptr, c);
+					SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::EndPlay, classInstance, nullptr, c);
 					break;
 				default:
 					break;
 				}
 
-				GetNodeContext().script->DestroyScriptInstance(scriptInstance);
+				GetNodeContext().script->DestroyClassInstance(classInstance);
 			}
 		}
 	}
@@ -389,7 +387,7 @@ namespace Editor
 	void NodeScriptingWindow::VisualizeNodes()
 	{
 		NodeContext& currentNodeContext = GetNodeContext();
-		const SCRIPT::Script& currentScript = *GetNodeContext().script;
+		const SCRIPT::Class& currentScript = *GetNodeContext().script;
 
 		ImNodes::BeginNodeEditor();
 

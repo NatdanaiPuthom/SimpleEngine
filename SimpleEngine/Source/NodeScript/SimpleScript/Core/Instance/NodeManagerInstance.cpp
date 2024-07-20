@@ -1,7 +1,8 @@
-#include "NodeManagerInstance.h"
-#include "../Node/NodeManager.h"
-#include "../Global/ScriptGlobal.h"
-#include "../DataType/DataTypeManager.h"
+#include "NodeManagerInstance.hpp"
+#include "../Node/NodeManager.hpp"
+#include "../Global/ScriptGlobal.hpp"
+#include "../DataType/DataTypeManager.hpp"
+#include "../Node/NodeTypeManager.hpp"
 
 namespace SCR
 {
@@ -17,17 +18,19 @@ namespace SCR
 
 	void NodeManagerInstance::Init(const NodeManager& aNodeManager)
 	{
-		myNodeStateMap.clear();
-		myMemoryArena.Clear();
-		for (auto& [nodeID, node, nodeType] : aNodeManager)
+		mNodeStateMap.clear();
+		mMemoryArena.Clear();
+		for (NodeID nodeID = 0; nodeID < aNodeManager.mNodes.size(); ++nodeID)
 		{
-			if (nodeType->nodeRecipe.nodeStateDataTypeID == InvalidID<DataTypeID>())
+			const Node& node = aNodeManager.mNodes[nodeID];
+			const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+			if (nodeType.mNodeRecipe.mNodeStateDataTypeID == InvalidID<DataTypeID>())
 			{
 				continue;
 			}
-			void* dataPtr = Global::GetDataTypeManager().AllocateData(nodeType->nodeRecipe.nodeStateDataTypeID, myMemoryArena);
-			assert(dataPtr != nullptr);
-			myNodeStateMap.emplace(nodeID, dataPtr);
+			void* mDataPtr = Global::GetDataTypeManager().AllocateData(nodeType.mNodeRecipe.mNodeStateDataTypeID, mMemoryArena);
+			assert(mDataPtr != nullptr);
+			mNodeStateMap.emplace(nodeID, mDataPtr);
 		}
 	}
 }

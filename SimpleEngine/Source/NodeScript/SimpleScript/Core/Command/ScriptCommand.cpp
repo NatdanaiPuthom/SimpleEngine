@@ -1,18 +1,18 @@
-#include "ScriptCommand.h"
-#include "ScriptCommandTracker.h"
-#include "../Global/ScriptGlobal.h"
+#include "ScriptCommand.hpp"
+#include "ScriptCommandTracker.hpp"
+#include "../Global/ScriptGlobal.hpp"
 
 namespace SCR
 {
 	Command::Command(const Command& aOther)
-		: myName(aOther.myName)
-		, myCommandFunction(aOther.myCommandFunction)
+		: mName(aOther.mName)
+		, mCommandFunction(aOther.mCommandFunction)
 	{
 	}
 
 	Command::Command(Command&& aOther)
-		: myName(std::move(aOther.myName))
-		, myCommandFunction(std::move(aOther.myCommandFunction))
+		: mName(std::move(aOther.mName))
+		, mCommandFunction(std::move(aOther.mCommandFunction))
 	{
 	}
 
@@ -22,14 +22,14 @@ namespace SCR
 		{
 			if (aCommandType == eCommandType::Do)
 			{
-				std::cout << "Do Command: " << myName << std::endl;
+				std::cout << "Do Command: " << mName << std::endl;
 			}
 			else
 			{
-				std::cout << "Undo Command: " << myName << std::endl;
+				std::cout << "Undo Command: " << mName << std::endl;
 			}
 		}
-		myCommandFunction(aCommandType);
+		mCommandFunction(aCommandType);
 	}
 
 }

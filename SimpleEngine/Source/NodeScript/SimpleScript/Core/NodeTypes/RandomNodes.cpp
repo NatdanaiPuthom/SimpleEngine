@@ -1,5 +1,5 @@
-#include "RandomNodes.h"
-#include "../Node/NodeTypeRegistry.h"
+#include "RandomNodes.hpp"
+#include "../Node/NodeTypeRegistry.hpp"
 #include <random>
 
 namespace SCR

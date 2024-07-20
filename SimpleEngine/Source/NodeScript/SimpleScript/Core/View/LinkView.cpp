@@ -1,5 +1,5 @@
-#include "LinkView.h"
-#include "../ScriptNodeGraph.h"
+#include "LinkView.hpp"
+#include "../ScriptNodeGraph.hpp"
 
 namespace SCR
 {
@@ -14,17 +14,17 @@ namespace SCR
 
 	bool LinkView::IsDestroyed() const
 	{
-		return GetLink().isDestroyed;
+		return GetLink().mIsDestroyed;
 	}
 
 	PinView LinkView::GetInputPin() const
 	{
-		return PinView(GetLink().inputPinID, *myNodeGraph);
+		return PinView(GetLink().mInputPinID, *myNodeGraph);
 	}
 
 	PinView LinkView::GetOutputPin() const
 	{
-		return PinView(GetLink().outputPinID, *myNodeGraph);
+		return PinView(GetLink().mOutputPinID, *myNodeGraph);
 	}
 
 	LinkID LinkView::GetID() const
@@ -34,6 +34,6 @@ namespace SCR
 
 	const Link& LinkView::GetLink() const
 	{
-		return myNodeGraph->myLinks.at(myLinkID);
+		return myNodeGraph->mLinks.at(myLinkID);
 	}
 }

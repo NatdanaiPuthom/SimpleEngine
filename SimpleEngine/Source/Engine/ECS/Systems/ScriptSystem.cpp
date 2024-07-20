@@ -1,8 +1,8 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "ScriptSystem.hpp"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
-#include "NodeScript/SimpleScript/Core/Node/NodeExecutor.h"
-#include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.h"
+#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
+#include "NodeScript/SimpleScript/Core/Node/NodeExecutor.hpp"
+#include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
 
 namespace ECS
 {
@@ -22,10 +22,10 @@ namespace ECS
 
 			const SCRIPT::ExecutionContextBase executionContext
 			{
-				.deltaTime = Global::GetDeltaTime()
+				.mDeltaTime = Global::GetDeltaTime()
 			};
 
-			SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::Tick, *scriptComponent->scriptInstance, &entity, executionContext, true);
+			SCRIPT::Global::GetNodeExecutor().ExecuteEvent(SCRIPT::Tick, *scriptComponent->classInstance, &entity, executionContext, true);
 		}
 	}
 

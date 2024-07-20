@@ -1,4 +1,4 @@
-#include "DataTypeManager.h"
+#include "DataTypeManager.hpp"
 
 namespace SCR
 {
@@ -16,20 +16,20 @@ namespace SCR
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
 			// If data type has a valid edit function
-			if (dataType->typeInterface.function.edit)
+			if (dataType->mInterface.function.edit)
 			{
-				return dataType->typeInterface.function.edit(aDataPtr);
+				return dataType->mInterface.function.edit(aDataPtr);
 			}
 
 			bool wasEdited = false;
 
 			// Visualize properties instead
-			for (const Property& property : dataType->properties)
+			for (const Property& property : dataType->mProperties)
 			{
-				if (const DataType* propertyDataType = Find(property.typeID))
+				if (const DataType* propertyDataType = Find(property.mTypeID))
 				{
 					void* propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + property.byteOffset);
-					wasEdited |= EditData(property.typeID, propertyDataPtr);
+					wasEdited |= EditData(property.mTypeID, propertyDataPtr);
 				}
 			}
 
@@ -44,20 +44,20 @@ namespace SCR
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
 			// If data type has a valid save function
-			if (dataType->typeInterface.function.save)
+			if (dataType->mInterface.function.save)
 			{
-				dataType->typeInterface.function.save(aJson, aDataPtr);
+				dataType->mInterface.function.save(aJson, aDataPtr);
 				return true;
 			}
 
 			// Save properties instead
-			for (const Property& property : dataType->properties)
+			for (const Property& property : dataType->mProperties)
 			{
 				nlohmann::json propertyJson;
 				const void* propertyDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + property.byteOffset);
-				if (SaveData(property.typeID, propertyJson, propertyDataPtr))
+				if (SaveData(property.mTypeID, propertyJson, propertyDataPtr))
 				{
-					aJson[property.name] = propertyJson;
+					aJson[property.mName] = propertyJson;
 				}
 			}
 		}
@@ -69,20 +69,20 @@ namespace SCR
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
 			// If data type has a valid load function
-			if (dataType->typeInterface.function.load)
+			if (dataType->mInterface.function.load)
 			{
-				dataType->typeInterface.function.load(aJson, aDataPtr);
+				dataType->mInterface.function.load(aJson, aDataPtr);
 				return true;
 			}
 
 			// Load properties instead
-			for (const Property& property : dataType->properties)
+			for (const Property& property : dataType->mProperties)
 			{
-				auto it = aJson.find(property.name);
+				auto it = aJson.find(property.mName);
 				if (it != aJson.end())
 				{
 					void* propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + property.byteOffset);
-					LoadData(property.typeID, it.value(), propertyDataPtr);
+					LoadData(property.mTypeID, it.value(), propertyDataPtr);
 				}
 			}
 		}
@@ -93,9 +93,9 @@ namespace SCR
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			if (dataType->typeInterface.creation.release)
+			if (dataType->mInterface.creation.release)
 			{
-				dataType->typeInterface.creation.release(aDataPtr);
+				dataType->mInterface.creation.release(aDataPtr);
 			}
 		}
 	}
@@ -104,9 +104,9 @@ namespace SCR
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			if (dataType->typeInterface.creation.copy)
+			if (dataType->mInterface.creation.copy)
 			{
-				dataType->typeInterface.creation.copy(aDestination, aSource);
+				dataType->mInterface.creation.copy(aDestination, aSource);
 			}
 		}
 	}
@@ -115,9 +115,9 @@ namespace SCR
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			if (dataType->typeInterface.creation.swap)
+			if (dataType->mInterface.creation.swap)
 			{
-				dataType->typeInterface.creation.swap(aDataPtr1, aDataPtr2);
+				dataType->mInterface.creation.swap(aDataPtr1, aDataPtr2);
 			}
 		}
 	}
@@ -126,7 +126,7 @@ namespace SCR
 	{
 		if (myDataTypes.contains(aDataTypeID))
 		{
-			return myDataTypes.at(aDataTypeID).name;
+			return myDataTypes.at(aDataTypeID).mName;
 		}
 		return myNullNameStr;
 	}
@@ -135,7 +135,7 @@ namespace SCR
 	{
 		for (const auto& [dataTypeID, dataType] : myDataTypes)
 		{
-			if (aName == dataType.name)
+			if (aName == dataType.mName)
 			{
 				return dataTypeID;
 			}
@@ -154,7 +154,7 @@ namespace SCR
 
 		for (const auto& [dataTypeID, dataType] : myDataTypes)
 		{
-			if (dataType.typeInterface)
+			if (dataType.mInterface)
 			{
 				dataTypes.emplace(dataTypeID, &dataType);
 			}
@@ -171,7 +171,7 @@ namespace SCR
 
 		for (const auto& [dataTypeID, dataType] : myDataTypes)
 		{
-			if (predicate(dataType.typeTraits, aTrait))
+			if (predicate(dataType.mTypeTraits, aTrait))
 			{
 				dataTypes.emplace(dataTypeID, &dataType);
 			}
@@ -185,7 +185,7 @@ namespace SCR
 		if (myDataTypes.contains(aDataTypeID))
 		{
 			const DataType& dataType = myDataTypes.at(aDataTypeID);
-			return dataType.color;
+			return dataType.mColor;
 		}
 		return DefaultColor;
 	}
@@ -195,7 +195,7 @@ namespace SCR
 		if (myDataTypes.contains(aDataTypeID))
 		{
 			const DataType& dataType = myDataTypes.at(aDataTypeID);
-			return dataType.color - mySelectionTint;
+			return dataType.mColor - mySelectionTint;
 		}
 		return DefaultColor - mySelectionTint;
 	}
@@ -205,7 +205,7 @@ namespace SCR
 		if (myDataTypes.contains(aDataTypeID))
 		{
 			const DataType& dataType = myDataTypes.at(aDataTypeID);
-			return dataType.color - myHoverTint;
+			return dataType.mColor - myHoverTint;
 		}
 		return DefaultColor - myHoverTint;
 	}

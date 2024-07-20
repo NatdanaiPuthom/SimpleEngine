@@ -1,12 +1,12 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "VariableWindow.hpp"
 #include "NodeScriptingWindow.hpp"
-#include "NodeScript/SimpleScript/Core/Script.h"
-#include "NodeScript/SimpleScript/Core/Utilities/ScriptUtilities.h"
-#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.h"
-#include "NodeScript/SimpleScript/Core/Utilities/ScriptProxy.h"
-#include "NodeScript/SimpleScript/Core/ScriptModifier.h"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
+#include "NodeScript/SimpleScript/Core/FlyClass.hpp"
+#include "NodeScript/SimpleScript/Core/Utilities/ScriptUtilities.hpp"
+#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/Utilities/ScriptProxy.hpp"
+#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
+#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
 
 namespace Editor
 {
@@ -18,7 +18,7 @@ namespace Editor
 
 	void VariableWindow::Update()
 	{
-		SCRIPT::Script& currentScript = *myParentWindow.GetNodeContext().script;
+		SCRIPT::Class& currentScript = *myParentWindow.GetNodeContext().script;
 
 		if (ImGui::Begin("VariableWindow"))
 		{
@@ -83,7 +83,7 @@ namespace Editor
 		int i = 0;
 		for (const auto& [dataTypeID, obj] : SCRIPT::Global::GetDataTypeManager().GetDataTypes())
 		{
-			ss << obj.name << '\0';
+			ss << obj.mName << '\0';
 			dataTypeIDs.push_back(dataTypeID);
 			if (aVariable.GetDataTypeID() == dataTypeID)
 			{

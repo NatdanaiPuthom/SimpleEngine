@@ -1,5 +1,5 @@
-#include "ScriptCommandTracker.h"
-#include "ScriptCompositeCommand.h"
+#include "ScriptCommandTracker.hpp"
+#include "ScriptCompositeCommand.hpp"
 
 namespace SCR
 {

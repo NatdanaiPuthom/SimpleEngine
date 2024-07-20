@@ -1,16 +1,15 @@
-#include "ScriptInternalModifier.h"
-#include "Script.h"
-#include "CustomEvent/CustomEvent.h"
-#include "Node/NodeTypeManager.h"
-#include "Pin/PinTypeManager.h"
-#include "DataType/DataTypeManager.h"
-#include "Command/ScriptCommandTracker.h"
-#include "Command/ScriptFunctionCommand.h"
-#include "Node/NodeExecutor.h"
-#include "Utilities/ScriptLinker.h"
-#include "ScriptModifier.h"
-#include "Global/ScriptGlobal.h"
-#include "ScriptFlow.h"
+#include "ScriptInternalModifier.hpp"
+#include "FlyClass.hpp"
+#include "CustomEvent/CustomEvent.hpp"
+#include "Node/NodeTypeManager.hpp"
+#include "Pin/PinTypeManager.hpp"
+#include "DataType/DataTypeManager.hpp"
+#include "Command/ScriptCommandTracker.hpp"
+#include "Node/NodeExecutor.hpp"
+#include "Utilities/ScriptLinker.hpp"
+#include "ScriptModifier.hpp"
+#include "Global/ScriptGlobal.hpp"
+#include "ScriptFlow.hpp"
 
 namespace SCR
 {
@@ -32,13 +31,13 @@ namespace SCR
 		NodeID CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, CommandTracker* aCommandTracker)
 		{
 			const NodeID id = GetCurrentNodeID(aNodeGraph);
-			AddNode(aNodeGraph, NodeTypeManager::GetInstance().CreateInstance(aNodeGraph, id, aNodeTypeID), id, aCommandTracker);
+			AddNode(aNodeGraph, Global::GetNodeTypeManager().CreateNode(aNodeGraph, id, aNodeTypeID), id, aCommandTracker);
 			return id;
 		}
 
 		NodeID CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker)
 		{
-			const NodeTypeID typeID = NodeTypeManager::GetInstance().GetTypeID(aName);
+			const NodeTypeID typeID = Global::GetNodeTypeManager().GetTypeID(aName);
 			aSuccess = typeID != 0;
 			if (!aCreateIfNameNotFound && !aSuccess)
 			{
@@ -50,21 +49,21 @@ namespace SCR
 		NodeID CreateGetterNode(NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
 		{
 			const NodeID id = GetCurrentNodeID(aNodeGraph);
-			AddNode(aNodeGraph, NodeTypeManager::GetInstance().CreateInstance_Getter(aNodeGraph, id, aDataTypeID), id, aCommandTracker);
+			AddNode(aNodeGraph, Global::GetNodeTypeManager().CreateGetterNode(aNodeGraph, id, aDataTypeID), id, aCommandTracker);
 			return id;
 		}
 
 		NodeID CreateSetterNode(NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
 		{
 			const NodeID id = GetCurrentNodeID(aNodeGraph);
-			AddNode(aNodeGraph, NodeTypeManager::GetInstance().CreateInstance_Setter(aNodeGraph, id, aDataTypeID), id, aCommandTracker);
+			AddNode(aNodeGraph, Global::GetNodeTypeManager().CreateSetterNode(aNodeGraph, id, aDataTypeID), id, aCommandTracker);
 			return id;
 		}
 
 		NodeID CreateOperatorNode(NodeGraph& aNodeGraph, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
 		{
 			const NodeID id = GetCurrentNodeID(aNodeGraph);
-			AddNode(aNodeGraph, NodeTypeManager::GetInstance().CreateInstance_Operator(aNodeGraph, id, aOperatorTrait, aDataTypeID), id, aCommandTracker);
+			AddNode(aNodeGraph, Global::GetNodeTypeManager().CreateOperatorNode(aNodeGraph, id, aOperatorTrait, aDataTypeID), id, aCommandTracker);
 			return id;
 		}
 
@@ -76,23 +75,23 @@ namespace SCR
 
 			Node& createdNode = nodes.back();
 
-			NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(createdNode.typeID);
-			nodeType.nodeRefs.push_back(NodeRef{ .nodeID = aNodeID, .nodeGraph = &aNodeGraph });
+			NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(createdNode.mTypeID);
+			nodeType.mNodeRefs.push_back(NodeRef{ .mNodeID = aNodeID, .mNodeGraph = &aNodeGraph });
 
 			struct CreateNodeData
 			{
-				NodeID nodeID = InvalidID<NodeID>();
-				NodeGraph* nodeGraph = nullptr;
+				NodeID mNodeID = InvalidID<NodeID>();
+				NodeGraph* mNodeGraph = nullptr;
 			} data;
 
-			data.nodeID = aNodeID;
-			data.nodeGraph = &aNodeGraph;
+			data.mNodeID = aNodeID;
+			data.mNodeGraph = &aNodeGraph;
 
 			auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
-					Node& node = ScriptProxy::GetNodeRef(*data.nodeGraph, data.nodeID);
+					Node& node = ScriptProxy::GetNodeRef(*data.mNodeGraph, data.mNodeID);
 
-					node.isDestroyed = aCommandType == eCommandType::Undo;
+					node.mIsDestroyed = aCommandType == eCommandType::Undo;
 				};
 
 			if (!aCommandTracker)
@@ -107,8 +106,8 @@ namespace SCR
 
 		std::vector<PinID> CreateInputPins(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID, size_t aStartIndex)
 		{
-			const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID);
-			const std::vector<PinTypeID>& pinTypeIDs = nodeType.nodeRecipe.inputPinTypeIDs;
+			const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(aNodeTypeID);
+			const std::vector<PinTypeID>& pinTypeIDs = nodeType.mNodeRecipe.mInputPinTypeIDs;
 			std::vector<PinID> pinsIDs;
 
 			for (size_t i = aStartIndex; i < pinTypeIDs.size(); i++)
@@ -121,20 +120,20 @@ namespace SCR
 
 		PinID CreatePin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID)
 		{
-			DataTypeID dataTypeID = PinTypeManager::GetPinType(aPinTypeID).dataTypeID;
+			const DataTypeID dataTypeID = Global::GetPinTypeManager().GetPinType(aPinTypeID).mDataTypeID;
 
 			MemoryArena<NodeBufferCapacity>& memoryArena = ScriptProxy::GetNodeGraphMemoryArena(aNodeGraph);
 
-			void* dataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryArena);
+			void* const mDataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryArena);
 
-			return CreatePin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
+			return CreatePin(aNodeGraph, aNodeID, aPinTypeID, mDataPtr);
 		}
 
 
 		std::vector<PinID> CreateOutputPins(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID, const size_t aStartIndex)
 		{
-			const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(aNodeTypeID);
-			const std::vector<PinTypeID>& pinTypeIDs = nodeType.nodeRecipe.outputPinTypeIDs;
+			const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(aNodeTypeID);
+			const std::vector<PinTypeID>& pinTypeIDs = nodeType.mNodeRecipe.mOutputPinTypeIDs;
 			std::vector<PinID> pinsIDs;
 
 			for (size_t i = aStartIndex; i < pinTypeIDs.size(); i++)
@@ -156,40 +155,40 @@ namespace SCR
 
 		void ActivateLink(NodeGraph& aNodeGraph, const LinkID aLinkID)
 		{
-			Link& link = aNodeGraph.myLinks[aLinkID];
+			Link& link = aNodeGraph.mLinks[aLinkID];
 
 
 			{
-				Pin& inputPin = ScriptProxy::GetPinRef(aNodeGraph, link.inputPinID);
-				auto it = std::find(inputPin.connectedPinIDs.begin(), inputPin.connectedPinIDs.end(), link.outputPinID);
-				if (it == inputPin.connectedPinIDs.end())
+				Pin& inputPin = ScriptProxy::GetPinRef(aNodeGraph, link.mInputPinID);
+				auto it = std::find(inputPin.mConnectedPinIDs.begin(), inputPin.mConnectedPinIDs.end(), link.mOutputPinID);
+				if (it == inputPin.mConnectedPinIDs.end())
 				{
-					inputPin.connectedPinIDs.push_back(link.outputPinID);
+					inputPin.mConnectedPinIDs.push_back(link.mOutputPinID);
 				}
 			}
 			{
-				Pin& outputPin = ScriptProxy::GetPinRef(aNodeGraph, link.outputPinID);
-				auto it = std::find(outputPin.connectedPinIDs.begin(), outputPin.connectedPinIDs.end(), link.inputPinID);
-				if (it == outputPin.connectedPinIDs.end())
+				Pin& outputPin = ScriptProxy::GetPinRef(aNodeGraph, link.mOutputPinID);
+				auto it = std::find(outputPin.mConnectedPinIDs.begin(), outputPin.mConnectedPinIDs.end(), link.mInputPinID);
+				if (it == outputPin.mConnectedPinIDs.end())
 				{
-					outputPin.connectedPinIDs.push_back(link.inputPinID);
+					outputPin.mConnectedPinIDs.push_back(link.mInputPinID);
 				}
 			}
 
-			link.isDestroyed = false;
+			link.mIsDestroyed = false;
 		}
 
 		void DeactivateLink(NodeGraph& aNodeGraph, const LinkID aLinkID)
 		{
-			Link& link = aNodeGraph.myLinks[aLinkID];
+			Link& link = aNodeGraph.mLinks[aLinkID];
 
-			Pin& inputPin = ScriptProxy::GetPinRef(aNodeGraph, link.inputPinID);
-			Pin& outputPin = ScriptProxy::GetPinRef(aNodeGraph, link.outputPinID);
+			Pin& inputPin = ScriptProxy::GetPinRef(aNodeGraph, link.mInputPinID);
+			Pin& outputPin = ScriptProxy::GetPinRef(aNodeGraph, link.mOutputPinID);
 
-			std::erase(inputPin.connectedPinIDs, link.outputPinID);
-			std::erase(outputPin.connectedPinIDs, link.inputPinID);
+			std::erase(inputPin.mConnectedPinIDs, link.mOutputPinID);
+			std::erase(outputPin.mConnectedPinIDs, link.mInputPinID);
 
-			link.isDestroyed = true;
+			link.mIsDestroyed = true;
 		}
 
 		LinkID CreateLink(NodeGraph& aNodeGraph, const PinID aInputPinID, const PinID aOutputPinID, CommandTracker* aCommandTracker)
@@ -201,21 +200,21 @@ namespace SCR
 			{
 				LinkID createdLinkID = InvalidID<LinkID>();
 				LinkID previousLinkID = InvalidID<LinkID>();
-				NodeGraph* nodeGraph = nullptr;
+				NodeGraph* mNodeGraph = nullptr;
 			} data;
 
-			data.nodeGraph = &aNodeGraph;
-			data.createdLinkID = static_cast<LinkID>(aNodeGraph.myLinks.size());
+			data.mNodeGraph = &aNodeGraph;
+			data.createdLinkID = static_cast<LinkID>(aNodeGraph.mLinks.size());
 
 
 			const Pin& inputPin = ScriptProxy::GetPin(aNodeGraph, aInputPinID);
 			const Pin& outputPin = ScriptProxy::GetPin(aNodeGraph, aOutputPinID);
-			const PinType& inputPinType = Global::GetPinTypeManager().GetPinType(inputPin.typeID);
-			const PinType& outputPinType = Global::GetPinTypeManager().GetPinType(outputPin.typeID);
-			DataTypeID inputPinDataType = inputPinType.dataTypeID;
-			DataTypeID outputPinDataType = outputPinType.dataTypeID;
-			assert(inputPinType.flowType == eFlowType::Input);
-			assert(outputPinType.flowType == eFlowType::Output);
+			const PinType& inputPinType = Global::GetPinTypeManager().GetPinType(inputPin.mTypeID);
+			const PinType& outputPinType = Global::GetPinTypeManager().GetPinType(outputPin.mTypeID);
+			DataTypeID inputPinDataType = inputPinType.mDataTypeID;
+			DataTypeID outputPinDataType = outputPinType.mDataTypeID;
+			assert(inputPinType.mFlowType == eFlowType::Input);
+			assert(outputPinType.mFlowType == eFlowType::Output);
 			assert(inputPinDataType == outputPinDataType);
 
 			if (inputPinDataType != GetDataTypeID<Flow>())
@@ -239,16 +238,16 @@ namespace SCR
 
 			}
 
-			aNodeGraph.myLinks.push_back(Link{ aInputPinID, aOutputPinID });
+			aNodeGraph.mLinks.push_back(Link{ aInputPinID, aOutputPinID });
 
 			auto doAction = [](const CreateLinkData& aData) -> void
 				{
 					if (aData.previousLinkID != InvalidID<LinkID>())
 					{
-						DeactivateLink(*aData.nodeGraph, aData.previousLinkID);
+						DeactivateLink(*aData.mNodeGraph, aData.previousLinkID);
 					}
 
-					ActivateLink(*aData.nodeGraph, aData.createdLinkID);
+					ActivateLink(*aData.mNodeGraph, aData.createdLinkID);
 				};
 
 			auto commandFunction = [data](eCommandType aCommandType)
@@ -258,17 +257,17 @@ namespace SCR
 
 						if (data.previousLinkID != InvalidID<LinkID>())
 						{
-							DeactivateLink(*data.nodeGraph, data.previousLinkID);
+							DeactivateLink(*data.mNodeGraph, data.previousLinkID);
 						}
 
-						ActivateLink(*data.nodeGraph, data.createdLinkID);
+						ActivateLink(*data.mNodeGraph, data.createdLinkID);
 					}
 					else
 					{
-						DeactivateLink(*data.nodeGraph, data.createdLinkID);
+						DeactivateLink(*data.mNodeGraph, data.createdLinkID);
 						if (data.previousLinkID != InvalidID<LinkID>())
 						{
-							ActivateLink(*data.nodeGraph, data.previousLinkID);
+							ActivateLink(*data.mNodeGraph, data.previousLinkID);
 						}
 					}
 				};
@@ -293,17 +292,17 @@ namespace SCR
 			struct DestroyLinkData
 			{
 				LinkID destroyedLinkID = InvalidID<LinkID>();
-				NodeGraph* nodeGraph = nullptr;
+				NodeGraph* mNodeGraph = nullptr;
 			} data;
 
 			data.destroyedLinkID = aLinkID;
-			data.nodeGraph = &aNodeGraph;
+			data.mNodeGraph = &aNodeGraph;
 
 			auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
 					void (*func) (NodeGraph&, LinkID) = aCommandType == eCommandType::Do ? DeactivateLink : ActivateLink;
 
-					func(*data.nodeGraph, data.destroyedLinkID);
+					func(*data.mNodeGraph, data.destroyedLinkID);
 				};
 
 			if (!aCommandTracker)
@@ -316,7 +315,7 @@ namespace SCR
 			}
 		}
 
-		VarID CreateVariable(Script& aScript, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
+		VarID CreateVariable(Class& aScript, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
 		{
 			std::vector<Variable>& variables = ScriptProxy::GetVariablesRef(aScript);
 			const VarID id = variables.size();
@@ -325,13 +324,13 @@ namespace SCR
 			return id;
 		}
 
-		void BindVariable(Script& aScript, const NodeRef& aNodeRef, const VarID aVarID, CommandTracker* aCommandTracker)
+		void BindVariable(Class& aScript, const NodeRef& aNodeRef, const VarID aVarID, CommandTracker* aCommandTracker)
 		{
 			struct BindVarData
 			{
 				NodeRef nodeRef;
 				VarID varID = InvalidID<VarID>();
-				Script* script = nullptr;
+				Class* script = nullptr;
 			} data;
 
 			data.nodeRef = aNodeRef;
@@ -360,7 +359,7 @@ namespace SCR
 			}
 		}
 
-		void UnbindVariable(Script& aScript, const NodeRef& aNodeRef, CommandTracker* aCommandTracker)
+		void UnbindVariable(Class& aScript, const NodeRef& aNodeRef, CommandTracker* aCommandTracker)
 		{
 			if (!ScriptProxy::GetNodeRefToVarIDMap(aScript).contains(aNodeRef))
 			{
@@ -371,7 +370,7 @@ namespace SCR
 			{
 				NodeRef nodeRef;
 				VarID varID = InvalidID<VarID>();
-				Script* script = nullptr;
+				Class* script = nullptr;
 			} data;
 
 			data.nodeRef = aNodeRef;
@@ -405,16 +404,16 @@ namespace SCR
 			const Pin& replacePin = ScriptProxy::GetPin(aNodeGraph, aReplacePinID);
 			const Pin& connectedPin = ScriptProxy::GetPin(aNodeGraph, aConnectedPinID);
 
-			const NodeID replaceNodeID = replacePin.nodeID;
+			const NodeID replaceNodeID = replacePin.mNodeID;
 			Node& replaceNode = ScriptProxy::GetNodeRef(aNodeGraph, replaceNodeID);
 
-			const NodeType& nodeType = NodeTypeManager::GetInstance().GetNodeType(replaceNode.typeID);
+			const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(replaceNode.mTypeID);
 
-			if (nodeType.nodeRecipe.operatorTrait != eNodeOperatorTrait::None)
+			if (nodeType.mNodeRecipe.mOperatorTrait != eNodeOperatorTrait::None)
 			{
-				const PinType& replacePinType = PinTypeManager::GetPinType(replacePin.typeID);
-				const PinType& connectedPinType = PinTypeManager::GetPinType(connectedPin.typeID);
-				bool canReplace = NodeTypeManager::GetInstance().CanCreateOperatorNode(nodeType.nodeRecipe.operatorTrait, connectedPinType.dataTypeID);
+				const PinType& replacePinType = Global::GetPinTypeManager().GetPinType(replacePin.mTypeID);
+				const PinType& connectedPinType = Global::GetPinTypeManager().GetPinType(connectedPin.mTypeID);
+				const bool canReplace = Global::GetNodeTypeManager().CanCreateOperatorNode(nodeType.mNodeRecipe.mOperatorTrait, connectedPinType.mDataTypeID);
 				if (!canReplace)
 				{
 					return;
@@ -423,13 +422,13 @@ namespace SCR
 				{
 					aCommandTracker->BeginComposite("Replace node composite");
 				}
-				const NodeID createdNodeID = CreateOperatorNode(aNodeGraph, nodeType.nodeRecipe.operatorTrait, connectedPinType.dataTypeID, aCommandTracker);
+				const NodeID createdNodeID = CreateOperatorNode(aNodeGraph, nodeType.mNodeRecipe.mOperatorTrait, connectedPinType.mDataTypeID, aCommandTracker);
 
 
 				DestroyNode(replaceNodeID, aNodeGraph, aCommandTracker);
 
 				Node& createdNode = ScriptProxy::GetNodeRef(aNodeGraph, createdNodeID);
-				createdNode.position = replaceNode.position;
+				createdNode.mPosition = replaceNode.mPosition;
 
 				Link createdLink;
 
@@ -437,7 +436,7 @@ namespace SCR
 				{ // Link new pin
 					size_t pinIndex = ScriptLinker::GetPinIndex(aNodeGraph, aReplacePinID);
 
-					const PinID createdPinConnectedID = replacePinType.flowType == eFlowType::Input ? createdNode.inputPins[pinIndex] : createdNode.outputPins[pinIndex];
+					const PinID createdPinConnectedID = replacePinType.mFlowType == eFlowType::Input ? createdNode.mInputPins[pinIndex] : createdNode.mOutputPins[pinIndex];
 
 					TryCreateLink(aConnectedPinID, createdPinConnectedID, aNodeGraph, aCommandTracker);
 				}
@@ -446,22 +445,22 @@ namespace SCR
 
 					const Node& destroyedNode = ScriptProxy::GetNode(aNodeGraph, replaceNodeID);
 
-					for (size_t pinIndex = 0; pinIndex < destroyedNode.inputPins.size(); ++pinIndex)
+					for (size_t pinIndex = 0; pinIndex < destroyedNode.mInputPins.size(); ++pinIndex)
 					{
-						const Pin& destroyedInputPin = ScriptProxy::GetPin(aNodeGraph, destroyedNode.inputPins[pinIndex]);
+						const Pin& destroyedInputPin = ScriptProxy::GetPin(aNodeGraph, destroyedNode.mInputPins[pinIndex]);
 
-						if (!destroyedInputPin.connectedPinIDs.empty())
+						if (!destroyedInputPin.mConnectedPinIDs.empty())
 						{
-							TryCreateLink(destroyedInputPin.connectedPinIDs[0], ScriptLinker::GetPinID(aNodeGraph, createdNodeID, pinIndex, eFlowType::Input), aNodeGraph, aCommandTracker);
+							TryCreateLink(destroyedInputPin.mConnectedPinIDs[0], ScriptLinker::GetPinID(aNodeGraph, createdNodeID, pinIndex, eFlowType::Input), aNodeGraph, aCommandTracker);
 						}
 
 					}
 
-					for (size_t pinIndex = 0; pinIndex < destroyedNode.outputPins.size(); ++pinIndex)
+					for (size_t pinIndex = 0; pinIndex < destroyedNode.mOutputPins.size(); ++pinIndex)
 					{
-						const Pin& destroyedOutputPin = ScriptProxy::GetPin(aNodeGraph, destroyedNode.outputPins.at(pinIndex));
+						const Pin& destroyedOutputPin = ScriptProxy::GetPin(aNodeGraph, destroyedNode.mOutputPins.at(pinIndex));
 
-						for (PinID connectedInputPinID : destroyedOutputPin.connectedPinIDs)
+						for (PinID connectedInputPinID : destroyedOutputPin.mConnectedPinIDs)
 						{
 							if (connectedInputPinID != InvalidID<PinID>())
 							{

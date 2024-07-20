@@ -1,6 +1,6 @@
-#include "ScriptCallStack.h"
-#include "ScriptNodeGraph.h"
-#include "ScriptProxy.h"
+#include "ScriptCallStack.hpp"
+#include "ScriptNodeGraph.hpp"
+#include "ScriptProxy.hpp"
 
 namespace SCR
 {
@@ -17,7 +17,7 @@ namespace SCR
 		assert(!myCallStack.empty());
 
 		const NodeRef& nodeRef = myCallStack.top();
-		return ScriptProxy::GetNode(*nodeRef.nodeGraph, nodeRef.nodeID);
+		return ScriptProxy::GetNode(*nodeRef.mNodeGraph, nodeRef.mNodeID);
 	}
 
 	void CallStack::Push(NodeID aNodeID, NodeGraph& aNodeGraph)

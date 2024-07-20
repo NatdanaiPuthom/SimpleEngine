@@ -1,37 +1,37 @@
-#include "NodeTypeView.h"
-#include "../Node/NodeTypeManager.h"
-#include "../Global/ScriptGlobal.h"
+#include "NodeTypeView.hpp"
+#include "../Node/NodeTypeManager.hpp"
+#include "../Global/ScriptGlobal.hpp"
 
 namespace SCR
 {
 	NodeTypeView::NodeTypeView(NodeTypeID anID)
-		: myNodeTypeID(anID)
+		: mNodeTypeID(anID)
 	{
 	}
 
 	const std::string& NodeTypeView::GetName() const
 	{
-		return GetNodeType().name;
+		return GetNodeType().mName;
 	}
 
 	std::string NodeTypeView::GetShortName() const
 	{
-		return Global::GetNodeTypeManager().GetShortName(myNodeTypeID);
+		return Global::GetNodeTypeManager().GetShortName(mNodeTypeID);
 	}
 
 	std::string NodeTypeView::GetNameDirectory() const
 	{
-		return Global::GetNodeTypeManager().GetNameDirectory(myNodeTypeID);
+		return Global::GetNodeTypeManager().GetNameDirectory(mNodeTypeID);
 	}
 
 	eNodeTrait NodeTypeView::GetTraits() const
 	{
-		return GetNodeType().nodeRecipe.traits;
+		return GetNodeType().mNodeRecipe.mTraits;
 	}
 
 	EventID NodeTypeView::GetEventID() const
 	{
-		return GetNodeType().nodeRecipe.eventID;
+		return GetNodeType().mNodeRecipe.mEventID;
 	}
 
 	std::vector<PinTypeView> NodeTypeView::GetInputPinTypes() const
@@ -46,12 +46,12 @@ namespace SCR
 
 	NodeTypeID NodeTypeView::GetID() const
 	{
-		return myNodeTypeID;
+		return mNodeTypeID;
 	}
 
 	bool NodeTypeView::operator==(const NodeTypeView& aOther) const
 	{
-		return myNodeTypeID == aOther.myNodeTypeID;
+		return mNodeTypeID == aOther.mNodeTypeID;
 	}
 
 	bool NodeTypeView::operator!=(const NodeTypeView& aOther) const
@@ -61,13 +61,13 @@ namespace SCR
 
 	const NodeType& NodeTypeView::GetNodeType() const
 	{
-		return Global::GetNodeTypeManager().GetNodeType(myNodeTypeID);
+		return Global::GetNodeTypeManager().GetNodeType(mNodeTypeID);
 	}
 
 	std::vector<PinTypeView> NodeTypeView::GetPinTypes(const eFlowType aFlowType) const
 	{
 		const NodeType& nodeType = GetNodeType();
-		const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, nodeType.nodeRecipe.inputPinTypeIDs, nodeType.nodeRecipe.outputPinTypeIDs);
+		const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, nodeType.mNodeRecipe.mInputPinTypeIDs, nodeType.mNodeRecipe.mOutputPinTypeIDs);
 
 		std::vector<PinTypeView> views;
 		views.reserve(pinTypeIDs.size());

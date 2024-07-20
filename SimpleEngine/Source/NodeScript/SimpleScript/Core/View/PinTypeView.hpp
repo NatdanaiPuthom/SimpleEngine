@@ -1,0 +1,27 @@
+#pragma once
+#include "../ScriptDefines.hpp"
+#include "../Pin/PinType.hpp"
+
+namespace SCR
+{
+	class PinTypeView final
+	{
+	public:
+
+		PinTypeView(PinTypeID anID);
+
+		const std::string& GetName() const;
+		eFlowType GetFlowType() const;
+		DataTypeID GetDataTypeID() const;
+
+		PinTypeID GetID() const;
+
+	private:
+
+		const PinType& GetPinType() const;
+
+	private:
+
+		PinTypeID mPinTypeID;
+	};
+}

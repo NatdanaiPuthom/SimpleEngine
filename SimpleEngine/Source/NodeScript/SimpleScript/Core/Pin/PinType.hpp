@@ -1,0 +1,49 @@
+#pragma once
+#include "../ScriptDefines.hpp"
+#include <string>
+
+namespace SCR
+{
+	enum class eFlowType
+	{
+		Input,
+		Output,
+	};
+
+
+	struct PinSetData
+	{
+		PinID mID;
+		const void* mValue;
+#ifdef _DEBUG
+		DataTypeID mDataTypeID;
+#endif
+	};
+
+	using PinSetFunction = FuncPtr<void, const PinSetData&, const InternalExecutionContext&>;
+
+	struct PinType
+	{
+		std::string mName;
+		const eFlowType mFlowType = eFlowType::Input;
+		const DataTypeID mDataTypeID = InvalidID<DataTypeID>();
+		const PinSetFunction mSetFunction = nullptr;
+	};
+
+
+	constexpr eFlowType InvertFlowType(const eFlowType aFlowType)
+	{
+		return aFlowType == eFlowType::Input ? eFlowType::Output : eFlowType::Input;
+	}
+
+	std::string PinFlowTypeToString(const eFlowType aPinType);
+
+	eFlowType StringToPinFlowType(const std::string& aName);
+
+	template<typename T>
+	decltype(auto) SelectByFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
+	{
+		return aFlowType == eFlowType::Input ? std::forward<T>(aInputValue) : std::forward<T>(aOutputValue);
+	}
+
+}

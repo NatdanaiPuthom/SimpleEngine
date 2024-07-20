@@ -1,9 +1,9 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "FunctionWindow.hpp"
 #include "NodeScriptingWindow.hpp"
-#include "NodeScript/SimpleScript/Core/ScriptModifier.h"
-#include "NodeScript/SimpleScript/Core/Script.h"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
+#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
+#include "NodeScript/SimpleScript/Core/FlyClass.hpp"
+#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
 
 namespace Editor
 {

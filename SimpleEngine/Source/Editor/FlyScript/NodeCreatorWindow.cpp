@@ -1,11 +1,10 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "NodeCreatorWindow.hpp"
 #include "NodeScriptingWindow.hpp"
-#include "NodeScript/SimpleScript/Core/Script.h"
-#include "NodeScript/SimpleScript/Core/Node/NodeTypeManager.h"
-#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.h"
-#include "NodeScript/SimpleScript/Core/ScriptModifier.h"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.h"
+#include "NodeScript/SimpleScript/Core/FlyClass.hpp"
+#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
+#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
 
 namespace Editor
 {
@@ -83,7 +82,7 @@ namespace Editor
 			int it = 0;
 			for (const auto& [dataTypeID, dataType] : SCRIPT::Global::GetDataTypeManager().GetFunctionDataTypes())
 			{
-				ss << dataType->name << '\0';
+				ss << dataType->mName << '\0';
 				dataTypeIDs.push_back(dataTypeID);
 				if (pinType.GetDataTypeID()  == dataTypeID)
 				{

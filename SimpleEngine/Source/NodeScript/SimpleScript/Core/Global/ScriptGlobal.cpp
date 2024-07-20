@@ -1,10 +1,10 @@
-#include "ScriptGlobal.h"
-#include "ScriptFoundation.h"
-#include "DataType/DataTypeManager.h"
-#include "NodeTypeManager.h"
-#include "PinTypeManager.h"
-#include "Type/ScriptTypeManager.h"
-#include "../ScriptCopyBuffer.h"
+#include "ScriptGlobal.hpp"
+#include "ScriptFoundation.hpp"
+#include "DataType/DataTypeManager.hpp"
+#include "NodeTypeManager.hpp"
+#include "PinTypeManager.hpp"
+#include "Type/ScriptTypeManager.hpp"
+#include "../ScriptCopyBuffer.hpp"
 
 namespace SCR
 {

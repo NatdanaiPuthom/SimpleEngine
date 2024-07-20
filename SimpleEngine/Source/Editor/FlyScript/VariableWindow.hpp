@@ -1,5 +1,5 @@
 #pragma once
-#include "NodeScript/SimpleScript/Core/ScriptDefines.h"
+#include "NodeScript/SimpleScript/Core/ScriptDefines.hpp"
 
 namespace SCRIPT
 {

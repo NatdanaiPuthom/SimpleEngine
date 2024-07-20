@@ -1,7 +1,7 @@
-#include "NodeView.h"
-#include "../ScriptNodeGraph.h"
-#include "../Global/ScriptGlobal.h"
-#include "../Node/NodeTypeManager.h"
+#include "NodeView.hpp"
+#include "../ScriptNodeGraph.hpp"
+#include "../Global/ScriptGlobal.hpp"
+#include "../Node/NodeTypeManager.hpp"
 
 namespace SCR
 {
@@ -14,22 +14,22 @@ namespace SCR
 
 	const std::string& NodeView::GetNodeTypeName() const
 	{
-		return GetNodeType().name;
+		return GetNodeType().mName;
 	}
 
 	std::string NodeView::GetShortName() const
 	{
-		return Global::GetNodeTypeManager().GetShortName(GetNode().typeID);
+		return Global::GetNodeTypeManager().GetShortName(GetNode().mTypeID);
 	}
 
 	Vec2 NodeView::GetPosition() const
 	{
-		return GetNode().position;
+		return GetNode().mPosition;
 	}
 
 	bool NodeView::IsDestroyed() const
 	{
-		return GetNode().isDestroyed;
+		return GetNode().mIsDestroyed;
 	}
 
 	std::vector<PinView> NodeView::GetInputPins() const
@@ -44,13 +44,13 @@ namespace SCR
 
 	const Node& NodeView::GetNode() const
 	{
-		return myNodeGraph->myNodeManager->myNodes.at(myNodeID);
+		return myNodeGraph->mNodeManager->mNodes.at(myNodeID);
 	}
 
 	const NodeType& NodeView::GetNodeType() const
 	{
 		const Node& node = GetNode();
-		return Global::GetNodeTypeManager().GetNodeType(node.typeID);
+		return Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 	}
 
 	std::vector<PinView> NodeView::GetPinViews(const eFlowType aFlowType) const
@@ -58,7 +58,7 @@ namespace SCR
 		const Node& node = GetNode();
 		std::vector<PinView> pinViews;
 
-		const std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.inputPins, node.outputPins);
+		const std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins);
 		pinViews.reserve(pinIDs.size());
 
 		for (const PinID pinID : pinIDs)
@@ -76,12 +76,12 @@ namespace SCR
 
 	eNodeTrait NodeView::GetTraits() const
 	{
-		return GetNodeType().nodeRecipe.traits;
+		return GetNodeType().mNodeRecipe.mTraits;
 	}
 
 	EventID NodeView::GetEventID() const
 	{
-		return GetNodeType().nodeRecipe.eventID;
+		return GetNodeType().mNodeRecipe.mEventID;
 	}
 
 	const NodeGraph& NodeView::GetNodeGraph() const

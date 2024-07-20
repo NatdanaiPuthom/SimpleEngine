@@ -1,10 +1,10 @@
-#include "ScriptFoundation.h"
-#include "Script.h"
-#include "NodeTypes/SystemNodes.h"
-#include "SystemDataTypes.h"
-#include "Serialization/ScriptLoader.h"
-#include "Node/NodeExecutor.h"
-#include "Type/ScriptTypeManager.h"
+#include "ScriptFoundation.hpp"
+#include "FlyClass.hpp"
+#include "NodeTypes/SystemNodes.hpp"
+#include "SystemDataTypes.hpp"
+#include "Serialization/ScriptLoader.hpp"
+#include "Node/NodeExecutor.hpp"
+#include "Type/ScriptTypeManager.hpp"
 
 namespace SCR
 {
@@ -37,20 +37,20 @@ namespace SCR
 		myScripts.clear();
 	}
 
-	Script& ScriptFoundation::CreateScript(DataTypeID aTargetID, const std::string& aName)
+	Class& ScriptFoundation::CreateClass(DataTypeID aTargetID, const std::string& aName)
 	{
-		std::vector<std::unique_ptr<Script>>& scriptsByTarget = myScripts[aTargetID];
-		return *scriptsByTarget.emplace_back(std::make_unique<Script>(aTargetID, aName));
+		std::vector<std::unique_ptr<Class>>& classesByTarget = myScripts[aTargetID];
+		return *classesByTarget.emplace_back(std::make_unique<Class>(aTargetID, aName));
 	}
 
-	void ScriptFoundation::DestroyScript(Script& aScript)
+	void ScriptFoundation::DestroyScript(Class& aScript)
 	{
 		auto& scriptsByTargetID = myScripts.at(aScript.GetTargetID());
 
-		std::erase_if(scriptsByTargetID, [&aScript](std::unique_ptr<Script>& scriptIter) -> bool { return &aScript == scriptIter.get(); });
+		std::erase_if(scriptsByTargetID, [&aScript](std::unique_ptr<Class>& scriptIter) -> bool { return &aScript == scriptIter.get(); });
 	}
 
-	const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Script>>>& ScriptFoundation::GetScripts()
+	const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& ScriptFoundation::GetScripts()
 	{
 		return myScripts;
 	}
