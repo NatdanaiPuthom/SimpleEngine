@@ -162,13 +162,6 @@ namespace Editor
 						}
 					}
 				}
-
-				const ECS::Entity& test = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(EditorEngine::mySelectedEntityID);
-				const ECS::TransformComponent* test2 = test.GetComponent<ECS::TransformComponent>();
-				test2;
-
-				//MainSingleton::GetSceneManager().GetCurrentECS().
-
 			}
 			ImGui::End();
 
