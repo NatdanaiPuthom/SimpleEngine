@@ -100,7 +100,7 @@ namespace FLY_NAMESPACE
 
 	};
 
-	struct Targetable
+	struct NonTargetable
 	{
 	};
 
@@ -111,8 +111,8 @@ namespace FLY_NAMESPACE
 		template<eNodeOperatorTrait Operators, typename... Traits>
 		constexpr static RegisterType<T> Register(const char* aName, const Color& aColor = DefaultColor)
 		{
-			constexpr bool isTargetable = ContainsType<Targetable, Traits...>;
-			DataTypeRegistry::Register<T, Operators>(aName, aColor, isTargetable);
+			constexpr bool isNotTargetable = ContainsType<NonTargetable, Traits...>;
+			DataTypeRegistry::Register<T, Operators>(aName, aColor, !isNotTargetable);
 
 			return RegisterType<T>();
 		}

@@ -3,6 +3,7 @@
 #include <ImGui/imgui.h>
 #include "DataType/DataTypeRegistry.hpp"
 #include "../SystemTypes/ScriptFlow.hpp"
+#include "../SystemTypes/FlyNone.hpp"
 
 bool Edit(bool& aValue);
 void Save(nlohmann::json& aJson, const bool& aValue);
@@ -171,19 +172,20 @@ namespace std
 namespace FLY_NAMESPACE
 {
 
-	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.75f, 0.75f, 0.75f));
-	FLY_DATATYPE(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f));
+	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.75f, 0.75f, 0.75f), NonTargetable);
+	FLY_DATATYPE(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f), NonTargetable);
+	FLY_DATATYPE(None, eNodeOperatorTrait::None, Color());
 
 	using String = std::string;
 
 
-	FLY_DATATYPE(bool, eNodeOperatorTrait::All, Color(1.f, 0.1f, 0.1f));
-	FLY_DATATYPE(int, eNodeOperatorTrait::All, Color(0.f, 0.2f, 1.f));
-	FLY_DATATYPE(float, eNodeOperatorTrait::All, Color(0.55f, 0.2f, 0.65f));
-	FLY_DATATYPE(UINT, eNodeOperatorTrait::All, Color(0.f, 0.4f, 1.f));
-	FLY_DATATYPE(UINT64, eNodeOperatorTrait::All, Color(0.1f, 0.5f, 1.f));
-	FLY_DATATYPE(char, eNodeOperatorTrait::All, Color(0.2f, 0.7f, 0.4f));
-	FLY_DATATYPE(String, eNodeOperatorTrait::All, Color(0.3f, 0.8f, 0.2f));
+	FLY_DATATYPE(bool, eNodeOperatorTrait::All, Color(1.f, 0.1f, 0.1f), NonTargetable);
+	FLY_DATATYPE(int, eNodeOperatorTrait::All, Color(0.f, 0.2f, 1.f), NonTargetable);
+	FLY_DATATYPE(float, eNodeOperatorTrait::All, Color(0.55f, 0.2f, 0.65f), NonTargetable);
+	FLY_DATATYPE(UINT, eNodeOperatorTrait::All, Color(0.f, 0.4f, 1.f), NonTargetable);
+	FLY_DATATYPE(UINT64, eNodeOperatorTrait::All, Color(0.1f, 0.5f, 1.f), NonTargetable);
+	FLY_DATATYPE(char, eNodeOperatorTrait::All, Color(0.2f, 0.7f, 0.4f), NonTargetable);
+	FLY_DATATYPE(String, eNodeOperatorTrait::All, Color(0.3f, 0.8f, 0.2f), NonTargetable);
 
 	void Test123();
 }

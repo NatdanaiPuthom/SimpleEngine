@@ -10,11 +10,11 @@ namespace Editor
 {
 	class NodeScriptingWindow;
 
-	class NodeCreatorWindow
+	class CustomEventWindow final
 	{
 	public:
-		NodeCreatorWindow(NodeScriptingWindow& aParentWindow);
-		~NodeCreatorWindow();
+		CustomEventWindow(NodeScriptingWindow& aParentWindow);
+		~CustomEventWindow();
 
 		void Update();
 

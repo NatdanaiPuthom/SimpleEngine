@@ -21,7 +21,7 @@ namespace Editor
 
 	void FunctionSettingsWindow::Update()
 	{
-		if (myParent.GetCurrentFunctionID() == Fly::InvalidID<Fly::FunctionID>())
+		if (myParent.GetCurrentFunction() == Fly::InvalidID<Fly::FunctionID>())
 		{
 			return;
 		}
@@ -32,7 +32,7 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button("Add Input"))
 			{
-				Fly::AddPinToFunction(myParent.GetCurrentFunctionID(), Fly::GetDataTypeID<bool>(), Fly::eFlowType::Input);
+				Fly::AddPinToFunction(myParent.GetCurrentFunction(), Fly::GetDataTypeID<bool>(), Fly::eFlowType::Input);
 			}
 			ImGui::Separator();
 
@@ -44,7 +44,7 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button("Add Output"))
 			{
-				Fly::AddPinToFunction(myParent.GetCurrentFunctionID(), Fly::GetDataTypeID<bool>(), Fly::eFlowType::Output);
+				Fly::AddPinToFunction(myParent.GetCurrentFunction(), Fly::GetDataTypeID<bool>(), Fly::eFlowType::Output);
 			}
 			ImGui::Separator();
 
@@ -59,7 +59,7 @@ namespace Editor
 	{
 		Fly::DataTypeManager& dataTypeManager = Fly::Global::GetDataTypeManager();
 
-		const Fly::FunctionView function(myParent.GetCurrentFunctionID());
+		const Fly::FunctionView function(myParent.GetCurrentFunction());
 		const Fly::NodeTypeView callerNodeType = function.GetCallerNodeType();
 
 		const std::vector<Fly::PinTypeView> pinTypes = Fly::SelectByFlowType(aFlowType, callerNodeType.GetInputPinTypes(), callerNodeType.GetOutputPinTypes());
@@ -77,7 +77,7 @@ namespace Editor
 				{
 					if (ImGui::Selectable(dataType.mName.c_str()))
 					{
-						Fly::SetPinAtIndexFunction(myParent.GetCurrentFunctionID(), i, dataTypeID, aFlowType);
+						Fly::SetPinAtIndexFunction(myParent.GetCurrentFunction(), i, dataTypeID, aFlowType);
 					}
 					++dataTypeIndex;
 				}

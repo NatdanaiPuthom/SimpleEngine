@@ -13,7 +13,7 @@ namespace FLY_NAMESPACE
 			return myState;
 		}
 
-		inline static size_t mTypeID = typeid(int).hash_code();
+		static DataTypeID mTypeID;
 	private:
 
 		bool myState;

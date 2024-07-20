@@ -44,7 +44,7 @@ namespace Editor
 				const std::string functionlabel = functionView.GetName() + "##function" + std::to_string(functionView.GetID());
 				if (ImGui::Selectable(functionlabel.c_str()))
 				{
-					myParentWindow.SetNodeContext(functionView.GetNodeGraph(), nullptr);
+					myParentWindow.SetNodeContext(functionView.GetNodeGraph(), Fly::ClassView());
 				}
 
 				if (ImGui::Button("Create Caller"))

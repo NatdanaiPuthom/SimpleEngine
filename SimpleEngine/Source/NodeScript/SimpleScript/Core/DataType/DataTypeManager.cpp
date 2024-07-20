@@ -180,36 +180,6 @@ namespace FLY_NAMESPACE
 		return dataTypes;
 	}
 
-	Color DataTypeManager::GetColor(const DataTypeID aDataTypeID)
-	{
-		if (myDataTypes.contains(aDataTypeID))
-		{
-			const DataType& dataType = myDataTypes.at(aDataTypeID);
-			return dataType.mColor;
-		}
-		return DefaultColor;
-	}
-
-	Color DataTypeManager::GetSelectionColor(const DataTypeID aDataTypeID)
-	{
-		if (myDataTypes.contains(aDataTypeID))
-		{
-			const DataType& dataType = myDataTypes.at(aDataTypeID);
-			return dataType.mColor - mySelectionTint;
-		}
-		return DefaultColor - mySelectionTint;
-	}
-
-	Color DataTypeManager::GetHoverColor(const DataTypeID aDataTypeID)
-	{
-		if (myDataTypes.contains(aDataTypeID))
-		{
-			const DataType& dataType = myDataTypes.at(aDataTypeID);
-			return dataType.mColor - myHoverTint;
-		}
-		return DefaultColor - myHoverTint;
-	}
-
 	DataType* DataTypeManager::Find(const DataTypeID anID)
 	{
 		auto it = myDataTypes.find(anID);

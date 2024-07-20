@@ -26,7 +26,7 @@ namespace FLY_NAMESPACE
 
 		Command(const Command& aOther);
 
-		Command(Command&& aOther);
+		Command(Command&& aOther) noexcept;
 
 		void operator()(eCommandType aCommandType) const;
 

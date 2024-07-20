@@ -42,10 +42,10 @@ namespace FLY_NAMESPACE
 		LinkID CreateLink(NodeGraph& aNodeGraph, PinID aInputPinID, PinID aOutputPinID, CommandTracker* aCommandTracker);
 		void DestroyLink(NodeGraph& aNodeGraph, LinkID aLinkID, CommandTracker* aCommandTracker);
 
-		VarID CreateVariable(Class& aScript, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
+		VarID CreateVariable(Class& aClass, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 
-		void BindVariable(Class& aScript, const NodeRef& aNodeRef, VarID aVarID, CommandTracker* aCommandTracker);
-		void UnbindVariable(Class& aScript, const NodeRef& aNodeRef, CommandTracker* aCommandTracker);
+		void BindVariable(Class& aClass, const NodeRef& aNodeRef, VarID aVarID, CommandTracker* aCommandTracker);
+		void UnbindVariable(Class& aClass, const NodeRef& aNodeRef, CommandTracker* aCommandTracker);
 
 
 		void ReplaceOperatorNode(NodeGraph& aNodeGraph, PinID aUndefinedPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);

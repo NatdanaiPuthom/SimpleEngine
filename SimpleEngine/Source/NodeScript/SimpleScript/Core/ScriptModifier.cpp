@@ -71,17 +71,21 @@ namespace FLY_NAMESPACE
 
 	}
 
-	void SaveClass(const Class& aClass, std::string_view aSavePath)
+	void SaveClass(const ClassView aClassView, std::string_view aSavePath)
 	{
-		ScriptLoader::SaveClass(aClass, aSavePath);
+		ScriptLoader::SaveClass(aClassView.GetClass(), aSavePath);
 	}
 
-	Class& CreateClass(const DataTypeID aTarget, const std::string& aName)
+	ClassView CreateClass(const DataTypeID aTarget, const std::string_view aName)
 	{
-		return Global::GetFoundation().CreateClass(aTarget, aName);
+		Class& createdClass = Global::GetFoundation().CreateClass(aTarget, aName);
+		return ClassView(createdClass);
 	}
 
-
+	void SetClassName(ClassView aClassView, std::string_view aName)
+	{
+		aClassView.GetClass().Name() = aName;
+	}
 
 	NodeView CreateNode(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, Vec2 aPosition, CommandTracker* aCommandTracker)
 	{
@@ -138,18 +142,18 @@ namespace FLY_NAMESPACE
 		return NodeView(mNodeID, aNodeGraph);
 	}
 
-	NodeView CreateGetterNode(Class& aScript, NodeGraph& aNodeGraph, const VarID aVarID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeView CreateGetterNode(ClassView aClassView, NodeGraph& aNodeGraph, const VarID aVarID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Create Getter Node");
 		}
 
-		const Variable& variable = aScript.GetVariableManager().mVariables.at(aVarID);
+		const Variable& variable = aClassView.GetClass().GetVariableManager().mVariables.at(aVarID);
 		
 		const NodeID mNodeID = Internal::CreateGetterNode(aNodeGraph, variable.dataTypeID, aCommandTracker);
 		SetNodePosition(mNodeID, aPosition, aNodeGraph, aCommandTracker);
-		Internal::BindVariable(aScript, NodeRef{ .mNodeID = mNodeID, .mNodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
+		Internal::BindVariable(aClassView.GetClass(), NodeRef{.mNodeID = mNodeID, .mNodeGraph = &aNodeGraph}, aVarID, aCommandTracker);
 
 		if (aCommandTracker)
 		{
@@ -159,18 +163,18 @@ namespace FLY_NAMESPACE
 		return NodeView(mNodeID, aNodeGraph);
 	}
 
-	NodeView CreateSetterNode(Class& aScript, NodeGraph& aNodeGraph, const VarID aVarID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeView CreateSetterNode(ClassView aClassView, NodeGraph& aNodeGraph, const VarID aVarID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Create Setter Node");
 		}
 
-		const Variable& variable = aScript.GetVariableManager().mVariables.at(aVarID);
+		const Variable& variable = aClassView.GetClass().GetVariableManager().mVariables.at(aVarID);
 
 		const NodeID mNodeID = Internal::CreateSetterNode(aNodeGraph, variable.dataTypeID, aCommandTracker);
 		SetNodePosition(mNodeID, aPosition, aNodeGraph, aCommandTracker);
-		Internal::BindVariable(aScript, NodeRef{ .mNodeID = mNodeID, .mNodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
+		Internal::BindVariable(aClassView.GetClass(), NodeRef{.mNodeID = mNodeID, .mNodeGraph = &aNodeGraph}, aVarID, aCommandTracker);
 
 		if (aCommandTracker)
 		{
@@ -387,13 +391,13 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	VariableView CreateVariable(Class& aScript, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
+	VariableView CreateVariable(const ClassView aClassView, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
 	{
-		const VarID varID = Internal::CreateVariable(aScript, aDataTypeID, aCommandTracker);
-		return VariableView(varID, aScript);
+		const VarID varID = Internal::CreateVariable(aClassView.GetClass(), aDataTypeID, aCommandTracker);
+		return VariableView(varID, aClassView.GetClass());
 	}
 
-	void DestroyVariable(VarID aVarID, Class& aScript, CommandTracker* aCommandTracker)
+	void DestroyVariable(VarID aVarID, const ClassView aClassView, CommandTracker* aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
@@ -402,17 +406,17 @@ namespace FLY_NAMESPACE
 
 		struct DestroyVariableData
 		{
-			VarID varID = InvalidID<VarID>();
-			Class* script = nullptr;
+			VarID mVarID = InvalidID<VarID>();
+			Class* mClass = nullptr;
 		} data;
 
-		data.varID = aVarID;
-		data.script = &aScript;
+		data.mVarID = aVarID;
+		data.mClass = &aClassView.GetClass();
 
 		auto commandFunction = [data](eCommandType aCommandType) -> void
 			{
 				bool mIsDestroyed = aCommandType == eCommandType::Do;
-				ScriptProxy::GetVariableRef(*data.script, data.varID).mIsDestroyed = mIsDestroyed;
+				ScriptProxy::GetVariableRef(*data.mClass, data.mVarID).mIsDestroyed = mIsDestroyed;
 			};
 
 		if (!aCommandTracker)
@@ -424,7 +428,7 @@ namespace FLY_NAMESPACE
 			aCommandTracker->DoCommand(Command(commandFunction, "Destroy Variable"));
 		}
 
-		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
+		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aClassView.GetClass());
 		DestroyNodes(variableManager.GetNodeRefsByVarID(aVarID), aCommandTracker);
 
 		if (aCommandTracker)
@@ -520,9 +524,9 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void EditVariableDefaultValue(const VarID aVarID, Class& aScript, CommandTracker*)
+	void EditVariableDefaultValue(const VarID aVarID, ClassView aClassView, CommandTracker*)
 	{
-		const Variable& variable = ScriptProxy::GetVariable(aScript, aVarID);
+		const Variable& variable = ScriptProxy::GetVariable(aClassView.GetClass(), aVarID);
 
 		if (Global::GetDataTypeManager().EditData(variable.dataTypeID, variable.defaultValueDataPtr))
 		{
@@ -530,28 +534,28 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void SetVariableDataType(const VarID aVarID, const DataTypeID aDataTypeID, Class& aScript, CommandTracker* const aCommandTracker)
+	void SetVariableDataType(const VarID aVarID, const DataTypeID aDataTypeID, ClassView aClassView, CommandTracker* const aCommandTracker)
 	{
-		Variable& variable = ScriptProxy::GetVariableRef(aScript, aVarID);
+		Variable& variable = ScriptProxy::GetVariableRef(aClassView.GetClass(), aVarID);
 
-		void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryArena(aScript));
+		void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, ScriptProxy::GetVariableMemoryArena(aClassView.GetClass()));
 
 		variable.dataTypeID = aDataTypeID;
 		variable.defaultValueDataPtr = defaultValueDataPtr;
 
-		DestroyVariableNodes(aVarID, aScript, aCommandTracker);
+		DestroyVariableNodes(aVarID, aClassView, aCommandTracker);
 	}
 
-	void SetVariableName(const VarID aVarID, const std::string_view aName, Class& aScript)
+	void SetVariableName(const VarID aVarID, const std::string_view aName, const ClassView aClassView)
 	{
-		Variable& variable = ScriptProxy::GetVariableRef(aScript, aVarID);
+		Variable& variable = ScriptProxy::GetVariableRef(aClassView.GetClass(), aVarID);
 
 		variable.mName = aName;
 	}
 
-	void DestroyVariableNodes(const VarID aVarID, Class& aScript, CommandTracker* const aCommandTracker)
+	void DestroyVariableNodes(const VarID aVarID, ClassView aClassView, CommandTracker* const aCommandTracker)
 	{
-		DestroyNodes(aScript.GetVariableManager().GetNodeRefsByVarID(aVarID), aCommandTracker);
+		DestroyNodes(aClassView.GetClass().GetVariableManager().GetNodeRefsByVarID(aVarID), aCommandTracker);
 	}
 
 	void SetPinTypeName(PinTypeID aPinTypeID, std::string_view aName)
@@ -804,10 +808,10 @@ namespace FLY_NAMESPACE
 		return FunctionView(Internal::CreateFunction(aName));
 	}
 
-	FunctionView CreateMemberFunction(const std::string& aName, Class& aScript)
+	FunctionView CreateMemberFunction(const std::string& aName, ClassView aClassView)
 	{
 		const FunctionID id = Internal::CreateFunction(aName);
-		aScript.BindFunction(id);
+		aClassView.GetClass().BindFunction(id);
 
 		return FunctionView(id);
 	}
@@ -856,19 +860,19 @@ namespace FLY_NAMESPACE
 		Global::Internal::GetFrameMemoryArena().Clear();
 	}
 
-	VariableView GetVariableByNodeID(const NodeID aNodeID, NodeGraph& aNodeGraph, const Class& aScript)
+	VariableView GetVariableByNodeID(const NodeID aNodeID, NodeGraph& aNodeGraph, const ClassView aClass)
 	{
-		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aScript);
+		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aClass.GetClass());
 		const VarID varID = variableManager.GetVariableIDByNodeRef(NodeRef{ .mNodeID = aNodeID, .mNodeGraph = &aNodeGraph });
-		return VariableView(varID, aScript);
+		return VariableView(varID, aClass.GetClass());
 	}
 
-	std::vector<VariableView> GetVariables(const Class& aScript, bool aIncludeDestroyed)
+	std::vector<VariableView> GetVariables(const ClassView aClass, const bool aIncludeDestroyed)
 	{
-		const std::vector<Variable>& variables = aScript.GetVariableManager().mVariables;
-		std::vector<VariableView> variableViews;
+		const std::vector<Variable>& variables = aClass.GetClass().GetVariableManager().mVariables;
+		std::vector<VariableView> views;
 
-		variableViews.reserve(variables.size());
+		views.reserve(variables.size());
 
 		for (VarID varID = 0; varID < variables.size(); ++varID)
 		{
@@ -880,17 +884,17 @@ namespace FLY_NAMESPACE
 					continue;
 				}
 			}
-			variableViews.push_back(VariableView(varID, aScript));
+			views.push_back(VariableView(varID, aClass.GetClass()));
 		}
-		return variableViews;
+		return views;
 	}
 
 	std::vector<NodeView> GetNodes(const NodeGraph& aNodeGraph, bool aIncludeDestroyed)
 	{
 		const std::vector<Node>& nodes = aNodeGraph.mNodeManager->mNodes;
-		std::vector<NodeView> nodeViews;
+		std::vector<NodeView> views;
 
-		nodeViews.reserve(nodes.size());
+		views.reserve(nodes.size());
 
 		for (NodeID mNodeID = 0; mNodeID < nodes.size(); ++mNodeID)
 		{
@@ -902,17 +906,17 @@ namespace FLY_NAMESPACE
 					continue;
 				}
 			}
-			nodeViews.push_back(NodeView(mNodeID, aNodeGraph));
+			views.push_back(NodeView(mNodeID, aNodeGraph));
 		}
-		return nodeViews;
+		return views;
 	}
 
 	std::vector<LinkView> GetLinks(const NodeGraph& aNodeGraph, bool aIncludeDestroyed)
 	{
 		const std::vector<Link>& links = aNodeGraph.mLinks;
-		std::vector<LinkView> linkViews;
+		std::vector<LinkView> views;
 
-		linkViews.reserve(links.size());
+		views.reserve(links.size());
 
 		for (LinkID linkID = 0; linkID < links.size(); ++linkID)
 		{
@@ -924,37 +928,51 @@ namespace FLY_NAMESPACE
 					continue;
 				}
 			}
-			linkViews.push_back(LinkView(linkID, aNodeGraph));
+			views.push_back(LinkView(linkID, aNodeGraph));
 		}
-		return linkViews;
+		return views;
+	}
+
+	std::vector<DataTypeView> GetDataTypes()
+	{
+		const auto& dataTypes = Global::GetDataTypeManager().GetDataTypes();
+		std::vector<DataTypeView> views;
+		views.reserve(dataTypes.size());
+
+		for (const auto& [dataTypeID, dataType] : dataTypes)
+		{
+			views.push_back(DataTypeView(dataTypeID));
+		}
+
+		return views;
 	}
 
 	std::vector<NodeTypeView> GetNodeTypes()
 	{
 		const auto& nodeTypes = Global::GetNodeTypeManager().GetNodeTypes();
-		std::vector<NodeTypeView> nodeTypeViews;
-		nodeTypeViews.reserve(nodeTypes.size());
+		std::vector<NodeTypeView> views;
+		views.reserve(nodeTypes.size());
 
 		for (NodeTypeID nodeTypeID = 0; nodeTypeID < nodeTypes.size(); ++nodeTypeID)
 		{
-			nodeTypeViews.push_back(NodeTypeView(nodeTypeID));
+			views.push_back(NodeTypeView(nodeTypeID));
 		}
 
-		return nodeTypeViews;
+		return views;
 	}
 
 	std::vector<FunctionView> GetFunctions()
 	{
 		const auto& mFunctions = Global::GetNodeTypeManager().GetFunctions();
-		std::vector<FunctionView> functionViews;
-		functionViews.reserve(mFunctions.size());
+		std::vector<FunctionView> views;
+		views.reserve(mFunctions.size());
 
 		for (FunctionID functionID = 0; functionID < mFunctions.size(); ++functionID)
 		{
-			functionViews.push_back(FunctionView(functionID));
+			views.push_back(FunctionView(functionID));
 		}
 
-		return functionViews;
+		return views;
 	}
 
 	std::vector<CustomEventView> GetCustomEvents()
@@ -998,9 +1016,24 @@ namespace FLY_NAMESPACE
 		);
 	}
 
-	const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& GetScripts()
+	std::unordered_map<DataTypeID, std::vector<ClassView>> GetClasses()
 	{
-		return ScriptFoundation::GetInstance().GetScripts();
+		auto& classes = ScriptFoundation::GetInstance().GetClasses();
+
+		std::unordered_map<DataTypeID, std::vector<ClassView>> views;
+
+		for (const auto& [dataTypeID, classesByDataTypeID] : classes)
+		{
+			std::vector<ClassView>& classVector = views[dataTypeID];
+
+			for (const auto& flyClass : classesByDataTypeID)
+			{
+				classVector.push_back(ClassView(*flyClass));
+			}
+		}
+
+
+		return views;
 	}
 
 

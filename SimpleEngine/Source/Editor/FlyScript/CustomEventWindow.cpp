@@ -1,5 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "NodeCreatorWindow.hpp"
+#include "CustomEventWindow.hpp"
 #include "NodeScriptingWindow.hpp"
 #include "NodeScript/SimpleScript/Core/FlyClass.hpp"
 #include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
@@ -8,16 +8,16 @@
 
 namespace Editor
 {
-	NodeCreatorWindow::NodeCreatorWindow(NodeScriptingWindow& aParentWindow)
+	CustomEventWindow::CustomEventWindow(NodeScriptingWindow& aParentWindow)
 		: myParentWindow(aParentWindow)
 	{
 	}
 
-	NodeCreatorWindow::~NodeCreatorWindow()
+	CustomEventWindow::~CustomEventWindow()
 	{
 	}
 
-	void NodeCreatorWindow::Update()
+	void CustomEventWindow::Update()
 	{
 		if (ImGui::Begin("Node Creator"))
 		{
@@ -47,7 +47,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void NodeCreatorWindow::EditInputs(const Fly::CustomEventView& aCustomEventView)
+	void CustomEventWindow::EditInputs(const Fly::CustomEventView& aCustomEventView)
 	{
 		const Fly::NodeTypeView executorNodeType = aCustomEventView.GetExecutorNodeType();
 		const Fly::NodeTypeView callerNodeType = aCustomEventView.GetCallerNodeType();
@@ -71,37 +71,35 @@ namespace Editor
 		ImGui::Separator();
 		
 		const std::vector<Fly::PinTypeView> outputPinTypes = executorNodeType.GetOutputPinTypes();
-		for (size_t i = 1; i < outputPinTypes.size(); ++i)
+		for (size_t i = 0; i < outputPinTypes.size(); ++i)
 		{
-			const Fly::PinTypeView& pinType = outputPinTypes.at(i);
+			const Fly::PinTypeView& outputPinType = outputPinTypes.at(i);
 			int currentSelectedIndex = 0;
 
-			std::vector<Fly::DataTypeID> dataTypeIDs;
-			std::stringstream ss;
+			const std::vector<Fly::DataTypeView> dataTypes = Fly::GetDataTypes();
 
-			int it = 0;
-			for (const auto& [dataTypeID, dataType] : Fly::Global::GetDataTypeManager().GetFunctionDataTypes())
+			std::stringstream ss;
+			for (int j = 0; j < dataTypes.size(); ++j)
 			{
-				ss << dataType->mName << '\0';
-				dataTypeIDs.push_back(dataTypeID);
-				if (pinType.GetDataTypeID()  == dataTypeID)
+				const Fly::DataTypeView& dataType = dataTypes.at(j);
+				ss << dataType.GetName() << '\0';
+				if (outputPinType.GetDataTypeID() == dataType.GetID())
 				{
-					currentSelectedIndex = it;
+					currentSelectedIndex = j;
 				}
-				++it;
 			}
 
-			std::string names = ss.str();
+			const std::string names = ss.str();
 
 			ImGui::Text("%u:", i);
 			ImGui::SameLine();
 
 			char buffer[35]{};
-			strcpy_s(buffer, pinType.GetName().c_str());
+			strcpy_s(buffer, outputPinType.GetName().c_str());
 
 			if (ImGui::InputText(("##" + std::to_string(i)).c_str(), buffer, IM_ARRAYSIZE(buffer)))
 			{
-				Fly::SetPinTypeName(pinType.GetID(), buffer);
+				Fly::SetPinTypeName(outputPinType.GetID(), buffer);
 				const std::vector<Fly::PinTypeView> callerInputPinTypes = callerNodeType.GetInputPinTypes();
 				Fly::SetPinTypeName(callerInputPinTypes.at(i).GetID(), buffer);
 			}
@@ -115,13 +113,13 @@ namespace Editor
 			if (ImGui::Combo(std::string("##CustomEventPinType" + std::to_string(i)).c_str(), &currentSelectedIndex, names.c_str()))
 			{
 
-				Fly::SetPinAtIndexCustomEvent(i, dataTypeIDs.at(currentSelectedIndex), aCustomEventView.GetID());
+				Fly::SetPinAtIndexCustomEvent(i, dataTypes.at(currentSelectedIndex).GetID(), aCustomEventView.GetID());
 			}
 
 			ImGui::SameLine();
 
 			ImGui::BeginDisabled();
-			ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::Global::GetDataTypeManager().GetColor(dataTypeIDs.at(currentSelectedIndex)))));
+			ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(dataTypes.at(currentSelectedIndex).GetColor())));
 			ImGui::EndDisabled();
 		}
 

@@ -8,11 +8,9 @@
 #include "Graphics/Texture/Texture.hpp"
 #include "Graphics/BufferData.hpp"
 
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
-#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
 #include "NodeScript/SimpleScript/Core/FlyClass.hpp"
 #include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
-#include "NodeScript/SimpleScript/Core/ScriptFoundation.hpp"
 
 #include "External/imgui.h"
 
@@ -488,10 +486,10 @@ namespace ECS
 
 	bool ViewAndEditValue(Fly::ClassInstance*& aClassInstance, const std::string& /*aVariableName*/)
 	{
-		Fly::DataTypeManager& dataTypeManager = Fly::Global::GetDataTypeManager();
-		Fly::ScriptFoundation& scriptFoundation = Fly::Global::GetFoundation();
+		//Fly::DataTypeManager& dataTypeManager = Fly::Global::GetDataTypeManager();
+		//Fly::ScriptFoundation& scriptFoundation = Fly::Global::GetFoundation();
 
-		const auto& scripts = scriptFoundation.GetScripts();
+		const auto& scripts = Fly::GetClasses();
 
 		bool wasChanged = false;
 
@@ -499,28 +497,28 @@ namespace ECS
 		{
 			for (auto& [dataTypeID, classesByTarget] : scripts)
 			{
-				const Fly::DataType* dataType = dataTypeManager.Find(dataTypeID);
-				if (dataType == nullptr)
+				const Fly::DataTypeView dataType(dataTypeID);
+				if (dataType)
 				{
 					continue;
 				}
-				ImGui::Text("%s Scripts:", dataType->mName.c_str());
+				ImGui::Text("%s Scripts:", dataType.GetName().c_str());
 				for (auto& flyClass : classesByTarget)
 				{
 					bool isSelected = false;
 					if (aClassInstance != nullptr)
 					{
-						isSelected = aClassInstance->mClass == flyClass.get();
+						isSelected = aClassInstance->mClass == &flyClass.GetClass();
 					}
-					if (ImGui::Selectable(flyClass->Name().c_str(), isSelected))
+					if (ImGui::Selectable(flyClass.GetName().c_str(), isSelected))
 					{
 						if (aClassInstance != nullptr)
 						{
-							flyClass->DestroyClassInstance(*aClassInstance);
+							flyClass.GetClass().DestroyClassInstance(*aClassInstance);
 
 						}
 
-						aClassInstance = &flyClass->CreateClassInstance();
+						aClassInstance = &flyClass.GetClass().CreateClassInstance();
 
 						wasChanged = true;
 					}

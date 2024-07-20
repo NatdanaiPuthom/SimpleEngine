@@ -6,6 +6,7 @@
 #include <limits>
 #include <type_traits>
 #include <algorithm>
+#include "SystemTypes/FlyNone.hpp"
 
 #undef max
 
@@ -26,7 +27,6 @@ namespace FLY_NAMESPACE
 	using EventID = size_t;
 
 	constexpr size_t NodeBufferCapacity = 1024;
-	constexpr DataTypeID GlobalDataTypeID = 0;
 
 	template<std::integral IDType>
 	inline constexpr IDType InvalidID()
@@ -59,9 +59,11 @@ namespace FLY_NAMESPACE
 	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);
 
 	// Struct for color - values between 0 and 1
-	struct Color
+	struct Color final
 	{
-		Color(float aR, float aG, float aB, float aA = 1.f)
+
+		Color() = default;
+		constexpr Color(float aR, float aG, float aB, float aA = 1.f)
 			: r(aR)
 			, g(aG)
 			, b(aB)

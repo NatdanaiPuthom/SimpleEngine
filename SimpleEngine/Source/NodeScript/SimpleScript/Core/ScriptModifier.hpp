@@ -7,8 +7,12 @@
 #include "View/VariableView.hpp"
 #include "View/LinkView.hpp"
 #include "Utilities/ScriptUtilities.hpp"
+#include "Utilities/MetaScript.hpp"
 #include "View/FunctionView.hpp"
 #include "View/CustomEventView.hpp"
+#include "View/FlyDataTypeView.hpp"
+#include "View/FlyClassView.hpp"
+#include "SystemTypes/FlyNone.hpp"
 #include <unordered_map>
 
 namespace FLY_NAMESPACE
@@ -27,15 +31,16 @@ namespace FLY_NAMESPACE
 	class Function;
 
 
-	void SaveClass(const Class& aClass, std::string_view aSavePath);
+	void SaveClass(ClassView aClassView, std::string_view aSavePath);
 
-	Class& CreateClass(DataTypeID aTarget, const std::string& aName);
+	ClassView CreateClass(DataTypeID aTarget, std::string_view aName);
+	void SetClassName(ClassView aClassView, std::string_view aName);
 
 	NodeView CreateNode(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 	NodeView CreateNodeAutoLink(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, PinID aConnection, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 	NodeView CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);
-	NodeView CreateGetterNode(Class& aScript, NodeGraph& aNodeGraph, VarID aVarID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-	NodeView CreateSetterNode(Class& aScript, NodeGraph& aNodeGraph, VarID aVarID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+	NodeView CreateGetterNode(ClassView aClassView, NodeGraph& aNodeGraph, VarID aVarID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+	NodeView CreateSetterNode(ClassView aClassView, NodeGraph& aNodeGraph, VarID aVarID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 
 	LinkID TryCreateLink(PinID aPinID1, PinID aPinID2, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 	void DestroyLink(LinkID aLinkID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
@@ -48,17 +53,17 @@ namespace FLY_NAMESPACE
 
 	void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aDragData, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
-	VariableView CreateVariable(Class& aScript, DataTypeID aDataTypeID = typeid(bool).hash_code(), CommandTracker* aCommandTracker = nullptr);
-	void DestroyVariable(VarID aVarID, Class& aScript, CommandTracker* aCommandTracker);
+	VariableView CreateVariable(ClassView aClassView, DataTypeID aDataTypeID = typeid(bool).hash_code(), CommandTracker* aCommandTracker = nullptr);
+	void DestroyVariable(VarID aVarID, ClassView aClassView, CommandTracker* aCommandTracker);
 
 	void EditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 	void SplitPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
-	void EditVariableDefaultValue(VarID aVarID, Class& aScript, CommandTracker* aCommandTracker);
-	void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID, Class& aScript, CommandTracker* aCommandTracker);
-	void SetVariableName(VarID aVarID, std::string_view aName, Class& aScript);
+	void EditVariableDefaultValue(VarID aVarID, ClassView aClassView, CommandTracker* aCommandTracker);
+	void SetVariableDataType(VarID aVarID, DataTypeID aDataTypeID, ClassView aClassView, CommandTracker* aCommandTracker);
+	void SetVariableName(VarID aVarID, std::string_view aName, ClassView aClassView);
 
-	void DestroyVariableNodes(VarID aVarID, Class& aScript, CommandTracker* aCommandTracker);
+	void DestroyVariableNodes(VarID aVarID, ClassView aClassView, CommandTracker* aCommandTracker);
 
 	void SetPinTypeName(PinTypeID aPinTypeID, std::string_view aName);
 
@@ -74,7 +79,7 @@ namespace FLY_NAMESPACE
 	void SetCustomEventName(CustomEventID aCustomEventID, std::string_view aName);
 
 	FunctionView CreateGlobalFunction(const std::string& aName);
-	FunctionView CreateMemberFunction(const std::string& aName, Class& aScript);
+	FunctionView CreateMemberFunction(const std::string& aName, ClassView aClassView);
 
 	void AddPinToFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName = "Pin");
 	void SetPinAtIndexFunction(FunctionID aFunctionID, size_t anIndex, DataTypeID aDataTypeID, eFlowType aFlowType);
@@ -84,13 +89,32 @@ namespace FLY_NAMESPACE
 
 	void BeginFrame();
 
-	//int GetPinID(PinID aPinID, const NodeGraph& aNodeGraph);
-
-	VariableView GetVariableByNodeID(NodeID aNodeID, NodeGraph& aNodeGraph, const Class& aScript);
-	std::vector<VariableView> GetVariables(const Class& aScript, bool aIncludeDestroyed = false);
+	VariableView GetVariableByNodeID(NodeID aNodeID, NodeGraph& aNodeGraph, ClassView aClass);
+	std::vector<VariableView> GetVariables(ClassView aClass, bool aIncludeDestroyed = false);
 
 	std::vector<NodeView> GetNodes(const NodeGraph& aNodeGraph, bool aIncludeDestroyed = false);
 	std::vector<LinkView> GetLinks(const NodeGraph& aNodeGraph, bool aIncludeDestroyed = false);
+
+	std::vector<DataTypeView> GetDataTypes();
+
+	template<Predicate<const DataTypeView&> FilterPredicate>
+	std::vector<DataTypeView> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate)
+	{
+		const std::vector<DataTypeView> dataTypes = GetDataTypes();
+
+		std::vector<DataTypeView> filtered;
+		filtered.reserve(dataTypes.size());
+
+		for (const DataTypeView& dataType : dataTypes)
+		{
+			if (aFilterPredicate(dataType))
+			{
+				filtered.push_back(dataType);
+			}
+		}
+
+		return filtered;
+	}
 
 	std::vector<NodeTypeView> GetNodeTypes();
 
@@ -100,5 +124,5 @@ namespace FLY_NAMESPACE
 	std::vector<NodeTypeView> GetNodeTypesFilteredByDataTypeAndFlowType(DataTypeID aDataTypeID, eFlowType aFlowType);
 	std::vector<NodeTypeView> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);
 
-	const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& GetScripts();
+	std::unordered_map<DataTypeID, std::vector<ClassView>> GetClasses();
 }

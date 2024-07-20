@@ -4,7 +4,7 @@
 namespace FLY_NAMESPACE
 {
 
-	VariableView::VariableView(VarID aVarID, const Class& aClass)
+	VariableView::VariableView(const VarID aVarID, const Class& aClass)
 		: myVarID(aVarID)
 		, myClass(&aClass)
 	{
@@ -15,9 +15,10 @@ namespace FLY_NAMESPACE
 		return GetVariable().mName;
 	}
 
-	DataTypeID VariableView::GetDataTypeID() const
+	DataTypeView VariableView::GetDataType() const
 	{
-		return GetVariable().dataTypeID;
+		const DataTypeID dataTypeID = GetVariable().dataTypeID;
+		return DataTypeView(dataTypeID);
 	}
 
 	bool VariableView::IsDestroyed() const

@@ -29,7 +29,7 @@ namespace FLY_NAMESPACE
 #ifdef FLY_DEBUG
 		if (aOwner == nullptr)
 		{
-			assert(aClassInstance.mClass->GetTargetID() == GlobalDataTypeID);
+			assert(aClassInstance.mClass->GetTargetID() == GetDataTypeID<None>());
 		}
 #endif
 

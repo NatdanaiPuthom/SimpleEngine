@@ -261,7 +261,7 @@ namespace FLY_NAMESPACE
 			const std::string& dataTypeStr = variableJson["DataType"];
 
 			const std::string variableName = variableJson["Name"];
-			SetVariableName(varID, variableName, aClass);
+			SetVariableName(varID, variableName, ClassView(aClass));
 
 			const json& defaultValueJson = variableJson["DefaultValue"];
 
@@ -271,7 +271,7 @@ namespace FLY_NAMESPACE
 			if (dataTypeID != InvalidID<DataTypeID>())
 			{
 
-				SetVariableDataType(varID, dataTypeID, aClass, nullptr);
+				SetVariableDataType(varID, dataTypeID, ClassView(aClass), nullptr);
 
 				Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
 
@@ -313,8 +313,8 @@ namespace FLY_NAMESPACE
 
 					const std::string fileName = entry.path().filename().string();
 					const std::string name = fileName.substr(0, fileName.find_last_of('.'));
-					Class& createdClass = CreateClass(GlobalDataTypeID, name);
-					LoadClass(createdClass, aFilePath);
+					ClassView createdClass = CreateClass(GetDataTypeID<None>(), name);
+					LoadClass(createdClass.GetClass(), aFilePath);
 				}
 			}
 		}

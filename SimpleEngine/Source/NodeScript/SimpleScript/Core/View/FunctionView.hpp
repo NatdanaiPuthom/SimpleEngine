@@ -11,7 +11,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-
+		FunctionView();
 		explicit FunctionView(FunctionID aFunctionID);
 
 		const std::string& GetName() const;
@@ -24,6 +24,9 @@ namespace FLY_NAMESPACE
 
 		FunctionID GetID() const;
 
+		operator bool() const;
+
+		bool operator==(const FunctionView& aOther) const;
 
 	private:
 

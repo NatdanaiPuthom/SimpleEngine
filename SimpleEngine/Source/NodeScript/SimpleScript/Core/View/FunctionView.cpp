@@ -4,6 +4,10 @@
 
 namespace FLY_NAMESPACE
 {
+	FunctionView::FunctionView()
+		: mFunctionID(InvalidID<FunctionID>())
+	{
+	}
 
 	FunctionView::FunctionView(const FunctionID aFunctionID)
 		: mFunctionID(aFunctionID)
@@ -53,6 +57,16 @@ namespace FLY_NAMESPACE
 	FunctionID FunctionView::GetID() const
 	{
 		return mFunctionID;
+	}
+
+	FunctionView::operator bool() const
+	{
+		return mFunctionID != InvalidID<FunctionID>();
+	}
+
+	bool FunctionView::operator==(const FunctionView& aOther) const
+	{
+		return mFunctionID == aOther.mFunctionID;
 	}
 
 	Function& FunctionView::GetFunction()

@@ -10,16 +10,16 @@ namespace FLY_NAMESPACE
 {
 	void ScriptFoundation::Destroy()
 	{
-		if (myInstance)
+		if (sInstance)
 		{
-			delete myInstance;
-			myInstance = nullptr;
+			delete sInstance;
+			sInstance = nullptr;
 		}
 	}
 	ScriptFoundation::ScriptFoundation()
-		: myMemoryPool(10000)
-		, myTypeManager(std::make_unique<TypeManager>())
-		, myNodeExecutor(std::make_unique<NodeExecutor>())
+		: mMemoryPool(10000)
+		, mTypeManager(std::make_unique<TypeManager>())
+		, mNodeExecutor(std::make_unique<NodeExecutor>())
 	{
 	}
 
@@ -29,39 +29,39 @@ namespace FLY_NAMESPACE
 
 	void ScriptFoundation::Initialize()
 	{
-		myTypeManager->GetNodeTypeManager().Assert();
+		mTypeManager->GetNodeTypeManager().Assert();
 	}
 
-	void ScriptFoundation::ClearScripts()
+	void ScriptFoundation::ClearClasses()
 	{
-		myScripts.clear();
+		mClasses.clear();
 	}
 
-	Class& ScriptFoundation::CreateClass(DataTypeID aTargetID, const std::string& aName)
+	Class& ScriptFoundation::CreateClass(DataTypeID aTargetID, const std::string_view aName)
 	{
-		std::vector<std::unique_ptr<Class>>& classesByTarget = myScripts[aTargetID];
-		return *classesByTarget.emplace_back(std::make_unique<Class>(aTargetID, aName));
+		std::vector<std::unique_ptr<Class>>& classesByTarget = mClasses[aTargetID];
+		return *classesByTarget.emplace_back(std::make_unique<Class>(aTargetID, std::string(aName)));
 	}
 
-	void ScriptFoundation::DestroyScript(Class& aScript)
+	void ScriptFoundation::DestroyClass(Class& aClass)
 	{
-		auto& scriptsByTargetID = myScripts.at(aScript.GetTargetID());
+		auto& scriptsByTargetID = mClasses.at(aClass.GetTargetID());
 
-		std::erase_if(scriptsByTargetID, [&aScript](std::unique_ptr<Class>& scriptIter) -> bool { return &aScript == scriptIter.get(); });
+		std::erase_if(scriptsByTargetID, [&aClass](std::unique_ptr<Class>& aClassIter) -> bool { return &aClass == aClassIter.get(); });
 	}
 
-	const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& ScriptFoundation::GetScripts()
+	const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& ScriptFoundation::GetClasses()
 	{
-		return myScripts;
+		return mClasses;
 	}
 
 	TypeManager& ScriptFoundation::GetTypeManager()
 	{
-		return *myTypeManager;
+		return *mTypeManager;
 	}
 
 	NodeExecutor& ScriptFoundation::GetNodeExecutor()
 	{
-		return *myNodeExecutor;
+		return *mNodeExecutor;
 	}
 }

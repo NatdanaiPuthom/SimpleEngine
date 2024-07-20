@@ -18,6 +18,30 @@
 namespace Editor
 {
 
+	static void DataTypeComboSelection(const char* aComboLabel, Fly::DataTypeView& aDataTypeView)
+	{
+		if (ImGui::BeginCombo(aComboLabel, aDataTypeView.GetName().c_str()))
+		{
+
+			const std::vector<Fly::DataTypeView> dataTypes = Fly::GetDataTypesFiltered(
+				[](const Fly::DataTypeView& aDataType) -> bool
+				{
+					return aDataType.IsTargetable();
+				}
+			);
+
+			for (const Fly::DataTypeView& dataType : dataTypes)
+			{
+				if (ImGui::Selectable(dataType.GetName().c_str()))
+				{
+					aDataTypeView = dataType;
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+	}
+
 	NodeScriptingWindow::NodeScriptingWindow()
 		: myVariableWindow(*this)
 		, myNodeCreatorWindow(*this)
@@ -48,11 +72,11 @@ namespace Editor
 
 
 
-	void NodeScriptingWindow::SetNodeContext(Fly::NodeGraph& aNodeGraph, Fly::Class* aScript)
+	void NodeScriptingWindow::SetNodeContext(Fly::NodeGraph& aNodeGraph, Fly::ClassView aClassView)
 	{
 		NodeContext nodeContext
 		{
-			aScript,
+			aClassView,
 			&aNodeGraph,
 		};
 		myNodeContextHistory.history.push_back(nodeContext);
@@ -69,26 +93,27 @@ namespace Editor
 
 	eScriptMode NodeScriptingWindow::GetCurrentMode() const
 	{
-		return GetNodeContext().flyClass ? eScriptMode::Class : eScriptMode::Global;
+		return GetNodeContext().classView ? eScriptMode::Class : eScriptMode::Global;
 	}
 
 	void NodeScriptingWindow::UpdateContext()
 	{
 		if (myNodeContextHistory.currentIndex == -1)
 		{
-			auto& scripts = Fly::GetScripts();
-			if (scripts.empty())
+			auto classes = Fly::GetClasses();
+			if (classes.empty())
 			{
-				Fly::CreateClass(0, "Default Script");
+				Fly::CreateClass(Fly::GetDataTypeID<Fly::None>(), "Default Class");
 			}
 
-			if (scripts.begin()->second.empty())
+			classes = Fly::GetClasses();
+			if (classes.begin()->second.empty())
 			{
-				Fly::CreateClass(Fly::GetScripts().begin()->first, "Default Script");
+				Fly::CreateClass(Fly::GetClasses().begin()->first, "Default Class");
 			}
 
-			Fly::Class& script = *scripts.begin()->second.front();
-			SetNodeContext(script.GetEventGraph(), &script);
+			Fly::ClassView flyClass = classes.begin()->second.front();
+			SetNodeContext(flyClass.GetEventGraph(), flyClass);
 		}
 
 
@@ -193,22 +218,21 @@ namespace Editor
 
 			if (ImGui::Begin("Member Functions"))
 			{
-				Fly::Class& currentScript = *GetNodeContext().flyClass;
+				Fly::ClassView currentScript = GetNodeContext().classView;
 				if (ImGui::Button("Create Member Function"))
 				{
 					Fly::CreateMemberFunction("Function1", currentScript);
 				}
 
-				const std::vector<Fly::FunctionID>& memberFunctionIDs = currentScript.GetMemberFunctionIDs();
+				std::vector<Fly::FunctionView> memberFunctions = currentScript.GetFunctions();
 
-				for (const Fly::FunctionID memberFunctionID : memberFunctionIDs)
+				for (Fly::FunctionView& memberFunction : memberFunctions)
 				{
-					Fly::FunctionView memberFunction(memberFunctionID);
 
 					if (ImGui::Selectable(memberFunction.GetName().c_str(), &memberFunction.GetNodeGraph() == GetNodeContext().nodeGraph))
 					{
-						SetNodeContext(memberFunction.GetNodeGraph(), GetNodeContext().flyClass);
-						mySelectedFunctionID = memberFunctionID;
+						SetNodeContext(memberFunction.GetNodeGraph(), GetNodeContext().classView);
+						mySelectedFunction = Fly::FunctionView(memberFunction.GetID());
 						break;
 					}
 				}
@@ -253,20 +277,48 @@ namespace Editor
 		{
 			ImGui::SameLine();
 			char buffer[35]{};
-			strcpy_s(buffer, GetNodeContext().flyClass->Name().c_str());
+			strcpy_s(buffer, GetNodeContext().classView.GetName().c_str());
 
 			if (ImGui::InputText("##", buffer, IM_ARRAYSIZE(buffer)))
 			{
-				GetNodeContext().flyClass->Name() = buffer;
+				Fly::SetClassName(GetNodeContext().classView, buffer);
 			}
 		}
 	}
 
 	void NodeScriptingWindow::ScriptLoadingMenu()
 	{
-		Fly::Class& currentClass = *GetNodeContext().flyClass;
+		Fly::ClassView currentClass = GetNodeContext().classView;
 
+		/*if (!currentClass)
+		{
+			return;
+		}*/
 
+		std::string currentClassName = currentClass ? currentClass.GetName() : "None";
+
+		if (ImGui::BeginCombo("Select Fly Class", currentClassName.c_str()))
+		{
+			const auto classes = Fly::GetClasses();
+
+			for (auto& [dataTypeID, classesByDataTypeID] : classes)
+			{
+				if (ImGui::BeginMenu(Fly::DataTypeView(dataTypeID).GetName().c_str()))
+				{
+					for (auto& flyClass : classesByDataTypeID)
+					{
+						if (ImGui::MenuItem(flyClass.GetName().c_str()))
+						{
+							SetNodeContext(flyClass.GetEventGraph(), flyClass);
+						}
+					}
+
+					ImGui::EndMenu();
+				}
+			}
+			//ImGui::MenuItem()
+			ImGui::EndCombo();
+		}
 
 		const bool canSave = myCommandTracker->GetUndoSize() == 0;
 
@@ -274,7 +326,7 @@ namespace Editor
 
 		if (ImGui::Button("Save"))
 		{
-			Fly::ScriptLoader::SaveClass(currentClass, SCRIPT_FILE_PATH);
+			Fly::SaveClass(currentClass, SCRIPT_FILE_PATH);
 			myCommandTracker->Clear();
 		}
 
@@ -295,15 +347,18 @@ namespace Editor
 
 		if (ImGui::BeginPopupModal("Create New Script", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			ImGui::InputText("##", myScriptNameText, IM_ARRAYSIZE(myScriptNameText), ImGuiInputTextFlags_AutoSelectAll);
+			ImGui::InputText("##", myNewClassNameText, IM_ARRAYSIZE(myNewClassNameText), ImGuiInputTextFlags_AutoSelectAll);
+
+			DataTypeComboSelection("Select Target##CreateNewScriptTarget", mySelectedTargetDataType);
+
 			ImGui::Separator();
 
 			if (ImGui::Button("Create", ImVec2(120, 0)))
 			{
-				Fly::Class& script = Fly::CreateClass(0, myScriptNameText);
-				myScriptNameText[0] = (char)0;
+				Fly::ClassView classView = Fly::CreateClass(Fly::GetDataTypeID<Fly::None>(), myNewClassNameText);
+				myNewClassNameText[0] = (char)0;
 
-				myImNodesContexts.emplace(&script.GetEventGraph(), ImNodes::CreateContext());
+				myImNodesContexts.emplace(&classView.GetEventGraph(), ImNodes::CreateContext());
 
 
 				ImGui::CloseCurrentPopup();
@@ -329,7 +384,7 @@ namespace Editor
 
 		if (ImGui::BeginPopupModal("Create Copy Script", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			ImGui::InputText("##", myScriptNameText, IM_ARRAYSIZE(myScriptNameText), ImGuiInputTextFlags_AutoSelectAll);
+			ImGui::InputText("##", myCreateCopyNameText, IM_ARRAYSIZE(myCreateCopyNameText), ImGuiInputTextFlags_AutoSelectAll);
 			ImGui::Separator();
 
 			ImGui::SetItemDefaultFocus();
@@ -337,7 +392,7 @@ namespace Editor
 
 			if (ImGui::Button("Cancel", ImVec2(120, 0)))
 			{
-				myScriptNameText[0] = (char)0;
+				myCreateCopyNameText[0] = (char)0;
 				ImGui::CloseCurrentPopup();
 			}
 
@@ -363,7 +418,7 @@ namespace Editor
 
 			if (ImGui::Button("Trigger Event"))
 			{
-				Fly::ClassInstance& classInstance = GetNodeContext().flyClass->CreateClassInstance();
+				Fly::ClassInstance& classInstance = GetNodeContext().classView.GetClass().CreateClassInstance();
 				Fly::ExecutionContextBase c;
 
 				switch (currentEventIndex)
@@ -381,7 +436,7 @@ namespace Editor
 					break;
 				}
 
-				GetNodeContext().flyClass->DestroyClassInstance(classInstance);
+				GetNodeContext().classView.GetClass().DestroyClassInstance(classInstance);
 			}
 		}
 	}
@@ -389,7 +444,7 @@ namespace Editor
 	void NodeScriptingWindow::VisualizeNodes()
 	{
 		NodeContext& currentNodeContext = GetNodeContext();
-		const Fly::Class& currentScript = *GetNodeContext().flyClass;
+		const Fly::ClassView currentClass = GetNodeContext().classView;
 
 		ImNodes::BeginNodeEditor();
 
@@ -430,7 +485,7 @@ namespace Editor
 
 				if (Fly::HasFlag(nodeView.GetTraits(), Fly::eNodeTrait::Accessor))
 				{
-					const Fly::VariableView variable = Fly::GetVariableByNodeID(nodeView.GetID(), *currentNodeContext.nodeGraph, currentScript);
+					const Fly::VariableView variable = Fly::GetVariableByNodeID(nodeView.GetID(), *currentNodeContext.nodeGraph, currentClass);
 					const bool isGetter = Fly::HasFlag(nodeView.GetTraits(), Fly::eNodeTrait::Getter);
 					const char* const prefixLabel = isGetter ? "Get" : "Set";
 					nodeLabel = prefixLabel + variable.GetName();
@@ -487,9 +542,9 @@ namespace Editor
 			// Render input pins
 			for (const Fly::PinView& inputPinView : inputPins)
 			{
-
-				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(Fly::Global::GetDataTypeManager().GetColor(inputPinView.GetDataTypeID())));
-				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(Fly::Global::GetDataTypeManager().GetHoverColor(inputPinView.GetDataTypeID())));
+				const Fly::DataTypeView pinDataType(inputPinView.GetDataTypeID());
+				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
+				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(pinDataType.GetColor() - myHoverTint));
 
 				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinIDsToHighlight.begin(), currentNodeContext.myPinIDsToHighlight.end(), inputPinView.GetID()) != currentNodeContext.myPinIDsToHighlight.end();
 
@@ -527,9 +582,9 @@ namespace Editor
 			// Render output pins
 			for (const Fly::PinView& outputPinView : outputPins)
 			{
-
-				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(Fly::Global::GetDataTypeManager().GetColor(outputPinView.GetDataTypeID())));
-				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(Fly::Global::GetDataTypeManager().GetHoverColor(outputPinView.GetDataTypeID())));
+				const Fly::DataTypeView pinDataType(outputPinView.GetDataTypeID());
+				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
+				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(pinDataType.GetColor() - myHoverTint));
 
 				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinIDsToHighlight.begin(), currentNodeContext.myPinIDsToHighlight.end(), outputPinView.GetID()) != currentNodeContext.myPinIDsToHighlight.end();
 
@@ -568,10 +623,11 @@ namespace Editor
 				continue;
 			}
 			const Fly::PinView pinView = linkView.GetInputPin();
+			const Fly::DataTypeView pinDataType(pinView.GetDataTypeID());
 
-			ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(Fly::Global::GetDataTypeManager().GetColor(pinView.GetDataTypeID())));
-			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(Fly::Global::GetDataTypeManager().GetSelectionColor(pinView.GetDataTypeID())));
-			ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(Fly::Global::GetDataTypeManager().GetHoverColor(pinView.GetDataTypeID())));
+			ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(pinDataType.GetColor()));
+			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(pinDataType.GetColor() - mySelectionTint));
+			ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(pinDataType.GetColor() - myHoverTint));
 
 			ImNodes::Link(linkView.GetID(), linkView.GetInputPin().GetID(), linkView.GetOutputPin().GetID());
 
@@ -727,7 +783,7 @@ namespace Editor
 			auto onClickCallback = [&](const Fly::NodeTypeView& aNodeType) -> void
 				{
 
-					Fly::CreateNodeAutoLink(*GetNodeContext().nodeGraph, aNodeType.GetID(), currentNodeContext.myLinkCreationPinID, Fly::Vec2{myNodeCreationClickPos.x, myNodeCreationClickPos.y}, myCommandTracker.get());
+					Fly::CreateNodeAutoLink(*GetNodeContext().nodeGraph, aNodeType.GetID(), currentNodeContext.myLinkCreationPinID, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 
 					currentNodeContext.myPinIDsToHighlight.clear();
@@ -924,7 +980,7 @@ namespace Editor
 				{
 					NodeContext& currentNodeContext = GetNodeContext();
 
-					Fly::CreateNode(*GetNodeContext().nodeGraph, aNodeType.GetID(), Fly::Vec2{myNodeCreationClickPos.x, myNodeCreationClickPos.y}, myCommandTracker.get());
+					Fly::CreateNode(*GetNodeContext().nodeGraph, aNodeType.GetID(), Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 
 					currentNodeContext.myPinIDsToHighlight.clear();
@@ -943,9 +999,9 @@ namespace Editor
 		return currentImNodesContext->CanvasOriginScreenSpace + ImNodes::EditorContextGetPanning() / 2.f;
 	}
 
-	Fly::FunctionID NodeScriptingWindow::GetCurrentFunctionID() const
+	Fly::FunctionView NodeScriptingWindow::GetCurrentFunction() const
 	{
-		return mySelectedFunctionID;
+		return mySelectedFunction;
 	}
 
 

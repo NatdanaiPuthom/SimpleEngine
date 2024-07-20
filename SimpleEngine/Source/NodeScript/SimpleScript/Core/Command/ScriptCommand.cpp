@@ -10,7 +10,7 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	Command::Command(Command&& aOther)
+	Command::Command(Command&& aOther) noexcept
 		: mName(std::move(aOther.mName))
 		, mCommandFunction(std::move(aOther.mCommandFunction))
 	{

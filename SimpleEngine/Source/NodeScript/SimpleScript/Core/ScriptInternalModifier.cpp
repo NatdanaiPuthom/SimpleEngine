@@ -315,37 +315,37 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		VarID CreateVariable(Class& aScript, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
+		VarID CreateVariable(Class& aClass, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
 		{
-			std::vector<Variable>& variables = ScriptProxy::GetVariablesRef(aScript);
+			std::vector<Variable>& variables = ScriptProxy::GetVariablesRef(aClass);
 			const VarID id = variables.size();
 			variables.emplace_back();
-			SetVariableDataType(id, aDataTypeID, aScript, aCommandTracker);
+			SetVariableDataType(id, aDataTypeID, ClassView(aClass), aCommandTracker);
 			return id;
 		}
 
-		void BindVariable(Class& aScript, const NodeRef& aNodeRef, const VarID aVarID, CommandTracker* aCommandTracker)
+		void BindVariable(Class& aClass, const NodeRef& aNodeRef, const VarID aVarID, CommandTracker* aCommandTracker)
 		{
 			struct BindVarData
 			{
-				NodeRef nodeRef;
-				VarID varID = InvalidID<VarID>();
-				Class* script = nullptr;
+				NodeRef mNodeRef;
+				VarID mVarID = InvalidID<VarID>();
+				Class* mClass = nullptr;
 			} data;
 
-			data.nodeRef = aNodeRef;
-			data.varID = aVarID;
-			data.script = &aScript;
+			data.mNodeRef = aNodeRef;
+			data.mVarID = aVarID;
+			data.mClass = &aClass;
 
 			auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
 					if (aCommandType == eCommandType::Do)
 					{
-						ScriptProxy::GetNodeRefToVarIDMap(*data.script)[data.nodeRef] = data.varID;
+						ScriptProxy::GetNodeRefToVarIDMap(*data.mClass)[data.mNodeRef] = data.mVarID;
 					}
 					else
 					{
-						ScriptProxy::GetNodeRefToVarIDMap(*data.script).erase(data.nodeRef);
+						ScriptProxy::GetNodeRefToVarIDMap(*data.mClass).erase(data.mNodeRef);
 					}
 				};
 
@@ -359,9 +359,9 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		void UnbindVariable(Class& aScript, const NodeRef& aNodeRef, CommandTracker* aCommandTracker)
+		void UnbindVariable(Class& aClass, const NodeRef& aNodeRef, CommandTracker* aCommandTracker)
 		{
-			if (!ScriptProxy::GetNodeRefToVarIDMap(aScript).contains(aNodeRef))
+			if (!ScriptProxy::GetNodeRefToVarIDMap(aClass).contains(aNodeRef))
 			{
 				return;
 			}
@@ -374,8 +374,8 @@ namespace FLY_NAMESPACE
 			} data;
 
 			data.nodeRef = aNodeRef;
-			data.varID = ScriptProxy::GetNodeRefToVarIDMap(aScript).at(data.nodeRef);
-			data.script = &aScript;
+			data.varID = ScriptProxy::GetNodeRefToVarIDMap(aClass).at(data.nodeRef);
+			data.script = &aClass;
 
 			auto commandFunction = [data](eCommandType aCommandType) -> void
 				{

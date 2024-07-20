@@ -401,8 +401,7 @@ namespace FLY_NAMESPACE
 	{
 		EventID mEventID = InvalidID<EventID>();
 		eNodeOperatorTrait mOperatorTrait = eNodeOperatorTrait::None;
-		DataTypeID mOwnerDataTypeID = GlobalDataTypeID;
-		//bool hasImplicitFlow = false;
+		DataTypeID mOwnerDataTypeID = InvalidID<DataTypeID>();
 		NodeTypeDesc desc;
 	};
 

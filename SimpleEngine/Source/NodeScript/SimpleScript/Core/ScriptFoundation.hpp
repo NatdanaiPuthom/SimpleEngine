@@ -16,11 +16,11 @@ namespace FLY_NAMESPACE
 
 		static ScriptFoundation& GetInstance()
 		{
-			if (!myInstance)
+			if (!sInstance)
 			{
-				myInstance = new ScriptFoundation();
+				sInstance = new ScriptFoundation();
 			}
-			return *myInstance;
+			return *sInstance;
 		}
 
 		static void Destroy();
@@ -32,24 +32,24 @@ namespace FLY_NAMESPACE
 
 		void Initialize();
 
-		void ClearScripts();
+		void ClearClasses();
 
-		Class& CreateClass(const DataTypeID aTargetID, const std::string& aName = "Default Script");
-		void DestroyScript(Class& aScript);
-		const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& GetScripts();
+		Class& CreateClass(const DataTypeID aTargetID, std::string_view aName);
+		void DestroyClass(Class& aClass);
+		const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& GetClasses();
 
 		TypeManager& GetTypeManager();
 		NodeExecutor& GetNodeExecutor();
 
 	private:
 
-		inline static ScriptFoundation* myInstance = nullptr;
+		inline static ScriptFoundation* sInstance = nullptr;
 
-		MemoryPool myMemoryPool;
-		std::unique_ptr<TypeManager> myTypeManager;
-		std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>> myScripts;
+		MemoryPool mMemoryPool;
+		std::unique_ptr<TypeManager> mTypeManager;
+		std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>> mClasses;
 
-		std::unique_ptr<NodeExecutor> myNodeExecutor;
+		std::unique_ptr<NodeExecutor> mNodeExecutor;
 
 	};
 }

@@ -2,7 +2,7 @@
 #include "Editor/Template/ToolInterface.hpp"
 #include "NodeScript/SimpleScript/Core/ScriptDefines.hpp"
 #include "VariableWindow.hpp"
-#include "NodeCreatorWindow.hpp"
+#include "CustomEventWindow.hpp"
 #include "FunctionWindow.hpp"
 #include "FunctionSettingsWindow.hpp"
 #include "NodeScript/SimpleScript/Core/SystemTypes/ScriptVec2.hpp"
@@ -17,8 +17,6 @@ struct ImNodesContext;
 namespace Fly
 {
 	struct Color;
-	class ScriptManager;
-	class Class;
 	class CommandTracker;
 	class NodeGraph;
 }
@@ -39,7 +37,7 @@ namespace Editor
 
 	struct NodeContext
 	{
-		Fly::Class* flyClass;
+		Fly::ClassView classView;
 		Fly::NodeGraph* nodeGraph;
 
 		std::vector<Fly::PinID> myPinIDsToHighlight;
@@ -76,7 +74,7 @@ namespace Editor
 
 		NodeContext& GetNodeContext();
 		const NodeContext& GetNodeContext() const;
-		void SetNodeContext(Fly::NodeGraph& aNodeGraph, Fly::Class* aScript);
+		void SetNodeContext(Fly::NodeGraph& aNodeGraph, Fly::ClassView aClassView);
 		eScriptMode GetCurrentMode() const;
 
 		void UpdateContext();
@@ -91,7 +89,7 @@ namespace Editor
 
 		ImVec2 GetMiddlePos() const;
 
-		Fly::FunctionID GetCurrentFunctionID() const;
+		Fly::FunctionView GetCurrentFunction() const;
 
 	private:
 		void ShowNodeTypeCreationMenu(const std::vector<Fly::NodeTypeView>& aNodeTypeIDs, const std::function<void(const Fly::NodeTypeView&)>& aOnClickFunc);
@@ -103,7 +101,9 @@ namespace Editor
 		ImVec2 GetMousePos() const;
 
 	private:
-		char myScriptNameText[TEXT_MAX_LENGTH] = "";
+		char myNewClassNameText[TEXT_MAX_LENGTH] = "";
+		Fly::DataTypeView mySelectedTargetDataType;
+		char myCreateCopyNameText[TEXT_MAX_LENGTH]{};
 		char myNodeTypeSearch[TEXT_MAX_LENGTH] = "";
 
 		std::unique_ptr<Fly::CommandTracker> myCommandTracker;
@@ -113,7 +113,7 @@ namespace Editor
 		
 
 		VariableWindow myVariableWindow;
-		NodeCreatorWindow myNodeCreatorWindow;
+		CustomEventWindow myNodeCreatorWindow;
 		FunctionWindow myFunctionWindow;
 		FunctionSettingsWindow myFunctionSettingsWindow;
 
@@ -130,7 +130,10 @@ namespace Editor
 
 		bool myIsContextSensitive = false;
 
-		Fly::FunctionID mySelectedFunctionID = Fly::InvalidID<Fly::FunctionID>();
+		Fly::FunctionView mySelectedFunction;
+
+		static constexpr Fly::Color mySelectionTint{ 0.2f, 0.2f, 0.2f, 0.f };// = Color(0.2f, 0.2f, 0.2f, 0);
+		static constexpr Fly::Color myHoverTint{ 0.1f, 0.1f, 0.1f, 0.f };
 
 		static constexpr const char* SCRIPT_FILE_PATH = "Assets/Scripts/";
 

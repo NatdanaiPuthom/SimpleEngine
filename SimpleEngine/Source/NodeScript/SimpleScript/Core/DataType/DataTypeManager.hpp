@@ -3,20 +3,13 @@
 #include "../Utilities/MetaScript.hpp"
 #include "../Utilities/ScriptUtilities.hpp"
 #include "../Memory/ScriptMemoryArena.hpp"
+#include "FlyDataType.hpp"
 #include <nlohmann/json.hpp>
 
 namespace FLY_NAMESPACE
 {
 	template<typename T>
 	concept Fundamental = std::is_fundamental_v<T>;
-
-	using EditInterface = bool(*)(void* aDataPtr);
-	using SaveInterface = void(*)(nlohmann::json& aSaveObject, const void* aDataPtr);
-	using LoadInterface = void(*)(const nlohmann::json& aLoadObject, void* aDataPtr);
-	using AllocateInterface = void (*)(void* aDataPtr, const void* aDefaultValue);
-	using ReleaseInterface = void (*)(void* aDataPtr);
-	using CopyInterface = void(*)(void* aDestination, const void* aSource);
-	using SwapInterface = void(*)(void* aDataPtr1, void* aDataPtr2);
 
 	template<Editable T>
 	constexpr EditInterface CreateEditInterface()
@@ -176,42 +169,6 @@ namespace FLY_NAMESPACE
 			};
 	}
 
-	struct FunctionInterface
-	{
-		const EditInterface edit;
-		const SaveInterface save;
-		const LoadInterface load;
-
-		operator bool() const
-		{
-			return edit && save && load;
-		}
-	};
-
-
-	struct CreationInterface
-	{
-		const AllocateInterface allocate;
-		const ReleaseInterface release;
-		const CopyInterface copy;
-		const SwapInterface swap;
-
-		operator bool() const
-		{
-			return allocate && copy && swap;
-		}
-	};
-
-	struct DataTypeInterface
-	{
-		const FunctionInterface function;
-		const CreationInterface creation;
-		operator bool() const
-		{
-			return function && creation;
-		}
-	};
-
 	template<typename T>
 	constexpr FunctionInterface CreateFunctionInterface()
 	{
@@ -245,41 +202,6 @@ namespace FLY_NAMESPACE
 		};
 	}
 
-
-	struct Property
-	{
-		const std::string mName;
-		const DataTypeID mTypeID;
-		const size_t byteOffset;
-	};
-
-	enum class eDataTypeTrait
-	{
-		None = 0,
-		Fundamental = 1 << 0,
-		Editable = 1 << 1,
-		SaveLoadable = 1 << 2,
-		Targetable = 1 << 3,
-		All = Fundamental | Editable | SaveLoadable | Targetable
-	};
-
-	struct DataType
-	{
-		const std::string mName;
-		const size_t mSize;
-		const Color mColor;
-		const std::type_info* mTypeInfo;
-		const eDataTypeTrait mTypeTraits;
-		const DataTypeInterface mInterface;
-		std::vector<Property> mProperties;
-		std::vector<NodeTypeID> mFunctions;
-	};
-
-	struct TemplateDataType
-	{
-		const std::string mName;
-	};
-
 	const Color DefaultColor = Color(1.f, 1.f, 0.3f);
 
 	class DataTypeManager
@@ -308,10 +230,6 @@ namespace FLY_NAMESPACE
 		const std::unordered_map<DataTypeID, DataType>& GetDataTypes();
 		std::unordered_map<DataTypeID, const DataType*> GetFunctionDataTypes();
 		std::unordered_map<DataTypeID, const DataType*> GetDataTypesFiltered(eDataTypeTrait aTrait, eBitwiseType aBitwiseType);
-
-		Color GetColor(DataTypeID aDataTypeID);
-		Color GetSelectionColor(DataTypeID aDataTypeID);
-		Color GetHoverColor(DataTypeID aDataTypeID);
 
 		DataType* Find(DataTypeID anID);
 
@@ -344,8 +262,7 @@ namespace FLY_NAMESPACE
 		std::unordered_map<DataTypeID, DataType> myDataTypes;
 		std::unordered_map<DataTypeID, TemplateDataType> myTemplateDataTypes;
 
-		const Color mySelectionTint = Color(0.2f, 0.2f, 0.2f, 0);
-		const Color myHoverTint = Color(0.1f, 0.1f, 0.1f, 0);
+		
 
 		const std::string myNullNameStr;
 	};

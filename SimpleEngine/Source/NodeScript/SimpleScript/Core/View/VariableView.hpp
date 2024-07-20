@@ -1,12 +1,12 @@
 #pragma once
 #include "../ScriptDefines.hpp"
-#include "../Variable/VariableManager.hpp"
+#include "FlyDataTypeView.hpp"
 
 namespace FLY_NAMESPACE
 {
 
 	class Class;
-
+	struct Variable;
 
 	class VariableView final
 	{
@@ -15,7 +15,7 @@ namespace FLY_NAMESPACE
 		VariableView(VarID aVarID, const Class& aClass);
 
 		const std::string& GetName() const;
-		DataTypeID GetDataTypeID() const;
+		DataTypeView GetDataType() const;
 		bool IsDestroyed() const;
 		VarID GetID() const;
 

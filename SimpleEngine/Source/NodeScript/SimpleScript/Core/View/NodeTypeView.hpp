@@ -10,7 +10,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-		NodeTypeView(NodeTypeID anID);
+		explicit NodeTypeView(NodeTypeID anID);
 
 		const std::string& GetName() const;
 		std::string GetShortName() const;

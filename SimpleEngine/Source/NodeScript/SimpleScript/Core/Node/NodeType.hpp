@@ -13,7 +13,7 @@ namespace FLY_NAMESPACE
 		const eNodeTrait mTraits = eNodeTrait::None;
 		const EventID mEventID = InvalidID<EventID>();
 		const eNodeOperatorTrait mOperatorTrait = eNodeOperatorTrait::None;
-		const DataTypeID mOwnerDataTypeID = GlobalDataTypeID;
+		const DataTypeID mOwnerDataTypeID = InvalidID<DataTypeID>();
 		std::vector<PinTypeID> mInputPinTypeIDs;
 		std::vector<PinTypeID> mOutputPinTypeIDs;
 		const MemoryPoolID mFunctionMemoryID = InvalidID<MemoryPoolID>();
