@@ -40,6 +40,9 @@ namespace ECS
 		template<typename T>
 		T* GetComponent(const EntityID aEntityID);
 
+		template<typename T>
+		const T* GetComponent(const EntityID aEntityID) const;
+
 		Entity& GetEntity(const EntityID aEntityID);
 		std::vector<Entity>& GetAllEntities();
 
@@ -92,7 +95,32 @@ namespace ECS
 	template<typename T>
 	inline T* EntityManager::GetComponent(const EntityID aEntityID)
 	{
-		std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents.at(aEntityID);
+		if (myEntityComponents.contains(aEntityID) == false)
+		{
+			return nullptr;
+		}
+
+		const std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents.at(aEntityID);
+
+		auto it = components.find(typeid(T));
+
+		if (it != components.end())
+		{
+			return myComponentManager->GetComponentByComponentID<T>(it->second);
+		}
+
+		return nullptr;
+	}
+
+	template<typename T>
+	inline const T* EntityManager::GetComponent(const EntityID aEntityID) const
+	{
+		if (myEntityComponents.contains(aEntityID) == false)
+		{
+			return nullptr;
+		}
+
+		const std::unordered_map<ComponentType, ComponentID>& components = myEntityComponents.at(aEntityID);
 
 		auto it = components.find(typeid(T));
 

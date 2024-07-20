@@ -145,9 +145,8 @@ namespace Editor
 					ECS::Entity& selectedEntity = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(EditorEngine::mySelectedEntityID);
 					ECS::TransformComponent* transformComponent = selectedEntity.GetComponent<ECS::TransformComponent>();
 
-					if (transformComponent)
+					if (transformComponent != nullptr)
 					{
-
 						Math::Matrix4x4f objectMatrix = transformComponent->transform.GetMatrix();
 						const Math::Matrix4x4f view = Math::Matrix4x4f::GetFastInverse(Global::GetGraphicsEngine()->GetCurrentCamera()->GetMatrix());
 						const Math::Matrix4x4f proj = Global::GetGraphicsEngine()->GetCurrentCamera()->GetProjectionMatrix();
@@ -163,6 +162,12 @@ namespace Editor
 						}
 					}
 				}
+
+				const ECS::Entity& test = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(EditorEngine::mySelectedEntityID);
+				const ECS::TransformComponent* test2 = test.GetComponent<ECS::TransformComponent>();
+				test2;
+
+				//MainSingleton::GetSceneManager().GetCurrentECS().
 
 			}
 			ImGui::End();

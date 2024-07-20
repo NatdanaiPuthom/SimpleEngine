@@ -36,6 +36,9 @@ namespace ECS
 		template<typename T>
 		T* GetComponent();
 
+		template<typename T>
+		const T* GetComponent() const;
+
 		const size_t GetID() const;
 		const std::string& GetName() const;
 		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap() const;
@@ -63,6 +66,12 @@ namespace ECS
 
 	template<typename T>
 	inline T* Entity::GetComponent()
+	{
+		return myEntityManager->GetComponent<T>(myID);
+	}
+
+	template<typename T>
+	inline const T* Entity::GetComponent() const
 	{
 		return myEntityManager->GetComponent<T>(myID);
 	}

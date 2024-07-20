@@ -38,6 +38,9 @@ namespace ECS
 		template<typename T>
 		T* GetComponentByComponentID(const ComponentID aID);
 
+		template<typename T>
+		const T* GetComponentByComponentID(const ComponentID aID) const;
+
 	private:
 		ComponentManager();
 		~ComponentManager();
@@ -72,7 +75,31 @@ namespace ECS
 	template<typename T>
 	inline T* ComponentManager::GetComponentByComponentID(const ComponentID aID)
 	{
-		std::unordered_map<size_t, char*>& componentIDToPointerMap = myComponents[typeid(T)].GetComponentIDToPointerMap();
+		if (myComponents.contains(typeid(T)) == false)
+		{
+			return nullptr;
+		}
+
+		const std::unordered_map<size_t, char*>& componentIDToPointerMap = myComponents.at(typeid(T)).GetComponentIDToPointerMap();
+		auto it = componentIDToPointerMap.find(aID);
+
+		if (it != componentIDToPointerMap.end())
+		{
+			return reinterpret_cast<T*>(it->second);
+		}
+
+		return nullptr;
+	}
+
+	template<typename T>
+	inline const T* ComponentManager::GetComponentByComponentID(const ComponentID aID) const
+	{
+		if (myComponents.contains(typeid(T)) == false)
+		{
+			return nullptr;
+		}
+
+		const std::unordered_map<size_t, char*>& componentIDToPointerMap = myComponents.at(typeid(T)).GetComponentIDToPointerMap();
 		auto it = componentIDToPointerMap.find(aID);
 
 		if (it != componentIDToPointerMap.end())

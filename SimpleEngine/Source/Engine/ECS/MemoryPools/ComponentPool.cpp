@@ -321,6 +321,11 @@ namespace ECS
 		return myIDToPointer;
 	}
 
+	const std::unordered_map<size_t, char*>& ComponentPool::GetComponentIDToPointerMap() const
+	{
+		return myIDToPointer;
+	}
+
 	char* ComponentPool::GetStartMemoryAddress()
 	{
 		return myStartMemoryAddress;

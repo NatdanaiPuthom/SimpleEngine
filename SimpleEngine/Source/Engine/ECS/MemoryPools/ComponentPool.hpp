@@ -32,6 +32,7 @@ namespace ECS
 		size_t GetComponentIndexByMemoryAddress(char* aAddress) const;
 
 		std::unordered_map<size_t, char*>& GetComponentIDToPointerMap();
+		const std::unordered_map<size_t, char*>& GetComponentIDToPointerMap() const;
 
 		char* GetStartMemoryAddress();
 		char* GetComponentAddressByID(const size_t aComponentID);
