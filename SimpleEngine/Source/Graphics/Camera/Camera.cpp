@@ -288,7 +288,9 @@ namespace Graphics
 
 	Math::Matrix4x4f Camera::GetViewMatrix() const
 	{
-		const Math::Vector3f& position = GetPosition();
+		//NOTE(v11.4.0): doesn't work
+
+		/*const Math::Vector3f& position = GetPosition();
 		Math::Matrix4x4f viewMatrix;
 
 		const Math::Vector3f forward = GetForward();
@@ -314,7 +316,9 @@ namespace Graphics
 		viewMatrix(1, 4) = 0.0f;
 		viewMatrix(2, 4) = 0.0f;
 		viewMatrix(3, 4) = 0.0f;
-		viewMatrix(4, 4) = 1.0f;
+		viewMatrix(4, 4) = 1.0f;*/
+
+		const Math::Matrix4x4f viewMatrix = Math::Matrix4x4f::GetFastInverse(myTransform.GetMatrix());
 
 		return viewMatrix;
 	}
