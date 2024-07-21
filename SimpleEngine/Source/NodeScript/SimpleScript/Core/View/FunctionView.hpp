@@ -24,7 +24,7 @@ namespace FLY_NAMESPACE
 
 		FunctionID GetID() const;
 
-		operator bool() const;
+		explicit operator bool() const;
 
 		bool operator==(const FunctionView& aOther) const;
 

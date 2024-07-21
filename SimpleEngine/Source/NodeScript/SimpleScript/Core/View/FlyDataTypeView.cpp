@@ -1,5 +1,5 @@
 #include "FlyDataTypeView.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 #include "../DataType/DataTypeManager.hpp"
 
 namespace FLY_NAMESPACE
@@ -42,6 +42,11 @@ namespace FLY_NAMESPACE
 	bool DataTypeView::IsTargetable() const
 	{
 		return HasFlag(GetTypeTraits(), eDataTypeTrait::Targetable);
+	}
+
+	bool DataTypeView::IsEditable() const
+	{
+		return HasFlag(GetTypeTraits(), eDataTypeTrait::Editable);
 	}
 
 	std::vector<NodeTypeView> DataTypeView::GetNodeTypes() const

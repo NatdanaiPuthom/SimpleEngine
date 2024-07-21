@@ -13,7 +13,7 @@ namespace FLY_NAMESPACE
 	public:
 
 		DataTypeView();
-		DataTypeView(DataTypeID aDataTypeID);
+		explicit DataTypeView(DataTypeID aDataTypeID);
 
 		DataTypeID GetID() const;
 
@@ -22,10 +22,11 @@ namespace FLY_NAMESPACE
 		eDataTypeTrait GetTypeTraits() const;
 
 		bool IsTargetable() const;
+		bool IsEditable() const;
 
 		std::vector<NodeTypeView> GetNodeTypes() const;
 
-		operator bool() const;
+		explicit operator bool() const;
 
 		bool operator==(const DataTypeView& aOther) const;
 		bool operator!=(const DataTypeView& aOther) const;
@@ -39,3 +40,12 @@ namespace FLY_NAMESPACE
 		DataTypeID mDataTypeID = InvalidID<DataTypeID>();
 	};
 }
+
+template<>
+struct std::hash<FLY_NAMESPACE::DataTypeView>
+{
+	size_t operator()(const FLY_NAMESPACE::DataTypeView& aDataTypeView) const
+	{
+		return aDataTypeView.GetID();
+	}
+};

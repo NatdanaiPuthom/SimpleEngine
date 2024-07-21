@@ -1,5 +1,5 @@
 #include "PinTypeView.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 #include "../Pin/PinTypeManager.hpp"
 
 namespace FLY_NAMESPACE

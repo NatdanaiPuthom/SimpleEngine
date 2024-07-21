@@ -13,7 +13,7 @@ namespace FLY_NAMESPACE
 
 	void NodeGraphInstance::Init(const NodeGraph& aNodeGraph)
 	{
-		mNodeManagerInstance.Init(*aNodeGraph.mNodeManager);
+		mNodeManagerInstance.Init(aNodeGraph.mNodes);
 	}
 }
 

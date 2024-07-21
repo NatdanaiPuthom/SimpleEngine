@@ -1,6 +1,6 @@
 #include "NodeTypeView.hpp"
 #include "../Node/NodeTypeManager.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -47,6 +47,11 @@ namespace FLY_NAMESPACE
 	NodeTypeID NodeTypeView::GetID() const
 	{
 		return mNodeTypeID;
+	}
+
+	NodeTypeView::operator bool() const
+	{
+		return mNodeTypeID != InvalidID<NodeTypeID>();
 	}
 
 	bool NodeTypeView::operator==(const NodeTypeView& aOther) const

@@ -12,6 +12,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
+		VariableView() = default;
 		VariableView(VarID aVarID, const Class& aClass);
 
 		const std::string& GetName() const;
@@ -19,12 +20,14 @@ namespace FLY_NAMESPACE
 		bool IsDestroyed() const;
 		VarID GetID() const;
 
+		explicit operator bool() const;
+
 	private:
 
 		const Variable& GetVariable() const;
 	private:
 
-		VarID myVarID;
-		const Class* myClass;
+		VarID mVarID = InvalidID<VarID>();
+		const Class* mClass = nullptr;
 	};
 }

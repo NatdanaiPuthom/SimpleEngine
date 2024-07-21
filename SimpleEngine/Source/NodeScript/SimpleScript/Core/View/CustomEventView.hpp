@@ -16,6 +16,8 @@ namespace FLY_NAMESPACE
 		NodeTypeView GetExecutorNodeType() const;
 		CustomEventID GetID() const;
 
+		explicit operator bool() const;
+
 	private:
 
 		const CustomEvent& GetCustomEvent() const;

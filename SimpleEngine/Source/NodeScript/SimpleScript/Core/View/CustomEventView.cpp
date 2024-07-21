@@ -1,11 +1,11 @@
 #include "CustomEventView.hpp"
 #include "../Node/NodeTypeManager.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 
 namespace FLY_NAMESPACE
 {
 
-	CustomEventView::CustomEventView(CustomEventID anID)
+	CustomEventView::CustomEventView(const CustomEventID anID)
 		: mCustomEventID(anID)
 	{
 	}
@@ -23,6 +23,11 @@ namespace FLY_NAMESPACE
 	CustomEventID CustomEventView::GetID() const
 	{
 		return mCustomEventID;
+	}
+
+	CustomEventView::operator bool() const
+	{
+		return mCustomEventID != InvalidID<CustomEventID>();
 	}
 
 	const CustomEvent& CustomEventView::GetCustomEvent() const

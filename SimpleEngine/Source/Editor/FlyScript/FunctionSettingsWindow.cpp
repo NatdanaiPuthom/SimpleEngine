@@ -1,11 +1,12 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "FunctionSettingsWindow.hpp"
 #include "NodeScriptingWindow.hpp"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
+#include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
 #include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
 #include "NodeScript/SimpleScript/Core/Node/NodeTypeManager.hpp"
 #include "NodeScript/SimpleScript/Core/Pin/PinTypeManager.hpp"
 #include "NodeScript/SimpleScript/Core/FlyClass.hpp"
+#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
 
 namespace Editor
 {
@@ -21,7 +22,7 @@ namespace Editor
 
 	void FunctionSettingsWindow::Update()
 	{
-		if (myParent.GetCurrentFunction() == Fly::InvalidID<Fly::FunctionID>())
+		if (!myParent.GetCurrentFunction())
 		{
 			return;
 		}
@@ -57,7 +58,6 @@ namespace Editor
 
 	void FunctionSettingsWindow::ShowInputOutput(const Fly::eFlowType aFlowType)
 	{
-		Fly::DataTypeManager& dataTypeManager = Fly::Global::GetDataTypeManager();
 
 		const Fly::FunctionView function(myParent.GetCurrentFunction());
 		const Fly::NodeTypeView callerNodeType = function.GetCallerNodeType();
@@ -66,20 +66,18 @@ namespace Editor
 		for (size_t i = 0; i < pinTypes.size(); ++i)
 		{
 			const Fly::PinTypeView& pinType = pinTypes[i];
-			const Fly::DataType* pinTypeDataType = dataTypeManager.Find(pinType.GetDataTypeID());
+			const Fly::DataTypeView pinTypeDataType = Fly::DataTypeView(pinType.GetDataTypeID());
 			constexpr static const char* comboLabel1 = "Data Type##FunctionSettings_";
 			const std::string inputOutputLabel = Fly::SelectByFlowType(aFlowType, std::string("Input"), std::string("Output"));
 			const std::string comboLabel = comboLabel1 + inputOutputLabel + std::to_string(i);
-			if (ImGui::BeginCombo(comboLabel.c_str(), pinTypeDataType->mName.c_str()))
+			if (ImGui::BeginCombo(comboLabel.c_str(), pinTypeDataType.GetName().c_str()))
 			{
-				size_t dataTypeIndex = 0;
-				for (const auto& [dataTypeID, dataType] : dataTypeManager.GetDataTypes())
+				for (const Fly::DataTypeView& dataTypeView : Fly::GetDataTypes())
 				{
-					if (ImGui::Selectable(dataType.mName.c_str()))
+					if (ImGui::Selectable(dataTypeView.GetName().c_str()))
 					{
-						Fly::SetPinAtIndexFunction(myParent.GetCurrentFunction(), i, dataTypeID, aFlowType);
+						Fly::SetPinAtIndexFunction(myParent.GetCurrentFunction(), i, dataTypeView.GetID(), aFlowType);
 					}
-					++dataTypeIndex;
 				}
 				ImGui::EndCombo();
 			}

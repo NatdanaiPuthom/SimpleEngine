@@ -12,6 +12,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
+		LinkView() = default;
 		LinkView(LinkID aLinkID, const NodeGraph& aNodeGraph);
 
 		bool IsDestroyed() const;
@@ -19,13 +20,15 @@ namespace FLY_NAMESPACE
 		PinView GetOutputPin() const;
 		LinkID GetID() const;
 
+		explicit operator bool() const;
+
 	private:
 
 		const Link& GetLink() const;
 
 	private:
 
-		LinkID myLinkID;
-		const NodeGraph* myNodeGraph;
+		LinkID mLinkID = InvalidID<LinkID>();
+		const NodeGraph* mNodeGraph = nullptr;
 	};
 }

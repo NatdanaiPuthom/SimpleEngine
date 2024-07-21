@@ -1,6 +1,6 @@
 #include "PinView.hpp"
 #include "../ScriptNodeGraph.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 #include "../Pin/PinTypeManager.hpp"
 #include "../DataType/DataTypeManager.hpp"
 
@@ -8,8 +8,8 @@ namespace FLY_NAMESPACE
 {
 
 	PinView::PinView(const PinID aPinID, const NodeGraph& aNodeGraph)
-		: myPinID(aPinID)
-		, myNodeGraph(&aNodeGraph)
+		: mPinID(aPinID)
+		, mNodeGraph(&aNodeGraph)
 	{
 	}
 	const std::vector<PinID>& PinView::GetConnectedPinIDs() const
@@ -44,12 +44,12 @@ namespace FLY_NAMESPACE
 
 	PinID PinView::GetID() const
 	{
-		return myPinID;
+		return mPinID;
 	}
 
 	const Pin& PinView::GetPin() const
 	{
-		return myNodeGraph->mPinManager->myPins.at(myPinID);
+		return mNodeGraph->mPins.at(mPinID);
 	}
 
 	const PinType& PinView::GetPinType() const

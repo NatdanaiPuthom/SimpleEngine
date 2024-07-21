@@ -1,6 +1,6 @@
 #include "PinType.hpp"
 #include "../DataType/DataTypeManager.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 
 namespace FLY_NAMESPACE
 {

@@ -1,4 +1,4 @@
-#include "ScriptGlobal.hpp"
+#include "FlyGlobal.hpp"
 #include "ScriptFoundation.hpp"
 #include "DataType/DataTypeManager.hpp"
 #include "NodeTypeManager.hpp"

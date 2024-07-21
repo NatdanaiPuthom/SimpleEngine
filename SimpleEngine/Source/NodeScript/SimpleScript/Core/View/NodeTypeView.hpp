@@ -23,6 +23,8 @@ namespace FLY_NAMESPACE
 
 		NodeTypeID GetID() const;
 
+		explicit operator bool() const;
+
 		bool operator==(const NodeTypeView& aOther) const;
 		bool operator!=(const NodeTypeView& aOther) const;
 

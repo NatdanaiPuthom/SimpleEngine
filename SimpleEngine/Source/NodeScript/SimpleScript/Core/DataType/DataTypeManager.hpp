@@ -311,11 +311,11 @@ namespace FLY_NAMESPACE
 		{
 			mTypeTraits |= eDataTypeTrait::Fundamental;
 		}
-		if constexpr (Editable<T>)
+		if (anInterface.function.edit)
 		{
 			mTypeTraits |= eDataTypeTrait::Editable;
 		}
-		if constexpr (Loadable<T, nlohmann::json> && Savable<T, nlohmann::json>)
+		if (anInterface.function.save && anInterface.function.load)
 		{
 			mTypeTraits |= eDataTypeTrait::SaveLoadable;
 		}

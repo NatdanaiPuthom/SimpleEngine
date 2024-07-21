@@ -3,7 +3,7 @@
 #include "../Pin/PinTypeManager.hpp"
 #include "ScriptProxy.hpp"
 #include "../Node/Node.hpp"
-#include "Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 
 namespace FLY_NAMESPACE
 {

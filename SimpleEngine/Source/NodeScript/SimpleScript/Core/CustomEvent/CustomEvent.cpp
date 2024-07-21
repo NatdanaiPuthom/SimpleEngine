@@ -11,7 +11,7 @@ namespace FLY_NAMESPACE
 
 		const NodeID callerNodeID = aContext->GetNodeData().mNodeRef.mNodeID;
 
-		const Node& callerNode = aContext->mNodeData.mNodeRef.mNodeGraph->mNodeManager->mNodes[callerNodeID];
+		const Node& callerNode = aContext->mNodeData.mNodeRef.mNodeGraph->mNodes[callerNodeID];
 		const CustomEventID customEventID = Global::GetNodeTypeManager().GetCustomEventID(callerNode.mTypeID);
 
 		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(customEventID);

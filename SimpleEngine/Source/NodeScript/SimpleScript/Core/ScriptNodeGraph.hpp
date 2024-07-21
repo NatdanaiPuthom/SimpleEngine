@@ -1,7 +1,7 @@
 #pragma once
 #include "ScriptDefines.hpp"
-#include "Node/NodeManager.hpp"
-#include "Pin/PinManager.hpp"
+#include "Node/Node.hpp"
+#include "Pin/Pin.hpp"
 #include "Memory/ScriptMemoryArena.hpp"
 
 namespace FLY_NAMESPACE
@@ -35,8 +35,9 @@ namespace FLY_NAMESPACE
 
 	public:
 
-		std::unique_ptr<NodeManager> mNodeManager;
-		std::unique_ptr<PinManager> mPinManager;
+
+		std::vector<Node> mNodes;
+		std::vector<Pin> mPins;
 		std::vector<Link> mLinks;
 
 		MemoryArena<NodeBufferCapacity> mMemoryArena;

@@ -1,11 +1,10 @@
 #include "NodeExecutor.hpp"
-#include "NodeManager.hpp"
 #include "../FlyClass.hpp"
 #include "NodeTypeManager.hpp"
 #include "../ScriptInternalModifier.hpp"
 #include "ScriptUtilities.hpp"
 #include "FlyClassInstance.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 
 namespace FLY_NAMESPACE
 {

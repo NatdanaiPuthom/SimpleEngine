@@ -28,7 +28,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		PinID myPinID;
-		const NodeGraph* myNodeGraph;
+		PinID mPinID;
+		const NodeGraph* mNodeGraph;
 	};
 }

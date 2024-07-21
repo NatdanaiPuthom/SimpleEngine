@@ -3,10 +3,10 @@
 #include "NodeScriptingWindow.hpp"
 #include "NodeScript/SimpleScript/Core/FlyClass.hpp"
 #include "NodeScript/SimpleScript/Core/Utilities/ScriptUtilities.hpp"
-#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
 #include "NodeScript/SimpleScript/Core/Utilities/ScriptProxy.hpp"
 #include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
+#include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
+#include "FlyScriptEditorUtilities.hpp"
 
 namespace Editor
 {
@@ -65,51 +65,33 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void VariableWindow::ModifyVariablePopup(const Fly::VariableView& aVariable)
+	void VariableWindow::ModifyVariablePopup(const Fly::VariableView& aVariableView)
 	{
 		char buffer[35]{};
-		strcpy_s(buffer, aVariable.GetName().c_str());
+		strcpy_s(buffer, aVariableView.GetName().c_str());
 
 		if (ImGui::InputText("##VariableName", buffer, IM_ARRAYSIZE(buffer)))
 		{
-			Fly::SetVariableName(aVariable.GetID(), buffer, myParentWindow.GetNodeContext().classView);
+			Fly::SetVariableName(aVariableView, buffer, myParentWindow.GetNodeContext().classView);
 		}
 
-		int currentSelectedIndex = 0;
-
-		std::vector<Fly::DataTypeID> dataTypeIDs;
-		std::stringstream ss;
-
-		int i = 0;
-		for (const auto& [dataTypeID, obj] : Fly::Global::GetDataTypeManager().GetDataTypes())
-		{
-			ss << obj.mName << '\0';
-			dataTypeIDs.push_back(dataTypeID);
-			if (aVariable.GetDataType().GetID() == dataTypeID)
-			{
-				currentSelectedIndex = i;
-			}
-			++i;
-		}
-
-		std::string names = ss.str();
+		Fly::DataTypeView currentDataType = aVariableView.GetDataType();
 
 		ImGui::Separator();
-
-		if (ImGui::Combo("##ChangeDataType", &currentSelectedIndex, names.c_str()))
+		if (DataTypeComboEditableFilter("##ChangeDataType", currentDataType))
 		{
-			SetVariableDataType(aVariable.GetID(), dataTypeIDs.at(currentSelectedIndex), myParentWindow.GetNodeContext().classView, nullptr);
+			SetVariableDataType(aVariableView, currentDataType, myParentWindow.GetNodeContext().classView, nullptr);
 		}
 
 		ImGui::Text("Default value:");
 		ImGui::SameLine();
-		EditVariableDefaultValue(aVariable.GetID(), myParentWindow.GetNodeContext().classView, nullptr);
+		EditVariableDefaultValue(aVariableView, myParentWindow.GetNodeContext().classView, nullptr);
 
 		ImGui::Separator();
 
 		if (ImGui::Button("Create Getter"))
 		{
-			CreateGetterNode(myParentWindow.GetNodeContext().classView, *myParentWindow.GetNodeContext().nodeGraph, aVariable.GetID());
+			CreateGetterNode(myParentWindow.GetNodeContext().classView, *myParentWindow.GetNodeContext().nodeGraph, aVariableView.GetID());
 			ImGui::CloseCurrentPopup();
 
 		}
@@ -118,12 +100,12 @@ namespace Editor
 
 		if (ImGui::Button("Create Setter"))
 		{
-			CreateSetterNode(myParentWindow.GetNodeContext().classView, *myParentWindow.GetNodeContext().nodeGraph, aVariable.GetID());
+			CreateSetterNode(myParentWindow.GetNodeContext().classView, *myParentWindow.GetNodeContext().nodeGraph, aVariableView.GetID());
 		}
 
 		if (ImGui::Button("Delete Variable"))
 		{
-			DestroyVariable(aVariable.GetID(), myParentWindow.GetNodeContext().classView, nullptr);
+			DestroyVariable(aVariableView, myParentWindow.GetNodeContext().classView, nullptr);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 #include "ScriptCommand.hpp"
 #include "ScriptCommandTracker.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 
 namespace FLY_NAMESPACE
 {

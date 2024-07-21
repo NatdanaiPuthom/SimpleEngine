@@ -9,7 +9,8 @@
 #include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
 #include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
 #include "NodeScript/SimpleScript/Core/Node/NodeExecutor.hpp"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
+#include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
+#include "FlyScriptEditorUtilities.hpp"
 
 #include "Editor/Menu/MainMenuBar.hpp" //NOTE(v10.0.2): Remove this once we no longer use static bool of MainMenuBar class
 
@@ -17,30 +18,6 @@
 
 namespace Editor
 {
-
-	static void DataTypeComboSelection(const char* aComboLabel, Fly::DataTypeView& aDataTypeView)
-	{
-		if (ImGui::BeginCombo(aComboLabel, aDataTypeView.GetName().c_str()))
-		{
-
-			const std::vector<Fly::DataTypeView> dataTypes = Fly::GetDataTypesFiltered(
-				[](const Fly::DataTypeView& aDataType) -> bool
-				{
-					return aDataType.IsTargetable();
-				}
-			);
-
-			for (const Fly::DataTypeView& dataType : dataTypes)
-			{
-				if (ImGui::Selectable(dataType.GetName().c_str()))
-				{
-					aDataTypeView = dataType;
-				}
-			}
-
-			ImGui::EndCombo();
-		}
-	}
 
 	NodeScriptingWindow::NodeScriptingWindow()
 		: myVariableWindow(*this)
@@ -103,7 +80,7 @@ namespace Editor
 			auto classes = Fly::GetClasses();
 			if (classes.empty())
 			{
-				Fly::CreateClass(Fly::GetDataTypeID<Fly::None>(), "Default Class");
+				Fly::CreateClassWithoutTarget("Default Class");
 			}
 
 			classes = Fly::GetClasses();
@@ -349,13 +326,13 @@ namespace Editor
 		{
 			ImGui::InputText("##", myNewClassNameText, IM_ARRAYSIZE(myNewClassNameText), ImGuiInputTextFlags_AutoSelectAll);
 
-			DataTypeComboSelection("Select Target##CreateNewScriptTarget", mySelectedTargetDataType);
+			DataTypeComboTargetableFilter("Select Target##CreateNewScriptTarget", mySelectedTargetDataType);
 
 			ImGui::Separator();
 
 			if (ImGui::Button("Create", ImVec2(120, 0)))
 			{
-				Fly::ClassView classView = Fly::CreateClass(Fly::GetDataTypeID<Fly::None>(), myNewClassNameText);
+				Fly::ClassView classView = Fly::CreateClass(mySelectedTargetDataType, myNewClassNameText);
 				myNewClassNameText[0] = (char)0;
 
 				myImNodesContexts.emplace(&classView.GetEventGraph(), ImNodes::CreateContext());
@@ -485,7 +462,7 @@ namespace Editor
 
 				if (Fly::HasFlag(nodeView.GetTraits(), Fly::eNodeTrait::Accessor))
 				{
-					const Fly::VariableView variable = Fly::GetVariableByNodeID(nodeView.GetID(), *currentNodeContext.nodeGraph, currentClass);
+					const Fly::VariableView variable = Fly::GetVariableByNode(nodeView, *currentNodeContext.nodeGraph, currentClass);
 					const bool isGetter = Fly::HasFlag(nodeView.GetTraits(), Fly::eNodeTrait::Getter);
 					const char* const prefixLabel = isGetter ? "Get" : "Set";
 					nodeLabel = prefixLabel + variable.GetName();
@@ -566,7 +543,7 @@ namespace Editor
 					const float itemWidth = std::max(20.f, nodeWidthLeft);
 					ImGui::PushItemWidth(itemWidth);
 
-					Fly::EditPin(inputPinView.GetID(), *GetNodeContext().nodeGraph, myCommandTracker.get());
+					Fly::EditPin(inputPinView, *GetNodeContext().nodeGraph, myCommandTracker.get());
 
 					ImGui::PopItemWidth();
 				}
@@ -702,7 +679,8 @@ namespace Editor
 
 		if (ImNodes::IsLinkCreated(&createdLinkPinID1, &createdLinkPinID2))
 		{
-			Fly::TryCreateLink(createdLinkPinID1, createdLinkPinID2, *GetNodeContext().nodeGraph, myCommandTracker.get());
+			const Fly::NodeGraph& currentNodeGraph = *GetNodeContext().nodeGraph;
+			Fly::TryCreateLink(Fly::PinView(createdLinkPinID1, currentNodeGraph), Fly::PinView(createdLinkPinID2, currentNodeGraph), *GetNodeContext().nodeGraph, myCommandTracker.get());
 			currentNodeContext.myPinIDsToHighlight.clear();
 		}
 
@@ -780,10 +758,10 @@ namespace Editor
 					}
 				};
 
-			auto onClickCallback = [&](const Fly::NodeTypeView& aNodeType) -> void
+			auto onClickCallback = [&](const Fly::NodeTypeView& aNodeTypeView) -> void
 				{
 
-					Fly::CreateNodeAutoLink(*GetNodeContext().nodeGraph, aNodeType.GetID(), currentNodeContext.myLinkCreationPinID, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
+					Fly::CreateNodeAutoLink(*GetNodeContext().nodeGraph, aNodeTypeView, currentNodeContext.myLinkCreationPinID, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 
 					currentNodeContext.myPinIDsToHighlight.clear();
@@ -922,7 +900,7 @@ namespace Editor
 		}
 	}
 
-	bool StringCompare(std::string_view aStr1, std::string_view aStr2)
+	static bool StringCompare(std::string_view aStr1, std::string_view aStr2)
 	{
 		auto it = std::search(
 			aStr1.begin(), aStr1.end(),
@@ -976,11 +954,11 @@ namespace Editor
 					}
 				};
 
-			auto onClickCallback = [&](const Fly::NodeTypeView& aNodeType) -> void
+			auto onClickCallback = [&](const Fly::NodeTypeView& aNodeTypeView) -> void
 				{
 					NodeContext& currentNodeContext = GetNodeContext();
 
-					Fly::CreateNode(*GetNodeContext().nodeGraph, aNodeType.GetID(), Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
+					Fly::CreateNode(*GetNodeContext().nodeGraph, aNodeTypeView, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 
 					currentNodeContext.myPinIDsToHighlight.clear();

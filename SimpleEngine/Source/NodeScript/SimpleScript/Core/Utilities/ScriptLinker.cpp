@@ -1,6 +1,5 @@
 #include "ScriptLinker.hpp"
 #include "../Node/NodeTypeRegistry.hpp"
-#include "../Node/NodeManager.hpp"
 #include "../Pin/PinTypeManager.hpp"
 #include "ScriptProxy.hpp"
 

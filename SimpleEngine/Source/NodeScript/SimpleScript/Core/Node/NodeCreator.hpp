@@ -5,7 +5,6 @@
 #include "../Variable/VariableManager.hpp"
 #include "NodeTypeManager.hpp"
 #include "NodeExecutor.hpp"
-#include "../Pin/PinManager.hpp"
 #include "Node.hpp"
 #include "../Utilities/ScriptUtilities.hpp"
 #include "../Pin/PinTypeManager.hpp"
@@ -14,7 +13,7 @@
 #include "../SystemTypes/ScriptWildcard.hpp"
 #include "../SystemTypes/ScriptFlow.hpp"
 #include "../Utilities/MetaScript.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "../SystemTypes/ReferenceWrapper.hpp"
 

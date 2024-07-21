@@ -6,9 +6,9 @@ namespace FLY_NAMESPACE
 
 
 
-	LinkView::LinkView(LinkID aLinkID, const NodeGraph& aNodeGraph)
-		: myLinkID(aLinkID)
-		, myNodeGraph(&aNodeGraph)
+	LinkView::LinkView(const LinkID aLinkID, const NodeGraph& aNodeGraph)
+		: mLinkID(aLinkID)
+		, mNodeGraph(&aNodeGraph)
 	{
 	}
 
@@ -19,21 +19,26 @@ namespace FLY_NAMESPACE
 
 	PinView LinkView::GetInputPin() const
 	{
-		return PinView(GetLink().mInputPinID, *myNodeGraph);
+		return PinView(GetLink().mInputPinID, *mNodeGraph);
 	}
 
 	PinView LinkView::GetOutputPin() const
 	{
-		return PinView(GetLink().mOutputPinID, *myNodeGraph);
+		return PinView(GetLink().mOutputPinID, *mNodeGraph);
 	}
 
 	LinkID LinkView::GetID() const
 	{
-		return myLinkID;
+		return mLinkID;
+	}
+
+	LinkView::operator bool() const
+	{
+		return mLinkID != InvalidID<LinkID>();
 	}
 
 	const Link& LinkView::GetLink() const
 	{
-		return myNodeGraph->mLinks.at(myLinkID);
+		return mNodeGraph->mLinks.at(mLinkID);
 	}
 }

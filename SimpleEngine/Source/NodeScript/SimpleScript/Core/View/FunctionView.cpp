@@ -1,5 +1,5 @@
 #include "FunctionView.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 #include "../Node/NodeTypeManager.hpp"
 
 namespace FLY_NAMESPACE

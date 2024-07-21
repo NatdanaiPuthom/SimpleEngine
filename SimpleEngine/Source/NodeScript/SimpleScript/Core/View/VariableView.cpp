@@ -5,8 +5,8 @@ namespace FLY_NAMESPACE
 {
 
 	VariableView::VariableView(const VarID aVarID, const Class& aClass)
-		: myVarID(aVarID)
-		, myClass(&aClass)
+		: mVarID(aVarID)
+		, mClass(&aClass)
 	{
 	}
 
@@ -28,11 +28,16 @@ namespace FLY_NAMESPACE
 
 	VarID VariableView::GetID() const
 	{
-		return myVarID;
+		return mVarID;
+	}
+
+	VariableView::operator bool() const
+	{
+		return mVarID != InvalidID<VarID>();
 	}
 
 	const Variable& VariableView::GetVariable() const
 	{
-		return myClass->GetVariableManager().mVariables.at(myVarID);
+		return mClass->GetVariableManager().mVariables.at(mVarID);
 	}
 }

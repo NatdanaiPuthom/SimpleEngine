@@ -1,6 +1,5 @@
 #include "NodeManagerInstance.hpp"
-#include "../Node/NodeManager.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 #include "../DataType/DataTypeManager.hpp"
 #include "../Node/NodeTypeManager.hpp"
 
@@ -16,13 +15,13 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	void NodeManagerInstance::Init(const NodeManager& aNodeManager)
+	void NodeManagerInstance::Init(const std::vector<Node>& aNodeVector)
 	{
 		mNodeStateMap.clear();
 		mMemoryArena.Clear();
-		for (NodeID nodeID = 0; nodeID < aNodeManager.mNodes.size(); ++nodeID)
+		for (NodeID nodeID = 0; nodeID < aNodeVector.size(); ++nodeID)
 		{
-			const Node& node = aNodeManager.mNodes[nodeID];
+			const Node& node = aNodeVector[nodeID];
 			const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 			if (nodeType.mNodeRecipe.mNodeStateDataTypeID == InvalidID<DataTypeID>())
 			{

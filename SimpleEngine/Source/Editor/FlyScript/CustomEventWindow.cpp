@@ -4,7 +4,8 @@
 #include "NodeScript/SimpleScript/Core/FlyClass.hpp"
 #include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
 #include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
+#include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
+#include "FlyScriptEditorUtilities.hpp"
 
 namespace Editor
 {
@@ -74,22 +75,6 @@ namespace Editor
 		for (size_t i = 0; i < outputPinTypes.size(); ++i)
 		{
 			const Fly::PinTypeView& outputPinType = outputPinTypes.at(i);
-			int currentSelectedIndex = 0;
-
-			const std::vector<Fly::DataTypeView> dataTypes = Fly::GetDataTypes();
-
-			std::stringstream ss;
-			for (int j = 0; j < dataTypes.size(); ++j)
-			{
-				const Fly::DataTypeView& dataType = dataTypes.at(j);
-				ss << dataType.GetName() << '\0';
-				if (outputPinType.GetDataTypeID() == dataType.GetID())
-				{
-					currentSelectedIndex = j;
-				}
-			}
-
-			const std::string names = ss.str();
 
 			ImGui::Text("%u:", i);
 			ImGui::SameLine();
@@ -110,16 +95,17 @@ namespace Editor
 				Fly::DeletePinAtIndexCustomEvent(i, aCustomEventView.GetID());
 			}
 
-			if (ImGui::Combo(std::string("##CustomEventPinType" + std::to_string(i)).c_str(), &currentSelectedIndex, names.c_str()))
+			const std::string comboLabel = "##CustomEventPinType" + std::to_string(i);
+			Fly::DataTypeView currentDataType(outputPinType.GetDataTypeID());
+			if (DataTypeComboEditableFilter(comboLabel.c_str(), currentDataType))
 			{
-
-				Fly::SetPinAtIndexCustomEvent(i, dataTypes.at(currentSelectedIndex).GetID(), aCustomEventView.GetID());
+				Fly::SetPinAtIndexCustomEvent(i, currentDataType, aCustomEventView.GetID());
 			}
 
 			ImGui::SameLine();
 
 			ImGui::BeginDisabled();
-			ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(dataTypes.at(currentSelectedIndex).GetColor())));
+			ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(currentDataType.GetColor())));
 			ImGui::EndDisabled();
 		}
 
@@ -127,14 +113,14 @@ namespace Editor
 
 		if (ImGui::Button("Create Caller"))
 		{
-			CreateNode(*myParentWindow.GetNodeContext().nodeGraph, aCustomEventView.GetCallerNodeType().GetID());
+			CreateNode(*myParentWindow.GetNodeContext().nodeGraph, aCustomEventView.GetCallerNodeType());
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Create Executor"))
 		{
-			CreateNode(*myParentWindow.GetNodeContext().nodeGraph, aCustomEventView.GetExecutorNodeType().GetID());
+			CreateNode(*myParentWindow.GetNodeContext().nodeGraph, aCustomEventView.GetExecutorNodeType());
 		}
 	}
 }

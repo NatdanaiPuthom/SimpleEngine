@@ -1,7 +1,7 @@
 #include "EventGraph.hpp"
 #include "Utilities/ScriptUtilities.hpp"
 #include "Node/NodeTypeManager.hpp"
-#include "Global/ScriptGlobal.hpp"
+#include "Global/FlyGlobal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -16,7 +16,7 @@ namespace FLY_NAMESPACE
 
 	void EventGraph::BindNodeToEvent(const NodeID aNodeID)
 	{
-		const Node& node = mNodeManager->mNodes.at(aNodeID);
+		const Node& node = mNodes.at(aNodeID);
 		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
 		const EventID mEventID = nodeType.mNodeRecipe.mEventID;
@@ -47,7 +47,7 @@ namespace FLY_NAMESPACE
 
 	void EventGraph::UnbindNodeFromEvent(const NodeID aNodeID)
 	{
-		const Node& node = mNodeManager->mNodes.at(aNodeID);
+		const Node& node = mNodes.at(aNodeID);
 		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
 		auto it = myEventNodes.find(nodeType.mNodeRecipe.mEventID);

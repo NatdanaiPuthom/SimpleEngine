@@ -1,6 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "ScriptSystem.hpp"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
+#include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
 #include "NodeScript/SimpleScript/Core/Node/NodeExecutor.hpp"
 #include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
 

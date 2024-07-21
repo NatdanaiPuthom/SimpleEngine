@@ -5,7 +5,6 @@
 
 namespace FLY_NAMESPACE
 {
-	class NodeManager;
 
 	class NodeManagerInstance final
 	{
@@ -17,7 +16,7 @@ namespace FLY_NAMESPACE
 		NodeManagerInstance(const NodeManagerInstance&) = delete;
 		NodeManagerInstance& operator=(const NodeManagerInstance&) = delete;
 
-		void Init(const NodeManager& aNodeManager);
+		void Init(const std::vector<Node>& aNodeVector);
 
 		template<typename T>
 		T& GetNodeState(NodeID aNodeID);

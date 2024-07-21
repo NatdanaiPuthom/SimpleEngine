@@ -3,7 +3,8 @@
 #include "NodeScriptingWindow.hpp"
 #include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
 #include "NodeScript/SimpleScript/Core/FlyClass.hpp"
-#include "NodeScript/SimpleScript/Core/Global/ScriptGlobal.hpp"
+#include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
+#include "FlyScriptEditorUtilities.hpp"
 
 namespace Editor
 {
@@ -38,7 +39,7 @@ namespace Editor
 				strcpy_s(functionNameBuffer, functionView.GetName().c_str());
 				if (ImGui::InputText("Name", functionNameBuffer, 32))
 				{
-					Fly::SetFunctionName(functionView.GetID(), functionNameBuffer);
+					Fly::SetFunctionName(functionView, functionNameBuffer);
 				}
 
 				const std::string functionlabel = functionView.GetName() + "##function" + std::to_string(functionView.GetID());
@@ -49,18 +50,18 @@ namespace Editor
 
 				if (ImGui::Button("Create Caller"))
 				{
-					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetCallerNodeType().GetID());
+					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetCallerNodeType());
 				}
 
-				if (ImGui::Button("Create Input"))
+				/*if (ImGui::Button("Create Input"))
 				{
-					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetInputNodeType().GetID());
+					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetInputNodeType());
 				}
 
 				if (ImGui::Button("Create Output"))
 				{
-					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetOutputNodeType().GetID());
-				}
+					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetOutputNodeType());
+				}*/
 
 				ImGui::Separator();
 			}

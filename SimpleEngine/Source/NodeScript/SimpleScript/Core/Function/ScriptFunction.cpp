@@ -54,8 +54,8 @@ namespace FLY_NAMESPACE
 		mInputNodeTypeID = RegisterSystemNodeType(InputNode, "Function/Input Function");
 		mOutputNodeTypeID = RegisterSystemNodeType(OutputNode, "Function/Output Function");
 
-		mInputNodeID = CreateNode(mNodeGraph, mInputNodeTypeID).GetID();
-		mOutputNodeID = CreateNode(mNodeGraph, mOutputNodeTypeID).GetID();
+		mInputNodeID = CreateNode(mNodeGraph, NodeTypeView(mInputNodeTypeID)).GetID();
+		mOutputNodeID = CreateNode(mNodeGraph, NodeTypeView(mOutputNodeTypeID)).GetID();
 	}
 
 	Function::~Function() = default;

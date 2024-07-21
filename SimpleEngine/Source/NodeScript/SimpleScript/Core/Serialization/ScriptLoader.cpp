@@ -1,7 +1,5 @@
 #include "ScriptLoader.hpp"
 #include "../FlyClass.hpp"
-#include "../Node/NodeManager.hpp"
-#include "../Pin/PinManager.hpp"
 #include "../Utilities/ScriptUtilities.hpp"
 #include "../Node/NodeTypeRegistry.hpp"
 #include "../Utilities/ScriptLinker.hpp"
@@ -70,9 +68,9 @@ namespace FLY_NAMESPACE
 
 		std::unordered_map<NodeID, NodeID> cleanedNodeIDs;
 
-		for (NodeID nodeID = 0; nodeID < eventGraph.mNodeManager->mNodes.size(); ++nodeID)
+		for (NodeID nodeID = 0; nodeID < eventGraph.mNodes.size(); ++nodeID)
 		{
-			const Node& node = eventGraph.mNodeManager->mNodes[nodeID];
+			const Node& node = eventGraph.mNodes[nodeID];
 			if (node.mIsDestroyed) continue;
 
 			json nodeJson;
@@ -241,7 +239,7 @@ namespace FLY_NAMESPACE
 
 				if (connectionID != InvalidID<PinID>())
 				{
-					TryCreateLink(pinID, connectionID, eventGraph, nullptr);
+					TryCreateLink(PinView(pinID, eventGraph), PinView(connectionID, eventGraph), eventGraph, nullptr);
 				}
 				continue;
 			}
@@ -261,19 +259,19 @@ namespace FLY_NAMESPACE
 			const std::string& dataTypeStr = variableJson["DataType"];
 
 			const std::string variableName = variableJson["Name"];
-			SetVariableName(varID, variableName, ClassView(aClass));
+			SetVariableName(VariableView(varID, aClass), variableName, ClassView(aClass));
 
 			const json& defaultValueJson = variableJson["DefaultValue"];
 
 
-			DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeStr);
+			DataTypeView dataType(Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeStr));
 
-			if (dataTypeID != InvalidID<DataTypeID>())
+			if (dataType)
 			{
 
-				SetVariableDataType(varID, dataTypeID, ClassView(aClass), nullptr);
+				SetVariableDataType(VariableView(varID, aClass), dataType, ClassView(aClass), nullptr);
 
-				Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
+				Global::GetDataTypeManager().LoadData(dataType.GetID(), defaultValueJson, variable.defaultValueDataPtr);
 
 			}
 
@@ -313,7 +311,7 @@ namespace FLY_NAMESPACE
 
 					const std::string fileName = entry.path().filename().string();
 					const std::string name = fileName.substr(0, fileName.find_last_of('.'));
-					ClassView createdClass = CreateClass(GetDataTypeID<None>(), name);
+					ClassView createdClass = CreateClass(DataTypeView(GetDataTypeID<None>()), name);
 					LoadClass(createdClass.GetClass(), aFilePath);
 				}
 			}

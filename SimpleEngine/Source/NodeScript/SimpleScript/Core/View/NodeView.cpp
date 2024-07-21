@@ -1,14 +1,14 @@
 #include "NodeView.hpp"
 #include "../ScriptNodeGraph.hpp"
-#include "../Global/ScriptGlobal.hpp"
+#include "../Global/FlyGlobal.hpp"
 #include "../Node/NodeTypeManager.hpp"
 
 namespace FLY_NAMESPACE
 {
 
 	NodeView::NodeView(const NodeID aNodeID, const NodeGraph& aNodeGraph)
-		: myNodeID(aNodeID)
-		, myNodeGraph(&aNodeGraph)
+		: mNodeID(aNodeID)
+		, mNodeGraph(&aNodeGraph)
 	{
 	}
 
@@ -44,7 +44,7 @@ namespace FLY_NAMESPACE
 
 	const Node& NodeView::GetNode() const
 	{
-		return myNodeGraph->mNodeManager->mNodes.at(myNodeID);
+		return mNodeGraph->mNodes.at(mNodeID);
 	}
 
 	const NodeType& NodeView::GetNodeType() const
@@ -63,7 +63,7 @@ namespace FLY_NAMESPACE
 
 		for (const PinID pinID : pinIDs)
 		{
-			pinViews.emplace_back(PinView(pinID, *myNodeGraph));
+			pinViews.emplace_back(PinView(pinID, *mNodeGraph));
 		}
 
 		return pinViews;
@@ -71,7 +71,7 @@ namespace FLY_NAMESPACE
 
 	NodeID NodeView::GetID() const
 	{
-		return myNodeID;
+		return mNodeID;
 	}
 
 	eNodeTrait NodeView::GetTraits() const
@@ -86,12 +86,12 @@ namespace FLY_NAMESPACE
 
 	const NodeGraph& NodeView::GetNodeGraph() const
 	{
-		return *myNodeGraph;
+		return *mNodeGraph;
 	}
 
 	bool NodeView::operator==(const NodeView& aOther) const
 	{
-		return myNodeGraph == aOther.myNodeGraph && myNodeID == aOther.myNodeID;
+		return mNodeGraph == aOther.mNodeGraph && mNodeID == aOther.mNodeID;
 	}
 
 	bool NodeView::operator!=(const NodeView& aOther) const

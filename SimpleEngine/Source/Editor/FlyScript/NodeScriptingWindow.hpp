@@ -5,7 +5,6 @@
 #include "CustomEventWindow.hpp"
 #include "FunctionWindow.hpp"
 #include "FunctionSettingsWindow.hpp"
-#include "NodeScript/SimpleScript/Core/SystemTypes/ScriptVec2.hpp"
 #include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
 #include <External/imgui.h>
 #include <vector>
