@@ -172,8 +172,7 @@ namespace Graphics
 
 	Math::Matrix4x4f Camera::GetWorldToClipMatrix() const
 	{
-		const Math::Matrix4x4f clipMatrix = Math::Matrix4x4f::GetFastInverse(myTransform.GetMatrix()) * myProjectionMatrix;
-		return clipMatrix;
+		return Math::Matrix4x4f::GetFastInverse(myTransform.GetMatrix()) * myProjectionMatrix;;
 	}
 
 	void Camera::SetPerspectiveProjection(const Math::Vector2ui& aResolution)
