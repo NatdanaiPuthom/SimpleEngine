@@ -7,15 +7,13 @@ namespace FLY_NAMESPACE
 	{
 		return [](const PinSetData& aPinSetData, const InternalExecutionContext& aContext) -> void
 			{
-				const Pin& pin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, aPinSetData.mID);
+				const Pin& pin = aPinSetData.mNodeGraph->mPins[aPinSetData.mID];
 				const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 #ifdef FLY_DEBUG
 				assert(aPinSetData.mDataTypeID == pinType.mDataTypeID);
 #endif
 
-				void* destination = pin.mDataPtr;
-
-				Global::GetDataTypeManager().CopyData(pinType.mDataTypeID, destination, aPinSetData.mValue);
+				Global::GetDataTypeManager().CopyData(pinType.mDataTypeID, pin.mDataPtr, aPinSetData.mValue);
 
 				if (pinType.mDataTypeID == Flow::mTypeID)
 				{
@@ -26,10 +24,10 @@ namespace FLY_NAMESPACE
 						if (pinType.mFlowType == eFlowType::Output)
 						{
 							assert(aContext.mExecutionQueue);
-							for (PinID connectedInputPinID : pin.mConnectedPinIDs)
+							for (const PinID connectedInputPinID : pin.mConnectedPinIDs)
 							{
-								const Pin& connectedInputPin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, connectedInputPinID);
-								aContext.mExecutionQueue->Push({ NodeRef{ connectedInputPin.mNodeID, aContext.mNodeData.mNodeRef.mNodeGraph }, eNodeTriggerReason::Flow });
+								const Pin& connectedInputPin = aPinSetData.mNodeGraph->mPins[connectedInputPinID];
+								aContext.mExecutionQueue->Push({ NodeRef{ connectedInputPin.mNodeID, aPinSetData.mNodeGraph }, eNodeTriggerReason::Flow });
 							}
 						}
 					}
@@ -37,7 +35,7 @@ namespace FLY_NAMESPACE
 			};
 	}
 
-	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, const NodeGraph& aDestinationNodeGraph, const NodeGraph& aSourceNodeGraph, const size_t aStartIndex)
+	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, NodeGraph& aDestinationNodeGraph, const NodeGraph& aSourceNodeGraph, const size_t aStartIndex)
 	{
 		assert(aDestination.size() == aSource.size());
 		for (size_t i = aStartIndex; i < aDestination.size(); i++)
@@ -50,11 +48,11 @@ namespace FLY_NAMESPACE
 
 			const PinID sourcePinID = aSource[i];
 			const Pin& sourcePin = ScriptProxy::GetPin(aSourceNodeGraph, sourcePinID);
+			[[maybe_unused]] const PinType& sourcePinType = Global::GetPinTypeManager().GetPinType(sourcePin.mTypeID);
 
-
-			outputPinType.mSetFunction(PinSetData{ destinationPinID, sourcePin.mDataPtr,
+			outputPinType.mSetFunction(PinSetData{ destinationPinID, &aDestinationNodeGraph, sourcePin.mDataPtr,
 #ifdef FLY_DEBUG
-				Global::GetPinTypeManager().GetPinType(sourcePin.mTypeID).mDataTypeID
+				sourcePinType.mDataTypeID
 #endif
 				}, aContext);
 		}
@@ -92,7 +90,7 @@ namespace FLY_NAMESPACE
 					ScriptProxy::GetNodeExecutor().ExecuteNode({ NodeRef{ connectedNodeID, aContext.mNodeData.mNodeRef.mNodeGraph }, eNodeTriggerReason::Read });
 				}
 
-				inputPinType.mSetFunction(PinSetData{ inputPinID, connectedOutputPin.mDataPtr,
+				inputPinType.mSetFunction(PinSetData{ inputPinID, aContext.mNodeData.mNodeRef.mNodeGraph, connectedOutputPin.mDataPtr,
 #ifdef _DEBUG
 					Global::GetPinTypeManager().GetPinType(connectedOutputPin.mTypeID).mDataTypeID
 #endif

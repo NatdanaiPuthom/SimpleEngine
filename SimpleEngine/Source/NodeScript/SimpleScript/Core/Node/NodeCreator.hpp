@@ -22,20 +22,21 @@ namespace FLY_NAMESPACE
 
 	PinSetFunction CreatePinSetFunction();
 
-	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, const NodeGraph& aDestinationNodeGraph, const NodeGraph& aSourceNodeGraph, const size_t aStartIndex);
+	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, NodeGraph& aDestinationNodeGraph, const NodeGraph& aSourceNodeGraph, const size_t aStartIndex);
 
 	template<CleanType T, eFlowType FlowType>
 	PinSetFunction CreatePinSetFunction()
 	{
 		return [](const PinSetData& aPinSetData, const InternalExecutionContext& aContext) -> void
 			{
+				aContext;
 #ifdef FLY_DEBUG
 				assert(aPinSetData.mDataTypeID == typeid(T).hash_code());
 #endif
 
 				const T& value = *reinterpret_cast<const T*>(aPinSetData.mValue);
 
-				const Pin& pin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, aPinSetData.mID);
+				const Pin& pin = ScriptProxy::GetPin(*aPinSetData.mNodeGraph, aPinSetData.mID);
 
 				T& memoryValue = *reinterpret_cast<T*>(pin.mDataPtr);
 				memoryValue = value;
@@ -46,11 +47,10 @@ namespace FLY_NAMESPACE
 					{
 						if constexpr (FlowType == eFlowType::Output)
 						{
-
-							for (PinID connectedInputPinID : pin.mConnectedPinIDs)
+							for (const PinID connectedInputPinID : pin.mConnectedPinIDs)
 							{
-								const Pin& connectedInputPin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, connectedInputPinID);
-								aContext.mExecutionQueue->Push(NodeExecutionData{ NodeRef{ connectedInputPin.mNodeID, aContext.mNodeData.mNodeRef.mNodeGraph }, eNodeTriggerReason::Flow });
+								const Pin& connectedInputPin = ScriptProxy::GetPin(*aPinSetData.mNodeGraph, connectedInputPinID);
+								aContext.mExecutionQueue->Push(NodeExecutionData{ NodeRef{ connectedInputPin.mNodeID, aPinSetData.mNodeGraph }, eNodeTriggerReason::Flow });
 							}
 						}
 					}
@@ -217,7 +217,7 @@ namespace FLY_NAMESPACE
 			const void* value = &std::get<Index>(aOutputValues);
 
 
-			pinType.mSetFunction(PinSetData{ mOutputPinID, value,
+			pinType.mSetFunction(PinSetData{ mOutputPinID, aContext.mNodeData.mNodeRef.mNodeGraph, value,
 
 #ifdef FLY_DEBUG
 				typeid(decltype(std::get<Index>(aOutputValues))).hash_code()
@@ -371,15 +371,14 @@ namespace FLY_NAMESPACE
 
 				const Node& node = ScriptProxy::GetNode(*aNodeExecutionData.mNodeRef.mNodeGraph, aNodeExecutionData.mNodeRef.mNodeID);
 
+				// Set current node data before calling function
+				aContext.mNodeData = aNodeExecutionData;
+
 				// Evaluate input values
 				if constexpr (HasInputs)
 				{
 					EvaluateInputValues(node.mInputPins, aContext);
 				}
-
-				// Set current node data before calling function
-				aContext.mNodeData = aNodeExecutionData;
-
 
 				ExecutionQueue executionQueue;
 				aContext.mExecutionQueue = &executionQueue;

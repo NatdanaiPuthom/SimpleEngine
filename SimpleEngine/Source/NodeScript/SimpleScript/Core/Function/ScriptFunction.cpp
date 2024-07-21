@@ -8,17 +8,17 @@ namespace FLY_NAMESPACE
 
 	static Flow CallerNode(const InternalExecutionContext* aContext, Flow)
 	{
-		const Node& callerNode = aContext->GetCurrentNode();
+		const Node& callerNode = aContext->mNodeData.mNodeRef.mNodeGraph->mNodes[aContext->mNodeData.mNodeRef.mNodeID];
 
 		NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
 		const FunctionID functionID = nodeTypeManager.GetFunctionID(callerNode.mTypeID);
 		Function& function = nodeTypeManager.GetFunction(functionID);
-		function.SetCaller({ aContext->GetNodeData().mNodeRef.mNodeID, aContext->mNodeData.mNodeRef.mNodeGraph });
-		const Node& inputNode = ScriptProxy::GetNode(function.GetNodeGraph(), function.GetInputNodeID());
+		const Node& inputNode = function.mNodeGraph.mNodes[function.mInputNodeID];
 
-		CopyPinData(*aContext, inputNode.mOutputPins, callerNode.mInputPins, function.GetNodeGraph(), *aContext->mNodeData.mNodeRef.mNodeGraph, 1);
+		CopyPinData(*aContext, inputNode.mOutputPins, callerNode.mInputPins, function.mNodeGraph, *aContext->mNodeData.mNodeRef.mNodeGraph, 1);
 
-		aContext->mExecutionQueue->Push(NodeExecutionData{ NodeRef{function.GetInputNodeID(), &function.GetNodeGraph() }, eNodeTriggerReason::Flow});
+		aContext->mExecutionQueue->Push(NodeExecutionData{ NodeRef{ function.mInputNodeID, &function.mNodeGraph }, eNodeTriggerReason::Flow});
+		aContext->mNodeExecutor->GetCallStack().Push(aContext->mNodeData.mNodeRef);
 
 		return Flow(true);
 	}
@@ -30,18 +30,16 @@ namespace FLY_NAMESPACE
 
 	static Wildcard OutputNode(const InternalExecutionContext* aContext, Flow)
 	{
-		const Node& outputNode = aContext->GetCurrentNode();
+		const Node& outputNode = aContext->mNodeData.mNodeRef.mNodeGraph->mNodes[aContext->mNodeData.mNodeRef.mNodeID];
 
 		const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
 		const FunctionID functionID = nodeTypeManager.GetFunctionID(outputNode.mTypeID);
 		const Function& function = nodeTypeManager.GetFunction(functionID);
 
-		const NodeRef& caller = function.GetCaller();
+		const NodeRef& callerNodeRef = aContext->mNodeExecutor->GetCallStack().Pop();
+		const Node& callerNode = callerNodeRef.mNodeGraph->mNodes[callerNodeRef.mNodeID];
 
-		// TODO: Fix node lookup
-		const Node& callerNode = ScriptProxy::GetNode(*caller.mNodeGraph, caller.mNodeID);
-
-		CopyPinData(*aContext, callerNode.mOutputPins, outputNode.mInputPins, *caller.mNodeGraph, function.GetNodeGraph(), 1);
+		CopyPinData(*aContext, callerNode.mOutputPins, outputNode.mInputPins, *callerNodeRef.mNodeGraph, function.mNodeGraph, 1);
 
 		return Wildcard();
 	}

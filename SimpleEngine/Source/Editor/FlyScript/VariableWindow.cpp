@@ -25,7 +25,7 @@ namespace Editor
 			if (ImGui::Button("Create Variable"))
 			{
 				
-				Fly::CreateVariable(myParentWindow.GetNodeContext().classView);
+				Fly::CreateVariable(myParentWindow.GetNodeContext().classView, Fly::DataTypeView(Fly::GetDataTypeID<bool>()));
 			}
 
 			ImGui::Separator();

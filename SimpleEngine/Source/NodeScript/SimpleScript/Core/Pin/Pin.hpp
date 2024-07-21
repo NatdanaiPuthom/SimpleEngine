@@ -19,7 +19,7 @@ namespace FLY_NAMESPACE
 		PinID mOutputPinID = InvalidID<PinID>();
 		bool mIsDestroyed = false;
 
-		operator bool() const
+		explicit operator bool() const
 		{
 			return mInputPinID != InvalidID<PinID>() && mOutputPinID != InvalidID<PinID>();
 		}

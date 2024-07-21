@@ -10,10 +10,12 @@ namespace FLY_NAMESPACE
 		Output,
 	};
 
+	class NodeGraph;
 
 	struct PinSetData
 	{
 		PinID mID;
+		NodeGraph* mNodeGraph;
 		const void* mValue;
 #ifdef _DEBUG
 		DataTypeID mDataTypeID;

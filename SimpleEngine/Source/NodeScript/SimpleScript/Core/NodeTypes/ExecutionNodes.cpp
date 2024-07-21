@@ -42,19 +42,19 @@ namespace FLY_NAMESPACE
 
 	static Flow Delay(const InternalExecutionContext* aContext, NodeState<DelayNodeData> aState, Flow, float aDuration, bool aResetOnFlow)
 	{
-		if (aContext->GetNodeData().mTriggerReason == eNodeTriggerReason::Flow)
+		if (aContext->mNodeData.mTriggerReason == eNodeTriggerReason::Flow)
 		{
 			if (aResetOnFlow)
 			{
 				aState.value.time = 0.f;
 			}
-			ScriptProxy::GetNodeExecutor().RegisterAutoTickNode(aContext->GetNodeData().mNodeRef);
+			aContext->mNodeExecutor->RegisterAutoTickNode(aContext->mNodeData.mNodeRef);
 		}
 		aState.value.time += aContext->mExecutionContext->mDeltaTime;
 		if (aState.value.time > aDuration)
 		{
 			aState.value.time = 0.f;
-			ScriptProxy::GetNodeExecutor().UnregisterAutoTickNode(aContext->GetNodeData().mNodeRef);
+			aContext->mNodeExecutor->UnregisterAutoTickNode(aContext->mNodeData.mNodeRef);
 			return Flow(true);
 		}
 		return Flow(false);

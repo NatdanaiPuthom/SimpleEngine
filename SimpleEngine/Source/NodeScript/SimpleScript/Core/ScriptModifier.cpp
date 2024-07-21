@@ -156,10 +156,10 @@ namespace FLY_NAMESPACE
 		}
 
 		const Variable& variable = aClassView.GetClass().GetVariableManager().mVariables.at(aVarID);
-		
+
 		const NodeID mNodeID = Internal::CreateGetterNode(aNodeGraph, variable.dataTypeID, aCommandTracker);
 		SetNodePosition(mNodeID, aPosition, aNodeGraph, aCommandTracker);
-		Internal::BindVariable(aClassView.GetClass(), NodeRef{.mNodeID = mNodeID, .mNodeGraph = &aNodeGraph}, aVarID, aCommandTracker);
+		Internal::BindVariable(aClassView.GetClass(), NodeRef{ .mNodeID = mNodeID, .mNodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
 
 		if (aCommandTracker)
 		{
@@ -180,7 +180,7 @@ namespace FLY_NAMESPACE
 
 		const NodeID mNodeID = Internal::CreateSetterNode(aNodeGraph, variable.dataTypeID, aCommandTracker);
 		SetNodePosition(mNodeID, aPosition, aNodeGraph, aCommandTracker);
-		Internal::BindVariable(aClassView.GetClass(), NodeRef{.mNodeID = mNodeID, .mNodeGraph = &aNodeGraph}, aVarID, aCommandTracker);
+		Internal::BindVariable(aClassView.GetClass(), NodeRef{ .mNodeID = mNodeID, .mNodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
 
 		if (aCommandTracker)
 		{
@@ -219,23 +219,23 @@ namespace FLY_NAMESPACE
 		return LinkView(createdLinkID, aNodeGraph);
 	}
 
-	void DestroyLink(const LinkID aLinkID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+	void DestroyLink(const LinkView aLinkView, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 	{
-		Internal::DestroyLink(aNodeGraph, aLinkID, aCommandTracker);
+		Internal::DestroyLink(aNodeGraph, aLinkView.GetID(), aCommandTracker);
 	}
 
 	void DestoryLinksByOutputPin(const PinView aOutputPinView, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
 	{
-		Pin& outputPin = aNodeGraph.mPins.at(aOutputPinView.GetID());
-
+		const Pin& outputPin = aNodeGraph.mPins.at(aOutputPinView.GetID());
+		outputPin;
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Destory Links by Output Pin");
 		}
-		for (const PinID connectedInputPin : outputPin.mConnectedPinIDs)
+		/*for (const PinID connectedInputPin : outputPin.mConnectedPinIDs)
 		{
 			DestroyLink(Link{ connectedInputPin, aOutputPinView.GetID() }, aNodeGraph, aCommandTracker);
-		}
+		}*/
 
 		if (aCommandTracker)
 		{
@@ -277,7 +277,7 @@ namespace FLY_NAMESPACE
 
 		for (const LinkID linkID : ScriptLinker::GetLinkIDsByNode(aNodeGraph, aNodeView.GetID()))
 		{
-			DestroyLink(linkID, aNodeGraph, aCommandTracker);
+			DestroyLink(LinkView(linkID, aNodeGraph), aNodeGraph, aCommandTracker);
 		}
 
 
@@ -296,7 +296,7 @@ namespace FLY_NAMESPACE
 
 		for (const LinkID linkID : aLinkIDs)
 		{
-			DestroyLink(linkID, aNodeGraph, aCommandTracker);
+			DestroyLink(LinkView(linkID, aNodeGraph), aNodeGraph, aCommandTracker);
 		}
 
 		for (const NodeID nodeID : aNodeIDs)
@@ -396,9 +396,9 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	VariableView CreateVariable(const ClassView aClassView, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
+	VariableView CreateVariable(const ClassView aClassView, const DataTypeView aDataTypeView, CommandTracker* aCommandTracker)
 	{
-		const VarID varID = Internal::CreateVariable(aClassView.GetClass(), aDataTypeID, aCommandTracker);
+		const VarID varID = Internal::CreateVariable(aClassView.GetClass(), aDataTypeView.GetID(), aCommandTracker);
 		return VariableView(varID, aClassView.GetClass());
 	}
 
@@ -827,9 +827,9 @@ namespace FLY_NAMESPACE
 		const Function& function = nodeTypeManager.GetFunction(aFunctionView.GetID());
 
 
-		AddPinToNodeType(aDataTypeID, function.GetCallerNodeTypeID(), aFlowType, aPinName);
+		AddPinToNodeType(aDataTypeID, function.mCallerNodeTypeID, aFlowType, aPinName);
 
-		const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.GetInputNodeTypeID(), function.GetOutputNodeTypeID());
+		const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.mInputNodeTypeID, function.mOutputNodeTypeID);
 		AddPinToNodeType(aDataTypeID, inputOutputNodeTypeID, InvertFlowType(aFlowType), aPinName);
 	}
 
@@ -837,9 +837,9 @@ namespace FLY_NAMESPACE
 	{
 		const Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionView.GetID());
 
-		SetPinAtIndexNodeType(function.GetCallerNodeTypeID(), anIndex, aDataTypeID, aFlowType);
+		SetPinAtIndexNodeType(function.mCallerNodeTypeID, anIndex, aDataTypeID, aFlowType);
 
-		const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.GetInputNodeTypeID(), function.GetOutputNodeTypeID());
+		const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.mInputNodeTypeID, function.mOutputNodeTypeID);
 		SetPinAtIndexNodeType(inputOutputNodeTypeID, anIndex, aDataTypeID, InvertFlowType(aFlowType));
 	}
 
@@ -847,9 +847,9 @@ namespace FLY_NAMESPACE
 	{
 		const Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionView.GetID());
 
-		DeletePinAtIndexNodeType(function.GetCallerNodeTypeID(), anIndex, aFlowType);
+		DeletePinAtIndexNodeType(function.mCallerNodeTypeID, anIndex, aFlowType);
 
-		const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.GetInputNodeTypeID(), function.GetOutputNodeTypeID());
+		const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.mInputNodeTypeID, function.mOutputNodeTypeID);
 		DeletePinAtIndexNodeType(inputOutputNodeTypeID, anIndex, InvertFlowType(aFlowType));
 	}
 
@@ -857,7 +857,7 @@ namespace FLY_NAMESPACE
 	{
 		Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionView.GetID());
 
-		function.SetName(aName);
+		function.mName = aName;
 	}
 
 	void BeginFrame()
@@ -868,7 +868,7 @@ namespace FLY_NAMESPACE
 	VariableView GetVariableByNode(const NodeView aNodeView, NodeGraph& aNodeGraph, const ClassView aClassView)
 	{
 		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aClassView.GetClass());
-		const VarID varID = variableManager.GetVariableIDByNodeRef(NodeRef{ .mNodeID = aNodeView.GetID(), .mNodeGraph = &aNodeGraph});
+		const VarID varID = variableManager.GetVariableIDByNodeRef(NodeRef{ .mNodeID = aNodeView.GetID(), .mNodeGraph = &aNodeGraph });
 		return VariableView(varID, aClassView.GetClass());
 	}
 

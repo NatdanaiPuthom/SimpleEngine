@@ -12,23 +12,17 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	const Node& CallStack::GetCurrentNode()
+	void CallStack::Push(const NodeRef& aNodeRef)
 	{
-		assert(!myCallStack.empty());
-
-		const NodeRef& nodeRef = myCallStack.top();
-		return ScriptProxy::GetNode(*nodeRef.mNodeGraph, nodeRef.mNodeID);
-	}
-
-	void CallStack::Push(NodeID aNodeID, NodeGraph& aNodeGraph)
-	{
-		myCallStack.push(NodeRef{ aNodeID, &aNodeGraph });
+		mCallStack.push(aNodeRef);
 	}
 
 
-	void CallStack::Pop()
+	NodeRef CallStack::Pop()
 	{
-		myCallStack.pop();
+		NodeRef top = mCallStack.top();
+		mCallStack.pop();
+		return top;
 	}
 
 }

@@ -15,15 +15,13 @@ namespace FLY_NAMESPACE
 
 		CallStack();
 		~CallStack();
-
-		const Node& GetCurrentNode();
 		
-		void Push(NodeID aNodeID, NodeGraph& aNodeGraph);
-		void Pop();
+		void Push(const NodeRef& aNodeRef);
+		NodeRef Pop();
 
 	private:
 
-		std::stack<NodeRef> myCallStack;
+		std::stack<NodeRef> mCallStack;
 
 	};
 }

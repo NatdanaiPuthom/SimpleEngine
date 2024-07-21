@@ -197,9 +197,9 @@ namespace FLY_NAMESPACE
 		const FunctionID id = mFunctions.size();
 		const std::unique_ptr<Function>& function = mFunctions.emplace_back(std::make_unique<Function>(aName));
 
-		mToFunctionID.emplace(function->GetCallerNodeTypeID(), id);
-		mToFunctionID.emplace(function->GetInputNodeTypeID(), id);
-		mToFunctionID.emplace(function->GetOutputNodeTypeID(), id);
+		mToFunctionID.emplace(function->mCallerNodeTypeID, id);
+		mToFunctionID.emplace(function->mInputNodeTypeID, id);
+		mToFunctionID.emplace(function->mOutputNodeTypeID, id);
 
 		return id;
 	}

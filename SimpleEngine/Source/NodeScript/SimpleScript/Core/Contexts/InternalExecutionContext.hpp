@@ -57,8 +57,6 @@ namespace FLY_NAMESPACE
 
 	struct InternalExecutionContext final
 	{
-		friend class NodeExecutor;
-
 		Class* mClass = nullptr;
 		const ExecutionContextBase* mExecutionContext = nullptr;
 		NodeExecutionData mNodeData;
@@ -66,13 +64,7 @@ namespace FLY_NAMESPACE
 		void* mOwner = nullptr;
 		ClassInstance* mClassInstance = nullptr;
 		NodeGraphInstance* mNodeGraphInstance = nullptr;
-
-		const NodeExecutionData& GetNodeData() const
-		{
-			return mNodeData;
-		}
-
-		const Node& GetCurrentNode() const;
+		NodeExecutor* mNodeExecutor = nullptr;
 
 	private:
 	};

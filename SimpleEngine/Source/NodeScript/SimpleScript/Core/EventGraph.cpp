@@ -27,7 +27,7 @@ namespace FLY_NAMESPACE
 		}
 
 		bool alreadyExists = false;
-		std::vector<NodeID>& nodeIDsByEvent = myEventNodes[mEventID];
+		std::vector<NodeID>& nodeIDsByEvent = mEventNodes[mEventID];
 		for (const NodeID mNodeID : nodeIDsByEvent)
 		{
 			if (mNodeID == aNodeID)
@@ -50,9 +50,9 @@ namespace FLY_NAMESPACE
 		const Node& node = mNodes.at(aNodeID);
 		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
-		auto it = myEventNodes.find(nodeType.mNodeRecipe.mEventID);
+		auto it = mEventNodes.find(nodeType.mNodeRecipe.mEventID);
 
-		if (it != myEventNodes.end())
+		if (it != mEventNodes.end())
 		{
 			std::erase(it->second, aNodeID);
 		}

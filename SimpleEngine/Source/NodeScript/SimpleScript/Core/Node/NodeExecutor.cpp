@@ -11,6 +11,7 @@ namespace FLY_NAMESPACE
 
 	NodeExecutor::NodeExecutor()
 	{
+		mExecutionContext.mNodeExecutor = this;
 	}
 
 	NodeExecutor::~NodeExecutor()
@@ -33,9 +34,9 @@ namespace FLY_NAMESPACE
 #endif
 
 		EventGraph& eventGraph = aClassInstance.mClass->GetEventGraph();
-		auto it = eventGraph.myEventNodes.find(anEventID);
+		auto it = eventGraph.mEventNodes.find(anEventID);
 
-		if (it != eventGraph.myEventNodes.end())
+		if (it != eventGraph.mEventNodes.end())
 		{
 			for (NodeID mNodeID : it->second)
 			{

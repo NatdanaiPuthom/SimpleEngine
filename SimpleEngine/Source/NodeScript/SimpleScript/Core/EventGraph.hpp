@@ -17,7 +17,7 @@ namespace FLY_NAMESPACE
 
 	public:
 
-		std::unordered_map<EventID, std::vector<NodeID>> myEventNodes;
+		std::unordered_map<EventID, std::vector<NodeID>> mEventNodes;
 
 	};
 }

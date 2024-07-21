@@ -16,42 +16,42 @@ namespace FLY_NAMESPACE
 
 	const std::string& FunctionView::GetName() const
 	{
-		return GetFunction().GetName();
+		return GetFunction().mName;
 	}
 
 	NodeView FunctionView::GetInputNode() const
 	{
 		const Function& function = GetFunction();
-		return NodeView(function.GetInputNodeID(), function.GetNodeGraph());
+		return NodeView(function.mInputNodeID, function.mNodeGraph);
 	}
 
 	NodeView FunctionView::GetOutputNode() const
 	{
 		const Function& function = GetFunction();
-		return NodeView(function.GetOutputNodeID(), function.GetNodeGraph());
+		return NodeView(function.mOutputNodeID, function.mNodeGraph);
 	}
 
 	NodeTypeView FunctionView::GetCallerNodeType() const
 	{
 		const Function& function = GetFunction();
-		return NodeTypeView(function.GetCallerNodeTypeID());
+		return NodeTypeView(function.mCallerNodeTypeID);
 	}
 
 	NodeTypeView FunctionView::GetInputNodeType() const
 	{
 		const Function& function = GetFunction();
-		return NodeTypeView(function.GetInputNodeTypeID());
+		return NodeTypeView(function.mInputNodeTypeID);
 	}
 
 	NodeTypeView FunctionView::GetOutputNodeType() const
 	{
 		const Function& function = GetFunction();
-		return NodeTypeView(function.GetOutputNodeTypeID());
+		return NodeTypeView(function.mOutputNodeTypeID);
 	}
 
 	NodeGraph& FunctionView::GetNodeGraph()
 	{
-		return GetFunction().GetNodeGraph();
+		return GetFunction().mNodeGraph;
 	}
 
 	FunctionID FunctionView::GetID() const

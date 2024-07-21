@@ -45,7 +45,7 @@ namespace FLY_NAMESPACE
 	NodeView CreateSetterNode(ClassView aClassView, NodeGraph& aNodeGraph, VarID aVarID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 
 	LinkView TryCreateLink(PinView aPinView1, PinView aPinView2, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
-	void DestroyLink(LinkID aLinkID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+	void DestroyLink(LinkView aLinkView, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 	void DestoryLinksByOutputPin(PinView aOutputPinView, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 	void DestroyNode(NodeView aNodeView, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 	void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
@@ -53,7 +53,7 @@ namespace FLY_NAMESPACE
 	void SetNodePosition(NodeID aNodeID, Vec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker = nullptr);
 	void SetNodePosition(NodeID aNodeID, Vec2 aPosition, Vec2 aOldPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
-	VariableView CreateVariable(ClassView aClassView, DataTypeID aDataTypeID = typeid(bool).hash_code(), CommandTracker* aCommandTracker = nullptr);
+	VariableView CreateVariable(ClassView aClassView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker = nullptr);
 	void DestroyVariable(VariableView aVariableView, ClassView aClassView, CommandTracker* aCommandTracker);
 
 	void EditVariableDefaultValue(VariableView aVariableView, ClassView aClassView, CommandTracker* aCommandTracker);

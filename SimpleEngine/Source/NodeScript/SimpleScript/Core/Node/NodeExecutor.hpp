@@ -26,6 +26,11 @@ namespace FLY_NAMESPACE
 
 		void RegisterAutoTickNode(const NodeRef& aNodeRef);
 		void UnregisterAutoTickNode(const NodeRef& aNodeRef);
+		
+		CallStack& GetCallStack()
+		{
+			return mCallStack;
+		}
 
 
 	private:

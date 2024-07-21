@@ -4,10 +4,6 @@
 
 namespace FLY_NAMESPACE
 {
-	const Node& InternalExecutionContext::GetCurrentNode() const
-	{
-		return ScriptProxy::GetNode(*mNodeData.mNodeRef.mNodeGraph, mNodeData.mNodeRef.mNodeID);
-	}
 
 	ExecutionQueue::ExecutionQueue()
 	{
