@@ -16,59 +16,35 @@ namespace FLY_NAMESPACE
 	namespace Internal
 	{
 
-		static void BindNodeToEvent(const NodeID aNodeID, EventGraph& anEventGraph, CommandTracker* const aCommandTracker)
+		static const Pin& GetPin(const PinID aPinID, const NodeGraph& aNodeGraph)
 		{
-			struct BindData
-			{
-				NodeID mNodeID = InvalidID<NodeID>();
-				EventGraph* eventGraph;
-			} data;
-
-			data.mNodeID = aNodeID;
-			data.eventGraph = &anEventGraph;
-
-			auto commandFunction = [data](eCommandType aCommandType) -> void
-				{
-					void (EventGraph:: * func)(NodeID) = aCommandType == eCommandType::Do ? &EventGraph::BindNodeToEvent : &EventGraph::UnbindNodeFromEvent;
-
-					(data.eventGraph->*func)(data.mNodeID);
-				};
-
-			if (!aCommandTracker)
-			{
-				commandFunction(eCommandType::Do);
-			}
-			else
-			{
-				aCommandTracker->DoCommand(Command(commandFunction, "Bind Node To Event"));
-			}
+			return aNodeGraph.mPins.at(aPinID);
 		}
 
-		static NodeID CreateNode(NodeGraph& aNodeGraph, const NodeTypeID aNodeTypeID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+		static Pin& GetPin(const PinID aPinID, NodeGraph& aNodeGraph)
 		{
-
-			if (aCommandTracker)
-			{
-				aCommandTracker->BeginComposite("Create Node + Set Node Pos");
-			}
-
-			const NodeID mNodeID = Internal::CreateNode(aNodeGraph, aNodeTypeID, aCommandTracker);
-
-			SetNodePosition(mNodeID, aPosition, aNodeGraph, aCommandTracker);
-
-			if (EventGraph* eventGraph = dynamic_cast<EventGraph*>(&aNodeGraph))
-			{
-				Internal::BindNodeToEvent(mNodeID, *eventGraph, aCommandTracker);
-			}
-
-			if (aCommandTracker)
-			{
-				aCommandTracker->EndComposite();
-			}
-
-			return mNodeID;
+			return aNodeGraph.mPins.at(aPinID);
 		}
 
+		PinType& GetPinType(const Pin& aPin)
+		{
+			return Global::GetPinTypeManager().GetPinType(aPin.mTypeID);
+		}
+
+		static Node& GetNode(const NodeID aNodeID, NodeGraph& aNodeGraph)
+		{
+			return aNodeGraph.mNodes.at(aNodeID);
+		}
+
+		const Node& GetNode(const NodeID aNodeID, const NodeGraph& aNodeGraph)
+		{
+			return aNodeGraph.mNodes.at(aNodeID);
+		}
+
+		static const NodeType& GetNodeType(const Node& aNode)
+		{
+			return Global::GetNodeTypeManager().GetNodeType(aNode.mTypeID);
+		}
 	}
 
 	void SaveClass(const ClassView aClassView, const std::string_view aSavePath)
@@ -92,30 +68,38 @@ namespace FLY_NAMESPACE
 		aClassView.GetClass().Name() = aName;
 	}
 
-	NodeView CreateNode(NodeGraph& aNodeGraph, const NodeTypeView aNodeTypeView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeView CreateNode(NodeGraphView aNodeGraphView, const NodeTypeView aNodeTypeView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
-		const NodeID mNodeID = Internal::CreateNode(aNodeGraph, aNodeTypeView.GetID(), aPosition, aCommandTracker);
-		return NodeView(mNodeID, aNodeGraph);
+		const NodeID nodeID = Internal::CreateNode(aNodeGraphView.GetAs(), aNodeTypeView.GetID(), aPosition, aCommandTracker);
+		return NodeView(nodeID, aNodeGraphView.GetNodeGraph());
 	}
 
-	NodeView CreateNodeAutoLink(NodeGraph& aNodeGraph, const NodeTypeView aNodeTypeView, const PinID aConnection, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeView CreateNode(NodeGraphView aNodeGraphView, std::string_view aName, bool& aSuccess, const Vec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
+	{
+		const NodeID nodeID = Internal::CreateNode(aNodeGraphView.GetAs(), aName, aSuccess, aPosition, aCreateIfNameNotFound, aCommandTracker);
+		return NodeView(nodeID, aNodeGraphView.GetNodeGraph());
+	}
+
+	NodeView CreateNodeAutoLink(NodeGraphView aNodeGraphView, const NodeTypeView aNodeTypeView, const PinID aConnection, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Create Node + Auto Link");
 		}
 
-		const NodeID createdNodeID = Internal::CreateNode(aNodeGraph, aNodeTypeView.GetID(), aPosition, aCommandTracker);
+		NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
 
-		const Pin& createdFromPin = aNodeGraph.mPins.at(aConnection);
+		const NodeID createdNodeID = Internal::CreateNode(&nodeGraph, aNodeTypeView.GetID(), aPosition, aCommandTracker);
+
+		const Pin& createdFromPin = nodeGraph.mPins.at(aConnection);
 		const PinType& pinType = Global::GetPinTypeManager().GetPinType(createdFromPin.mTypeID);
-		const Node& createdNode = aNodeGraph.mNodes.at(createdNodeID);
+		const Node& createdNode = nodeGraph.mNodes.at(createdNodeID);
 
 		const std::vector<PinID>& pinIDs = SelectByFlowType(pinType.mFlowType, createdNode.mOutputPins, createdNode.mInputPins);
 
 		for (const PinID pinID : pinIDs)
 		{
-			if (TryCreateLink(PinView(pinID, aNodeGraph), PinView(aConnection, aNodeGraph), aNodeGraph, aCommandTracker))
+			if (Internal::TryCreateLink(nodeGraph, pinID, aConnection, aCommandTracker))
 			{
 				break;
 			}
@@ -126,168 +110,89 @@ namespace FLY_NAMESPACE
 			aCommandTracker->EndComposite();
 		}
 
-		return NodeView(createdNodeID, aNodeGraph);
+		return NodeView(createdNodeID, nodeGraph);
 	}
 
-	NodeView CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, const Vec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
-	{
-		if (aCommandTracker)
-		{
-			aCommandTracker->BeginComposite("Create Node + Set Node Pos");
-		}
-
-		const NodeID mNodeID = Internal::CreateNode(aNodeGraph, aName, aSuccess, aCreateIfNameNotFound, aCommandTracker);
-
-		SetNodePosition(mNodeID, aPosition, aNodeGraph, aCommandTracker);
-
-		if (aCommandTracker)
-		{
-			aCommandTracker->EndComposite();
-		}
-
-		return NodeView(mNodeID, aNodeGraph);
-	}
-
-	NodeView CreateGetterNode(ClassView aClassView, NodeGraph& aNodeGraph, const VarID aVarID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeView CreateGetterNode(ClassView aClassView, NodeGraphView aNodeGraphView, const VariableView aVariableView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Create Getter Node");
 		}
 
-		const Variable& variable = aClassView.GetClass().GetVariableManager().mVariables.at(aVarID);
+		const Variable& variable = aClassView.GetClass().GetVariableManager().mVariables.at(aVariableView.GetID());
 
-		const NodeID mNodeID = Internal::CreateGetterNode(aNodeGraph, variable.dataTypeID, aCommandTracker);
-		SetNodePosition(mNodeID, aPosition, aNodeGraph, aCommandTracker);
-		Internal::BindVariable(aClassView.GetClass(), NodeRef{ .mNodeID = mNodeID, .mNodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
+		const NodeID nodeID = Internal::CreateGetterNode(aNodeGraphView.GetNodeGraph(), variable.dataTypeID, aCommandTracker);
+		Internal::SetNodePosition(nodeID, aPosition, aNodeGraphView.GetNodeGraph(), aCommandTracker);
+		Internal::BindVariable(aClassView.GetClass(), NodeRef{ .mNodeID = nodeID, .mNodeGraph = &aNodeGraphView.GetNodeGraph() }, aVariableView.GetID(), aCommandTracker);
 
 		if (aCommandTracker)
 		{
 			aCommandTracker->EndComposite();
 		}
 
-		return NodeView(mNodeID, aNodeGraph);
+		return NodeView(nodeID, aNodeGraphView.GetNodeGraph());
 	}
 
-	NodeView CreateSetterNode(ClassView aClassView, NodeGraph& aNodeGraph, const VarID aVarID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeView CreateSetterNode(ClassView aClassView, NodeGraphView aNodeGraphView, const VariableView aVariableView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Create Setter Node");
 		}
 
-		const Variable& variable = aClassView.GetClass().GetVariableManager().mVariables.at(aVarID);
+		NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
 
-		const NodeID mNodeID = Internal::CreateSetterNode(aNodeGraph, variable.dataTypeID, aCommandTracker);
-		SetNodePosition(mNodeID, aPosition, aNodeGraph, aCommandTracker);
-		Internal::BindVariable(aClassView.GetClass(), NodeRef{ .mNodeID = mNodeID, .mNodeGraph = &aNodeGraph }, aVarID, aCommandTracker);
+		const Variable& variable = aClassView.GetClass().GetVariableManager().mVariables.at(aVariableView.GetID());
+
+		const NodeID nodeID = Internal::CreateSetterNode(nodeGraph, variable.dataTypeID, aCommandTracker);
+		Internal::SetNodePosition(nodeID, aPosition, nodeGraph, aCommandTracker);
+		Internal::BindVariable(aClassView.GetClass(), NodeRef{ .mNodeID = nodeID, .mNodeGraph = &nodeGraph }, aVariableView.GetID(), aCommandTracker);
 
 		if (aCommandTracker)
 		{
 			aCommandTracker->EndComposite();
 		}
 
-		return NodeView(mNodeID, aNodeGraph);
+		return NodeView(nodeID, nodeGraph);
 	}
 
-	LinkView TryCreateLink(const PinView aPinView1, const PinView aPinView2, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+	LinkView TryCreateLink(const PinView aPinView1, const PinView aPinView2, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
 	{
-		const Link createdLink = ScriptLinker::ArePinsLinkable(aNodeGraph, aPinView1.GetID(), aPinView2.GetID());
-		if (!createdLink)
-		{
-			// Check if we can replace node with overloaded operator node
-			const Pin& pin1 = aNodeGraph.mPins.at(aPinView1.GetID());
-			const Pin& pin2 = aNodeGraph.mPins.at(aPinView2.GetID());
-
-			const PinType& pinType1 = Global::GetPinTypeManager().GetPinType(pin1.mTypeID);
-			const PinType& pinType2 = Global::GetPinTypeManager().GetPinType(pin2.mTypeID);
-
-			if (pinType1.mDataTypeID == typeid(Wildcard).hash_code())
-			{
-				Internal::ReplaceOperatorNode(aNodeGraph, aPinView1.GetID(), aPinView2.GetID(), aCommandTracker);
-
-			}
-			else if (pinType2.mDataTypeID == typeid(Wildcard).hash_code())
-			{
-				Internal::ReplaceOperatorNode(aNodeGraph, aPinView2.GetID(), aPinView1.GetID(), aCommandTracker);
-			}
-
-			return LinkView();
-		}
-
-		const LinkID createdLinkID = Internal::CreateLink(aNodeGraph, createdLink.mInputPinID, createdLink.mOutputPinID, aCommandTracker);
-		return LinkView(createdLinkID, aNodeGraph);
+		const LinkID createdLinkID = Internal::TryCreateLink(aNodeGraphView.GetNodeGraph(), aPinView1.GetID(), aPinView2.GetID(), aCommandTracker);
+		return LinkView(createdLinkID, aNodeGraphView.GetNodeGraph());
 	}
 
-	void DestroyLink(const LinkView aLinkView, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+	void DestroyLink(const LinkView aLinkView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
 	{
-		Internal::DestroyLink(aNodeGraph, aLinkView.GetID(), aCommandTracker);
+		Internal::DestroyLink(aNodeGraphView.GetNodeGraph(), aLinkView.GetID(), aCommandTracker);
 	}
 
-	void DestoryLinksByOutputPin(const PinView aOutputPinView, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+	/*void DestoryLinksByOutputPin(const PinView aOutputPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
 	{
-		const Pin& outputPin = aNodeGraph.mPins.at(aOutputPinView.GetID());
+		const Pin& outputPin = aNodeGraphView.GetNodeGraph().mPins.at(aOutputPinView.GetID());
 		outputPin;
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Destory Links by Output Pin");
 		}
-		/*for (const PinID connectedInputPin : outputPin.mConnectedPinIDs)
+		for (const PinID connectedInputPin : outputPin.mConnectedPinIDs)
 		{
-			DestroyLink(Link{ connectedInputPin, aOutputPinView.GetID() }, aNodeGraph, aCommandTracker);
-		}*/
+			DestroyLink(LinkView{ connectedInputPin, aOutputPinView.GetID() }, aNodeGraphView.GetNodeGraph(), aCommandTracker);
+		}
 
 		if (aCommandTracker)
 		{
 			aCommandTracker->EndComposite();
 		}
-	}
+	}*/
 
-	void DestroyNode(const NodeView aNodeView, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+	void DestroyNode(const NodeView aNodeView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
 	{
-		if (aCommandTracker)
-		{
-			aCommandTracker->BeginComposite("Destroy Node + Conncected Links");
-
-		}
-
-		struct DestroyNodeData
-		{
-			NodeID mNodeID = InvalidID<NodeID>();
-			NodeGraph* mNodeGraph = nullptr;
-		} data;
-
-		data.mNodeID = aNodeView.GetID();
-		data.mNodeGraph = &aNodeGraph;
-
-		auto commandFunction = [data](eCommandType aCommandType) -> void
-			{
-				Node& node = data.mNodeGraph->mNodes[data.mNodeID];
-				node.mIsDestroyed = aCommandType == eCommandType::Do;
-			};
-
-		if (!aCommandTracker)
-		{
-			commandFunction(eCommandType::Do);
-		}
-		else
-		{
-			aCommandTracker->DoCommand(Command(commandFunction, "Destroy Node"));
-		}
-
-		for (const LinkID linkID : ScriptLinker::GetLinkIDsByNode(aNodeGraph, aNodeView.GetID()))
-		{
-			DestroyLink(LinkView(linkID, aNodeGraph), aNodeGraph, aCommandTracker);
-		}
-
-
-		if (aCommandTracker)
-		{
-			aCommandTracker->EndComposite();
-		}
+		return Internal::DestroyNode(aNodeGraphView.GetNodeGraph(), aNodeView.GetID(), aCommandTracker);
 	}
 
-	void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+	void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
@@ -296,12 +201,12 @@ namespace FLY_NAMESPACE
 
 		for (const LinkID linkID : aLinkIDs)
 		{
-			DestroyLink(LinkView(linkID, aNodeGraph), aNodeGraph, aCommandTracker);
+			DestroyLink(LinkView(linkID, aNodeGraphView.GetNodeGraph()), aNodeGraphView, aCommandTracker);
 		}
 
 		for (const NodeID nodeID : aNodeIDs)
 		{
-			DestroyNode(NodeView(nodeID, aNodeGraph), aNodeGraph, aCommandTracker);
+			DestroyNode(NodeView(nodeID, aNodeGraphView.GetNodeGraph()), aNodeGraphView, aCommandTracker);
 		}
 
 		if (aCommandTracker)
@@ -319,7 +224,7 @@ namespace FLY_NAMESPACE
 
 		for (const NodeRef& nodeRef : aNodeRefs)
 		{
-			DestroyNode(NodeView(nodeRef.mNodeID, *nodeRef.mNodeGraph), *nodeRef.mNodeGraph, aCommandTracker);
+			Internal::DestroyNode(*nodeRef.mNodeGraph, nodeRef.mNodeID, aCommandTracker);
 		}
 
 		if (aCommandTracker)
@@ -328,53 +233,18 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void SetNodePosition(const NodeID aNodeID, Vec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+	void SetNodePosition(const NodeView aNodeView, Vec2 aPosition, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
 	{
-		SetNodePosition(aNodeID, aPosition, aNodeGraph.mNodes.at(aNodeID).mPosition, aNodeGraph, aCommandTracker);
+		const Vec2 oldPos = Internal::GetNode(aNodeView.GetID(), aNodeGraphView.GetNodeGraph()).mPosition;
+		SetNodePosition(aNodeView, aPosition, oldPos, aNodeGraphView, aCommandTracker);
 	}
 
-	void SetNodePosition(const NodeID aNodeID, Vec2 aPosition, Vec2 aOldPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+	void SetNodePosition(const NodeView aNodeView, Vec2 aPosition, Vec2 aOldPosition, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
 	{
-
-		struct SetNodePositionData
-		{
-			NodeID mNodeID = InvalidID<NodeID>();
-			Vec2 oldPos;
-			Vec2 newPos;
-			NodeGraph* mNodeGraph = nullptr;
-		} data;
-
-		if (aPosition == aOldPosition)
-		{
-			return;
-		}
-
-
-		data.mNodeID = aNodeID;
-		data.oldPos = aOldPosition;
-		data.newPos = aPosition;
-		data.mNodeGraph = &aNodeGraph;
-
-		auto commandFunction = [data](eCommandType aCommandType) -> void
-			{
-				Node& node = data.mNodeGraph->mNodes.at(data.mNodeID);
-				const Vec2& pos = aCommandType == eCommandType::Do ? data.newPos : data.oldPos;
-				node.mPosition = pos;
-			};
-
-		if (!aCommandTracker)
-		{
-			commandFunction(eCommandType::Do);
-		}
-		else
-		{
-			aCommandTracker->DoCommand(Command(commandFunction, "Set Node Position"));
-		}
-
-
+		Internal::SetNodePosition(aNodeView.GetID(), aPosition, aOldPosition, aNodeGraphView.GetNodeGraph(), aCommandTracker);
 	}
 
-	void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aDragData, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
+	void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aDragData, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
 	{
 		if (aDragData.empty())
 		{
@@ -387,7 +257,7 @@ namespace FLY_NAMESPACE
 
 		for (const auto& [mNodeID, dragData] : aDragData)
 		{
-			SetNodePosition(mNodeID, dragData.endPos, dragData.startPos, aNodeGraph, aCommandTracker);
+			Internal::SetNodePosition(mNodeID, dragData.endPos, dragData.startPos, aNodeGraphView.GetNodeGraph(), aCommandTracker);
 		}
 
 		if (aCommandTracker)
@@ -440,93 +310,6 @@ namespace FLY_NAMESPACE
 		{
 			aCommandTracker->EndComposite();
 		}
-
-	}
-
-	void EditPin(const PinView aPinView, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
-	{
-		const Pin& pin = aNodeGraph.mPins.at(aPinView.GetID());
-		const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
-
-		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
-
-		const void* const copyDataPtr = [aCommandTracker, &dataTypeManager, &pinType, &pin]() -> const void*
-			{
-				return aCommandTracker != nullptr ? dataTypeManager.AllocateData(pinType.mDataTypeID, Global::Internal::GetFrameMemoryArena(), pin.mDataPtr) : nullptr;
-			}();
-
-		const bool wasEdited = dataTypeManager.EditData(pinType.mDataTypeID, pin.mDataPtr);
-
-		if (!wasEdited || !aCommandTracker)
-		{
-			return;
-		}
-
-
-		void* previousDataPtr = Global::GetDataTypeManager().AllocateData(pinType.mDataTypeID, Global::Internal::GetEditMemoryArena(), copyDataPtr);
-
-		struct EditPinData
-		{
-			PinID pinID = InvalidID<PinID>();
-			void* previousDataPtr = nullptr;
-			NodeGraph* mNodeGraph = nullptr;
-		} data;
-
-		data.pinID = aPinView.GetID();
-		data.previousDataPtr = previousDataPtr;
-		data.mNodeGraph = &aNodeGraph;
-
-		auto commandFunction = [data](eCommandType aCommandType) -> void
-			{
-				if (aCommandType == eCommandType::Do)
-				{
-					const Pin& pin = data.mNodeGraph->mPins[data.pinID];
-					const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
-
-					Global::GetDataTypeManager().SwapData(pinType.mDataTypeID, pin.mDataPtr, data.previousDataPtr);
-				}
-				else
-				{
-					const Pin& pin = data.mNodeGraph->mPins[data.pinID];
-					const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
-
-					Global::GetDataTypeManager().SwapData(pinType.mDataTypeID, pin.mDataPtr, data.previousDataPtr);
-				}
-			};
-
-		aCommandTracker->RegisterCommand(Command(commandFunction, "Edit Pin"));
-	}
-
-	void SplitPin(const PinView aPinView, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker)
-	{
-		aCommandTracker;
-		const Pin& pin = aNodeGraph.mPins.at(aPinView.GetID());
-
-		if (!pin.mConnectedPinIDs.empty())
-		{
-			return;
-		}
-
-		const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
-
-		const DataType* pinDataType = Global::GetDataTypeManager().Find(pinType.mDataTypeID);
-
-		if (pinDataType == nullptr)
-		{
-			return;
-		}
-
-		const std::vector<Property>& mProperties = pinDataType->mProperties;
-		if (mProperties.empty())
-		{
-			return;
-		}
-
-		for (const Property& property : mProperties)
-		{
-			const PinTypeID createdPinTypeID = Global::GetPinTypeManager().Create(property.mName, pinType.mFlowType, property.mTypeID, CreatePinSetFunction());
-			Internal::CreatePin(aNodeGraph, pin.mNodeID, createdPinTypeID);
-		}
 	}
 
 	void EditVariableDefaultValue(const VariableView aVariableView, const ClassView aClassView, CommandTracker*)
@@ -563,6 +346,124 @@ namespace FLY_NAMESPACE
 		DestroyNodes(aClassView.GetClass().GetVariableManager().GetNodeRefsByVarID(aVariableView.GetID()), aCommandTracker);
 	}
 
+	void EditPin(const PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
+	{
+		NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
+		Pin& pin = nodeGraph.mPins.at(aPinView.GetID());
+		const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+
+		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
+
+		const void* const copyDataPtr = [aCommandTracker, &dataTypeManager, &pinType, &pin]() -> const void*
+			{
+				return aCommandTracker != nullptr ? dataTypeManager.AllocateData(pinType.mDataTypeID, Global::Internal::GetFrameMemoryArena(), pin.mDataPtr) : nullptr;
+			}();
+
+		const bool wasEdited = dataTypeManager.EditData(pinType.mDataTypeID, pin.mDataPtr);
+
+		if (!wasEdited || !aCommandTracker)
+		{
+			return;
+		}
+
+
+		void* const previousDataPtr = Global::GetDataTypeManager().AllocateData(pinType.mDataTypeID, Global::Internal::GetEditMemoryArena(), copyDataPtr);
+
+		struct EditPinData
+		{
+			PinID mPinID = InvalidID<PinID>();
+			void* mPreviousDataPtr = nullptr;
+			NodeGraph* mNodeGraph = nullptr;
+		} data;
+
+		data.mPinID = aPinView.GetID();
+		data.mPreviousDataPtr = previousDataPtr;
+		data.mNodeGraph = &nodeGraph;
+
+		auto commandFunction = [data](eCommandType aCommandType) -> void
+			{
+				if (aCommandType == eCommandType::Do)
+				{
+					Pin& pin = data.mNodeGraph->mPins.at(data.mPinID);
+					const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+
+					Global::GetDataTypeManager().SwapData(pinType.mDataTypeID, pin.mDataPtr, data.mPreviousDataPtr);
+				}
+				else
+				{
+					Pin& pin = data.mNodeGraph->mPins.at(data.mPinID);
+					const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+
+					Global::GetDataTypeManager().SwapData(pinType.mDataTypeID, pin.mDataPtr, data.mPreviousDataPtr);
+				}
+			};
+
+		aCommandTracker->RegisterCommand(Command(commandFunction, "Edit Pin"));
+	}
+
+	void SplitPin(const PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
+	{
+		aCommandTracker;
+		NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
+		const Pin& pin = nodeGraph.mPins.at(aPinView.GetID());
+
+		if (!pin.mConnectedPinIDs.empty())
+		{
+			return;
+		}
+
+		const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+
+		const DataType* pinDataType = Global::GetDataTypeManager().Find(pinType.mDataTypeID);
+
+		if (pinDataType == nullptr)
+		{
+			return;
+		}
+
+		const std::vector<Property>& mProperties = pinDataType->mProperties;
+		if (mProperties.empty())
+		{
+			return;
+		}
+
+		for (const Property& property : mProperties)
+		{
+			const PinTypeID createdPinTypeID = Global::GetPinTypeManager().Create(property.mName, pinType.mFlowType, property.mTypeID, CreatePinSetFunction());
+			Internal::CreatePin(nodeGraph, pin.mNodeID, createdPinTypeID);
+		}
+	}
+
+	bool IsPinReplacable(const PinView aPinView, const NodeGraphView aNodeGraphView)
+	{
+		const Pin& pin = Internal::GetPin(aPinView.GetID(), aNodeGraphView.GetNodeGraph());
+		const Node& node = Internal::GetNode(pin.mNodeID, aNodeGraphView.GetNodeGraph());
+		const NodeType& nodeType = Internal::GetNodeType(node);
+
+		return nodeType.mNodeRecipe.mOperatorTrait != eNodeOperatorTrait::None;
+	}
+
+	void ReplaceWildcardNode(const PinView aPinView, NodeGraphView aNodeGraphView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	{
+		Internal::ReplaceWildcardNode(aNodeGraphView.GetNodeGraph(), aPinView.GetID(), aDataTypeView.GetID(), aCommandTracker);
+	}
+
+	std::vector<DataTypeView> GetReplacableDataTypes(const PinView aPinView, const NodeGraphView aNodeGraphView)
+	{
+		const Node& node = Internal::GetNode(aPinView.GetNodeID(), aNodeGraphView.GetNodeGraph());
+		const NodeType& nodeType = Internal::GetNodeType(node);
+		std::vector<DataTypeView> dataTypeViews;
+
+		auto& dataTypes = Global::GetNodeTypeManager().GetWildcardMapByOperator(nodeType.mNodeRecipe.mOperatorTrait);
+		dataTypeViews.reserve(dataTypes.size());
+		for (auto& [dataTypeID, nodeTypeID] : dataTypes)
+		{
+			dataTypeViews.push_back(DataTypeView(dataTypeID));
+		}
+
+		return dataTypeViews;
+	}
+
 	void SetPinTypeName(const PinTypeView aPinTypeView, std::string_view aName)
 	{
 		PinType& pinType = Global::GetPinTypeManager().GetPinType(aPinTypeView.GetID());
@@ -570,12 +471,13 @@ namespace FLY_NAMESPACE
 		pinType.mName = aName;
 	}
 
-	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraph& aNodeGraph)
+	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraphView aCopiedFromNodeGraphView)
 	{
 		if (aNodeIDs.empty())
 		{
 			return;
 		}
+		const NodeGraph& copiedFromNodeGraph = aCopiedFromNodeGraphView.GetNodeGraph();
 		CopyBuffer& copyBuffer = Global::Internal::GetCopyBuffer();
 		copyBuffer = CopyBuffer{};
 
@@ -584,15 +486,15 @@ namespace FLY_NAMESPACE
 		createdNodeIDs.reserve(aNodeIDs.size());
 
 		Vec2 avgPos;
-		for (NodeID mNodeID : aNodeIDs)
+		for (const NodeID nodeID : aNodeIDs)
 		{
-			const Node& node = ScriptProxy::GetNode(aNodeGraph, mNodeID);
+			const Node& node = copiedFromNodeGraph.mNodes.at(nodeID);
 
-			const NodeID createdNodeID = Internal::CreateNode(copyBuffer.mNodeGraph, node.mTypeID, node.mPosition, nullptr);
+			const NodeID createdNodeID = Internal::CreateNode(&copyBuffer.mNodeGraph, node.mTypeID, node.mPosition, nullptr);
 			avgPos += node.mPosition;
 
 			createdNodeIDs.push_back(createdNodeID);
-			nodeConverter.emplace(mNodeID, createdNodeID);
+			nodeConverter.emplace(nodeID, createdNodeID);
 		}
 
 		avgPos /= static_cast<float>(aNodeIDs.size());
@@ -605,24 +507,24 @@ namespace FLY_NAMESPACE
 		// Create links
 		for (NodeID copiedNodeID : aNodeIDs)
 		{
-			const Node& copiedNode = ScriptProxy::GetNode(aNodeGraph, copiedNodeID);
-			for (PinID copiedInputPinID : copiedNode.mInputPins)
+			const Node& copiedNode = copiedFromNodeGraph.mNodes.at(copiedNodeID);
+			for (const PinID copiedInputPinID : copiedNode.mInputPins)
 			{
-				const Pin& copiedInputPin = ScriptProxy::GetPin(aNodeGraph, copiedInputPinID);
+				const Pin& copiedInputPin = Internal::GetPin(copiedInputPinID, copiedFromNodeGraph);
 				const PinType& copiedInputPinType = Global::GetPinTypeManager().GetPinType(copiedInputPin.mTypeID);
 
 				const NodeID createdNodeID = nodeConverter.at(copiedNodeID);
-				const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(aNodeGraph, copiedInputPinID, copyBuffer.mNodeGraph, createdNodeID);
+				const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(copiedFromNodeGraph, copiedInputPinID, copyBuffer.mNodeGraph, createdNodeID);
 				assert(createdInputPinID != InvalidID<PinID>());
 
-				const std::vector<LinkID> connectedLinks = ScriptLinker::GetLinkIDsByPin(aNodeGraph, copiedInputPinID);
+				const std::vector<LinkID> connectedLinks = ScriptLinker::GetLinkIDsByPin(copiedFromNodeGraph, copiedInputPinID);
 
 				for (const LinkID connectedLinkID : connectedLinks)
 				{
-					const Link& connectedLink = aNodeGraph.mLinks[connectedLinkID];
+					const Link& connectedLink = copiedFromNodeGraph.mLinks[connectedLinkID];
 
 					const PinID connectedOutputPinID = connectedLink.mOutputPinID;
-					const Pin& connectedOutputPin = ScriptProxy::GetPin(aNodeGraph, connectedOutputPinID);
+					const Pin& connectedOutputPin = Internal::GetPin(connectedOutputPinID, copiedFromNodeGraph);
 
 					auto it = nodeConverter.find(connectedOutputPin.mNodeID);
 					if (it == nodeConverter.end())
@@ -630,12 +532,12 @@ namespace FLY_NAMESPACE
 						continue;
 					}
 					const NodeID newConnectedNodeID = it->second;
-					const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(aNodeGraph, connectedOutputPinID, copyBuffer.mNodeGraph, newConnectedNodeID);
+					const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(copiedFromNodeGraph, connectedOutputPinID, copyBuffer.mNodeGraph, newConnectedNodeID);
 
-					TryCreateLink(PinView(createdInputPinID, copyBuffer.mNodeGraph), PinView(createdOutputPinID, copyBuffer.mNodeGraph), copyBuffer.mNodeGraph, nullptr);
+					Internal::TryCreateLink(copyBuffer.mNodeGraph, createdInputPinID, createdOutputPinID, nullptr);
 				}
 
-				const Pin& createdInputPin = ScriptProxy::GetPin(copyBuffer.mNodeGraph, createdInputPinID);
+				Pin& createdInputPin = Internal::GetPin(createdInputPinID, copyBuffer.mNodeGraph);
 
 				Global::GetDataTypeManager().CopyData(copiedInputPinType.mDataTypeID, createdInputPin.mDataPtr, copiedInputPin.mDataPtr);
 			}
@@ -645,7 +547,7 @@ namespace FLY_NAMESPACE
 
 	}
 
-	void PasteCopyBuffer(const Vec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
+	void PasteCopyBuffer(const Vec2 aPosition, NodeGraphView aTargetNodeGraphView, CommandTracker* const aCommandTracker)
 	{
 		CopyBuffer& copyBuffer = Global::Internal::GetCopyBuffer();
 
@@ -654,22 +556,24 @@ namespace FLY_NAMESPACE
 			aCommandTracker->BeginComposite("Paste Nodes");
 		}
 
+		NodeGraph& targetNodeGraph = aTargetNodeGraphView.GetNodeGraph();
+
 		std::unordered_map<NodeID, NodeID> nodeConverter;
 
 		for (NodeID sourceNodeID = 0; sourceNodeID < copyBuffer.mNodeGraph.mNodes.size(); sourceNodeID++)
 		{
 			const Node& node = copyBuffer.mNodeGraph.mNodes[sourceNodeID];
-			const NodeID createdNodeID = Internal::CreateNode(aNodeGraph, node.mTypeID, aPosition + node.mPosition, aCommandTracker);
+			const NodeID createdNodeID = Internal::CreateNode(&targetNodeGraph, node.mTypeID, aPosition + node.mPosition, aCommandTracker);
 			nodeConverter.emplace(sourceNodeID, createdNodeID);
 
-			const Node& createdNode = ScriptProxy::GetNode(aNodeGraph, createdNodeID);
+			const Node& createdNode = Internal::GetNode(createdNodeID, targetNodeGraph);
 			DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
 			for (const PinID createdInputPinID : createdNode.mInputPins)
 			{
-				const Pin& createdInputPin = ScriptProxy::GetPin(aNodeGraph, createdInputPinID);
+				Pin& createdInputPin = Internal::GetPin(createdInputPinID, targetNodeGraph);
 				const PinType& createdInputPinType = Global::GetPinTypeManager().GetPinType(createdInputPin.mTypeID);
 
-				const PinID sourcePinID = ScriptLinker::GetOpposingPinID(aNodeGraph, createdInputPinID, copyBuffer.mNodeGraph, sourceNodeID);
+				const PinID sourcePinID = ScriptLinker::GetOpposingPinID(targetNodeGraph, createdInputPinID, copyBuffer.mNodeGraph, sourceNodeID);
 				const Pin& sourcePin = ScriptProxy::GetPin(copyBuffer.mNodeGraph, sourcePinID);
 				dataTypeManager.CopyData(createdInputPinType.mDataTypeID, createdInputPin.mDataPtr, sourcePin.mDataPtr);
 			}
@@ -679,11 +583,11 @@ namespace FLY_NAMESPACE
 		{
 			const Pin& inputPin = copyBuffer.mNodeGraph.mPins[link.mInputPinID];
 			const Pin& outputPin = copyBuffer.mNodeGraph.mPins[link.mOutputPinID];
-			const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(copyBuffer.mNodeGraph, link.mInputPinID, aNodeGraph, nodeConverter.at(inputPin.mNodeID));
-			const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(copyBuffer.mNodeGraph, link.mOutputPinID, aNodeGraph, nodeConverter.at(outputPin.mNodeID));
-			const LinkView createdLinkView = TryCreateLink(PinView(createdInputPinID, aNodeGraph), PinView(createdOutputPinID, aNodeGraph), aNodeGraph, aCommandTracker);
+			const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(copyBuffer.mNodeGraph, link.mInputPinID, targetNodeGraph, nodeConverter.at(inputPin.mNodeID));
+			const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(copyBuffer.mNodeGraph, link.mOutputPinID, targetNodeGraph, nodeConverter.at(outputPin.mNodeID));
+			const LinkID createdLinkID = Internal::TryCreateLink(targetNodeGraph, createdInputPinID, createdOutputPinID, aCommandTracker);
 
-			assert(createdLinkView);
+			assert(createdLinkID != InvalidID<LinkID>());
 		}
 
 		if (aCommandTracker)
@@ -865,10 +769,10 @@ namespace FLY_NAMESPACE
 		Global::Internal::GetFrameMemoryArena().Clear();
 	}
 
-	VariableView GetVariableByNode(const NodeView aNodeView, NodeGraph& aNodeGraph, const ClassView aClassView)
+	VariableView GetVariableByNode(const NodeView aNodeView, NodeGraphView aNodeGraphView, const ClassView aClassView)
 	{
 		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aClassView.GetClass());
-		const VarID varID = variableManager.GetVariableIDByNodeRef(NodeRef{ .mNodeID = aNodeView.GetID(), .mNodeGraph = &aNodeGraph });
+		const VarID varID = variableManager.GetVariableIDByNodeRef(NodeRef{ .mNodeID = aNodeView.GetID(), .mNodeGraph = &aNodeGraphView.GetNodeGraph() });
 		return VariableView(varID, aClassView.GetClass());
 	}
 
@@ -894,9 +798,9 @@ namespace FLY_NAMESPACE
 		return views;
 	}
 
-	std::vector<NodeView> GetNodes(const NodeGraph& aNodeGraph, bool aIncludeDestroyed)
+	std::vector<NodeView> GetNodes(const NodeGraphView aNodeGraphView, bool aIncludeDestroyed)
 	{
-		const std::vector<Node>& nodes = aNodeGraph.mNodes;
+		const std::vector<Node>& nodes = aNodeGraphView.GetNodeGraph().mNodes;
 		std::vector<NodeView> views;
 
 		views.reserve(nodes.size());
@@ -911,14 +815,14 @@ namespace FLY_NAMESPACE
 					continue;
 				}
 			}
-			views.push_back(NodeView(mNodeID, aNodeGraph));
+			views.push_back(NodeView(mNodeID, aNodeGraphView.GetNodeGraph()));
 		}
 		return views;
 	}
 
-	std::vector<LinkView> GetLinks(const NodeGraph& aNodeGraph, bool aIncludeDestroyed)
+	std::vector<LinkView> GetLinks(const NodeGraphView aNodeGraphView, bool aIncludeDestroyed)
 	{
-		const std::vector<Link>& links = aNodeGraph.mLinks;
+		const std::vector<Link>& links = aNodeGraphView.GetNodeGraph().mLinks;
 		std::vector<LinkView> views;
 
 		views.reserve(links.size());
@@ -927,13 +831,13 @@ namespace FLY_NAMESPACE
 		{
 			if (!aIncludeDestroyed)
 			{
-				const Link& link = aNodeGraph.mLinks.at(linkID);
+				const Link& link = aNodeGraphView.GetNodeGraph().mLinks.at(linkID);
 				if (link.mIsDestroyed)
 				{
 					continue;
 				}
 			}
-			views.push_back(LinkView(linkID, aNodeGraph));
+			views.push_back(LinkView(linkID, aNodeGraphView.GetNodeGraph()));
 		}
 		return views;
 	}

@@ -46,14 +46,13 @@ namespace FLY_NAMESPACE
 
 	Function::Function(std::string_view aName)
 		: mName(aName)
-		, mNodeGraph(eNodeGraphType::Function)
 	{
 		mCallerNodeTypeID = RegisterSystemNodeType(CallerNode, "Function/Call Function");
 		mInputNodeTypeID = RegisterSystemNodeType(InputNode, "Function/Input Function");
 		mOutputNodeTypeID = RegisterSystemNodeType(OutputNode, "Function/Output Function");
 
-		mInputNodeID = CreateNode(mNodeGraph, NodeTypeView(mInputNodeTypeID)).GetID();
-		mOutputNodeID = CreateNode(mNodeGraph, NodeTypeView(mOutputNodeTypeID)).GetID();
+		mInputNodeID = Internal::CreateNode(&mNodeGraph, mInputNodeTypeID);
+		mOutputNodeID = Internal::CreateNode(&mNodeGraph, mOutputNodeTypeID);
 	}
 
 	Function::~Function() = default;

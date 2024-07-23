@@ -19,6 +19,6 @@ namespace FLY_NAMESPACE
 		mClass = &aClass;
 		mVariableManagerInstance.Init(ScriptProxy::GetVariableManager(aClass));
 		// TODO Fix
-		mEventGraphInstance.Init(aClass.GetEventGraph());
+		mEventGraphInstance.Init(aClass.GetEventGraph().mNodeGraph);
 	}
 }

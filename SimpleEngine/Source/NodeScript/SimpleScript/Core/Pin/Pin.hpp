@@ -9,7 +9,7 @@ namespace FLY_NAMESPACE
 	{
 		NodeID mNodeID;
 		PinTypeID mTypeID;
-		void* mDataPtr;
+		OwningPtr<void> mDataPtr;
 		std::vector<PinID> mConnectedPinIDs;
 	};
 

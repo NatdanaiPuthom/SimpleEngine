@@ -1,6 +1,6 @@
 #pragma once
 #include "../ScriptDefines.hpp"
-#include "../ScriptNodeGraph.hpp"
+#include "../FlyNodeGraph.hpp"
 #include "../Node/NodeRef.hpp"
 
 namespace FLY_NAMESPACE
@@ -25,9 +25,6 @@ namespace FLY_NAMESPACE
 		NodeID mInputNodeID = InvalidID<NodeID>();
 		NodeID mOutputNodeID = InvalidID<NodeID>();
 
-		// Temp
-		//NodeRef mCaller;
-		
 		NodeGraph mNodeGraph;
 	};
 }

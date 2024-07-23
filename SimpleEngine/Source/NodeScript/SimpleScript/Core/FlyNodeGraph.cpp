@@ -1,14 +1,9 @@
-#include "ScriptNodeGraph.hpp"
+#include "FlyNodeGraph.hpp"
 #include "Global/FlyGlobal.hpp"
 #include "Node/NodeTypeManager.hpp"
 
 namespace FLY_NAMESPACE
 {
-
-	NodeGraph::NodeGraph(const eNodeGraphType aType)
-		: mType(aType)
-	{
-	}
 
 	NodeGraph::~NodeGraph()
 	{
@@ -24,16 +19,11 @@ namespace FLY_NAMESPACE
 		: mNodes(aOther.mNodes)
 		, mPins(aOther.mPins)
 		, mMemoryArena(aOther.mMemoryArena)
-		, mType(aOther.mType)
 	{
 
 		for (Pin& pin : mPins)
 		{
 			pin.mDataPtr = mMemoryArena.GetRenewedPointer(pin.mDataPtr, aOther.mMemoryArena);
 		}
-	}
-	eNodeGraphType NodeGraph::GetType() const
-	{
-		return mType;
 	}
 }

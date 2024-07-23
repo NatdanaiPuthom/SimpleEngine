@@ -2,7 +2,7 @@
 #include "ScriptDefines.hpp"
 #include <ImGui/imgui.h>
 #include "DataType/DataTypeRegistry.hpp"
-#include "../SystemTypes/ScriptFlow.hpp"
+#include "../SystemTypes/FlyFlow.hpp"
 #include "../SystemTypes/FlyNone.hpp"
 
 bool Edit(bool& aValue);

@@ -16,8 +16,6 @@
 constexpr const char* FILE_EXTENSION = ".fly";
 constexpr const char* CUSTOM_EVENT_FILE_NAME = "CustomEvents.fly";
 
-using json = nlohmann::json;
-
 namespace FLY_NAMESPACE
 {
 
@@ -38,7 +36,8 @@ namespace FLY_NAMESPACE
 		std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
 		std::filesystem::path filePath = fileDirectory.string() + aClass.Name() + FILE_EXTENSION;
 
-		if (!std::filesystem::create_directories(fileDirectory))
+		const bool createdDirectory = std::filesystem::create_directories(std::string(aFilePath));
+		if (!createdDirectory)
 		{
 			throw std::runtime_error("Failed to create directory: " + fileDirectory.string());
 			return;
@@ -53,27 +52,30 @@ namespace FLY_NAMESPACE
 			return;
 		}
 
-		const NodeGraph& eventGraph = ScriptProxy::GetEventGraph(aClass);
-		const VariableManager& variableManager = ScriptProxy::GetVariableManager(aClass);
+		const NodeGraph& eventGraph = aClass.GetEventGraph().mNodeGraph;
+		const VariableManager& variableManager = aClass.GetVariableManager();
 
-		json jsonDoc;
+		nlohmann::json jsonDoc;
 
 		jsonDoc["Name"] = aClass.Name();
 
-		json& dataJson = jsonDoc["Data"];
+		nlohmann::json& dataJson = jsonDoc["Data"];
 
-		dataJson["Nodes"] = json::array();
+		dataJson["Nodes"] = nlohmann::json::array();
 
-		json& nodesArrayJson = dataJson["Nodes"];
+		nlohmann::json& nodesArrayJson = dataJson["Nodes"];
 
 		std::unordered_map<NodeID, NodeID> cleanedNodeIDs;
 
 		for (NodeID nodeID = 0; nodeID < eventGraph.mNodes.size(); ++nodeID)
 		{
-			const Node& node = eventGraph.mNodes[nodeID];
-			if (node.mIsDestroyed) continue;
+			const Node& node = eventGraph.mNodes.at(nodeID);
+			if (node.mIsDestroyed)
+			{
+				continue;
+			}
 
-			json nodeJson;
+			nlohmann::json nodeJson;
 			cleanedNodeIDs.emplace(nodeID, static_cast<NodeID>(cleanedNodeIDs.size()));
 
 			nodeJson["ID"] = cleanedNodeIDs.at(nodeID);
@@ -84,27 +86,37 @@ namespace FLY_NAMESPACE
 			nodesArrayJson.push_back(nodeJson);
 		}
 
-		dataJson["PinData"] = json::array();
-		json& pinDataArrayJson = dataJson["PinData"];
+		dataJson["PinData"] = nlohmann::json::array();
+		nlohmann::json& pinDataArrayJson = dataJson["PinData"];
 
-		for (PinID inputPinID : ScriptFilter::GetInputPins(eventGraph))
+		for (const PinID inputPinID : ScriptFilter::GetInputPins(eventGraph))
 		{
-			const Pin& pin = ScriptProxy::GetPin(eventGraph, inputPinID);
+			const Pin& pin = eventGraph.mPins.at(inputPinID);
 
-			json pinDataJson;
+			nlohmann::json pinDataJson;
 
 			pinDataJson["NodeID"] = cleanedNodeIDs.at(pin.mNodeID);
 			pinDataJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, inputPinID);
 
-			pinDataJson["Connection"] = json::object();
-			bool connectionExists = !pin.mConnectedPinIDs.empty();
-			pinDataJson["Connection"]["Exists"] = connectionExists;
+			pinDataJson["ConnectionData"] = nlohmann::json::object();
+			nlohmann::json& connectionsJson = pinDataJson["Connections"];
+
+			const bool connectionExists = !pin.mConnectedPinIDs.empty();
+			connectionsJson["Exists"] = connectionExists;
 
 			if (connectionExists)
 			{
-				const Pin& connectedPin = ScriptProxy::GetPin(eventGraph, pin.mConnectedPinIDs[0]);
-				pinDataJson["Connection"]["NodeID"] = cleanedNodeIDs.at(connectedPin.mNodeID);
-				pinDataJson["Connection"]["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, pin.mConnectedPinIDs[0]);
+
+				connectionsJson["Pins"] = nlohmann::json::array();
+				nlohmann::json& connectedPinsJson = connectionsJson["Pins"];
+				for (const PinID connectedPinID : pin.mConnectedPinIDs)
+				{
+					nlohmann::json& connectedPinJson = connectedPinsJson.emplace_back();
+					const Pin& connectedPin = eventGraph.mPins.at(connectedPinID);
+					connectedPinJson["NodeID"] = cleanedNodeIDs.at(connectedPin.mNodeID);
+					connectedPinJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, connectedPinID);
+				}
+
 			}
 			else
 			{
@@ -112,7 +124,7 @@ namespace FLY_NAMESPACE
 
 				pinDataJson["DataType"] = Global::GetDataTypeManager().GetName(pinType.mDataTypeID);
 
-				json valueJson = json::object();
+				nlohmann::json valueJson = nlohmann::json::object();
 				Global::GetDataTypeManager().SaveData(pinType.mDataTypeID, valueJson, pin.mDataPtr);
 				pinDataJson["Value"] = valueJson;
 			}
@@ -120,8 +132,8 @@ namespace FLY_NAMESPACE
 			pinDataArrayJson.push_back(pinDataJson);
 		}
 
-		dataJson["Variables"] = json::array();
-		json& variableDataJson = dataJson["Variables"];
+		dataJson["Variables"] = nlohmann::json::array();
+		nlohmann::json& variableDataJson = dataJson["Variables"];
 
 		for (VarID i = 0; i < ScriptProxy::GetVariables(aClass).size(); ++i)
 		{
@@ -132,20 +144,19 @@ namespace FLY_NAMESPACE
 				continue;
 			}
 
-			json variableJson;
+			nlohmann::json variableJson;
 
 			variableJson["Name"] = variable.mName;
 			variableJson["DataType"] = Global::GetDataTypeManager().GetName(variable.dataTypeID);
 
-			json defaultValueJson = json::object();
-			DataTypeID dataTypeID = variable.dataTypeID;
+			nlohmann::json defaultValueJson = nlohmann::json::object();
 
-			Global::GetDataTypeManager().SaveData(dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
+			Global::GetDataTypeManager().SaveData(variable.dataTypeID, defaultValueJson, variable.defaultValueDataPtr);
 
 			variableJson["DefaultValue"] = defaultValueJson;
 
-			variableJson["Nodes"] = json::array();
-			json& variableNodesJson = variableJson["Nodes"];
+			variableJson["Nodes"] = nlohmann::json::array();
+			nlohmann::json& variableNodesJson = variableJson["Nodes"];
 
 			for (const NodeRef& nodeRef : variableManager.GetNodeRefsByVarID(i))
 			{
@@ -180,32 +191,32 @@ namespace FLY_NAMESPACE
 
 		ifs.close();
 
-		const json jsonDoc = json::parse(file);
+		const nlohmann::json jsonDoc = nlohmann::json::parse(file);
 
-		NodeGraph& eventGraph = ScriptProxy::GetEventGraph(aClass);
+		NodeGraph& eventGraph = aClass.GetEventGraph().mNodeGraph;
 
-		const json& dataJson = jsonDoc["Data"];
+		const nlohmann::json& dataJson = jsonDoc["Data"];
 
 		std::unordered_set<NodeID> failedNodeIDs;
 
-		for (const json& nodeJson : dataJson["Nodes"])
+		for (const nlohmann::json& nodeJson : dataJson["Nodes"])
 		{
 			const std::string& nodeName = nodeJson["Name"];
-			const json& nodePosJson = nodeJson["Pos"];
-			float xPos = nodePosJson["x"];
-			float yPos = nodePosJson["y"];
+			const nlohmann::json& nodePosJson = nodeJson["Pos"];
+			const float xPos = nodePosJson["x"];
+			const float yPos = nodePosJson["y"];
 
 			bool success = true;
-			const NodeView node = CreateNode(eventGraph, nodeName, success, { xPos, yPos }, nullptr, true);
+			const NodeID nodeID = Internal::CreateNode(&eventGraph, nodeName, success, { xPos, yPos }, true, nullptr);
 
 			if (!success)
 			{
 				std::cout << "Failed create node with name: " + nodeName << std::endl;
-				failedNodeIDs.insert(node.GetID());
+				failedNodeIDs.insert(nodeID);
 			}
 		}
 
-		for (const json& pinData : dataJson["PinData"])
+		for (const nlohmann::json& pinData : dataJson["PinData"])
 		{
 
 			const NodeID mNodeID = pinData["NodeID"];
@@ -220,38 +231,38 @@ namespace FLY_NAMESPACE
 			{
 				continue;
 			}
-			const Pin& pin = ScriptProxy::GetPin(eventGraph, pinID);
+			Pin& pin = eventGraph.mPins.at(pinID);
 			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 
-			const json& connectionJson = pinData["Connection"];
-			bool connectionExists = connectionJson["Exists"];
+			const nlohmann::json& connectionJson = pinData["Connections"];
+			const bool connectionExists = connectionJson["Exists"];
 			if (connectionExists)
 			{
-				NodeID connectionNodeID = connectionJson["NodeID"];
+				const NodeID connectionNodeID = connectionJson["NodeID"];
 				if (failedNodeIDs.contains(connectionNodeID))
 				{
 					continue;
 				}
 
-				size_t connectedPinIndex = connectionJson["PinIndex"];
+				const size_t connectedPinIndex = connectionJson["PinIndex"];
 
-				PinID connectionID = ScriptLinker::GetPinID(eventGraph, connectionNodeID, connectedPinIndex, eFlowType::Output);
+				const PinID connectionID = ScriptLinker::GetPinID(eventGraph, connectionNodeID, connectedPinIndex, eFlowType::Output);
 
 				if (connectionID != InvalidID<PinID>())
 				{
-					TryCreateLink(PinView(pinID, eventGraph), PinView(connectionID, eventGraph), eventGraph, nullptr);
+					Internal::TryCreateLink(eventGraph, pinID, connectionID, nullptr);
 				}
 				continue;
 			}
 
 
-			const json& valueJson = pinData["Value"];
+			const nlohmann::json& valueJson = pinData["Value"];
 			Global::GetDataTypeManager().LoadData(pinType.mDataTypeID, valueJson, pin.mDataPtr);
 		}
 
-		const json& variableDataJson = dataJson["Variables"];
+		const nlohmann::json& variableDataJson = dataJson["Variables"];
 
-		for (const json& variableJson : variableDataJson)
+		for (const nlohmann::json& variableJson : variableDataJson)
 		{
 			const VarID varID = Internal::CreateVariable(aClass, GetDataTypeID<bool>(), nullptr);
 			const Variable& variable = aClass.GetVariableManager().mVariables.at(varID);
@@ -261,7 +272,7 @@ namespace FLY_NAMESPACE
 			const std::string variableName = variableJson["Name"];
 			SetVariableName(VariableView(varID, aClass), variableName, ClassView(aClass));
 
-			const json& defaultValueJson = variableJson["DefaultValue"];
+			const nlohmann::json& defaultValueJson = variableJson["DefaultValue"];
 
 
 			DataTypeView dataType(Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeStr));
@@ -352,8 +363,8 @@ namespace FLY_NAMESPACE
 			return;
 		}
 
-		json jsonDoc = json::object();
-		json customEventsJson = json::array();
+		nlohmann::json jsonDoc = nlohmann::json::object();
+		nlohmann::json customEventsJson = nlohmann::json::array();
 
 		const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
 
@@ -363,18 +374,18 @@ namespace FLY_NAMESPACE
 		{
 			const NodeType& executorNodeType = Global::GetNodeTypeManager().GetNodeType(customEventNodeType.GetExecutorTypeID());
 
-			json customEventJson;
+			nlohmann::json customEventJson;
 
 			customEventJson["Name"] = nodeTypeManager.GetShortName(customEventNodeType.GetExecutorTypeID());
 
 
-			json pinArrayJson = json::array();
+			nlohmann::json pinArrayJson = nlohmann::json::array();
 
 			for (size_t i = 1; i < executorNodeType.mNodeRecipe.mOutputPinTypeIDs.size(); ++i)
 			{
 				PinTypeID pinTypeID = executorNodeType.mNodeRecipe.mOutputPinTypeIDs[i];
 
-				json customEventPinJson;
+				nlohmann::json customEventPinJson;
 
 				const PinType& pinType = Global::GetPinTypeManager().GetPinType(pinTypeID);
 
@@ -412,18 +423,18 @@ namespace FLY_NAMESPACE
 
 		ifs.close();
 
-		const json& jsonDoc = json::parse(file);
-		const json& customEventsJson = jsonDoc["CustomEvents"];
+		const nlohmann::json& jsonDoc = nlohmann::json::parse(file);
+		const nlohmann::json& customEventsJson = jsonDoc["CustomEvents"];
 
-		for (const json& customEventJson : customEventsJson)
+		for (const nlohmann::json& customEventJson : customEventsJson)
 		{
 			const std::string& nodeName = customEventJson["Name"];
 
 			const CustomEventView customEvent = CreateCustomEvent(nodeName);
 
-			const json& pinsJson = customEventJson["Pins"];
+			const nlohmann::json& pinsJson = customEventJson["Pins"];
 
-			for (const json& pinJson : pinsJson)
+			for (const nlohmann::json& pinJson : pinsJson)
 			{
 				const std::string& pinName = pinJson["Name"];
 				const std::string& dataTypeName = pinJson["DataType"];

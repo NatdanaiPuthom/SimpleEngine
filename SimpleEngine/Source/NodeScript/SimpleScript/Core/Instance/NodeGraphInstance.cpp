@@ -1,5 +1,5 @@
 #include "NodeGraphInstance.hpp"
-#include "../ScriptNodeGraph.hpp"
+#include "../FlyNodeGraph.hpp"
 
 namespace FLY_NAMESPACE
 {

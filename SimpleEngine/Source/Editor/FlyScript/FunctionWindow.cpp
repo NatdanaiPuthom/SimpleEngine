@@ -50,7 +50,7 @@ namespace Editor
 
 				if (ImGui::Button("Create Caller"))
 				{
-					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetCallerNodeType());
+					Fly::CreateNode(myParentWindow.GetNodeContext().nodeGraphView, functionView.GetCallerNodeType());
 				}
 
 				/*if (ImGui::Button("Create Input"))

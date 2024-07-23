@@ -52,6 +52,11 @@ namespace FLY_NAMESPACE
 		return mEventGraph;
 	}
 
+	const EventGraph& Class::GetEventGraph() const
+	{
+		return mEventGraph;
+	}
+
 	DataTypeID Class::GetTargetID() const
 	{
 		return mTargetID;

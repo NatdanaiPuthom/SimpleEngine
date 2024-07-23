@@ -11,6 +11,7 @@ namespace FLY_NAMESPACE
 
 	public:
 
+		PinView() = default;
 		PinView(PinID aPinID, const NodeGraph& aNodeGraph);
 
 		const std::vector<PinID>& GetConnectedPinIDs() const;
@@ -20,6 +21,8 @@ namespace FLY_NAMESPACE
 		NodeID GetNodeID() const;
 
 		PinID GetID() const;
+
+		explicit operator bool() const;
 		
 	private:
 
@@ -28,7 +31,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		PinID mPinID;
+		PinID mPinID = InvalidID<PinID>();
 		const NodeGraph* mNodeGraph;
 	};
 }

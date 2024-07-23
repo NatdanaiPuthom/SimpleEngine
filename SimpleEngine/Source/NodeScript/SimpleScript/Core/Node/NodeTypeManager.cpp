@@ -204,6 +204,11 @@ namespace FLY_NAMESPACE
 		return id;
 	}
 
+	const std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::GetWildcardMapByOperator(eNodeOperatorTrait aOperatorTrait) const
+	{
+		return mOperatorNodeTypeIDs.at(aOperatorTrait);
+	}
+
 	NodeType NodeTypeManager::CreateInvalidNodeType()
 	{
 		NodeRecipe recipe

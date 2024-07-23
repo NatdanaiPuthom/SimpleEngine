@@ -49,9 +49,9 @@ namespace FLY_NAMESPACE
 		return NodeTypeView(function.mOutputNodeTypeID);
 	}
 
-	NodeGraph& FunctionView::GetNodeGraph()
+	NodeGraphView FunctionView::GetNodeGraph()
 	{
-		return GetFunction().mNodeGraph;
+		return NodeGraphView(*this);
 	}
 
 	FunctionID FunctionView::GetID() const

@@ -2,13 +2,17 @@
 #include "ScriptDefines.hpp"
 #include "Pin/Pin.hpp"
 #include "Node/NodeTrait.hpp"
-#include "ScriptProxy.hpp"
+#include "SystemTypes/FlyVec2.hpp"
+#include "Node/NodeRef.hpp"
 #include <string>
+#include <variant>
 
 namespace FLY_NAMESPACE
 {
 
 	class Class;
+	class CommandTracker;
+	class EventGraph;
 
 
 	struct NodeGraphContext
@@ -20,16 +24,23 @@ namespace FLY_NAMESPACE
 	namespace Internal
 	{
 
+		using NodeGraphVariant = std::variant<NodeGraph*, EventGraph*>;
+
 
 		CustomEventID CreateCustomEvent(std::string_view aName);
 		FunctionID CreateFunction(std::string_view aName);
-		NodeID CreateNode(NodeGraph& aNodeGraph, NodeTypeID aNodeTypeID, CommandTracker* aCommandTracker);
-		NodeID CreateNode(NodeGraph& aNodeGraph, std::string_view aName, bool& aSuccess, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker);
+		NodeID CreateNode(NodeGraphVariant&& aNodeGraphVariant, NodeTypeID aNodeTypeID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+		NodeID CreateNode(NodeGraphVariant&& aNodeGraphVariant, std::string_view aName, bool& aSuccess, Vec2 aPosition, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker);
 		NodeID CreateGetterNode(NodeGraph& aNodeGraph, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 		NodeID CreateSetterNode(NodeGraph& aNodeGraph, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 		NodeID CreateOperatorNode(NodeGraph& aNodeGraph, eNodeOperatorTrait aOperatorTrait, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 
 		void AddNode(NodeGraph& aNodeGraph, Node&& aNode, NodeID aNodeID, CommandTracker* aCommandTracker);
+
+		void DestroyNode(NodeGraph& aNodeGraph, NodeID aNodeID, CommandTracker* aCommandTracker);
+
+		void SetNodePosition(NodeID aNodeID, Vec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void SetNodePosition(NodeID aNodeID, Vec2 aPosition, Vec2 aOldPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
 	
 		std::vector<PinID> CreateInputPins(NodeGraph& aNodeGraph, NodeID aNodeID, NodeTypeID aNodeTypeID, size_t aStartIndex = 0);
@@ -39,6 +50,7 @@ namespace FLY_NAMESPACE
 		PinID CreatePin(NodeGraph& aNodeGraph, NodeID aNodeID, PinTypeID aPinTypeID);
 		PinID CreatePin(NodeGraph& aNodeGraph, NodeID aNodeID, PinTypeID aPinTypeID, void* aDataPtr);
 
+		LinkID TryCreateLink(NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2, CommandTracker* aCommandTracker);
 		LinkID CreateLink(NodeGraph& aNodeGraph, PinID aInputPinID, PinID aOutputPinID, CommandTracker* aCommandTracker);
 		void DestroyLink(NodeGraph& aNodeGraph, LinkID aLinkID, CommandTracker* aCommandTracker);
 
@@ -48,7 +60,8 @@ namespace FLY_NAMESPACE
 		void UnbindVariable(Class& aClass, const NodeRef& aNodeRef, CommandTracker* aCommandTracker);
 
 
-		void ReplaceOperatorNode(NodeGraph& aNodeGraph, PinID aUndefinedPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);
+		void ReplaceWildcardNode(NodeGraph& aNodeGraph, PinID aWildcardPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);
+		void ReplaceWildcardNode(NodeGraph& aNodeGraph, PinID aWildcardPinID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 
 		NodeID GetCurrentNodeID(NodeGraph& aNodeGraph);
 	}

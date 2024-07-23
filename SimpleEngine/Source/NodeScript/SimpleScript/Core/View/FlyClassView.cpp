@@ -25,9 +25,9 @@ namespace FLY_NAMESPACE
 		return DataTypeView(targetID);
 	}
 
-	EventGraph& ClassView::GetEventGraph() const
+	NodeGraphView ClassView::GetEventGraph() const
 	{
-		return mClass->GetEventGraph();
+		return NodeGraphView(GetClass().GetEventGraph());
 	}
 
 	std::vector<VariableView> ClassView::GetVariables(const bool aIncludeDestroyed) const

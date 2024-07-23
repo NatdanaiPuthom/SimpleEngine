@@ -58,6 +58,39 @@ namespace FLY_NAMESPACE
 	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, NodeGraph&);
 	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);
 
+	template<typename T>
+	class OwningPtr final
+	{
+	public:
+		OwningPtr(T* const aPtr)
+			: mPtr(aPtr)
+		{
+		}
+
+		T* Get()
+		{
+			return mPtr;
+		}
+
+		const T* Get() const
+		{
+			return mPtr;
+		}
+
+		operator T* ()
+		{
+			return Get();
+		}
+
+		operator const T* () const
+		{
+			return Get();
+		}
+
+	private:
+		T* mPtr;
+	};
+
 	// Struct for color - values between 0 and 1
 	struct Color final
 	{

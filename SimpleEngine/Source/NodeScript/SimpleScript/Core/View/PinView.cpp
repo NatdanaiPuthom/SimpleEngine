@@ -1,5 +1,5 @@
 #include "PinView.hpp"
-#include "../ScriptNodeGraph.hpp"
+#include "../FlyNodeGraph.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../Pin/PinTypeManager.hpp"
 #include "../DataType/DataTypeManager.hpp"
@@ -45,6 +45,11 @@ namespace FLY_NAMESPACE
 	PinID PinView::GetID() const
 	{
 		return mPinID;
+	}
+
+	PinView::operator bool() const
+	{
+		return mPinID != InvalidID<PinID>();
 	}
 
 	const Pin& PinView::GetPin() const

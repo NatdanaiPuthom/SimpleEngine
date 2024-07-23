@@ -37,7 +37,7 @@ namespace Editor
 	struct NodeContext
 	{
 		Fly::ClassView classView;
-		Fly::NodeGraph* nodeGraph;
+		Fly::NodeGraphView nodeGraphView;
 
 		std::vector<Fly::PinID> myPinIDsToHighlight;
 		std::unordered_map<Fly::NodeID, Fly::NodeDragData> myNodeDragData;
@@ -73,7 +73,7 @@ namespace Editor
 
 		NodeContext& GetNodeContext();
 		const NodeContext& GetNodeContext() const;
-		void SetNodeContext(Fly::NodeGraph& aNodeGraph, Fly::ClassView aClassView);
+		void SetNodeContext(Fly::NodeGraphView aNodeGraphView, Fly::ClassView aClassView);
 		eScriptMode GetCurrentMode() const;
 
 		void UpdateContext();
@@ -107,7 +107,7 @@ namespace Editor
 
 		std::unique_ptr<Fly::CommandTracker> myCommandTracker;
 
-		std::unordered_map<const Fly::NodeGraph*, ImNodesContext*> myImNodesContexts;
+		std::unordered_map<Fly::NodeGraphView, ImNodesContext*> myImNodesContexts;
 
 		
 
@@ -124,8 +124,9 @@ namespace Editor
 		ImVec2 myDragStartPos;
 		ImVec2 myDragEndPos;
 
-		Fly::PinID myHoveredLinkID = Fly::InvalidID<Fly::PinID>();
-		Fly::PinID myHoveredPinID = Fly::InvalidID<Fly::PinID>();
+		Fly::LinkView myHoveredLinkView;
+		Fly::PinView myHoveredPinView;
+		Fly::PinView myClickedPinView;
 
 		bool myIsContextSensitive = false;
 
@@ -134,7 +135,7 @@ namespace Editor
 		static constexpr Fly::Color mySelectionTint{ 0.2f, 0.2f, 0.2f, 0.f };// = Color(0.2f, 0.2f, 0.2f, 0);
 		static constexpr Fly::Color myHoverTint{ 0.1f, 0.1f, 0.1f, 0.f };
 
-		static constexpr const char* SCRIPT_FILE_PATH = "Assets/Scripts/";
+		static constexpr const char* SCRIPT_FILE_PATH = "Assets/Scripts";
 
 	};
 }

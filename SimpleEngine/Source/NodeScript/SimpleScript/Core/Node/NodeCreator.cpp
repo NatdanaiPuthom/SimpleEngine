@@ -7,7 +7,7 @@ namespace FLY_NAMESPACE
 	{
 		return [](const PinSetData& aPinSetData, const InternalExecutionContext& aContext) -> void
 			{
-				const Pin& pin = aPinSetData.mNodeGraph->mPins[aPinSetData.mID];
+				Pin& pin = aPinSetData.mNodeGraph->mPins[aPinSetData.mID];
 				const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 #ifdef FLY_DEBUG
 				assert(aPinSetData.mDataTypeID == pinType.mDataTypeID);
@@ -42,12 +42,12 @@ namespace FLY_NAMESPACE
 		{
 			const PinID destinationPinID = aDestination[i];
 
-			const Pin& destinationPin = ScriptProxy::GetPin(aDestinationNodeGraph, destinationPinID);
+			const Pin& destinationPin = aDestinationNodeGraph.mPins[destinationPinID];
 
 			const PinType& outputPinType = Global::GetPinTypeManager().GetPinType(destinationPin.mTypeID);
 
 			const PinID sourcePinID = aSource[i];
-			const Pin& sourcePin = ScriptProxy::GetPin(aSourceNodeGraph, sourcePinID);
+			const Pin& sourcePin = aSourceNodeGraph.mPins[sourcePinID];
 			[[maybe_unused]] const PinType& sourcePinType = Global::GetPinTypeManager().GetPinType(sourcePin.mTypeID);
 
 			outputPinType.mSetFunction(PinSetData{ destinationPinID, &aDestinationNodeGraph, sourcePin.mDataPtr,
@@ -66,7 +66,7 @@ namespace FLY_NAMESPACE
 
 			const PinID inputPinID = aInputPinIDs[i];
 
-			const Pin& inputPin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, inputPinID);
+			const Pin& inputPin = aContext.mNodeData.mNodeRef.mNodeGraph->mPins[inputPinID];
 			const PinType& inputPinType = Global::GetPinTypeManager().GetPinType(inputPin.mTypeID);
 
 			if (inputPinType.mDataTypeID == Flow::mTypeID)
@@ -79,15 +79,15 @@ namespace FLY_NAMESPACE
 
 				const PinID connectedOutputPinID = inputPin.mConnectedPinIDs.front();
 
-				const Pin& connectedOutputPin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, connectedOutputPinID);
+				const Pin& connectedOutputPin = aContext.mNodeData.mNodeRef.mNodeGraph->mPins[connectedOutputPinID];
 				const NodeID connectedNodeID = connectedOutputPin.mNodeID;
 
-				const Node& connectedNode = ScriptProxy::GetNode(*aContext.mNodeData.mNodeRef.mNodeGraph, connectedNodeID);
+				const Node& connectedNode = aContext.mNodeData.mNodeRef.mNodeGraph->mNodes[connectedNodeID];
 				const NodeType& connectedNodeType = Global::GetNodeTypeManager().GetNodeType(connectedNode.mTypeID);
 
 				if (!HasFlag(connectedNodeType.mNodeRecipe.mTraits, eNodeTrait::HasFlow))
 				{
-					ScriptProxy::GetNodeExecutor().ExecuteNode({ NodeRef{ connectedNodeID, aContext.mNodeData.mNodeRef.mNodeGraph }, eNodeTriggerReason::Read });
+					Global::GetNodeExecutor().ExecuteNode({ NodeRef{ connectedNodeID, aContext.mNodeData.mNodeRef.mNodeGraph }, eNodeTriggerReason::Read });
 				}
 
 				inputPinType.mSetFunction(PinSetData{ inputPinID, aContext.mNodeData.mNodeRef.mNodeGraph, connectedOutputPin.mDataPtr,

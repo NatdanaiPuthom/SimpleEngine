@@ -3,7 +3,7 @@
 #include "../Utilities/MetaScript.hpp"
 #include "../Utilities/ScriptUtilities.hpp"
 #include "../DataType/DataTypeManager.hpp"
-#include "../SystemTypes/ScriptWildcard.hpp"
+#include "../SystemTypes/FlyWildcard.hpp"
 #include "../Node/NodeTrait.hpp"
 #include "../Node/NodeTypeRegistry.hpp"
 

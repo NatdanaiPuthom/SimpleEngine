@@ -6,6 +6,7 @@
 #include "../Utilities/MetaScript.hpp"
 #include "../Pin/PinTypeManager.hpp"
 #include "../DataType/DataTypeManager.hpp"
+#include "../FlyClass.hpp"
 #include "FlyClassInstance.hpp"
 
 namespace FLY_NAMESPACE
@@ -38,7 +39,7 @@ namespace FLY_NAMESPACE
 	inline T GetterNode(const InternalExecutionContext* aContext)
 	{
 		const NodeRef& nodeRef = aContext->mNodeData.mNodeRef;
-		const VariableManager& variableManager = ScriptProxy::GetVariableManager(*aContext->mClass);
+		const VariableManager& variableManager = aContext->mClass->GetVariableManager();
 
 		const VarID varID = variableManager.GetVariableIDByNodeRef(nodeRef);
 
@@ -51,7 +52,7 @@ namespace FLY_NAMESPACE
 	inline void SetterNode(const InternalExecutionContext* aContext, const T& aValue)
 	{
 		const NodeRef& nodeRef = aContext->mNodeData.mNodeRef;
-		const VariableManager& variableManager = ScriptProxy::GetVariableManager(*aContext->mClass);
+		const VariableManager& variableManager = aContext->mClass->GetVariableManager();
 
 		const VarID varID = variableManager.GetVariableIDByNodeRef(nodeRef);
 

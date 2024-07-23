@@ -5,6 +5,6 @@ namespace FLY_NAMESPACE
 {
 	struct CopyBuffer
 	{
-		NodeGraph mNodeGraph = NodeGraph(eNodeGraphType::Other);
+		NodeGraph mNodeGraph;
 	};
 }

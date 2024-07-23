@@ -7,7 +7,6 @@
 namespace FLY_NAMESPACE
 {
 
-	class EventGraph;
 	class ClassInstance;
 
 	class NodeExecutor final

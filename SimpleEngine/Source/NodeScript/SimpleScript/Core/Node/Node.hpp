@@ -1,6 +1,6 @@
 #pragma once
 #include "../ScriptDefines.hpp"
-#include "../SystemTypes/ScriptVec2.hpp"
+#include "../SystemTypes/FlyVec2.hpp"
 #include "../Pin/Pin.hpp"
 #include <vector>
 

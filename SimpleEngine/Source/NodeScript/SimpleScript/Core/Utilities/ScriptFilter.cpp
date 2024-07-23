@@ -4,6 +4,7 @@
 #include "ScriptProxy.hpp"
 #include "../Node/Node.hpp"
 #include "../Global/FlyGlobal.hpp"
+#include "../FlyNodeGraph.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -16,17 +17,19 @@ namespace FLY_NAMESPACE
 	{
 		std::vector<PinID> inputPinIDs;
 
-		for (PinID i = 0; i < ScriptProxy::GetPins(aNodeGraph).size(); i++)
+		for (PinID i = 0; i < aNodeGraph.mPins.size(); i++)
 		{
-			if (Global::GetPinTypeManager().GetPinType(ScriptProxy::GetPin(aNodeGraph, i).mTypeID).mFlowType == eFlowType::Input)
+			const Pin& pin = aNodeGraph.mPins.at(i);
+			if (Global::GetPinTypeManager().GetPinType(pin.mTypeID).mFlowType != eFlowType::Input)
 			{
-				const NodeID mNodeID = ScriptProxy::GetPin(aNodeGraph, i).mNodeID;
-
-				if (!ScriptProxy::GetNode(aNodeGraph, mNodeID).mIsDestroyed)
-				{
-					inputPinIDs.push_back(i);
-				}
+				continue;
 			}
+
+			if (!aNodeGraph.mNodes.at(pin.mNodeID).mIsDestroyed)
+			{
+				inputPinIDs.push_back(i);
+			}
+
 		}
 		return inputPinIDs;
 	}
@@ -35,16 +38,17 @@ namespace FLY_NAMESPACE
 	{
 		std::vector<PinID> pinIDs;
 
-		for (PinID i = 0; i < ScriptProxy::GetPins(aNodeGraph).size(); i++)
+		for (PinID i = 0; i < aNodeGraph.mPins.size(); i++)
 		{
-			const Pin& pin = ScriptProxy::GetPin(aNodeGraph, i);
-			if (Global::GetPinTypeManager().GetPinType(pin.mTypeID).mFlowType == eFlowType::Output)
+			const Pin& pin = aNodeGraph.mPins.at(i);
+			if (Global::GetPinTypeManager().GetPinType(pin.mTypeID).mFlowType != eFlowType::Output)
 			{
+				continue;
+			}
 
-				if (!ScriptProxy::GetNode(aNodeGraph, pin.mNodeID).mIsDestroyed)
-				{
-					pinIDs.push_back(i);
-				}
+			if (!aNodeGraph.mNodes.at(pin.mNodeID).mIsDestroyed)
+			{
+				pinIDs.push_back(i);
 			}
 		}
 		return pinIDs;

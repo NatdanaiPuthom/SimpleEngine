@@ -64,6 +64,8 @@ namespace FLY_NAMESPACE
 		CustomEventID CreateCustomEvent(std::string_view aName);
 		FunctionID CreateFunction(std::string_view aName);
 
+		const std::unordered_map<DataTypeID, NodeTypeID> GetWildcardMapByOperator(eNodeOperatorTrait aOperatorTrait) const;
+
 		void Assert();
 
 	private:

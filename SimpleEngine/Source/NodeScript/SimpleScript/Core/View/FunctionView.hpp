@@ -3,6 +3,7 @@
 #include "../Function/ScriptFunction.hpp"
 #include "NodeView.hpp"
 #include "NodeTypeView.hpp"
+#include "FlyNodeGraphView.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -20,7 +21,7 @@ namespace FLY_NAMESPACE
 		NodeTypeView GetCallerNodeType() const;
 		NodeTypeView GetInputNodeType() const;
 		NodeTypeView GetOutputNodeType() const;
-		NodeGraph& GetNodeGraph();
+		NodeGraphView GetNodeGraph();
 
 		FunctionID GetID() const;
 

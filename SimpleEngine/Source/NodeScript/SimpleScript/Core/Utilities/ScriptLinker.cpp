@@ -8,7 +8,7 @@ namespace FLY_NAMESPACE
 
 	PinID ScriptLinker::GetPinID(const NodeGraph& aNodeGraph, const NodeID aNodeID, const size_t aPinIndex, const eFlowType aPinFlowType)
 	{
-		const Node& node = ScriptProxy::GetNode(aNodeGraph, aNodeID);
+		const Node& node = aNodeGraph.mNodes.at(aNodeID);
 		switch (aPinFlowType)
 		{
 		case eFlowType::Input:
@@ -31,9 +31,9 @@ namespace FLY_NAMESPACE
 
 	size_t ScriptLinker::GetPinIndex(const NodeGraph& aNodeGraph, const PinID aPinID)
 	{
-		const Pin& pin = ScriptProxy::GetPin(aNodeGraph, aPinID);
+		const Pin& pin = aNodeGraph.mPins.at(aPinID);
 		const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
-		const Node& node = ScriptProxy::GetNode(aNodeGraph, pin.mNodeID);
+		const Node& node = aNodeGraph.mNodes.at(pin.mNodeID);
 
 		const std::vector<PinID>& pinIDs = pinType.mFlowType == eFlowType::Output ? node.mOutputPins : node.mInputPins;
 
@@ -49,23 +49,23 @@ namespace FLY_NAMESPACE
 
 	PinID ScriptLinker::GetOpposingPinID(const NodeGraph& aPreviousNodeGraph, const PinID aPreviousPinID, const NodeGraph& aNewNodeGraph, const NodeID aNodeID)
 	{
-		size_t pinIndex = GetPinIndex(aPreviousNodeGraph, aPreviousPinID);
-		const Pin& pin = ScriptProxy::GetPin(aPreviousNodeGraph, aPreviousPinID);
+		const size_t pinIndex = GetPinIndex(aPreviousNodeGraph, aPreviousPinID);
+		const Pin& pin = aPreviousNodeGraph.mPins.at(aPreviousPinID);
 		const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 		return GetPinID(aNewNodeGraph, aNodeID, pinIndex, pinType.mFlowType);
 	}
 
 	static bool ArePinsLinkableByDataType(const NodeGraph& aNodeGraph, const PinID aPinID1, const PinID aPinID2)
 	{
-		const Pin& pin1 = ScriptProxy::GetPin(aNodeGraph, aPinID1);
-		const Pin& pin2 = ScriptProxy::GetPin(aNodeGraph, aPinID2);
+		const Pin& pin1 = aNodeGraph.mPins.at(aPinID1);
+		const Pin& pin2 = aNodeGraph.mPins.at(aPinID2);
 		return  Global::GetPinTypeManager().GetPinType(pin1.mTypeID).mDataTypeID == Global::GetPinTypeManager().GetPinType(pin2.mTypeID).mDataTypeID;
 	}
 
 	Link ScriptLinker::ArePinsLinkable(const NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2)
 	{
-		const Pin& pin1 = ScriptProxy::GetPin(aNodeGraph, aPinID1);
-		const Pin& pin2 = ScriptProxy::GetPin(aNodeGraph, aPinID2);
+		const Pin& pin1 = aNodeGraph.mPins.at(aPinID1);
+		const Pin& pin2 = aNodeGraph.mPins.at(aPinID2);
 		const PinType& pinType1 = Global::GetPinTypeManager().GetPinType(pin1.mTypeID);
 		const PinType& pinType2 = Global::GetPinTypeManager().GetPinType(pin2.mTypeID);
 

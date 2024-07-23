@@ -10,9 +10,10 @@
 #include "../Pin/PinTypeManager.hpp"
 #include "../DataType/DataTypeManager.hpp"
 #include "../ScriptInternalModifier.hpp"
-#include "../SystemTypes/ScriptWildcard.hpp"
-#include "../SystemTypes/ScriptFlow.hpp"
+#include "../SystemTypes/FlyWildcard.hpp"
+#include "../SystemTypes/FlyFlow.hpp"
 #include "../Utilities/MetaScript.hpp"
+#include "../Utilities/ScriptProxy.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "../SystemTypes/ReferenceWrapper.hpp"
@@ -36,9 +37,9 @@ namespace FLY_NAMESPACE
 
 				const T& value = *reinterpret_cast<const T*>(aPinSetData.mValue);
 
-				const Pin& pin = ScriptProxy::GetPin(*aPinSetData.mNodeGraph, aPinSetData.mID);
+				Pin& pin = aPinSetData.mNodeGraph->mPins[aPinSetData.mID];
 
-				T& memoryValue = *reinterpret_cast<T*>(pin.mDataPtr);
+				T& memoryValue = *reinterpret_cast<T*>(pin.mDataPtr.Get());
 				memoryValue = value;
 
 				if constexpr (IsSameType<T, Flow>)
@@ -49,7 +50,7 @@ namespace FLY_NAMESPACE
 						{
 							for (const PinID connectedInputPinID : pin.mConnectedPinIDs)
 							{
-								const Pin& connectedInputPin = ScriptProxy::GetPin(*aPinSetData.mNodeGraph, connectedInputPinID);
+								const Pin& connectedInputPin = aPinSetData.mNodeGraph->mPins[connectedInputPinID];
 								aContext.mExecutionQueue->Push(NodeExecutionData{ NodeRef{ connectedInputPin.mNodeID, aPinSetData.mNodeGraph }, eNodeTriggerReason::Flow });
 							}
 						}
@@ -234,8 +235,8 @@ namespace FLY_NAMESPACE
 	{
 		if constexpr (Index < std::tuple_size_v<TupleType>)
 		{
-			const Pin& pin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, aPinIDs[Index]);
-			std::get<Index>(aTuple) = ReferenceWrapper<Arg>(*reinterpret_cast<Arg*>(pin.mDataPtr));
+			Pin& pin = aContext.mNodeData.mNodeRef.mNodeGraph->mPins[aPinIDs[Index]];
+			std::get<Index>(aTuple) = ReferenceWrapper<Arg>(*reinterpret_cast<Arg*>(pin.mDataPtr.Get()));
 
 			if constexpr (sizeof...(Args) > 0)
 			{

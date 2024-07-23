@@ -49,23 +49,23 @@ namespace Editor
 
 
 
-	void NodeScriptingWindow::SetNodeContext(Fly::NodeGraph& aNodeGraph, Fly::ClassView aClassView)
+	void NodeScriptingWindow::SetNodeContext(const Fly::NodeGraphView aNodeGraphView, const Fly::ClassView aClassView)
 	{
 		NodeContext nodeContext
 		{
 			aClassView,
-			&aNodeGraph,
+			aNodeGraphView,
 		};
 		myNodeContextHistory.history.push_back(nodeContext);
 		myNodeContextHistory.currentIndex++;
 
-		if (!myImNodesContexts.contains(&aNodeGraph))
+		if (!myImNodesContexts.contains(aNodeGraphView))
 		{
-			myImNodesContexts.emplace(&aNodeGraph, ImNodes::CreateContext());
+			myImNodesContexts.emplace(aNodeGraphView, ImNodes::CreateContext());
 
 		}
 
-		ImNodes::SetCurrentContext(myImNodesContexts.at(&aNodeGraph));
+		ImNodes::SetCurrentContext(myImNodesContexts.at(aNodeGraphView));
 	}
 
 	eScriptMode NodeScriptingWindow::GetCurrentMode() const
@@ -94,7 +94,7 @@ namespace Editor
 		}
 
 
-		ImNodes::SetCurrentContext(myImNodesContexts.at(GetNodeContext().nodeGraph));
+		ImNodes::SetCurrentContext(myImNodesContexts.at(GetNodeContext().nodeGraphView));
 
 		ImNodesStyle& style = ImNodes::GetStyle();
 
@@ -143,7 +143,7 @@ namespace Editor
 
 					ImNodes::GetSelectedNodes(selectedNodes.data());
 
-					Fly::CreateCopyBuffer(selectedNodes, *GetNodeContext().nodeGraph);
+					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().nodeGraphView);
 				}
 			}
 			else if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_V))
@@ -151,7 +151,7 @@ namespace Editor
 
 				const Fly::Vec2 mousePos = Fly::Vec2{ GetMousePos().x, GetMousePos().y };
 
-				Fly::PasteCopyBuffer(mousePos, *GetNodeContext().nodeGraph, myCommandTracker.get());
+				Fly::PasteCopyBuffer(mousePos, GetNodeContext().nodeGraphView, myCommandTracker.get());
 			}
 			else if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_X))
 			{
@@ -163,8 +163,8 @@ namespace Editor
 
 					ImNodes::GetSelectedNodes(selectedNodes.data());
 
-					Fly::CreateCopyBuffer(selectedNodes, *GetNodeContext().nodeGraph);
-					Fly::DestroySelection(selectedNodes, {}, *GetNodeContext().nodeGraph, nullptr);
+					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().nodeGraphView);
+					Fly::DestroySelection(selectedNodes, {}, GetNodeContext().nodeGraphView, nullptr);
 				}
 			}
 
@@ -206,7 +206,7 @@ namespace Editor
 				for (Fly::FunctionView& memberFunction : memberFunctions)
 				{
 
-					if (ImGui::Selectable(memberFunction.GetName().c_str(), &memberFunction.GetNodeGraph() == GetNodeContext().nodeGraph))
+					if (ImGui::Selectable(memberFunction.GetName().c_str(), memberFunction.GetNodeGraph() == GetNodeContext().nodeGraphView))
 					{
 						SetNodeContext(memberFunction.GetNodeGraph(), GetNodeContext().classView);
 						mySelectedFunction = Fly::FunctionView(memberFunction.GetID());
@@ -215,7 +215,7 @@ namespace Editor
 				}
 			}
 
-			if (GetNodeContext().nodeGraph->GetType() == Fly::eNodeGraphType::Function)
+			if (GetNodeContext().nodeGraphView.GetType() == Fly::eNodeGraphType::Function)
 			{
 				myFunctionSettingsWindow.Update();
 			}
@@ -278,9 +278,9 @@ namespace Editor
 		{
 			const auto classes = Fly::GetClasses();
 
-			for (auto& [dataTypeID, classesByDataTypeID] : classes)
+			for (auto& [dataTypeView, classesByDataTypeID] : classes)
 			{
-				if (ImGui::BeginMenu(Fly::DataTypeView(dataTypeID).GetName().c_str()))
+				if (ImGui::BeginMenu(dataTypeView.GetName().c_str()))
 				{
 					for (auto& flyClass : classesByDataTypeID)
 					{
@@ -335,7 +335,7 @@ namespace Editor
 				Fly::ClassView classView = Fly::CreateClass(mySelectedTargetDataType, myNewClassNameText);
 				myNewClassNameText[0] = (char)0;
 
-				myImNodesContexts.emplace(&classView.GetEventGraph(), ImNodes::CreateContext());
+				myImNodesContexts.emplace(classView.GetEventGraph(), ImNodes::CreateContext());
 
 
 				ImGui::CloseCurrentPopup();
@@ -425,7 +425,7 @@ namespace Editor
 
 		ImNodes::BeginNodeEditor();
 
-		const std::vector<Fly::NodeView> nodeViews = Fly::GetNodes(*GetNodeContext().nodeGraph);
+		const std::vector<Fly::NodeView> nodeViews = Fly::GetNodes(GetNodeContext().nodeGraphView);
 
 		for (const Fly::NodeView& nodeView : nodeViews)
 		{
@@ -462,7 +462,7 @@ namespace Editor
 
 				if (Fly::HasFlag(nodeView.GetTraits(), Fly::eNodeTrait::Accessor))
 				{
-					const Fly::VariableView variable = Fly::GetVariableByNode(nodeView, *currentNodeContext.nodeGraph, currentClass);
+					const Fly::VariableView variable = Fly::GetVariableByNode(nodeView, currentNodeContext.nodeGraphView, currentClass);
 					const bool isGetter = Fly::HasFlag(nodeView.GetTraits(), Fly::eNodeTrait::Getter);
 					const char* const prefixLabel = isGetter ? "Get" : "Set";
 					nodeLabel = prefixLabel + variable.GetName();
@@ -543,7 +543,7 @@ namespace Editor
 					const float itemWidth = std::max(20.f, nodeWidthLeft);
 					ImGui::PushItemWidth(itemWidth);
 
-					Fly::EditPin(inputPinView, *GetNodeContext().nodeGraph, myCommandTracker.get());
+					Fly::EditPin(inputPinView, GetNodeContext().nodeGraphView, myCommandTracker.get());
 
 					ImGui::PopItemWidth();
 				}
@@ -591,7 +591,7 @@ namespace Editor
 			ImNodes::EndNode();
 		}
 
-		std::vector<Fly::LinkView> linkViews = Fly::GetLinks(*currentNodeContext.nodeGraph);
+		std::vector<Fly::LinkView> linkViews = Fly::GetLinks(currentNodeContext.nodeGraphView);
 
 		for (const Fly::LinkView& linkView : linkViews)
 		{
@@ -636,7 +636,7 @@ namespace Editor
 			myIsDraggingNode = false;
 		}
 
-		std::vector<Fly::NodeView> nodeViews = Fly::GetNodes(*currentNodeContext.nodeGraph);
+		std::vector<Fly::NodeView> nodeViews = Fly::GetNodes(currentNodeContext.nodeGraphView);
 
 		for (const Fly::NodeView& nodeView : nodeViews)
 		{
@@ -662,15 +662,48 @@ namespace Editor
 			}
 			if (newPos != oldPos)
 			{
-				Fly::SetNodePosition(nodeView.GetID(), newPos, *GetNodeContext().nodeGraph);
+				Fly::SetNodePosition(nodeView, newPos, GetNodeContext().nodeGraphView);
 			}
 		}
 
 		if (dragEnded)
 		{
-			Fly::CommitNodeDrag(currentNodeContext.myNodeDragData, *GetNodeContext().nodeGraph, myCommandTracker.get());
+			Fly::CommitNodeDrag(currentNodeContext.myNodeDragData, GetNodeContext().nodeGraphView, myCommandTracker.get());
 			currentNodeContext.myNodeDragData.clear();
 		}
+
+
+		Fly::PinID hoveredPinID;
+		if (ImNodes::IsPinHovered(&hoveredPinID) && ImGui::IsKeyPressed(ImGuiKey_MouseRight))
+		{
+			myClickedPinView = Fly::PinView(hoveredPinID, currentNodeContext.nodeGraphView.GetNodeGraph());
+			if (Fly::IsPinReplacable(myClickedPinView, currentNodeContext.nodeGraphView))
+			{
+				ImGui::OpenPopup("Pin Popup");	
+			}
+		}
+
+		if (ImGui::BeginPopup("Pin Popup"))
+		{
+			const std::vector<Fly::DataTypeView> replacableDataTypeViews = Fly::GetReplacableDataTypes(myClickedPinView, currentNodeContext.nodeGraphView);
+			for (const Fly::DataTypeView& replacableDataTypeView : replacableDataTypeViews)
+			{
+				ImGui::PushID(static_cast<int>(replacableDataTypeView.GetID()));
+				if (ImGui::Selectable(replacableDataTypeView.GetName().c_str(), replacableDataTypeView.GetID() == myClickedPinView.GetDataTypeID()))
+				{
+					Fly::ReplaceWildcardNode(myClickedPinView, currentNodeContext.nodeGraphView, replacableDataTypeView, myCommandTracker.get());
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::PopID();
+			}
+
+			ImGui::EndPopup();
+		}
+		else
+		{
+			myClickedPinView = Fly::PinView();
+		}
+
 
 		// See if links should be created
 
@@ -679,8 +712,8 @@ namespace Editor
 
 		if (ImNodes::IsLinkCreated(&createdLinkPinID1, &createdLinkPinID2))
 		{
-			const Fly::NodeGraph& currentNodeGraph = *GetNodeContext().nodeGraph;
-			Fly::TryCreateLink(Fly::PinView(createdLinkPinID1, currentNodeGraph), Fly::PinView(createdLinkPinID2, currentNodeGraph), *GetNodeContext().nodeGraph, myCommandTracker.get());
+			const Fly::NodeGraph& currentNodeGraph = GetNodeContext().nodeGraphView.GetNodeGraph();
+			Fly::TryCreateLink(Fly::PinView(createdLinkPinID1, currentNodeGraph), Fly::PinView(createdLinkPinID2, currentNodeGraph), GetNodeContext().nodeGraphView, myCommandTracker.get());
 			currentNodeContext.myPinIDsToHighlight.clear();
 		}
 
@@ -703,7 +736,7 @@ namespace Editor
 
 			if (!selectedLinks.empty() || !selectedNodes.empty())
 			{
-				Fly::DestroySelection(selectedNodes, selectedLinks, *GetNodeContext().nodeGraph, myCommandTracker.get());
+				Fly::DestroySelection(selectedNodes, selectedLinks, GetNodeContext().nodeGraphView, myCommandTracker.get());
 			}
 
 			ImNodes::ClearNodeSelection();
@@ -716,13 +749,13 @@ namespace Editor
 		{
 			currentNodeContext.myStartedLinkPinID = startedPinID;
 
-			const Fly::PinView pin(startedPinID, *currentNodeContext.nodeGraph);
+			const Fly::PinView pin(startedPinID, currentNodeContext.nodeGraphView.GetNodeGraph());
 
-			currentNodeContext.myPinIDsToHighlight = Fly::ScriptFilter::GetNonConnectedPinsOfTypeAndHash(*GetNodeContext().nodeGraph, InvertFlowType(pin.GetFlowType()), pin.GetDataTypeID());
+			currentNodeContext.myPinIDsToHighlight = Fly::ScriptFilter::GetNonConnectedPinsOfTypeAndHash(GetNodeContext().nodeGraphView.GetNodeGraph(), InvertFlowType(pin.GetFlowType()), pin.GetDataTypeID());
 
 			for (Fly::PinID i = 0; i < currentNodeContext.myPinIDsToHighlight.size(); i++)
 			{
-				if (Fly::PinView(currentNodeContext.myPinIDsToHighlight[i], *currentNodeContext.nodeGraph).GetNodeID() == pin.GetNodeID())
+				if (Fly::PinView(currentNodeContext.myPinIDsToHighlight[i], currentNodeContext.nodeGraphView.GetNodeGraph()).GetNodeID() == pin.GetNodeID())
 				{
 					currentNodeContext.myPinIDsToHighlight.erase(currentNodeContext.myPinIDsToHighlight.begin() + i);
 					i--;
@@ -745,7 +778,7 @@ namespace Editor
 		// Drop link create popup
 		if (ImGui::BeginPopup("Node Create Popup"))
 		{
-			const Fly::PinView pinView(currentNodeContext.myLinkCreationPinID, *GetNodeContext().nodeGraph);
+			const Fly::PinView pinView(currentNodeContext.myLinkCreationPinID, GetNodeContext().nodeGraphView.GetNodeGraph());
 
 			auto nodeTypePopulationFunc = [&](NodeTypeCategory& aMainCategory) -> void
 				{
@@ -761,7 +794,7 @@ namespace Editor
 			auto onClickCallback = [&](const Fly::NodeTypeView& aNodeTypeView) -> void
 				{
 
-					Fly::CreateNodeAutoLink(*GetNodeContext().nodeGraph, aNodeTypeView, currentNodeContext.myLinkCreationPinID, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
+					Fly::CreateNodeAutoLink(GetNodeContext().nodeGraphView, aNodeTypeView, currentNodeContext.myLinkCreationPinID, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 
 					currentNodeContext.myPinIDsToHighlight.clear();
@@ -781,7 +814,7 @@ namespace Editor
 
 				ImGui::Text("Links:");
 
-				const std::vector<Fly::LinkView> linkViews = Fly::GetLinks(*GetNodeContext().nodeGraph);
+				const std::vector<Fly::LinkView> linkViews = Fly::GetLinks(GetNodeContext().nodeGraphView);
 
 				for (const Fly::LinkView& linkView : linkViews)
 				{
@@ -795,12 +828,11 @@ namespace Editor
 
 				ImGui::Separator();
 
-				if (myHoveredPinID != Fly::InvalidID<Fly::PinID>())
+				if (myHoveredPinView)
 				{
-					ImGui::Text("Hovered PinID: %d", myHoveredPinID);
-					const Fly::PinView hoveredPin = Fly::PinView(myHoveredPinID, *GetNodeContext().nodeGraph);
+					ImGui::Text("Hovered PinID: %d", myHoveredPinView.GetID());
 					ImGui::Text("Connections:");
-					for (const Fly::PinID connectionID : hoveredPin.GetConnectedPinIDs())
+					for (const Fly::PinID connectionID : myHoveredPinView.GetConnectedPinIDs())
 					{
 						ImGui::Text("%d", connectionID);
 					}
@@ -811,11 +843,6 @@ namespace Editor
 		}
 
 		ImNodes::GetStyle().PinCircleRadius = 5.f;
-
-		if (!ImNodes::IsPinHovered(&myHoveredPinID))
-		{
-			myHoveredPinID = Fly::InvalidID<Fly::PinID>();
-		}
 	}
 
 	void NodeScriptingWindow::PopulateCategories(const std::string& aName, const Fly::NodeTypeView& aNodeType, NodeTypeCategory& aCategory)
@@ -912,7 +939,7 @@ namespace Editor
 
 	void NodeScriptingWindow::NodeCreation()
 	{
-		if (ImGui::IsKeyPressed(ImGuiKey_MouseRight))
+		if (ImGui::IsKeyPressed(ImGuiKey_MouseRight) && !myClickedPinView)
 		{
 			ImGui::OpenPopup("Node Type Selection");
 			UpdateClickPos();
@@ -945,7 +972,6 @@ namespace Editor
 							}
 
 							const bool isSearched = StringCompare(nodeType.GetName(), myNodeTypeSearch);
-							//const bool isSearched = std::strstr(nodeType.GetName().c_str(), myNodeTypeSearch);
 							if (isSearched)
 							{
 								aMainCategory.nodeTypes.push_back(nodeType);
@@ -958,7 +984,7 @@ namespace Editor
 				{
 					NodeContext& currentNodeContext = GetNodeContext();
 
-					Fly::CreateNode(*GetNodeContext().nodeGraph, aNodeTypeView, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
+					Fly::CreateNode(GetNodeContext().nodeGraphView, aNodeTypeView, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 
 					currentNodeContext.myPinIDsToHighlight.clear();
@@ -973,7 +999,7 @@ namespace Editor
 	ImVec2 NodeScriptingWindow::GetMiddlePos() const
 	{
 		const NodeContext& currentContext = GetNodeContext();
-		ImNodesContext* currentImNodesContext = myImNodesContexts.at(currentContext.nodeGraph);
+		ImNodesContext* currentImNodesContext = myImNodesContexts.at(currentContext.nodeGraphView);
 		return currentImNodesContext->CanvasOriginScreenSpace + ImNodes::EditorContextGetPanning() / 2.f;
 	}
 
@@ -991,7 +1017,7 @@ namespace Editor
 	ImVec2 NodeScriptingWindow::GetMousePos() const
 	{
 		NodeContext currentContext = GetNodeContext();
-		ImNodesContext* currentImNodesContext = myImNodesContexts.at(currentContext.nodeGraph);
+		ImNodesContext* currentImNodesContext = myImNodesContexts.at(currentContext.nodeGraphView);
 		return ImGui::GetMousePosOnOpeningCurrentPopup() - currentImNodesContext->CanvasOriginScreenSpace - ImNodes::EditorContextGetPanning();
 	}
 }

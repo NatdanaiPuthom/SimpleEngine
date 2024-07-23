@@ -26,16 +26,6 @@ namespace FLY_NAMESPACE
 		return *aScript.mVariableManager.mMemoryArena;
 	}
 
-	NodeGraph& ScriptProxy::GetEventGraph(Class& aScript)
-	{
-		return aScript.mEventGraph;
-	}
-
-	const NodeGraph& ScriptProxy::GetEventGraph(const Class& aScript)
-	{
-		return aScript.mEventGraph;
-	}
-
 	NodeExecutor& ScriptProxy::GetNodeExecutor()
 	{
 		return *ScriptFoundation::GetInstance().mNodeExecutor;

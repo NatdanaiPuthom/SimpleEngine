@@ -3,6 +3,7 @@
 #include "VariableView.hpp"
 #include "FunctionView.hpp"
 #include "FlyDataTypeView.hpp"
+#include "FlyNodeGraphView.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -20,7 +21,7 @@ namespace FLY_NAMESPACE
 		const std::string& GetName() const;
 		DataTypeView GetTargetDataType() const;
 
-		EventGraph& GetEventGraph() const;
+		NodeGraphView GetEventGraph() const;
 
 		std::vector<VariableView> GetVariables(bool aIncludeDestroyed = false) const;
 		std::vector<FunctionView> GetFunctions() const;

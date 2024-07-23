@@ -91,7 +91,7 @@ namespace Editor
 
 		if (ImGui::Button("Create Getter"))
 		{
-			CreateGetterNode(myParentWindow.GetNodeContext().classView, *myParentWindow.GetNodeContext().nodeGraph, aVariableView.GetID());
+			CreateGetterNode(myParentWindow.GetNodeContext().classView, myParentWindow.GetNodeContext().nodeGraphView, aVariableView);
 			ImGui::CloseCurrentPopup();
 
 		}
@@ -100,7 +100,7 @@ namespace Editor
 
 		if (ImGui::Button("Create Setter"))
 		{
-			CreateSetterNode(myParentWindow.GetNodeContext().classView, *myParentWindow.GetNodeContext().nodeGraph, aVariableView.GetID());
+			CreateSetterNode(myParentWindow.GetNodeContext().classView, myParentWindow.GetNodeContext().nodeGraphView, aVariableView);
 		}
 
 		if (ImGui::Button("Delete Variable"))

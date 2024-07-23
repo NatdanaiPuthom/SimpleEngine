@@ -40,7 +40,7 @@ namespace FLY_NAMESPACE
 		{
 			for (NodeID mNodeID : it->second)
 			{
-				ExecuteNode(NodeExecutionData{ NodeRef{.mNodeID = mNodeID, .mNodeGraph = &eventGraph }, eNodeTriggerReason::Event });
+				ExecuteNode(NodeExecutionData{ NodeRef{.mNodeID = mNodeID, .mNodeGraph = &eventGraph.mNodeGraph }, eNodeTriggerReason::Event });
 			}
 		}
 
@@ -56,7 +56,7 @@ namespace FLY_NAMESPACE
 
 	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
 	{
-		const Node& node = ScriptProxy::GetNode(*aNodeExecutionData.mNodeRef.mNodeGraph, aNodeExecutionData.mNodeRef.mNodeID);
+		const Node& node = aNodeExecutionData.mNodeRef.mNodeGraph->mNodes[aNodeExecutionData.mNodeRef.mNodeID];
 		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 		nodeType.mNodeRecipe.mExecuteFunction(aNodeExecutionData, mExecutionContext);
 	}

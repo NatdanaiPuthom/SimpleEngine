@@ -1,8 +1,7 @@
 #pragma once
 #include "ScriptDefines.hpp"
 #include "Variable/VariableManager.hpp"
-#include "ScriptNodeGraph.hpp"
-#include "EventGraph.hpp"
+#include "FlyEventGraph.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -31,6 +30,7 @@ namespace FLY_NAMESPACE
 		void DestroyClassInstance(ClassInstance& aScriptInstance);
 
 		EventGraph& GetEventGraph();
+		const EventGraph& GetEventGraph() const;
 		DataTypeID GetTargetID() const;
 
 		void BindFunction(FunctionID aFunctionID);

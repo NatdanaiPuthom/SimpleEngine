@@ -45,9 +45,6 @@ namespace FLY_NAMESPACE
 		static MemoryArena<NodeBufferCapacity>& GetVariableMemoryArena(Class& aScript);
 		static const MemoryArena<NodeBufferCapacity>& GetVariableMemoryArena(const Class& aScript);
 
-		static NodeGraph& GetEventGraph(Class& aScript);
-		static const NodeGraph& GetEventGraph(const Class& aScript);
-
 		static NodeExecutor& GetNodeExecutor();
 
 		static VariableManager& GetVariableManager(Class& aScript);
