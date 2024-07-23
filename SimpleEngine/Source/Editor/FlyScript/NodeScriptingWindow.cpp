@@ -110,12 +110,6 @@ namespace Editor
 	void NodeScriptingWindow::Draw()
 	{
 
-
-		if (Editor::MainMenuBar::myStaticNodeScriptWindowActive == false) //TO-DO(v10.0.2): May move this somehow?
-		{
-			return;
-		}
-
 		if (ImGui::Begin("Node Scripting"))
 		{
 			Fly::BeginFrame();

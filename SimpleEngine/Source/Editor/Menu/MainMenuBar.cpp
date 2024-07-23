@@ -5,18 +5,19 @@
 #include "Editor/Windows/AssetWindow.hpp"
 #include "Editor/Windows/DeferredSceneWindow.hpp"
 #include "Editor/Windows/PostProcessingWindow.hpp"
+#include "Editor/FlyScript/NodeScriptingWindow.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #include "External/dearimgui/imguizmo/ImGuizmo.h"
 #include "Editor/Editor.hpp"
 
 namespace Editor
 {
-	bool MainMenuBar::myStaticNodeScriptWindowActive = false;
 
 	MainMenuBar::MainMenuBar()
 		: myEditorWindowActive(false)
 		, myDeferredWindowActive(false)
 		, myPostProcessWindowActive(false)
+		, myNodeScriptingWindowActive(false)
 	{
 	}
 
@@ -31,6 +32,7 @@ namespace Editor
 		myHierarchyWindow = std::make_unique<HierarchyWindow>();
 		myDeferredSceneWindow = std::make_unique<DeferredSceneWindow>();
 		myPostProcessWindow = std::make_unique<PostProcessingWindow>();
+		myNodeScriptingWindow = std::make_unique<NodeScriptingWindow>();
 
 		LoadSettingsFromJson();
 
@@ -39,13 +41,14 @@ namespace Editor
 		myHierarchyWindow->Init();
 		myDeferredSceneWindow->Init();
 		myPostProcessWindow->Init();
+		myNodeScriptingWindow->Init();
 	}
 
 	void MainMenuBar::Update()
 	{
 		Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
 
-		bool* const windowActive[] = { &myEditorWindowActive, &myDeferredWindowActive, &myPostProcessWindowActive, &myStaticNodeScriptWindowActive };
+		bool* const windowActive[] = { &myEditorWindowActive, &myDeferredWindowActive, &myPostProcessWindowActive, &myNodeScriptingWindowActive };
 		static const char* const windowNames[] = { "Editor", "Deferred", "PostProcess", "NodeScript" };
 		static const char* const keyShortCuts[] = { "F1", "F2", "F3", "F4" };
 
@@ -210,6 +213,11 @@ namespace Editor
 		if (myPostProcessWindowActive == true)
 		{
 			myPostProcessWindow->Draw();
+		}
+
+		if (myNodeScriptingWindowActive)
+		{
+			myNodeScriptingWindow->Draw();
 		}
 	}
 
