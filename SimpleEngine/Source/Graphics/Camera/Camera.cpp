@@ -172,8 +172,7 @@ namespace Graphics
 
 	Math::Matrix4x4f Camera::GetWorldToClipMatrix() const
 	{
-		const Math::Matrix4x4f clipMatrix = Math::Matrix4x4f::GetFastInverse(myTransform.GetMatrix()) * myProjectionMatrix;
-		return clipMatrix;
+		return Math::Matrix4x4f::GetFastInverse(myTransform.GetMatrix()) * myProjectionMatrix;;
 	}
 
 	void Camera::SetPerspectiveProjection(const Math::Vector2ui& aResolution)
@@ -288,35 +287,7 @@ namespace Graphics
 
 	Math::Matrix4x4f Camera::GetViewMatrix() const
 	{
-		const Math::Vector3f& position = GetPosition();
-		Math::Matrix4x4f viewMatrix;
-
-		const Math::Vector3f forward = GetForward();
-		const Math::Vector3f right = GetRight();
-		const Math::Vector3f up = GetUp();
-
-		viewMatrix(1, 1) = right.x;
-		viewMatrix(2, 1) = right.y;
-		viewMatrix(3, 1) = right.z;
-
-		viewMatrix(1, 2) = up.x;
-		viewMatrix(2, 2) = up.y;
-		viewMatrix(3, 2) = up.z;
-
-		viewMatrix(1, 3) = -forward.x;
-		viewMatrix(2, 3) = -forward.y;
-		viewMatrix(3, 3) = -forward.z;
-
-		viewMatrix(4, 1) = Dot(-1.0f * position, right);
-		viewMatrix(4, 1) = Dot(-1.0f * position, up);
-		viewMatrix(4, 1) = Dot(position, forward);
-
-		viewMatrix(1, 4) = 0.0f;
-		viewMatrix(2, 4) = 0.0f;
-		viewMatrix(3, 4) = 0.0f;
-		viewMatrix(4, 4) = 1.0f;
-
-		return viewMatrix;
+		return Math::Matrix4x4f::GetFastInverse(myTransform.GetMatrix());
 	}
 
 	float Camera::GetRotationSpeed() const

@@ -147,13 +147,17 @@ namespace Editor
 
 					if (transformComponent != nullptr)
 					{
+						const std::shared_ptr<Graphics::Camera> camera = Global::GetGraphicsEngine()->GetEditorCamera();
+
 						Math::Matrix4x4f objectMatrix = transformComponent->transform.GetMatrix();
-						const Math::Matrix4x4f view = Math::Matrix4x4f::GetFastInverse(Global::GetGraphicsEngine()->GetCurrentCamera()->GetMatrix());
-						const Math::Matrix4x4f proj = Global::GetGraphicsEngine()->GetCurrentCamera()->GetProjectionMatrix();
+						const Math::Matrix4x4f view = camera->GetViewMatrix();
+						const Math::Matrix4x4f proj = camera->GetProjectionMatrix();
+
+						static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
 
 						if (ImGuizmo::Manipulate(&view(1, 1),
 							&proj(1, 1),
-							ImGuizmo::OPERATION::TRANSLATE,
+							operation,
 							ImGuizmo::MODE::WORLD,
 							&objectMatrix(1, 1)
 						))
