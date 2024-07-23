@@ -1,10 +1,10 @@
 #include "FlyGlobal.hpp"
-#include "ScriptFoundation.hpp"
-#include "DataType/DataTypeManager.hpp"
-#include "NodeTypeManager.hpp"
-#include "PinTypeManager.hpp"
-#include "Type/ScriptTypeManager.hpp"
-#include "../ScriptCopyBuffer.hpp"
+#include "FlyFoundation.hpp"
+#include "DataType/FlyDataTypeManager.hpp"
+#include "FlyNodeTypeManager.hpp"
+#include "FlyPinTypeManager.hpp"
+#include "Type/FlyTypeManager.hpp"
+#include "../FlyCopyBuffer.hpp"
 
 namespace FLY_NAMESPACE
 {

@@ -1,5 +1,5 @@
 #include "RandomNodes.hpp"
-#include "../Node/NodeTypeRegistry.hpp"
+#include "../Node/FlyNodeTypeRegistry.hpp"
 #include <random>
 
 namespace FLY_NAMESPACE

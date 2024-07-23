@@ -2,11 +2,11 @@
 #include "FunctionSettingsWindow.hpp"
 #include "NodeScriptingWindow.hpp"
 #include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
-#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
-#include "NodeScript/SimpleScript/Core/Node/NodeTypeManager.hpp"
-#include "NodeScript/SimpleScript/Core/Pin/PinTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/DataType/FlyDataTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/Node/FlyNodeTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/Pin/FlyPinTypeManager.hpp"
 #include "NodeScript/SimpleScript/Core/FlyClass.hpp"
-#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
+#include "NodeScript/SimpleScript/Core/Fly.hpp"
 
 namespace Editor
 {

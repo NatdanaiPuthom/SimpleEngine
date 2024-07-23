@@ -1,7 +1,7 @@
 #pragma once
-#include "../ScriptDefines.hpp"
-#include "VariableView.hpp"
-#include "FunctionView.hpp"
+#include "../FlyDefines.hpp"
+#include "FlyVariableView.hpp"
+#include "FlyFunctionView.hpp"
 #include "FlyDataTypeView.hpp"
 #include "FlyNodeGraphView.hpp"
 

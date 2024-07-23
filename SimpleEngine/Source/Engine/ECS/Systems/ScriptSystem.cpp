@@ -1,7 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "ScriptSystem.hpp"
-#include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
-#include "NodeScript/SimpleScript/Core/Node/NodeExecutor.hpp"
+#include "NodeScript/SimpleScript/Core/FlyExecution.hpp"
 #include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
 
 namespace ECS

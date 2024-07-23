@@ -1,5 +1,5 @@
 #pragma once
-#include "../ScriptDefines.hpp"
+#include "../FlyDefines.hpp"
 
 namespace FLY_NAMESPACE
 {

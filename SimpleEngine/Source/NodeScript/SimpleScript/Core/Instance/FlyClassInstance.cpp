@@ -1,6 +1,5 @@
 #include "FlyClassInstance.hpp"
 #include "../FlyClass.hpp"
-#include "ScriptProxy.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -17,7 +16,7 @@ namespace FLY_NAMESPACE
 	void ClassInstance::Init(Class& aClass)
 	{
 		mClass = &aClass;
-		mVariableManagerInstance.Init(ScriptProxy::GetVariableManager(aClass));
+		mVariableManagerInstance.Init(aClass.GetVariableManager());
 		// TODO Fix
 		mEventGraphInstance.Init(aClass.GetEventGraph().mNodeGraph);
 	}

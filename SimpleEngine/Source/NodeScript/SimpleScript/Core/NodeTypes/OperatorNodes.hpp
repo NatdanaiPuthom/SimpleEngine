@@ -1,11 +1,11 @@
 #pragma once
-#include "../ScriptDefines.hpp"
-#include "../Utilities/MetaScript.hpp"
-#include "../Utilities/ScriptUtilities.hpp"
-#include "../DataType/DataTypeManager.hpp"
+#include "../FlyDefines.hpp"
+#include "../Utilities/FlyMeta.hpp"
+#include "../Utilities/FlyUtilities.hpp"
+#include "../DataType/FlyDataTypeManager.hpp"
 #include "../SystemTypes/FlyWildcard.hpp"
-#include "../Node/NodeTrait.hpp"
-#include "../Node/NodeTypeRegistry.hpp"
+#include "../Node/FlyNodeTrait.hpp"
+#include "../Node/FlyNodeTypeRegistry.hpp"
 
 namespace FLY_NAMESPACE
 {

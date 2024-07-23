@@ -1,7 +1,5 @@
 #include "MathNodes.hpp"
-#include "../Node/NodeTypeRegistry.hpp"
-#include "../Contexts/ExecutionContextBase.hpp"
-#include "../DataType/DataTypeRegistry.hpp"
+#include "../FlyRegistration.hpp"
 #include <imgui.h>
 
 namespace FLY_NAMESPACE
@@ -101,8 +99,8 @@ namespace FLY_NAMESPACE
 
 	static float Wave(NodeExecutionContext<ExecutionContextBase> aContext, NodeState<WaveData> aData, float aFrequency, float anAmplitude, float anEquilibrium, WaveTypeData aWaveType)
 	{
-		aData.value.t += aContext.context.mDeltaTime;
-		return anEquilibrium + CalculateFrequencyByType(aWaveType.waveType, aData.value.t * aFrequency) * anAmplitude;
+		aData.mValue.t += aContext.mContext.mDeltaTime;
+		return anEquilibrium + CalculateFrequencyByType(aWaveType.waveType, aData.mValue.t * aFrequency) * anAmplitude;
 	}
 
 	REGISTER_FUNCTION(Wave, "Utility/Math");

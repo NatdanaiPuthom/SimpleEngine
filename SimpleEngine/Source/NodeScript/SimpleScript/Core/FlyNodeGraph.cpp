@@ -1,6 +1,6 @@
 #include "FlyNodeGraph.hpp"
 #include "Global/FlyGlobal.hpp"
-#include "Node/NodeTypeManager.hpp"
+#include "Node/FlyNodeTypeManager.hpp"
 
 namespace FLY_NAMESPACE
 {

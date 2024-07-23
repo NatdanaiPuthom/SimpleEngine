@@ -1,10 +1,5 @@
 #include "FlyClass.hpp"
-#include "Utilities/ScriptProxy.hpp"
-#include "Node/NodeExecutor.hpp"
-#include "Command/ScriptCommandTracker.hpp"
-#include "ScriptUtilities.hpp"
 #include "Instance/FlyClassInstance.hpp"
-#include "Function/ScriptFunction.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -33,7 +28,7 @@ namespace FLY_NAMESPACE
 	{
 		std::unique_ptr<ClassInstance>& classInstance = mClassInstances.emplace_back(std::make_unique<ClassInstance>());
 		classInstance->Init(*this);
-		
+
 		return *classInstance;
 	}
 
@@ -70,6 +65,11 @@ namespace FLY_NAMESPACE
 	const std::vector<FunctionID>& Class::GetMemberFunctionIDs() const
 	{
 		return mMemberFunctionIDs;
+	}
+
+	VariableManager& Class::GetVariableManager()
+	{
+		return mVariableManager;
 	}
 
 	const VariableManager& Class::GetVariableManager() const

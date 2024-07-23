@@ -1,9 +1,9 @@
 #include "FlyNodeGraphView.hpp"
 #include "../FlyEventGraph.hpp"
-#include "FunctionView.hpp"
+#include "FlyFunctionView.hpp"
 #include "../Global/FlyGlobal.hpp"
-#include "../Node/NodeTypeManager.hpp"
-#include "../Utilities/MetaScript.hpp"
+#include "../Node/FlyNodeTypeManager.hpp"
+#include "../Utilities/FlyMeta.hpp"
 
 namespace FLY_NAMESPACE
 {

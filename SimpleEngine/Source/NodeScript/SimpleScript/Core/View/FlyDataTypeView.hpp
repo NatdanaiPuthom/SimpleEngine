@@ -1,6 +1,6 @@
 #pragma once
-#include "../ScriptDefines.hpp"
-#include "NodeTypeView.hpp"
+#include "../FlyDefines.hpp"
+#include "FlyNodeTypeView.hpp"
 #include "../DataType/FlyDataType.hpp"
 
 namespace FLY_NAMESPACE

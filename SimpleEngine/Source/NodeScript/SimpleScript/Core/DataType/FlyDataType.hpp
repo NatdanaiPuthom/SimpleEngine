@@ -1,5 +1,5 @@
 #pragma once
-#include "../ScriptDefines.hpp"
+#include "../FlyDefines.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -51,7 +51,7 @@ namespace FLY_NAMESPACE
 	{
 		const std::string mName;
 		const DataTypeID mTypeID;
-		const size_t byteOffset;
+		const size_t mByteOffset;
 	};
 
 	enum class eDataTypeTrait

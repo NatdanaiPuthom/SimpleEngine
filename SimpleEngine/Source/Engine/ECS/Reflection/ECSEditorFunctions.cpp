@@ -8,8 +8,7 @@
 #include "Graphics/Texture/Texture.hpp"
 #include "Graphics/BufferData.hpp"
 
-#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
-#include "NodeScript/SimpleScript/Core/FlyClass.hpp"
+#include "NodeScript/SimpleScript/Core/Fly.hpp"
 #include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
 
 #include "External/imgui.h"
@@ -514,11 +513,11 @@ namespace ECS
 					{
 						if (aClassInstance != nullptr)
 						{
-							flyClass.GetClass().DestroyClassInstance(*aClassInstance);
+							Fly::DestroyClassInstance(*aClassInstance);
 
 						}
 
-						aClassInstance = &flyClass.GetClass().CreateClassInstance();
+						aClassInstance = &Fly::CreateClassInstance(flyClass);
 
 						wasChanged = true;
 					}

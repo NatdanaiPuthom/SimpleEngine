@@ -1,12 +1,12 @@
 #include "ExecutionNodes.hpp"
-#include "../Node/NodeTypeRegistry.hpp"
+#include "../Node/FlyNodeTypeRegistry.hpp"
 
 namespace FLY_NAMESPACE
 {
 
 	std::tuple<Flow, float> Tick(NodeExecutionContext<ExecutionContextBase> aContext)
 	{
-		return { Flow(true), aContext.context.mDeltaTime };
+		return { Flow(true), aContext.mContext.mDeltaTime };
 	}
 
 	Flow BeginPlay()
@@ -31,8 +31,8 @@ namespace FLY_NAMESPACE
 
 	static std::tuple<Flow, Flow> FlipFlop(NodeState<FlipFlopNodeData> aData, Flow)
 	{
-		aData.value.myState = !aData.value.myState;
-		return { Flow(!aData.value.myState), Flow(aData.value.myState) };
+		aData.mValue.myState = !aData.mValue.myState;
+		return { Flow(!aData.mValue.myState), Flow(aData.mValue.myState) };
 	}
 
 	struct DelayNodeData
@@ -46,14 +46,14 @@ namespace FLY_NAMESPACE
 		{
 			if (aResetOnFlow)
 			{
-				aState.value.time = 0.f;
+				aState.mValue.time = 0.f;
 			}
 			aContext->mNodeExecutor->RegisterAutoTickNode(aContext->mNodeData.mNodeRef);
 		}
-		aState.value.time += aContext->mExecutionContext->mDeltaTime;
-		if (aState.value.time > aDuration)
+		aState.mValue.time += aContext->mExecutionContext->mDeltaTime;
+		if (aState.mValue.time > aDuration)
 		{
-			aState.value.time = 0.f;
+			aState.mValue.time = 0.f;
 			aContext->mNodeExecutor->UnregisterAutoTickNode(aContext->mNodeData.mNodeRef);
 			return Flow(true);
 		}

@@ -1,7 +1,7 @@
 #pragma once
-#include "../ScriptDefines.hpp"
-#include "NodeView.hpp"
-#include "PinView.hpp"
+#include "../FlyDefines.hpp"
+#include "FlyNodeView.hpp"
+#include "FlyPinView.hpp"
 #include <variant>
 
 namespace FLY_NAMESPACE

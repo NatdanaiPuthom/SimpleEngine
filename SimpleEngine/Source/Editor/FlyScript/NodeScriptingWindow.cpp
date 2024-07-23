@@ -1,14 +1,11 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "NodeScriptingWindow.hpp"
+#include "NodeScript/SimpleScript/Core/Fly.hpp"
 #include "NodeScript/SimpleScript/Core/FlyClass.hpp"
-#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
-#include "NodeScript/SimpleScript/Core/Serialization/ScriptLoader.hpp"
-#include "NodeScript/SimpleScript/Core/Utilities/ScriptFilter.hpp"
-#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
-#include "NodeScript/SimpleScript/Core/Command/ScriptCommandTracker.hpp"
+#include "NodeScript/SimpleScript/Core/Command/FlyCommandTracker.hpp"
 #include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
 #include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
-#include "NodeScript/SimpleScript/Core/Node/NodeExecutor.hpp"
+#include "NodeScript/SimpleScript/Core/Node/FlyNodeExecutor.hpp"
 #include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
 #include "FlyScriptEditorUtilities.hpp"
 
@@ -112,10 +109,7 @@ namespace Editor
 
 	void NodeScriptingWindow::Draw()
 	{
-		Fly::BeginFrame();
 
-
-		UpdateContext();
 
 		if (Editor::MainMenuBar::myStaticNodeScriptWindowActive == false) //TO-DO(v10.0.2): May move this somehow?
 		{
@@ -124,6 +118,11 @@ namespace Editor
 
 		if (ImGui::Begin("Node Scripting"))
 		{
+			Fly::BeginFrame();
+
+
+			UpdateContext();
+
 			if (ImGui::IsKeyDown(ImGuiMod_Ctrl) && ImGui::IsKeyPressed(ImGuiKey_Z))
 			{
 				myCommandTracker->UndoCommand();
@@ -312,7 +311,7 @@ namespace Editor
 
 		if (ImGui::Button("Reload All"))
 		{
-			Fly::ScriptLoader::LoadAllClasses(SCRIPT_FILE_PATH);
+			Fly::LoadAllClasses(SCRIPT_FILE_PATH);
 		}
 
 		ImGui::SameLine();
@@ -380,7 +379,7 @@ namespace Editor
 
 		if (ImGui::Button("Save Custom Events"))
 		{
-			Fly::ScriptLoader::SaveCustomEvents("Assets/VisualScripting");
+			Fly::SaveCustomEvents(SCRIPT_FILE_PATH);
 		}
 
 		if (GetCurrentMode() == eScriptMode::Class)
@@ -395,7 +394,7 @@ namespace Editor
 
 			if (ImGui::Button("Trigger Event"))
 			{
-				Fly::ClassInstance& classInstance = GetNodeContext().classView.GetClass().CreateClassInstance();
+				Fly::ClassInstance& classInstance = Fly::CreateClassInstance(GetNodeContext().classView);
 				Fly::ExecutionContextBase c;
 
 				switch (currentEventIndex)
@@ -413,7 +412,7 @@ namespace Editor
 					break;
 				}
 
-				GetNodeContext().classView.GetClass().DestroyClassInstance(classInstance);
+				Fly::DestroyClassInstance(classInstance);
 			}
 		}
 	}
@@ -751,7 +750,7 @@ namespace Editor
 
 			const Fly::PinView pin(startedPinID, currentNodeContext.nodeGraphView.GetNodeGraph());
 
-			currentNodeContext.myPinIDsToHighlight = Fly::ScriptFilter::GetNonConnectedPinsOfTypeAndHash(GetNodeContext().nodeGraphView.GetNodeGraph(), InvertFlowType(pin.GetFlowType()), pin.GetDataTypeID());
+			currentNodeContext.myPinIDsToHighlight = Fly::GetNonConnectedPinsOfTypeAndHash(GetNodeContext().nodeGraphView.GetNodeGraph(), InvertFlowType(pin.GetFlowType()), pin.GetDataTypeID());
 
 			for (Fly::PinID i = 0; i < currentNodeContext.myPinIDsToHighlight.size(); i++)
 			{

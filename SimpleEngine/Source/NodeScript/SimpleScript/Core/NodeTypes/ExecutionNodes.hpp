@@ -1,8 +1,6 @@
 #pragma once
-#include "../ScriptDefines.hpp"
-#include "../Contexts/ExecutionContextBase.hpp"
-#include "../SystemTypes/FlyFlow.hpp"
-#include "../Node/NodeState.hpp"
+#include "../FlyDefines.hpp"
+#include "../FlyRegistration.hpp"
 
 namespace FLY_NAMESPACE
 {

@@ -1,6 +1,6 @@
 #include "FlyDataTypeView.hpp"
 #include "../Global/FlyGlobal.hpp"
-#include "../DataType/DataTypeManager.hpp"
+#include "../DataType/FlyDataTypeManager.hpp"
 
 namespace FLY_NAMESPACE
 {

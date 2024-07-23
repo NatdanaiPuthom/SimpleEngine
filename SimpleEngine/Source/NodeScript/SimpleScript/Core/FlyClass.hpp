@@ -1,6 +1,6 @@
 #pragma once
-#include "ScriptDefines.hpp"
-#include "Variable/VariableManager.hpp"
+#include "FlyDefines.hpp"
+#include "Variable/FlyVariableManager.hpp"
 #include "FlyEventGraph.hpp"
 
 namespace FLY_NAMESPACE
@@ -36,6 +36,7 @@ namespace FLY_NAMESPACE
 		void BindFunction(FunctionID aFunctionID);
 		const std::vector<FunctionID>& GetMemberFunctionIDs() const;
 
+		VariableManager& GetVariableManager();
 		const VariableManager& GetVariableManager() const;
 
 	private:

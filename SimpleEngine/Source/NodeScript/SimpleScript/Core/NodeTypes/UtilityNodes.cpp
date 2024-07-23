@@ -1,5 +1,5 @@
 #include "UtilityNodes.hpp"
-#include "../Node/NodeTypeRegistry.hpp"
+#include "../Node/FlyNodeTypeRegistry.hpp"
 
 namespace FLY_NAMESPACE
 {

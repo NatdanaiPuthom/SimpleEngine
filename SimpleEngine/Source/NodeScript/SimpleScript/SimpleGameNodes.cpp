@@ -1,6 +1,5 @@
 #include "SimpleScript/SimpleGameNodes.hpp"
-#include "SimpleScript/Core/Node/NodeTypeRegistry.hpp"
-#include "SimpleScript/Core/DataType/DataTypeRegistry.hpp"
+#include "NodeScript/SimpleScript/Core/FlyRegistration.hpp"
 
 //template<typename T>
 //std::string ToString(T a)

@@ -2,8 +2,8 @@
 #include "CustomEventWindow.hpp"
 #include "NodeScriptingWindow.hpp"
 #include "NodeScript/SimpleScript/Core/FlyClass.hpp"
-#include "NodeScript/SimpleScript/Core/DataType/DataTypeManager.hpp"
-#include "NodeScript/SimpleScript/Core/ScriptModifier.hpp"
+#include "NodeScript/SimpleScript/Core/DataType/FlyDataTypeManager.hpp"
+#include "NodeScript/SimpleScript/Core/Fly.hpp"
 #include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
 #include "FlyScriptEditorUtilities.hpp"
 

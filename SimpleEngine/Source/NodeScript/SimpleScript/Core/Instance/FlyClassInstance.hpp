@@ -1,7 +1,7 @@
 #pragma once
-#include "../ScriptDefines.hpp"
-#include "VariableManagerInstance.hpp"
-#include "NodeGraphInstance.hpp"
+#include "../FlyDefines.hpp"
+#include "FlyVariableManagerInstance.hpp"
+#include "FlyNodeGraphInstance.hpp"
 
 namespace FLY_NAMESPACE
 {

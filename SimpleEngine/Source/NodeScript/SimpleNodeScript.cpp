@@ -1,6 +1,6 @@
 #include "SimpleNodeScript.hpp"
-#include "ScriptFoundation.hpp"
-#include "ScriptLoader.hpp"
+#include "FlyFoundation.hpp"
+#include "Fly.hpp"
 #include "NodeScript/SimpleScript/SimpleGameNodes.hpp"
 
 SimpleNodeScript::SimpleNodeScript()
@@ -17,5 +17,5 @@ void SimpleNodeScript::Init()
 	Fly::ScriptFoundation::GetInstance().Initialize();
 	RegisterSimpleGameNodes();
 
-	Fly::ScriptLoader::LoadAllClasses(SCRIPT_FILE_PATH);
+	Fly::LoadAllClasses(SCRIPT_FILE_PATH);
 }

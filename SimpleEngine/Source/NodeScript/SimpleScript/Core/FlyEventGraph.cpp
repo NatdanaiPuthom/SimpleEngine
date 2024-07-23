@@ -1,6 +1,6 @@
 #include "FlyEventGraph.hpp"
-#include "Utilities/ScriptUtilities.hpp"
-#include "Node/NodeTypeManager.hpp"
+#include "Utilities/FlyUtilities.hpp"
+#include "Node/FlyNodeTypeManager.hpp"
 #include "Global/FlyGlobal.hpp"
 
 namespace FLY_NAMESPACE
