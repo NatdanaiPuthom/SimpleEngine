@@ -6,6 +6,7 @@
 #include "Editor/Menu/HelpMenuBar.hpp"
 #include "Editor/Menu/SceneMenuBar.hpp"
 #include "Editor/Menu/PlayMenuBar.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 #endif
 
 namespace Editor
@@ -35,7 +36,10 @@ namespace Editor
 
 	void EditorEngine::Update()
 	{
-		Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
+		if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
+		{
+			Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
+		}
 
 		for (const std::unique_ptr<ToolInterface>& tool : myTools)
 		{
