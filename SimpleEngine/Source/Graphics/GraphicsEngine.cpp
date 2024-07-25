@@ -21,6 +21,7 @@ namespace Graphics
 		, myVSync(true)
 		, myFPSLevelCap(0)
 		, myCurrentRasterizerState(eRasterizerState::BackfaceCulling)
+		, myCurrentCameraRaw(nullptr)
 	{
 	}
 
@@ -96,7 +97,7 @@ namespace Graphics
 		myLightBufferData->directionalLightDirection.y = -1.0f;
 		myLightBufferData->directionalLightDirection.z = 0.0f;
 
-		myCurrentCamera = myEditorCamera;
+		myCurrentCameraRaw = myEditorCamera.get();
 	}
 
 	void GraphicsEngine::PrepareFrame()
@@ -529,8 +530,8 @@ namespace Graphics
 	void GraphicsEngine::UpdateCameraConstantBuffer()
 	{
 		CameraBufferData frameBuffer = {};
-		frameBuffer.worldToClipMatrix = myCurrentCamera->GetWorldToClipMatrix();
-		frameBuffer.cameraPosition = myCurrentCamera->GetPosition();
+		frameBuffer.worldToClipMatrix = myCurrentCameraRaw->GetWorldToClipMatrix();
+		frameBuffer.cameraPosition = myCurrentCameraRaw->GetPosition();
 		frameBuffer.resolution = Global::GetResolution();
 
 		myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
@@ -659,15 +660,15 @@ namespace Graphics
 		myContext->OMSetRenderTargets(static_cast<unsigned int>(count), &renderTargetsPointer[0], aDepthBuffer);
 	}
 
-	void GraphicsEngine::SetCamera(std::shared_ptr<Graphics::Camera> aCamera)
+	void GraphicsEngine::SetCamera(Graphics::Camera* aCamera)
 	{
-		myCurrentCamera = aCamera;
+		myCurrentCameraRaw = aCamera;
 		UpdateCameraConstantBuffer();
 	}
 
 	void GraphicsEngine::SetToDefaultCamera()
 	{
-		myCurrentCamera = myEditorCamera;
+		myCurrentCameraRaw = myEditorCamera.get();
 	}
 
 	std::vector<RenderTarget>& GraphicsEngine::GetRenderTargets(const eRenderTargetType aRenderTargetType)
@@ -1003,9 +1004,9 @@ namespace Graphics
 		return myModelFactory.get();
 	}
 
-	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetCurrentCamera()
+	Graphics::Camera* GraphicsEngine::GetCurrentCamera()
 	{
-		return myCurrentCamera;
+		return myCurrentCameraRaw;
 	}
 
 	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetEditorCamera()
@@ -1013,9 +1014,9 @@ namespace Graphics
 		return myEditorCamera;
 	}
 
-	const std::shared_ptr<Camera> GraphicsEngine::GetCurrentCamera() const
+	const Graphics::Camera* GraphicsEngine::GetCurrentCamera() const
 	{
-		return myCurrentCamera;
+		return myCurrentCameraRaw;
 	}
 
 	const std::shared_ptr<Camera> GraphicsEngine::GetEditorCamera() const

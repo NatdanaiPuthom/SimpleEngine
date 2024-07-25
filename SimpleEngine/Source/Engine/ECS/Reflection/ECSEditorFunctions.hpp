@@ -13,6 +13,7 @@ namespace Graphics
 	class Shader;
 	class Texture;
 	class Skeleton;
+	class Camera;
 
 	struct PointLightData;
 	struct Animation;
@@ -55,7 +56,8 @@ namespace ECS
 	bool ViewAndEditValue(Math::Vector3f& aValue, const std::string& aVariableName);
 	bool ViewAndEditValue(Math::Vector4f& aValue, const std::string& aVariableName);
 	bool ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName);
-	bool ViewAndEditValue(Graphics::PointLightData& aValue, const std::string& aVariableName);
+	bool ViewAndEditValue(Graphics::PointLightData& aPointLightData, const std::string& aVariableName);
+	bool ViewAndEditValue(Graphics::Camera& aCamera, const std::string& aVariableName);
 
 	bool ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& aVariableName);
 	bool ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& aVariableName);

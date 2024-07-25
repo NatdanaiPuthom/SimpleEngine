@@ -17,10 +17,6 @@ namespace ECS
 	{
 	}
 
-	void RealEnemySystem::Init()
-	{
-	}
-
 	void RealEnemySystem::Update(EntityComponentSystem* aEntityComponentSystem)
 	{
 		const auto& enemies = aEntityComponentSystem->GetEntityIDsWithThisComponent<RealEnemyComponent>();

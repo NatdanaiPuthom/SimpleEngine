@@ -150,7 +150,7 @@ namespace Editor
 
 					if (transformComponent != nullptr)
 					{
-						const std::shared_ptr<Graphics::Camera> camera = Global::GetGraphicsEngine()->GetEditorCamera();
+						const Graphics::Camera* camera = Global::GetGraphicsEngine()->GetCurrentCamera();
 
 						Math::Matrix4x4f objectMatrix = transformComponent->transform.GetMatrix();
 						const Math::Matrix4x4f view = camera->GetViewMatrix();

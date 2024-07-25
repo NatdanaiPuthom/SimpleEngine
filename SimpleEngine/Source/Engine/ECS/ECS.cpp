@@ -59,7 +59,7 @@ namespace ECS
 
 	void EntityComponentSystem::Init()
 	{
-		mySystemManager.Init();
+		mySystemManager.Init(this);
 	}
 
 	void EntityComponentSystem::Update()

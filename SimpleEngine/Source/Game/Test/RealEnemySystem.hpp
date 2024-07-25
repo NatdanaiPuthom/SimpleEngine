@@ -13,7 +13,6 @@ namespace ECS
 
 		~RealEnemySystem() override;
 
-		void Init() override;
 		void Update(EntityComponentSystem* aEntityComponentSystem) override;
 		/*
 		void Render() override;

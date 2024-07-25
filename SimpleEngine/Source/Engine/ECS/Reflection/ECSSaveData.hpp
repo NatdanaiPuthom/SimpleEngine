@@ -17,6 +17,7 @@ namespace Graphics
 	class Shader;
 	class Texture;
 	class Skeleton;
+	class Camera;
 
 	struct Animation;
 	struct PointLightData;
@@ -33,7 +34,8 @@ namespace ECS
 	nlohmann::json ReturnDataAsJSON(const Math::Vector2f& aVector, const std::string& aVariableName);
 	nlohmann::json ReturnDataAsJSON(const Math::Vector3f& aVector, const std::string& aVariableName);
 	nlohmann::json ReturnDataAsJSON(const Math::Vector4f& aVector, const std::string& aVariableName);
-	nlohmann::json ReturnDataAsJSON(const Graphics::PointLightData& aPointlight, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const Graphics::PointLightData& aPointlightData, const std::string& aVariableName);
+	nlohmann::json ReturnDataAsJSON(const Graphics::Camera& aCamera, const std::string& aVariableName);
 
 	nlohmann::json ReturnDataAsJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName);
 	nlohmann::json ReturnDataAsJSON(const Graphics::Shader*& aShader, const std::string& aVariableName);

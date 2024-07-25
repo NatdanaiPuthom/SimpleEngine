@@ -38,6 +38,7 @@ namespace Graphics
 		void SetPosition(const Math::Vector3f& aPosition);
 		void SetRotation(const Math::Vector3f& aRotationInDegree);
 		void SetNearPlane(const float aNearPlane, const Math::Vector2ui& aResolution);
+		void SetFarPlane(const float aFarPlane, const Math::Vector2ui& aResolution);
 		void SetHorizontalFoV(const float aHorizontalFoVRad, const Math::Vector2ui& aResolution);
 
 		void SetMoveSpeed(const float aSpeed);

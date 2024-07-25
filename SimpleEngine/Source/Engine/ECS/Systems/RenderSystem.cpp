@@ -50,7 +50,7 @@ namespace ECS
 
 		for (size_t i = 0; i < entities.size(); ++i)
 		{
-			 ECS::Entity& entity = entities[i];
+			ECS::Entity& entity = entities[i];
 			const MeshComponent* mesh = entity.GetComponent<ECS::MeshComponent>(); //To-DO(v9.37.2): Disgusting, fix pls
 			const TransformComponent* transform = entity.GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
 

@@ -10,6 +10,7 @@
 #include "Graphics/Model/Skeleton.hpp"
 #include "Graphics/Animation/Animation.hpp"
 #include "Graphics/BufferData.hpp"
+#include "Graphics/Camera/Camera.hpp"
 
 #include <string>
 #include <array>
@@ -38,6 +39,8 @@ namespace Math
 namespace Graphics
 {
 	REGISTER_DATATYPE(PointLightData);
+	REGISTER_DATATYPE(Camera);
+
 	REGISTER_DATATYPE_CONST_POINTER(Mesh);
 	REGISTER_DATATYPE_CONST_POINTER(Shader);
 	REGISTER_DATATYPE_CONST_POINTER(Texture);

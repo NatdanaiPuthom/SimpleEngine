@@ -32,7 +32,7 @@ namespace ECS
 
 		~ExampleSystem() override;
 
-		void Init() override;
+		void Init(EntityComponentSystem* aEntityComponentSystem) override;
 		void Update(EntityComponentSystem* aEntityComponentSystem) override;
 		void Render(EntityComponentSystem* aEntityComponentSystem) override;
 

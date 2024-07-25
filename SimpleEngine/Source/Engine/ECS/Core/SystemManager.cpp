@@ -3,6 +3,7 @@
 #include "Engine/ECS/Core/System.hpp"
 #include "Engine/ECS/Systems/AnimationSystem.hpp"
 #include "Engine/ECS/Systems/ScriptSystem.hpp"
+#include "Engine/ECS/Systems/CameraSystem.hpp"
 
 namespace ECS
 {
@@ -10,6 +11,7 @@ namespace ECS
 	{
 		AddSystem<RenderSystem>();
 		AddSystem<RenderLightSystem>();
+		AddSystem<CameraSystem>();
 		AddSystem<AnimationSystem>();
 		AddSystem<ScriptSystem>();
 	}
@@ -42,11 +44,11 @@ namespace ECS
 
 	SystemManager& SystemManager::operator=(SystemManager&& aOther) noexcept = default;
 
-	void SystemManager::Init()
+	void SystemManager::Init(EntityComponentSystem* aEntityComponentSystem)
 	{
 		for (const auto& [key, system] : mySystems)
 		{
-			system->Init();
+			system->Init(aEntityComponentSystem);
 		}
 	}
 

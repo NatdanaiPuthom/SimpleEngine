@@ -9,8 +9,6 @@ namespace ECS
 		RenderLightSystem();
 		~RenderLightSystem();
 
-		void Init() override;
-		void Update(EntityComponentSystem* aEntityComponentSystem) override;
 		void Render(EntityComponentSystem* aEntityComponentSystem) override;
 		void LateRender(EntityComponentSystem* aEntityComponentSystem) override;
 
