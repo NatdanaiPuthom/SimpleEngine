@@ -9,7 +9,8 @@ namespace ECS
 		CameraSystem();
 		~CameraSystem() override;
 
-		void Update(EntityComponentSystem* aEntityComponentSystem) override;
+		void Render(EntityComponentSystem* aEntityComponentSystem) override;
+		void LateRender(EntityComponentSystem* aEntityComponentSystem) override;
 
 		std::unique_ptr<System> Clone() const override;
 	};
