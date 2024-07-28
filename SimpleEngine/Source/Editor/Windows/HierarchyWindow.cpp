@@ -52,6 +52,7 @@ namespace Editor
 				if (selected >= 0)
 				{
 					RemoveEntity(entities, selected);
+					EditorEngine::mySelectedEntityID = entities[selected].GetID();
 					return;
 				}
 			}

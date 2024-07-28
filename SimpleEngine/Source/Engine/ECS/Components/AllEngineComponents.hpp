@@ -8,3 +8,5 @@
 #include "Engine/ECS/Components/Core/DirectionalLightComponent.hpp"
 #include "Engine/ECS/Components/Core/PointLightComponent.hpp"
 #include "Engine/ECS/Components/Core/ScriptComponent.hpp"
+#include "Engine/ECS/Components/Core/CameraComponent.hpp"
+#include "Engine/ECS/Components/Core/BloomComponent.hpp"

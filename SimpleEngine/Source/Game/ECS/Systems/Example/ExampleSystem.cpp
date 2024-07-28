@@ -11,7 +11,7 @@ namespace ECS
 	{
 	}
 
-	void ExampleSystem::Init()
+	void ExampleSystem::Init(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 		std::cout << "Initialized ExampleSystem!" << std::endl;
 	}

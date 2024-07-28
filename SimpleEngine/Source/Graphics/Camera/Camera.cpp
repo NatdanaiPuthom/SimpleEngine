@@ -255,6 +255,16 @@ namespace Graphics
 		}
 	}
 
+	void Camera::SetFarPlane(const float aFarPlane, const Math::Vector2ui& aResolution)
+	{
+		myFarPlane = aFarPlane;
+
+		if (myCameraType == eCameraType::Perspective)
+		{
+			SetPerspectiveProjection(aResolution);
+		}
+	}
+
 	void Camera::SetMoveSpeed(const float aSpeed)
 	{
 		myMoveSpeed = aSpeed;

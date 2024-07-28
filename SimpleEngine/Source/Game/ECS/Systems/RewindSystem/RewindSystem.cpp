@@ -66,7 +66,7 @@ namespace ECS
 
 	}
 
-	void RewindSystem::Init()
+	void RewindSystem::Init(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 		rewindTimeQue.reserve(600);
 	}

@@ -25,7 +25,7 @@ namespace ECS
 
 		virtual std::unique_ptr<System> Clone() const override;
 
-		void Init() override;
+		void Init(EntityComponentSystem* aEntityComponentSystem) override;
 		void Update(EntityComponentSystem* aEntityComponentSystem) override;
 
 		void GoToPoint(ECS::TransformComponent* aTransformComponent, ECS::RewindTestComponent* aRewindTestComponent);

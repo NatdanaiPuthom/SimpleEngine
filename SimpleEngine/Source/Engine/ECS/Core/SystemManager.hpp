@@ -21,7 +21,7 @@ namespace ECS
 		SystemManager& operator=(const SystemManager& aOther);
 		SystemManager& operator=(SystemManager&& aOther) noexcept;
 
-		void Init();
+		void Init(EntityComponentSystem* aEntityComponentSystem);
 		void Update(EntityComponentSystem* aEntityComponentSystem);
 		void Render(EntityComponentSystem* aEntityComponentSystem);
 

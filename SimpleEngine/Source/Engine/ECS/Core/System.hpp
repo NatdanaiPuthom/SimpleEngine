@@ -5,7 +5,6 @@ namespace ECS
 {
 	class EntityComponentSystem;
 
-
 	class System
 	{
 	public:
@@ -18,7 +17,7 @@ namespace ECS
 		System& operator=(const System&) = delete;
 		System& operator=(System&&) noexcept = delete;
 
-		virtual void Init() {};
+		virtual void Init(EntityComponentSystem* /*aEntityComponentSystem*/) {};
 		virtual void Update(EntityComponentSystem* /*aEntityComponentSystem*/) {};
 		virtual void Render(EntityComponentSystem* /*aEntityComponentSystem*/) {};
 

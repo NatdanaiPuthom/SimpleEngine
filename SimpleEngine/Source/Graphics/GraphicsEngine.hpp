@@ -64,7 +64,7 @@ namespace Graphics
 		void SetTint(const Math::Vector3f& aColor);
 		void SetUseBloom(const bool aShouldUseBloom);
 		void SetBloomPixelThreshold(const float aValue);
-		void SetCamera(std::shared_ptr<Camera> aCamera);
+		void SetCamera(Graphics::Camera* aCamera);
 		void SetFPSLevelCap(const unsigned int aCapLevel);
 		void SetBlendState(const eBlendState aBlendState);
 		void SetSamplerState(const eSamplerState aSamplerState);
@@ -88,10 +88,10 @@ namespace Graphics
 
 		const eRasterizerState GetCurrentRasterizerState() const;
 
-		std::shared_ptr<Camera> GetCurrentCamera();
+		Graphics::Camera* GetCurrentCamera();
 		std::shared_ptr<Camera> GetEditorCamera();
 
-		const std::shared_ptr<Camera> GetCurrentCamera() const;
+		const Graphics::Camera* GetCurrentCamera() const;
 		const std::shared_ptr<Camera> GetEditorCamera() const;
 
 		//NOTE(v9.35.5): Will Add and cache the texture if it does not already exist. aSlot is used to set slot when adding texture
@@ -181,7 +181,6 @@ namespace Graphics
 
 		ComPtr<ID3D11DepthStencilView> myDepthBuffer;
 
-		std::shared_ptr<Camera> myCurrentCamera;
 		std::shared_ptr<Camera> myEditorCamera;
 
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
@@ -199,6 +198,8 @@ namespace Graphics
 		std::unique_ptr<ModelFactory> myModelFactory;
 		std::unique_ptr<Drawer::Renderer> myRenderer;
 		std::unique_ptr<Simple::ImGuiEngine> myImGuiEngine;
+
+		Camera* myCurrentCameraRaw;
 
 		eRasterizerState myCurrentRasterizerState;
 

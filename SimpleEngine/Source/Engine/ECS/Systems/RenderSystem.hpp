@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/ECS/Core/System.hpp"
 #include <vector>
+#include <memory>
 
 namespace ECS
 {
@@ -11,8 +12,6 @@ namespace ECS
 
 namespace ECS
 {
-	class EntityComponentSystem;
-
 	class RenderSystem : public ECS::System
 	{
 		struct StaticModelToRender

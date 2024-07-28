@@ -94,15 +94,33 @@ namespace ECS
 		return json;
 	}
 
-	nlohmann::json ReturnDataAsJSON(const Graphics::PointLightData& aPointlight, const std::string& aVariableName)
+	nlohmann::json ReturnDataAsJSON(const Graphics::PointLightData& aPointlightData, const std::string& aVariableName)
 	{
 		nlohmann::json json;
 
-		json[aVariableName]["Color"]["x"] = aPointlight.color.x;
-		json[aVariableName]["Color"]["y"] = aPointlight.color.y;
-		json[aVariableName]["Color"]["z"] = aPointlight.color.z;
-		json[aVariableName]["Intensity"] = aPointlight.color.w;
-		json[aVariableName]["Radius"] = aPointlight.radius;
+		json[aVariableName]["Color"]["x"] = aPointlightData.color.x;
+		json[aVariableName]["Color"]["y"] = aPointlightData.color.y;
+		json[aVariableName]["Color"]["z"] = aPointlightData.color.z;
+		json[aVariableName]["Intensity"] = aPointlightData.color.w;
+		json[aVariableName]["Radius"] = aPointlightData.radius;
+
+		return json;
+	}
+
+	nlohmann::json ReturnDataAsJSON(const Graphics::Camera& aCamera, const std::string& aVariableName)
+	{
+		nlohmann::json json;
+
+		const Math::Vector3f position = aCamera.GetPosition();
+
+		json[aVariableName]["Position"]["x"] = position.x;
+		json[aVariableName]["Position"]["y"] = position.y;
+		json[aVariableName]["Position"]["z"] = position.z;
+
+		json[aVariableName]["MoveSpeed"] = aCamera.GetMoveSpeed();
+		json[aVariableName]["HorizontalFoV"] = aCamera.GetHorizontalFoV();
+		json[aVariableName]["NearPlane"] = aCamera.GetNearPlane();
+		json[aVariableName]["FarPlane"] = aCamera.GetFarPlane();
 
 		return json;
 	}

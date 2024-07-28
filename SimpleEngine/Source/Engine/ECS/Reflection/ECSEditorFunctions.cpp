@@ -7,6 +7,7 @@
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
 #include "Graphics/BufferData.hpp"
+#include "Graphics/Camera/Camera.hpp"
 
 #include "NodeScript/SimpleScript/Core/Fly.hpp"
 #include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
@@ -217,13 +218,51 @@ namespace ECS
 		return edited;
 	}
 
-	bool ViewAndEditValue(Graphics::PointLightData& aValue, const std::string& /*aVariableName*/)
+	bool ViewAndEditValue(Graphics::PointLightData& aPointLightData, const std::string& /*aVariableName*/)
 	{
-		const bool editedColor = ImGui::DragFloat3("Color", &aValue.color.x, 0.1f, 0.0f);
-		const bool editedIntensity = ImGui::DragFloat("Intensity", &aValue.color.w, 0.1f, 0.0f);
-		const bool editedRadius = ImGui::DragFloat("Radius", &aValue.radius, 0.2f, 0.1f);
+		const bool editedColor = ImGui::DragFloat3("Color", &aPointLightData.color.x, 0.1f, 0.0f);
+		const bool editedIntensity = ImGui::DragFloat("Intensity", &aPointLightData.color.w, 0.1f, 0.0f);
+		const bool editedRadius = ImGui::DragFloat("Radius", &aPointLightData.radius, 0.2f, 0.1f);
 
 		return (editedColor || editedIntensity || editedRadius);
+	}
+
+	bool ViewAndEditValue(Graphics::Camera& aCamera, const std::string& /*aVariableName*/)
+	{
+		const Math::Vector2ui resolution = Global::GetResolution();
+
+		float moveSpeed = aCamera.GetMoveSpeed();
+		float horizontalFoV = aCamera.GetHorizontalFoV();
+		float nearPlane = aCamera.GetNearPlane();
+		float farPlane = aCamera.GetFarPlane();
+
+		bool hasEdited = false;
+
+		if (ImGui::DragFloat("Speed", &moveSpeed))
+		{
+			aCamera.SetMoveSpeed(moveSpeed);
+			hasEdited = true;
+		}
+		
+		if (ImGui::DragFloat("HorizontalFoV", &horizontalFoV))
+		{
+			aCamera.SetHorizontalFoV(horizontalFoV, resolution);
+			hasEdited = true;
+		}
+
+		if (ImGui::DragFloat("NearPlane", &nearPlane))
+		{
+			aCamera.SetNearPlane(nearPlane, resolution);
+			hasEdited = true;
+		}
+
+		if (ImGui::DragFloat("FarPlane", &farPlane))
+		{
+			aCamera.SetFarPlane(farPlane, resolution);
+			hasEdited = true;
+		}
+		
+		return hasEdited;
 	}
 
 	bool ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& /*aVariableName*/)

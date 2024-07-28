@@ -17,6 +17,7 @@ namespace Graphics
 	class Shader;
 	class Texture;
 	class Skeleton;
+	class Camera;
 
 	struct Animation;
 	struct PointLightData;
@@ -36,6 +37,7 @@ namespace ECS
 	bool LoadAndSetDataFromJSON(Math::Vector4f& aVector, const std::string& aVariableName, const nlohmann::json& aJSONData);
 
 	bool LoadAndSetDataFromJSON(Graphics::PointLightData& aPointLight, const std::string& aVariableName, const nlohmann::json& aJSONData);
+	bool LoadAndSetDataFromJSON(Graphics::Camera& aCamera, const std::string& aVariableName, const nlohmann::json& aJSONData);
 
 	bool LoadAndSetDataFromJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName, const nlohmann::json& aJSONData);
 	bool LoadAndSetDataFromJSON(const Graphics::Texture*& aTexture, const std::string& aVariableName, const nlohmann::json& aJSONData);

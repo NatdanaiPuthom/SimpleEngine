@@ -3,11 +3,11 @@
 
 namespace ECS
 {
-	class RenderLightSystem final : public ECS::System
+	class CameraSystem : public ECS::System
 	{
 	public:
-		RenderLightSystem();
-		~RenderLightSystem();
+		CameraSystem();
+		~CameraSystem() override;
 
 		void Render(EntityComponentSystem* aEntityComponentSystem) override;
 		void LateRender(EntityComponentSystem* aEntityComponentSystem) override;

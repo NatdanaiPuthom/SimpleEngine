@@ -106,6 +106,24 @@ namespace ECS
 		return true;
 	}
 
+	bool LoadAndSetDataFromJSON(Graphics::Camera& aCamera, const std::string& aVariableName, const nlohmann::json& aJSONData)
+	{
+		const Math::Vector2ui resolution = Global::GetResolution();
+
+		Math::Vector3f position;
+		position.x = aJSONData[aVariableName]["Position"]["x"];
+		position.y = aJSONData[aVariableName]["Position"]["y"];
+		position.z = aJSONData[aVariableName]["Position"]["z"];
+
+		aCamera.SetPosition(position);
+		aCamera.SetMoveSpeed(aJSONData[aVariableName]["MoveSpeed"]);
+		aCamera.SetHorizontalFoV(aJSONData[aVariableName]["HorizontalFoV"], resolution);
+		aCamera.SetNearPlane(aJSONData[aVariableName]["NearPlane"], resolution);
+		aCamera.SetFarPlane(aJSONData[aVariableName]["FarPlane"], resolution);
+
+		return true;
+	}
+
 	bool LoadAndSetDataFromJSON(const Graphics::Mesh*& aMesh, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
 		const std::string filePath = aJSONData[aVariableName];

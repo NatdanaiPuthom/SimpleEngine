@@ -18,28 +18,6 @@ namespace ECS
 	{
 	}
 
-	void RenderLightSystem::Init()
-	{
-	}
-
-	void RenderLightSystem::Update(EntityComponentSystem* /*aEntityComponentSystem*/)
-	{
-		/*
-		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-
-		static Math::Vector4f ambientLight = graphicsEngine->GetAmbientLightColorAndIntensity();
-
-		if (ImGui::Begin("Light"))
-		{
-			if (ImGui::DragFloat4("Ambient light", &ambientLight.x, 0.1f))
-			{
-				graphicsEngine->SetAmbientLightColorAndIntensity(ambientLight);
-			}
-		}
-		ImGui::End();
-		*/
-	}
-
 	void RenderLightSystem::Render(EntityComponentSystem* aEntityComponentSystem)
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
