@@ -8,7 +8,7 @@
 
 namespace FLY_NAMESPACE
 {
-	void ScriptFoundation::Destroy()
+	void Foundation::Destroy()
 	{
 		if (sInstance)
 		{
@@ -16,51 +16,68 @@ namespace FLY_NAMESPACE
 			sInstance = nullptr;
 		}
 	}
-	ScriptFoundation::ScriptFoundation()
+	Foundation::Foundation()
 		: mMemoryPool(10000)
 		, mTypeManager(std::make_unique<TypeManager>())
 		, mNodeExecutor(std::make_unique<NodeExecutor>())
 	{
 	}
 
-	ScriptFoundation::~ScriptFoundation()
+	Foundation::~Foundation()
 	{
 	}
 
-	void ScriptFoundation::Initialize()
+	void Foundation::Initialize()
 	{
 		mTypeManager->GetNodeTypeManager().Assert();
 	}
 
-	void ScriptFoundation::ClearClasses()
+	void Foundation::ClearClasses()
 	{
 		mClasses.clear();
 	}
 
-	Class& ScriptFoundation::CreateClass(DataTypeID aTargetID, const std::string_view aName)
+	Class& Foundation::CreateClass(DataTypeID aTargetID, const std::string_view aName)
 	{
 		std::vector<std::unique_ptr<Class>>& classesByTarget = mClasses[aTargetID];
-		return *classesByTarget.emplace_back(std::make_unique<Class>(aTargetID, std::string(aName)));
+		
+		std::unique_ptr<Class>& createdClass = classesByTarget.emplace_back(std::make_unique<Class>(aTargetID, std::string(aName)));
+		mClassesByName.emplace(createdClass->mName, createdClass.get());
+		return *createdClass;
 	}
 
-	void ScriptFoundation::DestroyClass(Class& aClass)
+	void Foundation::DestroyClass(Class& aClass)
 	{
-		auto& scriptsByTargetID = mClasses.at(aClass.GetTargetID());
+		auto& scriptsByTargetID = mClasses.at(aClass.mTargetID);
+		mClassesByName.erase(aClass.mName);
 
 		std::erase_if(scriptsByTargetID, [&aClass](std::unique_ptr<Class>& aClassIter) -> bool { return &aClass == aClassIter.get(); });
 	}
 
-	const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& ScriptFoundation::GetClasses()
+	void Foundation::SetClassName(std::string_view aOldName, std::string_view aNewName)
+	{
+		if (aOldName == aNewName)
+		{
+			return;
+		}
+
+		Class* c = mClassesByName.at(aOldName);
+		c->mName = aNewName;
+		mClassesByName.erase(aOldName);
+		mClassesByName.emplace(c->mName, c);
+	}
+
+	const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& Foundation::GetClasses()
 	{
 		return mClasses;
 	}
 
-	TypeManager& ScriptFoundation::GetTypeManager()
+	TypeManager& Foundation::GetTypeManager()
 	{
 		return *mTypeManager;
 	}
 
-	NodeExecutor& ScriptFoundation::GetNodeExecutor()
+	NodeExecutor& Foundation::GetNodeExecutor()
 	{
 		return *mNodeExecutor;
 	}

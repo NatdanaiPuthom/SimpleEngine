@@ -40,7 +40,7 @@ namespace FLY_NAMESPACE
 	inline T GetterNode(const InternalExecutionContext* aContext)
 	{
 		const NodeRef& nodeRef = aContext->mNodeData.mNodeRef;
-		const VariableManager& variableManager = aContext->mClass->GetVariableManager();
+		const VariableManager& variableManager = aContext->mClass->mVariableManager;
 
 		const VarID varID = variableManager.GetVariableIDByNodeRef(nodeRef);
 
@@ -53,7 +53,7 @@ namespace FLY_NAMESPACE
 	inline void SetterNode(const InternalExecutionContext* aContext, const T& aValue)
 	{
 		const NodeRef& nodeRef = aContext->mNodeData.mNodeRef;
-		const VariableManager& variableManager = aContext->mClass->GetVariableManager();
+		const VariableManager& variableManager = aContext->mClass->mVariableManager;
 
 		const VarID varID = variableManager.GetVariableIDByNodeRef(nodeRef);
 

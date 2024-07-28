@@ -6,6 +6,7 @@
 #include <limits>
 #include <type_traits>
 #include <algorithm>
+#include <string_view>
 #include "SystemTypes/FlyNone.hpp"
 
 #undef max
@@ -25,6 +26,7 @@ namespace FLY_NAMESPACE
 	using DataTypeID = size_t;
 	using ObjectTypeID = size_t;
 	using EventID = size_t;
+	using ClassID = std::string_view;
 
 	constexpr size_t NodeBufferCapacity = 1024;
 

@@ -16,9 +16,9 @@ namespace FLY_NAMESPACE
 		MemoryArena<10000> g_EditArena;
 		CopyBuffer g_CopyBuffer;
 
-		ScriptFoundation& GetFoundation()
+		Foundation& GetFoundation()
 		{
-			return ScriptFoundation::GetInstance();
+			return Foundation::GetInstance();
 		}
 
 		NodeExecutor& GetNodeExecutor()

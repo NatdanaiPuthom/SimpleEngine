@@ -9,7 +9,7 @@
 namespace FLY_NAMESPACE
 {
 
-	class ScriptFoundation;
+	class Foundation;
 	class Class;
 	class NodeTypeManager;
 	class PinTypeManager;

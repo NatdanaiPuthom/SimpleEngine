@@ -31,7 +31,7 @@ namespace FLY_NAMESPACE
 		bool operator==(const ClassView& aOther) const;
 		bool operator!=(const ClassView& aOther) const;
 
-		operator bool() const;
+		explicit operator bool() const;
 
 	private:
 

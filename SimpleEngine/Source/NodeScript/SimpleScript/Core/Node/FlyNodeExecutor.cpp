@@ -27,11 +27,11 @@ namespace FLY_NAMESPACE
 #ifdef FLY_DEBUG
 		if (aOwner == nullptr)
 		{
-			assert(aClassInstance.mClass->GetTargetID() == GetDataTypeID<None>());
+			assert(aClassInstance.mClass->mTargetID == GetDataTypeID<None>());
 		}
 #endif
 
-		EventGraph& eventGraph = aClassInstance.mClass->GetEventGraph();
+		EventGraph& eventGraph = aClassInstance.mClass->mEventGraph;
 		auto it = eventGraph.mEventNodes.find(anEventID);
 
 		if (it != eventGraph.mEventNodes.end())

@@ -522,7 +522,7 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		VarID CreateVariable(Class& aClass, const DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
+		VarID CreateVariable(Class& aClass, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
 			std::vector<Variable>& variables = ScriptProxy::GetVariablesRef(aClass);
 			const VarID id = variables.size();
@@ -531,11 +531,11 @@ namespace FLY_NAMESPACE
 			return id;
 		}
 
-		void SetVariableDataType(Class& aClass, VarID aVarID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker)
+		void SetVariableDataType(Class& aClass, const VarID aVarID, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
-			Variable& variable = aClass.GetVariableManager().mVariables.at(aVarID);
+			Variable& variable = aClass.mVariableManager.mVariables.at(aVarID);
 
-			void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, *aClass.GetVariableManager().mMemoryArena);
+			void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, *aClass.mVariableManager.mMemoryArena);
 
 			variable.mDataTypeID = aDataTypeID;
 			variable.mDefaultValueDataPtr = defaultValueDataPtr;
@@ -545,10 +545,10 @@ namespace FLY_NAMESPACE
 
 		void DestroyVariableNodes(Class& aClass, const VarID aVarID, CommandTracker* const aCommandTracker)
 		{
-			DestroyNodes(aClass.GetVariableManager().GetNodeRefsByVarID(aVarID), aCommandTracker);
+			DestroyNodes(aClass.mVariableManager.GetNodeRefsByVarID(aVarID), aCommandTracker);
 		}
 
-		void BindVariable(Class& aClass, const NodeRef& aNodeRef, const VarID aVarID, CommandTracker* aCommandTracker)
+		void BindVariable(Class& aClass, const NodeRef& aNodeRef, const VarID aVarID, CommandTracker* const aCommandTracker)
 		{
 			struct BindVarData
 			{

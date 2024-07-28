@@ -12,7 +12,6 @@ namespace FLY_NAMESPACE
 
 	class Class final
 	{
-		friend class ScriptProxy;
 	public:
 
 		Class(DataTypeID aTargetID, const std::string& aName = "Default Script");
@@ -23,23 +22,13 @@ namespace FLY_NAMESPACE
 		Class& operator=(const Class&) = delete;
 		Class& operator=(Class&&) = delete;
 
-		std::string& Name();
-		const std::string& Name() const;
-
 		ClassInstance& CreateClassInstance();
 		void DestroyClassInstance(ClassInstance& aScriptInstance);
-
-		EventGraph& GetEventGraph();
-		const EventGraph& GetEventGraph() const;
-		DataTypeID GetTargetID() const;
 
 		void BindFunction(FunctionID aFunctionID);
 		const std::vector<FunctionID>& GetMemberFunctionIDs() const;
 
-		VariableManager& GetVariableManager();
-		const VariableManager& GetVariableManager() const;
-
-	private:
+	public:
 
 		EventGraph mEventGraph;
 		VariableManager mVariableManager;

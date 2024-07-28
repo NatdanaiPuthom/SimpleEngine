@@ -14,16 +14,6 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	std::string& Class::Name()
-	{
-		return mName;
-	}
-
-	const std::string& Class::Name() const
-	{
-		return mName;
-	}
-
 	ClassInstance& Class::CreateClassInstance()
 	{
 		std::unique_ptr<ClassInstance>& classInstance = mClassInstances.emplace_back(std::make_unique<ClassInstance>());
@@ -42,21 +32,6 @@ namespace FLY_NAMESPACE
 		);
 	}
 
-	EventGraph& Class::GetEventGraph()
-	{
-		return mEventGraph;
-	}
-
-	const EventGraph& Class::GetEventGraph() const
-	{
-		return mEventGraph;
-	}
-
-	DataTypeID Class::GetTargetID() const
-	{
-		return mTargetID;
-	}
-
 	void Class::BindFunction(FunctionID aFunctionID)
 	{
 		mMemberFunctionIDs.push_back(aFunctionID);
@@ -65,16 +40,6 @@ namespace FLY_NAMESPACE
 	const std::vector<FunctionID>& Class::GetMemberFunctionIDs() const
 	{
 		return mMemberFunctionIDs;
-	}
-
-	VariableManager& Class::GetVariableManager()
-	{
-		return mVariableManager;
-	}
-
-	const VariableManager& Class::GetVariableManager() const
-	{
-		return mVariableManager;
 	}
 }
 

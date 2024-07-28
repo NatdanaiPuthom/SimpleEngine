@@ -75,7 +75,7 @@ namespace FLY_NAMESPACE
 
 	void SetClassName(const ClassView aClassView, const std::string_view aName)
 	{
-		aClassView.GetClass().Name() = aName;
+		Global::GetFoundation().SetClassName(aClassView.GetName(), aName);
 	}
 
 	ClassInstance& CreateClassInstance(const ClassView aClassView)
@@ -140,7 +140,7 @@ namespace FLY_NAMESPACE
 			aCommandTracker->BeginComposite("Create Getter Node");
 		}
 
-		const Variable& variable = aClassView.GetClass().GetVariableManager().mVariables.at(aVariableView.GetID());
+		const Variable& variable = aClassView.GetClass().mVariableManager.mVariables.at(aVariableView.GetID());
 
 		const NodeID nodeID = Internal::CreateGetterNode(aNodeGraphView.GetNodeGraph(), variable.mDataTypeID, aCommandTracker);
 		Internal::SetNodePosition(nodeID, aPosition, aNodeGraphView.GetNodeGraph(), aCommandTracker);
@@ -163,7 +163,7 @@ namespace FLY_NAMESPACE
 
 		NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
 
-		const Variable& variable = aClassView.GetClass().GetVariableManager().mVariables.at(aVariableView.GetID());
+		const Variable& variable = aClassView.GetClass().mVariableManager.mVariables.at(aVariableView.GetID());
 
 		const NodeID nodeID = Internal::CreateSetterNode(nodeGraph, variable.mDataTypeID, aCommandTracker);
 		Internal::SetNodePosition(nodeID, aPosition, nodeGraph, aCommandTracker);
@@ -321,7 +321,7 @@ namespace FLY_NAMESPACE
 
 	void EditVariableDefaultValue(const VariableView aVariableView, const ClassView aClassView, CommandTracker*)
 	{
-		Variable& variable = aClassView.GetClass().GetVariableManager().mVariables.at(aVariableView.GetID());
+		Variable& variable = aClassView.GetClass().mVariableManager.mVariables.at(aVariableView.GetID());
 
 		if (Global::GetDataTypeManager().EditData(variable.mDataTypeID, variable.mDefaultValueDataPtr))
 		{
@@ -343,7 +343,7 @@ namespace FLY_NAMESPACE
 
 	void DestroyVariableNodes(const VariableView aVariableView, ClassView aClassView, CommandTracker* const aCommandTracker)
 	{
-		DestroyNodes(aClassView.GetClass().GetVariableManager().GetNodeRefsByVarID(aVariableView.GetID()), aCommandTracker);
+		DestroyNodes(aClassView.GetClass().mVariableManager.GetNodeRefsByVarID(aVariableView.GetID()), aCommandTracker);
 	}
 
 	void EditPin(const PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
@@ -892,7 +892,7 @@ namespace FLY_NAMESPACE
 
 	std::vector<VariableView> GetVariables(const ClassView aClass, const bool aIncludeDestroyed)
 	{
-		const std::vector<Variable>& variables = aClass.GetClass().GetVariableManager().mVariables;
+		const std::vector<Variable>& variables = aClass.GetClass().mVariableManager.mVariables;
 		std::vector<VariableView> views;
 
 		views.reserve(variables.size());
@@ -1041,7 +1041,7 @@ namespace FLY_NAMESPACE
 
 	std::unordered_map<DataTypeView, std::vector<ClassView>> GetClasses()
 	{
-		auto& classes = ScriptFoundation::GetInstance().GetClasses();
+		auto& classes = Foundation::GetInstance().GetClasses();
 
 		std::unordered_map<DataTypeView, std::vector<ClassView>> views;
 

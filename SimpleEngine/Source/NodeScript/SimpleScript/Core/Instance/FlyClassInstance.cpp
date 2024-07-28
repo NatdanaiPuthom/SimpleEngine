@@ -16,8 +16,8 @@ namespace FLY_NAMESPACE
 	void ClassInstance::Init(Class& aClass)
 	{
 		mClass = &aClass;
-		mVariableManagerInstance.Init(aClass.GetVariableManager());
+		mVariableManagerInstance.Init(aClass.mVariableManager);
 		// TODO Fix
-		mEventGraphInstance.Init(aClass.GetEventGraph().mNodeGraph);
+		mEventGraphInstance.Init(aClass.mEventGraph.mNodeGraph);
 	}
 }

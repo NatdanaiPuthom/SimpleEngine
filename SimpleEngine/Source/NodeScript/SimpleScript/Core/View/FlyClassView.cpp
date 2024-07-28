@@ -16,23 +16,23 @@ namespace FLY_NAMESPACE
 
 	const std::string& ClassView::GetName() const
 	{
-		return mClass->Name();
+		return mClass->mName;
 	}
 
 	DataTypeView ClassView::GetTargetDataType() const
 	{
-		const DataTypeID targetID = mClass->GetTargetID();
+		const DataTypeID targetID = mClass->mTargetID;
 		return DataTypeView(targetID);
 	}
 
 	NodeGraphView ClassView::GetEventGraph() const
 	{
-		return NodeGraphView(GetClass().GetEventGraph());
+		return NodeGraphView(GetClass().mEventGraph);
 	}
 
 	std::vector<VariableView> ClassView::GetVariables(const bool aIncludeDestroyed) const
 	{
-		const std::vector<Variable>& variables = mClass->GetVariableManager().mVariables;
+		const std::vector<Variable>& variables = mClass->mVariableManager.mVariables;
 		std::vector<VariableView> variableViews;
 
 		variableViews.reserve(variables.size());

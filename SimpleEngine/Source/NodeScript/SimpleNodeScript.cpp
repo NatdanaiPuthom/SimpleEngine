@@ -9,12 +9,12 @@ SimpleNodeScript::SimpleNodeScript()
 
 SimpleNodeScript::~SimpleNodeScript()
 {
-	Fly::ScriptFoundation::GetInstance().Destroy();
+	Fly::Foundation::GetInstance().Destroy();
 }
 
 void SimpleNodeScript::Init()
 {
-	Fly::ScriptFoundation::GetInstance().Initialize();
+	Fly::Foundation::GetInstance().Initialize();
 	RegisterSimpleGameNodes();
 
 	Fly::LoadAllClasses(SCRIPT_FILE_PATH);

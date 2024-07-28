@@ -9,24 +9,23 @@ namespace FLY_NAMESPACE
 	class TypeManager;
 	class Class;
 
-	class ScriptFoundation final
+	class Foundation final
 	{
-		friend class ScriptProxy;
 	public:
 
-		static ScriptFoundation& GetInstance()
+		inline static Foundation& GetInstance()
 		{
 			if (!sInstance)
 			{
-				sInstance = new ScriptFoundation();
+				sInstance = new Foundation();
 			}
 			return *sInstance;
 		}
 
 		static void Destroy();
 	private:
-		ScriptFoundation();
-		~ScriptFoundation();
+		Foundation();
+		~Foundation();
 
 	public:
 
@@ -36,6 +35,7 @@ namespace FLY_NAMESPACE
 
 		Class& CreateClass(const DataTypeID aTargetID, std::string_view aName);
 		void DestroyClass(Class& aClass);
+		void SetClassName(std::string_view aOldName, std::string_view aNewName);
 		const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& GetClasses();
 
 		TypeManager& GetTypeManager();
@@ -43,11 +43,14 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		inline static ScriptFoundation* sInstance = nullptr;
+		inline static Foundation* sInstance = nullptr;
+
+	public:
 
 		MemoryPool mMemoryPool;
 		std::unique_ptr<TypeManager> mTypeManager;
 		std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>> mClasses;
+		std::unordered_map<std::string_view, Class*> mClassesByName;
 
 		std::unique_ptr<NodeExecutor> mNodeExecutor;
 

@@ -38,6 +38,6 @@ namespace FLY_NAMESPACE
 
 	const Variable& VariableView::GetVariable() const
 	{
-		return mClass->GetVariableManager().mVariables.at(mVarID);
+		return mClass->mVariableManager.mVariables.at(mVarID);
 	}
 }

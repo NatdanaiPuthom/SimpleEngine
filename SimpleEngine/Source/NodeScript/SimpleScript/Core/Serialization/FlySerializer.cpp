@@ -4,7 +4,6 @@
 #include "../Utilities/FlyLinker.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../FlyInternal.hpp"
-#include "../Utilities/FlyFilter.hpp"
 #include "../Command/FlyCommandTracker.hpp"
 #include "../Fly.hpp"
 #include "../FlyFoundation.hpp"
@@ -32,7 +31,7 @@ namespace FLY_NAMESPACE
 	void ScriptLoader::SaveClass(const Class& aClass, const std::string_view aFilePath)
 	{
 		std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
-		std::filesystem::path filePath = fileDirectory.string() + aClass.Name() + FILE_EXTENSION;
+		std::filesystem::path filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
 
 		const bool createdDirectory = std::filesystem::create_directories(std::string(aFilePath));
 		if (!createdDirectory)
@@ -50,12 +49,12 @@ namespace FLY_NAMESPACE
 			return;
 		}
 
-		const NodeGraph& eventGraph = aClass.GetEventGraph().mNodeGraph;
-		const VariableManager& variableManager = aClass.GetVariableManager();
+		const NodeGraph& eventGraph = aClass.mEventGraph.mNodeGraph;
+		const VariableManager& variableManager = aClass.mVariableManager;
 
 		nlohmann::json jsonDoc;
 
-		jsonDoc["Name"] = aClass.Name();
+		jsonDoc["Name"] = aClass.mName;
 
 		nlohmann::json& dataJson = jsonDoc["Data"];
 
@@ -87,7 +86,7 @@ namespace FLY_NAMESPACE
 		dataJson["PinData"] = nlohmann::json::array();
 		nlohmann::json& pinDataArrayJson = dataJson["PinData"];
 
-		for (const PinID inputPinID : ScriptFilter::GetInputPins(eventGraph))
+		for (const PinID inputPinID : GetInputPins(eventGraph))
 		{
 			const Pin& pin = eventGraph.mPins.at(inputPinID);
 
@@ -133,9 +132,9 @@ namespace FLY_NAMESPACE
 		dataJson["Variables"] = nlohmann::json::array();
 		nlohmann::json& variableDataJson = dataJson["Variables"];
 
-		for (VarID i = 0; i < ScriptProxy::GetVariables(aClass).size(); ++i)
+		for (VarID varID = 0; varID < aClass.mVariableManager.mVariables.size(); ++varID)
 		{
-			const Variable& variable = ScriptProxy::GetVariable(aClass, i);
+			const Variable& variable = aClass.mVariableManager.mVariables.at(varID);
 
 			if (variable.mIsDestroyed)
 			{
@@ -156,14 +155,17 @@ namespace FLY_NAMESPACE
 			variableJson["Nodes"] = nlohmann::json::array();
 			nlohmann::json& variableNodesJson = variableJson["Nodes"];
 
-			for (const NodeRef& nodeRef : variableManager.GetNodeRefsByVarID(i))
+			for (const NodeRef& nodeRef : variableManager.GetNodeRefsByVarID(varID))
 			{
-				const Node& node = ScriptProxy::GetNode(*nodeRef.mNodeGraph, nodeRef.mNodeID);
+
+				const Node& node = nodeRef.mNodeGraph->mNodes.at(nodeRef.mNodeID);
 
 				if (!node.mIsDestroyed)
 				{
+					nlohmann::json& varNodeJson = variableNodesJson.emplace_back();
 					const NodeID cleanNodeID = cleanedNodeIDs.at(nodeRef.mNodeID);
-					variableNodesJson.push_back(cleanNodeID);
+					varNodeJson["NodeID"] = cleanNodeID;
+					variableNodesJson.push_back(varNodeJson);
 				}
 			}
 
@@ -177,7 +179,7 @@ namespace FLY_NAMESPACE
 	void ScriptLoader::LoadClass(Class& aClass, const std::string_view aFilePath)
 	{
 		const std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
-		const std::filesystem::path filePath = fileDirectory.string() + aClass.Name() + FILE_EXTENSION;
+		const std::filesystem::path filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
 		std::ifstream ifs(filePath);
 		const std::string file((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 
@@ -191,7 +193,7 @@ namespace FLY_NAMESPACE
 
 		const nlohmann::json jsonDoc = nlohmann::json::parse(file);
 
-		NodeGraph& eventGraph = aClass.GetEventGraph().mNodeGraph;
+		NodeGraph& eventGraph = aClass.mEventGraph.mNodeGraph;
 
 		const nlohmann::json& dataJson = jsonDoc["Data"];
 
@@ -263,7 +265,7 @@ namespace FLY_NAMESPACE
 		for (const nlohmann::json& variableJson : variableDataJson)
 		{
 			const VarID varID = Internal::CreateVariable(aClass, GetDataTypeID<bool>(), nullptr);
-			Variable& variable = aClass.GetVariableManager().mVariables.at(varID);
+			Variable& variable = aClass.mVariableManager.mVariables.at(varID);
 
 			const std::string& dataTypeStr = variableJson["DataType"];
 
@@ -330,7 +332,7 @@ namespace FLY_NAMESPACE
 	void ScriptLoader::CreateCopyOfClass(const Class& aClass, const std::string_view aFilePath, const std::string_view aCopyName)
 	{
 		const std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
-		std::string filePath = fileDirectory.string() + aClass.Name() + FILE_EXTENSION;
+		std::string filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
 		std::string copyPath = fileDirectory.string() + std::string(aCopyName) + FILE_EXTENSION;
 
 		if (std::filesystem::copy_file(filePath, copyPath))

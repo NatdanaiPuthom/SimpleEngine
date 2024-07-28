@@ -52,18 +52,6 @@ namespace Editor
 				{
 					Fly::CreateNode(myParentWindow.GetNodeContext().nodeGraphView, functionView.GetCallerNodeType());
 				}
-
-				/*if (ImGui::Button("Create Input"))
-				{
-					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetInputNodeType());
-				}
-
-				if (ImGui::Button("Create Output"))
-				{
-					Fly::CreateNode(*myParentWindow.GetNodeContext().nodeGraph, functionView.GetOutputNodeType());
-				}*/
-
-				ImGui::Separator();
 			}
 
 		}

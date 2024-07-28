@@ -4,7 +4,7 @@
 namespace FLY_NAMESPACE
 {
 
-	class ScriptFoundation;
+	class Foundation;
 	class NodeExecutor;
 	class DataTypeManager;
 	class NodeTypeManager;
@@ -17,7 +17,7 @@ namespace FLY_NAMESPACE
 	{
 
 
-		ScriptFoundation& GetFoundation();
+		Foundation& GetFoundation();
 		NodeExecutor& GetNodeExecutor();
 		DataTypeManager& GetDataTypeManager();
 		NodeTypeManager& GetNodeTypeManager();

@@ -7,7 +7,7 @@ namespace FLY_NAMESPACE
 
 	MemoryPool& ScriptProxy::GetGlobalMemoryPool()
 	{
-		return ScriptFoundation::GetInstance().mMemoryPool;
+		return Foundation::GetInstance().mMemoryPool;
 	}
 
 	MemoryArena<NodeBufferCapacity>& ScriptProxy::GetNodeGraphMemoryArena(NodeGraph& aNodeGraph)
@@ -27,7 +27,7 @@ namespace FLY_NAMESPACE
 
 	NodeExecutor& ScriptProxy::GetNodeExecutor()
 	{
-		return *ScriptFoundation::GetInstance().mNodeExecutor;
+		return *Foundation::GetInstance().mNodeExecutor;
 	}
 
 	VariableManager& ScriptProxy::GetVariableManager(Class& aScript)

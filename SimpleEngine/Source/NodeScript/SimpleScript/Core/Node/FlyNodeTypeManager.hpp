@@ -12,7 +12,7 @@
 namespace FLY_NAMESPACE
 {
 	class Class;
-	class ScriptFoundation;
+	class Foundation;
 
 	class NodeTypeManager
 	{
