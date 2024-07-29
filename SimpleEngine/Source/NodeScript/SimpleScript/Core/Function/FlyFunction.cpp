@@ -8,16 +8,16 @@ namespace FLY_NAMESPACE
 
 	static Flow CallerNode(const InternalExecutionContext* aContext, Flow)
 	{
-		const Node& callerNode = aContext->mNodeData.mNodeRef.mNodeGraph->mNodes[aContext->mNodeData.mNodeRef.mNodeID];
+		const Node& callerNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
 
 		NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
 		const FunctionID functionID = nodeTypeManager.GetFunctionID(callerNode.mTypeID);
 		Function& function = nodeTypeManager.GetFunction(functionID);
 		const Node& inputNode = function.mNodeGraph.mNodes[function.mInputNodeID];
 
-		CopyPinData(*aContext, inputNode.mOutputPins, callerNode.mInputPins, function.mNodeGraph, *aContext->mNodeData.mNodeRef.mNodeGraph, 1);
+		CopyPinData(*aContext, inputNode.mOutputPins, callerNode.mInputPins, function.mNodeGraph, aContext->mNodeData.mNodeRef.GetNodeGraph(), 1);
 
-		aContext->mExecutionQueue->Push(NodeExecutionData{ NodeRef{ function.mInputNodeID, &function.mNodeGraph }, eNodeTriggerReason::Flow});
+		aContext->mExecutionQueue->Push(NodeExecutionData{ CreateContextualNodeRef(function.mInputNodeID, function.mNodeGraph), eNodeTriggerReason::Flow});
 		aContext->mNodeExecutor->GetCallStack().Push(aContext->mNodeData.mNodeRef);
 
 		return Flow(true);
@@ -30,16 +30,16 @@ namespace FLY_NAMESPACE
 
 	static Wildcard OutputNode(const InternalExecutionContext* aContext, Flow)
 	{
-		const Node& outputNode = aContext->mNodeData.mNodeRef.mNodeGraph->mNodes[aContext->mNodeData.mNodeRef.mNodeID];
+		const Node& outputNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
 
 		const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
 		const FunctionID functionID = nodeTypeManager.GetFunctionID(outputNode.mTypeID);
 		const Function& function = nodeTypeManager.GetFunction(functionID);
 
 		const NodeRef& callerNodeRef = aContext->mNodeExecutor->GetCallStack().Pop();
-		const Node& callerNode = callerNodeRef.mNodeGraph->mNodes[callerNodeRef.mNodeID];
+		const Node& callerNode = callerNodeRef.GetNodeGraph().mNodes[callerNodeRef.GetNodeID()];
 
-		CopyPinData(*aContext, callerNode.mOutputPins, outputNode.mInputPins, *callerNodeRef.mNodeGraph, function.mNodeGraph, 1);
+		CopyPinData(*aContext, callerNode.mOutputPins, outputNode.mInputPins, callerNodeRef.GetNodeGraph(), function.mNodeGraph, 1);
 
 		return Wildcard();
 	}

@@ -1,10 +1,10 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "FlyExecutionTypes.hpp"
-#include "../Contexts/FlyInternalExecutionContext.hpp"
+#include "../Execution/FlyInternalExecutionContext.hpp"
 #include "../Variable/FlyVariableManager.hpp"
 #include "FlyNodeTypeManager.hpp"
-#include "FlyNodeExecutor.hpp"
+#include "../Execution/FlyNodeExecutor.hpp"
 #include "FlyNode.hpp"
 #include "../Utilities/FlyUtilities.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
@@ -51,7 +51,7 @@ namespace FLY_NAMESPACE
 							for (const PinID connectedInputPinID : pin.mConnectedPinIDs)
 							{
 								const Pin& connectedInputPin = aPinSetData.mNodeGraph->mPins[connectedInputPinID];
-								aContext.mExecutionQueue->Push(NodeExecutionData{ NodeRef{ connectedInputPin.mNodeID, aPinSetData.mNodeGraph }, eNodeTriggerReason::Flow });
+								aContext.mExecutionQueue->Push(NodeExecutionData{CreateContextualNodeRef(connectedInputPin.mNodeID, *aPinSetData.mNodeGraph), eNodeTriggerReason::Flow});
 							}
 						}
 					}
@@ -171,8 +171,7 @@ namespace FLY_NAMESPACE
 		static_assert(!std::is_reference_v<OutputType>, "Return type can't be a reference");
 		static_assert(!std::is_same_v<void, OutputType>, "Return type can't be void");
 
-		//MemoryPoolID memoryPoolID = ScriptProxy::GetGraphMemoryPool(aNodeGraph).Allocate<OutputType>();
-		void* mDataPtr = &ScriptProxy::GetNodeGraphMemoryArena(aNodeGraph).Allocate<OutputType>();
+		void* mDataPtr = &aNodeGraph.mMemoryArena.Allocate<OutputType>();
 		return Internal::CreatePin(aNodeGraph, aNodeID, aPinTypeID, mDataPtr);
 	}
 
@@ -210,15 +209,15 @@ namespace FLY_NAMESPACE
 	{
 		if constexpr (Index < sizeof...(OutputTypes))
 		{
-			const PinID mOutputPinID = aOutputPinIDs[Index];
-			const Pin& pin = ScriptProxy::GetPin(*aContext.mNodeData.mNodeRef.mNodeGraph, mOutputPinID);
+			const PinID outputPinID = aOutputPinIDs[Index];
+			const Pin& pin = ScriptProxy::GetPin(aContext.mNodeData.mNodeRef.GetNodeGraph(), outputPinID);
 			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 			assert(pinType.mFlowType == eFlowType::Output);
 
 			const void* value = &std::get<Index>(aOutputValues);
 
 
-			pinType.mSetFunction(PinSetData{ mOutputPinID, aContext.mNodeData.mNodeRef.mNodeGraph, value,
+			pinType.mSetFunction(PinSetData{ outputPinID, &aContext.mNodeData.mNodeRef.GetNodeGraph(), value,
 
 #ifdef FLY_DEBUG
 				typeid(decltype(std::get<Index>(aOutputValues))).hash_code()
@@ -235,7 +234,7 @@ namespace FLY_NAMESPACE
 	{
 		if constexpr (Index < std::tuple_size_v<TupleType>)
 		{
-			Pin& pin = aContext.mNodeData.mNodeRef.mNodeGraph->mPins[aPinIDs[Index]];
+			Pin& pin = aContext.mNodeData.mNodeRef.GetNodeGraph().mPins[aPinIDs[Index]];
 			std::get<Index>(aTuple) = ReferenceWrapper<Arg>(*reinterpret_cast<Arg*>(pin.mDataPtr.Get()));
 
 			if constexpr (sizeof...(Args) > 0)
@@ -302,7 +301,7 @@ namespace FLY_NAMESPACE
 	std::tuple<OutputTypes...> CallFunction(InternalExecutionContext& aContext, TypeList<OutputTypes...>, TypeList<InputTypes...>)
 	{
 
-		const Node& node = ScriptProxy::GetNode(*aContext.mNodeData.mNodeRef.mNodeGraph, aContext.mNodeData.mNodeRef.mNodeID);
+		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext.mNodeData.mNodeRef.GetNodeID()];
 		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
 		MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
@@ -317,7 +316,7 @@ namespace FLY_NAMESPACE
 		{
 			NodeState<NodeStateDataType> nodeState
 			{
-				aContext.mNodeGraphInstance->mNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.mNodeID)
+				aContext.mNodeGraphInstance->mNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
 			};
 
 			NodeExecutionContext<NodeExecutionContextType> executionContext
@@ -338,7 +337,7 @@ namespace FLY_NAMESPACE
 		{
 			NodeState<NodeStateDataType> nodeState
 			{
-				aContext.mNodeGraphInstance->mNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.mNodeID)
+				aContext.mNodeGraphInstance->mNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
 			};
 			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(&aContext, nodeState), inputTuple));
 
@@ -347,7 +346,7 @@ namespace FLY_NAMESPACE
 		{
 			NodeState<NodeStateDataType> nodeState
 			{
-				aContext.mNodeGraphInstance->mNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.mNodeID)
+				aContext.mNodeGraphInstance->mNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
 			};
 			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(nodeState), inputTuple));
 		}
@@ -370,7 +369,7 @@ namespace FLY_NAMESPACE
 		return [](const NodeExecutionData& aNodeExecutionData, InternalExecutionContext& aContext) -> void
 			{
 
-				const Node& node = ScriptProxy::GetNode(*aNodeExecutionData.mNodeRef.mNodeGraph, aNodeExecutionData.mNodeRef.mNodeID);
+				const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().mNodes[aNodeExecutionData.mNodeRef.GetNodeID()];
 
 				// Set current node data before calling function
 				aContext.mNodeData = aNodeExecutionData;

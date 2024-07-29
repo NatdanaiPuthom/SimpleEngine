@@ -15,16 +15,6 @@ namespace FLY_NAMESPACE
 		return aNodeGraph.mMemoryArena;
 	}
 
-	MemoryArena<NodeBufferCapacity>& ScriptProxy::GetVariableMemoryArena(Class& aClass)
-	{
-		return *aClass.mVariableManager.mMemoryArena;
-	}
-
-	const MemoryArena<NodeBufferCapacity>& ScriptProxy::GetVariableMemoryArena(const Class& aScript)
-	{
-		return *aScript.mVariableManager.mMemoryArena;
-	}
-
 	NodeExecutor& ScriptProxy::GetNodeExecutor()
 	{
 		return *Foundation::GetInstance().mNodeExecutor;
@@ -89,15 +79,5 @@ namespace FLY_NAMESPACE
 	Pin& ScriptProxy::GetPinRef(NodeGraph& aNodeGraph, const PinID aPinID)
 	{
 		return aNodeGraph.mPins[aPinID];
-	}
-
-	Variable& ScriptProxy::GetVariableRef(Class& aScript, const VarID aVarID)
-	{
-		return aScript.mVariableManager.mVariables[aVarID];
-	}
-
-	std::unordered_map<NodeRef, VarID, NodeRefHasher>& ScriptProxy::GetNodeRefToVarIDMap(Class& aScript)
-	{
-		return aScript.mVariableManager.mNodeRefToVarID;
 	}
 }

@@ -5,7 +5,7 @@
 #include "NodeScript/SimpleScript/Core/Command/FlyCommandTracker.hpp"
 #include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
 #include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
-#include "NodeScript/SimpleScript/Core/Node/FlyNodeExecutor.hpp"
+#include "NodeScript/SimpleScript/Core/Execution/FlyNodeExecutor.hpp"
 #include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
 #include "FlyScriptEditorUtilities.hpp"
 
@@ -455,9 +455,9 @@ namespace Editor
 
 				if (Fly::HasFlag(nodeView.GetTraits(), Fly::eNodeTrait::Accessor))
 				{
-					const Fly::VariableView variable = Fly::GetVariableByNode(nodeView, currentNodeContext.nodeGraphView, currentClass);
+					const Fly::VariableView variable = Fly::GetVariableByNode(nodeView, currentNodeContext.nodeGraphView);
 					const bool isGetter = Fly::HasFlag(nodeView.GetTraits(), Fly::eNodeTrait::Getter);
-					const char* const prefixLabel = isGetter ? "Get" : "Set";
+					const char* const prefixLabel = isGetter ? "Get " : "Set ";
 					nodeLabel = prefixLabel + variable.GetName();
 				}
 				else

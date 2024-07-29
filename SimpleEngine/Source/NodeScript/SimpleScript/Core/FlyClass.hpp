@@ -14,7 +14,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-		Class(DataTypeID aTargetID, const std::string& aName = "Default Script");
+		Class(DataTypeID aTargetID = GetDataTypeID<None>(), const std::string& aName = "Default Script");
 		~Class();
 
 		Class(const Class&) = delete;

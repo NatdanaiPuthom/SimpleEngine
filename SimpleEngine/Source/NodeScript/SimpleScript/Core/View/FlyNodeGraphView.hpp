@@ -11,6 +11,7 @@ namespace FLY_NAMESPACE
 	class EventGraph;
 	class FunctionView;
 
+
 	enum class eNodeGraphType
 	{
 		EventGraph,

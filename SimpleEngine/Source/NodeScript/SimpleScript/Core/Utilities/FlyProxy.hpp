@@ -42,9 +42,6 @@ namespace FLY_NAMESPACE
 
 		static MemoryArena<NodeBufferCapacity>& GetNodeGraphMemoryArena(NodeGraph& aNodeGraph);
 
-		static MemoryArena<NodeBufferCapacity>& GetVariableMemoryArena(Class& aScript);
-		static const MemoryArena<NodeBufferCapacity>& GetVariableMemoryArena(const Class& aScript);
-
 		static NodeExecutor& GetNodeExecutor();
 
 		static VariableManager& GetVariableManager(Class& aScript);
@@ -66,9 +63,6 @@ namespace FLY_NAMESPACE
 
 		static Node& GetNodeRef(NodeGraph& aNodeGraph, const NodeID aNodeID);
 		static Pin& GetPinRef(NodeGraph& aNodeGraph, const PinID aPinID);
-		static Variable& GetVariableRef(Class& aScript, const VarID aVarID);
-
-		static std::unordered_map<NodeRef, VarID, NodeRefHasher>& GetNodeRefToVarIDMap(Class& aScript);
 
 	};
 }

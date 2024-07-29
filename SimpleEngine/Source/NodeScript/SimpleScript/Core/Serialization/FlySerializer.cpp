@@ -50,126 +50,146 @@ namespace FLY_NAMESPACE
 		}
 
 		const NodeGraph& eventGraph = aClass.mEventGraph.mNodeGraph;
-		const VariableManager& variableManager = aClass.mVariableManager;
 
 		nlohmann::json jsonDoc;
 
 		jsonDoc["Name"] = aClass.mName;
 
 		nlohmann::json& dataJson = jsonDoc["Data"];
-
-		dataJson["Nodes"] = nlohmann::json::array();
-
-		nlohmann::json& nodesArrayJson = dataJson["Nodes"];
-
 		std::unordered_map<NodeID, NodeID> cleanedNodeIDs;
 
-		for (NodeID nodeID = 0; nodeID < eventGraph.mNodes.size(); ++nodeID)
+
 		{
-			const Node& node = eventGraph.mNodes.at(nodeID);
-			if (node.mIsDestroyed)
+			dataJson["Nodes"] = nlohmann::json::array();
+
+			nlohmann::json& nodesArrayJson = dataJson["Nodes"];
+
+
+			for (NodeID nodeID = 0; nodeID < eventGraph.mNodes.size(); ++nodeID)
 			{
-				continue;
-			}
-
-			nlohmann::json nodeJson;
-			cleanedNodeIDs.emplace(nodeID, static_cast<NodeID>(cleanedNodeIDs.size()));
-
-			nodeJson["ID"] = cleanedNodeIDs.at(nodeID);
-			nodeJson["Name"] = Global::GetNodeTypeManager().GetShortName(node.mTypeID);
-			nodeJson["Pos"]["x"] = node.mPosition.x;
-			nodeJson["Pos"]["y"] = node.mPosition.y;
-
-			nodesArrayJson.push_back(nodeJson);
-		}
-
-		dataJson["PinData"] = nlohmann::json::array();
-		nlohmann::json& pinDataArrayJson = dataJson["PinData"];
-
-		for (const PinID inputPinID : GetInputPins(eventGraph))
-		{
-			const Pin& pin = eventGraph.mPins.at(inputPinID);
-
-			nlohmann::json pinDataJson;
-
-			pinDataJson["NodeID"] = cleanedNodeIDs.at(pin.mNodeID);
-			pinDataJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, inputPinID);
-
-			pinDataJson["ConnectionData"] = nlohmann::json::object();
-			nlohmann::json& connectionsJson = pinDataJson["Connections"];
-
-			const bool connectionExists = !pin.mConnectedPinIDs.empty();
-			connectionsJson["Exists"] = connectionExists;
-
-			if (connectionExists)
-			{
-
-				connectionsJson["Pins"] = nlohmann::json::array();
-				nlohmann::json& connectedPinsJson = connectionsJson["Pins"];
-				for (const PinID connectedPinID : pin.mConnectedPinIDs)
+				const Node& node = eventGraph.mNodes.at(nodeID);
+				if (node.mIsDestroyed)
 				{
-					nlohmann::json& connectedPinJson = connectedPinsJson.emplace_back();
-					const Pin& connectedPin = eventGraph.mPins.at(connectedPinID);
-					connectedPinJson["NodeID"] = cleanedNodeIDs.at(connectedPin.mNodeID);
-					connectedPinJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, connectedPinID);
+					continue;
 				}
 
+				nlohmann::json nodeJson;
+				cleanedNodeIDs.emplace(nodeID, static_cast<NodeID>(cleanedNodeIDs.size()));
+
+				nodeJson["ID"] = cleanedNodeIDs.at(nodeID);
+				nodeJson["Name"] = Global::GetNodeTypeManager().GetShortName(node.mTypeID);
+				nodeJson["Pos"]["x"] = node.mPosition.x;
+				nodeJson["Pos"]["y"] = node.mPosition.y;
+
+				//const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+
+				/*if (HasFlag(nodeType.mNodeRecipe.mTraits, eNodeTrait::Accessor))
+				{
+					const VarID varID = aClass.mVariableManager.GetVariableIDByNodeRef(CreateGlobalNodeRef(nodeID, eventGraph, aClass));
+
+					varID;
+					
+				}*/
+
+				nodesArrayJson.push_back(nodeJson);
 			}
-			else
-			{
-				const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
-
-				pinDataJson["DataType"] = Global::GetDataTypeManager().GetName(pinType.mDataTypeID);
-
-				nlohmann::json valueJson = nlohmann::json::object();
-				Global::GetDataTypeManager().SaveData(pinType.mDataTypeID, valueJson, pin.mDataPtr);
-				pinDataJson["Value"] = valueJson;
-			}
-
-			pinDataArrayJson.push_back(pinDataJson);
 		}
 
-		dataJson["Variables"] = nlohmann::json::array();
-		nlohmann::json& variableDataJson = dataJson["Variables"];
-
-		for (VarID varID = 0; varID < aClass.mVariableManager.mVariables.size(); ++varID)
 		{
-			const Variable& variable = aClass.mVariableManager.mVariables.at(varID);
+			dataJson["PinData"] = nlohmann::json::array();
+			nlohmann::json& pinDataArrayJson = dataJson["PinData"];
 
-			if (variable.mIsDestroyed)
+			for (const PinID inputPinID : GetInputPins(eventGraph))
 			{
-				continue;
-			}
+				const Pin& pin = eventGraph.mPins.at(inputPinID);
 
-			nlohmann::json variableJson;
+				nlohmann::json pinDataJson;
 
-			variableJson["Name"] = variable.mName;
-			variableJson["DataType"] = Global::GetDataTypeManager().GetName(variable.mDataTypeID);
+				pinDataJson["NodeID"] = cleanedNodeIDs.at(pin.mNodeID);
+				pinDataJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, inputPinID);
 
-			nlohmann::json defaultValueJson = nlohmann::json::object();
+				pinDataJson["ConnectionData"] = nlohmann::json::object();
+				nlohmann::json& connectionsJson = pinDataJson["Connections"];
 
-			Global::GetDataTypeManager().SaveData(variable.mDataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+				const bool connectionExists = !pin.mConnectedPinIDs.empty();
+				connectionsJson["Exists"] = connectionExists;
 
-			variableJson["DefaultValue"] = defaultValueJson;
-
-			variableJson["Nodes"] = nlohmann::json::array();
-			nlohmann::json& variableNodesJson = variableJson["Nodes"];
-
-			for (const NodeRef& nodeRef : variableManager.GetNodeRefsByVarID(varID))
-			{
-
-				const Node& node = nodeRef.mNodeGraph->mNodes.at(nodeRef.mNodeID);
-
-				if (!node.mIsDestroyed)
+				if (connectionExists)
 				{
-					nlohmann::json& varNodeJson = variableNodesJson.emplace_back();
-					const NodeID cleanNodeID = cleanedNodeIDs.at(nodeRef.mNodeID);
-					varNodeJson["NodeID"] = cleanNodeID;
-					variableNodesJson.push_back(varNodeJson);
-				}
-			}
 
-			variableDataJson.push_back(variableJson);
+					connectionsJson["Pins"] = nlohmann::json::array();
+					nlohmann::json& connectedPinsJson = connectionsJson["Pins"];
+					for (const PinID connectedPinID : pin.mConnectedPinIDs)
+					{
+						nlohmann::json& connectedPinJson = connectedPinsJson.emplace_back();
+						const Pin& connectedPin = eventGraph.mPins.at(connectedPinID);
+						connectedPinJson["NodeID"] = cleanedNodeIDs.at(connectedPin.mNodeID);
+						connectedPinJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, connectedPinID);
+					}
+
+				}
+				else
+				{
+					const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+
+					pinDataJson["DataType"] = Global::GetDataTypeManager().GetName(pinType.mDataTypeID);
+
+					nlohmann::json valueJson = nlohmann::json::object();
+					Global::GetDataTypeManager().SaveData(pinType.mDataTypeID, valueJson, pin.mDataPtr);
+					pinDataJson["Value"] = valueJson;
+				}
+
+				pinDataArrayJson.push_back(pinDataJson);
+			}
+		}
+
+		{
+			dataJson["Variables"] = nlohmann::json::array();
+			nlohmann::json& variableDataJson = dataJson["Variables"];
+
+			for (VarID varID = 0; varID < aClass.mVariableManager.mVariables.size(); ++varID)
+			{
+				const Variable& variable = aClass.mVariableManager.mVariables.at(varID);
+
+				if (variable.mIsDestroyed)
+				{
+					continue;
+				}
+
+				nlohmann::json variableJson;
+
+				variableJson["Name"] = variable.mName;
+				variableJson["DataType"] = Global::GetDataTypeManager().GetName(variable.mDataTypeID);
+
+				nlohmann::json defaultValueJson = nlohmann::json::object();
+
+				Global::GetDataTypeManager().SaveData(variable.mDataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+
+				variableJson["DefaultValue"] = defaultValueJson;
+
+				/*variableJson["Nodes"] = nlohmann::json::array();
+				nlohmann::json& variableNodesJson = variableJson["Nodes"];
+
+				for (const NodeRef& nodeRef : variableManager.GetNodeRefsByVarID(varID))
+				{
+
+					const Node& node = nodeRef.GetNodeGraph().mNodes.at(nodeRef.GetNodeID());
+
+					if (!node.mIsDestroyed)
+					{
+						nlohmann::json& varNodeJson = variableNodesJson.emplace_back();
+						const NodeID cleanNodeID = cleanedNodeIDs.at(nodeRef.GetNodeID());
+						varNodeJson["NodeID"] = cleanNodeID;
+						nlohmann::json& graphJson = varNodeJson["Graph"];
+						assert(nodeRef.GetClass());
+						graphJson["ClassName"] = nodeRef.GetClass()->mName;
+						graphJson
+						variableNodesJson.push_back(varNodeJson);
+					}
+				}*/
+
+				variableDataJson.push_back(variableJson);
+			}
 		}
 
 		ofs << jsonDoc;

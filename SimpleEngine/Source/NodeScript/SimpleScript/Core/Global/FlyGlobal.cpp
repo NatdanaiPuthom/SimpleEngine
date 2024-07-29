@@ -41,6 +41,11 @@ namespace FLY_NAMESPACE
 			return GetFoundation().GetTypeManager().GetPinTypeManager();
 		}
 
+		Class& GetClassByID(const ClassID aID)
+		{
+			return GetFoundation().GetClassByID(aID);
+		}
+
 		bool& IsDebugging()
 		{
 			return g_sDebugging;

@@ -36,9 +36,9 @@ namespace FLY_NAMESPACE
 
 		if (it != eventGraph.mEventNodes.end())
 		{
-			for (NodeID mNodeID : it->second)
+			for (const NodeID nodeID : it->second)
 			{
-				ExecuteNode(NodeExecutionData{ NodeRef{.mNodeID = mNodeID, .mNodeGraph = &eventGraph.mNodeGraph }, eNodeTriggerReason::Event });
+				ExecuteNode(NodeExecutionData{ .mNodeRef = CreateContextualNodeRef(nodeID, eventGraph.mNodeGraph), .mTriggerReason = eNodeTriggerReason::Event});
 			}
 		}
 
@@ -54,19 +54,19 @@ namespace FLY_NAMESPACE
 
 	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
 	{
-		const Node& node = aNodeExecutionData.mNodeRef.mNodeGraph->mNodes[aNodeExecutionData.mNodeRef.mNodeID];
+		const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().mNodes[aNodeExecutionData.mNodeRef.GetNodeID()];
 		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 		nodeType.mNodeRecipe.mExecuteFunction(aNodeExecutionData, mExecutionContext);
 	}
 
 	void NodeExecutor::RegisterAutoTickNode(const NodeRef& aNodeRef)
 	{
-		mAutoTickNodes.insert({ aNodeRef, eNodeTriggerReason::Event });
+		mAutoTickNodes.insert(NodeExecutionData{ .mNodeRef = aNodeRef, .mTriggerReason = eNodeTriggerReason::Event });
 	}
 
 	void NodeExecutor::UnregisterAutoTickNode(const NodeRef& aNodeRef)
 	{
-		mAutoTickNodes.erase({ aNodeRef, eNodeTriggerReason::Event });
+		mAutoTickNodes.erase(NodeExecutionData{ .mNodeRef = aNodeRef, .mTriggerReason = eNodeTriggerReason::Event });
 	}
 
 }

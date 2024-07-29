@@ -1,6 +1,8 @@
 #pragma once
 #include "FlyDefines.hpp"
 #include "Memory/FlyMemoryArena.hpp"
+#include "Variable/FlyVariableRef.hpp"
+#include "Node/FlyNodeRef.hpp"
 #include <memory>
 
 namespace FLY_NAMESPACE
@@ -35,11 +37,16 @@ namespace FLY_NAMESPACE
 
 		Class& CreateClass(const DataTypeID aTargetID, std::string_view aName);
 		void DestroyClass(Class& aClass);
-		void SetClassName(std::string_view aOldName, std::string_view aNewName);
-		const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& GetClasses();
+
+		Class& GetClassByID(ClassID aID);
+		const std::vector< std::unique_ptr<Class>>& GetClasses() const;
 
 		TypeManager& GetTypeManager();
 		NodeExecutor& GetNodeExecutor();
+
+		const VariableRef& GetVariableRefByNodeRef(const GlobalNodeRef& aNodeRef) const;
+
+		std::vector<GlobalNodeRef> GetNodeRefsByVariableRef(const VariableRef& aVarRef) const;
 
 	private:
 
@@ -49,10 +56,11 @@ namespace FLY_NAMESPACE
 
 		MemoryPool mMemoryPool;
 		std::unique_ptr<TypeManager> mTypeManager;
-		std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>> mClasses;
-		std::unordered_map<std::string_view, Class*> mClassesByName;
+		std::vector<std::unique_ptr<Class>> mClasses;
 
 		std::unique_ptr<NodeExecutor> mNodeExecutor;
+
+		std::unordered_map<GlobalNodeRef, VariableRef, GlobalNodeRefHasher> mNodeRefToVarRef;
 
 	};
 }

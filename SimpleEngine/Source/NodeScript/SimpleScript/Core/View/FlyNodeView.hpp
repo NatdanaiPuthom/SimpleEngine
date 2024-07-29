@@ -41,8 +41,8 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		NodeID mNodeID = InvalidID<NodeID>();
 		const NodeGraph* mNodeGraph = nullptr;
+		NodeID mNodeID = InvalidID<NodeID>();
 
 	};
 }

@@ -108,7 +108,7 @@ namespace FLY_NAMESPACE
 	std::vector<PinID> GetNonConnectedPinsOfType(const NodeGraph& aNodeGraph, const eFlowType aFlowType);
 	std::vector<PinID> GetNonConnectedPinsOfTypeAndHash(const NodeGraph& aNodeGraph, const eFlowType aFlowType, const DataTypeID aDataTypeID);
 
-	VariableView GetVariableByNode(NodeView aNodeView, NodeGraphView aNodeGraphView, ClassView aClassView);
+	VariableView GetVariableByNode(NodeView aNodeView, NodeGraphView aNodeGraphView);
 	std::vector<VariableView> GetVariables(ClassView aClassView, bool aIncludeDestroyed = false);
 
 	std::vector<NodeView> GetNodes(NodeGraphView aNodeGraph, bool aIncludeDestroyed = false);

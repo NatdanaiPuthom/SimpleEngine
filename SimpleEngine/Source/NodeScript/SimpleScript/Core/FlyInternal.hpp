@@ -4,6 +4,7 @@
 #include "Node/FlyNodeTrait.hpp"
 #include "SystemTypes/FlyVec2.hpp"
 #include "Node/FlyNodeRef.hpp"
+#include "Variable/FlyVariableRef.hpp"
 #include <string>
 #include <variant>
 
@@ -39,11 +40,12 @@ namespace FLY_NAMESPACE
 
 		void DestroyNode(NodeGraph& aNodeGraph, NodeID aNodeID, CommandTracker* aCommandTracker);
 		void DestroyNodes(const std::vector<NodeRef>& aNodeRefs, CommandTracker* aCommandTracker);
+		void DestroyNodes(const std::vector<GlobalNodeRef>& aNodeRefs, CommandTracker* aCommandTracker);
 
 		void SetNodePosition(NodeID aNodeID, Vec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 		void SetNodePosition(NodeID aNodeID, Vec2 aPosition, Vec2 aOldPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
-	
+
 		std::vector<PinID> CreateInputPins(NodeGraph& aNodeGraph, NodeID aNodeID, NodeTypeID aNodeTypeID, size_t aStartIndex = 0);
 
 		std::vector<PinID> CreateOutputPins(NodeGraph& aNodeGraph, NodeID, NodeTypeID aNodeTypeID, size_t aStartIndex);
@@ -67,6 +69,9 @@ namespace FLY_NAMESPACE
 		void ReplaceWildcardNode(NodeGraph& aNodeGraph, PinID aWildcardPinID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 
 		NodeID GetCurrentNodeID(NodeGraph& aNodeGraph);
+
+		VariableRef GetVariableRefByNodeRef(const GlobalNodeRef& aNodeRef);
+		std::vector<GlobalNodeRef> GetNodeRefsByVariableRef(const VariableRef& aVarRef);
 	}
 
 

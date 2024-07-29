@@ -26,7 +26,7 @@ namespace FLY_NAMESPACE
 	using DataTypeID = size_t;
 	using ObjectTypeID = size_t;
 	using EventID = size_t;
-	using ClassID = std::string_view;
+	using ClassID = size_t;
 
 	constexpr size_t NodeBufferCapacity = 1024;
 

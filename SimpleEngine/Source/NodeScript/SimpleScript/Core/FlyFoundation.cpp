@@ -3,7 +3,7 @@
 #include "NodeTypes/SystemNodes.hpp"
 #include "FlyDataTypes.hpp"
 #include "Serialization/FlySerializer.hpp"
-#include "Node/FlyNodeExecutor.hpp"
+#include "Execution/FlyNodeExecutor.hpp"
 #include "Type/FlyTypeManager.hpp"
 
 namespace FLY_NAMESPACE
@@ -16,6 +16,7 @@ namespace FLY_NAMESPACE
 			sInstance = nullptr;
 		}
 	}
+
 	Foundation::Foundation()
 		: mMemoryPool(10000)
 		, mTypeManager(std::make_unique<TypeManager>())
@@ -37,37 +38,23 @@ namespace FLY_NAMESPACE
 		mClasses.clear();
 	}
 
-	Class& Foundation::CreateClass(DataTypeID aTargetID, const std::string_view aName)
+	Class& Foundation::CreateClass(const DataTypeID aTargetID, const std::string_view aName)
 	{
-		std::vector<std::unique_ptr<Class>>& classesByTarget = mClasses[aTargetID];
-		
-		std::unique_ptr<Class>& createdClass = classesByTarget.emplace_back(std::make_unique<Class>(aTargetID, std::string(aName)));
-		mClassesByName.emplace(createdClass->mName, createdClass.get());
+		std::unique_ptr<Class>& createdClass = mClasses.emplace_back(std::make_unique<Class>(aTargetID, std::string(aName)));
 		return *createdClass;
 	}
 
 	void Foundation::DestroyClass(Class& aClass)
 	{
-		auto& scriptsByTargetID = mClasses.at(aClass.mTargetID);
-		mClassesByName.erase(aClass.mName);
-
-		std::erase_if(scriptsByTargetID, [&aClass](std::unique_ptr<Class>& aClassIter) -> bool { return &aClass == aClassIter.get(); });
+		std::erase_if(mClasses, [&aClass](std::unique_ptr<Class>& aClassIter) -> bool { return &aClass == aClassIter.get(); });
 	}
 
-	void Foundation::SetClassName(std::string_view aOldName, std::string_view aNewName)
+	Class& Foundation::GetClassByID(const ClassID aID)
 	{
-		if (aOldName == aNewName)
-		{
-			return;
-		}
-
-		Class* c = mClassesByName.at(aOldName);
-		c->mName = aNewName;
-		mClassesByName.erase(aOldName);
-		mClassesByName.emplace(c->mName, c);
+		return *mClasses.at(aID);
 	}
 
-	const std::unordered_map<DataTypeID, std::vector<std::unique_ptr<Class>>>& Foundation::GetClasses()
+	const std::vector<std::unique_ptr<Class>>& Foundation::GetClasses() const
 	{
 		return mClasses;
 	}
@@ -80,5 +67,29 @@ namespace FLY_NAMESPACE
 	NodeExecutor& Foundation::GetNodeExecutor()
 	{
 		return *mNodeExecutor;
+	}
+
+
+	const VariableRef& Foundation::GetVariableRefByNodeRef(const GlobalNodeRef& aNodeRef) const
+	{
+		return mNodeRefToVarRef.at(aNodeRef);
+	}
+
+	/*VarID Foundation::GetVariableIDByNodeRef(const GlobalNodeRefConst& aNodeRef) const
+	{
+		return GetVariableIDByNodeRef(*reinterpret_cast<const GlobalNodeRef*>(&aNodeRef));
+	}*/
+
+	std::vector<GlobalNodeRef> Foundation::GetNodeRefsByVariableRef(const VariableRef& aVarRef) const
+	{
+		std::vector<GlobalNodeRef> nodeIDs;
+		for (auto& [nodeRef, varID] : mNodeRefToVarRef)
+		{
+			if (varID == aVarRef)
+			{
+				nodeIDs.push_back(nodeRef);
+			}
+		}
+		return nodeIDs;
 	}
 }

@@ -11,7 +11,7 @@ namespace FLY_NAMESPACE
 		{
 			const Node& node = mNodes[nodeID];
 			NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
-			std::erase(nodeType.mNodeRefs, NodeRef{ .mNodeID = nodeID, .mNodeGraph = this });
+			std::erase(nodeType.mNodeRefs, CreateContextualNodeRef(nodeID, *this));
 		}
 	}
 

@@ -9,6 +9,7 @@
 #include "../FlyClass.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "FlyExecutionTypes.hpp"
+#include "../Variable/FlyVariableRef.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -39,12 +40,9 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	inline T GetterNode(const InternalExecutionContext* aContext)
 	{
-		const NodeRef& nodeRef = aContext->mNodeData.mNodeRef;
-		const VariableManager& variableManager = aContext->mClass->mVariableManager;
+		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
 
-		const VarID varID = variableManager.GetVariableIDByNodeRef(nodeRef);
-
-		const VariableInstance& variableInstance = aContext->mClassInstance->mVariableManagerInstance.mVariables[varID];
+		const VariableInstance& variableInstance = aContext->mClassInstance->mVariableManagerInstance.mVariables[variableRef.GetVarID()];
 		const T& output = *reinterpret_cast<const T*>(variableInstance.mRuntimeDataPtr.Get());
 		return output;
 	}
@@ -52,12 +50,10 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	inline void SetterNode(const InternalExecutionContext* aContext, const T& aValue)
 	{
-		const NodeRef& nodeRef = aContext->mNodeData.mNodeRef;
-		const VariableManager& variableManager = aContext->mClass->mVariableManager;
 
-		const VarID varID = variableManager.GetVariableIDByNodeRef(nodeRef);
+		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
 
-		VariableInstance& variableInstance = aContext->mClassInstance->mVariableManagerInstance.mVariables[varID];
+		VariableInstance& variableInstance = aContext->mClassInstance->mVariableManagerInstance.mVariables[variableRef.GetVarID()];
 
 		T& runtimeValue = *reinterpret_cast<T*>(variableInstance.mRuntimeDataPtr.Get());
 		runtimeValue = aValue;

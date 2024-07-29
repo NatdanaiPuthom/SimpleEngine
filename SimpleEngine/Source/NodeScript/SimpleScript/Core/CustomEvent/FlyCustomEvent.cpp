@@ -8,7 +8,7 @@ namespace FLY_NAMESPACE
 	{
 		// Sets the values of the custom 
 
-		const Node& callerNode = aContext->mNodeData.mNodeRef.mNodeGraph->mNodes[aContext->mNodeData.mNodeRef.mNodeID];
+		const Node& callerNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
 		const CustomEventID customEventID = Global::GetNodeTypeManager().GetCustomEventID(callerNode.mTypeID);
 
 		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(customEventID);
@@ -20,9 +20,9 @@ namespace FLY_NAMESPACE
 		{
 			aContext->mExecutionQueue->Push(NodeExecutionData{ executorNodeRef, eNodeTriggerReason::Flow });
 
-			const Node& executorNode = executorNodeRef.mNodeGraph->mNodes[executorNodeRef.mNodeID];
+			const Node& executorNode = executorNodeRef.GetNodeGraph().mNodes[executorNodeRef.GetNodeID()];
 
-			CopyPinData(*aContext, executorNode.mOutputPins, callerNode.mInputPins, *executorNodeRef.mNodeGraph, *aContext->mNodeData.mNodeRef.mNodeGraph, 1);
+			CopyPinData(*aContext, executorNode.mOutputPins, callerNode.mInputPins, executorNodeRef.GetNodeGraph(), aContext->mNodeData.mNodeRef.GetNodeGraph(), 1);
 
 		}
 	}

@@ -12,6 +12,7 @@ namespace FLY_NAMESPACE
 	class MemoryManager;
 	template<size_t> class MemoryArena;
 	struct CopyBuffer;
+	class Class;
 
 	namespace Global
 	{
@@ -22,6 +23,7 @@ namespace FLY_NAMESPACE
 		DataTypeManager& GetDataTypeManager();
 		NodeTypeManager& GetNodeTypeManager();
 		PinTypeManager& GetPinTypeManager();
+		Class& GetClassByID(ClassID aClassID);
 
 		bool& IsDebugging();
 

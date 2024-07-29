@@ -4,7 +4,7 @@
 namespace FLY_NAMESPACE
 {
 
-	VariableView::VariableView(const VarID aVarID, const Class& aClass)
+	VariableView::VariableView(const VarID aVarID, Class& aClass)
 		: mVarID(aVarID)
 		, mClass(&aClass)
 	{
@@ -29,6 +29,11 @@ namespace FLY_NAMESPACE
 	VarID VariableView::GetID() const
 	{
 		return mVarID;
+	}
+
+	Class& VariableView::GetClass() const
+	{
+		return *mClass;
 	}
 
 	VariableView::operator bool() const

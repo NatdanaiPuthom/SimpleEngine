@@ -1,11 +1,8 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include <vector>
-#include <string>
-#include <unordered_map>
-#include <memory>
-#include "../Node/FlyNodeRef.hpp"
 #include "FlyVariable.hpp"
+#include "../Memory/FlyMemoryArena.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -25,17 +22,11 @@ namespace FLY_NAMESPACE
 		VariableManager& operator=(const VariableManager&) = delete;
 		VariableManager& operator=(VariableManager&&) = default;
 
-
-		VarID GetVariableIDByNodeRef(const NodeRef& aNodeRef) const;
-		std::vector<NodeRef> GetNodeRefsByVarID(const VarID aVarID) const;
-
 	public:
 
 		std::vector<Variable> mVariables;
 
-		std::unordered_map<NodeRef, VarID, NodeRefHasher> mNodeRefToVarID;
-
-		std::unique_ptr<MemoryArena<NodeBufferCapacity>> mMemoryArena;
+		MemoryArena<NodeBufferCapacity> mMemoryArena;
 
 	};
 	

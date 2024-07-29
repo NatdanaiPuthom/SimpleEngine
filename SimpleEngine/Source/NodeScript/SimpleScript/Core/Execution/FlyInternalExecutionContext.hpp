@@ -1,6 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyNodeRef.hpp"
+#include "../Node/FlyNodeRef.hpp"
 #include <queue>
 
 namespace FLY_NAMESPACE
@@ -75,6 +75,6 @@ struct std::hash<FLY_NAMESPACE::NodeExecutionData>
 {
 	std::size_t operator()(const FLY_NAMESPACE::NodeExecutionData& aValue) const
 	{
-		return static_cast<size_t>(aValue.mNodeRef.mNodeID);
+		return static_cast<size_t>(aValue.mNodeRef.GetNodeID());
 	}
 };

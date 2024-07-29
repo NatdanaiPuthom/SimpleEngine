@@ -7,8 +7,8 @@ namespace FLY_NAMESPACE
 {
 
 	NodeView::NodeView(const NodeID aNodeID, const NodeGraph& aNodeGraph)
-		: mNodeID(aNodeID)
-		, mNodeGraph(&aNodeGraph)
+		: mNodeGraph(&aNodeGraph)
+		, mNodeID(aNodeID)
 	{
 	}
 
