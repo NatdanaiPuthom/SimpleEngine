@@ -30,6 +30,7 @@ namespace FLY_NAMESPACE
 		const eFlowType mFlowType = eFlowType::Input;
 		const DataTypeID mDataTypeID = InvalidID<DataTypeID>();
 		const PinSetFunction mSetFunction = nullptr;
+		MemoryPoolID mDefaultValueID = InvalidID<MemoryPoolID>();
 	};
 
 
@@ -43,7 +44,7 @@ namespace FLY_NAMESPACE
 	eFlowType StringToPinFlowType(const std::string& aName);
 
 	template<typename T>
-	decltype(auto) SelectByFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
+	constexpr decltype(auto) SelectByFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
 	{
 		return aFlowType == eFlowType::Input ? std::forward<T>(aInputValue) : std::forward<T>(aOutputValue);
 	}

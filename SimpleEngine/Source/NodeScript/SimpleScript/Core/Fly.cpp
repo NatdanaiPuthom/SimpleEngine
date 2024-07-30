@@ -273,13 +273,13 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	VariableView CreateVariable(const ClassView aClassView, const DataTypeView aDataTypeView, CommandTracker* aCommandTracker)
+	VariableView CreateVariable(const ClassView aClassView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
 	{
 		const VarID varID = Internal::CreateVariable(aClassView.GetClass(), aDataTypeView.GetID(), aCommandTracker);
 		return VariableView(varID, aClassView.GetClass());
 	}
 
-	void DestroyVariable(const VariableView aVariableView, const ClassView aClassView, CommandTracker* aCommandTracker)
+	void DestroyVariable(const VariableView aVariableView, const ClassView aClassView, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{

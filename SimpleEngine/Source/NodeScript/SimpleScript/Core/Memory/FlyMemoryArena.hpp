@@ -72,8 +72,8 @@ namespace FLY_NAMESPACE
 		MemoryPool& operator=(const MemoryPool&);
 		MemoryPool& operator=(MemoryPool&&) noexcept;
 
-		template<typename T>
-		MemoryPoolID Allocate(const T aDefaultValue = T());
+		template<typename T, typename... Args>
+		MemoryPoolID Allocate(Args&&... aArgs);
 
 		template<typename T>
 		T& At(MemoryPoolID anID);
@@ -100,8 +100,8 @@ namespace FLY_NAMESPACE
 		std::vector<MemoryObject> mObjects;
 	};
 
-	template<typename T>
-	inline MemoryPoolID MemoryPool::Allocate(const T aDefaultValue)
+	template<typename T, typename... Args>
+	inline MemoryPoolID MemoryPool::Allocate(Args&&... aArgs)
 	{
 		constexpr size_t newAllocSize = sizeof(T);
 		if (mStartPtr == nullptr)
@@ -115,7 +115,7 @@ namespace FLY_NAMESPACE
 
 		const MemoryPoolID id = GetSize();
 		Byte* currentMemory = mStartPtr + id;
-		new(currentMemory)T(aDefaultValue);
+		new(currentMemory)T(std::forward<Args>(aArgs)...);
 		mSize += newAllocSize;
 		MemoryObject memoryObject
 		{

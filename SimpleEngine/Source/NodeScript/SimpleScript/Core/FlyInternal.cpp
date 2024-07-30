@@ -12,6 +12,7 @@
 #include "FlyWildcard.hpp"
 #include "Utilities/FlyProxy.hpp"
 #include "FlyFoundation.hpp"
+#include "Node/FlyNodeTypeRegistry.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -323,9 +324,9 @@ namespace FLY_NAMESPACE
 
 			MemoryArena<NodeBufferCapacity>& memoryArena = ScriptProxy::GetNodeGraphMemoryArena(aNodeGraph);
 
-			void* const mDataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryArena);
+			void* const dataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryArena);
 
-			return CreatePin(aNodeGraph, aNodeID, aPinTypeID, mDataPtr);
+			return CreatePin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 		}
 
 
@@ -544,7 +545,7 @@ namespace FLY_NAMESPACE
 
 		VarID CreateVariable(Class& aClass, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
-			std::vector<Variable>& variables = ScriptProxy::GetVariablesRef(aClass);
+			std::vector<Variable>& variables = aClass.mVariableManager.mVariables;
 			const VarID id = variables.size();
 			variables.emplace_back();
 			SetVariableDataType(aClass, id, aDataTypeID, aCommandTracker);

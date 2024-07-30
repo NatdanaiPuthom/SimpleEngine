@@ -13,12 +13,12 @@ namespace FLY_NAMESPACE
 		PinTypeManager();
 		~PinTypeManager();
 
-		PinTypeID Create(std::string_view aName, eFlowType aFlowType, DataTypeID aDataTypeID, PinSetFunction aSetFunction);
+		PinTypeID Create(std::string_view aName, eFlowType aFlowType, DataTypeID aDataTypeID, PinSetFunction aSetFunction, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>());
 
 		template<typename T>
-		PinTypeID Create(std::string_view aName, eFlowType aFlowType, PinSetFunction aSetFunction)
+		PinTypeID Create(std::string_view aName, eFlowType aFlowType, PinSetFunction aSetFunction, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>())
 		{
-			return Create(aName, aFlowType, typeid(T).hash_code(), aSetFunction);
+			return Create(aName, aFlowType, GetDataTypeID<T>(), aSetFunction, aDefaultValueMemoryID);
 		}
 
 		PinType& GetPinType(PinTypeID anID);

@@ -31,6 +31,7 @@ namespace FLY_NAMESPACE
 	{
 		std::vector<std::string> mInputPinNames;
 		std::vector<std::string> mOutputPinNames;
+		std::vector<std::any> mDefaultValues;
 		bool mShowDataTypePinNames = true;
 	};
 }

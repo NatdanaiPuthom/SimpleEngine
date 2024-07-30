@@ -60,12 +60,12 @@ namespace FLY_NAMESPACE
 		return Flow(false);
 	}
 
-	REGISTER_FUNCTION(BeginPlay, "Events", Event);
-	REGISTER_FUNCTION(Tick, "Events", Event);
-	REGISTER_FUNCTION(EndPlay, "Events", Event);
+	REGISTER_FUNCTION(BeginPlay, "Events", Event{});
+	REGISTER_FUNCTION(Tick, "Events", Event{}, OutputNames{ "Flow", "Delta Time" });
+	REGISTER_FUNCTION(EndPlay, "Events", Event{});
 
-	REGISTER_FUNCTION(Branch, "Execution");
-	REGISTER_FUNCTION(FlipFlop, "Execution");
-	REGISTER_FUNCTION(Delay, "Execution");
+	REGISTER_FUNCTION(Branch, "Execution", InputNames{ "Flow", "Condition" }, OutputNames{ "True", "False" }, DefaultValues{ Flow(false), true });
+	REGISTER_FUNCTION(FlipFlop, "Execution", OutputNames{ "Flip", "Flop" });
+	REGISTER_FUNCTION(Delay, "Execution", InputNames{ "Flow", "Duration", "Reset On Flow" }, DefaultValues{ Flow(false), 1.f, false });
 
 }
