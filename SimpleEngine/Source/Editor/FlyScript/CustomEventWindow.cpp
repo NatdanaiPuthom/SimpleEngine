@@ -20,9 +20,9 @@ namespace Editor
 
 	void CustomEventWindow::Update()
 	{
-		if (ImGui::Begin("Node Creator"))
+		if (ImGui::Begin("Custom Event"))
 		{
-			if (ImGui::Button("Create Custom Event Node"))
+			if (ImGui::Button("Create Custom Event"))
 			{
 				Fly::CreateCustomEvent("CustomEvent");
 			}
@@ -50,23 +50,22 @@ namespace Editor
 
 	void CustomEventWindow::EditInputs(const Fly::CustomEventView& aCustomEventView)
 	{
-		const Fly::NodeTypeView executorNodeType = aCustomEventView.GetExecutorNodeType();
-		const Fly::NodeTypeView callerNodeType = aCustomEventView.GetCallerNodeType();
+		const Fly::NodeTypeView executorNodeType = aCustomEventView.GetNodeType();
 		std::string shortName = executorNodeType.GetShortName();
 
 		char nameBuffer[35]{};
 		strcpy_s(nameBuffer, shortName.c_str());
 
-		if (ImGui::InputText(std::string("##" + std::to_string(aCustomEventView.GetID())).c_str(), nameBuffer, IM_ARRAYSIZE(nameBuffer)))
+		if (ImGui::InputText(std::string("##CustomEventName" + std::to_string(aCustomEventView.GetID())).c_str(), nameBuffer, IM_ARRAYSIZE(nameBuffer)))
 		{
-			Fly::SetCustomEventName(aCustomEventView.GetID(), nameBuffer);
+			Fly::SetCustomEventName(aCustomEventView, nameBuffer);
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Add Pin"))
 		{
-			Fly::AddPinToCustomEvent(Fly::GetDataTypeID<bool>(), aCustomEventView.GetID(), "Pin");
+			Fly::AddPinToCustomEvent(aCustomEventView, Fly::DataTypeView(Fly::GetDataTypeID<bool>()), "Pin");
 		}
 
 		ImGui::Separator();
@@ -74,6 +73,10 @@ namespace Editor
 		const std::vector<Fly::PinTypeView> outputPinTypes = executorNodeType.GetOutputPinTypes();
 		for (size_t i = 0; i < outputPinTypes.size(); ++i)
 		{
+			if (i == 0)
+			{
+				continue;
+			}
 			const Fly::PinTypeView& outputPinType = outputPinTypes.at(i);
 
 			ImGui::Text("%u:", i);
@@ -82,24 +85,22 @@ namespace Editor
 			char buffer[35]{};
 			strcpy_s(buffer, outputPinType.GetName().c_str());
 
-			if (ImGui::InputText(("##" + std::to_string(i)).c_str(), buffer, IM_ARRAYSIZE(buffer)))
+			if (ImGui::InputText(("##CustomEventPinName" + std::to_string(i)).c_str(), buffer, IM_ARRAYSIZE(buffer)))
 			{
-				Fly::SetPinTypeName(outputPinType.GetID(), buffer);
-				const std::vector<Fly::PinTypeView> callerInputPinTypes = callerNodeType.GetInputPinTypes();
-				Fly::SetPinTypeName(callerInputPinTypes.at(i).GetID(), buffer);
+				Fly::SetPinNameAtIndexCustomEvent(aCustomEventView, buffer, i);
 			}
 
 			ImGui::SameLine();
 			if (ImGui::Button(std::string("Delete##" + std::to_string(i)).c_str()))
 			{
-				Fly::DeletePinAtIndexCustomEvent(i, aCustomEventView.GetID());
+				Fly::DeletePinAtIndexCustomEvent(aCustomEventView, i);
 			}
 
 			const std::string comboLabel = "##CustomEventPinType" + std::to_string(i);
 			Fly::DataTypeView currentDataType(outputPinType.GetDataTypeID());
 			if (DataTypeComboEditableFilter(comboLabel.c_str(), currentDataType))
 			{
-				Fly::SetPinAtIndexCustomEvent(i, currentDataType, aCustomEventView.GetID());
+				Fly::SetPinDataTypeAtIndexCustomEvent(aCustomEventView, currentDataType, i);
 			}
 
 			ImGui::SameLine();

@@ -36,15 +36,16 @@ namespace FLY_NAMESPACE
 
 		bool CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID);
 
-		NodeType& GetNodeType(NodeTypeID anID);
-		const NodeType& GetNodeType(NodeTypeID anID) const;
+		NodeType& GetNodeType(NodeTypeID aID);
+		const NodeType& GetNodeType(NodeTypeID aID) const;
 
 		const std::vector<NodeType>& GetNodeTypes();
 		
 		template<Predicate<const NodeType&> FilterPredicate>
 		std::vector<NodeTypeView> GetNodeTypesFiltered(FilterPredicate&& aPredicate);
 
-		CustomEvent& GetCustomEvent(CustomEventID anID);
+		CustomEvent& GetCustomEvent(CustomEventID aID);
+		const CustomEvent& GetCustomEvent(CustomEventID aID) const;
 		std::vector<CustomEvent>& GetCustomEvents();
 		const std::vector<CustomEvent>& GetCustomEvents() const;
 

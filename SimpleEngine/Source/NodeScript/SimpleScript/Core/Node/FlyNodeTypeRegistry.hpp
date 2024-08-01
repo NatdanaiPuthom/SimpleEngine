@@ -8,7 +8,6 @@
 #include "../DataType/FlyDataTypeManager.hpp"
 #include "../FlyClass.hpp"
 #include "../Instance/FlyClassInstance.hpp"
-#include "FlyExecutionTypes.hpp"
 #include "../Variable/FlyVariableRef.hpp"
 
 namespace FLY_NAMESPACE

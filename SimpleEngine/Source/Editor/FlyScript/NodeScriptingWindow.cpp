@@ -391,16 +391,17 @@ namespace Editor
 				Fly::ClassInstance& classInstance = Fly::CreateClassInstance(GetNodeContext().classView);
 				Fly::ExecutionContextBase c;
 
+				Fly::None none;
 				switch (currentEventIndex)
 				{
 				case 0:
-					Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::BeginPlay, classInstance, nullptr, c);
+					Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::BeginPlay, classInstance, &none, c);
 					break;
 				case 1:
-					Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::Tick, classInstance, nullptr, c);
+					Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::Tick, classInstance, &none, c);
 					break;
 				case 2:
-					Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::EndPlay, classInstance, nullptr, c);
+					Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::EndPlay, classInstance, &none, c);
 					break;
 				default:
 					break;
@@ -744,7 +745,7 @@ namespace Editor
 
 			const Fly::PinView pin(startedPinID, currentNodeContext.nodeGraphView.GetNodeGraph());
 
-			currentNodeContext.myPinIDsToHighlight = Fly::GetNonConnectedPinsOfTypeAndHash(GetNodeContext().nodeGraphView.GetNodeGraph(), InvertFlowType(pin.GetFlowType()), pin.GetDataTypeID());
+			currentNodeContext.myPinIDsToHighlight = Fly::GetNonConnectedPinsByFlowTypeAndDataType(GetNodeContext().nodeGraphView, InvertFlowType(pin.GetFlowType()), Fly::DataTypeView(pin.GetDataTypeID()));
 
 			for (Fly::PinID i = 0; i < currentNodeContext.myPinIDsToHighlight.size(); i++)
 			{

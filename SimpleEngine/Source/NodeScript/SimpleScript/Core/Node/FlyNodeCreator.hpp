@@ -1,6 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyExecutionTypes.hpp"
+#include "../Execution/FlyExecutionTypes.hpp"
 #include "../Execution/FlyInternalExecutionContext.hpp"
 #include "../Variable/FlyVariableManager.hpp"
 #include "FlyNodeTypeManager.hpp"
@@ -21,7 +21,7 @@
 namespace FLY_NAMESPACE
 {
 
-	struct NodeCreationData
+	struct NodeCreationData final
 	{
 		EventID mEventID = InvalidID<EventID>();
 		eNodeOperatorTrait mOperatorTrait = eNodeOperatorTrait::None;
@@ -36,9 +36,8 @@ namespace FLY_NAMESPACE
 	template<CleanType T, eFlowType FlowType>
 	PinSetFunction CreatePinSetFunction()
 	{
-		return [](const PinSetData& aPinSetData, const InternalExecutionContext& aContext) -> void
+		return [](const PinSetData& aPinSetData, [[maybe_unused]] const InternalExecutionContext& aContext) -> void
 			{
-				aContext;
 #ifdef FLY_DEBUG
 				assert(aPinSetData.mDataTypeID == typeid(T).hash_code());
 #endif

@@ -44,7 +44,7 @@ namespace FLY_NAMESPACE
 	eFlowType StringToPinFlowType(const std::string& aName);
 
 	template<typename T>
-	constexpr decltype(auto) SelectByFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
+	[[nodiscard]] constexpr decltype(auto) SelectByFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
 	{
 		return aFlowType == eFlowType::Input ? std::forward<T>(aInputValue) : std::forward<T>(aOutputValue);
 	}

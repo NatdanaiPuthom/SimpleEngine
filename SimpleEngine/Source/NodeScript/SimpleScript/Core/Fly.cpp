@@ -188,6 +188,11 @@ namespace FLY_NAMESPACE
 		Internal::DestroyLink(aNodeGraphView.GetNodeGraph(), aLinkView.GetID(), aCommandTracker);
 	}
 
+	void DestroyLinksByPin(const PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
+	{
+		Internal::DestroyLinksByPin(aNodeGraphView.GetNodeGraph(), aPinView.GetID(), aCommandTracker);
+	}
+
 	/*void DestoryLinksByOutputPin(const PinView aOutputPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
 	{
 		const Pin& outputPin = aNodeGraphView.GetNodeGraph().mPins.at(aOutputPinView.GetID());
@@ -623,19 +628,19 @@ namespace FLY_NAMESPACE
 	}
 
 
-	static void SetPinAtIndexNodeType(const NodeTypeID aNodeTypeID, const size_t anIndex, const DataTypeID aDataTypeID, const eFlowType aFlowType)
+	static void SetPinAtIndexNodeType(const NodeTypeID aNodeTypeID, const size_t aIndex, const DataTypeID aDataTypeID, const eFlowType aFlowType)
 	{
 		NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
 		PinTypeManager& pinTypeManager = Global::GetPinTypeManager();
 
 		NodeType& nodeType = nodeTypeManager.GetNodeType(aNodeTypeID);
 		std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, nodeType.mNodeRecipe.mInputPinTypeIDs, nodeType.mNodeRecipe.mOutputPinTypeIDs);
-		const PinTypeID oldPinTypeID = pinTypeIDs.at(anIndex);
+		const PinTypeID oldPinTypeID = pinTypeIDs.at(aIndex);
 		const PinType& oldPinType = pinTypeManager.GetPinType(oldPinTypeID);
 
 		const PinTypeID newPinTypeID = pinTypeManager.Create(oldPinType.mName, aFlowType, aDataTypeID, CreatePinSetFunction());
 
-		pinTypeIDs.at(anIndex) = newPinTypeID;
+		pinTypeIDs.at(aIndex) = newPinTypeID;
 
 		const std::vector<NodeRef>& mNodeRefs = nodeType.mNodeRefs;
 		for (const NodeRef& nodeRef : mNodeRefs)
@@ -644,65 +649,89 @@ namespace FLY_NAMESPACE
 
 			std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins);
 			const PinID createdPinID = Internal::CreatePin(nodeRef.GetNodeGraph(), nodeRef.GetNodeID(), newPinTypeID);
-			pinIDs.at(anIndex) = createdPinID;
+			pinIDs.at(aIndex) = createdPinID;
 		}
 	}
 
-	static void DeletePinAtIndexNodeType(const NodeTypeID aNodeTypeID, const size_t anIndex, const eFlowType aFlowType)
+	static void DeletePinAtIndexNodeType(const NodeTypeID aNodeTypeID, const size_t aIndex, const eFlowType aFlowType)
 	{
 		NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(aNodeTypeID);
 
 		std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, nodeType.mNodeRecipe.mInputPinTypeIDs, nodeType.mNodeRecipe.mOutputPinTypeIDs);
 
-		assert(anIndex < pinTypeIDs.size());
+		assert(aIndex < pinTypeIDs.size());
 
-		pinTypeIDs.erase(pinTypeIDs.begin() + anIndex);
+		pinTypeIDs.erase(pinTypeIDs.begin() + aIndex);
 
 		for (const NodeRef& nodeRef : nodeType.mNodeRefs)
 		{
 			Node& node = nodeRef.GetNodeGraph().mNodes.at(nodeRef.GetNodeID());
 
 			std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins);
-			pinIDs.erase(pinIDs.begin() + anIndex);
+			Internal::DestroyLinksByPin(nodeRef.GetNodeGraph(), pinIDs.at(aIndex), nullptr);
+			pinIDs.erase(pinIDs.begin() + aIndex);
+
 		}
 	}
 
-	void AddPinToCustomEvent(const DataTypeID aDataTypeID, const CustomEventID aCustomEventID, std::string_view aPinName)
+	void AddPinToCustomEvent(const CustomEventView aCustomEventView, const DataTypeView aDataTypeView, std::string_view aPinName)
 	{
-		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventID);
+		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventView.GetID());
 
-		AddPinToNodeType(aDataTypeID, customEvent.GetExecutorTypeID(), eFlowType::Output, aPinName);
-		AddPinToNodeType(aDataTypeID, customEvent.GetCallerTypeID(), eFlowType::Input, aPinName);
+		AddPinToNodeType(aDataTypeView.GetID(), customEvent.GetExecutorTypeID(), eFlowType::Output, aPinName);
+		AddPinToNodeType(aDataTypeView.GetID(), customEvent.GetCallerTypeID(), eFlowType::Input, aPinName);
 	}
 
-	void SetPinAtIndexCustomEvent(const size_t anIndex, const DataTypeView aDataTypeView, const CustomEventID aCustomEventID)
+	void SetPinDataTypeAtIndexCustomEvent(const CustomEventView aCustomEventView, const DataTypeView aDataTypeView, const size_t aIndex)
 	{
-		if (anIndex == 0)
+		if (aIndex == 0)
 		{
 			return;
 		}
-		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventID);
+		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventView.GetID());
 
-		SetPinAtIndexNodeType(customEvent.GetExecutorTypeID(), anIndex, aDataTypeView.GetID(), eFlowType::Output);
-		SetPinAtIndexNodeType(customEvent.GetCallerTypeID(), anIndex, aDataTypeView.GetID(), eFlowType::Input);
+		SetPinAtIndexNodeType(customEvent.GetExecutorTypeID(), aIndex, aDataTypeView.GetID(), eFlowType::Output);
+		SetPinAtIndexNodeType(customEvent.GetCallerTypeID(), aIndex, aDataTypeView.GetID(), eFlowType::Input);
 	}
 
-	void DeletePinAtIndexCustomEvent(const size_t anIndex, const CustomEventID aCustomEventID)
+	void SetPinNameAtIndexCustomEvent(const CustomEventView aCustomEventView, const std::string_view aName, const size_t aIndex)
 	{
-		if (anIndex == 0)
+		if (aIndex == 0)
+		{
+			return;
+		}
+		const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
+		const CustomEvent& customEvent = nodeTypeManager.GetCustomEvent(aCustomEventView.GetID());
+
+		{
+			const NodeType& callerNodeType = nodeTypeManager.GetNodeType(customEvent.GetCallerTypeID());
+
+			SetPinTypeName(callerNodeType.mNodeRecipe.mInputPinTypeIDs.at(aIndex), aName);
+		}
+
+		{
+			const NodeType& executorNodeType = nodeTypeManager.GetNodeType(customEvent.GetExecutorTypeID());
+
+			SetPinTypeName(executorNodeType.mNodeRecipe.mOutputPinTypeIDs.at(aIndex), aName);
+		}
+	}
+
+	void DeletePinAtIndexCustomEvent(const CustomEventView aCustomEventView, const size_t aIndex)
+	{
+		if (aIndex == 0)
 		{
 			return;
 		}
 
-		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventID);
+		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventView.GetID());
 
-		DeletePinAtIndexNodeType(customEvent.GetCallerTypeID(), anIndex, eFlowType::Input);
-		DeletePinAtIndexNodeType(customEvent.GetExecutorTypeID(), anIndex, eFlowType::Output);
+		DeletePinAtIndexNodeType(customEvent.GetCallerTypeID(), aIndex, eFlowType::Input);
+		DeletePinAtIndexNodeType(customEvent.GetExecutorTypeID(), aIndex, eFlowType::Output);
 	}
 
-	void SetCustomEventName(const CustomEventID aCustomEventID, std::string_view aName)
+	void SetCustomEventName(const CustomEventView aCustomEventView, std::string_view aName)
 	{
-		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventID);
+		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventView.GetID());
 		NodeType& executorNodeType = Global::GetNodeTypeManager().GetNodeType(customEvent.GetExecutorTypeID());
 		NodeType& callerNodeType = Global::GetNodeTypeManager().GetNodeType(customEvent.GetCallerTypeID());
 
@@ -724,36 +753,61 @@ namespace FLY_NAMESPACE
 		return FunctionView(id);
 	}
 
-	void AddPinToFunction(const FunctionView aFunctionView, const DataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName)
+	void AddPinToFunction(const FunctionView aFunctionView, const DataTypeView aDataTypeView, const eFlowType aFlowType, std::string_view aPinName)
 	{
 		const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
 		const Function& function = nodeTypeManager.GetFunction(aFunctionView.GetID());
 
 
-		AddPinToNodeType(aDataTypeID, function.mCallerNodeTypeID, aFlowType, aPinName);
+		AddPinToNodeType(aDataTypeView.GetID(), function.mCallerNodeTypeID, aFlowType, aPinName);
 
 		const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.mInputNodeTypeID, function.mOutputNodeTypeID);
-		AddPinToNodeType(aDataTypeID, inputOutputNodeTypeID, InvertFlowType(aFlowType), aPinName);
+		AddPinToNodeType(aDataTypeView.GetID(), inputOutputNodeTypeID, InvertFlowType(aFlowType), aPinName);
 	}
 
-	void SetPinAtIndexFunction(const FunctionView aFunctionView, const size_t anIndex, const DataTypeID aDataTypeID, const eFlowType aFlowType)
+	void SetPinDataTypeAtIndexFunction(const FunctionView aFunctionView, const DataTypeView aDataTypeView, const size_t aIndex, const eFlowType aFlowType)
 	{
 		const Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionView.GetID());
 
-		SetPinAtIndexNodeType(function.mCallerNodeTypeID, anIndex, aDataTypeID, aFlowType);
+		SetPinAtIndexNodeType(function.mCallerNodeTypeID, aIndex, aDataTypeView.GetID(), aFlowType);
 
 		const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.mInputNodeTypeID, function.mOutputNodeTypeID);
-		SetPinAtIndexNodeType(inputOutputNodeTypeID, anIndex, aDataTypeID, InvertFlowType(aFlowType));
+		SetPinAtIndexNodeType(inputOutputNodeTypeID, aIndex, aDataTypeView.GetID(), InvertFlowType(aFlowType));
 	}
 
-	void DeletePinAtIndexFunction(const FunctionView aFunctionView, const size_t anIndex, const eFlowType aFlowType)
+	void SetPinNameAtIndexFunction(const FunctionView aFunctionView, const std::string_view aName, const size_t aIndex, const eFlowType aFlowType)
+	{
+		if (aIndex == 0)
+		{
+			return;
+		}
+		const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
+		const Function& function = nodeTypeManager.GetFunction(aFunctionView.GetID());
+
+		{
+			const NodeType& callerNodeType = nodeTypeManager.GetNodeType(function.mCallerNodeTypeID);
+
+			const std::vector<PinTypeID>& callerPinTypeIDs = SelectByFlowType(aFlowType, callerNodeType.mNodeRecipe.mInputPinTypeIDs, callerNodeType.mNodeRecipe.mOutputPinTypeIDs);
+			SetPinTypeName(PinTypeView(callerPinTypeIDs.at(aIndex)), aName);
+		}
+
+		{
+			const NodeType& inputNodeType = nodeTypeManager.GetNodeType(function.mInputNodeTypeID);
+			const NodeType& outputNodeType = nodeTypeManager.GetNodeType(function.mOutputNodeTypeID);
+
+			const std::vector<PinTypeID>& inputOutputPinTypeIDs = SelectByFlowType(aFlowType, inputNodeType.mNodeRecipe.mOutputPinTypeIDs, outputNodeType.mNodeRecipe.mInputPinTypeIDs);
+			SetPinTypeName(inputOutputPinTypeIDs.at(aIndex), aName);
+		}
+	}
+
+	void DeletePinAtIndexFunction(const FunctionView aFunctionView, const size_t aIndex, const eFlowType aFlowType)
 	{
 		const Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionView.GetID());
 
-		DeletePinAtIndexNodeType(function.mCallerNodeTypeID, anIndex, aFlowType);
+		DeletePinAtIndexNodeType(function.mCallerNodeTypeID, aIndex, aFlowType);
 
 		const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.mInputNodeTypeID, function.mOutputNodeTypeID);
-		DeletePinAtIndexNodeType(inputOutputNodeTypeID, anIndex, InvertFlowType(aFlowType));
+		DeletePinAtIndexNodeType(inputOutputNodeTypeID, aIndex, InvertFlowType(aFlowType));
 	}
 
 	void SetFunctionName(const FunctionView aFunctionView, std::string_view aName)
@@ -833,7 +887,7 @@ namespace FLY_NAMESPACE
 
 	}
 
-	std::vector<PinID> GetNonConnectedPinsOfType(const NodeGraph& aNodeGraph, const eFlowType aFlowType)
+	std::vector<PinID> GetNonConnectedPinsByFlowType(const NodeGraph& aNodeGraph, const eFlowType aFlowType)
 	{
 		switch (aFlowType)
 		{
@@ -849,34 +903,17 @@ namespace FLY_NAMESPACE
 		return std::vector<PinID>();
 	}
 
-	std::vector<PinID> GetNonConnectedPinsOfTypeAndHash(const NodeGraph& aNodeGraph, const eFlowType aFlowType, const DataTypeID aDataTypeID)
+	std::vector<PinID> GetNonConnectedPinsByFlowTypeAndDataType(const NodeGraphView aNodeGraphView, const eFlowType aFlowType, const DataTypeView aDataTypeView)
 	{
 		std::vector<PinID> pinIDs;
-		std::vector<PinID> pinTypeFilter = GetNonConnectedPinsOfType(aNodeGraph, aFlowType);
-		switch (aFlowType)
+		std::vector<PinID> pinTypeFilter = GetNonConnectedPinsByFlowType(aNodeGraphView.GetNodeGraph(), aFlowType);
+		for (const PinID id : pinTypeFilter)
 		{
-		case eFlowType::Input:
-
-			for (PinID id : pinTypeFilter)
+			const PinTypeView pinTypeView(aNodeGraphView.GetNodeGraph().mPins.at(id).mTypeID);
+			if (pinTypeView.GetDataTypeID() == aDataTypeView.GetID())
 			{
-				if (Global::GetPinTypeManager().GetPinType(ScriptProxy::GetPin(aNodeGraph, id).mTypeID).mDataTypeID == aDataTypeID)
-				{
-					pinIDs.push_back(id);
-				}
+				pinIDs.push_back(id);
 			}
-			break;
-
-		case eFlowType::Output:
-			for (PinID id : pinTypeFilter)
-			{
-				if (Global::GetPinTypeManager().GetPinType(ScriptProxy::GetPin(aNodeGraph, id).mTypeID).mDataTypeID == aDataTypeID)
-				{
-					pinIDs.push_back(id);
-				}
-			}
-			break;
-		default:
-			break;
 		}
 
 		return pinIDs;

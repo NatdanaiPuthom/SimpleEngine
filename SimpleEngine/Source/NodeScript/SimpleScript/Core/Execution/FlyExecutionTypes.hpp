@@ -10,7 +10,7 @@ namespace FLY_NAMESPACE
 	};
 
 	template<typename T>
-	struct NodeExecutionContext
+	struct NodeExecutionContext final
 	{
 		const T& mContext;
 	};

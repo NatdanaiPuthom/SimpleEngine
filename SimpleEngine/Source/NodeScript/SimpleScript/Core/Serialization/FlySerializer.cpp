@@ -461,7 +461,7 @@ namespace FLY_NAMESPACE
 
 				const DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeName);
 
-				AddPinToCustomEvent(dataTypeID, customEvent.GetID(), pinName);
+				AddPinToCustomEvent(CustomEventView(customEvent.GetID()), DataTypeView(dataTypeID), pinName);
 			}
 		}
 	}

@@ -9,7 +9,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-		explicit CustomEventView(CustomEventID anID);
+		explicit CustomEventView(CustomEventID aID);
 
 
 		NodeTypeView GetCallerNodeType() const;
@@ -17,6 +17,8 @@ namespace FLY_NAMESPACE
 		CustomEventID GetID() const;
 
 		explicit operator bool() const;
+
+		friend bool operator==(const CustomEventView& a, const CustomEventView& b);
 
 	private:
 

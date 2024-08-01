@@ -53,7 +53,7 @@ namespace FLY_NAMESPACE
 
 	LinkView TryCreateLink(PinView aPinView1, PinView aPinView2, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void DestroyLink(LinkView aLinkView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
-	//void DestoryLinksByOutputPin(PinView aOutputPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
+	void DestroyLinksByPin(PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void DestroyNode(NodeView aNodeView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void DestroyNodes(const std::vector<NodeRef>& aNodeRefs, CommandTracker* aCommandTracker);
@@ -84,18 +84,20 @@ namespace FLY_NAMESPACE
 
 	CustomEventView CreateCustomEvent(std::string_view aName);
 
-	void AddPinToCustomEvent(DataTypeID aDataTypeID, CustomEventID aCustomEventID, std::string_view aPinName = "Pin");
-	void SetPinAtIndexCustomEvent(size_t anIndex, DataTypeView aDataTypeView, CustomEventID aCustomEventID);
-	void DeletePinAtIndexCustomEvent(size_t anIndex, CustomEventID aCustomEventID);
+	void AddPinToCustomEvent(CustomEventView aCustomEventView, DataTypeView aDataTypeView, std::string_view aPinName = "Pin");
+	void SetPinDataTypeAtIndexCustomEvent(CustomEventView aCustomEventView, DataTypeView aDataTypeView, size_t aIndex);
+	void SetPinNameAtIndexCustomEvent(CustomEventView aCustomEventView, std::string_view aName, size_t aIndex);
+	void DeletePinAtIndexCustomEvent(CustomEventView aCustomEventView, size_t aIndex);
 
-	void SetCustomEventName(CustomEventID aCustomEventID, std::string_view aName);
+	void SetCustomEventName(CustomEventView aCustomEventView, std::string_view aName);
 
 	FunctionView CreateGlobalFunction(const std::string_view aName);
 	FunctionView CreateMemberFunction(const std::string_view aName, ClassView aClassView);
 
-	void AddPinToFunction(FunctionView aFunctionView, DataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName = "Pin");
-	void SetPinAtIndexFunction(FunctionView aFunctionView, size_t anIndex, DataTypeID aDataTypeID, eFlowType aFlowType);
-	void DeletePinAtIndexFunction(FunctionView aFunctionView, size_t anIndex, eFlowType aFlowType);
+	void AddPinToFunction(FunctionView aFunctionView, DataTypeView aDataTypeView, eFlowType aFlowType, std::string_view aPinName = "Pin");
+	void SetPinDataTypeAtIndexFunction(FunctionView aFunctionView, DataTypeView aDataTypeView, size_t aIndex, eFlowType aFlowType);
+	void SetPinNameAtIndexFunction(FunctionView aFunctionView, std::string_view aName, size_t aIndex, eFlowType aFlowType);
+	void DeletePinAtIndexFunction(FunctionView aFunctionView, size_t aIndex, eFlowType aFlowType);
 
 	void SetFunctionName(FunctionView aFunctionView, std::string_view aName);
 
@@ -105,8 +107,8 @@ namespace FLY_NAMESPACE
 	std::vector<PinID> GetOutputPins(const NodeGraph& aNodeGraph);
 	std::vector<PinID> GetNonConnectedInputPins(const NodeGraph& aNodeGraph);
 	std::vector<PinID> GetNonConnectedOutputPins(const NodeGraph& aNodeGraph);
-	std::vector<PinID> GetNonConnectedPinsOfType(const NodeGraph& aNodeGraph, const eFlowType aFlowType);
-	std::vector<PinID> GetNonConnectedPinsOfTypeAndHash(const NodeGraph& aNodeGraph, const eFlowType aFlowType, const DataTypeID aDataTypeID);
+	std::vector<PinID> GetNonConnectedPinsByFlowType(const NodeGraph& aNodeGraph, const eFlowType aFlowType);
+	std::vector<PinID> GetNonConnectedPinsByFlowTypeAndDataType(NodeGraphView aNodeGraphView, eFlowType aFlowType, DataTypeView aDataTypeView);
 
 	VariableView GetVariableByNode(NodeView aNodeView, NodeGraphView aNodeGraphView);
 	std::vector<VariableView> GetVariables(ClassView aClassView, bool aIncludeDestroyed = false);

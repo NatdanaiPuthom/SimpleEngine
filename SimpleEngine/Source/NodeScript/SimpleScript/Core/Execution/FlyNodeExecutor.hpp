@@ -16,10 +16,9 @@ namespace FLY_NAMESPACE
 		NodeExecutor();
 		~NodeExecutor();
 
-		void ExecuteEvent(EventID anEventID, ClassInstance& aClassInstance, void* aOwner, const ExecutionContextBase& anExecutionContext, bool aExecuteAutoTickers = false);
 
-		template<typename EventFunction>
-		void ExecuteEvent(EventFunction, ClassInstance& aClassInstance, void* aOwner, const ExecutionContextBase& aContext, bool aExecuteAutoTickers = false);
+		template<typename EventFunction, typename TargetType>
+		void ExecuteEvent(EventFunction, ClassInstance& aClassInstance, TargetType* aTarget, const ExecutionContextBase& aContext, bool aExecuteAutoTickers = false);
 
 		void ExecuteNode(const NodeExecutionData& aNodeExecutionData);
 
@@ -34,6 +33,12 @@ namespace FLY_NAMESPACE
 
 	private:
 
+		void ExecuteEventInternal(EventID aEventID, ClassInstance& aClassInstance, void* aTarget, const ExecutionContextBase& aExecutionContext, bool aExecuteAutoTickers = false);
+
+		bool IsSameTarget(const ClassInstance& aClassInstance, DataTypeID aDataTypeID) const;
+
+	private:
+
 		std::unordered_set<NodeExecutionData> mAutoTickNodes;
 
 		InternalExecutionContext mExecutionContext;
@@ -41,10 +46,11 @@ namespace FLY_NAMESPACE
 		CallStack mCallStack;
 	};
 
-	template<typename EventFunction>
-	inline void NodeExecutor::ExecuteEvent(EventFunction aFunction, ClassInstance& aClassInstance, void* const aOwner, const ExecutionContextBase& aContext, const bool aExecuteAutoTickers)
+	template<typename EventFunction, typename TargetType>
+	inline void NodeExecutor::ExecuteEvent(EventFunction aFunction, ClassInstance& aClassInstance, TargetType* const aTarget, const ExecutionContextBase& aContext, const bool aExecuteAutoTickers)
 	{
-		const EventID mEventID = std::hash<EventFunction>()(aFunction);
-		ExecuteEvent(mEventID, aClassInstance, aOwner, aContext, aExecuteAutoTickers);
+		const EventID eventID = std::hash<EventFunction>()(aFunction);
+		assert(IsSameTarget(aClassInstance, GetDataTypeID<TargetType>()));
+		ExecuteEventInternal(eventID, aClassInstance, aTarget, aContext, aExecuteAutoTickers);
 	}
 }

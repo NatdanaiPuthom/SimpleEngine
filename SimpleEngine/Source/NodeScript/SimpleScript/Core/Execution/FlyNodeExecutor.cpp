@@ -16,7 +16,26 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	void NodeExecutor::ExecuteEvent(const EventID anEventID, ClassInstance& aClassInstance, void* const aOwner, const ExecutionContextBase& anExecutionContext, const bool aExecuteAutoTickers)
+
+	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
+	{
+		const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().mNodes[aNodeExecutionData.mNodeRef.GetNodeID()];
+		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+		nodeType.mNodeRecipe.mExecuteFunction(aNodeExecutionData, mExecutionContext);
+	}
+
+	void NodeExecutor::RegisterAutoTickNode(const NodeRef& aNodeRef)
+	{
+		mAutoTickNodes.insert(NodeExecutionData{ .mNodeRef = aNodeRef, .mTriggerReason = eNodeTriggerReason::Event });
+	}
+
+	void NodeExecutor::UnregisterAutoTickNode(const NodeRef& aNodeRef)
+	{
+		mAutoTickNodes.erase(NodeExecutionData{ .mNodeRef = aNodeRef, .mTriggerReason = eNodeTriggerReason::Event });
+	}
+
+
+	void NodeExecutor::ExecuteEventInternal(const EventID anEventID, ClassInstance& aClassInstance, void* const aOwner, const ExecutionContextBase& anExecutionContext, const bool aExecuteAutoTickers)
 	{
 		mExecutionContext.mClass = aClassInstance.mClass;
 		mExecutionContext.mExecutionContext = &anExecutionContext;
@@ -38,7 +57,7 @@ namespace FLY_NAMESPACE
 		{
 			for (const NodeID nodeID : it->second)
 			{
-				ExecuteNode(NodeExecutionData{ .mNodeRef = CreateContextualNodeRef(nodeID, eventGraph.mNodeGraph), .mTriggerReason = eNodeTriggerReason::Event});
+				ExecuteNode(NodeExecutionData{ .mNodeRef = CreateContextualNodeRef(nodeID, eventGraph.mNodeGraph), .mTriggerReason = eNodeTriggerReason::Event });
 			}
 		}
 
@@ -51,22 +70,9 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-
-	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
+	bool NodeExecutor::IsSameTarget(const ClassInstance& aClassInstance, DataTypeID aDataTypeID) const
 	{
-		const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().mNodes[aNodeExecutionData.mNodeRef.GetNodeID()];
-		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
-		nodeType.mNodeRecipe.mExecuteFunction(aNodeExecutionData, mExecutionContext);
-	}
-
-	void NodeExecutor::RegisterAutoTickNode(const NodeRef& aNodeRef)
-	{
-		mAutoTickNodes.insert(NodeExecutionData{ .mNodeRef = aNodeRef, .mTriggerReason = eNodeTriggerReason::Event });
-	}
-
-	void NodeExecutor::UnregisterAutoTickNode(const NodeRef& aNodeRef)
-	{
-		mAutoTickNodes.erase(NodeExecutionData{ .mNodeRef = aNodeRef, .mTriggerReason = eNodeTriggerReason::Event });
+		return aClassInstance.mClass->mTargetID == aDataTypeID;
 	}
 
 }

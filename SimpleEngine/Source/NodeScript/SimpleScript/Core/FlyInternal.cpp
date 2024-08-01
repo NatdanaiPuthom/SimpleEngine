@@ -382,8 +382,8 @@ namespace FLY_NAMESPACE
 		{
 			Link& link = aNodeGraph.mLinks[aLinkID];
 
-			Pin& inputPin = ScriptProxy::GetPinRef(aNodeGraph, link.mInputPinID);
-			Pin& outputPin = ScriptProxy::GetPinRef(aNodeGraph, link.mOutputPinID);
+			Pin& inputPin = aNodeGraph.mPins.at(link.mInputPinID);
+			Pin& outputPin = aNodeGraph.mPins.at(link.mOutputPinID);
 
 			std::erase(inputPin.mConnectedPinIDs, link.mOutputPinID);
 			std::erase(outputPin.mConnectedPinIDs, link.mInputPinID);
@@ -519,18 +519,18 @@ namespace FLY_NAMESPACE
 
 			struct DestroyLinkData
 			{
-				LinkID destroyedLinkID = InvalidID<LinkID>();
+				LinkID mDestroyedLinkID = InvalidID<LinkID>();
 				NodeGraph* mNodeGraph = nullptr;
 			} data;
 
-			data.destroyedLinkID = aLinkID;
+			data.mDestroyedLinkID = aLinkID;
 			data.mNodeGraph = &aNodeGraph;
 
 			auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
 					void (*func) (NodeGraph&, LinkID) = aCommandType == eCommandType::Do ? DeactivateLink : ActivateLink;
 
-					func(*data.mNodeGraph, data.destroyedLinkID);
+					func(*data.mNodeGraph, data.mDestroyedLinkID);
 				};
 
 			if (!aCommandTracker)
@@ -540,6 +540,29 @@ namespace FLY_NAMESPACE
 			else
 			{
 				aCommandTracker->DoCommand(Command(commandFunction, "Destory Link"));
+			}
+		}
+
+		void DestroyLinksByPin(NodeGraph& aNodeGraph, const PinID aPinID, CommandTracker* const aCommandTracker)
+		{
+			const Pin& pin = aNodeGraph.mPins.at(aPinID);
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Destroy Links By Pin");
+			}
+
+
+			for (const PinID connectedPinID : pin.mConnectedPinIDs)
+			{
+				const LinkID linkID = ScriptLinker::GetLinkIDByPinIDs(aNodeGraph, aPinID, connectedPinID);
+				DestroyLink(aNodeGraph, linkID, aCommandTracker);
+			}
+
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
 			}
 		}
 

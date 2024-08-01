@@ -69,14 +69,14 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
-	NodeType& NodeTypeManager::GetNodeType(const NodeTypeID anID)
+	NodeType& NodeTypeManager::GetNodeType(const NodeTypeID aID)
 	{
-		return mNodeTypes.at(anID);
+		return mNodeTypes.at(aID);
 	}
 
-	const NodeType& NodeTypeManager::GetNodeType(const NodeTypeID anID) const
+	const NodeType& NodeTypeManager::GetNodeType(const NodeTypeID aID) const
 	{
-		return mNodeTypes.at(anID);
+		return mNodeTypes.at(aID);
 	}
 
 	const std::vector<NodeType>& NodeTypeManager::GetNodeTypes()
@@ -84,9 +84,14 @@ namespace FLY_NAMESPACE
 		return mNodeTypes;
 	}
 
-	CustomEvent& NodeTypeManager::GetCustomEvent(const CustomEventID anID)
+	CustomEvent& NodeTypeManager::GetCustomEvent(const CustomEventID aID)
 	{
-		return mCustomEvents.at(anID);
+		return mCustomEvents.at(aID);
+	}
+
+	const CustomEvent& NodeTypeManager::GetCustomEvent(const CustomEventID aID) const
+	{
+		return mCustomEvents.at(aID);
 	}
 
 	std::vector<CustomEvent>& NodeTypeManager::GetCustomEvents()

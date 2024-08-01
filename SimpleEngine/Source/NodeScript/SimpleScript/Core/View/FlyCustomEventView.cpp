@@ -5,8 +5,8 @@
 namespace FLY_NAMESPACE
 {
 
-	CustomEventView::CustomEventView(const CustomEventID anID)
-		: mCustomEventID(anID)
+	CustomEventView::CustomEventView(const CustomEventID aID)
+		: mCustomEventID(aID)
 	{
 	}
 
@@ -33,5 +33,10 @@ namespace FLY_NAMESPACE
 	const CustomEvent& CustomEventView::GetCustomEvent() const
 	{
 		return Global::GetNodeTypeManager().GetCustomEvent(mCustomEventID);
+	}
+
+	bool operator==(const CustomEventView& a, const CustomEventView& b)
+	{
+		return a.mCustomEventID == b.mCustomEventID;
 	}
 }
