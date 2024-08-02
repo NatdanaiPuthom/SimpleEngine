@@ -1,5 +1,5 @@
 #include "FlyLinkView.hpp"
-#include "../FlyNodeGraph.hpp"
+#include "../Graph/FlyNodeGraph.hpp"
 
 namespace FLY_NAMESPACE
 {

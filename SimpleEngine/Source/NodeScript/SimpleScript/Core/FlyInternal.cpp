@@ -568,7 +568,7 @@ namespace FLY_NAMESPACE
 
 		VarID CreateVariable(Class& aClass, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
-			std::vector<Variable>& variables = aClass.mVariableManager.mVariables;
+			std::vector<Variable>& variables = aClass.mStruct.mVariables;
 			const VarID id = variables.size();
 			variables.emplace_back();
 			SetVariableDataType(aClass, id, aDataTypeID, aCommandTracker);
@@ -577,9 +577,9 @@ namespace FLY_NAMESPACE
 
 		void SetVariableDataType(Class& aClass, const VarID aVarID, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
-			Variable& variable = aClass.mVariableManager.mVariables.at(aVarID);
+			Variable& variable = aClass.mStruct.mVariables.at(aVarID);
 
-			void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, aClass.mVariableManager.mMemoryArena);
+			void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, aClass.mStruct.mMemoryArena);
 
 			variable.mDataTypeID = aDataTypeID;
 			variable.mDefaultValueDataPtr = defaultValueDataPtr;

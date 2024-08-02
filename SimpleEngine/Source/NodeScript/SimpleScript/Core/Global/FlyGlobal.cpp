@@ -4,17 +4,17 @@
 #include "FlyNodeTypeManager.hpp"
 #include "FlyPinTypeManager.hpp"
 #include "Type/FlyTypeManager.hpp"
-#include "../FlyCopyBuffer.hpp"
+#include "../Graph/FlyNodeGraph.hpp"
 
 namespace FLY_NAMESPACE
 {
 	namespace Global
 	{
 
-		bool g_sDebugging = false;
+		bool g_IsDebugging = false;
 		MemoryArena<1024> g_FrameArena;
 		MemoryArena<10000> g_EditArena;
-		CopyBuffer g_CopyBuffer;
+		NodeGraph g_NodeGraphCopy;
 
 		Foundation& GetFoundation()
 		{
@@ -48,7 +48,7 @@ namespace FLY_NAMESPACE
 
 		bool& IsDebugging()
 		{
-			return g_sDebugging;
+			return g_IsDebugging;
 		}
 
 		namespace Internal
@@ -62,9 +62,10 @@ namespace FLY_NAMESPACE
 			{
 				return g_EditArena;
 			}
-			CopyBuffer& GetCopyBuffer()
+
+			NodeGraph& GetNodeGraphCopy()
 			{
-				return g_CopyBuffer;
+				return g_NodeGraphCopy;
 			}
 		}
 	}

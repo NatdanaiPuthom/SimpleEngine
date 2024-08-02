@@ -6,7 +6,7 @@
 #include "../Utilities/FlyMeta.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
-#include "../FlyClass.hpp"
+#include "../DataType/FlyClass.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "../Variable/FlyVariableRef.hpp"
 
@@ -41,7 +41,7 @@ namespace FLY_NAMESPACE
 	{
 		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
 
-		const VariableInstance& variableInstance = aContext->mClassInstance->mVariableManagerInstance.mVariables[variableRef.GetVarID()];
+		const VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariables[variableRef.GetVarID()];
 		const T& output = *reinterpret_cast<const T*>(variableInstance.mRuntimeDataPtr.Get());
 		return output;
 	}
@@ -52,7 +52,7 @@ namespace FLY_NAMESPACE
 
 		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
 
-		VariableInstance& variableInstance = aContext->mClassInstance->mVariableManagerInstance.mVariables[variableRef.GetVarID()];
+		VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariables[variableRef.GetVarID()];
 
 		T& runtimeValue = *reinterpret_cast<T*>(variableInstance.mRuntimeDataPtr.Get());
 		runtimeValue = aValue;

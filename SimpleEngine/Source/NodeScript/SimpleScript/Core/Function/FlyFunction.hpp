@@ -1,6 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "../FlyNodeGraph.hpp"
+#include "../Graph/FlyNodeGraph.hpp"
 #include "../Node/FlyNodeRef.hpp"
 
 namespace FLY_NAMESPACE

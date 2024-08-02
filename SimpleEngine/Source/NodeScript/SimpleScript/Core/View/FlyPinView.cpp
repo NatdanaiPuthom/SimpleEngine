@@ -1,5 +1,5 @@
 #include "FlyPinView.hpp"
-#include "../FlyNodeGraph.hpp"
+#include "../Graph/FlyNodeGraph.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"

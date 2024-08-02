@@ -1,5 +1,5 @@
 #include "FlyClassInstance.hpp"
-#include "../FlyClass.hpp"
+#include "../DataType/FlyClass.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -16,7 +16,7 @@ namespace FLY_NAMESPACE
 	void ClassInstance::Init(Class& aClass)
 	{
 		mClass = &aClass;
-		mVariableManagerInstance.Init(aClass.mVariableManager);
+		mStructInstance.Init(aClass.mStruct);
 		// TODO Fix
 		mEventGraphInstance.Init(aClass.mEventGraph.mNodeGraph);
 	}

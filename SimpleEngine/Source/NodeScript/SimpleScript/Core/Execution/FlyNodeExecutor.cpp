@@ -1,5 +1,5 @@
 #include "FlyNodeExecutor.hpp"
-#include "../FlyClass.hpp"
+#include "../DataType/FlyClass.hpp"
 #include "FlyNodeTypeManager.hpp"
 #include "FlyClassInstance.hpp"
 #include "../Global/FlyGlobal.hpp"

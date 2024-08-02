@@ -1,6 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyVariableManagerInstance.hpp"
+#include "FlyStructInstance.hpp"
 #include "FlyNodeGraphInstance.hpp"
 
 namespace FLY_NAMESPACE
@@ -21,7 +21,7 @@ namespace FLY_NAMESPACE
 
 
 		Class* mClass;
-		VariableManagerInstance mVariableManagerInstance;
+		StructInstance mStructInstance;
 		NodeGraphInstance mEventGraphInstance;
 
 	private:

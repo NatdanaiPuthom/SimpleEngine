@@ -1,11 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "FunctionSettingsWindow.hpp"
 #include "NodeScriptingWindow.hpp"
-#include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
-#include "NodeScript/SimpleScript/Core/DataType/FlyDataTypeManager.hpp"
-#include "NodeScript/SimpleScript/Core/Node/FlyNodeTypeManager.hpp"
-#include "NodeScript/SimpleScript/Core/Pin/FlyPinTypeManager.hpp"
-#include "NodeScript/SimpleScript/Core/FlyClass.hpp"
 #include "NodeScript/SimpleScript/Core/Fly.hpp"
 
 namespace Editor

@@ -1,5 +1,5 @@
 #include "FlyClassView.hpp"
-#include "../FlyClass.hpp"
+#include "../DataType/FlyClass.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -32,7 +32,7 @@ namespace FLY_NAMESPACE
 
 	std::vector<VariableView> ClassView::GetVariables(const bool aIncludeDestroyed) const
 	{
-		const std::vector<Variable>& variables = mClass->mVariableManager.mVariables;
+		const std::vector<Variable>& variables = mClass->mStruct.mVariables;
 		std::vector<VariableView> variableViews;
 
 		variableViews.reserve(variables.size());

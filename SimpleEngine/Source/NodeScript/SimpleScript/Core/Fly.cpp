@@ -4,7 +4,6 @@
 #include "Pin/FlyPinTypeManager.hpp"
 #include "Node/FlyNodeTypeRegistry.hpp"
 #include "FlyInternal.hpp"
-#include "FlyCopyBuffer.hpp"
 #include "Utilities/FlyLinker.hpp"
 #include "Command/FlyCommandTracker.hpp"
 #include "FlyFoundation.hpp"
@@ -140,7 +139,7 @@ namespace FLY_NAMESPACE
 			aCommandTracker->BeginComposite("Create Getter Node");
 		}
 
-		const Variable& variable = aClassView.GetClass().mVariableManager.mVariables.at(aVariableView.GetID());
+		const Variable& variable = aClassView.GetClass().mStruct.mVariables.at(aVariableView.GetID());
 
 		const NodeID nodeID = Internal::CreateGetterNode(aNodeGraphView.GetNodeGraph(), variable.mDataTypeID, aCommandTracker);
 		Internal::SetNodePosition(nodeID, aPosition, aNodeGraphView.GetNodeGraph(), aCommandTracker);
@@ -163,7 +162,7 @@ namespace FLY_NAMESPACE
 
 		NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
 
-		const Variable& variable = aClassView.GetClass().mVariableManager.mVariables.at(aVariableView.GetID());
+		const Variable& variable = aClassView.GetClass().mStruct.mVariables.at(aVariableView.GetID());
 
 		const NodeID nodeID = Internal::CreateSetterNode(nodeGraph, variable.mDataTypeID, aCommandTracker);
 		Internal::SetNodePosition(nodeID, aPosition, nodeGraph, aCommandTracker);
@@ -192,25 +191,6 @@ namespace FLY_NAMESPACE
 	{
 		Internal::DestroyLinksByPin(aNodeGraphView.GetNodeGraph(), aPinView.GetID(), aCommandTracker);
 	}
-
-	/*void DestoryLinksByOutputPin(const PinView aOutputPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
-	{
-		const Pin& outputPin = aNodeGraphView.GetNodeGraph().mPins.at(aOutputPinView.GetID());
-		outputPin;
-		if (aCommandTracker)
-		{
-			aCommandTracker->BeginComposite("Destory Links by Output Pin");
-		}
-		for (const PinID connectedInputPin : outputPin.mConnectedPinIDs)
-		{
-			DestroyLink(LinkView{ connectedInputPin, aOutputPinView.GetID() }, aNodeGraphView.GetNodeGraph(), aCommandTracker);
-		}
-
-		if (aCommandTracker)
-		{
-			aCommandTracker->EndComposite();
-		}
-	}*/
 
 	void DestroyNode(const NodeView aNodeView, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
 	{
@@ -303,7 +283,7 @@ namespace FLY_NAMESPACE
 		auto commandFunction = [data](eCommandType aCommandType) -> void
 			{
 				bool mIsDestroyed = aCommandType == eCommandType::Do;
-				data.mClass->mVariableManager.mVariables.at(data.mVarID).mIsDestroyed = mIsDestroyed;
+				data.mClass->mStruct.mVariables.at(data.mVarID).mIsDestroyed = mIsDestroyed;
 			};
 
 		if (!aCommandTracker)
@@ -325,7 +305,7 @@ namespace FLY_NAMESPACE
 
 	void EditVariableDefaultValue(const VariableView aVariableView, const ClassView aClassView, CommandTracker*)
 	{
-		Variable& variable = aClassView.GetClass().mVariableManager.mVariables.at(aVariableView.GetID());
+		Variable& variable = aClassView.GetClass().mStruct.mVariables.at(aVariableView.GetID());
 
 		if (Global::GetDataTypeManager().EditData(variable.mDataTypeID, variable.mDefaultValueDataPtr))
 		{
@@ -340,7 +320,7 @@ namespace FLY_NAMESPACE
 
 	void SetVariableName(const VariableView aVariableView, const std::string_view aName, const ClassView aClassView)
 	{
-		Variable& variable = aClassView.GetClass().mVariableManager.mVariables.at(aVariableView.GetID());
+		Variable& variable = aClassView.GetClass().mStruct.mVariables.at(aVariableView.GetID());
 
 		variable.mName = aName;
 	}
@@ -482,8 +462,8 @@ namespace FLY_NAMESPACE
 			return;
 		}
 		const NodeGraph& copiedFromNodeGraph = aCopiedFromNodeGraphView.GetNodeGraph();
-		CopyBuffer& copyBuffer = Global::Internal::GetCopyBuffer();
-		copyBuffer = CopyBuffer{};
+		NodeGraph& nodeGraphCopy = Global::Internal::GetNodeGraphCopy();
+		nodeGraphCopy = NodeGraph{};
 
 		std::vector<NodeID> createdNodeIDs;
 		std::unordered_map<NodeID, NodeID> nodeConverter;
@@ -494,7 +474,7 @@ namespace FLY_NAMESPACE
 		{
 			const Node& node = copiedFromNodeGraph.mNodes.at(nodeID);
 
-			const NodeID createdNodeID = Internal::CreateNode(&copyBuffer.mNodeGraph, node.mTypeID, node.mPosition, nullptr);
+			const NodeID createdNodeID = Internal::CreateNode(&nodeGraphCopy, node.mTypeID, node.mPosition, nullptr);
 			avgPos += node.mPosition;
 
 			createdNodeIDs.push_back(createdNodeID);
@@ -503,7 +483,7 @@ namespace FLY_NAMESPACE
 
 		avgPos /= static_cast<float>(aNodeIDs.size());
 
-		for (Node& node : copyBuffer.mNodeGraph.mNodes)
+		for (Node& node : nodeGraphCopy.mNodes)
 		{
 			node.mPosition = node.mPosition - avgPos;
 		}
@@ -518,7 +498,7 @@ namespace FLY_NAMESPACE
 				const PinType& copiedInputPinType = Global::GetPinTypeManager().GetPinType(copiedInputPin.mTypeID);
 
 				const NodeID createdNodeID = nodeConverter.at(copiedNodeID);
-				const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(copiedFromNodeGraph, copiedInputPinID, copyBuffer.mNodeGraph, createdNodeID);
+				const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(copiedFromNodeGraph, copiedInputPinID, nodeGraphCopy, createdNodeID);
 				assert(createdInputPinID != InvalidID<PinID>());
 
 				const std::vector<LinkID> connectedLinks = ScriptLinker::GetLinkIDsByPin(copiedFromNodeGraph, copiedInputPinID);
@@ -536,12 +516,12 @@ namespace FLY_NAMESPACE
 						continue;
 					}
 					const NodeID newConnectedNodeID = it->second;
-					const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(copiedFromNodeGraph, connectedOutputPinID, copyBuffer.mNodeGraph, newConnectedNodeID);
+					const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(copiedFromNodeGraph, connectedOutputPinID, nodeGraphCopy, newConnectedNodeID);
 
-					Internal::TryCreateLink(copyBuffer.mNodeGraph, createdInputPinID, createdOutputPinID, nullptr);
+					Internal::TryCreateLink(nodeGraphCopy, createdInputPinID, createdOutputPinID, nullptr);
 				}
 
-				Pin& createdInputPin = Internal::GetPin(createdInputPinID, copyBuffer.mNodeGraph);
+				Pin& createdInputPin = Internal::GetPin(createdInputPinID, nodeGraphCopy);
 
 				Global::GetDataTypeManager().CopyData(copiedInputPinType.mDataTypeID, createdInputPin.mDataPtr, copiedInputPin.mDataPtr);
 			}
@@ -553,7 +533,7 @@ namespace FLY_NAMESPACE
 
 	void PasteCopyBuffer(const Vec2 aPosition, NodeGraphView aTargetNodeGraphView, CommandTracker* const aCommandTracker)
 	{
-		CopyBuffer& copyBuffer = Global::Internal::GetCopyBuffer();
+		const NodeGraph& nodeGraphCopy = Global::Internal::GetNodeGraphCopy();
 
 		if (aCommandTracker)
 		{
@@ -564,9 +544,9 @@ namespace FLY_NAMESPACE
 
 		std::unordered_map<NodeID, NodeID> nodeConverter;
 
-		for (NodeID sourceNodeID = 0; sourceNodeID < copyBuffer.mNodeGraph.mNodes.size(); sourceNodeID++)
+		for (NodeID sourceNodeID = 0; sourceNodeID < nodeGraphCopy.mNodes.size(); sourceNodeID++)
 		{
-			const Node& node = copyBuffer.mNodeGraph.mNodes[sourceNodeID];
+			const Node& node = nodeGraphCopy.mNodes.at(sourceNodeID);
 			const NodeID createdNodeID = Internal::CreateNode(&targetNodeGraph, node.mTypeID, aPosition + node.mPosition, aCommandTracker);
 			nodeConverter.emplace(sourceNodeID, createdNodeID);
 
@@ -577,18 +557,18 @@ namespace FLY_NAMESPACE
 				Pin& createdInputPin = Internal::GetPin(createdInputPinID, targetNodeGraph);
 				const PinType& createdInputPinType = Global::GetPinTypeManager().GetPinType(createdInputPin.mTypeID);
 
-				const PinID sourcePinID = ScriptLinker::GetOpposingPinID(targetNodeGraph, createdInputPinID, copyBuffer.mNodeGraph, sourceNodeID);
-				const Pin& sourcePin = ScriptProxy::GetPin(copyBuffer.mNodeGraph, sourcePinID);
+				const PinID sourcePinID = ScriptLinker::GetOpposingPinID(targetNodeGraph, createdInputPinID, nodeGraphCopy, sourceNodeID);
+				const Pin& sourcePin = ScriptProxy::GetPin(nodeGraphCopy, sourcePinID);
 				dataTypeManager.CopyData(createdInputPinType.mDataTypeID, createdInputPin.mDataPtr, sourcePin.mDataPtr);
 			}
 		}
 
-		for (const Link& link : copyBuffer.mNodeGraph.mLinks)
+		for (const Link& link : nodeGraphCopy.mLinks)
 		{
-			const Pin& inputPin = copyBuffer.mNodeGraph.mPins[link.mInputPinID];
-			const Pin& outputPin = copyBuffer.mNodeGraph.mPins[link.mOutputPinID];
-			const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(copyBuffer.mNodeGraph, link.mInputPinID, targetNodeGraph, nodeConverter.at(inputPin.mNodeID));
-			const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(copyBuffer.mNodeGraph, link.mOutputPinID, targetNodeGraph, nodeConverter.at(outputPin.mNodeID));
+			const Pin& inputPin = nodeGraphCopy.mPins[link.mInputPinID];
+			const Pin& outputPin = nodeGraphCopy.mPins[link.mOutputPinID];
+			const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(nodeGraphCopy, link.mInputPinID, targetNodeGraph, nodeConverter.at(inputPin.mNodeID));
+			const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(nodeGraphCopy, link.mOutputPinID, targetNodeGraph, nodeConverter.at(outputPin.mNodeID));
 			const LinkID createdLinkID = Internal::TryCreateLink(targetNodeGraph, createdInputPinID, createdOutputPinID, aCommandTracker);
 
 			assert(createdLinkID != InvalidID<LinkID>());
@@ -927,7 +907,7 @@ namespace FLY_NAMESPACE
 
 	std::vector<VariableView> GetVariables(const ClassView aClass, const bool aIncludeDestroyed)
 	{
-		const std::vector<Variable>& variables = aClass.GetClass().mVariableManager.mVariables;
+		const std::vector<Variable>& variables = aClass.GetClass().mStruct.mVariables;
 		std::vector<VariableView> views;
 
 		views.reserve(variables.size());

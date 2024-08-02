@@ -1,12 +1,12 @@
 #include "FlySerializer.hpp"
-#include "../FlyClass.hpp"
+#include "../DataType/FlyClass.hpp"
 #include "../Node/FlyNodeTypeRegistry.hpp"
 #include "../Utilities/FlyLinker.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../FlyInternal.hpp"
 #include "../Command/FlyCommandTracker.hpp"
 #include "../Fly.hpp"
-#include "../FlyFoundation.hpp"
+#include "../Foundation/FlyFoundation.hpp"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -147,9 +147,9 @@ namespace FLY_NAMESPACE
 			dataJson["Variables"] = nlohmann::json::array();
 			nlohmann::json& variableDataJson = dataJson["Variables"];
 
-			for (VarID varID = 0; varID < aClass.mVariableManager.mVariables.size(); ++varID)
+			for (VarID varID = 0; varID < aClass.mStruct.mVariables.size(); ++varID)
 			{
-				const Variable& variable = aClass.mVariableManager.mVariables.at(varID);
+				const Variable& variable = aClass.mStruct.mVariables.at(varID);
 
 				if (variable.mIsDestroyed)
 				{
@@ -285,7 +285,7 @@ namespace FLY_NAMESPACE
 		for (const nlohmann::json& variableJson : variableDataJson)
 		{
 			const VarID varID = Internal::CreateVariable(aClass, GetDataTypeID<bool>(), nullptr);
-			Variable& variable = aClass.mVariableManager.mVariables.at(varID);
+			Variable& variable = aClass.mStruct.mVariables.at(varID);
 
 			const std::string& dataTypeStr = variableJson["DataType"];
 

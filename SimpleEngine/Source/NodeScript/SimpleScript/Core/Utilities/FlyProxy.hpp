@@ -20,7 +20,6 @@ namespace FLY_NAMESPACE
 	class PinManager;
 	class NodeExecutor;
 	class ScriptModifier;
-	class VariableManager;
 	class CommandTracker;
 	class Node;
 	struct Pin;
@@ -28,7 +27,6 @@ namespace FLY_NAMESPACE
 	class InternalModifier;
 	class NodeGraph;
 	class CallStack;
-	struct CopyBuffer;
 	
 	class ScriptProxy
 	{
@@ -43,21 +41,15 @@ namespace FLY_NAMESPACE
 		static MemoryArena<NodeBufferCapacity>& GetNodeGraphMemoryArena(NodeGraph& aNodeGraph);
 
 		static NodeExecutor& GetNodeExecutor();
-
-		static VariableManager& GetVariableManager(Class& aScript);
-		static const VariableManager& GetVariableManager(const Class& aScript);
 		
-		static const std::vector<Variable>& GetVariables(const Class& aScript);
 		static const std::vector<Pin>& GetPins(const NodeGraph& aNodeGraph);
 
 		static const Node& GetNode(const NodeGraph& aNodeGraph, NodeID aNodeID);
 		static const Pin& GetPin(const NodeGraph& aNodeGraph, PinID aPinID);
-		static const Variable& GetVariable(const Class& aScript, const VarID aVarID);
 		
 	public:
 
 		static std::vector<Node>& GetNodes(NodeGraph& aNodeGraph);
-		static std::vector<Variable>& GetVariablesRef(Class& aScript);
 
 		static std::vector<Pin>& GetPins(NodeGraph& aNodeGraph);
 

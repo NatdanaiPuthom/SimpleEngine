@@ -1,8 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "CustomEventWindow.hpp"
 #include "NodeScriptingWindow.hpp"
-#include "NodeScript/SimpleScript/Core/FlyClass.hpp"
-#include "NodeScript/SimpleScript/Core/DataType/FlyDataTypeManager.hpp"
 #include "NodeScript/SimpleScript/Core/Fly.hpp"
 #include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
 #include "FlyScriptEditorUtilities.hpp"
@@ -50,7 +48,7 @@ namespace Editor
 
 	void CustomEventWindow::EditInputs(const Fly::CustomEventView& aCustomEventView)
 	{
-		const Fly::NodeTypeView executorNodeType = aCustomEventView.GetNodeType();
+		const Fly::NodeTypeView executorNodeType = aCustomEventView.GetExecutorNodeType();
 		std::string shortName = executorNodeType.GetShortName();
 
 		char nameBuffer[35]{};

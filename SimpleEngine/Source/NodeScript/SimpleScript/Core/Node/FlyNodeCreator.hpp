@@ -2,7 +2,7 @@
 #include "../FlyDefines.hpp"
 #include "../Execution/FlyExecutionTypes.hpp"
 #include "../Execution/FlyInternalExecutionContext.hpp"
-#include "../Variable/FlyVariableManager.hpp"
+#include "../DataType/FlyStruct.hpp"
 #include "FlyNodeTypeManager.hpp"
 #include "../Execution/FlyNodeExecutor.hpp"
 #include "FlyNode.hpp"

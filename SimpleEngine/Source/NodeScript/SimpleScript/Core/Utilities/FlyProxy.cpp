@@ -1,6 +1,6 @@
 #include "FlyProxy.hpp"
-#include "../FlyFoundation.hpp"
-#include "../FlyClass.hpp"
+#include "../Foundation/FlyFoundation.hpp"
+#include "../DataType/FlyClass.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -20,22 +20,6 @@ namespace FLY_NAMESPACE
 		return *Foundation::GetInstance().mNodeExecutor;
 	}
 
-	VariableManager& ScriptProxy::GetVariableManager(Class& aScript)
-	{
-		return aScript.mVariableManager;
-	}
-
-	const VariableManager& ScriptProxy::GetVariableManager(const Class& aScript)
-	{
-		return aScript.mVariableManager;
-	}
-
-
-	const std::vector<Variable>& ScriptProxy::GetVariables(const Class& aScript)
-	{
-		return aScript.mVariableManager.mVariables;
-	}
-
 	const std::vector<Pin>& ScriptProxy::GetPins(const NodeGraph& aNodeGraph)
 	{
 		return aNodeGraph.mPins;
@@ -51,19 +35,9 @@ namespace FLY_NAMESPACE
 		return aNodeGraph.mPins[aPinID];
 	}
 
-	const Variable& ScriptProxy::GetVariable(const Class& aScript, const VarID aVarID)
-	{
-		return aScript.mVariableManager.mVariables[aVarID];
-	}
-
 	std::vector<Node>& ScriptProxy::GetNodes(NodeGraph& aNodeGraph)
 	{
 		return aNodeGraph.mNodes;
-	}
-
-	std::vector<Variable>& ScriptProxy::GetVariablesRef(Class& aScript)
-	{
-		return aScript.mVariableManager.mVariables;
 	}
 
 	std::vector<Pin>& ScriptProxy::GetPins(NodeGraph& aNodeGraph)

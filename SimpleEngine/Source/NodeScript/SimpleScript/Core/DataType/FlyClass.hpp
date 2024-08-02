@@ -1,7 +1,7 @@
 #pragma once
-#include "FlyDefines.hpp"
-#include "Variable/FlyVariableManager.hpp"
-#include "FlyEventGraph.hpp"
+#include "../FlyDefines.hpp"
+#include "FlyStruct.hpp"
+#include "../Graph/FlyEventGraph.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -23,7 +23,7 @@ namespace FLY_NAMESPACE
 		Class& operator=(Class&&) = delete;
 
 		ClassInstance& CreateClassInstance();
-		void DestroyClassInstance(ClassInstance& aScriptInstance);
+		void DestroyClassInstance(ClassInstance& aClassInstance);
 
 		void BindFunction(FunctionID aFunctionID);
 		const std::vector<FunctionID>& GetMemberFunctionIDs() const;
@@ -31,7 +31,7 @@ namespace FLY_NAMESPACE
 	public:
 
 		EventGraph mEventGraph;
-		VariableManager mVariableManager;
+		Struct mStruct;
 
 		std::vector<FunctionID> mMemberFunctionIDs;
 		std::vector<std::unique_ptr<ClassInstance>> mClassInstances;

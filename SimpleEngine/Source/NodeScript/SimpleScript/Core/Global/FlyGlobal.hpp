@@ -11,7 +11,6 @@ namespace FLY_NAMESPACE
 	class PinTypeManager;
 	class MemoryManager;
 	template<size_t> class MemoryArena;
-	struct CopyBuffer;
 	class Class;
 
 	namespace Global
@@ -31,7 +30,7 @@ namespace FLY_NAMESPACE
 		{
 			MemoryArena<1024>& GetFrameMemoryArena();
 			MemoryArena<10000>& GetEditMemoryArena();
-			CopyBuffer& GetCopyBuffer();
+			NodeGraph& GetNodeGraphCopy();
 		}
 	}
 

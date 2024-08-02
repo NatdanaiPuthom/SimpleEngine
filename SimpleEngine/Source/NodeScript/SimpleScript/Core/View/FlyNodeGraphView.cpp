@@ -1,5 +1,5 @@
 #include "FlyNodeGraphView.hpp"
-#include "../FlyEventGraph.hpp"
+#include "../Graph/FlyEventGraph.hpp"
 #include "FlyFunctionView.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
