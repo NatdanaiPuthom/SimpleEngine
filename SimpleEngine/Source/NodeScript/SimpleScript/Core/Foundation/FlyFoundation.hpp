@@ -3,6 +3,7 @@
 #include "Memory/FlyMemoryArena.hpp"
 #include "Variable/FlyVariableRef.hpp"
 #include "Node/FlyNodeRef.hpp"
+#include "../Graph/FlyNodeGraph.hpp"
 #include <memory>
 
 namespace FLY_NAMESPACE
@@ -59,6 +60,7 @@ namespace FLY_NAMESPACE
 		std::vector<std::unique_ptr<Class>> mClasses;
 
 		std::unique_ptr<NodeExecutor> mNodeExecutor;
+		NodeGraph mNodeGraphCopy;
 
 		std::unordered_map<GlobalNodeRef, VariableRef, GlobalNodeRefHasher> mNodeRefToVarRef;
 

@@ -8,6 +8,7 @@ namespace ECS
 	public:
 
 		ScriptSystem();
+		void Init(EntityComponentSystem* aEntityComponentSystem) override;
 		void Update(EntityComponentSystem* aEntityComponentSystem) override;
 
 		std::unique_ptr<System> Clone() const override;

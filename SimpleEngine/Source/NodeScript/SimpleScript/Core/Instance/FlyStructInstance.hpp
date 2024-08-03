@@ -5,20 +5,20 @@
 namespace FLY_NAMESPACE
 {
 
-	struct VariableInstance
+	struct VariableInstance final
 	{
+		OwningPtr<void> mDefaultDataPtr = nullptr;
 		OwningPtr<void> mRuntimeDataPtr = nullptr;
 	};
 
 	class Struct;
 
-	constexpr size_t VariableArenaSize = 1024;
 
 	class StructInstance final
 	{
+		static constexpr size_t MemoryAlignment = 1024;
 	public:
-
-		StructInstance();
+		StructInstance(const Struct& aStruct);
 		~StructInstance();
 
 		StructInstance(const StructInstance& aOther);
@@ -26,10 +26,10 @@ namespace FLY_NAMESPACE
 		StructInstance& operator=(const StructInstance& aOther);
 		StructInstance& operator=(StructInstance&&) noexcept = default;
 
-		void Init(Struct& aStruct);
+		void Init();
 
-	
-		std::vector<VariableInstance> mVariables;
-		MemoryArena<VariableArenaSize> mMemoryArena;
+		const Struct* mStruct;
+		std::vector<VariableInstance> mVariableInstances;
+		MemoryArena<MemoryAlignment> mMemoryArena;
 	};
 }

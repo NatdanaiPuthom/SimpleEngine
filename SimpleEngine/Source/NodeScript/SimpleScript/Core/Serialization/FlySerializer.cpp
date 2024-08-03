@@ -3,7 +3,7 @@
 #include "../Node/FlyNodeTypeRegistry.hpp"
 #include "../Utilities/FlyLinker.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
-#include "../FlyInternal.hpp"
+#include "../Internal/FlyInternal.hpp"
 #include "../Command/FlyCommandTracker.hpp"
 #include "../Fly.hpp"
 #include "../Foundation/FlyFoundation.hpp"

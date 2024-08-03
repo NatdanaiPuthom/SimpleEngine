@@ -7,8 +7,17 @@
 namespace FLY_NAMESPACE
 {
 
-	StructInstance::StructInstance()
+	StructInstance::StructInstance(const Struct& aStruct)
+		: mStruct(&aStruct)
+		, mVariableInstances(aStruct.mVariables.size())
 	{
+		for (VarID varID = 0; varID < aStruct.mVariables.size(); ++varID)
+		{
+			const Variable& variable = aStruct.mVariables[varID];
+			VariableInstance& variableInstance = mVariableInstances[varID];
+			variableInstance.mRuntimeDataPtr = Global::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
+			variableInstance.mDefaultDataPtr = Global::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
+		}
 	}
 
 	StructInstance::~StructInstance()
@@ -16,36 +25,38 @@ namespace FLY_NAMESPACE
 	}
 
 	StructInstance::StructInstance(const StructInstance& aOther)
-		: mVariables(aOther.mVariables)
+		: mStruct(aOther.mStruct)
+		, mVariableInstances(aOther.mVariableInstances)
 		, mMemoryArena(aOther.mMemoryArena)
 	{
-		for (VariableInstance& variableInstance : mVariables)
+		for (VariableInstance& variableInstance : mVariableInstances)
 		{
+			variableInstance.mDefaultDataPtr = mMemoryArena.GetRenewedPointer(variableInstance.mDefaultDataPtr, aOther.mMemoryArena);
 			variableInstance.mRuntimeDataPtr = mMemoryArena.GetRenewedPointer(variableInstance.mRuntimeDataPtr, aOther.mMemoryArena);
 		}
 	}
 
 	StructInstance& StructInstance::operator=(const StructInstance& aOther)
 	{
-		mVariables = aOther.mVariables;
+		mVariableInstances = aOther.mVariableInstances;
 		mMemoryArena = aOther.mMemoryArena;
 
-		for (VariableInstance& variableInstance : mVariables)
+		for (VariableInstance& variableInstance : mVariableInstances)
 		{
+			variableInstance.mDefaultDataPtr = mMemoryArena.GetRenewedPointer(variableInstance.mDefaultDataPtr, aOther.mMemoryArena);
 			variableInstance.mRuntimeDataPtr = mMemoryArena.GetRenewedPointer(variableInstance.mRuntimeDataPtr, aOther.mMemoryArena);
 		}
 
 		return *this;
 	}
 
-	void StructInstance::Init(Struct& aStruct)
+	void StructInstance::Init()
 	{
-		mMemoryArena.Clear();
-		mVariables.resize(aStruct.mVariables.size());
-		for (VarID varID = 0; varID < aStruct.mVariables.size(); ++varID)
+		for (VarID varID = 0; varID < mStruct->mVariables.size(); ++varID)
 		{
-			const Variable& variable = aStruct.mVariables[varID];
-			mVariables[varID].mRuntimeDataPtr = Global::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
+			const Variable& variable = mStruct->mVariables[varID];
+			VariableInstance& variableInstance = mVariableInstances[varID];
+			Global::GetDataTypeManager().CopyData(variable.mDataTypeID, variableInstance.mRuntimeDataPtr, variableInstance.mDefaultDataPtr);
 		}
 	}
 }

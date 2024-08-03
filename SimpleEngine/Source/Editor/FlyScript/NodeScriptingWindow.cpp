@@ -104,6 +104,10 @@ namespace Editor
 
 		style.Colors[ImNodesCol_NodeOutline] = ToImGuiColor(Fly::Color{ 0.0f, 0.0f, 0.0f, 1.f });
 		style.Colors[ImNodesCol_GridBackground] = ToImGuiColor(Fly::Color{ 0.03f,0.03f, 0.03f, 1.f });
+
+		style.Flags = ImNodesStyleFlags_GridSnapping | ImNodesStyleFlags_GridLines | ImNodesStyleFlags_NodeOutline;
+
+		style.LinkThickness = 3.f;
 	}
 
 	void NodeScriptingWindow::Draw()
@@ -258,11 +262,6 @@ namespace Editor
 	void NodeScriptingWindow::ScriptLoadingMenu()
 	{
 		Fly::ClassView currentClass = GetNodeContext().classView;
-
-		/*if (!currentClass)
-		{
-			return;
-		}*/
 
 		std::string currentClassName = currentClass ? currentClass.GetName() : "None";
 
@@ -441,6 +440,8 @@ namespace Editor
 				style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(Fly::Color{ 0.9f, 0.1f, 0.1f, 1.f });
 				style.Colors[ImNodesCol_TitleBarSelected] = ToImGuiColor(Fly::Color{ 1.f, 0.1f, 0.1f, 1.f });
 			}
+
+			style.Colors[ImNodesCol_NodeOutline] = ImNodes::IsNodeSelected(nodeView.GetID()) ? ToImGuiColor(Fly::Color(0.8f, 0.8f, 0.8f, 1.f)) : ToImGuiColor(Fly::Color(0.f, 0.f, 0.f, 1.f));
 
 			ImNodes::SetNodeGridSpacePos(nodeView.GetID(), ImVec2{ nodeView.GetPosition().x, nodeView.GetPosition().y });
 			ImNodes::BeginNode(nodeView.GetID());
@@ -642,7 +643,7 @@ namespace Editor
 			Fly::Vec2 oldPos = nodeView.GetPosition();
 			if (dragStarted && ImNodes::IsNodeSelected(nodeView.GetID()))
 			{
-				currentNodeContext.myNodeDragData.emplace(nodeView.GetID(), Fly::NodeDragData{ .startPos = oldPos });
+				currentNodeContext.myNodeDragData.emplace(nodeView.GetID(), Fly::NodeDragData{ .mStartPos = oldPos });
 			}
 			else if (dragEnded)
 			{
@@ -650,7 +651,7 @@ namespace Editor
 
 				if (it != currentNodeContext.myNodeDragData.end())
 				{
-					it->second.endPos = newPos;
+					it->second.mEndPos = newPos;
 				}
 			}
 			if (newPos != oldPos)
@@ -670,9 +671,10 @@ namespace Editor
 		if (ImNodes::IsPinHovered(&hoveredPinID) && ImGui::IsKeyPressed(ImGuiKey_MouseRight))
 		{
 			myClickedPinView = Fly::PinView(hoveredPinID, currentNodeContext.nodeGraphView.GetNodeGraph());
-			if (Fly::IsPinReplacable(myClickedPinView, currentNodeContext.nodeGraphView))
+			const bool hasAnyConnectedLinks = Fly::HasNodeAnyConnectedLinks(Fly::NodeView(myClickedPinView.GetNodeID(), currentNodeContext.nodeGraphView), currentNodeContext.nodeGraphView);
+			if (Fly::IsPinReplacable(myClickedPinView, currentNodeContext.nodeGraphView) && !hasAnyConnectedLinks)
 			{
-				ImGui::OpenPopup("Pin Popup");	
+				ImGui::OpenPopup("Pin Popup");
 			}
 		}
 
@@ -684,7 +686,7 @@ namespace Editor
 				ImGui::PushID(static_cast<int>(replacableDataTypeView.GetID()));
 				if (ImGui::Selectable(replacableDataTypeView.GetName().c_str(), replacableDataTypeView.GetID() == myClickedPinView.GetDataTypeID()))
 				{
-					Fly::ReplaceWildcardNode(myClickedPinView, currentNodeContext.nodeGraphView, replacableDataTypeView, myCommandTracker.get());
+					Fly::ReplaceTemplateNode(myClickedPinView, currentNodeContext.nodeGraphView, replacableDataTypeView, myCommandTracker.get());
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::PopID();
@@ -955,14 +957,11 @@ namespace Editor
 					}
 					else
 					{
-						const std::vector<Fly::NodeTypeView> nodeTypes = Fly::GetNodeTypes();
-						for (const Fly::NodeTypeView& nodeType : nodeTypes)
+						const std::vector<Fly::NodeTypeView> filteredNodeTypes = Fly::GetNodeTypesFilteredByTrait(Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
+
+						for (const Fly::NodeTypeView& nodeType : filteredNodeTypes)
 						{
 
-							if (Fly::HasFlag(nodeType.GetTraits(), Fly::eNodeTrait::NonTrivial))
-							{
-								continue;
-							}
 
 							const bool isSearched = StringCompare(nodeType.GetName(), myNodeTypeSearch);
 							if (isSearched)

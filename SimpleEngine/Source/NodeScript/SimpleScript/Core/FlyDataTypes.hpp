@@ -172,7 +172,7 @@ namespace std
 namespace FLY_NAMESPACE
 {
 
-	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.75f, 0.75f, 0.75f), NonTargetable);
+	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.5f, 0.5f, 0.5f), NonTargetable);
 	FLY_DATATYPE(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f), NonTargetable);
 	FLY_DATATYPE(None, eNodeOperatorTrait::None, Color());
 

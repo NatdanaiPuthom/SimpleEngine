@@ -41,7 +41,7 @@ namespace FLY_NAMESPACE
 	{
 		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
 
-		const VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariables[variableRef.GetVarID()];
+		const VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariableInstances[variableRef.GetVarID()];
 		const T& output = *reinterpret_cast<const T*>(variableInstance.mRuntimeDataPtr.Get());
 		return output;
 	}
@@ -52,7 +52,7 @@ namespace FLY_NAMESPACE
 
 		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
 
-		VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariables[variableRef.GetVarID()];
+		VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariableInstances[variableRef.GetVarID()];
 
 		T& runtimeValue = *reinterpret_cast<T*>(variableInstance.mRuntimeDataPtr.Get());
 		runtimeValue = aValue;
@@ -104,18 +104,18 @@ namespace FLY_NAMESPACE
 
 			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType>())
 			{
-				dataType->mFunctions.push_back(nodeTypeID);
+				dataType->mNodeTypeIDs.push_back(nodeTypeID);
 			}
 		}
 
 		template<typename ClassType, typename OutputType, typename... InputTypes> requires NoArgsReference<InputTypes...>
-		static void RegisterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
+		static void RegisterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeCreationData&& aCreationData = NodeCreationData())
 		{
-			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aDescription);
+			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aCreationData.mDescription);
 
 			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType>())
 			{
-				dataType->mFunctions.push_back(nodeTypeID);
+				dataType->mNodeTypeIDs.push_back(nodeTypeID);
 			}
 		}
 
@@ -242,6 +242,67 @@ namespace FLY_NAMESPACE
 
 			return RegisterFunctionNode();
 		}
+
+
+		template<typename ClassType, typename OutputType, typename... InputTypes, typename... Extra>
+		static RegisterFunctionNode Register(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, [[maybe_unused]] Extra&&... aExtraTypes)
+		{
+			NodeCreationData nodeCreationData;
+			if constexpr (ContainsType<Event, Extra...>)
+			{
+				const EventID eventID = std::hash<decltype(aFunction)>()(aFunction);
+				nodeCreationData.mEventID = eventID;
+			}
+
+			if constexpr (ContainsType<InputNames, Extra...>)
+			{
+				nodeCreationData.mDescription.mInputPinNames = Extract<InputNames>(std::forward<Extra>(aExtraTypes)...).mNames;
+			}
+
+			if constexpr (ContainsType<OutputNames, Extra...>)
+			{
+				nodeCreationData.mDescription.mOutputPinNames = Extract<OutputNames>(std::forward<Extra>(aExtraTypes)...).mNames;
+			}
+
+			if constexpr (ContainsType<DefaultValues, Extra...>)
+			{
+				nodeCreationData.mDescription.mDefaultValues = Extract<DefaultValues>(std::forward<Extra>(aExtraTypes)...).mValues;
+			}
+
+			NodeTypeRegistry::RegisterMemberNodeType(aFunction, aFunctionName, std::move(nodeCreationData));
+
+			return RegisterFunctionNode();
+		}
+
+		template<typename ClassType, typename OutputType, typename... InputTypes, typename... Extra>
+		static RegisterFunctionNode Register(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, [[maybe_unused]] Extra&&... aExtraTypes)
+		{
+			NodeCreationData nodeCreationData;
+			if constexpr (ContainsType<Event, Extra...>)
+			{
+				const EventID eventID = std::hash<decltype(aFunction)>()(aFunction);
+				nodeCreationData.mEventID = eventID;
+			}
+
+			if constexpr (ContainsType<InputNames, Extra...>)
+			{
+				nodeCreationData.mDescription.mInputPinNames = Extract<InputNames>(std::forward<Extra>(aExtraTypes)...).mNames;
+			}
+
+			if constexpr (ContainsType<OutputNames, Extra...>)
+			{
+				nodeCreationData.mDescription.mOutputPinNames = Extract<OutputNames>(std::forward<Extra>(aExtraTypes)...).mNames;
+			}
+
+			if constexpr (ContainsType<DefaultValues, Extra...>)
+			{
+				nodeCreationData.mDescription.mDefaultValues = Extract<DefaultValues>(std::forward<Extra>(aExtraTypes)...).mValues;
+			}
+
+			NodeTypeRegistry::RegisterMemberNodeType(aFunction, aFunctionName, std::move(nodeCreationData));
+
+			return RegisterFunctionNode();
+		}
 	};
 
 
@@ -253,5 +314,5 @@ namespace FLY_NAMESPACE
 // Macro to generate a unique name using __COUNTER__
 #define FLY_UNIQUE_NAME(base) FLY_CONCATENATE(base, __COUNTER__)
 
-#define REGISTER_FUNCTION(function, directory, ...) \
-    inline static Fly::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = Fly::RegisterFunctionNode::Register(function, directory"/"#function, __VA_ARGS__);
+#define FLY_FUNCTION(function, directory, ...) \
+    inline static Fly::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = Fly::RegisterFunctionNode::Register(&function, directory"/"#function, __VA_ARGS__);

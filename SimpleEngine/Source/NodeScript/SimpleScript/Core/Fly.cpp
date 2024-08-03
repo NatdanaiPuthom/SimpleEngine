@@ -90,13 +90,13 @@ namespace FLY_NAMESPACE
 	NodeView CreateNode(NodeGraphView aNodeGraphView, const NodeTypeView aNodeTypeView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		const NodeID nodeID = Internal::CreateNode(aNodeGraphView.GetAs(), aNodeTypeView.GetID(), aPosition, aCommandTracker);
-		return NodeView(nodeID, aNodeGraphView.GetNodeGraph());
+		return NodeView(nodeID, aNodeGraphView);
 	}
 
 	NodeView CreateNode(NodeGraphView aNodeGraphView, std::string_view aName, bool& aSuccess, const Vec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
 	{
 		const NodeID nodeID = Internal::CreateNode(aNodeGraphView.GetAs(), aName, aSuccess, aPosition, aCreateIfNameNotFound, aCommandTracker);
-		return NodeView(nodeID, aNodeGraphView.GetNodeGraph());
+		return NodeView(nodeID, aNodeGraphView);
 	}
 
 	NodeView CreateNodeAutoLink(NodeGraphView aNodeGraphView, const NodeTypeView aNodeTypeView, const PinID aConnection, const Vec2 aPosition, CommandTracker* const aCommandTracker)
@@ -118,7 +118,7 @@ namespace FLY_NAMESPACE
 
 		for (const PinID pinID : pinIDs)
 		{
-			if (Internal::TryCreateLink(nodeGraph, pinID, aConnection, aCommandTracker))
+			if (Internal::TryCreateLink(nodeGraph, pinID, aConnection, aCommandTracker) != InvalidID<LinkID>())
 			{
 				break;
 			}
@@ -129,7 +129,7 @@ namespace FLY_NAMESPACE
 			aCommandTracker->EndComposite();
 		}
 
-		return NodeView(createdNodeID, nodeGraph);
+		return NodeView(createdNodeID, aNodeGraphView);
 	}
 
 	NodeView CreateGetterNode(ClassView aClassView, NodeGraphView aNodeGraphView, const VariableView aVariableView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
@@ -150,7 +150,7 @@ namespace FLY_NAMESPACE
 			aCommandTracker->EndComposite();
 		}
 
-		return NodeView(nodeID, aNodeGraphView.GetNodeGraph());
+		return NodeView(nodeID, aNodeGraphView);
 	}
 
 	NodeView CreateSetterNode(ClassView aClassView, NodeGraphView aNodeGraphView, const VariableView aVariableView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
@@ -173,7 +173,7 @@ namespace FLY_NAMESPACE
 			aCommandTracker->EndComposite();
 		}
 
-		return NodeView(nodeID, nodeGraph);
+		return NodeView(nodeID, aNodeGraphView);
 	}
 
 	LinkView TryCreateLink(const PinView aPinView1, const PinView aPinView2, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
@@ -211,7 +211,7 @@ namespace FLY_NAMESPACE
 
 		for (const NodeID nodeID : aNodeIDs)
 		{
-			DestroyNode(NodeView(nodeID, aNodeGraphView.GetNodeGraph()), aNodeGraphView, aCommandTracker);
+			DestroyNode(NodeView(nodeID, aNodeGraphView), aNodeGraphView, aCommandTracker);
 		}
 
 		if (aCommandTracker)
@@ -249,7 +249,7 @@ namespace FLY_NAMESPACE
 
 		for (const auto& [mNodeID, dragData] : aDragData)
 		{
-			Internal::SetNodePosition(mNodeID, dragData.endPos, dragData.startPos, aNodeGraphView.GetNodeGraph(), aCommandTracker);
+			Internal::SetNodePosition(mNodeID, dragData.mEndPos, dragData.mStartPos, aNodeGraphView.GetNodeGraph(), aCommandTracker);
 		}
 
 		if (aCommandTracker)
@@ -404,18 +404,27 @@ namespace FLY_NAMESPACE
 		{
 			return;
 		}
+	}
 
-		const std::vector<Property>& mProperties = pinDataType->mProperties;
-		if (mProperties.empty())
-		{
-			return;
-		}
+	bool HasNodeAnyConnectedLinks(NodeView aNodeView, NodeGraphView aNodeGraphView)
+	{
+		const Node& node = aNodeGraphView.GetNodeGraph().mNodes.at(aNodeView.GetID());
 
-		for (const Property& property : mProperties)
-		{
-			const PinTypeID createdPinTypeID = Global::GetPinTypeManager().Create(property.mName, pinType.mFlowType, property.mTypeID, CreatePinSetFunction());
-			Internal::CreatePin(nodeGraph, pin.mNodeID, createdPinTypeID);
-		}
+		auto hasConnectedLink = [](const std::vector<PinID>& aPinIDs, NodeGraph& aNodeGraph) -> bool
+			{
+				for (const PinID pinID : aPinIDs)
+				{
+					const Pin& pin = aNodeGraph.mPins.at(pinID);
+					if (!pin.mConnectedPinIDs.empty())
+					{
+						return true;
+					}
+				}
+
+				return false;
+			};
+		
+		return hasConnectedLink(node.mInputPins, aNodeGraphView.GetNodeGraph()) || hasConnectedLink(node.mOutputPins, aNodeGraphView.GetNodeGraph());
 	}
 
 	bool IsPinReplacable(const PinView aPinView, const NodeGraphView aNodeGraphView)
@@ -427,9 +436,9 @@ namespace FLY_NAMESPACE
 		return nodeType.mNodeRecipe.mOperatorTrait != eNodeOperatorTrait::None;
 	}
 
-	void ReplaceWildcardNode(const PinView aPinView, NodeGraphView aNodeGraphView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	void ReplaceTemplateNode(const PinView aPinView, NodeGraphView aNodeGraphView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
 	{
-		Internal::ReplaceWildcardNode(aNodeGraphView.GetNodeGraph(), aPinView.GetID(), aDataTypeView.GetID(), aCommandTracker);
+		Internal::ReplaceTemplateNode(aNodeGraphView.GetNodeGraph(), aPinView.GetID(), aDataTypeView.GetID(), aCommandTracker);
 	}
 
 	std::vector<DataTypeView> GetReplacableDataTypes(const PinView aPinView, const NodeGraphView aNodeGraphView)
@@ -558,7 +567,7 @@ namespace FLY_NAMESPACE
 				const PinType& createdInputPinType = Global::GetPinTypeManager().GetPinType(createdInputPin.mTypeID);
 
 				const PinID sourcePinID = ScriptLinker::GetOpposingPinID(targetNodeGraph, createdInputPinID, nodeGraphCopy, sourceNodeID);
-				const Pin& sourcePin = ScriptProxy::GetPin(nodeGraphCopy, sourcePinID);
+				const Pin& sourcePin = nodeGraphCopy.mPins.at(sourcePinID);
 				dataTypeManager.CopyData(createdInputPinType.mDataTypeID, createdInputPin.mDataPtr, sourcePin.mDataPtr);
 			}
 		}
@@ -625,7 +634,7 @@ namespace FLY_NAMESPACE
 		const std::vector<NodeRef>& mNodeRefs = nodeType.mNodeRefs;
 		for (const NodeRef& nodeRef : mNodeRefs)
 		{
-			Node& node = ScriptProxy::GetNodeRef(nodeRef.GetNodeGraph(), nodeRef.GetNodeID());
+			Node& node = nodeRef.GetNodeGraph().mNodes.at(nodeRef.GetNodeID());
 
 			std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins);
 			const PinID createdPinID = Internal::CreatePin(nodeRef.GetNodeGraph(), nodeRef.GetNodeID(), newPinTypeID);
@@ -849,7 +858,7 @@ namespace FLY_NAMESPACE
 
 		return Stream<PinID>(inputPinIDs).Filter([&](PinID aPinID) -> bool
 			{
-				return ScriptProxy::GetPin(aNodeGraph, aPinID).mConnectedPinIDs.empty();
+				return aNodeGraph.mPins.at(aPinID).mConnectedPinIDs.empty();
 			})
 			.GetCopy();
 
@@ -861,7 +870,7 @@ namespace FLY_NAMESPACE
 
 		return Stream<PinID>(pinIDs).Filter([&](PinID aPinID) -> bool
 			{
-				return ScriptProxy::GetPin(aNodeGraph, aPinID).mConnectedPinIDs.empty();
+				return aNodeGraph.mPins.at(aPinID).mConnectedPinIDs.empty();
 			})
 			.GetCopy();
 
@@ -944,7 +953,7 @@ namespace FLY_NAMESPACE
 					continue;
 				}
 			}
-			views.push_back(NodeView(mNodeID, aNodeGraphView.GetNodeGraph()));
+			views.push_back(NodeView(mNodeID, aNodeGraphView));
 		}
 		return views;
 	}

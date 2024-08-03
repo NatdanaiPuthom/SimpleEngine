@@ -33,7 +33,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		const DataType& GetDataType() const;
+		const DataType* GetDataType() const;
 
 	private:
 

@@ -97,18 +97,17 @@ namespace FLY_NAMESPACE
 		aData.waveType = aJson["waveType"];
 	}
 
-	static float Wave(NodeExecutionContext<ExecutionContextBase> aContext, NodeState<WaveData> aData, float aFrequency, float anAmplitude, float anEquilibrium, WaveTypeData aWaveType)
+	static float Wave(NodeExecutionContext<ExecutionContextBase> aContext, NodeState<WaveData> aState, float aFrequency, float aAmplitude, float aEquilibrium, WaveTypeData aWaveType)
 	{
-		aData.mValue.t += aContext.mContext.mDeltaTime;
-		return anEquilibrium + CalculateFrequencyByType(aWaveType.waveType, aData.mValue.t * aFrequency) * anAmplitude;
+		aState.mValue.t += aContext.mContext.mDeltaTime;
+		return aEquilibrium + CalculateFrequencyByType(aWaveType.waveType, aState.mValue.t * aFrequency) * aAmplitude;
 	}
 
-	REGISTER_FUNCTION(Wave, "Utility/Math");
-	REGISTER_FUNCTION(sinf, "Utility/Math");
-	REGISTER_FUNCTION(cosf, "Utility/Math");
-	REGISTER_FUNCTION(asinf, "Utility/Math");
-	REGISTER_FUNCTION(acosf, "Utility/Math");
-	REGISTER_FUNCTION(Wave, "Utility/Math");
+	FLY_FUNCTION(sinf, "Utility/Math");
+	FLY_FUNCTION(cosf, "Utility/Math");
+	FLY_FUNCTION(asinf, "Utility/Math");
+	FLY_FUNCTION(acosf, "Utility/Math");
+	FLY_FUNCTION(Wave, "Utility/Math", InputNames{ "Frequency", "Amplitude", "Equilibrium", "Wave Type" });
 
 	FLY_DATATYPE(WaveTypeData, eNodeOperatorTrait::None, DefaultColor);
 }

@@ -7,18 +7,16 @@ namespace FLY_NAMESPACE
 {
 
 	class Class;
-	struct ExecutionContextBase;
 
 	class ClassInstance final
 	{
 	public:
 
 
-		ClassInstance();
+		ClassInstance(Class& aClass);
 		~ClassInstance();
 
-		void Init(Class& aScript);
-
+		void Init();
 
 		Class* mClass;
 		StructInstance mStructInstance;

@@ -9,11 +9,10 @@
 #include "../Utilities/FlyUtilities.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
-#include "../FlyInternal.hpp"
+#include "../Internal/FlyInternal.hpp"
 #include "../SystemTypes/FlyWildcard.hpp"
 #include "../SystemTypes/FlyFlow.hpp"
 #include "../Utilities/FlyMeta.hpp"
-#include "../Utilities/FlyProxy.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "../SystemTypes/FlyReferenceWrapper.hpp"
@@ -82,7 +81,7 @@ namespace FLY_NAMESPACE
 				const std::any& defaultValueAny = aCreationData.mDescription.mDefaultValues.at(Index);
 				if (defaultValueAny.has_value())
 				{
-					defaultValueMemoryID = ScriptProxy::GetGlobalMemoryPool().Allocate<Type>(std::any_cast<Type>(defaultValueAny));
+					defaultValueMemoryID = Global::Internal::GetMemoryPool().Allocate<Type>(std::any_cast<Type>(defaultValueAny));
 				}
 			}
 			aPinTypeIDArray[Index] = Global::GetPinTypeManager().Create<CT>(pinNames[Index], FlowType, CreatePinSetFunction<CT, FlowType>(), defaultValueMemoryID);
@@ -124,7 +123,7 @@ namespace FLY_NAMESPACE
 				MemoryArena<NodeBufferCapacity>& memoryArena = aNodeGraph.mMemoryArena;
 				if (pinType.mDefaultValueID != InvalidID<MemoryPoolID>())
 				{
-					const MemoryPool& globalMemoryPool = ScriptProxy::GetGlobalMemoryPool();
+					const MemoryPool& globalMemoryPool = Global::Internal::GetMemoryPool();
 					return &memoryArena.Allocate<CleanType>(globalMemoryPool.At<InputType>(pinType.mDefaultValueID));
 				}
 				else
@@ -166,8 +165,8 @@ namespace FLY_NAMESPACE
 		static_assert(!std::is_reference_v<OutputType>, "Return type can't be a reference");
 		static_assert(!std::is_same_v<void, OutputType>, "Return type can't be void");
 
-		void* mDataPtr = &aNodeGraph.mMemoryArena.Allocate<OutputType>();
-		return Internal::CreatePin(aNodeGraph, aNodeID, aPinTypeID, mDataPtr);
+		void* const dataPtr = &aNodeGraph.mMemoryArena.Allocate<OutputType>();
+		return Internal::CreatePin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 	}
 
 	template<size_t Index, size_t OutputSize, typename OutputType, typename... OutputTypes>
@@ -205,7 +204,7 @@ namespace FLY_NAMESPACE
 		if constexpr (Index < sizeof...(OutputTypes))
 		{
 			const PinID outputPinID = aOutputPinIDs[Index];
-			const Pin& pin = ScriptProxy::GetPin(aContext.mNodeData.mNodeRef.GetNodeGraph(), outputPinID);
+			const Pin& pin = aContext.mNodeData.mNodeRef.GetNodeGraph().mPins[outputPinID];
 			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 			assert(pinType.mFlowType == eFlowType::Output);
 
@@ -299,7 +298,7 @@ namespace FLY_NAMESPACE
 		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext.mNodeData.mNodeRef.GetNodeID()];
 		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
-		MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
+		MemoryPool& foundationMemoryPool = Global::Internal::GetMemoryPool();
 
 		MemoryPoolID mFunctionMemoryID = nodeType.mNodeRecipe.mFunctionMemoryID;
 		Callable& callable = foundationMemoryPool.At<Callable>(mFunctionMemoryID);
@@ -420,13 +419,13 @@ namespace FLY_NAMESPACE
 		const std::vector<PinTypeID> inputPinTypeIDs = CreatePinTypes<eFlowType::Input, std::remove_cvref_t<InputTypes>...>(aCreationData);
 		const std::vector<PinTypeID> outputPinTypeIDs = CreatePinTypes<eFlowType::Output, OutputTypes...>(aCreationData);
 
-		MemoryPool& foundationMemoryPool = ScriptProxy::GetGlobalMemoryPool();
+		MemoryPool& foundationMemoryPool = Global::Internal::GetMemoryPool();
 		const MemoryPoolID functionMemoryID = foundationMemoryPool.Allocate<Callable>(aCallable);
 
 
 		return NodeRecipe
 		{
-			.mCreateFunction = CreateCreateNodeFunction(aOutputList, TypeList<std::remove_cvref_t<InputTypes>...>{}),
+			.mCreateFunction = CreateCreateNodeFunction(TypeList<std::remove_cvref_t<OutputTypes>...>{}, TypeList<std::remove_cvref_t<InputTypes>...>{}),
 			.mExecuteFunction = CreateExecuteNodeFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext, NodeExecutionContextType, NodeStateDataType, Callable>(aOutputList,  TypeList<std::remove_cvref_t<InputTypes>...>{}),
 			.mTraits = traits,
 			.mEventID = aCreationData.mEventID,
@@ -901,33 +900,36 @@ namespace FLY_NAMESPACE
 		}
 	}
 
+	// non-const member functions with non-void return
 	template<typename ClassType, typename OutputType, typename... InputTypes>
-	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFuncPtr)
+	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction)
 	{
-		auto callable = [aFuncPtr](ClassType* aClassType, InputTypes&&... aInputTypes) -> OutputType
+		auto callable = [aFunction](ClassType* aClassType, InputTypes&&... aInputTypes) -> OutputType
 			{
-				return (aClassType->*aFuncPtr)(std::forward<InputTypes>(aInputTypes)...);
+				return (aClassType->*aFunction)(std::forward<InputTypes>(aInputTypes)...);
 			};
 		return CreateNodeRecipe(callable, TypeList<OutputType>(), TypeList<ClassType*, InputTypes...>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType>() });
 	}
 
+	// void returning member functions - generates flow
 	template<typename ClassType, typename OutputType, typename... InputTypes> requires IsSameType<OutputType, void>
-	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFuncPtr)
+	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction)
 	{
-		auto callable = [aFuncPtr](Flow, ClassType* aClassType, InputTypes&&... aInputTypes) -> Flow
+		auto callable = [aFunction](Flow, ClassType* aClassType, InputTypes&&... aInputTypes) -> Flow
 			{
-				(aClassType->*aFuncPtr)(std::forward<InputTypes>(aInputTypes)...);
+				(aClassType->*aFunction)(std::forward<InputTypes>(aInputTypes)...);
 				return Flow(true);
 			};
 		return CreateNodeRecipe(callable, TypeList<Flow>(), TypeList<Flow, ClassType*, InputTypes...>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType>(), .hasImplicitFlow = true });
 	}
 
+	// const member functions
 	template<typename ClassType, typename OutputType, typename... InputTypes>
-	NodeRecipe FilterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFuncPtr)
+	NodeRecipe FilterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction)
 	{
-		auto callable = [aFuncPtr](ClassType* aClassType, InputTypes&&... aInputTypes) -> OutputType
+		auto callable = [aFunction](ClassType* aClassType, InputTypes&&... aInputTypes) -> OutputType
 			{
-				return (aClassType->*aFuncPtr)(std::forward<InputTypes>(aInputTypes)...);
+				return (aClassType->*aFunction)(std::forward<InputTypes>(aInputTypes)...);
 			};
 		return CreateNodeRecipe(callable, TypeList<OutputType>(), TypeList<ClassType*, InputTypes...>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType>() });
 	}

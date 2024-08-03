@@ -1,5 +1,4 @@
 #include "ExecutionNodes.hpp"
-#include "../Node/FlyNodeTypeRegistry.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -60,12 +59,12 @@ namespace FLY_NAMESPACE
 		return Flow(false);
 	}
 
-	REGISTER_FUNCTION(BeginPlay, "Events", Event{});
-	REGISTER_FUNCTION(Tick, "Events", Event{}, OutputNames{ "Flow", "Delta Time" });
-	REGISTER_FUNCTION(EndPlay, "Events", Event{});
+	FLY_FUNCTION(BeginPlay, "Events", Event{});
+	FLY_FUNCTION(Tick, "Events", Event{}, OutputNames{ "Flow", "Delta Time" });
+	FLY_FUNCTION(EndPlay, "Events", Event{});
 
-	REGISTER_FUNCTION(Branch, "Execution", InputNames{ "Flow", "Condition" }, OutputNames{ "True", "False" }, DefaultValues{ Flow(false), true });
-	REGISTER_FUNCTION(FlipFlop, "Execution", OutputNames{ "Flip", "Flop" });
-	REGISTER_FUNCTION(Delay, "Execution", InputNames{ "Flow", "Duration", "Reset On Flow" }, DefaultValues{ Flow(false), 1.f, false });
+	FLY_FUNCTION(Branch, "Execution", InputNames{ "Flow", "Condition" }, OutputNames{ "True", "False" }, DefaultValues{ Flow(false), true });
+	FLY_FUNCTION(FlipFlop, "Execution", OutputNames{ "Flip", "Flop" });
+	FLY_FUNCTION(Delay, "Execution", InputNames{ "Flow", "Duration", "Reset On Flow" }, DefaultValues{ Flow(false), 1.f, false });
 
 }

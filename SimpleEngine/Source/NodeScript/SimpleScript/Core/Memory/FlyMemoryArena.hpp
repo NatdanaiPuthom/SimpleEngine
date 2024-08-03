@@ -213,7 +213,7 @@ namespace FLY_NAMESPACE
 
 	inline size_t GetPointerDiff(const void* const aPtr1, const void* const aPtr2)
 	{
-		return reinterpret_cast<const Byte*>(aPtr1) - reinterpret_cast<const Byte*>(aPtr2);
+		return static_cast<const Byte*>(aPtr1) - static_cast<const Byte*>(aPtr2);
 	}
 
 	template<typename T, size_t Size>
@@ -242,7 +242,7 @@ namespace FLY_NAMESPACE
 			mMemoryObjects.reserve(aOther.mMemoryObjects.size());
 			for (const MemoryObject& memoryObject : aOther.mMemoryObjects)
 			{
-				const size_t ptrDiff = reinterpret_cast<size_t>(memoryObject.mDataPtr) - reinterpret_cast<size_t>(&aOther.mBuffer[0]);
+				const size_t ptrDiff = GetPointerDiff(memoryObject.mDataPtr, &aOther.mBuffer[0]);
 				void* newMemory = &mBuffer[0] + ptrDiff;
 				mMemoryObjects.emplace_back(memoryObject, newMemory);
 			}
@@ -266,7 +266,7 @@ namespace FLY_NAMESPACE
 
 			for (const MemoryObject& memoryObject : aOther.mMemoryObjects)
 			{
-				size_t ptrDiff = reinterpret_cast<size_t>(memoryObject.memory) - reinterpret_cast<size_t>(&aOther.mBuffer[0]);
+				const size_t ptrDiff = GetPointerDiff(memoryObject.mDataPtr, &aOther.mBuffer[0]);
 				void* newMemory = &mBuffer[0] + ptrDiff;
 				mMemoryObjects.emplace_back(memoryObject, newMemory);
 			}
@@ -289,9 +289,10 @@ namespace FLY_NAMESPACE
 		{
 			void* currentMemory = GetCurrentPtr();
 			AllocateSize(sizeof(T));
-			::new (currentMemory) T(std::forward<Args>(aArgs)...);
 
 			T* value = reinterpret_cast<T*>(currentMemory);
+
+			std::construct_at(value, std::forward<Args>(aArgs)...);
 
 			if constexpr (!std::is_fundamental_v<T>)
 			{
@@ -305,6 +306,7 @@ namespace FLY_NAMESPACE
 		{
 			mSize += aSize;
 		}
+
 		void RegisterMemoryObject(void* aDataPtr, DataTypeID aDataTypeID)
 		{
 			assert(GetPointerDiff(aDataPtr, GetDataPtr()) < Capacity);
@@ -312,27 +314,27 @@ namespace FLY_NAMESPACE
 			mMemoryObjects.emplace_back(MemoryObject(aDataPtr, aDataTypeID));
 		}
 
-		size_t SizeLeft() const
+		[[nodiscard]] size_t GetSizeLeft() const
 		{
 			return Capacity - mSize;
 		}
 
-		void* GetDataPtr()
+		[[nodiscard]] void* GetDataPtr()
 		{
 			return &mBuffer[0];
 		}
 
-		const void* GetDataPtr() const
+		[[nodiscard]] const void* GetDataPtr() const
 		{
 			return &mBuffer[0];
 		}
 
-		void* GetCurrentPtr()
+		[[nodiscard]] void* GetCurrentPtr()
 		{
 			return (&mBuffer[0]) + mSize;
 		}
 
-		const void* GetCurrentPtr() const
+		[[nodiscard]] const void* GetCurrentPtr() const
 		{
 			return (&mBuffer[0]) + mSize;
 		}
@@ -368,10 +370,10 @@ namespace FLY_NAMESPACE
 
 		void RegisterMemoryObject(void* aDataPtr, DataTypeID aDataTypeID);
 
-		void* GetRenewedPointer(const void* aDataPtr, const MemoryArena& aPrevious) const;
+		[[nodiscard]] void* GetRenewedPointer(const void* aDataPtr, const MemoryArena& aPrevious) const;
 
 		template<std::integral T>
-		T GetID(const void* aPtr) const;
+		[[nodiscard]] T GetID(const void* aPtr) const;
 
 		void Clear();
 
@@ -379,8 +381,8 @@ namespace FLY_NAMESPACE
 
 
 		void AllocateNewBuffer();
-		MemoryBuffer& GetCurrentBuffer();
-		MemoryBuffer& GetMemoryBuffer(const void* const aDataPtr);
+		[[nodiscard]] MemoryBuffer& GetCurrentBuffer();
+		[[nodiscard]] MemoryBuffer& GetMemoryBuffer(const void* aDataPtr);
 
 	private:
 
@@ -426,7 +428,7 @@ namespace FLY_NAMESPACE
 	inline T& MemoryArena<BufferCapacity>::Allocate(Args && ...aArgs)
 	{
 		constexpr size_t allocSize = sizeof(T);
-		if (GetCurrentBuffer().SizeLeft() < allocSize)
+		if (GetCurrentBuffer().GetSizeLeft() < allocSize)
 		{
 			AllocateNewBuffer();
 		}
@@ -441,14 +443,18 @@ namespace FLY_NAMESPACE
 	template<size_t BufferCapacity>
 	inline void* MemoryArena<BufferCapacity>::AllocateSize(size_t aSize)
 	{
-		if (GetCurrentBuffer().SizeLeft() < aSize)
+		if (aSize > BufferCapacity)
+		{
+			throw std::runtime_error("Trying to allocate size that is larger than the set buffer capacity.");
+		}
+		if (GetCurrentBuffer().GetSizeLeft() < aSize)
 		{
 			AllocateNewBuffer();
 		}
 		MemoryBuffer& buffer = GetCurrentBuffer();
-		void* mDataPtr = buffer.GetCurrentPtr();
+		void* dataPtr = buffer.GetCurrentPtr();
 		buffer.AllocateSize(aSize);
-		return mDataPtr;
+		return dataPtr;
 	}
 
 	template<size_t BufferCapacity>
@@ -459,31 +465,32 @@ namespace FLY_NAMESPACE
 	}
 
 	template<size_t BufferCapacity>
-	inline void* MemoryArena<BufferCapacity>::GetRenewedPointer(const void* aPtr, const MemoryArena& aPrevious) const
+	inline void* MemoryArena<BufferCapacity>::GetRenewedPointer(const void* aDataPtr, const MemoryArena& aPrevious) const
 	{
 		for (size_t i = 0; i < aPrevious.mMemoryBuffers.size(); ++i)
 		{
 			const std::unique_ptr<MemoryBuffer>& buffer = aPrevious.mMemoryBuffers[i];
-			const size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->GetDataPtr());
+			const size_t ptrDiff = GetPointerDiff(aDataPtr, buffer->GetDataPtr());
 			if (ptrDiff < BufferCapacity)
 			{
 				return reinterpret_cast<void*>(reinterpret_cast<size_t>(mMemoryBuffers[i]->GetDataPtr()) + ptrDiff);
 			}
 		}
+		assert(false);
 		return nullptr;
 	}
 
 	template<size_t BufferCapacity>
 	template<std::integral T>
-	inline T MemoryArena<BufferCapacity>::GetID(const void* aPtr) const
+	inline T MemoryArena<BufferCapacity>::GetID(const void* aDataPtr) const
 	{
 		for (size_t i = 0; i < mMemoryBuffers.size(); ++i)
 		{
 			const std::unique_ptr<MemoryBuffer>& buffer = mMemoryBuffers[i];
-			const size_t ptrDiff = reinterpret_cast<size_t>(aPtr) - reinterpret_cast<size_t>(buffer->GetDataPtr());
+			const size_t ptrDiff = GetPointerDiff(aDataPtr, buffer->GetDataPtr());
 			if (ptrDiff < BufferCapacity)
 			{
-				return static_cast<T>(i * BufferCapacity + (reinterpret_cast<size_t>(mMemoryBuffers[i]->GetDataPtr()) + ptrDiff));
+				return static_cast<T>(i * BufferCapacity + (static_cast<size_t>(mMemoryBuffers[i]->GetDataPtr()) + ptrDiff));
 			}
 		}
 
@@ -516,7 +523,7 @@ namespace FLY_NAMESPACE
 		for (size_t i = 0; i < mMemoryBuffers.size(); ++i)
 		{
 			const std::unique_ptr<MemoryBuffer>& buffer = mMemoryBuffers[i];
-			const size_t ptrDiff = reinterpret_cast<size_t>(aDataPtr) - reinterpret_cast<size_t>(buffer->GetDataPtr());
+			const size_t ptrDiff = GetPointerDiff(aDataPtr, buffer->GetDataPtr());
 			if (ptrDiff < BufferCapacity)
 			{
 				return *buffer;

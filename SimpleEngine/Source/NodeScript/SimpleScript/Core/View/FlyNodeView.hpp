@@ -7,12 +7,13 @@
 namespace FLY_NAMESPACE
 {
 	struct NodeType;
+	class NodeGraphView;
 
 	class NodeView final
 	{
 	public:
 
-		NodeView(NodeID aNodeID, const NodeGraph& aNodeGraph);
+		NodeView(NodeID aNodeID, const NodeGraphView& aNodeGraphView);
 
 		const std::string& GetNodeTypeName() const;
 		std::string GetShortName() const;

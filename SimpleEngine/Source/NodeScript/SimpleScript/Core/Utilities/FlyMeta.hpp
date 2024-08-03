@@ -309,6 +309,9 @@ namespace FLY_NAMESPACE
 	concept DefaultConstructible = std::default_initializable<T>;
 
 	template<typename T>
+	concept NotDefaultConstructible = !DefaultConstructible<T>;
+
+	template<typename T>
 	concept Copyable = std::copyable<T>;
 
 	template<typename T, typename SerializationObject>

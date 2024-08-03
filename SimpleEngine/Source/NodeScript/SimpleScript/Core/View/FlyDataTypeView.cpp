@@ -13,7 +13,8 @@ namespace FLY_NAMESPACE
 	DataTypeView::DataTypeView(const DataTypeID aDataTypeID)
 		: mDataTypeID(aDataTypeID)
 	{
-		if (Global::GetDataTypeManager().Find(mDataTypeID) == nullptr)
+		const DataType* dataType = GetDataType();
+		if (!dataType)
 		{
 			mDataTypeID = InvalidID<DataTypeID>();
 		}
@@ -26,17 +27,27 @@ namespace FLY_NAMESPACE
 
 	const std::string& DataTypeView::GetName() const
 	{
-		return GetDataType().mName;
+		return Global::GetDataTypeManager().GetName(mDataTypeID);
 	}
 
 	const Color& DataTypeView::GetColor() const
 	{
-		return GetDataType().mColor;
+		const DataType* dataType = GetDataType();
+		if (dataType)
+		{
+			return dataType->mColor;
+		}
+		return DefaultColor;
 	}
 
 	eDataTypeTrait DataTypeView::GetTypeTraits() const
 	{
-		return GetDataType().mTypeTraits;
+		const DataType* dataType = GetDataType();
+		if (dataType)
+		{
+			return dataType->mTypeTraits;
+		}
+		return eDataTypeTrait::None;
 	}
 
 	bool DataTypeView::IsTargetable() const
@@ -51,8 +62,13 @@ namespace FLY_NAMESPACE
 
 	std::vector<NodeTypeView> DataTypeView::GetNodeTypes() const
 	{
-		const std::vector<NodeTypeID>& nodeTypeIDs = GetDataType().mNodeTypeIDs;
-		
+		const DataType* dataType = GetDataType();
+		if (!dataType)
+		{
+			return std::vector<NodeTypeView>();
+		}
+		const std::vector<NodeTypeID>& nodeTypeIDs = dataType->mNodeTypeIDs;
+
 		std::vector<NodeTypeView> nodeTypeViews;
 
 		nodeTypeViews.reserve(nodeTypeIDs.size());
@@ -80,10 +96,8 @@ namespace FLY_NAMESPACE
 		return !(*this == aOther);
 	}
 
-	const DataType& DataTypeView::GetDataType() const
+	const DataType* DataTypeView::GetDataType() const
 	{
-		const DataType* dataType = Global::GetDataTypeManager().Find(mDataTypeID);
-		assert(dataType);
-		return *dataType;
+		return Global::GetDataTypeManager().Find(mDataTypeID);
 	}
 }

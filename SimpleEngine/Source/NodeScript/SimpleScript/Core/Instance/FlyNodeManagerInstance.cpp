@@ -27,9 +27,9 @@ namespace FLY_NAMESPACE
 			{
 				continue;
 			}
-			void* mDataPtr = Global::GetDataTypeManager().AllocateData(nodeType.mNodeRecipe.mNodeStateDataTypeID, mMemoryArena);
-			assert(mDataPtr != nullptr);
-			mNodeStateMap.emplace(nodeID, mDataPtr);
+			void* dataPtr = Global::GetDataTypeManager().AllocateData(nodeType.mNodeRecipe.mNodeStateDataTypeID, mMemoryArena);
+			assert(dataPtr != nullptr);
+			mNodeStateMap.emplace(nodeID, dataPtr);
 		}
 	}
 }

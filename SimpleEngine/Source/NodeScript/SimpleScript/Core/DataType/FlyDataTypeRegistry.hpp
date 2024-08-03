@@ -41,14 +41,19 @@ namespace FLY_NAMESPACE
 		}
 		dataTypeManager.Register<T>(aName, aColor, aIsTargetable);
 
-		RegisterTemplateTypes<T, Templates...>(aName);
-		RegisterGetterNodeType<T>();
-		RegisterSetterNodeType<T>();
-		RegisterOperatorNodeTypes<T, Operators>();
+
+		if constexpr (DefaultConstructible<T>)
+		{
+			RegisterTemplateTypes<T, Templates...>(aName);
+			RegisterGetterNodeType<T>();
+			RegisterSetterNodeType<T>();
+			RegisterOperatorNodeTypes<T, Operators>();
+		}
+	
 
 		if (aIsTargetable)
 		{
-			NodeTypeRegistry::RegisterNodeType(GetSelfNode<T>, aName + "/" + aName + "::Get Self");
+			RegisterSystemNodeType<eNodeTrait::Self>(GetSelfNode<T>, aName + "/" + aName + "::Get Self");
 
 		}
 	}
@@ -111,8 +116,8 @@ namespace FLY_NAMESPACE
 		template<eNodeOperatorTrait Operators, typename... Traits>
 		constexpr static RegisterType<T> Register(const char* aName, const Color& aColor = DefaultColor)
 		{
-			constexpr bool isNotTargetable = ContainsType<NonTargetable, Traits...>;
-			DataTypeRegistry::Register<T, Operators>(aName, aColor, !isNotTargetable);
+			constexpr bool isTargetable = !ContainsType<NonTargetable, Traits...>;
+			DataTypeRegistry::Register<T, Operators>(aName, aColor, isTargetable);
 
 			return RegisterType<T>();
 		}
@@ -126,10 +131,9 @@ namespace FLY_NAMESPACE
 		constexpr RegisterProperty(MemberType StructType::* aMember, const std::string& aName)
 		{
 			DataTypeRegistry::RegisterProperty(aMember, aName);
-			//SCRIPT::NodeTypeRegistry::RegisterMemberVariable(aMember, );
 		}
 	};
 }
 
 #define FLY_DATATYPE(type, operators, color, ...) inline static FLY_NAMESPACE::RegisterType<type> fly_registeredType##type = FLY_NAMESPACE::RegisterType<type>::Register<operators, __VA_ARGS__>(#type, color);
-#define FLY_PROPERTY(member) inline static FLY_NAMESPACE::RegisterProperty prop(member, #member);
+#define FLY_PROPERTY(member) inline static FLY_NAMESPACE::RegisterProperty prop(&member, #member);

@@ -522,38 +522,31 @@ namespace ECS
 		return true;
 	}
 
-	bool ViewAndEditValue(Fly::ClassInstance*& aClassInstance, const std::string& /*aVariableName*/)
+	bool ViewAndEditValue(Fly::ClassInstance*& aClassInstance, [[maybe_unused]] const std::string& aVariableName)
 	{
-		//Fly::DataTypeManager& dataTypeManager = Fly::Global::GetDataTypeManager();
-		//Fly::ScriptFoundation& scriptFoundation = Fly::Global::GetFoundation();
 
-		const auto& scripts = Fly::GetClasses();
+		const auto& classes = Fly::GetClasses();
 
 		bool wasChanged = false;
 
 		if (ImGui::BeginCombo("Script", "None"))
 		{
-			for (auto& [dataTypeID, classesByTarget] : scripts)
+			for (auto& [dataTypeID, classesByTarget] : classes)
 			{
 				const Fly::DataTypeView dataType(dataTypeID);
-				if (dataType)
+				if (!dataType)
 				{
 					continue;
 				}
 				ImGui::Text("%s Scripts:", dataType.GetName().c_str());
 				for (auto& flyClass : classesByTarget)
 				{
-					bool isSelected = false;
-					if (aClassInstance != nullptr)
-					{
-						isSelected = aClassInstance->mClass == &flyClass.GetClass();
-					}
+					const bool isSelected = aClassInstance ? aClassInstance->mClass == &flyClass.GetClass() : false;
 					if (ImGui::Selectable(flyClass.GetName().c_str(), isSelected))
 					{
 						if (aClassInstance != nullptr)
 						{
 							Fly::DestroyClassInstance(*aClassInstance);
-
 						}
 
 						aClassInstance = &Fly::CreateClassInstance(flyClass);

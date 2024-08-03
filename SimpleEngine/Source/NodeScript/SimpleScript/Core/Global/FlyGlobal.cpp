@@ -14,7 +14,6 @@ namespace FLY_NAMESPACE
 		bool g_IsDebugging = false;
 		MemoryArena<1024> g_FrameArena;
 		MemoryArena<10000> g_EditArena;
-		NodeGraph g_NodeGraphCopy;
 
 		Foundation& GetFoundation()
 		{
@@ -63,9 +62,14 @@ namespace FLY_NAMESPACE
 				return g_EditArena;
 			}
 
+			MemoryPool& GetMemoryPool()
+			{
+				return GetFoundation().mMemoryPool;
+			}
+
 			NodeGraph& GetNodeGraphCopy()
 			{
-				return g_NodeGraphCopy;
+				return GetFoundation().mNodeGraphCopy;
 			}
 		}
 	}

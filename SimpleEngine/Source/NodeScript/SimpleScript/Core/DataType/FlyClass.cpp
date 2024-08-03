@@ -16,9 +16,7 @@ namespace FLY_NAMESPACE
 
 	ClassInstance& Class::CreateClassInstance()
 	{
-		std::unique_ptr<ClassInstance>& classInstance = mClassInstances.emplace_back(std::make_unique<ClassInstance>());
-		classInstance->Init(*this);
-
+		std::unique_ptr<ClassInstance>& classInstance = mClassInstances.emplace_back(std::make_unique<ClassInstance>(*this));
 		return *classInstance;
 	}
 

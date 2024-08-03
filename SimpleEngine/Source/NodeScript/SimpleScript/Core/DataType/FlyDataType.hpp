@@ -1,5 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
+#include "FlyVariable.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -47,13 +48,6 @@ namespace FLY_NAMESPACE
 		}
 	};
 
-	struct Property
-	{
-		const std::string mName;
-		const DataTypeID mTypeID;
-		const size_t mByteOffset;
-	};
-
 	enum class eDataTypeTrait
 	{
 		None = 0,
@@ -72,7 +66,7 @@ namespace FLY_NAMESPACE
 		const std::type_info* mTypeInfo;
 		const eDataTypeTrait mTypeTraits;
 		const DataTypeInterface mInterface;
-		std::vector<Property> mProperties;
+		std::vector<Variable> mVariables;
 		std::vector<NodeTypeID> mNodeTypeIDs;
 	};
 

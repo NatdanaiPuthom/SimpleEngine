@@ -9,7 +9,7 @@ namespace FLY_NAMESPACE
 	class DataTypeManager;
 	class NodeTypeManager;
 	class PinTypeManager;
-	class MemoryManager;
+	class MemoryPool;
 	template<size_t> class MemoryArena;
 	class Class;
 
@@ -30,6 +30,7 @@ namespace FLY_NAMESPACE
 		{
 			MemoryArena<1024>& GetFrameMemoryArena();
 			MemoryArena<10000>& GetEditMemoryArena();
+			MemoryPool& GetMemoryPool();
 			NodeGraph& GetNodeGraphCopy();
 		}
 	}

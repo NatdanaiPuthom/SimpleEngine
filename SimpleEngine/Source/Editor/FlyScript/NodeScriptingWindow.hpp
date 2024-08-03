@@ -29,7 +29,7 @@ namespace Editor
 		std::vector<Fly::NodeTypeView> nodeTypes;
 	};
 
-	inline static unsigned int ToImGuiColor(const Fly::Color& aColor)
+	inline constexpr unsigned int ToImGuiColor(const Fly::Color& aColor)
 	{
 		return IM_COL32(aColor.r * 255, aColor.g * 255, aColor.b * 255, 255);
 	}

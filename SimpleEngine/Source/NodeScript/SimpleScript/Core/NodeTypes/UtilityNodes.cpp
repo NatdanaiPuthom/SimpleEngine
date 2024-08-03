@@ -1,47 +1,27 @@
 #include "UtilityNodes.hpp"
-#include "../Node/FlyNodeTypeRegistry.hpp"
 
 namespace FLY_NAMESPACE
 {
-
-	template<typename T, typename U>
-	static U CastValue(T aValue)
+	float IntToFloat(int aValue)
 	{
-		return static_cast<U>(aValue);
+		return CastValue<float>(aValue);
 	}
 
-	template<typename T>
-	static T Clamp(T aValue, T aMin, T aMax)
-	{
-		return std::clamp(aValue, aMin, aMax);
-	}
+	FLY_FUNCTION(IntToFloat, "Utility/Cast/Int To Float");
+	
 
-#undef min
-#undef max
+	FLY_FUNCTION(Clamp<int>, "Utility/Function/", InputNames{ "Value", "Min", "Max" }, DefaultValues{ 0, 0, 0 });
+	FLY_FUNCTION(Clamp<float>, "Utility/Function/", InputNames{ "Value", "Min", "Max" }, DefaultValues{ 0.f, 0.f, 0.f });
+	FLY_FUNCTION(Clamp<unsigned long long>, "Utility/Function/", InputNames{ "Value", "Min", "Max" }, DefaultValues{ 0ull, 0ull, 0ull });
 
-	template<typename T>
-	static T Min(T aValue1, T aValue2)
-	{
-		return std::min(aValue1, aValue2);
-	}
-
-	template<typename T>
-	static T Max(T aValue1, T aValue2)
-	{
-		return std::max(aValue1, aValue2);
-	}
-
-	REGISTER_FUNCTION(Clamp<int>, "Utility/Function/");
-	REGISTER_FUNCTION(Clamp<float>, "Utility/Function/");
-	REGISTER_FUNCTION(Clamp<unsigned long long>, "Utility/Function/");
-
-	REGISTER_FUNCTION(Min<int>, "Utility/Function");
-	REGISTER_FUNCTION(Min<float>, "Utility/Function");
-	REGISTER_FUNCTION(Min<unsigned long long>, "Utility/Function");
+	FLY_FUNCTION(Min<int>, "Utility/Function");
+	FLY_FUNCTION(Min<float>, "Utility/Function");
+	FLY_FUNCTION(Min<unsigned long long>, "Utility/Function");
 
 
-	REGISTER_FUNCTION(Max<int>, "Utility/Function");
-	REGISTER_FUNCTION(Max<float>, "Utility/Function");
-	REGISTER_FUNCTION(Max<unsigned long long>, "Utility/Function");
+	FLY_FUNCTION(Max<int>, "Utility/Function");
+	FLY_FUNCTION(Max<float>, "Utility/Function");
+	FLY_FUNCTION(Max<unsigned long long>, "Utility/Function");
+	
 }
 

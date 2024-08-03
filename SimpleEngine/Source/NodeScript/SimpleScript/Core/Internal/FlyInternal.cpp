@@ -10,7 +10,6 @@
 #include "Global/FlyGlobal.hpp"
 #include "FlyFlow.hpp"
 #include "FlyWildcard.hpp"
-#include "Utilities/FlyProxy.hpp"
 #include "FlyFoundation.hpp"
 #include "Node/FlyNodeTypeRegistry.hpp"
 
@@ -142,7 +141,7 @@ namespace FLY_NAMESPACE
 
 		void AddNode(NodeGraph& aNodeGraph, Node&& aNode, const NodeID aNodeID, CommandTracker* const aCommandTracker)
 		{
-			std::vector<Node>& nodes = ScriptProxy::GetNodes(aNodeGraph);
+			std::vector<Node>& nodes = aNodeGraph.mNodes;
 
 			nodes.emplace_back(std::move(aNode));
 
@@ -162,7 +161,7 @@ namespace FLY_NAMESPACE
 
 			auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
-					Node& node = ScriptProxy::GetNodeRef(*data.mNodeGraph, data.mNodeID);
+					Node& node = data.mNodeGraph->mNodes.at(data.mNodeID);
 
 					node.mIsDestroyed = aCommandType == eCommandType::Undo;
 				};
@@ -322,9 +321,7 @@ namespace FLY_NAMESPACE
 		{
 			const DataTypeID dataTypeID = Global::GetPinTypeManager().GetPinType(aPinTypeID).mDataTypeID;
 
-			MemoryArena<NodeBufferCapacity>& memoryArena = ScriptProxy::GetNodeGraphMemoryArena(aNodeGraph);
-
-			void* const dataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, memoryArena);
+			void* const dataPtr = Global::GetDataTypeManager().AllocateData(dataTypeID, aNodeGraph.mMemoryArena);
 
 			return CreatePin(aNodeGraph, aNodeID, aPinTypeID, dataPtr);
 		}
@@ -347,7 +344,7 @@ namespace FLY_NAMESPACE
 
 		PinID CreatePin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID, void* const aDataPtr)
 		{
-			std::vector<Pin>& pins = ScriptProxy::GetPins(aNodeGraph);
+			std::vector<Pin>& pins = aNodeGraph.mPins;
 			const PinID id = static_cast<PinID>(pins.size());
 			pins.push_back(Pin{ aNodeID, aPinTypeID, aDataPtr });
 			return id;
@@ -359,7 +356,7 @@ namespace FLY_NAMESPACE
 
 
 			{
-				Pin& inputPin = ScriptProxy::GetPinRef(aNodeGraph, link.mInputPinID);
+				Pin& inputPin = aNodeGraph.mPins.at(link.mInputPinID);
 				auto it = std::find(inputPin.mConnectedPinIDs.begin(), inputPin.mConnectedPinIDs.end(), link.mOutputPinID);
 				if (it == inputPin.mConnectedPinIDs.end())
 				{
@@ -367,7 +364,7 @@ namespace FLY_NAMESPACE
 				}
 			}
 			{
-				Pin& outputPin = ScriptProxy::GetPinRef(aNodeGraph, link.mOutputPinID);
+				Pin& outputPin = aNodeGraph.mPins.at(link.mOutputPinID);
 				auto it = std::find(outputPin.mConnectedPinIDs.begin(), outputPin.mConnectedPinIDs.end(), link.mInputPinID);
 				if (it == outputPin.mConnectedPinIDs.end())
 				{
@@ -405,12 +402,11 @@ namespace FLY_NAMESPACE
 
 				if (pinType1.mDataTypeID == GetDataTypeID<Wildcard>())
 				{
-					ReplaceWildcardNode(aNodeGraph, aPinID1, aPinID2, aCommandTracker);
-
+					ReplaceTemplateNode(aNodeGraph, aPinID1, aPinID2, aCommandTracker);
 				}
 				else if (pinType2.mDataTypeID == GetDataTypeID<Wildcard>())
 				{
-					ReplaceWildcardNode(aNodeGraph, aPinID2, aPinID1, aCommandTracker);
+					ReplaceTemplateNode(aNodeGraph, aPinID2, aPinID1, aCommandTracker);
 				}
 
 				return InvalidID<LinkID>();
@@ -435,8 +431,8 @@ namespace FLY_NAMESPACE
 			data.createdLinkID = static_cast<LinkID>(aNodeGraph.mLinks.size());
 
 
-			const Pin& inputPin = ScriptProxy::GetPin(aNodeGraph, aInputPinID);
-			const Pin& outputPin = ScriptProxy::GetPin(aNodeGraph, aOutputPinID);
+			const Pin& inputPin = aNodeGraph.mPins.at(aInputPinID);
+			const Pin& outputPin = aNodeGraph.mPins.at(aOutputPinID);
 			const PinType& inputPinType = Global::GetPinTypeManager().GetPinType(inputPin.mTypeID);
 			const PinType& outputPinType = Global::GetPinTypeManager().GetPinType(outputPin.mTypeID);
 			DataTypeID inputPinDataType = inputPinType.mDataTypeID;
@@ -665,7 +661,7 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		void ReplaceWildcardNode(NodeGraph& aNodeGraph, const PinID aWildcardPinID, const PinID aConnectedPinID, CommandTracker* const aCommandTracker)
+		void ReplaceTemplateNode(NodeGraph& aNodeGraph, const PinID aWildcardPinID, const PinID aConnectedPinID, CommandTracker* const aCommandTracker)
 		{
 			const Pin& wildcardPin = aNodeGraph.mPins.at(aWildcardPinID);
 			const Pin& connectedPin = aNodeGraph.mPins.at(aConnectedPinID);
@@ -746,7 +742,7 @@ namespace FLY_NAMESPACE
 
 		}
 
-		void ReplaceWildcardNode(NodeGraph& aNodeGraph, const PinID aWildcardPinID, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
+		void ReplaceTemplateNode(NodeGraph& aNodeGraph, const PinID aWildcardPinID, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
 			const Pin& wildcardPin = aNodeGraph.mPins.at(aWildcardPinID);
 
@@ -783,7 +779,7 @@ namespace FLY_NAMESPACE
 
 		NodeID GetCurrentNodeID(NodeGraph& aNodeGraph)
 		{
-			return static_cast<NodeID>(ScriptProxy::GetNodes(aNodeGraph).size());
+			return static_cast<NodeID>(aNodeGraph.mNodes.size());
 		}
 
 		VariableRef GetVariableRefByNodeRef(const GlobalNodeRef& aNodeRef)

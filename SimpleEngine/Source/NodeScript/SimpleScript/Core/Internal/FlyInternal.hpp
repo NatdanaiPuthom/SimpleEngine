@@ -66,8 +66,8 @@ namespace FLY_NAMESPACE
 		void UnbindVariable(Class& aClass, const NodeRef& aNodeRef, CommandTracker* aCommandTracker);
 
 
-		void ReplaceWildcardNode(NodeGraph& aNodeGraph, PinID aWildcardPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);
-		void ReplaceWildcardNode(NodeGraph& aNodeGraph, PinID aWildcardPinID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
+		void ReplaceTemplateNode(NodeGraph& aNodeGraph, PinID aWildcardPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);
+		void ReplaceTemplateNode(NodeGraph& aNodeGraph, PinID aWildcardPinID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 
 		NodeID GetCurrentNodeID(NodeGraph& aNodeGraph);
 

@@ -2,12 +2,13 @@
 #include "../Graph/FlyNodeGraph.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
+#include "FlyNodeGraphView.hpp"
 
 namespace FLY_NAMESPACE
 {
 
-	NodeView::NodeView(const NodeID aNodeID, const NodeGraph& aNodeGraph)
-		: mNodeGraph(&aNodeGraph)
+	NodeView::NodeView(const NodeID aNodeID, const NodeGraphView& aNodeGraphView)
+		: mNodeGraph(&aNodeGraphView.GetNodeGraph())
 		, mNodeID(aNodeID)
 	{
 	}

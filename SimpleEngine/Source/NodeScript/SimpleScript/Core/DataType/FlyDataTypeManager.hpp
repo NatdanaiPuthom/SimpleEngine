@@ -136,6 +136,15 @@ namespace FLY_NAMESPACE
 			};
 	}
 
+	template<NotDefaultConstructible T>
+	constexpr AllocateInterface CreateAllocateInterface()
+	{
+		return [](void*, const void*) -> void
+			{
+				throw std::runtime_error("Can't instantiate an object that isn't default constructible.");
+			};
+	}
+
 	template<typename T>
 	constexpr ReleaseInterface CreateReleaseInterface()
 	{
@@ -211,30 +220,40 @@ namespace FLY_NAMESPACE
 
 		DataTypeManager();
 		~DataTypeManager();
+		
+	private:
 
-		bool EditData(DataTypeID aDataTypeID, void* aDataPtr);
-		bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr);
-		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr);
+		bool EditData(const DataType& aDataType, void* aDataPtr) const;
+		bool SaveData(const DataType& aDataType, nlohmann::json& aJson, const void* aDataPtr) const;
+		bool LoadData(const DataType& aDataType, const nlohmann::json& aJson, void* aDataPtr) const;
+
+	public:
+
+		bool EditData(DataTypeID aDataTypeID, void* aDataPtr) const;
+		bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr) const;
+		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr) const;
 
 		template<size_t BufferCapacity>
-		void* AllocateData(DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* aDefaultValue = nullptr);
+		void* AllocateData(DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* aDefaultValue = nullptr) const;
 
-		void ReleaseData(DataTypeID aDataTypeID, void* aDataPtr);
+		void ReleaseData(DataTypeID aDataTypeID, void* aDataPtr) const;
 
-		void CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource);
-		void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2);
-		const std::string& GetName(DataTypeID aDataTypeID);
+		void CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource) const;
+		void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2) const;
+		const std::string& GetName(DataTypeID aDataTypeID) const;
 
-		DataTypeID GetDataTypeIDByName(const std::string& aName);
+		DataTypeID GetDataTypeIDByName(const std::string& aName) const;
 
-		const std::unordered_map<DataTypeID, DataType>& GetDataTypes();
-		std::unordered_map<DataTypeID, const DataType*> GetFunctionDataTypes();
-		std::unordered_map<DataTypeID, const DataType*> GetDataTypesFiltered(eDataTypeTrait aTrait, eBitwiseType aBitwiseType);
+		const std::unordered_map<DataTypeID, DataType>& GetDataTypes() const;
 
 		DataType* Find(DataTypeID anID);
+		const DataType* Find(DataTypeID anID) const;
 
 		template<typename T>
 		DataType* Find();
+
+		template<typename T>
+		const DataType* Find() const;
 
 
 		template<typename T>
@@ -346,20 +365,20 @@ namespace FLY_NAMESPACE
 	template<CleanType ClassType, CleanType PropertyType>
 	inline void DataTypeManager::RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName)
 	{
-		size_t byteOffset = GetByteOffset(aProperty);
+		const size_t byteOffset = GetByteOffset(aProperty);
 
-		DataTypeID dataTypeID = typeid(PropertyType).hash_code();
+		const DataTypeID dataTypeID = typeid(PropertyType).hash_code();
 
-		Property property
+		Variable variable
 		{
+			.mDataTypeID = dataTypeID,
 			.mName = aName,
-			.mTypeID = dataTypeID,
-			.byteOffset = byteOffset
+			.mByteOffset = byteOffset
 		};
 
 		if (DataType* classDataType = Find<ClassType>())
 		{
-			classDataType->mProperties.push_back(property);
+			classDataType->mVariables.push_back(variable);
 		}
 	}
 
@@ -371,7 +390,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<size_t BufferCapacity>
-	inline void* DataTypeManager::AllocateData(const DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* const aDefaultValue)
+	inline void* DataTypeManager::AllocateData(const DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* const aDefaultValue) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -393,6 +412,12 @@ namespace FLY_NAMESPACE
 
 	template<typename T>
 	inline DataType* DataTypeManager::Find()
+	{
+		return Find(typeid(T).hash_code());
+	}
+
+	template<typename T>
+	inline const DataType* DataTypeManager::Find() const
 	{
 		return Find(typeid(T).hash_code());
 	}

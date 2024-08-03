@@ -20,17 +20,13 @@
 namespace FLY_NAMESPACE
 {
 
-	struct NodeDragData
+	struct NodeDragData final
 	{
-		Vec2 startPos;
-		Vec2 endPos;
+		Vec2 mStartPos;
+		Vec2 mEndPos;
 	};
 
-	class Class;
-	class Foundation;
-	class MoveNodesCommand;
 	class CommandTracker;
-	class Function;
 	class ClassInstance;
 
 
@@ -73,8 +69,9 @@ namespace FLY_NAMESPACE
 	void EditPin(PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void SplitPin(PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 
+	bool HasNodeAnyConnectedLinks(NodeView aNodeView, NodeGraphView aNodeGraphView);
 	bool IsPinReplacable(PinView aPinView, NodeGraphView aNodeGraphView);
-	void ReplaceWildcardNode(PinView aPinView, NodeGraphView aNodeGraphView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
+	void ReplaceTemplateNode(PinView aPinView, NodeGraphView aNodeGraphView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
 	std::vector<DataTypeView> GetReplacableDataTypes(PinView aPinView, NodeGraphView aNodeGraphView);
 
 	void SetPinTypeName(PinTypeView aPinTypeView, std::string_view aName);

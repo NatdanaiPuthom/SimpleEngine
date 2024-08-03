@@ -19,8 +19,8 @@ namespace FLY_NAMESPACE
 		return distr(gen);
 	}
 
-	REGISTER_FUNCTION(GetRandomNumber<int>, "Utility/Random");
-	REGISTER_FUNCTION(GetRandomNumber<unsigned int>, "Utility/Random");
-	REGISTER_FUNCTION(GetRandomNumber<unsigned long long>, "Utility/Random");
+	FLY_FUNCTION(GetRandomNumber<int>, "Utility/Random", InputNames{ "Min", "Max" });
+	FLY_FUNCTION(GetRandomNumber<unsigned int>, "Utility/Random", InputNames{ "Min", "Max" });
+	FLY_FUNCTION(GetRandomNumber<unsigned long long>, "Utility/Random", InputNames{ "Min", "Max" });
 
 }

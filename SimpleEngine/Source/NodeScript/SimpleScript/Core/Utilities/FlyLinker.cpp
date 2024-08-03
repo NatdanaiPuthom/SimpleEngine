@@ -1,7 +1,6 @@
 #include "FlyLinker.hpp"
 #include "../Node/FlyNodeTypeRegistry.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
-#include "FlyProxy.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -119,11 +118,11 @@ namespace FLY_NAMESPACE
 	std::vector<LinkID> ScriptLinker::GetLinkIDsByPin(const NodeGraph& aNodeGraph, const PinID aPinID, bool aIncludeDestroyed)
 	{
 		std::vector<LinkID> linkIDs;
-		const Pin& pin = ScriptProxy::GetPin(aNodeGraph, aPinID);
+		const Pin& pin = aNodeGraph.mPins.at(aPinID);
 
-		for (PinID connectedPinID : pin.mConnectedPinIDs)
+		for (const PinID connectedPinID : pin.mConnectedPinIDs)
 		{
-			LinkID linkID = GetLinkIDByPinIDs(aNodeGraph, aPinID, connectedPinID, aIncludeDestroyed);
+			const LinkID linkID = GetLinkIDByPinIDs(aNodeGraph, aPinID, connectedPinID, aIncludeDestroyed);
 			assert(linkID != InvalidID<LinkID>());
 
 			linkIDs.push_back(linkID);
@@ -135,14 +134,14 @@ namespace FLY_NAMESPACE
 	std::vector<LinkID> ScriptLinker::GetLinkIDsByNode(const NodeGraph& aNodeGraph, const NodeID aNodeID)
 	{
 		std::vector<LinkID> linkIDs;
-		const Node& node = ScriptProxy::GetNode(aNodeGraph, aNodeID);
+		const Node& node = aNodeGraph.mNodes.at(aNodeID);
 
-		for (PinID inputPinID : node.mInputPins)
+		for (const PinID inputPinID : node.mInputPins)
 		{
 			std::vector<LinkID> inputLinks = GetLinkIDsByPin(aNodeGraph, inputPinID);
 			linkIDs.insert(linkIDs.end(), inputLinks.begin(), inputLinks.end());
 		}
-		for (PinID mOutputPinID : node.mOutputPins)
+		for (const PinID mOutputPinID : node.mOutputPins)
 		{
 			std::vector<LinkID> outputLinks = GetLinkIDsByPin(aNodeGraph, mOutputPinID);
 			linkIDs.insert(linkIDs.end(), outputLinks.begin(), outputLinks.end());

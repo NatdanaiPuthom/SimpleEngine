@@ -11,85 +11,110 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	bool DataTypeManager::EditData(const DataTypeID aDataTypeID, void* const aDataPtr)
+	bool DataTypeManager::EditData(const DataType& aDataType, void* const aDataPtr) const
 	{
-		if (const DataType* dataType = Find(aDataTypeID))
+		// If data type has a valid edit function
+		if (aDataType.mInterface.function.edit)
 		{
-			// If data type has a valid edit function
-			if (dataType->mInterface.function.edit)
+			return aDataType.mInterface.function.edit(aDataPtr);
+		}
+
+		bool wasEdited = false;
+
+		// Visualize properties instead
+		for (const Variable& variable : aDataType.mVariables)
+		{
+			if (const DataType* variableDataType = Find(variable.mDataTypeID))
 			{
-				return dataType->mInterface.function.edit(aDataPtr);
+				void* const propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
+				wasEdited |= EditData(*variableDataType, propertyDataPtr);
 			}
+		}
 
-			bool wasEdited = false;
+		return wasEdited;
+	}
 
-			// Visualize properties instead
-			for (const Property& property : dataType->mProperties)
+	bool DataTypeManager::SaveData(const DataType& aDataType, nlohmann::json& aJson, const void* aDataPtr) const
+	{
+		// If data type has a valid save function
+		if (aDataType.mInterface.function.save)
+		{
+			aDataType.mInterface.function.save(aJson, aDataPtr);
+			return true;
+		}
+
+		// Save properties instead
+		for (const Variable& variable : aDataType.mVariables)
+		{
+			if (const DataType* variableDataType = Find(variable.mDataTypeID))
 			{
-				if (const DataType* propertyDataType = Find(property.mTypeID))
+				nlohmann::json variableJson;
+				const void* variableDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
+				if (SaveData(*variableDataType, variableJson, variableDataPtr))
 				{
-					void* propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + property.mByteOffset);
-					wasEdited |= EditData(property.mTypeID, propertyDataPtr);
+					aJson[variable.mName] = variableJson;
 				}
 			}
-
-			return wasEdited;
 		}
 
 		return false;
 	}
 
-	bool DataTypeManager::SaveData(const DataTypeID aDataTypeID, nlohmann::json& aJson, const void* const aDataPtr)
+	bool DataTypeManager::LoadData(const DataType& aDataType, const nlohmann::json& aJson, void* const aDataPtr) const
 	{
-		if (const DataType* dataType = Find(aDataTypeID))
+		// If data type has a valid load function
+		if (aDataType.mInterface.function.load)
 		{
-			// If data type has a valid save function
-			if (dataType->mInterface.function.save)
-			{
-				dataType->mInterface.function.save(aJson, aDataPtr);
-				return true;
-			}
-
-			// Save properties instead
-			for (const Property& property : dataType->mProperties)
-			{
-				nlohmann::json propertyJson;
-				const void* propertyDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + property.mByteOffset);
-				if (SaveData(property.mTypeID, propertyJson, propertyDataPtr))
-				{
-					aJson[property.mName] = propertyJson;
-				}
-			}
+			aDataType.mInterface.function.load(aJson, aDataPtr);
+			return true;
 		}
-		return false;
-	}
 
-	bool DataTypeManager::LoadData(const DataTypeID aDataTypeID, const nlohmann::json& aJson, void* const aDataPtr)
-	{
-		if (const DataType* dataType = Find(aDataTypeID))
+		// Load properties instead
+		for (const Variable& variable : aDataType.mVariables)
 		{
-			// If data type has a valid load function
-			if (dataType->mInterface.function.load)
+			if (const DataType* dataType = Find(variable.mDataTypeID))
 			{
-				dataType->mInterface.function.load(aJson, aDataPtr);
-				return true;
-			}
-
-			// Load properties instead
-			for (const Property& property : dataType->mProperties)
-			{
-				auto it = aJson.find(property.mName);
+				auto it = aJson.find(variable.mName);
 				if (it != aJson.end())
 				{
-					void* propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + property.mByteOffset);
-					LoadData(property.mTypeID, it.value(), propertyDataPtr);
+					void* propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
+					LoadData(*dataType, it.value(), propertyDataPtr);
 				}
 			}
+		}
+
+		return false;
+	}
+
+	bool DataTypeManager::EditData(const DataTypeID aDataTypeID, void* const aDataPtr) const
+	{
+		if (const DataType* dataType = Find(aDataTypeID))
+		{
+			return EditData(*dataType, aDataPtr);
+		}
+
+		return false;
+	}
+
+	bool DataTypeManager::SaveData(const DataTypeID aDataTypeID, nlohmann::json& aJson, const void* const aDataPtr) const
+	{
+		if (const DataType* dataType = Find(aDataTypeID))
+		{
+			return SaveData(*dataType, aJson, aDataPtr);
 		}
 		return false;
 	}
 
-	void DataTypeManager::ReleaseData(const DataTypeID aDataTypeID, void* const aDataPtr)
+	bool DataTypeManager::LoadData(const DataTypeID aDataTypeID, const nlohmann::json& aJson, void* const aDataPtr) const
+	{
+		if (const DataType* dataType = Find(aDataTypeID))
+		{
+			return LoadData(*dataType, aJson, aDataPtr);
+		}
+		return false;
+	}
+
+	void DataTypeManager::ReleaseData(const DataTypeID aDataTypeID, void* const aDataPtr) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -100,7 +125,7 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void DataTypeManager::CopyData(const DataTypeID aDataTypeID, void* const aDestination, const void* const aSource)
+	void DataTypeManager::CopyData(const DataTypeID aDataTypeID, void* const aDestination, const void* const aSource) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -111,7 +136,7 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void DataTypeManager::SwapData(const DataTypeID aDataTypeID, void* const aDataPtr1, void* const aDataPtr2)
+	void DataTypeManager::SwapData(const DataTypeID aDataTypeID, void* const aDataPtr1, void* const aDataPtr2) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
@@ -122,7 +147,7 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	const std::string& DataTypeManager::GetName(const DataTypeID aDataTypeID)
+	const std::string& DataTypeManager::GetName(const DataTypeID aDataTypeID) const
 	{
 		if (mDataTypes.contains(aDataTypeID))
 		{
@@ -131,7 +156,7 @@ namespace FLY_NAMESPACE
 		return mNullNameStr;
 	}
 
-	DataTypeID DataTypeManager::GetDataTypeIDByName(const std::string& aName)
+	DataTypeID DataTypeManager::GetDataTypeIDByName(const std::string& aName) const
 	{
 		for (const auto& [dataTypeID, dataType] : mDataTypes)
 		{
@@ -143,52 +168,29 @@ namespace FLY_NAMESPACE
 		return InvalidID<DataTypeID>();
 	}
 
-	const std::unordered_map<DataTypeID, DataType>& DataTypeManager::GetDataTypes()
+	const std::unordered_map<DataTypeID, DataType>& DataTypeManager::GetDataTypes() const
 	{
 		return mDataTypes;
 	}
 
-	std::unordered_map<DataTypeID, const DataType*> DataTypeManager::GetFunctionDataTypes()
-	{
-		std::unordered_map<DataTypeID, const DataType*> dataTypes;
-
-		for (const auto& [dataTypeID, dataType] : mDataTypes)
-		{
-			if (dataType.mInterface)
-			{
-				dataTypes.emplace(dataTypeID, &dataType);
-			}
-		}
-
-		return dataTypes;
-	}
-
-	std::unordered_map<DataTypeID, const DataType*> DataTypeManager::GetDataTypesFiltered(const eDataTypeTrait aTrait, const eBitwiseType aBitwiseType)
-	{
-		std::unordered_map<DataTypeID, const DataType*> dataTypes;
-
-		bool(*const predicate)(eDataTypeTrait, eDataTypeTrait) = aBitwiseType == eBitwiseType::HasFlag ? HasFlag<eDataTypeTrait> : Equals<eDataTypeTrait>;
-
-		for (const auto& [dataTypeID, dataType] : mDataTypes)
-		{
-			if (predicate(dataType.mTypeTraits, aTrait))
-			{
-				dataTypes.emplace(dataTypeID, &dataType);
-			}
-		}
-
-		return dataTypes;
-	}
 
 	DataType* DataTypeManager::Find(const DataTypeID anID)
 	{
 		auto it = mDataTypes.find(anID);
-
 		if (it != mDataTypes.end())
 		{
 			return &it->second;
 		}
+		return nullptr;
+	}
 
+	const DataType* DataTypeManager::Find(DataTypeID anID) const
+	{
+		auto it = mDataTypes.find(anID);
+		if (it != mDataTypes.end())
+		{
+			return &it->second;
+		}
 		return nullptr;
 	}
 }

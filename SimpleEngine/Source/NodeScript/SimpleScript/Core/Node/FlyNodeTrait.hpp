@@ -10,15 +10,16 @@ namespace FLY_NAMESPACE
 		Getter = 1 << 1,
 		Setter = 1 << 2,
 		Operator = 1 << 3,
-		Wildcard = 1 << 4,
+		Template = 1 << 4,
 		CustomEvent = 1 << 5,
 		HasFlow = 1 << 6,
 		HasImplicitFlow = 1 << 7,
 		TakesExecutionContext = 1 << 8,
 		TakesInternalExecutionContext = 1 << 9,
-		NonTrivial = Invalid | Getter | Setter | Operator | CustomEvent,
+		Self = 1 << 10,
+		NonTrivial = Invalid | Getter | Setter | Operator | CustomEvent | Self,
 		Accessor = Getter | Setter,
-		All = Invalid | Getter | Setter | Operator | CustomEvent | HasFlow | TakesExecutionContext | TakesInternalExecutionContext | HasImplicitFlow
+		All = Invalid | Getter | Setter | Operator | CustomEvent | HasFlow | TakesExecutionContext | TakesInternalExecutionContext | HasImplicitFlow | Self
 	};
 
 	/*enum class eCreationNodeTrait : unsigned int

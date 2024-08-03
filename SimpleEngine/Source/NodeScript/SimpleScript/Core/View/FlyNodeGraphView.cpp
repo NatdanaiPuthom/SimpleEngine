@@ -27,7 +27,7 @@ namespace FLY_NAMESPACE
 
 		for (NodeID nodeID = 0; nodeID < nodes.size(); ++nodeID)
 		{
-			NodeView nodeView(nodeID, GetNodeGraph());
+			NodeView nodeView(nodeID, *this);
 			if (!aIncludeDestroyed && nodeView.IsDestroyed())
 			{
 				continue;
@@ -48,7 +48,7 @@ namespace FLY_NAMESPACE
 		for (PinID pinID = 0; pinID < pins.size(); ++pinID)
 		{
 			PinView pinView(pinID, GetNodeGraph());
-			NodeView nodeView(pinView.GetNodeID(), GetNodeGraph());
+			NodeView nodeView(pinView.GetNodeID(), *this);
 			if (!aIncludeDestroyed && nodeView.IsDestroyed())
 			{
 				continue;

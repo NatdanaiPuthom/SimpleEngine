@@ -22,13 +22,13 @@ namespace FLY_NAMESPACE
 	NodeView FunctionView::GetInputNode() const
 	{
 		const Function& function = GetFunction();
-		return NodeView(function.mInputNodeID, function.mNodeGraph);
+		return NodeView(function.mInputNodeID, NodeGraphView(*this));
 	}
 
 	NodeView FunctionView::GetOutputNode() const
 	{
 		const Function& function = GetFunction();
-		return NodeView(function.mOutputNodeID, function.mNodeGraph);
+		return NodeView(function.mOutputNodeID, NodeGraphView(*this));
 	}
 
 	NodeTypeView FunctionView::GetCallerNodeType() const

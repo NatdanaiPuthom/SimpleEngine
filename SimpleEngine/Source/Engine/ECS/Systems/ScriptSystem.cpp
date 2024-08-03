@@ -2,11 +2,26 @@
 #include "ScriptSystem.hpp"
 #include "NodeScript/SimpleScript/Core/FlyExecution.hpp"
 #include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
+#include "NodeScript/SimpleScript/Core/FlyRegistration.hpp"
 
 namespace ECS
 {
 	ScriptSystem::ScriptSystem()
 	{
+	}
+
+	void ScriptSystem::Init(EntityComponentSystem* aEntityComponentSystem)
+	{
+		auto& entityIDs = aEntityComponentSystem->GetEntityIDsWithThisComponent<ScriptComponent>();
+
+		for (auto& entityID : entityIDs)
+		{
+			ECS::Entity& entity = aEntityComponentSystem->GetEntity(entityID);
+
+			ScriptComponent* const scriptComponent = entity.GetComponent<ScriptComponent>();
+
+			scriptComponent->classInstance->Init();
+		}
 	}
 
 	void ScriptSystem::Update(EntityComponentSystem* aEntityComponentSystem)
@@ -34,3 +49,9 @@ namespace ECS
 	}
 }
 
+namespace ECS
+{
+	FLY_DATATYPE(Entity, Fly::eNodeOperatorTrait::None, Fly::DefaultColor);
+
+	FLY_FUNCTION(Entity::GetName, "Entity");
+}
