@@ -12,7 +12,7 @@ namespace FLY_NAMESPACE
 
 	class NodeGraph;
 
-	struct PinSetData
+	struct SetPinData final
 	{
 		PinID mID;
 		NodeGraph* mNodeGraph;
@@ -22,26 +22,24 @@ namespace FLY_NAMESPACE
 #endif
 	};
 
-	using PinSetFunction = FuncPtr<void, const PinSetData&, const InternalExecutionContext&>;
-
-	struct PinType
+	struct PinType final
 	{
 		std::string mName;
 		const eFlowType mFlowType = eFlowType::Input;
 		const DataTypeID mDataTypeID = InvalidID<DataTypeID>();
-		const PinSetFunction mSetFunction = nullptr;
+		const SetPinDataInterface mSetPinDataFunction = nullptr;
 		MemoryPoolID mDefaultValueID = InvalidID<MemoryPoolID>();
 	};
 
 
-	constexpr eFlowType InvertFlowType(const eFlowType aFlowType)
+	[[nodiscard]] constexpr eFlowType InvertFlowType(const eFlowType aFlowType)
 	{
 		return aFlowType == eFlowType::Input ? eFlowType::Output : eFlowType::Input;
 	}
 
-	std::string PinFlowTypeToString(const eFlowType aPinType);
+	[[nodiscard]] std::string PinFlowTypeToString(const eFlowType aPinType);
 
-	eFlowType StringToPinFlowType(const std::string& aName);
+	[[nodiscard]] eFlowType StringToPinFlowType(const std::string& aName);
 
 	template<typename T>
 	[[nodiscard]] constexpr decltype(auto) SelectByFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)

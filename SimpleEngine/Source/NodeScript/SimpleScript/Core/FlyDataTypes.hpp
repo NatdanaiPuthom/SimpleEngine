@@ -6,35 +6,35 @@
 #include "../SystemTypes/FlyNone.hpp"
 
 bool Edit(bool& aValue);
-void Save(nlohmann::json& aJson, const bool& aValue);
-void Load(const nlohmann::json& aJson, bool& aValue);
+void Save(const bool& aValue, nlohmann::json& aJson);
+void Load(bool& aValue, const nlohmann::json& aJson);
 
 bool Edit(int& aValue);
-void Save(nlohmann::json& aJson, const int& aValue);
-void Load(const nlohmann::json& aJson, int& aValue);
+void Save(const int& aValue, nlohmann::json& aJson);
+void Load(int& aValue, const nlohmann::json& aJson);
 
 bool Edit(float& aValue);
-void Save(nlohmann::json& aJson, const float& aValue);
-void Load(const nlohmann::json& aJson, float& aValue);
+void Save(const float& aValue, nlohmann::json& aJson);
+void Load(float& aValue, const nlohmann::json& aJson);
 
 bool Edit(UINT& aValue);
-void Save(nlohmann::json& aJson, const UINT& aValue);
-void Load(const nlohmann::json& aJson, UINT& aValue);
+void Save(const UINT& aValue, nlohmann::json& aJson);
+void Load(UINT& aValue, const nlohmann::json& aJson);
 
 bool Edit(UINT64& aValue);
-void Save(nlohmann::json& aJson, const UINT64& aValue);
-void Load(const nlohmann::json& aJson, UINT64& aValue);
+void Save(const UINT64& aValue, nlohmann::json& aJson);
+void Load(UINT64& aValue, const nlohmann::json& aJson);
 
 bool Edit(char& aValue);
-void Save(nlohmann::json& aJson, const char& aValue);
-void Load(const nlohmann::json& aJson, char& aValue);
+void Save(const char& aValue, nlohmann::json& aJson);
+void Load(char& aValue, const nlohmann::json& aJson);
 
 
 namespace std
 {
 	bool Edit(std::string& aValue);
-	void Save(nlohmann::json& aJson, const std::string& aValue);
-	void Load(const nlohmann::json& aJson, std::string& aValue);
+	void Save(const std::string& aValue, nlohmann::json& aJson);
+	void Load(std::string& aValue, const nlohmann::json& aJson);
 }
 
 template<typename T>
@@ -172,20 +172,17 @@ namespace std
 namespace FLY_NAMESPACE
 {
 
-	FLY_DATATYPE(Wildcard, eNodeOperatorTrait::All, Color(0.5f, 0.5f, 0.5f), NonTargetable);
-	FLY_DATATYPE(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f), NonTargetable);
-	FLY_DATATYPE(None, eNodeOperatorTrait::None, Color());
+	FLY_STRUCT(Wildcard, eNodeOperatorTrait::All, Colors::Gray, NonTargetable);
+	FLY_STRUCT(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f), NonTargetable);
+	FLY_STRUCT(None, eNodeOperatorTrait::None, Colors::Black);
 
 	using String = std::string;
 
-
-	FLY_DATATYPE(bool, eNodeOperatorTrait::All, Color(1.f, 0.1f, 0.1f), NonTargetable);
-	FLY_DATATYPE(int, eNodeOperatorTrait::All, Color(0.f, 0.2f, 1.f), NonTargetable);
-	FLY_DATATYPE(float, eNodeOperatorTrait::All, Color(0.55f, 0.2f, 0.65f), NonTargetable);
-	FLY_DATATYPE(UINT, eNodeOperatorTrait::All, Color(0.f, 0.4f, 1.f), NonTargetable);
-	FLY_DATATYPE(UINT64, eNodeOperatorTrait::All, Color(0.1f, 0.5f, 1.f), NonTargetable);
-	FLY_DATATYPE(char, eNodeOperatorTrait::All, Color(0.2f, 0.7f, 0.4f), NonTargetable);
-	FLY_DATATYPE(String, eNodeOperatorTrait::All, Color(0.3f, 0.8f, 0.2f), NonTargetable);
-
-	void Test123();
+	FLY_STRUCT(bool, eNodeOperatorTrait::All, Color(1.f, 0.1f, 0.1f), NonTargetable);
+	FLY_STRUCT(int, eNodeOperatorTrait::All, Color(0.f, 0.2f, 1.f), NonTargetable);
+	FLY_STRUCT(float, eNodeOperatorTrait::All, Color(0.55f, 0.2f, 0.65f), NonTargetable);
+	FLY_STRUCT(UINT, eNodeOperatorTrait::All, Color(0.f, 0.4f, 1.f), NonTargetable);
+	FLY_STRUCT(UINT64, eNodeOperatorTrait::All, Color(0.1f, 0.5f, 1.f), NonTargetable);
+	FLY_STRUCT(char, eNodeOperatorTrait::All, Color(0.2f, 0.7f, 0.4f), NonTargetable);
+	FLY_STRUCT(String, eNodeOperatorTrait::All, Color(0.3f, 0.8f, 0.2f), NonTargetable);
 }

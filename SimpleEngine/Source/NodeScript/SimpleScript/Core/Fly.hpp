@@ -13,6 +13,7 @@
 #include "View/FlyDataTypeView.hpp"
 #include "View/FlyClassView.hpp"
 #include "View/FlyNodeGraphView.hpp"
+#include "View/FlyClassInstanceView.hpp"
 #include "SystemTypes/FlyNone.hpp"
 #include "SystemTypes/FlyWildcard.hpp"
 #include <unordered_map>
@@ -38,8 +39,8 @@ namespace FLY_NAMESPACE
 	ClassView CreateClassWithoutTarget(std::string_view aName);
 	void SetClassName(ClassView aClassView, std::string_view aName);
 
-	ClassInstance& CreateClassInstance(ClassView aClassView);
-	void DestroyClassInstance(ClassInstance& aClassInstance);
+	ClassInstanceView CreateClassInstance(ClassView aClassView);
+	void DestroyClassInstance(ClassInstanceView aClassInstanceView);
 
 	NodeView CreateNode(NodeGraphView aNodeGraphView, NodeTypeView aNodeTypeView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 	NodeView CreateNode(NodeGraphView aNodeGraphView, std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);

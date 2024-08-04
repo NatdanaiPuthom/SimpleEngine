@@ -10,14 +10,16 @@ namespace FLY_NAMESPACE
 		Getter = 1 << 1,
 		Setter = 1 << 2,
 		Operator = 1 << 3,
-		Template = 1 << 4,
-		CustomEvent = 1 << 5,
-		HasFlow = 1 << 6,
-		HasImplicitFlow = 1 << 7,
-		TakesExecutionContext = 1 << 8,
-		TakesInternalExecutionContext = 1 << 9,
-		Self = 1 << 10,
-		NonTrivial = Invalid | Getter | Setter | Operator | CustomEvent | Self,
+		Wildcard = 1 << 4,
+		TemplateSpec = 1 << 5,
+		Template = Wildcard | TemplateSpec,
+		CustomEvent = 1 << 6,
+		HasFlow = 1 << 7,
+		HasImplicitFlow = 1 << 8,
+		TakesExecutionContext = 1 << 9,
+		TakesInternalExecutionContext = 1 << 10,
+		Self = 1 << 11,
+		NonTrivial = Invalid | Getter | Setter | Operator | TemplateSpec | CustomEvent | Self,
 		Accessor = Getter | Setter,
 		All = Invalid | Getter | Setter | Operator | CustomEvent | HasFlow | TakesExecutionContext | TakesInternalExecutionContext | HasImplicitFlow | Self
 	};
@@ -46,11 +48,10 @@ namespace FLY_NAMESPACE
 		Multiply = 1 << 12,
 		Divide = 1 << 13,
 		Modulo = 1 << 14,
-		Functor = 1 << 15,
 
 		Comparator = Equal | NotEqual | Greater | Less | GreaterEqual | LessEqual,
 		Logical = And | Or | Not,
 		Math = Add | Subtract | Multiply | Divide | Modulo,
-		All = Comparator | Logical | Math | Print | Functor
+		All = Comparator | Logical | Math | Print
 	};
 }

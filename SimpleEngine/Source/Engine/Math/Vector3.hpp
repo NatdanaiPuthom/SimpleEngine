@@ -54,7 +54,7 @@ namespace Math
 	template <class T> void operator*=(Vector3<T>& aVector, const T& aScalar);
 	template <class T> void operator/=(Vector3<T>& aVector, const T& aScalar);
 
-	template <class T> bool operator==(Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
+	template <class T> bool operator==(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
 
 	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector3<T>& aVector);
 
@@ -227,7 +227,7 @@ namespace Math
 	}
 
 	template<class T>
-	bool operator==(Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
+	bool operator==(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
 	{
 		return aVectorA.x == aVectorB.x && aVectorA.y == aVectorB.y && aVectorA.z == aVectorB.z;
 	}

@@ -47,13 +47,13 @@ namespace FLY_NAMESPACE
 			{
 				aState.mValue.time = 0.f;
 			}
-			aContext->mNodeExecutor->RegisterAutoTickNode(aContext->mNodeData.mNodeRef);
+			aContext->mClassInstance->mClass->mEventGraph.BindNodeToEvent(aContext->mNodeData.mNodeRef.GetNodeID());
 		}
 		aState.mValue.time += aContext->mExecutionContext->mDeltaTime;
 		if (aState.mValue.time > aDuration)
 		{
 			aState.mValue.time = 0.f;
-			aContext->mNodeExecutor->UnregisterAutoTickNode(aContext->mNodeData.mNodeRef);
+			aContext->mClassInstance->mClass->mEventGraph.UnbindNodeFromEvent(aContext->mNodeData.mNodeRef.GetNodeID());
 			return Flow(true);
 		}
 		return Flow(false);
@@ -65,6 +65,6 @@ namespace FLY_NAMESPACE
 
 	FLY_FUNCTION(Branch, "Execution", InputNames{ "Flow", "Condition" }, OutputNames{ "True", "False" }, DefaultValues{ Flow(false), true });
 	FLY_FUNCTION(FlipFlop, "Execution", OutputNames{ "Flip", "Flop" });
-	FLY_FUNCTION(Delay, "Execution", InputNames{ "Flow", "Duration", "Reset On Flow" }, DefaultValues{ Flow(false), 1.f, false });
+	FLY_FUNCTION(Delay, "Execution", InputNames{ "Flow", "Duration", "Reset On Flow" }, DefaultValues{ Flow(false), 1.f, false }, AutoTick{});
 
 }

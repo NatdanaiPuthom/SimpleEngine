@@ -30,30 +30,12 @@ namespace FLY_NAMESPACE
 		return a.mNodeRef < b.mNodeRef;
 	}
 
-	class NodeExecutor;
-
-	class ExecutionQueue
-	{
-	public:
-
-		ExecutionQueue();
-		~ExecutionQueue();
-
-		void Push(const NodeExecutionData& aNode);
-		void Execute();
-
-	private:
-
-
-		std::queue<NodeExecutionData> mExecutionQueue;
-
-	};
-
 	class Class;
 	class InternalModifier;
 	struct ExecutionContextBase;
 	class ClassInstance;
 	class NodeGraphInstance;
+	class NodeExecutor;
 
 	struct InternalExecutionContext final
 	{
@@ -61,12 +43,10 @@ namespace FLY_NAMESPACE
 		const ExecutionContextBase* mExecutionContext = nullptr;
 		NodeExecutionData mNodeData;
 		ExecutionQueue* mExecutionQueue = nullptr;
-		void* mOwner = nullptr;
+		void* mTarget = nullptr;
 		ClassInstance* mClassInstance = nullptr;
 		NodeGraphInstance* mNodeGraphInstance = nullptr;
 		NodeExecutor* mNodeExecutor = nullptr;
-
-	private:
 	};
 }
 

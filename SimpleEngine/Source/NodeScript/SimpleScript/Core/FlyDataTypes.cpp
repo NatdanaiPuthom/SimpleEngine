@@ -15,13 +15,13 @@ bool Edit(bool& aValue)
 	return prev != aValue;
 }
 
-void Save(nlohmann::json& aJson, const bool& aValue)
+void Save(const bool& aValue, nlohmann::json& aJson)
 {
 	aJson["Value"] = aValue;
 }
 
 
-void Load(const nlohmann::json& aJson, bool& aValue)
+void Load(bool& aValue, const nlohmann::json& aJson)
 {
 	aValue = aJson["Value"];
 }
@@ -32,12 +32,12 @@ bool Edit(int& aValue)
 	return ImGui::DragInt("##", &aValue);
 }
 
-void Save(nlohmann::json& aJson, const int& aValue)
+void Save(const int& aValue, nlohmann::json& aJson)
 {
 	aJson["Value"] = aValue;
 }
 
-void Load(const nlohmann::json& aJson, int& aValue)
+void Load(int& aValue, const nlohmann::json& aJson)
 {
 	aValue = aJson["Value"];
 }
@@ -48,12 +48,12 @@ bool Edit(float& aValue)
 	return ImGui::DragFloat("##", &aValue);
 }
 
-void Save(nlohmann::json& aJson, const float& aValue)
+void Save(const float& aValue, nlohmann::json& aJson)
 {
 	aJson["Value"] = aValue;
 }
 
-void Load(const nlohmann::json& aJson, float& aValue)
+void Load(float& aValue, const nlohmann::json& aJson)
 {
 	aValue = aJson["Value"];
 }
@@ -70,12 +70,12 @@ bool Edit(UINT& aValue)
 	return false;
 }
 
-void Save(nlohmann::json& aJson, const UINT& aValue)
+void Save(const UINT& aValue, nlohmann::json& aJson)
 {
 	aJson["Value"] = aValue;
 }
 
-void Load(const nlohmann::json& aJson, UINT& aValue)
+void Load(UINT& aValue, const nlohmann::json& aJson)
 {
 	aValue = aJson["Value"];
 }
@@ -92,12 +92,12 @@ bool Edit(UINT64& aValue)
 	return false;
 }
 
-void Save(nlohmann::json& aJson, const UINT64& aValue)
+void Save(const UINT64& aValue, nlohmann::json& aJson)
 {
 	aJson["Value"] = aValue;
 }
 
-void Load(const nlohmann::json& aJson, UINT64& aValue)
+void Load(UINT64& aValue, const nlohmann::json& aJson)
 {
 	aValue = aJson["Value"];
 }
@@ -115,13 +115,13 @@ bool Edit(char& aValue)
 	return false;
 }
 
-void Save(nlohmann::json& aJson, const char& aValue)
+void Save(const char& aValue, nlohmann::json& aJson)
 {
 	int i = aValue;
 	aJson["char"] = i;
 }
 
-void Load(const nlohmann::json& aJson, char& aValue)
+void Load(char& aValue, const nlohmann::json& aJson)
 {
 	int i = aJson["char"];
 	aValue = (char)i;
@@ -144,24 +144,13 @@ namespace std
 
 	}
 
-	void Save(nlohmann::json& aJson, const std::string& aValue)
+	void Save(const std::string& aValue, nlohmann::json& aJson)
 	{
 		aJson["Value"] = aValue;
 	}
 
-	void Load(const nlohmann::json& aJson, std::string& aValue)
+	void Load(std::string& aValue, const nlohmann::json& aJson)
 	{
 		aValue = aJson["Value"];
-	}
-}
-
-
-namespace FLY_NAMESPACE
-{
-
-	
-
-	void Test123()
-	{
 	}
 }

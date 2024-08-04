@@ -87,12 +87,12 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
-	static void Save(nlohmann::json& aJson, const WaveTypeData& aData)
+	static void Save(const WaveTypeData& aData, nlohmann::json& aJson)
 	{
 		aJson["waveType"] = aData.waveType;
 	}
 
-	static void Load(const nlohmann::json& aJson, WaveTypeData& aData)
+	static void Load(WaveTypeData& aData, const nlohmann::json& aJson)
 	{
 		aData.waveType = aJson["waveType"];
 	}
@@ -109,6 +109,6 @@ namespace FLY_NAMESPACE
 	FLY_FUNCTION(acosf, "Utility/Math");
 	FLY_FUNCTION(Wave, "Utility/Math", InputNames{ "Frequency", "Amplitude", "Equilibrium", "Wave Type" });
 
-	FLY_DATATYPE(WaveTypeData, eNodeOperatorTrait::None, DefaultColor);
+	FLY_STRUCT(WaveTypeData, eNodeOperatorTrait::None, DefaultColor);
 }
 

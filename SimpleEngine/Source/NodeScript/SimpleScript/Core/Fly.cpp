@@ -77,14 +77,14 @@ namespace FLY_NAMESPACE
 		aClassView.GetClass().mName = aName;
 	}
 
-	ClassInstance& CreateClassInstance(const ClassView aClassView)
+	ClassInstanceView CreateClassInstance(const ClassView aClassView)
 	{
-		return aClassView.GetClass().CreateClassInstance();
+		return ClassInstanceView(aClassView.GetClass().CreateClassInstance());
 	}
 
-	void DestroyClassInstance(ClassInstance& aClassInstance)
+	void DestroyClassInstance(ClassInstanceView aClassInstanceView)
 	{
-		aClassInstance.mClass->DestroyClassInstance(aClassInstance);
+		aClassInstanceView.GetClassInstance().mClass->DestroyClassInstance(aClassInstanceView.GetClassInstance());
 	}
 
 	NodeView CreateNode(NodeGraphView aNodeGraphView, const NodeTypeView aNodeTypeView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
@@ -598,7 +598,7 @@ namespace FLY_NAMESPACE
 	{
 		NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(aNodeTypeID);
 
-		const PinTypeID createdPinTypeID = Global::GetPinTypeManager().Create(aPinName, aFlowType, aDataTypeID, CreatePinSetFunction());
+		const PinTypeID createdPinTypeID = Global::GetPinTypeManager().Create(aPinName, aFlowType, aDataTypeID, Global::GetDataTypeManager().GetSetPinDataInterface(aDataTypeID, aFlowType));
 
 		std::vector<PinTypeID>& pinTypeIDs = aFlowType == eFlowType::Input ? nodeType.mNodeRecipe.mInputPinTypeIDs : nodeType.mNodeRecipe.mOutputPinTypeIDs;
 		pinTypeIDs.push_back(createdPinTypeID);
@@ -627,7 +627,7 @@ namespace FLY_NAMESPACE
 		const PinTypeID oldPinTypeID = pinTypeIDs.at(aIndex);
 		const PinType& oldPinType = pinTypeManager.GetPinType(oldPinTypeID);
 
-		const PinTypeID newPinTypeID = pinTypeManager.Create(oldPinType.mName, aFlowType, aDataTypeID, CreatePinSetFunction());
+		const PinTypeID newPinTypeID = pinTypeManager.Create(oldPinType.mName, aFlowType, aDataTypeID, Global::GetDataTypeManager().GetSetPinDataInterface(aDataTypeID, aFlowType));
 
 		pinTypeIDs.at(aIndex) = newPinTypeID;
 

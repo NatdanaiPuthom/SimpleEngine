@@ -522,14 +522,16 @@ namespace ECS
 		return true;
 	}
 
-	bool ViewAndEditValue(Fly::ClassInstance*& aClassInstance, [[maybe_unused]] const std::string& aVariableName)
+	bool ViewAndEditValue(Fly::ClassInstanceView& aClassInstanceView, [[maybe_unused]] const std::string& aVariableName)
 	{
 
 		const auto& classes = Fly::GetClasses();
 
 		bool wasChanged = false;
 
-		if (ImGui::BeginCombo("Script", "None"))
+		const std::string& preview = aClassInstanceView ? aClassInstanceView.GetName() : "";
+
+		if (ImGui::BeginCombo("Class", preview.c_str()))
 		{
 			for (auto& [dataTypeID, classesByTarget] : classes)
 			{
@@ -538,18 +540,18 @@ namespace ECS
 				{
 					continue;
 				}
-				ImGui::Text("%s Scripts:", dataType.GetName().c_str());
+				ImGui::Text("%s Classes:", dataType.GetName().c_str());
 				for (auto& flyClass : classesByTarget)
 				{
-					const bool isSelected = aClassInstance ? aClassInstance->mClass == &flyClass.GetClass() : false;
+					const bool isSelected = aClassInstanceView ? aClassInstanceView.GetClassInstance().mClass == &flyClass.GetClass() : false;
 					if (ImGui::Selectable(flyClass.GetName().c_str(), isSelected))
 					{
-						if (aClassInstance != nullptr)
+						if (aClassInstanceView)
 						{
-							Fly::DestroyClassInstance(*aClassInstance);
+							Fly::DestroyClassInstance(aClassInstanceView);
 						}
 
-						aClassInstance = &Fly::CreateClassInstance(flyClass);
+						aClassInstanceView = Fly::CreateClassInstance(flyClass);
 
 						wasChanged = true;
 					}

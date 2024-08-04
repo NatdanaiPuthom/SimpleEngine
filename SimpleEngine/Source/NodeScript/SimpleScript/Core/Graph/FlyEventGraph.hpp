@@ -1,9 +1,11 @@
 #pragma once
-#include "FlyDefines.hpp"
+#include "../FlyDefines.hpp"
 #include "FlyNodeGraph.hpp"
 
 namespace FLY_NAMESPACE
 {
+	
+	constexpr size_t AutoTickEventID = 0;
 
 	class EventGraph final
 	{

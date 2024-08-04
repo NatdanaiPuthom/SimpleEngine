@@ -287,22 +287,16 @@ namespace FLY_NAMESPACE
 		{ Edit(aValue) } -> std::same_as<bool>;
 	};
 
-	/*template<typename T>
-	concept Editable2 = requires(T & aValue)
-	{
-		{ ::Edit(aValue) } -> std::same_as<bool>;
-	};*/
-
 	template<typename T, typename SerializationObject>
-	concept Savable = requires(const T & aValue, SerializationObject & aSerializationObject)
+	concept Savable = requires(const T & aValue, SerializationObject & aSerializer)
 	{
-		{ Save(aSerializationObject, aValue) } -> std::same_as<void>;
+		{ Save(aValue, aSerializer) } -> std::same_as<void>;
 	};
 
-	template<typename T, typename SerializationObject>
-	concept Loadable = requires(T & aValue, const SerializationObject & aSerializationObject)
+	template<typename T, typename Serializer>
+	concept Loadable = requires(T & aValue, const Serializer & aSerializer)
 	{
-		{ Load(aSerializationObject, aValue) } -> std::same_as<void>;
+		{ Load(aValue, aSerializer) } -> std::same_as<void>;
 	};
 
 	template<typename T>

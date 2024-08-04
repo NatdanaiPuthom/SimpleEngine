@@ -156,6 +156,18 @@ namespace FLY_NAMESPACE
 		return mNullNameStr;
 	}
 
+	SetPinDataInterface DataTypeManager::GetSetPinDataInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const
+	{
+
+		if (const DataType* dataType = Find(aDataTypeID))
+		{
+			return SelectByFlowType(aFlowType, dataType->mInterface.execution.setInputPinData, dataType->mInterface.execution.setOutputPinData);
+		}
+
+		assert(false);
+		return SetPinDataInterface();
+	}
+
 	DataTypeID DataTypeManager::GetDataTypeIDByName(const std::string& aName) const
 	{
 		for (const auto& [dataTypeID, dataType] : mDataTypes)
@@ -174,9 +186,9 @@ namespace FLY_NAMESPACE
 	}
 
 
-	DataType* DataTypeManager::Find(const DataTypeID anID)
+	DataType* DataTypeManager::Find(const DataTypeID aDataTypeID)
 	{
-		auto it = mDataTypes.find(anID);
+		auto it = mDataTypes.find(aDataTypeID);
 		if (it != mDataTypes.end())
 		{
 			return &it->second;
@@ -184,9 +196,9 @@ namespace FLY_NAMESPACE
 		return nullptr;
 	}
 
-	const DataType* DataTypeManager::Find(DataTypeID anID) const
+	const DataType* DataTypeManager::Find(DataTypeID aDataTypeID) const
 	{
-		auto it = mDataTypes.find(anID);
+		auto it = mDataTypes.find(aDataTypeID);
 		if (it != mDataTypes.end())
 		{
 			return &it->second;

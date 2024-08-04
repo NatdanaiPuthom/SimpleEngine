@@ -12,13 +12,13 @@ namespace FLY_NAMESPACE
 	public:
 
 		template<typename T, eNodeOperatorTrait Operators = eNodeOperatorTrait::All, template<typename> typename... Templates>
-		static void Register(const std::string & aName, const Color& aColor, bool aIsTargetable);
+		static void Register(const std::string& aName, const Color& aColor, bool aIsTargetable);
 
 		template<template<typename> typename TemplateType>
 		static void RegisterTemplateType(const std::string& aName);
 
-		template<typename ClassType, typename PropertyType>
-		static void RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName);
+		template<typename ClassType, typename MemberType>
+		static void RegisterMemberVariable(MemberType ClassType::* aMemberVariable, const std::string& aName);
 
 	private:
 
@@ -31,7 +31,7 @@ namespace FLY_NAMESPACE
 	};
 
 	template<typename T, eNodeOperatorTrait Operators, template<typename> typename... Templates>
-	inline void DataTypeRegistry::Register(const std::string & aName, const Color & aColor, const bool aIsTargetable)
+	inline void DataTypeRegistry::Register(const std::string& aName, const Color& aColor, const bool aIsTargetable)
 	{
 		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
 
@@ -49,12 +49,14 @@ namespace FLY_NAMESPACE
 			RegisterSetterNodeType<T>();
 			RegisterOperatorNodeTypes<T, Operators>();
 		}
-	
 
-		if (aIsTargetable)
+
+		if constexpr (IsPointer<T>)
 		{
-			RegisterSystemNodeType<eNodeTrait::Self>(GetSelfNode<T>, aName + "/" + aName + "::Get Self");
-
+			if (aIsTargetable)
+			{
+				RegisterSystemNodeType<eNodeTrait::Self>(GetSelfNode<T>, aName + "/" + aName + "::Get Self");
+			}
 		}
 	}
 
@@ -64,11 +66,13 @@ namespace FLY_NAMESPACE
 		Global::GetDataTypeManager().RegisterTemplateType<TemplateType>(aName);
 	}
 
-	template<typename ClassType, typename PropertyType>
-	inline void DataTypeRegistry::RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName)
+	template<typename ClassType, typename MemberType>
+	inline void DataTypeRegistry::RegisterMemberVariable(MemberType ClassType::* aMemberVariable, const std::string& aName)
 	{
-		Global::GetDataTypeManager().RegisterProperty(aProperty, aName);
-		NodeTypeRegistry::RegisterMemberVariable(aProperty, "SFSF", "");
+		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
+		dataTypeManager.RegisterMemberVariable(aMemberVariable, aName);
+		const std::string directory = GetClassFromMember(aName);
+		NodeTypeRegistry::RegisterMemberVariable(aMemberVariable, directory, aName);
 	}
 
 	template<typename T, template<typename> typename TemplateType>
@@ -109,15 +113,27 @@ namespace FLY_NAMESPACE
 	{
 	};
 
+	struct PointerMember
+	{
+	};
+
 	template<typename T>
 	struct RegisterType
 	{
 
 		template<eNodeOperatorTrait Operators, typename... Traits>
-		constexpr static RegisterType<T> Register(const char* aName, const Color& aColor = DefaultColor)
+		constexpr static RegisterType<T> Struct(const char* aName, const Color& aColor = DefaultColor)
 		{
-			constexpr bool isTargetable = !ContainsType<NonTargetable, Traits...>;
-			DataTypeRegistry::Register<T, Operators>(aName, aColor, isTargetable);
+			DataTypeRegistry::Register<T, Operators>(aName, aColor, false);
+
+			return RegisterType<T>();
+		}
+
+		template<eNodeOperatorTrait Operators, typename... Traits>
+		constexpr static RegisterType<T> Class(const char* aName, const Color& aColor = DefaultColor)
+		{
+			const bool isTargetable = !ContainsType<NonTargetable, Traits...>;
+			DataTypeRegistry::Register<T*, Operators>(aName, aColor, isTargetable);
 
 			return RegisterType<T>();
 		}
@@ -125,15 +141,16 @@ namespace FLY_NAMESPACE
 
 
 
-	struct RegisterProperty
+	struct RegisterMemberVariable final
 	{
-		template<typename StructType, typename MemberType>
-		constexpr RegisterProperty(MemberType StructType::* aMember, const std::string& aName)
+		template<typename ParentType, typename MemberType, typename... Extra>
+		constexpr RegisterMemberVariable(MemberType ParentType::* aMember, const std::string& aName, [[maybe_unused]] Extra&&... aExtra)
 		{
-			DataTypeRegistry::RegisterProperty(aMember, aName);
+			DataTypeRegistry::RegisterMemberVariable(aMember, aName);
 		}
 	};
 }
 
-#define FLY_DATATYPE(type, operators, color, ...) inline static FLY_NAMESPACE::RegisterType<type> fly_registeredType##type = FLY_NAMESPACE::RegisterType<type>::Register<operators, __VA_ARGS__>(#type, color);
-#define FLY_PROPERTY(member) inline static FLY_NAMESPACE::RegisterProperty prop(&member, #member);
+#define FLY_CLASS(type, operators, color, ...) inline static FLY_NAMESPACE::RegisterType<type> fly_registeredType##type = FLY_NAMESPACE::RegisterType<type>::Class<operators, __VA_ARGS__>(#type, color);
+#define FLY_STRUCT(type, operators, color, ...) inline static FLY_NAMESPACE::RegisterType<type> fly_registeredType##type = FLY_NAMESPACE::RegisterType<type>::Struct<operators, __VA_ARGS__>(#type, color);
+#define FLY_MEMBER(member, ...) inline static FLY_NAMESPACE::RegisterMemberVariable prop(&member, #member);

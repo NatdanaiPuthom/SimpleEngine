@@ -60,6 +60,9 @@ namespace FLY_NAMESPACE
 	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, NodeGraph&);
 	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);
 
+	struct SetPinData;
+	using SetPinDataInterface = void(*)(const SetPinData& aPinData, const InternalExecutionContext& aContext);
+
 	template<typename T>
 	class OwningPtr final
 	{
@@ -69,22 +72,22 @@ namespace FLY_NAMESPACE
 		{
 		}
 
-		T* Get()
+		T* Get() noexcept
 		{
 			return mPtr;
 		}
 
-		const T* Get() const
+		const T* Get() const noexcept
 		{
 			return mPtr;
 		}
 
-		operator T* ()
+		operator T* () noexcept
 		{
 			return Get();
 		}
 
-		operator const T* () const
+		operator const T* () const noexcept
 		{
 			return Get();
 		}
@@ -103,12 +106,12 @@ namespace FLY_NAMESPACE
 		{
 		}
 
-		T* Get() const
+		T* Get() const noexcept
 		{
 			return mPtr;
 		}
 
-		explicit operator T* () const
+		explicit operator T* () const noexcept
 		{
 			return Get();
 		}
@@ -133,27 +136,44 @@ namespace FLY_NAMESPACE
 		}
 		float r = 0, g = 0, b = 0, a = 1;
 
-		void Clamp()
+		constexpr void Clamp()
 		{
 			r = std::clamp(r, 0.f, 1.f);
 			g = std::clamp(g, 0.f, 1.f);
 			b = std::clamp(b, 0.f, 1.f);
 			a = std::clamp(a, 0.f, 1.f);
 		}
+
 	};
 
-
-	inline Color operator+(const Color& aColor1, const Color& aColor2)
+	constexpr inline Color operator+(const Color& aColor1, const Color& aColor2)
 	{
 		Color c = { aColor1.r + aColor2.r, aColor1.g + aColor2.g, aColor1.b + aColor2.b, aColor1.a + aColor2.a };
 		c.Clamp();
 		return c;
 	}
 
-	inline Color operator-(const Color& aColor1, const Color& aColor2)
+	constexpr inline Color operator-(const Color& aColor1, const Color& aColor2)
 	{
 		Color c = { aColor1.r - aColor2.r, aColor1.g - aColor2.g, aColor1.b - aColor2.b, aColor1.a - aColor2.a };
 		c.Clamp();
 		return c;
 	}
+
+	namespace Colors
+	{
+		constexpr Color Black = Color();
+		constexpr Color White = Color(1.f, 1.f, 1.f);
+		constexpr Color Red = Color(1.f, 0.f, 0.f);
+		constexpr Color Blue = Color(0.f, 0.f, 1.f);
+		constexpr Color Green = Color(0.f, 1.f, 0.f);
+		constexpr Color Yellow = Color(1.f, 1.f, 0.f);
+		constexpr Color Orange = Color(1.f, 0.65f, 0.f);
+		constexpr Color Pink = Color(1.f, 0.57f, 0.69f);
+		constexpr Color Purple = Color(0.6f, 0.f, 0.1f);
+		constexpr Color Gray = Color(0.5f, 0.5f, 0.5f);
+	}
+
+
+
 }

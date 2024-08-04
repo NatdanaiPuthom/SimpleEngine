@@ -24,7 +24,7 @@ namespace FLY_NAMESPACE
 		nodeType.mNodeRecipe.mExecuteFunction(aNodeExecutionData, mExecutionContext);
 	}
 
-	void NodeExecutor::RegisterAutoTickNode(const NodeRef& aNodeRef)
+	/*void NodeExecutor::RegisterAutoTickNode(const NodeRef& aNodeRef)
 	{
 		mAutoTickNodes.insert(NodeExecutionData{ .mNodeRef = aNodeRef, .mTriggerReason = eNodeTriggerReason::Event });
 	}
@@ -32,19 +32,19 @@ namespace FLY_NAMESPACE
 	void NodeExecutor::UnregisterAutoTickNode(const NodeRef& aNodeRef)
 	{
 		mAutoTickNodes.erase(NodeExecutionData{ .mNodeRef = aNodeRef, .mTriggerReason = eNodeTriggerReason::Event });
-	}
+	}*/
 
 
-	void NodeExecutor::ExecuteEventInternal(const EventID anEventID, ClassInstance& aClassInstance, void* const aOwner, const ExecutionContextBase& anExecutionContext, const bool aExecuteAutoTickers)
+	void NodeExecutor::ExecuteEvent(const EventID anEventID, ClassInstance& aClassInstance, void* const aTarget, const ExecutionContextBase& anExecutionContext)
 	{
 		mExecutionContext.mClass = aClassInstance.mClass;
 		mExecutionContext.mExecutionContext = &anExecutionContext;
 		mExecutionContext.mClassInstance = &aClassInstance;
 		mExecutionContext.mNodeGraphInstance = &aClassInstance.mEventGraphInstance;
-		mExecutionContext.mOwner = aOwner;
+		mExecutionContext.mTarget = aTarget;
 
 #ifdef FLY_DEBUG
-		if (aOwner == nullptr)
+		if (aTarget == nullptr)
 		{
 			assert(aClassInstance.mClass->mTargetID == GetDataTypeID<None>());
 		}
@@ -60,19 +60,6 @@ namespace FLY_NAMESPACE
 				ExecuteNode(NodeExecutionData{ .mNodeRef = CreateContextualNodeRef(nodeID, eventGraph.mNodeGraph), .mTriggerReason = eNodeTriggerReason::Event });
 			}
 		}
-
-		if (aExecuteAutoTickers)
-		{
-			for (const NodeExecutionData& executionData : mAutoTickNodes)
-			{
-				ExecuteNode(executionData);
-			}
-		}
-	}
-
-	bool NodeExecutor::IsSameTarget(const ClassInstance& aClassInstance, DataTypeID aDataTypeID) const
-	{
-		return aClassInstance.mClass->mTargetID == aDataTypeID;
 	}
 
 }

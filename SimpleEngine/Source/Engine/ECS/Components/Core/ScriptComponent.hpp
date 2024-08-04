@@ -1,10 +1,10 @@
 #pragma once
-#include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
+#include "NodeScript/SimpleScript/Core/View/FlyClassInstanceView.hpp"
 #include "Engine/ECS/Reflection/ECSReflection.hpp"
 
 namespace Fly
 {
-	REGISTER_DATATYPE_POINTER(ClassInstance);
+	REGISTER_DATATYPE(ClassInstanceView);
 }
 
 namespace ECS
@@ -12,7 +12,7 @@ namespace ECS
 	
 	struct ScriptComponent final
 	{
-		Fly::ClassInstance* classInstance;
+		Fly::ClassInstanceView classInstanceView;
 	};
 }
 
@@ -20,5 +20,5 @@ namespace ECS
 namespace ECS
 {
 	REGISTER_COMPONENT(ScriptComponent);
-	REGISTER_AND_EXPOSE_PROPERTY(&ScriptComponent::classInstance);
+	REGISTER_AND_EXPOSE_PROPERTY(&ScriptComponent::classInstanceView);
 }

@@ -2,10 +2,7 @@
 #include "NodeScriptingWindow.hpp"
 #include "NodeScript/SimpleScript/Core/Fly.hpp"
 #include "NodeScript/SimpleScript/Core/Command/FlyCommandTracker.hpp"
-#include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
 #include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
-#include "NodeScript/SimpleScript/Core/Execution/FlyNodeExecutor.hpp"
-#include "NodeScript/SimpleScript/Core/Global/FlyGlobal.hpp"
 #include "FlyScriptEditorUtilities.hpp"
 
 #include "Editor/Menu/MainMenuBar.hpp" //NOTE(v10.0.2): Remove this once we no longer use static bool of MainMenuBar class
@@ -386,26 +383,26 @@ namespace Editor
 
 			if (ImGui::Button("Trigger Event"))
 			{
-				Fly::ClassInstance& classInstance = Fly::CreateClassInstance(GetNodeContext().classView);
+				Fly::ClassInstanceView classInstanceView = Fly::CreateClassInstance(GetNodeContext().classView);
 				Fly::ExecutionContextBase c;
 
 				Fly::None none;
 				switch (currentEventIndex)
 				{
 				case 0:
-					Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::BeginPlay, classInstance, &none, c);
+					classInstanceView.ExecuteEvent(Fly::BeginPlay, &none, c);
 					break;
 				case 1:
-					Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::Tick, classInstance, &none, c);
+					classInstanceView.ExecuteEvent(Fly::Tick, &none, c);
 					break;
 				case 2:
-					Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::EndPlay, classInstance, &none, c);
+					classInstanceView.ExecuteEvent(Fly::EndPlay, &none, c);
 					break;
 				default:
 					break;
 				}
 
-				Fly::DestroyClassInstance(classInstance);
+				Fly::DestroyClassInstance(classInstanceView);
 			}
 		}
 	}

@@ -4,6 +4,7 @@
 #include "../Utilities/FlyUtilities.hpp"
 #include "../Memory/FlyMemoryArena.hpp"
 #include "FlyDataType.hpp"
+#include "../Pin/FlyPinType.hpp"
 #include <nlohmann/json.hpp>
 
 namespace FLY_NAMESPACE
@@ -27,7 +28,7 @@ namespace FLY_NAMESPACE
 		return [](nlohmann::json& aJson, const void* aDataPtr) -> void
 			{
 				const T& value = *reinterpret_cast<const T*>(aDataPtr);
-				Save(aJson, value);
+				Save(value, aJson);
 			};
 	}
 
@@ -37,7 +38,7 @@ namespace FLY_NAMESPACE
 		return [](const nlohmann::json& aJson, void* aDataPtr) -> void
 			{
 				T& value = *reinterpret_cast<T*>(aDataPtr);
-				Load(aJson, value);
+				Load(value, aJson);
 			};
 	}
 
@@ -87,7 +88,7 @@ namespace FLY_NAMESPACE
 		return [](nlohmann::json& aJson, const void* aDataPtr) -> void
 			{
 				const T& value = *reinterpret_cast<const T*>(aDataPtr);
-				::Save(aJson, value);
+				::Save(value, aJson);
 			};
 	}
 
@@ -97,7 +98,7 @@ namespace FLY_NAMESPACE
 		return [](const nlohmann::json& aJson, void* aDataPtr) -> void
 			{
 				T& value = *reinterpret_cast<T*>(aDataPtr);
-				::Load(aJson, value);
+				::Load(value, aJson);
 			};
 	}
 
@@ -202,16 +203,27 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
+	constexpr ExecutionInterface CreateExecutionInterface()
+	{
+		return ExecutionInterface
+		{
+			.setInputPinData = CreateSetPinDataInterface<T, eFlowType::Input>(),
+			.setOutputPinData = CreateSetPinDataInterface<T, eFlowType::Output>()
+		};
+	}
+
+	template<typename T>
 	constexpr DataTypeInterface CreateDataTypeInterface()
 	{
 		return DataTypeInterface
 		{
 			.function = CreateFunctionInterface<T>(),
-			.creation = CreateCreationInterface<T>()
+			.creation = CreateCreationInterface<T>(),
+			.execution = CreateExecutionInterface<T>()
 		};
 	}
 
-	const Color DefaultColor = Color(1.f, 1.f, 0.3f);
+	constexpr Color DefaultColor = Color(1.f, 1.f, 0.3f);
 
 	class DataTypeManager
 	{
@@ -242,12 +254,14 @@ namespace FLY_NAMESPACE
 		void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2) const;
 		const std::string& GetName(DataTypeID aDataTypeID) const;
 
+		SetPinDataInterface GetSetPinDataInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
+
 		DataTypeID GetDataTypeIDByName(const std::string& aName) const;
 
 		const std::unordered_map<DataTypeID, DataType>& GetDataTypes() const;
 
-		DataType* Find(DataTypeID anID);
-		const DataType* Find(DataTypeID anID) const;
+		DataType* Find(DataTypeID aDataTypeID);
+		const DataType* Find(DataTypeID aDataTypeID) const;
 
 		template<typename T>
 		DataType* Find();
@@ -270,8 +284,8 @@ namespace FLY_NAMESPACE
 		template<CleanType T>
 		void RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface, bool aIsTargetable);
 
-		template<CleanType ClassType, CleanType PropertyType>
-		void RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName);
+		template<CleanType ClassType, CleanType MemberType>
+		void RegisterMemberVariable(MemberType ClassType::* aMemberVariable, const std::string& aName);
 
 		template<CleanType T>
 		bool HasRegisteredType() const;
@@ -325,22 +339,26 @@ namespace FLY_NAMESPACE
 	template<CleanType T>
 	inline void DataTypeManager::RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface, const bool aIsTargetable)
 	{
-		eDataTypeTrait mTypeTraits = eDataTypeTrait::None;
+		eDataTypeTrait typeTraits = eDataTypeTrait::None;
 		if constexpr (Fundamental<T>)
 		{
-			mTypeTraits |= eDataTypeTrait::Fundamental;
+			typeTraits |= eDataTypeTrait::Fundamental;
 		}
 		if (anInterface.function.edit)
 		{
-			mTypeTraits |= eDataTypeTrait::Editable;
+			typeTraits |= eDataTypeTrait::Editable;
 		}
 		if (anInterface.function.save && anInterface.function.load)
 		{
-			mTypeTraits |= eDataTypeTrait::SaveLoadable;
+			typeTraits |= eDataTypeTrait::SaveLoadable;
 		}
 		if (aIsTargetable)
 		{
-			mTypeTraits |= eDataTypeTrait::Targetable;
+			typeTraits |= eDataTypeTrait::Targetable;
+		}
+		if constexpr (IsPointer<T>)
+		{
+			typeTraits |= eDataTypeTrait::Pointer;
 		}
 
 		const std::type_info& typeInfo = typeid(T);
@@ -350,24 +368,23 @@ namespace FLY_NAMESPACE
 			.mSize = sizeof(T),
 			.mColor = aColor,
 			.mTypeInfo = &typeInfo,
-			.mTypeTraits = mTypeTraits,
+			.mTypeTraits = typeTraits,
 			.mInterface = anInterface,
 		};
 
-		mDataTypes.emplace(typeInfo.hash_code(), dataType);
-		/*auto [it, success] = myDataTypes.emplace(typeInfo.hash_code(), dataType);
-		if (!success)
+		auto [it, success] = mDataTypes.emplace(typeInfo.hash_code(), dataType);
+		if (!success && aName != it->second.mName)
 		{
 			throw std::runtime_error("Two data types have the same hash value");
-		}*/
+		}
 	}
 
-	template<CleanType ClassType, CleanType PropertyType>
-	inline void DataTypeManager::RegisterProperty(PropertyType ClassType::* aProperty, const std::string& aName)
+	template<CleanType ClassType, CleanType MemberType>
+	inline void DataTypeManager::RegisterMemberVariable(MemberType ClassType::* aMemberVariable, const std::string& aName)
 	{
-		const size_t byteOffset = GetByteOffset(aProperty);
+		const size_t byteOffset = GetByteOffset(aMemberVariable);
 
-		const DataTypeID dataTypeID = typeid(PropertyType).hash_code();
+		const DataTypeID dataTypeID = GetDataTypeID<MemberType>();
 
 		Variable variable
 		{
@@ -376,9 +393,11 @@ namespace FLY_NAMESPACE
 			.mByteOffset = byteOffset
 		};
 
-		if (DataType* classDataType = Find<ClassType>())
+		DataType* parentDataType = Find<ClassType*>();
+
+		if (parentDataType)
 		{
-			classDataType->mVariables.push_back(variable);
+			parentDataType->mVariables.push_back(variable);
 		}
 	}
 
@@ -386,7 +405,7 @@ namespace FLY_NAMESPACE
 	inline bool DataTypeManager::HasRegisteredType() const
 	{
 		const DataTypeID dataTypeID = GetDataTypeID<T>();
-		return mDataTypes.find(dataTypeID) != mDataTypes.end();
+		return mDataTypes.contains(dataTypeID);
 	}
 
 	template<size_t BufferCapacity>

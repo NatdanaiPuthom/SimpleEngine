@@ -3,6 +3,7 @@
 #include "NodeScript/SimpleScript/Core/FlyExecution.hpp"
 #include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
 #include "NodeScript/SimpleScript/Core/FlyRegistration.hpp"
+#include <imgui.h>
 
 namespace ECS
 {
@@ -20,7 +21,7 @@ namespace ECS
 
 			ScriptComponent* const scriptComponent = entity.GetComponent<ScriptComponent>();
 
-			scriptComponent->classInstance->Init();
+			scriptComponent->classInstanceView.Init();
 		}
 	}
 
@@ -39,8 +40,10 @@ namespace ECS
 				.mDeltaTime = Global::GetDeltaTime()
 			};
 
-			Fly::Global::GetNodeExecutor().ExecuteEvent(Fly::Tick, *scriptComponent->classInstance, &entity, executionContext, true);
+			scriptComponent->classInstanceView.ExecuteEvent(Fly::Tick, &entity, executionContext);
 		}
+
+		//Fly::RegisterFunctionNode r = Fly::RegisterFunctionNode::Register(&Entity::GetComponent<TransformComponent>, "");
 	}
 
 	std::unique_ptr<System> ScriptSystem::Clone() const
@@ -49,9 +52,59 @@ namespace ECS
 	}
 }
 
+namespace Math
+{
+	static bool Edit(Vector3f& aValue)
+	{
+		return ::ImGui::DragFloat3("##", &aValue.x);
+	}
+
+	static void Save(const Vector3f& aValue, nlohmann::json& aJson)
+	{
+		aJson["x"] = aValue.x;
+		aJson["y"] = aValue.y;
+		aJson["z"] = aValue.z;
+	}
+
+	static void Load(Vector3f& aValue, const nlohmann::json& aJson)
+	{
+		aValue.x = aJson["x"];
+		aValue.y = aJson["y"];
+		aValue.z = aJson["z"];
+	}
+}
+
 namespace ECS
 {
-	FLY_DATATYPE(Entity, Fly::eNodeOperatorTrait::None, Fly::DefaultColor);
+	
+	using Transform = Math::Transform;
+	using Vector3f = Math::Vector3f;
+
+	FLY_STRUCT(Transform, Fly::eNodeOperatorTrait::None, Fly::DefaultColor, Fly::NonTargetable);
+	FLY_STRUCT(Vector3f, Fly::eNodeOperatorTrait::All, Fly::DefaultColor, Fly::NonTargetable);
+	FLY_CLASS(Entity, Fly::eNodeOperatorTrait::None, Fly::Colors::Pink);
+	FLY_CLASS(TransformComponent, Fly::eNodeOperatorTrait::None, Fly::DefaultColor, Fly::NonTargetable);
+
+	FLY_MEMBER(TransformComponent::transform);
 
 	FLY_FUNCTION(Entity::GetName, "Entity");
+	FLY_FUNCTION(Entity::SetName, "Entity");
+	//FLY_FUNCTION(Entity::GetComponent<TransformComponent>, "Entity");
+
+	FLY_FUNCTION(Transform::GetPosition, "Transform");
+	FLY_FUNCTION(Transform::SetPosition, "Transform");
+
+	TransformComponent* GetTransformComponent(Entity* aEntity)
+	{
+		return aEntity->GetComponent<TransformComponent>();
+	}
+
+	std::tuple<float, float, float> BreakVector3f(const Vector3f& aVector)
+	{
+		return { aVector.x, aVector.y, aVector.z };
+	}
+
+	FLY_FUNCTION(BreakVector3f, "Vector3f", Fly::OutputNames{ "X", "Y", "Z" });
+	FLY_FUNCTION(GetTransformComponent, "Entity");
+
 }

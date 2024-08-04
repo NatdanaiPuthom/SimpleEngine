@@ -1,10 +1,10 @@
 #pragma once
-#include "FlyDefines.hpp"
-#include "Pin/FlyPin.hpp"
-#include "Node/FlyNodeTrait.hpp"
-#include "SystemTypes/FlyVec2.hpp"
-#include "Node/FlyNodeRef.hpp"
-#include "Variable/FlyVariableRef.hpp"
+#include "../FlyDefines.hpp"
+#include "../Pin/FlyPin.hpp"
+#include "../Node/FlyNodeTrait.hpp"
+#include "../SystemTypes/FlyVec2.hpp"
+#include "../Node/FlyNodeRef.hpp"
+#include "../Variable/FlyVariableRef.hpp"
 #include <string>
 #include <variant>
 

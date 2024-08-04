@@ -3,7 +3,7 @@
 namespace FLY_NAMESPACE
 {
 
-	PinSetFunction CreatePinSetFunction()
+	/*PinSetFunction CreatePinSetFunction()
 	{
 		return [](const PinSetData& aPinSetData, const InternalExecutionContext& aContext) -> void
 			{
@@ -33,7 +33,7 @@ namespace FLY_NAMESPACE
 					}
 				}
 			};
-	}
+	}*/
 
 	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, NodeGraph& aDestinationNodeGraph, const NodeGraph& aSourceNodeGraph, const size_t aStartIndex)
 	{
@@ -50,7 +50,7 @@ namespace FLY_NAMESPACE
 			const Pin& sourcePin = aSourceNodeGraph.mPins[sourcePinID];
 			[[maybe_unused]] const PinType& sourcePinType = Global::GetPinTypeManager().GetPinType(sourcePin.mTypeID);
 
-			outputPinType.mSetFunction(PinSetData{ destinationPinID, &aDestinationNodeGraph, sourcePin.mDataPtr,
+			outputPinType.mSetPinDataFunction(SetPinData{ destinationPinID, &aDestinationNodeGraph, sourcePin.mDataPtr,
 #ifdef FLY_DEBUG
 				sourcePinType.mDataTypeID
 #endif
@@ -91,7 +91,7 @@ namespace FLY_NAMESPACE
 					Global::GetNodeExecutor().ExecuteNode(NodeExecutionData{ CreateContextualNodeRef(connectedNodeID, aContext.mNodeData.mNodeRef.GetNodeGraph()), eNodeTriggerReason::Read });
 				}
 
-				inputPinType.mSetFunction(PinSetData{ inputPinID, &currentNodeGraph, connectedOutputPin.mDataPtr,
+				inputPinType.mSetPinDataFunction(SetPinData{ inputPinID, &currentNodeGraph, connectedOutputPin.mDataPtr,
 #ifdef _DEBUG
 					Global::GetPinTypeManager().GetPinType(connectedOutputPin.mTypeID).mDataTypeID
 #endif

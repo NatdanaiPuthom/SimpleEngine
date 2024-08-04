@@ -13,91 +13,91 @@ namespace FLY_NAMESPACE
 	struct OperatorNodes
 	{
 		template<HasOperator_EqualTo T>
-		static constexpr inline bool EqualTo(T aValue1, T aValue2)
+		static constexpr inline bool EqualTo(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 == aValue2;
 		}
 
 		template<HasOperator_NotEqualTo T>
-		static constexpr inline bool NotEqualTo(T aValue1, T aValue2)
+		static constexpr inline bool NotEqualTo(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 != aValue2;
 		}
 
 		template<HasOperator_Greater T>
-		static constexpr inline bool Greater(T aValue1, T aValue2)
+		static constexpr inline bool Greater(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 > aValue2;
 		}
 
 		template<HasOperator_Less T>
-		static constexpr inline bool Less(T aValue1, T aValue2)
+		static constexpr inline bool Less(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 < aValue2;
 		}
 
 		template<HasOperator_GreaterEqual T>
-		static constexpr  inline bool GreaterEqual(T aValue1, T aValue2)
+		static constexpr  inline bool GreaterEqual(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 >= aValue2;
 		}
 
 		template<HasOperator_LessEqual T>
-		static constexpr inline bool LessEqual(T aValue1, T aValue2)
+		static constexpr inline bool LessEqual(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 <= aValue2;
 		}
 
 		template<HasOperator_And T>
-		static constexpr inline T And(T aValue1, T aValue2)
+		static constexpr inline T And(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 && aValue2;
 		}
 
 		template<HasOperator_Or T>
-		static constexpr inline T Or(T aValue1, T aValue2)
+		static constexpr inline T Or(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 || aValue2;
 		}
 
 		template<HasOperator_Not T>
-		static constexpr inline T Not(T aValue)
+		static constexpr inline T Not(const T& aValue)
 		{
 			return !aValue;
 		}
 
 		template<HasOperator_Print T>
-		static constexpr inline void Print(T aValue)
+		static constexpr inline void Print(const T& aValue)
 		{
 			std::cout << aValue << std::endl;
 		}
 
 		template<HasOperator_Add T>
-		static constexpr inline T Add(T aValue1, T aValue2)
+		static constexpr inline T Add(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 + aValue2;
 		}
 
 		template<HasOperator_Subtract T>
-		static constexpr inline T Substract(T aValue1, T aValue2)
+		static constexpr inline T Substract(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 - aValue2;
 		}
 
 		template<HasOperator_Multiply T>
-		static constexpr inline T Multiply(T aValue1, T aValue2)
+		static constexpr inline T Multiply(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 * aValue2;
 		}
 
 		template<HasOperator_Divide T>
-		static constexpr inline T Divide(T aValue1, T aValue2)
+		static constexpr inline T Divide(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 / aValue2;
 		}
 
 		template<HasOperator_Modulo T>
-		static constexpr inline T Modulo(T aValue1, T aValue2)
+		static constexpr inline T Modulo(const T& aValue1, const T& aValue2)
 		{
 			return aValue1 % aValue2;
 		}
@@ -126,12 +126,6 @@ namespace FLY_NAMESPACE
 		{
 			aValue--;
 			return aValue;
-		}
-
-		template<HasOperator_Functor T>
-		static constexpr inline void Functor(T aValue)
-		{
-			aValue();
 		}
 	};
 
@@ -199,21 +193,6 @@ namespace FLY_NAMESPACE
 			break;
 		case eNodeOperatorTrait::Modulo:
 			return HasOperator_Modulo<T>;
-			break;
-			/*	case eNodeOperatorTrait::IncrementPrefix:
-					return HasOperator_IncrementPrefix<T>;
-					break;
-				case eNodeOperatorTrait::IncrementPostfix:
-					return HasOperator_IncrementPostfix<T>;
-					break;
-				case eNodeOperatorTrait::DecrementPrefix:
-					return HasOperator_DecrementPrefix<T>;
-					break;
-				case eNodeOperatorTrait::DecrementPostfix:
-					return HasOperator_DecrementPostfix<T>;
-					break;*/
-		case eNodeOperatorTrait::Functor:
-			return HasOperator_Functor<T>;
 			break;
 		default:
 			break;
@@ -288,28 +267,6 @@ namespace FLY_NAMESPACE
 		else if constexpr (OperatorTrait == eNodeOperatorTrait::Modulo)
 		{
 			return OperatorNodes::Modulo<T>;
-		}
-
-		/*	else if constexpr (OperatorTrait == eNodeOperatorTrait::IncrementPrefix)
-			{
-				return OperatorNodes::IncrementPrefix<T>;
-			}
-			else if constexpr (OperatorTrait == eNodeOperatorTrait::IncrementPostfix)
-			{
-				return OperatorNodes::IncrementPostfix<T>;
-			}
-			else if constexpr (OperatorTrait == eNodeOperatorTrait::DecrementPrefix)
-			{
-				return OperatorNodes::DecrementPrefix<T>;
-			}
-			else if constexpr (OperatorTrait == eNodeOperatorTrait::DecrementPostfix)
-			{
-				return OperatorNodes::DecrementPostfix<T>;
-			}*/
-
-		else if constexpr (OperatorTrait == eNodeOperatorTrait::Functor)
-		{
-			return OperatorNodes::Functor<T>;
 		}
 
 		else
@@ -388,8 +345,6 @@ namespace FLY_NAMESPACE
 		TryRegisterOperatorNode<T, eNodeOperatorTrait::Multiply, RegisteredTraits>("Operators/Math/Multiply");
 		TryRegisterOperatorNode<T, eNodeOperatorTrait::Divide, RegisteredTraits>("Operators/Math/Divide");
 		TryRegisterOperatorNode<T, eNodeOperatorTrait::Modulo, RegisteredTraits>("Operators/Math/Modulo");
-
-		TryRegisterOperatorNode<T, eNodeOperatorTrait::Functor, RegisteredTraits, eNodeTrait::HasImplicitFlow>("Operators/Functor");
 
 	}
 }
