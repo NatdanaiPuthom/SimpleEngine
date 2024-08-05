@@ -15,7 +15,6 @@ SimpleNodeScript::~SimpleNodeScript()
 void SimpleNodeScript::Init()
 {
 	Fly::Foundation::GetInstance().Initialize();
-	RegisterSimpleGameNodes();
 
 	Fly::LoadAllClasses(SCRIPT_FILE_PATH);
 }

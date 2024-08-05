@@ -4,23 +4,23 @@
 
 namespace FLY_NAMESPACE
 {
-	struct Vec2
+	struct Vec2 final
 	{
 		float x = 0.f;
 		float y = 0.f;
 	};
 
-	inline Vec2 operator+(Vec2 a, Vec2 b)
+	constexpr inline Vec2 operator+(Vec2 a, Vec2 b)
 	{
 		return { a.x + b.x, a.y + b.y };
 	}
 
-	inline Vec2 operator-(Vec2 a, Vec2 b)
+	constexpr inline Vec2 operator-(Vec2 a, Vec2 b)
 	{
 		return { a.x - b.x, a.y - b.y };
 	}
 
-	inline Vec2 operator/(Vec2 a, float b)
+	constexpr inline Vec2 operator/(Vec2 a, float b)
 	{
 		if (b != 0.f)
 		{
@@ -28,27 +28,27 @@ namespace FLY_NAMESPACE
 		}
 		return a;
 	}
-	inline void operator+=(Vec2& a, Vec2 b)
+	constexpr inline void operator+=(Vec2& a, Vec2 b)
 	{
 		a = a + b;
 	}
 
-	inline void operator-=(Vec2& a, Vec2 b)
+	constexpr inline void operator-=(Vec2& a, Vec2 b)
 	{
 		a = a - b;
 	}
 
-	inline void operator/=(Vec2& a, float b)
+	constexpr inline void operator/=(Vec2& a, float b)
 	{
 		a = a / b;
 	}
 
-	inline bool operator==(Vec2 a, Vec2 b)
+	constexpr inline bool operator==(Vec2 a, Vec2 b)
 	{
 		return a.x == b.x && a.y == b.y;
 	}
 
-	inline bool operator!=(Vec2 a, Vec2 b)
+	constexpr inline bool operator!=(Vec2 a, Vec2 b)
 	{
 		return !(a == b);
 	}

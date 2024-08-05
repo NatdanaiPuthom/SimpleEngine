@@ -28,7 +28,7 @@ namespace FLY_NAMESPACE
 	using EventID = size_t;
 	using ClassID = size_t;
 
-	constexpr size_t NodeBufferCapacity = 1024;
+	constexpr const char* TypeIdentifierStr = "#T";
 
 	template<std::integral IDType>
 	inline constexpr IDType InvalidID()

@@ -13,6 +13,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
+		NodeView() = default;
 		NodeView(NodeID aNodeID, const NodeGraphView& aNodeGraphView);
 
 		const std::string& GetNodeTypeName() const;
@@ -20,18 +21,22 @@ namespace FLY_NAMESPACE
 		Vec2 GetPosition() const;
 		bool IsDestroyed() const;
 
-		std::vector<PinView> GetInputPins() const;
-		std::vector<PinView> GetOutputPins() const;
+		std::vector<PinView> GetInputPinViews() const;
+		std::vector<PinView> GetOutputPinViews() const;
 
 		NodeID GetID() const;
 
 		eNodeTrait GetTraits() const;
 		EventID GetEventID() const;
 
+		void Destroy(CommandTracker* aCommandTracker);
+		void DestroyConnectedLinks(CommandTracker* aCommandTracker);
+
 		const NodeGraph& GetNodeGraph() const;
 
-		bool operator==(const NodeView& aOther) const;
-		bool operator!=(const NodeView& aOther) const;
+		friend bool operator==(const NodeView& a, const NodeView& b);
+
+		explicit operator bool() const;
 
 	private:
 
@@ -42,7 +47,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		const NodeGraph* mNodeGraph = nullptr;
+		NodeGraphVariant mNodeGraphVariant;
 		NodeID mNodeID = InvalidID<NodeID>();
 
 	};

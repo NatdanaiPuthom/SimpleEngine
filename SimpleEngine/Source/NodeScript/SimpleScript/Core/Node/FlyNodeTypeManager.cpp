@@ -33,7 +33,7 @@ namespace FLY_NAMESPACE
 
 	void NodeTypeManager::SetOperatorNodeTypeID(const DataTypeID aDataTypeID, const eNodeOperatorTrait aOperatorTrait, const NodeTypeID aID)
 	{
-		mOperatorNodeTypeIDs[aOperatorTrait].emplace(aDataTypeID, aID);
+		mTemplateNodeTypeIDMap[aOperatorTrait].emplace(aDataTypeID, aID);
 	}
 
 	Node NodeTypeManager::CreateGetterNode(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID)
@@ -50,7 +50,7 @@ namespace FLY_NAMESPACE
 
 	Node NodeTypeManager::CreateOperatorNode(NodeGraph& aNodeGraph, const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID)
 	{
-		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = mOperatorNodeTypeIDs.at(aOperatorTrait);
+		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = mTemplateNodeTypeIDMap.at(aOperatorTrait);
 		const NodeTypeID typeID = operatorNodes.at(aDataTypeID);
 		return CreateNode(aNodeGraph, aNodeID, typeID);
 	}
@@ -62,9 +62,9 @@ namespace FLY_NAMESPACE
 
 	bool NodeTypeManager::CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID)
 	{
-		if (mOperatorNodeTypeIDs.contains(aTrait))
+		if (mTemplateNodeTypeIDMap.contains(aTrait))
 		{
-			return mOperatorNodeTypeIDs.at(aTrait).contains(aDataTypeID);
+			return mTemplateNodeTypeIDMap.at(aTrait).contains(aDataTypeID);
 		}
 		return false;
 	}
@@ -207,9 +207,9 @@ namespace FLY_NAMESPACE
 		return id;
 	}
 
-	const std::unordered_map<DataTypeID, NodeTypeID> NodeTypeManager::GetWildcardMapByOperator(eNodeOperatorTrait aOperatorTrait) const
+	const std::unordered_map<DataTypeID, NodeTypeID>& NodeTypeManager::GetTemplateMapByOperator(const eNodeOperatorTrait aOperatorTrait) const
 	{
-		return mOperatorNodeTypeIDs.at(aOperatorTrait);
+		return mTemplateNodeTypeIDMap.at(aOperatorTrait);
 	}
 
 	NodeType NodeTypeManager::CreateInvalidNodeType()

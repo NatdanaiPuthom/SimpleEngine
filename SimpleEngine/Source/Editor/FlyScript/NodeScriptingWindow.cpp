@@ -4,8 +4,7 @@
 #include "NodeScript/SimpleScript/Core/Command/FlyCommandTracker.hpp"
 #include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
 #include "FlyScriptEditorUtilities.hpp"
-
-#include "Editor/Menu/MainMenuBar.hpp" //NOTE(v10.0.2): Remove this once we no longer use static bool of MainMenuBar class
+#include "EditorNodeRegistration.hpp"
 
 #include <imnodes/imnodes_internal.h>
 
@@ -61,9 +60,9 @@ namespace Editor
 		ImNodes::SetCurrentContext(myImNodesContexts.at(aNodeGraphView));
 	}
 
-	eScriptMode NodeScriptingWindow::GetCurrentMode() const
+	eGraphMode NodeScriptingWindow::GetCurrentMode() const
 	{
-		return GetNodeContext().classView ? eScriptMode::Class : eScriptMode::Global;
+		return GetNodeContext().classView ? eGraphMode::Class : eGraphMode::Global;
 	}
 
 	void NodeScriptingWindow::UpdateContext()
@@ -103,6 +102,7 @@ namespace Editor
 		style.Colors[ImNodesCol_GridBackground] = ToImGuiColor(Fly::Color{ 0.03f,0.03f, 0.03f, 1.f });
 
 		style.Flags = ImNodesStyleFlags_GridSnapping | ImNodesStyleFlags_GridLines | ImNodesStyleFlags_NodeOutline;
+		style.PinCircleRadius = 5.f;
 
 		style.LinkThickness = 3.f;
 	}
@@ -174,8 +174,8 @@ namespace Editor
 
 			}
 
-			ScriptSelectionMenu();
-			ScriptLoadingMenu();
+			ShowSelectionMenu();
+			ShowLoadingMenu();
 			UpdateContext();
 			VisualizeNodes();
 			UpdateNodes();
@@ -188,13 +188,13 @@ namespace Editor
 
 			if (ImGui::Begin("Member Functions"))
 			{
-				Fly::ClassView currentScript = GetNodeContext().classView;
+				Fly::ClassView currentClass = GetNodeContext().classView;
 				if (ImGui::Button("Create Member Function"))
 				{
-					Fly::CreateMemberFunction("Function1", currentScript);
+					Fly::CreateMemberFunction("Function1", currentClass);
 				}
 
-				std::vector<Fly::FunctionView> memberFunctions = currentScript.GetFunctions();
+				std::vector<Fly::FunctionView> memberFunctions = currentClass.GetFunctions();
 
 				for (Fly::FunctionView& memberFunction : memberFunctions)
 				{
@@ -222,7 +222,7 @@ namespace Editor
 
 	}
 
-	void NodeScriptingWindow::ScriptSelectionMenu()
+	void NodeScriptingWindow::ShowSelectionMenu()
 	{
 
 		ImGui::BeginDisabled(myNodeContextHistory.currentIndex == 0);
@@ -243,7 +243,7 @@ namespace Editor
 		}
 		ImGui::EndDisabled();
 
-		if (GetCurrentMode() == eScriptMode::Class)
+		if (GetCurrentMode() == eGraphMode::Class)
 		{
 			ImGui::SameLine();
 			char buffer[35]{};
@@ -256,7 +256,7 @@ namespace Editor
 		}
 	}
 
-	void NodeScriptingWindow::ScriptLoadingMenu()
+	void NodeScriptingWindow::ShowLoadingMenu()
 	{
 		Fly::ClassView currentClass = GetNodeContext().classView;
 
@@ -291,7 +291,7 @@ namespace Editor
 
 		if (ImGui::Button("Save"))
 		{
-			Fly::SaveClass(currentClass, SCRIPT_FILE_PATH);
+			Fly::SaveClass(currentClass, ASSET_FILE_PATH);
 			myCommandTracker->Clear();
 		}
 
@@ -300,21 +300,21 @@ namespace Editor
 
 		if (ImGui::Button("Reload All"))
 		{
-			Fly::LoadAllClasses(SCRIPT_FILE_PATH);
+			Fly::LoadAllClasses(ASSET_FILE_PATH);
 		}
 
 		ImGui::SameLine();
 
-		if (ImGui::Button("Create New Script"))
+		if (ImGui::Button("Create New Class"))
 		{
-			ImGui::OpenPopup("Create New Script");
+			ImGui::OpenPopup("Create New Class");
 		}
 
-		if (ImGui::BeginPopupModal("Create New Script", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::BeginPopupModal("Create New Class", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			ImGui::InputText("##", myNewClassNameText, IM_ARRAYSIZE(myNewClassNameText), ImGuiInputTextFlags_AutoSelectAll);
 
-			DataTypeComboTargetableFilter("Select Target##CreateNewScriptTarget", mySelectedTargetDataType);
+			DataTypeComboTargetableFilter("Select Target##CreateNewClassTarget", mySelectedTargetDataType);
 
 			ImGui::Separator();
 
@@ -344,10 +344,10 @@ namespace Editor
 
 		if (ImGui::Button("Create Copy"))
 		{
-			ImGui::OpenPopup("Create Copy Script");
+			ImGui::OpenPopup("Create Copy Class");
 		}
 
-		if (ImGui::BeginPopupModal("Create Copy Script", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::BeginPopupModal("Create Copy Class", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			ImGui::InputText("##", myCreateCopyNameText, IM_ARRAYSIZE(myCreateCopyNameText), ImGuiInputTextFlags_AutoSelectAll);
 			ImGui::Separator();
@@ -368,23 +368,37 @@ namespace Editor
 
 		if (ImGui::Button("Save Custom Events"))
 		{
-			Fly::SaveCustomEvents(SCRIPT_FILE_PATH);
+			Fly::SaveCustomEvents(ASSET_FILE_PATH);
 		}
 
-		if (GetCurrentMode() == eScriptMode::Class)
+		if (GetCurrentMode() == eGraphMode::Class)
 		{
 
+			constexpr const char* events[] = { "Begin Play", "Tick", "End Play", "Editor Update" };
 			static int currentEventIndex = 0;
-			const char* events[] = { "Begin Play", "Tick", "End Play", };
 
-			ImGui::Combo("Event Type", &currentEventIndex, events, IM_ARRAYSIZE(events));
+			if (ImGui::BeginCombo("Event Type", events[currentEventIndex]))
+			{
+				for (int i = 0; i < IM_ARRAYSIZE(events); ++i)
+				{
+					if (ImGui::Selectable(events[i], i == currentEventIndex))
+					{
+						currentEventIndex = i;
+					}
+				}
+
+				ImGui::EndCombo();
+			}
+
 			ImGui::SameLine();
 
-
-			if (ImGui::Button("Trigger Event"))
+			if (ImGui::Button("Execute Event"))
 			{
 				Fly::ClassInstanceView classInstanceView = Fly::CreateClassInstance(GetNodeContext().classView);
-				Fly::ExecutionContextBase c;
+				Fly::ExecutionContextBase c
+				{
+					.mDeltaTime = Global::GetDeltaTime()
+				};
 
 				Fly::None none;
 				switch (currentEventIndex)
@@ -398,6 +412,8 @@ namespace Editor
 				case 2:
 					classInstanceView.ExecuteEvent(Fly::EndPlay, &none, c);
 					break;
+				case 3:
+					break;
 				default:
 					break;
 				}
@@ -405,6 +421,14 @@ namespace Editor
 				Fly::DestroyClassInstance(classInstanceView);
 			}
 		}
+
+		Fly::ClassInstanceView classInstanceView = Fly::CreateClassInstance(GetNodeContext().classView);
+		Fly::ExecutionContextBase c
+		{
+			.mDeltaTime = Global::GetDeltaTime()
+		};
+		Fly::None none;
+		classInstanceView.ExecuteEvent(EditorUpdate, &none, c);
 	}
 
 	void NodeScriptingWindow::VisualizeNodes()
@@ -476,13 +500,13 @@ namespace Editor
 
 			ImVec2 cursorPos = ImGui::GetCursorPos();
 
-			const std::vector<Fly::PinView> inputPins = nodeView.GetInputPins();
-			float nodeWidthLeft = inputPins.empty() ? 0.f : 100.f;
+			const std::vector<Fly::PinView> inputPinViews = nodeView.GetInputPinViews();
+			float nodeWidthLeft = inputPinViews.empty() ? 0.f : 100.f;
 
-			for (const Fly::PinView& pinView : inputPins)
+			for (const Fly::PinView& inputPinView : inputPinViews)
 			{
 
-				const std::string& pinLabel = pinView.GetPinTypeName();
+				const std::string& pinLabel = inputPinView.GetPinTypeName();
 				const float labelWidth = ImGui::CalcTextSize(pinLabel.c_str()).x;
 
 				nodeWidthLeft = std::max(nodeWidthLeft, labelWidth);
@@ -490,11 +514,11 @@ namespace Editor
 
 			float nodeWidthRight = 0.f;
 
-			std::vector<Fly::PinView> outputPins = nodeView.GetOutputPins();
+			std::vector<Fly::PinView> outputPinViews = nodeView.GetOutputPinViews();
 
-			for (const Fly::PinView& pinView : outputPins)
+			for (const Fly::PinView& outputPinView : outputPinViews)
 			{
-				const std::string& pinLabel = pinView.GetPinTypeName();
+				const std::string& pinLabel = outputPinView.GetPinTypeName();
 				const float labelWidth = ImGui::CalcTextSize(pinLabel.c_str()).x;
 
 				nodeWidthRight = std::max(nodeWidthRight, labelWidth);
@@ -508,7 +532,7 @@ namespace Editor
 			}
 
 			// Render input pins
-			for (const Fly::PinView& inputPinView : inputPins)
+			for (const Fly::PinView& inputPinView : inputPinViews)
 			{
 				const Fly::DataTypeView pinDataType(inputPinView.GetDataTypeID());
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
@@ -548,7 +572,7 @@ namespace Editor
 			ImGui::SetCursorPos(cursorPos);
 
 			// Render output pins
-			for (const Fly::PinView& outputPinView : outputPins)
+			for (const Fly::PinView& outputPinView : outputPinViews)
 			{
 				const Fly::DataTypeView pinDataType(outputPinView.GetDataTypeID());
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
@@ -636,7 +660,7 @@ namespace Editor
 				continue;
 			}
 
-			const Fly::Vec2 newPos = ToScriptVec2(ImNodes::GetNodeGridSpacePos(nodeView.GetID()));
+			const Fly::Vec2 newPos = ToFlyVec2(ImNodes::GetNodeGridSpacePos(nodeView.GetID()));
 			Fly::Vec2 oldPos = nodeView.GetPosition();
 			if (dragStarted && ImNodes::IsNodeSelected(nodeView.GetID()))
 			{
@@ -663,31 +687,90 @@ namespace Editor
 			currentNodeContext.myNodeDragData.clear();
 		}
 
+		Fly::NodeID hoveredNodeID = Fly::InvalidID<Fly::NodeID>();
+		if (ImNodes::IsNodeHovered(&hoveredNodeID) && ImGui::IsKeyPressed(ImGuiKey_MouseRight))
+		{
+			myClickedNodeView = Fly::NodeView(hoveredNodeID, currentNodeContext.nodeGraphView);
+
+			ImGui::OpenPopup("Node Popup");
+		}
+
+		if (ImGui::BeginPopup("Node Popup"))
+		{
+			ImGui::Text("Node Options");
+
+			if (ImGui::Selectable("Destroy Node"))
+			{
+				myClickedNodeView.Destroy(myCommandTracker.get());
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (Fly::HasNodeAnyConnectedLinks(myClickedNodeView, currentNodeContext.nodeGraphView) && ImGui::Selectable("Destroy Links"))
+			{
+				myClickedNodeView.DestroyConnectedLinks(myCommandTracker.get());
+			}
+
+			ImGui::Separator();
+
+			if (Fly::IsNodeReplacable(myClickedNodeView, currentNodeContext.nodeGraphView) && ImGui::BeginMenu("Choose Type"))
+			{
+				const std::vector<Fly::DataTypeView> replacableDataTypeViews = Fly::GetReplacableDataTypes(myClickedNodeView, currentNodeContext.nodeGraphView);
+				for (const Fly::DataTypeView& replacableDataTypeView : replacableDataTypeViews)
+				{
+					ImGui::PushID(static_cast<int>(replacableDataTypeView.GetID()));
+					if (ImGui::Selectable(replacableDataTypeView.GetName().c_str()))
+					{
+						Fly::ReplaceTemplateNode(myClickedNodeView, currentNodeContext.nodeGraphView, replacableDataTypeView, myCommandTracker.get());
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::PopID();
+				}
+
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndPopup();
+		}
+		else
+		{
+			myClickedNodeView = {};
+		}
 
 		Fly::PinID hoveredPinID;
 		if (ImNodes::IsPinHovered(&hoveredPinID) && ImGui::IsKeyPressed(ImGuiKey_MouseRight))
 		{
-			myClickedPinView = Fly::PinView(hoveredPinID, currentNodeContext.nodeGraphView.GetNodeGraph());
-			const bool hasAnyConnectedLinks = Fly::HasNodeAnyConnectedLinks(Fly::NodeView(myClickedPinView.GetNodeID(), currentNodeContext.nodeGraphView), currentNodeContext.nodeGraphView);
-			if (Fly::IsPinReplacable(myClickedPinView, currentNodeContext.nodeGraphView) && !hasAnyConnectedLinks)
-			{
-				ImGui::OpenPopup("Pin Popup");
-			}
+			myClickedPinView = Fly::PinView(hoveredPinID, currentNodeContext.nodeGraphView);
+
+			ImGui::OpenPopup("Pin Popup");
+
 		}
 
 		if (ImGui::BeginPopup("Pin Popup"))
 		{
-			const std::vector<Fly::DataTypeView> replacableDataTypeViews = Fly::GetReplacableDataTypes(myClickedPinView, currentNodeContext.nodeGraphView);
-			for (const Fly::DataTypeView& replacableDataTypeView : replacableDataTypeViews)
+			if (Fly::HasPinAnyConnectedLinks(myClickedPinView) && ImGui::Selectable("Destroy Links"))
 			{
-				ImGui::PushID(static_cast<int>(replacableDataTypeView.GetID()));
-				if (ImGui::Selectable(replacableDataTypeView.GetName().c_str(), replacableDataTypeView.GetID() == myClickedPinView.GetDataTypeID()))
-				{
-					Fly::ReplaceTemplateNode(myClickedPinView, currentNodeContext.nodeGraphView, replacableDataTypeView, myCommandTracker.get());
-					ImGui::CloseCurrentPopup();
-				}
-				ImGui::PopID();
+				myClickedPinView.DestroyConnectedLinks(myCommandTracker.get());
 			}
+
+			ImGui::Separator();
+
+			if (Fly::IsPinReplacable(myClickedPinView, currentNodeContext.nodeGraphView) && ImGui::BeginMenu("Choose Type"))
+			{
+				const std::vector<Fly::DataTypeView> replacableDataTypeViews = Fly::GetReplacableDataTypes(myClickedPinView, currentNodeContext.nodeGraphView);
+				for (const Fly::DataTypeView& replacableDataTypeView : replacableDataTypeViews)
+				{
+					ImGui::PushID(static_cast<int>(replacableDataTypeView.GetID()));
+					if (ImGui::Selectable(replacableDataTypeView.GetName().c_str(), replacableDataTypeView.GetID() == myClickedPinView.GetDataTypeID()))
+					{
+						Fly::ReplaceTemplateNode(myClickedPinView, currentNodeContext.nodeGraphView, replacableDataTypeView, myCommandTracker.get());
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::PopID();
+				}
+
+				ImGui::EndMenu();
+			}
+
 
 			ImGui::EndPopup();
 		}
@@ -704,8 +787,7 @@ namespace Editor
 
 		if (ImNodes::IsLinkCreated(&createdLinkPinID1, &createdLinkPinID2))
 		{
-			const Fly::NodeGraph& currentNodeGraph = GetNodeContext().nodeGraphView.GetNodeGraph();
-			Fly::TryCreateLink(Fly::PinView(createdLinkPinID1, currentNodeGraph), Fly::PinView(createdLinkPinID2, currentNodeGraph), GetNodeContext().nodeGraphView, myCommandTracker.get());
+			currentNodeContext.nodeGraphView.TryCreateLink(Fly::PinView(createdLinkPinID1, GetNodeContext().nodeGraphView), Fly::PinView(createdLinkPinID2, GetNodeContext().nodeGraphView), myCommandTracker.get());
 			currentNodeContext.myPinIDsToHighlight.clear();
 		}
 
@@ -728,7 +810,7 @@ namespace Editor
 
 			if (!selectedLinks.empty() || !selectedNodes.empty())
 			{
-				Fly::DestroySelection(selectedNodes, selectedLinks, GetNodeContext().nodeGraphView, myCommandTracker.get());
+				currentNodeContext.nodeGraphView.DestroySelection(selectedNodes, selectedLinks, myCommandTracker.get());
 			}
 
 			ImNodes::ClearNodeSelection();
@@ -741,13 +823,13 @@ namespace Editor
 		{
 			currentNodeContext.myStartedLinkPinID = startedPinID;
 
-			const Fly::PinView pin(startedPinID, currentNodeContext.nodeGraphView.GetNodeGraph());
+			const Fly::PinView pin(startedPinID, currentNodeContext.nodeGraphView);
 
 			currentNodeContext.myPinIDsToHighlight = Fly::GetNonConnectedPinsByFlowTypeAndDataType(GetNodeContext().nodeGraphView, InvertFlowType(pin.GetFlowType()), Fly::DataTypeView(pin.GetDataTypeID()));
 
 			for (Fly::PinID i = 0; i < currentNodeContext.myPinIDsToHighlight.size(); i++)
 			{
-				if (Fly::PinView(currentNodeContext.myPinIDsToHighlight[i], currentNodeContext.nodeGraphView.GetNodeGraph()).GetNodeID() == pin.GetNodeID())
+				if (Fly::PinView(currentNodeContext.myPinIDsToHighlight[i], currentNodeContext.nodeGraphView).GetNodeID() == pin.GetNodeID())
 				{
 					currentNodeContext.myPinIDsToHighlight.erase(currentNodeContext.myPinIDsToHighlight.begin() + i);
 					i--;
@@ -770,7 +852,7 @@ namespace Editor
 		// Drop link create popup
 		if (ImGui::BeginPopup("Node Create Popup"))
 		{
-			const Fly::PinView pinView(currentNodeContext.myLinkCreationPinID, GetNodeContext().nodeGraphView.GetNodeGraph());
+			const Fly::PinView pinView(currentNodeContext.myLinkCreationPinID, GetNodeContext().nodeGraphView);
 
 			auto nodeTypePopulationFunc = [&](NodeTypeCategory& aMainCategory) -> void
 				{
@@ -834,7 +916,6 @@ namespace Editor
 			ImGui::End();
 		}
 
-		ImNodes::GetStyle().PinCircleRadius = 5.f;
 	}
 
 	void NodeScriptingWindow::PopulateCategories(const std::string& aName, const Fly::NodeTypeView& aNodeType, NodeTypeCategory& aCategory)
@@ -931,7 +1012,7 @@ namespace Editor
 
 	void NodeScriptingWindow::NodeCreation()
 	{
-		if (ImGui::IsKeyPressed(ImGuiKey_MouseRight) && !myClickedPinView)
+		if (ImGui::IsKeyPressed(ImGuiKey_MouseRight) && !myClickedPinView && !myClickedNodeView)
 		{
 			ImGui::OpenPopup("Node Type Selection");
 			UpdateClickPos();

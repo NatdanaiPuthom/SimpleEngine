@@ -3,15 +3,18 @@
 #include "../Global/FlyGlobal.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
+#include "FlyNodeGraphView.hpp"
+#include "Fly.hpp"
 
 namespace FLY_NAMESPACE
 {
 
-	PinView::PinView(const PinID aPinID, const NodeGraph& aNodeGraph)
+	PinView::PinView(const PinID aPinID, const NodeGraphView& aNodeGraphView)
 		: mPinID(aPinID)
-		, mNodeGraph(&aNodeGraph)
+		, mNodeGraphVariant(aNodeGraphView.GetVariant())
 	{
 	}
+
 	const std::vector<PinID>& PinView::GetConnectedPinIDs() const
 	{
 		return GetPin().mConnectedPinIDs;
@@ -25,7 +28,7 @@ namespace FLY_NAMESPACE
 	const std::string& PinView::GetPinTypeName() const
 	{
 		const PinType& pinType = GetPinType();
-		if (pinType.mName == "#T")
+		if (pinType.mName == TypeIdentifierStr)
 		{
 			return Global::GetDataTypeManager().GetName(pinType.mDataTypeID);
 		}
@@ -47,6 +50,11 @@ namespace FLY_NAMESPACE
 		return mPinID;
 	}
 
+	void PinView::DestroyConnectedLinks(CommandTracker* const aCommandTracker)
+	{
+		DestroyLinksByPin(*this, NodeGraphView(mNodeGraphVariant), aCommandTracker);
+	}
+
 	PinView::operator bool() const
 	{
 		return mPinID != InvalidID<PinID>();
@@ -54,7 +62,7 @@ namespace FLY_NAMESPACE
 
 	const Pin& PinView::GetPin() const
 	{
-		return mNodeGraph->mPins.at(mPinID);
+		return NodeGraphView(mNodeGraphVariant).GetNodeGraph().mPins.at(mPinID);
 	}
 
 	const PinType& PinView::GetPinType() const

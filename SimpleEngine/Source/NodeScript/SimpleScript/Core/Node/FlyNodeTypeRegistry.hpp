@@ -34,7 +34,7 @@ namespace FLY_NAMESPACE
 
 	inline NodeTypeID RegisterInternal(NodeRecipe&& aNodeRecipe, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
 	{
-		const std::string defaultPinNames = aDescription.mShowDataTypePinNames ? "#T" : "";
+		const std::string defaultPinNames = aDescription.mShowDataTypePinNames ? TypeIdentifierStr : "";
 		aDescription.mInputPinNames.resize(aNodeRecipe.mInputPinTypeIDs.size(), defaultPinNames);
 		aDescription.mOutputPinNames.resize(aNodeRecipe.mOutputPinTypeIDs.size(), defaultPinNames);
 
@@ -104,17 +104,10 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-		template<IsNotVoid OutputType, typename... InputTypes>
+		template<eNodeTrait Traits, typename OutputType, typename... InputTypes>
 		static void RegisterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeCreationData&& aCreationData = NodeCreationData())
 		{
-			RegisterInternal(FilterNodeType(aFunction, std::forward<NodeCreationData>(aCreationData)), aNodeName, aCreationData.mDescription);
-		}
-
-		template<typename OutputType, typename... InputTypes>
-		static void RegisterFlowNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeCreationData&& aCreationData = NodeCreationData())
-		{
-			//aCreationData.hasImplicitFlow = true;
-			RegisterInternal(FilterNodeType<eNodeTrait::HasImplicitFlow>(aFunction, std::forward<NodeCreationData>(aCreationData)), aNodeName, aCreationData.mDescription);
+			RegisterInternal(FilterNodeType<Traits>(aFunction, std::forward<NodeCreationData>(aCreationData)), aNodeName, aCreationData.mDescription);
 		}
 
 		template<typename ClassType, typename OutputType, typename... InputTypes>
@@ -188,6 +181,10 @@ namespace FLY_NAMESPACE
 	{
 	};
 
+	struct Pure final
+	{
+	};
+
 	struct InputNames final
 	{
 		InputNames(std::initializer_list<std::string> aNames)
@@ -224,9 +221,10 @@ namespace FLY_NAMESPACE
 
 	struct RegisterFunctionNode final
 	{
+		constexpr RegisterFunctionNode() = default;
 
 		template<typename T, typename First, typename... Rest>
-		static T&& Extract(First&& first, [[maybe_unused]] Rest&&... rest)
+		constexpr static T&& Extract(First&& first, [[maybe_unused]] Rest&&... rest)
 		{
 			if constexpr (std::is_same_v<T, First>)
 			{
@@ -238,9 +236,17 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		template<typename Function, typename... Extra>
-		static NodeCreationData GetNodeCreationData(Function aFunction, [[maybe_unused]] Extra&&... aExtraTypes)
+
+		template<typename ContainerType, typename ContainerType2>
+		constexpr static void InsertAtEnd(ContainerType& aContainer, ContainerType2&& aContainer2)
 		{
+			aContainer.insert(std::end(aContainer), std::begin(aContainer2), std::end(aContainer2));
+		}
+
+		template<typename Function, typename... Extra>
+		constexpr static NodeCreationData GetNodeCreationData(Function aFunction, [[maybe_unused]] Extra&&... aExtraTypes)
+		{
+			constexpr bool isPure = ContainsType<Pure, Extra...>;
 			NodeCreationData nodeCreationData;
 			if constexpr (ContainsType<Event, Extra...>)
 			{
@@ -250,17 +256,31 @@ namespace FLY_NAMESPACE
 
 			if constexpr (ContainsType<InputNames, Extra...>)
 			{
-				nodeCreationData.mDescription.mInputPinNames = Extract<InputNames, Extra...>(std::forward<Extra>(aExtraTypes)...).mNames;
+				if constexpr (!isPure)
+				{
+					nodeCreationData.mDescription.mInputPinNames.emplace_back(TypeIdentifierStr);
+				}
+
+				InsertAtEnd(nodeCreationData.mDescription.mInputPinNames, std::move(Extract<InputNames, Extra...>(std::forward<Extra>(aExtraTypes)...).mNames));
 			}
 
 			if constexpr (ContainsType<OutputNames, Extra...>)
 			{
-				nodeCreationData.mDescription.mOutputPinNames = Extract<OutputNames>(std::forward<Extra>(aExtraTypes)...).mNames;
+				if constexpr (!isPure)
+				{
+					nodeCreationData.mDescription.mOutputPinNames.emplace_back(TypeIdentifierStr);
+				}
+				InsertAtEnd(nodeCreationData.mDescription.mOutputPinNames, std::move(Extract<OutputNames, Extra...>(std::forward<Extra>(aExtraTypes)...).mNames));
 			}
 
 			if constexpr (ContainsType<DefaultValues, Extra...>)
 			{
-				nodeCreationData.mDescription.mDefaultValues = Extract<DefaultValues>(std::forward<Extra>(aExtraTypes)...).mValues;
+				if constexpr (!isPure)
+				{
+					nodeCreationData.mDescription.mDefaultValues.emplace_back();
+				}
+
+				InsertAtEnd(nodeCreationData.mDescription.mDefaultValues, std::move(Extract<DefaultValues, Extra...>(std::forward<Extra>(aExtraTypes)...).mValues));
 			}
 
 			if constexpr (ContainsType<AutoTick, Extra...>)
@@ -274,16 +294,18 @@ namespace FLY_NAMESPACE
 		}
 
 		template<typename OutputType, typename... InputTypes, typename... Extra>
-		static RegisterFunctionNode Register(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aFunctionName, [[maybe_unused]] Extra&&... aExtraTypes)
+		constexpr static RegisterFunctionNode Register(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
-			NodeTypeRegistry::RegisterNodeType(aFunction, aFunctionName, GetNodeCreationData(aFunction, std::forward<Extra>(aExtraTypes)...));
+			constexpr eNodeTrait Traits = ContainsType<Pure, Extra...> || ContainsType<Event, Extra...> ? eNodeTrait::None : eNodeTrait::HasImplicitFlow;
+
+			NodeTypeRegistry::RegisterNodeType<Traits>(aFunction, aFunctionName, GetNodeCreationData(aFunction, std::forward<Extra>(aExtraTypes)...));
 
 			return RegisterFunctionNode();
 		}
 
 
 		template<typename ClassType, typename OutputType, typename... InputTypes, typename... Extra>
-		static RegisterFunctionNode Register(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, [[maybe_unused]] Extra&&... aExtraTypes)
+		constexpr static RegisterFunctionNode Register(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
 			NodeTypeRegistry::RegisterMemberNodeType(aFunction, aFunctionName, GetNodeCreationData(aFunction, std::forward<Extra>(aExtraTypes)...));
 
@@ -291,7 +313,7 @@ namespace FLY_NAMESPACE
 		}
 
 		template<typename ClassType, typename OutputType, typename... InputTypes, typename... Extra>
-		static RegisterFunctionNode Register(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, [[maybe_unused]] Extra&&... aExtraTypes)
+		constexpr static RegisterFunctionNode Register(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
 			NodeTypeRegistry::RegisterMemberNodeType(aFunction, aFunctionName, GetNodeCreationData(aFunction, std::forward<Extra>(aExtraTypes)...));
 

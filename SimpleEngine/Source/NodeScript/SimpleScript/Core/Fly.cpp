@@ -179,7 +179,7 @@ namespace FLY_NAMESPACE
 	LinkView TryCreateLink(const PinView aPinView1, const PinView aPinView2, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
 	{
 		const LinkID createdLinkID = Internal::TryCreateLink(aNodeGraphView.GetNodeGraph(), aPinView1.GetID(), aPinView2.GetID(), aCommandTracker);
-		return LinkView(createdLinkID, aNodeGraphView.GetNodeGraph());
+		return LinkView(createdLinkID, aNodeGraphView);
 	}
 
 	void DestroyLink(const LinkView aLinkView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
@@ -190,6 +190,13 @@ namespace FLY_NAMESPACE
 	void DestroyLinksByPin(const PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
 	{
 		Internal::DestroyLinksByPin(aNodeGraphView.GetNodeGraph(), aPinView.GetID(), aCommandTracker);
+	}
+
+	void DestroyLinksByNode(NodeView aNodeView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
+	{
+		std::vector<LinkID> linkIDs = ScriptLinker::GetLinkIDsByNode(aNodeGraphView.GetNodeGraph(), aNodeView.GetID());
+
+		DestroySelection({}, linkIDs, aNodeGraphView, aCommandTracker);
 	}
 
 	void DestroyNode(const NodeView aNodeView, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
@@ -206,7 +213,7 @@ namespace FLY_NAMESPACE
 
 		for (const LinkID linkID : aLinkIDs)
 		{
-			DestroyLink(LinkView(linkID, aNodeGraphView.GetNodeGraph()), aNodeGraphView, aCommandTracker);
+			DestroyLink(LinkView(linkID, aNodeGraphView), aNodeGraphView, aCommandTracker);
 		}
 
 		for (const NodeID nodeID : aNodeIDs)
@@ -406,11 +413,16 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	bool HasNodeAnyConnectedLinks(NodeView aNodeView, NodeGraphView aNodeGraphView)
+	bool HasPinAnyConnectedLinks(const PinView aPinView)
+	{
+		return !aPinView.GetConnectedPinIDs().empty();
+	}
+
+	bool HasNodeAnyConnectedLinks(const NodeView aNodeView, const NodeGraphView aNodeGraphView)
 	{
 		const Node& node = aNodeGraphView.GetNodeGraph().mNodes.at(aNodeView.GetID());
 
-		auto hasConnectedLink = [](const std::vector<PinID>& aPinIDs, NodeGraph& aNodeGraph) -> bool
+		auto hasConnectedLink = [](const std::vector<PinID>& aPinIDs, const NodeGraph& aNodeGraph) -> bool
 			{
 				for (const PinID pinID : aPinIDs)
 				{
@@ -427,27 +439,47 @@ namespace FLY_NAMESPACE
 		return hasConnectedLink(node.mInputPins, aNodeGraphView.GetNodeGraph()) || hasConnectedLink(node.mOutputPins, aNodeGraphView.GetNodeGraph());
 	}
 
-	bool IsPinReplacable(const PinView aPinView, const NodeGraphView aNodeGraphView)
+	bool IsNodeReplacable(const NodeView aNodeView, const NodeGraphView aNodeGraphView)
 	{
-		const Pin& pin = Internal::GetPin(aPinView.GetID(), aNodeGraphView.GetNodeGraph());
-		const Node& node = Internal::GetNode(pin.mNodeID, aNodeGraphView.GetNodeGraph());
+		const Node& node = Internal::GetNode(aNodeView.GetID(), aNodeGraphView.GetNodeGraph());
 		const NodeType& nodeType = Internal::GetNodeType(node);
 
 		return nodeType.mNodeRecipe.mOperatorTrait != eNodeOperatorTrait::None;
 	}
 
-	void ReplaceTemplateNode(const PinView aPinView, NodeGraphView aNodeGraphView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	bool IsPinReplacable(const PinView aPinView, const NodeGraphView aNodeGraphView)
 	{
-		Internal::ReplaceTemplateNode(aNodeGraphView.GetNodeGraph(), aPinView.GetID(), aDataTypeView.GetID(), aCommandTracker);
+		return IsNodeReplacable(NodeView(aPinView.GetNodeID(), aNodeGraphView), aNodeGraphView);
+	}
+
+	void ReplaceTemplateNode(const PinView aReplacedPinView, NodeGraphView aNodeGraphView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	{
+		Internal::ReplaceTemplateNode(aNodeGraphView.GetNodeGraph(), aReplacedPinView.GetNodeID(), aDataTypeView.GetID(), aCommandTracker);
+	}
+
+	void ReplaceTemplateNode(const NodeView aNodeView, NodeGraphView aNodeGraphView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	{
+		Internal::ReplaceTemplateNode(aNodeGraphView.GetNodeGraph(), aNodeView.GetID(), aDataTypeView.GetID(), aCommandTracker);
 	}
 
 	std::vector<DataTypeView> GetReplacableDataTypes(const PinView aPinView, const NodeGraphView aNodeGraphView)
 	{
-		const Node& node = Internal::GetNode(aPinView.GetNodeID(), aNodeGraphView.GetNodeGraph());
+		assert(aPinView && "View is not valid");
+		assert(aNodeGraphView && "View is not valid");
+		
+		return GetReplacableDataTypes(NodeView(aPinView.GetNodeID(), aNodeGraphView), aNodeGraphView);
+	}
+
+	std::vector<DataTypeView> GetReplacableDataTypes(const NodeView aNodeView, const NodeGraphView aNodeGraphView)
+	{
+		assert(aNodeView && "View is not valid");
+		assert(aNodeGraphView && "View is not valid");
+
+		const Node& node = Internal::GetNode(aNodeView.GetID(), aNodeGraphView.GetNodeGraph());
 		const NodeType& nodeType = Internal::GetNodeType(node);
 		std::vector<DataTypeView> dataTypeViews;
 
-		auto& dataTypes = Global::GetNodeTypeManager().GetWildcardMapByOperator(nodeType.mNodeRecipe.mOperatorTrait);
+		auto& dataTypes = Global::GetNodeTypeManager().GetTemplateMapByOperator(nodeType.mNodeRecipe.mOperatorTrait);
 		dataTypeViews.reserve(dataTypes.size());
 		for (auto& [dataTypeID, nodeTypeID] : dataTypes)
 		{
@@ -975,7 +1007,7 @@ namespace FLY_NAMESPACE
 					continue;
 				}
 			}
-			views.push_back(LinkView(linkID, aNodeGraphView.GetNodeGraph()));
+			views.push_back(LinkView(linkID, aNodeGraphView));
 		}
 		return views;
 	}

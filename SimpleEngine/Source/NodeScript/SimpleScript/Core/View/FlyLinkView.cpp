@@ -1,14 +1,15 @@
 #include "FlyLinkView.hpp"
 #include "../Graph/FlyNodeGraph.hpp"
+#include "FlyNodeGraphView.hpp"
 
 namespace FLY_NAMESPACE
 {
 
 
 
-	LinkView::LinkView(const LinkID aLinkID, const NodeGraph& aNodeGraph)
+	LinkView::LinkView(const LinkID aLinkID, const NodeGraphView& aNodeGraphView)
 		: mLinkID(aLinkID)
-		, mNodeGraph(&aNodeGraph)
+		, mNodeGraphVariant(aNodeGraphView.GetVariant())
 	{
 	}
 
@@ -19,12 +20,12 @@ namespace FLY_NAMESPACE
 
 	PinView LinkView::GetInputPin() const
 	{
-		return PinView(GetLink().mInputPinID, *mNodeGraph);
+		return PinView(GetLink().mInputPinID, NodeGraphView(mNodeGraphVariant));
 	}
 
 	PinView LinkView::GetOutputPin() const
 	{
-		return PinView(GetLink().mOutputPinID, *mNodeGraph);
+		return PinView(GetLink().mOutputPinID, NodeGraphView(mNodeGraphVariant));
 	}
 
 	LinkID LinkView::GetID() const
@@ -39,6 +40,6 @@ namespace FLY_NAMESPACE
 
 	const Link& LinkView::GetLink() const
 	{
-		return mNodeGraph->mLinks.at(mLinkID);
+		return NodeGraphView(mNodeGraphVariant).GetNodeGraph().mLinks.at(mLinkID);
 	}
 }

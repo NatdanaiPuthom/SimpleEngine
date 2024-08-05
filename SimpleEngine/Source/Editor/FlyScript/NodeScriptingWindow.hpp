@@ -51,14 +51,14 @@ namespace Editor
 		std::vector<NodeContext> history;
 	};
 
-	inline Fly::Vec2 ToScriptVec2(ImVec2 aVec)
+	inline Fly::Vec2 ToFlyVec2(ImVec2 aVec)
 	{
 		return { aVec.x, aVec.y };
 	}
 
 	constexpr size_t TEXT_MAX_LENGTH = 40;
 
-	enum class eScriptMode
+	enum class eGraphMode
 	{
 		Class,
 		Global
@@ -74,14 +74,14 @@ namespace Editor
 		NodeContext& GetNodeContext();
 		const NodeContext& GetNodeContext() const;
 		void SetNodeContext(Fly::NodeGraphView aNodeGraphView, Fly::ClassView aClassView);
-		eScriptMode GetCurrentMode() const;
+		eGraphMode GetCurrentMode() const;
 
 		void UpdateContext();
 
 		void Draw() override;
 
-		void ScriptSelectionMenu();
-		void ScriptLoadingMenu();
+		void ShowSelectionMenu();
+		void ShowLoadingMenu();
 		void VisualizeNodes();
 		void UpdateNodes();
 		void NodeCreation();
@@ -124,6 +124,7 @@ namespace Editor
 		ImVec2 myDragStartPos;
 		ImVec2 myDragEndPos;
 
+		Fly::NodeView myClickedNodeView;
 		Fly::LinkView myHoveredLinkView;
 		Fly::PinView myHoveredPinView;
 		Fly::PinView myClickedPinView;
@@ -135,7 +136,7 @@ namespace Editor
 		static constexpr Fly::Color mySelectionTint{ 0.2f, 0.2f, 0.2f, 0.f };// = Color(0.2f, 0.2f, 0.2f, 0);
 		static constexpr Fly::Color myHoverTint{ 0.1f, 0.1f, 0.1f, 0.f };
 
-		static constexpr const char* SCRIPT_FILE_PATH = "Assets/Scripts";
+		static constexpr const char* ASSET_FILE_PATH = "Assets/Classes";
 
 	};
 }

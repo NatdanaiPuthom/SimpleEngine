@@ -51,6 +51,7 @@ namespace FLY_NAMESPACE
 	LinkView TryCreateLink(PinView aPinView1, PinView aPinView2, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void DestroyLink(LinkView aLinkView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void DestroyLinksByPin(PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
+	void DestroyLinksByNode(NodeView aNodeView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void DestroyNode(NodeView aNodeView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void DestroyNodes(const std::vector<NodeRef>& aNodeRefs, CommandTracker* aCommandTracker);
@@ -70,10 +71,14 @@ namespace FLY_NAMESPACE
 	void EditPin(PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void SplitPin(PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 
+	bool HasPinAnyConnectedLinks(PinView aPinView);
 	bool HasNodeAnyConnectedLinks(NodeView aNodeView, NodeGraphView aNodeGraphView);
+	bool IsNodeReplacable(NodeView aNodeView, NodeGraphView aNodeGraphView);
 	bool IsPinReplacable(PinView aPinView, NodeGraphView aNodeGraphView);
-	void ReplaceTemplateNode(PinView aPinView, NodeGraphView aNodeGraphView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
+	void ReplaceTemplateNode(PinView aReplacedPinView, NodeGraphView aNodeGraphView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
+	void ReplaceTemplateNode(NodeView aReplacedNodeView, NodeGraphView aNodeGraphView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
 	std::vector<DataTypeView> GetReplacableDataTypes(PinView aPinView, NodeGraphView aNodeGraphView);
+	std::vector<DataTypeView> GetReplacableDataTypes(NodeView aNodeView, NodeGraphView aNodeGraphView);
 
 	void SetPinTypeName(PinTypeView aPinTypeView, std::string_view aName);
 

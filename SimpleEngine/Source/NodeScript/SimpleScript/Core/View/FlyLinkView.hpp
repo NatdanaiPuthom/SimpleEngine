@@ -13,7 +13,7 @@ namespace FLY_NAMESPACE
 	public:
 
 		LinkView() = default;
-		LinkView(LinkID aLinkID, const NodeGraph& aNodeGraph);
+		LinkView(LinkID aLinkID, const NodeGraphView& aNodeGraphView);
 
 		bool IsDestroyed() const;
 		PinView GetInputPin() const;
@@ -29,6 +29,6 @@ namespace FLY_NAMESPACE
 	private:
 
 		LinkID mLinkID = InvalidID<LinkID>();
-		const NodeGraph* mNodeGraph = nullptr;
+		NodeGraphVariant mNodeGraphVariant;
 	};
 }

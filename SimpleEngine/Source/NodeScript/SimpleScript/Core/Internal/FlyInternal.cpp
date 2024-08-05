@@ -402,11 +402,11 @@ namespace FLY_NAMESPACE
 
 				if (pinType1.mDataTypeID == GetDataTypeID<Wildcard>())
 				{
-					ReplaceTemplateNode(aNodeGraph, aPinID1, aPinID2, aCommandTracker);
+					ReplaceTemplateNodeWithLink(aNodeGraph, aPinID1, aPinID2, aCommandTracker);
 				}
 				else if (pinType2.mDataTypeID == GetDataTypeID<Wildcard>())
 				{
-					ReplaceTemplateNode(aNodeGraph, aPinID2, aPinID1, aCommandTracker);
+					ReplaceTemplateNodeWithLink(aNodeGraph, aPinID2, aPinID1, aCommandTracker);
 				}
 
 				return InvalidID<LinkID>();
@@ -661,7 +661,7 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		void ReplaceTemplateNode(NodeGraph& aNodeGraph, const PinID aWildcardPinID, const PinID aConnectedPinID, CommandTracker* const aCommandTracker)
+		void ReplaceTemplateNodeWithLink(NodeGraph& aNodeGraph, const PinID aWildcardPinID, const PinID aConnectedPinID, CommandTracker* const aCommandTracker)
 		{
 			const Pin& wildcardPin = aNodeGraph.mPins.at(aWildcardPinID);
 			const Pin& connectedPin = aNodeGraph.mPins.at(aConnectedPinID);
@@ -742,20 +742,16 @@ namespace FLY_NAMESPACE
 
 		}
 
-		void ReplaceTemplateNode(NodeGraph& aNodeGraph, const PinID aWildcardPinID, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
+		void ReplaceTemplateNode(NodeGraph& aNodeGraph, const NodeID aReplacedNodeID, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
-			const Pin& wildcardPin = aNodeGraph.mPins.at(aWildcardPinID);
+			const NodeType& replacedNodeType = Global::GetNodeTypeManager().GetNodeType(aNodeGraph.mNodes.at(aReplacedNodeID).mTypeID);
 
-			const NodeID wildcardNodeID = wildcardPin.mNodeID;
-
-			const NodeType& wildcardNodeType = Global::GetNodeTypeManager().GetNodeType(aNodeGraph.mNodes.at(wildcardNodeID).mTypeID);
-
-			if (wildcardNodeType.mNodeRecipe.mOperatorTrait == eNodeOperatorTrait::None)
+			if (replacedNodeType.mNodeRecipe.mOperatorTrait == eNodeOperatorTrait::None)
 			{
 				return;
 			}
 
-			const bool canReplace = Global::GetNodeTypeManager().CanCreateOperatorNode(wildcardNodeType.mNodeRecipe.mOperatorTrait, aDataTypeID);
+			const bool canReplace = Global::GetNodeTypeManager().CanCreateOperatorNode(replacedNodeType.mNodeRecipe.mOperatorTrait, aDataTypeID);
 			if (!canReplace)
 			{
 				return;
@@ -766,10 +762,10 @@ namespace FLY_NAMESPACE
 				aCommandTracker->BeginComposite("Replace node composite");
 			}
 
-			const NodeID createdNodeID = CreateOperatorNode(aNodeGraph, wildcardNodeType.mNodeRecipe.mOperatorTrait, aDataTypeID, aCommandTracker);
-			const Node& wildcardNode = aNodeGraph.mNodes.at(wildcardNodeID);
-			SetNodePosition(createdNodeID, wildcardNode.mPosition, aNodeGraph, aCommandTracker);
-			DestroyNode(aNodeGraph, wildcardNodeID, aCommandTracker);
+			const NodeID createdNodeID = CreateOperatorNode(aNodeGraph, replacedNodeType.mNodeRecipe.mOperatorTrait, aDataTypeID, aCommandTracker);
+			const Node& replacedNode = aNodeGraph.mNodes.at(aReplacedNodeID);
+			SetNodePosition(createdNodeID, replacedNode.mPosition, aNodeGraph, aCommandTracker);
+			DestroyNode(aNodeGraph, aReplacedNodeID, aCommandTracker);
 
 			if (aCommandTracker)
 			{

@@ -120,7 +120,7 @@ namespace FLY_NAMESPACE
 		void* const dataPtr = [pinTypeID, &aNodeGraph]() -> void*
 			{
 				const PinType& pinType = Global::GetPinTypeManager().GetPinType(pinTypeID);
-				MemoryArena<NodeBufferCapacity>& memoryArena = aNodeGraph.mMemoryArena;
+				MemoryArena<NodeGraphBufferSize>& memoryArena = aNodeGraph.mMemoryArena;
 				if (pinType.mDefaultValueID != InvalidID<MemoryPoolID>())
 				{
 					const MemoryPool& globalMemoryPool = Global::Internal::GetMemoryPool();
@@ -300,11 +300,10 @@ namespace FLY_NAMESPACE
 
 		MemoryPool& foundationMemoryPool = Global::Internal::GetMemoryPool();
 
-		MemoryPoolID mFunctionMemoryID = nodeType.mNodeRecipe.mFunctionMemoryID;
-		Callable& callable = foundationMemoryPool.At<Callable>(mFunctionMemoryID);
+		MemoryPoolID functionMemoryID = nodeType.mNodeRecipe.mFunctionMemoryID;
+		Callable& callable = foundationMemoryPool.At<Callable>(functionMemoryID);
 
 		std::tuple<ReferenceWrapper<InputTypes>...> inputTuple = CreateInputPack<InputTypes...>(node.mInputPins, aContext);
-		inputTuple;
 
 		if constexpr (TakesExecutionContext && TakesNodeState)
 		{
@@ -459,12 +458,11 @@ namespace FLY_NAMESPACE
 					TypeList<Flow, InputTypes...>(),
 					std::forward<NodeCreationData>(aCreationData)
 				);
-
 			}
 			else
 			{
 				return CreateNodeRecipe<Traits>(
-					[aFunction](Flow, InputTypes&&... someInputs) -> std::tuple<Flow, OutputType>
+					[aFunction](Flow, InputTypes... someInputs) -> std::tuple<Flow, OutputType>
 					{
 						OutputType output = aFunction(std::forward<InputTypes>(someInputs)...);
 						return { Flow(true), output };

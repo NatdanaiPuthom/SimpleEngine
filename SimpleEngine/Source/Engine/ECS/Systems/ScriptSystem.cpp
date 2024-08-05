@@ -56,7 +56,7 @@ namespace Math
 {
 	static bool Edit(Vector3f& aValue)
 	{
-		return ::ImGui::DragFloat3("##", &aValue.x);
+		return ImGui::DragFloat3("##", &aValue.x);
 	}
 
 	static void Save(const Vector3f& aValue, nlohmann::json& aJson)
@@ -72,6 +72,23 @@ namespace Math
 		aValue.y = aJson["y"];
 		aValue.z = aJson["z"];
 	}
+
+	static bool Edit(Vector2f& aValue)
+	{
+		return ImGui::DragFloat2("##", &aValue.x);
+	}
+
+	static void Save(const Vector2f& aValue, nlohmann::json& aJson)
+	{
+		aJson["x"] = aValue.x;
+		aJson["y"] = aValue.y;
+	}
+
+	static void Load(Vector2f& aValue, const nlohmann::json& aJson)
+	{
+		aValue.x = aJson["x"];
+		aValue.y = aJson["y"];
+	}
 }
 
 namespace ECS
@@ -79,9 +96,11 @@ namespace ECS
 	
 	using Transform = Math::Transform;
 	using Vector3f = Math::Vector3f;
+	using Vector2f = Math::Vector2f;
 
 	FLY_STRUCT(Transform, Fly::eNodeOperatorTrait::None, Fly::DefaultColor, Fly::NonTargetable);
 	FLY_STRUCT(Vector3f, Fly::eNodeOperatorTrait::All, Fly::DefaultColor, Fly::NonTargetable);
+	FLY_STRUCT(Vector2f, Fly::eNodeOperatorTrait::All, Fly::DefaultColor, Fly::NonTargetable);
 	FLY_CLASS(Entity, Fly::eNodeOperatorTrait::None, Fly::Colors::Pink);
 	FLY_CLASS(TransformComponent, Fly::eNodeOperatorTrait::None, Fly::DefaultColor, Fly::NonTargetable);
 
@@ -104,7 +123,15 @@ namespace ECS
 		return { aVector.x, aVector.y, aVector.z };
 	}
 
-	FLY_FUNCTION(BreakVector3f, "Vector3f", Fly::OutputNames{ "X", "Y", "Z" });
-	FLY_FUNCTION(GetTransformComponent, "Entity");
+	bool ImGuiButton(const std::string& aLabel, Math::Vector2f aSize)
+	{
+		const std::string label = aLabel.empty() ? "Label" : aLabel;
+		return ImGui::Button(label.c_str(), ImVec2{ aSize.x, aSize.y });
+	}
+
+	FLY_FUNCTION(ImGuiButton, "ImGui", Fly::InputNames{ "Label", "Size"}, Fly::OutputNames{ "Was Clicked" }, Fly::DefaultValues{ std::string("Label") });
+
+	FLY_FUNCTION(BreakVector3f, "Vector3f", Fly::OutputNames{ "X", "Y", "Z" }, Fly::Pure{});
+	FLY_FUNCTION(GetTransformComponent, "Entity", Fly::Pure{});
 
 }

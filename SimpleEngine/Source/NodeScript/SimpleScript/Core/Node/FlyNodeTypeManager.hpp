@@ -65,7 +65,7 @@ namespace FLY_NAMESPACE
 		CustomEventID CreateCustomEvent(std::string_view aName);
 		FunctionID CreateFunction(std::string_view aName);
 
-		const std::unordered_map<DataTypeID, NodeTypeID> GetWildcardMapByOperator(eNodeOperatorTrait aOperatorTrait) const;
+		const std::unordered_map<DataTypeID, NodeTypeID>& GetTemplateMapByOperator(eNodeOperatorTrait aOperatorTrait) const;
 
 		void Assert();
 
@@ -82,7 +82,7 @@ namespace FLY_NAMESPACE
 		std::unordered_multimap<NodeTypeID, FunctionID> mToFunctionID;
 		std::unordered_map<DataTypeID, NodeTypeID> mGetterNodeTypeIDs;
 		std::unordered_map<DataTypeID, NodeTypeID> mSetterNodeTypeIDs;
-		std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> mOperatorNodeTypeIDs;
+		std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> mTemplateNodeTypeIDMap;
 	};
 
 	template<Predicate<const NodeType&> FilterPredicate>

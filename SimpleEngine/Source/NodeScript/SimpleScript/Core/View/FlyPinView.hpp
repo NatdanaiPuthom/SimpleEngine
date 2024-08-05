@@ -2,17 +2,20 @@
 #include "../FlyDefines.hpp"
 #include "../Pin/FlyPin.hpp"
 #include "../Pin/FlyPinType.hpp"
+#include "../Graph/FlyNodeGraphVariant.hpp"
 
 namespace FLY_NAMESPACE
 {
 
+	class CommandTracker;
+	class NodeGraphView;
+
 	class PinView final
 	{
-
 	public:
 
 		PinView() = default;
-		PinView(PinID aPinID, const NodeGraph& aNodeGraph);
+		PinView(PinID aPinID, const NodeGraphView& aNodeGraphView);
 
 		const std::vector<PinID>& GetConnectedPinIDs() const;
 		DataTypeID GetDataTypeID() const;
@@ -21,6 +24,8 @@ namespace FLY_NAMESPACE
 		NodeID GetNodeID() const;
 
 		PinID GetID() const;
+
+		void DestroyConnectedLinks(CommandTracker* aCommandTracker);
 
 		explicit operator bool() const;
 		
@@ -32,6 +37,6 @@ namespace FLY_NAMESPACE
 	private:
 
 		PinID mPinID = InvalidID<PinID>();
-		const NodeGraph* mNodeGraph;
+		NodeGraphVariant mNodeGraphVariant;
 	};
 }

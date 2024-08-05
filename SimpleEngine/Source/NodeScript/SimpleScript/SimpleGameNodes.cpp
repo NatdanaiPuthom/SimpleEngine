@@ -6,9 +6,3 @@
 //{
 //	return std::to_string(a);
 //}
-
-
-void RegisterSimpleGameNodes()
-{
-	//SCRIPT::NodeTypeRegistry::RegisterNodeType(ToString<int>, "Utility/String/To String (Int)");
-}

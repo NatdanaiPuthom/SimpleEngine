@@ -59,12 +59,12 @@ namespace FLY_NAMESPACE
 		return Flow(false);
 	}
 
-	FLY_FUNCTION(BeginPlay, "Events", Event{});
-	FLY_FUNCTION(Tick, "Events", Event{}, OutputNames{ "Flow", "Delta Time" });
-	FLY_FUNCTION(EndPlay, "Events", Event{});
+	FLY_FUNCTION(BeginPlay, "Events", Event{}, Pure{});
+	FLY_FUNCTION(Tick, "Events", Event{}, OutputNames{ "Flow", "Delta Time" }, Pure{});
+	FLY_FUNCTION(EndPlay, "Events", Event{}, Pure{});
 
-	FLY_FUNCTION(Branch, "Execution", InputNames{ "Flow", "Condition" }, OutputNames{ "True", "False" }, DefaultValues{ Flow(false), true });
-	FLY_FUNCTION(FlipFlop, "Execution", OutputNames{ "Flip", "Flop" });
-	FLY_FUNCTION(Delay, "Execution", InputNames{ "Flow", "Duration", "Reset On Flow" }, DefaultValues{ Flow(false), 1.f, false }, AutoTick{});
+	FLY_FUNCTION(Branch, "Execution", InputNames{ "Flow", "Condition" }, OutputNames{ "True", "False" }, DefaultValues{ Flow(false), true }, Pure{});
+	FLY_FUNCTION(FlipFlop, "Execution", OutputNames{ "Flip", "Flop" }, Pure{});
+	FLY_FUNCTION(Delay, "Execution", InputNames{ "Flow", "Duration", "Reset On Flow" }, DefaultValues{ Flow(false), 1.f, false }, AutoTick{}, Pure{});
 
 }

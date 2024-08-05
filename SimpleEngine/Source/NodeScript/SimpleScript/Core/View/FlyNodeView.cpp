@@ -3,12 +3,13 @@
 #include "../Global/FlyGlobal.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
 #include "FlyNodeGraphView.hpp"
+#include "Fly.hpp"
 
 namespace FLY_NAMESPACE
 {
 
 	NodeView::NodeView(const NodeID aNodeID, const NodeGraphView& aNodeGraphView)
-		: mNodeGraph(&aNodeGraphView.GetNodeGraph())
+		: mNodeGraphVariant(aNodeGraphView.GetVariant())
 		, mNodeID(aNodeID)
 	{
 	}
@@ -33,19 +34,19 @@ namespace FLY_NAMESPACE
 		return GetNode().mIsDestroyed;
 	}
 
-	std::vector<PinView> NodeView::GetInputPins() const
+	std::vector<PinView> NodeView::GetInputPinViews() const
 	{
 		return GetPinViews(eFlowType::Input);
 	}
 
-	std::vector<PinView> NodeView::GetOutputPins() const
+	std::vector<PinView> NodeView::GetOutputPinViews() const
 	{
 		return GetPinViews(eFlowType::Output);
 	}
 
 	const Node& NodeView::GetNode() const
 	{
-		return mNodeGraph->mNodes.at(mNodeID);
+		return GetNodeGraph().mNodes.at(mNodeID);
 	}
 
 	const NodeType& NodeView::GetNodeType() const
@@ -64,7 +65,7 @@ namespace FLY_NAMESPACE
 
 		for (const PinID pinID : pinIDs)
 		{
-			pinViews.emplace_back(PinView(pinID, *mNodeGraph));
+			pinViews.emplace_back(PinView(pinID, NodeGraphView(mNodeGraphVariant)));
 		}
 
 		return pinViews;
@@ -85,18 +86,28 @@ namespace FLY_NAMESPACE
 		return GetNodeType().mNodeRecipe.mEventID;
 	}
 
+	void NodeView::Destroy(CommandTracker* const aCommandTracker)
+	{
+		Fly::DestroyNode(*this, NodeGraphView(mNodeGraphVariant), aCommandTracker);
+	}
+
+	void NodeView::DestroyConnectedLinks(CommandTracker* const aCommandTracker)
+	{
+		Fly::DestroyLinksByNode(*this, NodeGraphView(mNodeGraphVariant), aCommandTracker);
+	}
+
 	const NodeGraph& NodeView::GetNodeGraph() const
 	{
-		return *mNodeGraph;
+		return NodeGraphView(mNodeGraphVariant).GetNodeGraph();
 	}
 
-	bool NodeView::operator==(const NodeView& aOther) const
+	bool operator==(const NodeView& a, const NodeView& b)
 	{
-		return mNodeGraph == aOther.mNodeGraph && mNodeID == aOther.mNodeID;
+		return NodeGraphView(a.mNodeGraphVariant) == NodeGraphView(b.mNodeGraphVariant) && a.mNodeID == b.mNodeID;
 	}
 
-	bool NodeView::operator!=(const NodeView& aOther) const
+	NodeView::operator bool() const
 	{
-		return !(*this == aOther);
+		return NodeGraphView(mNodeGraphVariant) && mNodeID != InvalidID<NodeID>();
 	}
 }

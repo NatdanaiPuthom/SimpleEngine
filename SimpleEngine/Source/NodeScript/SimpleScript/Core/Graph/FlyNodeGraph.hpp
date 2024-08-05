@@ -7,6 +7,8 @@
 namespace FLY_NAMESPACE
 {
 
+	constexpr size_t NodeGraphBufferSize = 1024;
+
 	class NodeGraph final
 	{
 	public:
@@ -27,6 +29,6 @@ namespace FLY_NAMESPACE
 		std::vector<Pin> mPins;
 		std::vector<Link> mLinks;
 
-		MemoryArena<NodeBufferCapacity> mMemoryArena;
+		MemoryArena<NodeGraphBufferSize> mMemoryArena;
 	};
 }
