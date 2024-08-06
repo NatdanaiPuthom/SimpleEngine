@@ -12,19 +12,19 @@ namespace Math
 		T y;
 		T z;
 
-		Vector3<T>();
-		~Vector3<T>() = default;
+		constexpr Vector3();
+		~Vector3() = default;
 
-		Vector3<T>(const T& aX, const T& aY, const T& aZ);
-		Vector3<T>(const Vector3<T>& aVector) = default;
+		constexpr Vector3(const T& aX, const T& aY, const T& aZ);
+		Vector3(const Vector3& aVector) = default;
 
-		Vector3<T>& operator=(const Vector3<T>& aVector) = default;
+		Vector3& operator=(const Vector3& aVector) = default;
 
 		Vector2<T> AsVector2XY() const;
 		Vector2<T> AsVector2XZ() const;
 
-		Vector3<T> GetNormalized() const;
-		Vector3<T> Cross(const Vector3<T>& aVector) const;
+		Vector3 GetNormalized() const;
+		Vector3 Cross(const Vector3<T>& aVector) const;
 
 		T LengthSqr() const;
 		T Length() const;
@@ -59,12 +59,12 @@ namespace Math
 	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector3<T>& aVector);
 
 	template<class T>
-	inline Vector3<T>::Vector3() : Vector3(0, 0, 0)
+	constexpr inline Vector3<T>::Vector3() : Vector3(0, 0, 0)
 	{
 	}
 
 	template<class T>
-	inline Vector3<T>::Vector3(const T& aX, const T& aY, const T& aZ) : x(aX), y(aY), z(aZ)
+	constexpr inline Vector3<T>::Vector3(const T& aX, const T& aY, const T& aZ) : x(aX), y(aY), z(aZ)
 	{
 	}
 
