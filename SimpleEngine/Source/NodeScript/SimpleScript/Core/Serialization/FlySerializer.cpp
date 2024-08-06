@@ -5,7 +5,6 @@
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../Internal/FlyInternal.hpp"
 #include "../Command/FlyCommandTracker.hpp"
-#include "../Fly.hpp"
 #include "../Foundation/FlyFoundation.hpp"
 #include <fstream>
 #include <nlohmann/json.hpp>
@@ -99,7 +98,7 @@ namespace FLY_NAMESPACE
 			dataJson["PinData"] = nlohmann::json::array();
 			nlohmann::json& pinDataArrayJson = dataJson["PinData"];
 
-			for (const PinID inputPinID : GetInputPins(eventGraph))
+			for (const PinID inputPinID : Internal::GetInputPins(eventGraph))
 			{
 				const Pin& pin = eventGraph.mPins.at(inputPinID);
 
@@ -290,19 +289,19 @@ namespace FLY_NAMESPACE
 			const std::string& dataTypeStr = variableJson["DataType"];
 
 			const std::string variableName = variableJson["Name"];
-			SetVariableName(VariableView(varID, aClass), variableName, ClassView(aClass));
+			Internal::SetVariableName(aClass, varID, variableName, nullptr);
 
 			const nlohmann::json& defaultValueJson = variableJson["DefaultValue"];
 
 
-			DataTypeView dataType(Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeStr));
+			const DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeStr);
 
-			if (dataType)
+			if (dataTypeID != InvalidID<DataTypeID>())
 			{
 
-				SetVariableDataType(VariableView(varID, aClass), dataType, ClassView(aClass), nullptr);
+				Internal::SetVariableDataType(aClass, varID, dataTypeID, nullptr);
 
-				Global::GetDataTypeManager().LoadData(dataType.GetID(), defaultValueJson, variable.mDefaultValueDataPtr);
+				Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
 
 			}
 
@@ -342,8 +341,8 @@ namespace FLY_NAMESPACE
 
 					const std::string fileName = entry.path().filename().string();
 					const std::string name = fileName.substr(0, fileName.find_last_of('.'));
-					ClassView createdClass = CreateClass(DataTypeView(GetDataTypeID<None>()), name);
-					LoadClass(createdClass.GetClass(), aFilePath);
+					Class& createdClass = Internal::CreateClass(GetDataTypeID<None>(), name);
+					LoadClass(createdClass, aFilePath);
 				}
 			}
 		}
@@ -450,7 +449,7 @@ namespace FLY_NAMESPACE
 		{
 			const std::string& nodeName = customEventJson["Name"];
 
-			const CustomEventView customEvent = CreateCustomEvent(nodeName);
+			const CustomEventID customEventID = Internal::CreateCustomEvent(nodeName);
 
 			const nlohmann::json& pinsJson = customEventJson["Pins"];
 
@@ -461,7 +460,7 @@ namespace FLY_NAMESPACE
 
 				const DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeName);
 
-				AddPinToCustomEvent(CustomEventView(customEvent.GetID()), DataTypeView(dataTypeID), pinName);
+				Internal::AddPinToCustomEvent(customEventID, dataTypeID, pinName);
 			}
 		}
 	}

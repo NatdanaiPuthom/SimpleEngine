@@ -21,7 +21,7 @@ namespace Editor
 		{
 			if (ImGui::Button("Create Variable"))
 			{
-				
+
 				Fly::CreateVariable(myParentWindow.GetNodeContext().classView, Fly::DataTypeView(Fly::GetDataTypeID<bool>()));
 			}
 
@@ -72,23 +72,23 @@ namespace Editor
 			Fly::SetVariableName(aVariableView, buffer, myParentWindow.GetNodeContext().classView);
 		}
 
-		Fly::DataTypeView currentDataType = aVariableView.GetDataType();
+		Fly::DataTypeView currentDataTypeView = aVariableView.GetDataType();
 
 		ImGui::Separator();
-		if (DataTypeComboEditableFilter("##ChangeDataType", currentDataType))
+		if (DataTypeComboEditableFilter("##ChangeDataType", currentDataTypeView))
 		{
-			SetVariableDataType(aVariableView, currentDataType, myParentWindow.GetNodeContext().classView, nullptr);
+			SetVariableDataType(aVariableView, currentDataTypeView, myParentWindow.GetNodeContext().classView, nullptr);
 		}
 
 		ImGui::Text("Default value:");
 		ImGui::SameLine();
-		EditVariableDefaultValue(aVariableView, myParentWindow.GetNodeContext().classView, nullptr);
+		Fly::EditVariableDefaultValue(aVariableView, myParentWindow.GetNodeContext().classView, nullptr);
 
 		ImGui::Separator();
 
 		if (ImGui::Button("Create Getter"))
 		{
-			CreateGetterNode(myParentWindow.GetNodeContext().classView, myParentWindow.GetNodeContext().nodeGraphView, aVariableView);
+			myParentWindow.GetNodeContext().classView.GetEventGraphView().CreateGetterNode(aVariableView, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
 			ImGui::CloseCurrentPopup();
 
 		}
@@ -97,12 +97,12 @@ namespace Editor
 
 		if (ImGui::Button("Create Setter"))
 		{
-			CreateSetterNode(myParentWindow.GetNodeContext().classView, myParentWindow.GetNodeContext().nodeGraphView, aVariableView);
+			myParentWindow.GetNodeContext().classView.GetEventGraphView().CreateSetterNode(aVariableView, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
 		}
 
 		if (ImGui::Button("Delete Variable"))
 		{
-			DestroyVariable(aVariableView, myParentWindow.GetNodeContext().classView, nullptr);
+			Fly::DestroyVariable(aVariableView, myParentWindow.GetNodeContext().classView, nullptr);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "../Pin/FlyPin.hpp"
+#include "../Pin/FlyPinType.hpp"
 #include "../Node/FlyNodeTrait.hpp"
 #include "../SystemTypes/FlyVec2.hpp"
 #include "../Node/FlyNodeRef.hpp"
@@ -28,6 +29,8 @@ namespace FLY_NAMESPACE
 		using NodeGraphVariant = std::variant<NodeGraph*, EventGraph*>;
 
 
+		Class& CreateClass(DataTypeID aTargetID, std::string_view aName);
+
 		CustomEventID CreateCustomEvent(std::string_view aName);
 		FunctionID CreateFunction(std::string_view aName);
 		NodeID CreateNode(NodeGraphVariant&& aNodeGraphVariant, NodeTypeID aNodeTypeID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
@@ -47,7 +50,6 @@ namespace FLY_NAMESPACE
 
 
 		std::vector<PinID> CreateInputPins(NodeGraph& aNodeGraph, NodeID aNodeID, NodeTypeID aNodeTypeID, size_t aStartIndex = 0);
-
 		std::vector<PinID> CreateOutputPins(NodeGraph& aNodeGraph, NodeID, NodeTypeID aNodeTypeID, size_t aStartIndex);
 
 		PinID CreatePin(NodeGraph& aNodeGraph, NodeID aNodeID, PinTypeID aPinTypeID);
@@ -60,16 +62,31 @@ namespace FLY_NAMESPACE
 
 		VarID CreateVariable(Class& aClass, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 		void SetVariableDataType(Class& aClass, VarID aVarID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
+		void SetVariableName(Class& aClass, VarID aVarID, std::string_view aName, CommandTracker* aCommandTracker);
 		void DestroyVariableNodes(Class& aClass, VarID aVarID, CommandTracker* aCommandTracker);
 
 		void BindVariable(Class& aClass, const NodeRef& aNodeRef, VarID aVarID, CommandTracker* aCommandTracker);
 		void UnbindVariable(Class& aClass, const NodeRef& aNodeRef, CommandTracker* aCommandTracker);
 
+		void SetPinTypeName(PinTypeID aPinTypeID, std::string_view aName);
+
+		void AddPinToCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, std::string_view aPinName);
+		void SetPinDataTypeAtIndexCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, size_t aIndex);
+		void SetPinNameAtIndexCustomEvent(CustomEventID aCustomEventID, std::string_view aName, size_t aIndex);
+		void DeletePinAtIndexCustomEvent(CustomEventID aCustomEventID, size_t aIndex);
+
+		void AddPinToFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName = "Pin");
+		void SetPinDataTypeAtIndexFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, size_t aIndex, eFlowType aFlowType);
+		void SetPinNameAtIndexFunction(FunctionID aFunctionID, std::string_view aName, size_t aIndex, eFlowType aFlowType);
+		void DeletePinAtIndexFunction(FunctionID aFunctionID, size_t aIndex, eFlowType aFlowType);
 
 		void ReplaceTemplateNodeWithLink(NodeGraph& aNodeGraph, PinID aWildcardPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);
 		void ReplaceTemplateNode(NodeGraph& aNodeGraph, NodeID aNodeID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 
 		NodeID GetCurrentNodeID(NodeGraph& aNodeGraph);
+
+		std::vector<PinID> GetInputPins(const NodeGraph& aNodeGraph, bool aIncludeDestroyed = false);
+		std::vector<PinID> GetOutputPins(const NodeGraph& aNodeGraph, bool aIncludeDestroyed = false);
 
 		VariableRef GetVariableRefByNodeRef(const GlobalNodeRef& aNodeRef);
 		std::vector<GlobalNodeRef> GetNodeRefsByVariableRef(const VariableRef& aVarRef);

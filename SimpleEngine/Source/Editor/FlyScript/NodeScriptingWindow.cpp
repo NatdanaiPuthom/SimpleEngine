@@ -82,7 +82,7 @@ namespace Editor
 			}
 
 			Fly::ClassView flyClass = classes.begin()->second.front();
-			SetNodeContext(flyClass.GetEventGraph(), flyClass);
+			SetNodeContext(flyClass.GetEventGraphView(), flyClass);
 		}
 
 
@@ -274,7 +274,7 @@ namespace Editor
 					{
 						if (ImGui::MenuItem(flyClass.GetName().c_str()))
 						{
-							SetNodeContext(flyClass.GetEventGraph(), flyClass);
+							SetNodeContext(flyClass.GetEventGraphView(), flyClass);
 						}
 					}
 
@@ -323,7 +323,7 @@ namespace Editor
 				Fly::ClassView classView = Fly::CreateClass(mySelectedTargetDataType, myNewClassNameText);
 				myNewClassNameText[0] = (char)0;
 
-				myImNodesContexts.emplace(classView.GetEventGraph(), ImNodes::CreateContext());
+				myImNodesContexts.emplace(classView.GetEventGraphView(), ImNodes::CreateContext());
 
 
 				ImGui::CloseCurrentPopup();
@@ -434,11 +434,10 @@ namespace Editor
 	void NodeScriptingWindow::VisualizeNodes()
 	{
 		NodeContext& currentNodeContext = GetNodeContext();
-		const Fly::ClassView currentClass = GetNodeContext().classView;
 
 		ImNodes::BeginNodeEditor();
 
-		const std::vector<Fly::NodeView> nodeViews = Fly::GetNodes(GetNodeContext().nodeGraphView);
+		const std::vector<Fly::NodeView> nodeViews = currentNodeContext.nodeGraphView.GetNodeViews();
 
 		for (const Fly::NodeView& nodeView : nodeViews)
 		{
@@ -532,13 +531,13 @@ namespace Editor
 			}
 
 			// Render input pins
-			for (const Fly::PinView& inputPinView : inputPinViews)
+			for (Fly::PinView inputPinView : inputPinViews)
 			{
 				const Fly::DataTypeView pinDataType(inputPinView.GetDataTypeID());
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
 				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(pinDataType.GetColor() - myHoverTint));
 
-				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinIDsToHighlight.begin(), currentNodeContext.myPinIDsToHighlight.end(), inputPinView.GetID()) != currentNodeContext.myPinIDsToHighlight.end();
+				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinViewsToHighlight.begin(), currentNodeContext.myPinViewsToHighlight.end(), inputPinView) != currentNodeContext.myPinViewsToHighlight.end();
 
 				const ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
 				ImNodes::BeginInputAttribute(inputPinView.GetID(), shape);
@@ -558,7 +557,7 @@ namespace Editor
 					const float itemWidth = std::max(20.f, nodeWidthLeft);
 					ImGui::PushItemWidth(itemWidth);
 
-					Fly::EditPin(inputPinView, GetNodeContext().nodeGraphView, myCommandTracker.get());
+					inputPinView.Edit(myCommandTracker.get());
 
 					ImGui::PopItemWidth();
 				}
@@ -578,7 +577,7 @@ namespace Editor
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
 				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(pinDataType.GetColor() - myHoverTint));
 
-				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinIDsToHighlight.begin(), currentNodeContext.myPinIDsToHighlight.end(), outputPinView.GetID()) != currentNodeContext.myPinIDsToHighlight.end();
+				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinViewsToHighlight.begin(), currentNodeContext.myPinViewsToHighlight.end(), outputPinView) != currentNodeContext.myPinViewsToHighlight.end();
 
 				const ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
 
@@ -651,9 +650,9 @@ namespace Editor
 			myIsDraggingNode = false;
 		}
 
-		std::vector<Fly::NodeView> nodeViews = Fly::GetNodes(currentNodeContext.nodeGraphView);
+		const std::vector<Fly::NodeView> nodeViews = currentNodeContext.nodeGraphView.GetNodeViews();
 
-		for (const Fly::NodeView& nodeView : nodeViews)
+		for (Fly::NodeView nodeView : nodeViews)
 		{
 			if (nodeView.IsDestroyed())
 			{
@@ -677,13 +676,13 @@ namespace Editor
 			}
 			if (newPos != oldPos)
 			{
-				Fly::SetNodePosition(nodeView, newPos, GetNodeContext().nodeGraphView);
+				nodeView.SetPosition(newPos);
 			}
 		}
 
 		if (dragEnded)
 		{
-			Fly::CommitNodeDrag(currentNodeContext.myNodeDragData, GetNodeContext().nodeGraphView, myCommandTracker.get());
+			currentNodeContext.nodeGraphView.CommitNodeDrag(currentNodeContext.myNodeDragData, myCommandTracker.get());
 			currentNodeContext.myNodeDragData.clear();
 		}
 
@@ -705,14 +704,14 @@ namespace Editor
 				ImGui::CloseCurrentPopup();
 			}
 
-			if (Fly::HasNodeAnyConnectedLinks(myClickedNodeView, currentNodeContext.nodeGraphView) && ImGui::Selectable("Destroy Links"))
+			if (myClickedNodeView.HasAnyConnectedLinks() && ImGui::Selectable("Destroy Links"))
 			{
 				myClickedNodeView.DestroyConnectedLinks(myCommandTracker.get());
 			}
 
 			ImGui::Separator();
 
-			if (Fly::IsNodeReplacable(myClickedNodeView, currentNodeContext.nodeGraphView) && ImGui::BeginMenu("Choose Type"))
+			if (myClickedNodeView.IsReplacable() && ImGui::BeginMenu("Choose Type"))
 			{
 				const std::vector<Fly::DataTypeView> replacableDataTypeViews = Fly::GetReplacableDataTypes(myClickedNodeView, currentNodeContext.nodeGraphView);
 				for (const Fly::DataTypeView& replacableDataTypeView : replacableDataTypeViews)
@@ -720,7 +719,7 @@ namespace Editor
 					ImGui::PushID(static_cast<int>(replacableDataTypeView.GetID()));
 					if (ImGui::Selectable(replacableDataTypeView.GetName().c_str()))
 					{
-						Fly::ReplaceTemplateNode(myClickedNodeView, currentNodeContext.nodeGraphView, replacableDataTypeView, myCommandTracker.get());
+						currentNodeContext.nodeGraphView.ReplaceTemplateNode(myClickedNodeView, replacableDataTypeView, myCommandTracker.get());
 						ImGui::CloseCurrentPopup();
 					}
 					ImGui::PopID();
@@ -747,14 +746,14 @@ namespace Editor
 
 		if (ImGui::BeginPopup("Pin Popup"))
 		{
-			if (Fly::HasPinAnyConnectedLinks(myClickedPinView) && ImGui::Selectable("Destroy Links"))
+			if (myClickedPinView.HasAnyConnectedLinks() && ImGui::Selectable("Destroy Links"))
 			{
 				myClickedPinView.DestroyConnectedLinks(myCommandTracker.get());
 			}
 
 			ImGui::Separator();
 
-			if (Fly::IsPinReplacable(myClickedPinView, currentNodeContext.nodeGraphView) && ImGui::BeginMenu("Choose Type"))
+			if (myClickedPinView.IsParentNodeReplacable() && ImGui::BeginMenu("Choose Type"))
 			{
 				const std::vector<Fly::DataTypeView> replacableDataTypeViews = Fly::GetReplacableDataTypes(myClickedPinView, currentNodeContext.nodeGraphView);
 				for (const Fly::DataTypeView& replacableDataTypeView : replacableDataTypeViews)
@@ -762,7 +761,7 @@ namespace Editor
 					ImGui::PushID(static_cast<int>(replacableDataTypeView.GetID()));
 					if (ImGui::Selectable(replacableDataTypeView.GetName().c_str(), replacableDataTypeView.GetID() == myClickedPinView.GetDataTypeID()))
 					{
-						Fly::ReplaceTemplateNode(myClickedPinView, currentNodeContext.nodeGraphView, replacableDataTypeView, myCommandTracker.get());
+						currentNodeContext.nodeGraphView.ReplaceTemplateNode(myClickedPinView, replacableDataTypeView, myCommandTracker.get());
 						ImGui::CloseCurrentPopup();
 					}
 					ImGui::PopID();
@@ -788,7 +787,7 @@ namespace Editor
 		if (ImNodes::IsLinkCreated(&createdLinkPinID1, &createdLinkPinID2))
 		{
 			currentNodeContext.nodeGraphView.TryCreateLink(Fly::PinView(createdLinkPinID1, GetNodeContext().nodeGraphView), Fly::PinView(createdLinkPinID2, GetNodeContext().nodeGraphView), myCommandTracker.get());
-			currentNodeContext.myPinIDsToHighlight.clear();
+			currentNodeContext.myPinViewsToHighlight.clear();
 		}
 
 		// See if links or nodes should be destroyed
@@ -823,18 +822,16 @@ namespace Editor
 		{
 			currentNodeContext.myStartedLinkPinID = startedPinID;
 
-			const Fly::PinView pin(startedPinID, currentNodeContext.nodeGraphView);
+			const Fly::PinView startedPin(startedPinID, currentNodeContext.nodeGraphView);
 
-			currentNodeContext.myPinIDsToHighlight = Fly::GetNonConnectedPinsByFlowTypeAndDataType(GetNodeContext().nodeGraphView, InvertFlowType(pin.GetFlowType()), Fly::DataTypeView(pin.GetDataTypeID()));
-
-			for (Fly::PinID i = 0; i < currentNodeContext.myPinIDsToHighlight.size(); i++)
-			{
-				if (Fly::PinView(currentNodeContext.myPinIDsToHighlight[i], currentNodeContext.nodeGraphView).GetNodeID() == pin.GetNodeID())
+			currentNodeContext.myPinViewsToHighlight = GetNodeContext().nodeGraphView.GetNonConnectedPinViewsByFlowTypeAndDataType(InvertFlowType(startedPin.GetFlowType()), Fly::DataTypeView(startedPin.GetDataTypeID()));
+			
+			std::erase_if(currentNodeContext.myPinViewsToHighlight, 
+				[&](const Fly::PinView& aPinView)-> bool 
 				{
-					currentNodeContext.myPinIDsToHighlight.erase(currentNodeContext.myPinIDsToHighlight.begin() + i);
-					i--;
+					return aPinView.GetID() == startedPin.GetID();
 				}
-			}
+			);
 		}
 
 		// Dropped link
@@ -844,7 +841,7 @@ namespace Editor
 		{
 			ImGui::OpenPopup("Node Create Popup");
 			currentNodeContext.myLinkCreationPinID = droppedPinID;
-			currentNodeContext.myPinIDsToHighlight.clear();
+			currentNodeContext.myPinViewsToHighlight.clear();
 
 			UpdateClickPos();
 		}
@@ -871,7 +868,7 @@ namespace Editor
 					Fly::CreateNodeAutoLink(GetNodeContext().nodeGraphView, aNodeTypeView, currentNodeContext.myLinkCreationPinID, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 
-					currentNodeContext.myPinIDsToHighlight.clear();
+					currentNodeContext.myPinViewsToHighlight.clear();
 					myNodeTypeSearch[0] = '\0';
 				};
 
@@ -1039,8 +1036,6 @@ namespace Editor
 
 						for (const Fly::NodeTypeView& nodeType : filteredNodeTypes)
 						{
-
-
 							const bool isSearched = StringCompare(nodeType.GetName(), myNodeTypeSearch);
 							if (isSearched)
 							{
@@ -1054,10 +1049,10 @@ namespace Editor
 				{
 					NodeContext& currentNodeContext = GetNodeContext();
 
-					Fly::CreateNode(GetNodeContext().nodeGraphView, aNodeTypeView, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
+					currentNodeContext.nodeGraphView.CreateNode(aNodeTypeView, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 
-					currentNodeContext.myPinIDsToHighlight.clear();
+					currentNodeContext.myPinViewsToHighlight.clear();
 					myNodeTypeSearch[0] = '\0';
 				};
 

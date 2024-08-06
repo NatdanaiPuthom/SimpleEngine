@@ -16,23 +16,28 @@ namespace FLY_NAMESPACE
 		NodeView() = default;
 		NodeView(NodeID aNodeID, const NodeGraphView& aNodeGraphView);
 
-		const std::string& GetNodeTypeName() const;
-		std::string GetShortName() const;
-		Vec2 GetPosition() const;
-		bool IsDestroyed() const;
+		[[nodiscard]] const std::string& GetNodeTypeName() const;
+		[[nodiscard]] std::string GetShortName() const;
+		[[nodiscard]] Vec2 GetPosition() const;
+		[[nodiscard]] bool IsDestroyed() const;
 
-		std::vector<PinView> GetInputPinViews() const;
-		std::vector<PinView> GetOutputPinViews() const;
+		[[nodiscard]] std::vector<PinView> GetInputPinViews() const;
+		[[nodiscard]] std::vector<PinView> GetOutputPinViews() const;
 
-		NodeID GetID() const;
+		[[nodiscard]] NodeID GetID() const;
 
-		eNodeTrait GetTraits() const;
-		EventID GetEventID() const;
+		[[nodiscard]] eNodeTrait GetTraits() const;
+		[[nodiscard]] EventID GetEventID() const;
+
+		[[nodiscard]] bool HasAnyConnectedLinks() const;
+		[[nodiscard]] bool IsReplacable() const;
 
 		void Destroy(CommandTracker* aCommandTracker);
 		void DestroyConnectedLinks(CommandTracker* aCommandTracker);
 
-		const NodeGraph& GetNodeGraph() const;
+		void SetPosition(Vec2 aPosition, CommandTracker* aCommandTracker = nullptr);
+
+		[[nodiscard]] const NodeGraph& GetNodeGraph() const;
 
 		friend bool operator==(const NodeView& a, const NodeView& b);
 
@@ -40,10 +45,10 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		const Node& GetNode() const;
-		const NodeType& GetNodeType() const;
+		[[nodiscard]] const Node& GetNode() const;
+		[[nodiscard]] const NodeType& GetNodeType() const;
 
-		std::vector<PinView> GetPinViews(const eFlowType aFlowType) const;
+		[[nodiscard]] std::vector<PinView> GetPinViews(const eFlowType aFlowType) const;
 
 	private:
 

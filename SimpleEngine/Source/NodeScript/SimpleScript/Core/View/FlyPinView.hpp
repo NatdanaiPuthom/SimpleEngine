@@ -17,22 +17,28 @@ namespace FLY_NAMESPACE
 		PinView() = default;
 		PinView(PinID aPinID, const NodeGraphView& aNodeGraphView);
 
-		const std::vector<PinID>& GetConnectedPinIDs() const;
-		DataTypeID GetDataTypeID() const;
-		const std::string& GetPinTypeName() const;
-		eFlowType GetFlowType() const;
-		NodeID GetNodeID() const;
+		[[nodiscard]] const std::vector<PinID>& GetConnectedPinIDs() const;
+		[[nodiscard]] DataTypeID GetDataTypeID() const;
+		[[nodiscard]] const std::string& GetPinTypeName() const;
+		[[nodiscard]] eFlowType GetFlowType() const;
+		[[nodiscard]] NodeID GetNodeID() const;
 
-		PinID GetID() const;
+		[[nodiscard]] PinID GetID() const;
+
+		[[nodiscard]] bool IsParentNodeReplacable() const;
+		[[nodiscard]] bool HasAnyConnectedLinks() const;
 
 		void DestroyConnectedLinks(CommandTracker* aCommandTracker);
+		void Edit(CommandTracker* aCommandTracker);
 
 		explicit operator bool() const;
+
+		friend bool operator==(const PinView& a, const PinView& b);
 		
 	private:
 
-		const Pin& GetPin() const;
-		const PinType& GetPinType() const;
+		[[nodiscard]] const Pin& GetPin() const;
+		[[nodiscard]] const PinType& GetPinType() const;
 
 	private:
 

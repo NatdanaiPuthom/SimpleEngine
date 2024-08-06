@@ -39,7 +39,7 @@ namespace Editor
 		Fly::ClassView classView;
 		Fly::NodeGraphView nodeGraphView;
 
-		std::vector<Fly::PinID> myPinIDsToHighlight;
+		std::vector<Fly::PinView> myPinViewsToHighlight;
 		std::unordered_map<Fly::NodeID, Fly::NodeDragData> myNodeDragData;
 		Fly::PinID myLinkCreationPinID;
 		Fly::PinID myStartedLinkPinID;
@@ -89,6 +89,11 @@ namespace Editor
 		ImVec2 GetMiddlePos() const;
 
 		Fly::FunctionView GetCurrentFunction() const;
+
+		Fly::CommandTracker& GetCommandTracker()
+		{
+			return *myCommandTracker;
+		}
 
 	private:
 		void ShowNodeTypeCreationMenu(const std::vector<Fly::NodeTypeView>& aNodeTypeIDs, const std::function<void(const Fly::NodeTypeView&)>& aOnClickFunc);

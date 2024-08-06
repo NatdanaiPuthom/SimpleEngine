@@ -5,8 +5,6 @@
 namespace FLY_NAMESPACE
 {
 
-
-
 	LinkView::LinkView(const LinkID aLinkID, const NodeGraphView& aNodeGraphView)
 		: mLinkID(aLinkID)
 		, mNodeGraphVariant(aNodeGraphView.GetVariant())

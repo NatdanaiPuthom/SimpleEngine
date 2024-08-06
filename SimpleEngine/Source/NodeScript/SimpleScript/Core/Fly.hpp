@@ -21,12 +21,6 @@
 namespace FLY_NAMESPACE
 {
 
-	struct NodeDragData final
-	{
-		Vec2 mStartPos;
-		Vec2 mEndPos;
-	};
-
 	class CommandTracker;
 	class ClassInstance;
 
@@ -45,8 +39,8 @@ namespace FLY_NAMESPACE
 	NodeView CreateNode(NodeGraphView aNodeGraphView, NodeTypeView aNodeTypeView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 	NodeView CreateNode(NodeGraphView aNodeGraphView, std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);
 	NodeView CreateNodeAutoLink(NodeGraphView aNodeGraph, NodeTypeView aNodeTypeView, PinID aConnection, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-	NodeView CreateGetterNode(ClassView aClassView, NodeGraphView aNodeGraphView, VariableView aVariableView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-	NodeView CreateSetterNode(ClassView aClassView, NodeGraphView aNodeGraphView, VariableView aVariableView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+	NodeView CreateGetterNode(NodeGraphView aNodeGraphView, VariableView aVariableView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+	NodeView CreateSetterNode(NodeGraphView aNodeGraphView, VariableView aVariableView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 
 	LinkView TryCreateLink(PinView aPinView1, PinView aPinView2, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 	void DestroyLink(LinkView aLinkView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
@@ -106,12 +100,12 @@ namespace FLY_NAMESPACE
 
 	void BeginFrame();
 
-	std::vector<PinID> GetInputPins(const NodeGraph& aNodeGraph);
-	std::vector<PinID> GetOutputPins(const NodeGraph& aNodeGraph);
-	std::vector<PinID> GetNonConnectedInputPins(const NodeGraph& aNodeGraph);
-	std::vector<PinID> GetNonConnectedOutputPins(const NodeGraph& aNodeGraph);
-	std::vector<PinID> GetNonConnectedPinsByFlowType(const NodeGraph& aNodeGraph, const eFlowType aFlowType);
-	std::vector<PinID> GetNonConnectedPinsByFlowTypeAndDataType(NodeGraphView aNodeGraphView, eFlowType aFlowType, DataTypeView aDataTypeView);
+	std::vector<PinID> GetInputPins(const NodeGraph& aNodeGraph, bool aIncludeDestroyed = false);
+	std::vector<PinID> GetOutputPins(const NodeGraph& aNodeGraph, bool aIncludeDestroyed = false);
+	std::vector<PinView> GetNonConnectedInputPinViews(NodeGraphView aNodeGraphView);
+	std::vector<PinView> GetNonConnectedOutputPinViews(NodeGraphView aNodeGraphView);
+	std::vector<PinView> GetNonConnectedPinViewsByFlowType(NodeGraphView aNodeGraphView, eFlowType aFlowType);
+	std::vector<PinView> GetNonConnectedPinViewsByFlowTypeAndDataType(NodeGraphView aNodeGraphView, eFlowType aFlowType, DataTypeView aDataTypeView);
 
 	VariableView GetVariableByNode(NodeView aNodeView, NodeGraphView aNodeGraphView);
 	std::vector<VariableView> GetVariables(ClassView aClassView, bool aIncludeDestroyed = false);

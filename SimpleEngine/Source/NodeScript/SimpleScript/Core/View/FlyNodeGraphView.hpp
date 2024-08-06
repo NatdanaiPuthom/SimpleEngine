@@ -3,10 +3,17 @@
 #include "FlyNodeView.hpp"
 #include "FlyPinView.hpp"
 #include "FlyLinkView.hpp"
+#include "FlyDataTypeView.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
 
 namespace FLY_NAMESPACE
 {
+
+	struct NodeDragData final
+	{
+		Vec2 mStartPos;
+		Vec2 mEndPos;
+	};
 	
 	class NodeGraph;
 	class EventGraph;
@@ -32,26 +39,36 @@ namespace FLY_NAMESPACE
 		explicit NodeGraphView(NodeGraphVariant&& aNodeGraphVariant);
 		explicit NodeGraphView(const NodeGraphVariant& aNodeGraphVariant);
 
-		std::vector<NodeView> GetNodes(bool aIncludeDestroyed = false) const;
-		std::vector<PinView> GetPins(bool aIncludeDestroyed = false) const;
+		[[nodiscard]] std::vector<NodeView> GetNodeViews(bool aIncludeDestroyed = false) const;
+		[[nodiscard]] std::vector<PinView> GetPinViews(bool aIncludeDestroyed = false) const;
 
-		NodeGraph& GetNodeGraph();
-		const NodeGraph& GetNodeGraph() const;
+		[[nodiscard]] NodeGraph& GetNodeGraph();
+		[[nodiscard]] const NodeGraph& GetNodeGraph() const;
 
-		eNodeGraphType GetType() const;
+		[[nodiscard]] eNodeGraphType GetType() const;
+
+		[[nodiscard]] std::vector<PinView> GetNonConnectedInputPinViews() const;
+		[[nodiscard]] std::vector<PinView> GetNonConnectedOutputPinViews() const;
+		[[nodiscard]] std::vector<PinView> GetNonConnectedPinViewsByFlowType(eFlowType aFlowType) const;
+		[[nodiscard]] std::vector<PinView> GetNonConnectedPinViewsByFlowTypeAndDataType(eFlowType aFlowType, DataTypeView aDataTypeView) const;
 
 		NodeView CreateNode(const NodeTypeView& aNodeTypeView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeView CreateNode(std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);
 		NodeView CreateNodeAutoLink(NodeTypeView aNodeTypeView, PinID aConnection, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-		NodeView CreateGetterNode(const ClassView& aClassView, VariableView aVariableView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-		NodeView CreateSetterNode(const ClassView& aClassView, VariableView aVariableView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+		NodeView CreateGetterNode(VariableView aVariableView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+		NodeView CreateSetterNode(VariableView aVariableView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 
 		void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, CommandTracker* aCommandTracker);
 		LinkView TryCreateLink(PinView aPinView1, PinView aPinView2, CommandTracker* aCommandTracker);
 
-		const NodeGraphVariant& GetVariant() const;
+		void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aNodeDragData, CommandTracker* aCommandTracker);
 
-		std::variant<NodeGraph*, EventGraph*> GetAs();
+		void ReplaceTemplateNode(NodeView aReplaceNodeView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
+		void ReplaceTemplateNode(PinView aReplacePinView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
+
+		[[nodiscard]] const NodeGraphVariant& GetVariant() const;
+
+		[[nodiscard]] std::variant<NodeGraph*, EventGraph*> GetAs();
 
 		friend bool operator==(const NodeGraphView& a, const NodeGraphView& b);
 

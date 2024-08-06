@@ -21,7 +21,7 @@ namespace FLY_NAMESPACE
 		const std::string& GetName() const;
 		DataTypeView GetTargetDataType() const;
 
-		NodeGraphView GetEventGraph() const;
+		NodeGraphView GetEventGraphView() const;
 
 		std::vector<VariableView> GetVariables(bool aIncludeDestroyed = false) const;
 		std::vector<FunctionView> GetFunctions() const;

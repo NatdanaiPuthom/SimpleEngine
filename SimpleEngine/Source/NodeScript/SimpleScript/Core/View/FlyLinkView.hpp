@@ -15,10 +15,10 @@ namespace FLY_NAMESPACE
 		LinkView() = default;
 		LinkView(LinkID aLinkID, const NodeGraphView& aNodeGraphView);
 
-		bool IsDestroyed() const;
-		PinView GetInputPin() const;
-		PinView GetOutputPin() const;
-		LinkID GetID() const;
+		[[nodiscard]] bool IsDestroyed() const;
+		[[nodiscard]] PinView GetInputPin() const;
+		[[nodiscard]] PinView GetOutputPin() const;
+		[[nodiscard]] LinkID GetID() const;
 
 		explicit operator bool() const;
 

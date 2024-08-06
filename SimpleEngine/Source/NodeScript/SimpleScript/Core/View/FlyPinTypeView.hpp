@@ -8,17 +8,17 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-		PinTypeView(PinTypeID anID);
+		explicit PinTypeView(PinTypeID anID);
 
-		const std::string& GetName() const;
-		eFlowType GetFlowType() const;
-		DataTypeID GetDataTypeID() const;
+		[[nodiscard]] const std::string& GetName() const;
+		[[nodiscard]] eFlowType GetFlowType() const;
+		[[nodiscard]] DataTypeID GetDataTypeID() const;
 
-		PinTypeID GetID() const;
+		[[nodiscard]] PinTypeID GetID() const;
 
 	private:
 
-		const PinType& GetPinType() const;
+		[[nodiscard]] const PinType& GetPinType() const;
 
 	private:
 

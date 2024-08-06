@@ -50,9 +50,24 @@ namespace FLY_NAMESPACE
 		return mPinID;
 	}
 
+	bool PinView::IsParentNodeReplacable() const
+	{
+		return IsPinReplacable(*this, NodeGraphView(mNodeGraphVariant));
+	}
+
+	bool PinView::HasAnyConnectedLinks() const
+	{
+		return HasPinAnyConnectedLinks(*this);
+	}
+
 	void PinView::DestroyConnectedLinks(CommandTracker* const aCommandTracker)
 	{
 		DestroyLinksByPin(*this, NodeGraphView(mNodeGraphVariant), aCommandTracker);
+	}
+
+	void PinView::Edit(CommandTracker* const aCommandTracker)
+	{
+		EditPin(*this, NodeGraphView(mNodeGraphVariant), aCommandTracker);
 	}
 
 	PinView::operator bool() const
@@ -69,5 +84,10 @@ namespace FLY_NAMESPACE
 	{
 		const Pin& pin = GetPin();
 		return Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+	}
+
+	bool operator==(const PinView& a, const PinView& b)
+	{
+		return NodeGraphView(a.mNodeGraphVariant) == NodeGraphView(b.mNodeGraphVariant) && a.mPinID == b.mPinID;
 	}
 }

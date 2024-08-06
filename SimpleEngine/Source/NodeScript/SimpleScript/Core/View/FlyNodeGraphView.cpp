@@ -28,7 +28,7 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	std::vector<NodeView> NodeGraphView::GetNodes(const bool aIncludeDestroyed) const
+	std::vector<NodeView> NodeGraphView::GetNodeViews(const bool aIncludeDestroyed) const
 	{
 		const std::vector<Node>& nodes = GetNodeGraph().mNodes;
 
@@ -48,7 +48,7 @@ namespace FLY_NAMESPACE
 		return nodeViews;
 	}
 
-	std::vector<PinView> NodeGraphView::GetPins(const bool aIncludeDestroyed) const
+	std::vector<PinView> NodeGraphView::GetPinViews(const bool aIncludeDestroyed) const
 	{
 		const std::vector<Pin>& pins = GetNodeGraph().mPins;
 
@@ -117,39 +117,74 @@ namespace FLY_NAMESPACE
 		);
 	}
 
+	std::vector<PinView> NodeGraphView::GetNonConnectedInputPinViews() const
+	{
+		return FLY_NAMESPACE::GetNonConnectedInputPinViews(*this);
+	}
+
+	std::vector<PinView> NodeGraphView::GetNonConnectedOutputPinViews() const
+	{
+		return FLY_NAMESPACE::GetNonConnectedOutputPinViews(*this);
+	}
+
+	std::vector<PinView> NodeGraphView::GetNonConnectedPinViewsByFlowType(eFlowType aFlowType) const
+	{
+		return FLY_NAMESPACE::GetNonConnectedPinViewsByFlowType(*this, aFlowType);
+	}
+
+	std::vector<PinView> NodeGraphView::GetNonConnectedPinViewsByFlowTypeAndDataType(const eFlowType aFlowType, const DataTypeView aDataTypeView) const
+	{
+		return FLY_NAMESPACE::GetNonConnectedPinViewsByFlowTypeAndDataType(*this, aFlowType, aDataTypeView);
+	}
+
 	NodeView NodeGraphView::CreateNode(const NodeTypeView& aNodeTypeView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
-		return Fly::CreateNode(*this, aNodeTypeView, aPosition, aCommandTracker);
+		return FLY_NAMESPACE::CreateNode(*this, aNodeTypeView, aPosition, aCommandTracker);
 	}
 
 	NodeView NodeGraphView::CreateNode(std::string_view aName, bool& aSuccess, Vec2 aPosition, CommandTracker* aCommandTracker, bool aCreateIfNameNotFound)
 	{
-		return Fly::CreateNode(*this, aName, aSuccess, aPosition, aCommandTracker, aCreateIfNameNotFound);
+		return FLY_NAMESPACE::CreateNode(*this, aName, aSuccess, aPosition, aCommandTracker, aCreateIfNameNotFound);
 	}
 
 	NodeView NodeGraphView::CreateNodeAutoLink(NodeTypeView aNodeTypeView, PinID aConnection, Vec2 aPosition, CommandTracker* aCommandTracker)
 	{
-		return Fly::CreateNodeAutoLink(*this, aNodeTypeView, aConnection, aPosition, aCommandTracker);
+		return FLY_NAMESPACE::CreateNodeAutoLink(*this, aNodeTypeView, aConnection, aPosition, aCommandTracker);
 	}
 
-	NodeView NodeGraphView::CreateGetterNode(const ClassView& aClassView, VariableView aVariableView, Vec2 aPosition, CommandTracker* aCommandTracker)
+	NodeView NodeGraphView::CreateGetterNode(VariableView aVariableView, Vec2 aPosition, CommandTracker* aCommandTracker)
 	{
-		return Fly::CreateGetterNode(aClassView, *this, aVariableView, aPosition, aCommandTracker);
+		return FLY_NAMESPACE::CreateGetterNode(*this, aVariableView, aPosition, aCommandTracker);
 	}
 
-	NodeView NodeGraphView::CreateSetterNode(const ClassView& aClassView, VariableView aVariableView, Vec2 aPosition, CommandTracker* aCommandTracker)
+	NodeView NodeGraphView::CreateSetterNode(VariableView aVariableView, Vec2 aPosition, CommandTracker* aCommandTracker)
 	{
-		return Fly::CreateSetterNode(aClassView, *this, aVariableView, aPosition, aCommandTracker);
+		return FLY_NAMESPACE::CreateSetterNode(*this, aVariableView, aPosition, aCommandTracker);
 	}
 
 	void NodeGraphView::DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, CommandTracker* const aCommandTracker)
 	{
-		Fly::DestroySelection(aNodeIDs, aLinkIDs, *this, aCommandTracker);
+		FLY_NAMESPACE::DestroySelection(aNodeIDs, aLinkIDs, *this, aCommandTracker);
 	}
 
 	LinkView NodeGraphView::TryCreateLink(PinView aPinView1, PinView aPinView2, CommandTracker* const aCommandTracker)
 	{
-		return Fly::TryCreateLink(aPinView1, aPinView2, *this, aCommandTracker);
+		return FLY_NAMESPACE::TryCreateLink(aPinView1, aPinView2, *this, aCommandTracker);
+	}
+
+	void NodeGraphView::CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aNodeDragData, CommandTracker* const aCommandTracker)
+	{
+		FLY_NAMESPACE::CommitNodeDrag(aNodeDragData, *this, aCommandTracker);
+	}
+
+	void NodeGraphView::ReplaceTemplateNode(NodeView aReplaceNodeView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker)
+	{
+		FLY_NAMESPACE::ReplaceTemplateNode(aReplaceNodeView, *this, aDataTypeView, aCommandTracker);
+	}
+
+	void NodeGraphView::ReplaceTemplateNode(PinView aReplacePinView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker)
+	{
+		FLY_NAMESPACE::ReplaceTemplateNode(aReplacePinView, *this, aDataTypeView, aCommandTracker);
 	}
 
 	const NodeGraphVariant& NodeGraphView::GetVariant() const

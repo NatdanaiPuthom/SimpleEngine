@@ -86,14 +86,29 @@ namespace FLY_NAMESPACE
 		return GetNodeType().mNodeRecipe.mEventID;
 	}
 
+	bool NodeView::HasAnyConnectedLinks() const
+	{
+		return HasNodeAnyConnectedLinks(*this, NodeGraphView(mNodeGraphVariant));
+	}
+
+	bool NodeView::IsReplacable() const
+	{
+		return IsNodeReplacable(*this, NodeGraphView(mNodeGraphVariant));
+	}
+
 	void NodeView::Destroy(CommandTracker* const aCommandTracker)
 	{
-		Fly::DestroyNode(*this, NodeGraphView(mNodeGraphVariant), aCommandTracker);
+		DestroyNode(*this, NodeGraphView(mNodeGraphVariant), aCommandTracker);
 	}
 
 	void NodeView::DestroyConnectedLinks(CommandTracker* const aCommandTracker)
 	{
-		Fly::DestroyLinksByNode(*this, NodeGraphView(mNodeGraphVariant), aCommandTracker);
+		DestroyLinksByNode(*this, NodeGraphView(mNodeGraphVariant), aCommandTracker);
+	}
+
+	void NodeView::SetPosition(const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	{
+		SetNodePosition(*this, aPosition, NodeGraphView(mNodeGraphVariant), aCommandTracker);
 	}
 
 	const NodeGraph& NodeView::GetNodeGraph() const

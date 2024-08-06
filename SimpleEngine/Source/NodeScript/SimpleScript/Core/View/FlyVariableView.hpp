@@ -6,6 +6,7 @@ namespace FLY_NAMESPACE
 {
 
 	class Class;
+	class ClassView;
 	struct Variable;
 
 	class VariableView final
@@ -13,14 +14,16 @@ namespace FLY_NAMESPACE
 	public:
 
 		VariableView() = default;
-		VariableView(VarID aVarID, Class& aClass);
+		VariableView(VarID aVarID, const ClassView& aClassView);
 
-		const std::string& GetName() const;
-		DataTypeView GetDataType() const;
-		bool IsDestroyed() const;
-		VarID GetID() const;
+		[[nodiscard]] const std::string& GetName() const;
+		[[nodiscard]] DataTypeView GetDataType() const;
+		[[nodiscard]] bool IsDestroyed() const;
+		[[nodiscard]] VarID GetID() const;
 
-		Class& GetClass() const;
+		[[nodiscard]] Class& GetClass() const;
+
+		void SetName(std::string_view aName);
 
 		explicit operator bool() const;
 

@@ -1,12 +1,13 @@
 #include "FlyVariableView.hpp"
 #include "FlyClass.hpp"
+#include "../Fly.hpp"
 
 namespace FLY_NAMESPACE
 {
 
-	VariableView::VariableView(const VarID aVarID, Class& aClass)
+	VariableView::VariableView(const VarID aVarID, const ClassView& aClassView)
 		: mVarID(aVarID)
-		, mClass(&aClass)
+		, mClass(&aClassView.GetClass())
 	{
 	}
 
@@ -34,6 +35,11 @@ namespace FLY_NAMESPACE
 	Class& VariableView::GetClass() const
 	{
 		return *mClass;
+	}
+
+	void VariableView::SetName(std::string_view aName)
+	{
+		SetVariableName(*this, aName, ClassView(*mClass));
 	}
 
 	VariableView::operator bool() const

@@ -25,7 +25,7 @@ namespace FLY_NAMESPACE
 		return DataTypeView(targetID);
 	}
 
-	NodeGraphView ClassView::GetEventGraph() const
+	NodeGraphView ClassView::GetEventGraphView() const
 	{
 		return NodeGraphView(GetClass().mEventGraph);
 	}
@@ -47,7 +47,7 @@ namespace FLY_NAMESPACE
 					continue;
 				}
 			}
-			variableViews.push_back(VariableView(varID, *mClass));
+			variableViews.push_back(VariableView(varID, *this));
 		}
 
 		return variableViews;
