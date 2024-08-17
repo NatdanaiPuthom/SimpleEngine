@@ -58,4 +58,9 @@ namespace Simple
 	{
 		MainSingleton::GetSceneManager().LateRender();
 	}
+
+	void GameWorld::RenderBloomEntities()
+	{
+		MainSingleton::GetSceneManager().RenderBloomEntities();
+	}
 }

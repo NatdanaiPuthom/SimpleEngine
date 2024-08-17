@@ -17,6 +17,11 @@ namespace ECS
 
 	void CameraSystem::Render(EntityComponentSystem* aEntityComponentSystem)
 	{
+		if (MainSingleton::GetSceneManager().GetIsPlaying() == false) //TO-DO(v11.4.1): Better architecture/flow
+		{
+			return;
+		}
+
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		const std::unordered_set<EntityID>& entitiesIDWithCameraComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<CameraComponent>();

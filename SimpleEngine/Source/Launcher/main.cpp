@@ -117,6 +117,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_BEGIN("Render To GBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
 		gameWorld.Render();
+		gameWorld.RenderBloomEntities();
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To DeferredBuffer");
