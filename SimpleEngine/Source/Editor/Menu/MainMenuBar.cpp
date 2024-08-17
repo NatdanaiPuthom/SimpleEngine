@@ -137,7 +137,7 @@ namespace Editor
 				const ImVec2 size = ImGui::GetContentRegionAvail();
 				ImGui::Image(textureID, size);
 
-				if (EditorEngine::mySelectedEntityID != static_cast<size_t>(-1))
+				if (EditorEngine::mySelectedEntityID != static_cast<size_t>(-1)) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
 				{
 					const ImVec2 topLeft = ImGui::GetItemRectMin();
 					const ImVec2 bottomRight = ImGui::GetItemRectMax();
