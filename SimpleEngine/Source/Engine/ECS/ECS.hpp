@@ -36,6 +36,7 @@ namespace ECS
 		void FixedUpdate();
 		void LateUpdate();
 		void LateRender();
+		void RenderEntitiesWithBloomComponent();
 
 		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
 

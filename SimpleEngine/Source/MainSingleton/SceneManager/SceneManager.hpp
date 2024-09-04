@@ -37,6 +37,7 @@ namespace Simpleton
 		void FixedUpdate();
 		void LateUpdate();
 		void LateRender();
+		void RenderBloomEntities();
 
 		void ReloadSceneFromFile(const std::string& aSceneName);
 

@@ -81,6 +81,11 @@ namespace Simpleton
 		myECSs.at(myCurrentSceneInfo->id).LateRender();
 	}
 
+	void SceneManager::RenderBloomEntities()
+	{
+		myECSs.at(myCurrentSceneInfo->id).RenderEntitiesWithBloomComponent();
+	}
+
 	void SceneManager::ChangeScene(const std::string& aSceneName)
 	{
 		if (mySceneInfos.contains(aSceneName) == false)

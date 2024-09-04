@@ -16,6 +16,9 @@ namespace Simple
 		void EarlyUpdate();
 		void LateUpdate();
 		void FixedUpdate();
+
+		void RenderBloomEntities();
+
 	private:
 		float myFixedUpdateTimer;
 		const float myFixedUpdateFreqency;

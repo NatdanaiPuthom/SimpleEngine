@@ -92,6 +92,10 @@ namespace ECS
 		mySystemManager.LateRender(this);
 	}
 
+	void EntityComponentSystem::RenderEntitiesWithBloomComponent()
+	{
+	}
+
 	void EntityComponentSystem::AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem)
 	{
 		mySystemManager.mySystems[aSystemHashCode] = std::move(aSystem);

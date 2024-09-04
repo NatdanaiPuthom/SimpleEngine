@@ -137,7 +137,7 @@ namespace Editor
 				const ImVec2 size = ImGui::GetContentRegionAvail();
 				ImGui::Image(textureID, size);
 
-				if (EditorEngine::mySelectedEntityID != static_cast<size_t>(-1))
+				if (EditorEngine::mySelectedEntityID != static_cast<size_t>(-1)) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
 				{
 					const ImVec2 topLeft = ImGui::GetItemRectMin();
 					const ImVec2 bottomRight = ImGui::GetItemRectMax();
@@ -158,6 +158,19 @@ namespace Editor
 
 						static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
 
+						if (MainSingleton::GetInputManager().IsKeyPressed('T'))
+						{
+							operation = ImGuizmo::OPERATION::TRANSLATE;
+						}
+						else if (MainSingleton::GetInputManager().IsKeyPressed('R'))
+						{
+							operation = ImGuizmo::OPERATION::ROTATE;
+						}
+						else if (MainSingleton::GetInputManager().IsKeyPressed('S'))
+						{
+							operation = ImGuizmo::OPERATION::SCALE;
+						}
+
 						if (ImGuizmo::Manipulate(&view(1, 1),
 							&proj(1, 1),
 							operation,
@@ -165,7 +178,20 @@ namespace Editor
 							&objectMatrix(1, 1)
 						))
 						{
-							transformComponent->transform.SetPosition(objectMatrix.GetPosition());
+							switch (operation)
+							{
+							case ImGuizmo::OPERATION::TRANSLATE:
+								transformComponent->transform.SetPosition(objectMatrix.GetPosition());
+								break;
+							case ImGuizmo::OPERATION::ROTATE:
+								//TO-DO(v11.4.1): Fix Quaternion and Rotation pls!!! It has been forever!
+								break;
+							case ImGuizmo::OPERATION::SCALE:
+								transformComponent->transform.SetScale(objectMatrix.GetScale());
+								break;
+							default:
+								break;
+							}
 						}
 					}
 				}
