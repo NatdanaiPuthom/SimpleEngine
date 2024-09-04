@@ -37,9 +37,24 @@ namespace FLY_NAMESPACE
 		return *mClass;
 	}
 
-	void VariableView::SetName(std::string_view aName)
+	void VariableView::SetName(const std::string_view aName, CommandTracker* const aCommandTracker)
 	{
-		SetVariableName(*this, aName, ClassView(*mClass));
+		SetVariableName(*this, aName, aCommandTracker);
+	}
+
+	void VariableView::Destroy(CommandTracker* const aCommandTracker)
+	{
+		DestroyVariable(*this, aCommandTracker);
+	}
+
+	void VariableView::EditDefaultValue(CommandTracker* const aCommandTracker)
+	{
+		EditVariableDefaultValue(*this, aCommandTracker);
+	}
+
+	void VariableView::SetDataType(const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	{
+		SetVariableDataType(*this, aDataTypeView, aCommandTracker);
 	}
 
 	VariableView::operator bool() const

@@ -3,17 +3,6 @@
 
 namespace FLY_NAMESPACE
 {
-	Command::Command(const Command& aOther)
-		: mName(aOther.mName)
-		, mCommandFunction(aOther.mCommandFunction)
-	{
-	}
-
-	Command::Command(Command&& aOther) noexcept
-		: mName(std::move(aOther.mName))
-		, mCommandFunction(std::move(aOther.mCommandFunction))
-	{
-	}
 
 	void Command::operator()(eCommandType aCommandType) const
 	{

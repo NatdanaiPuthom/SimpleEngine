@@ -6,6 +6,7 @@
 #include "../SystemTypes/FlyVec2.hpp"
 #include "../Node/FlyNodeRef.hpp"
 #include "../Variable/FlyVariableRef.hpp"
+#include "../Graph/FlyNodeGraphVariant.hpp"
 #include <string>
 #include <variant>
 
@@ -26,15 +27,13 @@ namespace FLY_NAMESPACE
 	namespace Internal
 	{
 
-		using NodeGraphVariant = std::variant<NodeGraph*, EventGraph*>;
-
 
 		Class& CreateClass(DataTypeID aTargetID, std::string_view aName);
 
 		CustomEventID CreateCustomEvent(std::string_view aName);
 		FunctionID CreateFunction(std::string_view aName);
-		NodeID CreateNode(NodeGraphVariant&& aNodeGraphVariant, NodeTypeID aNodeTypeID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-		NodeID CreateNode(NodeGraphVariant&& aNodeGraphVariant, std::string_view aName, bool& aSuccess, Vec2 aPosition, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker);
+		NodeID CreateNode(const NodeGraphVariant& aNodeGraphVariant, NodeTypeID aNodeTypeID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+		NodeID CreateNode(const NodeGraphVariant& aNodeGraphVariant, std::string_view aName, bool& aSuccess, Vec2 aPosition, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker);
 		NodeID CreateGetterNode(NodeGraph& aNodeGraph, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 		NodeID CreateSetterNode(NodeGraph& aNodeGraph, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 		NodeID CreateOperatorNode(NodeGraph& aNodeGraph, eNodeOperatorTrait aOperatorTrait, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);

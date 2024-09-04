@@ -15,9 +15,7 @@ struct ImNodesContext;
 
 namespace Fly
 {
-	struct Color;
 	class CommandTracker;
-	class NodeGraph;
 }
 
 namespace Editor
@@ -34,10 +32,11 @@ namespace Editor
 		return IM_COL32(aColor.r * 255, aColor.g * 255, aColor.b * 255, 255);
 	}
 
-	struct NodeContext
+	struct NodeContext final
 	{
-		Fly::ClassView classView;
-		Fly::NodeGraphView nodeGraphView;
+		Fly::ClassView myClassView;
+		Fly::NodeGraphView myNodeGraphView;
+		Fly::ClassInstanceView myClassInstanceView;
 
 		std::vector<Fly::PinView> myPinViewsToHighlight;
 		std::unordered_map<Fly::NodeID, Fly::NodeDragData> myNodeDragData;

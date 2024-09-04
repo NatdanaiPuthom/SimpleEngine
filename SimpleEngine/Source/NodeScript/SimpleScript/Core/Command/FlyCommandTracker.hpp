@@ -1,12 +1,12 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "FlyCommand.hpp"
+#include "FlyCompositeCommand.hpp"
+#include "../Memory/FlyHeapObject.hpp"
 #include <stack>
 
 namespace FLY_NAMESPACE
 {
-
-	class CompositeCommand;
 
 	class CommandTracker final
 	{
@@ -38,9 +38,9 @@ namespace FLY_NAMESPACE
 	private:
 
 
-		std::stack<std::unique_ptr<Command>> myUndoStack;
-		std::stack<std::unique_ptr<Command>> myRedoStack;
-		std::unique_ptr<CompositeCommand> myCurrentCompositeCommand;
+		std::stack<HeapObject<Command>> myUndoStack;
+		std::stack<HeapObject<Command>> myRedoStack;
+		HeapObject<CompositeCommand> myCurrentCompositeCommand;
 
 	};
 }

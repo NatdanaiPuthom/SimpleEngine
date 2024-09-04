@@ -8,20 +8,20 @@ namespace FLY_NAMESPACE
 	}
 
 	FLY_FUNCTION(IntToFloat, "Utility/Cast/Int To Float", Pure{});
-	
-
-	FLY_FUNCTION(Clamp<int>, "Utility/Function/", InputNames{ "Value", "Min", "Max" }, DefaultValues{ 0, 0, 0 });
-	FLY_FUNCTION(Clamp<float>, "Utility/Function/", InputNames{ "Value", "Min", "Max" }, DefaultValues{ 0.f, 0.f, 0.f });
-	FLY_FUNCTION(Clamp<unsigned long long>, "Utility/Function/", InputNames{ "Value", "Min", "Max" }, DefaultValues{ 0ull, 0ull, 0ull });
-
-	FLY_FUNCTION(Min<int>, "Utility/Function");
-	FLY_FUNCTION(Min<float>, "Utility/Function");
-	FLY_FUNCTION(Min<unsigned long long>, "Utility/Function");
 
 
-	FLY_FUNCTION(Max<int>, "Utility/Function");
-	FLY_FUNCTION(Max<float>, "Utility/Function");
-	FLY_FUNCTION(Max<unsigned long long>, "Utility/Function");
+	FLY_FUNCTION(Clamp<int>, Directory{ "Utility/Function" }, InputNames{ "Value", "Min", "Max" }, DefaultValues{ 0, 0, 0 });
+	FLY_FUNCTION(Clamp<float>, Directory{ "Utility/Function" }, InputNames{ "Value", "Min", "Max" }, DefaultValues{ 0.f, 0.f, 0.f });
+	FLY_FUNCTION(Clamp<unsigned long long>, Directory{ "Utility/Function" }, InputNames{ "Value", "Min", "Max" }, DefaultValues{ 0ull, 0ull, 0ull });
+
+	FLY_FUNCTION(Min<int>, Directory{ "Utility/Function" });
+	FLY_FUNCTION(Min<float>, Directory{ "Utility/Function" });
+	FLY_FUNCTION(Min<unsigned long long>, Directory{ "Utility/Function" });
+
+
+	FLY_FUNCTION(Max<int>, Directory{ "Utility/Function" });
+	FLY_FUNCTION(Max<float>, Directory{ "Utility/Function" });
+	FLY_FUNCTION(Max<unsigned long long>, Directory{ "Utility/Function" });
 	
 }
 

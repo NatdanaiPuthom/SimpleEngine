@@ -33,10 +33,24 @@ namespace FLY_NAMESPACE
 		return Flow(true);
 	}
 
+	static NodeCreationData GetCallerNodeCreationData(const std::string_view aCustomEventName)
+	{
+		NodeCreationData data;
+		data.mName = "CustomEvent/Call " + std::string(aCustomEventName);
+		return data;
+	}
+
+	static NodeCreationData GetExecutorNodeCreationData(const std::string_view aCustomEventName)
+	{
+		NodeCreationData data;
+		data.mName = "CustomEvent/" + std::string(aCustomEventName);
+		return data;
+	}
+
 	CustomEvent::CustomEvent(std::string_view aName)
 	{
-		mCallerTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent | eNodeTrait::HasImplicitFlow>(CustomEventCallerNode, "CustomEvent/Call " + std::string(aName), NodeCreationData{ /*.hasImplicitFlow = true*/ });
-		mExecutorTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent>(CustomEventExecutorNode, "CustomEvent/" + std::string(aName));
+		mCallerTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent | eNodeTrait::HasImplicitFlow>(CustomEventCallerNode, GetCallerNodeCreationData(aName));
+		mExecutorTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent>(CustomEventExecutorNode, GetExecutorNodeCreationData(aName));
 	}
 
 	CustomEvent::~CustomEvent()

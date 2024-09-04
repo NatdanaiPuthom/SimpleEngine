@@ -19,8 +19,8 @@ namespace FLY_NAMESPACE
 		return distr(gen);
 	}
 
-	FLY_FUNCTION(GetRandomNumber<int>, "Utility/Random", InputNames{ "Min", "Max" }, Pure{});
-	FLY_FUNCTION(GetRandomNumber<unsigned int>, "Utility/Random", InputNames{ "Min", "Max" }, Pure{});
-	FLY_FUNCTION(GetRandomNumber<unsigned long long>, "Utility/Random", InputNames{ "Min", "Max" }, Pure{});
+	FLY_FUNCTION(GetRandomNumber<int>, Fly::Directory{ "Utility/Random" }, InputNames{ "Min", "Max" }, Pure{});
+	FLY_FUNCTION(GetRandomNumber<unsigned int>, Fly::Directory{ "Utility/Random" }, InputNames{ "Min", "Max" }, Pure{});
+	FLY_FUNCTION(GetRandomNumber<unsigned long long>, Fly::Directory{ "Utility/Random" }, InputNames{ "Min", "Max" }, Pure{});
 
 }

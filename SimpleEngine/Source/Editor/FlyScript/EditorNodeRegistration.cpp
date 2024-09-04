@@ -9,5 +9,5 @@ namespace Editor
 		return Fly::Flow(true);
 	}
 
-	FLY_FUNCTION(EditorUpdate, "Events", Fly::Event{});
+	FLY_FUNCTION(EditorUpdate, Fly::Directory{ "Events" }, Fly::Event{});
 }

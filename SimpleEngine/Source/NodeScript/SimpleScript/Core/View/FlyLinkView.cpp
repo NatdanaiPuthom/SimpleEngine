@@ -1,6 +1,7 @@
 #include "FlyLinkView.hpp"
 #include "../Graph/FlyNodeGraph.hpp"
 #include "FlyNodeGraphView.hpp"
+#include "../Fly.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -29,6 +30,11 @@ namespace FLY_NAMESPACE
 	LinkID LinkView::GetID() const
 	{
 		return mLinkID;
+	}
+
+	void LinkView::Destroy(CommandTracker* const aCommandTracker)
+	{
+		DestroyLink(*this, NodeGraphView(mNodeGraphVariant), aCommandTracker);
 	}
 
 	LinkView::operator bool() const

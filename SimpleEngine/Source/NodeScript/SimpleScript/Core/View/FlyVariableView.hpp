@@ -8,6 +8,7 @@ namespace FLY_NAMESPACE
 	class Class;
 	class ClassView;
 	struct Variable;
+	class CommandTracker;
 
 	class VariableView final
 	{
@@ -23,7 +24,10 @@ namespace FLY_NAMESPACE
 
 		[[nodiscard]] Class& GetClass() const;
 
-		void SetName(std::string_view aName);
+		void SetName(std::string_view aName, CommandTracker* aCommandTracker);
+		void Destroy(CommandTracker* aCommandTracker);
+		void EditDefaultValue(CommandTracker* aCommandTracker);
+		void SetDataType(DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
 
 		explicit operator bool() const;
 

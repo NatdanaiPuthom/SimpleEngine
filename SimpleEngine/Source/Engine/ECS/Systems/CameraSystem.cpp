@@ -24,7 +24,7 @@ namespace ECS
 		if (entitiesIDWithCameraComponent.empty())
 		{
 			graphicsEngine->SetCamera(graphicsEngine->GetEditorCamera().get());
-			Simple::Console::Print("No Camera found in current scene", Simple::ConsoleTextColor::Red);
+			//Simple::Console::Print("No Camera found in current scene", Simple::ConsoleTextColor::Red);
 		}
 		else
 		{

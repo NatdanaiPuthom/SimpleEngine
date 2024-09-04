@@ -32,7 +32,7 @@ namespace FLY_NAMESPACE
 		return aStr.substr(0, aStr.find_first_of(':'));
 	}
 
-	inline NodeTypeID RegisterInternal(NodeRecipe&& aNodeRecipe, const std::string& aNodeName, NodeTypeDesc aDescription = NodeTypeDesc())
+	inline NodeTypeID RegisterInternal(NodeRecipe&& aNodeRecipe, NodeTypeDesc&& aDescription = NodeTypeDesc())
 	{
 		const std::string defaultPinNames = aDescription.mShowDataTypePinNames ? TypeIdentifierStr : "";
 		aDescription.mInputPinNames.resize(aNodeRecipe.mInputPinTypeIDs.size(), defaultPinNames);
@@ -47,13 +47,17 @@ namespace FLY_NAMESPACE
 		{
 			Global::GetPinTypeManager().GetPinType(aNodeRecipe.mOutputPinTypeIDs[i]).mName = aDescription.mOutputPinNames[i];
 		}
-		return Global::GetNodeTypeManager().Register(NodeType{ .mNodeRecipe = std::move(aNodeRecipe), .mName = InsertSpaces(aNodeName) });
+		aNodeRecipe.mName = InsertSpaces(aNodeRecipe.mName);
+
+		assert(!aNodeRecipe.mName.empty());
+
+		return Global::GetNodeTypeManager().Register(NodeType{ .mNodeRecipe = std::move(aNodeRecipe) });
 	}
 
 	template<eNodeTrait Traits = eNodeTrait::None, typename OutputType, typename... InputTypes>
-	inline NodeTypeID RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeCreationData&& aCreationData = NodeCreationData())
+	inline NodeTypeID RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData = NodeCreationData())
 	{
-		return RegisterInternal(FilterNodeType<Traits>(aFunction, std::forward<NodeCreationData>(aCreationData)), aNodeName, aCreationData.mDescription);
+		return RegisterInternal(FilterNodeType<Traits>(aFunction, std::forward<NodeCreationData>(aCreationData)), std::forward<NodeTypeDesc>(aCreationData.mDescription));
 	}
 
 	template<typename T>
@@ -62,7 +66,7 @@ namespace FLY_NAMESPACE
 		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
 
 		const VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariableInstances[variableRef.GetVarID()];
-		const T& output = *reinterpret_cast<const T*>(variableInstance.mRuntimeDataPtr.Get());
+		const T& output = *reinterpret_cast<const T*>(variableInstance.mRuntimeValueDataPtr.Get());
 		return output;
 	}
 
@@ -74,14 +78,17 @@ namespace FLY_NAMESPACE
 
 		VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariableInstances[variableRef.GetVarID()];
 
-		T& runtimeValue = *reinterpret_cast<T*>(variableInstance.mRuntimeDataPtr.Get());
+		T& runtimeValue = *reinterpret_cast<T*>(variableInstance.mRuntimeValueDataPtr.Get());
 		runtimeValue = aValue;
 	}
 
 	template<typename T>
 	inline void RegisterGetterNodeType()
 	{
-		const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>, NodeCreationData{}), "Get " + Global::GetDataTypeManager().GetName(GetDataTypeID<T>()));
+		const std::string& typeName = Global::GetDataTypeManager().GetName(GetDataTypeID<T>());
+		NodeCreationData getterData;
+		getterData.mName = "Get " + typeName;
+		const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>, std::move(getterData)));
 		Global::GetNodeTypeManager().SetGetterNodeTypeID(GetDataTypeID<T>(), nodeTypeID);
 	}
 
@@ -89,7 +96,11 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	inline void RegisterSetterNodeType()
 	{
-		const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>, NodeCreationData{}), "Set " + Global::GetDataTypeManager().GetName(GetDataTypeID<T>()));
+		const std::string& typeName = Global::GetDataTypeManager().GetName(GetDataTypeID<T>());
+
+		NodeCreationData setterData;
+		setterData.mName = "Set " + typeName;
+		const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>, std::move(setterData)));
 		Global::GetNodeTypeManager().SetSetterNodeTypeID(GetDataTypeID<T>(), nodeTypeID);
 	}
 
@@ -105,28 +116,42 @@ namespace FLY_NAMESPACE
 	public:
 
 		template<eNodeTrait Traits, typename OutputType, typename... InputTypes>
-		static void RegisterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeCreationData&& aCreationData = NodeCreationData())
+		static void RegisterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData = NodeCreationData())
 		{
-			RegisterInternal(FilterNodeType<Traits>(aFunction, std::forward<NodeCreationData>(aCreationData)), aNodeName, aCreationData.mDescription);
+			RegisterInternal(FilterNodeType<Traits>(aFunction, std::forward<NodeCreationData>(aCreationData)), std::forward<NodeTypeDesc>(aCreationData.mDescription));
 		}
 
-		template<typename ClassType, typename OutputType, typename... InputTypes>
-		static void RegisterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeCreationData&& aCreationData = NodeCreationData())
+		template<eNodeTrait Traits, typename ClassType, typename OutputType, typename... InputTypes>
+		static void RegisterFakeMemberNodeType(FuncPtr<OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData = NodeCreationData())
 		{
-			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aCreationData.mDescription);
+			aCreationData.mOwnerDataTypeID = GetDataTypeID<ClassType*>();
+			const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<Traits>(aFunction, std::forward<NodeCreationData>(aCreationData)), std::forward<NodeTypeDesc>(aCreationData.mDescription));
 
-			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType>())
+			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType*>())
 			{
 				dataType->mNodeTypeIDs.push_back(nodeTypeID);
 			}
 		}
 
 		template<typename ClassType, typename OutputType, typename... InputTypes>
-		static void RegisterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aNodeName, NodeCreationData&& aCreationData = NodeCreationData())
+		static void RegisterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData = NodeCreationData())
 		{
-			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction), aNodeName, aCreationData.mDescription);
+			aCreationData.mOwnerDataTypeID = GetDataTypeID<ClassType*>();
+			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction, std::forward<NodeCreationData>(aCreationData)), std::forward<NodeTypeDesc>(aCreationData.mDescription));
 
-			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType>())
+			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType*>())
+			{
+				dataType->mNodeTypeIDs.push_back(nodeTypeID);
+			}
+		}
+
+		template<typename ClassType, typename OutputType, typename... InputTypes>
+		static void RegisterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData = NodeCreationData())
+		{
+			aCreationData.mOwnerDataTypeID = GetDataTypeID<ClassType*>();
+			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction, std::forward<NodeCreationData>(aCreationData)), std::forward<NodeTypeDesc>(aCreationData.mDescription));
+
+			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType*>())
 			{
 				dataType->mNodeTypeIDs.push_back(nodeTypeID);
 			}
@@ -144,7 +169,19 @@ namespace FLY_NAMESPACE
 					return anObject->*aMember;
 				};
 
-			const NodeTypeID getterNodeTypeID = RegisterInternal(CreateNodeRecipe(getterFunc, TypeList<std::remove_const_t<MemberType>>(), TypeList<ClassType*>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType*>() }), aDirectory + "/Get " + aVariableName);
+
+			NodeCreationData getterData;
+			getterData.mName = aDirectory + "/Get " + aVariableName;
+			getterData.mOwnerDataTypeID = GetDataTypeID<ClassType*>();
+
+			const NodeTypeID getterNodeTypeID = RegisterInternal(
+				CreateNodeRecipe(
+					getterFunc,
+					TypeList<std::remove_const_t<MemberType>>(),
+					TypeList<ClassType*>(),
+					std::move(getterData)
+				)
+			);
 
 			DataType* dataType = Global::GetDataTypeManager().Find<ClassType*>();
 			if (dataType)
@@ -163,7 +200,18 @@ namespace FLY_NAMESPACE
 						return Flow(true);
 					};
 				;
-				const NodeTypeID setterNodeTypeID = RegisterInternal(CreateNodeRecipe(setterFunc, TypeList<Flow>(), TypeList<Flow, ClassType*, std::remove_const_t<MemberType>>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType*>() }), aDirectory + "/Set " + aVariableName);
+
+				NodeCreationData setterData;
+				setterData.mName = aDirectory + "/Set " + aVariableName;
+				setterData.mOwnerDataTypeID = GetDataTypeID<ClassType*>();
+				const NodeTypeID setterNodeTypeID = RegisterInternal(
+					CreateNodeRecipe(
+						setterFunc,
+						TypeList<Flow>(),
+						TypeList<Flow, ClassType*, std::remove_const_t<MemberType>>(),
+						std::move(setterData)
+					)
+				);
 
 				if (dataType)
 				{
@@ -212,30 +260,20 @@ namespace FLY_NAMESPACE
 		std::vector<std::any> mValues;
 	};
 
-	enum class eNodeRegTrait : unsigned char
+	struct Directory final
 	{
-		None = 0,
-		Event = 1 << 0,
-		Pure = 1 << 1
+		std::string mDirectory;
+	};
+
+	template<typename T>
+	struct MemberOf final
+	{
+		using Type = T;
 	};
 
 	struct RegisterFunctionNode final
 	{
 		constexpr RegisterFunctionNode() = default;
-
-		template<typename T, typename First, typename... Rest>
-		constexpr static T&& Extract(First&& first, [[maybe_unused]] Rest&&... rest)
-		{
-			if constexpr (std::is_same_v<T, First>)
-			{
-				return std::forward<First>(first);
-			}
-			else
-			{
-				return Extract<T>(std::forward<Rest>(rest)...);
-			}
-		}
-
 
 		template<typename ContainerType, typename ContainerType2>
 		constexpr static void InsertAtEnd(ContainerType& aContainer, ContainerType2&& aContainer2)
@@ -243,8 +281,8 @@ namespace FLY_NAMESPACE
 			aContainer.insert(std::end(aContainer), std::begin(aContainer2), std::end(aContainer2));
 		}
 
-		template<typename Function, typename... Extra>
-		constexpr static NodeCreationData GetNodeCreationData(Function aFunction, [[maybe_unused]] Extra&&... aExtraTypes)
+		template<typename ClassType = None, typename Function, typename... Extra>
+		constexpr static NodeCreationData GetNodeCreationData(Function aFunction, const std::string& aFunctionName, [[maybe_unused]] Extra&&... aExtraTypes)
 		{
 			constexpr bool isPure = ContainsType<Pure, Extra...>;
 			NodeCreationData nodeCreationData;
@@ -290,15 +328,40 @@ namespace FLY_NAMESPACE
 				static_assert(!ContainsType<Event, Extra...>);
 			}
 
+			if constexpr (ContainsType<Directory, Extra...>)
+			{
+				nodeCreationData.mName = Extract<Directory, Extra...>(std::forward<Extra>(aExtraTypes)...).mDirectory + "/" + aFunctionName;
+			}
+			else
+			{
+				if constexpr (!std::same_as<ClassType, None>)
+				{
+					const DataType* c = Global::GetDataTypeManager().Find(GetDataTypeID<ClassType*>());
+					const DataType* classDataType = c ? c : Global::GetDataTypeManager().Find<ClassType>();
+					assert(classDataType);
+					nodeCreationData.mName = classDataType->mName + "/" + aFunctionName;
+				}
+			}
+
 			return nodeCreationData;
 		}
+
+
 
 		template<typename OutputType, typename... InputTypes, typename... Extra>
 		constexpr static RegisterFunctionNode Register(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
 			constexpr eNodeTrait Traits = ContainsType<Pure, Extra...> || ContainsType<Event, Extra...> ? eNodeTrait::None : eNodeTrait::HasImplicitFlow;
 
-			NodeTypeRegistry::RegisterNodeType<Traits>(aFunction, aFunctionName, GetNodeCreationData(aFunction, std::forward<Extra>(aExtraTypes)...));
+			if constexpr (ContainsTemplateType<MemberOf, Extra...>)
+			{
+				using ClassType = std::decay_t<decltype(ExtractTemplate<MemberOf, Extra...>(std::forward<Extra>(aExtraTypes)...))>::Type;
+				NodeTypeRegistry::RegisterFakeMemberNodeType<Traits, ClassType>(aFunction, GetNodeCreationData<ClassType>(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
+			}
+			else
+			{
+				NodeTypeRegistry::RegisterNodeType<Traits>(aFunction, GetNodeCreationData(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
+			}
 
 			return RegisterFunctionNode();
 		}
@@ -307,7 +370,7 @@ namespace FLY_NAMESPACE
 		template<typename ClassType, typename OutputType, typename... InputTypes, typename... Extra>
 		constexpr static RegisterFunctionNode Register(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
-			NodeTypeRegistry::RegisterMemberNodeType(aFunction, aFunctionName, GetNodeCreationData(aFunction, std::forward<Extra>(aExtraTypes)...));
+			NodeTypeRegistry::RegisterMemberNodeType(aFunction, GetNodeCreationData<ClassType>(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
 
 			return RegisterFunctionNode();
 		}
@@ -315,7 +378,7 @@ namespace FLY_NAMESPACE
 		template<typename ClassType, typename OutputType, typename... InputTypes, typename... Extra>
 		constexpr static RegisterFunctionNode Register(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
-			NodeTypeRegistry::RegisterMemberNodeType(aFunction, aFunctionName, GetNodeCreationData(aFunction, std::forward<Extra>(aExtraTypes)...));
+			NodeTypeRegistry::RegisterMemberNodeType(aFunction, GetNodeCreationData<ClassType>(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
 
 			return RegisterFunctionNode();
 		}
@@ -330,5 +393,5 @@ namespace FLY_NAMESPACE
 // Macro to generate a unique name using __COUNTER__
 #define FLY_UNIQUE_NAME(base) FLY_CONCATENATE(base, __COUNTER__)
 
-#define FLY_FUNCTION(function, directory, ...) \
-    inline static Fly::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = Fly::RegisterFunctionNode::Register(&function, directory"/"#function, __VA_ARGS__);
+#define FLY_FUNCTION(function, ...) \
+    inline static Fly::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = Fly::RegisterFunctionNode::Register(&function, #function, __VA_ARGS__);

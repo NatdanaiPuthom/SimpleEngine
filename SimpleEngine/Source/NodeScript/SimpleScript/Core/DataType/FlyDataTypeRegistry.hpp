@@ -55,7 +55,9 @@ namespace FLY_NAMESPACE
 		{
 			if (aIsTargetable)
 			{
-				RegisterSystemNodeType<eNodeTrait::Self>(GetSelfNode<T>, aName + "/" + aName + "::Get Self");
+				NodeCreationData nodeData;
+				nodeData.mName = aName + "/" + aName + "::Get Self";
+				RegisterSystemNodeType<eNodeTrait::Self>(GetSelfNode<T>, std::move(nodeData));
 			}
 		}
 	}

@@ -4,7 +4,7 @@
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
 #include "FlyNodeGraphView.hpp"
-#include "Fly.hpp"
+#include "../Fly.hpp"
 
 namespace FLY_NAMESPACE
 {

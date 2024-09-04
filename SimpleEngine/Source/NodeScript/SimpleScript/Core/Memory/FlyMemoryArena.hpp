@@ -1,6 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include <memory>
+#include "FlyHeapObject.hpp"
 #include <vector>
 
 namespace FLY_NAMESPACE
@@ -386,7 +386,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		std::vector<std::unique_ptr<MemoryBuffer>> mMemoryBuffers;
+		std::vector<HeapObject<MemoryBuffer>> mMemoryBuffers;
 		size_t mCurrentBufferIndex;
 	};
 
@@ -405,20 +405,14 @@ namespace FLY_NAMESPACE
 	template<size_t BufferCapacity>
 	inline MemoryArena<BufferCapacity>::MemoryArena(const MemoryArena& aOther)
 		: mCurrentBufferIndex(aOther.mCurrentBufferIndex)
+		, mMemoryBuffers(aOther.mMemoryBuffers)
 	{
-		for (const std::unique_ptr<MemoryBuffer>& buffer : aOther.mMemoryBuffers)
-		{
-			mMemoryBuffers.emplace_back(std::make_unique<MemoryBuffer>(*buffer));
-		}
 	}
 
 	template<size_t BufferCapacity>
 	inline MemoryArena<BufferCapacity>& MemoryArena<BufferCapacity>::operator=(const MemoryArena<BufferCapacity>& aOther)
 	{
-		for (const std::unique_ptr<MemoryBuffer>& buffer : aOther.mMemoryBuffers)
-		{
-			mMemoryBuffers.emplace_back(std::make_unique<MemoryBuffer>(*buffer));
-		}
+		mMemoryBuffers = aOther.mMemoryBuffers;
 		mCurrentBufferIndex = aOther.mCurrentBufferIndex;
 		return *this;
 	}
@@ -469,7 +463,7 @@ namespace FLY_NAMESPACE
 	{
 		for (size_t i = 0; i < aPrevious.mMemoryBuffers.size(); ++i)
 		{
-			const std::unique_ptr<MemoryBuffer>& buffer = aPrevious.mMemoryBuffers[i];
+			const auto& buffer = aPrevious.mMemoryBuffers[i];
 			const size_t ptrDiff = GetPointerDiff(aDataPtr, buffer->GetDataPtr());
 			if (ptrDiff < BufferCapacity)
 			{
@@ -486,7 +480,7 @@ namespace FLY_NAMESPACE
 	{
 		for (size_t i = 0; i < mMemoryBuffers.size(); ++i)
 		{
-			const std::unique_ptr<MemoryBuffer>& buffer = mMemoryBuffers[i];
+			const auto& buffer = mMemoryBuffers[i];
 			const size_t ptrDiff = GetPointerDiff(aDataPtr, buffer->GetDataPtr());
 			if (ptrDiff < BufferCapacity)
 			{
@@ -507,7 +501,7 @@ namespace FLY_NAMESPACE
 	inline void MemoryArena<BufferCapacity>::AllocateNewBuffer()
 	{
 		mCurrentBufferIndex = mMemoryBuffers.size();
-		mMemoryBuffers.emplace_back(std::make_unique<MemoryBuffer>());
+		mMemoryBuffers.emplace_back(MakeHeapObject<MemoryBuffer>());
 	}
 
 
@@ -522,7 +516,7 @@ namespace FLY_NAMESPACE
 	{
 		for (size_t i = 0; i < mMemoryBuffers.size(); ++i)
 		{
-			const std::unique_ptr<MemoryBuffer>& buffer = mMemoryBuffers[i];
+			const auto& buffer = mMemoryBuffers[i];
 			const size_t ptrDiff = GetPointerDiff(aDataPtr, buffer->GetDataPtr());
 			if (ptrDiff < BufferCapacity)
 			{

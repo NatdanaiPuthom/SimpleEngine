@@ -47,12 +47,9 @@ namespace FLY_NAMESPACE
 	Function::Function(std::string_view aName)
 		: mName(aName)
 	{
-		mCallerNodeTypeID = RegisterSystemNodeType(CallerNode, "Function/Call Function");
-		mInputNodeTypeID = RegisterSystemNodeType(InputNode, "Function/Input Function");
-		mOutputNodeTypeID = RegisterSystemNodeType(OutputNode, "Function/Output Function");
-
-		mInputNodeID = Internal::CreateNode(&mNodeGraph, mInputNodeTypeID);
-		mOutputNodeID = Internal::CreateNode(&mNodeGraph, mOutputNodeTypeID);
+		mCallerNodeTypeID = RegisterSystemNodeType(CallerNode, NodeCreationData{ .mName = "Function/Call Function" });
+		mInputNodeTypeID = RegisterSystemNodeType(InputNode, NodeCreationData{ .mName = "Function/Input Function" });
+		mOutputNodeTypeID = RegisterSystemNodeType(OutputNode, NodeCreationData{ .mName = "Function/Output Function" });
 	}
 
 	Function::~Function() = default;

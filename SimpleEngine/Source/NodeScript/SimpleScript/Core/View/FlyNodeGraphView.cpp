@@ -192,22 +192,6 @@ namespace FLY_NAMESPACE
 		return mNodeGraphVariant;
 	}
 
-	std::variant<NodeGraph*, EventGraph*> NodeGraphView::GetAs()
-	{
-		return std::visit([&](auto& aArg) -> std::variant<NodeGraph*, EventGraph*>
-			{
-				if constexpr (std::same_as<EventGraph*, std::decay_t<decltype(aArg)>>)
-				{
-					return aArg;
-				}
-				else
-				{
-					return &GetNodeGraph();
-				}
-			}, mNodeGraphVariant
-		);
-	}
-
 	bool operator==(const NodeGraphView& a, const NodeGraphView& b)
 	{
 		if (a.GetType() != b.GetType())

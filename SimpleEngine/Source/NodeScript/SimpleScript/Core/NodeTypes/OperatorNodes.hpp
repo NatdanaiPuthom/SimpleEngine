@@ -142,7 +142,7 @@ namespace FLY_NAMESPACE
 		return static_cast<CastTo>(aValue);
 	}
 
-	template<CleanType T, eNodeOperatorTrait OperatorTrait>
+	template<Decayed T, eNodeOperatorTrait OperatorTrait>
 	constexpr inline bool HasOperator()
 	{
 		switch (OperatorTrait)
@@ -200,7 +200,7 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
-	template<CleanType T, eNodeOperatorTrait OperatorTrait>
+	template<Decayed T, eNodeOperatorTrait OperatorTrait>
 	constexpr inline auto GetFunctionByOperator()
 	{
 		if constexpr (OperatorTrait == eNodeOperatorTrait::Equal)
@@ -276,19 +276,19 @@ namespace FLY_NAMESPACE
 	}
 
 
-	struct NodeTypeDesc;
+	/*struct NodeTypeDesc;
 
 	template<eNodeTrait, typename OutputType, typename... InputTypes>
-	constexpr void RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...>, const std::string&, NodeTypeDesc);
+	constexpr void RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...>, NodeCreationData&& = NodeCreationData());*/
 
 
-	template<CleanType T, eNodeOperatorTrait OperatorTrait, eNodeTrait ExtraTraits = eNodeTrait::None>
+	template<Decayed T, eNodeOperatorTrait OperatorTrait, eNodeTrait ExtraTraits = eNodeTrait::None>
 	constexpr inline void RegisterOperatorNode(std::string aDefaultNodeName)
 	{
 
-		const DataTypeID dataTypeID = typeid(T).hash_code();
+		const DataTypeID dataTypeID = GetDataTypeID<T>();
 
-		if constexpr (!IsSameType<T, Wildcard>)
+		if constexpr (!std::same_as<T, Wildcard>)
 		{
 			const std::string& customTypeName = Global::GetDataTypeManager().GetName(dataTypeID);
 			if (!customTypeName.empty())
@@ -306,12 +306,12 @@ namespace FLY_NAMESPACE
 
 		auto operatorFunc = GetFunctionByOperator<T, OperatorTrait>();
 
-		const NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits>(operatorFunc, aDefaultNodeName, NodeCreationData{ .mOperatorTrait = OperatorTrait });
+		const NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits>(operatorFunc, NodeCreationData{ .mOperatorTrait = OperatorTrait, .mName = aDefaultNodeName });
 
 		Global::GetNodeTypeManager().SetOperatorNodeTypeID(dataTypeID, OperatorTrait, nodeTypeID);
 	}
 
-	template<CleanType T, eNodeOperatorTrait OperatorTrait, eNodeOperatorTrait RegisteredTraits, eNodeTrait ExtraTraits = eNodeTrait::None>
+	template<Decayed T, eNodeOperatorTrait OperatorTrait, eNodeOperatorTrait RegisteredTraits, eNodeTrait ExtraTraits = eNodeTrait::None>
 	constexpr inline void TryRegisterOperatorNode(const std::string& aDefaultNodeName)
 	{
 		if constexpr (HasFlag(OperatorTrait, RegisteredTraits))
@@ -324,7 +324,7 @@ namespace FLY_NAMESPACE
 
 	}
 
-	template<CleanType T, eNodeOperatorTrait RegisteredTraits>
+	template<Decayed T, eNodeOperatorTrait RegisteredTraits>
 	inline void RegisterOperatorNodeTypes()
 	{
 		TryRegisterOperatorNode<T, eNodeOperatorTrait::Equal, RegisteredTraits>("Operators/Compare/Equal To");

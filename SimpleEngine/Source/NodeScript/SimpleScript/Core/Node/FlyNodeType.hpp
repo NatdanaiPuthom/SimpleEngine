@@ -6,28 +6,28 @@
 
 namespace FLY_NAMESPACE
 {
-	struct NodeRecipe
+	struct NodeRecipe final
 	{
 		const CreateNodeSignature mCreateFunction = nullptr;
 		const ExecuteNodeSignature mExecuteFunction = nullptr;
 		const eNodeTrait mTraits = eNodeTrait::None;
 		const EventID mEventID = InvalidID<EventID>();
-		const eNodeOperatorTrait mOperatorTrait = eNodeOperatorTrait::None;
 		const DataTypeID mOwnerDataTypeID = InvalidID<DataTypeID>();
 		std::vector<PinTypeID> mInputPinTypeIDs;
 		std::vector<PinTypeID> mOutputPinTypeIDs;
 		const MemoryPoolID mFunctionMemoryID = InvalidID<MemoryPoolID>();
 		const DataTypeID mNodeStateDataTypeID = InvalidID<DataTypeID>();
+		std::string mName;
+		const eNodeOperatorTrait mOperatorTrait = eNodeOperatorTrait::None;
 	};
 
-	struct NodeType
+	struct NodeType final
 	{
 		NodeRecipe mNodeRecipe;
-		std::string mName;
 		std::vector<NodeRef> mNodeRefs;
 	};
 
-	struct NodeTypeDesc
+	struct NodeTypeDesc final
 	{
 		std::vector<std::string> mInputPinNames;
 		std::vector<std::string> mOutputPinNames;

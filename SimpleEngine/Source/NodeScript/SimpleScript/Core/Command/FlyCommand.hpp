@@ -13,9 +13,9 @@ namespace FLY_NAMESPACE
 
 	class Command final
 	{
+		using CommandFunction = std::function<void(eCommandType)>;
 	public:
 
-		using CommandFunction = std::function<void(eCommandType)>;
 
 		template<typename CallableCommand>
 		Command(CallableCommand&& aCallableCommand, const std::string& aName)
@@ -23,10 +23,6 @@ namespace FLY_NAMESPACE
 			, mCommandFunction(aCallableCommand)
 		{
 		}
-
-		Command(const Command& aOther);
-
-		Command(Command&& aOther) noexcept;
 
 		void operator()(eCommandType aCommandType) const;
 

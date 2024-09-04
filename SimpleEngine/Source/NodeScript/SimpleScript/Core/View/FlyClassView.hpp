@@ -4,6 +4,7 @@
 #include "FlyFunctionView.hpp"
 #include "FlyDataTypeView.hpp"
 #include "FlyNodeGraphView.hpp"
+#include "FlyClassInstanceView.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -27,6 +28,9 @@ namespace FLY_NAMESPACE
 		std::vector<FunctionView> GetFunctions() const;
 
 		Class& GetClass() const;
+
+		VariableView CreateVariable(DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
+		ClassInstanceView CreateClassInstance();
 
 		bool operator==(const ClassView& aOther) const;
 		bool operator!=(const ClassView& aOther) const;

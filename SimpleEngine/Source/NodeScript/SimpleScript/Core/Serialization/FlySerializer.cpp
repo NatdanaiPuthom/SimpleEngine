@@ -212,7 +212,8 @@ namespace FLY_NAMESPACE
 
 		const nlohmann::json jsonDoc = nlohmann::json::parse(file);
 
-		NodeGraph& eventGraph = aClass.mEventGraph.mNodeGraph;
+		EventGraph& eventGraph = aClass.mEventGraph;
+		NodeGraph& eventNodeGraph = eventGraph.mNodeGraph;
 
 		const nlohmann::json& dataJson = jsonDoc["Data"];
 
@@ -244,13 +245,13 @@ namespace FLY_NAMESPACE
 				continue;
 			}
 			const size_t pinIndex = pinData["PinIndex"];
-			const PinID pinID = ScriptLinker::GetPinID(eventGraph, mNodeID, pinIndex, eFlowType::Input);
+			const PinID pinID = ScriptLinker::GetPinID(eventNodeGraph, mNodeID, pinIndex, eFlowType::Input);
 
 			if (pinID == InvalidID<PinID>())
 			{
 				continue;
 			}
-			Pin& pin = eventGraph.mPins.at(pinID);
+			Pin& pin = eventNodeGraph.mPins.at(pinID);
 			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 
 			const nlohmann::json& connectionJson = pinData["Connections"];
@@ -265,11 +266,11 @@ namespace FLY_NAMESPACE
 
 				const size_t connectedPinIndex = connectionJson["PinIndex"];
 
-				const PinID connectionID = ScriptLinker::GetPinID(eventGraph, connectionNodeID, connectedPinIndex, eFlowType::Output);
+				const PinID connectionID = ScriptLinker::GetPinID(eventNodeGraph, connectionNodeID, connectedPinIndex, eFlowType::Output);
 
 				if (connectionID != InvalidID<PinID>())
 				{
-					Internal::TryCreateLink(eventGraph, pinID, connectionID, nullptr);
+					Internal::TryCreateLink(eventNodeGraph, pinID, connectionID, nullptr);
 				}
 				continue;
 			}

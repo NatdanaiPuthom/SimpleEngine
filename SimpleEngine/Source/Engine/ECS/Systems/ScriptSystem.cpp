@@ -7,6 +7,7 @@
 
 namespace ECS
 {
+
 	ScriptSystem::ScriptSystem()
 	{
 	}
@@ -21,7 +22,7 @@ namespace ECS
 
 			ScriptComponent* const scriptComponent = entity.GetComponent<ScriptComponent>();
 
-			scriptComponent->classInstanceView.Init();
+			scriptComponent->classInstanceView.InitRuntime();
 		}
 	}
 
@@ -42,8 +43,6 @@ namespace ECS
 
 			scriptComponent->classInstanceView.ExecuteEvent(Fly::Tick, &entity, executionContext);
 		}
-
-		//Fly::RegisterFunctionNode r = Fly::RegisterFunctionNode::Register(&Entity::GetComponent<TransformComponent>, "");
 	}
 
 	std::unique_ptr<System> ScriptSystem::Clone() const
@@ -104,15 +103,6 @@ namespace ECS
 	FLY_CLASS(Entity, Fly::eNodeOperatorTrait::None, Fly::Colors::Pink);
 	FLY_CLASS(TransformComponent, Fly::eNodeOperatorTrait::None, Fly::DefaultColor, Fly::NonTargetable);
 
-	FLY_MEMBER(TransformComponent::transform);
-
-	FLY_FUNCTION(Entity::GetName, "Entity");
-	FLY_FUNCTION(Entity::SetName, "Entity");
-	//FLY_FUNCTION(Entity::GetComponent<TransformComponent>, "Entity");
-
-	FLY_FUNCTION(Transform::GetPosition, "Transform");
-	FLY_FUNCTION(Transform::SetPosition, "Transform");
-
 	TransformComponent* GetTransformComponent(Entity* aEntity)
 	{
 		return aEntity->GetComponent<TransformComponent>();
@@ -123,15 +113,51 @@ namespace ECS
 		return { aVector.x, aVector.y, aVector.z };
 	}
 
-	bool ImGuiButton(const std::string& aLabel, Math::Vector2f aSize)
+	Vector3f MakeVector3f(const float aX, const float aY, const float aZ)
 	{
-		const std::string label = aLabel.empty() ? "Label" : aLabel;
-		return ImGui::Button(label.c_str(), ImVec2{ aSize.x, aSize.y });
+		return Vector3f(aX, aY, aZ);
 	}
 
-	FLY_FUNCTION(ImGuiButton, "ImGui", Fly::InputNames{ "Label", "Size"}, Fly::OutputNames{ "Was Clicked" }, Fly::DefaultValues{ std::string("Label") });
+	Fly::Flow ImGuiButton(const std::string& aLabel, Math::Vector2f aSize)
+	{
+		const std::string label = aLabel.empty() ? "Label" : aLabel;
+		const bool wasClicked = ImGui::Button(label.c_str(), ImVec2{ aSize.x, aSize.y });
+		return Fly::Flow(wasClicked);
+	}
 
-	FLY_FUNCTION(BreakVector3f, "Vector3f", Fly::OutputNames{ "X", "Y", "Z" }, Fly::Pure{});
-	FLY_FUNCTION(GetTransformComponent, "Entity", Fly::Pure{});
+	struct ImGuiCheckboxState final
+	{
+		bool v = false;
+	};
+
+	std::tuple<Fly::Flow, Fly::Flow, Fly::Flow> ImGuiCheckbox(Fly::NodeState<ImGuiCheckboxState> aState, const std::string& aLabel)
+	{
+		const std::string label = aLabel.empty() ? "Label" : aLabel;
+		bool wasClicked = ImGui::Checkbox(label.c_str(), &aState.mValue.v);
+
+		return { Fly::Flow(wasClicked), Fly::Flow(aState.mValue.v), Fly::Flow(!aState.mValue.v)};
+	}
+
+	void SetEntityPosition(Entity* aEntity, const Vector3f& aPosition)
+	{
+		if (!aEntity)
+		{
+			return;
+		}
+
+		TransformComponent* transformComponent = aEntity->GetComponent<TransformComponent>();
+
+		if (!transformComponent)
+		{
+			return;
+		}
+		transformComponent->transform.SetPosition(aPosition);
+	}
+
+	FLY_FUNCTION(ImGuiButton, Fly::Directory{ "ImGui" }, Fly::InputNames{ "Label", "Size" }, Fly::OutputNames{ "On Click" }, Fly::DefaultValues{ std::string("Label") });
+	FLY_FUNCTION(ImGuiCheckbox, Fly::Directory{ "ImGui" }, Fly::InputNames{ "Label" }, Fly::OutputNames{ "On Click", "On Checked", "On Unchecked" }, Fly::DefaultValues{std::string("Label")});
+	FLY_FUNCTION(SetEntityPosition, Fly::MemberOf<Entity>{}, Fly::InputNames{ "Entity", "Position" });
+	FLY_FUNCTION(BreakVector3f, Fly::MemberOf<Vector3f>{}, Fly::OutputNames{ "X", "Y", "Z" }, Fly::Pure{});
+	FLY_FUNCTION(MakeVector3f, Fly::MemberOf<Vector3f>{}, Fly::InputNames{ "X", "Y", "Z" }, Fly::Pure{});
 
 }

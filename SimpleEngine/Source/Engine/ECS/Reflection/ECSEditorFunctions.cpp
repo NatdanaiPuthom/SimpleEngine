@@ -243,7 +243,7 @@ namespace ECS
 			aCamera.SetMoveSpeed(moveSpeed);
 			hasEdited = true;
 		}
-		
+
 		if (ImGui::DragFloat("HorizontalFoV", &horizontalFoV))
 		{
 			aCamera.SetHorizontalFoV(horizontalFoV, resolution);
@@ -261,7 +261,7 @@ namespace ECS
 			aCamera.SetFarPlane(farPlane, resolution);
 			hasEdited = true;
 		}
-		
+
 		return hasEdited;
 	}
 
@@ -522,47 +522,68 @@ namespace ECS
 		return true;
 	}
 
+	struct Combo
+	{
+		template<typename Func>
+		Combo(const char* aLabel, const char* aPreview, Func&& aFunc)
+		{
+			isOpen = ImGui::BeginCombo(aLabel, aPreview);
+
+			if (isOpen) aFunc();
+		}
+
+		~Combo()
+		{
+			if (isOpen)
+			{
+				ImGui::EndCombo();
+
+			}
+		}
+
+		bool isOpen = false;
+	};
+
 	bool ViewAndEditValue(Fly::ClassInstanceView& aClassInstanceView, [[maybe_unused]] const std::string& aVariableName)
 	{
 
-		const auto& classes = Fly::GetClasses();
-
 		bool wasChanged = false;
 
-		const std::string& preview = aClassInstanceView ? aClassInstanceView.GetName() : "";
+		Fly::DataTypeView entityDataTypeView(Fly::GetDataTypeID<Entity*>());
+		const auto entityClasses = Fly::GetClassesByDataType(entityDataTypeView);
 
-		if (ImGui::BeginCombo("Class", preview.c_str()))
-		{
-			for (auto& [dataTypeID, classesByTarget] : classes)
+		const std::string& preview = aClassInstanceView ? aClassInstanceView.GetName() : "None";
+		Combo classCombo("Entity Class", preview.c_str(), [&]() -> void
 			{
-				const Fly::DataTypeView dataType(dataTypeID);
-				if (!dataType)
+
+				for (auto& entityClass : entityClasses)
 				{
-					continue;
-				}
-				ImGui::Text("%s Classes:", dataType.GetName().c_str());
-				for (auto& flyClass : classesByTarget)
-				{
-					const bool isSelected = aClassInstanceView ? aClassInstanceView.GetClassInstance().mClass == &flyClass.GetClass() : false;
-					if (ImGui::Selectable(flyClass.GetName().c_str(), isSelected))
+					const bool isSelected = aClassInstanceView ? aClassInstanceView.GetClassInstance().mClass == &entityClass.GetClass() : false;
+					if (ImGui::Selectable(entityClass.GetName().c_str(), isSelected))
 					{
+						if (isSelected)
+						{
+							continue;
+						}
+
 						if (aClassInstanceView)
 						{
 							Fly::DestroyClassInstance(aClassInstanceView);
 						}
 
-						aClassInstanceView = Fly::CreateClassInstance(flyClass);
+						aClassInstanceView = Fly::CreateClassInstance(entityClass);
 
 						wasChanged = true;
 					}
 				}
+			});
 
-				ImGui::Separator();
-
-			}
-
-			ImGui::EndCombo();
+		if (!aClassInstanceView)
+		{
+			return wasChanged;
 		}
+
+		Fly::EditClassInstanceVariableDefaultValue(aClassInstanceView);
 
 		return wasChanged;
 	}

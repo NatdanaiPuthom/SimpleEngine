@@ -8,29 +8,6 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	CompositeCommand::~CompositeCommand()
-	{
-
-	}
-
-	CompositeCommand::CompositeCommand(const CompositeCommand& aOther)
-		: myCommands(aOther.myCommands)
-		, myName(aOther.myName)
-	{
-		if (aOther.myCurrentChild)
-		{
-			myCurrentChild = std::make_unique<CompositeCommand>(*aOther.myCurrentChild);
-		}
-	}
-
-	CompositeCommand::CompositeCommand(CompositeCommand&& aOther) noexcept
-		: myCurrentChild(std::move(aOther.myCurrentChild))
-		, myCommands(std::move(aOther.myCommands))
-		, myName(std::move(aOther.myName))
-	{
-
-	}
-
 	void CompositeCommand::AddCommand(Command&& aCommand)
 	{
 		if (myCurrentChild)
@@ -64,7 +41,7 @@ namespace FLY_NAMESPACE
 		}
 		else
 		{
-			myCurrentChild = std::make_unique<CompositeCommand>(aName);
+			myCurrentChild = MakeHeapObject<CompositeCommand>(aName);
 		}
 
 	}
@@ -73,16 +50,16 @@ namespace FLY_NAMESPACE
 	{
 		if (myCurrentChild)
 		{
-			eEndCode endCode = myCurrentChild->End();
+			const eEndCode endCode = myCurrentChild->End();
 			if (endCode == eEndCode::Ended)
 			{
 				const std::string compositeName = myCurrentChild->GetName();
 				myCommands.emplace_back(Command(std::move(*myCurrentChild), compositeName));
-				myCurrentChild.reset();
+				myCurrentChild.Reset();
 			}
 			else if (endCode == eEndCode::Ended_Empty) // If the child's commands are empty we don't want to add the child to our commands
 			{
-				myCurrentChild.reset();
+				myCurrentChild.Reset();
 			}
 			return eEndCode::InProgress;
 		}

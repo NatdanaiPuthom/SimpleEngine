@@ -11,7 +11,7 @@ namespace FLY_NAMESPACE
 
 	const std::string& NodeTypeView::GetName() const
 	{
-		return GetNodeType().mName;
+		return GetNodeType().mNodeRecipe.mName;
 	}
 
 	std::string NodeTypeView::GetShortName() const

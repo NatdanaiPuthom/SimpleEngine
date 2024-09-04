@@ -225,7 +225,7 @@ namespace FLY_NAMESPACE
 
 	constexpr Color DefaultColor = Color(1.f, 1.f, 0.3f);
 
-	class DataTypeManager
+	class DataTypeManager final
 	{
 		friend class DataTypeRegistry;
 	public:
@@ -281,21 +281,19 @@ namespace FLY_NAMESPACE
 		template<typename T>
 		void RegisterTemplateSpecification(const std::string& aName, const Color& aColor = DefaultColor);
 
-		template<CleanType T>
+		template<Decayed T>
 		void RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface, bool aIsTargetable);
 
-		template<CleanType ClassType, CleanType MemberType>
+		template<Decayed ClassType, Decayed MemberType>
 		void RegisterMemberVariable(MemberType ClassType::* aMemberVariable, const std::string& aName);
 
-		template<CleanType T>
+		template<Decayed T>
 		bool HasRegisteredType() const;
 
 	private:
 
 		std::unordered_map<DataTypeID, DataType> mDataTypes;
 		std::unordered_map<DataTypeID, TemplateDataType> mTemplateDataTypes;
-
-		
 
 		const std::string mNullNameStr;
 	};
@@ -336,7 +334,7 @@ namespace FLY_NAMESPACE
 		RegisterInternal<T>(aName, aColor, dataTypeInterface);
 	}
 
-	template<CleanType T>
+	template<Decayed T>
 	inline void DataTypeManager::RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface, const bool aIsTargetable)
 	{
 		eDataTypeTrait typeTraits = eDataTypeTrait::None;
@@ -379,7 +377,7 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	template<CleanType ClassType, CleanType MemberType>
+	template<Decayed ClassType, Decayed MemberType>
 	inline void DataTypeManager::RegisterMemberVariable(MemberType ClassType::* aMemberVariable, const std::string& aName)
 	{
 		const size_t byteOffset = GetByteOffset(aMemberVariable);
@@ -401,7 +399,7 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	template<CleanType T>
+	template<Decayed T>
 	inline bool DataTypeManager::HasRegisteredType() const
 	{
 		const DataTypeID dataTypeID = GetDataTypeID<T>();

@@ -7,6 +7,7 @@ namespace FLY_NAMESPACE
 {
 
 	class NodeGraph;
+	class CommandTracker;
 
 	class LinkView final
 	{
@@ -19,6 +20,8 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] PinView GetInputPin() const;
 		[[nodiscard]] PinView GetOutputPin() const;
 		[[nodiscard]] LinkID GetID() const;
+
+		void Destroy(CommandTracker* aCommandTracker);
 
 		explicit operator bool() const;
 

@@ -112,14 +112,14 @@ namespace Editor
 
 		if (ImGui::Button("Create Caller"))
 		{
-			CreateNode(myParentWindow.GetNodeContext().nodeGraphView, aCustomEventView.GetCallerNodeType());
+			CreateNode(myParentWindow.GetNodeContext().myNodeGraphView, aCustomEventView.GetCallerNodeType());
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Create Executor"))
 		{
-			CreateNode(myParentWindow.GetNodeContext().nodeGraphView, aCustomEventView.GetExecutorNodeType());
+			CreateNode(myParentWindow.GetNodeContext().myNodeGraphView, aCustomEventView.GetExecutorNodeType());
 		}
 	}
 }

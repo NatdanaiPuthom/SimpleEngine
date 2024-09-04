@@ -2,32 +2,13 @@
 #include "../FlyDefines.hpp"
 #include <iostream>
 
-
-template<typename T>
-concept Editable3 = requires(T & aValue)
-{
-	{ Edit(aValue) } -> std::same_as<bool>;
-};
-
 namespace FLY_NAMESPACE
 {
 	template <typename... Types>
 	concept EmptyParameterPack = sizeof...(Types) == 0;
 
 	template<typename T>
-	concept CleanType = std::is_same_v<std::remove_cv_t<std::remove_reference_t<T>>, T>;
-
-	template<typename T>
-	struct CleanUpType
-	{
-		using type = std::remove_const_t<std::remove_reference_t<T>>;
-	};
-
-	template<typename T>
-	using CleanType_V = CleanUpType<T>::type;
-
-	template<typename T1, typename T2>
-	concept IsSameType = std::is_same_v<T1, T2>;
+	concept Decayed = std::is_same_v<std::remove_cv_t<std::remove_reference_t<T>>, T>;
 
 	template<typename T>
 	concept IsPointer = std::is_pointer_v<T>;
@@ -41,45 +22,35 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	concept IsNotVoid = !IsVoid<T>;
 
-	template<typename T>
-	concept CleanType_NonPointer = requires
-	{
-		CleanType<T> && !IsPointer<T>;
-	};
-
 	template<int Value, int Min, int Max>
 	concept IsInRange = Value >= Min && Value <= Max;
 
-	template <typename T>
+	template<typename T>
 	struct Is_Of_Template_Type : std::false_type {};
 
-	template <template <typename...> typename Base, typename... Ts>
+	template<template <typename...> typename Base, typename... Ts>
 	struct Is_Of_Template_Type<Base<Ts...>> : std::true_type {};
 
-	template <template <typename...> typename Base, typename T>
+	template<template <typename...> typename Base, typename T>
 	concept IsSameTemplateType = Is_Of_Template_Type<T>::value;
 
-	template <typename T, size_t Size>
+	template<typename T, size_t Size>
 	concept SizeEqual = (sizeof(T) == Size);
 
-	template <typename T, size_t Size>
+	template<typename T, size_t Size>
 	concept SizeNotEqual = (sizeof(T) != Size);
 
-	template <typename T, size_t Size>
+	template<typename T, size_t Size>
 	concept SizeGreaterEqual = (sizeof(T) >= Size);
 
-	template <typename T, size_t Size>
+	template<typename T, size_t Size>
 	concept SizeLessEqual = (sizeof(T) <= Size);
 
-	template <typename T, size_t Size>
+	template<typename T, size_t Size>
 	concept SizeGreater = (sizeof(T) > Size);
 
-	template <typename T, size_t Size>
+	template<typename T, size_t Size>
 	concept SizeLess = (sizeof(T) < Size);
-
-
-	template<typename T>
-	concept IsSmallObject = SizeLessEqual<T, 64>;
 
 	// Operator concepts
 	template<typename T>
@@ -196,10 +167,10 @@ namespace FLY_NAMESPACE
 		{ a-- } -> std::same_as<T>;
 	};
 
-	template<typename T>
-	concept HasOperator_Functor = requires(T a)
+	template<typename T, typename Return, typename... Args>
+	concept HasOperator_Functor = requires(T a, Args... aArgs)
 	{
-		{ a() } -> std::same_as<void>;
+		{ a(aArgs...) } -> std::same_as<Return>;
 	};
 
 	template<typename CastFrom, typename CastTo>
@@ -281,6 +252,48 @@ namespace FLY_NAMESPACE
 		return GetIndexOfTypeFromArgsImpl<Find, 0, Args...>();
 	}
 
+	template<typename T, typename First, typename... Rest>
+	constexpr T&& Extract(First&& aFirst, [[maybe_unused]] Rest&&... aRest)
+	{
+		if constexpr (std::same_as<T, First>)
+		{
+			return std::forward<First>(aFirst);
+		}
+		else
+		{
+			return Extract<T>(std::forward<Rest>(aRest)...);
+		}
+	}
+
+	template<typename, template <typename...> typename>
+	struct is_instance_of : std::false_type {};
+
+	template<typename... Args, template <typename...> typename Template>
+	struct is_instance_of<Template<Args...>, Template> : std::true_type {};
+
+	// Convenience variable template
+	template<typename T, template <typename...> typename Template>
+	inline constexpr bool is_instance_of_v = is_instance_of<T, Template>::value;
+
+	template<typename T, template <typename...> typename Template>
+	concept SameAsTemplate = is_instance_of_v<T, Template>;
+
+	template<template<typename> typename TemplateType, typename... Types>
+	concept ContainsTemplateType = (SameAsTemplate<Types, TemplateType> || ...);
+
+	template<template<typename> typename T, typename First, typename... Rest>
+	constexpr decltype(auto) ExtractTemplate(First&& aFirst, [[maybe_unused]] Rest&&... aRest)
+	{
+		if constexpr (SameAsTemplate<First, T>)
+		{
+			return std::forward<First>(aFirst);
+		}
+		else
+		{
+			return Extract<T>(std::forward<Rest>(aRest)...);
+		}
+	}
+
 	template<typename T>
 	concept Editable = requires(T & aValue)
 	{
@@ -310,7 +323,7 @@ namespace FLY_NAMESPACE
 
 	template<typename T, typename SerializationObject>
 	concept Scriptable =
-		CleanType<T> &&
+		Decayed<T> &&
 		Editable<T> &&
 		Savable<T, SerializationObject>&&
 		Loadable<T, SerializationObject>&&
@@ -320,7 +333,7 @@ namespace FLY_NAMESPACE
 	template<typename Type, typename CurrentType, typename... Types>
 	constexpr bool PackContains()
 	{
-		if constexpr (IsSameType<Type, CurrentType>)
+		if constexpr (std::same_as<Type, CurrentType>)
 		{
 			return true;
 		}

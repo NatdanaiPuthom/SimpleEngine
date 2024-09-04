@@ -16,16 +16,15 @@ namespace FLY_NAMESPACE
 
 	ClassInstance& Class::CreateClassInstance()
 	{
-		std::unique_ptr<ClassInstance>& classInstance = mClassInstances.emplace_back(std::make_unique<ClassInstance>(*this));
-		return *classInstance;
+		return *mClassInstances.emplace_back(MakeHeapObject<ClassInstance>(*this));
 	}
 
 	void Class::DestroyClassInstance(ClassInstance& aClassInstance)
 	{
 		std::erase_if(mClassInstances,
-			[&aClassInstance](const std::unique_ptr<ClassInstance>& aClassInstanceIter) -> bool
+			[&aClassInstance](const HeapObject<ClassInstance>& aClassInstanceIter) -> bool
 			{
-				return &aClassInstance == aClassInstanceIter.get();
+				return &aClassInstance == aClassInstanceIter.Get();
 			}
 		);
 	}

@@ -15,19 +15,18 @@ namespace Editor
 
 	void VariableWindow::Update()
 	{
-		Fly::ClassView currentClass = myParentWindow.GetNodeContext().classView;
+		Fly::ClassView currentClass = myParentWindow.GetNodeContext().myClassView;
 
 		if (ImGui::Begin("VariableWindow"))
 		{
 			if (ImGui::Button("Create Variable"))
 			{
-
-				Fly::CreateVariable(myParentWindow.GetNodeContext().classView, Fly::DataTypeView(Fly::GetDataTypeID<bool>()));
+				currentClass.CreateVariable(Fly::DataTypeView(Fly::GetDataTypeID<bool>()), nullptr);
 			}
 
 			ImGui::Separator();
 
-			std::vector<Fly::VariableView> variables = Fly::GetVariables(currentClass);
+			const std::vector<Fly::VariableView> variables = currentClass.GetVariables();
 			for (const Fly::VariableView& variable : variables)
 			{
 				const std::string treeNodeStrID = std::string("##ScriptVariable" + std::to_string(variable.GetID()));
@@ -56,20 +55,19 @@ namespace Editor
 				ImGui::Separator();
 				ImGui::PopStyleColor();
 			}
-
 		}
 
 		ImGui::End();
 	}
 
-	void VariableWindow::ModifyVariablePopup(const Fly::VariableView& aVariableView)
+	void VariableWindow::ModifyVariablePopup(Fly::VariableView aVariableView)
 	{
 		char buffer[35]{};
 		strcpy_s(buffer, aVariableView.GetName().c_str());
 
 		if (ImGui::InputText("##VariableName", buffer, IM_ARRAYSIZE(buffer)))
 		{
-			Fly::SetVariableName(aVariableView, buffer, myParentWindow.GetNodeContext().classView);
+			aVariableView.SetName(buffer, nullptr);
 		}
 
 		Fly::DataTypeView currentDataTypeView = aVariableView.GetDataType();
@@ -77,32 +75,31 @@ namespace Editor
 		ImGui::Separator();
 		if (DataTypeComboEditableFilter("##ChangeDataType", currentDataTypeView))
 		{
-			SetVariableDataType(aVariableView, currentDataTypeView, myParentWindow.GetNodeContext().classView, nullptr);
+			aVariableView.SetDataType(currentDataTypeView, nullptr);
 		}
 
 		ImGui::Text("Default value:");
 		ImGui::SameLine();
-		Fly::EditVariableDefaultValue(aVariableView, myParentWindow.GetNodeContext().classView, nullptr);
+	
+		aVariableView.EditDefaultValue(nullptr);
 
 		ImGui::Separator();
 
 		if (ImGui::Button("Create Getter"))
 		{
-			myParentWindow.GetNodeContext().classView.GetEventGraphView().CreateGetterNode(aVariableView, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
-			ImGui::CloseCurrentPopup();
-
+			myParentWindow.GetNodeContext().myClassView.GetEventGraphView().CreateGetterNode(aVariableView, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Create Setter"))
 		{
-			myParentWindow.GetNodeContext().classView.GetEventGraphView().CreateSetterNode(aVariableView, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
+			myParentWindow.GetNodeContext().myClassView.GetEventGraphView().CreateSetterNode(aVariableView, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
 		}
 
 		if (ImGui::Button("Delete Variable"))
 		{
-			Fly::DestroyVariable(aVariableView, myParentWindow.GetNodeContext().classView, nullptr);
+			aVariableView.Destroy(nullptr);
 		}
 	}
 }

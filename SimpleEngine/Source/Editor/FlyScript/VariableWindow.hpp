@@ -1,10 +1,7 @@
 #pragma once
 #include "NodeScript/SimpleScript/Core/FlyDefines.hpp"
+#include "NodeScript/SimpleScript/Core/View/FlyVariableView.hpp"
 
-namespace Fly
-{
-	class VariableView;
-}
 namespace Editor
 {
 	class NodeScriptingWindow;
@@ -18,7 +15,7 @@ namespace Editor
 
 	private:
 
-		void ModifyVariablePopup(const Fly::VariableView& aVariable);
+		void ModifyVariablePopup(Fly::VariableView aVariableView);
 
 	private:
 

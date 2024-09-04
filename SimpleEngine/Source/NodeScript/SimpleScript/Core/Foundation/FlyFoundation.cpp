@@ -19,8 +19,7 @@ namespace FLY_NAMESPACE
 
 	Foundation::Foundation()
 		: mMemoryPool(10000)
-		, mTypeManager(std::make_unique<TypeManager>())
-		, mNodeExecutor(std::make_unique<NodeExecutor>())
+		, mNodeExecutor(MakeHeapObject<NodeExecutor>())
 	{
 	}
 
@@ -30,7 +29,7 @@ namespace FLY_NAMESPACE
 
 	void Foundation::Initialize()
 	{
-		mTypeManager->GetNodeTypeManager().Assert();
+		mTypeManager.GetNodeTypeManager().Assert();
 	}
 
 	void Foundation::ClearClasses()
@@ -40,28 +39,22 @@ namespace FLY_NAMESPACE
 
 	Class& Foundation::CreateClass(const DataTypeID aTargetID, const std::string_view aName)
 	{
-		std::unique_ptr<Class>& createdClass = mClasses.emplace_back(std::make_unique<Class>(aTargetID, std::string(aName)));
-		return *createdClass;
+		return *mClasses.emplace_back(MakeHeapObject<Class>(aTargetID, std::string(aName)));
 	}
 
 	void Foundation::DestroyClass(Class& aClass)
 	{
-		std::erase_if(mClasses, [&aClass](std::unique_ptr<Class>& aClassIter) -> bool { return &aClass == aClassIter.get(); });
+		std::erase_if(mClasses, [&aClass](HeapObject<Class>& aClassIter) -> bool { return &aClass == aClassIter.Get(); });
 	}
 
-	Class& Foundation::GetClassByID(const ClassID aID)
-	{
-		return *mClasses.at(aID);
-	}
-
-	const std::vector<std::unique_ptr<Class>>& Foundation::GetClasses() const
+	const std::vector<HeapObject<Class>>& Foundation::GetClasses() const
 	{
 		return mClasses;
 	}
 
 	TypeManager& Foundation::GetTypeManager()
 	{
-		return *mTypeManager;
+		return mTypeManager;
 	}
 
 	NodeExecutor& Foundation::GetNodeExecutor()
@@ -69,16 +62,10 @@ namespace FLY_NAMESPACE
 		return *mNodeExecutor;
 	}
 
-
 	const VariableRef& Foundation::GetVariableRefByNodeRef(const GlobalNodeRef& aNodeRef) const
 	{
 		return mNodeRefToVarRef.at(aNodeRef);
 	}
-
-	/*VarID Foundation::GetVariableIDByNodeRef(const GlobalNodeRefConst& aNodeRef) const
-	{
-		return GetVariableIDByNodeRef(*reinterpret_cast<const GlobalNodeRef*>(&aNodeRef));
-	}*/
 
 	std::vector<GlobalNodeRef> Foundation::GetNodeRefsByVariableRef(const VariableRef& aVarRef) const
 	{

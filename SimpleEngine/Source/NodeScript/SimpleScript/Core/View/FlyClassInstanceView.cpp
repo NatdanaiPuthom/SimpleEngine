@@ -12,9 +12,9 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	void ClassInstanceView::Init()
+	void ClassInstanceView::InitRuntime()
 	{
-		mClassInstance->Init();
+		mClassInstance->InitRuntime();
 	}
 
 	const std::string& ClassInstanceView::GetName() const

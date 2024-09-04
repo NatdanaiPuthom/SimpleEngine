@@ -174,7 +174,7 @@ namespace FLY_NAMESPACE
 
 	FLY_STRUCT(Wildcard, eNodeOperatorTrait::All, Colors::Gray, NonTargetable);
 	FLY_STRUCT(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f), NonTargetable);
-	FLY_STRUCT(None, eNodeOperatorTrait::None, Colors::Black);
+	FLY_CLASS(None, eNodeOperatorTrait::None, Colors::Black);
 
 	using String = std::string;
 

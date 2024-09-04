@@ -2,6 +2,7 @@
 #include "../FlyDefines.hpp"
 #include "FlyStruct.hpp"
 #include "../Graph/FlyEventGraph.hpp"
+#include "../Memory/FlyHeapObject.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -34,7 +35,7 @@ namespace FLY_NAMESPACE
 		Struct mStruct;
 
 		std::vector<FunctionID> mMemberFunctionIDs;
-		std::vector<std::unique_ptr<ClassInstance>> mClassInstances;
+		std::vector<HeapObject<ClassInstance>> mClassInstances;
 
 		DataTypeID mTargetID;
 		std::string mName;

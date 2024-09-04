@@ -1,5 +1,6 @@
 #pragma once
 #include "FlyCommand.hpp"
+#include "../Memory/FlyHeapObject.hpp"
 #include <vector>
 
 namespace FLY_NAMESPACE
@@ -18,12 +19,6 @@ namespace FLY_NAMESPACE
 
 		CompositeCommand(const std::string& aName = std::string());
 
-		~CompositeCommand();
-
-		CompositeCommand(const CompositeCommand& aOther);
-		CompositeCommand(CompositeCommand&& aOther) noexcept;
-
-
 		void AddCommand(Command&& aCommand);
 
 		void operator()(eCommandType aCommandType) const;
@@ -40,7 +35,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		std::unique_ptr<CompositeCommand> myCurrentChild;
+		HeapObject<CompositeCommand> myCurrentChild;
 		std::vector<Command> myCommands;
 		std::string myName;
 	};

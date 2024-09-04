@@ -26,6 +26,7 @@ namespace FLY_NAMESPACE
 		EventID mEventID = InvalidID<EventID>();
 		eNodeOperatorTrait mOperatorTrait = eNodeOperatorTrait::None;
 		DataTypeID mOwnerDataTypeID = InvalidID<DataTypeID>();
+		std::string mName;
 		NodeTypeDesc mDescription;
 	};
 
@@ -33,7 +34,7 @@ namespace FLY_NAMESPACE
 
 	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, NodeGraph& aDestinationNodeGraph, const NodeGraph& aSourceNodeGraph, const size_t aStartIndex);
 
-	template<CleanType T, eFlowType FlowType>
+	template<Decayed T, eFlowType FlowType>
 	SetPinDataInterface CreateSetPinDataInterface()
 	{
 		return [](const SetPinData& aSetPinData, [[maybe_unused]] const InternalExecutionContext& aContext) -> void
@@ -49,7 +50,7 @@ namespace FLY_NAMESPACE
 				T& memoryValue = *reinterpret_cast<T*>(pin.mDataPtr.Get());
 				memoryValue = value;
 
-				if constexpr (IsSameType<T, Flow>)
+				if constexpr (std::same_as<T, Flow>)
 				{
 					if (value)
 					{
@@ -71,7 +72,7 @@ namespace FLY_NAMESPACE
 	{
 		if constexpr (Index < Size)
 		{
-			using CT = CleanType_V<Type>;
+			using DecayedT = std::decay_t<Type>;
 
 
 			const std::vector<std::string>& pinNames = SelectByFlowType(FlowType, aCreationData.mDescription.mInputPinNames, aCreationData.mDescription.mOutputPinNames);
@@ -85,7 +86,7 @@ namespace FLY_NAMESPACE
 					defaultValueMemoryID = Global::Internal::GetMemoryPool().Allocate<Type>(std::any_cast<Type>(defaultValueAny));
 				}
 			}
-			aPinTypeIDArray[Index] = Global::GetPinTypeManager().Create<CT>(pinNames[Index], FlowType, CreateSetPinDataInterface<CT, FlowType>(), defaultValueMemoryID);
+			aPinTypeIDArray[Index] = Global::GetPinTypeManager().Create<DecayedT>(pinNames[Index], FlowType, CreateSetPinDataInterface<DecayedT, FlowType>(), defaultValueMemoryID);
 
 			if constexpr (Index + 1 < Size)
 			{
@@ -113,7 +114,7 @@ namespace FLY_NAMESPACE
 	{
 		static_assert(!(std::is_reference_v<InputType> && !std::is_const_v<std::remove_reference_t<InputType>>), "Non const references are not supported");
 
-		using CleanType = CleanType_V<InputType>;
+		using DecayedType = std::decay_t<InputType>;
 
 		const PinTypeID pinTypeID = Global::GetNodeTypeManager().GetNodeType(aNodeTypeID).mNodeRecipe.mInputPinTypeIDs[anIndex];
 
@@ -124,11 +125,11 @@ namespace FLY_NAMESPACE
 				if (pinType.mDefaultValueID != InvalidID<MemoryPoolID>())
 				{
 					const MemoryPool& globalMemoryPool = Global::Internal::GetMemoryPool();
-					return &memoryArena.Allocate<CleanType>(globalMemoryPool.At<InputType>(pinType.mDefaultValueID));
+					return &memoryArena.Allocate<DecayedType>(globalMemoryPool.At<InputType>(pinType.mDefaultValueID));
 				}
 				else
 				{
-					return &memoryArena.Allocate<CleanType>();
+					return &memoryArena.Allocate<DecayedType>();
 				}
 			}();
 
@@ -309,7 +310,7 @@ namespace FLY_NAMESPACE
 		{
 			NodeState<NodeStateDataType> nodeState
 			{
-				aContext.mNodeGraphInstance->mNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
+				aContext.mNodeGraphInstance->GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
 			};
 
 			NodeExecutionContext<NodeExecutionContextType> executionContext
@@ -330,7 +331,7 @@ namespace FLY_NAMESPACE
 		{
 			NodeState<NodeStateDataType> nodeState
 			{
-				aContext.mNodeGraphInstance->mNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
+				aContext.mNodeGraphInstance->GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
 			};
 			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(&aContext, nodeState), inputTuple));
 
@@ -339,7 +340,7 @@ namespace FLY_NAMESPACE
 		{
 			NodeState<NodeStateDataType> nodeState
 			{
-				aContext.mNodeGraphInstance->mNodeManagerInstance.GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
+				aContext.mNodeGraphInstance->GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
 			};
 			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(nodeState), inputTuple));
 		}
@@ -364,14 +365,16 @@ namespace FLY_NAMESPACE
 
 				const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().mNodes[aNodeExecutionData.mNodeRef.GetNodeID()];
 
-				// Set current node data before calling function
-				aContext.mNodeData = aNodeExecutionData;
+
 
 				// Evaluate input values
 				if constexpr (HasInputs)
 				{
 					EvaluateInputValues(node.mInputPins, aContext);
 				}
+
+				// Set current node data before calling function
+				aContext.mNodeData = aNodeExecutionData;
 
 				ExecutionQueue executionQueue;
 				aContext.mExecutionQueue = &executionQueue;
@@ -395,7 +398,7 @@ namespace FLY_NAMESPACE
 
 
 		constexpr bool TakesExecutionContext = HasFlag(Traits, eNodeTrait::TakesExecutionContext);
-		constexpr bool TakesNodeState = !IsSameType<Wildcard, NodeStateDataType>;
+		constexpr bool TakesNodeState = !std::same_as<Wildcard, NodeStateDataType>;
 		constexpr bool TakesInternalExecutionContext = HasFlag(Traits, eNodeTrait::TakesInternalExecutionContext);
 		constexpr bool HasFlow = ContainsType<Flow, OutputTypes...> || ContainsType<Flow, InputTypes...>;
 
@@ -411,8 +414,8 @@ namespace FLY_NAMESPACE
 		{
 			traits |= eNodeTrait::HasFlow;
 		}
-		aCreationData.mDescription.mInputPinNames.resize(sizeof...(InputTypes));
-		aCreationData.mDescription.mOutputPinNames.resize(sizeof...(OutputTypes));
+		aCreationData.mDescription.mInputPinNames.resize(sizeof...(InputTypes), TypeIdentifierStr);
+		aCreationData.mDescription.mOutputPinNames.resize(sizeof...(OutputTypes), TypeIdentifierStr);
 		aCreationData.mDescription.mDefaultValues.resize(sizeof...(InputTypes));
 
 		const std::vector<PinTypeID> inputPinTypeIDs = CreatePinTypes<eFlowType::Input, std::remove_cvref_t<InputTypes>...>(aCreationData);
@@ -428,12 +431,13 @@ namespace FLY_NAMESPACE
 			.mExecuteFunction = CreateExecuteNodeFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext, NodeExecutionContextType, NodeStateDataType, Callable>(aOutputList,  TypeList<std::remove_cvref_t<InputTypes>...>{}),
 			.mTraits = traits,
 			.mEventID = aCreationData.mEventID,
-			.mOperatorTrait = aCreationData.mOperatorTrait,
 			.mOwnerDataTypeID = aCreationData.mOwnerDataTypeID,
 			.mInputPinTypeIDs = inputPinTypeIDs,
 			.mOutputPinTypeIDs = outputPinTypeIDs,
 			.mFunctionMemoryID = functionMemoryID,
-			.mNodeStateDataTypeID = nodeStateDataTypeID
+			.mNodeStateDataTypeID = nodeStateDataTypeID,
+			.mName = aCreationData.mName,
+			.mOperatorTrait = aCreationData.mOperatorTrait,
 		};
 	}
 
@@ -443,7 +447,7 @@ namespace FLY_NAMESPACE
 	template<eNodeTrait Traits = eNodeTrait::None, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData)
 	{
-		constexpr bool IsOutputVoid = IsSameType<OutputType, void>;
+		constexpr bool IsOutputVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
 			if constexpr (IsOutputVoid)
@@ -500,7 +504,7 @@ namespace FLY_NAMESPACE
 	template<eNodeTrait Traits = eNodeTrait::None, typename ExecutionContextType, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeExecutionContext<ExecutionContextType>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
 	{
-		constexpr bool IsOutputTypeVoid = IsSameType<OutputType, void>;
+		constexpr bool IsOutputTypeVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
 			if constexpr (IsOutputTypeVoid)
@@ -558,7 +562,7 @@ namespace FLY_NAMESPACE
 	template<eNodeTrait Traits = eNodeTrait::None, typename NodeStateDataType, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeState<NodeStateDataType>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
 	{
-		constexpr bool IsOutputVoid = IsSameType<OutputType, void>;
+		constexpr bool IsOutputVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
 			if constexpr (IsOutputVoid)
@@ -616,7 +620,7 @@ namespace FLY_NAMESPACE
 	template<eNodeTrait Traits = eNodeTrait::None, typename ExecutionContextType, typename NodeStateDataType, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeExecutionContext<ExecutionContextType>, NodeState<NodeStateDataType>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
 	{
-		constexpr bool IsOutputVoid = IsSameType<OutputType, void>;
+		constexpr bool IsOutputVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
 			if constexpr (IsOutputVoid)
@@ -786,7 +790,7 @@ namespace FLY_NAMESPACE
 	template<eNodeTrait Traits = eNodeTrait::None, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, const InternalExecutionContext*, InputTypes...> aFunction, NodeCreationData&& aCreationData)
 	{
-		constexpr bool IsOutputVoid = IsSameType<OutputType, void>;
+		constexpr bool IsOutputVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
 			if constexpr (IsOutputVoid)
@@ -840,7 +844,7 @@ namespace FLY_NAMESPACE
 	template<eNodeTrait Traits = eNodeTrait::None, typename NodeStateDataType, typename OutputType, typename... InputTypes>
 	static constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, const InternalExecutionContext*, NodeState<NodeStateDataType>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
 	{
-		constexpr bool IsOutputVoid = IsSameType<OutputType, void>;
+		constexpr bool IsOutputVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
 			if constexpr (IsOutputVoid)
@@ -900,71 +904,50 @@ namespace FLY_NAMESPACE
 
 	// non-const member functions with non-void return
 	template<typename ClassType, typename OutputType, typename... InputTypes>
-	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction)
+	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData)
 	{
-		if (Global::GetDataTypeManager().Find<ClassType>())
-		{
-			auto callable = [aFunction](ClassType& aClassType, InputTypes&&... aInputTypes) -> OutputType
-				{
-					return (aClassType.*aFunction)(std::forward<InputTypes>(aInputTypes)...);
-				};
-			return CreateNodeRecipe(callable, TypeList<OutputType>(), TypeList<ClassType&, InputTypes...>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType>() });
-		}
-		else
-		{
-			auto callable = [aFunction](ClassType* aClassType, InputTypes&&... aInputTypes) -> OutputType
-				{
-					return (aClassType->*aFunction)(std::forward<InputTypes>(aInputTypes)...);
-				};
-			return CreateNodeRecipe(callable, TypeList<OutputType>(), TypeList<ClassType*, InputTypes...>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType*>() });
-		}
+		auto callable = [aFunction](ClassType* aClassType, InputTypes&&... aInputTypes) -> OutputType
+			{
+				return (aClassType->*aFunction)(std::forward<InputTypes>(aInputTypes)...);
+			};
+		return CreateNodeRecipe(
+			callable,
+			TypeList<OutputType>(),
+			TypeList<ClassType*, InputTypes...>(),
+			std::forward<NodeCreationData>(aCreationData)
+		);
 	}
 
 	// void returning member functions - generates flow
-	template<typename ClassType, typename OutputType, typename... InputTypes> requires IsSameType<OutputType, void>
-	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction)
+	template<typename ClassType, typename OutputType, typename... InputTypes> requires std::same_as<OutputType, void>
+	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData)
 	{
-		if constexpr (DefaultConstructible<ClassType>)
-		{
-			if (Global::GetDataTypeManager().Find<ClassType>())
-			{
-				auto callable = [aFunction](Flow, ClassType& aClassType, InputTypes&&... aInputTypes) -> Flow
-					{
-						(aClassType.*aFunction)(std::forward<InputTypes>(aInputTypes)...);
-						return Flow(true);
-					};
-				return CreateNodeRecipe<eNodeTrait::HasImplicitFlow>(callable, TypeList<Flow>(), TypeList<Flow, ClassType&, InputTypes...>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType>() });
-			}
-		}
 		auto callable = [aFunction](Flow, ClassType* aClassType, InputTypes&&... aInputTypes) -> Flow
 			{
 				(aClassType->*aFunction)(std::forward<InputTypes>(aInputTypes)...);
 				return Flow(true);
 			};
-		return CreateNodeRecipe<eNodeTrait::HasImplicitFlow>(callable, TypeList<Flow>(), TypeList<Flow, ClassType*, InputTypes...>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType*>() });
-
+		return CreateNodeRecipe<eNodeTrait::HasImplicitFlow>(
+			callable,
+			TypeList<Flow>(),
+			TypeList<Flow, ClassType*, InputTypes...>(),
+			std::forward<NodeCreationData>(aCreationData)
+		);
 	}
 
 	// const member functions
 	template<typename ClassType, typename OutputType, typename... InputTypes>
-	NodeRecipe FilterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction)
+	NodeRecipe FilterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData)
 	{
-		if constexpr (DefaultConstructible<ClassType>)
-		{
-			if (Global::GetDataTypeManager().Find<ClassType>())
-			{
-				auto callable = [aFunction](const ClassType& aClassType, InputTypes&&... aInputTypes) -> OutputType
-					{
-						return (aClassType.*aFunction)(std::forward<InputTypes>(aInputTypes)...);
-					};
-				return CreateNodeRecipe(callable, TypeList<OutputType>(), TypeList<const ClassType&, InputTypes...>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType>() });
-			}
-		}
-
 		auto callable = [aFunction](ClassType* aClassType, InputTypes&&... aInputTypes) -> OutputType
 			{
 				return (aClassType->*aFunction)(std::forward<InputTypes>(aInputTypes)...);
 			};
-		return CreateNodeRecipe(callable, TypeList<OutputType>(), TypeList<ClassType*, InputTypes...>(), NodeCreationData{ .mOwnerDataTypeID = GetDataTypeID<ClassType*>() });
+		return CreateNodeRecipe(
+			callable,
+			TypeList<OutputType>(),
+			TypeList<ClassType*, InputTypes...>(),
+			std::forward<NodeCreationData>(aCreationData)
+		);
 	}
 }

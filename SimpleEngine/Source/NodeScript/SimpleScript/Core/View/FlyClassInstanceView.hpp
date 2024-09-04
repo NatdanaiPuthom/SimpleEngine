@@ -14,7 +14,7 @@ namespace FLY_NAMESPACE
 		ClassInstanceView() = default;
 		explicit ClassInstanceView(ClassInstance& aClassInstance);
 
-		void Init();
+		void InitRuntime();
 
 		template<typename EventFunction, typename TargetType>
 		void ExecuteEvent(EventFunction aEventFunction, TargetType* aTarget, const ExecutionContextBase& aContext);
@@ -50,7 +50,7 @@ namespace FLY_NAMESPACE
 	inline void ClassInstanceView::ExecuteEvent(EventFunction aEventFunction, TargetType* aTarget, const ExecutionContextBase& aContext)
 	{
 		const EventID eventID = std::hash<EventFunction>()(aEventFunction);
-		assert(IsSameTarget(GetDataTypeID<TargetType>()));
+		assert(IsSameTarget(GetDataTypeID<TargetType*>()));
 		ExecuteEventInternal(eventID, aTarget, aContext);
 	}
 

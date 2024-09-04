@@ -7,8 +7,8 @@ namespace FLY_NAMESPACE
 
 	struct VariableInstance final
 	{
-		OwningPtr<void> mDefaultDataPtr = nullptr;
-		OwningPtr<void> mRuntimeDataPtr = nullptr;
+		OwningPtr<void> mDefaultValueDataPtr = nullptr;
+		OwningPtr<void> mRuntimeValueDataPtr = nullptr;
 	};
 
 	class Struct;
@@ -26,7 +26,8 @@ namespace FLY_NAMESPACE
 		StructInstance& operator=(const StructInstance& aOther);
 		StructInstance& operator=(StructInstance&&) noexcept = default;
 
-		void Init();
+		void Mirror();
+		void InitRuntime();
 
 		const Struct* mStruct;
 		std::vector<VariableInstance> mVariableInstances;

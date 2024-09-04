@@ -124,7 +124,7 @@ namespace FLY_NAMESPACE
 		return *mFunctions.at(anID);
 	}
 
-	const std::vector<std::unique_ptr<Function>>& NodeTypeManager::GetFunctions()
+	const std::vector<HeapObject<Function>>& NodeTypeManager::GetFunctions()
 	{
 		return mFunctions;
 	}
@@ -153,7 +153,7 @@ namespace FLY_NAMESPACE
 
 	const std::string& NodeTypeManager::GetFullName(const NodeTypeID anID) const
 	{
-		return mNodeTypes.at(anID).mName;
+		return mNodeTypes.at(anID).mNodeRecipe.mName;
 	}
 
 	std::string NodeTypeManager::GetShortName(const NodeTypeID anID) const
@@ -198,7 +198,7 @@ namespace FLY_NAMESPACE
 	FunctionID NodeTypeManager::CreateFunction(std::string_view aName)
 	{
 		const FunctionID id = mFunctions.size();
-		const std::unique_ptr<Function>& function = mFunctions.emplace_back(std::make_unique<Function>(aName));
+		const HeapObject<Function>& function = mFunctions.emplace_back(MakeHeapObject<Function>(aName));
 
 		mToFunctionID.emplace(function->mCallerNodeTypeID, id);
 		mToFunctionID.emplace(function->mInputNodeTypeID, id);
@@ -216,12 +216,13 @@ namespace FLY_NAMESPACE
 	{
 		NodeRecipe recipe
 		{
-			[](const NodeID, const NodeTypeID, NodeGraph&)->Node {return Node(0, std::array<PinID, 0>(), std::array<PinID, 0>()); },
-			[](const NodeExecutionData&, InternalExecutionContext&) {},
-			eNodeTrait::Invalid
+			.mCreateFunction = [](const NodeID, const NodeTypeID, NodeGraph&)->Node {return Node(0, std::array<PinID, 0>(), std::array<PinID, 0>()); },
+			.mExecuteFunction = [](const NodeExecutionData&, InternalExecutionContext&) {},
+			.mTraits = eNodeTrait::Invalid,
+			.mName = "Invalid Node"
 		};
 
-		return { recipe, "Invalid Type" };
+		return NodeType{ .mNodeRecipe = recipe };
 	}
 
 

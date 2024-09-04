@@ -3,8 +3,10 @@
 #include "Memory/FlyMemoryArena.hpp"
 #include "Variable/FlyVariableRef.hpp"
 #include "Node/FlyNodeRef.hpp"
-#include "../Graph/FlyNodeGraph.hpp"
+#include "../Graph/FlyEventGraph.hpp"
+#include "../Type/FlyTypeManager.hpp"
 #include <memory>
+#include "../Memory/FlyHeapObject.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -39,8 +41,7 @@ namespace FLY_NAMESPACE
 		Class& CreateClass(const DataTypeID aTargetID, std::string_view aName);
 		void DestroyClass(Class& aClass);
 
-		Class& GetClassByID(ClassID aID);
-		const std::vector< std::unique_ptr<Class>>& GetClasses() const;
+		const std::vector<HeapObject<Class>>& GetClasses() const;
 
 		TypeManager& GetTypeManager();
 		NodeExecutor& GetNodeExecutor();
@@ -56,11 +57,11 @@ namespace FLY_NAMESPACE
 	public:
 
 		MemoryPool mMemoryPool;
-		std::unique_ptr<TypeManager> mTypeManager;
-		std::vector<std::unique_ptr<Class>> mClasses;
+		TypeManager mTypeManager;
+		std::vector<HeapObject<Class>> mClasses;
 
-		std::unique_ptr<NodeExecutor> mNodeExecutor;
-		NodeGraph mNodeGraphCopy;
+		HeapObject<NodeExecutor> mNodeExecutor;
+		EventGraph mNodeGraphCopy;
 
 		std::unordered_map<GlobalNodeRef, VariableRef, GlobalNodeRefHasher> mNodeRefToVarRef;
 

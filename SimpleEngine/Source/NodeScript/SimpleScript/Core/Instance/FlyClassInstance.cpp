@@ -7,6 +7,7 @@ namespace FLY_NAMESPACE
 	ClassInstance::ClassInstance(Class& aClass)
 		: mClass(&aClass)
 		, mStructInstance(aClass.mStruct)
+		, mEventGraphInstance(aClass.mEventGraph.mNodeGraph)
 	{
 	}
 
@@ -14,9 +15,8 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	void ClassInstance::Init()
+	void ClassInstance::InitRuntime()
 	{
-		mStructInstance.Init();
-		mEventGraphInstance.Init(mClass->mEventGraph.mNodeGraph);
+		mStructInstance.InitRuntime();
 	}
 }

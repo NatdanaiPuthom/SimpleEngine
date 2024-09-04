@@ -16,7 +16,7 @@ namespace FLY_NAMESPACE
 		ClassInstance(Class& aClass);
 		~ClassInstance();
 
-		void Init();
+		void InitRuntime();
 
 		Class* mClass;
 		StructInstance mStructInstance;

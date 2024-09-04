@@ -1,5 +1,6 @@
 #include "FlyClassView.hpp"
 #include "../DataType/FlyClass.hpp"
+#include "../Fly.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -71,6 +72,16 @@ namespace FLY_NAMESPACE
 	Class& ClassView::GetClass() const
 	{
 		return *mClass;
+	}
+
+	VariableView ClassView::CreateVariable(const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	{
+		return FLY_NAMESPACE::CreateVariable(*this, aDataTypeView, aCommandTracker);
+	}
+
+	ClassInstanceView ClassView::CreateClassInstance()
+	{
+		return FLY_NAMESPACE::CreateClassInstance(*this);
 	}
 
 	bool ClassView::operator==(const ClassView& aOther) const

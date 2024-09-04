@@ -36,6 +36,8 @@ namespace FLY_NAMESPACE
 	ClassInstanceView CreateClassInstance(ClassView aClassView);
 	void DestroyClassInstance(ClassInstanceView aClassInstanceView);
 
+	void EditClassInstanceVariableDefaultValue(ClassInstanceView aClassInstanceView);
+
 	NodeView CreateNode(NodeGraphView aNodeGraphView, NodeTypeView aNodeTypeView, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 	NodeView CreateNode(NodeGraphView aNodeGraphView, std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);
 	NodeView CreateNodeAutoLink(NodeGraphView aNodeGraph, NodeTypeView aNodeTypeView, PinID aConnection, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
@@ -55,11 +57,10 @@ namespace FLY_NAMESPACE
 	void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aDragData, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
 
 	VariableView CreateVariable(ClassView aClassView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker = nullptr);
-	void DestroyVariable(VariableView aVariableView, ClassView aClassView, CommandTracker* aCommandTracker);
-
-	void EditVariableDefaultValue(VariableView aVariableView, ClassView aClassView, CommandTracker* aCommandTracker);
-	void SetVariableDataType(VariableView aVariableView, DataTypeView aDataTypeView, ClassView aClassView, CommandTracker* aCommandTracker);
-	void SetVariableName(VariableView aVariableView, std::string_view aName, ClassView aClassView);
+	void DestroyVariable(VariableView aVariableView, CommandTracker* aCommandTracker);
+	void EditVariableDefaultValue(VariableView aVariableView, CommandTracker* aCommandTracker);
+	void SetVariableDataType(VariableView aVariableView, DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
+	void SetVariableName(VariableView aVariableView, std::string_view aName, CommandTracker* aCommandTracker);
 	void DestroyVariableNodes(VariableView aVariableView, ClassView aClassView, CommandTracker* aCommandTracker);
 
 	void EditPin(PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker);
@@ -127,6 +128,7 @@ namespace FLY_NAMESPACE
 	std::vector<NodeTypeView> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);
 
 	std::unordered_map<DataTypeView, std::vector<ClassView>> GetClasses();
+	std::vector<ClassView> GetClassesByDataType(DataTypeView aDataTypeView);
 
 	template<Predicate<const DataTypeView&> FilterPredicate>
 	std::vector<DataTypeView> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate)

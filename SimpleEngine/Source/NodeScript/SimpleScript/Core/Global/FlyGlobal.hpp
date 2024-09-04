@@ -12,6 +12,7 @@ namespace FLY_NAMESPACE
 	class MemoryPool;
 	template<size_t> class MemoryArena;
 	class Class;
+	class EventGraph;
 
 	namespace Global
 	{
@@ -22,7 +23,6 @@ namespace FLY_NAMESPACE
 		DataTypeManager& GetDataTypeManager();
 		NodeTypeManager& GetNodeTypeManager();
 		PinTypeManager& GetPinTypeManager();
-		Class& GetClassByID(ClassID aClassID);
 
 		bool& IsDebugging();
 
@@ -31,7 +31,7 @@ namespace FLY_NAMESPACE
 			MemoryArena<1024>& GetFrameMemoryArena();
 			MemoryArena<10000>& GetEditMemoryArena();
 			MemoryPool& GetMemoryPool();
-			NodeGraph& GetNodeGraphCopy();
+			EventGraph& GetNodeGraphCopy();
 		}
 	}
 

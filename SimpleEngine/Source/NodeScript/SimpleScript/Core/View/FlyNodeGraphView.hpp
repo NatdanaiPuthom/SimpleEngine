@@ -68,8 +68,6 @@ namespace FLY_NAMESPACE
 
 		[[nodiscard]] const NodeGraphVariant& GetVariant() const;
 
-		[[nodiscard]] std::variant<NodeGraph*, EventGraph*> GetAs();
-
 		friend bool operator==(const NodeGraphView& a, const NodeGraphView& b);
 
 		explicit operator bool() const;

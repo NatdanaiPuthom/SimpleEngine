@@ -19,20 +19,20 @@ namespace FLY_NAMESPACE
 	namespace Internal
 	{
 
-		NodeGraph& GetNodeGraph(NodeGraphVariant&& aNodeGraphVariant)
+		NodeGraph& GetNodeGraph(const NodeGraphVariant& aNodeGraphVariant)
 		{
 			switch (aNodeGraphVariant.index())
 			{
 			case 0:
-				return *std::get<0>(aNodeGraphVariant);
+				return std::get<0>(aNodeGraphVariant)->mNodeGraph;
 				break;
 			case 1:
-				return std::get<1>(aNodeGraphVariant)->mNodeGraph;
+				return Global::GetNodeTypeManager().GetFunction(std::get<1>(aNodeGraphVariant).mID).mNodeGraph;
 				break;
 			default:
 				break;
 			}
-			return *std::get<0>(aNodeGraphVariant);
+			return std::get<0>(aNodeGraphVariant)->mNodeGraph;
 		}
 
 		void BindNodeToEvent(const NodeID aNodeID, EventGraph& anEventGraph, CommandTracker* const aCommandTracker)
@@ -76,17 +76,24 @@ namespace FLY_NAMESPACE
 
 		FunctionID CreateFunction(const std::string_view aName)
 		{
-			return Global::GetNodeTypeManager().CreateFunction(aName);
+			const FunctionID id = Global::GetNodeTypeManager().CreateFunction(aName);
+
+			Function& createdFunction = Global::GetNodeTypeManager().GetFunction(id);
+
+			createdFunction.mInputNodeID = Internal::CreateNode(FunctionIDWrapper(id), createdFunction.mInputNodeTypeID);
+			createdFunction.mOutputNodeID = Internal::CreateNode(FunctionIDWrapper(id), createdFunction.mOutputNodeTypeID);
+
+			return id;
 		}
 
-		NodeID CreateNode(NodeGraphVariant&& aNodeGraphVariant, const NodeTypeID aNodeTypeID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+		NodeID CreateNode(const NodeGraphVariant& aNodeGraphVariant, const NodeTypeID aNodeTypeID, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 		{
 			if (aCommandTracker)
 			{
 				aCommandTracker->BeginComposite("Create Node + Set Position");
 			}
 
-			NodeGraph& nodeGraph = GetNodeGraph(std::forward<NodeGraphVariant>(aNodeGraphVariant));
+			NodeGraph& nodeGraph = GetNodeGraph(aNodeGraphVariant);
 			const NodeID nodeID = GetCurrentNodeID(nodeGraph);
 			AddNode(nodeGraph, Global::GetNodeTypeManager().CreateNode(nodeGraph, nodeID, aNodeTypeID), nodeID, aCommandTracker);
 
@@ -101,8 +108,8 @@ namespace FLY_NAMESPACE
 						BindNodeToEvent(nodeID, *aType, aCommandTracker);
 					}
 
-				}, std::forward<NodeGraphVariant>(aNodeGraphVariant)
-					);
+				}, aNodeGraphVariant
+			);
 
 			if (aCommandTracker)
 			{
@@ -112,7 +119,7 @@ namespace FLY_NAMESPACE
 		}
 
 
-		NodeID CreateNode(NodeGraphVariant&& aNodeGraphVariant, const std::string_view aName, bool& aSuccess, const Vec2 aPosition, bool aCreateIfNameNotFound, CommandTracker* const aCommandTracker)
+		NodeID CreateNode(const NodeGraphVariant& aNodeGraphVariant, const std::string_view aName, bool& aSuccess, const Vec2 aPosition, bool aCreateIfNameNotFound, CommandTracker* const aCommandTracker)
 		{
 			const NodeTypeID typeID = Global::GetNodeTypeManager().GetTypeID(aName);
 			aSuccess = typeID != 0;
@@ -120,7 +127,7 @@ namespace FLY_NAMESPACE
 			{
 				return InvalidID<NodeID>();
 			}
-			return CreateNode(std::forward<NodeGraphVariant>(aNodeGraphVariant), typeID, aPosition, aCommandTracker);
+			return CreateNode(aNodeGraphVariant, typeID, aPosition, aCommandTracker);
 		}
 
 		NodeID CreateGetterNode(NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
@@ -573,6 +580,11 @@ namespace FLY_NAMESPACE
 			const VarID id = variables.size();
 			variables.emplace_back();
 			SetVariableDataType(aClass, id, aDataTypeID, aCommandTracker);
+
+			for (auto& classInstance : aClass.mClassInstances)
+			{
+				classInstance->mStructInstance.Mirror();
+			}
 			return id;
 		}
 
@@ -580,7 +592,7 @@ namespace FLY_NAMESPACE
 		{
 			Variable& variable = aClass.mStruct.mVariables.at(aVarID);
 
-			void* defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, aClass.mStruct.mMemoryArena);
+			void* const defaultValueDataPtr = Global::GetDataTypeManager().AllocateData(aDataTypeID, aClass.mStruct.mMemoryArena);
 
 			variable.mDataTypeID = aDataTypeID;
 			variable.mDefaultValueDataPtr = defaultValueDataPtr;
