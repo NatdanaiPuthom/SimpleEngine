@@ -28,7 +28,7 @@ namespace FLY_NAMESPACE
 		return Flow(true);
 	}
 
-	static Wildcard OutputNode(const InternalExecutionContext* aContext, Flow)
+	static void OutputNode(const InternalExecutionContext* aContext, Flow)
 	{
 		const Node& outputNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
 
@@ -40,8 +40,6 @@ namespace FLY_NAMESPACE
 		const Node& callerNode = callerNodeRef.GetNodeGraph().mNodes[callerNodeRef.GetNodeID()];
 
 		CopyPinData(*aContext, callerNode.mOutputPins, outputNode.mInputPins, callerNodeRef.GetNodeGraph(), function.mNodeGraph, 1);
-
-		return Wildcard();
 	}
 
 	Function::Function(std::string_view aName)
@@ -50,6 +48,16 @@ namespace FLY_NAMESPACE
 		mCallerNodeTypeID = RegisterSystemNodeType(CallerNode, NodeCreationData{ .mName = "Function/Call Function" });
 		mInputNodeTypeID = RegisterSystemNodeType(InputNode, NodeCreationData{ .mName = "Function/Input Function" });
 		mOutputNodeTypeID = RegisterSystemNodeType(OutputNode, NodeCreationData{ .mName = "Function/Output Function" });
+
+		//std::tuple<ReferenceWrapper<const InternalExecutionContext*>, ReferenceWrapper<Flow>> t{};
+
+		//std::apply(OutputNode, t);
+
+		/*std::tuple<ReferenceWrapper<Flow>> t;
+		InternalExecutionContext i;
+
+		std::apply(OutputNode, std::tuple_cat(std::forward_as_tuple(&i), t));*/
+
 	}
 
 	Function::~Function() = default;

@@ -18,9 +18,9 @@ namespace FLY_NAMESPACE
 
 		std::string mName;
 
-		NodeTypeID mCallerNodeTypeID;
-		NodeTypeID mInputNodeTypeID;
-		NodeTypeID mOutputNodeTypeID;
+		NodeTypeID mCallerNodeTypeID = InvalidID<NodeTypeID>();
+		NodeTypeID mInputNodeTypeID = InvalidID<NodeTypeID>();
+		NodeTypeID mOutputNodeTypeID = InvalidID<NodeTypeID>();
 
 		NodeID mInputNodeID = InvalidID<NodeID>();
 		NodeID mOutputNodeID = InvalidID<NodeID>();

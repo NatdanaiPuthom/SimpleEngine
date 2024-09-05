@@ -27,7 +27,7 @@ namespace Editor
 				Fly::CreateGlobalFunction("Function");
 			}
 
-			ImGui::Separator();
+			/*ImGui::Separator();
 
 			std::vector<Fly::FunctionView> functions = Fly::GetFunctions();
 			for (Fly::FunctionView& functionView : functions)
@@ -37,7 +37,7 @@ namespace Editor
 				strcpy_s(functionNameBuffer, functionView.GetName().c_str());
 				if (ImGui::InputText("Name", functionNameBuffer, 32))
 				{
-					Fly::SetFunctionName(functionView, functionNameBuffer);
+					Fly::SetFunctionName(functionView, functionNameBuffer, nullptr);
 				}
 
 				const std::string functionlabel = functionView.GetName() + "##function" + std::to_string(functionView.GetID());
@@ -50,7 +50,7 @@ namespace Editor
 				{
 					Fly::CreateNode(myParentWindow.GetNodeContext().myNodeGraphView, functionView.GetCallerNodeType());
 				}
-			}
+			}*/
 
 		}
 		ImGui::End();

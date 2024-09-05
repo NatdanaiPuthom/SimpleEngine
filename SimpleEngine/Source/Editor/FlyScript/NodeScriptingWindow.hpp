@@ -5,6 +5,7 @@
 #include "CustomEventWindow.hpp"
 #include "FunctionWindow.hpp"
 #include "FunctionSettingsWindow.hpp"
+#include "FlyClassWindow.hpp"
 #include "NodeScript/SimpleScript/Core/Fly.hpp"
 #include <External/imgui.h>
 #include <vector>
@@ -114,10 +115,10 @@ namespace Editor
 		std::unordered_map<Fly::NodeGraphView, ImNodesContext*> myImNodesContexts;
 
 		
-
-		VariableWindow myVariableWindow;
-		CustomEventWindow myNodeCreatorWindow;
-		FunctionWindow myFunctionWindow;
+		FlyClassWindow myClassWindow;
+		//VariableWindow myVariableWindow;
+		CustomEventWindow myCustomEventWindow;
+		//FunctionWindow myFunctionWindow;
 		FunctionSettingsWindow myFunctionSettingsWindow;
 
 		NodeContextHistory myNodeContextHistory;
@@ -135,7 +136,9 @@ namespace Editor
 
 		bool myIsContextSensitive = false;
 
+	public:
 		Fly::FunctionView mySelectedFunction;
+	private:
 
 		static constexpr Fly::Color mySelectionTint{ 0.2f, 0.2f, 0.2f, 0.f };// = Color(0.2f, 0.2f, 0.2f, 0);
 		static constexpr Fly::Color myHoverTint{ 0.1f, 0.1f, 0.1f, 0.f };

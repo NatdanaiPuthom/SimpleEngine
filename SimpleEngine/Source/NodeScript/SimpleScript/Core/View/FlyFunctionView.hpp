@@ -16,18 +16,20 @@ namespace FLY_NAMESPACE
 		explicit FunctionView(FunctionID aFunctionID);
 
 		const std::string& GetName() const;
-		NodeView GetInputNode() const;
-		NodeView GetOutputNode() const;
-		NodeTypeView GetCallerNodeType() const;
-		NodeTypeView GetInputNodeType() const;
-		NodeTypeView GetOutputNodeType() const;
-		NodeGraphView GetNodeGraph();
+		NodeView GetInputNodeView() const;
+		NodeView GetOutputNodeView() const;
+		NodeTypeView GetCallerNodeTypeView() const;
+		NodeTypeView GetInputNodeTypeView() const;
+		NodeTypeView GetOutputNodeTypeView() const;
+		NodeGraphView GetNodeGraphView();
 
 		FunctionID GetID() const;
 
+		void SetName(std::string_view aName, CommandTracker* aCommandTracker);
+
 		explicit operator bool() const;
 
-		bool operator==(const FunctionView& aOther) const;
+		friend bool operator==(const FunctionView& a, const FunctionView& b);
 
 	private:
 

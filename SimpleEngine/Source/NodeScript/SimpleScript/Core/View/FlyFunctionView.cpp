@@ -1,6 +1,7 @@
 #include "FlyFunctionView.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
+#include "../Fly.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -19,37 +20,37 @@ namespace FLY_NAMESPACE
 		return GetFunction().mName;
 	}
 
-	NodeView FunctionView::GetInputNode() const
+	NodeView FunctionView::GetInputNodeView() const
 	{
 		const Function& function = GetFunction();
 		return NodeView(function.mInputNodeID, NodeGraphView(*this));
 	}
 
-	NodeView FunctionView::GetOutputNode() const
+	NodeView FunctionView::GetOutputNodeView() const
 	{
 		const Function& function = GetFunction();
 		return NodeView(function.mOutputNodeID, NodeGraphView(*this));
 	}
 
-	NodeTypeView FunctionView::GetCallerNodeType() const
+	NodeTypeView FunctionView::GetCallerNodeTypeView() const
 	{
 		const Function& function = GetFunction();
 		return NodeTypeView(function.mCallerNodeTypeID);
 	}
 
-	NodeTypeView FunctionView::GetInputNodeType() const
+	NodeTypeView FunctionView::GetInputNodeTypeView() const
 	{
 		const Function& function = GetFunction();
 		return NodeTypeView(function.mInputNodeTypeID);
 	}
 
-	NodeTypeView FunctionView::GetOutputNodeType() const
+	NodeTypeView FunctionView::GetOutputNodeTypeView() const
 	{
 		const Function& function = GetFunction();
 		return NodeTypeView(function.mOutputNodeTypeID);
 	}
 
-	NodeGraphView FunctionView::GetNodeGraph()
+	NodeGraphView FunctionView::GetNodeGraphView()
 	{
 		return NodeGraphView(*this);
 	}
@@ -59,14 +60,19 @@ namespace FLY_NAMESPACE
 		return mFunctionID;
 	}
 
+	void FunctionView::SetName(const std::string_view aName, CommandTracker* aCommandTracker)
+	{
+		Fly::SetFunctionName(*this, aName, aCommandTracker);
+	}
+
 	FunctionView::operator bool() const
 	{
 		return mFunctionID != InvalidID<FunctionID>();
 	}
 
-	bool FunctionView::operator==(const FunctionView& aOther) const
+	bool operator==(const FunctionView& a, const FunctionView& b)
 	{
-		return mFunctionID == aOther.mFunctionID;
+		return a.mFunctionID == b.mFunctionID;
 	}
 
 	Function& FunctionView::GetFunction()

@@ -97,7 +97,7 @@ namespace FLY_NAMESPACE
 	void SetPinNameAtIndexFunction(FunctionView aFunctionView, std::string_view aName, size_t aIndex, eFlowType aFlowType);
 	void DeletePinAtIndexFunction(FunctionView aFunctionView, size_t aIndex, eFlowType aFlowType);
 
-	void SetFunctionName(FunctionView aFunctionView, std::string_view aName);
+	void SetFunctionName(FunctionView aFunctionView, std::string_view aName, CommandTracker* aCommandTracker);
 
 	void BeginFrame();
 

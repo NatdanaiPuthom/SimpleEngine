@@ -22,9 +22,8 @@ namespace Editor
 	};
 
 	NodeScriptingWindow::NodeScriptingWindow()
-		: myVariableWindow(*this)
-		, myNodeCreatorWindow(*this)
-		, myFunctionWindow(*this)
+		: myClassWindow(*this)
+		, myCustomEventWindow(*this)
 		, myFunctionSettingsWindow(*this)
 	{
 		myCommandTracker = std::make_unique<Fly::CommandTracker>();
@@ -192,39 +191,14 @@ namespace Editor
 			UpdateNodes();
 			NodeCreation();
 
-			myVariableWindow.Update();
-			myNodeCreatorWindow.Update();
-			myFunctionWindow.Update();
+			myClassWindow.Draw();
+			myCustomEventWindow.Update();
 
-
-			if (ImGui::Begin("Member Functions"))
-			{
-				Fly::ClassView currentClass = GetNodeContext().myClassView;
-				if (ImGui::Button("Create Member Function"))
-				{
-					Fly::CreateMemberFunction("Function1", currentClass);
-				}
-
-				std::vector<Fly::FunctionView> memberFunctions = currentClass.GetFunctions();
-
-				for (Fly::FunctionView& memberFunction : memberFunctions)
-				{
-
-					if (ImGui::Selectable(memberFunction.GetName().c_str(), memberFunction.GetNodeGraph() == GetNodeContext().myNodeGraphView))
-					{
-						SetNodeContext(memberFunction.GetNodeGraph(), GetNodeContext().myClassView);
-						mySelectedFunction = Fly::FunctionView(memberFunction.GetID());
-						break;
-					}
-				}
-			}
 
 			if (GetNodeContext().myNodeGraphView.GetType() == Fly::eNodeGraphType::Function)
 			{
 				myFunctionSettingsWindow.Update();
 			}
-
-			ImGui::End();
 
 
 		}

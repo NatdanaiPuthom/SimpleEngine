@@ -293,6 +293,70 @@ namespace FLY_NAMESPACE
 	}
 
 	template<bool TakesExecutionContext, bool TakesNodeState, bool TakesInternalExecutionContext, typename NodeExecutionContextType, typename NodeStateDataType, typename Callable, typename... OutputTypes, typename... InputTypes>
+		requires(sizeof...(OutputTypes) == 0)
+	void CallFunction(InternalExecutionContext& aContext, TypeList<OutputTypes...>, TypeList<InputTypes...>)
+	{
+		//static_assert(false);
+		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext.mNodeData.mNodeRef.GetNodeID()];
+		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+
+		MemoryPool& foundationMemoryPool = Global::Internal::GetMemoryPool();
+
+		MemoryPoolID functionMemoryID = nodeType.mNodeRecipe.mFunctionMemoryID;
+		Callable& callable = foundationMemoryPool.At<Callable>(functionMemoryID);
+
+		std::tuple<ReferenceWrapper<InputTypes>...> inputTuple = CreateInputPack<InputTypes...>(node.mInputPins, aContext);
+
+		if constexpr (TakesExecutionContext && TakesNodeState)
+		{
+			NodeState<NodeStateDataType> nodeState
+			{
+				aContext.mNodeGraphInstance->GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
+			};
+
+			NodeExecutionContext<NodeExecutionContextType> executionContext
+			{
+				*reinterpret_cast<const NodeExecutionContextType*>(aContext.mExecutionContext)
+			};
+			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(executionContext, nodeState), inputTuple));
+		}
+		else if constexpr (TakesExecutionContext)
+		{
+			NodeExecutionContext<NodeExecutionContextType> executionContext
+			{
+				*reinterpret_cast<const NodeExecutionContextType*>(aContext.mExecutionContext)
+			};
+			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(executionContext), inputTuple));
+		}
+		else if constexpr (TakesNodeState && TakesInternalExecutionContext)
+		{
+			NodeState<NodeStateDataType> nodeState
+			{
+				aContext.mNodeGraphInstance->GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
+			};
+			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(&aContext, nodeState), inputTuple));
+
+		}
+		else if constexpr (TakesNodeState)
+		{
+			NodeState<NodeStateDataType> nodeState
+			{
+				aContext.mNodeGraphInstance->GetNodeState<NodeStateDataType>(aContext.mNodeData.mNodeRef.GetNodeID())
+			};
+			return std::apply(callable, std::tuple_cat(std::forward_as_tuple(nodeState), inputTuple));
+		}
+		else if constexpr (TakesInternalExecutionContext)
+		{
+			std::apply(callable, std::tuple_cat(std::forward_as_tuple(&aContext), inputTuple));
+		}
+		else
+		{
+			return std::apply(callable, inputTuple);
+		}
+
+	}
+
+	template<bool TakesExecutionContext, bool TakesNodeState, bool TakesInternalExecutionContext, typename NodeExecutionContextType, typename NodeStateDataType, typename Callable, typename... OutputTypes, typename... InputTypes>
 	std::tuple<OutputTypes...> CallFunction(InternalExecutionContext& aContext, TypeList<OutputTypes...>, TypeList<InputTypes...>)
 	{
 
@@ -380,11 +444,19 @@ namespace FLY_NAMESPACE
 				aContext.mExecutionQueue = &executionQueue;
 
 				// Call function and retrieve output values
-				std::tuple<OutputTypes...> outputValues = CallFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext,
-					NodeExecutionContextType, NodeStateDataType, Callable>(aContext, TypeList<OutputTypes...>{}, TypeList<InputTypes...>{});
+				if constexpr (sizeof...(OutputTypes) > 0)
+				{
+					std::tuple<OutputTypes...> outputValues = CallFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext,
+						NodeExecutionContextType, NodeStateDataType, Callable>(aContext, TypeList<OutputTypes...>{}, TypeList<InputTypes...>{});
+					SetOutputValues(std::forward<std::tuple<OutputTypes...>>(std::move(outputValues)), node.mOutputPins, aContext);
+				}
+				else
+				{
+					CallFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext,
+						NodeExecutionContextType, NodeStateDataType, Callable>(aContext, TypeList<OutputTypes...>{}, TypeList<InputTypes...>{});
+				}
 
 				// Set output of function
-				SetOutputValues(std::forward<std::tuple<OutputTypes...>>(std::move(outputValues)), node.mOutputPins, aContext);
 
 				aContext.mExecutionQueue = nullptr;
 				executionQueue.Execute();
@@ -394,7 +466,7 @@ namespace FLY_NAMESPACE
 	template<eNodeTrait Traits = eNodeTrait::None, typename NodeExecutionContextType = Wildcard, typename NodeStateDataType = Wildcard, typename Callable, typename... OutputTypes, typename... InputTypes>
 	NodeRecipe CreateNodeRecipe(Callable aCallable, TypeList<OutputTypes...> aOutputList, TypeList<InputTypes...>, NodeCreationData&& aCreationData)
 	{
-		static_assert(sizeof...(OutputTypes) > 0, "A node must always have an output pin, have you considered registering it as a flow node type?");
+		//static_assert(sizeof...(OutputTypes) > 0, "A node must always have an output pin, have you considered registering it as a flow node type?");
 
 
 		constexpr bool TakesExecutionContext = HasFlag(Traits, eNodeTrait::TakesExecutionContext);
@@ -820,11 +892,12 @@ namespace FLY_NAMESPACE
 			if constexpr (IsOutputVoid)
 			{
 				return CreateNodeRecipe<Traits | eNodeTrait::TakesInternalExecutionContext>(
-					[aFunction](const InternalExecutionContext* aContext, Flow, InputTypes... aInputs) -> OutputType
+					[aFunction](const InternalExecutionContext* aContext, InputTypes... aInputs) -> OutputType
 					{
 						return aFunction(aContext, std::forward<InputTypes>(aInputs)...);
-					}, TypeList<>(), TypeList<InputTypes...>(), std::forward<NodeCreationData>(aCreationData)
-						);
+					},
+					TypeList<>(), TypeList<InputTypes...>(), std::forward<NodeCreationData>(aCreationData)
+				);
 			}
 			else
 			{

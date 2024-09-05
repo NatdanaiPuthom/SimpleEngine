@@ -707,7 +707,7 @@ namespace FLY_NAMESPACE
 		Internal::DeletePinAtIndexFunction(aFunctionView.GetID(), aIndex, aFlowType);
 	}
 
-	void SetFunctionName(const FunctionView aFunctionView, std::string_view aName)
+	void SetFunctionName(const FunctionView aFunctionView, const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 	{
 		Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionView.GetID());
 
