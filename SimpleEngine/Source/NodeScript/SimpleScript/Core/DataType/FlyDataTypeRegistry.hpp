@@ -73,7 +73,7 @@ namespace FLY_NAMESPACE
 	{
 		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
 		dataTypeManager.RegisterMemberVariable(aMemberVariable, aName);
-		const std::string directory = GetClassFromMember(aName);
+		const std::string directory = GetClassNameFromMemberName(aName);
 		NodeTypeRegistry::RegisterMemberVariable(aMemberVariable, directory, aName);
 	}
 

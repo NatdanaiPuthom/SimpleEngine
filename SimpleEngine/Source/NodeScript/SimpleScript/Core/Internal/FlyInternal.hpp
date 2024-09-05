@@ -69,15 +69,15 @@ namespace FLY_NAMESPACE
 
 		void SetPinTypeName(PinTypeID aPinTypeID, std::string_view aName);
 
-		void AddPinToCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, std::string_view aPinName);
-		void SetPinDataTypeAtIndexCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, size_t aIndex);
-		void SetPinNameAtIndexCustomEvent(CustomEventID aCustomEventID, std::string_view aName, size_t aIndex);
-		void DeletePinAtIndexCustomEvent(CustomEventID aCustomEventID, size_t aIndex);
+		void AddPinToCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, std::string_view aPinName, CommandTracker* aCommandTracker);
+		void SetPinDataTypeAtIndexCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, size_t aIndex, CommandTracker* aCommandTracker);
+		void SetPinNameAtIndexCustomEvent(CustomEventID aCustomEventID, std::string_view aName, size_t aIndex, CommandTracker* aCommandTracker);
+		void DeletePinAtIndexCustomEvent(CustomEventID aCustomEventID, size_t aIndex, CommandTracker* aCommandTracker);
 
-		void AddPinToFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName = "Pin");
-		void SetPinDataTypeAtIndexFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, size_t aIndex, eFlowType aFlowType);
-		void SetPinNameAtIndexFunction(FunctionID aFunctionID, std::string_view aName, size_t aIndex, eFlowType aFlowType);
-		void DeletePinAtIndexFunction(FunctionID aFunctionID, size_t aIndex, eFlowType aFlowType);
+		void AddPinToFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName, CommandTracker* aCommandTracker);
+		void SetPinDataTypeAtIndexFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
+		void SetPinNameAtIndexFunction(FunctionID aFunctionID, std::string_view aName, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
+		void DeletePinAtIndexFunction(FunctionID aFunctionID, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
 
 		void ReplaceTemplateNodeWithLink(NodeGraph& aNodeGraph, PinID aWildcardPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);
 		void ReplaceTemplateNode(NodeGraph& aNodeGraph, NodeID aNodeID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);

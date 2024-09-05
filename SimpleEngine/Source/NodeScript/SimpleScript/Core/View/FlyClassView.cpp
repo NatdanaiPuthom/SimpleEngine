@@ -84,6 +84,11 @@ namespace FLY_NAMESPACE
 		return FLY_NAMESPACE::CreateClassInstance(*this);
 	}
 
+	FunctionView ClassView::CreateMemberFunction(const std::string_view aName)
+	{
+		return FLY_NAMESPACE::CreateMemberFunction(aName, *this);
+	}
+
 	bool ClassView::operator==(const ClassView& aOther) const
 	{
 		return mClass == aOther.mClass;

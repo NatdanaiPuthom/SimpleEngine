@@ -31,7 +31,7 @@ namespace Editor
 	void FlyClassWindow::DrawGraphSelection()
 	{
 		Fly::ClassView currentClassView = myParentWindow.GetNodeContext().myClassView;
-		if (ImGui::Selectable("Event Graph"))
+		if (ImGui::Selectable("Event Graph", currentClassView.GetEventGraphView() == myParentWindow.GetNodeContext().myNodeGraphView))
 		{
 			myParentWindow.SetNodeContext(currentClassView.GetEventGraphView(), currentClassView);
 		}
@@ -43,9 +43,9 @@ namespace Editor
 
 		if (ImGui::Button("Create Member Function"))
 		{
-			Fly::FunctionView createdFunctionView = Fly::CreateMemberFunction("Function1", currentClassView);
+			Fly::FunctionView createdFunctionView = currentClassView.CreateMemberFunction("Function1");
 			myParentWindow.SetNodeContext(createdFunctionView.GetNodeGraphView(), currentClassView);
-			myParentWindow.mySelectedFunction = createdFunctionView;
+			myParentWindow.SetSelectedFunctionView(createdFunctionView);
 			ImGui::SetNextItemOpen(true);
 		}
 
@@ -55,13 +55,13 @@ namespace Editor
 
 			std::vector<Fly::FunctionView> memberFunctions = currentClassView.GetFunctions();
 
-			for (Fly::FunctionView& memberFunction : memberFunctions)
+			for (Fly::FunctionView& memberFunctionView : memberFunctions)
 			{
 
-				if (ImGui::Selectable(memberFunction.GetName().c_str(), memberFunction.GetNodeGraphView() == myParentWindow.GetNodeContext().myNodeGraphView))
+				if (ImGui::Selectable(memberFunctionView.GetName().c_str(), memberFunctionView.GetNodeGraphView() == myParentWindow.GetNodeContext().myNodeGraphView))
 				{
-					myParentWindow.SetNodeContext(memberFunction.GetNodeGraphView(), myParentWindow.GetNodeContext().myClassView);
-					myParentWindow.mySelectedFunction = memberFunction;
+					myParentWindow.SetNodeContext(memberFunctionView.GetNodeGraphView(), myParentWindow.GetNodeContext().myClassView);
+					myParentWindow.SetSelectedFunctionView(memberFunctionView);
 					break;
 				}
 			}

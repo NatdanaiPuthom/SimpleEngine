@@ -1,7 +1,6 @@
 #pragma once
 #include "Editor/Template/ToolInterface.hpp"
 #include "NodeScript/SimpleScript/Core/FlyDefines.hpp"
-#include "VariableWindow.hpp"
 #include "CustomEventWindow.hpp"
 #include "FunctionWindow.hpp"
 #include "FunctionSettingsWindow.hpp"
@@ -75,6 +74,9 @@ namespace Editor
 		const NodeContext& GetNodeContext() const;
 		void SetNodeContext(Fly::NodeGraphView aNodeGraphView, Fly::ClassView aClassView);
 		eGraphMode GetCurrentMode() const;
+		void SetSelectedFunctionView(Fly::FunctionView aFunctionView);
+
+		bool OpenClassByName(std::string_view aName);
 
 		void UpdateContext();
 
@@ -88,7 +90,7 @@ namespace Editor
 
 		ImVec2 GetMiddlePos() const;
 
-		Fly::FunctionView GetCurrentFunction() const;
+		Fly::FunctionView GetCurrentFunctionView();
 
 		Fly::CommandTracker& GetCommandTracker()
 		{
@@ -116,9 +118,7 @@ namespace Editor
 
 		
 		FlyClassWindow myClassWindow;
-		//VariableWindow myVariableWindow;
 		CustomEventWindow myCustomEventWindow;
-		//FunctionWindow myFunctionWindow;
 		FunctionSettingsWindow myFunctionSettingsWindow;
 
 		NodeContextHistory myNodeContextHistory;
@@ -136,9 +136,7 @@ namespace Editor
 
 		bool myIsContextSensitive = false;
 
-	public:
-		Fly::FunctionView mySelectedFunction;
-	private:
+		Fly::FunctionView mySelectedFunctionView;
 
 		static constexpr Fly::Color mySelectionTint{ 0.2f, 0.2f, 0.2f, 0.f };// = Color(0.2f, 0.2f, 0.2f, 0);
 		static constexpr Fly::Color myHoverTint{ 0.1f, 0.1f, 0.1f, 0.f };

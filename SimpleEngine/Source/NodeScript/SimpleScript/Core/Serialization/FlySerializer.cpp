@@ -32,8 +32,8 @@ namespace FLY_NAMESPACE
 		std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
 		std::filesystem::path filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
 
-		const bool createdDirectory = std::filesystem::create_directories(std::string(aFilePath));
-		if (!createdDirectory)
+		std::filesystem::create_directories(std::string(aFilePath));
+		if (!std::filesystem::exists(fileDirectory))
 		{
 			throw std::runtime_error("Failed to create directory: " + fileDirectory.string());
 			return;
@@ -342,7 +342,7 @@ namespace FLY_NAMESPACE
 
 					const std::string fileName = entry.path().filename().string();
 					const std::string name = fileName.substr(0, fileName.find_last_of('.'));
-					Class& createdClass = Internal::CreateClass(GetDataTypeID<None>(), name);
+					Class& createdClass = Internal::CreateClass(GetDataTypeID<None*>(), name);
 					LoadClass(createdClass, aFilePath);
 				}
 			}
@@ -461,7 +461,7 @@ namespace FLY_NAMESPACE
 
 				const DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeName);
 
-				Internal::AddPinToCustomEvent(customEventID, dataTypeID, pinName);
+				Internal::AddPinToCustomEvent(customEventID, dataTypeID, pinName, nullptr);
 			}
 		}
 	}

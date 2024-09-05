@@ -27,7 +27,7 @@ namespace FLY_NAMESPACE
 		return result;
 	}
 
-	inline std::string GetClassFromMember(const std::string& aStr)
+	inline std::string GetClassNameFromMemberName(const std::string& aStr)
 	{
 		return aStr.substr(0, aStr.find_first_of(':'));
 	}

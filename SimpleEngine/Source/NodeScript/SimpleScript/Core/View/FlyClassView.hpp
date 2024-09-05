@@ -31,6 +31,7 @@ namespace FLY_NAMESPACE
 
 		VariableView CreateVariable(DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
 		ClassInstanceView CreateClassInstance();
+		FunctionView CreateMemberFunction(std::string_view aName);
 
 		bool operator==(const ClassView& aOther) const;
 		bool operator!=(const ClassView& aOther) const;

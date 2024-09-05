@@ -2,10 +2,14 @@
 #include "Editor/Windows/AssetWindow.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "Engine/Debugger/Console/Console.hpp"
+#include "Menu/MainMenuBar.hpp"
+#include "FlyScript/NodeScriptingWindow.hpp"
 
 namespace Editor
 {
 	AssetWindow::AssetWindow()
+		: myActiveWindowData(nullptr)
+		, myNodeScriptingWindow(nullptr)
 	{
 	}
 
@@ -133,6 +137,7 @@ namespace Editor
 		for (size_t i = 0; i < fileNames.size(); ++i)
 		{
 			const std::string extension = SimpleUtilities::FileManager::GetFileExtension(fileNames[i]);
+			const std::string baseName = SimpleUtilities::FileManager::GetFileBaseName(fileNames[i]);
 
 			ImTextureID textureID = unknownIcon;
 
@@ -225,7 +230,10 @@ namespace Editor
 					}
 					else if (extension == ".fly")
 					{
-
+						if (myNodeScriptingWindow->OpenClassByName(baseName))
+						{
+							myActiveWindowData->SetActiveWindow(eWindowType::NodeScript);
+						}
 					}
 				}
 				else if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && extension[0] == '.')

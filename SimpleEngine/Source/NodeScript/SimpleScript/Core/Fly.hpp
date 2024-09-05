@@ -29,9 +29,11 @@ namespace FLY_NAMESPACE
 	void LoadAllClasses(std::string_view aFilePath);
 	void SaveCustomEvents(std::string_view aFilePath);
 
-	ClassView CreateClass(DataTypeView aTargetView, std::string_view aName);
-	ClassView CreateClassWithoutTarget(std::string_view aName);
+	ClassView CreateClass(DataTypeView aTargetView, std::string_view aName, std::string_view aSavePath);
+	ClassView CreateClassWithoutTarget(std::string_view aName, std::string_view aSavePath);
 	void SetClassName(ClassView aClassView, std::string_view aName);
+
+	ClassView FindClassByName(std::string_view aName);
 
 	ClassInstanceView CreateClassInstance(ClassView aClassView);
 	void DestroyClassInstance(ClassInstanceView aClassInstanceView);
@@ -82,20 +84,20 @@ namespace FLY_NAMESPACE
 
 	CustomEventView CreateCustomEvent(std::string_view aName);
 
-	void AddPinToCustomEvent(CustomEventView aCustomEventView, DataTypeView aDataTypeView, std::string_view aPinName = "Pin");
-	void SetPinDataTypeAtIndexCustomEvent(CustomEventView aCustomEventView, DataTypeView aDataTypeView, size_t aIndex);
-	void SetPinNameAtIndexCustomEvent(CustomEventView aCustomEventView, std::string_view aName, size_t aIndex);
-	void DeletePinAtIndexCustomEvent(CustomEventView aCustomEventView, size_t aIndex);
+	void AddPinToCustomEvent(CustomEventView aCustomEventView, DataTypeView aDataTypeView, std::string_view aPinName, CommandTracker* aCommandTracker);
+	void SetPinDataTypeAtIndexCustomEvent(CustomEventView aCustomEventView, DataTypeView aDataTypeView, size_t aIndex, CommandTracker* aCommandTracker);
+	void SetPinNameAtIndexCustomEvent(CustomEventView aCustomEventView, std::string_view aName, size_t aIndex, CommandTracker* aCommandTracker);
+	void DeletePinAtIndexCustomEvent(CustomEventView aCustomEventView, size_t aIndex, CommandTracker* aCommandTracker);
 
-	void SetCustomEventName(CustomEventView aCustomEventView, std::string_view aName);
+	void SetCustomEventName(CustomEventView aCustomEventView, std::string_view aName, CommandTracker* aCommandTracker);
 
 	FunctionView CreateGlobalFunction(const std::string_view aName);
 	FunctionView CreateMemberFunction(const std::string_view aName, ClassView aClassView);
 
-	void AddPinToFunction(FunctionView aFunctionView, DataTypeView aDataTypeView, eFlowType aFlowType, std::string_view aPinName = "Pin");
-	void SetPinDataTypeAtIndexFunction(FunctionView aFunctionView, DataTypeView aDataTypeView, size_t aIndex, eFlowType aFlowType);
-	void SetPinNameAtIndexFunction(FunctionView aFunctionView, std::string_view aName, size_t aIndex, eFlowType aFlowType);
-	void DeletePinAtIndexFunction(FunctionView aFunctionView, size_t aIndex, eFlowType aFlowType);
+	void AddPinToFunction(FunctionView aFunctionView, DataTypeView aDataTypeView, eFlowType aFlowType, std::string_view aPinName, CommandTracker* aCommandTracker);
+	void SetPinDataTypeAtIndexFunction(FunctionView aFunctionView, DataTypeView aDataTypeView, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
+	void SetPinNameAtIndexFunction(FunctionView aFunctionView, std::string_view aName, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
+	void DeletePinAtIndexFunction(FunctionView aFunctionView, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
 
 	void SetFunctionName(FunctionView aFunctionView, std::string_view aName, CommandTracker* aCommandTracker);
 

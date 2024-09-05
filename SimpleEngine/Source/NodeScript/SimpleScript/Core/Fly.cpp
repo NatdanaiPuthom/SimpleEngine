@@ -61,20 +61,36 @@ namespace FLY_NAMESPACE
 		ScriptLoader::SaveCustomEvents(aFilePath);
 	}
 
-	ClassView CreateClass(const DataTypeView aTargetView, const std::string_view aName)
+	ClassView CreateClass(const DataTypeView aTargetView, const std::string_view aName, const std::string_view aSavePath)
 	{
 		Class& createdClass = Global::GetFoundation().CreateClass(aTargetView.GetID(), aName);
+		SaveClass(ClassView(createdClass), aSavePath);
 		return ClassView(createdClass);
 	}
 
-	ClassView CreateClassWithoutTarget(const std::string_view aName)
+	ClassView CreateClassWithoutTarget(const std::string_view aName, const std::string_view aSavePath)
 	{
-		return CreateClass(DataTypeView(GetDataTypeID<None*>()), aName);
+		return CreateClass(DataTypeView(GetDataTypeID<None*>()), aName, aSavePath);
 	}
 
 	void SetClassName(const ClassView aClassView, const std::string_view aName)
 	{
 		aClassView.GetClass().mName = aName;
+	}
+
+	ClassView FindClassByName(const std::string_view aName)
+	{
+		auto& classes = Global::GetFoundation().mClasses;
+
+		for (HeapObject<Class>& c : classes)
+		{
+			if (ClassView(*c).GetName() == aName)
+			{
+				return ClassView(*c);
+			}
+		}
+
+		return ClassView();
 	}
 
 	ClassInstanceView CreateClassInstance(const ClassView aClassView)
@@ -643,27 +659,27 @@ namespace FLY_NAMESPACE
 		return CustomEventView(Internal::CreateCustomEvent(aName));
 	}
 
-	void AddPinToCustomEvent(const CustomEventView aCustomEventView, const DataTypeView aDataTypeView, std::string_view aPinName)
+	void AddPinToCustomEvent(const CustomEventView aCustomEventView, const DataTypeView aDataTypeView, std::string_view aPinName, CommandTracker* const aCommandTracker)
 	{
-		Internal::AddPinToCustomEvent(aCustomEventView.GetID(), aDataTypeView.GetID(), aPinName);
+		Internal::AddPinToCustomEvent(aCustomEventView.GetID(), aDataTypeView.GetID(), aPinName, aCommandTracker);
 	}
 
-	void SetPinDataTypeAtIndexCustomEvent(const CustomEventView aCustomEventView, const DataTypeView aDataTypeView, const size_t aIndex)
+	void SetPinDataTypeAtIndexCustomEvent(const CustomEventView aCustomEventView, const DataTypeView aDataTypeView, const size_t aIndex, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetPinDataTypeAtIndexCustomEvent(aCustomEventView.GetID(), aDataTypeView.GetID(), aIndex);
+		Internal::SetPinDataTypeAtIndexCustomEvent(aCustomEventView.GetID(), aDataTypeView.GetID(), aIndex, aCommandTracker);
 	}
 
-	void SetPinNameAtIndexCustomEvent(const CustomEventView aCustomEventView, const std::string_view aName, const size_t aIndex)
+	void SetPinNameAtIndexCustomEvent(const CustomEventView aCustomEventView, const std::string_view aName, const size_t aIndex, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetPinNameAtIndexCustomEvent(aCustomEventView.GetID(), aName, aIndex);
+		Internal::SetPinNameAtIndexCustomEvent(aCustomEventView.GetID(), aName, aIndex, aCommandTracker);
 	}
 
-	void DeletePinAtIndexCustomEvent(const CustomEventView aCustomEventView, const size_t aIndex)
+	void DeletePinAtIndexCustomEvent(const CustomEventView aCustomEventView, const size_t aIndex, CommandTracker* const aCommandTracker)
 	{
-		Internal::DeletePinAtIndexCustomEvent(aCustomEventView.GetID(), aIndex);
+		Internal::DeletePinAtIndexCustomEvent(aCustomEventView.GetID(), aIndex, aCommandTracker);
 	}
 
-	void SetCustomEventName(const CustomEventView aCustomEventView, std::string_view aName)
+	void SetCustomEventName(const CustomEventView aCustomEventView, std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 	{
 		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventView.GetID());
 		NodeType& executorNodeType = Global::GetNodeTypeManager().GetNodeType(customEvent.GetExecutorTypeID());
@@ -687,24 +703,24 @@ namespace FLY_NAMESPACE
 		return FunctionView(id);
 	}
 
-	void AddPinToFunction(const FunctionView aFunctionView, const DataTypeView aDataTypeView, const eFlowType aFlowType, std::string_view aPinName)
+	void AddPinToFunction(const FunctionView aFunctionView, const DataTypeView aDataTypeView, const eFlowType aFlowType, std::string_view aPinName, CommandTracker* const aCommandTracker)
 	{
-		Internal::AddPinToFunction(aFunctionView.GetID(), aDataTypeView.GetID(), aFlowType, aPinName);
+		Internal::AddPinToFunction(aFunctionView.GetID(), aDataTypeView.GetID(), aFlowType, aPinName, aCommandTracker);
 	}
 
-	void SetPinDataTypeAtIndexFunction(const FunctionView aFunctionView, const DataTypeView aDataTypeView, const size_t aIndex, const eFlowType aFlowType)
+	void SetPinDataTypeAtIndexFunction(const FunctionView aFunctionView, const DataTypeView aDataTypeView, const size_t aIndex, const eFlowType aFlowType, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetPinDataTypeAtIndexFunction(aFunctionView.GetID(), aDataTypeView.GetID(), aIndex, aFlowType);
+		Internal::SetPinDataTypeAtIndexFunction(aFunctionView.GetID(), aDataTypeView.GetID(), aIndex, aFlowType, aCommandTracker);
 	}
 
-	void SetPinNameAtIndexFunction(const FunctionView aFunctionView, const std::string_view aName, const size_t aIndex, const eFlowType aFlowType)
+	void SetPinNameAtIndexFunction(const FunctionView aFunctionView, const std::string_view aName, const size_t aIndex, const eFlowType aFlowType, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetPinNameAtIndexFunction(aFunctionView.GetID(), aName, aIndex, aFlowType);
+		Internal::SetPinNameAtIndexFunction(aFunctionView.GetID(), aName, aIndex, aFlowType, aCommandTracker);
 	}
 
-	void DeletePinAtIndexFunction(const FunctionView aFunctionView, const size_t aIndex, const eFlowType aFlowType)
+	void DeletePinAtIndexFunction(const FunctionView aFunctionView, const size_t aIndex, const eFlowType aFlowType, CommandTracker* const aCommandTracker)
 	{
-		Internal::DeletePinAtIndexFunction(aFunctionView.GetID(), aIndex, aFlowType);
+		Internal::DeletePinAtIndexFunction(aFunctionView.GetID(), aIndex, aFlowType, aCommandTracker);
 	}
 
 	void SetFunctionName(const FunctionView aFunctionView, const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)

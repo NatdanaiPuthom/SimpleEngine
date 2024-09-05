@@ -761,7 +761,7 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		void AddPinToCustomEvent(const CustomEventID aCustomEventID, const DataTypeID aDataTypeID, const std::string_view aPinName)
+		void AddPinToCustomEvent(const CustomEventID aCustomEventID, const DataTypeID aDataTypeID, const std::string_view aPinName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventID);
 
@@ -769,7 +769,7 @@ namespace FLY_NAMESPACE
 			AddPinToNodeType(customEvent.GetCallerTypeID(), aDataTypeID, eFlowType::Input, aPinName);
 		}
 
-		void SetPinDataTypeAtIndexCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, size_t aIndex)
+		void SetPinDataTypeAtIndexCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, size_t aIndex, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			if (aIndex == 0)
 			{
@@ -781,7 +781,7 @@ namespace FLY_NAMESPACE
 			SetPinAtIndexNodeType(customEvent.GetCallerTypeID(), aIndex, aDataTypeID, eFlowType::Input);
 		}
 
-		void SetPinNameAtIndexCustomEvent(const CustomEventID aCustomEventID, const std::string_view aName, const size_t aIndex)
+		void SetPinNameAtIndexCustomEvent(const CustomEventID aCustomEventID, const std::string_view aName, const size_t aIndex, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			if (aIndex == 0)
 			{
@@ -803,7 +803,7 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		void DeletePinAtIndexCustomEvent(const CustomEventID aCustomEventID, const size_t aIndex)
+		void DeletePinAtIndexCustomEvent(const CustomEventID aCustomEventID, const size_t aIndex, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			if (aIndex == 0)
 			{
@@ -816,7 +816,7 @@ namespace FLY_NAMESPACE
 			DeletePinAtIndexNodeType(customEvent.GetExecutorTypeID(), aIndex, eFlowType::Output);
 		}
 
-		void AddPinToFunction(const FunctionID aFunctionID, const DataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName)
+		void AddPinToFunction(const FunctionID aFunctionID, const DataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
 			const Function& function = nodeTypeManager.GetFunction(aFunctionID);
@@ -828,7 +828,7 @@ namespace FLY_NAMESPACE
 			AddPinToNodeType(inputOutputNodeTypeID, aDataTypeID, InvertFlowType(aFlowType), aPinName);
 		}
 
-		void SetPinDataTypeAtIndexFunction(const FunctionID aFunctionID, const DataTypeID aDataTypeID, const size_t aIndex, const eFlowType aFlowType)
+		void SetPinDataTypeAtIndexFunction(const FunctionID aFunctionID, const DataTypeID aDataTypeID, const size_t aIndex, const eFlowType aFlowType, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			const Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionID);
 
@@ -838,7 +838,7 @@ namespace FLY_NAMESPACE
 			SetPinAtIndexNodeType(inputOutputNodeTypeID, aIndex, aDataTypeID, InvertFlowType(aFlowType));
 		}
 
-		void SetPinNameAtIndexFunction(const FunctionID aFunctionID, const std::string_view aName, const size_t aIndex, const eFlowType aFlowType)
+		void SetPinNameAtIndexFunction(const FunctionID aFunctionID, const std::string_view aName, const size_t aIndex, const eFlowType aFlowType, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			if (aIndex == 0)
 			{
@@ -863,7 +863,7 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		void DeletePinAtIndexFunction(const FunctionID aFunctionID, const size_t aIndex, const eFlowType aFlowType)
+		void DeletePinAtIndexFunction(const FunctionID aFunctionID, const size_t aIndex, const eFlowType aFlowType, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			const Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionID);
 

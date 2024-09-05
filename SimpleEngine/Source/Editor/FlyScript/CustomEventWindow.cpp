@@ -25,9 +25,9 @@ namespace Editor
 				Fly::CreateCustomEvent("CustomEvent");
 			}
 
-			const std::vector<Fly::CustomEventView> customEvents = Fly::GetCustomEvents();
+			std::vector<Fly::CustomEventView> customEvents = Fly::GetCustomEvents();
 
-			for (const Fly::CustomEventView& customEvent : customEvents)
+			for (Fly::CustomEventView& customEvent : customEvents)
 			{
 				if (ImGui::TreeNode(std::to_string(customEvent.GetID()).c_str(), customEvent.GetExecutorNodeType().GetShortName().c_str()))
 				{
@@ -46,7 +46,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void CustomEventWindow::EditInputs(const Fly::CustomEventView& aCustomEventView)
+	void CustomEventWindow::EditInputs(Fly::CustomEventView& aCustomEventView)
 	{
 		const Fly::NodeTypeView executorNodeType = aCustomEventView.GetExecutorNodeType();
 		std::string shortName = executorNodeType.GetShortName();
@@ -56,14 +56,14 @@ namespace Editor
 
 		if (ImGui::InputText(std::string("##CustomEventName" + std::to_string(aCustomEventView.GetID())).c_str(), nameBuffer, IM_ARRAYSIZE(nameBuffer)))
 		{
-			Fly::SetCustomEventName(aCustomEventView, nameBuffer);
+			aCustomEventView.SetName(nameBuffer, nullptr);
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Add Pin"))
 		{
-			Fly::AddPinToCustomEvent(aCustomEventView, Fly::DataTypeView(Fly::GetDataTypeID<bool>()), "Pin");
+			aCustomEventView.AddPin(Fly::DataTypeView(Fly::GetDataTypeID<bool>()), "Pin", nullptr);
 		}
 
 		ImGui::Separator();
@@ -85,20 +85,20 @@ namespace Editor
 
 			if (ImGui::InputText(("##CustomEventPinName" + std::to_string(i)).c_str(), buffer, IM_ARRAYSIZE(buffer)))
 			{
-				Fly::SetPinNameAtIndexCustomEvent(aCustomEventView, buffer, i);
+				aCustomEventView.SetPinNameAtIndex(buffer, i, nullptr);
 			}
 
 			ImGui::SameLine();
 			if (ImGui::Button(std::string("Delete##" + std::to_string(i)).c_str()))
 			{
-				Fly::DeletePinAtIndexCustomEvent(aCustomEventView, i);
+				aCustomEventView.DeletePinAtIndex(i, nullptr);
 			}
 
 			const std::string comboLabel = "##CustomEventPinType" + std::to_string(i);
 			Fly::DataTypeView currentDataType(outputPinType.GetDataTypeID());
 			if (DataTypeComboEditableFilter(comboLabel.c_str(), currentDataType))
 			{
-				Fly::SetPinDataTypeAtIndexCustomEvent(aCustomEventView, currentDataType, i);
+				aCustomEventView.SetPinDataTypeAtIndex(currentDataType, i, nullptr);
 			}
 
 			ImGui::SameLine();

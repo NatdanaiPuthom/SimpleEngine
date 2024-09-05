@@ -14,15 +14,26 @@ namespace Editor
 {
 
 	MainMenuBar::MainMenuBar()
-		: myEditorWindowActive(false)
-		, myDeferredWindowActive(false)
-		, myPostProcessWindowActive(false)
-		, myNodeScriptingWindowActive(false)
 	{
 	}
 
 	MainMenuBar::~MainMenuBar()
 	{
+	}
+
+	bool ActiveWindowData::IsWindowActive(eWindowType aWindowType) const
+	{
+		return myIsWindowActive[static_cast<size_t>(aWindowType)];
+	}
+
+	void ActiveWindowData::SetActiveWindow(eWindowType aWindowType, const bool aIsActive)
+	{
+		assert(aWindowType != eWindowType::Count);
+		for (bool& isActive : myIsWindowActive)
+		{
+			isActive = false;
+		}
+		myIsWindowActive[static_cast<size_t>(aWindowType)] = aIsActive;
 	}
 
 	void MainMenuBar::Init()
@@ -42,29 +53,23 @@ namespace Editor
 		myDeferredSceneWindow->Init();
 		myPostProcessWindow->Init();
 		myNodeScriptingWindow->Init();
+
+		myAssetWindow->myActiveWindowData = &myActiveWindowData;
+		myAssetWindow->myNodeScriptingWindow = myNodeScriptingWindow.get();
 	}
 
 	void MainMenuBar::Update()
 	{
 		Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
 
-		bool* const windowActive[] = { &myEditorWindowActive, &myDeferredWindowActive, &myPostProcessWindowActive, &myNodeScriptingWindowActive };
 		static const char* const windowNames[] = { "Editor", "Deferred", "PostProcess", "NodeScript" };
 		static const char* const keyShortCuts[] = { "F1", "F2", "F3", "F4" };
 
-		for (int i = 0; i < sizeof(windowActive) / sizeof(windowActive[0]); ++i)
+		for (unsigned int i = 0; i < static_cast<unsigned int>(eWindowType::Count); ++i)
 		{
 			if (inputManager.IsKeyPressed(VK_F1 + i))
 			{
-				*windowActive[i] = !(*windowActive[i]);
-
-				for (int j = 0; j < sizeof(windowActive) / sizeof(windowActive[0]); ++j)
-				{
-					if (j != i)
-					{
-						*windowActive[j] = false;
-					}
-				}
+				myActiveWindowData.SetActiveWindow(static_cast<eWindowType>(i));
 			}
 		}
 
@@ -84,17 +89,11 @@ namespace Editor
 		{
 			if (ImGui::BeginMenu("Windows"))
 			{
-				for (unsigned int i = 0; i < sizeof(windowActive) / sizeof(windowActive[0]); ++i)
+				for (unsigned int i = 0; i < static_cast<unsigned int>(eWindowType::Count); ++i)
 				{
-					if (ImGui::MenuItem(windowNames[i], keyShortCuts[i], *&windowActive[i]))
+					if (ImGui::MenuItem(windowNames[i], keyShortCuts[i], myActiveWindowData.IsWindowActive(static_cast<eWindowType>(i))))
 					{
-						for (unsigned int j = 0; j < sizeof(windowActive) / sizeof(windowActive[0]); ++j)
-						{
-							if (j != i)
-							{
-								*windowActive[j] = false;
-							}
-						}
+						myActiveWindowData.SetActiveWindow(static_cast<eWindowType>(i));
 					}
 				}
 
@@ -106,7 +105,7 @@ namespace Editor
 			ImGui::EndMainMenuBar();
 		}
 
-		if (myEditorWindowActive == true)
+		if (myActiveWindowData.IsWindowActive(eWindowType::Editor))
 		{
 			mySettingsWindow->Update();
 			myHierarchyWindow->Update();
@@ -116,7 +115,7 @@ namespace Editor
 
 	void MainMenuBar::Draw()
 	{
-		if (myEditorWindowActive == true)
+		if (myActiveWindowData.IsWindowActive(eWindowType::Editor))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 3));
@@ -224,24 +223,24 @@ namespace Editor
 
 	void MainMenuBar::DrawTools()
 	{
-		if (myEditorWindowActive)
+		if (myActiveWindowData.IsWindowActive(eWindowType::Editor))
 		{
 			mySettingsWindow->Draw();
 			myAssetWindow->Draw();
 			myHierarchyWindow->Draw(); //TO-DO(v9.31.1): For now HierachyWindow should always be run last due to removing Entities during run time. Fix/Look into it in future
 		}
 
-		if (myDeferredWindowActive == true)
+		if (myActiveWindowData.IsWindowActive(eWindowType::Deferred))
 		{
 			myDeferredSceneWindow->Draw();
 		}
 
-		if (myPostProcessWindowActive == true)
+		if (myActiveWindowData.IsWindowActive(eWindowType::PostProcess))
 		{
 			myPostProcessWindow->Draw();
 		}
 
-		if (myNodeScriptingWindowActive)
+		if (myActiveWindowData.IsWindowActive(eWindowType::NodeScript))
 		{
 			myNodeScriptingWindow->Draw();
 		}
@@ -259,7 +258,7 @@ namespace Editor
 
 		const nlohmann::json settings = json["Editor_Settings"];
 
-		myEditorWindowActive = settings["Editor"]["Active"];
+		myActiveWindowData.SetActiveWindow(eWindowType::Editor, settings["Editor"]["Active"]);
 		myHierarchyWindow->myIsActive = settings["Windows"]["Show_Inspector"];
 	}
 }

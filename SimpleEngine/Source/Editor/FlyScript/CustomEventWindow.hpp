@@ -20,7 +20,7 @@ namespace Editor
 
 	private:
 
-		void EditInputs(const Fly::CustomEventView& aCustomEventView);
+		void EditInputs(Fly::CustomEventView& aCustomEventView);
 
 	private:
 

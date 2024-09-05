@@ -65,6 +65,21 @@ namespace FLY_NAMESPACE
 		Fly::SetFunctionName(*this, aName, aCommandTracker);
 	}
 
+	void FunctionView::AddPin(DataTypeView aDataTypeView, eFlowType aFlowType, std::string_view aName, CommandTracker* aCommandTracker)
+	{
+		AddPinToFunction(*this, aDataTypeView, aFlowType, aName, aCommandTracker);
+	}
+
+	void FunctionView::SetPinNameAtIndex(std::string_view aName, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker)
+	{
+		SetPinNameAtIndexFunction(*this, aName, aIndex, aFlowType, aCommandTracker);
+	}
+
+	void FunctionView::SetPinDataTypeAtIndex(DataTypeView aDataTypeView, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker)
+	{
+		SetPinDataTypeAtIndexFunction(*this, aDataTypeView, aIndex, aFlowType, aCommandTracker);
+	}
+
 	FunctionView::operator bool() const
 	{
 		return mFunctionID != InvalidID<FunctionID>();

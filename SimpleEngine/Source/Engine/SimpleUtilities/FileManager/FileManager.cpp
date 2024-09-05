@@ -75,6 +75,12 @@ namespace SimpleUtilities
 		return aFilePath;
 	}
 
+	const std::string FileManager::GetFileBaseName(const std::string& aFilePath)
+	{
+		std::string fileName = GetFileName(aFilePath);
+		return fileName.substr(0, fileName.find('.'));
+	}
+
 	const std::vector<std::string> FileManager::GetFileNamesFromDirectory(const std::string& aAbsolutePath, const bool aIncludeFolders)
 	{
 		std::vector<std::string> fileNames;

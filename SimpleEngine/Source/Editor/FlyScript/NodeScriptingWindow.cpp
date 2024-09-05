@@ -11,16 +11,6 @@
 namespace Editor
 {
 
-	struct A
-	{
-		int i = 1;
-	};
-
-	struct B
-	{
-		Fly::HeapObject<A> mA;
-	};
-
 	NodeScriptingWindow::NodeScriptingWindow()
 		: myClassWindow(*this)
 		, myCustomEventWindow(*this)
@@ -52,6 +42,9 @@ namespace Editor
 
 	void NodeScriptingWindow::SetNodeContext(const Fly::NodeGraphView aNodeGraphView, const Fly::ClassView aClassView)
 	{
+		assert(aNodeGraphView);
+		assert(aClassView);
+
 		NodeContext nodeContext
 		{
 			.myClassView = aClassView,
@@ -75,6 +68,25 @@ namespace Editor
 		return GetNodeContext().myClassView ? eGraphMode::Class : eGraphMode::Global;
 	}
 
+	void NodeScriptingWindow::SetSelectedFunctionView(Fly::FunctionView aFunctionView)
+	{
+		mySelectedFunctionView = aFunctionView;
+	}
+
+	bool NodeScriptingWindow::OpenClassByName(std::string_view aName)
+	{
+		Fly::ClassView classView = Fly::FindClassByName(aName);
+
+		if (!classView)
+		{
+			return false;
+		}
+
+		SetNodeContext(classView.GetEventGraphView(), classView);
+
+		return true;
+	}
+
 	void NodeScriptingWindow::UpdateContext()
 	{
 		if (myNodeContextHistory.currentIndex == -1)
@@ -82,13 +94,13 @@ namespace Editor
 			auto classes = Fly::GetClasses();
 			if (classes.empty())
 			{
-				Fly::CreateClassWithoutTarget("Default Class");
+				Fly::CreateClassWithoutTarget("Default Class", ASSET_FILE_PATH);
 			}
 
 			classes = Fly::GetClasses();
 			if (classes.begin()->second.empty())
 			{
-				Fly::CreateClass(Fly::GetClasses().begin()->first, "Default Class");
+				Fly::CreateClass(Fly::GetClasses().begin()->first, "Default Class", ASSET_FILE_PATH);
 			}
 
 			Fly::ClassView flyClass = classes.begin()->second.front();
@@ -266,7 +278,6 @@ namespace Editor
 					ImGui::EndMenu();
 				}
 			}
-			//ImGui::MenuItem()
 			ImGui::EndCombo();
 		}
 
@@ -305,10 +316,10 @@ namespace Editor
 
 			if (ImGui::Button("Create", ImVec2(120, 0)))
 			{
-				Fly::ClassView myClassView = Fly::CreateClass(mySelectedTargetDataType, myNewClassNameText);
+				Fly::ClassView createdClassView = Fly::CreateClass(mySelectedTargetDataType, myNewClassNameText, ASSET_FILE_PATH);
 				myNewClassNameText[0] = (char)0;
 
-				myImNodesContexts.emplace(myClassView.GetEventGraphView(), ImNodes::CreateContext());
+				myImNodesContexts.emplace(createdClassView.GetEventGraphView(), ImNodes::CreateContext());
 
 
 				ImGui::CloseCurrentPopup();
@@ -693,14 +704,16 @@ namespace Editor
 				ImGui::CloseCurrentPopup();
 			}
 
-			if (myClickedNodeView.HasAnyConnectedLinks() && ImGui::Selectable("Destroy Links"))
+			ImGui::BeginDisabled(!myClickedNodeView.HasAnyConnectedLinks());
+			if (ImGui::Selectable("Destroy Links"))
 			{
 				myClickedNodeView.DestroyConnectedLinks(myCommandTracker.get());
 			}
+			ImGui::EndDisabled();
 
 			ImGui::Separator();
 
-			if (myClickedNodeView.IsReplacable() && ImGui::BeginMenu("Choose Type"))
+			if (myClickedNodeView.IsReplacable() && ImGui::BeginMenu("Data Type"))
 			{
 				const std::vector<Fly::DataTypeView> replacableDataTypeViews = Fly::GetReplacableDataTypes(myClickedNodeView, currentNodeContext.myNodeGraphView);
 				for (const Fly::DataTypeView& replacableDataTypeView : replacableDataTypeViews)
@@ -735,10 +748,17 @@ namespace Editor
 
 		if (ImGui::BeginPopup("Pin Popup"))
 		{
-			if (myClickedPinView.HasAnyConnectedLinks() && ImGui::Selectable("Destroy Links"))
+
+			ImGui::Text("Pin Options");
+
+			ImGui::Separator();
+
+			ImGui::BeginDisabled(!myClickedPinView.HasAnyConnectedLinks());
+			if (ImGui::Selectable("Destroy Links"))
 			{
 				myClickedPinView.DestroyConnectedLinks(myCommandTracker.get());
 			}
+			ImGui::EndDisabled();
 
 			ImGui::Separator();
 
@@ -1057,9 +1077,9 @@ namespace Editor
 		return currentImNodesContext->CanvasOriginScreenSpace + ImNodes::EditorContextGetPanning() / 2.f;
 	}
 
-	Fly::FunctionView NodeScriptingWindow::GetCurrentFunction() const
+	Fly::FunctionView NodeScriptingWindow::GetCurrentFunctionView()
 	{
-		return mySelectedFunction;
+		return mySelectedFunctionView;
 	}
 
 

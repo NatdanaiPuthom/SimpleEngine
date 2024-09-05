@@ -4,6 +4,10 @@
 
 namespace Editor
 {
+
+	class ActiveWindowData;
+	class NodeScriptingWindow;
+
 	class AssetWindow final : public Editor::ToolInterface
 	{
 	public:
@@ -18,5 +22,9 @@ namespace Editor
 	private:
 		std::string myFilePopUpID;
 		std::string myFileToRemove;
+
+	public:
+		ActiveWindowData* myActiveWindowData;
+		NodeScriptingWindow* myNodeScriptingWindow;
 	};
 }
