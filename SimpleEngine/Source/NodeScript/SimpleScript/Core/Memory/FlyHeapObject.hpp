@@ -5,118 +5,161 @@
 
 namespace FLY_NAMESPACE
 {
+
 	template<typename T, bool Nullable>
-	concept DC_HO = Nullable || (std::default_initializable<T> && !Nullable);
+	class HeapObject;
+
 
 	template<typename T>
-	class HeapObject final
+	class HeapObject<T, true> final
 	{
 	public:
 
 		HeapObject() = default;
-		~HeapObject() = default;
-		explicit HeapObject(T* aPtr);
+		explicit HeapObject(T* aPtr)
+			: mUniquePtr(std::unique_ptr<T>(aPtr))
+		{
+		}
 
-		HeapObject(const HeapObject& aOther);
+
+		template<typename... Args> requires HasArgsConstructor<T, Args...>
+		HeapObject(Args&&... aArgs)
+			: mUniquePtr(std::make_unique<T>(std::forward<Args>(aArgs)...))
+		{
+		}
+
+		HeapObject(const HeapObject& aOther)
+			: mUniquePtr(aOther ? std::make_unique<T>(*aOther) : std::unique_ptr<T>())
+		{
+
+		}
+
 		HeapObject(HeapObject&&) noexcept = default;
 
-		HeapObject& operator=(const HeapObject& aOther);
+		template<typename T>
+		HeapObject& operator=(const HeapObject& aOther)
+		{
+			mUniquePtr = aOther ? std::unique_ptr<T>(*aOther) : std::unique_ptr<T>();
+
+			return *this;
+		}
+
 		HeapObject& operator=(HeapObject&&) noexcept = default;
 
-		[[nodiscard]] T* Get() noexcept;
-		[[nodiscard]] const T* Get() const noexcept;
+		[[nodiscard]] T* Get()
+		{
+			return mUniquePtr.get();
+		}
 
-		[[nodiscard]] T* operator->() noexcept;
-		[[nodiscard]] const T* operator->() const noexcept;
-		[[nodiscard]] T& operator*() noexcept;
-		[[nodiscard]] const T& operator*() const noexcept;
+		[[nodiscard]] const T* Get() const
+		{
+			return mUniquePtr.get();
+		}
 
-		void Reset(T* aPointer = nullptr);
-		[[nodiscard]] T* Release();
+		[[nodiscard]] T* operator->()
+		{
+			return Get();
+		}
 
-		explicit operator bool() const noexcept;
+		[[nodiscard]] const T* operator->() const
+		{
+			return Get();
+		}
+
+		[[nodiscard]] T& operator*()
+		{
+			return *mUniquePtr;
+		}
+
+		[[nodiscard]] const T& operator*() const
+		{
+			return *mUniquePtr;
+		}
+
+		void Reset(T* aPointer = nullptr)
+		{
+			mUniquePtr.reset(aPointer);
+		}
+
+		[[nodiscard]] T* Release()
+		{
+			return mUniquePtr.release();
+		}
+
+		explicit operator bool() const
+		{
+			return mUniquePtr.operator bool();
+		}
 
 	private:
 
 		std::unique_ptr<T> mUniquePtr;
+
 	};
 
 	template<typename T>
-	inline HeapObject<T>::HeapObject(T* aPtr)
-		: mUniquePtr(aPtr)
+	class HeapObject<T, false> final
 	{
-	}
+	public:
 
-	template<typename T>
-	inline HeapObject<T>::HeapObject(const HeapObject& aOther)
-		: mUniquePtr(aOther ? std::make_unique<T>(*aOther) : std::unique_ptr<T>())
-	{
-	}
+		template<typename... Args> requires HasArgsConstructor<T, Args...>
+		HeapObject(Args&&... aArgs)
+			: mUniquePtr(std::make_unique<T>(std::forward<Args>(aArgs)...))
+		{
+		}
 
-	template<typename T>
-	inline HeapObject<T>& HeapObject<T>::operator=(const HeapObject& aOther)
-	{
-		mUniquePtr = aOther ? std::make_unique<T>(*aOther) : std::unique_ptr<T>();
+		HeapObject(const HeapObject& aOther)
+			: mUniquePtr(std::make_unique<T>(*aOther))
+		{
 
-		return *this;
-	}
+		}
 
-	template<typename T>
-	inline T* HeapObject<T>::Get() noexcept
-	{
-		return mUniquePtr.get();
-	}
 
-	template<typename T>
-	inline const T* HeapObject<T>::Get() const noexcept
-	{
-		return mUniquePtr.get();
-	}
+		HeapObject(HeapObject&&) noexcept = default;
 
-	template<typename T>
-	inline T* HeapObject<T>::operator->() noexcept
-	{
-		return Get();
-	}
+		HeapObject& operator=(const HeapObject& aOther)
+		{
+			mUniquePtr = std::make_unique<T>(*aOther);
 
-	template<typename T>
-	inline const T* HeapObject<T>::operator->() const noexcept
-	{
-		return Get();
-	}
+			return *this;
+		}
 
-	template<typename T>
-	inline T& HeapObject<T>::operator*() noexcept
-	{
-		return *Get();
-	}
-	template<typename T>
-	inline const T& HeapObject<T>::operator*() const noexcept
-	{
-		return *Get();
-	}
+		HeapObject& operator=(HeapObject&&) noexcept = default;
 
-	template<typename T>
-	inline void HeapObject<T>::Reset(T* aPointer)
-	{
-		mUniquePtr.reset(aPointer);
-	}
-	template<typename T>
-	inline T* HeapObject<T>::Release()
-	{
-		return mUniquePtr.release();
-	}
+		T& Get()
+		{
+			return *mUniquePtr.get();
+		}
 
-	template<typename T>
-	inline HeapObject<T>::operator bool() const noexcept
-	{
-		return mUniquePtr.operator bool();
-	}
+		const T& Get() const
+		{
+			return *mUniquePtr.get();
+		}
 
-	template<typename T, class... Args> requires Fly::HasArgsConstructor<T, Args...>
-	[[nodiscard]] inline HeapObject<T> MakeHeapObject(Args&&... aArgs)
-	{
-		return HeapObject<T>(new T(std::forward<Args>(aArgs)...));
-	}
+		T* operator->()
+		{
+			return mUniquePtr.get();
+		}
+
+		const T* operator->() const
+		{
+			return mUniquePtr.get();
+		}
+
+		T& operator*()
+		{
+			return *mUniquePtr;
+		}
+
+		const T& operator*() const
+		{
+			return *mUniquePtr;
+		}
+
+	private:
+
+		std::unique_ptr<T> mUniquePtr;
+
+	};
 
 }

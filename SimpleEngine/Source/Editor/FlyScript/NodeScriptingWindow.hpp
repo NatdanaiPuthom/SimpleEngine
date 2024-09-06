@@ -141,7 +141,7 @@ namespace Editor
 		static constexpr Fly::Color mySelectionTint{ 0.2f, 0.2f, 0.2f, 0.f };// = Color(0.2f, 0.2f, 0.2f, 0);
 		static constexpr Fly::Color myHoverTint{ 0.1f, 0.1f, 0.1f, 0.f };
 
-		static constexpr const char* ASSET_FILE_PATH = "Assets/Classes";
+		static constexpr const char* ASSET_FILE_PATH = "Assets/FlyClasses";
 
 	};
 }

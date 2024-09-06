@@ -53,7 +53,7 @@ namespace FLY_NAMESPACE
 
 		Function& GetFunction(FunctionID aFunctionID);
 		const Function& GetFunction(FunctionID aFunctionID) const;
-		const std::vector<HeapObject<Function>>& GetFunctions();
+		const std::vector<HeapObject<Function, false>>& GetFunctions();
 		FunctionID GetFunctionID(NodeTypeID aNodeTypeID) const;
 
 		NodeTypeID GetTypeID(std::string_view aName);
@@ -76,7 +76,7 @@ namespace FLY_NAMESPACE
 	private:
 		std::vector<NodeType> mNodeTypes;
 		std::vector<CustomEvent> mCustomEvents;
-		std::vector<HeapObject<Function>> mFunctions;
+		std::vector<HeapObject<Function, false>> mFunctions;
 
 		std::unordered_multimap<NodeTypeID, CustomEventID> mToCustomEventID;
 		std::unordered_multimap<NodeTypeID, FunctionID> mToFunctionID;

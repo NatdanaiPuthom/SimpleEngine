@@ -228,7 +228,23 @@ namespace FLY_NAMESPACE
 
 	NodeGraphView::operator bool() const
 	{
-		return std::get<EventGraph*>(mNodeGraphVariant) != nullptr;
+		return std::visit([](const auto& aArg) -> bool
+			{
+				using T = std::decay_t<decltype(aArg)>;
+				if constexpr (std::is_same_v<T, EventGraph*>)
+				{
+					return aArg != nullptr;
+				}
+				else if constexpr (std::is_same_v<T, FunctionIDWrapper>)
+				{
+					return aArg.mID != InvalidID<FunctionID>();
+				}
+				else 
+				{
+					return false;
+				}
+			}, mNodeGraphVariant
+		);
 	}
 
 

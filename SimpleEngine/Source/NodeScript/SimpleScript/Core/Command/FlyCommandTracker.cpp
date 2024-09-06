@@ -41,19 +41,19 @@ namespace FLY_NAMESPACE
 		}
 		else
 		{
-			myCurrentCompositeCommand = MakeHeapObject<CompositeCommand>(aName);
+			myCurrentCompositeCommand = HeapObject<CompositeCommand, true>(aName);
 		}
 	}
 
 	void CommandTracker::EndComposite()
 	{
-		CompositeCommand::eEndCode endCode = myCurrentCompositeCommand->End();
+		const CompositeCommand::eEndCode endCode = myCurrentCompositeCommand->End();
 
 		if (endCode == CompositeCommand::eEndCode::Ended)
 		{
-			HeapObject<CompositeCommand> composite = std::move(myCurrentCompositeCommand);
+			HeapObject<CompositeCommand, true> tempCommand = std::move(myCurrentCompositeCommand);
 			myCurrentCompositeCommand.Reset();
-			DoCommand(Command(std::move(*composite), composite->GetName()));
+			DoCommand(Command(*std::move(tempCommand), tempCommand->GetName()));
 		}
 		else if (endCode == CompositeCommand::eEndCode::Ended_Empty)
 		{
@@ -75,7 +75,7 @@ namespace FLY_NAMESPACE
 	{
 		if (!myUndoStack.empty())
 		{
-			HeapObject<Command>& topCommand = myUndoStack.top();
+			HeapObject<Command, false>& topCommand = myUndoStack.top();
 			(*topCommand)(eCommandType::Undo);
 			myRedoStack.push(std::move(topCommand));
 			myUndoStack.pop();
@@ -86,7 +86,7 @@ namespace FLY_NAMESPACE
 	{
 		if (!myRedoStack.empty())
 		{
-			HeapObject<Command>& topCommand = myRedoStack.top();
+			HeapObject<Command, false>& topCommand = myRedoStack.top();
 			(*topCommand)(eCommandType::Do);
 			myUndoStack.push(std::move(topCommand));
 			myRedoStack.pop();
@@ -106,7 +106,7 @@ namespace FLY_NAMESPACE
 			aCommand(eCommandType::Do);
 		}
 
-		myUndoStack.push(MakeHeapObject<Command>(std::forward<Command>(aCommand)));
+		myUndoStack.push(HeapObject<Command, false>(std::forward<Command>(aCommand)));
 
 		while (!myRedoStack.empty())
 		{

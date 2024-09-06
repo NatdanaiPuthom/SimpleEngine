@@ -124,7 +124,7 @@ namespace FLY_NAMESPACE
 		return *mFunctions.at(anID);
 	}
 
-	const std::vector<HeapObject<Function>>& NodeTypeManager::GetFunctions()
+	const std::vector<HeapObject<Function, false>>& NodeTypeManager::GetFunctions()
 	{
 		return mFunctions;
 	}
@@ -198,10 +198,10 @@ namespace FLY_NAMESPACE
 	FunctionID NodeTypeManager::CreateFunction(std::string_view aName)
 	{
 		const FunctionID id = mFunctions.size();
-		const HeapObject<Function>& function = mFunctions.emplace_back(MakeHeapObject<Function>(aName));
+		const HeapObject<Function, false>& function = mFunctions.emplace_back(HeapObject<Function, false>(aName));
 
 		mToFunctionID.emplace(function->mCallerNodeTypeID, id);
-		mToFunctionID.emplace(function->mInputNodeTypeID, id);
+		mToFunctionID.emplace(function.Get().mInputNodeTypeID, id);
 		mToFunctionID.emplace(function->mOutputNodeTypeID, id);
 
 		return id;

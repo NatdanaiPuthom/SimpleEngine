@@ -583,7 +583,7 @@ namespace FLY_NAMESPACE
 
 			for (auto& classInstance : aClass.mClassInstances)
 			{
-				classInstance->mStructInstance.Mirror();
+				classInstance.Get().mStructInstance.Mirror();
 			}
 			return id;
 		}

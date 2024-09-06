@@ -38,9 +38,9 @@ namespace FLY_NAMESPACE
 	private:
 
 
-		std::stack<HeapObject<Command>> myUndoStack;
-		std::stack<HeapObject<Command>> myRedoStack;
-		HeapObject<CompositeCommand> myCurrentCompositeCommand;
+		std::stack<HeapObject<Command, false>> myUndoStack;
+		std::stack<HeapObject<Command, false>> myRedoStack;
+		HeapObject<CompositeCommand, true> myCurrentCompositeCommand;
 
 	};
 }

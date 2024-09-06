@@ -41,7 +41,7 @@ namespace FLY_NAMESPACE
 		}
 		else
 		{
-			myCurrentChild = MakeHeapObject<CompositeCommand>(aName);
+			myCurrentChild = HeapObject<CompositeCommand, true>(aName);
 		}
 
 	}

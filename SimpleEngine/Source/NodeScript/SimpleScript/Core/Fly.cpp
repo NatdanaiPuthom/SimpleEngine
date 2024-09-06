@@ -82,7 +82,7 @@ namespace FLY_NAMESPACE
 	{
 		auto& classes = Global::GetFoundation().mClasses;
 
-		for (HeapObject<Class>& c : classes)
+		for (HeapObject<Class, false>& c : classes)
 		{
 			if (ClassView(*c).GetName() == aName)
 			{

@@ -35,7 +35,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		HeapObject<CompositeCommand> myCurrentChild;
+		HeapObject<CompositeCommand, true> myCurrentChild;
 		std::vector<Command> myCommands;
 		std::string myName;
 	};
