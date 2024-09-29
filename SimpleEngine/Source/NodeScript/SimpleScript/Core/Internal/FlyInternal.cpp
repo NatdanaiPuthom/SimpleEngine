@@ -151,6 +151,30 @@ namespace FLY_NAMESPACE
 			return id;
 		}
 
+		struct TransformObjectData
+		{
+			float x, y;
+		};
+
+		void Do(const TransformObjectData&)
+		{
+
+		}
+
+		void Undo(const TransformObjectData&)
+		{
+
+		}
+
+		struct ChangeVariableData
+		{
+			float x, y;
+
+			void Do() const {}
+			void Undo() const {}
+		};
+
+
 		void AddNode(NodeGraph& aNodeGraph, Node&& aNode, const NodeID aNodeID, CommandTracker* const aCommandTracker)
 		{
 			std::vector<Node>& nodes = aNodeGraph.mNodes;
@@ -167,6 +191,11 @@ namespace FLY_NAMESPACE
 				NodeID mNodeID = InvalidID<NodeID>();
 				NodeGraph* mNodeGraph = nullptr;
 			} data;
+
+			CommandNew c1(TransformObjectData{});
+			CommandNew c2(ChangeVariableData{});
+
+			CommandNew c(CreateNodeData{}, [](const CreateNodeData&) {}, [](const CreateNodeData&) {});
 
 			data.mNodeID = aNodeID;
 			data.mNodeGraph = &aNodeGraph;

@@ -25,9 +25,9 @@ namespace Editor
 				Fly::CreateCustomEvent("CustomEvent");
 			}
 
-			std::vector<Fly::CustomEventView> customEvents = Fly::GetCustomEvents();
+			std::vector<Fly::CustomEventFacade> customEvents = Fly::GetCustomEvents();
 
-			for (Fly::CustomEventView& customEvent : customEvents)
+			for (Fly::CustomEventFacade& customEvent : customEvents)
 			{
 				if (ImGui::TreeNode(std::to_string(customEvent.GetID()).c_str(), customEvent.GetExecutorNodeType().GetShortName().c_str()))
 				{
@@ -46,36 +46,36 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void CustomEventWindow::EditInputs(Fly::CustomEventView& aCustomEventView)
+	void CustomEventWindow::EditInputs(Fly::CustomEventFacade& aCustomEventFacade)
 	{
-		const Fly::NodeTypeView executorNodeType = aCustomEventView.GetExecutorNodeType();
+		const Fly::NodeTypeFacade executorNodeType = aCustomEventFacade.GetExecutorNodeType();
 		std::string shortName = executorNodeType.GetShortName();
 
 		char nameBuffer[35]{};
 		strcpy_s(nameBuffer, shortName.c_str());
 
-		if (ImGui::InputText(std::string("##CustomEventName" + std::to_string(aCustomEventView.GetID())).c_str(), nameBuffer, IM_ARRAYSIZE(nameBuffer)))
+		if (ImGui::InputText(std::string("##CustomEventName" + std::to_string(aCustomEventFacade.GetID())).c_str(), nameBuffer, IM_ARRAYSIZE(nameBuffer)))
 		{
-			aCustomEventView.SetName(nameBuffer, nullptr);
+			aCustomEventFacade.SetName(nameBuffer, nullptr);
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Add Pin"))
 		{
-			aCustomEventView.AddPin(Fly::DataTypeView(Fly::GetDataTypeID<bool>()), "Pin", nullptr);
+			aCustomEventFacade.AddPin(Fly::DataTypeFacade(Fly::GetDataTypeID<bool>()), "Pin", nullptr);
 		}
 
 		ImGui::Separator();
 		
-		const std::vector<Fly::PinTypeView> outputPinTypes = executorNodeType.GetOutputPinTypes();
+		const std::vector<Fly::PinTypeFacade> outputPinTypes = executorNodeType.GetOutputPinTypeFacades();
 		for (size_t i = 0; i < outputPinTypes.size(); ++i)
 		{
 			if (i == 0)
 			{
 				continue;
 			}
-			const Fly::PinTypeView& outputPinType = outputPinTypes.at(i);
+			const Fly::PinTypeFacade& outputPinType = outputPinTypes.at(i);
 
 			ImGui::Text("%u:", i);
 			ImGui::SameLine();
@@ -85,26 +85,26 @@ namespace Editor
 
 			if (ImGui::InputText(("##CustomEventPinName" + std::to_string(i)).c_str(), buffer, IM_ARRAYSIZE(buffer)))
 			{
-				aCustomEventView.SetPinNameAtIndex(buffer, i, nullptr);
+				aCustomEventFacade.SetPinNameAtIndex(buffer, i, nullptr);
 			}
 
 			ImGui::SameLine();
 			if (ImGui::Button(std::string("Delete##" + std::to_string(i)).c_str()))
 			{
-				aCustomEventView.DeletePinAtIndex(i, nullptr);
+				aCustomEventFacade.DeletePinAtIndex(i, nullptr);
 			}
 
 			const std::string comboLabel = "##CustomEventPinType" + std::to_string(i);
-			Fly::DataTypeView currentDataType(outputPinType.GetDataTypeID());
-			if (DataTypeComboEditableFilter(comboLabel.c_str(), currentDataType))
+			Fly::DataTypeFacade currentDataTypeFacade(outputPinType.GetDataTypeID());
+			if (DataTypeComboEditableFilter(comboLabel.c_str(), currentDataTypeFacade))
 			{
-				aCustomEventView.SetPinDataTypeAtIndex(currentDataType, i, nullptr);
+				aCustomEventFacade.SetPinDataTypeAtIndex(currentDataTypeFacade, i, nullptr);
 			}
 
 			ImGui::SameLine();
 
 			ImGui::BeginDisabled();
-			ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(currentDataType.GetColor())));
+			ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(currentDataTypeFacade.GetColor())));
 			ImGui::EndDisabled();
 		}
 
@@ -112,14 +112,14 @@ namespace Editor
 
 		if (ImGui::Button("Create Caller"))
 		{
-			CreateNode(myParentWindow.GetNodeContext().myNodeGraphView, aCustomEventView.GetCallerNodeType());
+			CreateNode(myParentWindow.GetNodeContext().myNodeGraphFacade, aCustomEventFacade.GetCallerNodeType());
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Create Executor"))
 		{
-			CreateNode(myParentWindow.GetNodeContext().myNodeGraphView, aCustomEventView.GetExecutorNodeType());
+			CreateNode(myParentWindow.GetNodeContext().myNodeGraphFacade, aCustomEventFacade.GetExecutorNodeType());
 		}
 	}
 }

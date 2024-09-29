@@ -1,0 +1,128 @@
+#include "FlyNodeFacade.hpp"
+#include "../Graph/FlyNodeGraph.hpp"
+#include "../Global/FlyGlobal.hpp"
+#include "../Node/FlyNodeTypeManager.hpp"
+#include "FlyNodeGraphFacade.hpp"
+#include "Fly.hpp"
+
+namespace FLY_NAMESPACE
+{
+
+	NodeFacade::NodeFacade(const NodeID aNodeID, const NodeGraphFacade& aNodeGraphFacade)
+		: mNodeGraphVariant(aNodeGraphFacade.GetVariant())
+		, mNodeID(aNodeID)
+	{
+	}
+
+	const std::string& NodeFacade::GetNodeTypeName() const
+	{
+		return GetNodeType().mNodeRecipe.mName;
+	}
+
+	std::string NodeFacade::GetShortName() const
+	{
+		return Global::GetNodeTypeManager().GetShortName(GetNode().mTypeID);
+	}
+
+	Vec2 NodeFacade::GetPosition() const
+	{
+		return GetNode().mPosition;
+	}
+
+	bool NodeFacade::IsDestroyed() const
+	{
+		return GetNode().mIsDestroyed;
+	}
+
+	std::vector<PinFacade> NodeFacade::GetInputPinFacades() const
+	{
+		return GetPinFacades(eFlowType::Input);
+	}
+
+	std::vector<PinFacade> NodeFacade::GetOutputPinFacades() const
+	{
+		return GetPinFacades(eFlowType::Output);
+	}
+
+	const Node& NodeFacade::GetNode() const
+	{
+		return GetNodeGraph().mNodes.at(mNodeID);
+	}
+
+	const NodeType& NodeFacade::GetNodeType() const
+	{
+		const Node& node = GetNode();
+		return Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+	}
+
+	std::vector<PinFacade> NodeFacade::GetPinFacades(const eFlowType aFlowType) const
+	{
+		const Node& node = GetNode();
+		std::vector<PinFacade> pinFacades;
+
+		const std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins);
+		pinFacades.reserve(pinIDs.size());
+
+		for (const PinID pinID : pinIDs)
+		{
+			pinFacades.emplace_back(PinFacade(pinID, NodeGraphFacade(mNodeGraphVariant)));
+		}
+
+		return pinFacades;
+	}
+
+	NodeID NodeFacade::GetID() const
+	{
+		return mNodeID;
+	}
+
+	eNodeTrait NodeFacade::GetTraits() const
+	{
+		return GetNodeType().mNodeRecipe.mTraits;
+	}
+
+	EventID NodeFacade::GetEventID() const
+	{
+		return GetNodeType().mNodeRecipe.mEventID;
+	}
+
+	bool NodeFacade::HasAnyConnectedLinks() const
+	{
+		return HasNodeAnyConnectedLinks(*this, NodeGraphFacade(mNodeGraphVariant));
+	}
+
+	bool NodeFacade::IsReplacable() const
+	{
+		return IsNodeReplacable(*this, NodeGraphFacade(mNodeGraphVariant));
+	}
+
+	void NodeFacade::Destroy(CommandTracker* const aCommandTracker)
+	{
+		DestroyNode(*this, NodeGraphFacade(mNodeGraphVariant), aCommandTracker);
+	}
+
+	void NodeFacade::DestroyConnectedLinks(CommandTracker* const aCommandTracker)
+	{
+		DestroyLinksByNode(*this, NodeGraphFacade(mNodeGraphVariant), aCommandTracker);
+	}
+
+	void NodeFacade::SetPosition(const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	{
+		SetNodePosition(*this, aPosition, NodeGraphFacade(mNodeGraphVariant), aCommandTracker);
+	}
+
+	const NodeGraph& NodeFacade::GetNodeGraph() const
+	{
+		return NodeGraphFacade(mNodeGraphVariant).GetNodeGraph();
+	}
+
+	bool operator==(const NodeFacade& a, const NodeFacade& b)
+	{
+		return NodeGraphFacade(a.mNodeGraphVariant) == NodeGraphFacade(b.mNodeGraphVariant) && a.mNodeID == b.mNodeID;
+	}
+
+	NodeFacade::operator bool() const
+	{
+		return NodeGraphFacade(mNodeGraphVariant) && mNodeID != InvalidID<NodeID>();
+	}
+}

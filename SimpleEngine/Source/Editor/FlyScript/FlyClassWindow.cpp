@@ -30,22 +30,22 @@ namespace Editor
 
 	void FlyClassWindow::DrawGraphSelection()
 	{
-		Fly::ClassView currentClassView = myParentWindow.GetNodeContext().myClassView;
-		if (ImGui::Selectable("Event Graph", currentClassView.GetEventGraphView() == myParentWindow.GetNodeContext().myNodeGraphView))
+		Fly::ClassFacade currentClassFacade = myParentWindow.GetNodeContext().myClassFacade;
+		if (ImGui::Selectable("Event Graph", currentClassFacade.GetEventGraphFacade() == myParentWindow.GetNodeContext().myNodeGraphFacade))
 		{
-			myParentWindow.SetNodeContext(currentClassView.GetEventGraphView(), currentClassView);
+			myParentWindow.SetNodeContext(currentClassFacade.GetEventGraphFacade(), currentClassFacade);
 		}
 	}
 
 	void FlyClassWindow::DrawFunctionSelection()
 	{
-		Fly::ClassView currentClassView = myParentWindow.GetNodeContext().myClassView;
+		Fly::ClassFacade currentClassFacade = myParentWindow.GetNodeContext().myClassFacade;
 
 		if (ImGui::Button("Create Member Function"))
 		{
-			Fly::FunctionView createdFunctionView = currentClassView.CreateMemberFunction("Function1");
-			myParentWindow.SetNodeContext(createdFunctionView.GetNodeGraphView(), currentClassView);
-			myParentWindow.SetSelectedFunctionView(createdFunctionView);
+			Fly::FunctionFacade createdFunctionFacade = currentClassFacade.CreateMemberFunction("Function1");
+			myParentWindow.SetNodeContext(createdFunctionFacade.GetNodeGraphFacade(), currentClassFacade);
+			myParentWindow.SetSelectedFunctionFacade(createdFunctionFacade);
 			ImGui::SetNextItemOpen(true);
 		}
 
@@ -53,15 +53,15 @@ namespace Editor
 		if (ImGui::TreeNode("Member Functions"))
 		{
 
-			std::vector<Fly::FunctionView> memberFunctions = currentClassView.GetFunctions();
+			std::vector<Fly::FunctionFacade> memberFunctions = currentClassFacade.GetFunctions();
 
-			for (Fly::FunctionView& memberFunctionView : memberFunctions)
+			for (Fly::FunctionFacade& memberFunctionFacade : memberFunctions)
 			{
 
-				if (ImGui::Selectable(memberFunctionView.GetName().c_str(), memberFunctionView.GetNodeGraphView() == myParentWindow.GetNodeContext().myNodeGraphView))
+				if (ImGui::Selectable(memberFunctionFacade.GetName().c_str(), memberFunctionFacade.GetNodeGraphFacade() == myParentWindow.GetNodeContext().myNodeGraphFacade))
 				{
-					myParentWindow.SetNodeContext(memberFunctionView.GetNodeGraphView(), myParentWindow.GetNodeContext().myClassView);
-					myParentWindow.SetSelectedFunctionView(memberFunctionView);
+					myParentWindow.SetNodeContext(memberFunctionFacade.GetNodeGraphFacade(), myParentWindow.GetNodeContext().myClassFacade);
+					myParentWindow.SetSelectedFunctionFacade(memberFunctionFacade);
 					break;
 				}
 			}
@@ -75,11 +75,11 @@ namespace Editor
 
 	void FlyClassWindow::DrawVariables()
 	{
-		Fly::ClassView currentClass = myParentWindow.GetNodeContext().myClassView;
+		Fly::ClassFacade currentClass = myParentWindow.GetNodeContext().myClassFacade;
 
 		if (ImGui::Button("Create Variable"))
 		{
-			myParentWindow.GetNodeContext().myClassView.CreateVariable(Fly::DataTypeView(Fly::GetDataTypeID<bool>()), nullptr);
+			myParentWindow.GetNodeContext().myClassFacade.CreateVariable(Fly::DataTypeFacade(Fly::GetDataTypeID<bool>()), nullptr);
 			ImGui::SetNextItemOpen(true);
 		}
 
@@ -88,19 +88,19 @@ namespace Editor
 
 			ImGui::Separator();
 
-			std::vector<Fly::VariableView> variables = Fly::GetVariables(currentClass);
-			for (Fly::VariableView& variable : variables)
+			std::vector<Fly::VariableFacade> variableFacades = Fly::GetVariables(currentClass);
+			for (Fly::VariableFacade& variableFacade : variableFacades)
 			{
-				const std::string treeNodeStrID = std::string("##ScriptVariable" + std::to_string(variable.GetID()));
-				if (ImGui::TreeNode(treeNodeStrID.c_str(), variable.GetName().c_str()))
+				const std::string treeNodeStrID = std::string("##ScriptVariable" + std::to_string(variableFacade.GetID()));
+				if (ImGui::TreeNode(treeNodeStrID.c_str(), variableFacade.GetName().c_str()))
 				{
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(variable.GetDataType().GetColor())));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(variableFacade.GetDataType().GetColor())));
 					ImGui::EndDisabled();
 
-					ModifyVariablePopup(variable);
+					ModifyVariablePopup(variableFacade);
 
 					ImGui::TreePop();
 				}
@@ -109,7 +109,7 @@ namespace Editor
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(variable.GetDataType().GetColor())));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(variableFacade.GetDataType().GetColor())));
 					ImGui::EndDisabled();
 				}
 
@@ -123,33 +123,33 @@ namespace Editor
 
 	}
 
-	void FlyClassWindow::ModifyVariablePopup(Fly::VariableView& aVariableView)
+	void FlyClassWindow::ModifyVariablePopup(Fly::VariableFacade& aVariableFacade)
 	{
 		char buffer[35]{};
-		strcpy_s(buffer, aVariableView.GetName().c_str());
+		strcpy_s(buffer, aVariableFacade.GetName().c_str());
 
 		if (ImGui::InputText("##VariableName", buffer, IM_ARRAYSIZE(buffer)))
 		{
-			aVariableView.SetName(buffer, nullptr);
+			aVariableFacade.SetName(buffer, nullptr);
 		}
 
-		Fly::DataTypeView currentDataTypeView = aVariableView.GetDataType();
+		Fly::DataTypeFacade currentDataTypeFacade = aVariableFacade.GetDataType();
 
 		ImGui::Separator();
-		if (DataTypeComboEditableFilter("##ChangeDataType", currentDataTypeView))
+		if (DataTypeComboEditableFilter("##ChangeDataType", currentDataTypeFacade))
 		{
-			aVariableView.SetDataType(currentDataTypeView, nullptr);
+			aVariableFacade.SetDataType(currentDataTypeFacade, nullptr);
 		}
 
 		ImGui::Text("Default Value:");
 		ImGui::SameLine();
-		aVariableView.EditDefaultValue(nullptr);
+		aVariableFacade.EditDefaultValue(nullptr);
 
 		ImGui::Separator();
 
 		if (ImGui::Button("Create Getter"))
 		{
-			myParentWindow.GetNodeContext().myClassView.GetEventGraphView().CreateGetterNode(aVariableView, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
+			myParentWindow.GetNodeContext().myClassFacade.GetEventGraphFacade().CreateGetterNode(aVariableFacade, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
 			ImGui::CloseCurrentPopup();
 
 		}
@@ -158,12 +158,12 @@ namespace Editor
 
 		if (ImGui::Button("Create Setter"))
 		{
-			myParentWindow.GetNodeContext().myClassView.GetEventGraphView().CreateSetterNode(aVariableView, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
+			myParentWindow.GetNodeContext().myClassFacade.GetEventGraphFacade().CreateSetterNode(aVariableFacade, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
 		}
 
 		if (ImGui::Button("Delete Variable"))
 		{
-			aVariableView.Destroy(nullptr);
+			aVariableFacade.Destroy(nullptr);
 		}
 	}
 

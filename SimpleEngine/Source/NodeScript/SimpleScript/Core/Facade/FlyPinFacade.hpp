@@ -8,14 +8,14 @@ namespace FLY_NAMESPACE
 {
 
 	class CommandTracker;
-	class NodeGraphView;
+	class NodeGraphFacade;
 
-	class PinView final
+	class PinFacade final
 	{
 	public:
 
-		PinView() = default;
-		PinView(PinID aPinID, const NodeGraphView& aNodeGraphView);
+		PinFacade() = default;
+		PinFacade(PinID aPinID, const NodeGraphFacade& aNodeGraphFacade);
 
 		[[nodiscard]] const std::vector<PinID>& GetConnectedPinIDs() const;
 		[[nodiscard]] DataTypeID GetDataTypeID() const;
@@ -33,7 +33,7 @@ namespace FLY_NAMESPACE
 
 		explicit operator bool() const;
 
-		friend bool operator==(const PinView& a, const PinView& b);
+		friend bool operator==(const PinFacade& a, const PinFacade& b);
 		
 	private:
 

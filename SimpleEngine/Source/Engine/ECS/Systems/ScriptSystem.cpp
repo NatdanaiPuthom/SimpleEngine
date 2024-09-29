@@ -22,7 +22,7 @@ namespace ECS
 
 			ScriptComponent* const scriptComponent = entity.GetComponent<ScriptComponent>();
 
-			scriptComponent->classInstanceView.InitRuntime();
+			scriptComponent->classInstanceFacade.InitRuntime();
 		}
 	}
 
@@ -41,7 +41,7 @@ namespace ECS
 				.mDeltaTime = Global::GetDeltaTime()
 			};
 
-			scriptComponent->classInstanceView.ExecuteEvent(Fly::Tick, &entity, executionContext);
+			scriptComponent->classInstanceFacade.ExecuteEvent(Fly::Tick, &entity, executionContext);
 		}
 	}
 

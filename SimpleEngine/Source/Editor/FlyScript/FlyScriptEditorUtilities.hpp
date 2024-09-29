@@ -2,12 +2,12 @@
 
 namespace Fly
 {
-	class DataTypeView;
+	class DataTypeFacade;
 }
 
 namespace Editor
 {
 
-	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::DataTypeView& aDataTypeView);
-	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::DataTypeView& aDataTypeView);
+	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade);
+	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade);
 }

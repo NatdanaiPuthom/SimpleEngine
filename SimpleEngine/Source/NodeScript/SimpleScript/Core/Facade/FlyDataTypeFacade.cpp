@@ -1,16 +1,16 @@
-#include "FlyDataTypeView.hpp"
+#include "FlyDataTypeFacade.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
 
 namespace FLY_NAMESPACE
 {
 
-	DataTypeView::DataTypeView()
-		: DataTypeView(GetDataTypeID<None>())
+	DataTypeFacade::DataTypeFacade()
+		: DataTypeFacade(GetDataTypeID<None>())
 	{
 	}
 
-	DataTypeView::DataTypeView(const DataTypeID aDataTypeID)
+	DataTypeFacade::DataTypeFacade(const DataTypeID aDataTypeID)
 		: mDataTypeID(aDataTypeID)
 	{
 		const DataType* dataType = GetDataType();
@@ -20,17 +20,17 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	DataTypeID DataTypeView::GetID() const
+	DataTypeID DataTypeFacade::GetID() const
 	{
 		return mDataTypeID;
 	}
 
-	const std::string& DataTypeView::GetName() const
+	const std::string& DataTypeFacade::GetName() const
 	{
 		return Global::GetDataTypeManager().GetName(mDataTypeID);
 	}
 
-	const Color& DataTypeView::GetColor() const
+	const Color& DataTypeFacade::GetColor() const
 	{
 		const DataType* dataType = GetDataType();
 		if (dataType)
@@ -40,7 +40,7 @@ namespace FLY_NAMESPACE
 		return DefaultColor;
 	}
 
-	eDataTypeTrait DataTypeView::GetTypeTraits() const
+	eDataTypeTrait DataTypeFacade::GetTypeTraits() const
 	{
 		const DataType* dataType = GetDataType();
 		if (dataType)
@@ -50,53 +50,53 @@ namespace FLY_NAMESPACE
 		return eDataTypeTrait::None;
 	}
 
-	bool DataTypeView::IsTargetable() const
+	bool DataTypeFacade::IsTargetable() const
 	{
 		return HasFlag(GetTypeTraits(), eDataTypeTrait::Targetable);
 	}
 
-	bool DataTypeView::IsEditable() const
+	bool DataTypeFacade::IsEditable() const
 	{
 		return HasFlag(GetTypeTraits(), eDataTypeTrait::Editable);
 	}
 
-	std::vector<NodeTypeView> DataTypeView::GetNodeTypes() const
+	std::vector<NodeTypeFacade> DataTypeFacade::GetNodeTypes() const
 	{
 		const DataType* dataType = GetDataType();
 		if (!dataType)
 		{
-			return std::vector<NodeTypeView>();
+			return std::vector<NodeTypeFacade>();
 		}
 		const std::vector<NodeTypeID>& nodeTypeIDs = dataType->mNodeTypeIDs;
 
-		std::vector<NodeTypeView> nodeTypeViews;
+		std::vector<NodeTypeFacade> nodeTypeFacades;
 
-		nodeTypeViews.reserve(nodeTypeIDs.size());
+		nodeTypeFacades.reserve(nodeTypeIDs.size());
 
 		for (const NodeTypeID nodeTypeID : nodeTypeIDs)
 		{
-			nodeTypeViews.push_back(NodeTypeView(nodeTypeID));
+			nodeTypeFacades.push_back(NodeTypeFacade(nodeTypeID));
 		}
 
-		return nodeTypeViews;
+		return nodeTypeFacades;
 	}
 
-	DataTypeView::operator bool() const
+	DataTypeFacade::operator bool() const
 	{
 		return mDataTypeID != InvalidID<DataTypeID>();
 	}
 
-	bool DataTypeView::operator==(const DataTypeView& aOther) const
+	bool DataTypeFacade::operator==(const DataTypeFacade& aOther) const
 	{
 		return mDataTypeID == aOther.mDataTypeID;
 	}
 
-	bool DataTypeView::operator!=(const DataTypeView& aOther) const
+	bool DataTypeFacade::operator!=(const DataTypeFacade& aOther) const
 	{
 		return !(*this == aOther);
 	}
 
-	const DataType* DataTypeView::GetDataType() const
+	const DataType* DataTypeFacade::GetDataType() const
 	{
 		return Global::GetDataTypeManager().Find(mDataTypeID);
 	}

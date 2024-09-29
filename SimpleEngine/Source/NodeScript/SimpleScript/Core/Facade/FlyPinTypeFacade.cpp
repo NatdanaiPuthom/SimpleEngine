@@ -1,36 +1,36 @@
-#include "FlyPinTypeView.hpp"
+#include "FlyPinTypeFacade.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 
 namespace FLY_NAMESPACE
 {
 
-	PinTypeView::PinTypeView(const PinTypeID anID)
+	PinTypeFacade::PinTypeFacade(const PinTypeID anID)
 		: mPinTypeID(anID)
 	{
 	}
 
-	const std::string& PinTypeView::GetName() const
+	const std::string& PinTypeFacade::GetName() const
 	{
 		return GetPinType().mName;
 	}
 
-	eFlowType PinTypeView::GetFlowType() const
+	eFlowType PinTypeFacade::GetFlowType() const
 	{
 		return GetPinType().mFlowType;
 	}
 
-	DataTypeID PinTypeView::GetDataTypeID() const
+	DataTypeID PinTypeFacade::GetDataTypeID() const
 	{
 		return GetPinType().mDataTypeID;
 	}
 
-	PinTypeID PinTypeView::GetID() const
+	PinTypeID PinTypeFacade::GetID() const
 	{
 		return mPinTypeID;
 	}
 
-	const PinType& PinTypeView::GetPinType() const
+	const PinType& PinTypeFacade::GetPinType() const
 	{
 		return Global::GetPinTypeManager().GetPinType(mPinTypeID);
 	}

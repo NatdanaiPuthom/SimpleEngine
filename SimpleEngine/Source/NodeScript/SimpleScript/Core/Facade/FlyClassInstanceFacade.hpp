@@ -7,12 +7,12 @@ namespace FLY_NAMESPACE
 
 	class ClassInstance;
 
-	class ClassInstanceView final
+	class ClassInstanceFacade final
 	{
 	public:
 
-		ClassInstanceView() = default;
-		explicit ClassInstanceView(ClassInstance& aClassInstance);
+		ClassInstanceFacade() = default;
+		explicit ClassInstanceFacade(ClassInstance& aClassInstance);
 
 		void InitRuntime();
 
@@ -31,7 +31,7 @@ namespace FLY_NAMESPACE
 
 		explicit operator bool() const;
 
-		friend bool operator==(const ClassInstanceView& a, const ClassInstanceView& b);
+		friend bool operator==(const ClassInstanceFacade& a, const ClassInstanceFacade& b);
 
 	private:
 
@@ -47,7 +47,7 @@ namespace FLY_NAMESPACE
 	};
 
 	template<typename EventFunction, typename TargetType>
-	inline void ClassInstanceView::ExecuteEvent(EventFunction aEventFunction, TargetType* aTarget, const ExecutionContextBase& aContext)
+	inline void ClassInstanceFacade::ExecuteEvent(EventFunction aEventFunction, TargetType* aTarget, const ExecutionContextBase& aContext)
 	{
 		const EventID eventID = std::hash<EventFunction>()(aEventFunction);
 		assert(IsSameTarget(GetDataTypeID<TargetType*>()));
@@ -55,7 +55,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename TargetType>
-	inline void ClassInstanceView::ExecuteAutoTickers(TargetType* aTarget, const ExecutionContextBase& aContext)
+	inline void ClassInstanceFacade::ExecuteAutoTickers(TargetType* aTarget, const ExecutionContextBase& aContext)
 	{
 		assert(IsSameTarget(GetDataTypeID<TargetType>()));
 		ExecuteAutoTickersInternal(aTarget, aContext);

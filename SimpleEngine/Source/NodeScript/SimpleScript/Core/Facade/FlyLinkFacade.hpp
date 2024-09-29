@@ -1,7 +1,7 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "../Pin/FlyPin.hpp"
-#include "FlyPinView.hpp"
+#include "FlyPinFacade.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -9,16 +9,16 @@ namespace FLY_NAMESPACE
 	class NodeGraph;
 	class CommandTracker;
 
-	class LinkView final
+	class LinkFacade final
 	{
 	public:
 
-		LinkView() = default;
-		LinkView(LinkID aLinkID, const NodeGraphView& aNodeGraphView);
+		LinkFacade() = default;
+		LinkFacade(LinkID aLinkID, const NodeGraphFacade& aNodeGraphFacade);
 
 		[[nodiscard]] bool IsDestroyed() const;
-		[[nodiscard]] PinView GetInputPin() const;
-		[[nodiscard]] PinView GetOutputPin() const;
+		[[nodiscard]] PinFacade GetInputPin() const;
+		[[nodiscard]] PinFacade GetOutputPin() const;
 		[[nodiscard]] LinkID GetID() const;
 
 		void Destroy(CommandTracker* aCommandTracker);

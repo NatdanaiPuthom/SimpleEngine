@@ -1,6 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyNodeTypeView.hpp"
+#include "FlyNodeTypeFacade.hpp"
 #include "../DataType/FlyDataType.hpp"
 
 namespace FLY_NAMESPACE
@@ -8,12 +8,12 @@ namespace FLY_NAMESPACE
 
 	struct DataType;
 
-	class DataTypeView final
+	class DataTypeFacade final
 	{
 	public:
 
-		DataTypeView();
-		explicit DataTypeView(DataTypeID aDataTypeID);
+		DataTypeFacade();
+		explicit DataTypeFacade(DataTypeID aDataTypeID);
 
 		DataTypeID GetID() const;
 
@@ -24,12 +24,12 @@ namespace FLY_NAMESPACE
 		bool IsTargetable() const;
 		bool IsEditable() const;
 
-		std::vector<NodeTypeView> GetNodeTypes() const;
+		std::vector<NodeTypeFacade> GetNodeTypes() const;
 
 		explicit operator bool() const;
 
-		bool operator==(const DataTypeView& aOther) const;
-		bool operator!=(const DataTypeView& aOther) const;
+		bool operator==(const DataTypeFacade& aOther) const;
+		bool operator!=(const DataTypeFacade& aOther) const;
 
 	private:
 
@@ -42,9 +42,9 @@ namespace FLY_NAMESPACE
 }
 
 template<>
-struct std::hash<FLY_NAMESPACE::DataTypeView>
+struct std::hash<FLY_NAMESPACE::DataTypeFacade>
 {
-	size_t operator()(const FLY_NAMESPACE::DataTypeView& aDataTypeView) const
+	size_t operator()(const FLY_NAMESPACE::DataTypeFacade& aDataTypeView) const
 	{
 		return aDataTypeView.GetID();
 	}

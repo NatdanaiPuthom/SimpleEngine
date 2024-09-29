@@ -1,34 +1,34 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "../CustomEvent/FlyCustomEvent.hpp"
-#include "FlyNodeTypeView.hpp"
+#include "FlyNodeTypeFacade.hpp"
 
 namespace FLY_NAMESPACE
 {
 	
-	class DataTypeView;
+	class DataTypeFacade;
 	class CommandTracker;
 
-	class CustomEventView final
+	class CustomEventFacade final
 	{
 	public:
 
-		explicit CustomEventView(CustomEventID aID);
+		explicit CustomEventFacade(CustomEventID aID);
 
 
-		NodeTypeView GetCallerNodeType() const;
-		NodeTypeView GetExecutorNodeType() const;
+		NodeTypeFacade GetCallerNodeType() const;
+		NodeTypeFacade GetExecutorNodeType() const;
 		CustomEventID GetID() const;
 
 		void SetName(std::string_view aName, CommandTracker* aCommandTracker);
-		void AddPin(DataTypeView aDataTypeView, std::string_view aName, CommandTracker* aCommandTracker);
+		void AddPin(DataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* aCommandTracker);
 		void SetPinNameAtIndex(std::string_view aName, size_t aIndex, CommandTracker* aCommandTracker);
-		void SetPinDataTypeAtIndex(DataTypeView aDataTypeView, size_t aIndex, CommandTracker* aCommandTracker);
+		void SetPinDataTypeAtIndex(DataTypeFacade aDataTypeFacade, size_t aIndex, CommandTracker* aCommandTracker);
 		void DeletePinAtIndex(size_t aIndex, CommandTracker* aCommandTracker);
 
 		explicit operator bool() const;
 
-		friend bool operator==(const CustomEventView& a, const CustomEventView& b);
+		friend bool operator==(const CustomEventFacade& a, const CustomEventFacade& b);
 
 	private:
 

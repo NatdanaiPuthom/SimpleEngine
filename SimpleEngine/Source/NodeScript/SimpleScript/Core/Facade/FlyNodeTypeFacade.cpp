@@ -1,85 +1,85 @@
-#include "FlyNodeTypeView.hpp"
+#include "FlyNodeTypeFacade.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
 #include "../Global/FlyGlobal.hpp"
 
 namespace FLY_NAMESPACE
 {
-	NodeTypeView::NodeTypeView(const NodeTypeID anID)
+	NodeTypeFacade::NodeTypeFacade(const NodeTypeID anID)
 		: mNodeTypeID(anID)
 	{
 	}
 
-	const std::string& NodeTypeView::GetName() const
+	const std::string& NodeTypeFacade::GetName() const
 	{
 		return GetNodeType().mNodeRecipe.mName;
 	}
 
-	std::string NodeTypeView::GetShortName() const
+	std::string NodeTypeFacade::GetShortName() const
 	{
 		return Global::GetNodeTypeManager().GetShortName(mNodeTypeID);
 	}
 
-	std::string NodeTypeView::GetNameDirectory() const
+	std::string NodeTypeFacade::GetNameDirectory() const
 	{
 		return Global::GetNodeTypeManager().GetNameDirectory(mNodeTypeID);
 	}
 
-	eNodeTrait NodeTypeView::GetTraits() const
+	eNodeTrait NodeTypeFacade::GetTraits() const
 	{
 		return GetNodeType().mNodeRecipe.mTraits;
 	}
 
-	EventID NodeTypeView::GetEventID() const
+	EventID NodeTypeFacade::GetEventID() const
 	{
 		return GetNodeType().mNodeRecipe.mEventID;
 	}
 
-	std::vector<PinTypeView> NodeTypeView::GetInputPinTypes() const
+	std::vector<PinTypeFacade> NodeTypeFacade::GetInputPinTypeFacades() const
 	{
 		return GetPinTypes(eFlowType::Input);
 	}
 
-	std::vector<PinTypeView> NodeTypeView::GetOutputPinTypes() const
+	std::vector<PinTypeFacade> NodeTypeFacade::GetOutputPinTypeFacades() const
 	{
 		return GetPinTypes(eFlowType::Output);
 	}
 
-	NodeTypeID NodeTypeView::GetID() const
+	NodeTypeID NodeTypeFacade::GetID() const
 	{
 		return mNodeTypeID;
 	}
 
-	NodeTypeView::operator bool() const
+	NodeTypeFacade::operator bool() const
 	{
 		return mNodeTypeID != InvalidID<NodeTypeID>();
 	}
 
-	bool NodeTypeView::operator==(const NodeTypeView& aOther) const
+	bool NodeTypeFacade::operator==(const NodeTypeFacade& aOther) const
 	{
 		return mNodeTypeID == aOther.mNodeTypeID;
 	}
 
-	bool NodeTypeView::operator!=(const NodeTypeView& aOther) const
+	bool NodeTypeFacade::operator!=(const NodeTypeFacade& aOther) const
 	{
 		return !(*this == aOther);
 	}
 
-	const NodeType& NodeTypeView::GetNodeType() const
+	const NodeType& NodeTypeFacade::GetNodeType() const
 	{
 		return Global::GetNodeTypeManager().GetNodeType(mNodeTypeID);
 	}
 
-	std::vector<PinTypeView> NodeTypeView::GetPinTypes(const eFlowType aFlowType) const
+	std::vector<PinTypeFacade> NodeTypeFacade::GetPinTypes(const eFlowType aFlowType) const
 	{
 		const NodeType& nodeType = GetNodeType();
 		const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, nodeType.mNodeRecipe.mInputPinTypeIDs, nodeType.mNodeRecipe.mOutputPinTypeIDs);
 
-		std::vector<PinTypeView> views;
+		std::vector<PinTypeFacade> views;
 		views.reserve(pinTypeIDs.size());
 
 		for (const PinTypeID pinTypeID : pinTypeIDs)
 		{
-			views.emplace_back(PinTypeView(pinTypeID));
+			views.emplace_back(PinTypeFacade(pinTypeID));
 		}
 
 		return views;

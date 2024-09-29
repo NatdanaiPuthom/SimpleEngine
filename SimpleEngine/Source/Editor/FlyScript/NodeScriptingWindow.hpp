@@ -24,7 +24,7 @@ namespace Editor
 	{
 		const std::string name;
 		std::vector<NodeTypeCategory> childCategories;
-		std::vector<Fly::NodeTypeView> nodeTypes;
+		std::vector<Fly::NodeTypeFacade> nodeTypes;
 	};
 
 	inline constexpr unsigned int ToImGuiColor(const Fly::Color& aColor)
@@ -34,11 +34,11 @@ namespace Editor
 
 	struct NodeContext final
 	{
-		Fly::ClassView myClassView;
-		Fly::NodeGraphView myNodeGraphView;
-		Fly::ClassInstanceView myClassInstanceView;
+		Fly::ClassFacade myClassFacade;
+		Fly::NodeGraphFacade myNodeGraphFacade;
+		Fly::ClassInstanceFacade myClassInstanceFacade;
 
-		std::vector<Fly::PinView> myPinViewsToHighlight;
+		std::vector<Fly::PinFacade> myPinFacadesToHighlight;
 		std::unordered_map<Fly::NodeID, Fly::NodeDragData> myNodeDragData;
 		Fly::PinID myLinkCreationPinID;
 		Fly::PinID myStartedLinkPinID;
@@ -72,9 +72,9 @@ namespace Editor
 
 		NodeContext& GetNodeContext();
 		const NodeContext& GetNodeContext() const;
-		void SetNodeContext(Fly::NodeGraphView aNodeGraphView, Fly::ClassView aClassView);
+		void SetNodeContext(Fly::NodeGraphFacade aNodeGraphFacade, Fly::ClassFacade aClassFacade);
 		eGraphMode GetCurrentMode() const;
-		void SetSelectedFunctionView(Fly::FunctionView aFunctionView);
+		void SetSelectedFunctionFacade(Fly::FunctionFacade aFunctionFacade);
 
 		bool OpenClassByName(std::string_view aName);
 
@@ -90,7 +90,7 @@ namespace Editor
 
 		ImVec2 GetMiddlePos() const;
 
-		Fly::FunctionView GetCurrentFunctionView();
+		Fly::FunctionFacade GetCurrentFunctionFacade();
 
 		Fly::CommandTracker& GetCommandTracker()
 		{
@@ -98,23 +98,23 @@ namespace Editor
 		}
 
 	private:
-		void ShowNodeTypeCreationMenu(const std::vector<Fly::NodeTypeView>& aNodeTypeIDs, const std::function<void(const Fly::NodeTypeView&)>& aOnClickFunc);
-		void ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(const Fly::NodeTypeView&)>& aOnClickFunc);
-		void ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(const Fly::NodeTypeView&)>& aOnClickFunction);
-		void PopulateCategories(const std::string& aName, const Fly::NodeTypeView& aNodeType, NodeTypeCategory& aCategory);
+		void ShowNodeTypeCreationMenu(const std::vector<Fly::NodeTypeFacade>& aNodeTypeIDs, const std::function<void(const Fly::NodeTypeFacade&)>& aOnClickFunc);
+		void ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(const Fly::NodeTypeFacade&)>& aOnClickFunc);
+		void ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(const Fly::NodeTypeFacade&)>& aOnClickFunction);
+		void PopulateCategories(const std::string& aName, const Fly::NodeTypeFacade& aNodeType, NodeTypeCategory& aCategory);
 
 		void UpdateClickPos();
 		ImVec2 GetMousePos() const;
 
 	private:
 		char myNewClassNameText[TEXT_MAX_LENGTH] = "";
-		Fly::DataTypeView mySelectedTargetDataType;
+		Fly::DataTypeFacade mySelectedTargetDataType;
 		char myCreateCopyNameText[TEXT_MAX_LENGTH]{};
 		char myNodeTypeSearch[TEXT_MAX_LENGTH] = "";
 
 		std::unique_ptr<Fly::CommandTracker> myCommandTracker;
 
-		std::unordered_map<Fly::NodeGraphView, ImNodesContext*> myImNodesContexts;
+		std::unordered_map<Fly::NodeGraphFacade, ImNodesContext*> myImNodesContexts;
 
 		
 		FlyClassWindow myClassWindow;
@@ -129,14 +129,14 @@ namespace Editor
 		ImVec2 myDragStartPos;
 		ImVec2 myDragEndPos;
 
-		Fly::NodeView myClickedNodeView;
-		Fly::LinkView myHoveredLinkView;
-		Fly::PinView myHoveredPinView;
-		Fly::PinView myClickedPinView;
+		Fly::NodeFacade myClickedNodeFacade;
+		Fly::LinkFacade myHoveredLinkFacade;
+		Fly::PinFacade myHoveredPinFacade;
+		Fly::PinFacade myClickedPinFacade;
 
 		bool myIsContextSensitive = false;
 
-		Fly::FunctionView mySelectedFunctionView;
+		Fly::FunctionFacade mySelectedFunctionFacade;
 
 		static constexpr Fly::Color mySelectionTint{ 0.2f, 0.2f, 0.2f, 0.f };// = Color(0.2f, 0.2f, 0.2f, 0);
 		static constexpr Fly::Color myHoverTint{ 0.1f, 0.1f, 0.1f, 0.f };

@@ -1,24 +1,24 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyDataTypeView.hpp"
+#include "FlyDataTypeFacade.hpp"
 
 namespace FLY_NAMESPACE
 {
 
 	class Class;
-	class ClassView;
+	class ClassFacade;
 	struct Variable;
 	class CommandTracker;
 
-	class VariableView final
+	class VariableFacade final
 	{
 	public:
 
-		VariableView() = default;
-		VariableView(VarID aVarID, const ClassView& aClassView);
+		VariableFacade() = default;
+		VariableFacade(VarID aVarID, const ClassFacade& aClassView);
 
 		[[nodiscard]] const std::string& GetName() const;
-		[[nodiscard]] DataTypeView GetDataType() const;
+		[[nodiscard]] DataTypeFacade GetDataType() const;
 		[[nodiscard]] bool IsDestroyed() const;
 		[[nodiscard]] VarID GetID() const;
 
@@ -27,7 +27,7 @@ namespace FLY_NAMESPACE
 		void SetName(std::string_view aName, CommandTracker* aCommandTracker);
 		void Destroy(CommandTracker* aCommandTracker);
 		void EditDefaultValue(CommandTracker* aCommandTracker);
-		void SetDataType(DataTypeView aDataTypeView, CommandTracker* aCommandTracker);
+		void SetDataType(DataTypeFacade aDataTypeView, CommandTracker* aCommandTracker);
 
 		explicit operator bool() const;
 

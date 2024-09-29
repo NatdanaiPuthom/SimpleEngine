@@ -46,9 +46,9 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void SaveClass(const ClassView aClassView, const std::string_view aSavePath)
+	void SaveClass(const ClassFacade aClassFacade, const std::string_view aSavePath)
 	{
-		ScriptLoader::SaveClass(aClassView.GetClass(), aSavePath);
+		ScriptLoader::SaveClass(aClassFacade.GetClass(), aSavePath);
 	}
 
 	void LoadAllClasses(const std::string_view aFilePath)
@@ -61,51 +61,51 @@ namespace FLY_NAMESPACE
 		ScriptLoader::SaveCustomEvents(aFilePath);
 	}
 
-	ClassView CreateClass(const DataTypeView aTargetView, const std::string_view aName, const std::string_view aSavePath)
+	ClassFacade CreateClass(const DataTypeFacade aTargetFacade, const std::string_view aName, const std::string_view aSavePath)
 	{
-		Class& createdClass = Global::GetFoundation().CreateClass(aTargetView.GetID(), aName);
-		SaveClass(ClassView(createdClass), aSavePath);
-		return ClassView(createdClass);
+		Class& createdClass = Global::GetFoundation().CreateClass(aTargetFacade.GetID(), aName);
+		SaveClass(ClassFacade(createdClass), aSavePath);
+		return ClassFacade(createdClass);
 	}
 
-	ClassView CreateClassWithoutTarget(const std::string_view aName, const std::string_view aSavePath)
+	ClassFacade CreateClassWithoutTarget(const std::string_view aName, const std::string_view aSavePath)
 	{
-		return CreateClass(DataTypeView(GetDataTypeID<None*>()), aName, aSavePath);
+		return CreateClass(DataTypeFacade(GetDataTypeID<None*>()), aName, aSavePath);
 	}
 
-	void SetClassName(const ClassView aClassView, const std::string_view aName)
+	void SetClassName(const ClassFacade aClassFacade, const std::string_view aName)
 	{
-		aClassView.GetClass().mName = aName;
+		aClassFacade.GetClass().mName = aName;
 	}
 
-	ClassView FindClassByName(const std::string_view aName)
+	ClassFacade FindClassByName(const std::string_view aName)
 	{
 		auto& classes = Global::GetFoundation().mClasses;
 
 		for (HeapObject<Class, false>& c : classes)
 		{
-			if (ClassView(*c).GetName() == aName)
+			if (ClassFacade(*c).GetName() == aName)
 			{
-				return ClassView(*c);
+				return ClassFacade(*c);
 			}
 		}
 
-		return ClassView();
+		return ClassFacade();
 	}
 
-	ClassInstanceView CreateClassInstance(const ClassView aClassView)
+	ClassInstanceFacade CreateClassInstance(const ClassFacade aClassFacade)
 	{
-		return ClassInstanceView(aClassView.GetClass().CreateClassInstance());
+		return ClassInstanceFacade(aClassFacade.GetClass().CreateClassInstance());
 	}
 
-	void DestroyClassInstance(ClassInstanceView aClassInstanceView)
+	void DestroyClassInstance(ClassInstanceFacade aClassInstanceFacade)
 	{
-		aClassInstanceView.GetClassInstance().mClass->DestroyClassInstance(aClassInstanceView.GetClassInstance());
+		aClassInstanceFacade.GetClassInstance().mClass->DestroyClassInstance(aClassInstanceFacade.GetClassInstance());
 	}
 
-	void EditClassInstanceVariableDefaultValue(ClassInstanceView aClassInstanceView)
+	void EditClassInstanceVariableDefaultValue(ClassInstanceFacade aClassInstanceFacade)
 	{
-		ClassInstance& classInstance = aClassInstanceView.GetClassInstance();
+		ClassInstance& classInstance = aClassInstanceFacade.GetClassInstance();
 		const std::vector<Variable>& variables = classInstance.mStructInstance.mStruct->mVariables;
 		std::vector<VariableInstance>& variableInstances = classInstance.mStructInstance.mVariableInstances;
 
@@ -120,28 +120,28 @@ namespace FLY_NAMESPACE
 
 	}
 
-	NodeView CreateNode(NodeGraphView aNodeGraphView, const NodeTypeView aNodeTypeView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeFacade CreateNode(NodeGraphFacade aNodeGraphFacade, const NodeTypeFacade aNodeTypeFacade, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
-		const NodeID nodeID = Internal::CreateNode(aNodeGraphView.GetVariant(), aNodeTypeView.GetID(), aPosition, aCommandTracker);
-		return NodeView(nodeID, aNodeGraphView);
+		const NodeID nodeID = Internal::CreateNode(aNodeGraphFacade.GetVariant(), aNodeTypeFacade.GetID(), aPosition, aCommandTracker);
+		return NodeFacade(nodeID, aNodeGraphFacade);
 	}
 
-	NodeView CreateNode(NodeGraphView aNodeGraphView, std::string_view aName, bool& aSuccess, const Vec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
+	NodeFacade CreateNode(NodeGraphFacade aNodeGraphFacade, std::string_view aName, bool& aSuccess, const Vec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
 	{
-		const NodeID nodeID = Internal::CreateNode(aNodeGraphView.GetVariant(), aName, aSuccess, aPosition, aCreateIfNameNotFound, aCommandTracker);
-		return NodeView(nodeID, aNodeGraphView);
+		const NodeID nodeID = Internal::CreateNode(aNodeGraphFacade.GetVariant(), aName, aSuccess, aPosition, aCreateIfNameNotFound, aCommandTracker);
+		return NodeFacade(nodeID, aNodeGraphFacade);
 	}
 
-	NodeView CreateNodeAutoLink(NodeGraphView aNodeGraphView, const NodeTypeView aNodeTypeView, const PinID aConnection, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeFacade CreateNodeAutoLink(NodeGraphFacade aNodeGraphFacade, const NodeTypeFacade aNodeTypeFacade, const PinID aConnection, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Create Node + Auto Link");
 		}
 
-		NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
+		NodeGraph& nodeGraph = aNodeGraphFacade.GetNodeGraph();
 
-		const NodeID createdNodeID = Internal::CreateNode(aNodeGraphView.GetVariant(), aNodeTypeView.GetID(), aPosition, aCommandTracker);
+		const NodeID createdNodeID = Internal::CreateNode(aNodeGraphFacade.GetVariant(), aNodeTypeFacade.GetID(), aPosition, aCommandTracker);
 
 		const Pin& createdFromPin = nodeGraph.mPins.at(aConnection);
 		const PinType& pinType = Global::GetPinTypeManager().GetPinType(createdFromPin.mTypeID);
@@ -162,82 +162,82 @@ namespace FLY_NAMESPACE
 			aCommandTracker->EndComposite();
 		}
 
-		return NodeView(createdNodeID, aNodeGraphView);
+		return NodeFacade(createdNodeID, aNodeGraphFacade);
 	}
 
-	NodeView CreateGetterNode(NodeGraphView aNodeGraphView, const VariableView aVariableView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeFacade CreateGetterNode(NodeGraphFacade aNodeGraphFacade, const VariableFacade aVariableFacade, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Create Getter Node");
 		}
 
-		const Variable& variable = aVariableView.GetClass().mStruct.mVariables.at(aVariableView.GetID());
+		const Variable& variable = aVariableFacade.GetClass().mStruct.mVariables.at(aVariableFacade.GetID());
 
-		const NodeID nodeID = Internal::CreateGetterNode(aNodeGraphView.GetNodeGraph(), variable.mDataTypeID, aCommandTracker);
-		Internal::SetNodePosition(nodeID, aPosition, aNodeGraphView.GetNodeGraph(), aCommandTracker);
-		Internal::BindVariable(aVariableView.GetClass(), CreateContextualNodeRef(nodeID, aNodeGraphView.GetNodeGraph()), aVariableView.GetID(), aCommandTracker);
+		const NodeID nodeID = Internal::CreateGetterNode(aNodeGraphFacade.GetNodeGraph(), variable.mDataTypeID, aCommandTracker);
+		Internal::SetNodePosition(nodeID, aPosition, aNodeGraphFacade.GetNodeGraph(), aCommandTracker);
+		Internal::BindVariable(aVariableFacade.GetClass(), CreateContextualNodeRef(nodeID, aNodeGraphFacade.GetNodeGraph()), aVariableFacade.GetID(), aCommandTracker);
 
 		if (aCommandTracker)
 		{
 			aCommandTracker->EndComposite();
 		}
 
-		return NodeView(nodeID, aNodeGraphView);
+		return NodeFacade(nodeID, aNodeGraphFacade);
 	}
 
-	NodeView CreateSetterNode(NodeGraphView aNodeGraphView, const VariableView aVariableView, const Vec2 aPosition, CommandTracker* const aCommandTracker)
+	NodeFacade CreateSetterNode(NodeGraphFacade aNodeGraphFacade, const VariableFacade aVariableFacade, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
 			aCommandTracker->BeginComposite("Create Setter Node");
 		}
 
-		NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
+		NodeGraph& nodeGraph = aNodeGraphFacade.GetNodeGraph();
 
-		const Variable& variable = aVariableView.GetClass().mStruct.mVariables.at(aVariableView.GetID());
+		const Variable& variable = aVariableFacade.GetClass().mStruct.mVariables.at(aVariableFacade.GetID());
 
 		const NodeID nodeID = Internal::CreateSetterNode(nodeGraph, variable.mDataTypeID, aCommandTracker);
 		Internal::SetNodePosition(nodeID, aPosition, nodeGraph, aCommandTracker);
-		Internal::BindVariable(aVariableView.GetClass(), CreateContextualNodeRef(nodeID, nodeGraph), aVariableView.GetID(), aCommandTracker);
+		Internal::BindVariable(aVariableFacade.GetClass(), CreateContextualNodeRef(nodeID, nodeGraph), aVariableFacade.GetID(), aCommandTracker);
 
 		if (aCommandTracker)
 		{
 			aCommandTracker->EndComposite();
 		}
 
-		return NodeView(nodeID, aNodeGraphView);
+		return NodeFacade(nodeID, aNodeGraphFacade);
 	}
 
-	LinkView TryCreateLink(const PinView aPinView1, const PinView aPinView2, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
+	LinkFacade TryCreateLink(const PinFacade aPinFacade1, const PinFacade aPinFacade2, NodeGraphFacade aNodeGraphFacade, CommandTracker* const aCommandTracker)
 	{
-		const LinkID createdLinkID = Internal::TryCreateLink(aNodeGraphView.GetNodeGraph(), aPinView1.GetID(), aPinView2.GetID(), aCommandTracker);
-		return LinkView(createdLinkID, aNodeGraphView);
+		const LinkID createdLinkID = Internal::TryCreateLink(aNodeGraphFacade.GetNodeGraph(), aPinFacade1.GetID(), aPinFacade2.GetID(), aCommandTracker);
+		return LinkFacade(createdLinkID, aNodeGraphFacade);
 	}
 
-	void DestroyLink(const LinkView aLinkView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
+	void DestroyLink(const LinkFacade aLinkFacade, NodeGraphFacade aNodeGraphFacade, CommandTracker* aCommandTracker)
 	{
-		Internal::DestroyLink(aNodeGraphView.GetNodeGraph(), aLinkView.GetID(), aCommandTracker);
+		Internal::DestroyLink(aNodeGraphFacade.GetNodeGraph(), aLinkFacade.GetID(), aCommandTracker);
 	}
 
-	void DestroyLinksByPin(const PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
+	void DestroyLinksByPin(const PinFacade aPinFacade, NodeGraphFacade aNodeGraphFacade, CommandTracker* const aCommandTracker)
 	{
-		Internal::DestroyLinksByPin(aNodeGraphView.GetNodeGraph(), aPinView.GetID(), aCommandTracker);
+		Internal::DestroyLinksByPin(aNodeGraphFacade.GetNodeGraph(), aPinFacade.GetID(), aCommandTracker);
 	}
 
-	void DestroyLinksByNode(NodeView aNodeView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
+	void DestroyLinksByNode(NodeFacade aNodeFacade, NodeGraphFacade aNodeGraphFacade, CommandTracker* aCommandTracker)
 	{
-		std::vector<LinkID> linkIDs = ScriptLinker::GetLinkIDsByNode(aNodeGraphView.GetNodeGraph(), aNodeView.GetID());
+		std::vector<LinkID> linkIDs = ScriptLinker::GetLinkIDsByNode(aNodeGraphFacade.GetNodeGraph(), aNodeFacade.GetID());
 
-		DestroySelection({}, linkIDs, aNodeGraphView, aCommandTracker);
+		DestroySelection({}, linkIDs, aNodeGraphFacade, aCommandTracker);
 	}
 
-	void DestroyNode(const NodeView aNodeView, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
+	void DestroyNode(const NodeFacade aNodeFacade, NodeGraphFacade aNodeGraphFacade, CommandTracker* const aCommandTracker)
 	{
-		return Internal::DestroyNode(aNodeGraphView.GetNodeGraph(), aNodeView.GetID(), aCommandTracker);
+		return Internal::DestroyNode(aNodeGraphFacade.GetNodeGraph(), aNodeFacade.GetID(), aCommandTracker);
 	}
 
-	void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
+	void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraphFacade aNodeGraphFacade, CommandTracker* aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
@@ -246,12 +246,12 @@ namespace FLY_NAMESPACE
 
 		for (const LinkID linkID : aLinkIDs)
 		{
-			DestroyLink(LinkView(linkID, aNodeGraphView), aNodeGraphView, aCommandTracker);
+			DestroyLink(LinkFacade(linkID, aNodeGraphFacade), aNodeGraphFacade, aCommandTracker);
 		}
 
 		for (const NodeID nodeID : aNodeIDs)
 		{
-			DestroyNode(NodeView(nodeID, aNodeGraphView), aNodeGraphView, aCommandTracker);
+			DestroyNode(NodeFacade(nodeID, aNodeGraphFacade), aNodeGraphFacade, aCommandTracker);
 		}
 
 		if (aCommandTracker)
@@ -265,18 +265,18 @@ namespace FLY_NAMESPACE
 		Internal::DestroyNodes(aNodeRefs, aCommandTracker);
 	}
 
-	void SetNodePosition(const NodeView aNodeView, Vec2 aPosition, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
+	void SetNodePosition(const NodeFacade aNodeFacade, Vec2 aPosition, NodeGraphFacade aNodeGraphFacade, CommandTracker* const aCommandTracker)
 	{
-		const Vec2 oldPos = Internal::GetNode(aNodeView.GetID(), aNodeGraphView.GetNodeGraph()).mPosition;
-		SetNodePosition(aNodeView, aPosition, oldPos, aNodeGraphView, aCommandTracker);
+		const Vec2 oldPos = Internal::GetNode(aNodeFacade.GetID(), aNodeGraphFacade.GetNodeGraph()).mPosition;
+		SetNodePosition(aNodeFacade, aPosition, oldPos, aNodeGraphFacade, aCommandTracker);
 	}
 
-	void SetNodePosition(const NodeView aNodeView, const Vec2 aPosition, const Vec2 aOldPosition, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
+	void SetNodePosition(const NodeFacade aNodeFacade, const Vec2 aPosition, const Vec2 aOldPosition, NodeGraphFacade aNodeGraphFacade, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetNodePosition(aNodeView.GetID(), aPosition, aOldPosition, aNodeGraphView.GetNodeGraph(), aCommandTracker);
+		Internal::SetNodePosition(aNodeFacade.GetID(), aPosition, aOldPosition, aNodeGraphFacade.GetNodeGraph(), aCommandTracker);
 	}
 
-	void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aDragData, NodeGraphView aNodeGraphView, CommandTracker* const aCommandTracker)
+	void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aDragData, NodeGraphFacade aNodeGraphFacade, CommandTracker* const aCommandTracker)
 	{
 		if (aDragData.empty())
 		{
@@ -289,7 +289,7 @@ namespace FLY_NAMESPACE
 
 		for (const auto& [mNodeID, dragData] : aDragData)
 		{
-			Internal::SetNodePosition(mNodeID, dragData.mEndPos, dragData.mStartPos, aNodeGraphView.GetNodeGraph(), aCommandTracker);
+			Internal::SetNodePosition(mNodeID, dragData.mEndPos, dragData.mStartPos, aNodeGraphFacade.GetNodeGraph(), aCommandTracker);
 		}
 
 		if (aCommandTracker)
@@ -298,13 +298,13 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	VariableView CreateVariable(const ClassView aClassView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	VariableFacade CreateVariable(const ClassFacade aClassFacade, const DataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)
 	{
-		const VarID varID = Internal::CreateVariable(aClassView.GetClass(), aDataTypeView.GetID(), aCommandTracker);
-		return VariableView(varID, aClassView);
+		const VarID varID = Internal::CreateVariable(aClassFacade.GetClass(), aDataTypeFacade.GetID(), aCommandTracker);
+		return VariableFacade(varID, aClassFacade);
 	}
 
-	void DestroyVariable(const VariableView aVariableView, CommandTracker* const aCommandTracker)
+	void DestroyVariable(const VariableFacade aVariableFacade, CommandTracker* const aCommandTracker)
 	{
 		if (aCommandTracker)
 		{
@@ -317,8 +317,8 @@ namespace FLY_NAMESPACE
 			Class* mClass = nullptr;
 		} data;
 
-		data.mVarID = aVariableView.GetID();
-		data.mClass = &aVariableView.GetClass();
+		data.mVarID = aVariableFacade.GetID();
+		data.mClass = &aVariableFacade.GetClass();
 
 		auto commandFunction = [data](eCommandType aCommandType) -> void
 			{
@@ -335,7 +335,7 @@ namespace FLY_NAMESPACE
 			aCommandTracker->DoCommand(Command(commandFunction, "Destroy Variable"));
 		}
 
-		Internal::DestroyNodes(Internal::GetNodeRefsByVariableRef(VariableRef(aVariableView.GetID(), aVariableView.GetClass())), aCommandTracker);
+		Internal::DestroyNodes(Internal::GetNodeRefsByVariableRef(VariableRef(aVariableFacade.GetID(), aVariableFacade.GetClass())), aCommandTracker);
 
 		if (aCommandTracker)
 		{
@@ -343,10 +343,10 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void EditVariableDefaultValue(const VariableView aVariableView, CommandTracker*)
+	void EditVariableDefaultValue(const VariableFacade aVariableFacade, CommandTracker*)
 	{
-		assert(aVariableView);
-		Variable& variable = aVariableView.GetClass().mStruct.mVariables.at(aVariableView.GetID());
+		assert(aVariableFacade);
+		Variable& variable = aVariableFacade.GetClass().mStruct.mVariables.at(aVariableFacade.GetID());
 
 		if (Global::GetDataTypeManager().EditData(variable.mDataTypeID, variable.mDefaultValueDataPtr))
 		{
@@ -354,27 +354,27 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void SetVariableDataType(const VariableView aVariableView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	void SetVariableDataType(const VariableFacade aVariableFacade, const DataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetVariableDataType(aVariableView.GetClass(), aVariableView.GetID(), aDataTypeView.GetID(), aCommandTracker);
+		Internal::SetVariableDataType(aVariableFacade.GetClass(), aVariableFacade.GetID(), aDataTypeFacade.GetID(), aCommandTracker);
 	}
 
-	void SetVariableName(const VariableView aVariableView, const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
+	void SetVariableName(const VariableFacade aVariableFacade, const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 	{
-		Variable& variable = aVariableView.GetClass().mStruct.mVariables.at(aVariableView.GetID());
+		Variable& variable = aVariableFacade.GetClass().mStruct.mVariables.at(aVariableFacade.GetID());
 
 		variable.mName = aName;
 	}
 
-	void DestroyVariableNodes(const VariableView aVariableView, ClassView aClassView, CommandTracker* const aCommandTracker)
+	void DestroyVariableNodes(const VariableFacade aVariableFacade, ClassFacade aClassFacade, CommandTracker* const aCommandTracker)
 	{
-		Internal::DestroyNodes(Internal::GetNodeRefsByVariableRef(VariableRef(aVariableView.GetID(), aClassView.GetClass())), aCommandTracker);
+		Internal::DestroyNodes(Internal::GetNodeRefsByVariableRef(VariableRef(aVariableFacade.GetID(), aClassFacade.GetClass())), aCommandTracker);
 	}
 
-	void EditPin(const PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
+	void EditPin(const PinFacade aPinFacade, NodeGraphFacade aNodeGraphFacade, CommandTracker* aCommandTracker)
 	{
-		NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
-		Pin& pin = nodeGraph.mPins.at(aPinView.GetID());
+		NodeGraph& nodeGraph = aNodeGraphFacade.GetNodeGraph();
+		Pin& pin = nodeGraph.mPins.at(aPinFacade.GetID());
 		const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 
 		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
@@ -401,7 +401,7 @@ namespace FLY_NAMESPACE
 			NodeGraph* mNodeGraph = nullptr;
 		} data;
 
-		data.mPinID = aPinView.GetID();
+		data.mPinID = aPinFacade.GetID();
 		data.mPreviousDataPtr = previousDataPtr;
 		data.mNodeGraph = &nodeGraph;
 
@@ -426,11 +426,11 @@ namespace FLY_NAMESPACE
 		aCommandTracker->RegisterCommand(Command(commandFunction, "Edit Pin"));
 	}
 
-	void SplitPin(const PinView aPinView, NodeGraphView aNodeGraphView, CommandTracker* aCommandTracker)
+	void SplitPin(const PinFacade aPinFacade, NodeGraphFacade aNodeGraphFacade, CommandTracker* aCommandTracker)
 	{
 		aCommandTracker;
-		NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
-		const Pin& pin = nodeGraph.mPins.at(aPinView.GetID());
+		NodeGraph& nodeGraph = aNodeGraphFacade.GetNodeGraph();
+		const Pin& pin = nodeGraph.mPins.at(aPinFacade.GetID());
 
 		if (!pin.mConnectedPinIDs.empty())
 		{
@@ -447,14 +447,14 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	bool HasPinAnyConnectedLinks(const PinView aPinView)
+	bool HasPinAnyConnectedLinks(const PinFacade aPinFacade)
 	{
-		return !aPinView.GetConnectedPinIDs().empty();
+		return !aPinFacade.GetConnectedPinIDs().empty();
 	}
 
-	bool HasNodeAnyConnectedLinks(const NodeView aNodeView, const NodeGraphView aNodeGraphView)
+	bool HasNodeAnyConnectedLinks(const NodeFacade aNodeFacade, const NodeGraphFacade aNodeGraphFacade)
 	{
-		const Node& node = aNodeGraphView.GetNodeGraph().mNodes.at(aNodeView.GetID());
+		const Node& node = aNodeGraphFacade.GetNodeGraph().mNodes.at(aNodeFacade.GetID());
 
 		auto hasConnectedLink = [](const std::vector<PinID>& aPinIDs, const NodeGraph& aNodeGraph) -> bool
 			{
@@ -470,73 +470,73 @@ namespace FLY_NAMESPACE
 				return false;
 			};
 
-		return hasConnectedLink(node.mInputPins, aNodeGraphView.GetNodeGraph()) || hasConnectedLink(node.mOutputPins, aNodeGraphView.GetNodeGraph());
+		return hasConnectedLink(node.mInputPins, aNodeGraphFacade.GetNodeGraph()) || hasConnectedLink(node.mOutputPins, aNodeGraphFacade.GetNodeGraph());
 	}
 
-	bool IsNodeReplacable(const NodeView aNodeView, const NodeGraphView aNodeGraphView)
+	bool IsNodeReplacable(const NodeFacade aNodeFacade, const NodeGraphFacade aNodeGraphFacade)
 	{
-		const Node& node = Internal::GetNode(aNodeView.GetID(), aNodeGraphView.GetNodeGraph());
+		const Node& node = Internal::GetNode(aNodeFacade.GetID(), aNodeGraphFacade.GetNodeGraph());
 		const NodeType& nodeType = Internal::GetNodeType(node);
 
 		return nodeType.mNodeRecipe.mOperatorTrait != eNodeOperatorTrait::None;
 	}
 
-	bool IsPinReplacable(const PinView aPinView, const NodeGraphView aNodeGraphView)
+	bool IsPinReplacable(const PinFacade aPinFacade, const NodeGraphFacade aNodeGraphFacade)
 	{
-		return IsNodeReplacable(NodeView(aPinView.GetNodeID(), aNodeGraphView), aNodeGraphView);
+		return IsNodeReplacable(NodeFacade(aPinFacade.GetNodeID(), aNodeGraphFacade), aNodeGraphFacade);
 	}
 
-	void ReplaceTemplateNode(const PinView aReplacedPinView, NodeGraphView aNodeGraphView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	void ReplaceTemplateNode(const PinFacade aReplacedPinFacade, NodeGraphFacade aNodeGraphFacade, const DataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)
 	{
-		Internal::ReplaceTemplateNode(aNodeGraphView.GetNodeGraph(), aReplacedPinView.GetNodeID(), aDataTypeView.GetID(), aCommandTracker);
+		Internal::ReplaceTemplateNode(aNodeGraphFacade.GetNodeGraph(), aReplacedPinFacade.GetNodeID(), aDataTypeFacade.GetID(), aCommandTracker);
 	}
 
-	void ReplaceTemplateNode(const NodeView aNodeView, NodeGraphView aNodeGraphView, const DataTypeView aDataTypeView, CommandTracker* const aCommandTracker)
+	void ReplaceTemplateNode(const NodeFacade aNodeFacade, NodeGraphFacade aNodeGraphFacade, const DataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)
 	{
-		Internal::ReplaceTemplateNode(aNodeGraphView.GetNodeGraph(), aNodeView.GetID(), aDataTypeView.GetID(), aCommandTracker);
+		Internal::ReplaceTemplateNode(aNodeGraphFacade.GetNodeGraph(), aNodeFacade.GetID(), aDataTypeFacade.GetID(), aCommandTracker);
 	}
 
-	std::vector<DataTypeView> GetReplacableDataTypes(const PinView aPinView, const NodeGraphView aNodeGraphView)
+	std::vector<DataTypeFacade> GetReplacableDataTypes(const PinFacade aPinFacade, const NodeGraphFacade aNodeGraphFacade)
 	{
-		assert(aPinView && "View is not valid");
-		assert(aNodeGraphView && "View is not valid");
+		assert(aPinFacade && "Facade is not valid");
+		assert(aNodeGraphFacade && "Facade is not valid");
 
-		return GetReplacableDataTypes(NodeView(aPinView.GetNodeID(), aNodeGraphView), aNodeGraphView);
+		return GetReplacableDataTypes(NodeFacade(aPinFacade.GetNodeID(), aNodeGraphFacade), aNodeGraphFacade);
 	}
 
-	std::vector<DataTypeView> GetReplacableDataTypes(const NodeView aNodeView, const NodeGraphView aNodeGraphView)
+	std::vector<DataTypeFacade> GetReplacableDataTypes(const NodeFacade aNodeFacade, const NodeGraphFacade aNodeGraphFacade)
 	{
-		assert(aNodeView && "View is not valid");
-		assert(aNodeGraphView && "View is not valid");
+		assert(aNodeFacade && "Facade is not valid");
+		assert(aNodeGraphFacade && "Facade is not valid");
 
-		const Node& node = Internal::GetNode(aNodeView.GetID(), aNodeGraphView.GetNodeGraph());
+		const Node& node = Internal::GetNode(aNodeFacade.GetID(), aNodeGraphFacade.GetNodeGraph());
 		const NodeType& nodeType = Internal::GetNodeType(node);
-		std::vector<DataTypeView> dataTypeViews;
+		std::vector<DataTypeFacade> dataTypeFacades;
 
 		auto& dataTypes = Global::GetNodeTypeManager().GetTemplateMapByOperator(nodeType.mNodeRecipe.mOperatorTrait);
-		dataTypeViews.reserve(dataTypes.size());
+		dataTypeFacades.reserve(dataTypes.size());
 		for (auto& [dataTypeID, nodeTypeID] : dataTypes)
 		{
-			dataTypeViews.push_back(DataTypeView(dataTypeID));
+			dataTypeFacades.push_back(DataTypeFacade(dataTypeID));
 		}
 
-		return dataTypeViews;
+		return dataTypeFacades;
 	}
 
-	void SetPinTypeName(const PinTypeView aPinTypeView, std::string_view aName)
+	void SetPinTypeName(const PinTypeFacade aPinTypeFacade, std::string_view aName)
 	{
-		PinType& pinType = Global::GetPinTypeManager().GetPinType(aPinTypeView.GetID());
+		PinType& pinType = Global::GetPinTypeManager().GetPinType(aPinTypeFacade.GetID());
 
 		pinType.mName = aName;
 	}
 
-	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraphView aCopiedFromNodeGraphView)
+	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraphFacade aCopiedFromNodeGraphFacade)
 	{
 		if (aNodeIDs.empty())
 		{
 			return;
 		}
-		const NodeGraph& copiedFromNodeGraph = aCopiedFromNodeGraphView.GetNodeGraph();
+		const NodeGraph& copiedFromNodeGraph = aCopiedFromNodeGraphFacade.GetNodeGraph();
 		EventGraph& eventGraphCopy = Global::Internal::GetNodeGraphCopy();
 		eventGraphCopy = EventGraph{};
 
@@ -605,7 +605,7 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void PasteCopyBuffer(const Vec2 aPosition, NodeGraphView aTargetNodeGraphView, CommandTracker* const aCommandTracker)
+	void PasteCopyBuffer(const Vec2 aPosition, NodeGraphFacade aTargetNodeGraphFacade, CommandTracker* const aCommandTracker)
 	{
 		const NodeGraph& nodeGraphCopy = Global::Internal::GetNodeGraphCopy().mNodeGraph;
 
@@ -614,14 +614,14 @@ namespace FLY_NAMESPACE
 			aCommandTracker->BeginComposite("Paste Nodes");
 		}
 
-		NodeGraph& targetNodeGraph = aTargetNodeGraphView.GetNodeGraph();
+		NodeGraph& targetNodeGraph = aTargetNodeGraphFacade.GetNodeGraph();
 
 		std::unordered_map<NodeID, NodeID> nodeConverter;
 
 		for (NodeID sourceNodeID = 0; sourceNodeID < nodeGraphCopy.mNodes.size(); sourceNodeID++)
 		{
 			const Node& node = nodeGraphCopy.mNodes.at(sourceNodeID);
-			const NodeID createdNodeID = Internal::CreateNode(aTargetNodeGraphView.GetVariant(), node.mTypeID, aPosition + node.mPosition, aCommandTracker);
+			const NodeID createdNodeID = Internal::CreateNode(aTargetNodeGraphFacade.GetVariant(), node.mTypeID, aPosition + node.mPosition, aCommandTracker);
 			nodeConverter.emplace(sourceNodeID, createdNodeID);
 
 			const Node& createdNode = Internal::GetNode(createdNodeID, targetNodeGraph);
@@ -654,34 +654,34 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	CustomEventView CreateCustomEvent(const std::string_view aName)
+	CustomEventFacade CreateCustomEvent(const std::string_view aName)
 	{
-		return CustomEventView(Internal::CreateCustomEvent(aName));
+		return CustomEventFacade(Internal::CreateCustomEvent(aName));
 	}
 
-	void AddPinToCustomEvent(const CustomEventView aCustomEventView, const DataTypeView aDataTypeView, std::string_view aPinName, CommandTracker* const aCommandTracker)
+	void AddPinToCustomEvent(const CustomEventFacade aCustomEventFacade, const DataTypeFacade aDataTypeFacade, std::string_view aPinName, CommandTracker* const aCommandTracker)
 	{
-		Internal::AddPinToCustomEvent(aCustomEventView.GetID(), aDataTypeView.GetID(), aPinName, aCommandTracker);
+		Internal::AddPinToCustomEvent(aCustomEventFacade.GetID(), aDataTypeFacade.GetID(), aPinName, aCommandTracker);
 	}
 
-	void SetPinDataTypeAtIndexCustomEvent(const CustomEventView aCustomEventView, const DataTypeView aDataTypeView, const size_t aIndex, CommandTracker* const aCommandTracker)
+	void SetPinDataTypeAtIndexCustomEvent(const CustomEventFacade aCustomEventFacade, const DataTypeFacade aDataTypeFacade, const size_t aIndex, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetPinDataTypeAtIndexCustomEvent(aCustomEventView.GetID(), aDataTypeView.GetID(), aIndex, aCommandTracker);
+		Internal::SetPinDataTypeAtIndexCustomEvent(aCustomEventFacade.GetID(), aDataTypeFacade.GetID(), aIndex, aCommandTracker);
 	}
 
-	void SetPinNameAtIndexCustomEvent(const CustomEventView aCustomEventView, const std::string_view aName, const size_t aIndex, CommandTracker* const aCommandTracker)
+	void SetPinNameAtIndexCustomEvent(const CustomEventFacade aCustomEventFacade, const std::string_view aName, const size_t aIndex, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetPinNameAtIndexCustomEvent(aCustomEventView.GetID(), aName, aIndex, aCommandTracker);
+		Internal::SetPinNameAtIndexCustomEvent(aCustomEventFacade.GetID(), aName, aIndex, aCommandTracker);
 	}
 
-	void DeletePinAtIndexCustomEvent(const CustomEventView aCustomEventView, const size_t aIndex, CommandTracker* const aCommandTracker)
+	void DeletePinAtIndexCustomEvent(const CustomEventFacade aCustomEventFacade, const size_t aIndex, CommandTracker* const aCommandTracker)
 	{
-		Internal::DeletePinAtIndexCustomEvent(aCustomEventView.GetID(), aIndex, aCommandTracker);
+		Internal::DeletePinAtIndexCustomEvent(aCustomEventFacade.GetID(), aIndex, aCommandTracker);
 	}
 
-	void SetCustomEventName(const CustomEventView aCustomEventView, std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
+	void SetCustomEventName(const CustomEventFacade aCustomEventFacade, std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 	{
-		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventView.GetID());
+		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(aCustomEventFacade.GetID());
 		NodeType& executorNodeType = Global::GetNodeTypeManager().GetNodeType(customEvent.GetExecutorTypeID());
 		NodeType& callerNodeType = Global::GetNodeTypeManager().GetNodeType(customEvent.GetCallerTypeID());
 
@@ -690,42 +690,42 @@ namespace FLY_NAMESPACE
 		callerNodeType.mNodeRecipe.mName = nameDirectory + "Call " + std::string(aName);
 	}
 
-	FunctionView CreateGlobalFunction(const std::string_view aName)
+	FunctionFacade CreateGlobalFunction(const std::string_view aName)
 	{
-		return FunctionView(Internal::CreateFunction(aName));
+		return FunctionFacade(Internal::CreateFunction(aName));
 	}
 
-	FunctionView CreateMemberFunction(const std::string_view aName, ClassView aClassView)
+	FunctionFacade CreateMemberFunction(const std::string_view aName, ClassFacade aClassFacade)
 	{
 		const FunctionID id = Internal::CreateFunction(aName);
-		aClassView.GetClass().BindFunction(id);
+		aClassFacade.GetClass().BindFunction(id);
 
-		return FunctionView(id);
+		return FunctionFacade(id);
 	}
 
-	void AddPinToFunction(const FunctionView aFunctionView, const DataTypeView aDataTypeView, const eFlowType aFlowType, std::string_view aPinName, CommandTracker* const aCommandTracker)
+	void AddPinToFunction(const FunctionFacade aFunctionFacade, const DataTypeFacade aDataTypeFacade, const eFlowType aFlowType, std::string_view aPinName, CommandTracker* const aCommandTracker)
 	{
-		Internal::AddPinToFunction(aFunctionView.GetID(), aDataTypeView.GetID(), aFlowType, aPinName, aCommandTracker);
+		Internal::AddPinToFunction(aFunctionFacade.GetID(), aDataTypeFacade.GetID(), aFlowType, aPinName, aCommandTracker);
 	}
 
-	void SetPinDataTypeAtIndexFunction(const FunctionView aFunctionView, const DataTypeView aDataTypeView, const size_t aIndex, const eFlowType aFlowType, CommandTracker* const aCommandTracker)
+	void SetPinDataTypeAtIndexFunction(const FunctionFacade aFunctionFacade, const DataTypeFacade aDataTypeFacade, const size_t aIndex, const eFlowType aFlowType, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetPinDataTypeAtIndexFunction(aFunctionView.GetID(), aDataTypeView.GetID(), aIndex, aFlowType, aCommandTracker);
+		Internal::SetPinDataTypeAtIndexFunction(aFunctionFacade.GetID(), aDataTypeFacade.GetID(), aIndex, aFlowType, aCommandTracker);
 	}
 
-	void SetPinNameAtIndexFunction(const FunctionView aFunctionView, const std::string_view aName, const size_t aIndex, const eFlowType aFlowType, CommandTracker* const aCommandTracker)
+	void SetPinNameAtIndexFunction(const FunctionFacade aFunctionFacade, const std::string_view aName, const size_t aIndex, const eFlowType aFlowType, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetPinNameAtIndexFunction(aFunctionView.GetID(), aName, aIndex, aFlowType, aCommandTracker);
+		Internal::SetPinNameAtIndexFunction(aFunctionFacade.GetID(), aName, aIndex, aFlowType, aCommandTracker);
 	}
 
-	void DeletePinAtIndexFunction(const FunctionView aFunctionView, const size_t aIndex, const eFlowType aFlowType, CommandTracker* const aCommandTracker)
+	void DeletePinAtIndexFunction(const FunctionFacade aFunctionFacade, const size_t aIndex, const eFlowType aFlowType, CommandTracker* const aCommandTracker)
 	{
-		Internal::DeletePinAtIndexFunction(aFunctionView.GetID(), aIndex, aFlowType, aCommandTracker);
+		Internal::DeletePinAtIndexFunction(aFunctionFacade.GetID(), aIndex, aFlowType, aCommandTracker);
 	}
 
-	void SetFunctionName(const FunctionView aFunctionView, const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
+	void SetFunctionName(const FunctionFacade aFunctionFacade, const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 	{
-		Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionView.GetID());
+		Function& function = Global::GetNodeTypeManager().GetFunction(aFunctionFacade.GetID());
 
 		function.mName = aName;
 	}
@@ -746,84 +746,84 @@ namespace FLY_NAMESPACE
 	}
 
 	template<Predicate<const Pin&> Predicate>
-	std::vector<PinView> GetPinViewsFiltered(Predicate&& aPredicate, const NodeGraphView& aNodeGraphView)
+	std::vector<PinFacade> GetPinFacadesFiltered(Predicate&& aPredicate, const NodeGraphFacade& aNodeGraphFacade)
 	{
-		std::vector<PinView> pinViews;
-		const NodeGraph& nodeGraph = aNodeGraphView.GetNodeGraph();
-		pinViews.reserve(nodeGraph.mPins.size());
+		std::vector<PinFacade> pinFacades;
+		const NodeGraph& nodeGraph = aNodeGraphFacade.GetNodeGraph();
+		pinFacades.reserve(nodeGraph.mPins.size());
 
 		for (PinID pinID = 0; pinID < nodeGraph.mPins.size(); ++pinID)
 		{
 			const Pin& pin = nodeGraph.mPins[pinID];
 			if (aPredicate(pin))
 			{
-				pinViews.push_back(PinView(pinID, aNodeGraphView));
+				pinFacades.push_back(PinFacade(pinID, aNodeGraphFacade));
 			}
 		}
 
-		return pinViews;
+		return pinFacades;
 	}
 
 
 
-	std::vector<PinView> GetNonConnectedInputPinViews(const NodeGraphView aNodeGraphView)
+	std::vector<PinFacade> GetNonConnectedInputPinFacades(const NodeGraphFacade aNodeGraphFacade)
 	{
-		return GetPinViewsFiltered([](const Pin& aPin)-> bool
+		return GetPinFacadesFiltered([](const Pin& aPin)-> bool
 			{
 				return aPin.mConnectedPinIDs.empty() && Global::GetPinTypeManager().GetPinType(aPin.mTypeID).mFlowType == eFlowType::Input;
 			},
-			aNodeGraphView
+			aNodeGraphFacade
 		);
 	}
 
-	std::vector<PinView> GetNonConnectedOutputPinViews(const NodeGraphView aNodeGraphView)
+	std::vector<PinFacade> GetNonConnectedOutputPinFacades(const NodeGraphFacade aNodeGraphFacade)
 	{
-		return GetPinViewsFiltered([](const Pin& aPin)-> bool
+		return GetPinFacadesFiltered([](const Pin& aPin)-> bool
 			{
 				return aPin.mConnectedPinIDs.empty() && Global::GetPinTypeManager().GetPinType(aPin.mTypeID).mFlowType == eFlowType::Output;
 			},
-			aNodeGraphView
+			aNodeGraphFacade
 		);
 	}
 
-	std::vector<PinView> GetNonConnectedPinViewsByFlowType(const NodeGraphView aNodeGraphView, const eFlowType aFlowType)
+	std::vector<PinFacade> GetNonConnectedPinFacadesByFlowType(const NodeGraphFacade aNodeGraphFacade, const eFlowType aFlowType)
 	{
 		switch (aFlowType)
 		{
 		case eFlowType::Input:
-			return GetNonConnectedInputPinViews(aNodeGraphView);
+			return GetNonConnectedInputPinFacades(aNodeGraphFacade);
 			break;
 		case eFlowType::Output:
-			return GetNonConnectedOutputPinViews(aNodeGraphView);
+			return GetNonConnectedOutputPinFacades(aNodeGraphFacade);
 			break;
 		default:
 			break;
 		}
-		return std::vector<PinView>();
+		return std::vector<PinFacade>();
 	}
 
-	std::vector<PinView> GetNonConnectedPinViewsByFlowTypeAndDataType(const NodeGraphView aNodeGraphView, const eFlowType aFlowType, const DataTypeView aDataTypeView)
+	std::vector<PinFacade> GetNonConnectedPinFacadesByFlowTypeAndDataType(const NodeGraphFacade aNodeGraphFacade, const eFlowType aFlowType, const DataTypeFacade aDataTypeFacade)
 	{
-		return GetPinViewsFiltered(
-			[aFlowType, dataTypeID = aDataTypeView.GetID()](const Pin& aPin) -> bool
+		return GetPinFacadesFiltered(
+			[aFlowType, dataTypeID = aDataTypeFacade.GetID()](const Pin& aPin) -> bool
 			{
 				const PinType& pinType = Global::GetPinTypeManager().GetPinType(aPin.mTypeID);
 				return aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType && pinType.mDataTypeID == dataTypeID;
 			},
-			aNodeGraphView
+			aNodeGraphFacade
 		);
 	}
 
-	VariableView GetVariableByNode(const NodeView aNodeView, NodeGraphView aNodeGraphView)
+	VariableFacade GetVariableByNode(const NodeFacade aNodeFacade, NodeGraphFacade aNodeGraphFacade)
 	{
-		const VariableRef variableRef = Internal::GetVariableRefByNodeRef(GlobalNodeRef(aNodeView.GetID(), aNodeGraphView.GetNodeGraph()));
-		return VariableView(variableRef.GetVarID(), ClassView(variableRef.GetClass()));
+		const VariableRef variableRef = Internal::GetVariableRefByNodeRef(GlobalNodeRef(aNodeFacade.GetID(), aNodeGraphFacade.GetNodeGraph()));
+		return VariableFacade(variableRef.GetVarID(), ClassFacade(variableRef.GetClass()));
 	}
 
-	std::vector<VariableView> GetVariables(const ClassView aClassView, const bool aIncludeDestroyed)
+	std::vector<VariableFacade> GetVariables(const ClassFacade aClassFacade, const bool aIncludeDestroyed)
 	{
-		const std::vector<Variable>& variables = aClassView.GetClass().mStruct.mVariables;
-		std::vector<VariableView> views;
+		const std::vector<Variable>& variables = aClassFacade.GetClass().mStruct.mVariables;
+		std::vector<VariableFacade> views;
 
 		views.reserve(variables.size());
 
@@ -837,15 +837,15 @@ namespace FLY_NAMESPACE
 					continue;
 				}
 			}
-			views.push_back(VariableView(varID, aClassView));
+			views.push_back(VariableFacade(varID, aClassFacade));
 		}
 		return views;
 	}
 
-	std::vector<NodeView> GetNodes(const NodeGraphView aNodeGraphView, bool aIncludeDestroyed)
+	std::vector<NodeFacade> GetNodes(const NodeGraphFacade aNodeGraphFacade, bool aIncludeDestroyed)
 	{
-		const std::vector<Node>& nodes = aNodeGraphView.GetNodeGraph().mNodes;
-		std::vector<NodeView> views;
+		const std::vector<Node>& nodes = aNodeGraphFacade.GetNodeGraph().mNodes;
+		std::vector<NodeFacade> views;
 
 		views.reserve(nodes.size());
 
@@ -859,15 +859,15 @@ namespace FLY_NAMESPACE
 					continue;
 				}
 			}
-			views.push_back(NodeView(mNodeID, aNodeGraphView));
+			views.push_back(NodeFacade(mNodeID, aNodeGraphFacade));
 		}
 		return views;
 	}
 
-	std::vector<LinkView> GetLinks(const NodeGraphView aNodeGraphView, bool aIncludeDestroyed)
+	std::vector<LinkFacade> GetLinks(const NodeGraphFacade aNodeGraphFacade, bool aIncludeDestroyed)
 	{
-		const std::vector<Link>& links = aNodeGraphView.GetNodeGraph().mLinks;
-		std::vector<LinkView> views;
+		const std::vector<Link>& links = aNodeGraphFacade.GetNodeGraph().mLinks;
+		std::vector<LinkFacade> views;
 
 		views.reserve(links.size());
 
@@ -875,76 +875,92 @@ namespace FLY_NAMESPACE
 		{
 			if (!aIncludeDestroyed)
 			{
-				const Link& link = aNodeGraphView.GetNodeGraph().mLinks.at(linkID);
+				const Link& link = aNodeGraphFacade.GetNodeGraph().mLinks.at(linkID);
 				if (link.mIsDestroyed)
 				{
 					continue;
 				}
 			}
-			views.push_back(LinkView(linkID, aNodeGraphView));
+			views.push_back(LinkFacade(linkID, aNodeGraphFacade));
 		}
 		return views;
 	}
 
-	std::vector<DataTypeView> GetDataTypes()
+	std::vector<DataTypeFacade> GetDataTypes()
 	{
 		const auto& dataTypes = Global::GetDataTypeManager().GetDataTypes();
-		std::vector<DataTypeView> views;
+		std::vector<DataTypeFacade> views;
 		views.reserve(dataTypes.size());
 
 		for (const auto& [dataTypeID, dataType] : dataTypes)
 		{
-			views.push_back(DataTypeView(dataTypeID));
+			views.push_back(DataTypeFacade(dataTypeID));
 		}
 
 		return views;
 	}
 
-	std::vector<NodeTypeView> GetNodeTypes()
+	std::vector<NodeTypeFacade> GetNodeTypes()
 	{
 		const auto& nodeTypes = Global::GetNodeTypeManager().GetNodeTypes();
-		std::vector<NodeTypeView> views;
+		std::vector<NodeTypeFacade> views;
 		views.reserve(nodeTypes.size());
 
 		for (NodeTypeID nodeTypeID = 0; nodeTypeID < nodeTypes.size(); ++nodeTypeID)
 		{
-			views.push_back(NodeTypeView(nodeTypeID));
+			views.push_back(NodeTypeFacade(nodeTypeID));
 		}
 
 		return views;
 	}
 
-	std::vector<FunctionView> GetFunctions()
+	std::vector<FunctionFacade> GetFunctions()
 	{
 		const auto& mFunctions = Global::GetNodeTypeManager().GetFunctions();
-		std::vector<FunctionView> views;
+		std::vector<FunctionFacade> views;
 		views.reserve(mFunctions.size());
 
 		for (FunctionID functionID = 0; functionID < mFunctions.size(); ++functionID)
 		{
-			views.push_back(FunctionView(functionID));
+			views.push_back(FunctionFacade(functionID));
 		}
 
 		return views;
 	}
 
-	std::vector<CustomEventView> GetCustomEvents()
+	std::vector<CustomEventFacade> GetCustomEvents()
 	{
 		const auto& customEvents = Global::GetNodeTypeManager().GetCustomEvents();
-		std::vector<CustomEventView> customEventViews;
-		customEventViews.reserve(customEvents.size());
+		std::vector<CustomEventFacade> customEventFacades;
+		customEventFacades.reserve(customEvents.size());
 
 		for (CustomEventID customEventID = 0; customEventID < customEvents.size(); ++customEventID)
 		{
-			customEventViews.push_back(CustomEventView(customEventID));
+			customEventFacades.push_back(CustomEventFacade(customEventID));
 		}
 
-		return customEventViews;
+		return customEventFacades;
 	}
 
-	std::vector<NodeTypeView> GetNodeTypesFilteredByDataTypeAndFlowType(const DataTypeID aDataTypeID, const eFlowType aFlowType)
+	template<typename FilterFunction>
+	std::vector<NodeTypeFacade> GetNodeTypesFiltered(FilterFunction&& aFilter)
 	{
-		return Global::GetNodeTypeManager().GetNodeTypesFiltered([aDataTypeID, aFlowType](const NodeType& aNodeType) -> bool
+		std::vector<NodeTypeFacade> facades;
+		const std::vector<NodeType>& nodeTypes = Global::GetNodeTypeManager().GetNodeTypes();
+		facades.reserve(nodeTypes.size());
+		for (NodeTypeID id = 0; id < nodeTypes.size(); id++)
+		{
+			if (aFilter(nodeTypes[id]))
+			{
+				facades.push_back(NodeTypeFacade(id));
+			}
+		}
+		return facades;
+	}
+
+	std::vector<NodeTypeFacade> GetNodeTypesFilteredByDataTypeAndFlowType(const DataTypeID aDataTypeID, const eFlowType aFlowType)
+	{
+		return GetNodeTypesFiltered([aDataTypeID, aFlowType](const NodeType& aNodeType) -> bool
 			{
 				const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, aNodeType.mNodeRecipe.mInputPinTypeIDs, aNodeType.mNodeRecipe.mOutputPinTypeIDs);
 				for (const PinTypeID pinTypeID : pinTypeIDs)
@@ -960,40 +976,40 @@ namespace FLY_NAMESPACE
 		);
 	}
 
-	std::vector<NodeTypeView> GetNodeTypesFilteredByTrait(const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
+	std::vector<NodeTypeFacade> GetNodeTypesFilteredByTrait(const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
 	{
-		return Global::GetNodeTypeManager().GetNodeTypesFiltered([aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
+		return GetNodeTypesFiltered([aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
 			{
 				return aBitOperation(aNodeTrait, aNodeType.mNodeRecipe.mTraits);
 			}
 		);
 	}
 
-	std::unordered_map<DataTypeView, std::vector<ClassView>> GetClasses()
+	std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> GetClasses()
 	{
 		auto& classes = Foundation::GetInstance().mClasses;
 
-		std::unordered_map<DataTypeView, std::vector<ClassView>> views;
+		std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> views;
 
 		for (auto& flyClass : classes)
 		{
-			views[DataTypeView(flyClass->mTargetID)].push_back(ClassView(*flyClass));
+			views[DataTypeFacade(flyClass->mTargetID)].push_back(ClassFacade(*flyClass));
 		}
 
 		return views;
 	}
 
-	std::vector<ClassView> GetClassesByDataType(DataTypeView aDataTypeView)
+	std::vector<ClassFacade> GetClassesByDataType(DataTypeFacade aDataTypeFacade)
 	{
 		auto& classes = Foundation::GetInstance().mClasses;
 
-		std::vector<ClassView> views;
+		std::vector<ClassFacade> views;
 
 		for (auto& flyClass : classes)
 		{
-			if (flyClass->mTargetID == aDataTypeView.GetID())
+			if (flyClass->mTargetID == aDataTypeFacade.GetID())
 			{
-				views.push_back(ClassView(*flyClass));
+				views.push_back(ClassFacade(*flyClass));
 			}
 		}
 

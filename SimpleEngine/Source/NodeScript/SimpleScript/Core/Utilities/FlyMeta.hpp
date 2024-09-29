@@ -197,16 +197,16 @@ namespace FLY_NAMESPACE
 		T(std::forward<Args>(args)...);
 	};
 
-	template<typename T, typename... Inputs>
-	concept ValidCallableInputs = requires(T a, Inputs&&... inputs)
+	template<typename T, typename ReturnType, typename... Args>
+	concept ValidCallable = requires(T a, Args&&... inputs)
 	{
-		a(std::forward<Inputs>(inputs)...);
+		{ a(std::forward<Args>(inputs)...) } -> std::same_as<ReturnType>;
 	};
 
-	template<typename T, typename Output>
-	concept ValidCallableOutput = requires(T a)
+	template<typename T, typename... Inputs>
+	concept ValidCallableArgs = requires(T a, Inputs&&... inputs)
 	{
-		{ a() } -> std::same_as<Output>;
+		a(std::forward<Inputs>(inputs)...);
 	};
 
 	template<typename... Args>

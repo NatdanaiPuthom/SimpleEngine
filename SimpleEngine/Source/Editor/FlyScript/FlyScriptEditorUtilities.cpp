@@ -6,19 +6,19 @@
 namespace Editor
 {
 
-	static bool DataTypeCombo(const char* aComboLabel, Fly::DataTypeView& aDataTypeView, auto aFilterPredicate)
+	static bool DataTypeCombo(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade, auto aFilterPredicate)
 	{
 		bool wasSelected = false;
-		if (ImGui::BeginCombo(aComboLabel, aDataTypeView.GetName().c_str()))
+		if (ImGui::BeginCombo(aComboLabel, aDataTypeFacade.GetName().c_str()))
 		{
 
-			const std::vector<Fly::DataTypeView> dataTypes = Fly::GetDataTypesFiltered(aFilterPredicate);
+			const std::vector<Fly::DataTypeFacade> dataTypes = Fly::GetDataTypesFiltered(aFilterPredicate);
 
-			for (const Fly::DataTypeView& dataType : dataTypes)
+			for (const Fly::DataTypeFacade& dataType : dataTypes)
 			{
 				if (ImGui::Selectable(dataType.GetName().c_str()))
 				{
-					aDataTypeView = dataType;
+					aDataTypeFacade = dataType;
 					wasSelected = true;
 				}
 			}
@@ -28,13 +28,13 @@ namespace Editor
 		return wasSelected;
 	}
 
-	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::DataTypeView& aDataTypeView)
+	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade)
 	{
-		return DataTypeCombo(aComboLabel, aDataTypeView, [](const Fly::DataTypeView& aDataType) -> bool { return aDataType.IsEditable(); });
+		return DataTypeCombo(aComboLabel, aDataTypeFacade, [](const Fly::DataTypeFacade& aDataType) -> bool { return aDataType.IsEditable(); });
 	}
 
-	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::DataTypeView& aDataTypeView)
+	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade)
 	{
-		return DataTypeCombo(aComboLabel, aDataTypeView, [](const Fly::DataTypeView& aDataType) -> bool { return aDataType.IsTargetable(); });
+		return DataTypeCombo(aComboLabel, aDataTypeFacade, [](const Fly::DataTypeFacade& aDataType) -> bool { return aDataType.IsTargetable(); });
 	}
 }

@@ -2,27 +2,27 @@
 #include "../FlyDefines.hpp"
 #include "../Node/FlyNode.hpp"
 #include "../Node/FlyNodeTrait.hpp"
-#include "FlyPinView.hpp"
+#include "FlyPinFacade.hpp"
 
 namespace FLY_NAMESPACE
 {
 	struct NodeType;
-	class NodeGraphView;
+	class NodeGraphFacade;
 
-	class NodeView final
+	class NodeFacade final
 	{
 	public:
 
-		NodeView() = default;
-		NodeView(NodeID aNodeID, const NodeGraphView& aNodeGraphView);
+		NodeFacade() = default;
+		NodeFacade(NodeID aNodeID, const NodeGraphFacade& aNodeGraphFacade);
 
 		[[nodiscard]] const std::string& GetNodeTypeName() const;
 		[[nodiscard]] std::string GetShortName() const;
 		[[nodiscard]] Vec2 GetPosition() const;
 		[[nodiscard]] bool IsDestroyed() const;
 
-		[[nodiscard]] std::vector<PinView> GetInputPinViews() const;
-		[[nodiscard]] std::vector<PinView> GetOutputPinViews() const;
+		[[nodiscard]] std::vector<PinFacade> GetInputPinFacades() const;
+		[[nodiscard]] std::vector<PinFacade> GetOutputPinFacades() const;
 
 		[[nodiscard]] NodeID GetID() const;
 
@@ -39,7 +39,7 @@ namespace FLY_NAMESPACE
 
 		[[nodiscard]] const NodeGraph& GetNodeGraph() const;
 
-		friend bool operator==(const NodeView& a, const NodeView& b);
+		friend bool operator==(const NodeFacade& a, const NodeFacade& b);
 
 		explicit operator bool() const;
 
@@ -48,7 +48,7 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] const Node& GetNode() const;
 		[[nodiscard]] const NodeType& GetNodeType() const;
 
-		[[nodiscard]] std::vector<PinView> GetPinViews(const eFlowType aFlowType) const;
+		[[nodiscard]] std::vector<PinFacade> GetPinFacades(const eFlowType aFlowType) const;
 
 	private:
 

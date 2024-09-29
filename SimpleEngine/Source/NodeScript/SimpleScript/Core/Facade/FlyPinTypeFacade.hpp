@@ -4,11 +4,11 @@
 
 namespace FLY_NAMESPACE
 {
-	class PinTypeView final
+	class PinTypeFacade final
 	{
 	public:
 
-		explicit PinTypeView(PinTypeID anID);
+		explicit PinTypeFacade(PinTypeID anID);
 
 		[[nodiscard]] const std::string& GetName() const;
 		[[nodiscard]] eFlowType GetFlowType() const;

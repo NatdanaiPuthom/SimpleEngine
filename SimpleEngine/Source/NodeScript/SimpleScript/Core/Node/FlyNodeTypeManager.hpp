@@ -1,7 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "FlyNodeType.hpp"
-#include "../View/FlyNodeTypeView.hpp"
 #include "../CustomEvent/FlyCustomEvent.hpp"
 #include "../Function/FlyFunction.hpp"
 #include "../Utilities/FlyMeta.hpp"
@@ -40,9 +39,6 @@ namespace FLY_NAMESPACE
 		const NodeType& GetNodeType(NodeTypeID aID) const;
 
 		const std::vector<NodeType>& GetNodeTypes();
-		
-		template<Predicate<const NodeType&> FilterPredicate>
-		std::vector<NodeTypeView> GetNodeTypesFiltered(FilterPredicate&& aPredicate);
 
 		CustomEvent& GetCustomEvent(CustomEventID aID);
 		const CustomEvent& GetCustomEvent(CustomEventID aID) const;
@@ -84,22 +80,4 @@ namespace FLY_NAMESPACE
 		std::unordered_map<DataTypeID, NodeTypeID> mSetterNodeTypeIDs;
 		std::unordered_map<eNodeOperatorTrait, std::unordered_map<DataTypeID, NodeTypeID>> mTemplateNodeTypeIDMap;
 	};
-
-	template<Predicate<const NodeType&> FilterPredicate>
-	inline std::vector<NodeTypeView> NodeTypeManager::GetNodeTypesFiltered(FilterPredicate&& aPredicate)
-	{
-		std::vector<NodeTypeView> nodeTypes;
-		nodeTypes.reserve(mNodeTypes.size());
-
-		for (NodeTypeID nodeTypeID = 0; nodeTypeID < mNodeTypes.size(); ++nodeTypeID)
-		{
-			const NodeType& nodeType = mNodeTypes[nodeTypeID];
-			if (aPredicate(nodeType))
-			{
-				nodeTypes.push_back(NodeTypeView(nodeTypeID));
-			}
-		}
-
-		return nodeTypes;
-	}
 }
