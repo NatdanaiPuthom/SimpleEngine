@@ -2,6 +2,7 @@
 #include "../FlyDefines.hpp"
 #include "../Utilities/FlyMeta.hpp"
 #include <string>
+#include <functional>
 
 namespace FLY_NAMESPACE
 {
@@ -55,13 +56,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 		
-		template<Commandable T>
-		CommandNew(T&& aData)
-			: mConcept(std::make_unique<CommandModel<T>>(std::forward<T>(aData)))
-		{
-		}
-
-		template<MemberCommandable T>
+		template<typename T> requires Commandable<T> or MemberCommandable<T>
 		CommandNew(T&& aData)
 			: mConcept(std::make_unique<CommandModel<T>>(std::forward<T>(aData)))
 		{

@@ -1,5 +1,5 @@
 #pragma once
-#include "NodeScript/SimpleScript/Core/Facade/FlyClassInstanceFacade.hpp"
+#include "NodeScript/Facade/FlyClassInstanceFacade.hpp"
 #include "Engine/ECS/Reflection/ECSReflection.hpp"
 
 namespace Fly

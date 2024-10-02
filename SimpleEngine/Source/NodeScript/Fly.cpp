@@ -46,6 +46,17 @@ namespace FLY_NAMESPACE
 		}
 	}
 
+
+	void InitializeFoundation()
+	{
+		Foundation::GetInstance().Initialize();
+	}
+
+	void DestroyFoundation()
+	{
+		Foundation::GetInstance().Destroy();
+	}
+
 	void SaveClass(const ClassFacade aClassFacade, const std::string_view aSavePath)
 	{
 		ScriptLoader::SaveClass(aClassFacade.GetClass(), aSavePath);

@@ -1,6 +1,12 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "FlyVariable.hpp"
+#include "nlohmann/json.hpp"
+
+namespace nlohamnn
+{
+	class json;
+}
 
 namespace FLY_NAMESPACE
 {

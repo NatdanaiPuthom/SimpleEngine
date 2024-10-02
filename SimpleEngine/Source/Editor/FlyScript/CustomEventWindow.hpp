@@ -1,5 +1,5 @@
 #pragma once
-#include "NodeScript/SimpleScript/Core/FlyDefines.hpp"
+#include "NodeScript/FlyDefines.hpp"
 
 namespace Fly
 {

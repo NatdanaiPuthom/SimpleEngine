@@ -1,5 +1,5 @@
 #pragma once
-#include "NodeScript/SimpleScript/Core/FlyRegistration.hpp"
+#include "NodeScript/FlyRegistration.hpp"
 
 namespace Editor
 {

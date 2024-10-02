@@ -1,7 +1,7 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "FunctionSettingsWindow.hpp"
 #include "NodeScriptingWindow.hpp"
-#include "NodeScript/SimpleScript/Core/Fly.hpp"
+#include "NodeScript/Fly.hpp"
 
 namespace Editor
 {

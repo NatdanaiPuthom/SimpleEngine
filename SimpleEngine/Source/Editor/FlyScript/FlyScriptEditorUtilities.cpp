@@ -1,6 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "FlyScriptEditorUtilities.hpp"
-#include "NodeScript/SimpleScript/Core/Fly.hpp"
+#include "NodeScript/Fly.hpp"
 
 
 namespace Editor

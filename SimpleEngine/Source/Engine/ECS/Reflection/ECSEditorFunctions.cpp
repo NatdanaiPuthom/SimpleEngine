@@ -9,8 +9,8 @@
 #include "Graphics/BufferData.hpp"
 #include "Graphics/Camera/Camera.hpp"
 
-#include "NodeScript/SimpleScript/Core/Fly.hpp"
-#include "NodeScript/SimpleScript/Core/Instance/FlyClassInstance.hpp"
+#include "NodeScript/Fly.hpp"
+#include "NodeScript/Instance/FlyClassInstance.hpp"
 
 #include "External/imgui.h"
 

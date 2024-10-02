@@ -1,7 +1,7 @@
 
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "FlyClassWindow.hpp"
-#include "NodeScript/SimpleScript/Core/Fly.hpp"
+#include "NodeScript/Fly.hpp"
 #include "NodeScriptingWindow.hpp"
 #include "FlyScriptEditorUtilities.hpp"
 

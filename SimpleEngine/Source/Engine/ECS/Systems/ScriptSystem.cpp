@@ -1,8 +1,8 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "ScriptSystem.hpp"
-#include "NodeScript/SimpleScript/Core/FlyExecution.hpp"
-#include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
-#include "NodeScript/SimpleScript/Core/FlyRegistration.hpp"
+#include "NodeScript/FlyExecution.hpp"
+#include "NodeScript/NodeTypes/ExecutionNodes.hpp"
+#include "NodeScript/FlyRegistration.hpp"
 #include <imgui.h>
 
 namespace ECS

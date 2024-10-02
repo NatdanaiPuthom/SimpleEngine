@@ -1,11 +1,10 @@
 #pragma once
 #include "Editor/Template/ToolInterface.hpp"
-#include "NodeScript/SimpleScript/Core/FlyDefines.hpp"
 #include "CustomEventWindow.hpp"
 #include "FunctionWindow.hpp"
 #include "FunctionSettingsWindow.hpp"
 #include "FlyClassWindow.hpp"
-#include "NodeScript/SimpleScript/Core/Fly.hpp"
+#include "NodeScript/Fly.hpp"
 #include <External/imgui.h>
 #include <vector>
 #include <string>

@@ -1,5 +1,5 @@
 #pragma once
-#include "NodeScript/SimpleScript/Core/Pin/FlyPinType.hpp"
+#include "NodeScript/Pin/FlyPinType.hpp"
 
 namespace Editor
 {

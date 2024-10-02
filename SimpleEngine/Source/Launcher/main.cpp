@@ -10,7 +10,7 @@
 #include "Game/GameWorld.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #include "Editor/Editor.hpp"
-#include "NodeScript/SimpleNodeScript.hpp"
+#include "Engine/SimpleScript/SimpleNodeScript.hpp"
 
 //#include "Launcher/Client/Client.hpp"
 

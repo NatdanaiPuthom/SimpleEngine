@@ -1,7 +1,6 @@
+#include "Engine/Precomplied/EnginePch.hpp"
 #include "SimpleNodeScript.hpp"
-#include "FlyFoundation.hpp"
-#include "Fly.hpp"
-#include "NodeScript/SimpleScript/SimpleGameNodes.hpp"
+#include "NodeScript/Fly.hpp"
 
 SimpleNodeScript::SimpleNodeScript()
 {
@@ -9,12 +8,12 @@ SimpleNodeScript::SimpleNodeScript()
 
 SimpleNodeScript::~SimpleNodeScript()
 {
-	Fly::Foundation::GetInstance().Destroy();
+	Fly::DestroyFoundation();
 }
 
 void SimpleNodeScript::Init()
 {
-	Fly::Foundation::GetInstance().Initialize();
+	Fly::InitializeFoundation();
 
 	Fly::LoadAllClasses(ASSET_FILE_PATH);
 }

@@ -2,6 +2,7 @@
 #include "../FlyDefines.hpp"
 #include "FlyHeapObject.hpp"
 #include <vector>
+#include <cassert>
 
 namespace FLY_NAMESPACE
 {

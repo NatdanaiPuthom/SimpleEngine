@@ -59,45 +59,45 @@ void Load(float& aValue, const nlohmann::json& aJson)
 }
 
 // Unsigned Int
-bool Edit(UINT& aValue)
+bool Edit(uint32& aValue)
 {
 	int intValue = static_cast<int>(aValue);
 	if (ImGui::DragInt("##", &intValue, 1.f, 0, INT_MAX))
 	{
-		aValue = static_cast<UINT>(intValue);
+		aValue = static_cast<uint32>(intValue);
 		return true;
 	}
 	return false;
 }
 
-void Save(const UINT& aValue, nlohmann::json& aJson)
+void Save(const uint32& aValue, nlohmann::json& aJson)
 {
 	aJson["Value"] = aValue;
 }
 
-void Load(UINT& aValue, const nlohmann::json& aJson)
+void Load(uint32& aValue, const nlohmann::json& aJson)
 {
 	aValue = aJson["Value"];
 }
 
 // Unsigned Long Long
-bool Edit(UINT64& aValue)
+bool Edit(uint64& aValue)
 {
 	int intValue = static_cast<int>(aValue);
 	if (ImGui::DragInt("##", &intValue, 1.f, 0, INT_MAX))
 	{
-		aValue = static_cast<UINT64>(intValue);
+		aValue = static_cast<uint64>(intValue);
 		return true;
 	}
 	return false;
 }
 
-void Save(const UINT64& aValue, nlohmann::json& aJson)
+void Save(const uint64& aValue, nlohmann::json& aJson)
 {
 	aJson["Value"] = aValue;
 }
 
-void Load(UINT64& aValue, const nlohmann::json& aJson)
+void Load(uint64& aValue, const nlohmann::json& aJson)
 {
 	aValue = aJson["Value"];
 }

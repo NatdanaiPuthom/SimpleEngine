@@ -1,8 +1,8 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "NodeScriptingWindow.hpp"
-#include "NodeScript/SimpleScript/Core/Fly.hpp"
-#include "NodeScript/SimpleScript/Core/Command/FlyCommandTracker.hpp"
-#include "NodeScript/SimpleScript/Core/NodeTypes/ExecutionNodes.hpp"
+#include "NodeScript/Fly.hpp"
+#include "NodeScript/Command/FlyCommandTracker.hpp"
+#include "NodeScript/NodeTypes/ExecutionNodes.hpp"
 #include "FlyScriptEditorUtilities.hpp"
 #include "EditorNodeRegistration.hpp"
 

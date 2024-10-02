@@ -22,8 +22,9 @@ namespace FLY_NAMESPACE
 {
 
 	class CommandTracker;
-	class ClassInstance;
 
+	void InitializeFoundation();
+	void DestroyFoundation();
 
 	void SaveClass(ClassFacade aClassFacade, std::string_view aSavePath);
 	void LoadAllClasses(std::string_view aFilePath);

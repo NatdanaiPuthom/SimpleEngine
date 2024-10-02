@@ -5,6 +5,9 @@
 #include "../SystemTypes/FlyFlow.hpp"
 #include "../SystemTypes/FlyNone.hpp"
 
+using uint32 = unsigned int;
+using uint64 = unsigned long long;
+
 bool Edit(bool& aValue);
 void Save(const bool& aValue, nlohmann::json& aJson);
 void Load(bool& aValue, const nlohmann::json& aJson);
@@ -17,13 +20,13 @@ bool Edit(float& aValue);
 void Save(const float& aValue, nlohmann::json& aJson);
 void Load(float& aValue, const nlohmann::json& aJson);
 
-bool Edit(UINT& aValue);
-void Save(const UINT& aValue, nlohmann::json& aJson);
-void Load(UINT& aValue, const nlohmann::json& aJson);
+bool Edit(uint32& aValue);
+void Save(const uint32& aValue, nlohmann::json& aJson);
+void Load(uint32& aValue, const nlohmann::json& aJson);
 
-bool Edit(UINT64& aValue);
-void Save(const UINT64& aValue, nlohmann::json& aJson);
-void Load(UINT64& aValue, const nlohmann::json& aJson);
+bool Edit(uint64& aValue);
+void Save(const uint64& aValue, nlohmann::json& aJson);
+void Load(uint64& aValue, const nlohmann::json& aJson);
 
 bool Edit(char& aValue);
 void Save(const char& aValue, nlohmann::json& aJson);
@@ -181,8 +184,8 @@ namespace FLY_NAMESPACE
 	FLY_STRUCT(bool, eNodeOperatorTrait::All, Color(1.f, 0.1f, 0.1f), NonTargetable);
 	FLY_STRUCT(int, eNodeOperatorTrait::All, Color(0.f, 0.2f, 1.f), NonTargetable);
 	FLY_STRUCT(float, eNodeOperatorTrait::All, Color(0.55f, 0.2f, 0.65f), NonTargetable);
-	FLY_STRUCT(UINT, eNodeOperatorTrait::All, Color(0.f, 0.4f, 1.f), NonTargetable);
-	FLY_STRUCT(UINT64, eNodeOperatorTrait::All, Color(0.1f, 0.5f, 1.f), NonTargetable);
+	FLY_STRUCT(uint32, eNodeOperatorTrait::All, Color(0.f, 0.4f, 1.f), NonTargetable);
+	FLY_STRUCT(uint64, eNodeOperatorTrait::All, Color(0.1f, 0.5f, 1.f), NonTargetable);
 	FLY_STRUCT(char, eNodeOperatorTrait::All, Color(0.2f, 0.7f, 0.4f), NonTargetable);
 	FLY_STRUCT(String, eNodeOperatorTrait::All, Color(0.3f, 0.8f, 0.2f), NonTargetable);
 }

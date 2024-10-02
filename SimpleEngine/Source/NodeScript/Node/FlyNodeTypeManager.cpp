@@ -1,4 +1,5 @@
-#include "Core/Node/FlyNodeTypeManager.hpp"
+#include "Node/FlyNodeTypeManager.hpp"
+#include <array>
 
 namespace FLY_NAMESPACE
 {

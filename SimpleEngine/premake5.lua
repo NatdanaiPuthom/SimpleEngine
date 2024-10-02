@@ -297,10 +297,10 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		targetname("%{prj.name}_%{cfg.buildcfg}") 
 		flags { "FatalWarnings" }
 
-		pchheader "NodeScript/Precomplied/NodeScriptPch.hpp"
-		pchsource "Source/NodeScript/Precomplied/NodeScriptPch.cpp"
+		--pchheader "NodeScript/Precomplied/NodeScriptPch.hpp"
+		--pchsource "Source/NodeScript/Precomplied/NodeScriptPch.cpp"
 
-		forceincludes { "%{prj.location}/NodeScript/Precomplied/NodeScriptPch.hpp" } -- Force include "NodeScriptPch.hpp" in every .cpp files without having to explicit include it ourselves
+		--forceincludes { "%{prj.location}/NodeScript/Precomplied/NodeScriptPch.hpp" } -- Force include "NodeScriptPch.hpp" in every .cpp files without having to explicit include it ourselves
 
 		files {
 			"Source/NodeScript/**.h", 
