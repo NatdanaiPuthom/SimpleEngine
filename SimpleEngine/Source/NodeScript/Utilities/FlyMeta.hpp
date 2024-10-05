@@ -253,16 +253,29 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T, typename First, typename... Rest>
-	constexpr T&& Extract(First&& aFirst, [[maybe_unused]] Rest&&... aRest)
+	constexpr T&& Extract_Impl(First&& aFirst, [[maybe_unused]] Rest&&... aRest)
 	{
-		if constexpr (std::same_as<T, First>)
+		if constexpr (std::same_as<T, std::decay_t<First>>)
 		{
 			return std::forward<First>(aFirst);
 		}
 		else
 		{
-			return Extract<T>(std::forward<Rest>(aRest)...);
+			return Extract_Impl<T>(std::forward<Rest>(aRest)...);
 		}
+	}
+
+	template<typename T>
+	constexpr T&& Extract_Impl()
+	{
+		//static_assert(false);
+		return T{};
+	}
+
+	template<typename T, typename... Types> requires ContainsType<T, Types...>
+	constexpr T&& Extract(Types&&... aTypes)
+	{
+		return Extract_Impl<T, Types...>(std::forward<Types>(aTypes)...);
 	}
 
 	template<typename, template <typename...> typename>

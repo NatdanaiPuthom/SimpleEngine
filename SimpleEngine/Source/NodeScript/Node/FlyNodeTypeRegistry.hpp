@@ -370,7 +370,7 @@ namespace FLY_NAMESPACE
 		template<typename ClassType, typename OutputType, typename... InputTypes, typename... Extra>
 		constexpr static RegisterFunctionNode Register(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
-			NodeTypeRegistry::RegisterMemberNodeType(aFunction, GetNodeCreationData<ClassType>(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
+			//NodeTypeRegistry::RegisterMemberNodeType(aFunction, GetNodeCreationData<ClassType>(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
 
 			return RegisterFunctionNode();
 		}
@@ -378,7 +378,7 @@ namespace FLY_NAMESPACE
 		template<typename ClassType, typename OutputType, typename... InputTypes, typename... Extra>
 		constexpr static RegisterFunctionNode Register(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
-			NodeTypeRegistry::RegisterMemberNodeType(aFunction, GetNodeCreationData<ClassType>(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
+			//NodeTypeRegistry::RegisterMemberNodeType(aFunction, GetNodeCreationData<ClassType>(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
 
 			return RegisterFunctionNode();
 		}
@@ -394,4 +394,4 @@ namespace FLY_NAMESPACE
 #define FLY_UNIQUE_NAME(base) FLY_CONCATENATE(base, __COUNTER__)
 
 #define FLY_FUNCTION(function, ...) \
-    inline static Fly::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = Fly::RegisterFunctionNode::Register(&function, #function, __VA_ARGS__);
+    inline static FLY_NAMESPACE::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = FLY_NAMESPACE::RegisterFunctionNode::Register(&function, #function, __VA_ARGS__);

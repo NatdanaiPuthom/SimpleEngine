@@ -76,7 +76,7 @@ namespace FLY_NAMESPACE
 		eWaveType waveType = eWaveType::Sine;
 	};
 
-	static bool Edit(WaveTypeData& aData)
+	bool Edit(WaveTypeData& aData)
 	{
 		int currentItem = static_cast<int>(aData.waveType);
 		if (ImGui::Combo("##", &currentItem, GetWaveTypesAsString()))
@@ -87,17 +87,17 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
-	static void Save(const WaveTypeData& aData, nlohmann::json& aJson)
+	void Save(const WaveTypeData& aData, nlohmann::json& aJson)
 	{
 		aJson["waveType"] = aData.waveType;
 	}
 
-	static void Load(WaveTypeData& aData, const nlohmann::json& aJson)
+	void Load(WaveTypeData& aData, const nlohmann::json& aJson)
 	{
 		aData.waveType = aJson["waveType"];
 	}
 
-	static float Wave(NodeExecutionContext<ExecutionContextBase> aContext, NodeState<WaveData> aState, float aFrequency, float aAmplitude, float aEquilibrium, WaveTypeData aWaveType)
+	float Wave(NodeExecutionContext<ExecutionContextBase> aContext, NodeState<WaveData> aState, float aFrequency, float aAmplitude, float aEquilibrium, WaveTypeData aWaveType)
 	{
 		aState.mValue.t += aContext.mContext.mDeltaTime;
 		return aEquilibrium + CalculateFrequencyByType(aWaveType.waveType, aState.mValue.t * aFrequency) * aAmplitude;

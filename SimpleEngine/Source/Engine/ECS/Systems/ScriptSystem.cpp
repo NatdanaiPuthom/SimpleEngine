@@ -97,11 +97,11 @@ namespace ECS
 	using Vector3f = Math::Vector3f;
 	using Vector2f = Math::Vector2f;
 
-	FLY_STRUCT(Transform, Fly::eNodeOperatorTrait::None, Fly::DefaultColor, Fly::NonTargetable);
-	FLY_STRUCT(Vector3f, Fly::eNodeOperatorTrait::All, Fly::DefaultColor, Fly::NonTargetable);
-	FLY_STRUCT(Vector2f, Fly::eNodeOperatorTrait::All, Fly::DefaultColor, Fly::NonTargetable);
-	FLY_CLASS(Entity, Fly::eNodeOperatorTrait::None, Fly::Colors::Pink);
-	FLY_CLASS(TransformComponent, Fly::eNodeOperatorTrait::None, Fly::DefaultColor, Fly::NonTargetable);
+	FLY_STRUCT(Transform, Fly::eNodeOperatorTrait::None, Fly::DefaultColor, Fly::NonTargetable{});
+	FLY_STRUCT(Vector3f, Fly::DefaultColor, Fly::NonTargetable{});
+	FLY_STRUCT(Vector2f, Fly::DefaultColor, Fly::NonTargetable{});
+	FLY_CLASS(Entity, Fly::Colors::Pink);
+	FLY_CLASS(TransformComponent, Fly::DefaultColor, Fly::NonTargetable{});
 
 	TransformComponent* GetTransformComponent(Entity* aEntity)
 	{

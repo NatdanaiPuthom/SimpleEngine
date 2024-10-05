@@ -119,25 +119,58 @@ namespace FLY_NAMESPACE
 	{
 	};
 
-	template<typename T>
-	struct RegisterType
+	struct RegisterType final
 	{
 
-		template<eNodeOperatorTrait Operators, typename... Traits>
-		constexpr static RegisterType<T> Struct(const char* aName, const Color& aColor = DefaultColor)
+		template<typename T, eNodeOperatorTrait Operators, typename... Traits>
+		constexpr static RegisterType Struct_Impl(const char* aName, [[maybe_unused]] Traits&&... aTraits)
 		{
-			DataTypeRegistry::Register<T, Operators>(aName, aColor, false);
+			Color color = DefaultColor;
+			if constexpr (ContainsType<Color, Traits...>)
+			{
+				color = Extract<Color>(std::forward<Traits>(aTraits)...);
+			}
+			DataTypeRegistry::Register<T, Operators>(aName, color, false);
 
-			return RegisterType<T>();
+			return RegisterType{};
 		}
 
-		template<eNodeOperatorTrait Operators, typename... Traits>
-		constexpr static RegisterType<T> Class(const char* aName, const Color& aColor = DefaultColor)
+		template<typename T, typename... Traits>
+		constexpr static RegisterType Struct(const char* aName, Traits&&... aTraits)
+		{
+			return Struct_Impl<T, eNodeOperatorTrait::All, Traits...>(aName, std::forward<Traits>(aTraits)...);
+		}
+
+		template<typename T, eNodeOperatorTrait Operators, typename... Traits>
+		constexpr static RegisterType Struct(const char* aName, Traits&&... aTraits)
+		{
+			return Struct_Impl<T, Operators, Traits...>(aName, std::forward<Traits>(aTraits)...);
+		}
+
+		template<typename T, eNodeOperatorTrait Operators, typename... Traits>
+		constexpr static RegisterType Class_Impl(const char* aName, Traits&&... aTraits)
 		{
 			const bool isTargetable = !ContainsType<NonTargetable, Traits...>;
-			DataTypeRegistry::Register<T*, Operators>(aName, aColor, isTargetable);
+			Color color = DefaultColor;
+			if constexpr (ContainsType<Color, Traits...>)
+			{
+				color = Extract<Color>(std::forward<Traits>(aTraits)...);
+			}
+			DataTypeRegistry::Register<T*, Operators>(aName, color, isTargetable);
 
-			return RegisterType<T>();
+			return RegisterType{};
+		}
+
+		template<typename T, typename... Traits>
+		constexpr static RegisterType Class(const char* aName, Traits&&... aTraits)
+		{
+			return Struct_Impl<T, eNodeOperatorTrait::None, Traits...>(aName, std::forward<Traits>(aTraits)...);
+		}
+
+		template<typename T, eNodeOperatorTrait Operators, typename... Traits>
+		constexpr static RegisterType Class(const char* aName, Traits&&... aTraits)
+		{
+			return Struct_Impl<T, Operators, Traits...>(aName, std::forward<Traits>(aTraits)...);
 		}
 	};
 
@@ -153,6 +186,9 @@ namespace FLY_NAMESPACE
 	};
 }
 
-#define FLY_CLASS(type, operators, color, ...) inline static FLY_NAMESPACE::RegisterType<type> fly_registeredType##type = FLY_NAMESPACE::RegisterType<type>::Class<operators, __VA_ARGS__>(#type, color);
-#define FLY_STRUCT(type, operators, color, ...) inline static FLY_NAMESPACE::RegisterType<type> fly_registeredType##type = FLY_NAMESPACE::RegisterType<type>::Struct<operators, __VA_ARGS__>(#type, color);
+#define FLY_CLASS(Type, ...) inline static FLY_NAMESPACE::RegisterType fly_registeredType##Type = FLY_NAMESPACE::RegisterType::Class<Type>(#Type, __VA_ARGS__);
+#define FLY_STRUCT(Type, ...) inline static FLY_NAMESPACE::RegisterType fly_registeredType##Type = FLY_NAMESPACE::RegisterType::Struct<Type>(#Type, __VA_ARGS__);
+
+												//inline static Fly::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = FLY_NAMESPACE::RegisterFunctionNode::Register(&function, #function, __VA_ARGS__);
+
 #define FLY_MEMBER(member, ...) inline static FLY_NAMESPACE::RegisterMemberVariable prop(&member, #member);

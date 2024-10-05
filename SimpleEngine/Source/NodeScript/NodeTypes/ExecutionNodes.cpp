@@ -18,7 +18,7 @@ namespace FLY_NAMESPACE
 		return Flow(true);
 	}
 
-	static std::tuple<Flow, Flow> Branch(Flow, bool aCondition)
+	std::tuple<Flow, Flow> Branch(Flow, bool aCondition)
 	{
 		return { Flow(aCondition), Flow(!aCondition) };
 	}
@@ -28,7 +28,7 @@ namespace FLY_NAMESPACE
 		bool myState = true;
 	};
 
-	static std::tuple<Flow, Flow> FlipFlop(NodeState<FlipFlopNodeData> aData, Flow)
+	std::tuple<Flow, Flow> FlipFlop(NodeState<FlipFlopNodeData> aData, Flow)
 	{
 		aData.mValue.myState = !aData.mValue.myState;
 		return { Flow(!aData.mValue.myState), Flow(aData.mValue.myState) };
@@ -39,7 +39,7 @@ namespace FLY_NAMESPACE
 		float time = 0.f;
 	};
 
-	static Flow Delay(const InternalExecutionContext* aContext, NodeState<DelayNodeData> aState, Flow, float aDuration, bool aResetOnFlow)
+	Flow Delay(const InternalExecutionContext* aContext, NodeState<DelayNodeData> aState, Flow, float aDuration, bool aResetOnFlow)
 	{
 		if (aContext->mNodeData.mTriggerReason == eNodeTriggerReason::Flow)
 		{
