@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <algorithm>
 #include <string_view>
+#include <string>
 #include "SystemTypes/FlyNone.hpp"
 
 #undef max
