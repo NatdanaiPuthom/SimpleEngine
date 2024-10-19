@@ -1,7 +1,6 @@
 #include "FlySerializer.hpp"
 #include "../DataType/FlyClass.hpp"
 #include "../Node/FlyNodeTypeRegistry.hpp"
-#include "../Utilities/FlyLinker.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../Internal/FlyInternal.hpp"
 #include "../Command/FlyCommandTracker.hpp"
@@ -105,7 +104,7 @@ namespace FLY_NAMESPACE
 				nlohmann::json pinDataJson;
 
 				pinDataJson["NodeID"] = cleanedNodeIDs.at(pin.mNodeID);
-				pinDataJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, inputPinID);
+				pinDataJson["PinIndex"] = Internal::GetPinIndex(eventGraph, inputPinID);
 
 				pinDataJson["ConnectionData"] = nlohmann::json::object();
 				nlohmann::json& connectionsJson = pinDataJson["Connections"];
@@ -123,7 +122,7 @@ namespace FLY_NAMESPACE
 						nlohmann::json& connectedPinJson = connectedPinsJson.emplace_back();
 						const Pin& connectedPin = eventGraph.mPins.at(connectedPinID);
 						connectedPinJson["NodeID"] = cleanedNodeIDs.at(connectedPin.mNodeID);
-						connectedPinJson["PinIndex"] = ScriptLinker::GetPinIndex(eventGraph, connectedPinID);
+						connectedPinJson["PinIndex"] = Internal::GetPinIndex(eventGraph, connectedPinID);
 					}
 
 				}
@@ -245,7 +244,7 @@ namespace FLY_NAMESPACE
 				continue;
 			}
 			const size_t pinIndex = pinData["PinIndex"];
-			const PinID pinID = ScriptLinker::GetPinID(eventNodeGraph, mNodeID, pinIndex, eFlowType::Input);
+			const PinID pinID = Internal::GetPinID(eventNodeGraph, mNodeID, pinIndex, eFlowType::Input);
 
 			if (pinID == InvalidID<PinID>())
 			{
@@ -266,7 +265,7 @@ namespace FLY_NAMESPACE
 
 				const size_t connectedPinIndex = connectionJson["PinIndex"];
 
-				const PinID connectionID = ScriptLinker::GetPinID(eventNodeGraph, connectionNodeID, connectedPinIndex, eFlowType::Output);
+				const PinID connectionID = Internal::GetPinID(eventNodeGraph, connectionNodeID, connectedPinIndex, eFlowType::Output);
 
 				if (connectionID != InvalidID<PinID>())
 				{

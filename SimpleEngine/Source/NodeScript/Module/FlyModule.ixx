@@ -1,10 +1,10 @@
-#pragma once
-#include "../FlyDefines.hpp"
-#include "../SystemTypes/FlyVec2.hpp"
-#include "../Pin/FlyPin.hpp"
-#include <vector>
+export module FlyModule;
 
-namespace FLY_NAMESPACE
+import FlyCore;
+
+import <vector>;
+
+export namespace FlyInternal
 {
 
 	class Node final
@@ -44,8 +44,6 @@ namespace FLY_NAMESPACE
 
 		Vec2 mPosition;
 		bool mIsDestroyed = false;
-		
-	};
 
-	
+	};
 }

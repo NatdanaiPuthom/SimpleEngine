@@ -1,18 +1,9 @@
-#pragma once
-#define FLY_NAMESPACE Fly
-#if defined _DEBUG
-#define FLY_DEBUG
-#endif
-#include <limits>
-#include <type_traits>
-#include <algorithm>
-#include <string_view>
-#include <string>
-#include "SystemTypes/FlyNone.hpp"
+export module FlyCore;
 
-#undef max
+import <algorithm>;
+import <iostream>;
 
-namespace FLY_NAMESPACE
+export namespace FlyInternal
 {
 	using NodeID = int;
 	using PinID = int;
@@ -28,8 +19,6 @@ namespace FLY_NAMESPACE
 	using ObjectTypeID = size_t;
 	using EventID = size_t;
 
-	constexpr const char* TypeIdentifierStr = "#T";
-
 	template<std::integral IDType>
 	inline constexpr IDType InvalidID()
 	{
@@ -42,89 +31,60 @@ namespace FLY_NAMESPACE
 		return typeid(T).hash_code();
 	}
 
-	template<typename Output, typename... Inputs>
-	using FuncPtr = Output(*)(Inputs...);
-
-	template<typename ClassType, typename OutputType, typename... InputTypes>
-	using FuncPtrMember = OutputType(ClassType::*)(InputTypes...);
-
-	template<typename ClassType, typename OutputType, typename... InputTypes>
-	using FuncPtrMember_Const = OutputType(ClassType::*)(InputTypes...) const;
-
-	class Node;
-	class NodeGraph;
-	struct InternalExecutionContext;
-	struct NodeExecutionData;
-	class ExecutionQueue;
-
-	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, NodeGraph&);
-	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);
-
-	struct SetPinData;
-	using SetPinDataInterface = void(*)(const SetPinData& aPinData, const InternalExecutionContext& aContext);
-
-	template<typename T>
-	class OwningPtr final
+	struct Vec2 final
 	{
-	public:
-		OwningPtr(T* const aPtr)
-			: mPtr(aPtr)
-		{
-		}
-
-		T* Get() noexcept
-		{
-			return mPtr;
-		}
-
-		const T* Get() const noexcept
-		{
-			return mPtr;
-		}
-
-		operator T* () noexcept
-		{
-			return Get();
-		}
-
-		operator const T* () const noexcept
-		{
-			return Get();
-		}
-
-	private:
-		T* mPtr;
+		float x = 0.f;
+		float y = 0.f;
 	};
 
-	template<typename T>
-	class NonOwningPtr final
+	constexpr inline Vec2 operator+(Vec2 a, Vec2 b)
 	{
-	public:
+		return { a.x + b.x, a.y + b.y };
+	}
 
-		NonOwningPtr(T* aPtr)
-			: mPtr(aPtr)
+	constexpr inline Vec2 operator-(Vec2 a, Vec2 b)
+	{
+		return { a.x - b.x, a.y - b.y };
+	}
+
+	constexpr inline Vec2 operator/(Vec2 a, float b)
+	{
+		if (b != 0.f)
 		{
+			return { a.x / b, a.y / b };
 		}
+		return a;
+	}
+	constexpr inline void operator+=(Vec2& a, Vec2 b)
+	{
+		a = a + b;
+	}
 
-		T* Get() const noexcept
-		{
-			return mPtr;
-		}
+	constexpr inline void operator-=(Vec2& a, Vec2 b)
+	{
+		a = a - b;
+	}
 
-		explicit operator T* () const noexcept
-		{
-			return Get();
-		}
+	constexpr inline void operator/=(Vec2& a, float b)
+	{
+		a = a / b;
+	}
 
-		T& operator*() const
-		{
-			return *mPtr;
-		}
+	constexpr inline bool operator==(Vec2 a, Vec2 b)
+	{
+		return a.x == b.x && a.y == b.y;
+	}
 
-	private:
+	constexpr inline bool operator!=(Vec2 a, Vec2 b)
+	{
+		return !(a == b);
+	}
 
-		T* mPtr;
-	};
+	inline std::ostream& operator<<(std::ostream& os, const Vec2& a)
+	{
+		os << "{ X: " << a.x << ", Y: " << a.y << " }";
+		return os;
+	}
 
 	// Struct for color - values between 0 and 1
 	struct Color final
@@ -178,7 +138,5 @@ namespace FLY_NAMESPACE
 		constexpr Color Purple = Color(0.6f, 0.f, 0.1f);
 		constexpr Color Gray = Color(0.5f, 0.5f, 0.5f);
 	}
-
-
 
 }

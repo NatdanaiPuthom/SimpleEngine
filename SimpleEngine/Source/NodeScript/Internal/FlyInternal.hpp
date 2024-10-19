@@ -89,6 +89,18 @@ namespace FLY_NAMESPACE
 
 		VariableRef GetVariableRefByNodeRef(const GlobalNodeRef& aNodeRef);
 		std::vector<GlobalNodeRef> GetNodeRefsByVariableRef(const VariableRef& aVarRef);
+
+
+		PinID GetPinID(const NodeGraph& aNodeGraph, const NodeID aNodeID, const size_t aPinIndex, const eFlowType aPinFlowType);
+		size_t GetPinIndex(const NodeGraph& aNodeGraph, const PinID aPinID);
+		PinID GetOpposingPinID(const NodeGraph& aPreviousNodeGraph, const PinID aPreviousPinID, const NodeGraph& aNewNodeGraph, const NodeID aNodeID);
+
+		Link ArePinsLinkable(const NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2);
+
+		LinkID GetLinkIDByPinIDs(const NodeGraph& aNodeGraph, const PinID aPinID1, const PinID aPinID2, bool aIncludeDestroyed = false);
+		std::vector<LinkID> GetLinkIDsByPin(const NodeGraph& aNodeGraph, const PinID aPinID, bool aIncludeDestroyed = false);
+		std::vector<LinkID> GetLinkIDsByNode(const NodeGraph& aNodeGraph, const NodeID aNodeID);
+
 	}
 
 

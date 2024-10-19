@@ -4,7 +4,6 @@
 #include "Pin/FlyPinTypeManager.hpp"
 #include "Node/FlyNodeTypeRegistry.hpp"
 #include "FlyInternal.hpp"
-#include "Utilities/FlyLinker.hpp"
 #include "Command/FlyCommandTracker.hpp"
 #include "FlyFoundation.hpp"
 #include "Serialization/FlySerializer.hpp"
@@ -238,7 +237,7 @@ namespace FLY_NAMESPACE
 
 	void DestroyLinksByNode(NodeFacade aNodeFacade, NodeGraphFacade aNodeGraphFacade, CommandTracker* aCommandTracker)
 	{
-		std::vector<LinkID> linkIDs = ScriptLinker::GetLinkIDsByNode(aNodeGraphFacade.GetNodeGraph(), aNodeFacade.GetID());
+		std::vector<LinkID> linkIDs = Internal::GetLinkIDsByNode(aNodeGraphFacade.GetNodeGraph(), aNodeFacade.GetID());
 
 		DestroySelection({}, linkIDs, aNodeGraphFacade, aCommandTracker);
 	}
@@ -586,10 +585,10 @@ namespace FLY_NAMESPACE
 				const PinType& copiedInputPinType = Global::GetPinTypeManager().GetPinType(copiedInputPin.mTypeID);
 
 				const NodeID createdNodeID = nodeConverter.at(copiedNodeID);
-				const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(copiedFromNodeGraph, copiedInputPinID, nodeGraphCopy, createdNodeID);
+				const PinID createdInputPinID = Internal::GetOpposingPinID(copiedFromNodeGraph, copiedInputPinID, nodeGraphCopy, createdNodeID);
 				assert(createdInputPinID != InvalidID<PinID>());
 
-				const std::vector<LinkID> connectedLinks = ScriptLinker::GetLinkIDsByPin(copiedFromNodeGraph, copiedInputPinID);
+				const std::vector<LinkID> connectedLinks = Internal::GetLinkIDsByPin(copiedFromNodeGraph, copiedInputPinID);
 
 				for (const LinkID connectedLinkID : connectedLinks)
 				{
@@ -604,7 +603,7 @@ namespace FLY_NAMESPACE
 						continue;
 					}
 					const NodeID newConnectedNodeID = it->second;
-					const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(copiedFromNodeGraph, connectedOutputPinID, nodeGraphCopy, newConnectedNodeID);
+					const PinID createdOutputPinID = Internal::GetOpposingPinID(copiedFromNodeGraph, connectedOutputPinID, nodeGraphCopy, newConnectedNodeID);
 
 					Internal::TryCreateLink(nodeGraphCopy, createdInputPinID, createdOutputPinID, nullptr);
 				}
@@ -642,7 +641,7 @@ namespace FLY_NAMESPACE
 				Pin& createdInputPin = Internal::GetPin(createdInputPinID, targetNodeGraph);
 				const PinType& createdInputPinType = Global::GetPinTypeManager().GetPinType(createdInputPin.mTypeID);
 
-				const PinID sourcePinID = ScriptLinker::GetOpposingPinID(targetNodeGraph, createdInputPinID, nodeGraphCopy, sourceNodeID);
+				const PinID sourcePinID = Internal::GetOpposingPinID(targetNodeGraph, createdInputPinID, nodeGraphCopy, sourceNodeID);
 				const Pin& sourcePin = nodeGraphCopy.mPins.at(sourcePinID);
 				dataTypeManager.CopyData(createdInputPinType.mDataTypeID, createdInputPin.mDataPtr, sourcePin.mDataPtr);
 			}
@@ -652,8 +651,8 @@ namespace FLY_NAMESPACE
 		{
 			const Pin& inputPin = nodeGraphCopy.mPins[link.mInputPinID];
 			const Pin& outputPin = nodeGraphCopy.mPins[link.mOutputPinID];
-			const PinID createdInputPinID = ScriptLinker::GetOpposingPinID(nodeGraphCopy, link.mInputPinID, targetNodeGraph, nodeConverter.at(inputPin.mNodeID));
-			const PinID createdOutputPinID = ScriptLinker::GetOpposingPinID(nodeGraphCopy, link.mOutputPinID, targetNodeGraph, nodeConverter.at(outputPin.mNodeID));
+			const PinID createdInputPinID = Internal::GetOpposingPinID(nodeGraphCopy, link.mInputPinID, targetNodeGraph, nodeConverter.at(inputPin.mNodeID));
+			const PinID createdOutputPinID = Internal::GetOpposingPinID(nodeGraphCopy, link.mOutputPinID, targetNodeGraph, nodeConverter.at(outputPin.mNodeID));
 			const LinkID createdLinkID = Internal::TryCreateLink(targetNodeGraph, createdInputPinID, createdOutputPinID, aCommandTracker);
 
 			assert(createdLinkID != InvalidID<LinkID>());

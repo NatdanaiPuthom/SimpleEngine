@@ -305,7 +305,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		files {
 			"Source/NodeScript/**.h", 
 			"Source/NodeScript/**.hpp", 
-			"Source/NodeScript/**.cpp"
+			"Source/NodeScript/**.cpp",
+			"Source/NodeScript/**.ixx"
 		}
 
 		includedirs { 

@@ -6,7 +6,6 @@
 #include "DataType/FlyDataTypeManager.hpp"
 #include "Command/FlyCommandTracker.hpp"
 #include "Execution/FlyNodeExecutor.hpp"
-#include "Utilities/FlyLinker.hpp"
 #include "Global/FlyGlobal.hpp"
 #include "FlyFlow.hpp"
 #include "FlyWildcard.hpp"
@@ -80,8 +79,8 @@ namespace FLY_NAMESPACE
 
 			Function& createdFunction = Global::GetNodeTypeManager().GetFunction(id);
 
-			createdFunction.mInputNodeID = Internal::CreateNode(FunctionIDWrapper(id), createdFunction.mInputNodeTypeID);
-			createdFunction.mOutputNodeID = Internal::CreateNode(FunctionIDWrapper(id), createdFunction.mOutputNodeTypeID);
+			createdFunction.mInputNodeID = CreateNode(FunctionIDWrapper(id), createdFunction.mInputNodeTypeID);
+			createdFunction.mOutputNodeID = CreateNode(FunctionIDWrapper(id), createdFunction.mOutputNodeTypeID);
 
 			return id;
 		}
@@ -249,7 +248,7 @@ namespace FLY_NAMESPACE
 				aCommandTracker->DoCommand(Command(commandFunction, "Destroy Node"));
 			}
 
-			for (const LinkID linkID : ScriptLinker::GetLinkIDsByNode(aNodeGraph, aNodeID))
+			for (const LinkID linkID : GetLinkIDsByNode(aNodeGraph, aNodeID))
 			{
 				DestroyLink(aNodeGraph, linkID, aCommandTracker);
 			}
@@ -431,7 +430,7 @@ namespace FLY_NAMESPACE
 
 		LinkID TryCreateLink(NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2, CommandTracker* const aCommandTracker)
 		{
-			const Link createdLink = ScriptLinker::ArePinsLinkable(aNodeGraph, aPinID1, aPinID2);
+			const Link createdLink = ArePinsLinkable(aNodeGraph, aPinID1, aPinID2);
 			if (!createdLink)
 			{
 				// Check if we can replace node with overloaded operator node
@@ -484,7 +483,7 @@ namespace FLY_NAMESPACE
 
 			if (inputPinDataType != GetDataTypeID<Flow>())
 			{
-				std::vector<LinkID> inputLinkIDs = ScriptLinker::GetLinkIDsByPin(aNodeGraph, aInputPinID);
+				std::vector<LinkID> inputLinkIDs = GetLinkIDsByPin(aNodeGraph, aInputPinID);
 				if (!inputLinkIDs.empty())
 				{
 					assert(inputLinkIDs.size() == 1);
@@ -493,7 +492,7 @@ namespace FLY_NAMESPACE
 			}
 			else
 			{
-				std::vector<LinkID> outputLinkIDs = ScriptLinker::GetLinkIDsByPin(aNodeGraph, aOutputPinID);
+				std::vector<LinkID> outputLinkIDs = GetLinkIDsByPin(aNodeGraph, aOutputPinID);
 
 				if (!outputLinkIDs.empty())
 				{
@@ -592,7 +591,7 @@ namespace FLY_NAMESPACE
 
 			for (const PinID connectedPinID : pin.mConnectedPinIDs)
 			{
-				const LinkID linkID = ScriptLinker::GetLinkIDByPinIDs(aNodeGraph, aPinID, connectedPinID);
+				const LinkID linkID = GetLinkIDByPinIDs(aNodeGraph, aPinID, connectedPinID);
 				DestroyLink(aNodeGraph, linkID, aCommandTracker);
 			}
 
@@ -638,7 +637,7 @@ namespace FLY_NAMESPACE
 
 		void DestroyVariableNodes(Class& aClass, const VarID aVarID, CommandTracker* const aCommandTracker)
 		{
-			Internal::DestroyNodes(GetNodeRefsByVariableRef(VariableRef(aVarID, aClass)), aCommandTracker);
+			DestroyNodes(GetNodeRefsByVariableRef(VariableRef(aVarID, aClass)), aCommandTracker);
 		}
 
 		void BindVariable(Class& aClass, const NodeRef& aNodeRef, const VarID aVarID, CommandTracker* const aCommandTracker)
@@ -735,7 +734,7 @@ namespace FLY_NAMESPACE
 				Node& node = nodeRef.GetNodeGraph().mNodes.at(nodeRef.GetNodeID());
 
 				std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins);
-				const PinID createdPinID = Internal::CreatePin(nodeRef.GetNodeGraph(), nodeRef.GetNodeID(), createdPinTypeID);
+				const PinID createdPinID = CreatePin(nodeRef.GetNodeGraph(), nodeRef.GetNodeID(), createdPinTypeID);
 
 				pinIDs.push_back(createdPinID);
 			}
@@ -764,7 +763,7 @@ namespace FLY_NAMESPACE
 				Node& node = nodeRef.GetNodeGraph().mNodes.at(nodeRef.GetNodeID());
 
 				std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins);
-				const PinID createdPinID = Internal::CreatePin(nodeRef.GetNodeGraph(), nodeRef.GetNodeID(), newPinTypeID);
+				const PinID createdPinID = CreatePin(nodeRef.GetNodeGraph(), nodeRef.GetNodeID(), newPinTypeID);
 				pinIDs.at(aIndex) = createdPinID;
 			}
 		}
@@ -784,7 +783,7 @@ namespace FLY_NAMESPACE
 				Node& node = nodeRef.GetNodeGraph().mNodes.at(nodeRef.GetNodeID());
 
 				std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins);
-				Internal::DestroyLinksByPin(nodeRef.GetNodeGraph(), pinIDs.at(aIndex), nullptr);
+				DestroyLinksByPin(nodeRef.GetNodeGraph(), pinIDs.at(aIndex), nullptr);
 				pinIDs.erase(pinIDs.begin() + aIndex);
 
 			}
@@ -941,7 +940,7 @@ namespace FLY_NAMESPACE
 			SetNodePosition(createdNodeID, replacedNode.mPosition, aNodeGraph, nullptr);
 
 			{ // Link new pin
-				const size_t pinIndex = ScriptLinker::GetPinIndex(aNodeGraph, aWildcardPinID);
+				const size_t pinIndex = GetPinIndex(aNodeGraph, aWildcardPinID);
 
 				const PinID createdPinConnectedID = SelectByFlowType(wildcardPinType.mFlowType, createdNode.mInputPins.at(pinIndex), createdNode.mOutputPins.at(pinIndex));
 
@@ -957,7 +956,7 @@ namespace FLY_NAMESPACE
 
 					if (!destroyedInputPin.mConnectedPinIDs.empty())
 					{
-						TryCreateLink(aNodeGraph, destroyedInputPin.mConnectedPinIDs[0], ScriptLinker::GetPinID(aNodeGraph, createdNodeID, pinIndex, eFlowType::Input), aCommandTracker);
+						TryCreateLink(aNodeGraph, destroyedInputPin.mConnectedPinIDs[0], GetPinID(aNodeGraph, createdNodeID, pinIndex, eFlowType::Input), aCommandTracker);
 					}
 
 				}
@@ -970,7 +969,7 @@ namespace FLY_NAMESPACE
 					{
 						if (connectedInputPinID != InvalidID<PinID>())
 						{
-							TryCreateLink(aNodeGraph, connectedInputPinID, ScriptLinker::GetPinID(aNodeGraph, createdNodeID, pinIndex, eFlowType::Output), aCommandTracker);
+							TryCreateLink(aNodeGraph, connectedInputPinID, GetPinID(aNodeGraph, createdNodeID, pinIndex, eFlowType::Output), aCommandTracker);
 						}
 					}
 				}
@@ -1073,6 +1072,152 @@ namespace FLY_NAMESPACE
 		std::vector<GlobalNodeRef> GetNodeRefsByVariableRef(const VariableRef& aVarRef)
 		{
 			return Global::GetFoundation().GetNodeRefsByVariableRef(aVarRef);
+		}
+
+		PinID GetPinID(const NodeGraph& aNodeGraph, const NodeID aNodeID, const size_t aPinIndex, const eFlowType aPinFlowType)
+		{
+			const Node& node = aNodeGraph.mNodes.at(aNodeID);
+			switch (aPinFlowType)
+			{
+			case eFlowType::Input:
+				if (aPinIndex < node.mInputPins.size())
+				{
+					return node.mInputPins.at(aPinIndex);
+				}
+				break;
+			case eFlowType::Output:
+				if (aPinIndex < node.mOutputPins.size())
+				{
+					return node.mOutputPins.at(aPinIndex);
+				}
+				break;
+			default:
+				break;
+			}
+			return InvalidID<PinID>();
+		}
+
+		size_t GetPinIndex(const NodeGraph& aNodeGraph, const PinID aPinID)
+		{
+			const Pin& pin = aNodeGraph.mPins.at(aPinID);
+			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+			const Node& node = aNodeGraph.mNodes.at(pin.mNodeID);
+
+			const std::vector<PinID>& pinIDs = pinType.mFlowType == eFlowType::Output ? node.mOutputPins : node.mInputPins;
+
+			for (size_t i = 0; i < pinIDs.size(); ++i)
+			{
+				if (pinIDs[i] == aPinID)
+				{
+					return i;
+				}
+			}
+			return InvalidID<size_t>();
+		}
+
+		PinID GetOpposingPinID(const NodeGraph& aPreviousNodeGraph, const PinID aPreviousPinID, const NodeGraph& aNewNodeGraph, const NodeID aNodeID)
+		{
+			const size_t pinIndex = GetPinIndex(aPreviousNodeGraph, aPreviousPinID);
+			const Pin& pin = aPreviousNodeGraph.mPins.at(aPreviousPinID);
+			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+			return GetPinID(aNewNodeGraph, aNodeID, pinIndex, pinType.mFlowType);
+		}
+
+		static bool ArePinsLinkableByDataType(const NodeGraph& aNodeGraph, const PinID aPinID1, const PinID aPinID2)
+		{
+			const Pin& pin1 = aNodeGraph.mPins.at(aPinID1);
+			const Pin& pin2 = aNodeGraph.mPins.at(aPinID2);
+			return  Global::GetPinTypeManager().GetPinType(pin1.mTypeID).mDataTypeID == Global::GetPinTypeManager().GetPinType(pin2.mTypeID).mDataTypeID;
+		}
+
+		Link ArePinsLinkable(const NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2)
+		{
+			const Pin& pin1 = aNodeGraph.mPins.at(aPinID1);
+			const Pin& pin2 = aNodeGraph.mPins.at(aPinID2);
+			const PinType& pinType1 = Global::GetPinTypeManager().GetPinType(pin1.mTypeID);
+			const PinType& pinType2 = Global::GetPinTypeManager().GetPinType(pin2.mTypeID);
+
+			Link outputLink;
+
+			switch (pinType1.mFlowType)
+			{
+			case eFlowType::Input:
+				if (pinType2.mFlowType == eFlowType::Output)
+				{
+					if (ArePinsLinkableByDataType(aNodeGraph, aPinID1, aPinID2))
+					{
+						outputLink.mInputPinID = aPinID1;
+						outputLink.mOutputPinID = aPinID2;
+					}
+				}
+				break;
+			case eFlowType::Output:
+				if (pinType2.mFlowType == eFlowType::Input)
+				{
+					if (ArePinsLinkableByDataType(aNodeGraph, aPinID1, aPinID2))
+					{
+						outputLink.mInputPinID = aPinID2;
+						outputLink.mOutputPinID = aPinID1;
+					}
+				}
+				break;
+			default:
+				break;
+			}
+			return outputLink;
+		}
+
+		LinkID GetLinkIDByPinIDs(const NodeGraph& aNodeGraph, const PinID aPinID1, const PinID aPinID2, bool aIncludeDestroyed)
+		{
+			for (LinkID id = 0; id < aNodeGraph.mLinks.size(); ++id)
+			{
+				const Link& link = aNodeGraph.mLinks[id];
+				if (!aIncludeDestroyed && link.mIsDestroyed)
+				{
+					continue;
+				}
+				if (link == Link{ aPinID1, aPinID2 } || link == Link{ aPinID2, aPinID1 })
+				{
+					return id;
+				}
+			}
+			return InvalidID<LinkID>();
+		}
+
+		std::vector<LinkID> GetLinkIDsByPin(const NodeGraph& aNodeGraph, const PinID aPinID, bool aIncludeDestroyed)
+		{
+			std::vector<LinkID> linkIDs;
+			const Pin& pin = aNodeGraph.mPins.at(aPinID);
+
+			for (const PinID connectedPinID : pin.mConnectedPinIDs)
+			{
+				const LinkID linkID = GetLinkIDByPinIDs(aNodeGraph, aPinID, connectedPinID, aIncludeDestroyed);
+				assert(linkID != InvalidID<LinkID>());
+
+				linkIDs.push_back(linkID);
+			}
+
+			return linkIDs;
+		}
+
+		std::vector<LinkID> GetLinkIDsByNode(const NodeGraph& aNodeGraph, const NodeID aNodeID)
+		{
+			std::vector<LinkID> linkIDs;
+			const Node& node = aNodeGraph.mNodes.at(aNodeID);
+
+			for (const PinID inputPinID : node.mInputPins)
+			{
+				std::vector<LinkID> inputLinks = GetLinkIDsByPin(aNodeGraph, inputPinID);
+				linkIDs.insert(linkIDs.end(), inputLinks.begin(), inputLinks.end());
+			}
+			for (const PinID mOutputPinID : node.mOutputPins)
+			{
+				std::vector<LinkID> outputLinks = GetLinkIDsByPin(aNodeGraph, mOutputPinID);
+				linkIDs.insert(linkIDs.end(), outputLinks.begin(), outputLinks.end());
+			}
+
+
+			return linkIDs;
 		}
 	}
 }
