@@ -1320,6 +1320,8 @@ namespace Graphics
 		swapChainDesc.BufferCount = 2;
 		swapChainDesc.BufferDesc.Width = aSize.x;
 		swapChainDesc.BufferDesc.Height = aSize.y;
+		swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
+		swapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
