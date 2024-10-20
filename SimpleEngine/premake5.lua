@@ -194,7 +194,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		files { -- Files that shown in Visual Studio's Solution
 			"Source/Engine/**.h", 
 			"Source/Engine/**.hpp", 
-			"Source/Engine/**.cpp"
+			"Source/Engine/**.cpp",
+			"Source/Engine/**.ixx"
 		} 
 			
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -214,7 +215,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/Graphics/**.hpp",
 			"Source/Graphics/**.cpp",
 			"Source/Graphics/**.hlsl",
-			"Source/Graphics/**.hlsli"
+			"Source/Graphics/**.hlsli",
+			"Source/Graphics/**.ixx"
 		}
 
 		includedirs {
@@ -242,7 +244,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 			"Source/Shader/**.hpp",
 			"Source/Shader/**.cpp",
 			"Source/Shader/**.hlsl",
-			"Source/Shader/**.hlsli",
+			"Source/Shader/**.hlsli"
 		}
 
 		includedirs {
@@ -278,7 +280,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		files {
 			"Source/Game/**.h", 
 			"Source/Game/**.hpp", 
-			"Source/Game/**.cpp"
+			"Source/Game/**.cpp",
+			"Source/Game/**.ixx"
 		}
 
 		includedirs { 
@@ -333,7 +336,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		files {
 			"Source/Editor/**.h",
 			"Source/Editor/**.hpp",
-			"Source/Editor/**.cpp"
+			"Source/Editor/**.cpp",
+			"Source/Editor/**.ixx"
 		}
 
 		includedirs {
