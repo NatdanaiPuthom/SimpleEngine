@@ -17,8 +17,7 @@ namespace Editor
 		void ShowSceneList();
 		void CreateNewScene();
 		void ReloadScene();
-		void ShowReloadTooltips();
-		void ShowSetStartToolTips();
 		void SetActiveSceneAsStart();
+		void ShowHoveredToolTips(const std::string& aToolTipText, float& aTimer);
 	};
 }

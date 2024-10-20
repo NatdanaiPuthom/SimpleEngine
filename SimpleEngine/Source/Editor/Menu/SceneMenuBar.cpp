@@ -53,14 +53,16 @@ namespace Editor
 					ReloadScene();
 				}
 
-				ShowReloadTooltips();
+				static float resetCurrentSceneTooltipDelayTimer = 0.0f;
+				ShowHoveredToolTips("Reset current scene", resetCurrentSceneTooltipDelayTimer);
 
 				if (ImGui::MenuItem("Set As Start##SceneMenuItem"))
 				{
 					SetActiveSceneAsStart();
 				}
 
-				ShowSetStartToolTips();
+				static float setSceneAsStartTooltipDelayTimer = 0.0f;
+				ShowHoveredToolTips("Open this scene on startup", setSceneAsStartTooltipDelayTimer);
 
 				ImGui::EndMenu();
 			}
@@ -129,6 +131,12 @@ namespace Editor
 				}
 				break;
 			}
+
+			if (i == 1) //NOTE(v11.4.2): Shouldn't be hardcoded value, whole Editor project need refactor someday
+			{
+				static float createNewSceneAsCopyTooltipDelayTimer = 0.0f;
+				ShowHoveredToolTips("Create new copy of this scene", createNewSceneAsCopyTooltipDelayTimer);
+			}
 		}
 	}
 
@@ -136,52 +144,6 @@ namespace Editor
 	{
 		Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
 		sceneManager.ReloadSceneFromFile(sceneManager.GetCurrentSceneInfo()->relativePath);
-	}
-
-	void SceneMenuBar::ShowReloadTooltips()
-	{
-		static float timer = 0.0f;
-
-		if (ImGui::IsItemHovered())
-		{
-			timer += Global::GetDeltaTime();
-
-			if (timer > 0.33f)
-			{
-				if (ImGui::BeginTooltip())
-				{
-					ImGui::Text("Reset current scene");
-					ImGui::EndTooltip();
-				}
-			}
-		}
-		else
-		{
-			timer = 0.0f;
-		}
-	}
-
-	void SceneMenuBar::ShowSetStartToolTips()
-	{
-		static float timer = 0.0f;
-
-		if (ImGui::IsItemHovered())
-		{
-			timer += Global::GetDeltaTime();
-
-			if (timer > 0.33f)
-			{
-				if (ImGui::BeginTooltip())
-				{
-					ImGui::Text("Open this scene on startup");
-					ImGui::EndTooltip();
-				}
-			}
-		}
-		else
-		{
-			timer = 0.0f;
-		}
 	}
 
 	void SceneMenuBar::SetActiveSceneAsStart()
@@ -194,5 +156,26 @@ namespace Editor
 
 		writeFile << jsonData;
 		writeFile.close();
+	}
+
+	void SceneMenuBar::ShowHoveredToolTips(const std::string& aToolTipText, float& aTimer)
+	{
+		if (ImGui::IsItemHovered())
+		{
+			aTimer += Global::GetDeltaTime();
+
+			if (aTimer > 0.33f)
+			{
+				if (ImGui::BeginTooltip())
+				{
+					ImGui::Text(aToolTipText.c_str());
+					ImGui::EndTooltip();
+				}
+			}
+		}
+		else
+		{
+			aTimer = 0.0f;
+		}
 	}
 }
