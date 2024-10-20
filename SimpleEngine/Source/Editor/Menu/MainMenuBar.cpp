@@ -29,10 +29,12 @@ namespace Editor
 	void ActiveWindowData::SetActiveWindow(eWindowType aWindowType, const bool aIsActive)
 	{
 		assert(aWindowType != eWindowType::Count);
+
 		for (bool& isActive : myIsWindowActive)
 		{
 			isActive = false;
 		}
+
 		myIsWindowActive[static_cast<size_t>(aWindowType)] = aIsActive;
 	}
 
@@ -69,7 +71,7 @@ namespace Editor
 		{
 			if (inputManager.IsKeyPressed(VK_F1 + i))
 			{
-				myActiveWindowData.SetActiveWindow(static_cast<eWindowType>(i));
+				myActiveWindowData.SetActiveWindow(static_cast<eWindowType>(i), !myActiveWindowData.IsWindowActive(static_cast<eWindowType>(i)));
 			}
 		}
 
@@ -93,7 +95,7 @@ namespace Editor
 				{
 					if (ImGui::MenuItem(windowNames[i], keyShortCuts[i], myActiveWindowData.IsWindowActive(static_cast<eWindowType>(i))))
 					{
-						myActiveWindowData.SetActiveWindow(static_cast<eWindowType>(i));
+						myActiveWindowData.SetActiveWindow(static_cast<eWindowType>(i), !myActiveWindowData.IsWindowActive(static_cast<eWindowType>(i)));
 					}
 				}
 
