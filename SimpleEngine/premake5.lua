@@ -34,6 +34,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	dirs["DLL"]					= os.realpath("Dependencies/DLL/")
 	dirs["SimpleLib"]			= os.realpath("Dependencies/SimpleLib/")
 	dirs["Bin_Settings"]		= os.realpath("Bin/Settings/")
+	dirs["Build"]               = os.realpath("Bin/Test/")
 
 	defines { -- Create Global Macro For Strings.
 
@@ -49,7 +50,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		'SIMPLE_DIR_NAVMESH="' .. "Assets/Navmesh/" .. '"',
 		'SIMPLE_DIR_AUDIO="' .. "Assets/Audio/" .. '"',
 		'SIMPLE_DIR_MODELS="' .. "Assets/Models/" .. '"',
-		'SIMPLE_DIR_SCENES="' .. "Assets\\\\Scenes" .. '"',
+		'SIMPLE_DIR_SCENES="' .. "Assets\\\\Scenes" .. '"', -- Editor thing, all paths in future should be using \\ instead of /
 
 		'SIMPLE_SETTINGS_IMGUI="' .."Settings/imgui.ini" .. '"',
 		'SIMPLE_SETTINGS_GAME="' .. "Settings/game_settings.json" .. '"',
@@ -432,16 +433,19 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		filter "configurations:Debug"
+		    targetdir (dirs.Bin)
 			postbuildcommands {
 				"{COPY} %{wks.location}/Dependencies/DLL/Debug/*.dll %{cfg.targetdir}"
 			}
 
 		filter "configurations:Release"
+			targetdir (dirs.Build)
 			postbuildcommands {
 				"{COPY} %{wks.location}/Dependencies/DLL/Release/*.dll %{cfg.targetdir}"
 			}
 
 		filter "configurations:Simple"
+			targetdir (dirs.Bin)
 			postbuildcommands {
 				"{COPY} %{wks.location}/Dependencies/DLL/Release/*.dll %{cfg.targetdir}"
 			}
