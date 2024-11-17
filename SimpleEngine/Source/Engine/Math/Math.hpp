@@ -55,7 +55,7 @@ namespace Math
 	}
 
 	template<typename T>
-	static inline T Distance(const Vector3<T>& aPositionA, const Vector3<T>& aPositionB)
+	static constexpr T Distance(const Vector3<T>& aPositionA, const Vector3<T>& aPositionB)
 	{
 		return sqrt(pow(aPositionA.x - aPositionB.x, 2.0f) + pow(aPositionA.y - aPositionB.y, 2.0f) + pow(aPositionA.z - aPositionB.z, 2.0f));
 	}
@@ -67,13 +67,13 @@ namespace Math
 	}
 
 	template<typename T>
-	static inline T Dot(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
+	static constexpr T Dot(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
 	{
 		return (aVectorA.x * aVectorB.x) + (aVectorA.y * aVectorB.y) + (aVectorA.z * aVectorB.z);
 	}
 
 	template<typename T>
-	static inline T Dot(const Vector2<T>& aVectorA, const Vector2<T>& aVectorB)
+	static constexpr T Dot(const Vector2<T>& aVectorA, const Vector2<T>& aVectorB)
 	{
 		return (aVectorA.x * aVectorB.x) + (aVectorA.y * aVectorB.y);
 	}

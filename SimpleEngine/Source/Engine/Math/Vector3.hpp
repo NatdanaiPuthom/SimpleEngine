@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "Engine/Math/Vector2.hpp"
+#include "Engine/Math/MathUtilities.hpp"
 
 namespace Math
 {
@@ -16,73 +17,82 @@ namespace Math
 		~Vector3() = default;
 
 		constexpr Vector3(const T& aX, const T& aY, const T& aZ);
-		Vector3(const Vector3& aVector) = default;
+		constexpr Vector3(const Vector3& aVector) = default;
 
-		Vector3& operator=(const Vector3& aVector) = default;
+		constexpr Vector3& operator=(const Vector3& aVector) = default;
 
-		Vector2<T> AsVector2XY() const;
-		Vector2<T> AsVector2XZ() const;
+		constexpr Vector2<T> AsVector2XY() const;
+		constexpr Vector2<T> AsVector2XZ() const;
 
-		Vector3 GetNormalized() const;
-		Vector3 Cross(const Vector3<T>& aVector) const;
+		constexpr Vector3 GetNormalized() const;
+		constexpr Vector3 Cross(const Vector3<T>& aVector) const;
 
-		T LengthSqr() const;
-		T Length() const;
-		T Dot(const Vector3<T>& aVector) const;
+		constexpr T LengthSqr() const;
+		constexpr T Length() const;
+		constexpr T Dot(const Vector3<T>& aVector) const;
 
-		void Normalize();
+		constexpr void Normalize();
 
-		static Vector3<T> Zero();
+		constexpr static Vector3<T> Zero();
 	};
+
+	template<typename T>
+	constexpr Vector3<T> RightVector = Vector3<T>(1, 0, 0);
+	template<typename T>
+	constexpr Vector3<T> UpVector = Vector3<T>(0, 1, 0);
+	template<typename T>
+	constexpr Vector3<T> ForwardVector = Vector3<T>(0, 0, 1);
+
+
 
 	typedef Vector3<int> Vector3i;
 	typedef Vector3<float> Vector3f;
 	typedef Vector3<unsigned int> Vector3ui;
 
-	template <class T> Vector3<T> operator+(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
-	template <class T> Vector3<T> operator-(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
+	template <class T> constexpr Vector3<T> operator+(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
+	template <class T> constexpr Vector3<T> operator-(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
 
-	template <class T> Vector3<T> operator*(const Vector3<T>& aVector, const T& aScalar);
-	template <class T> Vector3<T> operator*(const T& aScalar, const Vector3<T>& aVector);
-	template <class T> Vector3<T> operator*(const Vector3<T>& aVector0, const Vector3<T>& aVector1);
+	template <class T> constexpr Vector3<T> operator*(const Vector3<T>& aVector, const T& aScalar);
+	template <class T> constexpr Vector3<T> operator*(const T& aScalar, const Vector3<T>& aVector);
+	template <class T> constexpr Vector3<T> operator*(const Vector3<T>& aVector0, const Vector3<T>& aVector1);
 
-	template <class T> Vector3<T> operator/(const Vector3<T>& aVector, const T& aScalar);
-	template <class T> Vector3<T> operator/(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
-	template <class T> Vector3<T> operator/(const T& aScalar, const Vector3<T>& aVector);
+	template <class T> constexpr Vector3<T> operator/(const Vector3<T>& aVector, const T& aScalar);
+	template <class T> constexpr Vector3<T> operator/(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
+	template <class T> constexpr Vector3<T> operator/(const T& aScalar, const Vector3<T>& aVector);
 
-	template <class T> void operator+=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
-	template <class T> void operator-=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
-	template <class T> void operator*=(Vector3<T>& aVector, const T& aScalar);
-	template <class T> void operator/=(Vector3<T>& aVector, const T& aScalar);
+	template <class T> constexpr void operator+=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
+	template <class T> constexpr void operator-=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
+	template <class T> constexpr void operator*=(Vector3<T>& aVector, const T& aScalar);
+	template <class T> constexpr void operator/=(Vector3<T>& aVector, const T& aScalar);
 
-	template <class T> bool operator==(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
+	template <class T> constexpr bool operator==(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
 
 	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector3<T>& aVector);
 
 	template<class T>
-	constexpr inline Vector3<T>::Vector3() : x(0), y(0), z(0)
+	constexpr Vector3<T>::Vector3() : x(0), y(0), z(0)
 	{
 	}
 
 	template<class T>
-	constexpr inline Vector3<T>::Vector3(const T& aX, const T& aY, const T& aZ) : x(aX), y(aY), z(aZ)
+	constexpr Vector3<T>::Vector3(const T& aX, const T& aY, const T& aZ) : x(aX), y(aY), z(aZ)
 	{
 	}
 
 	template<class T>
-	inline Vector2<T> Vector3<T>::AsVector2XY() const
+	constexpr Vector2<T> Vector3<T>::AsVector2XY() const
 	{
 		return Vector2<T>(x, y);
 	}
 
 	template<class T>
-	inline Vector2<T> Vector3<T>::AsVector2XZ() const
+	constexpr Vector2<T> Vector3<T>::AsVector2XZ() const
 	{
 		return Vector2<T>(x, z);
 	}
 
 	template<class T>
-	inline Vector3<T> Vector3<T>::GetNormalized() const
+	constexpr Vector3<T> Vector3<T>::GetNormalized() const
 	{
 		const T magnitude = (x * x) + (y * y) + (z * z);
 
@@ -97,7 +107,7 @@ namespace Math
 	}
 
 	template<class T>
-	inline Vector3<T> Vector3<T>::Cross(const Vector3<T>& aVector) const
+	constexpr Vector3<T> Vector3<T>::Cross(const Vector3<T>& aVector) const
 	{
 		return
 		{
@@ -108,7 +118,7 @@ namespace Math
 	}
 
 	template<class T>
-	inline void Vector3<T>::Normalize()
+	constexpr void Vector3<T>::Normalize()
 	{
 		const T magnitude = (x * x) + (y * y) + (z * z);
 
@@ -124,73 +134,73 @@ namespace Math
 	}
 
 	template<class T>
-	inline Vector3<T> Vector3<T>::Zero()
+	constexpr Vector3<T> Vector3<T>::Zero()
 	{
 		return Vector3<T>(0, 0, 0);
 	}
 
 	template<class T>
-	inline T Vector3<T>::LengthSqr() const
+	constexpr T Vector3<T>::LengthSqr() const
 	{
-		return abs((x * x) + (y * y) + (z * z));
+		return Abs((x * x) + (y * y) + (z * z));
 	}
 
 	template<class T>
-	inline T Vector3<T>::Length() const
+	constexpr T Vector3<T>::Length() const
 	{
 		return static_cast<T> (sqrt((x * x) + (y * y) + (z * z)));
 	}
 
 	template<class T>
-	inline T Vector3<T>::Dot(const Vector3<T>& aVector) const
+	constexpr T Vector3<T>::Dot(const Vector3<T>& aVector) const
 	{
 		return (x * aVector.x) + (y * aVector.y) + (z * aVector.z);
 	}
 
 	template<class T>
-	Vector3<T> operator+(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
+	constexpr Vector3<T> operator+(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
 	{
 		return Vector3<T>(aVectorA.x + aVectorB.x, aVectorA.y + aVectorB.y, aVectorA.z + aVectorB.z);
 	}
 
 	template<class T>
-	Vector3<T> operator-(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
+	constexpr Vector3<T> operator-(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
 	{
 		return Vector3<T>(aVectorA.x - aVectorB.x, aVectorA.y - aVectorB.y, aVectorA.z - aVectorB.z);
 	}
 
 	template<class T>
-	Vector3<T> operator*(const Vector3<T>& aVector, const T& aScalar)
+	constexpr Vector3<T> operator*(const Vector3<T>& aVector, const T& aScalar)
 	{
 		return Vector3<T>(aVector.x * aScalar, aVector.y * aScalar, aVector.z * aScalar);
 	}
 
 	template<class T>
-	Vector3<T> operator*(const T& aScalar, const Vector3<T>& aVector)
+	constexpr Vector3<T> operator*(const T& aScalar, const Vector3<T>& aVector)
 	{
 		return aVector * aScalar;
 	}
 
 	template<class T>
-	Vector3<T> operator/(const Vector3<T>& aVector, const T& aScalar)
+	constexpr Vector3<T> operator/(const Vector3<T>& aVector, const T& aScalar)
 	{
 		return aVector * (1 / aScalar);
 	}
 
 	template<class T>
-	Vector3<T> operator/(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
+	constexpr Vector3<T> operator/(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
 	{
 		return Vector3<T>(aVectorA.x / aVectorB.x, aVectorA.y / aVectorB.y, aVectorA.z / aVectorB.z);
 	}
 
 	template<class T>
-	Vector3<T> operator/(const T& aScalar, const Vector3<T>& aVector)
+	constexpr Vector3<T> operator/(const T& aScalar, const Vector3<T>& aVector)
 	{
 		return Vector3<T>(aScalar / aVector.x, aScalar / aVector.y, aScalar / aVector.z);
 	}
 
 	template<class T>
-	void operator+=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
+	constexpr void operator+=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
 	{
 		aVectorA.x += aVectorB.x;
 		aVectorA.y += aVectorB.y;
@@ -198,7 +208,7 @@ namespace Math
 	}
 
 	template<class T>
-	void operator-=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
+	constexpr void operator-=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
 	{
 		aVectorA.x -= aVectorB.x;
 		aVectorA.y -= aVectorB.y;
@@ -206,7 +216,7 @@ namespace Math
 	}
 
 	template<class T>
-	void operator*=(Vector3<T>& aVector, const T& aScalar)
+	constexpr void operator*=(Vector3<T>& aVector, const T& aScalar)
 	{
 		aVector.x *= aScalar;
 		aVector.y *= aScalar;
@@ -214,7 +224,7 @@ namespace Math
 	}
 
 	template<class T>
-	void operator/=(Vector3<T>& aVector, const T& aScalar)
+	constexpr void operator/=(Vector3<T>& aVector, const T& aScalar)
 	{
 		const T inverse = (1 / aScalar);
 		aVector.x *= inverse;
@@ -223,7 +233,7 @@ namespace Math
 	}
 
 	template <class T>
-	Vector3<T> operator*(const Vector3<T>& aVector0, const Vector3<T>& aVector1)
+	constexpr Vector3<T> operator*(const Vector3<T>& aVector0, const Vector3<T>& aVector1)
 	{
 		Vector3<T> vector;
 		vector.x = aVector0.x * aVector1.x;
@@ -234,7 +244,7 @@ namespace Math
 	}
 
 	template<class T>
-	bool operator==(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
+	constexpr bool operator==(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
 	{
 		return aVectorA.x == aVectorB.x && aVectorA.y == aVectorB.y && aVectorA.z == aVectorB.z;
 	}
