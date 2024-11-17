@@ -13,20 +13,20 @@ namespace Math
 		T z;
 		T w;
 
-		Vector4<T>();
-		~Vector4<T>() = default;
+		constexpr Vector4();
+		~Vector4() = default;
 
-		Vector4<T>(const T& aX, const T& aY, const T& aZ, const T& myW);
-		Vector4<T>(const Vector4<T>& aVector) = default;
+		constexpr Vector4(const T& aX, const T& aY, const T& aZ, const T& myW);
+		constexpr Vector4(const Vector4& aVector) = default;
 
-		Vector4<T>& operator=(const Vector4<T>& aVector2) = default;
+		Vector4& operator=(const Vector4& aVector4) = default;
 
 		Vector3<T> AsVector3XYZ() const;
-		Vector4<T> GetNormalized() const;
+		Vector4 GetNormalized() const;
 
 		T LengthSqr() const;
 		T Length() const;
-		T Dot(const Vector4<T>& aVector) const;
+		T Dot(const Vector4& aVector) const;
 
 		void Normalize();
 	};
@@ -53,11 +53,11 @@ namespace Math
 	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector4<T>& aVector);
 
 	template<class T>
-	inline Vector4<T>::Vector4() : Vector4(0, 0, 0, 0)
+	inline constexpr Vector4<T>::Vector4() : x(0), y(0), z(0), w(0)
 	{}
 
 	template<class T>
-	inline Vector4<T>::Vector4(const T& aX, const T& aY, const T& aZ, const T& aW) : x(aX), y(aY), z(aZ), w(aW)
+	inline constexpr Vector4<T>::Vector4(const T& aX, const T& aY, const T& aZ, const T& aW) : x(aX), y(aY), z(aZ), w(aW)
 	{}
 
 	template<class T>

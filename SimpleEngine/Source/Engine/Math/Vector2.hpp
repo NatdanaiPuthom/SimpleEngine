@@ -10,16 +10,16 @@ namespace Math
 		T x;
 		T y;
 
-		Vector2<T>();
-		~Vector2<T>() = default;
+		constexpr Vector2();
+		~Vector2() = default;
 
-		Vector2<T>(const T& aX, const T& aY);
-		Vector2<T>(const Vector2<T>& aVector) = default;
+		constexpr Vector2(const T& aX, const T& aY);
+		constexpr Vector2(const Vector2& aVector) = default;
 
-		Vector2<T>& operator=(const Vector2<T>& aVector2) = default;
-		bool operator==(const Vector2<T>& aVector) const;
+		Vector2& operator=(const Vector2& aVector2) = default;
+		bool operator==(const Vector2& aVector) const;
 
-		Vector2<T> GetNormalized() const;
+		Vector2 GetNormalized() const;
 
 		T LengthSqr() const;
 		T Length() const;
@@ -50,11 +50,11 @@ namespace Math
 	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector2<T>& aVector);
 
 	template<class T>
-	inline Vector2<T>::Vector2() : Vector2(0, 0)
+	inline constexpr Vector2<T>::Vector2() : x(0), y(0)
 	{}
 
 	template<class T>
-	inline Vector2<T>::Vector2(const T& aX, const T& aY) : x(aX), y(aY)
+	inline constexpr Vector2<T>::Vector2(const T& aX, const T& aY) : x(aX), y(aY)
 	{}
 
 	template<class T>

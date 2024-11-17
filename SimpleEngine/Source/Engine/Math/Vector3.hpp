@@ -48,6 +48,7 @@ namespace Math
 
 	template <class T> Vector3<T> operator/(const Vector3<T>& aVector, const T& aScalar);
 	template <class T> Vector3<T> operator/(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
+	template <class T> Vector3<T> operator/(const T& aScalar, const Vector3<T>& aVector);
 
 	template <class T> void operator+=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
 	template <class T> void operator-=(Vector3<T>& aVectorA, const Vector3<T>& aVectorB);
@@ -59,7 +60,7 @@ namespace Math
 	template <class T> std::ostream& operator<<(std::ostream& aOS, const Vector3<T>& aVector);
 
 	template<class T>
-	constexpr inline Vector3<T>::Vector3() : Vector3(0, 0, 0)
+	constexpr inline Vector3<T>::Vector3() : x(0), y(0), z(0)
 	{
 	}
 
@@ -180,6 +181,12 @@ namespace Math
 	Vector3<T> operator/(const Vector3<T>& aVectorA, const Vector3<T>& aVectorB)
 	{
 		return Vector3<T>(aVectorA.x / aVectorB.x, aVectorA.y / aVectorB.y, aVectorA.z / aVectorB.z);
+	}
+
+	template<class T>
+	Vector3<T> operator/(const T& aScalar, const Vector3<T>& aVector)
+	{
+		return Vector3<T>(aScalar / aVector.x, aScalar / aVector.y, aScalar / aVector.z);
 	}
 
 	template<class T>
