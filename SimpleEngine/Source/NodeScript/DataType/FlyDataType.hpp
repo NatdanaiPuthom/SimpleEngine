@@ -10,28 +10,30 @@ namespace nlohamnn
 
 namespace FLY_NAMESPACE
 {
-	using EditInterface = bool(*)(void* aDataPtr);
-	using SaveInterface = void(*)(nlohmann::json& aSaveObject, const void* aDataPtr);
-	using LoadInterface = void(*)(const nlohmann::json& aLoadObject, void* aDataPtr);
 	using AllocateInterface = void(*)(void* aDataPtr, const void* aDefaultValue);
 	using ReleaseInterface = void(*)(void* aDataPtr);
 	using CopyInterface = void(*)(void* aDestination, const void* aSource);
 	using SwapInterface = void(*)(void* aDataPtr1, void* aDataPtr2);
+	using EqualsInterface = bool(*)(const void* aDataPtr1, const void* aDataPtr2);
 
-	struct FunctionInterface final
-	{
-		const EditInterface edit;
-		const SaveInterface save;
-		const LoadInterface load;
-	};
-
-
-	struct CreationInterface final
+	struct FundamentalInterface final
 	{
 		const AllocateInterface allocate;
 		const ReleaseInterface release;
 		const CopyInterface copy;
 		const SwapInterface swap;
+		const EqualsInterface equals;
+	};
+
+	using ViewAndEditInterface = eIsItemActive(*)(void* aDataPtr);
+	using SaveInterface = void(*)(nlohmann::json& aSaveObject, const void* aDataPtr);
+	using LoadInterface = void(*)(const nlohmann::json& aLoadObject, void* aDataPtr);
+
+	struct FunctionInterface final
+	{
+		const ViewAndEditInterface viewAndEdit;
+		const SaveInterface save;
+		const LoadInterface load;
 	};
 
 	struct ExecutionInterface final
@@ -42,8 +44,8 @@ namespace FLY_NAMESPACE
 
 	struct DataTypeInterface final
 	{
+		const FundamentalInterface fundamental;
 		const FunctionInterface function;
-		const CreationInterface creation;
 		const ExecutionInterface execution;
 	};
 
@@ -51,11 +53,11 @@ namespace FLY_NAMESPACE
 	{
 		None = 0,
 		Fundamental = 1 << 0,
-		Editable = 1 << 1,
+		ViewAndEditable = 1 << 1,
 		SaveLoadable = 1 << 2,
 		Pointer = 1 << 4,
 		Targetable = 1 << 3,
-		All = Fundamental | Editable | SaveLoadable | Targetable
+		All = Fundamental | ViewAndEditable | SaveLoadable | Targetable
 	};
 
 	struct DataType

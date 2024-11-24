@@ -7,12 +7,11 @@
 
 
 // Bool
-bool Edit(bool& aValue)
+Fly::eIsItemActive ViewAndEdit(bool& aValue)
 {
-	bool prev = aValue;
 	ImGui::Checkbox("##", &aValue);
 
-	return prev != aValue;
+	return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
 }
 
 void Save(const bool& aValue, nlohmann::json& aJson)
@@ -27,9 +26,10 @@ void Load(bool& aValue, const nlohmann::json& aJson)
 }
 
 // Int
-bool Edit(int& aValue)
+Fly::eIsItemActive ViewAndEdit(int& aValue)
 {
-	return ImGui::DragInt("##", &aValue);
+	ImGui::DragInt("##", &aValue);
+	return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
 }
 
 void Save(const int& aValue, nlohmann::json& aJson)
@@ -43,9 +43,10 @@ void Load(int& aValue, const nlohmann::json& aJson)
 }
 
 // Float
-bool Edit(float& aValue)
+Fly::eIsItemActive ViewAndEdit(float& aValue)
 {
-	return ImGui::DragFloat("##", &aValue);
+	ImGui::DragFloat("##", &aValue);
+	return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
 }
 
 void Save(const float& aValue, nlohmann::json& aJson)
@@ -59,15 +60,14 @@ void Load(float& aValue, const nlohmann::json& aJson)
 }
 
 // Unsigned Int
-bool Edit(uint32& aValue)
+Fly::eIsItemActive ViewAndEdit(uint32& aValue)
 {
 	int intValue = static_cast<int>(aValue);
 	if (ImGui::DragInt("##", &intValue, 1.f, 0, INT_MAX))
 	{
 		aValue = static_cast<uint32>(intValue);
-		return true;
 	}
-	return false;
+	return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
 }
 
 void Save(const uint32& aValue, nlohmann::json& aJson)
@@ -81,15 +81,14 @@ void Load(uint32& aValue, const nlohmann::json& aJson)
 }
 
 // Unsigned Long Long
-bool Edit(uint64& aValue)
+Fly::eIsItemActive ViewAndEdit(uint64& aValue)
 {
 	int intValue = static_cast<int>(aValue);
 	if (ImGui::DragInt("##", &intValue, 1.f, 0, INT_MAX))
 	{
 		aValue = static_cast<uint64>(intValue);
-		return true;
 	}
-	return false;
+	return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
 }
 
 void Save(const uint64& aValue, nlohmann::json& aJson)
@@ -103,16 +102,15 @@ void Load(uint64& aValue, const nlohmann::json& aJson)
 }
 
 // Char
-bool Edit(char& aValue)
+Fly::eIsItemActive ViewAndEdit(char& aValue)
 {
 	char c[2] = { aValue, '\0' };
 
 	if (ImGui::InputText("##", c, 2))
 	{
 		aValue = c[0];
-		return true;
 	}
-	return false;
+	return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
 }
 
 void Save(const char& aValue, nlohmann::json& aJson)
@@ -130,7 +128,7 @@ void Load(char& aValue, const nlohmann::json& aJson)
 namespace std
 {
 
-	bool Edit(std::string& aValue)
+	Fly::eIsItemActive ViewAndEdit(std::string& aValue)
 	{
 		char buffer[32]{};
 		strcpy_s(buffer, aValue.c_str());
@@ -138,10 +136,8 @@ namespace std
 		if (ImGui::InputText("##", buffer, IM_ARRAYSIZE(buffer)))
 		{
 			aValue = buffer;
-			return true;
 		}
-		return false;
-
+		return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
 	}
 
 	void Save(const std::string& aValue, nlohmann::json& aJson)

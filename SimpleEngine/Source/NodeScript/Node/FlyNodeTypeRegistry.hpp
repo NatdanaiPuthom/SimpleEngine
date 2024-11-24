@@ -105,7 +105,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<IsPointer T>
-	static T GetSelfNode(const InternalExecutionContext* aContext)
+	static T GetTargetNode(const InternalExecutionContext* aContext)
 	{
 		return reinterpret_cast<T>(aContext->mTarget);
 	}

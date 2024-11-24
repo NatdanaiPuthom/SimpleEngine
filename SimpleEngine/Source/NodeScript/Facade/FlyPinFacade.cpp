@@ -5,6 +5,7 @@
 #include "../DataType/FlyDataTypeManager.hpp"
 #include "FlyNodeGraphFacade.hpp"
 #include "../Fly.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -52,7 +53,7 @@ namespace FLY_NAMESPACE
 
 	bool PinFacade::IsParentNodeReplacable() const
 	{
-		return IsPinReplacable(*this, NodeGraphFacade(mNodeGraphVariant));
+		return Internal::IsNodeReplacable(NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), GetNodeID());
 	}
 
 	bool PinFacade::HasAnyConnectedLinks() const
@@ -62,12 +63,12 @@ namespace FLY_NAMESPACE
 
 	void PinFacade::DestroyConnectedLinks(CommandTracker* const aCommandTracker)
 	{
-		DestroyLinksByPin(*this, NodeGraphFacade(mNodeGraphVariant), aCommandTracker);
+		Internal::DestroyLinksByPin(NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), GetID(), aCommandTracker);
 	}
 
 	void PinFacade::Edit(CommandTracker* const aCommandTracker)
 	{
-		EditPin(*this, NodeGraphFacade(mNodeGraphVariant), aCommandTracker);
+		Internal::EditPin(GetID(), NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), aCommandTracker);
 	}
 
 	PinFacade::operator bool() const

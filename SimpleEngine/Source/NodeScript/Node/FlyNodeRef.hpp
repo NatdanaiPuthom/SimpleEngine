@@ -55,6 +55,14 @@ namespace FLY_NAMESPACE
 			return mNodeID;
 		}
 
+		friend bool operator==(const NodeRef& a, const NodeRef& b);
+		friend bool operator<(const NodeRef& a, const NodeRef& b);
+
+		explicit operator bool() const
+		{
+			return mNodeID != InvalidID<NodeID>();
+		}
+
 	private:
 
 		NodeGraph* mNodeGraph = nullptr;
@@ -66,7 +74,7 @@ namespace FLY_NAMESPACE
 
 	inline bool operator==(const NodeRef& a, const NodeRef& b)
 	{
-		return &a.GetNodeGraph() == &b.GetNodeGraph() && a.GetNodeID() == b.GetNodeID();
+		return a.mNodeGraph == b.mNodeGraph && a.mNodeID == b.mNodeID;
 	}
 
 	inline bool operator!=(const NodeRef& a, const NodeRef& b)
@@ -76,11 +84,11 @@ namespace FLY_NAMESPACE
 
 	inline bool operator<(const NodeRef& a, const NodeRef& b)
 	{
-		if (&a.GetNodeGraph() == &b.GetNodeGraph())
+		if (a.mNodeGraph == b.mNodeGraph)
 		{
-			return a.GetNodeID() < b.GetNodeID();
+			return a.mNodeID < b.mNodeID;
 		}
-		return &a.GetNodeGraph() < &b.GetNodeGraph();
+		return a.mNodeGraph < b.mNodeGraph;
 	}
 
 	struct NodeRefHasher final

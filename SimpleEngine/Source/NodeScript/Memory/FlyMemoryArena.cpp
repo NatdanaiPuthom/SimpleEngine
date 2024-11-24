@@ -169,8 +169,8 @@ namespace FLY_NAMESPACE
 		DataType* dataType = GetDataType(aDataTypeID);
 		assert(dataType);
 
-		release = dataType->mInterface.creation.release;
-		copy = dataType->mInterface.creation.copy;
+		release = dataType->mInterface.fundamental.release;
+		copy = dataType->mInterface.fundamental.copy;
 
 #ifdef FLY_DEBUG
 		mTypeInfo = dataType->mTypeInfo;

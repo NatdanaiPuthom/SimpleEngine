@@ -12,38 +12,164 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	concept Fundamental = std::is_fundamental_v<T>;
 
-	template<Editable T>
-	constexpr EditInterface CreateEditInterface()
+
+	template<typename T>
+	constexpr AllocateInterface CreateAllocateInterface()
 	{
-		return [](void* aDataPtr) -> bool
+		if constexpr (DefaultConstructible<T>)
+		{
+			return [](void* aDataPtr, const void* aDefaultValue) -> void
+				{
+					if (aDefaultValue != nullptr)
+					{
+						const T& defaultValue = *reinterpret_cast<const T*>(aDefaultValue);
+						new(aDataPtr)T(defaultValue);
+					}
+					else
+					{
+						new(aDataPtr)T();
+					}
+				};
+		}
+		else
+		{
+			return [](void*, const void*) -> void
+				{
+					throw std::runtime_error("Can't instantiate an object that isn't default constructible.");
+				};
+		}
+	}
+
+	template<typename T>
+	constexpr ReleaseInterface CreateReleaseInterface()
+	{
+		return [](void* const aDataPtr) -> void
 			{
 				T& value = *reinterpret_cast<T*>(aDataPtr);
-				return Edit(value);
+				value.~T();
 			};
 	}
 
-	template<Savable<nlohmann::json> T>
-	constexpr SaveInterface CreateSaveInterface()
+	template<Copyable T>
+	constexpr CopyInterface CreateCopyInterface()
 	{
-		return [](nlohmann::json& aJson, const void* aDataPtr) -> void
+		return [](void* aDestination, const void* aSource)
 			{
-				const T& value = *reinterpret_cast<const T*>(aDataPtr);
-				Save(value, aJson);
+				T& destination = *reinterpret_cast<T*>(aDestination);
+				const T& source = *reinterpret_cast<const T*>(aSource);
+				destination = source;
 			};
 	}
 
-	template<Loadable<nlohmann::json> T>
-	constexpr LoadInterface CreateLoadInterface()
+	template<std::swappable T>
+	constexpr SwapInterface CreateSwapInterface()
 	{
-		return [](const nlohmann::json& aJson, void* aDataPtr) -> void
+		return [](void* aDataPtr1, void* aDataPtr2)
 			{
-				T& value = *reinterpret_cast<T*>(aDataPtr);
-				Load(value, aJson);
+				T& value1 = *reinterpret_cast<T*>(aDataPtr1);
+				T& value2 = *reinterpret_cast<T*>(aDataPtr2);
+
+				std::swap(value1, value2);
 			};
 	}
 
 	template<typename T>
-	constexpr EditInterface CreateEditTemplateInterface()
+	constexpr EqualsInterface CreateEqualsInterface()
+	{
+		if constexpr (HasOperator_EqualTo<T>)
+		{
+			return [](const void* aDataPtr1, const void* aDataPtr2) -> bool
+				{
+					const T& value1 = *reinterpret_cast<const T*>(aDataPtr1);
+					const T& value2 = *reinterpret_cast<const T*>(aDataPtr2);
+
+					return value1 == value2;
+				};
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	template<typename T>
+	constexpr ViewAndEditInterface CreateEditInterface()
+	{
+		if constexpr (ViewAndEditable<T>)
+		{
+			return [](void* aDataPtr) -> eIsItemActive
+				{
+					T& value = *reinterpret_cast<T*>(aDataPtr);
+					return ViewAndEdit(value);
+				};
+		}
+		else if constexpr (Fundamental<T>)
+		{
+			return [](void* aDataPtr) -> eIsItemActive
+				{
+					T& value = *reinterpret_cast<T*>(aDataPtr);
+					return ::ViewAndEdit(value);
+				};
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	template<typename T>
+	constexpr SaveInterface CreateSaveInterface()
+	{
+		if constexpr (Savable<T, nlohamnn::json>)
+		{
+			return [](nlohmann::json& aJson, const void* aDataPtr) -> void
+				{
+					const T& value = *reinterpret_cast<const T*>(aDataPtr);
+					Save(value, aJson);
+				};
+		}
+		else if constexpr (Fundamental<T>)
+		{
+			return [](nlohmann::json& aJson, const void* aDataPtr) -> void
+				{
+					const T& value = *reinterpret_cast<const T*>(aDataPtr);
+					::Save(value, aJson);
+				};
+		}
+		else
+		{
+			return nullptr;
+		}
+
+	}
+
+	template<typename T>
+	constexpr LoadInterface CreateLoadInterface()
+	{
+		if constexpr (Loadable<T, nlohmann::json>)
+		{
+			return [](const nlohmann::json& aJson, void* aDataPtr) -> void
+				{
+					T& value = *reinterpret_cast<T*>(aDataPtr);
+					Load(value, aJson);
+				};
+		}
+		else if constexpr (Fundamental<T>)
+		{
+			return [](const nlohmann::json& aJson, void* aDataPtr) -> void
+				{
+					T& value = *reinterpret_cast<T*>(aDataPtr);
+					::Load(value, aJson);
+				};
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	template<typename T>
+	constexpr ViewAndEditInterface CreateEditTemplateInterface()
 	{
 		return [](void* aDataPtr) -> bool
 			{
@@ -72,111 +198,17 @@ namespace FLY_NAMESPACE
 			};
 	}
 
-	template<Fundamental T>
-	constexpr EditInterface CreateEditInterface()
-	{
-		return [](void* aDataPtr) -> bool
-			{
-				T& value = *reinterpret_cast<T*>(aDataPtr);
-				return ::Edit(value);
-			};
-	}
-
-	template<Fundamental T>
-	constexpr SaveInterface CreateSaveInterface()
-	{
-		return [](nlohmann::json& aJson, const void* aDataPtr) -> void
-			{
-				const T& value = *reinterpret_cast<const T*>(aDataPtr);
-				::Save(value, aJson);
-			};
-	}
-
-	template<Fundamental T>
-	constexpr LoadInterface CreateLoadInterface()
-	{
-		return [](const nlohmann::json& aJson, void* aDataPtr) -> void
-			{
-				T& value = *reinterpret_cast<T*>(aDataPtr);
-				::Load(value, aJson);
-			};
-	}
-
 	template<typename T>
-	constexpr EditInterface CreateEditInterface()
+	constexpr FundamentalInterface CreateFundamentalInterface()
 	{
-		return nullptr;
-	}
-
-	template<typename T>
-	constexpr SaveInterface CreateSaveInterface()
-	{
-		return nullptr;
-	}
-
-	template<typename T>
-	constexpr LoadInterface CreateLoadInterface()
-	{
-		return nullptr;
-	}
-
-	template<DefaultConstructible T>
-	constexpr AllocateInterface CreateAllocateInterface()
-	{
-		return [](void* aDataPtr, const void* aDefaultValue) -> void
-			{
-				if (aDefaultValue != nullptr)
-				{
-					const T& defaultValue = *reinterpret_cast<const T*>(aDefaultValue);
-					new(aDataPtr)T(defaultValue);
-				}
-				else
-				{
-					new(aDataPtr)T();
-				}
-			};
-	}
-
-	template<NotDefaultConstructible T>
-	constexpr AllocateInterface CreateAllocateInterface()
-	{
-		return [](void*, const void*) -> void
-			{
-				throw std::runtime_error("Can't instantiate an object that isn't default constructible.");
-			};
-	}
-
-	template<typename T>
-	constexpr ReleaseInterface CreateReleaseInterface()
-	{
-		return [](void* const aDataPtr) -> void
-			{
-				T& value = *reinterpret_cast<T*>(aDataPtr);
-				value.~T();
-			};
-	}
-
-	template<Copyable T>
-	constexpr CopyInterface CreateCopyInterface()
-	{
-		return [](void* aDestination, const void* aSource)
-			{
-				T& destination = *reinterpret_cast<T*>(aDestination);
-				const T& source = *reinterpret_cast<const T*>(aSource);
-				destination = source;
-			};
-	}
-
-	template<Copyable T>
-	constexpr SwapInterface CreateSwapInterface()
-	{
-		return [](void* aDataPtr1, void* aDataPtr2)
-			{
-				T& value1 = *reinterpret_cast<T*>(aDataPtr1);
-				T& value2 = *reinterpret_cast<T*>(aDataPtr2);
-
-				std::swap(value1, value2);
-			};
+		return FundamentalInterface
+		{
+			.allocate = CreateAllocateInterface<T>(),
+			.release = CreateReleaseInterface<T>(),
+			.copy = CreateCopyInterface<T>(),
+			.swap = CreateSwapInterface<T>(),
+			.equals = CreateEqualsInterface<T>()
+		};
 	}
 
 	template<typename T>
@@ -184,23 +216,13 @@ namespace FLY_NAMESPACE
 	{
 		return FunctionInterface
 		{
-			.edit = CreateEditInterface<T>(),
+			.viewAndEdit = CreateEditInterface<T>(),
 			.save = CreateSaveInterface<T>(),
 			.load = CreateLoadInterface<T>()
 		};
 	}
 
-	template<typename T>
-	constexpr CreationInterface CreateCreationInterface()
-	{
-		return CreationInterface
-		{
-			.allocate = CreateAllocateInterface<T>(),
-			.release = CreateReleaseInterface<T>(),
-			.copy = CreateCopyInterface<T>(),
-			.swap = CreateSwapInterface<T>()
-		};
-	}
+	
 
 	template<typename T>
 	constexpr ExecutionInterface CreateExecutionInterface()
@@ -217,8 +239,8 @@ namespace FLY_NAMESPACE
 	{
 		return DataTypeInterface
 		{
+			.fundamental = CreateFundamentalInterface<T>(),
 			.function = CreateFunctionInterface<T>(),
-			.creation = CreateCreationInterface<T>(),
 			.execution = CreateExecutionInterface<T>()
 		};
 	}
@@ -232,16 +254,16 @@ namespace FLY_NAMESPACE
 
 		DataTypeManager();
 		~DataTypeManager();
-		
+
 	private:
 
-		bool EditData(const DataType& aDataType, void* aDataPtr) const;
+		eIsItemActive ViewAndEditData(const DataType& aDataType, void* aDataPtr) const;
 		bool SaveData(const DataType& aDataType, nlohmann::json& aJson, const void* aDataPtr) const;
 		bool LoadData(const DataType& aDataType, const nlohmann::json& aJson, void* aDataPtr) const;
 
 	public:
 
-		bool EditData(DataTypeID aDataTypeID, void* aDataPtr) const;
+		eIsItemActive ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr) const;
 		bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr) const;
 		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr) const;
 
@@ -252,6 +274,8 @@ namespace FLY_NAMESPACE
 
 		void CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource) const;
 		void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2) const;
+		bool DataEqualsTo(DataTypeID aDataTypeID, const void* aDataPtr1, const void* aDataPtr2) const;
+
 		const std::string& GetName(DataTypeID aDataTypeID) const;
 
 		SetPinDataInterface GetSetPinDataInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
@@ -325,7 +349,7 @@ namespace FLY_NAMESPACE
 				.save = CreateSaveTemplateInterface<T>(),
 				.load = CreateLoadTemplateInterface<T>()
 			},
-			.creation = CreationInterface
+			.fundamental = FundamentalInterface
 			{
 				.allocate = CreateAllocateInterface<T>(),
 				.copy = CreateCopyInterface<T>(),
@@ -342,9 +366,9 @@ namespace FLY_NAMESPACE
 		{
 			typeTraits |= eDataTypeTrait::Fundamental;
 		}
-		if (anInterface.function.edit)
+		if (anInterface.function.viewAndEdit)
 		{
-			typeTraits |= eDataTypeTrait::Editable;
+			typeTraits |= eDataTypeTrait::ViewAndEditable;
 		}
 		if (anInterface.function.save && anInterface.function.load)
 		{
@@ -402,8 +426,7 @@ namespace FLY_NAMESPACE
 	template<Decayed T>
 	inline bool DataTypeManager::HasRegisteredType() const
 	{
-		const DataTypeID dataTypeID = GetDataTypeID<T>();
-		return mDataTypes.contains(dataTypeID);
+		return mDataTypes.contains(GetDataTypeID<T>());
 	}
 
 	template<size_t BufferCapacity>
@@ -411,10 +434,10 @@ namespace FLY_NAMESPACE
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			if (dataType->mInterface.creation.allocate)
+			if (dataType->mInterface.fundamental.allocate)
 			{
 				void* dataPtr = anArena.AllocateSize(dataType->mSize);
-				dataType->mInterface.creation.allocate(dataPtr, aDefaultValue);
+				dataType->mInterface.fundamental.allocate(dataPtr, aDefaultValue);
 
 				if (HasNotFlag(dataType->mTypeTraits, eDataTypeTrait::Fundamental))
 				{
@@ -430,12 +453,12 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	inline DataType* DataTypeManager::Find()
 	{
-		return Find(typeid(T).hash_code());
+		return Find(GetDataTypeID<T>());
 	}
 
 	template<typename T>
 	inline const DataType* DataTypeManager::Find() const
 	{
-		return Find(typeid(T).hash_code());
+		return Find(GetDataTypeID<T>());
 	}
 }

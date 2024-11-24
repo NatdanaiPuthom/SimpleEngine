@@ -1,6 +1,8 @@
 #include "FlyClassFacade.hpp"
 #include "../DataType/FlyClass.hpp"
 #include "../Fly.hpp"
+#include "../Internal/FlyInternal.hpp"
+#include "../Serialization/FlySerializer.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -83,17 +85,36 @@ namespace FLY_NAMESPACE
 
 	VariableFacade ClassFacade::CreateVariable(const DataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)
 	{
-		return FLY_NAMESPACE::CreateVariable(*this, aDataTypeFacade, aCommandTracker);
+		const VarID varID = Internal::CreateVariable(GetClass(), aDataTypeFacade.GetID(), aCommandTracker);
+		return VariableFacade(varID, *this);
 	}
 
 	ClassInstanceFacade ClassFacade::CreateClassInstance()
 	{
-		return FLY_NAMESPACE::CreateClassInstance(*this);
+		return ClassInstanceFacade(GetClass().CreateClassInstance());
 	}
 
 	FunctionFacade ClassFacade::CreateMemberFunction(const std::string_view aName)
 	{
-		return FLY_NAMESPACE::CreateMemberFunction(aName, *this);
+		const FunctionID id = Internal::CreateFunction(aName);
+		GetClass().BindFunction(id);
+
+		return FunctionFacade(id);
+	}
+
+	void ClassFacade::SetName(std::string_view aName)
+	{
+		GetClass().mName = aName;
+	}
+
+	void ClassFacade::Save(const std::string_view aSavePath) const
+	{
+		Internal::SaveClass(GetClass(), aSavePath);
+	}
+
+	void ClassFacade::Load(std::string_view aFilePath)
+	{
+		Internal::LoadClass(GetClass(), aFilePath);
 	}
 
 	bool ClassFacade::operator==(const ClassFacade& aOther) const

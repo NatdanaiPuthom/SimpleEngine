@@ -60,9 +60,11 @@ namespace FLY_NAMESPACE
 		return mFunctionID;
 	}
 
-	void FunctionFacade::SetName(const std::string_view aName, CommandTracker* aCommandTracker)
+	void FunctionFacade::SetName(const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 	{
-		Fly::SetFunctionName(*this, aName, aCommandTracker);
+		Function& function = Global::GetNodeTypeManager().GetFunction(GetID());
+
+		function.mName = aName;
 	}
 
 	void FunctionFacade::AddPin(DataTypeFacade aDataTypeFacade, eFlowType aFlowType, std::string_view aName, CommandTracker* aCommandTracker)

@@ -4,66 +4,69 @@ namespace FLY_NAMESPACE
 {
 
 	CompositeCommand::CompositeCommand(const std::string& aName)
-		: myName(aName)
+		: mName(aName)
 	{
 	}
 
-	void CompositeCommand::AddCommand(Command&& aCommand)
+	void CompositeCommand::AddCommand(CommandNew&& aCommand)
 	{
-		if (myCurrentChild)
+		if (mCurrentChild)
 		{
-			myCurrentChild->AddCommand(std::forward<Command>(aCommand));
+			mCurrentChild->AddCommand(std::forward<CommandNew>(aCommand));
 		}
 		else
 		{
-			myCommands.emplace_back(std::forward<Command>(aCommand));
+			mCommands.emplace_back(std::forward<CommandNew>(aCommand));
 		}
 	}
 
-	void CompositeCommand::operator()(eCommandType aCommandType) const
+	void CompositeCommand::Do() const
 	{
-		switch (aCommandType)
+		for (const CommandNew& command : mCommands)
 		{
-		case eCommandType::Do:
-			Do();
-			break;
-		case eCommandType::Undo:
-			Undo();
-			break;
+			command.DoCommand();
+		}
+	}
+
+	void CompositeCommand::Undo() const
+	{
+		for (int i = static_cast<int>(mCommands.size()) - 1; i >= 0; --i)
+		{
+			mCommands.at(i).UndoCommand();
 		}
 	}
 
 	void CompositeCommand::Begin(const std::string& aName)
 	{
-		if (myCurrentChild)
+		if (mCurrentChild)
 		{
-			myCurrentChild->Begin(aName);
+			mCurrentChild->Begin(aName);
 		}
 		else
 		{
-			myCurrentChild = HeapObject<CompositeCommand, true>(aName);
+			mCurrentChild = HeapObject<CompositeCommand, false>(aName);
 		}
 
 	}
 
 	CompositeCommand::eEndCode CompositeCommand::End()
 	{
-		if (myCurrentChild)
+		if (mCurrentChild)
 		{
-			const eEndCode endCode = myCurrentChild->End();
+			const eEndCode endCode = mCurrentChild->End();
 			if (endCode == eEndCode::Ended)
 			{
-				const std::string compositeName = myCurrentChild->GetName();
-				myCommands.emplace_back(Command(std::move(*myCurrentChild), compositeName));
-				myCurrentChild.Reset();
+				const std::string compositeName = mCurrentChild->GetName();
+				mCommands.emplace_back(CommandNew(std::move(*mCurrentChild), compositeName));
+				mCurrentChild.Reset();
 			}
 			else if (endCode == eEndCode::Ended_Empty) // If the child's commands are empty we don't want to add the child to our commands
 			{
-				myCurrentChild.Reset();
+				mCurrentChild.Reset();
 			}
 			return eEndCode::InProgress;
 		}
-		else if (myCommands.empty())
+		else if (mCommands.empty())
 		{
 			return eEndCode::Ended_Empty;
 		}
@@ -73,22 +76,6 @@ namespace FLY_NAMESPACE
 
 	const std::string& CompositeCommand::GetName()
 	{
-		return myName;
-	}
-
-	void CompositeCommand::Do() const
-	{
-		for (const Command& command : myCommands)
-		{
-			command(eCommandType::Do);
-		}
-	}
-
-	void CompositeCommand::Undo() const
-	{
-		for (int i = static_cast<int>(myCommands.size()) - 1; i >= 0; --i)
-		{
-			myCommands.at(i)(eCommandType::Undo);
-		}
+		return mName;
 	}
 }

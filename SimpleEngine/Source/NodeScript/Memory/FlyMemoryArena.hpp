@@ -387,7 +387,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		std::vector<HeapObject<MemoryBuffer, false>> mMemoryBuffers;
+		std::vector<HeapObject<MemoryBuffer>> mMemoryBuffers;
 		size_t mCurrentBufferIndex;
 	};
 
@@ -465,10 +465,10 @@ namespace FLY_NAMESPACE
 		for (size_t i = 0; i < aPrevious.mMemoryBuffers.size(); ++i)
 		{
 			const auto& buffer = aPrevious.mMemoryBuffers[i];
-			const size_t ptrDiff = GetPointerDiff(aDataPtr, buffer.Get().GetDataPtr());
+			const size_t ptrDiff = GetPointerDiff(aDataPtr, buffer->GetDataPtr());
 			if (ptrDiff < BufferCapacity)
 			{
-				return reinterpret_cast<void*>(reinterpret_cast<size_t>(mMemoryBuffers[i].Get().GetDataPtr()) + ptrDiff);
+				return reinterpret_cast<void*>(reinterpret_cast<size_t>(mMemoryBuffers[i]->GetDataPtr()) + ptrDiff);
 			}
 		}
 		assert(false);
@@ -502,7 +502,7 @@ namespace FLY_NAMESPACE
 	inline void MemoryArena<BufferCapacity>::AllocateNewBuffer()
 	{
 		mCurrentBufferIndex = mMemoryBuffers.size();
-		mMemoryBuffers.emplace_back();
+		mMemoryBuffers.emplace_back(HeapObject<MemoryBuffer>());
 	}
 
 

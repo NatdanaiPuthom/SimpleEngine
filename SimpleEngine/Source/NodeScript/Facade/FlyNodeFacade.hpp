@@ -38,6 +38,7 @@ namespace FLY_NAMESPACE
 		void SetPosition(Vec2 aPosition, CommandTracker* aCommandTracker = nullptr);
 
 		[[nodiscard]] const NodeGraph& GetNodeGraph() const;
+		[[nodiscard]] NodeGraph& GetNodeGraph();
 
 		friend bool operator==(const NodeFacade& a, const NodeFacade& b);
 

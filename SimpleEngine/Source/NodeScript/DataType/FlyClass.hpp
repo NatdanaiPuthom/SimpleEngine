@@ -35,7 +35,7 @@ namespace FLY_NAMESPACE
 		Struct mStruct;
 
 		std::vector<FunctionID> mMemberFunctionIDs;
-		std::vector<HeapObject<ClassInstance, false>> mClassInstances;
+		std::vector<HeapObject<ClassInstance>> mClassInstances;
 
 		DataTypeID mTargetID;
 		std::string mName;

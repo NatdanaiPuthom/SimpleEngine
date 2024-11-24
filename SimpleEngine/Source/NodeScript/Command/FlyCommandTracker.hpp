@@ -22,8 +22,8 @@ namespace FLY_NAMESPACE
 
 	public:
 
-		void DoCommand(Command&& aCommand);
-		void RegisterCommand(Command&& aCommand);
+		void DoCommand(CommandNew&& aCommand);
+		void RegisterCommand(CommandNew&& aCommand);
 
 		void BeginComposite(const std::string& aName);
 		void EndComposite();
@@ -33,14 +33,14 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		void DoCommandInternal(Command&& aCommand, bool aExecute);
+		void DoCommandInternal(CommandNew&& aCommand, bool aExecute);
 
 	private:
 
 
-		std::stack<HeapObject<Command, false>> myUndoStack;
-		std::stack<HeapObject<Command, false>> myRedoStack;
-		HeapObject<CompositeCommand, true> myCurrentCompositeCommand;
+		std::stack<HeapObject<CommandNew>> mUndoStack;
+		std::stack<HeapObject<CommandNew>> mRedoStack;
+		HeapObject<CompositeCommand, false> mCurrentCompositeCommand;
 
 	};
 }

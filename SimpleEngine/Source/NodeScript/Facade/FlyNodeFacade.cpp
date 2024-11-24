@@ -4,6 +4,7 @@
 #include "../Node/FlyNodeTypeManager.hpp"
 #include "FlyNodeGraphFacade.hpp"
 #include "Fly.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -93,28 +94,34 @@ namespace FLY_NAMESPACE
 
 	bool NodeFacade::IsReplacable() const
 	{
-		return IsNodeReplacable(*this, NodeGraphFacade(mNodeGraphVariant));
+		return Internal::IsNodeReplacable(NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), GetID());
 	}
 
 	void NodeFacade::Destroy(CommandTracker* const aCommandTracker)
 	{
-		DestroyNode(*this, NodeGraphFacade(mNodeGraphVariant), aCommandTracker);
+		Internal::DestroyNode(GetNodeGraph(), GetID(), aCommandTracker);
 	}
 
 	void NodeFacade::DestroyConnectedLinks(CommandTracker* const aCommandTracker)
 	{
-		DestroyLinksByNode(*this, NodeGraphFacade(mNodeGraphVariant), aCommandTracker);
+		Internal::DestroyLinks(Internal::GetLinkIDsByNode(NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), GetID()), NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), aCommandTracker);
 	}
 
 	void NodeFacade::SetPosition(const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
-		SetNodePosition(*this, aPosition, NodeGraphFacade(mNodeGraphVariant), aCommandTracker);
+		Internal::SetNodePosition(GetID(), aPosition, GetNodeGraph(), aCommandTracker);
 	}
 
 	const NodeGraph& NodeFacade::GetNodeGraph() const
 	{
 		return NodeGraphFacade(mNodeGraphVariant).GetNodeGraph();
 	}
+
+	NodeGraph& NodeFacade::GetNodeGraph()
+	{
+		return NodeGraphFacade(mNodeGraphVariant).GetNodeGraph();
+	}
+
 
 	bool operator==(const NodeFacade& a, const NodeFacade& b)
 	{

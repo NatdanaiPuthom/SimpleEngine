@@ -8,34 +8,34 @@
 using uint32 = unsigned int;
 using uint64 = unsigned long long;
 
-bool Edit(bool& aValue);
+Fly::eIsItemActive ViewAndEdit(bool& aValue);
 void Save(const bool& aValue, nlohmann::json& aJson);
 void Load(bool& aValue, const nlohmann::json& aJson);
 
-bool Edit(int& aValue);
+Fly::eIsItemActive ViewAndEdit(int& aValue);
 void Save(const int& aValue, nlohmann::json& aJson);
 void Load(int& aValue, const nlohmann::json& aJson);
 
-bool Edit(float& aValue);
+Fly::eIsItemActive ViewAndEdit(float& aValue);
 void Save(const float& aValue, nlohmann::json& aJson);
 void Load(float& aValue, const nlohmann::json& aJson);
 
-bool Edit(uint32& aValue);
+Fly::eIsItemActive ViewAndEdit(uint32& aValue);
 void Save(const uint32& aValue, nlohmann::json& aJson);
 void Load(uint32& aValue, const nlohmann::json& aJson);
 
-bool Edit(uint64& aValue);
+Fly::eIsItemActive ViewAndEdit(uint64& aValue);
 void Save(const uint64& aValue, nlohmann::json& aJson);
 void Load(uint64& aValue, const nlohmann::json& aJson);
 
-bool Edit(char& aValue);
+Fly::eIsItemActive ViewAndEdit(char& aValue);
 void Save(const char& aValue, nlohmann::json& aJson);
 void Load(char& aValue, const nlohmann::json& aJson);
 
 
 namespace std
 {
-	bool Edit(std::string& aValue);
+	Fly::eIsItemActive ViewAndEdit(std::string& aValue);
 	void Save(const std::string& aValue, nlohmann::json& aJson);
 	void Load(std::string& aValue, const nlohmann::json& aJson);
 }

@@ -30,7 +30,7 @@ namespace Editor
 
 	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade)
 	{
-		return DataTypeCombo(aComboLabel, aDataTypeFacade, [](const Fly::DataTypeFacade& aDataType) -> bool { return aDataType.IsEditable(); });
+		return DataTypeCombo(aComboLabel, aDataTypeFacade, [](const Fly::DataTypeFacade& aDataType) -> bool { return aDataType.IsViewAndEditable(); });
 	}
 
 	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade)

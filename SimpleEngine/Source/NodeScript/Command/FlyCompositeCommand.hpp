@@ -19,9 +19,10 @@ namespace FLY_NAMESPACE
 
 		CompositeCommand(const std::string& aName = std::string());
 
-		void AddCommand(Command&& aCommand);
+		void AddCommand(CommandNew&& aCommand);
 
-		void operator()(eCommandType aCommandType) const;
+		void Do() const;
+		void Undo() const;
 
 		void Begin(const std::string& aName);
 		eEndCode End();
@@ -30,13 +31,8 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		void Do() const;
-		void Undo() const;
-
-	private:
-
-		HeapObject<CompositeCommand, true> myCurrentChild;
-		std::vector<Command> myCommands;
-		std::string myName;
+		HeapObject<CompositeCommand, false> mCurrentChild;
+		std::vector<CommandNew> mCommands;
+		std::string mName;
 	};
 }

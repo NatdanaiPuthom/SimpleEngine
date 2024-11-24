@@ -38,15 +38,15 @@ namespace FLY_NAMESPACE
 
 	Class& Foundation::CreateClass(const DataTypeID aTargetID, const std::string_view aName)
 	{
-		return *mClasses.emplace_back(HeapObject<Class, false>(aTargetID, std::string(aName)));
+		return *mClasses.emplace_back(HeapObject<Class>(aTargetID, std::string(aName)));
 	}
 
 	void Foundation::DestroyClass(Class& aClass)
 	{
-		std::erase_if(mClasses, [&aClass](HeapObject<Class, false>& aClassIter) -> bool { return &aClass == &*aClassIter; });
+		std::erase_if(mClasses, [&aClass](HeapObject<Class>& aClassIter) -> bool { return &aClass == &*aClassIter; });
 	}
 
-	const std::vector<HeapObject<Class, false>>& Foundation::GetClasses() const
+	const std::vector<HeapObject<Class>>& Foundation::GetClasses() const
 	{
 		return mClasses;
 	}

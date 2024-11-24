@@ -53,9 +53,11 @@ namespace ECS
 
 namespace Math
 {
-	static bool Edit(Vector3f& aValue)
+	static Fly::eIsItemActive ViewAndEdit(Vector3f& aValue)
 	{
-		return ImGui::DragFloat3("##", &aValue.x);
+		ImGui::DragFloat3("##", &aValue.x);
+
+		return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
 	}
 
 	static void Save(const Vector3f& aValue, nlohmann::json& aJson)
@@ -72,9 +74,11 @@ namespace Math
 		aValue.z = aJson["z"];
 	}
 
-	static bool Edit(Vector2f& aValue)
+	static Fly::eIsItemActive ViewAndEdit(Vector2f& aValue)
 	{
-		return ImGui::DragFloat2("##", &aValue.x);
+		ImGui::DragFloat2("##", &aValue.x);
+
+		return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
 	}
 
 	static void Save(const Vector2f& aValue, nlohmann::json& aJson)

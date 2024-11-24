@@ -5,15 +5,12 @@
 #include "FlyLinkFacade.hpp"
 #include "FlyDataTypeFacade.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
+#include "../Node/NodeDragData.hpp"
 
 namespace FLY_NAMESPACE
 {
 
-	struct NodeDragData final
-	{
-		Vec2 mStartPos;
-		Vec2 mEndPos;
-	};
+	
 	
 	class NodeGraph;
 	class EventGraph;
@@ -51,6 +48,8 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] std::vector<PinFacade> GetNonConnectedOutputPinFacades() const;
 		[[nodiscard]] std::vector<PinFacade> GetNonConnectedPinFacadesByFlowType(eFlowType aFlowType) const;
 		[[nodiscard]] std::vector<PinFacade> GetNonConnectedPinFacadesByFlowTypeAndDataType(eFlowType aFlowType, DataTypeFacade aDataTypeFacade) const;
+
+		[[nodiscard]] std::vector<LinkFacade> GetLinkFacades(bool aIncludeDestroyed = false);
 
 		NodeFacade CreateNode(const NodeTypeFacade& aNodeTypeFacade, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeFacade CreateNode(std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);

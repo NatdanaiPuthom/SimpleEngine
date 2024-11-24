@@ -40,7 +40,7 @@ namespace Editor
 
 
 
-	void NodeScriptingWindow::SetNodeContext(const Fly::NodeGraphFacade aNodeGraphFacade, const Fly::ClassFacade aClassFacade)
+	void NodeScriptingWindow::SetNodeContext(const Fly::NodeGraphFacade aNodeGraphFacade, Fly::ClassFacade aClassFacade)
 	{
 		assert(aNodeGraphFacade);
 		assert(aClassFacade);
@@ -49,7 +49,7 @@ namespace Editor
 		{
 			.myClassFacade = aClassFacade,
 			.myNodeGraphFacade = aNodeGraphFacade,
-			.myClassInstanceFacade = Fly::CreateClassInstance(aClassFacade)
+			.myClassInstanceFacade = aClassFacade.CreateClassInstance()
 		};
 		myNodeContextHistory.history.push_back(nodeContext);
 		myNodeContextHistory.currentIndex++;
@@ -134,7 +134,6 @@ namespace Editor
 
 		if (ImGui::Begin("Node Scripting"))
 		{
-			Fly::BeginFrame();
 
 
 			UpdateContext();
@@ -147,6 +146,7 @@ namespace Editor
 			{
 				myCommandTracker->RedoCommand();
 			}
+			Fly::BeginFrame(myCommandTracker.get());
 
 			if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_C))
 			{
@@ -179,7 +179,7 @@ namespace Editor
 					ImNodes::GetSelectedNodes(selectedNodes.data());
 
 					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().myNodeGraphFacade);
-					Fly::DestroySelection(selectedNodes, {}, GetNodeContext().myNodeGraphFacade, nullptr);
+					GetNodeContext().myNodeGraphFacade.DestroySelection(selectedNodes, {}, nullptr);
 				}
 			}
 
@@ -248,7 +248,7 @@ namespace Editor
 
 			if (ImGui::InputText("##", buffer, IM_ARRAYSIZE(buffer)))
 			{
-				Fly::SetClassName(GetNodeContext().myClassFacade, buffer);
+				GetNodeContext().myClassFacade.SetName(buffer);
 			}
 		}
 	}
@@ -287,7 +287,7 @@ namespace Editor
 
 		if (ImGui::Button("Save"))
 		{
-			Fly::SaveClass(currentClass, ASSET_FILE_PATH);
+			currentClass.Save(ASSET_FILE_PATH);
 			myCommandTracker->Clear();
 		}
 
@@ -386,11 +386,13 @@ namespace Editor
 				ImGui::EndCombo();
 			}
 
+			ImGui::GetFocusID();
+
 			ImGui::SameLine();
 
 			if (ImGui::Button("Execute Event"))
 			{
-				Fly::ClassInstanceFacade classInstanceFacade = Fly::CreateClassInstance(GetNodeContext().myClassFacade);
+				Fly::ClassInstanceFacade classInstanceFacade = GetNodeContext().myClassFacade.CreateClassInstance();
 				Fly::ExecutionContextBase c
 				{
 					.mDeltaTime = Global::GetDeltaTime()
@@ -604,7 +606,7 @@ namespace Editor
 			ImNodes::EndNode();
 		}
 
-		std::vector<Fly::LinkFacade> linkFacades = Fly::GetLinks(currentNodeContext.myNodeGraphFacade);
+		std::vector<Fly::LinkFacade> linkFacades = currentNodeContext.myNodeGraphFacade.GetLinkFacades();
 
 		for (const Fly::LinkFacade& linkFacade : linkFacades)
 		{
@@ -873,9 +875,7 @@ namespace Editor
 
 			auto onClickCallback = [&](const Fly::NodeTypeFacade& aNodeTypeFacade) -> void
 				{
-
-					Fly::CreateNodeAutoLink(GetNodeContext().myNodeGraphFacade, aNodeTypeFacade, currentNodeContext.myLinkCreationPinID, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
-
+					GetNodeContext().myNodeGraphFacade.CreateNodeAutoLink(aNodeTypeFacade, currentNodeContext.myLinkCreationPinID, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
 					currentNodeContext.myPinFacadesToHighlight.clear();
 					myNodeTypeSearch[0] = '\0';
@@ -894,7 +894,7 @@ namespace Editor
 
 				ImGui::Text("Links:");
 
-				const std::vector<Fly::LinkFacade> linkFacades = Fly::GetLinks(GetNodeContext().myNodeGraphFacade);
+				const std::vector<Fly::LinkFacade> linkFacades = GetNodeContext().myNodeGraphFacade.GetLinkFacades();
 
 				for (const Fly::LinkFacade& linkFacade : linkFacades)
 				{

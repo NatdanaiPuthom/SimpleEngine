@@ -23,6 +23,8 @@ namespace FLY_NAMESPACE
 		ReferenceWrapper& operator=(T&& aValue)
 		{
 			Set(aValue);
+
+			return *this;
 		}
 
 		constexpr operator Ref() const noexcept
@@ -30,27 +32,27 @@ namespace FLY_NAMESPACE
 			return *myPtr;
 		}
 
-		_NODISCARD const T& Get() const noexcept
+		[[nodiscard]] constexpr const T& Get() const noexcept
 		{
 			return *myPtr;
 		}
 
-		_NODISCARD T& Get() noexcept
+		[[nodiscard]] constexpr T& Get() noexcept
 		{
 			return *myPtr;
 		}
 
-		_NODISCARD T*& GetPtr() noexcept
+		[[nodiscard]] constexpr T*& GetPtr() noexcept
 		{
 			return myPtr;
 		}
 
-		_NODISCARD const T*& GetPtr() const noexcept
+		[[nodiscard]] constexpr const T*& GetPtr() const noexcept
 		{
 			return myPtr;
 		}
 
-		void Set(Ref aValue)
+		constexpr void Set(Ref aValue)
 		{
 			myPtr = &aValue;
 		}

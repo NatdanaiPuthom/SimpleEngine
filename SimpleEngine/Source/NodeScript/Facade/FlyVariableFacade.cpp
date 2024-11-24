@@ -1,6 +1,7 @@
 #include "FlyVariableFacade.hpp"
 #include "FlyClass.hpp"
 #include "../Fly.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -39,12 +40,12 @@ namespace FLY_NAMESPACE
 
 	void VariableFacade::SetName(const std::string_view aName, CommandTracker* const aCommandTracker)
 	{
-		SetVariableName(*this, aName, aCommandTracker);
+		Internal::SetVariableName(mVarID, *mClass, aName, aCommandTracker);
 	}
 
 	void VariableFacade::Destroy(CommandTracker* const aCommandTracker)
 	{
-		DestroyVariable(*this, aCommandTracker);
+		Internal::DestroyVariable(mVarID, *mClass, aCommandTracker);
 	}
 
 	void VariableFacade::EditDefaultValue(CommandTracker* const aCommandTracker)
@@ -54,7 +55,7 @@ namespace FLY_NAMESPACE
 
 	void VariableFacade::SetDataType(const DataTypeFacade aDataTypeView, CommandTracker* const aCommandTracker)
 	{
-		SetVariableDataType(*this, aDataTypeView, aCommandTracker);
+		Internal::SetVariableDataType(mVarID , *mClass, aDataTypeView.GetID(), aCommandTracker);
 	}
 
 	VariableFacade::operator bool() const

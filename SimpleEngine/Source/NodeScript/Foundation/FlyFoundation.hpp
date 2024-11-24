@@ -41,7 +41,7 @@ namespace FLY_NAMESPACE
 		Class& CreateClass(const DataTypeID aTargetID, std::string_view aName);
 		void DestroyClass(Class& aClass);
 
-		const std::vector<HeapObject<Class, false>>& GetClasses() const;
+		const std::vector<HeapObject<Class>>& GetClasses() const;
 
 		TypeManager& GetTypeManager();
 		NodeExecutor& GetNodeExecutor();
@@ -58,9 +58,9 @@ namespace FLY_NAMESPACE
 
 		MemoryPool mMemoryPool;
 		TypeManager mTypeManager;
-		std::vector<HeapObject<Class, false>> mClasses;
+		std::vector<HeapObject<Class>> mClasses;
 
-		HeapObject<NodeExecutor, false> mNodeExecutor;
+		HeapObject<NodeExecutor> mNodeExecutor;
 		EventGraph mNodeGraphCopy;
 
 		std::unordered_map<GlobalNodeRef, VariableRef, GlobalNodeRefHasher> mNodeRefToVarRef;

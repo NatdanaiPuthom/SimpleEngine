@@ -4,20 +4,21 @@
 namespace FLY_NAMESPACE
 {
 
-	void Command::operator()(eCommandType aCommandType) const
+	void CommandNew::DoCommand() const
 	{
 		if (Global::IsDebugging())
 		{
-			if (aCommandType == eCommandType::Do)
-			{
-				std::cout << "Do Command: " << mName << std::endl;
-			}
-			else
-			{
-				std::cout << "Undo Command: " << mName << std::endl;
-			}
+			std::cout << "Do Command: " << mName << std::endl;
 		}
-		mCommandFunction(aCommandType);
+		mConcept->DoCommand();
 	}
 
+	void CommandNew::UndoCommand() const
+	{
+		if (Global::IsDebugging())
+		{
+			std::cout << "Undo Command: " << mName << std::endl;
+		}
+		mConcept->UndoCommand();
+	}
 }

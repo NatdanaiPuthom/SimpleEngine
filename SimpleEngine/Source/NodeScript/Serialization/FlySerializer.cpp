@@ -26,441 +26,445 @@ namespace FLY_NAMESPACE
 		return fileDirectory;
 	}
 
-	void ScriptLoader::SaveClass(const Class& aClass, const std::string_view aFilePath)
+	namespace Internal
 	{
-		std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
-		std::filesystem::path filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
 
-		std::filesystem::create_directories(std::string(aFilePath));
-		if (!std::filesystem::exists(fileDirectory))
+		void SaveClass(const Class& aClass, const std::string_view aFilePath)
 		{
-			throw std::runtime_error("Failed to create directory: " + fileDirectory.string());
-			return;
+			std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
+			std::filesystem::path filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
 
-		}
-
-		std::ofstream ofs(filePath, std::ios::out);
-
-		if (!ofs.is_open())
-		{
-			throw std::runtime_error("Failed to open file for writing: " + filePath.string());
-			return;
-		}
-
-		const NodeGraph& eventGraph = aClass.mEventGraph.mNodeGraph;
-
-		nlohmann::json jsonDoc;
-
-		jsonDoc["Name"] = aClass.mName;
-
-		nlohmann::json& dataJson = jsonDoc["Data"];
-		std::unordered_map<NodeID, NodeID> cleanedNodeIDs;
-
-
-		{
-			dataJson["Nodes"] = nlohmann::json::array();
-
-			nlohmann::json& nodesArrayJson = dataJson["Nodes"];
-
-
-			for (NodeID nodeID = 0; nodeID < eventGraph.mNodes.size(); ++nodeID)
+			std::filesystem::create_directories(std::string(aFilePath));
+			if (!std::filesystem::exists(fileDirectory))
 			{
-				const Node& node = eventGraph.mNodes.at(nodeID);
-				if (node.mIsDestroyed)
+				throw std::runtime_error("Failed to create directory: " + fileDirectory.string());
+				return;
+
+			}
+
+			std::ofstream ofs(filePath, std::ios::out);
+
+			if (!ofs.is_open())
+			{
+				throw std::runtime_error("Failed to open file for writing: " + filePath.string());
+				return;
+			}
+
+			const NodeGraph& eventGraph = aClass.mEventGraph.mNodeGraph;
+
+			nlohmann::json jsonDoc;
+
+			jsonDoc["Name"] = aClass.mName;
+
+			nlohmann::json& dataJson = jsonDoc["Data"];
+			std::unordered_map<NodeID, NodeID> cleanedNodeIDs;
+
+
+			{
+				dataJson["Nodes"] = nlohmann::json::array();
+
+				nlohmann::json& nodesArrayJson = dataJson["Nodes"];
+
+
+				for (NodeID nodeID = 0; nodeID < eventGraph.mNodes.size(); ++nodeID)
+				{
+					const Node& node = eventGraph.mNodes.at(nodeID);
+					if (node.mIsDestroyed)
+					{
+						continue;
+					}
+
+					nlohmann::json nodeJson;
+					cleanedNodeIDs.emplace(nodeID, static_cast<NodeID>(cleanedNodeIDs.size()));
+
+					nodeJson["ID"] = cleanedNodeIDs.at(nodeID);
+					nodeJson["Name"] = Global::GetNodeTypeManager().GetShortName(node.mTypeID);
+					nodeJson["Pos"]["x"] = node.mPosition.x;
+					nodeJson["Pos"]["y"] = node.mPosition.y;
+
+					//const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+
+					/*if (HasFlag(nodeType.mNodeRecipe.mTraits, eNodeTrait::Accessor))
+					{
+						const VarID varID = aClass.mVariableManager.GetVariableIDByNodeRef(CreateGlobalNodeRef(nodeID, eventGraph, aClass));
+
+						varID;
+
+					}*/
+
+					nodesArrayJson.push_back(nodeJson);
+				}
+			}
+
+			{
+				dataJson["PinData"] = nlohmann::json::array();
+				nlohmann::json& pinDataArrayJson = dataJson["PinData"];
+
+				for (const PinID inputPinID : Internal::GetInputPins(eventGraph))
+				{
+					const Pin& pin = eventGraph.mPins.at(inputPinID);
+
+					nlohmann::json pinDataJson;
+
+					pinDataJson["NodeID"] = cleanedNodeIDs.at(pin.mNodeID);
+					pinDataJson["PinIndex"] = Internal::GetPinIndex(eventGraph, inputPinID);
+
+					pinDataJson["ConnectionData"] = nlohmann::json::object();
+					nlohmann::json& connectionsJson = pinDataJson["Connections"];
+
+					const bool connectionExists = !pin.mConnectedPinIDs.empty();
+					connectionsJson["Exists"] = connectionExists;
+
+					if (connectionExists)
+					{
+
+						connectionsJson["Pins"] = nlohmann::json::array();
+						nlohmann::json& connectedPinsJson = connectionsJson["Pins"];
+						for (const PinID connectedPinID : pin.mConnectedPinIDs)
+						{
+							nlohmann::json& connectedPinJson = connectedPinsJson.emplace_back();
+							const Pin& connectedPin = eventGraph.mPins.at(connectedPinID);
+							connectedPinJson["NodeID"] = cleanedNodeIDs.at(connectedPin.mNodeID);
+							connectedPinJson["PinIndex"] = Internal::GetPinIndex(eventGraph, connectedPinID);
+						}
+
+					}
+					else
+					{
+						const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+
+						pinDataJson["DataType"] = Global::GetDataTypeManager().GetName(pinType.mDataTypeID);
+
+						nlohmann::json valueJson = nlohmann::json::object();
+						Global::GetDataTypeManager().SaveData(pinType.mDataTypeID, valueJson, pin.mDataPtr);
+						pinDataJson["Value"] = valueJson;
+					}
+
+					pinDataArrayJson.push_back(pinDataJson);
+				}
+			}
+
+			{
+				dataJson["Variables"] = nlohmann::json::array();
+				nlohmann::json& variableDataJson = dataJson["Variables"];
+
+				for (VarID varID = 0; varID < aClass.mStruct.mVariables.size(); ++varID)
+				{
+					const Variable& variable = aClass.mStruct.mVariables.at(varID);
+
+					if (variable.mIsDestroyed)
+					{
+						continue;
+					}
+
+					nlohmann::json variableJson;
+
+					variableJson["Name"] = variable.mName;
+					variableJson["DataType"] = Global::GetDataTypeManager().GetName(variable.mDataTypeID);
+
+					nlohmann::json defaultValueJson = nlohmann::json::object();
+
+					Global::GetDataTypeManager().SaveData(variable.mDataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+
+					variableJson["DefaultValue"] = defaultValueJson;
+
+					/*variableJson["Nodes"] = nlohmann::json::array();
+					nlohmann::json& variableNodesJson = variableJson["Nodes"];
+
+					for (const NodeRef& nodeRef : variableManager.GetNodeRefsByVarID(varID))
+					{
+
+						const Node& node = nodeRef.GetNodeGraph().mNodes.at(nodeRef.GetNodeID());
+
+						if (!node.mIsDestroyed)
+						{
+							nlohmann::json& varNodeJson = variableNodesJson.emplace_back();
+							const NodeID cleanNodeID = cleanedNodeIDs.at(nodeRef.GetNodeID());
+							varNodeJson["NodeID"] = cleanNodeID;
+							nlohmann::json& graphJson = varNodeJson["Graph"];
+							assert(nodeRef.GetClass());
+							graphJson["ClassName"] = nodeRef.GetClass()->mName;
+							graphJson
+							variableNodesJson.push_back(varNodeJson);
+						}
+					}*/
+
+					variableDataJson.push_back(variableJson);
+				}
+			}
+
+			ofs << jsonDoc;
+			ofs.close();
+		}
+
+		void LoadClass(Class& aClass, const std::string_view aFilePath)
+		{
+			const std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
+			const std::filesystem::path filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
+			std::ifstream ifs(filePath);
+			const std::string file((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+
+			if (!ifs.is_open())
+			{
+				throw std::runtime_error("Failed to open file for loading: " + filePath.string());
+				return;
+			}
+
+			ifs.close();
+
+			const nlohmann::json jsonDoc = nlohmann::json::parse(file);
+
+			EventGraph& eventGraph = aClass.mEventGraph;
+			NodeGraph& eventNodeGraph = eventGraph.mNodeGraph;
+
+			const nlohmann::json& dataJson = jsonDoc["Data"];
+
+			std::unordered_set<NodeID> failedNodeIDs;
+
+			for (const nlohmann::json& nodeJson : dataJson["Nodes"])
+			{
+				const std::string& nodeName = nodeJson["Name"];
+				const nlohmann::json& nodePosJson = nodeJson["Pos"];
+				const float xPos = nodePosJson["x"];
+				const float yPos = nodePosJson["y"];
+
+				bool success = true;
+				const NodeID nodeID = Internal::CreateNode(&eventGraph, nodeName, success, { xPos, yPos }, true, nullptr);
+
+				if (!success)
+				{
+					std::cout << "Failed create node with name: " + nodeName << std::endl;
+					failedNodeIDs.insert(nodeID);
+				}
+			}
+
+			for (const nlohmann::json& pinData : dataJson["PinData"])
+			{
+
+				const NodeID mNodeID = pinData["NodeID"];
+				if (failedNodeIDs.contains(mNodeID))
 				{
 					continue;
 				}
+				const size_t pinIndex = pinData["PinIndex"];
+				const PinID pinID = Internal::GetPinID(eventNodeGraph, mNodeID, pinIndex, eFlowType::Input);
 
-				nlohmann::json nodeJson;
-				cleanedNodeIDs.emplace(nodeID, static_cast<NodeID>(cleanedNodeIDs.size()));
-
-				nodeJson["ID"] = cleanedNodeIDs.at(nodeID);
-				nodeJson["Name"] = Global::GetNodeTypeManager().GetShortName(node.mTypeID);
-				nodeJson["Pos"]["x"] = node.mPosition.x;
-				nodeJson["Pos"]["y"] = node.mPosition.y;
-
-				//const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
-
-				/*if (HasFlag(nodeType.mNodeRecipe.mTraits, eNodeTrait::Accessor))
+				if (pinID == InvalidID<PinID>())
 				{
-					const VarID varID = aClass.mVariableManager.GetVariableIDByNodeRef(CreateGlobalNodeRef(nodeID, eventGraph, aClass));
+					continue;
+				}
+				Pin& pin = eventNodeGraph.mPins.at(pinID);
+				const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
 
-					varID;
-					
-				}*/
-
-				nodesArrayJson.push_back(nodeJson);
-			}
-		}
-
-		{
-			dataJson["PinData"] = nlohmann::json::array();
-			nlohmann::json& pinDataArrayJson = dataJson["PinData"];
-
-			for (const PinID inputPinID : Internal::GetInputPins(eventGraph))
-			{
-				const Pin& pin = eventGraph.mPins.at(inputPinID);
-
-				nlohmann::json pinDataJson;
-
-				pinDataJson["NodeID"] = cleanedNodeIDs.at(pin.mNodeID);
-				pinDataJson["PinIndex"] = Internal::GetPinIndex(eventGraph, inputPinID);
-
-				pinDataJson["ConnectionData"] = nlohmann::json::object();
-				nlohmann::json& connectionsJson = pinDataJson["Connections"];
-
-				const bool connectionExists = !pin.mConnectedPinIDs.empty();
-				connectionsJson["Exists"] = connectionExists;
-
+				const nlohmann::json& connectionJson = pinData["Connections"];
+				const bool connectionExists = connectionJson["Exists"];
 				if (connectionExists)
 				{
-
-					connectionsJson["Pins"] = nlohmann::json::array();
-					nlohmann::json& connectedPinsJson = connectionsJson["Pins"];
-					for (const PinID connectedPinID : pin.mConnectedPinIDs)
+					const NodeID connectionNodeID = connectionJson["NodeID"];
+					if (failedNodeIDs.contains(connectionNodeID))
 					{
-						nlohmann::json& connectedPinJson = connectedPinsJson.emplace_back();
-						const Pin& connectedPin = eventGraph.mPins.at(connectedPinID);
-						connectedPinJson["NodeID"] = cleanedNodeIDs.at(connectedPin.mNodeID);
-						connectedPinJson["PinIndex"] = Internal::GetPinIndex(eventGraph, connectedPinID);
+						continue;
 					}
 
-				}
-				else
-				{
-					const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+					const size_t connectedPinIndex = connectionJson["PinIndex"];
 
-					pinDataJson["DataType"] = Global::GetDataTypeManager().GetName(pinType.mDataTypeID);
+					const PinID connectionID = Internal::GetPinID(eventNodeGraph, connectionNodeID, connectedPinIndex, eFlowType::Output);
 
-					nlohmann::json valueJson = nlohmann::json::object();
-					Global::GetDataTypeManager().SaveData(pinType.mDataTypeID, valueJson, pin.mDataPtr);
-					pinDataJson["Value"] = valueJson;
-				}
-
-				pinDataArrayJson.push_back(pinDataJson);
-			}
-		}
-
-		{
-			dataJson["Variables"] = nlohmann::json::array();
-			nlohmann::json& variableDataJson = dataJson["Variables"];
-
-			for (VarID varID = 0; varID < aClass.mStruct.mVariables.size(); ++varID)
-			{
-				const Variable& variable = aClass.mStruct.mVariables.at(varID);
-
-				if (variable.mIsDestroyed)
-				{
+					if (connectionID != InvalidID<PinID>())
+					{
+						Internal::TryCreateLink(eventNodeGraph, pinID, connectionID, nullptr);
+					}
 					continue;
 				}
 
-				nlohmann::json variableJson;
 
-				variableJson["Name"] = variable.mName;
-				variableJson["DataType"] = Global::GetDataTypeManager().GetName(variable.mDataTypeID);
+				const nlohmann::json& valueJson = pinData["Value"];
+				Global::GetDataTypeManager().LoadData(pinType.mDataTypeID, valueJson, pin.mDataPtr);
+			}
 
-				nlohmann::json defaultValueJson = nlohmann::json::object();
+			const nlohmann::json& variableDataJson = dataJson["Variables"];
 
-				Global::GetDataTypeManager().SaveData(variable.mDataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+			for (const nlohmann::json& variableJson : variableDataJson)
+			{
+				const VarID varID = Internal::CreateVariable(aClass, GetDataTypeID<bool>(), nullptr);
+				Variable& variable = aClass.mStruct.mVariables.at(varID);
 
-				variableJson["DefaultValue"] = defaultValueJson;
+				const std::string& dataTypeStr = variableJson["DataType"];
 
-				/*variableJson["Nodes"] = nlohmann::json::array();
-				nlohmann::json& variableNodesJson = variableJson["Nodes"];
+				const std::string variableName = variableJson["Name"];
+				Internal::SetVariableName(varID, aClass, variableName, nullptr);
 
-				for (const NodeRef& nodeRef : variableManager.GetNodeRefsByVarID(varID))
+				const nlohmann::json& defaultValueJson = variableJson["DefaultValue"];
+
+
+				const DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeStr);
+
+				if (dataTypeID != InvalidID<DataTypeID>())
 				{
 
-					const Node& node = nodeRef.GetNodeGraph().mNodes.at(nodeRef.GetNodeID());
+					Internal::SetVariableDataType(varID, aClass, dataTypeID, nullptr);
 
-					if (!node.mIsDestroyed)
+					Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+
+				}
+
+				/*const json& variableNodesJson = variableJson["Nodes"];
+
+				for (const NodeID nodeID : variableNodesJson)
+				{
+					if (!failedNodeIDs.contains(nodeID))
 					{
-						nlohmann::json& varNodeJson = variableNodesJson.emplace_back();
-						const NodeID cleanNodeID = cleanedNodeIDs.at(nodeRef.GetNodeID());
-						varNodeJson["NodeID"] = cleanNodeID;
-						nlohmann::json& graphJson = varNodeJson["Graph"];
-						assert(nodeRef.GetClass());
-						graphJson["ClassName"] = nodeRef.GetClass()->mName;
-						graphJson
-						variableNodesJson.push_back(varNodeJson);
+						InternalModifier::BindVariable(aScript, NodeRef{.nodeID = nodeID, .nodeGraph = , varID, nullptr);
+					}
+					else
+					{
+						std::cout << "Couldn't bind node to variable" << std::endl;
 					}
 				}*/
-
-				variableDataJson.push_back(variableJson);
 			}
 		}
 
-		ofs << jsonDoc;
-		ofs.close();
-	}
-
-	void ScriptLoader::LoadClass(Class& aClass, const std::string_view aFilePath)
-	{
-		const std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
-		const std::filesystem::path filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
-		std::ifstream ifs(filePath);
-		const std::string file((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-
-		if (!ifs.is_open())
-		{
-			throw std::runtime_error("Failed to open file for loading: " + filePath.string());
-			return;
-		}
-
-		ifs.close();
-
-		const nlohmann::json jsonDoc = nlohmann::json::parse(file);
-
-		EventGraph& eventGraph = aClass.mEventGraph;
-		NodeGraph& eventNodeGraph = eventGraph.mNodeGraph;
-
-		const nlohmann::json& dataJson = jsonDoc["Data"];
-
-		std::unordered_set<NodeID> failedNodeIDs;
-
-		for (const nlohmann::json& nodeJson : dataJson["Nodes"])
-		{
-			const std::string& nodeName = nodeJson["Name"];
-			const nlohmann::json& nodePosJson = nodeJson["Pos"];
-			const float xPos = nodePosJson["x"];
-			const float yPos = nodePosJson["y"];
-
-			bool success = true;
-			const NodeID nodeID = Internal::CreateNode(&eventGraph, nodeName, success, { xPos, yPos }, true, nullptr);
-
-			if (!success)
-			{
-				std::cout << "Failed create node with name: " + nodeName << std::endl;
-				failedNodeIDs.insert(nodeID);
-			}
-		}
-
-		for (const nlohmann::json& pinData : dataJson["PinData"])
+		void LoadAllClasses(const std::string_view aFilePath)
 		{
 
-			const NodeID mNodeID = pinData["NodeID"];
-			if (failedNodeIDs.contains(mNodeID))
-			{
-				continue;
-			}
-			const size_t pinIndex = pinData["PinIndex"];
-			const PinID pinID = Internal::GetPinID(eventNodeGraph, mNodeID, pinIndex, eFlowType::Input);
+			std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
 
-			if (pinID == InvalidID<PinID>())
+			if (!std::filesystem::exists(fileDirectory) || !std::filesystem::is_directory(fileDirectory))
 			{
-				continue;
+				std::cerr << "Error: Directory does not exist or is not accessible: " << fileDirectory << std::endl;
 			}
-			Pin& pin = eventNodeGraph.mPins.at(pinID);
-			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
-
-			const nlohmann::json& connectionJson = pinData["Connections"];
-			const bool connectionExists = connectionJson["Exists"];
-			if (connectionExists)
+			else
 			{
-				const NodeID connectionNodeID = connectionJson["NodeID"];
-				if (failedNodeIDs.contains(connectionNodeID))
+				for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(fileDirectory))
 				{
-					continue;
-				}
 
-				const size_t connectedPinIndex = connectionJson["PinIndex"];
+					if (std::filesystem::is_regular_file(entry.path()))
+					{
+						std::cout << "Found script file: " << entry.path() << std::endl;
 
-				const PinID connectionID = Internal::GetPinID(eventNodeGraph, connectionNodeID, connectedPinIndex, eFlowType::Output);
-
-				if (connectionID != InvalidID<PinID>())
-				{
-					Internal::TryCreateLink(eventNodeGraph, pinID, connectionID, nullptr);
-				}
-				continue;
-			}
-
-
-			const nlohmann::json& valueJson = pinData["Value"];
-			Global::GetDataTypeManager().LoadData(pinType.mDataTypeID, valueJson, pin.mDataPtr);
-		}
-
-		const nlohmann::json& variableDataJson = dataJson["Variables"];
-
-		for (const nlohmann::json& variableJson : variableDataJson)
-		{
-			const VarID varID = Internal::CreateVariable(aClass, GetDataTypeID<bool>(), nullptr);
-			Variable& variable = aClass.mStruct.mVariables.at(varID);
-
-			const std::string& dataTypeStr = variableJson["DataType"];
-
-			const std::string variableName = variableJson["Name"];
-			Internal::SetVariableName(aClass, varID, variableName, nullptr);
-
-			const nlohmann::json& defaultValueJson = variableJson["DefaultValue"];
-
-
-			const DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeStr);
-
-			if (dataTypeID != InvalidID<DataTypeID>())
-			{
-
-				Internal::SetVariableDataType(aClass, varID, dataTypeID, nullptr);
-
-				Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
-
-			}
-
-			/*const json& variableNodesJson = variableJson["Nodes"];
-
-			for (const NodeID nodeID : variableNodesJson)
-			{
-				if (!failedNodeIDs.contains(nodeID))
-				{
-					InternalModifier::BindVariable(aScript, NodeRef{.nodeID = nodeID, .nodeGraph = , varID, nullptr);
-				}
-				else
-				{
-					std::cout << "Couldn't bind node to variable" << std::endl;
-				}
-			}*/
-		}
-	}
-
-	void ScriptLoader::LoadAllClasses(const std::string_view aFilePath)
-	{
-
-		std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
-
-		if (!std::filesystem::exists(fileDirectory) || !std::filesystem::is_directory(fileDirectory))
-		{
-			std::cerr << "Error: Directory does not exist or is not accessible: " << fileDirectory << std::endl;
-		}
-		else
-		{
-			for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(fileDirectory))
-			{
-
-				if (std::filesystem::is_regular_file(entry.path()))
-				{
-					std::cout << "Found script file: " << entry.path() << std::endl;
-
-					const std::string fileName = entry.path().filename().string();
-					const std::string name = fileName.substr(0, fileName.find_last_of('.'));
-					Class& createdClass = Internal::CreateClass(GetDataTypeID<None*>(), name);
-					LoadClass(createdClass, aFilePath);
+						const std::string fileName = entry.path().filename().string();
+						const std::string name = fileName.substr(0, fileName.find_last_of('.'));
+						Class& createdClass = Internal::CreateClass(GetDataTypeID<None*>(), name);
+						LoadClass(createdClass, aFilePath);
+					}
 				}
 			}
 		}
-	}
 
-	void ScriptLoader::CreateCopyOfClass(const Class& aClass, const std::string_view aFilePath, const std::string_view aCopyName)
-	{
-		const std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
-		std::string filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
-		std::string copyPath = fileDirectory.string() + std::string(aCopyName) + FILE_EXTENSION;
-
-		if (std::filesystem::copy_file(filePath, copyPath))
+		void CreateCopyOfClass(const Class& aClass, const std::string_view aFilePath, const std::string_view aCopyName)
 		{
-			std::cout << "Succeeded copying file: " << filePath << std::endl;
-		}
-		else
-		{
-			throw std::runtime_error("Failed copying file");
-		}
-	}
+			const std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
+			std::string filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
+			std::string copyPath = fileDirectory.string() + std::string(aCopyName) + FILE_EXTENSION;
 
-	void ScriptLoader::SaveCustomEvents(const std::string_view aFilePath)
-	{
-		const std::filesystem::path filePath = GetFileDirectory(aFilePath).string() + CUSTOM_EVENT_FILE_NAME;
-
-		if (!std::filesystem::create_directories(aFilePath))
-		{
-			throw std::runtime_error("Failed to create directory for writing: " + filePath.string());
-			return;
-		}
-
-		std::ofstream ofs(filePath, std::ios::out);
-
-		if (!ofs.is_open())
-		{
-			throw std::runtime_error("Failed to open file for writing: " + filePath.string());
-			return;
-		}
-
-		nlohmann::json jsonDoc = nlohmann::json::object();
-		nlohmann::json customEventsJson = nlohmann::json::array();
-
-		const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
-
-		const std::vector<CustomEvent>& customEventNodeTypes = nodeTypeManager.GetCustomEvents();
-
-		for (const CustomEvent& customEventNodeType : customEventNodeTypes)
-		{
-			const NodeType& executorNodeType = Global::GetNodeTypeManager().GetNodeType(customEventNodeType.GetExecutorTypeID());
-
-			nlohmann::json customEventJson;
-
-			customEventJson["Name"] = nodeTypeManager.GetShortName(customEventNodeType.GetExecutorTypeID());
-
-
-			nlohmann::json pinArrayJson = nlohmann::json::array();
-
-			for (size_t i = 1; i < executorNodeType.mNodeRecipe.mOutputPinTypeIDs.size(); ++i)
+			if (std::filesystem::copy_file(filePath, copyPath))
 			{
-				PinTypeID pinTypeID = executorNodeType.mNodeRecipe.mOutputPinTypeIDs[i];
+				std::cout << "Succeeded copying file: " << filePath << std::endl;
+			}
+			else
+			{
+				throw std::runtime_error("Failed copying file");
+			}
+		}
 
-				nlohmann::json customEventPinJson;
+		void SaveCustomEvents(const std::string_view aFilePath)
+		{
+			const std::filesystem::path filePath = GetFileDirectory(aFilePath).string() + CUSTOM_EVENT_FILE_NAME;
 
-				const PinType& pinType = Global::GetPinTypeManager().GetPinType(pinTypeID);
-
-				customEventPinJson["Name"] = pinType.mName;
-				customEventPinJson["DataType"] = Global::GetDataTypeManager().GetName(pinType.mDataTypeID);
-
-				pinArrayJson.push_back(customEventPinJson);
+			if (!std::filesystem::create_directories(aFilePath))
+			{
+				throw std::runtime_error("Failed to create directory for writing: " + filePath.string());
+				return;
 			}
 
-			customEventJson["Pins"] = pinArrayJson;
+			std::ofstream ofs(filePath, std::ios::out);
 
-			customEventsJson.push_back(customEventJson);
-		}
-
-		jsonDoc["CustomEvents"] = customEventsJson;
-
-		ofs << jsonDoc;
-
-		ofs.close();
-	}
-
-	void ScriptLoader::LoadCustomEvents(const std::string_view aFilePath)
-	{
-		const std::string filePath = GetFileDirectory(aFilePath).string() + CUSTOM_EVENT_FILE_NAME;
-		std::ifstream ifs(filePath);
-		std::string file(
-			(std::istreambuf_iterator<char>(ifs)),
-			(std::istreambuf_iterator<char>())
-		);
-
-		if (!ifs.is_open())
-		{
-			return;
-		}
-
-		ifs.close();
-
-		const nlohmann::json& jsonDoc = nlohmann::json::parse(file);
-		const nlohmann::json& customEventsJson = jsonDoc["CustomEvents"];
-
-		for (const nlohmann::json& customEventJson : customEventsJson)
-		{
-			const std::string& nodeName = customEventJson["Name"];
-
-			const CustomEventID customEventID = Internal::CreateCustomEvent(nodeName);
-
-			const nlohmann::json& pinsJson = customEventJson["Pins"];
-
-			for (const nlohmann::json& pinJson : pinsJson)
+			if (!ofs.is_open())
 			{
-				const std::string& pinName = pinJson["Name"];
-				const std::string& dataTypeName = pinJson["DataType"];
+				throw std::runtime_error("Failed to open file for writing: " + filePath.string());
+				return;
+			}
 
-				const DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeName);
+			nlohmann::json jsonDoc = nlohmann::json::object();
+			nlohmann::json customEventsJson = nlohmann::json::array();
 
-				Internal::AddPinToCustomEvent(customEventID, dataTypeID, pinName, nullptr);
+			const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
+
+			const std::vector<CustomEvent>& customEventNodeTypes = nodeTypeManager.GetCustomEvents();
+
+			for (const CustomEvent& customEventNodeType : customEventNodeTypes)
+			{
+				const NodeType& executorNodeType = Global::GetNodeTypeManager().GetNodeType(customEventNodeType.GetExecutorTypeID());
+
+				nlohmann::json customEventJson;
+
+				customEventJson["Name"] = nodeTypeManager.GetShortName(customEventNodeType.GetExecutorTypeID());
+
+
+				nlohmann::json pinArrayJson = nlohmann::json::array();
+
+				for (size_t i = 1; i < executorNodeType.mNodeRecipe.mOutputPinTypeIDs.size(); ++i)
+				{
+					PinTypeID pinTypeID = executorNodeType.mNodeRecipe.mOutputPinTypeIDs[i];
+
+					nlohmann::json customEventPinJson;
+
+					const PinType& pinType = Global::GetPinTypeManager().GetPinType(pinTypeID);
+
+					customEventPinJson["Name"] = pinType.mName;
+					customEventPinJson["DataType"] = Global::GetDataTypeManager().GetName(pinType.mDataTypeID);
+
+					pinArrayJson.push_back(customEventPinJson);
+				}
+
+				customEventJson["Pins"] = pinArrayJson;
+
+				customEventsJson.push_back(customEventJson);
+			}
+
+			jsonDoc["CustomEvents"] = customEventsJson;
+
+			ofs << jsonDoc;
+
+			ofs.close();
+		}
+
+		void LoadCustomEvents(const std::string_view aFilePath)
+		{
+			const std::string filePath = GetFileDirectory(aFilePath).string() + CUSTOM_EVENT_FILE_NAME;
+			std::ifstream ifs(filePath);
+			std::string file(
+				(std::istreambuf_iterator<char>(ifs)),
+				(std::istreambuf_iterator<char>())
+			);
+
+			if (!ifs.is_open())
+			{
+				return;
+			}
+
+			ifs.close();
+
+			const nlohmann::json& jsonDoc = nlohmann::json::parse(file);
+			const nlohmann::json& customEventsJson = jsonDoc["CustomEvents"];
+
+			for (const nlohmann::json& customEventJson : customEventsJson)
+			{
+				const std::string& nodeName = customEventJson["Name"];
+
+				const CustomEventID customEventID = Internal::CreateCustomEvent(nodeName);
+
+				const nlohmann::json& pinsJson = customEventJson["Pins"];
+
+				for (const nlohmann::json& pinJson : pinsJson)
+				{
+					const std::string& pinName = pinJson["Name"];
+					const std::string& dataTypeName = pinJson["DataType"];
+
+					const DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeName);
+
+					Internal::AddPinToCustomEvent(customEventID, dataTypeID, pinName, nullptr);
+				}
 			}
 		}
 	}

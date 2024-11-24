@@ -33,6 +33,11 @@ namespace FLY_NAMESPACE
 		ClassInstanceFacade CreateClassInstance();
 		FunctionFacade CreateMemberFunction(std::string_view aName);
 
+		void SetName(std::string_view aName);
+
+		void Save(std::string_view aSavePath) const;
+		void Load(std::string_view aFilePath);
+
 		bool operator==(const ClassFacade& aOther) const;
 		bool operator!=(const ClassFacade& aOther) const;
 

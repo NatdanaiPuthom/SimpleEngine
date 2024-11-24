@@ -6,19 +6,23 @@
 namespace FLY_NAMESPACE
 {
 
-	template<typename T, bool Nullable>
-	class HeapObject;
-
-
-	template<typename T>
-	class HeapObject<T, true> final
+	template<typename T, bool DefaultConstruct = true>
+	class HeapObject final
 	{
 	public:
 
-		HeapObject() = default;
+		HeapObject()
+		{
+			if constexpr (DefaultConstruct)
+			{
+				mUniquePtr = std::make_unique<T>();
+			}
+		}
+
 		explicit HeapObject(T* aPtr)
 			: mUniquePtr(std::unique_ptr<T>(aPtr))
 		{
+			
 		}
 
 
@@ -36,10 +40,9 @@ namespace FLY_NAMESPACE
 
 		HeapObject(HeapObject&&) noexcept = default;
 
-		template<typename T>
 		HeapObject& operator=(const HeapObject& aOther)
 		{
-			mUniquePtr = aOther ? std::unique_ptr<T>(*aOther) : std::unique_ptr<T>();
+			mUniquePtr = aOther ? std::make_unique<T>(*aOther) : std::unique_ptr<T>();
 
 			return *this;
 		}
@@ -96,70 +99,4 @@ namespace FLY_NAMESPACE
 		std::unique_ptr<T> mUniquePtr;
 
 	};
-
-	template<typename T>
-	class HeapObject<T, false> final
-	{
-	public:
-
-		template<typename... Args> requires HasArgsConstructor<T, Args...>
-		HeapObject(Args&&... aArgs)
-			: mUniquePtr(std::make_unique<T>(std::forward<Args>(aArgs)...))
-		{
-		}
-
-		HeapObject(const HeapObject& aOther)
-			: mUniquePtr(std::make_unique<T>(*aOther))
-		{
-
-		}
-
-
-		HeapObject(HeapObject&&) noexcept = default;
-
-		HeapObject& operator=(const HeapObject& aOther)
-		{
-			mUniquePtr = std::make_unique<T>(*aOther);
-
-			return *this;
-		}
-
-		HeapObject& operator=(HeapObject&&) noexcept = default;
-
-		T& Get()
-		{
-			return *mUniquePtr.get();
-		}
-
-		const T& Get() const
-		{
-			return *mUniquePtr.get();
-		}
-
-		T* operator->()
-		{
-			return mUniquePtr.get();
-		}
-
-		const T* operator->() const
-		{
-			return mUniquePtr.get();
-		}
-
-		T& operator*()
-		{
-			return *mUniquePtr;
-		}
-
-		const T& operator*() const
-		{
-			return *mUniquePtr;
-		}
-
-	private:
-
-		std::unique_ptr<T> mUniquePtr;
-
-	};
-
 }

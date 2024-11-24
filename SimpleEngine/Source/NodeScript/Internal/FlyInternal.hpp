@@ -7,8 +7,10 @@
 #include "../Node/FlyNodeRef.hpp"
 #include "../Variable/FlyVariableRef.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
+#include "../Node/NodeDragData.hpp"
 #include <string>
 #include <variant>
+#include <unordered_map>
 
 namespace FLY_NAMESPACE
 {
@@ -16,17 +18,16 @@ namespace FLY_NAMESPACE
 	class Class;
 	class CommandTracker;
 	class EventGraph;
-
-
-	struct NodeGraphContext
-	{
-		NodeGraph& mNodeGraph;
-		Class& script;
-	};
+	struct NodeType;
 
 	namespace Internal
 	{
-
+		const Pin& GetPin(PinID aPinID, const NodeGraph& aNodeGraph);
+		Pin& GetPin(PinID aPinID, NodeGraph& aNodeGraph);
+		const PinType& GetPinType(const Pin& aPin);
+		Node& GetNode(NodeID aNodeID, NodeGraph& aNodeGraph);
+		const Node& GetNode(NodeID aNodeID, const NodeGraph& aNodeGraph);
+		const NodeType& GetNodeType(NodeID aNodeID, const NodeGraph& aNodeGraph);
 
 		Class& CreateClass(DataTypeID aTargetID, std::string_view aName);
 
@@ -34,8 +35,9 @@ namespace FLY_NAMESPACE
 		FunctionID CreateFunction(std::string_view aName);
 		NodeID CreateNode(const NodeGraphVariant& aNodeGraphVariant, NodeTypeID aNodeTypeID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeID CreateNode(const NodeGraphVariant& aNodeGraphVariant, std::string_view aName, bool& aSuccess, Vec2 aPosition, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker);
-		NodeID CreateGetterNode(NodeGraph& aNodeGraph, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
-		NodeID CreateSetterNode(NodeGraph& aNodeGraph, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
+		NodeID CreateNodeAutoLink(const NodeGraphVariant& aNodeGraphVariant, NodeTypeID aNodeTypeID, PinID aConnection, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+		NodeID CreateGetterNode(NodeGraph& aNodeGraph, VarID aVarID, Class& aClass, DataTypeID aDataTypeID, Vec2 aPosition, CommandTracker* aCommandTracker);
+		NodeID CreateSetterNode(NodeGraph& aNodeGraph, VarID aVarID, Class& aClass, DataTypeID aDataTypeID, Vec2 aPosition, CommandTracker* aCommandTracker);
 		NodeID CreateOperatorNode(NodeGraph& aNodeGraph, eNodeOperatorTrait aOperatorTrait, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 
 		void AddNode(NodeGraph& aNodeGraph, Node&& aNode, NodeID aNodeID, CommandTracker* aCommandTracker);
@@ -43,10 +45,13 @@ namespace FLY_NAMESPACE
 		void DestroyNode(NodeGraph& aNodeGraph, NodeID aNodeID, CommandTracker* aCommandTracker);
 		void DestroyNodes(const std::vector<NodeRef>& aNodeRefs, CommandTracker* aCommandTracker);
 		void DestroyNodes(const std::vector<GlobalNodeRef>& aNodeRefs, CommandTracker* aCommandTracker);
+		void DestroyNodes(const std::vector<NodeID>& aNodeIDs, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void DestroyLinks(const std::vector<LinkID>& aLinkIDs, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
 		void SetNodePosition(NodeID aNodeID, Vec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 		void SetNodePosition(NodeID aNodeID, Vec2 aPosition, Vec2 aOldPosition, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
-
+		void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aNodeDragData, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker);
 
 		std::vector<PinID> CreateInputPins(NodeGraph& aNodeGraph, NodeID aNodeID, NodeTypeID aNodeTypeID, size_t aStartIndex = 0);
 		std::vector<PinID> CreateOutputPins(NodeGraph& aNodeGraph, NodeID, NodeTypeID aNodeTypeID, size_t aStartIndex);
@@ -54,15 +59,23 @@ namespace FLY_NAMESPACE
 		PinID CreatePin(NodeGraph& aNodeGraph, NodeID aNodeID, PinTypeID aPinTypeID);
 		PinID CreatePin(NodeGraph& aNodeGraph, NodeID aNodeID, PinTypeID aPinTypeID, void* aDataPtr);
 
+		void EditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void SplitPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+
+		void BeginFrame(CommandTracker* aCommandTracker);
+
+		bool IsNodeReplacable(NodeGraph& aNodeGraph, NodeID aNodeID);
+
 		LinkID TryCreateLink(NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2, CommandTracker* aCommandTracker);
 		LinkID CreateLink(NodeGraph& aNodeGraph, PinID aInputPinID, PinID aOutputPinID, CommandTracker* aCommandTracker);
 		void DestroyLink(NodeGraph& aNodeGraph, LinkID aLinkID, CommandTracker* aCommandTracker);
 		void DestroyLinksByPin(NodeGraph& aNodeGraph, PinID aPinID, CommandTracker* aCommandTracker);
 
 		VarID CreateVariable(Class& aClass, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
-		void SetVariableDataType(Class& aClass, VarID aVarID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
-		void SetVariableName(Class& aClass, VarID aVarID, std::string_view aName, CommandTracker* aCommandTracker);
-		void DestroyVariableNodes(Class& aClass, VarID aVarID, CommandTracker* aCommandTracker);
+		void SetVariableDataType(VarID aVarID, Class& aClass, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
+		void SetVariableName(VarID aVarID, Class& aClass, std::string_view aName, CommandTracker* aCommandTracker);
+		void DestroyVariable(VarID aVarID, Class& aClass, CommandTracker* aCommandTracker);
+		void DestroyVariableNodes(VarID aVarID, Class& aClass, CommandTracker* aCommandTracker);
 
 		void BindVariable(Class& aClass, const NodeRef& aNodeRef, VarID aVarID, CommandTracker* aCommandTracker);
 		void UnbindVariable(Class& aClass, const NodeRef& aNodeRef, CommandTracker* aCommandTracker);

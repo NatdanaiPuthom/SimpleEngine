@@ -15,6 +15,48 @@
 namespace FLY_NAMESPACE
 {
 
+	struct PinRef
+	{
+		NodeGraph* mNodeGraph = nullptr;
+		PinID mPinID = InvalidID<PinID>();
+
+		friend bool operator<(const PinRef& a, const PinRef& b)
+		{
+			if (a.mNodeGraph == b.mNodeGraph)
+			{
+				return a.mPinID < b.mPinID;
+			}
+			return a.mNodeGraph < b.mNodeGraph;
+		}
+
+		friend bool operator==(const PinRef& a, const PinRef& b)
+		{
+			if (a.mNodeGraph == b.mNodeGraph)
+			{
+				return a.mPinID == b.mPinID;
+			}
+			return a.mNodeGraph == b.mNodeGraph;
+		}
+
+		explicit operator bool() const
+		{
+			return mPinID != InvalidID<PinID>();
+		}
+	};
+
+
+	struct PinRefHasher final
+	{
+		size_t operator()(const PinRef& aPinRef) const
+		{
+			return reinterpret_cast<size_t>(&aPinRef.mNodeGraph) + static_cast<size_t>(aPinRef.mPinID);
+		}
+	};
+
+	PinRef gActivePinLastFrame;
+	PinRef gActivePinThisFrame;
+	CommandNew gChangePinValueCommand;
+
 	namespace Internal
 	{
 
@@ -34,31 +76,85 @@ namespace FLY_NAMESPACE
 			return std::get<0>(aNodeGraphVariant)->mNodeGraph;
 		}
 
+		const Pin& GetPin(const PinID aPinID, const NodeGraph& aNodeGraph)
+		{
+			return aNodeGraph.mPins.at(aPinID);
+		}
+
+		Pin& GetPin(const PinID aPinID, NodeGraph& aNodeGraph)
+		{
+			return aNodeGraph.mPins.at(aPinID);
+		}
+
+		const PinType& GetPinType(const PinID aPinID, const NodeGraph& aNodeGraph)
+		{
+			const Pin& pin = GetPin(aPinID, aNodeGraph);
+			return Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+		}
+
+		const PinType& GetPinType(const Pin& aPin)
+		{
+			return Global::GetPinTypeManager().GetPinType(aPin.mTypeID);
+		}
+
+		Node& GetNode(const NodeID aNodeID, NodeGraph& aNodeGraph)
+		{
+			return aNodeGraph.mNodes.at(aNodeID);
+		}
+
+		const Node& GetNode(const NodeID aNodeID, const NodeGraph& aNodeGraph)
+		{
+			return aNodeGraph.mNodes.at(aNodeID);
+		}
+
+		const NodeType& GetNodeType(const Node& aNode)
+		{
+			return Global::GetNodeTypeManager().GetNodeType(aNode.mTypeID);
+		}
+
+		const NodeType& GetNodeType(const NodeID aNodeID, const NodeGraph& aNodeGraph)
+		{
+			const Node& node = GetNode(aNodeID, aNodeGraph);
+			return Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+		}
+
 		void BindNodeToEvent(const NodeID aNodeID, EventGraph& anEventGraph, CommandTracker* const aCommandTracker)
 		{
 			struct BindData
 			{
 				NodeID mNodeID = InvalidID<NodeID>();
-				EventGraph* eventGraph;
+				EventGraph* mEventGraph;
 			} data;
 
 			data.mNodeID = aNodeID;
-			data.eventGraph = &anEventGraph;
+			data.mEventGraph = &anEventGraph;
 
-			auto commandFunction = [data](eCommandType aCommandType) -> void
+			auto doCommandFunction = [](const BindData& aData) -> void
+				{
+					aData.mEventGraph->BindNodeToEvent(aData.mNodeID);
+				};
+
+			auto undoCommandFunction = [](const BindData& aData) -> void
+				{
+					aData.mEventGraph->UnbindNodeFromEvent(aData.mNodeID);
+				};
+
+			/*auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
 					void (EventGraph:: * func)(NodeID) = aCommandType == eCommandType::Do ? &EventGraph::BindNodeToEvent : &EventGraph::UnbindNodeFromEvent;
 
-					(data.eventGraph->*func)(data.mNodeID);
-				};
+					(data.mEventGraph->*func)(data.mNodeID);
+				};*/
 
 			if (!aCommandTracker)
 			{
-				commandFunction(eCommandType::Do);
+				//commandFunction(eCommandType::Do);
+				doCommandFunction(data);
 			}
 			else
 			{
-				aCommandTracker->DoCommand(Command(commandFunction, "Bind Node To Event"));
+				aCommandTracker->DoCommand(CommandNew(std::move(data), doCommandFunction, undoCommandFunction, "Bind Node To Event"));
+				//aCommandTracker->DoCommand(CommandNew(commandFunction, "Bind Node To Event"));
 			}
 		}
 
@@ -129,18 +225,80 @@ namespace FLY_NAMESPACE
 			return CreateNode(aNodeGraphVariant, typeID, aPosition, aCommandTracker);
 		}
 
-		NodeID CreateGetterNode(NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
+		NodeID CreateNodeAutoLink(const NodeGraphVariant& aNodeGraphVariant, const NodeTypeID aNodeTypeID, const PinID aConnection, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 		{
-			const NodeID id = GetCurrentNodeID(aNodeGraph);
-			AddNode(aNodeGraph, Global::GetNodeTypeManager().CreateGetterNode(aNodeGraph, id, aDataTypeID), id, aCommandTracker);
-			return id;
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Create Node + Auto Link");
+			}
+
+			const NodeID createdNodeID = Internal::CreateNode(aNodeGraphVariant, aNodeTypeID, aPosition, aCommandTracker);
+
+			const Pin& createdFromPin = GetNodeGraph(aNodeGraphVariant).mPins.at(aConnection);
+			const PinType& pinType = Global::GetPinTypeManager().GetPinType(createdFromPin.mTypeID);
+			const Node& createdNode = GetNodeGraph(aNodeGraphVariant).mNodes.at(createdNodeID);
+
+			const std::vector<PinID>& pinIDs = SelectByFlowType(pinType.mFlowType, createdNode.mOutputPins, createdNode.mInputPins);
+
+			for (const PinID pinID : pinIDs)
+			{
+				if (Internal::TryCreateLink(GetNodeGraph(aNodeGraphVariant), pinID, aConnection, aCommandTracker) != InvalidID<LinkID>())
+				{
+					break;
+				}
+			}
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+
+			return createdNodeID;
 		}
 
-		NodeID CreateSetterNode(NodeGraph& aNodeGraph, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
+		NodeID CreateGetterNode(NodeGraph& aNodeGraph, const VarID aVarID, Class& aClass, const DataTypeID aDataTypeID, Vec2 aPosition, CommandTracker* const aCommandTracker)
 		{
-			const NodeID id = GetCurrentNodeID(aNodeGraph);
-			AddNode(aNodeGraph, Global::GetNodeTypeManager().CreateSetterNode(aNodeGraph, id, aDataTypeID), id, aCommandTracker);
-			return id;
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Create Getter Node");
+			}
+
+			const NodeID nodeID = GetCurrentNodeID(aNodeGraph);
+			AddNode(aNodeGraph, Global::GetNodeTypeManager().CreateGetterNode(aNodeGraph, nodeID, aDataTypeID), nodeID, aCommandTracker);
+
+			Internal::SetNodePosition(nodeID, aPosition, aNodeGraph, aCommandTracker);
+			Internal::BindVariable(aClass, CreateContextualNodeRef(nodeID, aNodeGraph), aVarID, aCommandTracker);
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+
+			return nodeID;
+		}
+
+		NodeID CreateSetterNode(NodeGraph& aNodeGraph, const VarID aVarID, Class& aClass, const DataTypeID aDataTypeID, Vec2 aPosition, CommandTracker* const aCommandTracker)
+		{
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Create Setter Node");
+			}
+
+			const NodeID nodeID = GetCurrentNodeID(aNodeGraph);
+			AddNode(aNodeGraph, Global::GetNodeTypeManager().CreateSetterNode(aNodeGraph, nodeID, aDataTypeID), nodeID, aCommandTracker);
+
+
+			Internal::SetNodePosition(nodeID, aPosition, aNodeGraph, aCommandTracker);
+			Internal::BindVariable(aClass, CreateContextualNodeRef(nodeID, aNodeGraph), aVarID, aCommandTracker);
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+
+			return nodeID;
+
+
 		}
 
 		NodeID CreateOperatorNode(NodeGraph& aNodeGraph, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
@@ -149,30 +307,6 @@ namespace FLY_NAMESPACE
 			AddNode(aNodeGraph, Global::GetNodeTypeManager().CreateOperatorNode(aNodeGraph, id, aOperatorTrait, aDataTypeID), id, aCommandTracker);
 			return id;
 		}
-
-		struct TransformObjectData
-		{
-			float x, y;
-		};
-
-		void Do(const TransformObjectData&)
-		{
-
-		}
-
-		void Undo(const TransformObjectData&)
-		{
-
-		}
-
-		struct ChangeVariableData
-		{
-			float x, y;
-
-			void Do() const {}
-			void Undo() const {}
-		};
-
 
 		void AddNode(NodeGraph& aNodeGraph, Node&& aNode, const NodeID aNodeID, CommandTracker* const aCommandTracker)
 		{
@@ -191,28 +325,28 @@ namespace FLY_NAMESPACE
 				NodeGraph* mNodeGraph = nullptr;
 			} data;
 
-			CommandNew c1(TransformObjectData{});
-			CommandNew c2(ChangeVariableData{});
-
-			CommandNew c(CreateNodeData{}, [](const CreateNodeData&) {}, [](const CreateNodeData&) {});
-
 			data.mNodeID = aNodeID;
 			data.mNodeGraph = &aNodeGraph;
 
-			auto commandFunction = [data](eCommandType aCommandType) -> void
+			auto doCommandFunction = [](const auto& aData) -> void
 				{
-					Node& node = data.mNodeGraph->mNodes.at(data.mNodeID);
+					Node& node = GetNode(aData.mNodeID, *aData.mNodeGraph);
+					node.mIsDestroyed = false;
+				};
 
-					node.mIsDestroyed = aCommandType == eCommandType::Undo;
+			auto undoCommandFunction = [](const auto& aData) -> void
+				{
+					Node& node = GetNode(aData.mNodeID, *aData.mNodeGraph);
+					node.mIsDestroyed = true;
 				};
 
 			if (!aCommandTracker)
 			{
-				commandFunction(eCommandType::Do);
+				doCommandFunction(data);
 			}
 			else
 			{
-				aCommandTracker->DoCommand(Command(commandFunction, "Create Node"));
+				aCommandTracker->DoCommand(CommandNew(std::move(data), doCommandFunction, undoCommandFunction, "Create Node"));
 			}
 		}
 
@@ -233,19 +367,26 @@ namespace FLY_NAMESPACE
 			data.mNodeID = aNodeID;
 			data.mNodeGraph = &aNodeGraph;
 
-			auto commandFunction = [data](eCommandType aCommandType) -> void
+
+			auto doCommandFunction = [](const auto& aData) -> void
 				{
-					Node& node = data.mNodeGraph->mNodes[data.mNodeID];
-					node.mIsDestroyed = aCommandType == eCommandType::Do;
+					Node& node =GetNode(aData.mNodeID, *aData.mNodeGraph);
+					node.mIsDestroyed = true;
+				};
+
+			auto undoCommandFunction = [](const auto& aData) -> void
+				{
+					Node& node = GetNode(aData.mNodeID, *aData.mNodeGraph);
+					node.mIsDestroyed = false;
 				};
 
 			if (!aCommandTracker)
 			{
-				commandFunction(eCommandType::Do);
+				doCommandFunction(data);
 			}
 			else
 			{
-				aCommandTracker->DoCommand(Command(commandFunction, "Destroy Node"));
+				aCommandTracker->DoCommand(CommandNew(data, doCommandFunction, undoCommandFunction, "Destroy Node"));
 			}
 
 			for (const LinkID linkID : GetLinkIDsByNode(aNodeGraph, aNodeID))
@@ -253,24 +394,6 @@ namespace FLY_NAMESPACE
 				DestroyLink(aNodeGraph, linkID, aCommandTracker);
 			}
 
-
-			if (aCommandTracker)
-			{
-				aCommandTracker->EndComposite();
-			}
-		}
-
-		void DestroyNodes(const std::vector<NodeRef>& aNodeRefs, CommandTracker* aCommandTracker)
-		{
-			if (aCommandTracker)
-			{
-				aCommandTracker->BeginComposite("Destroy Nodes");
-			}
-
-			for (const NodeRef& nodeRef : aNodeRefs)
-			{
-				DestroyNode(nodeRef.GetNodeGraph(), nodeRef.GetNodeID(), aCommandTracker);
-			}
 
 			if (aCommandTracker)
 			{
@@ -296,6 +419,76 @@ namespace FLY_NAMESPACE
 			}
 		}
 
+		void DestroyNodes(const std::vector<NodeRef>& aNodeRefs, CommandTracker* const aCommandTracker)
+		{
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Destroy Nodes");
+			}
+
+			for (const NodeRef& nodeRef : aNodeRefs)
+			{
+				DestroyNode(nodeRef.GetNodeGraph(), nodeRef.GetNodeID(), aCommandTracker);
+			}
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+		}
+
+		void DestroyNodes(const std::vector<NodeID>& aNodeIDs, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
+		{
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Destroy Nodes");
+			}
+
+			for (const NodeID nodeID : aNodeIDs)
+			{
+				DestroyNode(aNodeGraph, nodeID, aCommandTracker);
+			}
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+		}
+
+		void DestroyLinks(const std::vector<LinkID>& aLinkIDs, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
+		{
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Destroy Links");
+			}
+
+			for (const LinkID linkID : aLinkIDs)
+			{
+				DestroyLink(aNodeGraph, linkID, aCommandTracker);
+			}
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+		}
+
+		void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
+		{
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Destroy Selection");
+			}
+
+			DestroyLinks(aLinkIDs, aNodeGraph, aCommandTracker);
+			DestroyNodes(aNodeIDs, aNodeGraph, aCommandTracker);
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+		}
+
 		void SetNodePosition(const NodeID aNodeID, const Vec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
 		{
 			const Vec2 oldPos = aNodeGraph.mNodes.at(aNodeID).mPosition;
@@ -308,8 +501,8 @@ namespace FLY_NAMESPACE
 			struct SetNodePositionData
 			{
 				NodeID mNodeID = InvalidID<NodeID>();
-				Vec2 oldPos;
-				Vec2 newPos;
+				Vec2 mOldPos;
+				Vec2 mNewPos;
 				NodeGraph* mNodeGraph = nullptr;
 			} data;
 
@@ -320,27 +513,64 @@ namespace FLY_NAMESPACE
 
 
 			data.mNodeID = aNodeID;
-			data.oldPos = aOldPosition;
-			data.newPos = aPosition;
+			data.mOldPos = aOldPosition;
+			data.mNewPos = aPosition;
 			data.mNodeGraph = &aNodeGraph;
 
-			auto commandFunction = [data](eCommandType aCommandType) -> void
+			auto doCommandFunction = [](const SetNodePositionData& aData) -> void
+				{
+					Node& node = GetNode(aData.mNodeID, *aData.mNodeGraph);
+					node.mPosition = aData.mNewPos;
+				};
+
+			auto undoCommandFunction = [](const SetNodePositionData& aData) -> void
+				{
+					Node& node = GetNode(aData.mNodeID, *aData.mNodeGraph);
+					node.mPosition = aData.mOldPos;
+				};
+
+			/*auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
 					Node& node = data.mNodeGraph->mNodes.at(data.mNodeID);
-					const Vec2& pos = aCommandType == eCommandType::Do ? data.newPos : data.oldPos;
+					const Vec2& pos = aCommandType == eCommandType::Do ? data.mNewPos : data.mOldPos;
 					node.mPosition = pos;
-				};
+				};*/
 
 			if (!aCommandTracker)
 			{
-				commandFunction(eCommandType::Do);
+				doCommandFunction(data);
+				//commandFunction(eCommandType::Do);
 			}
 			else
 			{
-				aCommandTracker->DoCommand(Command(commandFunction, "Set Node Position"));
+				aCommandTracker->DoCommand(CommandNew(data, doCommandFunction, undoCommandFunction, "Set Node Position"));
+				//aCommandTracker->DoCommand(Command(commandFunction, "Set Node Position"));
 			}
 
 
+		}
+
+		void CommitNodeDrag(const std::unordered_map<NodeID, NodeDragData>& aNodeDragData, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
+		{
+			if (aNodeDragData.empty())
+			{
+				return;
+			}
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Drag nodes");
+			}
+
+			for (const auto& [nodeID, dragData] : aNodeDragData)
+			{
+				Internal::SetNodePosition(nodeID, dragData.mEndPos, dragData.mStartPos, aNodeGraph, aCommandTracker);
+			}
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
 		}
 
 		std::vector<PinID> CreateInputPins(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID, size_t aStartIndex)
@@ -388,6 +618,133 @@ namespace FLY_NAMESPACE
 			const PinID id = static_cast<PinID>(pins.size());
 			pins.push_back(Pin{ aNodeID, aPinTypeID, aDataPtr });
 			return id;
+		}
+
+
+		void EditPin(const PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
+		{
+			Pin& pin = GetPin(aPinID, aNodeGraph);
+			const PinType& pinType = GetPinType(pin);
+
+			const DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
+
+			const void* const copyDataPtr = [aCommandTracker, &dataTypeManager, &pinType, &pin]() -> const void*
+				{
+					return aCommandTracker != nullptr ? dataTypeManager.AllocateData(pinType.mDataTypeID, Global::Internal::GetFrameMemoryArena(), pin.mDataPtr) : nullptr;
+				}();
+
+			const eIsItemActive isItemActive = dataTypeManager.ViewAndEditData(pinType.mDataTypeID, pin.mDataPtr);
+
+			//const bool wasEdited = !dataTypeManager.DataEqualsTo(pinType.mDataTypeID, pin.mDataPtr, copyDataPtr);
+
+			if (isItemActive == eIsItemActive::No || !aCommandTracker)
+			{
+				return;
+			}
+
+			const PinRef pinRef{ .mNodeGraph = &aNodeGraph, .mPinID = aPinID };
+
+			gActivePinThisFrame = pinRef;
+
+			if (gActivePinLastFrame == gActivePinThisFrame)
+			{
+				return;
+			}
+
+			void* const previousDataPtr = Global::GetDataTypeManager().AllocateData(pinType.mDataTypeID, Global::Internal::GetEditMemoryArena(), copyDataPtr);
+
+			struct EditPinData
+			{
+				PinID mPinID = InvalidID<PinID>();
+				void* mPreviousDataPtr = nullptr;
+				NodeGraph* mNodeGraph = nullptr;
+			} data;
+
+			data.mPinID = aPinID;
+			data.mPreviousDataPtr = previousDataPtr;
+			data.mNodeGraph = &aNodeGraph;
+
+			auto doCommandFunction = [](const EditPinData& aData) -> void
+				{
+					Pin& pin = GetPin(aData.mPinID, *aData.mNodeGraph);
+					const PinType& pinType = GetPinType(pin);
+
+					Global::GetDataTypeManager().SwapData(pinType.mDataTypeID, pin.mDataPtr, aData.mPreviousDataPtr);
+				};
+
+			auto undoCommandFunction = [](const EditPinData& aData) -> void
+				{
+					Pin& pin = GetPin(aData.mPinID, *aData.mNodeGraph);
+					const PinType& pinType = GetPinType(pin);
+
+					Global::GetDataTypeManager().SwapData(pinType.mDataTypeID, pin.mDataPtr, aData.mPreviousDataPtr);
+				};
+
+			/*auto commandFunction = [data](eCommandType aCommandType) -> void
+				{
+					if (aCommandType == eCommandType::Do)
+					{
+						Pin& pin = GetPin(data.mPinID, *data.mNodeGraph);
+						const PinType& pinType = GetPinType(pin);
+
+						Global::GetDataTypeManager().SwapData(pinType.mDataTypeID, pin.mDataPtr, data.mPreviousDataPtr);
+					}
+					else
+					{
+						Pin& pin = GetPin(data.mPinID, *data.mNodeGraph);
+						const PinType& pinType = GetPinType(pin);
+
+						Global::GetDataTypeManager().SwapData(pinType.mDataTypeID, pin.mDataPtr, data.mPreviousDataPtr);
+					}
+				};*/
+
+			gChangePinValueCommand = CommandNew(data, doCommandFunction, undoCommandFunction, "Edit Pin");
+			//aCommandTracker->RegisterCommand(Command(commandFunction, "Edit Pin"));
+		}
+
+		void SplitPin(const PinID aPinID, NodeGraph& aNodeGraph, [[maybe_unused]] CommandTracker* const aCommandTracker)
+		{
+			const Pin& pin = GetPin(aPinID, aNodeGraph);
+
+			if (!pin.mConnectedPinIDs.empty())
+			{
+				return;
+			}
+
+			const PinType& pinType = GetPinType(aPinID, aNodeGraph);
+
+			const DataType* pinDataType = Global::GetDataTypeManager().Find(pinType.mDataTypeID);
+
+			if (pinDataType == nullptr)
+			{
+				return;
+			}
+		}
+
+		void BeginFrame(CommandTracker* const aCommandTracker)
+		{
+			if (!aCommandTracker)
+			{
+				return;
+			}
+
+			if (gActivePinLastFrame && gActivePinLastFrame != gActivePinThisFrame)
+			{
+				aCommandTracker->RegisterCommand(CommandNew(gChangePinValueCommand));
+			}
+
+			gActivePinLastFrame = gActivePinThisFrame;
+			gActivePinThisFrame = PinRef{};
+
+
+			Global::Internal::GetFrameMemoryArena().Clear();
+		}
+
+		bool IsNodeReplacable(NodeGraph& aNodeGraph, NodeID aNodeID)
+		{
+			const NodeType& nodeType = GetNodeType(aNodeID, aNodeGraph);
+
+			return nodeType.mNodeRecipe.mOperatorTrait != eNodeOperatorTrait::None;
 		}
 
 		void ActivateLink(NodeGraph& aNodeGraph, const LinkID aLinkID)
@@ -504,7 +861,7 @@ namespace FLY_NAMESPACE
 
 			aNodeGraph.mLinks.push_back(Link{ aInputPinID, aOutputPinID });
 
-			auto doAction = [](const CreateLinkData& aData) -> void
+			auto doCommandFunction = [](const CreateLinkData& aData) -> void
 				{
 					if (aData.previousLinkID != InvalidID<LinkID>())
 					{
@@ -514,7 +871,16 @@ namespace FLY_NAMESPACE
 					ActivateLink(*aData.mNodeGraph, aData.createdLinkID);
 				};
 
-			auto commandFunction = [data](eCommandType aCommandType)
+			auto undoCommandFunction = [](const CreateLinkData& aData) -> void
+				{
+					DeactivateLink(*aData.mNodeGraph, aData.createdLinkID);
+					if (aData.previousLinkID != InvalidID<LinkID>())
+					{
+						ActivateLink(*aData.mNodeGraph, aData.previousLinkID);
+					}
+				};
+
+			/*auto commandFunction = [data](eCommandType aCommandType)
 				{
 					if (aCommandType == eCommandType::Do)
 					{
@@ -534,15 +900,16 @@ namespace FLY_NAMESPACE
 							ActivateLink(*data.mNodeGraph, data.previousLinkID);
 						}
 					}
-				};
+				};*/
 
 			if (!aCommandTracker)
 			{
-				commandFunction(eCommandType::Do);
+				doCommandFunction(data);
 			}
 			else
 			{
-				aCommandTracker->DoCommand(Command(commandFunction, "Create Link"));
+				aCommandTracker->DoCommand(CommandNew(data, doCommandFunction, undoCommandFunction, "Create Link"));
+				//aCommandTracker->DoCommand(Command(commandFunction, "Create Link"));
 			}
 
 			return data.createdLinkID;
@@ -562,20 +929,32 @@ namespace FLY_NAMESPACE
 			data.mDestroyedLinkID = aLinkID;
 			data.mNodeGraph = &aNodeGraph;
 
-			auto commandFunction = [data](eCommandType aCommandType) -> void
+			auto doCommandFunction = [](const DestroyLinkData& aData) -> void
+				{
+					DeactivateLink(*aData.mNodeGraph, aData.mDestroyedLinkID);
+				};
+
+			auto undoCommandFunction = [](const DestroyLinkData& aData) -> void
+				{
+					ActivateLink(*aData.mNodeGraph, aData.mDestroyedLinkID);
+				};
+
+			/*auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
 					void (*func) (NodeGraph&, LinkID) = aCommandType == eCommandType::Do ? DeactivateLink : ActivateLink;
 
 					func(*data.mNodeGraph, data.mDestroyedLinkID);
-				};
+				};*/
 
 			if (!aCommandTracker)
 			{
-				commandFunction(eCommandType::Do);
+				doCommandFunction(data);
+				//commandFunction(eCommandType::Do);
 			}
 			else
 			{
-				aCommandTracker->DoCommand(Command(commandFunction, "Destory Link"));
+				aCommandTracker->DoCommand(CommandNew(data, doCommandFunction, undoCommandFunction, "Destroy Link"));
+				//aCommandTracker->DoCommand(Command(commandFunction, "Destory Link"));
 			}
 		}
 
@@ -605,18 +984,18 @@ namespace FLY_NAMESPACE
 		VarID CreateVariable(Class& aClass, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
 			std::vector<Variable>& variables = aClass.mStruct.mVariables;
-			const VarID id = variables.size();
+			const VarID varID = variables.size();
 			variables.emplace_back();
-			SetVariableDataType(aClass, id, aDataTypeID, aCommandTracker);
+			SetVariableDataType(varID, aClass, aDataTypeID, aCommandTracker);
 
 			for (auto& classInstance : aClass.mClassInstances)
 			{
-				classInstance.Get().mStructInstance.Mirror();
+				classInstance->mStructInstance.Mirror();
 			}
-			return id;
+			return varID;
 		}
 
-		void SetVariableDataType(Class& aClass, const VarID aVarID, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
+		void SetVariableDataType(const VarID aVarID, Class& aClass, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
 			Variable& variable = aClass.mStruct.mVariables.at(aVarID);
 
@@ -625,17 +1004,69 @@ namespace FLY_NAMESPACE
 			variable.mDataTypeID = aDataTypeID;
 			variable.mDefaultValueDataPtr = defaultValueDataPtr;
 
-			DestroyVariableNodes(aClass, aVarID, aCommandTracker);
+			DestroyVariableNodes(aVarID, aClass, aCommandTracker);
 		}
 
-		void SetVariableName(Class& aClass, const VarID aVarID, const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
+		void SetVariableName(const VarID aVarID, Class& aClass, const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			Variable& variable = aClass.mStruct.mVariables.at(aVarID);
 
 			variable.mName = aName;
 		}
 
-		void DestroyVariableNodes(Class& aClass, const VarID aVarID, CommandTracker* const aCommandTracker)
+		void DestroyVariable(const VarID aVarID, Class& aClass, CommandTracker* const aCommandTracker)
+		{
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Destroy Variable + Connected Nodes");
+			}
+
+			struct DestroyVariableData
+			{
+				VarID mVarID = InvalidID<VarID>();
+				Class* mClass = nullptr;
+			} data;
+
+			data.mVarID = aVarID;
+			data.mClass = &aClass;
+
+			auto doCommandFunction = [](const DestroyVariableData& aData) -> void
+				{
+					aData.mClass->mStruct.mVariables.at(aData.mVarID).mIsDestroyed = true;
+				};
+
+
+			auto undoCommandFunction = [](const DestroyVariableData& aData) -> void
+				{
+					aData.mClass->mStruct.mVariables.at(aData.mVarID).mIsDestroyed = false;
+				};
+
+			/*auto commandFunction = [data](eCommandType aCommandType) -> void
+				{
+					bool mIsDestroyed = aCommandType == eCommandType::Do;
+					data.mClass->mStruct.mVariables.at(data.mVarID).mIsDestroyed = mIsDestroyed;
+				};*/
+
+			if (!aCommandTracker)
+			{
+				doCommandFunction(data);
+				//commandFunction(eCommandType::Do);
+			}
+			else
+			{
+				aCommandTracker->DoCommand(CommandNew(data, doCommandFunction, undoCommandFunction, "Destroy Variable"));
+				//aCommandTracker->DoCommand(Command(commandFunction, "Destroy Variable"));
+			}
+
+			DestroyNodes(GetNodeRefsByVariableRef(VariableRef(aVarID, aClass)), aCommandTracker);
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+		}
+
+		void DestroyVariableNodes(const VarID aVarID, Class& aClass, CommandTracker* const aCommandTracker)
 		{
 			DestroyNodes(GetNodeRefsByVariableRef(VariableRef(aVarID, aClass)), aCommandTracker);
 		}
@@ -652,7 +1083,17 @@ namespace FLY_NAMESPACE
 			data.mNodeRef = gNodeRef;
 			data.mVarRef = VariableRef(aVarID, aClass);
 
-			auto commandFunction = [data](eCommandType aCommandType) -> void
+			auto doCommandFunction = [](const BindVarData& aData) -> void
+				{
+					Global::GetFoundation().mNodeRefToVarRef[aData.mNodeRef] = aData.mVarRef;
+				};
+
+			auto undoCommandFunction = [](const BindVarData& aData) -> void
+				{
+					Global::GetFoundation().mNodeRefToVarRef.erase(aData.mNodeRef);
+				};
+
+			/*auto commandFunction = [data](eCommandType aCommandType) -> void
 				{
 					if (aCommandType == eCommandType::Do)
 					{
@@ -662,15 +1103,17 @@ namespace FLY_NAMESPACE
 					{
 						Global::GetFoundation().mNodeRefToVarRef.erase(data.mNodeRef);
 					}
-				};
+				};*/
 
 			if (!aCommandTracker)
 			{
-				commandFunction(eCommandType::Do);
+				doCommandFunction(data);
+				//commandFunction(eCommandType::Do);
 			}
 			else
 			{
-				aCommandTracker->DoCommand(Command(commandFunction, "Bind Node To Variable"));
+				aCommandTracker->DoCommand(CommandNew(data, doCommandFunction, undoCommandFunction, "Bind Node To Variable"));
+				//aCommandTracker->DoCommand(Command(commandFunction, "Bind Node To Variable"));
 			}
 		}
 
@@ -691,25 +1134,37 @@ namespace FLY_NAMESPACE
 			data.mNodeRef = gNodeRef;
 			data.mVarRef = GetVariableRefByNodeRef(gNodeRef);
 
-			auto commandFunction = [data](eCommandType aCommandType) -> void
+			auto doCommandFunction = [](const UnbindVarData& aData) -> void
 				{
-					if (aCommandType == eCommandType::Do)
-					{
-						Global::GetFoundation().mNodeRefToVarRef.erase(data.mNodeRef);
-					}
-					else
-					{
-						Global::GetFoundation().mNodeRefToVarRef[data.mNodeRef] = data.mVarRef;
-					}
+					Global::GetFoundation().mNodeRefToVarRef.erase(aData.mNodeRef);
 				};
+
+			auto undoCommandFunction = [](const UnbindVarData& aData) -> void
+				{
+					Global::GetFoundation().mNodeRefToVarRef[aData.mNodeRef] = aData.mVarRef;
+				};
+
+			//auto commandFunction = [data](eCommandType aCommandType) -> void
+			//	{
+			//		if (aCommandType == eCommandType::Do)
+			//		{
+			//			Global::GetFoundation().mNodeRefToVarRef.erase(data.mNodeRef);
+			//		}
+			//		else
+			//		{
+			//			Global::GetFoundation().mNodeRefToVarRef[data.mNodeRef] = data.mVarRef;
+			//		}
+			//	};
 
 			if (!aCommandTracker)
 			{
-				commandFunction(eCommandType::Do);
+				doCommandFunction(data);
+				//commandFunction(eCommandType::Do);
 			}
 			else
 			{
-				aCommandTracker->DoCommand(Command(commandFunction, "Unbind Variable"));
+				aCommandTracker->DoCommand(CommandNew(data, doCommandFunction, undoCommandFunction, "Unbind Variable"));
+				//aCommandTracker->DoCommand(Command(commandFunction, "Unbind Variable"));
 			}
 		}
 

@@ -18,10 +18,10 @@ namespace FLY_NAMESPACE
 		HasImplicitFlow = 1 << 8,
 		TakesExecutionContext = 1 << 9,
 		TakesInternalExecutionContext = 1 << 10,
-		Self = 1 << 11,
-		NonTrivial = Invalid | Getter | Setter | Operator | TemplateSpec | CustomEvent | Self,
+		Target = 1 << 11,
+		NonTrivial = Invalid | Getter | Setter | Operator | TemplateSpec | CustomEvent | Target,
 		Accessor = Getter | Setter,
-		All = Invalid | Getter | Setter | Operator | CustomEvent | HasFlow | TakesExecutionContext | TakesInternalExecutionContext | HasImplicitFlow | Self
+		All = Invalid | Getter | Setter | Operator | CustomEvent | HasFlow | TakesExecutionContext | TakesInternalExecutionContext | HasImplicitFlow | Target
 	};
 
 	/*enum class eCreationNodeTrait : unsigned int

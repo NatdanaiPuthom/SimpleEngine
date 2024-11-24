@@ -13,105 +13,96 @@ namespace FLY_NAMESPACE
 
 	void CommandTracker::Clear()
 	{
-		while (!myUndoStack.empty())
-		{
-			myUndoStack.pop();
-		}
-		while (!myRedoStack.empty())
-		{
-			myRedoStack.pop();
-		}
+		mUndoStack = {};
+		mRedoStack = {};
 	}
 
-	void CommandTracker::DoCommand(Command&& aCommand)
+	void CommandTracker::DoCommand(CommandNew&& aCommand)
 	{
-		DoCommandInternal(std::forward<Command>(aCommand), true);
+		DoCommandInternal(std::forward<CommandNew>(aCommand), true);
 	}
 
-	void CommandTracker::RegisterCommand(Command&& aCommand)
+	void CommandTracker::RegisterCommand(CommandNew&& aCommand)
 	{
-		DoCommandInternal(std::forward<Command>(aCommand), false);
+		DoCommandInternal(std::forward<CommandNew>(aCommand), false);
 	}
 
 	void CommandTracker::BeginComposite(const std::string& aName)
 	{
-		if (myCurrentCompositeCommand)
+		if (mCurrentCompositeCommand)
 		{
-			myCurrentCompositeCommand->Begin(aName);
+			mCurrentCompositeCommand->Begin(aName);
 		}
 		else
 		{
-			myCurrentCompositeCommand = HeapObject<CompositeCommand, true>(aName);
+			mCurrentCompositeCommand = HeapObject<CompositeCommand, false>(aName);
 		}
 	}
 
 	void CommandTracker::EndComposite()
 	{
-		const CompositeCommand::eEndCode endCode = myCurrentCompositeCommand->End();
+		const CompositeCommand::eEndCode endCode = mCurrentCompositeCommand->End();
 
 		if (endCode == CompositeCommand::eEndCode::Ended)
 		{
-			HeapObject<CompositeCommand, true> tempCommand = std::move(myCurrentCompositeCommand);
-			myCurrentCompositeCommand.Reset();
-			DoCommand(Command(*std::move(tempCommand), tempCommand->GetName()));
+			HeapObject<CompositeCommand, false> tempCommand = std::move(mCurrentCompositeCommand);
+			mCurrentCompositeCommand.Reset();
+			DoCommand(CommandNew(*std::move(tempCommand), tempCommand->GetName()));
 		}
 		else if (endCode == CompositeCommand::eEndCode::Ended_Empty)
 		{
-			myCurrentCompositeCommand.Reset();
+			mCurrentCompositeCommand.Reset();
 		}
 	}
 
 	size_t CommandTracker::GetUndoSize() const
 	{
-		return myUndoStack.size();
+		return mUndoStack.size();
 	}
 
 	size_t CommandTracker::GetRedoSize() const
 	{
-		return myRedoStack.size();
+		return mRedoStack.size();
 	}
 
 	void CommandTracker::UndoCommand()
 	{
-		if (!myUndoStack.empty())
+		if (!mUndoStack.empty())
 		{
-			HeapObject<Command, false>& topCommand = myUndoStack.top();
-			(*topCommand)(eCommandType::Undo);
-			myRedoStack.push(std::move(topCommand));
-			myUndoStack.pop();
+			HeapObject<CommandNew>& topCommand = mUndoStack.top();
+			topCommand->UndoCommand();
+			mRedoStack.push(std::move(topCommand));
+			mUndoStack.pop();
 		}
 	}
 
 	void CommandTracker::RedoCommand()
 	{
-		if (!myRedoStack.empty())
+		if (!mRedoStack.empty())
 		{
-			HeapObject<Command, false>& topCommand = myRedoStack.top();
-			(*topCommand)(eCommandType::Do);
-			myUndoStack.push(std::move(topCommand));
-			myRedoStack.pop();
+			HeapObject<CommandNew>& topCommand = mRedoStack.top();
+			topCommand->DoCommand();
+			mUndoStack.push(std::move(topCommand));
+			mRedoStack.pop();
 		}
 	}
 
-	void CommandTracker::DoCommandInternal(Command&& aCommand, bool aExecute)
+	void CommandTracker::DoCommandInternal(CommandNew&& aCommand, bool aExecute)
 	{
-		if (myCurrentCompositeCommand)
+		if (mCurrentCompositeCommand)
 		{
-			myCurrentCompositeCommand->AddCommand(std::forward<Command>(aCommand));
+			mCurrentCompositeCommand->AddCommand(std::forward<CommandNew>(aCommand));
 			return;
 		}
 
 		if (aExecute)
 		{
-			aCommand(eCommandType::Do);
+			aCommand.DoCommand();
 		}
 
-		myUndoStack.push(HeapObject<Command, false>(std::forward<Command>(aCommand)));
+		mUndoStack.push(HeapObject<CommandNew>(std::forward<CommandNew>(aCommand)));
 
-		while (!myRedoStack.empty())
-		{
-			myRedoStack.pop();
-		}
+		mRedoStack = {};
 	}
 }
 

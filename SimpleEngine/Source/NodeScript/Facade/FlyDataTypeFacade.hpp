@@ -22,7 +22,7 @@ namespace FLY_NAMESPACE
 		eDataTypeTrait GetTypeTraits() const;
 
 		bool IsTargetable() const;
-		bool IsEditable() const;
+		bool IsViewAndEditable() const;
 
 		std::vector<NodeTypeFacade> GetNodeTypes() const;
 

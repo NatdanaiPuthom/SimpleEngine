@@ -6,20 +6,20 @@ namespace FLY_NAMESPACE
 {
 	class Class;
 
-	class ScriptLoader
+	namespace Internal
 	{
-	public:
 
-		
-		static void SaveClass(const Class& aClass, std::string_view aFilePath);
-		static void LoadClass(Class& aClass, std::string_view aFilePath);
-		
-		static void LoadAllClasses(std::string_view aFilePath);
 
-		static void CreateCopyOfClass(const Class& aClass, std::string_view aFilePath, std::string_view aCopyName);
+		void SaveClass(const Class& aClass, std::string_view aFilePath);
+		void LoadClass(Class& aClass, std::string_view aFilePath);
 
-		static void SaveCustomEvents(std::string_view aFilePath);
-		static void LoadCustomEvents(std::string_view aFilePath);
+		void LoadAllClasses(std::string_view aFilePath);
 
-	};
+		void CreateCopyOfClass(const Class& aClass, std::string_view aFilePath, std::string_view aCopyName);
+
+		void SaveCustomEvents(std::string_view aFilePath);
+		void LoadCustomEvents(std::string_view aFilePath);
+	}
+
+
 }

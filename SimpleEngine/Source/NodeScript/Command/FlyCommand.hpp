@@ -2,38 +2,9 @@
 #include "../FlyDefines.hpp"
 #include "../Utilities/FlyMeta.hpp"
 #include <string>
-#include <functional>
 
 namespace FLY_NAMESPACE
 {
-
-	enum class eCommandType
-	{
-		Do,
-		Undo
-	};
-
-	class Command final
-	{
-		using CommandFunction = std::function<void(eCommandType)>;
-	public:
-
-
-		template<typename CallableCommand>
-		Command(CallableCommand&& aCallableCommand, const std::string& aName)
-			: mName(aName)
-			, mCommandFunction(aCallableCommand)
-		{
-		}
-
-		void operator()(eCommandType aCommandType) const;
-
-	private:
-
-		std::string mName;
-		CommandFunction mCommandFunction;
-
-	};
 
 	template<typename T>
 	concept Commandable = requires(const T & aData)
@@ -56,22 +27,27 @@ namespace FLY_NAMESPACE
 	{
 	public:
 		
+		CommandNew() = default;
+
 		template<typename T> requires Commandable<T> or MemberCommandable<T>
-		CommandNew(T&& aData)
-			: mConcept(std::make_unique<CommandModel<T>>(std::forward<T>(aData)))
+		CommandNew(const T& aData, const std::string& aName)
+			: mConcept(std::make_unique<CommandModel<T>>(aData))
+			, mName(aName)
 		{
 		}
 
 
 		template<typename T, ValidCallable<void, const T&> DoFunc, ValidCallable<void, const T&> UndoFunc>
-		CommandNew(T&& aData, DoFunc aDoFunction, UndoFunc aUndoFunction)
-			: mConcept(std::make_unique<CommandModel<T, FunctionType<T>, FunctionType<T>>>(std::forward<T>(aData), aDoFunction, aUndoFunction))
+		CommandNew(const T& aData, DoFunc aDoFunction, UndoFunc aUndoFunction, const std::string& aName)
+			: mConcept(std::make_unique<CommandModel<T, FunctionType<T>, FunctionType<T>>>(aData, aDoFunction, aUndoFunction))
+			, mName(aName)
 		{
 		}
 
 
 		CommandNew(const CommandNew& aOther)
 			: mConcept(aOther.mConcept->Clone())
+			, mName(aOther.mName)
 		{
 
 		}
@@ -82,20 +58,14 @@ namespace FLY_NAMESPACE
 		{
 			CommandNew temp(aOther);
 			std::swap(mConcept, temp.mConcept);
+			mName = aOther.mName;
 			return *this;
 		}
 
 		CommandNew& operator=(CommandNew&&) = default;
 
-		void DoCommand()
-		{
-			mConcept->DoCommand();
-		}
-
-		void UndoCommand()
-		{
-			mConcept->UndoCommand();
-		}
+		void DoCommand() const;
+		void UndoCommand() const;
 
 
 	private:
@@ -121,8 +91,8 @@ namespace FLY_NAMESPACE
 		{
 		public:
 
-			CommandModel(T&& aData)
-				: mData(std::forward<T>(aData))
+			CommandModel(const T& aData)
+				: mData(aData)
 			{
 
 			}
@@ -152,8 +122,8 @@ namespace FLY_NAMESPACE
 		{
 		public:
 
-			CommandModel(T&& aData)
-				: mData(std::forward<T>(aData))
+			CommandModel(const T& aData)
+				: mData(aData)
 			{
 
 			}
@@ -179,13 +149,13 @@ namespace FLY_NAMESPACE
 		};
 
 		template<typename T>
-		class CommandModel<T, FunctionType<T>, FunctionType<T>>  final : public CommandConcept
+		class CommandModel<T, FunctionType<T>, FunctionType<T>> final : public CommandConcept
 		{
 			using FunctionType = void(*)(const T&);
 		public:
 
-			CommandModel(T&& aData, FunctionType aDoFunction, FunctionType aUndoFunction)
-				: mData(std::forward<T>(aData))
+			CommandModel(const T& aData, FunctionType aDoFunction, FunctionType aUndoFunction)
+				: mData(aData)
 				, mDoFunction(aDoFunction)
 				, mUndoFunction(aUndoFunction)
 			{
@@ -220,6 +190,7 @@ namespace FLY_NAMESPACE
 
 
 		std::unique_ptr<CommandConcept> mConcept;
+		std::string mName;
 	};
 
 }

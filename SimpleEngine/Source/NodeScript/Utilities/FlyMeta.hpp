@@ -308,9 +308,9 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	concept Editable = requires(T & aValue)
+	concept ViewAndEditable = requires(T & aValue)
 	{
-		{ Edit(aValue) } -> std::same_as<bool>;
+		{ ViewAndEdit(aValue) } -> std::same_as<eIsItemActive>;
 	};
 
 	template<typename T, typename SerializationObject>
@@ -337,7 +337,7 @@ namespace FLY_NAMESPACE
 	template<typename T, typename SerializationObject>
 	concept Scriptable =
 		Decayed<T> &&
-		Editable<T> &&
+		ViewAndEditable<T> &&
 		Savable<T, SerializationObject>&&
 		Loadable<T, SerializationObject>&&
 		DefaultConstructible<T>&&
@@ -369,21 +369,4 @@ namespace FLY_NAMESPACE
 		constexpr ClassType* a = nullptr;
 		return (size_t) & reinterpret_cast<const char&>(a->*aProperty);
 	}
-
-	/*template<typename VariantType, typename T, std::size_t CurrentIndex = 0>
-	constexpr std::size_t GetVariantIndex() 
-	{
-		if constexpr (CurrentIndex == std::variant_size_v<VariantType>)
-		{
-			return CurrentIndex;
-		}
-		else if constexpr (std::is_same_v<std::variant_alternative_t<CurrentIndex, VariantType>, T>)
-		{
-			return CurrentIndex;
-		}
-		else 
-		{
-			return GetVariantIndex<VariantType, T, CurrentIndex + 1>();
-		}
-	}*/
 }

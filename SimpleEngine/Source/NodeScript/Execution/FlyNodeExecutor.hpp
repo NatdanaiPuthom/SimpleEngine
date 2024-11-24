@@ -2,6 +2,7 @@
 #include "../FlyDefines.hpp"
 #include "FlyInternalExecutionContext.hpp"
 #include "FlyCallStack.hpp"
+#include "FlyDebugger.hpp"
 #include <unordered_set>
 
 namespace FLY_NAMESPACE
@@ -17,9 +18,6 @@ namespace FLY_NAMESPACE
 		~NodeExecutor();
 
 		void ExecuteNode(const NodeExecutionData& aNodeExecutionData);
-
-		/*void RegisterAutoTickNode(const NodeRef& aNodeRef);
-		void UnregisterAutoTickNode(const NodeRef& aNodeRef);*/
 		
 		CallStack& GetCallStack()
 		{
@@ -28,14 +26,15 @@ namespace FLY_NAMESPACE
 
 		void ExecuteEvent(EventID aEventID, ClassInstance& aClassInstance, void* aTarget, const ExecutionContextBase& aExecutionContext);
 
-	private:
+	
 
 	private:
-
-		//std::unordered_set<NodeExecutionData> mAutoTickNodes;
 
 		InternalExecutionContext mExecutionContext;
 
 		CallStack mCallStack;
+
+		Debugger mDebugger;
+		
 	};
 }

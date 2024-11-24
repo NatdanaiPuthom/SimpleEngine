@@ -16,24 +16,12 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-
 	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
 	{
 		const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().mNodes[aNodeExecutionData.mNodeRef.GetNodeID()];
 		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
 		nodeType.mNodeRecipe.mExecuteFunction(aNodeExecutionData, mExecutionContext);
 	}
-
-	/*void NodeExecutor::RegisterAutoTickNode(const NodeRef& aNodeRef)
-	{
-		mAutoTickNodes.insert(NodeExecutionData{ .mNodeRef = aNodeRef, .mTriggerReason = eNodeTriggerReason::Event });
-	}
-
-	void NodeExecutor::UnregisterAutoTickNode(const NodeRef& aNodeRef)
-	{
-		mAutoTickNodes.erase(NodeExecutionData{ .mNodeRef = aNodeRef, .mTriggerReason = eNodeTriggerReason::Event });
-	}*/
-
 
 	void NodeExecutor::ExecuteEvent(const EventID anEventID, ClassInstance& aClassInstance, void* const aTarget, const ExecutionContextBase& anExecutionContext)
 	{

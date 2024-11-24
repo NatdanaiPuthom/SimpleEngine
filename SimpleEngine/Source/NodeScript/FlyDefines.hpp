@@ -179,6 +179,9 @@ namespace FLY_NAMESPACE
 		constexpr Color Gray = Color(0.5f, 0.5f, 0.5f);
 	}
 
-
-
+	enum class eIsItemActive : bool
+	{
+		No,
+		Yes
+	};
 }

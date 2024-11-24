@@ -550,7 +550,7 @@ namespace ECS
 		bool wasChanged = false;
 
 		Fly::DataTypeFacade entityDataTypeFacade(Fly::GetDataTypeID<Entity*>());
-		const auto entityClasses = Fly::GetClassesByDataType(entityDataTypeFacade);
+		auto entityClasses = Fly::GetClassesByDataType(entityDataTypeFacade);
 
 		const std::string& preview = aClassInstanceFacade ? aClassInstanceFacade.GetName() : "None";
 		Combo classCombo("Entity Class", preview.c_str(), [&]() -> void
@@ -571,7 +571,7 @@ namespace ECS
 							Fly::DestroyClassInstance(aClassInstanceFacade);
 						}
 
-						aClassInstanceFacade = Fly::CreateClassInstance(entityClass);
+						aClassInstanceFacade = entityClass.CreateClassInstance();
 
 						wasChanged = true;
 					}

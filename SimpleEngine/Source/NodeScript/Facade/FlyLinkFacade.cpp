@@ -2,6 +2,7 @@
 #include "../Graph/FlyNodeGraph.hpp"
 #include "FlyNodeGraphFacade.hpp"
 #include "../Fly.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -34,7 +35,7 @@ namespace FLY_NAMESPACE
 
 	void LinkFacade::Destroy(CommandTracker* const aCommandTracker)
 	{
-		DestroyLink(*this, NodeGraphFacade(mNodeGraphVariant), aCommandTracker);
+		Internal::DestroyLink(NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), GetID(), aCommandTracker);
 	}
 
 	LinkFacade::operator bool() const
