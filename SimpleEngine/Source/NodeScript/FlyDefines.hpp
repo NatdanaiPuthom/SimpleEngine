@@ -60,8 +60,10 @@ namespace FLY_NAMESPACE
 	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, NodeGraph&);
 	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);
 
-	struct SetPinData;
-	using SetPinDataInterface = void(*)(const SetPinData& aPinData, const InternalExecutionContext& aContext);
+	struct SetPinValueData;
+	struct SetPinValueFromPinData;
+	using SetPinValueInterface = void(*)(const SetPinValueData&, const InternalExecutionContext&);
+	using SetPinValueFromPinInterface = void(*)(const SetPinValueFromPinData&, const InternalExecutionContext&);
 
 	template<typename T>
 	class OwningPtr final
@@ -101,22 +103,22 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-		NonOwningPtr(T* aPtr)
+		constexpr NonOwningPtr(T* aPtr)
 			: mPtr(aPtr)
 		{
 		}
 
-		T* Get() const noexcept
+		constexpr T* Get() const noexcept
 		{
 			return mPtr;
 		}
 
-		explicit operator T* () const noexcept
+		constexpr explicit operator T* () const noexcept
 		{
 			return Get();
 		}
 
-		T& operator*() const
+		constexpr T& operator*() const
 		{
 			return *mPtr;
 		}
@@ -130,7 +132,7 @@ namespace FLY_NAMESPACE
 	struct Color final
 	{
 
-		Color() = default;
+		constexpr Color() = default;
 		constexpr Color(float aR, float aG, float aB, float aA = 1.f)
 			: r(aR)
 			, g(aG)
@@ -179,9 +181,8 @@ namespace FLY_NAMESPACE
 		constexpr Color Gray = Color(0.5f, 0.5f, 0.5f);
 	}
 
-	enum class eIsItemActive : bool
+	struct EditAndViewResult final
 	{
-		No,
-		Yes
+		bool mIsItemActive = false;
 	};
 }

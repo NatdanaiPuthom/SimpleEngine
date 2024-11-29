@@ -63,7 +63,7 @@ namespace FLY_NAMESPACE
 	FLY_FUNCTION(Tick, Directory{ "Events" }, Event{}, OutputNames{ "Flow", "Delta Time" }, Pure{});
 	FLY_FUNCTION(EndPlay, Directory{ "Events" }, Event{}, Pure{});
 
-	FLY_FUNCTION(Branch, Directory{ "Execution" }, InputNames{ "Flow", "Condition" }, OutputNames{ "True", "False" }, DefaultValues{ Flow(false), true }, Pure{});
+	FLY_FUNCTION(Branch, Directory{ "Execution" }, InputNames{ "Flow", "Condition" }, OutputNames{ "True", "False" }, Pure{});
 	FLY_FUNCTION(FlipFlop, Directory{ "Execution" }, OutputNames{ "Flip", "Flop" }, Pure{});
 	FLY_FUNCTION(Delay, Directory{ "Execution" }, InputNames{ "Flow", "Duration", "Reset On Flow" }, DefaultValues{ Flow(false), 1.f, false }, AutoTick{}, Pure{});
 }

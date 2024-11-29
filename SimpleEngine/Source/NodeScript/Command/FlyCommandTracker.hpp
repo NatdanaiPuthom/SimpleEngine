@@ -17,13 +17,12 @@ namespace FLY_NAMESPACE
 
 		void Clear();
 
-		size_t GetUndoSize() const;
-		size_t GetRedoSize() const;
 
-	public:
+		template<typename... Args>
+		void DoCommand(Args&&... aArgs);
 
-		void DoCommand(CommandNew&& aCommand);
-		void RegisterCommand(CommandNew&& aCommand);
+		template<typename... Args>
+		void RegisterCommand(Args&&... aArgs);
 
 		void BeginComposite(const std::string& aName);
 		void EndComposite();
@@ -31,16 +30,53 @@ namespace FLY_NAMESPACE
 		void UndoCommand();
 		void RedoCommand();
 
+		size_t GetUndoSize() const;
+		size_t GetRedoSize() const;
+
 	private:
 
-		void DoCommandInternal(CommandNew&& aCommand, bool aExecute);
+		template<typename... Args>
+		void DoCommandInternal(bool aExecute, Args&&... aArgs);
 
 	private:
 
 
-		std::stack<HeapObject<CommandNew>> mUndoStack;
-		std::stack<HeapObject<CommandNew>> mRedoStack;
+		std::stack<HeapObject<Command>> mUndoStack;
+		std::stack<HeapObject<Command>> mRedoStack;
 		HeapObject<CompositeCommand, false> mCurrentCompositeCommand;
 
 	};
+
+
+	template<typename ...Args>
+	inline void CommandTracker::DoCommand(Args && ...aArgs)
+	{
+		DoCommandInternal(true, std::forward<Args>(aArgs)...);
+	}
+
+	template<typename ...Args>
+	inline void CommandTracker::RegisterCommand(Args && ...aArgs)
+	{
+		DoCommandInternal(false, std::forward<Args>(aArgs)...);
+	}
+
+	template<typename... Args>
+	inline void CommandTracker::DoCommandInternal(bool aExecute, Args&&... aArgs)
+	{
+		if (mCurrentCompositeCommand)
+		{
+			mCurrentCompositeCommand->AddCommand(std::forward<Args>(aArgs)...);
+			return;
+		}
+
+		HeapObject<Command> command(std::forward<Args>(aArgs)...);
+		if (aExecute)
+		{
+			command->DoCommand();
+		}
+
+		mUndoStack.push(std::move(command));
+
+		mRedoStack = {};
+	}
 }

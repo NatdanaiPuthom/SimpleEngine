@@ -416,7 +416,7 @@ namespace Editor
 					break;
 				}
 
-				Fly::DestroyClassInstance(classInstanceFacade);
+				classInstanceFacade.Destroy();
 			}
 		}
 
@@ -475,16 +475,16 @@ namespace Editor
 
 				std::string nodeLabel;
 
-				if (Fly::HasFlag(nodeFacade.GetTraits(), Fly::eNodeTrait::Accessor))
+				if (nodeFacade.IsAccessor())
 				{
-					const Fly::VariableFacade variable = Fly::GetVariableByNode(nodeFacade, currentNodeContext.myNodeGraphFacade);
+					const Fly::VariableFacade variable = nodeFacade.GetVariableFacade();
 					const bool isGetter = Fly::HasFlag(nodeFacade.GetTraits(), Fly::eNodeTrait::Getter);
 					const char* const prefixLabel = isGetter ? "Get " : "Set ";
 					nodeLabel = prefixLabel + variable.GetName();
 				}
 				else
 				{
-					nodeLabel = nodeFacade.GetShortName();
+					nodeLabel = nodeFacade.GetNodeTypeFacade().GetShortName();
 				}
 
 				if (Fly::Global::IsDebugging())
@@ -505,7 +505,6 @@ namespace Editor
 
 			for (const Fly::PinFacade& inputPinFacade : inputPinFacades)
 			{
-
 				const std::string& pinLabel = inputPinFacade.GetPinTypeName();
 				const float labelWidth = ImGui::CalcTextSize(pinLabel.c_str()).x;
 
@@ -540,7 +539,17 @@ namespace Editor
 
 				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinFacadesToHighlight.begin(), currentNodeContext.myPinFacadesToHighlight.end(), inputPinFacade) != currentNodeContext.myPinFacadesToHighlight.end();
 
-				const ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
+
+				const ImNodesPinShape shape = [shouldBeHighlighted, inputPinFacade]()
+					{
+						if (shouldBeHighlighted)
+						{
+							return ImNodesPinShape_Triangle;
+						}
+
+						const bool isPointer = Fly::DataTypeFacade(inputPinFacade.GetDataTypeID()).IsPointer();
+						return isPointer ? ImNodesPinShape_QuadFilled : ImNodesPinShape_CircleFilled;
+					}();
 				ImNodes::BeginInputAttribute(inputPinFacade.GetID(), shape);
 
 				std::string pinLabel = inputPinFacade.GetPinTypeName();
@@ -558,7 +567,7 @@ namespace Editor
 					const float itemWidth = std::max(20.f, nodeWidthLeft);
 					ImGui::PushItemWidth(itemWidth);
 
-					inputPinFacade.Edit(myCommandTracker.get());
+					inputPinFacade.ViewAndEdit(myCommandTracker.get());
 
 					ImGui::PopItemWidth();
 				}
@@ -572,7 +581,7 @@ namespace Editor
 			ImGui::SetCursorPos(cursorPos);
 
 			// Render output pins
-			for (const Fly::PinFacade& outputPinFacade : outputPinFacades)
+			for (Fly::PinFacade outputPinFacade : outputPinFacades)
 			{
 				const Fly::DataTypeFacade pinDataType(outputPinFacade.GetDataTypeID());
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
@@ -580,7 +589,16 @@ namespace Editor
 
 				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinFacadesToHighlight.begin(), currentNodeContext.myPinFacadesToHighlight.end(), outputPinFacade) != currentNodeContext.myPinFacadesToHighlight.end();
 
-				const ImNodesPinShape shape = shouldBeHighlighted ? ImNodesPinShape_Triangle : ImNodesPinShape_CircleFilled;
+				const ImNodesPinShape shape = [shouldBeHighlighted, outputPinFacade]()
+					{
+						if (shouldBeHighlighted)
+						{
+							return ImNodesPinShape_Triangle;
+						}
+
+						const bool isPointer = Fly::DataTypeFacade(outputPinFacade.GetDataTypeID()).IsPointer();
+						return isPointer ? ImNodesPinShape_QuadFilled : ImNodesPinShape_CircleFilled;
+					}();
 
 				ImNodes::BeginOutputAttribute(outputPinFacade.GetID(), shape);
 
@@ -717,7 +735,7 @@ namespace Editor
 
 			if (myClickedNodeFacade.IsReplacable() && ImGui::BeginMenu("Data Type"))
 			{
-				const std::vector<Fly::DataTypeFacade> replacableDataTypeFacades = Fly::GetReplacableDataTypes(myClickedNodeFacade, currentNodeContext.myNodeGraphFacade);
+				const std::vector<Fly::DataTypeFacade> replacableDataTypeFacades = myClickedNodeFacade.GetNodeTypeFacade().GetReplacableDataTypes();
 				for (const Fly::DataTypeFacade& replacableDataTypeFacade : replacableDataTypeFacades)
 				{
 					ImGui::PushID(static_cast<int>(replacableDataTypeFacade.GetID()));
@@ -755,6 +773,10 @@ namespace Editor
 
 			ImGui::Separator();
 
+			myClickedPinFacade.View();
+
+			ImGui::Separator();
+
 			ImGui::BeginDisabled(!myClickedPinFacade.HasAnyConnectedLinks());
 			if (ImGui::Selectable("Destroy Links"))
 			{
@@ -766,7 +788,7 @@ namespace Editor
 
 			if (myClickedPinFacade.IsParentNodeReplacable() && ImGui::BeginMenu("Choose Type"))
 			{
-				const std::vector<Fly::DataTypeFacade> replacableDataTypeFacades = Fly::GetReplacableDataTypes(myClickedPinFacade, currentNodeContext.myNodeGraphFacade);
+				const std::vector<Fly::DataTypeFacade> replacableDataTypeFacades = Fly::GetNodeOwner(myClickedPinFacade).GetNodeTypeFacade().GetReplacableDataTypes();
 				for (const Fly::DataTypeFacade& replacableDataTypeFacade : replacableDataTypeFacades)
 				{
 					ImGui::PushID(static_cast<int>(replacableDataTypeFacade.GetID()));
@@ -835,7 +857,7 @@ namespace Editor
 
 			const Fly::PinFacade startedPin(startedPinID, currentNodeContext.myNodeGraphFacade);
 
-			currentNodeContext.myPinFacadesToHighlight = GetNodeContext().myNodeGraphFacade.GetNonConnectedPinFacadesByFlowTypeAndDataType(InvertFlowType(startedPin.GetFlowType()), Fly::DataTypeFacade(startedPin.GetDataTypeID()));
+			currentNodeContext.myPinFacadesToHighlight = GetNodeContext().myNodeGraphFacade.GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(InvertFlowType(startedPin.GetFlowType()), Fly::DataTypeFacade(startedPin.GetDataTypeID()));
 
 			std::erase_if(currentNodeContext.myPinFacadesToHighlight,
 				[&](const Fly::PinFacade& aPinFacade)-> bool
@@ -865,7 +887,7 @@ namespace Editor
 			auto nodeTypePopulationFunc = [&](NodeTypeCategory& aMainCategory) -> void
 				{
 
-					const std::vector<Fly::NodeTypeFacade> filteredNodeTypesByDataTypeAndFlowType = Fly::GetNodeTypesFilteredByDataTypeAndFlowType(pinFacade.GetDataTypeID(), InvertFlowType(pinFacade.GetFlowType()));
+					const std::vector<Fly::NodeTypeFacade> filteredNodeTypesByDataTypeAndFlowType = Fly::GetNodeTypesFilteredByRelatedDataTypesAndFlowType(pinFacade.GetDataTypeID(), InvertFlowType(pinFacade.GetFlowType()));
 
 					for (const Fly::NodeTypeFacade& nodeType : filteredNodeTypesByDataTypeAndFlowType)
 					{

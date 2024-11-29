@@ -88,7 +88,7 @@ namespace Editor
 
 			ImGui::Separator();
 
-			std::vector<Fly::VariableFacade> variableFacades = Fly::GetVariables(currentClass);
+			std::vector<Fly::VariableFacade> variableFacades = currentClass.GetVariables();
 			for (Fly::VariableFacade& variableFacade : variableFacades)
 			{
 				const std::string treeNodeStrID = std::string("##ScriptVariable" + std::to_string(variableFacade.GetID()));

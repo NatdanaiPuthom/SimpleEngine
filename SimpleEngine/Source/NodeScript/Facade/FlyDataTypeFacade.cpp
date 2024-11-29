@@ -55,30 +55,24 @@ namespace FLY_NAMESPACE
 		return HasFlag(GetTypeTraits(), eDataTypeTrait::Targetable);
 	}
 
+	bool DataTypeFacade::IsPointer() const
+	{
+		return HasFlag(GetTypeTraits(), eDataTypeTrait::Pointer);
+	}
+
 	bool DataTypeFacade::IsViewAndEditable() const
 	{
 		return HasFlag(GetTypeTraits(), eDataTypeTrait::ViewAndEditable);
 	}
 
-	std::vector<NodeTypeFacade> DataTypeFacade::GetNodeTypes() const
+	std::optional<const std::vector<NodeTypeID>*> DataTypeFacade::GetNodeTypesIDs() const
 	{
 		const DataType* dataType = GetDataType();
 		if (!dataType)
 		{
-			return std::vector<NodeTypeFacade>();
+			return std::nullopt;
 		}
-		const std::vector<NodeTypeID>& nodeTypeIDs = dataType->mNodeTypeIDs;
-
-		std::vector<NodeTypeFacade> nodeTypeFacades;
-
-		nodeTypeFacades.reserve(nodeTypeIDs.size());
-
-		for (const NodeTypeID nodeTypeID : nodeTypeIDs)
-		{
-			nodeTypeFacades.push_back(NodeTypeFacade(nodeTypeID));
-		}
-
-		return nodeTypeFacades;
+		return &dataType->mNodeTypeIDs;
 	}
 
 	DataTypeFacade::operator bool() const

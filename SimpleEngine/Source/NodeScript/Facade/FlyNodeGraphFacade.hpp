@@ -48,6 +48,7 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] std::vector<PinFacade> GetNonConnectedOutputPinFacades() const;
 		[[nodiscard]] std::vector<PinFacade> GetNonConnectedPinFacadesByFlowType(eFlowType aFlowType) const;
 		[[nodiscard]] std::vector<PinFacade> GetNonConnectedPinFacadesByFlowTypeAndDataType(eFlowType aFlowType, DataTypeFacade aDataTypeFacade) const;
+		[[nodiscard]] std::vector<PinFacade> GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(eFlowType aFlowType, DataTypeFacade aDataTypeFacade) const;
 
 		[[nodiscard]] std::vector<LinkFacade> GetLinkFacades(bool aIncludeDestroyed = false);
 

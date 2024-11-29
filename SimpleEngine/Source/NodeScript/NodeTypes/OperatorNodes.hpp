@@ -103,29 +103,43 @@ namespace FLY_NAMESPACE
 		}
 
 		template<HasOperator_IncrementPrefix T>
-		static constexpr inline T& IncrementPrefix(T& aValue)
+		static constexpr inline void IncrementPrefix(T* aValue)
 		{
-			return ++aValue;
+			if (!aValue)
+			{
+				return;
+			}
+			++(*aValue);
 		}
 
 		template<HasOperator_IncrementPostfix T>
-		static constexpr inline T IncrementPostfix(T aValue)
+		static constexpr inline void IncrementPostfix(T* aValue)
 		{
-			aValue++;
-			return aValue;
+			if (!aValue)
+			{
+				return;
+			}
+			(*aValue)++;
 		}
 
 		template<HasOperator_DecrementPrefix T>
-		static constexpr inline T& DecrementPrefix(T& aValue)
+		static constexpr inline void DecrementPrefix(T* aValue)
 		{
-			return --aValue;
+			if (!aValue)
+			{
+				return;
+			}
+			--(*aValue);
 		}
 
 		template<HasOperator_DecrementPostfix T>
-		static constexpr inline T DecrementPostfix(T aValue)
+		static constexpr inline void DecrementPostfix(T* aValue)
 		{
-			aValue--;
-			return aValue;
+			if (!aValue)
+			{
+				return;
+			}
+			(*aValue)--;
 		}
 	};
 
@@ -193,6 +207,9 @@ namespace FLY_NAMESPACE
 			break;
 		case eNodeOperatorTrait::Modulo:
 			return HasOperator_Modulo<T>;
+			break;
+		case eNodeOperatorTrait::IncrementPrefix:
+			return HasOperator_IncrementPrefix<T>;
 			break;
 		default:
 			break;
@@ -267,6 +284,16 @@ namespace FLY_NAMESPACE
 		else if constexpr (OperatorTrait == eNodeOperatorTrait::Modulo)
 		{
 			return OperatorNodes::Modulo<T>;
+		}
+
+		else if constexpr (OperatorTrait == eNodeOperatorTrait::IncrementPrefix)
+		{
+			return OperatorNodes::IncrementPrefix<T>;
+		}
+
+		else if constexpr (OperatorTrait == eNodeOperatorTrait::DecrementPrefix)
+		{
+			return OperatorNodes::DecrementPrefix<T>();
 		}
 
 		else
@@ -345,6 +372,9 @@ namespace FLY_NAMESPACE
 		TryRegisterOperatorNode<T, eNodeOperatorTrait::Multiply, RegisteredTraits>("Operators/Math/Multiply");
 		TryRegisterOperatorNode<T, eNodeOperatorTrait::Divide, RegisteredTraits>("Operators/Math/Divide");
 		TryRegisterOperatorNode<T, eNodeOperatorTrait::Modulo, RegisteredTraits>("Operators/Math/Modulo");
+
+		TryRegisterOperatorNode<T, eNodeOperatorTrait::IncrementPrefix, RegisteredTraits, eNodeTrait::HasImplicitFlow>("Operators/Math/Increment");
+		TryRegisterOperatorNode<T, eNodeOperatorTrait::DecrementPrefix, RegisteredTraits, eNodeTrait::HasImplicitFlow>("Operators/Math/Decrement");
 
 	}
 }

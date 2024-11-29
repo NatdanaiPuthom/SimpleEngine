@@ -12,14 +12,21 @@ namespace FLY_NAMESPACE
 
 	class NodeGraph;
 
-	struct SetPinData final
+	struct SetPinValueData final
 	{
-		PinID mID;
-		NodeGraph* mNodeGraph;
-		const void* mValue;
-#ifdef _DEBUG
-		DataTypeID mDataTypeID;
+		NodeGraph* mNodeGraph = nullptr;
+		const void* mReadFromDataPtr = nullptr;
+		PinID mWriteToPinID = InvalidID<PinID>();
+#ifdef FLY_DEBUG
+		DataTypeID mReadFromDataTypeID = InvalidID<DataTypeID>();
 #endif
+	};
+
+	struct SetPinValueFromPinData
+	{
+		NodeGraph* mNodeGraph = nullptr;
+		PinID mWriteToPinID = InvalidID<PinID>();
+		PinID mReadFromPinID = InvalidID<PinID>();
 	};
 
 	struct PinType final
@@ -27,7 +34,8 @@ namespace FLY_NAMESPACE
 		std::string mName;
 		const eFlowType mFlowType = eFlowType::Input;
 		const DataTypeID mDataTypeID = InvalidID<DataTypeID>();
-		const SetPinDataInterface mSetPinDataFunction = nullptr;
+		const SetPinValueInterface mSetPinValueFunction = nullptr;
+		const SetPinValueFromPinInterface mSetPinValueFromPinFunction = nullptr;
 		MemoryPoolID mDefaultValueID = InvalidID<MemoryPoolID>();
 	};
 

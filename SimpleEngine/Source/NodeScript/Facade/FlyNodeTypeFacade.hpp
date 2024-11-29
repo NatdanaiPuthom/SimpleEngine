@@ -2,6 +2,8 @@
 #include "../FlyDefines.hpp"
 #include "../Node/FlyNodeType.hpp"
 #include "FlyPinTypeFacade.hpp"
+#include "FlyDataTypeFacade.hpp"
+#include <vector>
 
 namespace FLY_NAMESPACE
 {
@@ -12,16 +14,18 @@ namespace FLY_NAMESPACE
 
 		explicit NodeTypeFacade(NodeTypeID anID);
 
-		const std::string& GetName() const;
-		std::string GetShortName() const;
-		std::string GetNameDirectory() const;
-		eNodeTrait GetTraits() const;
-		EventID GetEventID() const;
+		[[nodiscard]] const std::string& GetName() const;
+		[[nodiscard]] std::string GetShortName() const;
+		[[nodiscard]] std::string GetNameDirectory() const;
+		[[nodiscard]] eNodeTrait GetTraits() const;
+		[[nodiscard]] EventID GetEventID() const;
 
-		std::vector<PinTypeFacade> GetInputPinTypeFacades() const;
-		std::vector<PinTypeFacade> GetOutputPinTypeFacades() const;
+		[[nodiscard]] std::vector<PinTypeFacade> GetInputPinTypeFacades() const;
+		[[nodiscard]] std::vector<PinTypeFacade> GetOutputPinTypeFacades() const;
 
-		NodeTypeID GetID() const;
+		[[nodiscard]] std::vector<DataTypeFacade> GetReplacableDataTypes() const;
+
+		[[nodiscard]] NodeTypeID GetID() const;
 
 		explicit operator bool() const;
 

@@ -11,10 +11,18 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	PinTypeID PinTypeManager::Create(std::string_view aName, eFlowType aFlowType, DataTypeID aDataTypeID, SetPinDataInterface aSetFunction, MemoryPoolID aDefaultValueMemoryID)
+	PinTypeID PinTypeManager::Create(std::string_view aName, const eFlowType aFlowType, const DataTypeID aDataTypeID, SetPinValueInterface aSetPinValueFunction, SetPinValueFromPinInterface aSetPinValueFromPinFunction, const MemoryPoolID aDefaultValueMemoryID)
 	{
 		const PinTypeID id = mPinTypes.size();
-		mPinTypes.emplace_back(std::string(aName), aFlowType, aDataTypeID, aSetFunction, aDefaultValueMemoryID);
+		mPinTypes.emplace_back(PinType
+			{
+				.mName = std::string(aName),
+				.mFlowType = aFlowType,
+				.mDataTypeID = aDataTypeID,
+				.mSetPinValueFunction = aSetPinValueFunction,
+				.mSetPinValueFromPinFunction = aSetPinValueFromPinFunction,
+				.mDefaultValueID = aDefaultValueMemoryID
+			});
 		return id;
 	}
 

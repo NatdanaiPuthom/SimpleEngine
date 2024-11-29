@@ -30,6 +30,18 @@ namespace FLY_NAMESPACE
 		return mPinTypeID;
 	}
 
+	void PinTypeFacade::SetName(const std::string_view aName)
+	{
+		PinType& pinType = GetPinType();
+
+		pinType.mName = aName;
+	}
+
+	PinType& PinTypeFacade::GetPinType() 
+	{
+		return Global::GetPinTypeManager().GetPinType(mPinTypeID);
+	}
+
 	const PinType& PinTypeFacade::GetPinType() const
 	{
 		return Global::GetPinTypeManager().GetPinType(mPinTypeID);

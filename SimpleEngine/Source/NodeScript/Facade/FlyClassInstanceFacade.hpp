@@ -6,6 +6,7 @@ namespace FLY_NAMESPACE
 {
 
 	class ClassInstance;
+	class CommandTracker;
 
 	class ClassInstanceFacade final
 	{
@@ -16,6 +17,9 @@ namespace FLY_NAMESPACE
 
 		void InitRuntime();
 
+		void EditVariableDefaultValues(CommandTracker* aCommandTracker);
+		void Destroy();
+
 		template<typename EventFunction, typename TargetType>
 		void ExecuteEvent(EventFunction aEventFunction, TargetType* aTarget, const ExecutionContextBase& aContext);
 
@@ -24,14 +28,13 @@ namespace FLY_NAMESPACE
 
 		const std::string& GetName() const;
 
-
-
 		ClassInstance& GetClassInstance();
 
 
 		explicit operator bool() const;
 
 		friend bool operator==(const ClassInstanceFacade& a, const ClassInstanceFacade& b);
+
 
 	private:
 

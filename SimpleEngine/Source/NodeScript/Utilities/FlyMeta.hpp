@@ -1,9 +1,14 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include <iostream>
+#include <variant>
 
 namespace FLY_NAMESPACE
 {
+
+	template<typename...>
+	struct TypeList {};
+
 	template <typename... Types>
 	concept EmptyParameterPack = sizeof...(Types) == 0;
 
@@ -11,28 +16,22 @@ namespace FLY_NAMESPACE
 	concept Decayed = std::is_same_v<std::remove_cv_t<std::remove_reference_t<T>>, T>;
 
 	template<typename T>
-	concept IsPointer = std::is_pointer_v<T>;
+	concept PointerType = std::is_pointer_v<T>;
 
 	template<typename T>
-	concept IsNotPointer = !IsPointer<T>;
-
-	template<typename T>
-	concept IsVoid = std::is_void_v<T>;
-
-	template<typename T>
-	concept IsNotVoid = !IsVoid<T>;
+	concept NotPointerType = !PointerType<T>;
 
 	template<int Value, int Min, int Max>
-	concept IsInRange = Value >= Min && Value <= Max;
+	concept InRange = Value >= Min && Value <= Max;
 
 	template<typename T>
-	struct Is_Of_Template_Type : std::false_type {};
+	struct OfTemplateType : std::false_type {};
 
 	template<template <typename...> typename Base, typename... Ts>
-	struct Is_Of_Template_Type<Base<Ts...>> : std::true_type {};
+	struct OfTemplateType<Base<Ts...>> : std::true_type {};
 
 	template<template <typename...> typename Base, typename T>
-	concept IsSameTemplateType = Is_Of_Template_Type<T>::value;
+	concept SameAsTemplateType = OfTemplateType<T>::value;
 
 	template<typename T, size_t Size>
 	concept SizeEqual = (sizeof(T) == Size);
@@ -224,8 +223,32 @@ namespace FLY_NAMESPACE
 	template<typename... Args>
 	concept NoArgsReference = !HasReference<Args...>::value;
 
+	// Define a trait to check if a type is only a raw reference
+	template <typename T>
+	struct S_IsRawReference : std::false_type {};
+
+	template <typename T>
+	struct S_IsRawReference<const T&> : std::false_type {};
+
+	// Specialize for raw references (T&)
+	template <typename T>
+	struct S_IsRawReference<T&> : std::true_type {};
+
+	// Specialize for rvalue references (T&&)
+	template <typename T>
+	struct S_IsRawReference<T&&> : std::true_type {};
+
+	template<typename T>
+	constexpr bool S_IsRawReference_T = S_IsRawReference<T>::value;
+
+	template<typename T>
+	concept IsRawReference = S_IsRawReference_T<T>;
+		
+	template<typename... Args>
+	concept AnyArgIsRawReference = (IsRawReference<Args> || ...);
+
 	template<typename T, typename... Types>
-	concept ContainsType = (std::same_as<T, Types> || ...);
+	concept ContainsType = (std::same_as<T, std::decay_t<Types>> || ...);
 
 	template<typename Find, size_t Index>
 	constexpr size_t GetIndexOfTypeFromArgsImpl()
@@ -253,7 +276,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T, typename First, typename... Rest>
-	constexpr T&& Extract_Impl(First&& aFirst, [[maybe_unused]] Rest&&... aRest)
+	constexpr T Extract_Impl(First&& aFirst, [[maybe_unused]] Rest&&... aRest)
 	{
 		if constexpr (std::same_as<T, std::decay_t<First>>)
 		{
@@ -273,7 +296,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T, typename... Types> requires ContainsType<T, Types...>
-	constexpr T&& Extract(Types&&... aTypes)
+	constexpr T Extract(Types&&... aTypes)
 	{
 		return Extract_Impl<T, Types...>(std::forward<Types>(aTypes)...);
 	}
@@ -310,7 +333,19 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	concept ViewAndEditable = requires(T & aValue)
 	{
-		{ ViewAndEdit(aValue) } -> std::same_as<eIsItemActive>;
+		{ ViewAndEdit(aValue) } -> std::same_as<EditAndViewResult>;
+	};
+
+	template<typename T>
+	concept Viewable = requires(const T & aValue)
+	{
+		{ View(aValue) } -> std::same_as<void>;
+	};
+
+	template<typename T>
+	concept GlobalViewable = requires(const T & aValue)
+	{
+		{ ::View(aValue) } -> std::same_as<void>;
 	};
 
 	template<typename T, typename SerializationObject>
@@ -369,4 +404,12 @@ namespace FLY_NAMESPACE
 		constexpr ClassType* a = nullptr;
 		return (size_t) & reinterpret_cast<const char&>(a->*aProperty);
 	}
+
+
+	template<typename... Fs>
+	struct Visitor final : Fs...
+	{
+		using Fs::operator()...;
+	};
+
 }

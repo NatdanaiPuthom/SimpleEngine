@@ -11,7 +11,7 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	eIsItemActive DataTypeManager::ViewAndEditData(const DataType& aDataType, void* const aDataPtr) const
+	EditAndViewResult DataTypeManager::ViewAndEditData(const DataType& aDataType, void* const aDataPtr) const
 	{
 		// If data type has a valid edit function
 		if (aDataType.mInterface.function.viewAndEdit)
@@ -19,19 +19,39 @@ namespace FLY_NAMESPACE
 			return aDataType.mInterface.function.viewAndEdit(aDataPtr);
 		}
 
-
-		eIsItemActive isAnyItemActive = eIsItemActive::No;
-		// Visualize properties instead
+		EditAndViewResult editAndViewResult;
+		// View and edit member variables instead
 		for (const Variable& variable : aDataType.mVariables)
 		{
 			if (const DataType* variableDataType = Find(variable.mDataTypeID))
 			{
 				void* const propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
-				isAnyItemActive |= ViewAndEditData(*variableDataType, propertyDataPtr);
+				editAndViewResult.mIsItemActive |= ViewAndEditData(*variableDataType, propertyDataPtr).mIsItemActive;
 			}
 		}
 
-		return isAnyItemActive;
+		return editAndViewResult;
+	}
+
+	void DataTypeManager::ViewData(const DataType& aDataType, const void* const aDataPtr) const
+	{
+		// If data type has a valid edit function
+		if (aDataType.mInterface.function.view)
+		{
+			aDataType.mInterface.function.view(aDataPtr);
+			return;
+		}
+
+		// View member variables instead
+		for (const Variable& variable : aDataType.mVariables)
+		{
+			if (const DataType* variableDataType = Find(variable.mDataTypeID))
+			{
+				const void* const propertyDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
+				ViewData(*variableDataType, propertyDataPtr);
+			}
+		}
+
 	}
 
 	bool DataTypeManager::SaveData(const DataType& aDataType, nlohmann::json& aJson, const void* aDataPtr) const
@@ -43,7 +63,7 @@ namespace FLY_NAMESPACE
 			return true;
 		}
 
-		// Save properties instead
+		// Save member variables instead
 		for (const Variable& variable : aDataType.mVariables)
 		{
 			if (const DataType* variableDataType = Find(variable.mDataTypeID))
@@ -69,7 +89,7 @@ namespace FLY_NAMESPACE
 			return true;
 		}
 
-		// Load properties instead
+		// Load member variables instead
 		for (const Variable& variable : aDataType.mVariables)
 		{
 			if (const DataType* dataType = Find(variable.mDataTypeID))
@@ -86,14 +106,22 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
-	eIsItemActive DataTypeManager::ViewAndEditData(const DataTypeID aDataTypeID, void* const aDataPtr) const
+	EditAndViewResult DataTypeManager::ViewAndEditData(const DataTypeID aDataTypeID, void* const aDataPtr) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
 			return ViewAndEditData(*dataType, aDataPtr);
 		}
 
-		return eIsItemActive::No;
+		return EditAndViewResult{ .mIsItemActive = false };
+	}
+
+	void DataTypeManager::ViewData(DataTypeID aDataTypeID, const void* aDataPtr) const
+	{
+		if (const DataType* dataType = Find(aDataTypeID))
+		{
+			ViewData(*dataType, aDataPtr);
+		}
 	}
 
 	bool DataTypeManager::SaveData(const DataTypeID aDataTypeID, nlohmann::json& aJson, const void* const aDataPtr) const
@@ -159,6 +187,24 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
+	bool DataTypeManager::AreDataTypesRelated(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const
+	{
+		if (aDataTypeID1 == aDataTypeID2)
+		{
+			return true;
+		}
+		auto checker = [this](DataTypeID a, DataTypeID b) -> bool
+			{
+				if (const DataType* dataType = Find(a))
+				{
+					return dataType->mToPointerDataTypeID == b || dataType->mToValueDataTypeID == b;
+				}
+				return false;
+			};
+
+		return checker(aDataTypeID1, aDataTypeID2) || checker(aDataTypeID2, aDataTypeID1);
+	}
+
 	const std::string& DataTypeManager::GetName(const DataTypeID aDataTypeID) const
 	{
 		if (mDataTypes.contains(aDataTypeID))
@@ -168,15 +214,26 @@ namespace FLY_NAMESPACE
 		return mNullNameStr;
 	}
 
-	SetPinDataInterface DataTypeManager::GetSetPinDataInterface(const DataTypeID aDataTypeID, const eFlowType aFlowType) const
+	SetPinValueInterface DataTypeManager::GetSetPinValueInterface(const DataTypeID aDataTypeID, const eFlowType aFlowType) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			return SelectByFlowType(aFlowType, dataType->mInterface.execution.setInputPinData, dataType->mInterface.execution.setOutputPinData);
+			return SelectByFlowType(aFlowType, dataType->mInterface.execution.setInputPinValue, dataType->mInterface.execution.setOutputPinValue);
 		}
 
 		assert(false);
-		return SetPinDataInterface();
+		return nullptr;
+	}
+
+	SetPinValueFromPinInterface DataTypeManager::GetSetPinValueFromPinInterface(const DataTypeID aDataTypeID, const eFlowType aFlowType) const
+	{
+		if (const DataType* dataType = Find(aDataTypeID))
+		{
+			return SelectByFlowType(aFlowType, dataType->mInterface.execution.setInputPinValueFromPin, dataType->mInterface.execution.setOutputPinValueFromPin);
+		}
+
+		assert(false);
+		return nullptr;
 	}
 
 	DataTypeID DataTypeManager::GetDataTypeIDByName(const std::string& aName) const

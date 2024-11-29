@@ -1,6 +1,5 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include <vector>
 
 namespace FLY_NAMESPACE
 {

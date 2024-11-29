@@ -1,7 +1,7 @@
 #include "FlyFunctionFacade.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
-#include "../Fly.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -62,24 +62,24 @@ namespace FLY_NAMESPACE
 
 	void FunctionFacade::SetName(const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 	{
-		Function& function = Global::GetNodeTypeManager().GetFunction(GetID());
+		Function& function = Global::GetNodeTypeManager().GetFunction(mFunctionID);
 
 		function.mName = aName;
 	}
 
 	void FunctionFacade::AddPin(DataTypeFacade aDataTypeFacade, eFlowType aFlowType, std::string_view aName, CommandTracker* aCommandTracker)
 	{
-		AddPinToFunction(*this, aDataTypeFacade, aFlowType, aName, aCommandTracker);
+		Internal::AddPinToFunction(mFunctionID, aDataTypeFacade.GetID(), aFlowType, aName, aCommandTracker); 
 	}
 
 	void FunctionFacade::SetPinNameAtIndex(std::string_view aName, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker)
 	{
-		SetPinNameAtIndexFunction(*this, aName, aIndex, aFlowType, aCommandTracker);
+		Internal::SetPinNameAtIndexFunction(mFunctionID, aName, aIndex, aFlowType, aCommandTracker);
 	}
 
 	void FunctionFacade::SetPinDataTypeAtIndex(DataTypeFacade aDataTypeFacade, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker)
 	{
-		SetPinDataTypeAtIndexFunction(*this, aDataTypeFacade, aIndex, aFlowType, aCommandTracker);
+		Internal::SetPinDataTypeAtIndexFunction(mFunctionID, aDataTypeFacade.GetID(), aIndex, aFlowType, aCommandTracker);
 	}
 
 	FunctionFacade::operator bool() const

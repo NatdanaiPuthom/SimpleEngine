@@ -6,6 +6,7 @@
 #include "../Internal/FlyInternal.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "FlyVariableFacade.hpp"
+#include "../DataType/FlyDataTypeManager.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -73,50 +74,47 @@ namespace FLY_NAMESPACE
 
 	NodeGraph& NodeGraphFacade::GetNodeGraph()
 	{
-		return std::visit([&](auto& aArg) -> NodeGraph&
+		return std::visit(Visitor{
+			[](EventGraph* aEventGraph)-> NodeGraph&
 			{
-				if constexpr (std::same_as<EventGraph*, std::decay_t<decltype(aArg)>>)
-				{
-					return aArg->mNodeGraph;
-				}
-				else
-				{
-					return Global::GetNodeTypeManager().GetFunction(std::get<FunctionIDWrapper>(mNodeGraphVariant).mID).mNodeGraph;
-				}
-			}, mNodeGraphVariant
-		);
+				return aEventGraph->mNodeGraph;
+			},
+			[](FunctionIDWrapper aFunctionIDWrapper) -> NodeGraph&
+			{
+				return Global::GetNodeTypeManager().GetFunction(aFunctionIDWrapper.mID).mNodeGraph;
+			}
+			},
+			mNodeGraphVariant);
 	}
 
 	const NodeGraph& NodeGraphFacade::GetNodeGraph() const
 	{
-		return std::visit([&](const auto& aArg) -> const NodeGraph&
+		return std::visit(Visitor{
+			[](EventGraph* aEventGraph) -> const NodeGraph&
 			{
-				if constexpr (std::same_as<EventGraph*, std::decay_t<decltype(aArg)>>)
-				{
-					return aArg->mNodeGraph;
-				}
-				else
-				{
-					return Global::GetNodeTypeManager().GetFunction(std::get<FunctionIDWrapper>(mNodeGraphVariant).mID).mNodeGraph;
-				}
-			}, mNodeGraphVariant
-		);
+				return aEventGraph->mNodeGraph;
+			},
+			[](FunctionIDWrapper aFunctionIDWrapper) -> const NodeGraph&
+			{
+				return Global::GetNodeTypeManager().GetFunction(aFunctionIDWrapper.mID).mNodeGraph;
+			}
+			},
+			mNodeGraphVariant);
 	}
 
 	eNodeGraphType NodeGraphFacade::GetType() const
 	{
-		return std::visit([&](auto& aArg) -> eNodeGraphType
+		return std::visit(Visitor{
+			[](EventGraph*) -> eNodeGraphType
 			{
-				if constexpr (std::same_as<EventGraph*, std::decay_t<decltype(aArg)>>)
-				{
-					return eNodeGraphType::EventGraph;
-				}
-				else
-				{
-					return eNodeGraphType::Function;
-				}
-			}, mNodeGraphVariant
-		);
+				return eNodeGraphType::EventGraph;
+			},
+			[](FunctionIDWrapper) -> eNodeGraphType
+			{
+				return eNodeGraphType::Function;
+			}
+			},
+			mNodeGraphVariant);
 	}
 
 	template<Predicate<const Pin&> Predicate>
@@ -181,6 +179,18 @@ namespace FLY_NAMESPACE
 			{
 				const PinType& pinType = Global::GetPinTypeManager().GetPinType(aPin.mTypeID);
 				return aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType && pinType.mDataTypeID == dataTypeID;
+			},
+			*this
+		);
+	}
+
+	std::vector<PinFacade> NodeGraphFacade::GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(const eFlowType aFlowType, const DataTypeFacade aDataTypeFacade) const
+	{
+		return GetPinFacadesFiltered(
+			[aFlowType, dataTypeID = aDataTypeFacade.GetID()](const Pin& aPin) -> bool
+			{
+				const PinType& pinType = Global::GetPinTypeManager().GetPinType(aPin.mTypeID);
+				return aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType && Global::GetDataTypeManager().AreDataTypesRelated(dataTypeID, pinType.mDataTypeID);
 			},
 			*this
 		);
@@ -260,7 +270,7 @@ namespace FLY_NAMESPACE
 
 	void NodeGraphFacade::ReplaceTemplateNode(PinFacade aReplacePinFacade, DataTypeFacade aDataTypeFacade, CommandTracker* aCommandTracker)
 	{
-		Internal::ReplaceTemplateNode(GetNodeGraph(),aReplacePinFacade.GetNodeID(), aDataTypeFacade.GetID(), aCommandTracker);
+		Internal::ReplaceTemplateNode(GetNodeGraph(), aReplacePinFacade.GetNodeID(), aDataTypeFacade.GetID(), aCommandTracker);
 	}
 
 	const NodeGraphVariant& NodeGraphFacade::GetVariant() const
@@ -288,20 +298,14 @@ namespace FLY_NAMESPACE
 
 	NodeGraphFacade::operator bool() const
 	{
-		return std::visit([](const auto& aArg) -> bool
+		return std::visit(Visitor{
+			[](const EventGraph* anEventGraph) -> bool
 			{
-				using T = std::decay_t<decltype(aArg)>;
-				if constexpr (std::is_same_v<T, EventGraph*>)
+				return anEventGraph != nullptr;
+			},
+			[](FunctionIDWrapper aFunctionIDWrapper) -> bool
 				{
-					return aArg != nullptr;
-				}
-				else if constexpr (std::is_same_v<T, FunctionIDWrapper>)
-				{
-					return aArg.mID != InvalidID<FunctionID>();
-				}
-				else 
-				{
-					return false;
+					return aFunctionIDWrapper.mID != InvalidID<FunctionID>();
 				}
 			}, mNodeGraphVariant
 		);

@@ -48,10 +48,12 @@ namespace FLY_NAMESPACE
 		Multiply = 1 << 12,
 		Divide = 1 << 13,
 		Modulo = 1 << 14,
+		IncrementPrefix = 1 << 15,
+		DecrementPrefix = 1 << 15,
 
 		Comparator = Equal | NotEqual | Greater | Less | GreaterEqual | LessEqual,
 		Logical = And | Or | Not,
 		Math = Add | Subtract | Multiply | Divide | Modulo,
-		All = Comparator | Logical | Math | Print
+		All = Comparator | Logical | Math | Print | IncrementPrefix | DecrementPrefix
 	};
 }

@@ -21,7 +21,7 @@ namespace Graphics
 
 namespace Fly
 {
-	class ClassInstanceView;
+	class ClassInstanceFacade;
 }
 
 namespace ECS
@@ -65,7 +65,7 @@ namespace ECS
 	bool ViewAndEditValue(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName);
 	bool ViewAndEditValue(const Graphics::Animation*& aAnimation, const std::string& aVariableName);
 
-	bool ViewAndEditValue(Fly::ClassInstanceView& aClassInstanceView, const std::string& aVariableName);
+	bool ViewAndEditValue(Fly::ClassInstanceFacade& aClassInstanceView, const std::string& aVariableName);
 
 	bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName);
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyNodeTypeFacade.hpp"
 #include "../DataType/FlyDataType.hpp"
 
 namespace FLY_NAMESPACE
@@ -15,16 +14,17 @@ namespace FLY_NAMESPACE
 		DataTypeFacade();
 		explicit DataTypeFacade(DataTypeID aDataTypeID);
 
-		DataTypeID GetID() const;
+		[[nodiscard]] DataTypeID GetID() const;
 
-		const std::string& GetName() const;
-		const Color& GetColor() const;
-		eDataTypeTrait GetTypeTraits() const;
+		[[nodiscard]] const std::string& GetName() const;
+		[[nodiscard]] const Color& GetColor() const;
+		[[nodiscard]] eDataTypeTrait GetTypeTraits() const;
 
-		bool IsTargetable() const;
-		bool IsViewAndEditable() const;
+		[[nodiscard]] bool IsTargetable() const;
+		[[nodiscard]] bool IsPointer() const;
+		[[nodiscard]] bool IsViewAndEditable() const;
 
-		std::vector<NodeTypeFacade> GetNodeTypes() const;
+		[[nodiscard]] std::optional<const std::vector<NodeTypeID>*> GetNodeTypesIDs() const;
 
 		explicit operator bool() const;
 
@@ -33,7 +33,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		const DataType* GetDataType() const;
+		[[nodiscard]] const DataType* GetDataType() const;
 
 	private:
 

@@ -50,7 +50,7 @@ namespace FLY_NAMESPACE
 
 	void VariableFacade::EditDefaultValue(CommandTracker* const aCommandTracker)
 	{
-		EditVariableDefaultValue(*this, aCommandTracker);
+		Internal::EditVariableDefaultValue(mVarID, *mClass, aCommandTracker);
 	}
 
 	void VariableFacade::SetDataType(const DataTypeFacade aDataTypeView, CommandTracker* const aCommandTracker)

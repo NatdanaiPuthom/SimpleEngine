@@ -19,6 +19,7 @@ namespace FLY_NAMESPACE
 	class CommandTracker;
 	class EventGraph;
 	struct NodeType;
+	class ClassInstance;
 
 	namespace Internal
 	{
@@ -59,7 +60,8 @@ namespace FLY_NAMESPACE
 		PinID CreatePin(NodeGraph& aNodeGraph, NodeID aNodeID, PinTypeID aPinTypeID);
 		PinID CreatePin(NodeGraph& aNodeGraph, NodeID aNodeID, PinTypeID aPinTypeID, void* aDataPtr);
 
-		void EditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void ViewAndEditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void ViewPin(PinID aPinID, const NodeGraph& aNodeGraph);
 		void SplitPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
 		void BeginFrame(CommandTracker* aCommandTracker);
@@ -76,12 +78,16 @@ namespace FLY_NAMESPACE
 		void SetVariableName(VarID aVarID, Class& aClass, std::string_view aName, CommandTracker* aCommandTracker);
 		void DestroyVariable(VarID aVarID, Class& aClass, CommandTracker* aCommandTracker);
 		void DestroyVariableNodes(VarID aVarID, Class& aClass, CommandTracker* aCommandTracker);
+		void EditVariableDefaultValue(VarID aVarID, Class& aClass, CommandTracker* aCommandTracker);
+
+		void EditClassInstanceVariableDefaultValue(ClassInstance& aClassInstance, CommandTracker* aCommandTracker);
 
 		void BindVariable(Class& aClass, const NodeRef& aNodeRef, VarID aVarID, CommandTracker* aCommandTracker);
 		void UnbindVariable(Class& aClass, const NodeRef& aNodeRef, CommandTracker* aCommandTracker);
 
 		void SetPinTypeName(PinTypeID aPinTypeID, std::string_view aName);
 
+		void SetCustomEventName(CustomEventID aCustomEventID, std::string_view aName, CommandTracker* aCommandTracker);
 		void AddPinToCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, std::string_view aPinName, CommandTracker* aCommandTracker);
 		void SetPinDataTypeAtIndexCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, size_t aIndex, CommandTracker* aCommandTracker);
 		void SetPinNameAtIndexCustomEvent(CustomEventID aCustomEventID, std::string_view aName, size_t aIndex, CommandTracker* aCommandTracker);

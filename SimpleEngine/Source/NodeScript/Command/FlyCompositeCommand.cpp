@@ -8,21 +8,21 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	void CompositeCommand::AddCommand(CommandNew&& aCommand)
+	/*void CompositeCommand::AddCommand(Command&& aCommand)
 	{
 		if (mCurrentChild)
 		{
-			mCurrentChild->AddCommand(std::forward<CommandNew>(aCommand));
+			mCurrentChild->AddCommand(std::forward<Command>(aCommand));
 		}
 		else
 		{
-			mCommands.emplace_back(std::forward<CommandNew>(aCommand));
+			mCommands.emplace_back(std::forward<Command>(aCommand));
 		}
-	}
+	}*/
 
 	void CompositeCommand::Do() const
 	{
-		for (const CommandNew& command : mCommands)
+		for (const Command& command : mCommands)
 		{
 			command.DoCommand();
 		}
@@ -57,7 +57,7 @@ namespace FLY_NAMESPACE
 			if (endCode == eEndCode::Ended)
 			{
 				const std::string compositeName = mCurrentChild->GetName();
-				mCommands.emplace_back(CommandNew(std::move(*mCurrentChild), compositeName));
+				mCommands.emplace_back(Command(std::move(*mCurrentChild), compositeName));
 				mCurrentChild.Reset();
 			}
 			else if (endCode == eEndCode::Ended_Empty) // If the child's commands are empty we don't want to add the child to our commands

@@ -7,7 +7,7 @@ namespace FLY_NAMESPACE
 		return CastValue<float>(aValue);
 	}
 
-	FLY_FUNCTION(IntToFloat, "Utility/Cast/Int To Float", Pure{});
+	FLY_FUNCTION(IntToFloat, Directory{ "Utility/Cast" }, Pure{});
 
 
 	FLY_FUNCTION(Clamp<int>, Directory{ "Utility/Function" }, InputNames{ "Value", "Min", "Max" }, DefaultValues{ 0, 0, 0 });

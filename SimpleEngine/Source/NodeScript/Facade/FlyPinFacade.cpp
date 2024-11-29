@@ -58,7 +58,12 @@ namespace FLY_NAMESPACE
 
 	bool PinFacade::HasAnyConnectedLinks() const
 	{
-		return HasPinAnyConnectedLinks(*this);
+		return !GetConnectedPinIDs().empty();
+	}
+
+	NodeGraphVariant PinFacade::GetNodeGraphVariant() const
+	{
+		return mNodeGraphVariant;
 	}
 
 	void PinFacade::DestroyConnectedLinks(CommandTracker* const aCommandTracker)
@@ -66,9 +71,14 @@ namespace FLY_NAMESPACE
 		Internal::DestroyLinksByPin(NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), GetID(), aCommandTracker);
 	}
 
-	void PinFacade::Edit(CommandTracker* const aCommandTracker)
+	void PinFacade::ViewAndEdit(CommandTracker* const aCommandTracker)
 	{
-		Internal::EditPin(GetID(), NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), aCommandTracker);
+		Internal::ViewAndEditPin(GetID(), NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), aCommandTracker);
+	}
+
+	void PinFacade::View()
+	{
+		Internal::ViewPin(mPinID, NodeGraphFacade(mNodeGraphVariant).GetNodeGraph());
 	}
 
 	PinFacade::operator bool() const

@@ -12,6 +12,12 @@ namespace ECS
 	{
 	}
 
+	std::tuple<Fly::Flow, float> OnDoorOpen()
+	{
+		return { Fly::Flow{ true }, 5.5f };
+	}
+
+
 	void ScriptSystem::Init(EntityComponentSystem* aEntityComponentSystem)
 	{
 		auto& entityIDs = aEntityComponentSystem->GetEntityIDsWithThisComponent<ScriptComponent>();
@@ -42,6 +48,11 @@ namespace ECS
 			};
 
 			scriptComponent->classInstanceFacade.ExecuteEvent(Fly::Tick, &entity, executionContext);
+
+			if (MainSingleton::GetInputManager().IsKeyPressed('H'))
+			{
+				scriptComponent->classInstanceFacade.ExecuteEvent(OnDoorOpen, &entity, Fly::ExecutionContextBase{});
+			}
 		}
 	}
 
@@ -53,11 +64,13 @@ namespace ECS
 
 namespace Math
 {
-	static Fly::eIsItemActive ViewAndEdit(Vector3f& aValue)
+	static Fly::EditAndViewResult ViewAndEdit(Vector3f& aValue)
 	{
 		ImGui::DragFloat3("##", &aValue.x);
 
-		return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
+		Fly::EditAndViewResult result;
+		result.mIsItemActive = ImGui::IsItemActive();
+		return result;
 	}
 
 	static void Save(const Vector3f& aValue, nlohmann::json& aJson)
@@ -74,11 +87,13 @@ namespace Math
 		aValue.z = aJson["z"];
 	}
 
-	static Fly::eIsItemActive ViewAndEdit(Vector2f& aValue)
+	static Fly::EditAndViewResult ViewAndEdit(Vector2f& aValue)
 	{
 		ImGui::DragFloat2("##", &aValue.x);
 
-		return static_cast<Fly::eIsItemActive>(ImGui::IsItemActive());
+		Fly::EditAndViewResult result;
+		result.mIsItemActive = ImGui::IsItemActive();
+		return result;
 	}
 
 	static void Save(const Vector2f& aValue, nlohmann::json& aJson)
@@ -96,7 +111,7 @@ namespace Math
 
 namespace ECS
 {
-	
+
 	using Transform = Math::Transform;
 	using Vector3f = Math::Vector3f;
 	using Vector2f = Math::Vector2f;
@@ -115,6 +130,31 @@ namespace ECS
 	std::tuple<float, float, float> BreakVector3f(const Vector3f& aVector)
 	{
 		return { aVector.x, aVector.y, aVector.z };
+	}
+
+	Transform MakeTransfrom(const Vector3f& aPosition, const Vector3f& aRotation, const Vector3f& aScale)
+	{
+		Transform t;
+		t.SetPosition(aPosition);
+		t.SetRotation(aRotation);
+		t.SetScale(aScale);
+
+		return t;
+	}
+
+	size_t GetStringLength(const std::string& aString)
+	{
+		return aString.size();
+	}
+
+	void ClearString(std::string* aString)
+	{
+		aString->clear();
+	}
+
+	std::string MakeString(std::string aString)
+	{
+		return aString;
 	}
 
 	Vector3f MakeVector3f(const float aX, const float aY, const float aZ)
@@ -139,7 +179,7 @@ namespace ECS
 		const std::string label = aLabel.empty() ? "Label" : aLabel;
 		bool wasClicked = ImGui::Checkbox(label.c_str(), &aState.mValue.v);
 
-		return { Fly::Flow(wasClicked), Fly::Flow(aState.mValue.v), Fly::Flow(!aState.mValue.v)};
+		return { Fly::Flow(wasClicked), Fly::Flow(aState.mValue.v), Fly::Flow(!aState.mValue.v) };
 	}
 
 	void SetEntityPosition(Entity* aEntity, const Vector3f& aPosition)
@@ -158,10 +198,24 @@ namespace ECS
 		transformComponent->transform.SetPosition(aPosition);
 	}
 
+	void ToggleBool(bool* aBool)
+	{
+		if (!aBool)
+		{
+			return;
+		}
+		*aBool = !*aBool;
+	}
+
 	FLY_FUNCTION(ImGuiButton, Fly::Directory{ "ImGui" }, Fly::InputNames{ "Label", "Size" }, Fly::OutputNames{ "On Click" }, Fly::DefaultValues{ std::string("Label") });
-	FLY_FUNCTION(ImGuiCheckbox, Fly::Directory{ "ImGui" }, Fly::InputNames{ "Label" }, Fly::OutputNames{ "On Click", "On Checked", "On Unchecked" }, Fly::DefaultValues{std::string("Label")});
+	FLY_FUNCTION(ImGuiCheckbox, Fly::Directory{ "ImGui" }, Fly::InputNames{ "Label" }, Fly::OutputNames{ "On Click", "On Checked", "On Unchecked" }, Fly::DefaultValues{ std::string("Label") });
 	FLY_FUNCTION(SetEntityPosition, Fly::MemberOf<Entity>{}, Fly::InputNames{ "Entity", "Position" });
 	FLY_FUNCTION(BreakVector3f, Fly::MemberOf<Vector3f>{}, Fly::OutputNames{ "X", "Y", "Z" }, Fly::Pure{});
 	FLY_FUNCTION(MakeVector3f, Fly::MemberOf<Vector3f>{}, Fly::InputNames{ "X", "Y", "Z" }, Fly::Pure{});
-
+	FLY_FUNCTION(MakeTransfrom, Fly::MemberOf<Transform>{}, Fly::InputNames{ "Position", "Rotation", "Scale" }, Fly::Pure{})
+	FLY_FUNCTION(GetStringLength, Fly::Pure{});
+	FLY_FUNCTION(ClearString);
+	FLY_FUNCTION(MakeString, Fly::Pure{});
+	FLY_FUNCTION(ToggleBool);
+	FLY_FUNCTION(OnDoorOpen, Fly::Event{});
 }

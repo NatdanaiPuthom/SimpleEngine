@@ -93,22 +93,100 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	constexpr ViewAndEditInterface CreateEditInterface()
+	constexpr ViewAndEditInterface CreateViewAndEditInterface()
 	{
 		if constexpr (ViewAndEditable<T>)
 		{
-			return [](void* aDataPtr) -> eIsItemActive
+			return [](void* aDataPtr) -> EditAndViewResult
 				{
 					T& value = *reinterpret_cast<T*>(aDataPtr);
 					return ViewAndEdit(value);
 				};
 		}
+		else if constexpr (PointerType<T> and ViewAndEditable<std::remove_pointer_t<T>>)
+		{
+			return [](void* aDataPtr) -> EditAndViewResult
+				{
+					T& value = *reinterpret_cast<T*>(aDataPtr);
+					if (value)
+					{
+						return ViewAndEdit(*value);
+					}
+
+					return EditAndViewResult{};
+				};
+		}
 		else if constexpr (Fundamental<T>)
 		{
-			return [](void* aDataPtr) -> eIsItemActive
+			return [](void* aDataPtr) -> EditAndViewResult
 				{
 					T& value = *reinterpret_cast<T*>(aDataPtr);
 					return ::ViewAndEdit(value);
+				};
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	template<typename T>
+	constexpr ViewInterface CreateViewInterface()
+	{
+		if constexpr (Viewable<T>)
+		{
+			return [](const void* aDataPtr) -> void
+				{
+					const T& value = *reinterpret_cast<const T*>(aDataPtr);
+					View(value);
+				};
+		}
+		else if constexpr (PointerType<T>)
+		{
+			if constexpr (Viewable<std::remove_pointer_t<T>>)
+			{
+				return [](const void* aDataPtr) -> void
+					{
+						const T& value = *reinterpret_cast<const T*>(aDataPtr);
+
+						if (value)
+						{
+							View(*value);
+						}
+					};
+			}
+			else if constexpr (Fundamental<std::remove_pointer_t<T>>)
+			{
+				if constexpr (GlobalViewable<std::remove_pointer_t<T>>)
+				{
+					return [](const void* aDataPtr) -> void
+						{
+							const T& value = *reinterpret_cast<const T*>(aDataPtr);
+
+							if (value)
+							{
+								::View(*value);
+							}
+						};
+				}
+				else
+				{
+					return nullptr;
+				}
+			}
+			else
+			{
+				return nullptr;
+			}
+
+		}
+		else if constexpr (Fundamental<T> and GlobalViewable<T>)
+		{
+			return [](const void* aDataPtr) -> void
+				{
+					const T& value = *reinterpret_cast<const T*>(aDataPtr);
+
+					::View(value);
 				};
 		}
 		else
@@ -216,21 +294,24 @@ namespace FLY_NAMESPACE
 	{
 		return FunctionInterface
 		{
-			.viewAndEdit = CreateEditInterface<T>(),
+			.viewAndEdit = CreateViewAndEditInterface<T>(),
+			.view = CreateViewInterface<T>(),
 			.save = CreateSaveInterface<T>(),
 			.load = CreateLoadInterface<T>()
 		};
 	}
 
-	
+
 
 	template<typename T>
 	constexpr ExecutionInterface CreateExecutionInterface()
 	{
 		return ExecutionInterface
 		{
-			.setInputPinData = CreateSetPinDataInterface<T, eFlowType::Input>(),
-			.setOutputPinData = CreateSetPinDataInterface<T, eFlowType::Output>()
+			.setInputPinValue = CreateSetPinValueInterface<T, eFlowType::Input>(),
+			.setOutputPinValue = CreateSetPinValueInterface<T, eFlowType::Output>(),
+			.setInputPinValueFromPin = CreateSetPinValueFromPinInterface<T, eFlowType::Input>(),
+			.setOutputPinValueFromPin = CreateSetPinValueFromPinInterface<T, eFlowType::Output>(),
 		};
 	}
 
@@ -257,13 +338,15 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		eIsItemActive ViewAndEditData(const DataType& aDataType, void* aDataPtr) const;
+		EditAndViewResult ViewAndEditData(const DataType& aDataType, void* aDataPtr) const;
+		void ViewData(const DataType& aDataType, const void* aDataPtr) const;
 		bool SaveData(const DataType& aDataType, nlohmann::json& aJson, const void* aDataPtr) const;
 		bool LoadData(const DataType& aDataType, const nlohmann::json& aJson, void* aDataPtr) const;
 
 	public:
 
-		eIsItemActive ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr) const;
+		EditAndViewResult ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr) const;
+		void ViewData(DataTypeID aDataTypeID, const void* aDataPtr) const;
 		bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr) const;
 		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr) const;
 
@@ -276,9 +359,12 @@ namespace FLY_NAMESPACE
 		void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2) const;
 		bool DataEqualsTo(DataTypeID aDataTypeID, const void* aDataPtr1, const void* aDataPtr2) const;
 
+		bool AreDataTypesRelated(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const;
+
 		const std::string& GetName(DataTypeID aDataTypeID) const;
 
-		SetPinDataInterface GetSetPinDataInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
+		SetPinValueInterface GetSetPinValueInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
+		SetPinValueFromPinInterface GetSetPinValueFromPinInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
 
 		DataTypeID GetDataTypeIDByName(const std::string& aName) const;
 
@@ -326,6 +412,11 @@ namespace FLY_NAMESPACE
 	inline void DataTypeManager::Register(const std::string& aName, const Color& aColor, const bool aIsTargetable)
 	{
 		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T>(), aIsTargetable);
+
+		if constexpr (!PointerType<T>)
+		{
+			RegisterInternal<T*>(aName + " (Ptr)", aColor, CreateDataTypeInterface<T*>(), false);
+		}
 	}
 
 	template<template<typename> typename TemplateType>
@@ -378,7 +469,7 @@ namespace FLY_NAMESPACE
 		{
 			typeTraits |= eDataTypeTrait::Targetable;
 		}
-		if constexpr (IsPointer<T>)
+		if constexpr (PointerType<T>)
 		{
 			typeTraits |= eDataTypeTrait::Pointer;
 		}
@@ -390,8 +481,10 @@ namespace FLY_NAMESPACE
 			.mSize = sizeof(T),
 			.mColor = aColor,
 			.mTypeInfo = &typeInfo,
-			.mTypeTraits = typeTraits,
 			.mInterface = anInterface,
+			.mToPointerDataTypeID = GetDataTypeID<T*>(),
+			.mToValueDataTypeID = GetDataTypeID<std::remove_pointer_t<T>>(),
+			.mTypeTraits = typeTraits,
 		};
 
 		auto [it, success] = mDataTypes.emplace(typeInfo.hash_code(), dataType);

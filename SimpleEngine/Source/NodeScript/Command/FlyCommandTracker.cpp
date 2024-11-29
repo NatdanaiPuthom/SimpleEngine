@@ -17,16 +17,6 @@ namespace FLY_NAMESPACE
 		mRedoStack = {};
 	}
 
-	void CommandTracker::DoCommand(CommandNew&& aCommand)
-	{
-		DoCommandInternal(std::forward<CommandNew>(aCommand), true);
-	}
-
-	void CommandTracker::RegisterCommand(CommandNew&& aCommand)
-	{
-		DoCommandInternal(std::forward<CommandNew>(aCommand), false);
-	}
-
 	void CommandTracker::BeginComposite(const std::string& aName)
 	{
 		if (mCurrentCompositeCommand)
@@ -47,11 +37,33 @@ namespace FLY_NAMESPACE
 		{
 			HeapObject<CompositeCommand, false> tempCommand = std::move(mCurrentCompositeCommand);
 			mCurrentCompositeCommand.Reset();
-			DoCommand(CommandNew(*std::move(tempCommand), tempCommand->GetName()));
+			DoCommand(Command(*std::move(tempCommand), tempCommand->GetName()));
 		}
 		else if (endCode == CompositeCommand::eEndCode::Ended_Empty)
 		{
 			mCurrentCompositeCommand.Reset();
+		}
+	}
+
+	void CommandTracker::UndoCommand()
+	{
+		if (!mUndoStack.empty())
+		{
+			HeapObject<Command>& topCommand = mUndoStack.top();
+			topCommand->UndoCommand();
+			mRedoStack.push(std::move(topCommand));
+			mUndoStack.pop();
+		}
+	}
+
+	void CommandTracker::RedoCommand()
+	{
+		if (!mRedoStack.empty())
+		{
+			HeapObject<Command>& topCommand = mRedoStack.top();
+			topCommand->DoCommand();
+			mUndoStack.push(std::move(topCommand));
+			mRedoStack.pop();
 		}
 	}
 
@@ -63,46 +75,6 @@ namespace FLY_NAMESPACE
 	size_t CommandTracker::GetRedoSize() const
 	{
 		return mRedoStack.size();
-	}
-
-	void CommandTracker::UndoCommand()
-	{
-		if (!mUndoStack.empty())
-		{
-			HeapObject<CommandNew>& topCommand = mUndoStack.top();
-			topCommand->UndoCommand();
-			mRedoStack.push(std::move(topCommand));
-			mUndoStack.pop();
-		}
-	}
-
-	void CommandTracker::RedoCommand()
-	{
-		if (!mRedoStack.empty())
-		{
-			HeapObject<CommandNew>& topCommand = mRedoStack.top();
-			topCommand->DoCommand();
-			mUndoStack.push(std::move(topCommand));
-			mRedoStack.pop();
-		}
-	}
-
-	void CommandTracker::DoCommandInternal(CommandNew&& aCommand, bool aExecute)
-	{
-		if (mCurrentCompositeCommand)
-		{
-			mCurrentCompositeCommand->AddCommand(std::forward<CommandNew>(aCommand));
-			return;
-		}
-
-		if (aExecute)
-		{
-			aCommand.DoCommand();
-		}
-
-		mUndoStack.push(HeapObject<CommandNew>(std::forward<CommandNew>(aCommand)));
-
-		mRedoStack = {};
 	}
 }
 

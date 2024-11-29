@@ -4,7 +4,7 @@
 namespace FLY_NAMESPACE
 {
 
-	void CommandNew::DoCommand() const
+	void Command::DoCommand() const
 	{
 		if (Global::IsDebugging())
 		{
@@ -13,7 +13,7 @@ namespace FLY_NAMESPACE
 		mConcept->DoCommand();
 	}
 
-	void CommandNew::UndoCommand() const
+	void Command::UndoCommand() const
 	{
 		if (Global::IsDebugging())
 		{

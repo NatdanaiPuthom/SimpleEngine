@@ -51,7 +51,7 @@ namespace FLY_NAMESPACE
 		}
 
 
-		if constexpr (IsPointer<T>)
+		if constexpr (PointerType<T>)
 		{
 			if (aIsTargetable)
 			{
@@ -148,7 +148,7 @@ namespace FLY_NAMESPACE
 		}
 
 		template<typename T, eNodeOperatorTrait Operators, typename... Traits>
-		constexpr static RegisterType Class_Impl(const char* aName, Traits&&... aTraits)
+		constexpr static RegisterType Class_Impl(const char* aName, [[maybe_unused]] Traits&&... aTraits)
 		{
 			const bool isTargetable = !ContainsType<NonTargetable, Traits...>;
 			Color color = DefaultColor;
@@ -164,13 +164,13 @@ namespace FLY_NAMESPACE
 		template<typename T, typename... Traits>
 		constexpr static RegisterType Class(const char* aName, Traits&&... aTraits)
 		{
-			return Struct_Impl<T, eNodeOperatorTrait::None, Traits...>(aName, std::forward<Traits>(aTraits)...);
+			return Class_Impl<T, eNodeOperatorTrait::None, Traits...>(aName, std::forward<Traits>(aTraits)...);
 		}
 
 		template<typename T, eNodeOperatorTrait Operators, typename... Traits>
 		constexpr static RegisterType Class(const char* aName, Traits&&... aTraits)
 		{
-			return Struct_Impl<T, Operators, Traits...>(aName, std::forward<Traits>(aTraits)...);
+			return Class_Impl<T, Operators, Traits...>(aName, std::forward<Traits>(aTraits)...);
 		}
 	};
 

@@ -15,16 +15,6 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	const std::string& NodeFacade::GetNodeTypeName() const
-	{
-		return GetNodeType().mNodeRecipe.mName;
-	}
-
-	std::string NodeFacade::GetShortName() const
-	{
-		return Global::GetNodeTypeManager().GetShortName(GetNode().mTypeID);
-	}
-
 	Vec2 NodeFacade::GetPosition() const
 	{
 		return GetNode().mPosition;
@@ -82,6 +72,11 @@ namespace FLY_NAMESPACE
 		return GetNodeType().mNodeRecipe.mTraits;
 	}
 
+	bool NodeFacade::IsAccessor() const
+	{
+		return HasFlag(GetTraits(), eNodeTrait::Accessor);
+	}
+
 	EventID NodeFacade::GetEventID() const
 	{
 		return GetNodeType().mNodeRecipe.mEventID;
@@ -89,12 +84,39 @@ namespace FLY_NAMESPACE
 
 	bool NodeFacade::HasAnyConnectedLinks() const
 	{
-		return HasNodeAnyConnectedLinks(*this, NodeGraphFacade(mNodeGraphVariant));
+		const Node& node = GetNode();
+
+		auto hasConnectedLink = [](const std::vector<PinID>& aPinIDs, const NodeGraph& aNodeGraph) -> bool
+			{
+				for (const PinID pinID : aPinIDs)
+				{
+					const Pin& pin = aNodeGraph.mPins.at(pinID);
+					if (!pin.mConnectedPinIDs.empty())
+					{
+						return true;
+					}
+				}
+
+				return false;
+			};
+
+		return hasConnectedLink(node.mInputPins, GetNodeGraph()) || hasConnectedLink(node.mOutputPins, GetNodeGraph());
 	}
 
 	bool NodeFacade::IsReplacable() const
 	{
 		return Internal::IsNodeReplacable(NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), GetID());
+	}
+
+	VariableFacade NodeFacade::GetVariableFacade() const
+	{
+		const VariableRef variableRef = Internal::GetVariableRefByNodeRef(GlobalNodeRef(mNodeID, GetNodeGraph()));
+		return VariableFacade(variableRef.GetVarID(), ClassFacade(variableRef.GetClass()));
+	}
+
+	NodeTypeFacade NodeFacade::GetNodeTypeFacade() const
+	{
+		return NodeTypeFacade(GetNode().mTypeID);
 	}
 
 	void NodeFacade::Destroy(CommandTracker* const aCommandTracker)
@@ -112,12 +134,7 @@ namespace FLY_NAMESPACE
 		Internal::SetNodePosition(GetID(), aPosition, GetNodeGraph(), aCommandTracker);
 	}
 
-	const NodeGraph& NodeFacade::GetNodeGraph() const
-	{
-		return NodeGraphFacade(mNodeGraphVariant).GetNodeGraph();
-	}
-
-	NodeGraph& NodeFacade::GetNodeGraph()
+	NodeGraph& NodeFacade::GetNodeGraph() const
 	{
 		return NodeGraphFacade(mNodeGraphVariant).GetNodeGraph();
 	}

@@ -44,6 +44,20 @@ namespace FLY_NAMESPACE
 		return GetPinTypes(eFlowType::Output);
 	}
 
+	std::vector<DataTypeFacade> NodeTypeFacade::GetReplacableDataTypes() const
+	{
+		std::vector<DataTypeFacade> dataTypeFacades;
+
+		auto& dataTypes = Global::GetNodeTypeManager().GetTemplateMapByOperator(GetNodeType().mNodeRecipe.mOperatorTrait);
+		dataTypeFacades.reserve(dataTypes.size());
+		for (auto& [dataTypeID, nodeTypeID] : dataTypes)
+		{
+			dataTypeFacades.push_back(DataTypeFacade(dataTypeID));
+		}
+
+		return dataTypeFacades;
+	}
+
 	NodeTypeID NodeTypeFacade::GetID() const
 	{
 		return mNodeTypeID;

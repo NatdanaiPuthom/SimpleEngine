@@ -50,53 +50,15 @@ namespace FLY_NAMESPACE
 			const Pin& sourcePin = aSourceNodeGraph.mPins[sourcePinID];
 			[[maybe_unused]] const PinType& sourcePinType = Global::GetPinTypeManager().GetPinType(sourcePin.mTypeID);
 
-			outputPinType.mSetPinDataFunction(SetPinData{ destinationPinID, &aDestinationNodeGraph, sourcePin.mDataPtr,
+			outputPinType.mSetPinValueFunction(SetPinValueData
+				{ 
+				.mNodeGraph = &aDestinationNodeGraph, 
+				.mReadFromDataPtr = sourcePin.mDataPtr, 
+				.mWriteToPinID = destinationPinID,
 #ifdef FLY_DEBUG
-				sourcePinType.mDataTypeID
+				.mReadFromDataTypeID = sourcePinType.mDataTypeID
 #endif
 				}, aContext);
-		}
-	}
-
-
-	void EvaluateInputValues(const std::vector<PinID>& aInputPinIDs, const InternalExecutionContext& aContext, const size_t aStartIndex)
-	{
-		NodeGraph& currentNodeGraph = aContext.mNodeData.mNodeRef.GetNodeGraph();
-		for (size_t i = aStartIndex; i < aInputPinIDs.size(); ++i)
-		{
-
-			const PinID inputPinID = aInputPinIDs[i];
-
-			const Pin& inputPin = currentNodeGraph.mPins[inputPinID];
-			const PinType& inputPinType = Global::GetPinTypeManager().GetPinType(inputPin.mTypeID);
-
-			if (inputPinType.mDataTypeID == Flow::mTypeID)
-			{
-				continue;
-			}
-
-			if (!inputPin.mConnectedPinIDs.empty())
-			{
-
-				const PinID connectedOutputPinID = inputPin.mConnectedPinIDs.front();
-
-				const Pin& connectedOutputPin = currentNodeGraph.mPins[connectedOutputPinID];
-				const NodeID connectedNodeID = connectedOutputPin.mNodeID;
-
-				const Node& connectedNode = currentNodeGraph.mNodes[connectedNodeID];
-				const NodeType& connectedNodeType = Global::GetNodeTypeManager().GetNodeType(connectedNode.mTypeID);
-
-				if (!HasFlag(connectedNodeType.mNodeRecipe.mTraits, eNodeTrait::HasFlow))
-				{
-					Global::GetNodeExecutor().ExecuteNode(NodeExecutionData{ CreateContextualNodeRef(connectedNodeID, aContext.mNodeData.mNodeRef.GetNodeGraph()), eNodeTriggerReason::Read });
-				}
-
-				inputPinType.mSetPinDataFunction(SetPinData{ inputPinID, &currentNodeGraph, connectedOutputPin.mDataPtr,
-#ifdef _DEBUG
-					Global::GetPinTypeManager().GetPinType(connectedOutputPin.mTypeID).mDataTypeID
-#endif
-					}, aContext);
-			}
 		}
 	}
 

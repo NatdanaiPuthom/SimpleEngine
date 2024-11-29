@@ -23,14 +23,14 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	using FunctionType = void(*)(const T&);
 
-	class CommandNew final
+	class Command final
 	{
 	public:
 		
-		CommandNew() = default;
+		Command() = default;
 
 		template<typename T> requires Commandable<T> or MemberCommandable<T>
-		CommandNew(const T& aData, const std::string& aName)
+		Command(const T& aData, const std::string& aName)
 			: mConcept(std::make_unique<CommandModel<T>>(aData))
 			, mName(aName)
 		{
@@ -38,31 +38,31 @@ namespace FLY_NAMESPACE
 
 
 		template<typename T, ValidCallable<void, const T&> DoFunc, ValidCallable<void, const T&> UndoFunc>
-		CommandNew(const T& aData, DoFunc aDoFunction, UndoFunc aUndoFunction, const std::string& aName)
+		Command(const T& aData, DoFunc aDoFunction, UndoFunc aUndoFunction, const std::string& aName)
 			: mConcept(std::make_unique<CommandModel<T, FunctionType<T>, FunctionType<T>>>(aData, aDoFunction, aUndoFunction))
 			, mName(aName)
 		{
 		}
 
 
-		CommandNew(const CommandNew& aOther)
+		Command(const Command& aOther)
 			: mConcept(aOther.mConcept->Clone())
 			, mName(aOther.mName)
 		{
 
 		}
 
-		CommandNew(CommandNew&&) = default;
+		Command(Command&&) = default;
 
-		CommandNew& operator=(const CommandNew& aOther)
+		Command& operator=(const Command& aOther)
 		{
-			CommandNew temp(aOther);
+			Command temp(aOther);
 			std::swap(mConcept, temp.mConcept);
 			mName = aOther.mName;
 			return *this;
 		}
 
-		CommandNew& operator=(CommandNew&&) = default;
+		Command& operator=(Command&&) = default;
 
 		void DoCommand() const;
 		void UndoCommand() const;

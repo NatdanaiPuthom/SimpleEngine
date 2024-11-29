@@ -61,23 +61,19 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	inline T GetterNode(const InternalExecutionContext* aContext)
+	inline T* GetterNode(const InternalExecutionContext* aContext)
 	{
 		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
-
-		const VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariableInstances[variableRef.GetVarID()];
-		const T& output = *reinterpret_cast<const T*>(variableInstance.mRuntimeValueDataPtr.Get());
-		return output;
+		VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariableInstances[variableRef.GetVarID()];
+		T* outputValue = reinterpret_cast<T*>(variableInstance.mRuntimeValueDataPtr.Get());
+		return outputValue;
 	}
 
 	template<typename T>
 	inline void SetterNode(const InternalExecutionContext* aContext, const T& aValue)
 	{
-
 		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
-
 		VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariableInstances[variableRef.GetVarID()];
-
 		T& runtimeValue = *reinterpret_cast<T*>(variableInstance.mRuntimeValueDataPtr.Get());
 		runtimeValue = aValue;
 	}
@@ -104,7 +100,7 @@ namespace FLY_NAMESPACE
 		Global::GetNodeTypeManager().SetSetterNodeTypeID(GetDataTypeID<T>(), nodeTypeID);
 	}
 
-	template<IsPointer T>
+	template<PointerType T>
 	static T GetTargetNode(const InternalExecutionContext* aContext)
 	{
 		return reinterpret_cast<T>(aContext->mTarget);
@@ -340,6 +336,12 @@ namespace FLY_NAMESPACE
 					const DataType* classDataType = c ? c : Global::GetDataTypeManager().Find<ClassType>();
 					assert(classDataType);
 					nodeCreationData.mName = classDataType->mName + "/" + aFunctionName;
+				}
+				else
+				{
+					nodeCreationData.mName = "Default/" + aFunctionName;
+					//static_assert(false);
+					//nodeCreationData.mName = aFunctionName;
 				}
 			}
 

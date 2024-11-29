@@ -2,6 +2,7 @@
 #include "../Node/FlyNodeTypeManager.hpp"
 #include "../Global/FlyGlobal.hpp"
 #include "../Fly.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -28,27 +29,27 @@ namespace FLY_NAMESPACE
 
 	void CustomEventFacade::SetName(std::string_view aName, CommandTracker* aCommandTracker)
 	{
-		SetCustomEventName(*this, aName, aCommandTracker);
+		Internal::SetCustomEventName(GetID(), aName, aCommandTracker);
 	}
 
 	void CustomEventFacade::AddPin(DataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* aCommandTracker)
 	{
-		AddPinToCustomEvent(*this, aDataTypeFacade, aName, aCommandTracker);
+		Internal::AddPinToCustomEvent(GetID(), aDataTypeFacade.GetID(), aName, aCommandTracker);
 	}
 
 	void CustomEventFacade::SetPinNameAtIndex(std::string_view aName, size_t aIndex, CommandTracker* aCommandTracker)
 	{
-		SetPinNameAtIndexCustomEvent(*this, aName, aIndex, aCommandTracker);
+		Internal::SetPinNameAtIndexCustomEvent(GetID(), aName, aIndex, aCommandTracker);
 	} 
 
 	void CustomEventFacade::SetPinDataTypeAtIndex(DataTypeFacade aDataTypeFacade, size_t aIndex, CommandTracker* aCommandTracker)
 	{
-		SetPinDataTypeAtIndexCustomEvent(*this, aDataTypeFacade, aIndex, aCommandTracker);
+		Internal::SetPinDataTypeAtIndexCustomEvent(GetID(), aDataTypeFacade.GetID(), aIndex, aCommandTracker);
 	}
 
 	void CustomEventFacade::DeletePinAtIndex(size_t aIndex, CommandTracker* aCommandTracker)
 	{
-		DeletePinAtIndexCustomEvent(*this, aIndex, aCommandTracker);
+		Internal::DeletePinAtIndexCustomEvent(GetID(), aIndex, aCommandTracker);
 	}
 
 	CustomEventFacade::operator bool() const

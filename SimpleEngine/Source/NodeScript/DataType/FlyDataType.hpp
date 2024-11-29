@@ -18,28 +18,32 @@ namespace FLY_NAMESPACE
 
 	struct FundamentalInterface final
 	{
-		const AllocateInterface allocate;
-		const ReleaseInterface release;
-		const CopyInterface copy;
-		const SwapInterface swap;
-		const EqualsInterface equals;
+		const AllocateInterface allocate = nullptr;
+		const ReleaseInterface release = nullptr;
+		const CopyInterface copy = nullptr;
+		const SwapInterface swap = nullptr;
+		const EqualsInterface equals = nullptr;
 	};
 
-	using ViewAndEditInterface = eIsItemActive(*)(void* aDataPtr);
+	using ViewAndEditInterface = EditAndViewResult(*)(void* aDataPtr);
+	using ViewInterface = void(*)(const void* aDataPtr);
 	using SaveInterface = void(*)(nlohmann::json& aSaveObject, const void* aDataPtr);
 	using LoadInterface = void(*)(const nlohmann::json& aLoadObject, void* aDataPtr);
 
 	struct FunctionInterface final
 	{
-		const ViewAndEditInterface viewAndEdit;
-		const SaveInterface save;
-		const LoadInterface load;
+		const ViewAndEditInterface viewAndEdit = nullptr;
+		const ViewInterface view = nullptr;
+		const SaveInterface save = nullptr;
+		const LoadInterface load = nullptr;
 	};
 
 	struct ExecutionInterface final
 	{
-		const SetPinDataInterface setInputPinData;
-		const SetPinDataInterface setOutputPinData;
+		const SetPinValueInterface setInputPinValue = nullptr;
+		const SetPinValueInterface setOutputPinValue = nullptr;
+		const SetPinValueFromPinInterface setInputPinValueFromPin = nullptr;
+		const SetPinValueFromPinInterface setOutputPinValueFromPin = nullptr;
 	};
 
 	struct DataTypeInterface final
@@ -55,21 +59,23 @@ namespace FLY_NAMESPACE
 		Fundamental = 1 << 0,
 		ViewAndEditable = 1 << 1,
 		SaveLoadable = 1 << 2,
-		Pointer = 1 << 4,
 		Targetable = 1 << 3,
+		Pointer = 1 << 4,
 		All = Fundamental | ViewAndEditable | SaveLoadable | Targetable
 	};
 
 	struct DataType
 	{
 		const std::string mName;
-		const size_t mSize;
+		const size_t mSize = 0;
 		const Color mColor;
 		const std::type_info* mTypeInfo;
-		const eDataTypeTrait mTypeTraits;
 		const DataTypeInterface mInterface;
 		std::vector<Variable> mVariables;
 		std::vector<NodeTypeID> mNodeTypeIDs;
+		const DataTypeID mToPointerDataTypeID = InvalidID<DataTypeID>();
+		const DataTypeID mToValueDataTypeID = InvalidID<DataTypeID>();
+		const eDataTypeTrait mTypeTraits = eDataTypeTrait::None;
 	};
 
 	struct TemplateDataType

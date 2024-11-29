@@ -28,8 +28,11 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] bool IsParentNodeReplacable() const;
 		[[nodiscard]] bool HasAnyConnectedLinks() const;
 
+		[[nodiscard]] NodeGraphVariant GetNodeGraphVariant() const;
+
 		void DestroyConnectedLinks(CommandTracker* aCommandTracker);
-		void Edit(CommandTracker* aCommandTracker);
+		void ViewAndEdit(CommandTracker* aCommandTracker);
+		void View();
 
 		explicit operator bool() const;
 

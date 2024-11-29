@@ -16,6 +16,7 @@
 #include "Facade/FlyClassInstanceFacade.hpp"
 #include "SystemTypes/FlyNone.hpp"
 #include "SystemTypes/FlyWildcard.hpp"
+#include "Facade/FlyFacade.hpp"
 #include <unordered_map>
 
 namespace FLY_NAMESPACE
@@ -34,46 +35,13 @@ namespace FLY_NAMESPACE
 
 	ClassFacade FindClassByName(std::string_view aName);
 
-	void DestroyClassInstance(ClassInstanceFacade aClassInstanceFacade);
-
-	void EditClassInstanceVariableDefaultValue(ClassInstanceFacade aClassInstanceFacade);
-
-	void EditVariableDefaultValue(VariableFacade aVariableFacade, CommandTracker* aCommandTracker);
-
-	bool HasPinAnyConnectedLinks(PinFacade aPinFacade);
-	bool HasNodeAnyConnectedLinks(NodeFacade aNodeFacade, NodeGraphFacade aNodeGraphFacade);
-	std::vector<DataTypeFacade> GetReplacableDataTypes(PinFacade aPinFacade, NodeGraphFacade aNodeGraphFacade);
-	std::vector<DataTypeFacade> GetReplacableDataTypes(NodeFacade aNodeFacade, NodeGraphFacade aNodeGraphFacade);
-
-	void SetPinTypeName(PinTypeFacade aPinTypeFacade, std::string_view aName);
-
 	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, NodeGraphFacade aCopiedFromNodeGraphFacade);
 	void PasteCopyBuffer(Vec2 aPosition, NodeGraphFacade aTargetNodeGraphFacade, CommandTracker* aCommandTracker);
 
 	CustomEventFacade CreateCustomEvent(std::string_view aName);
-
-	void AddPinToCustomEvent(CustomEventFacade aCustomEventFacade, DataTypeFacade aDataTypeFacade, std::string_view aPinName, CommandTracker* aCommandTracker);
-	void SetPinDataTypeAtIndexCustomEvent(CustomEventFacade aCustomEventFacade, DataTypeFacade aDataTypeFacade, size_t aIndex, CommandTracker* aCommandTracker);
-	void SetPinNameAtIndexCustomEvent(CustomEventFacade aCustomEventFacade, std::string_view aName, size_t aIndex, CommandTracker* aCommandTracker);
-	void DeletePinAtIndexCustomEvent(CustomEventFacade aCustomEventFacade, size_t aIndex, CommandTracker* aCommandTracker);
-
-	void SetCustomEventName(CustomEventFacade aCustomEventFacade, std::string_view aName, CommandTracker* aCommandTracker);
-
 	FunctionFacade CreateGlobalFunction(const std::string_view aName);
 
-	void AddPinToFunction(FunctionFacade aFunctionFacade, DataTypeFacade aDataTypeFacade, eFlowType aFlowType, std::string_view aPinName, CommandTracker* aCommandTracker);
-	void SetPinDataTypeAtIndexFunction(FunctionFacade aFunctionFacade, DataTypeFacade aDataTypeFacade, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
-	void SetPinNameAtIndexFunction(FunctionFacade aFunctionFacade, std::string_view aName, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
-	void DeletePinAtIndexFunction(FunctionFacade aFunctionFacade, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
-
 	void BeginFrame(CommandTracker* aCommandTracker);
-
-	std::vector<PinID> GetInputPins(const NodeGraph& aNodeGraph, bool aIncludeDestroyed = false);
-	std::vector<PinID> GetOutputPins(const NodeGraph& aNodeGraph, bool aIncludeDestroyed = false);
-
-	VariableFacade GetVariableByNode(NodeFacade aNodeFacade, NodeGraphFacade aNodeGraphFacade);
-	std::vector<VariableFacade> GetVariables(ClassFacade aClassFacade, bool aIncludeDestroyed = false);
-
 
 	std::vector<DataTypeFacade> GetDataTypes();
 
@@ -86,6 +54,7 @@ namespace FLY_NAMESPACE
 	std::vector<CustomEventFacade> GetCustomEvents();
 
 	std::vector<NodeTypeFacade> GetNodeTypesFilteredByDataTypeAndFlowType(DataTypeID aDataTypeID, eFlowType aFlowType);
+	std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowType(DataTypeID aDataTypeID, eFlowType aFlowType);
 	std::vector<NodeTypeFacade> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);
 
 	std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> GetClasses();

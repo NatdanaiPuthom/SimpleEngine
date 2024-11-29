@@ -3,6 +3,8 @@
 #include "../Node/FlyNode.hpp"
 #include "../Node/FlyNodeTrait.hpp"
 #include "FlyPinFacade.hpp"
+#include "FlyVariableFacade.hpp"
+#include "FlyNodeTypeFacade.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -16,8 +18,6 @@ namespace FLY_NAMESPACE
 		NodeFacade() = default;
 		NodeFacade(NodeID aNodeID, const NodeGraphFacade& aNodeGraphFacade);
 
-		[[nodiscard]] const std::string& GetNodeTypeName() const;
-		[[nodiscard]] std::string GetShortName() const;
 		[[nodiscard]] Vec2 GetPosition() const;
 		[[nodiscard]] bool IsDestroyed() const;
 
@@ -27,18 +27,21 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] NodeID GetID() const;
 
 		[[nodiscard]] eNodeTrait GetTraits() const;
+		[[nodiscard]] bool IsAccessor() const;
 		[[nodiscard]] EventID GetEventID() const;
 
 		[[nodiscard]] bool HasAnyConnectedLinks() const;
 		[[nodiscard]] bool IsReplacable() const;
+
+		[[nodiscard]] VariableFacade GetVariableFacade() const;
+		[[nodiscard]] NodeTypeFacade GetNodeTypeFacade() const;
 
 		void Destroy(CommandTracker* aCommandTracker);
 		void DestroyConnectedLinks(CommandTracker* aCommandTracker);
 
 		void SetPosition(Vec2 aPosition, CommandTracker* aCommandTracker = nullptr);
 
-		[[nodiscard]] const NodeGraph& GetNodeGraph() const;
-		[[nodiscard]] NodeGraph& GetNodeGraph();
+		[[nodiscard]] NodeGraph& GetNodeGraph() const;
 
 		friend bool operator==(const NodeFacade& a, const NodeFacade& b);
 

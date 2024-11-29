@@ -568,7 +568,7 @@ namespace ECS
 
 						if (aClassInstanceFacade)
 						{
-							Fly::DestroyClassInstance(aClassInstanceFacade);
+							aClassInstanceFacade.Destroy();
 						}
 
 						aClassInstanceFacade = entityClass.CreateClassInstance();
@@ -583,7 +583,7 @@ namespace ECS
 			return wasChanged;
 		}
 
-		Fly::EditClassInstanceVariableDefaultValue(aClassInstanceFacade);
+		aClassInstanceFacade.EditVariableDefaultValues(nullptr);
 
 		return wasChanged;
 	}

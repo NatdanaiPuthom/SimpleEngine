@@ -16,8 +16,11 @@ namespace FLY_NAMESPACE
 
 		[[nodiscard]] PinTypeID GetID() const;
 
+		void SetName(std::string_view aName);
+
 	private:
 
+		[[nodiscard]] PinType& GetPinType();
 		[[nodiscard]] const PinType& GetPinType() const;
 
 	private:

@@ -19,7 +19,8 @@ namespace FLY_NAMESPACE
 
 		CompositeCommand(const std::string& aName = std::string());
 
-		void AddCommand(CommandNew&& aCommand);
+		template<typename... Args>
+		void AddCommand(Args&&... aArgs);
 
 		void Do() const;
 		void Undo() const;
@@ -32,7 +33,20 @@ namespace FLY_NAMESPACE
 	private:
 
 		HeapObject<CompositeCommand, false> mCurrentChild;
-		std::vector<CommandNew> mCommands;
+		std::vector<Command> mCommands;
 		std::string mName;
 	};
+
+	template<typename ...Args>
+	inline void CompositeCommand::AddCommand(Args && ...aArgs)
+	{
+		if (mCurrentChild)
+		{
+			mCurrentChild->AddCommand(std::forward<Args>(aArgs)...);
+		}
+		else
+		{
+			mCommands.emplace_back(std::forward<Args>(aArgs)...);
+		}
+	}
 }

@@ -3,6 +3,7 @@
 #include "../Execution/FlyNodeExecutor.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "../DataType/FlyClass.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -15,6 +16,16 @@ namespace FLY_NAMESPACE
 	void ClassInstanceFacade::InitRuntime()
 	{
 		mClassInstance->InitRuntime();
+	}
+
+	void ClassInstanceFacade::EditVariableDefaultValues(CommandTracker* const aCommandTracker)
+	{
+		Internal::EditClassInstanceVariableDefaultValue(*mClassInstance, aCommandTracker);
+	}
+
+	void ClassInstanceFacade::Destroy()
+	{
+		GetClassInstance().mClass->DestroyClassInstance(GetClassInstance());
 	}
 
 	const std::string& ClassInstanceFacade::GetName() const

@@ -51,6 +51,7 @@ namespace FLY_NAMESPACE
 	{
 		mCallerTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent | eNodeTrait::HasImplicitFlow>(CustomEventCallerNode, GetCallerNodeCreationData(aName));
 		mExecutorTypeID = RegisterSystemNodeType<eNodeTrait::CustomEvent>(CustomEventExecutorNode, GetExecutorNodeCreationData(aName));
+
 	}
 
 	CustomEvent::~CustomEvent()
