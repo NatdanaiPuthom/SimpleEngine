@@ -433,19 +433,16 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		}
 
 		filter "configurations:Debug"
-		    targetdir (dirs.Bin)
 			postbuildcommands {
 				"{COPY} %{wks.location}/Dependencies/DLL/Debug/*.dll %{cfg.targetdir}"
 			}
 
 		filter "configurations:Release"
-			targetdir (dirs.Build)
 			postbuildcommands {
 				"{COPY} %{wks.location}/Dependencies/DLL/Release/*.dll %{cfg.targetdir}"
 			}
 
 		filter "configurations:Simple"
-			targetdir (dirs.Bin)
 			postbuildcommands {
 				"{COPY} %{wks.location}/Dependencies/DLL/Release/*.dll %{cfg.targetdir}"
 			}
