@@ -25,6 +25,8 @@ namespace FLY_NAMESPACE
 
 		explicit operator bool() const;
 
+		friend bool operator==(const LinkFacade& a, const LinkFacade& b);
+
 	private:
 
 		const Link& GetLink() const;
@@ -32,6 +34,6 @@ namespace FLY_NAMESPACE
 	private:
 
 		LinkID mLinkID = InvalidID<LinkID>();
-		NodeGraphVariant mNodeGraphVariant;
+		NodeGraphVariantHandle mNodeGraphVariant;
 	};
 }

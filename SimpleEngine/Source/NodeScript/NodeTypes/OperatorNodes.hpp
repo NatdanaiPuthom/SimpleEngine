@@ -69,7 +69,7 @@ namespace FLY_NAMESPACE
 		template<HasOperator_Print T>
 		static constexpr inline void Print(const T& aValue)
 		{
-			std::cout << aValue << std::endl;
+			std::cout << aValue << '\n';
 		}
 
 		template<HasOperator_Add T>

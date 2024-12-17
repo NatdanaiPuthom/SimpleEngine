@@ -11,7 +11,7 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	EditAndViewResult DataTypeManager::ViewAndEditData(const DataType& aDataType, void* const aDataPtr) const
+	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataType& aDataType, void* const aDataPtr) const
 	{
 		// If data type has a valid edit function
 		if (aDataType.mInterface.function.viewAndEdit)
@@ -19,18 +19,18 @@ namespace FLY_NAMESPACE
 			return aDataType.mInterface.function.viewAndEdit(aDataPtr);
 		}
 
-		EditAndViewResult editAndViewResult;
+		ViewAndEditResult viewAndEditResult;
 		// View and edit member variables instead
 		for (const Variable& variable : aDataType.mVariables)
 		{
 			if (const DataType* variableDataType = Find(variable.mDataTypeID))
 			{
 				void* const propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
-				editAndViewResult.mIsItemActive |= ViewAndEditData(*variableDataType, propertyDataPtr).mIsItemActive;
+				viewAndEditResult.mIsItemActive |= ViewAndEditData(*variableDataType, propertyDataPtr).mIsItemActive;
 			}
 		}
 
-		return editAndViewResult;
+		return viewAndEditResult;
 	}
 
 	void DataTypeManager::ViewData(const DataType& aDataType, const void* const aDataPtr) const
@@ -106,14 +106,14 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
-	EditAndViewResult DataTypeManager::ViewAndEditData(const DataTypeID aDataTypeID, void* const aDataPtr) const
+	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataTypeID aDataTypeID, void* const aDataPtr) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
 			return ViewAndEditData(*dataType, aDataPtr);
 		}
 
-		return EditAndViewResult{ .mIsItemActive = false };
+		return ViewAndEditResult{ .mIsItemActive = false };
 	}
 
 	void DataTypeManager::ViewData(DataTypeID aDataTypeID, const void* aDataPtr) const
@@ -248,6 +248,11 @@ namespace FLY_NAMESPACE
 		return InvalidID<DataTypeID>();
 	}
 
+	void DataTypeManager::SetEditorNullptrFunction(void(*aFunction)())
+	{
+		editorNullptrFunction = aFunction;
+	}
+
 	const std::unordered_map<DataTypeID, DataType>& DataTypeManager::GetDataTypes() const
 	{
 		return mDataTypes;
@@ -264,7 +269,7 @@ namespace FLY_NAMESPACE
 		return nullptr;
 	}
 
-	const DataType* DataTypeManager::Find(DataTypeID aDataTypeID) const
+	const DataType* DataTypeManager::Find(const DataTypeID aDataTypeID) const
 	{
 		auto it = mDataTypes.find(aDataTypeID);
 		if (it != mDataTypes.end())
@@ -272,5 +277,20 @@ namespace FLY_NAMESPACE
 			return &it->second;
 		}
 		return nullptr;
+	}
+
+	bool DataTypeManager::IsRegistered(const DataTypeID aDataTypeID) const
+	{
+		return mDataTypes.contains(aDataTypeID);
+	}
+
+	void DataTypeManager::SetDefaultColor(const Color& aColor)
+	{
+		mDefaultColor = aColor;
+	}
+
+	Color DataTypeManager::GetDefaultColor() const
+	{
+		return mDefaultColor;
 	}
 }

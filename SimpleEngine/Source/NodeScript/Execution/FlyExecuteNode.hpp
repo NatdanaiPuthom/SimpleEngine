@@ -32,7 +32,9 @@ namespace FLY_NAMESPACE
 				.mNodeGraph = &aContext.mNodeData.mNodeRef.GetNodeGraph(),
 				.mReadFromDataPtr = dataPtr,
 				.mWriteToPinID = outputPinID,
-				.mReadFromDataTypeID = GetDataTypeID<decltype(std::get<Index>(aOutputValues))>()
+#ifdef FLY_DEBUG
+				.mReadFromDataTypeID = GetDataTypeID<std::tuple_element_t<Index, TupleType>>()
+#endif
 			};
 
 			pinType.mSetPinValueFunction(setPinValueData, aContext);

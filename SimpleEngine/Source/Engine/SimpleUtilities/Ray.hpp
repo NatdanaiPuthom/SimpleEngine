@@ -15,6 +15,9 @@ namespace SimpleUtilities
 		constexpr Math::Vector3f GetInverseDirection() const;
 		constexpr Math::Vector3f GetOrigin() const;
 		constexpr Math::Vector3f GetDirection() const;
+
+		constexpr void SetOrigin(const Math::Vector3f& aOrigin);
+		constexpr void SetDirection(const Math::Vector3f& aDirection);
 	private:
 		Math::Vector3f myOrigin;
 		Math::Vector3f myDirection;
@@ -52,6 +55,16 @@ namespace SimpleUtilities
 	constexpr Math::Vector3f Ray::GetDirection() const
 	{
 		return myDirection;
+	}
+
+	constexpr void Ray::SetOrigin(const Math::Vector3f& aOrigin)
+	{
+		myOrigin = aOrigin;
+	}
+
+	constexpr void Ray::SetDirection(const Math::Vector3f& aDirection)
+	{
+		myDirection = aDirection;
 	}
 
 	constexpr Math::Vector3f Ray::GetInverseDirection() const

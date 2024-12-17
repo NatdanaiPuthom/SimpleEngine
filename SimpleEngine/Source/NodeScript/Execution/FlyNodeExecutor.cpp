@@ -30,6 +30,7 @@ namespace FLY_NAMESPACE
 		mExecutionContext.mClassInstance = &aClassInstance;
 		mExecutionContext.mNodeGraphInstance = &aClassInstance.mEventGraphInstance;
 		mExecutionContext.mTarget = aTarget;
+		mExecutionContext.mNodeGraphVariantHandle = &aClassInstance.mClass->mEventGraph;
 
 #ifdef FLY_DEBUG
 		if (aTarget == nullptr)
@@ -45,9 +46,14 @@ namespace FLY_NAMESPACE
 		{
 			for (const NodeID nodeID : it->second)
 			{
-				ExecuteNode(NodeExecutionData{ .mNodeRef = CreateContextualNodeRef(nodeID, eventGraph.mNodeGraph), .mTriggerReason = eNodeTriggerReason::Event });
+				ExecuteNode(NodeExecutionData{ .mNodeRef = NodeRef(nodeID, eventGraph.mNodeGraph), .mTriggerReason = eNodeTriggerReason::Event });
 			}
 		}
+	}
+
+	Debugger& NodeExecutor::GetDebugger()
+	{
+		return mDebugger;
 	}
 
 }

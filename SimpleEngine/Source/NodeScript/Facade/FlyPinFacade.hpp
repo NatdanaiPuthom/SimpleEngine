@@ -28,11 +28,11 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] bool IsParentNodeReplacable() const;
 		[[nodiscard]] bool HasAnyConnectedLinks() const;
 
-		[[nodiscard]] NodeGraphVariant GetNodeGraphVariant() const;
+		[[nodiscard]] NodeGraphVariantHandle GetNodeGraphVariant() const;
 
 		void DestroyConnectedLinks(CommandTracker* aCommandTracker);
 		void ViewAndEdit(CommandTracker* aCommandTracker);
-		void View();
+		void View() const;
 
 		explicit operator bool() const;
 
@@ -46,6 +46,6 @@ namespace FLY_NAMESPACE
 	private:
 
 		PinID mPinID = InvalidID<PinID>();
-		NodeGraphVariant mNodeGraphVariant;
+		NodeGraphVariantHandle mNodeGraphVariant;
 	};
 }

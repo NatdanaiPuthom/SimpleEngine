@@ -1,6 +1,7 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "../Node/FlyNodeRef.hpp"
+#include "../Graph/FlyNodeGraphVariant.hpp"
 #include <queue>
 
 namespace FLY_NAMESPACE
@@ -42,6 +43,7 @@ namespace FLY_NAMESPACE
 		Class* mClass = nullptr;
 		const ExecutionContextBase* mExecutionContext = nullptr;
 		NodeExecutionData mNodeData;
+		NodeGraphVariantHandle mNodeGraphVariantHandle;
 		ExecutionQueue* mExecutionQueue = nullptr;
 		void* mTarget = nullptr;
 		ClassInstance* mClassInstance = nullptr;

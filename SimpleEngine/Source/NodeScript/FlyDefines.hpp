@@ -12,6 +12,11 @@
 
 #undef max
 
+#define FLY_CONCATENATE_DETAIL(x, y) x##y
+#define FLY_CONCATENATE(x, y) FLY_CONCATENATE_DETAIL(x, y)
+
+#define FLY_UNIQUE_NAME(base) FLY_CONCATENATE(base, __COUNTER__)
+
 namespace FLY_NAMESPACE
 {
 	using NodeID = int;
@@ -181,7 +186,7 @@ namespace FLY_NAMESPACE
 		constexpr Color Gray = Color(0.5f, 0.5f, 0.5f);
 	}
 
-	struct EditAndViewResult final
+	struct ViewAndEditResult final
 	{
 		bool mIsItemActive = false;
 	};

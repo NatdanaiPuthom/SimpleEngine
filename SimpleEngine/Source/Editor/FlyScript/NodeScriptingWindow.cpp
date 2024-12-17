@@ -17,6 +17,8 @@ namespace Editor
 		, myFunctionSettingsWindow(*this)
 	{
 		myCommandTracker = std::make_unique<Fly::CommandTracker>();
+		
+		Fly::SetEditorNullptrFunction([]() { ImGui::TextWrapped("Nullptr"); });
 	}
 
 	NodeScriptingWindow::~NodeScriptingWindow()
@@ -131,10 +133,9 @@ namespace Editor
 
 	void NodeScriptingWindow::Draw()
 	{
-
+		PROFILER_FUNCTION(profiler::colors::Amber600);
 		if (ImGui::Begin("Node Scripting"))
 		{
-
 
 			UpdateContext();
 
@@ -181,6 +182,15 @@ namespace Editor
 					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().myNodeGraphFacade);
 					GetNodeContext().myNodeGraphFacade.DestroySelection(selectedNodes, {}, nullptr);
 				}
+			}
+
+			if (ImGui::IsKeyPressed(ImGuiKey_UpArrow))
+			{
+				mySearchNodeData.myCurrentIndex = std::max(0, mySearchNodeData.myCurrentIndex - 1);
+			}
+			else if (ImGui::IsKeyPressed(ImGuiKey_DownArrow))
+			{
+				mySearchNodeData.myCurrentIndex++;
 			}
 
 			bool& isDebugging = Fly::Global::IsDebugging();
@@ -428,7 +438,11 @@ namespace Editor
 				.mDeltaTime = Global::GetDeltaTime()
 			};
 			Fly::None none;
+			PROFILER_BEGIN("Execute Event");
 			GetNodeContext().myClassInstanceFacade.ExecuteEvent(EditorUpdate, &none, c);
+			PROFILER_END();
+
+			GetNodeContext().myTraversedLinks = Fly::GetTraversedLinks();
 		}
 	}
 
@@ -581,7 +595,7 @@ namespace Editor
 			ImGui::SetCursorPos(cursorPos);
 
 			// Render output pins
-			for (Fly::PinFacade outputPinFacade : outputPinFacades)
+			for (const Fly::PinFacade& outputPinFacade : outputPinFacades)
 			{
 				const Fly::DataTypeFacade pinDataType(outputPinFacade.GetDataTypeID());
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
@@ -635,9 +649,15 @@ namespace Editor
 			const Fly::PinFacade pinFacade = linkFacade.GetInputPin();
 			const Fly::DataTypeFacade pinDataType(pinFacade.GetDataTypeID());
 
-			ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(pinDataType.GetColor()));
-			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(pinDataType.GetColor() - mySelectionTint));
-			ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(pinDataType.GetColor() - myHoverTint));
+			const Fly::Color dataTypeColor = pinDataType.GetColor();
+			Fly::Color linkColor = dataTypeColor;
+			if (std::find(currentNodeContext.myTraversedLinks.begin(), currentNodeContext.myTraversedLinks.end(), linkFacade) != currentNodeContext.myTraversedLinks.end())
+			{
+				linkColor = Fly::Color(0.f, 0.f, 0.f, 1.f);
+			}
+			ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(linkColor));
+			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(linkColor - mySelectionTint));
+			ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(linkColor - myHoverTint));
 
 			ImNodes::Link(linkFacade.GetID(), linkFacade.GetInputPin().GetID(), linkFacade.GetOutputPin().GetID());
 
@@ -773,7 +793,14 @@ namespace Editor
 
 			ImGui::Separator();
 
-			myClickedPinFacade.View();
+			if (myClickedPinFacade.GetFlowType() == Fly::eFlowType::Input)
+			{
+				myClickedPinFacade.ViewAndEdit(myCommandTracker.get());
+			}
+			else
+			{
+				myClickedPinFacade.View();
+			}
 
 			ImGui::Separator();
 
@@ -872,40 +899,52 @@ namespace Editor
 
 		if (ImNodes::IsLinkDropped(&droppedPinID))
 		{
-			ImGui::OpenPopup("Node Create Popup");
+			ImGui::OpenPopup(NODE_SEARCH_POPUP_NAME);
 			currentNodeContext.myLinkCreationPinID = droppedPinID;
 			currentNodeContext.myPinFacadesToHighlight.clear();
+			myNodeTypeSearch[0] = '\0';
 
 			UpdateClickPos();
-		}
 
-		// Drop link create popup
-		if (ImGui::BeginPopup("Node Create Popup"))
-		{
-			const Fly::PinFacade pinFacade(currentNodeContext.myLinkCreationPinID, GetNodeContext().myNodeGraphFacade);
-
-			auto nodeTypePopulationFunc = [&](NodeTypeCategory& aMainCategory) -> void
+			auto categoryFunc = [this](NodeTypeCategory& aMainCategory) -> void
 				{
+					NodeContext& context = GetNodeContext();
+					const Fly::PinFacade pinFacade(context.myLinkCreationPinID, context.myNodeGraphFacade);
 
-					const std::vector<Fly::NodeTypeFacade> filteredNodeTypesByDataTypeAndFlowType = Fly::GetNodeTypesFilteredByRelatedDataTypesAndFlowType(pinFacade.GetDataTypeID(), InvertFlowType(pinFacade.GetFlowType()));
+					const std::vector<Fly::NodeTypeFacade> filteredNodeTypesByDataTypeAndFlowType = Fly::GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(pinFacade.GetDataTypeID(), InvertFlowType(pinFacade.GetFlowType()), Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
 
-					for (const Fly::NodeTypeFacade& nodeType : filteredNodeTypesByDataTypeAndFlowType)
+					if (myNodeTypeSearch[0] == '\0')
 					{
-						PopulateCategories(nodeType.GetName(), nodeType, aMainCategory);
+						for (const Fly::NodeTypeFacade& nodeType : filteredNodeTypesByDataTypeAndFlowType)
+						{
+							PopulateCategories(nodeType.GetName(), nodeType, aMainCategory);
+						}
 					}
+					else
+					{
+						for (const Fly::NodeTypeFacade& nodeType : filteredNodeTypesByDataTypeAndFlowType)
+						{
+							const bool isSearched = SearchString(nodeType.GetName(), std::string_view(myNodeTypeSearch));
+							if (isSearched)
+							{
+								aMainCategory.nodeTypes.push_back(nodeType);
+							}
+						}
+					}
+
 				};
 
-			auto onClickCallback = [&](const Fly::NodeTypeFacade& aNodeTypeFacade) -> void
+			auto onClickCallback = [this](const Fly::NodeTypeFacade& aNodeTypeFacade) -> void
 				{
-					GetNodeContext().myNodeGraphFacade.CreateNodeAutoLink(aNodeTypeFacade, currentNodeContext.myLinkCreationPinID, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
+					NodeContext& c = GetNodeContext();
+					c.myNodeGraphFacade.CreateNodeAutoLink(aNodeTypeFacade, c.myLinkCreationPinID, Fly::Vec2{ myNodeCreationClickPos.x, myNodeCreationClickPos.y }, myCommandTracker.get());
 
-					currentNodeContext.myPinFacadesToHighlight.clear();
+					c.myPinFacadesToHighlight.clear();
 					myNodeTypeSearch[0] = '\0';
 				};
 
-			ShowNodeCreationMenu(nodeTypePopulationFunc, onClickCallback);
-
-			ImGui::EndPopup();
+			mySearchNodeData.myCategoryFunction = categoryFunc;
+			mySearchNodeData.myOnClickFunction = onClickCallback;
 		}
 
 		if (Fly::Global::IsDebugging())
@@ -946,6 +985,81 @@ namespace Editor
 
 	}
 
+	bool NodeScriptingWindow::ShowNodeSearchMenu(const std::vector<Fly::NodeTypeFacade>& aNodeTypes)
+	{
+		bool wasClicked = false;
+		for (int i = 0; i < aNodeTypes.size(); i++)
+		{
+			const Fly::NodeTypeFacade& nodeType = aNodeTypes[i];
+
+			const bool isCurrentlySelected = mySearchNodeData.myCurrentIndex == i;
+			if (ImGui::MenuItem(nodeType.GetShortName().c_str(), nullptr, isCurrentlySelected) || 
+				(isCurrentlySelected && ImGui::IsKeyPressed(ImGuiKey_Enter)))
+			{
+				mySearchNodeData.myOnClickFunction(nodeType);
+				wasClicked = true;
+			}
+		}
+		return wasClicked;
+	}
+
+	bool NodeScriptingWindow::ShowNodeSearchMenuByCategory(const NodeTypeCategory& aCategory)
+	{
+		bool wasClicked = false;
+		if (ImGui::BeginMenu(aCategory.name.c_str()))
+		{
+
+			for (const NodeTypeCategory& childCategory : aCategory.childCategories)
+			{
+				wasClicked |= ShowNodeSearchMenuByCategory(childCategory);
+			}
+
+			wasClicked |= ShowNodeSearchMenu(aCategory.nodeTypes);
+
+			ImGui::EndMenu();
+		}
+		return wasClicked;
+	}
+
+	void NodeScriptingWindow::ShowNodeSearchMenu()
+	{
+		if (ImGui::BeginPopup(NODE_SEARCH_POPUP_NAME))
+		{
+
+			NodeTypeCategory mainCategory{ "Create Node" };
+			mySearchNodeData.myCategoryFunction(mainCategory);
+
+			ImGui::SetKeyboardFocusHere();
+			ImGui::InputTextWithHint("##", "Node Type", myNodeTypeSearch, IM_ARRAYSIZE(myNodeTypeSearch));
+
+			bool wasClicked = false;
+
+			if (myNodeTypeSearch[0] == '\0')
+			{
+
+				for (const NodeTypeCategory& category : mainCategory.childCategories)
+				{
+					wasClicked |= ShowNodeSearchMenuByCategory(category);
+				}
+			}
+			else
+			{
+				wasClicked |= ShowNodeSearchMenu(mainCategory.nodeTypes);
+			}
+
+			if (wasClicked)
+			{
+				mySearchNodeData.myCurrentIndex = 0;
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+		else
+		{
+			mySearchNodeData = {};
+		}
+	}
+
 	void NodeScriptingWindow::PopulateCategories(const std::string& aName, const Fly::NodeTypeFacade& aNodeType, NodeTypeCategory& aCategory)
 	{
 		std::string categoryName = aName.substr(0, aName.find_first_of('/'));
@@ -977,77 +1091,15 @@ namespace Editor
 		}
 	}
 
-	void NodeScriptingWindow::ShowNodeTypeCreationMenu(const std::vector<Fly::NodeTypeFacade>& aNodeTypes, const std::function<void(const Fly::NodeTypeFacade&)>& aOnClickFunc)
-	{
-		for (const Fly::NodeTypeFacade& nodeType : aNodeTypes)
-		{
-			if (ImGui::MenuItem(nodeType.GetShortName().c_str()))
-			{
-				aOnClickFunc(nodeType);
-			}
-		}
-	}
-
-	void NodeScriptingWindow::ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(const Fly::NodeTypeFacade&)>& aOnClickFunc)
-	{
-		if (ImGui::BeginMenu(aCategory.name.c_str()))
-		{
-
-			for (const NodeTypeCategory& childCategory : aCategory.childCategories)
-			{
-				ShowNodeCreationMenuByCategory(childCategory, aOnClickFunc);
-			}
-
-			ShowNodeTypeCreationMenu(aCategory.nodeTypes, aOnClickFunc);
-
-			ImGui::EndMenu();
-		}
-	}
-
-	void NodeScriptingWindow::ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(const Fly::NodeTypeFacade&)>& aOnClickFunction)
-	{
-		NodeTypeCategory mainCategory{ "Create Node" };
-		aCategoryFunction(mainCategory);
-
-		ImGui::SetKeyboardFocusHere();
-		ImGui::InputTextWithHint("##", "Node Type", myNodeTypeSearch, IM_ARRAYSIZE(myNodeTypeSearch));
-
-		//ImGui::Keyboard
-
-		if (myNodeTypeSearch[0] == '\0')
-		{
-
-			for (const NodeTypeCategory& category : mainCategory.childCategories)
-			{
-				ShowNodeCreationMenuByCategory(category, aOnClickFunction);
-			}
-		}
-		else
-		{
-			ShowNodeTypeCreationMenu(mainCategory.nodeTypes, aOnClickFunction);
-		}
-	}
-
-	static bool StringCompare(std::string_view aStr1, std::string_view aStr2)
-	{
-		auto it = std::search(
-			aStr1.begin(), aStr1.end(),
-			aStr2.begin(), aStr2.end(),
-			[](unsigned char ch1, unsigned char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
-		);
-		return it != aStr1.end();
-	}
-
 	void NodeScriptingWindow::NodeCreation()
 	{
 		if (ImGui::IsKeyPressed(ImGuiKey_MouseRight) && !myClickedPinFacade && !myClickedNodeFacade)
 		{
-			ImGui::OpenPopup("Node Type Selection");
+			ImGui::OpenPopup(NODE_SEARCH_POPUP_NAME);
 			UpdateClickPos();
-		}
+			myNodeTypeSearch[0] = '\0';
 
-		if (ImGui::BeginPopup("Node Type Selection"))
-		{
+
 			auto categoryFunc = [&](NodeTypeCategory& aMainCategory) -> void
 				{
 
@@ -1067,7 +1119,7 @@ namespace Editor
 
 						for (const Fly::NodeTypeFacade& nodeType : filteredNodeTypes)
 						{
-							const bool isSearched = StringCompare(nodeType.GetName(), myNodeTypeSearch);
+							const bool isSearched = SearchString(nodeType.GetName(), std::string_view(myNodeTypeSearch));
 							if (isSearched)
 							{
 								aMainCategory.nodeTypes.push_back(nodeType);
@@ -1086,10 +1138,11 @@ namespace Editor
 					currentNodeContext.myPinFacadesToHighlight.clear();
 					myNodeTypeSearch[0] = '\0';
 				};
-
-			ShowNodeCreationMenu(categoryFunc, onClickCallback);
-			ImGui::EndPopup();
+			mySearchNodeData.myCategoryFunction = categoryFunc;
+			mySearchNodeData.myOnClickFunction = onClickCallback;
 		}
+
+		ShowNodeSearchMenu();
 	}
 
 	ImVec2 NodeScriptingWindow::GetMiddlePos() const

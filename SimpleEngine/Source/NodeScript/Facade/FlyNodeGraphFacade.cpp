@@ -21,12 +21,12 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	NodeGraphFacade::NodeGraphFacade(NodeGraphVariant&& aNodeGraphVariant)
-		: mNodeGraphVariant(std::forward<NodeGraphVariant>(aNodeGraphVariant))
+	NodeGraphFacade::NodeGraphFacade(NodeGraphVariantHandle&& aNodeGraphVariant)
+		: mNodeGraphVariant(std::forward<NodeGraphVariantHandle>(aNodeGraphVariant))
 	{
 	}
 
-	NodeGraphFacade::NodeGraphFacade(const NodeGraphVariant& aNodeGraphVariant)
+	NodeGraphFacade::NodeGraphFacade(const NodeGraphVariantHandle& aNodeGraphVariant)
 		: mNodeGraphVariant(aNodeGraphVariant)
 	{
 	}
@@ -74,32 +74,12 @@ namespace FLY_NAMESPACE
 
 	NodeGraph& NodeGraphFacade::GetNodeGraph()
 	{
-		return std::visit(Visitor{
-			[](EventGraph* aEventGraph)-> NodeGraph&
-			{
-				return aEventGraph->mNodeGraph;
-			},
-			[](FunctionIDWrapper aFunctionIDWrapper) -> NodeGraph&
-			{
-				return Global::GetNodeTypeManager().GetFunction(aFunctionIDWrapper.mID).mNodeGraph;
-			}
-			},
-			mNodeGraphVariant);
+		return Internal::GetNodeGraph(mNodeGraphVariant);
 	}
 
 	const NodeGraph& NodeGraphFacade::GetNodeGraph() const
 	{
-		return std::visit(Visitor{
-			[](EventGraph* aEventGraph) -> const NodeGraph&
-			{
-				return aEventGraph->mNodeGraph;
-			},
-			[](FunctionIDWrapper aFunctionIDWrapper) -> const NodeGraph&
-			{
-				return Global::GetNodeTypeManager().GetFunction(aFunctionIDWrapper.mID).mNodeGraph;
-			}
-			},
-			mNodeGraphVariant);
+		return Internal::GetNodeGraph(mNodeGraphVariant);
 	}
 
 	eNodeGraphType NodeGraphFacade::GetType() const
@@ -273,14 +253,15 @@ namespace FLY_NAMESPACE
 		Internal::ReplaceTemplateNode(GetNodeGraph(), aReplacePinFacade.GetNodeID(), aDataTypeFacade.GetID(), aCommandTracker);
 	}
 
-	const NodeGraphVariant& NodeGraphFacade::GetVariant() const
+	const NodeGraphVariantHandle& NodeGraphFacade::GetVariant() const
 	{
 		return mNodeGraphVariant;
 	}
 
 	bool operator==(const NodeGraphFacade& a, const NodeGraphFacade& b)
 	{
-		return std::visit([](const auto& aArg, const auto& bArg) -> bool
+		return a.mNodeGraphVariant == b.mNodeGraphVariant;
+		/*return std::visit([](const auto& aArg, const auto& bArg) -> bool
 			{
 				using T1 = std::decay_t<decltype(aArg)>;
 				using T2 = std::decay_t<decltype(bArg)>;
@@ -293,7 +274,7 @@ namespace FLY_NAMESPACE
 					return false;
 				}
 			}, a.mNodeGraphVariant, b.mNodeGraphVariant
-		);
+		);*/
 	}
 
 	NodeGraphFacade::operator bool() const
@@ -304,9 +285,9 @@ namespace FLY_NAMESPACE
 				return anEventGraph != nullptr;
 			},
 			[](FunctionIDWrapper aFunctionIDWrapper) -> bool
-				{
-					return aFunctionIDWrapper.mID != InvalidID<FunctionID>();
-				}
+			{
+				return aFunctionIDWrapper.mID != InvalidID<FunctionID>();
+			}
 			}, mNodeGraphVariant
 		);
 	}

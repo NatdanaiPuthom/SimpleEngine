@@ -103,7 +103,7 @@ namespace FLY_NAMESPACE
 		return aEquilibrium + CalculateFrequencyByType(aWaveType.waveType, aState.mValue.t * aFrequency) * aAmplitude;
 	}
 
-	FLY_STRUCT(WaveTypeData, eNodeOperatorTrait::None, DefaultColor);
+	FLY_VALUETYPE(WaveTypeData, eNodeOperatorTrait::None);
 
 	FLY_FUNCTION(sinf, Directory{ "Utility/Math" }, Pure{});
 	FLY_FUNCTION(cosf, Directory{ "Utility/Math" }, Pure{});

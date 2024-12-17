@@ -22,6 +22,7 @@ namespace FLY_NAMESPACE
 
 	enum class eNodeGraphType
 	{
+		None,
 		EventGraph,
 		Function
 	};
@@ -33,8 +34,8 @@ namespace FLY_NAMESPACE
 		NodeGraphFacade() = default;
 		explicit NodeGraphFacade(const FunctionFacade& aFunctionFacade);
 		explicit NodeGraphFacade(EventGraph& aEventGraph);
-		explicit NodeGraphFacade(NodeGraphVariant&& aNodeGraphVariant);
-		explicit NodeGraphFacade(const NodeGraphVariant& aNodeGraphVariant);
+		explicit NodeGraphFacade(NodeGraphVariantHandle&& aNodeGraphVariant);
+		explicit NodeGraphFacade(const NodeGraphVariantHandle& aNodeGraphVariant);
 
 		[[nodiscard]] std::vector<NodeFacade> GetNodeFacades(bool aIncludeDestroyed = false) const;
 		[[nodiscard]] std::vector<PinFacade> GetPinFacades(bool aIncludeDestroyed = false) const;
@@ -66,7 +67,7 @@ namespace FLY_NAMESPACE
 		void ReplaceTemplateNode(NodeFacade aReplaceNodeFacade, DataTypeFacade aDataTypeFacade, CommandTracker* aCommandTracker);
 		void ReplaceTemplateNode(PinFacade aReplacePinFacade, DataTypeFacade aDataTypeFacade, CommandTracker* aCommandTracker);
 
-		[[nodiscard]] const NodeGraphVariant& GetVariant() const;
+		[[nodiscard]] const NodeGraphVariantHandle& GetVariant() const;
 
 		friend bool operator==(const NodeGraphFacade& a, const NodeGraphFacade& b);
 
@@ -74,7 +75,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		NodeGraphVariant mNodeGraphVariant;
+		NodeGraphVariantHandle mNodeGraphVariant;
 
 	};
 }

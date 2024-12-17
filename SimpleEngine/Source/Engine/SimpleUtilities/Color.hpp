@@ -21,7 +21,10 @@ namespace SimpleUtilities
 		float b = 0.f;
 		float a = 1.f;
 
-
+		friend bool operator==(const Color& a, const Color& b)
+		{
+			return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
+		}
 	};
 
 	namespace Colors

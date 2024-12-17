@@ -12,6 +12,11 @@ namespace SimpleUtilities
 
 		constexpr void InitWithMinAndMax(const Math::Vector3f& aMin, const Math::Vector3f& aMax);
 		constexpr bool IsInside(const Math::Vector3f& aPosition) const;
+
+		constexpr void SetCenter(const Math::Vector3f& aCenter);
+		constexpr void SetBounds(const Math::Vector3f& aBounds);
+		constexpr Math::Vector3f GetBounds() const;
+		constexpr Math::Vector3f GetCenter() const;
 	public:
 		constexpr Math::Vector3f GetMax() const;
 		constexpr Math::Vector3f GetMin() const;
@@ -44,6 +49,29 @@ namespace SimpleUtilities
 			aPosition.y >= myMinPoint.y && aPosition.y <= myMaxPoint.y &&
 			aPosition.z >= myMinPoint.z && aPosition.z <= myMaxPoint.z
 			);
+	}
+
+	constexpr void AABB3D::SetCenter(const Math::Vector3f& aCenter)
+	{
+		const Math::Vector3f bounds = GetBounds();
+		myMinPoint = aCenter - bounds / 2.f;
+		myMaxPoint = myMinPoint + bounds;
+	}
+
+	constexpr void AABB3D::SetBounds(const Math::Vector3f& aBounds)
+	{
+		const Math::Vector3f min = GetCenter() - aBounds / 2.f;
+		InitWithMinAndMax(min, min + aBounds);
+	}
+
+	constexpr Math::Vector3f AABB3D::GetBounds() const
+	{
+		return myMaxPoint - myMinPoint;
+	}
+
+	inline constexpr Math::Vector3f AABB3D::GetCenter() const
+	{
+		return myMinPoint + GetBounds() / 2.f;
 	}
 
 	constexpr Math::Vector3f AABB3D::GetMax() const

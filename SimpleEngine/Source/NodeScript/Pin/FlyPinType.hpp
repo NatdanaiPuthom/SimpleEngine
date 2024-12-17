@@ -1,5 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
+#include "../Graph/FlyNodeGraphVariant.hpp"
 #include <string>
 
 namespace FLY_NAMESPACE
@@ -15,6 +16,7 @@ namespace FLY_NAMESPACE
 	struct SetPinValueData final
 	{
 		NodeGraph* mNodeGraph = nullptr;
+		NodeGraphVariantHandle mNodeGraphVariantHandle;
 		const void* mReadFromDataPtr = nullptr;
 		PinID mWriteToPinID = InvalidID<PinID>();
 #ifdef FLY_DEBUG

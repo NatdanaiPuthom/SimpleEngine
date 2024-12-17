@@ -14,7 +14,7 @@ namespace Math
 		T z;
 
 		constexpr Vector3();
-		~Vector3() = default;
+		constexpr ~Vector3() {}
 
 		constexpr Vector3(const T& aX, const T& aY, const T& aZ);
 		constexpr Vector3(const Vector3& aVector) = default;
@@ -148,7 +148,7 @@ namespace Math
 	template<class T>
 	constexpr T Vector3<T>::Length() const
 	{
-		return static_cast<T> (sqrt((x * x) + (y * y) + (z * z)));
+		return static_cast<T>(sqrt(LengthSqr()));
 	}
 
 	template<class T>

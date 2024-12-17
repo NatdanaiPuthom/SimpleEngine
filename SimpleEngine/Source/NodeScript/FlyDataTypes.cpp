@@ -7,10 +7,10 @@
 
 
 // Bool
-Fly::EditAndViewResult ViewAndEdit(bool& aValue)
+Fly::ViewAndEditResult ViewAndEdit(bool& aValue)
 {
 	ImGui::Checkbox("##", &aValue);
-	Fly::EditAndViewResult result;
+	Fly::ViewAndEditResult result;
 	result.mIsItemActive = ImGui::IsItemActive();
 	return result;
 }
@@ -34,10 +34,10 @@ void Load(bool& aValue, const nlohmann::json& aJson)
 }
 
 // Int
-Fly::EditAndViewResult ViewAndEdit(int& aValue)
+Fly::ViewAndEditResult ViewAndEdit(int& aValue)
 {
 	ImGui::DragInt("##", &aValue);
-	Fly::EditAndViewResult result;
+	Fly::ViewAndEditResult result;
 	result.mIsItemActive = ImGui::IsItemActive();
 	return result;
 }
@@ -61,10 +61,10 @@ void Load(int& aValue, const nlohmann::json& aJson)
 }
 
 // Float
-Fly::EditAndViewResult ViewAndEdit(float& aValue)
+Fly::ViewAndEditResult ViewAndEdit(float& aValue)
 {
 	ImGui::DragFloat("##", &aValue);
-	Fly::EditAndViewResult result;
+	Fly::ViewAndEditResult result;
 	result.mIsItemActive = ImGui::IsItemActive();
 	return result;
 }
@@ -88,14 +88,14 @@ void Load(float& aValue, const nlohmann::json& aJson)
 }
 
 // Unsigned Int
-Fly::EditAndViewResult ViewAndEdit(uint32& aValue)
+Fly::ViewAndEditResult ViewAndEdit(uint32& aValue)
 {
 	int intValue = static_cast<int>(aValue);
 	if (ImGui::DragInt("##", &intValue, 1.f, 0, INT_MAX))
 	{
 		aValue = static_cast<uint32>(intValue);
 	}
-	Fly::EditAndViewResult result;
+	Fly::ViewAndEditResult result;
 	result.mIsItemActive = ImGui::IsItemActive();
 	return result;
 }
@@ -119,7 +119,7 @@ void Load(uint32& aValue, const nlohmann::json& aJson)
 }
 
 // Unsigned Long Long
-Fly::EditAndViewResult ViewAndEdit(uint64& aValue)
+Fly::ViewAndEditResult ViewAndEdit(uint64& aValue)
 {
 	int intValue = static_cast<int>(aValue);
 	if (ImGui::DragInt("##", &intValue, 1.f, 0, INT_MAX))
@@ -127,7 +127,7 @@ Fly::EditAndViewResult ViewAndEdit(uint64& aValue)
 		aValue = static_cast<uint64>(intValue);
 	}
 
-	Fly::EditAndViewResult result;
+	Fly::ViewAndEditResult result;
 	result.mIsItemActive = ImGui::IsItemActive();
 	return result;
 }
@@ -151,7 +151,7 @@ void Load(uint64& aValue, const nlohmann::json& aJson)
 }
 
 // Char
-Fly::EditAndViewResult ViewAndEdit(char& aValue)
+Fly::ViewAndEditResult ViewAndEdit(char& aValue)
 {
 	char c[2] = { aValue, '\0' };
 
@@ -159,7 +159,7 @@ Fly::EditAndViewResult ViewAndEdit(char& aValue)
 	{
 		aValue = c[0];
 	}
-	Fly::EditAndViewResult result;
+	Fly::ViewAndEditResult result;
 	result.mIsItemActive = ImGui::IsItemActive();
 	return result;
 }
@@ -187,7 +187,7 @@ void Load(char& aValue, const nlohmann::json& aJson)
 namespace std
 {
 
-	Fly::EditAndViewResult ViewAndEdit(std::string& aValue)
+	Fly::ViewAndEditResult ViewAndEdit(std::string& aValue)
 	{
 		char buffer[32]{};
 		strcpy_s(buffer, aValue.c_str());
@@ -196,7 +196,7 @@ namespace std
 		{
 			aValue = buffer;
 		}
-		Fly::EditAndViewResult result;
+		Fly::ViewAndEditResult result;
 		result.mIsItemActive = ImGui::IsItemActive();
 		return result;
 	}

@@ -23,6 +23,7 @@ namespace FLY_NAMESPACE
 
 	namespace Internal
 	{
+		NodeGraph& GetNodeGraph(const NodeGraphVariantHandle& aNodeGraphVariantHandle);
 		const Pin& GetPin(PinID aPinID, const NodeGraph& aNodeGraph);
 		Pin& GetPin(PinID aPinID, NodeGraph& aNodeGraph);
 		const PinType& GetPinType(const Pin& aPin);
@@ -34,9 +35,9 @@ namespace FLY_NAMESPACE
 
 		CustomEventID CreateCustomEvent(std::string_view aName);
 		FunctionID CreateFunction(std::string_view aName);
-		NodeID CreateNode(const NodeGraphVariant& aNodeGraphVariant, NodeTypeID aNodeTypeID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-		NodeID CreateNode(const NodeGraphVariant& aNodeGraphVariant, std::string_view aName, bool& aSuccess, Vec2 aPosition, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker);
-		NodeID CreateNodeAutoLink(const NodeGraphVariant& aNodeGraphVariant, NodeTypeID aNodeTypeID, PinID aConnection, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+		NodeID CreateNode(const NodeGraphVariantHandle& aNodeGraphVariant, NodeTypeID aNodeTypeID, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+		NodeID CreateNode(const NodeGraphVariantHandle& aNodeGraphVariant, std::string_view aName, bool& aSuccess, Vec2 aPosition, bool aCreateIfNameNotFound, CommandTracker* aCommandTracker);
+		NodeID CreateNodeAutoLink(const NodeGraphVariantHandle& aNodeGraphVariant, NodeTypeID aNodeTypeID, PinID aConnection, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeID CreateGetterNode(NodeGraph& aNodeGraph, VarID aVarID, Class& aClass, DataTypeID aDataTypeID, Vec2 aPosition, CommandTracker* aCommandTracker);
 		NodeID CreateSetterNode(NodeGraph& aNodeGraph, VarID aVarID, Class& aClass, DataTypeID aDataTypeID, Vec2 aPosition, CommandTracker* aCommandTracker);
 		NodeID CreateOperatorNode(NodeGraph& aNodeGraph, eNodeOperatorTrait aOperatorTrait, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);

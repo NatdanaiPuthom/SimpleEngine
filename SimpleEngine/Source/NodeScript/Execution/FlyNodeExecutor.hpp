@@ -26,6 +26,8 @@ namespace FLY_NAMESPACE
 
 		void ExecuteEvent(EventID aEventID, ClassInstance& aClassInstance, void* aTarget, const ExecutionContextBase& aExecutionContext);
 
+
+		Debugger& GetDebugger();
 	
 
 	private:

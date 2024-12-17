@@ -35,7 +35,7 @@ namespace FLY_NAMESPACE
 	{
 		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
 
-		if (dataTypeManager.HasRegisteredType<T>())
+		if (dataTypeManager.IsRegistered<T>())
 		{
 			return;
 		}
@@ -93,7 +93,7 @@ namespace FLY_NAMESPACE
 
 		using Specification = TemplateType<T>;
 
-		Global::GetDataTypeManager().RegisterTemplateSpecification<Specification>(templateTypeName + std::string("<") + aTemplateName + ">", DefaultColor);
+		Global::GetDataTypeManager().RegisterTemplateSpecification<Specification>(templateTypeName + std::string("<") + aTemplateName + ">");
 		RegisterGetterNodeType<Specification>();
 		RegisterSetterNodeType<Specification>();
 		RegisterOperatorNodeTypes<Specification, eNodeOperatorTrait::All>();
@@ -105,17 +105,7 @@ namespace FLY_NAMESPACE
 		(RegisterTemplateSpecification<T, TemplateTypes>(aTemplateName), ...);
 	}
 
-	enum class eDataTypeSetting
-	{
-		Serializable,
-
-	};
-
 	struct NonTargetable
-	{
-	};
-
-	struct PointerMember
 	{
 	};
 
@@ -125,7 +115,7 @@ namespace FLY_NAMESPACE
 		template<typename T, eNodeOperatorTrait Operators, typename... Traits>
 		constexpr static RegisterType Struct_Impl(const char* aName, [[maybe_unused]] Traits&&... aTraits)
 		{
-			Color color = DefaultColor;
+			Color color = Global::GetDataTypeManager().GetDefaultColor();
 			if constexpr (ContainsType<Color, Traits...>)
 			{
 				color = Extract<Color>(std::forward<Traits>(aTraits)...);
@@ -151,7 +141,7 @@ namespace FLY_NAMESPACE
 		constexpr static RegisterType Class_Impl(const char* aName, [[maybe_unused]] Traits&&... aTraits)
 		{
 			const bool isTargetable = !ContainsType<NonTargetable, Traits...>;
-			Color color = DefaultColor;
+			Color color = Global::GetDataTypeManager().GetDefaultColor();
 			if constexpr (ContainsType<Color, Traits...>)
 			{
 				color = Extract<Color>(std::forward<Traits>(aTraits)...);
@@ -172,6 +162,12 @@ namespace FLY_NAMESPACE
 		{
 			return Class_Impl<T, Operators, Traits...>(aName, std::forward<Traits>(aTraits)...);
 		}
+
+		template<SameAsTemplate<std::variant> VariantType>
+		constexpr static RegisterType Variant(const char* aName)
+		{
+			return Struct<VariantType, eNodeOperatorTrait::None>(aName);
+		}
 	};
 
 
@@ -186,9 +182,7 @@ namespace FLY_NAMESPACE
 	};
 }
 
-#define FLY_CLASS(Type, ...) inline static FLY_NAMESPACE::RegisterType fly_registeredType##Type = FLY_NAMESPACE::RegisterType::Class<Type>(#Type, __VA_ARGS__);
-#define FLY_STRUCT(Type, ...) inline static FLY_NAMESPACE::RegisterType fly_registeredType##Type = FLY_NAMESPACE::RegisterType::Struct<Type>(#Type, __VA_ARGS__);
+#define FLY_POINTERTYPE(Type, ...) inline static FLY_NAMESPACE::RegisterType fly_registeredType##Type = FLY_NAMESPACE::RegisterType::Class<Type>(#Type, __VA_ARGS__);
+#define FLY_VALUETYPE(Type, ...) inline static FLY_NAMESPACE::RegisterType fly_registeredType##Type = FLY_NAMESPACE::RegisterType::Struct<Type>(#Type, __VA_ARGS__);
 
-												//inline static Fly::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = FLY_NAMESPACE::RegisterFunctionNode::Register(&function, #function, __VA_ARGS__);
-
-#define FLY_MEMBER(member, ...) inline static FLY_NAMESPACE::RegisterMemberVariable prop(&member, #member);
+#define FLY_MEMBER(member, ...) inline static FLY_NAMESPACE::RegisterMemberVariable FLY_UNIQUE_NAME(fly_member)(&member, #member);

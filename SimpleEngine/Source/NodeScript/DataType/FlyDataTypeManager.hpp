@@ -13,6 +13,9 @@ namespace FLY_NAMESPACE
 	concept Fundamental = std::is_fundamental_v<T>;
 
 
+	inline void(*editorNullptrFunction)();
+
+
 	template<typename T>
 	constexpr AllocateInterface CreateAllocateInterface()
 	{
@@ -97,28 +100,36 @@ namespace FLY_NAMESPACE
 	{
 		if constexpr (ViewAndEditable<T>)
 		{
-			return [](void* aDataPtr) -> EditAndViewResult
+			return [](void* aDataPtr) -> ViewAndEditResult
 				{
 					T& value = *reinterpret_cast<T*>(aDataPtr);
 					return ViewAndEdit(value);
 				};
 		}
-		else if constexpr (PointerType<T> and ViewAndEditable<std::remove_pointer_t<T>>)
+		else if constexpr (PointerType<T>)
 		{
-			return [](void* aDataPtr) -> EditAndViewResult
+			/*if constexpr (ViewAndEditable<std::remove_pointer_t<T>>)
+			{*/
+
+			return [](void* aDataPtr) -> ViewAndEditResult
 				{
 					T& value = *reinterpret_cast<T*>(aDataPtr);
 					if (value)
 					{
-						return ViewAndEdit(*value);
+						//return ViewAndEdit(*value);
+					}
+					else if (editorNullptrFunction)
+					{
+						editorNullptrFunction();
 					}
 
-					return EditAndViewResult{};
+					return ViewAndEditResult{};
 				};
+			//}
 		}
 		else if constexpr (Fundamental<T>)
 		{
-			return [](void* aDataPtr) -> EditAndViewResult
+			return [](void* aDataPtr) -> ViewAndEditResult
 				{
 					T& value = *reinterpret_cast<T*>(aDataPtr);
 					return ::ViewAndEdit(value);
@@ -153,6 +164,10 @@ namespace FLY_NAMESPACE
 						{
 							View(*value);
 						}
+						else if (editorNullptrFunction)
+						{
+							editorNullptrFunction();
+						}
 					};
 			}
 			else if constexpr (Fundamental<std::remove_pointer_t<T>>)
@@ -166,6 +181,10 @@ namespace FLY_NAMESPACE
 							if (value)
 							{
 								::View(*value);
+							}
+							else if (editorNullptrFunction)
+							{
+								editorNullptrFunction();
 							}
 						};
 				}
@@ -198,7 +217,7 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	constexpr SaveInterface CreateSaveInterface()
 	{
-		if constexpr (Savable<T, nlohamnn::json>)
+		if constexpr (Savable<T, nlohmann::json>)
 		{
 			return [](nlohmann::json& aJson, const void* aDataPtr) -> void
 				{
@@ -326,8 +345,6 @@ namespace FLY_NAMESPACE
 		};
 	}
 
-	constexpr Color DefaultColor = Color(1.f, 1.f, 0.3f);
-
 	class DataTypeManager final
 	{
 		friend class DataTypeRegistry;
@@ -338,14 +355,14 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		EditAndViewResult ViewAndEditData(const DataType& aDataType, void* aDataPtr) const;
+		ViewAndEditResult ViewAndEditData(const DataType& aDataType, void* aDataPtr) const;
 		void ViewData(const DataType& aDataType, const void* aDataPtr) const;
 		bool SaveData(const DataType& aDataType, nlohmann::json& aJson, const void* aDataPtr) const;
 		bool LoadData(const DataType& aDataType, const nlohmann::json& aJson, void* aDataPtr) const;
 
 	public:
 
-		EditAndViewResult ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr) const;
+		ViewAndEditResult ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr) const;
 		void ViewData(DataTypeID aDataTypeID, const void* aDataPtr) const;
 		bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr) const;
 		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr) const;
@@ -368,6 +385,8 @@ namespace FLY_NAMESPACE
 
 		DataTypeID GetDataTypeIDByName(const std::string& aName) const;
 
+		void SetEditorNullptrFunction(void(*aFunction)());
+
 		const std::unordered_map<DataTypeID, DataType>& GetDataTypes() const;
 
 		DataType* Find(DataTypeID aDataTypeID);
@@ -379,9 +398,21 @@ namespace FLY_NAMESPACE
 		template<typename T>
 		const DataType* Find() const;
 
+		template<Decayed T>
+		bool IsRegistered() const;
+
+		bool IsRegistered(DataTypeID aDataTypeID) const;
+
+		void SetDefaultColor(const Color& aColor);
+
+		Color GetDefaultColor() const;
 
 		template<typename T>
 		void Register(const std::string& aName, const Color& aColor, bool aIsTargetable);
+
+		template<typename T>
+		void Register(const std::string& aName, bool aIsTargetable);
+
 
 	private:
 
@@ -389,7 +420,10 @@ namespace FLY_NAMESPACE
 		void RegisterTemplateType(const std::string& aName);
 
 		template<typename T>
-		void RegisterTemplateSpecification(const std::string& aName, const Color& aColor = DefaultColor);
+		void RegisterTemplateSpecification(const std::string& aName, const Color& aColor);
+
+		template<typename T>
+		void RegisterTemplateSpecification(const std::string& aName);
 
 		template<Decayed T>
 		void RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface, bool aIsTargetable);
@@ -397,15 +431,13 @@ namespace FLY_NAMESPACE
 		template<Decayed ClassType, Decayed MemberType>
 		void RegisterMemberVariable(MemberType ClassType::* aMemberVariable, const std::string& aName);
 
-		template<Decayed T>
-		bool HasRegisteredType() const;
-
 	private:
 
 		std::unordered_map<DataTypeID, DataType> mDataTypes;
 		std::unordered_map<DataTypeID, TemplateDataType> mTemplateDataTypes;
 
-		const std::string mNullNameStr;
+		std::string mNullNameStr;
+		Fly::Color mDefaultColor = Color(1.000f, 0.131f, 0.978f, 1.000f);
 	};
 
 	template<typename T>
@@ -417,6 +449,12 @@ namespace FLY_NAMESPACE
 		{
 			RegisterInternal<T*>(aName + " (Ptr)", aColor, CreateDataTypeInterface<T*>(), false);
 		}
+	}
+
+	template<typename T>
+	inline void DataTypeManager::Register(const std::string& aName, const bool aIsTargetable)
+	{
+		Register<T>(aName, mDefaultColor, aIsTargetable);
 	}
 
 	template<template<typename> typename TemplateType>
@@ -449,6 +487,12 @@ namespace FLY_NAMESPACE
 		RegisterInternal<T>(aName, aColor, dataTypeInterface);
 	}
 
+	template<typename T>
+	inline void DataTypeManager::RegisterTemplateSpecification(const std::string& aName)
+	{
+		RegisterTemplateSpecification<T>(aName, mDefaultColor);
+	}
+
 	template<Decayed T>
 	inline void DataTypeManager::RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface, const bool aIsTargetable)
 	{
@@ -472,6 +516,10 @@ namespace FLY_NAMESPACE
 		if constexpr (PointerType<T>)
 		{
 			typeTraits |= eDataTypeTrait::Pointer;
+		}
+		if constexpr (std::is_trivially_copyable_v<T>)
+		{
+			typeTraits |= eDataTypeTrait::TriviallyCopyable;
 		}
 
 		const std::type_info& typeInfo = typeid(T);
@@ -508,7 +556,7 @@ namespace FLY_NAMESPACE
 			.mByteOffset = byteOffset
 		};
 
-		DataType* parentDataType = Find<ClassType*>();
+		DataType* parentDataType = Find<ClassType>();
 
 		if (parentDataType)
 		{
@@ -517,9 +565,9 @@ namespace FLY_NAMESPACE
 	}
 
 	template<Decayed T>
-	inline bool DataTypeManager::HasRegisteredType() const
+	inline bool DataTypeManager::IsRegistered() const
 	{
-		return mDataTypes.contains(GetDataTypeID<T>());
+		return IsRegistered(GetDataTypeID<T>());
 	}
 
 	template<size_t BufferCapacity>
@@ -532,7 +580,7 @@ namespace FLY_NAMESPACE
 				void* dataPtr = anArena.AllocateSize(dataType->mSize);
 				dataType->mInterface.fundamental.allocate(dataPtr, aDefaultValue);
 
-				if (HasNotFlag(dataType->mTypeTraits, eDataTypeTrait::Fundamental))
+				if (HasNotFlag(dataType->mTypeTraits, eDataTypeTrait::TriviallyCopyable))
 				{
 					anArena.RegisterMemoryObject(dataPtr, aDataTypeID);
 				}

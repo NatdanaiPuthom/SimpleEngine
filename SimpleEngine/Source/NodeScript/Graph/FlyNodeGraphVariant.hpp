@@ -6,6 +6,7 @@ namespace FLY_NAMESPACE
 {
 
 	class EventGraph;
+	class NodeGraph;
 	
 	struct FunctionIDWrapper final
 	{
@@ -22,6 +23,6 @@ namespace FLY_NAMESPACE
 		}
 	};
 
-	using NodeGraphVariant = std::variant<EventGraph*, FunctionIDWrapper>;
+	using NodeGraphVariantHandle = std::variant<EventGraph*, FunctionIDWrapper>;
 
 }

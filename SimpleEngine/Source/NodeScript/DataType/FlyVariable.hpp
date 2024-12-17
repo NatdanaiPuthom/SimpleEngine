@@ -12,4 +12,12 @@ namespace FLY_NAMESPACE
 		size_t mByteOffset = 0;
 		bool mIsDestroyed = false;
 	};
+
+	struct MemberVariable final
+	{
+		DataTypeID mDataTypeID = InvalidID<DataTypeID>();
+		OwningPtr<void> mDefaultValueDataPtr = nullptr;
+		std::string mName;
+		size_t mByteOffset = 0;
+	};
 }

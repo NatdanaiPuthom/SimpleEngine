@@ -17,14 +17,17 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] DataTypeID GetID() const;
 
 		[[nodiscard]] const std::string& GetName() const;
-		[[nodiscard]] const Color& GetColor() const;
+		[[nodiscard]] Color GetColor() const;
 		[[nodiscard]] eDataTypeTrait GetTypeTraits() const;
+		//[[nodiscard]] std::vector<MemberVariableFacade> GetMemberVariables() const;
 
 		[[nodiscard]] bool IsTargetable() const;
 		[[nodiscard]] bool IsPointer() const;
 		[[nodiscard]] bool IsViewAndEditable() const;
 
 		[[nodiscard]] std::optional<const std::vector<NodeTypeID>*> GetNodeTypesIDs() const;
+
+		void SetColor(const Color& aColor);
 
 		explicit operator bool() const;
 
@@ -33,6 +36,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
+		[[nodiscard]] DataType* GetDataType();
 		[[nodiscard]] const DataType* GetDataType() const;
 
 	private:

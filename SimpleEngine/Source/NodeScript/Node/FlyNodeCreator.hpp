@@ -15,13 +15,13 @@
 #include "../Global/FlyGlobal.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "../SystemTypes/FlyReferenceWrapper.hpp"
-#include "Execution/FlyExecuteNode.hpp"
+#include "../Execution/FlyExecuteNode.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
 #include "../Utilities/FlyUtilities.hpp"
 
 namespace FLY_NAMESPACE
 {
-
+	
 	struct NodeCreationData final
 	{
 		EventID mEventID = InvalidID<EventID>();
@@ -43,7 +43,7 @@ namespace FLY_NAMESPACE
 				//const Pin& readFromPin = aSetPinValueData.mNodeGraph->mPins[aSetPinValueData.mReadFromPinID];
 				Pin& writeToPin = aSetPinValueData.mNodeGraph->mPins[aSetPinValueData.mWriteToPinID];
 				//const PinType& readFromPinType = Global::GetPinTypeManager().GetPinType(readFromPin.mTypeID);
-				const PinType& writeToPinType = Global::GetPinTypeManager().GetPinType(writeToPin.mTypeID);
+				[[maybe_unused]] const PinType& writeToPinType = Global::GetPinTypeManager().GetPinType(writeToPin.mTypeID);
 #ifdef FLY_DEBUG
 				//assert(readFromPinType.mDataTypeID == GetDataTypeID<T>());
 				assert(writeToPinType.mDataTypeID == GetDataTypeID<T>());
@@ -78,6 +78,12 @@ namespace FLY_NAMESPACE
 							{
 								const Pin& connectedInputPin = aSetPinValueData.mNodeGraph->mPins[connectedInputPinID];
 								aContext.mExecutionQueue->Push(NodeExecutionData{ NodeRef(connectedInputPin.mNodeID, *aSetPinValueData.mNodeGraph), eNodeTriggerReason::Flow });
+								
+#ifdef FLY_DEBUG
+								const LinkID linkID = Internal::GetLinkIDByPinIDs(*aSetPinValueData.mNodeGraph, connectedInputPinID, aSetPinValueData.mWriteToPinID);
+								aContext.mNodeExecutor->GetDebugger().AddTraversedLink(linkID, aContext.mNodeGraphVariantHandle);
+#endif
+							
 							}
 						}
 					}
@@ -378,7 +384,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<eNodeTrait Traits = eNodeTrait::None, typename NodeExecutionContextType = Wildcard, typename NodeStateDataType = Wildcard, typename Callable, typename... OutputTypes, typename... InputTypes>
-	NodeRecipe CreateNodeRecipe(Callable aCallable, TypeList<OutputTypes...> aOutputList, TypeList<InputTypes...>, NodeCreationData&& aCreationData)
+	NodeRecipe CreateNodeRecipe(Callable aCallable, TypeList<OutputTypes...> aOutputList, TypeList<InputTypes...>, NodeCreationData aCreationData)
 	{
 		static_assert(!AnyArgIsRawReference<InputTypes...> && "Function parameter cannot be of reference type. Consider adding const or change to pointer");
 
@@ -390,7 +396,7 @@ namespace FLY_NAMESPACE
 		DataTypeID nodeStateDataTypeID = InvalidID<DataTypeID>();
 		if constexpr (TakesNodeState)
 		{
-			Global::GetDataTypeManager().Register<NodeStateDataType>(typeid(NodeStateDataType).name(), DefaultColor, false);
+			Global::GetDataTypeManager().Register<NodeStateDataType>(typeid(NodeStateDataType).name(), false);
 			nodeStateDataTypeID = GetDataTypeID<NodeStateDataType>();
 		}
 
@@ -430,7 +436,7 @@ namespace FLY_NAMESPACE
 
 	// For function with 1 return value
 	template<eNodeTrait Traits = eNodeTrait::None, typename OutputType, typename... InputTypes>
-	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		constexpr bool IsOutputVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
@@ -445,7 +451,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 			else
@@ -458,7 +464,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 		}
@@ -470,7 +476,7 @@ namespace FLY_NAMESPACE
 					aFunction,
 					TypeList<>(),
 					TypeList<InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 			else
@@ -479,7 +485,7 @@ namespace FLY_NAMESPACE
 					aFunction,
 					TypeList<OutputType>(),
 					TypeList<InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 		}
@@ -487,7 +493,7 @@ namespace FLY_NAMESPACE
 
 	// For functions with 1 return value && takes in an execution context
 	template<eNodeTrait Traits = eNodeTrait::None, typename ExecutionContextType, typename OutputType, typename... InputTypes>
-	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeExecutionContext<ExecutionContextType>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeExecutionContext<ExecutionContextType>, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		constexpr bool IsOutputTypeVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
@@ -502,7 +508,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 			else
@@ -515,7 +521,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 		}
@@ -527,7 +533,7 @@ namespace FLY_NAMESPACE
 					aFunction,
 					TypeList<>(),
 					TypeList<InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 
 			}
@@ -537,7 +543,7 @@ namespace FLY_NAMESPACE
 					aFunction,
 					TypeList<OutputType>(),
 					TypeList<InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 		}
@@ -545,7 +551,7 @@ namespace FLY_NAMESPACE
 
 	// For functions with 1 return value and takes in internal data
 	template<eNodeTrait Traits = eNodeTrait::None, typename NodeStateDataType, typename OutputType, typename... InputTypes>
-	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeState<NodeStateDataType>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeState<NodeStateDataType>, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		constexpr bool IsOutputVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
@@ -560,7 +566,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 			else
@@ -573,7 +579,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 		}
@@ -585,7 +591,7 @@ namespace FLY_NAMESPACE
 					aFunction,
 					TypeList<>(),
 					TypeList<InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 
 			}
@@ -595,7 +601,7 @@ namespace FLY_NAMESPACE
 					aFunction,
 					TypeList<OutputType>(),
 					TypeList<InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 		}
@@ -603,7 +609,7 @@ namespace FLY_NAMESPACE
 
 	// For functions with 1 return value && takes in execution context && takes in internal data 
 	template<eNodeTrait Traits = eNodeTrait::None, typename ExecutionContextType, typename NodeStateDataType, typename OutputType, typename... InputTypes>
-	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeExecutionContext<ExecutionContextType>, NodeState<NodeStateDataType>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, NodeExecutionContext<ExecutionContextType>, NodeState<NodeStateDataType>, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		constexpr bool IsOutputVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
@@ -618,7 +624,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 			else
@@ -631,7 +637,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 		}
@@ -643,7 +649,7 @@ namespace FLY_NAMESPACE
 					aFunction,
 					TypeList<>(),
 					TypeList<InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 
 			}
@@ -653,7 +659,7 @@ namespace FLY_NAMESPACE
 					aFunction,
 					TypeList<OutputType>(),
 					TypeList<InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 		}
@@ -661,7 +667,7 @@ namespace FLY_NAMESPACE
 
 	// For functions with tuple return value
 	template<eNodeTrait Traits = eNodeTrait::None, typename... OutputTypes, typename... InputTypes>
-	constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
@@ -672,7 +678,7 @@ namespace FLY_NAMESPACE
 				},
 				TypeList<Flow, OutputTypes...>(),
 				TypeList<Flow, InputTypes...>(),
-				std::forward<NodeCreationData>(aCreationData)
+				aCreationData
 			);
 
 		}
@@ -683,7 +689,7 @@ namespace FLY_NAMESPACE
 				aFunction,
 				TypeList<OutputTypes...>(),
 				TypeList<InputTypes...>(),
-				std::forward<NodeCreationData>(aCreationData)
+				aCreationData
 			);
 
 		}
@@ -691,7 +697,7 @@ namespace FLY_NAMESPACE
 
 	// For functions with tuple return value && takes in execution context
 	template<eNodeTrait Traits = eNodeTrait::None, typename ExecutionContextType, typename... OutputTypes, typename... InputTypes>
-	constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, NodeExecutionContext<ExecutionContextType>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, NodeExecutionContext<ExecutionContextType>, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
@@ -702,7 +708,7 @@ namespace FLY_NAMESPACE
 				},
 				TypeList<Flow, OutputTypes...>(),
 				TypeList<Flow, InputTypes...>(),
-				std::forward<NodeCreationData>(aCreationData)
+				aCreationData
 			);
 
 		}
@@ -711,14 +717,14 @@ namespace FLY_NAMESPACE
 			return CreateNodeRecipe<Traits | eNodeTrait::TakesExecutionContext, ExecutionContextType>(aFunction,
 				TypeList<OutputTypes...>(),
 				TypeList<InputTypes...>(),
-				std::forward<NodeCreationData>(aCreationData)
+				aCreationData
 			);
 		}
 	}
 
 	// For functions with tuple return value && takes in internal data
 	template<eNodeTrait Traits = eNodeTrait::None, typename NodeStateDataType, typename... OutputTypes, typename... InputTypes>
-	constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, NodeState<NodeStateDataType>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, NodeState<NodeStateDataType>, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
@@ -729,7 +735,7 @@ namespace FLY_NAMESPACE
 				},
 				TypeList<Flow, OutputTypes...>(),
 				TypeList<Flow, InputTypes...>(),
-				std::forward<NodeCreationData>(aCreationData)
+				aCreationData
 			);
 
 		}
@@ -739,7 +745,7 @@ namespace FLY_NAMESPACE
 				aFunction,
 				TypeList<OutputTypes...>(),
 				TypeList<InputTypes...>(),
-				std::forward<NodeCreationData>(aCreationData)
+				aCreationData
 			);
 		}
 	}
@@ -773,7 +779,7 @@ namespace FLY_NAMESPACE
 
 	// For functions with 1 return value and takes in InternalExecutionContext
 	template<eNodeTrait Traits = eNodeTrait::None, typename OutputType, typename... InputTypes>
-	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, InternalExecutionContextPtr, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, InternalExecutionContextPtr, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		constexpr bool IsOutputVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
@@ -786,7 +792,7 @@ namespace FLY_NAMESPACE
 						aFunction(aContext, std::forward<InputTypes>(aInputs)...);
 						return Flow(true);
 					},
-					TypeList<Flow>(), TypeList<Flow, InputTypes...>(), std::forward<NodeCreationData>(aCreationData)
+					TypeList<Flow>(), TypeList<Flow, InputTypes...>(), aCreationData
 				);
 			}
 			else
@@ -796,7 +802,7 @@ namespace FLY_NAMESPACE
 					{
 						return { Flow(true), aFunction(aContext, std::forward<InputTypes>(aInputs)...) };
 					},
-					TypeList<Flow, OutputType>(), TypeList<Flow, InputTypes...>(), std::forward<NodeCreationData>(aCreationData)
+					TypeList<Flow, OutputType>(), TypeList<Flow, InputTypes...>(), aCreationData
 				);
 			}
 		}
@@ -809,7 +815,7 @@ namespace FLY_NAMESPACE
 					{
 						return aFunction(aContext, std::forward<InputTypes>(aInputs)...);
 					},
-					TypeList<>(), TypeList<InputTypes...>(), std::forward<NodeCreationData>(aCreationData)
+					TypeList<>(), TypeList<InputTypes...>(), aCreationData
 				);
 			}
 			else
@@ -819,7 +825,7 @@ namespace FLY_NAMESPACE
 					{
 						return aFunction(aContext, std::forward<InputTypes>(aInputs)...);
 					},
-					TypeList<OutputType>(), TypeList<InputTypes...>(), std::forward<NodeCreationData>(aCreationData)
+					TypeList<OutputType>(), TypeList<InputTypes...>(), aCreationData
 				);
 			}
 		}
@@ -828,7 +834,7 @@ namespace FLY_NAMESPACE
 
 	// For functions with 1 return value and takes in InternalExecutionContext and NodeState
 	template<eNodeTrait Traits = eNodeTrait::None, typename NodeStateDataType, typename OutputType, typename... InputTypes>
-	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, InternalExecutionContextPtr, NodeState<NodeStateDataType>, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	constexpr NodeRecipe FilterNodeType(FuncPtr<OutputType, InternalExecutionContextPtr, NodeState<NodeStateDataType>, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		constexpr bool IsOutputVoid = std::same_as<OutputType, void>;
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
@@ -843,7 +849,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<Flow>(),
 					TypeList<Flow, InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 			else
@@ -855,7 +861,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<Flow, OutputType>(),
 					TypeList<Flow, InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 		}
@@ -870,7 +876,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<>(),
 					TypeList<InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 			else
@@ -882,7 +888,7 @@ namespace FLY_NAMESPACE
 					},
 					TypeList<OutputType>(),
 					TypeList<InputTypes...>(),
-					std::forward<NodeCreationData>(aCreationData)
+					aCreationData
 				);
 			}
 		}
@@ -890,7 +896,7 @@ namespace FLY_NAMESPACE
 
 	// For functions with tuple return value and takes in InternalExecutionContext
 	template<eNodeTrait Traits = eNodeTrait::None, typename... OutputTypes, typename... InputTypes>
-	constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, InternalExecutionContextPtr, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	constexpr NodeRecipe FilterNodeType(FuncPtr<std::tuple<OutputTypes...>, InternalExecutionContextPtr, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		if constexpr (HasFlag(Traits, eNodeTrait::HasImplicitFlow))
 		{
@@ -901,7 +907,7 @@ namespace FLY_NAMESPACE
 				},
 				TypeList<Flow, OutputTypes...>(),
 				TypeList<Flow, InputTypes...>(),
-				std::forward<NodeCreationData>(aCreationData)
+				aCreationData
 			);
 		}
 		else
@@ -913,14 +919,14 @@ namespace FLY_NAMESPACE
 				},
 				TypeList<OutputTypes...>(),
 				TypeList<InputTypes...>(),
-				std::forward<NodeCreationData>(aCreationData)
+				aCreationData
 			);
 		}
 	}
 
 	// non-const member functions with non-void return
 	template<typename ClassType, typename OutputType, typename... InputTypes>
-	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		auto callable = [aFunction](ClassType* aClassType, InputTypes&&... aInputTypes) -> OutputType
 			{
@@ -930,13 +936,13 @@ namespace FLY_NAMESPACE
 			callable,
 			TypeList<OutputType>(),
 			TypeList<ClassType*, InputTypes...>(),
-			std::forward<NodeCreationData>(aCreationData)
+			aCreationData
 		);
 	}
 
 	// void returning member functions - generates flow
 	template<typename ClassType, typename OutputType, typename... InputTypes> requires std::same_as<OutputType, void>
-	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	NodeRecipe FilterMemberNodeType(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		auto callable = [aFunction](Flow, ClassType* aClassType, InputTypes&&... aInputTypes) -> Flow
 			{
@@ -947,13 +953,13 @@ namespace FLY_NAMESPACE
 			callable,
 			TypeList<Flow>(),
 			TypeList<Flow, ClassType*, InputTypes...>(),
-			std::forward<NodeCreationData>(aCreationData)
+			aCreationData
 		);
 	}
 
 	// const member functions
 	template<typename ClassType, typename OutputType, typename... InputTypes>
-	NodeRecipe FilterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData)
+	NodeRecipe FilterMemberNodeType(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const NodeCreationData& aCreationData)
 	{
 		auto callable = [aFunction](ClassType* aClassType, InputTypes&&... aInputTypes) -> OutputType
 			{
@@ -963,7 +969,7 @@ namespace FLY_NAMESPACE
 			callable,
 			TypeList<OutputType>(),
 			TypeList<ClassType*, InputTypes...>(),
-			std::forward<NodeCreationData>(aCreationData)
+			aCreationData
 		);
 	}
 }

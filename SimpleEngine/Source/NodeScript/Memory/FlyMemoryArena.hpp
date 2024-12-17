@@ -295,7 +295,7 @@ namespace FLY_NAMESPACE
 
 			std::construct_at(value, std::forward<Args>(aArgs)...);
 
-			if constexpr (!std::is_fundamental_v<T>)
+			if constexpr (!std::is_trivially_copyable_v<T>)
 			{
 				mMemoryObjects.emplace_back(MemoryObject(value));
 			}
@@ -420,7 +420,7 @@ namespace FLY_NAMESPACE
 
 	template<size_t BufferCapacity>
 	template<MemSizeLessEqual<BufferCapacity> T, typename ...Args>
-	inline T& MemoryArena<BufferCapacity>::Allocate(Args && ...aArgs)
+	inline T& MemoryArena<BufferCapacity>::Allocate(Args&&... aArgs)
 	{
 		constexpr size_t allocSize = sizeof(T);
 		if (GetCurrentBuffer().GetSizeLeft() < allocSize)

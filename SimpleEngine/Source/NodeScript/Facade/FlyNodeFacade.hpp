@@ -56,7 +56,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		NodeGraphVariant mNodeGraphVariant;
+		NodeGraphVariantHandle mNodeGraphVariant;
 		NodeID mNodeID = InvalidID<NodeID>();
 
 	};

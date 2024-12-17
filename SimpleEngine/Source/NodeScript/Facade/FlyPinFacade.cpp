@@ -61,7 +61,7 @@ namespace FLY_NAMESPACE
 		return !GetConnectedPinIDs().empty();
 	}
 
-	NodeGraphVariant PinFacade::GetNodeGraphVariant() const
+	NodeGraphVariantHandle PinFacade::GetNodeGraphVariant() const
 	{
 		return mNodeGraphVariant;
 	}
@@ -76,7 +76,7 @@ namespace FLY_NAMESPACE
 		Internal::ViewAndEditPin(GetID(), NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), aCommandTracker);
 	}
 
-	void PinFacade::View()
+	void PinFacade::View() const
 	{
 		Internal::ViewPin(mPinID, NodeGraphFacade(mNodeGraphVariant).GetNodeGraph());
 	}
@@ -99,6 +99,6 @@ namespace FLY_NAMESPACE
 
 	bool operator==(const PinFacade& a, const PinFacade& b)
 	{
-		return NodeGraphFacade(a.mNodeGraphVariant) == NodeGraphFacade(b.mNodeGraphVariant) && a.mPinID == b.mPinID;
+		return a.mNodeGraphVariant == b.mNodeGraphVariant && a.mPinID == b.mPinID;
 	}
 }

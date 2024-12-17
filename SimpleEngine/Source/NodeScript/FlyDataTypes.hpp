@@ -8,32 +8,32 @@
 using uint32 = unsigned int;
 using uint64 = unsigned long long;
 
-Fly::EditAndViewResult ViewAndEdit(bool& aValue);
+Fly::ViewAndEditResult ViewAndEdit(bool& aValue);
 void View(const bool& aValue);
 void Save(const bool& aValue, nlohmann::json& aJson);
 void Load(bool& aValue, const nlohmann::json& aJson);
 
-Fly::EditAndViewResult ViewAndEdit(int& aValue);
+Fly::ViewAndEditResult ViewAndEdit(int& aValue);
 void View(const int& aValue);
 void Save(const int& aValue, nlohmann::json& aJson);
 void Load(int& aValue, const nlohmann::json& aJson);
 
-Fly::EditAndViewResult ViewAndEdit(float& aValue);
+Fly::ViewAndEditResult ViewAndEdit(float& aValue);
 void View(const float& aValue);
 void Save(const float& aValue, nlohmann::json& aJson);
 void Load(float& aValue, const nlohmann::json& aJson);
 
-Fly::EditAndViewResult ViewAndEdit(uint32& aValue);
+Fly::ViewAndEditResult ViewAndEdit(uint32& aValue);
 void View(const uint32& aValue);
 void Save(const uint32& aValue, nlohmann::json& aJson);
 void Load(uint32& aValue, const nlohmann::json& aJson);
 
-Fly::EditAndViewResult ViewAndEdit(uint64& aValue);
+Fly::ViewAndEditResult ViewAndEdit(uint64& aValue);
 void View(const uint64& aValue);
 void Save(const uint64& aValue, nlohmann::json& aJson);
 void Load(uint64& aValue, const nlohmann::json& aJson);
 
-Fly::EditAndViewResult ViewAndEdit(char& aValue);
+Fly::ViewAndEditResult ViewAndEdit(char& aValue);
 void View(const char& aValue);
 void Save(const char& aValue, nlohmann::json& aJson);
 void Load(char& aValue, const nlohmann::json& aJson);
@@ -41,7 +41,7 @@ void Load(char& aValue, const nlohmann::json& aJson);
 
 namespace std
 {
-	Fly::EditAndViewResult ViewAndEdit(std::string& aValue);
+	Fly::ViewAndEditResult ViewAndEdit(std::string& aValue);
 	void View(const std::string& aValue);
 	void Save(const std::string& aValue, nlohmann::json& aJson);
 	void Load(std::string& aValue, const nlohmann::json& aJson);
@@ -182,17 +182,17 @@ namespace std
 namespace FLY_NAMESPACE
 {
 
-	FLY_STRUCT(Wildcard, Colors::Gray);
-	FLY_STRUCT(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f));
-	FLY_CLASS(None, Colors::Black);
+	FLY_VALUETYPE(Wildcard, Colors::Gray);
+	FLY_VALUETYPE(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f));
+	FLY_POINTERTYPE(None, Colors::Black);
 
 	using String = std::string;
 
-	FLY_STRUCT(bool, Color(1.f, 0.1f, 0.1f));
-	FLY_STRUCT(int, Color(0.f, 0.2f, 1.f));
-	FLY_STRUCT(float, Color(0.55f, 0.2f, 0.65f));
-	FLY_STRUCT(uint32, Color(0.f, 0.4f, 1.f));
-	FLY_STRUCT(uint64, Color(0.1f, 0.5f, 1.f));
-	FLY_STRUCT(char, Color(0.2f, 0.7f, 0.4f));
-	FLY_STRUCT(String, Color(0.3f, 0.8f, 0.2f));
+	FLY_VALUETYPE(bool, Color(1.f, 0.1f, 0.1f));
+	FLY_VALUETYPE(int, Color(0.f, 0.2f, 1.f));
+	FLY_VALUETYPE(float, Color(0.55f, 0.2f, 0.65f));
+	FLY_VALUETYPE(uint32, Color(0.f, 0.4f, 1.f));
+	FLY_VALUETYPE(uint64, Color(0.1f, 0.5f, 1.f));
+	FLY_VALUETYPE(char, Color(0.2f, 0.7f, 0.4f));
+	FLY_VALUETYPE(String, Color(0.3f, 0.8f, 0.2f));
 }

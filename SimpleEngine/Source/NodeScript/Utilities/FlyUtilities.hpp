@@ -15,7 +15,13 @@ namespace FLY_NAMESPACE
 
 
 	template<Enumerable T>
-	constexpr auto EnumCast(T aValue)
+	struct EnumCount;
+
+	template<size_t Count>
+	struct EnumCountConstant : std::integral_constant<size_t, Count> {};
+
+	template<Enumerable T>
+	constexpr std::underlying_type_t<T> EnumCast(T aValue)
 	{
 		return static_cast<std::underlying_type_t<T>>(aValue);
 	}
@@ -23,25 +29,31 @@ namespace FLY_NAMESPACE
 	template<Enumerable T>
 	constexpr T operator&(const T aValue1, const T aValue2)
 	{
-		return static_cast<T>(static_cast<std::underlying_type_t<T>>(aValue1) & static_cast<std::underlying_type_t<T>>(aValue2));
+		return static_cast<T>(EnumCast(aValue1) & EnumCast(aValue2));
 	}
 
 	template<Enumerable T>
 	constexpr T operator|(const T aValue1, const T aValue2)
 	{
-		return static_cast<T>(static_cast<std::underlying_type_t<T>>(aValue1) | static_cast<std::underlying_type_t<T>>(aValue2));
+		return static_cast<T>(EnumCast(aValue1) | EnumCast(aValue2));
 	}
 
 	template<Enumerable T>
 	constexpr T operator^(const T aValue1, const T aValue2)
 	{
-		return static_cast<T>(static_cast<std::underlying_type_t<T>>(aValue1) ^ static_cast<std::underlying_type_t<T>>(aValue2));
+		return static_cast<T>(EnumCast(aValue1) ^ EnumCast(aValue2));
 	}
 
 	template<Enumerable T>
 	constexpr void operator|=(T& aValue1, const T aValue2)
 	{
 		aValue1 = aValue1 | aValue2;
+	}
+
+	template<Enumerable T>
+	constexpr void operator^=(T& aValue1, const T aValue2)
+	{
+		aValue1 = aValue1 ^ aValue2;
 	}
 
 	template<Enumerable T>
@@ -54,17 +66,5 @@ namespace FLY_NAMESPACE
 	constexpr bool HasNotFlag(const T aValue1, const T aValue2)
 	{
 		return !HasFlag(aValue1, aValue2);
-	}
-
-	template<Enumerable T>
-	constexpr bool Equals(const T aValue1, const T aValue2)
-	{
-		return aValue1 == aValue2;
-	}
-
-	template<Enumerable T>
-	constexpr std::underlying_type_t<T> EnumToInt(const T aValue)
-	{
-		return static_cast<std::underlying_type_t<T>>(aValue);
 	}
 }

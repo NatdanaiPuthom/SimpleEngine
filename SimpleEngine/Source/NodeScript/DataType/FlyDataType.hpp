@@ -3,11 +3,6 @@
 #include "FlyVariable.hpp"
 #include "nlohmann/json.hpp"
 
-namespace nlohamnn
-{
-	class json;
-}
-
 namespace FLY_NAMESPACE
 {
 	using AllocateInterface = void(*)(void* aDataPtr, const void* aDefaultValue);
@@ -25,7 +20,7 @@ namespace FLY_NAMESPACE
 		const EqualsInterface equals = nullptr;
 	};
 
-	using ViewAndEditInterface = EditAndViewResult(*)(void* aDataPtr);
+	using ViewAndEditInterface = ViewAndEditResult(*)(void* aDataPtr);
 	using ViewInterface = void(*)(const void* aDataPtr);
 	using SaveInterface = void(*)(nlohmann::json& aSaveObject, const void* aDataPtr);
 	using LoadInterface = void(*)(const nlohmann::json& aLoadObject, void* aDataPtr);
@@ -61,6 +56,7 @@ namespace FLY_NAMESPACE
 		SaveLoadable = 1 << 2,
 		Targetable = 1 << 3,
 		Pointer = 1 << 4,
+		TriviallyCopyable = 1 << 5,
 		All = Fundamental | ViewAndEditable | SaveLoadable | Targetable
 	};
 
@@ -68,7 +64,7 @@ namespace FLY_NAMESPACE
 	{
 		const std::string mName;
 		const size_t mSize = 0;
-		const Color mColor;
+		Color mColor;
 		const std::type_info* mTypeInfo;
 		const DataTypeInterface mInterface;
 		std::vector<Variable> mVariables;

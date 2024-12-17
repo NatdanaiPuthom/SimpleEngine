@@ -35,6 +35,9 @@ namespace FLY_NAMESPACE
 
 	ClassFacade FindClassByName(std::string_view aName);
 
+	void SetDefaultDataTypeColor(const Fly::Color& aColor);
+	void SetEditorNullptrFunction(void(*aFunction)());
+
 	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, NodeGraphFacade aCopiedFromNodeGraphFacade);
 	void PasteCopyBuffer(Vec2 aPosition, NodeGraphFacade aTargetNodeGraphFacade, CommandTracker* aCommandTracker);
 
@@ -53,8 +56,10 @@ namespace FLY_NAMESPACE
 	std::vector<FunctionFacade> GetFunctions();
 	std::vector<CustomEventFacade> GetCustomEvents();
 
+	std::vector<LinkFacade> GetTraversedLinks();
+
 	std::vector<NodeTypeFacade> GetNodeTypesFilteredByDataTypeAndFlowType(DataTypeID aDataTypeID, eFlowType aFlowType);
-	std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowType(DataTypeID aDataTypeID, eFlowType aFlowType);
+	std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(DataTypeID aDataTypeID, eFlowType aFlowType, eNodeTrait aNodeTrait, bool(*)(eNodeTrait, eNodeTrait));
 	std::vector<NodeTypeFacade> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);
 
 	std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> GetClasses();

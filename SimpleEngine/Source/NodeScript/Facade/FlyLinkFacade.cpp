@@ -43,6 +43,12 @@ namespace FLY_NAMESPACE
 		return mLinkID != InvalidID<LinkID>();
 	}
 
+
+	bool operator==(const LinkFacade& a, const LinkFacade& b)
+	{
+		return a.mLinkID == b.mLinkID && a.mNodeGraphVariant == b.mNodeGraphVariant;
+	}
+
 	const Link& LinkFacade::GetLink() const
 	{
 		return NodeGraphFacade(mNodeGraphVariant).GetNodeGraph().mLinks.at(mLinkID);

@@ -3,6 +3,7 @@
 
 namespace FLY_NAMESPACE
 {
+
 	enum class eNodeTrait : size_t
 	{
 		None = 0,
@@ -21,14 +22,8 @@ namespace FLY_NAMESPACE
 		Target = 1 << 11,
 		NonTrivial = Invalid | Getter | Setter | Operator | TemplateSpec | CustomEvent | Target,
 		Accessor = Getter | Setter,
-		All = Invalid | Getter | Setter | Operator | CustomEvent | HasFlow | TakesExecutionContext | TakesInternalExecutionContext | HasImplicitFlow | Target
+		All = Invalid | Getter | Setter | Operator | CustomEvent | HasFlow | TakesExecutionContext | TakesInternalExecutionContext | HasImplicitFlow | Target,
 	};
-
-	/*enum class eCreationNodeTrait : unsigned int
-	{
-		HasImplicitFlow,
-		TakesExecutionContext
-	};*/
 
 	enum class eNodeOperatorTrait : unsigned int
 	{
@@ -49,7 +44,7 @@ namespace FLY_NAMESPACE
 		Divide = 1 << 13,
 		Modulo = 1 << 14,
 		IncrementPrefix = 1 << 15,
-		DecrementPrefix = 1 << 15,
+		DecrementPrefix = 1 << 16,
 
 		Comparator = Equal | NotEqual | Greater | Less | GreaterEqual | LessEqual,
 		Logical = And | Or | Not,

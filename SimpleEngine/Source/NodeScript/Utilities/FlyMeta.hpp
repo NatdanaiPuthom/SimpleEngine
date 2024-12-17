@@ -7,7 +7,7 @@ namespace FLY_NAMESPACE
 {
 
 	template<typename...>
-	struct TypeList {};
+	struct TypeList { constexpr TypeList() {} };
 
 	template <typename... Types>
 	concept EmptyParameterPack = sizeof...(Types) == 0;
@@ -296,7 +296,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T, typename... Types> requires ContainsType<T, Types...>
-	constexpr T Extract(Types&&... aTypes)
+	constexpr decltype(auto) Extract(Types&&... aTypes)
 	{
 		return Extract_Impl<T, Types...>(std::forward<Types>(aTypes)...);
 	}
@@ -326,14 +326,14 @@ namespace FLY_NAMESPACE
 		}
 		else
 		{
-			return Extract<T>(std::forward<Rest>(aRest)...);
+			return ExtractTemplate<T>(std::forward<Rest>(aRest)...);
 		}
 	}
 
 	template<typename T>
 	concept ViewAndEditable = requires(T & aValue)
 	{
-		{ ViewAndEdit(aValue) } -> std::same_as<EditAndViewResult>;
+		{ ViewAndEdit(aValue) } -> std::same_as<ViewAndEditResult>;
 	};
 
 	template<typename T>

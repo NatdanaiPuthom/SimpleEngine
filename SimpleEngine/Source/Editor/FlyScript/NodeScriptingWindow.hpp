@@ -41,6 +41,7 @@ namespace Editor
 		std::unordered_map<Fly::NodeID, Fly::NodeDragData> myNodeDragData;
 		Fly::PinID myLinkCreationPinID;
 		Fly::PinID myStartedLinkPinID;
+		std::vector<Fly::LinkFacade> myTraversedLinks;
 	};
 
 	struct NodeContextHistory
@@ -97,9 +98,9 @@ namespace Editor
 		}
 
 	private:
-		void ShowNodeTypeCreationMenu(const std::vector<Fly::NodeTypeFacade>& aNodeTypeIDs, const std::function<void(const Fly::NodeTypeFacade&)>& aOnClickFunc);
-		void ShowNodeCreationMenuByCategory(const NodeTypeCategory& aCategory, const std::function<void(const Fly::NodeTypeFacade&)>& aOnClickFunc);
-		void ShowNodeCreationMenu(const std::function<void(NodeTypeCategory&)>& aCategoryFunction, const std::function<void(const Fly::NodeTypeFacade&)>& aOnClickFunction);
+		bool ShowNodeSearchMenu(const std::vector<Fly::NodeTypeFacade>& aNodeTypeIDs);
+		bool ShowNodeSearchMenuByCategory(const NodeTypeCategory& aCategory);
+		void ShowNodeSearchMenu();
 		void PopulateCategories(const std::string& aName, const Fly::NodeTypeFacade& aNodeType, NodeTypeCategory& aCategory);
 
 		void UpdateClickPos();
@@ -124,7 +125,7 @@ namespace Editor
 
 		ImVec2 myNodeCreationClickPos;
 
-		bool myIsDraggingNode;
+		bool myIsDraggingNode = false;
 		ImVec2 myDragStartPos;
 		ImVec2 myDragEndPos;
 
@@ -133,7 +134,17 @@ namespace Editor
 		Fly::PinFacade myHoveredPinFacade;
 		Fly::PinFacade myClickedPinFacade;
 
+		struct SearchNodeData
+		{
+			std::function<void(NodeTypeCategory&)> myCategoryFunction;
+			std::function<void(const Fly::NodeTypeFacade&)> myOnClickFunction;
+
+			int myCurrentIndex = 0;
+		};
+
 		bool myIsContextSensitive = false;
+
+		SearchNodeData mySearchNodeData;
 
 		Fly::FunctionFacade mySelectedFunctionFacade;
 
@@ -141,6 +152,7 @@ namespace Editor
 		static constexpr Fly::Color myHoverTint{ 0.1f, 0.1f, 0.1f, 0.f };
 
 		static constexpr const char* ASSET_FILE_PATH = "Assets/FlyClasses";
+		static constexpr const char* NODE_SEARCH_POPUP_NAME = "NodeSearchPopup";
 
 	};
 }

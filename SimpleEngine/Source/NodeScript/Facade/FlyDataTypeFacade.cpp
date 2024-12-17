@@ -30,14 +30,14 @@ namespace FLY_NAMESPACE
 		return Global::GetDataTypeManager().GetName(mDataTypeID);
 	}
 
-	const Color& DataTypeFacade::GetColor() const
+	Color DataTypeFacade::GetColor() const
 	{
 		const DataType* dataType = GetDataType();
 		if (dataType)
 		{
 			return dataType->mColor;
 		}
-		return DefaultColor;
+		return Global::GetDataTypeManager().GetDefaultColor();
 	}
 
 	eDataTypeTrait DataTypeFacade::GetTypeTraits() const
@@ -75,6 +75,11 @@ namespace FLY_NAMESPACE
 		return &dataType->mNodeTypeIDs;
 	}
 
+	void DataTypeFacade::SetColor(const Color& aColor)
+	{
+		GetDataType()->mColor = aColor;
+	}
+
 	DataTypeFacade::operator bool() const
 	{
 		return mDataTypeID != InvalidID<DataTypeID>();
@@ -88,6 +93,11 @@ namespace FLY_NAMESPACE
 	bool DataTypeFacade::operator!=(const DataTypeFacade& aOther) const
 	{
 		return !(*this == aOther);
+	}
+
+	DataType* DataTypeFacade::GetDataType()
+	{
+		return Global::GetDataTypeManager().Find(mDataTypeID);
 	}
 
 	const DataType* DataTypeFacade::GetDataType() const

@@ -58,6 +58,16 @@ namespace FLY_NAMESPACE
 		return ClassFacade();
 	}
 
+	void SetDefaultDataTypeColor(const Fly::Color& aColor)
+	{
+		Global::GetDataTypeManager().SetDefaultColor(aColor);
+	}
+
+	void SetEditorNullptrFunction(void(*aFunction)())
+	{
+		Global::GetDataTypeManager().SetEditorNullptrFunction(aFunction);
+	}
+
 	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraphFacade aCopiedFromNodeGraphFacade)
 	{
 		if (aNodeIDs.empty())
@@ -272,6 +282,20 @@ namespace FLY_NAMESPACE
 		return customEventFacades;
 	}
 
+	std::vector<LinkFacade> GetTraversedLinks()
+	{
+		std::vector<LinkFacade> linkFacades;
+		const std::vector<LinkRef> linkRefs = Global::GetNodeExecutor().GetDebugger().GetTraversedLinks();
+		linkFacades.reserve(linkRefs.size());
+
+		for (auto& linkRef : linkRefs)
+		{
+			linkFacades.push_back(LinkFacade(linkRef.mLinkID, NodeGraphFacade(linkRef.mNodeGraphVariantHandle)));
+		}
+
+		return linkFacades;
+	}
+
 	template<typename FilterFunction>
 	std::vector<NodeTypeFacade> GetNodeTypesFiltered(FilterFunction&& aFilter)
 	{
@@ -306,10 +330,14 @@ namespace FLY_NAMESPACE
 		);
 	}
 
-	std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowType(const DataTypeID aDataTypeID, const eFlowType aFlowType)
+	std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(const DataTypeID aDataTypeID, const eFlowType aFlowType, eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
 	{
-		return GetNodeTypesFiltered([aDataTypeID, aFlowType](const NodeType& aNodeType) -> bool
+		return GetNodeTypesFiltered([aDataTypeID, aFlowType, aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
 			{
+				if (!aBitOperation(aNodeTrait, aNodeType.mNodeRecipe.mTraits))
+				{
+					return false;
+				}
 				const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, aNodeType.mNodeRecipe.mInputPinTypeIDs, aNodeType.mNodeRecipe.mOutputPinTypeIDs);
 				for (const PinTypeID pinTypeID : pinTypeIDs)
 				{
