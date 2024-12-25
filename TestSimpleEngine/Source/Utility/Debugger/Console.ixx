@@ -13,7 +13,7 @@ export module MOD_Console;
 
 export namespace Simple
 {
-	class Console
+	class Console final
 	{
 	public:
 		Console();
@@ -28,7 +28,7 @@ export namespace Simple
 		Console& operator=(Console&&) = delete;
 
 	private:
-		bool m_ConsoleCreatedSuccessfully = false;
+		bool myConsoleCreatedSuccessfully = false;
 	};
 
 	Console::Console()
@@ -37,7 +37,7 @@ export namespace Simple
 
 	Console::~Console()
 	{
-		if (m_ConsoleCreatedSuccessfully)
+		if (myConsoleCreatedSuccessfully)
 		{
 #pragma warning(push)
 #pragma warning(disable : 4996)
@@ -51,7 +51,7 @@ export namespace Simple
 
 	bool Console::Init()
 	{
-		if (m_ConsoleCreatedSuccessfully == true)
+		if (myConsoleCreatedSuccessfully == true)
 		{
 			return false;
 		}
@@ -70,15 +70,15 @@ export namespace Simple
 
 			SetConsoleTitle(L"Simple, it's just that easy");
 
-			m_ConsoleCreatedSuccessfully = true;
+			myConsoleCreatedSuccessfully = true;
 		}
 		else
 		{
-			m_ConsoleCreatedSuccessfully = false;
+			myConsoleCreatedSuccessfully = false;
 		}
 #pragma warning(pop)
 
-		return m_ConsoleCreatedSuccessfully;
+		return myConsoleCreatedSuccessfully;
 	}
 }
 

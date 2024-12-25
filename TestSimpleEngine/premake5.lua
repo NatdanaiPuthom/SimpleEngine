@@ -88,7 +88,6 @@ workspace "SimpleEngine"
 		flags { "FatalWarnings" }
 
 		includedirs {
-			dirs.Source,
 			dirs.Utility, 
 		} 
 
@@ -100,16 +99,37 @@ workspace "SimpleEngine"
 		} 
 			
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	
+
+	project "Engine"
+		kind "StaticLib"
+		location (dirs.Local) 
+		targetdir (dirs.Lib)
+		targetname("%{prj.name}_%{cfg.buildcfg}") 
+		flags { "FatalWarnings" }
+
+		includedirs {
+			dirs.Engine, 
+		} 
+
+		files {
+			dirs.Engine .. "/**.h",
+			dirs.Engine .. "/**.hpp",
+			dirs.Engine .. "/**.cpp",
+			dirs.Engine .. "/**.ixx",
+		} 
+
+		links {
+			"Utility"
+		}
+			
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 	project "UnitTest"
 		kind "SharedLib"
 		location (dirs.Local)
 		targetdir (dirs.Temp)
 		targetname("%{prj.name}_%{cfg.buildcfg}") 
-
-		flags { 
-			"FatalWarnings" 
-		}
+		flags { "FatalWarnings" }
 
 		files {
 
@@ -126,27 +146,6 @@ workspace "SimpleEngine"
 		links {
 		}
 
-	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	project "Engine"
-		kind "StaticLib"
-		location (dirs.Local) 
-		targetdir (dirs.Lib)
-		targetname("%{prj.name}_%{cfg.buildcfg}") 
-		flags { "FatalWarnings" }
-
-		includedirs {
-			dirs.Source,
-			dirs.Engine, 
-		} 
-
-		files {
-			dirs.Engine .. "/**.h",
-			dirs.Engine .. "/**.hpp",
-			dirs.Engine .. "/**.cpp",
-			dirs.Engine .. "/**.ixx",
-		} 
-			
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	project "Launcher"
@@ -172,7 +171,6 @@ workspace "SimpleEngine"
 
 		links {
 			"Engine",
-			"Utility"
 		}
 
 		prebuildcommands {
