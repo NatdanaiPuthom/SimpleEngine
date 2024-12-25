@@ -1,6 +1,8 @@
-export module MOD_WinProc;
+module;
 
-import <dwmapi.h>;
+#include <dwmapi.h>
+
+export module MOD_WinProc;
 
 export LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

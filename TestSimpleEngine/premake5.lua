@@ -9,12 +9,23 @@ dirs["Dependencies"]		= os.realpath("Dependencies/")
 dirs["Lib"]					= os.realpath("Dependencies/Lib/")
 
 dirs["Launcher"]			= os.realpath("Source/Launcher/")
+dirs["Utility"]				= os.realpath("Source/Utility/")
 dirs["Engine"]				= os.realpath("Source/Engine/")
 dirs["UnitTests"]			= os.realpath("Source/UnitTests/")
-dirs["Test"]				= os.realpath("Bin/Test/")
+
+os.mkdir(dirs.Bin)
+os.mkdir(dirs.Local)
+os.mkdir(dirs.Source)
+os.mkdir(dirs.Temp)
+os.mkdir(dirs.Dependencies)
+os.mkdir(dirs.Lib)
+
 os.mkdir(dirs.Launcher)
+os.mkdir(dirs.Utility)
 os.mkdir(dirs.Engine)
 os.mkdir(dirs.UnitTests)
+
+dirs["Test"]				= os.realpath("Bin/Test/")
 
 workspace "SimpleEngine"
 	startproject "Launcher" 
@@ -24,13 +35,6 @@ workspace "SimpleEngine"
 	cppdialect "C++20"
 	warnings "Extra"
 	objdir (dirs.Temp)
-
-	os.mkdir(dirs.Bin)
-	os.mkdir(dirs.Local)
-	os.mkdir(dirs.Source)
-	os.mkdir(dirs.Temp)
-	os.mkdir(dirs.Dependencies)
-	os.mkdir(dirs.Lib)
 
 	defines {
 		
@@ -74,6 +78,27 @@ workspace "SimpleEngine"
 			"dwmapi"
 		}
   
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	project "Utility"
+		kind "StaticLib"
+		location (dirs.Local) 
+		targetdir (dirs.Lib)
+		targetname("%{prj.name}_%{cfg.buildcfg}") 
+		flags { "FatalWarnings" }
+
+		includedirs {
+			dirs.Source,
+			dirs.Utility, 
+		} 
+
+		files {
+			dirs.Utility .. "/**.h",
+			dirs.Utility .. "/**.hpp",
+			dirs.Utility .. "/**.cpp",
+			dirs.Utility .. "/**.ixx",
+		} 
+			
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	project "UnitTests"
@@ -137,7 +162,8 @@ workspace "SimpleEngine"
 
 		includedirs { 
 			dirs.Source,
-			dirs.Launcher, 
+			dirs.Launcher,
+			dirs.Utility,
 		}
 
 		externalincludedirs {
@@ -146,6 +172,7 @@ workspace "SimpleEngine"
 
 		links {
 			"Engine",
+			"Utility"
 		}
 
 		prebuildcommands {
@@ -153,12 +180,21 @@ workspace "SimpleEngine"
 
 		filter "configurations:Debug"
 			targetdir (dirs.Bin)
+
 			postbuildcommands {
 			
 			}
 
 		filter "configurations:Release"
-			targetdir (dirs.Test)
+			targetdir (dirs.Bin)
+
+			postbuildcommands {
+				
+			}
+
+		filter "configurations:Simple"
+			targetdir (dirs.Bin)
+
 			postbuildcommands {
 				
 			}

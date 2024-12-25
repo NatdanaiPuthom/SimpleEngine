@@ -1,9 +1,11 @@
-export module MOD_Console;
+module;
 
-import <Windows.h>;
-import <stdio.h>;
-import <fcntl.h>;
-import <io.h>;
+#include <Windows.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <io.h>
+
+export module MOD_Console;
 
 export namespace Simple
 {

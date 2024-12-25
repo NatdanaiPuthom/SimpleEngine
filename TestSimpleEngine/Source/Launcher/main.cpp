@@ -1,4 +1,4 @@
-#include <windows.h>
+#include <Windows.h>
 
 import MOD_Console;
 import MOD_WinProc;
