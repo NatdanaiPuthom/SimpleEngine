@@ -1,3 +1,4 @@
+#define WIN32_LEAN_AND_MEAN //NOTE(v1.0.0): Fuck you Microsoft
 #include <Windows.h>
 
 import MOD_Console;

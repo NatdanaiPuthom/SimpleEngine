@@ -1,5 +1,9 @@
 module;
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN //NOTE(v1.0.0): Fuck you Microsoft
+#endif
+
 #include <Windows.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -77,3 +81,7 @@ export namespace Simple
 		return m_ConsoleCreatedSuccessfully;
 	}
 }
+
+#ifdef WIN32_LEAN_AND_MEAN
+#undef WIN32_LEAN_AND_MEAN
+#endif
