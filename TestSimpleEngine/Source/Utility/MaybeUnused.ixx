@@ -6,4 +6,4 @@ module;
 #include <fcntl.h>
 #include <io.h>
 
-export module MOD_Test;
+export module MOD_MaybeUnused;
