@@ -35,6 +35,8 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	dirs["SimpleLib"]			= os.realpath("Dependencies/SimpleLib/")
 	dirs["Bin_Settings"]		= os.realpath("Bin/Settings/")
 	dirs["Build"]               = os.realpath("Bin/Test/")
+	
+	debugdir(dirs.Bin)
 
 	defines { -- Create Global Macro For Strings.
 
@@ -64,6 +66,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		'SIMPLE_FILENAME_NEWSCENE="NewScene.scene"',
 		'SIMPLE_FILENAME_DEBUGJSON="debug_settings.json"'
 	}
+
 
 	configurations { -- Create Configurations For This WorkSpace
 		"Debug",
