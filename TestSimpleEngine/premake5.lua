@@ -8,10 +8,10 @@ dirs["Temp"]				= os.realpath("Temp/")
 dirs["Dependencies"]		= os.realpath("Dependencies/")
 dirs["Lib"]					= os.realpath("Dependencies/Lib/")
 
-dirs["Launcher"]			= os.realpath("Source/Launcher/")
-dirs["Utility"]				= os.realpath("Source/Utility/")
-dirs["Engine"]				= os.realpath("Source/Engine/")
-dirs["UnitTests"]			= os.realpath("Source/UnitTests/")
+dirs["Launcher"]			= dirs.Source .. "Launcher/"
+dirs["Utility"]				= dirs.Source .. "Utility/"
+dirs["Engine"]				= dirs.Source .. "Engine/"
+dirs["UnitTest"]			= dirs.Source .. "UnitTest/"
 
 os.mkdir(dirs.Bin)
 os.mkdir(dirs.Local)
@@ -23,7 +23,7 @@ os.mkdir(dirs.Lib)
 os.mkdir(dirs.Launcher)
 os.mkdir(dirs.Utility)
 os.mkdir(dirs.Engine)
-os.mkdir(dirs.UnitTests)
+os.mkdir(dirs.UnitTest)
 
 dirs["Test"]				= os.realpath("Bin/Test/")
 
@@ -101,20 +101,22 @@ workspace "SimpleEngine"
 			
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	project "UnitTests"
+	project "UnitTest"
 		kind "SharedLib"
 		location (dirs.Local)
 		targetdir (dirs.Temp)
-		targetname "UnitTests_%{cfg.buildcfg}"
+		targetname("%{prj.name}_%{cfg.buildcfg}") 
 
 		flags { 
 			"FatalWarnings" 
 		}
 
 		files {
-			"Source/UnitTests/**.h",
-			"Source/UnitTests/**.hpp",
-			"Source/UnitTests/**.cpp",
+
+			dirs.UnitTest .. "/**.h",
+			dirs.UnitTest .. "/**.hpp",
+			dirs.UnitTest .. "/**.cpp",
+			dirs.UnitTest .. "/**.ixx",
 		}
 
 		includedirs {
@@ -161,9 +163,7 @@ workspace "SimpleEngine"
 		}
 
 		includedirs { 
-			dirs.Source,
 			dirs.Launcher,
-			dirs.Utility,
 		}
 
 		externalincludedirs {
