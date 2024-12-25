@@ -5,6 +5,7 @@
 #include "NodeScript/FlyRegistration.hpp"
 #include "NodeScript/Fly.hpp"
 #include <imgui.h>
+#include "SimpleUtilities/Color.hpp"
 
 namespace ECS
 {
