@@ -95,6 +95,7 @@ namespace Graphics
 		MP3,
 		Scene,
 		Cursor,
+		FlyScript,
 		Unknown
 	};
 
