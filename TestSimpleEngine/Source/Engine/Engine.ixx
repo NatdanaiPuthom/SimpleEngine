@@ -5,11 +5,13 @@ module;
 #endif
 
 #include <Windows.h>
+#include <cassert>
 
 export module MOD_Engine;
 
 import MOD_Console;
 import MOD_WinProc;
+import MOD_Timer;
 
 export namespace Simple
 {
@@ -24,7 +26,11 @@ export namespace Simple
 		bool IsRunning() const;
 
 	private:
+		HWND SetUpMainWindow(HINSTANCE& hInstance);
+
+	private:
 		HWND myHWND;
+		Timer myTimer;
 		Console myConsole;
 		bool myIsRunning = false;
 	};
@@ -40,40 +46,25 @@ export namespace Simple
 
 	bool Engine::Init(HINSTANCE& hInstance, const int nCmdShow)
 	{
-		if (myIsRunning == true)
+		if (myIsRunning)
 		{
 			return false;
 		}
 
-		if (myConsole.Init() == false)
+		if (!myConsole.Init())
 		{
 			return false;
 		}
 
-		WNDCLASS wc = {};
-		wc.lpfnWndProc = WndProc;
-		wc.hInstance = hInstance;
-		wc.lpszClassName = L"SimpleWindowClass";
+		myHWND = SetUpMainWindow(hInstance);
 
-		if (!RegisterClass(&wc))
+		if (!myHWND)
 		{
 			return false;
 		}
 
-		HWND hWnd = CreateWindow(
-			L"SimpleWindowClass",  // Window class name
-			L"Simple Window",      // Window title
-			WS_OVERLAPPEDWINDOW,   // Window style
-			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, // Position and size
-			NULL, NULL, hInstance, NULL);
-
-		if (!hWnd)
-		{
-			return false;
-		}
-
-		ShowWindow(hWnd, nCmdShow);
-		UpdateWindow(hWnd);
+		ShowWindow(myHWND, nCmdShow);
+		UpdateWindow(myHWND);
 
 		myIsRunning = true;
 
@@ -105,6 +96,55 @@ export namespace Simple
 	bool Engine::IsRunning() const
 	{
 		return myIsRunning;
+	}
+
+	HWND Engine::SetUpMainWindow(HINSTANCE& hInstance)
+	{
+		WNDCLASSEXW wcex = {};
+		wcex.cbSize = sizeof(WNDCLASSEX);
+		wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+		wcex.style &= ~CS_DROPSHADOW;
+		wcex.lpfnWndProc = WndProc;
+		wcex.hInstance = hInstance;
+		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+		wcex.lpszClassName = L"Natdanai";
+		//wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+		//wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+		//wcex.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+
+		//assert(wcex.hCursor && "Failed to load cursor");
+		//assert(wcex.hIcon != NULL && "Failed to load icon");
+		//assert(wcex.hIconSm != NULL && "Failed to load small icon");
+
+		if (!RegisterClassExW(&wcex))
+		{
+			MessageBox(NULL, L"Failed to register window class", L"Error", MB_ICONERROR);
+			return nullptr;
+		}
+
+		const int width = 1600;
+		const int height = 900;
+
+		RECT wr = {};
+		wr.left = 0;
+		wr.right = width + wr.left;
+		wr.top = 0;
+		wr.bottom = height + wr.top;
+
+		AdjustWindowRect(&wr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
+
+		return CreateWindow(
+			L"Natdanai",
+			L"v1.0.0",
+			WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			wr.right - wr.left,
+			wr.bottom - wr.top,
+			nullptr,
+			nullptr,
+			hInstance,
+			nullptr);
 	}
 }
 
