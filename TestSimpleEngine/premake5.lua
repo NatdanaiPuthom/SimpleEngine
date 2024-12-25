@@ -61,7 +61,7 @@ workspace "SimpleEngine"
 		libdirs { dirs.Lib	}
 
 	filter "configurations:Simple"
-		defines { "_SIMPLE" }
+		defines { "_SIMPLE", "NDEBUG" }
 		symbols "Off"
 		optimize "Full"
 		runtime "Release"
@@ -140,10 +140,12 @@ workspace "SimpleEngine"
 		}
 
 		includedirs {
-			dirs.Source
+			dirs.Source,
+			dirs.UnitTest
 		}
 
 		links {
+			"Utility"
 		}
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
