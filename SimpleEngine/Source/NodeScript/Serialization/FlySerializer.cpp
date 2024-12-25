@@ -8,7 +8,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-constexpr const char* FILE_EXTENSION = ".fly";
+constexpr const char* FLY_FILE_EXTENSION = ".fly";
 constexpr const char* CUSTOM_EVENT_FILE_NAME = "CustomEvents.fly";
 
 namespace FLY_NAMESPACE
@@ -23,16 +23,184 @@ namespace FLY_NAMESPACE
 			fileDirectory += "/";
 		}
 
-		return fileDirectory;
+		return std::filesystem::path(std::filesystem::current_path().string() + "/" + fileDirectory);
 	}
 
 	namespace Internal
 	{
 
+		void LoadFlyFile(std::string_view aFilePath)
+		{
+			const std::filesystem::path filePath = aFilePath;
+			std::ifstream ifs(filePath);
+			const std::string file((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+
+			if (!ifs.is_open())
+			{
+				throw std::runtime_error("Failed to open file for loading: " + filePath.string());
+				return;
+			}
+
+			ifs.close();
+
+			const nlohmann::json jsonDoc = nlohmann::json::parse(file);
+
+			const std::string& flyType = jsonDoc["Type"];
+
+			if (flyType == "Class")
+			{
+				LoadClass(jsonDoc);
+			}
+			else if (flyType == "Struct")
+			{
+				LoadStruct(jsonDoc);
+			}
+		}
+
+
+		void SaveStruct(const Struct& aStruct, std::string_view aFilePath)
+		{
+			std::filesystem::path fileDirectory = aFilePath;
+			std::filesystem::path filePath = fileDirectory.string() + "/" + aStruct.mName + FLY_FILE_EXTENSION;
+
+			std::filesystem::create_directories(std::string(aFilePath));
+			if (!std::filesystem::exists(fileDirectory))
+			{
+				throw std::runtime_error("Failed to create directory: " + fileDirectory.string());
+				return;
+
+			}
+
+			std::ofstream ofs(filePath, std::ios::out);
+
+			if (!ofs.is_open())
+			{
+				throw std::runtime_error("Failed to open file for writing: " + filePath.string());
+				return;
+			}
+
+
+			nlohmann::json jsonDoc;
+
+			jsonDoc["Type"] = "Struct";
+			jsonDoc["Name"] = aStruct.mName;
+
+			nlohmann::json& dataJson = jsonDoc["Data"];
+
+			{
+				dataJson["Variables"] = nlohmann::json::array();
+				nlohmann::json& variableDataJson = dataJson["Variables"];
+
+				for (VarID varID = 0; varID < aStruct.mVariableContainer.mVariables.size(); ++varID)
+				{
+					const Variable& variable = aStruct.mVariableContainer.mVariables.at(varID);
+
+					if (variable.mIsDestroyed)
+					{
+						continue;
+					}
+
+					nlohmann::json variableJson;
+
+					variableJson["Name"] = variable.mName;
+					variableJson["DataType"] = Global::GetDataTypeManager().GetName(variable.mDataTypeID);
+
+					nlohmann::json defaultValueJson = nlohmann::json::object();
+
+					Global::GetDataTypeManager().SaveData(variable.mDataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+
+					variableJson["DefaultValue"] = defaultValueJson;
+
+					/*variableJson["Nodes"] = nlohmann::json::array();
+					nlohmann::json& variableNodesJson = variableJson["Nodes"];
+
+					for (const NodeRef& nodeRef : variableManager.GetNodeRefsByVarID(varID))
+					{
+
+						const Node& node = nodeRef.GetNodeGraph().mNodes.at(nodeRef.GetNodeID());
+
+						if (!node.mIsDestroyed)
+						{
+							nlohmann::json& varNodeJson = variableNodesJson.emplace_back();
+							const NodeID cleanNodeID = cleanedNodeIDs.at(nodeRef.GetNodeID());
+							varNodeJson["NodeID"] = cleanNodeID;
+							nlohmann::json& graphJson = varNodeJson["Graph"];
+							assert(nodeRef.GetClass());
+							graphJson["ClassName"] = nodeRef.GetClass()->mName;
+							graphJson
+							variableNodesJson.push_back(varNodeJson);
+						}
+					}*/
+
+					variableDataJson.push_back(variableJson);
+				}
+			}
+
+			ofs << jsonDoc;
+			ofs.close();
+
+			
+		}
+
+		void LoadStruct(const nlohmann::json& aJsonData)
+		{
+			const std::string& structName = aJsonData["Name"];
+			const StructID createdStructID = Internal::CreateStruct(structName);
+			LoadStruct(aJsonData["Data"], GetStructByID(createdStructID));
+		}
+
+
+		void LoadStruct(const nlohmann::json& aJsonData, Struct& aStruct)
+		{
+			const nlohmann::json& dataJson = aJsonData;
+
+
+			const nlohmann::json& variableDataJson = dataJson["Variables"];
+
+			for (const nlohmann::json& variableJson : variableDataJson)
+			{
+				const VarID varID = Internal::CreateVariable(aStruct.mVariableContainer, GetDataTypeID<bool>(), "Var", nullptr);
+				Variable& variable = aStruct.mVariableContainer.mVariables.at(varID);
+
+				const std::string& dataTypeStr = variableJson["DataType"];
+
+				const std::string variableName = variableJson["Name"];
+				Internal::SetVariableName(varID, aStruct.mVariableContainer, variableName, nullptr);
+
+				const nlohmann::json& defaultValueJson = variableJson["DefaultValue"];
+
+
+				const DataTypeID dataTypeID = Global::GetDataTypeManager().GetDataTypeIDByName(dataTypeStr);
+
+				if (dataTypeID != InvalidID<DataTypeID>())
+				{
+
+					Internal::SetVariableDataType(varID, aStruct.mVariableContainer, dataTypeID, nullptr);
+
+					Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+
+				}
+
+				/*const json& variableNodesJson = variableJson["Nodes"];
+
+				for (const NodeID nodeID : variableNodesJson)
+				{
+					if (!failedNodeIDs.contains(nodeID))
+					{
+						InternalModifier::BindVariable(aScript, NodeRef{.nodeID = nodeID, .nodeGraph = , varID, nullptr);
+					}
+					else
+					{
+						std::cout << "Couldn't bind node to variable" << std::endl;
+					}
+				}*/
+			}
+		}
+
 		void SaveClass(const Class& aClass, const std::string_view aFilePath)
 		{
 			std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
-			std::filesystem::path filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
+			std::filesystem::path filePath = fileDirectory.string() + aClass.mName + FLY_FILE_EXTENSION;
 
 			std::filesystem::create_directories(std::string(aFilePath));
 			if (!std::filesystem::exists(fileDirectory))
@@ -54,7 +222,9 @@ namespace FLY_NAMESPACE
 
 			nlohmann::json jsonDoc;
 
+			jsonDoc["Type"] = "Class";
 			jsonDoc["Name"] = aClass.mName;
+			jsonDoc["Target"] = Global::GetDataTypeManager().GetName(aClass.mTargetID);
 
 			nlohmann::json& dataJson = jsonDoc["Data"];
 			std::unordered_map<NodeID, NodeID> cleanedNodeIDs;
@@ -148,9 +318,9 @@ namespace FLY_NAMESPACE
 				dataJson["Variables"] = nlohmann::json::array();
 				nlohmann::json& variableDataJson = dataJson["Variables"];
 
-				for (VarID varID = 0; varID < aClass.mStruct.mVariables.size(); ++varID)
+				for (VarID varID = 0; varID < aClass.mVariableContainer.mVariables.size(); ++varID)
 				{
-					const Variable& variable = aClass.mStruct.mVariables.at(varID);
+					const Variable& variable = aClass.mVariableContainer.mVariables.at(varID);
 
 					if (variable.mIsDestroyed)
 					{
@@ -197,27 +367,20 @@ namespace FLY_NAMESPACE
 			ofs.close();
 		}
 
-		void LoadClass(Class& aClass, const std::string_view aFilePath)
+		void LoadClass(const nlohmann::json& aJsonData)
 		{
-			const std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
-			const std::filesystem::path filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
-			std::ifstream ifs(filePath);
-			const std::string file((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+			const std::string& className = aJsonData["Name"];
+			const std::string& targetName = aJsonData["Target"];
+			const ClassID createdClassID = Internal::CreateClass(Global::GetDataTypeManager().GetDataTypeIDByName(targetName), className);
+			LoadClass(aJsonData["Data"], GetClassByID(createdClassID));
+		}
 
-			if (!ifs.is_open())
-			{
-				throw std::runtime_error("Failed to open file for loading: " + filePath.string());
-				return;
-			}
-
-			ifs.close();
-
-			const nlohmann::json jsonDoc = nlohmann::json::parse(file);
-
+		void LoadClass(const nlohmann::json& aJsonData, Class& aClass)
+		{
 			EventGraph& eventGraph = aClass.mEventGraph;
 			NodeGraph& eventNodeGraph = eventGraph.mNodeGraph;
 
-			const nlohmann::json& dataJson = jsonDoc["Data"];
+			const nlohmann::json& dataJson = aJsonData;
 
 			std::unordered_set<NodeID> failedNodeIDs;
 
@@ -286,13 +449,13 @@ namespace FLY_NAMESPACE
 
 			for (const nlohmann::json& variableJson : variableDataJson)
 			{
-				const VarID varID = Internal::CreateVariable(aClass, GetDataTypeID<bool>(), nullptr);
-				Variable& variable = aClass.mStruct.mVariables.at(varID);
+				const VarID varID = Internal::CreateVariable(aClass.mVariableContainer, GetDataTypeID<bool>(), "Var", nullptr);
+				Variable& variable = aClass.mVariableContainer.mVariables.at(varID);
 
 				const std::string& dataTypeStr = variableJson["DataType"];
 
 				const std::string variableName = variableJson["Name"];
-				Internal::SetVariableName(varID, aClass, variableName, nullptr);
+				Internal::SetVariableName(varID, aClass.mVariableContainer, variableName, nullptr);
 
 				const nlohmann::json& defaultValueJson = variableJson["DefaultValue"];
 
@@ -302,7 +465,7 @@ namespace FLY_NAMESPACE
 				if (dataTypeID != InvalidID<DataTypeID>())
 				{
 
-					Internal::SetVariableDataType(varID, aClass, dataTypeID, nullptr);
+					Internal::SetVariableDataType(varID, aClass.mVariableContainer, dataTypeID, nullptr);
 
 					Global::GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
 
@@ -324,9 +487,8 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		void LoadAllClasses(const std::string_view aFilePath)
+		void LoadAllFlyFiles(const std::string_view aFilePath)
 		{
-
 			std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
 
 			if (!std::filesystem::exists(fileDirectory) || !std::filesystem::is_directory(fileDirectory))
@@ -338,14 +500,13 @@ namespace FLY_NAMESPACE
 				for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(fileDirectory))
 				{
 
-					if (std::filesystem::is_regular_file(entry.path()))
+					if (std::filesystem::is_regular_file(entry.path()) && entry.path().extension() == ".fly")
 					{
 						std::cout << "Found script file: " << entry.path() << std::endl;
 
 						const std::string fileName = entry.path().filename().string();
-						const std::string name = fileName.substr(0, fileName.find_last_of('.'));
-						Class& createdClass = Internal::CreateClass(GetDataTypeID<None*>(), name);
-						LoadClass(createdClass, aFilePath);
+
+						LoadFlyFile(entry.path().string());
 					}
 				}
 			}
@@ -354,8 +515,8 @@ namespace FLY_NAMESPACE
 		void CreateCopyOfClass(const Class& aClass, const std::string_view aFilePath, const std::string_view aCopyName)
 		{
 			const std::filesystem::path fileDirectory = GetFileDirectory(aFilePath);
-			std::string filePath = fileDirectory.string() + aClass.mName + FILE_EXTENSION;
-			std::string copyPath = fileDirectory.string() + std::string(aCopyName) + FILE_EXTENSION;
+			std::string filePath = fileDirectory.string() + aClass.mName + FLY_FILE_EXTENSION;
+			std::string copyPath = fileDirectory.string() + std::string(aCopyName) + FLY_FILE_EXTENSION;
 
 			if (std::filesystem::copy_file(filePath, copyPath))
 			{

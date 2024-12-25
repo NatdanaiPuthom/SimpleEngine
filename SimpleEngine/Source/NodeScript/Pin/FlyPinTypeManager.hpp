@@ -13,15 +13,22 @@ namespace FLY_NAMESPACE
 		PinTypeManager();
 		~PinTypeManager();
 
-		PinTypeID Create(std::string_view aName, eFlowType aFlowType, DataTypeID aDataTypeID, SetPinValueInterface aSetPinValueFunction, SetPinValueFromPinInterface aSetPinValueFromPinInterface, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>());
+		PinTypeID CreatePinType(std::string_view aName, eFlowType aFlowType, DataTypeID aDataTypeID, SetPinValueInterface aSetPinValueFunction, SetPinValueFromPinInterface aSetPinValueFromPinInterface, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>());
 
 		template<typename T>
-		PinTypeID Create(std::string_view aName, eFlowType aFlowType, SetPinValueInterface aSetPinValueFunction, SetPinValueFromPinInterface aSetPinValueFromPinInterface, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>())
+		PinTypeID CreatePinType(std::string_view aName, eFlowType aFlowType, SetPinValueInterface aSetPinValueFunction, SetPinValueFromPinInterface aSetPinValueFromPinInterface, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>())
 		{
-			return Create(aName, aFlowType, GetDataTypeID<T>(), aSetPinValueFunction, aSetPinValueFromPinInterface, aDefaultValueMemoryID);
+			return CreatePinType(aName, aFlowType, GetDataTypeID<T>(), aSetPinValueFunction, aSetPinValueFromPinInterface, aDefaultValueMemoryID);
 		}
 
-		PinType& GetPinType(PinTypeID anID);
+		PinType& GetPinType(PinTypeID aID)
+		{
+			return mPinTypes[aID];
+		}
+		const PinType& GetPinType(PinTypeID aID) const
+		{
+			return mPinTypes[aID];
+		}
 
 	private:
 		std::vector<PinType> mPinTypes;

@@ -27,12 +27,20 @@ namespace FLY_NAMESPACE
 
 		[[nodiscard]] bool IsParentNodeReplacable() const;
 		[[nodiscard]] bool HasAnyConnectedLinks() const;
+		[[nodiscard]] bool IsViewAndEditable() const;
+		[[nodiscard]] bool IsViewable() const;
+		[[nodiscard]] bool IsSplitable() const;
+		[[nodiscard]] bool IsRecombinable() const;
+		[[nodiscard]] std::vector<PinFacade> GetPotentialConnections() const;
+		//[[nodiscard]] std::vector<PinFacade> GetSplitPins() const;
 
 		[[nodiscard]] NodeGraphVariantHandle GetNodeGraphVariant() const;
 
 		void DestroyConnectedLinks(CommandTracker* aCommandTracker);
 		void ViewAndEdit(CommandTracker* aCommandTracker);
 		void View() const;
+		void Split(CommandTracker* aCommandTracker);
+		void RecombineParentPin(CommandTracker* aCommandTracker);
 
 		explicit operator bool() const;
 

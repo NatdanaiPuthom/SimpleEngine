@@ -550,16 +550,16 @@ namespace ECS
 		bool wasChanged = false;
 
 		Fly::DataTypeFacade entityDataTypeFacade(Fly::GetDataTypeID<Entity*>());
-		auto entityClasses = Fly::GetClassesByDataType(entityDataTypeFacade);
+		auto entityClasses = Fly::GetClassesByTargetDataType(entityDataTypeFacade);
 
-		const std::string& preview = aClassInstanceFacade ? aClassInstanceFacade.GetName() : "None";
-		Combo classCombo("Entity Class", preview.c_str(), [&]() -> void
+		std::string_view preview = aClassInstanceFacade ? aClassInstanceFacade.GetName() : "None";
+		Combo classCombo("Entity Class", std::string(preview).c_str(), [&]() -> void
 			{
 
 				for (auto& entityClass : entityClasses)
 				{
-					const bool isSelected = aClassInstanceFacade ? aClassInstanceFacade.GetClassInstance().mClass == &entityClass.GetClass() : false;
-					if (ImGui::Selectable(entityClass.GetName().c_str(), isSelected))
+					const bool isSelected = aClassInstanceFacade ? aClassInstanceFacade.GetClassInstance().mClassID == entityClass.GetID() : false;
+					if (ImGui::Selectable(std::string(entityClass.GetName()).c_str(), isSelected))
 					{
 						if (isSelected)
 						{
@@ -583,7 +583,7 @@ namespace ECS
 			return wasChanged;
 		}
 
-		aClassInstanceFacade.EditVariableDefaultValues(nullptr);
+		aClassInstanceFacade.ViewAndEditVariableDefaultValues(nullptr);
 
 		return wasChanged;
 	}

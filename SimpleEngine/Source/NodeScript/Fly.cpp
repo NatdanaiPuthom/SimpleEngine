@@ -21,9 +21,9 @@ namespace FLY_NAMESPACE
 		Foundation::GetInstance().Destroy();
 	}
 
-	void LoadAllClasses(const std::string_view aFilePath)
+	void LoadAllFlyFiles(const std::string_view aFilePath)
 	{
-		Internal::LoadAllClasses(aFilePath);
+		Internal::LoadAllFlyFiles(aFilePath);
 	}
 
 	void SaveCustomEvents(const std::string_view aFilePath)
@@ -31,11 +31,18 @@ namespace FLY_NAMESPACE
 		Internal::SaveCustomEvents(aFilePath);
 	}
 
+	StructFacade CreateStruct(std::string_view aName, std::string_view aSavePath)
+	{
+		StructID structID = Internal::CreateStruct(aName);
+		Internal::SaveStruct(Global::GetFoundation().GetStruct(structID), aSavePath);
+		return StructFacade(structID);
+	}
+
 	ClassFacade CreateClass(const DataTypeFacade aTargetFacade, const std::string_view aName, const std::string_view aSavePath)
 	{
-		Class& createdClass = Global::GetFoundation().CreateClass(aTargetFacade.GetID(), aName);
-		Internal::SaveClass(createdClass, aSavePath);
-		return ClassFacade(createdClass);
+		ClassID createdClassID = Internal::CreateClass(aTargetFacade.GetID(), aName);
+		Internal::SaveClass(Internal::GetClassByID(createdClassID), aSavePath);
+		return ClassFacade(createdClassID);
 	}
 
 	ClassFacade CreateClassWithoutTarget(const std::string_view aName, const std::string_view aSavePath)
@@ -43,20 +50,38 @@ namespace FLY_NAMESPACE
 		return CreateClass(DataTypeFacade(GetDataTypeID<None*>()), aName, aSavePath);
 	}
 
+
+	StructFacade FindStructByName(const std::string_view aName)
+	{
+		auto& structs = Global::GetFoundation().mStructs;
+
+		for (size_t i = 0; i < structs.size(); i++)
+		{
+			if (structs[i]->mName == aName)
+			{
+				return StructFacade(StructID{ i });
+			}
+		}
+
+		return StructFacade();
+	}
+
 	ClassFacade FindClassByName(const std::string_view aName)
 	{
 		auto& classes = Global::GetFoundation().mClasses;
 
-		for (HeapObject<Class>& c : classes)
+		for (size_t i = 0; i < classes.size(); ++i)
 		{
-			if (ClassFacade(*c).GetName() == aName)
+			if (classes[i]->mName == aName)
 			{
-				return ClassFacade(*c);
+				return ClassFacade(ClassID{ i });
 			}
 		}
 
 		return ClassFacade();
 	}
+
+
 
 	void SetDefaultDataTypeColor(const Fly::Color& aColor)
 	{
@@ -330,7 +355,7 @@ namespace FLY_NAMESPACE
 		);
 	}
 
-	std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(const DataTypeID aDataTypeID, const eFlowType aFlowType, eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
+	std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(const DataTypeID aDataTypeID, const eFlowType aFlowType, const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
 	{
 		return GetNodeTypesFiltered([aDataTypeID, aFlowType, aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
 			{
@@ -342,7 +367,9 @@ namespace FLY_NAMESPACE
 				for (const PinTypeID pinTypeID : pinTypeIDs)
 				{
 					const PinType& pinType = Global::GetPinTypeManager().GetPinType(pinTypeID);
-					if (Global::GetDataTypeManager().AreDataTypesRelated(pinType.mDataTypeID, aDataTypeID))
+					const DataTypeID inputDataTypeID = SelectByFlowType(aFlowType, pinType.mDataTypeID, aDataTypeID);
+					const DataTypeID outputDataTypeID = SelectByFlowType(aFlowType, aDataTypeID, pinType.mDataTypeID);
+					if (Internal::AreDataTypesLinkable(inputDataTypeID, outputDataTypeID))
 					{
 						return true;
 					}
@@ -367,25 +394,25 @@ namespace FLY_NAMESPACE
 
 		std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> views;
 
-		for (auto& flyClass : classes)
+		for (size_t i = 0; i < classes.size(); i++)
 		{
-			views[DataTypeFacade(flyClass->mTargetID)].push_back(ClassFacade(*flyClass));
+			views[DataTypeFacade(classes[i]->mTargetID)].push_back(ClassFacade(ClassID{ i }));
 		}
 
 		return views;
 	}
 
-	std::vector<ClassFacade> GetClassesByDataType(DataTypeFacade aDataTypeFacade)
+	std::vector<ClassFacade> GetClassesByTargetDataType(DataTypeFacade aDataTypeFacade)
 	{
 		auto& classes = Foundation::GetInstance().mClasses;
 
 		std::vector<ClassFacade> views;
 
-		for (auto& flyClass : classes)
+		for (size_t i = 0; i < classes.size(); ++i)
 		{
-			if (flyClass->mTargetID == aDataTypeFacade.GetID())
+			if (classes[i]->mTargetID == aDataTypeFacade.GetID())
 			{
-				views.push_back(ClassFacade(*flyClass));
+				views.push_back(ClassFacade(ClassID{ i }));
 			}
 		}
 

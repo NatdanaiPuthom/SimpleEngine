@@ -15,6 +15,7 @@ namespace Editor
 		: myClassWindow(*this)
 		, myCustomEventWindow(*this)
 		, myFunctionSettingsWindow(*this)
+		, myStructCreatorWindow(this)
 	{
 		myCommandTracker = std::make_unique<Fly::CommandTracker>();
 		
@@ -77,16 +78,19 @@ namespace Editor
 
 	bool NodeScriptingWindow::OpenClassByName(std::string_view aName)
 	{
-		Fly::ClassFacade classFacade = Fly::FindClassByName(aName);
-
-		if (!classFacade)
+		if (Fly::ClassFacade classFacade = Fly::FindClassByName(aName))
 		{
-			return false;
+			SetNodeContext(classFacade.GetEventGraphFacade(), classFacade);
+			return true;
 		}
 
-		SetNodeContext(classFacade.GetEventGraphFacade(), classFacade);
+		if (Fly::StructFacade structFacade = Fly::FindStructByName(aName))
+		{
+			myStructCreatorWindow.SetStructFacade(structFacade);
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	void NodeScriptingWindow::UpdateContext()
@@ -215,6 +219,7 @@ namespace Editor
 
 			myClassWindow.Draw();
 			myCustomEventWindow.Update();
+			myStructCreatorWindow.Update();
 
 
 			if (GetNodeContext().myNodeGraphFacade.GetType() == Fly::eNodeGraphType::Function)
@@ -253,12 +258,11 @@ namespace Editor
 		if (GetCurrentMode() == eGraphMode::Class)
 		{
 			ImGui::SameLine();
-			char buffer[35]{};
-			strcpy_s(buffer, GetNodeContext().myClassFacade.GetName().c_str());
 
-			if (ImGui::InputText("##", buffer, IM_ARRAYSIZE(buffer)))
+			std::string className = std::string(GetNodeContext().myClassFacade.GetName());
+			if (ImGui::InputString<32>("##", className))
 			{
-				GetNodeContext().myClassFacade.SetName(buffer);
+				GetNodeContext().myClassFacade.SetName(className, nullptr);
 			}
 		}
 	}
@@ -267,7 +271,7 @@ namespace Editor
 	{
 		Fly::ClassFacade currentClass = GetNodeContext().myClassFacade;
 
-		std::string currentClassName = currentClass ? currentClass.GetName() : "None";
+		std::string currentClassName = currentClass ? std::string(currentClass.GetName()) : "None";
 
 		if (ImGui::BeginCombo("Select Fly Class", currentClassName.c_str()))
 		{
@@ -279,7 +283,7 @@ namespace Editor
 				{
 					for (auto& flyClass : classesByDataTypeID)
 					{
-						if (ImGui::MenuItem(flyClass.GetName().c_str()))
+						if (ImGui::MenuItem(std::string(flyClass.GetName()).c_str()))
 						{
 							SetNodeContext(flyClass.GetEventGraphFacade(), flyClass);
 						}
@@ -306,7 +310,7 @@ namespace Editor
 
 		if (ImGui::Button("Reload All"))
 		{
-			Fly::LoadAllClasses(ASSET_FILE_PATH);
+			Fly::LoadAllFlyFiles(ASSET_FILE_PATH);
 		}
 
 		ImGui::SameLine();
@@ -491,10 +495,10 @@ namespace Editor
 
 				if (nodeFacade.IsAccessor())
 				{
-					const Fly::VariableFacade variable = nodeFacade.GetVariableFacade();
+					/*const Fly::VariableFacade variable = nodeFacade.GetVariableFacade();
 					const bool isGetter = Fly::HasFlag(nodeFacade.GetTraits(), Fly::eNodeTrait::Getter);
 					const char* const prefixLabel = isGetter ? "Get " : "Set ";
-					nodeLabel = prefixLabel + variable.GetName();
+					nodeLabel = prefixLabel + variable.GetName();*/
 				}
 				else
 				{
@@ -514,7 +518,7 @@ namespace Editor
 
 			ImVec2 cursorPos = ImGui::GetCursorPos();
 
-			const std::vector<Fly::PinFacade> inputPinFacades = nodeFacade.GetInputPinFacades();
+			std::vector<Fly::PinFacade> inputPinFacades = nodeFacade.GetSplitInputPinFacades();
 			float nodeWidthLeft = inputPinFacades.empty() ? 0.f : 100.f;
 
 			for (const Fly::PinFacade& inputPinFacade : inputPinFacades)
@@ -527,7 +531,7 @@ namespace Editor
 
 			float nodeWidthRight = 0.f;
 
-			std::vector<Fly::PinFacade> outputPinFacades = nodeFacade.GetOutputPinFacades();
+			std::vector<Fly::PinFacade> outputPinFacades = nodeFacade.GetSplitOutputPinFacades();
 
 			for (const Fly::PinFacade& outputPinFacade : outputPinFacades)
 			{
@@ -544,51 +548,61 @@ namespace Editor
 				extraWidth += 30.f;
 			}
 
-			// Render input pins
-			for (Fly::PinFacade inputPinFacade : inputPinFacades)
-			{
-				const Fly::DataTypeFacade pinDataType(inputPinFacade.GetDataTypeID());
-				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
-				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(pinDataType.GetColor() - myHoverTint));
 
-				const bool shouldBeHighlighted = std::find(currentNodeContext.myPinFacadesToHighlight.begin(), currentNodeContext.myPinFacadesToHighlight.end(), inputPinFacade) != currentNodeContext.myPinFacadesToHighlight.end();
+			auto renderInputPin = [&](Fly::PinFacade& aInputPinFacade) -> void
+				{
+					const Fly::DataTypeFacade pinDataType(aInputPinFacade.GetDataTypeID());
+					ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
+					ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(pinDataType.GetColor() - myHoverTint));
+
+					const bool shouldBeHighlighted = std::find(currentNodeContext.myPinFacadesToHighlight.begin(), currentNodeContext.myPinFacadesToHighlight.end(), aInputPinFacade) != currentNodeContext.myPinFacadesToHighlight.end();
 
 
-				const ImNodesPinShape shape = [shouldBeHighlighted, inputPinFacade]()
-					{
-						if (shouldBeHighlighted)
+					const ImNodesPinShape shape = [shouldBeHighlighted, aInputPinFacade]()
 						{
-							return ImNodesPinShape_Triangle;
-						}
+							if (shouldBeHighlighted)
+							{
+								return ImNodesPinShape_Triangle;
+							}
 
-						const bool isPointer = Fly::DataTypeFacade(inputPinFacade.GetDataTypeID()).IsPointer();
-						return isPointer ? ImNodesPinShape_QuadFilled : ImNodesPinShape_CircleFilled;
-					}();
-				ImNodes::BeginInputAttribute(inputPinFacade.GetID(), shape);
+							const bool isPointer = Fly::DataTypeFacade(aInputPinFacade.GetDataTypeID()).IsPointer();
+							return isPointer ? ImNodesPinShape_QuadFilled : ImNodesPinShape_CircleFilled;
+						}();
+					ImNodes::BeginInputAttribute(aInputPinFacade.GetID(), shape);
 
-				std::string pinLabel = inputPinFacade.GetPinTypeName();
-				if (!pinLabel.empty())
-				{
-					if (Fly::Global::IsDebugging())
+					std::string pinLabel = aInputPinFacade.GetPinTypeName();
+					if (!pinLabel.empty())
 					{
-						pinLabel += ", " + std::to_string(inputPinFacade.GetID());
+						if (Fly::Global::IsDebugging())
+						{
+							pinLabel += ", " + std::to_string(aInputPinFacade.GetID());
+						}
+						ImGui::TextUnformatted(pinLabel.c_str());
 					}
-					ImGui::TextUnformatted(pinLabel.c_str());
-				}
 
-				if (inputPinFacade.GetConnectedPinIDs().empty())
+					if (aInputPinFacade.GetConnectedPinIDs().empty())
+					{
+						const float itemWidth = std::max(20.f, nodeWidthLeft);
+						ImGui::PushItemWidth(itemWidth);
+
+						aInputPinFacade.ViewAndEdit(myCommandTracker.get());
+
+						ImGui::PopItemWidth();
+					}
+
+					ImNodes::EndInputAttribute();
+					ImNodes::PopColorStyle();
+					ImNodes::PopColorStyle();
+				};
+
+			// Render input pins
+			for (Fly::PinFacade& inputPinFacade : inputPinFacades)
+			{
+				renderInputPin(inputPinFacade);
+				/*for (Fly::PinFacade& splitInputPinFacade : inputPinFacade.GetSplitPins())
 				{
-					const float itemWidth = std::max(20.f, nodeWidthLeft);
-					ImGui::PushItemWidth(itemWidth);
-
-					inputPinFacade.ViewAndEdit(myCommandTracker.get());
-
-					ImGui::PopItemWidth();
-				}
-
-				ImNodes::EndInputAttribute();
-				ImNodes::PopColorStyle();
-				ImNodes::PopColorStyle();
+					renderInputPin(splitInputPinFacade);
+				}*/
 			}
 
 
@@ -653,7 +667,7 @@ namespace Editor
 			Fly::Color linkColor = dataTypeColor;
 			if (std::find(currentNodeContext.myTraversedLinks.begin(), currentNodeContext.myTraversedLinks.end(), linkFacade) != currentNodeContext.myTraversedLinks.end())
 			{
-				linkColor = Fly::Color(0.f, 0.f, 0.f, 1.f);
+				linkColor = myTraversedLinkColor;
 			}
 			ImNodes::PushColorStyle(ImNodesCol_Link, ToImGuiColor(linkColor));
 			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(linkColor - mySelectionTint));
@@ -804,6 +818,20 @@ namespace Editor
 
 			ImGui::Separator();
 
+			ImGui::BeginDisabled(!myClickedPinFacade.IsSplitable());
+			if (ImGui::Selectable("Split Pin"))
+			{
+				myClickedPinFacade.Split(myCommandTracker.get());
+			}
+			ImGui::EndDisabled();
+
+			ImGui::BeginDisabled(!myClickedPinFacade.IsRecombinable());
+			if (ImGui::Selectable("Recombine Pin"))
+			{
+				myClickedPinFacade.RecombineParentPin(myCommandTracker.get());
+			}
+			ImGui::EndDisabled();
+
 			ImGui::BeginDisabled(!myClickedPinFacade.HasAnyConnectedLinks());
 			if (ImGui::Selectable("Destroy Links"))
 			{
@@ -884,7 +912,7 @@ namespace Editor
 
 			const Fly::PinFacade startedPin(startedPinID, currentNodeContext.myNodeGraphFacade);
 
-			currentNodeContext.myPinFacadesToHighlight = GetNodeContext().myNodeGraphFacade.GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(InvertFlowType(startedPin.GetFlowType()), Fly::DataTypeFacade(startedPin.GetDataTypeID()));
+			currentNodeContext.myPinFacadesToHighlight = startedPin.GetPotentialConnections();// GetNodeContext().myNodeGraphFacade.GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(InvertFlowType(startedPin.GetFlowType()), Fly::DataTypeFacade(startedPin.GetDataTypeID()));
 
 			std::erase_if(currentNodeContext.myPinFacadesToHighlight,
 				[&](const Fly::PinFacade& aPinFacade)-> bool

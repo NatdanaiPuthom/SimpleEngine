@@ -263,13 +263,13 @@ namespace FLY_NAMESPACE
 			{
 				aState.mValue.time = 0.f;
 			}
-			aContext->mClassInstance->mClass->mEventGraph.BindNodeToEvent(aContext->mNodeData.mNodeRef.GetNodeID());
+			aContext->mClass->mEventGraph.BindNodeToEvent(aContext->mNodeData.mNodeRef.GetNodeID());
 		}
 		aState.mValue.time += aContext->mExecutionContext->mDeltaTime;
 		if (aState.mValue.time > aDuration)
 		{
 			aState.mValue.time = 0.f;
-			aContext->mClassInstance->mClass->mEventGraph.UnbindNodeFromEvent(aContext->mNodeData.mNodeRef.GetNodeID());
+			aContext->mClass->mEventGraph.UnbindNodeFromEvent(aContext->mNodeData.mNodeRef.GetNodeID());
 			return Flow(true);
 		}
 		return Flow(false);
@@ -281,10 +281,31 @@ namespace FLY_NAMESPACE
 		int b = 2;
 	};
 
+	struct Emil2
+	{
+		Emil e;
+	};
+
 	FLY_VALUETYPE(Emil);
 
 	FLY_MEMBER(Emil::a);
 	FLY_MEMBER(Emil::b);
+
+	FLY_VALUETYPE(Emil2);
+	FLY_MEMBER(Emil2::e);
+
+	Emil EmilTest(Emil e)
+	{
+		return e;
+	}
+
+	void EmilTest2(Emil2, Emil2)
+	{
+	}
+
+
+	FLY_FUNCTION(EmilTest);
+	FLY_FUNCTION(EmilTest2);
 
 	FLY_FUNCTION(BeginPlay, Directory{ "Events" }, Event{}, Pure{});
 	FLY_FUNCTION(Tick, Directory{ "Events" }, Event{}, OutputNames{ "Flow", "Delta Time" }, Pure{});

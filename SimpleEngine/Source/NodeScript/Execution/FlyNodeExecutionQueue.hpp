@@ -10,8 +10,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-		ExecutionQueue();
-		~ExecutionQueue();
+		ExecutionQueue() = default;
 
 		void Push(const NodeExecutionData& aNode);
 		void Execute();

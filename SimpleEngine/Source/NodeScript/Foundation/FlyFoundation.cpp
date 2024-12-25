@@ -29,6 +29,8 @@ namespace FLY_NAMESPACE
 	void Foundation::Initialize()
 	{
 		mTypeManager.GetNodeTypeManager().Assert();
+
+		Internal::InitializeSubPins();
 	}
 
 	void Foundation::ClearClasses()
@@ -36,14 +38,28 @@ namespace FLY_NAMESPACE
 		mClasses.clear();
 	}
 
-	Class& Foundation::CreateClass(const DataTypeID aTargetID, const std::string_view aName)
+	StructID Foundation::CreateStruct(const std::string_view aName)
 	{
-		return *mClasses.emplace_back(HeapObject<Class>(aTargetID, std::string(aName)));
+		StructID id{ mStructs.size() };
+		mStructs.emplace_back(HeapObject<Struct>(aName));
+		return id;
+	}
+
+	ClassID Foundation::CreateClass(const DataTypeID aTargetID, const std::string_view aName)
+	{
+		ClassID id{ mClasses.size() };
+		mClasses.emplace_back(HeapObject<Class>(aTargetID, std::string(aName)));
+		return id;
 	}
 
 	void Foundation::DestroyClass(Class& aClass)
 	{
 		std::erase_if(mClasses, [&aClass](HeapObject<Class>& aClassIter) -> bool { return &aClass == &*aClassIter; });
+	}
+
+	Struct& Foundation::GetStruct(const StructID aID)
+	{
+		return *mStructs[aID];
 	}
 
 	const std::vector<HeapObject<Class>>& Foundation::GetClasses() const

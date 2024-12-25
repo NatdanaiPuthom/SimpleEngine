@@ -4,6 +4,7 @@
 #include "FunctionWindow.hpp"
 #include "FunctionSettingsWindow.hpp"
 #include "FlyClassWindow.hpp"
+#include "StructCreatorWindow.hpp"
 #include "NodeScript/Fly.hpp"
 #include <External/imgui.h>
 #include <vector>
@@ -120,6 +121,7 @@ namespace Editor
 		FlyClassWindow myClassWindow;
 		CustomEventWindow myCustomEventWindow;
 		FunctionSettingsWindow myFunctionSettingsWindow;
+		StructCreatorWindow myStructCreatorWindow;
 
 		NodeContextHistory myNodeContextHistory;
 
@@ -147,6 +149,8 @@ namespace Editor
 		SearchNodeData mySearchNodeData;
 
 		Fly::FunctionFacade mySelectedFunctionFacade;
+
+		static constexpr Fly::Color myTraversedLinkColor{ 0.2f, 0.9f, 0.7f, 1.f };
 
 		static constexpr Fly::Color mySelectionTint{ 0.2f, 0.2f, 0.2f, 0.f };// = Color(0.2f, 0.2f, 0.2f, 0);
 		static constexpr Fly::Color myHoverTint{ 0.1f, 0.1f, 0.1f, 0.f };

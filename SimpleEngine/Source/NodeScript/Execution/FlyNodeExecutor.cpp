@@ -3,6 +3,7 @@
 #include "FlyNodeTypeManager.hpp"
 #include "FlyClassInstance.hpp"
 #include "../Global/FlyGlobal.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -25,21 +26,22 @@ namespace FLY_NAMESPACE
 
 	void NodeExecutor::ExecuteEvent(const EventID anEventID, ClassInstance& aClassInstance, void* const aTarget, const ExecutionContextBase& anExecutionContext)
 	{
-		mExecutionContext.mClass = aClassInstance.mClass;
+		Class& c = Internal::GetClassByID(aClassInstance.mClassID);
+		mExecutionContext.mClass = &c;
 		mExecutionContext.mExecutionContext = &anExecutionContext;
 		mExecutionContext.mClassInstance = &aClassInstance;
 		mExecutionContext.mNodeGraphInstance = &aClassInstance.mEventGraphInstance;
 		mExecutionContext.mTarget = aTarget;
-		mExecutionContext.mNodeGraphVariantHandle = &aClassInstance.mClass->mEventGraph;
+		mExecutionContext.mNodeGraphVariantHandle = &c.mEventGraph;
 
 #ifdef FLY_DEBUG
 		if (aTarget == nullptr)
 		{
-			assert(aClassInstance.mClass->mTargetID == GetDataTypeID<None>());
+			assert(c.mTargetID == GetDataTypeID<None>());
 		}
 #endif
 
-		EventGraph& eventGraph = aClassInstance.mClass->mEventGraph;
+		EventGraph& eventGraph = c.mEventGraph;
 		auto it = eventGraph.mEventNodes.find(anEventID);
 
 		if (it != eventGraph.mEventNodes.end())

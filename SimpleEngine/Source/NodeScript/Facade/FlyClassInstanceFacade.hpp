@@ -7,6 +7,7 @@ namespace FLY_NAMESPACE
 
 	class ClassInstance;
 	class CommandTracker;
+	class Class;
 
 	class ClassInstanceFacade final
 	{
@@ -17,7 +18,7 @@ namespace FLY_NAMESPACE
 
 		void InitRuntime();
 
-		void EditVariableDefaultValues(CommandTracker* aCommandTracker);
+		void ViewAndEditVariableDefaultValues(CommandTracker* aCommandTracker);
 		void Destroy();
 
 		template<typename EventFunction, typename TargetType>
@@ -26,9 +27,9 @@ namespace FLY_NAMESPACE
 		template<typename TargetType>
 		void ExecuteAutoTickers(TargetType* aTarget, const ExecutionContextBase& aContext);
 
-		const std::string& GetName() const;
+		[[nodiscard]] std::string_view GetName() const;
 
-		ClassInstance& GetClassInstance();
+		[[nodiscard]] ClassInstance& GetClassInstance();
 
 
 		explicit operator bool() const;
@@ -38,7 +39,9 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		bool IsSameTarget(DataTypeID aDataTypeID) const;
+		[[nodiscard]] Class& GetClass() const;
+
+		[[nodiscard]] bool IsSameTarget(DataTypeID aDataTypeID) const;
 		void ExecuteEventInternal(EventID aEventID, void* aTarget, const ExecutionContextBase& aContext);
 		void ExecuteAutoTickersInternal(void* aTarget, const ExecutionContextBase& aContext);
 

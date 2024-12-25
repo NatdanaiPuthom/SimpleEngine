@@ -1,9 +1,9 @@
 #pragma once
 #include "../FlyDefines.hpp"
+#include "FlyDataType.hpp"
 #include "../Utilities/FlyMeta.hpp"
 #include "../Utilities/FlyUtilities.hpp"
 #include "../Memory/FlyMemoryArena.hpp"
-#include "FlyDataType.hpp"
 #include "../Pin/FlyPinType.hpp"
 #include <nlohmann/json.hpp>
 
@@ -108,24 +108,27 @@ namespace FLY_NAMESPACE
 		}
 		else if constexpr (PointerType<T>)
 		{
-			/*if constexpr (ViewAndEditable<std::remove_pointer_t<T>>)
-			{*/
-
-			return [](void* aDataPtr) -> ViewAndEditResult
-				{
-					T& value = *reinterpret_cast<T*>(aDataPtr);
-					if (value)
+			if constexpr (ViewAndEditable<std::remove_pointer_t<T>>)
+			{
+				return nullptr;
+			}
+			else
+			{
+				return [](void*) -> ViewAndEditResult
 					{
-						//return ViewAndEdit(*value);
-					}
-					else if (editorNullptrFunction)
-					{
+						//T& value = *reinterpret_cast<T*>(aDataPtr);
+						//if (value)
+						//{
+						//	//return ViewAndEdit(*value);
+						//}
+						//else if (editorNullptrFunction)
+						//{
 						editorNullptrFunction();
-					}
+						//}
 
-					return ViewAndEditResult{};
-				};
-			//}
+						return ViewAndEditResult{};
+					};
+			}
 		}
 		else if constexpr (Fundamental<T>)
 		{
@@ -355,14 +358,14 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		ViewAndEditResult ViewAndEditData(const DataType& aDataType, void* aDataPtr) const;
+		[[nodiscard]] ViewAndEditResult ViewAndEditData(const DataType& aDataType, void* aDataPtr) const;
 		void ViewData(const DataType& aDataType, const void* aDataPtr) const;
 		bool SaveData(const DataType& aDataType, nlohmann::json& aJson, const void* aDataPtr) const;
 		bool LoadData(const DataType& aDataType, const nlohmann::json& aJson, void* aDataPtr) const;
 
 	public:
 
-		ViewAndEditResult ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr) const;
+		[[nodiscard]] ViewAndEditResult ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr) const;
 		void ViewData(DataTypeID aDataTypeID, const void* aDataPtr) const;
 		bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr) const;
 		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr) const;
@@ -377,26 +380,27 @@ namespace FLY_NAMESPACE
 		bool DataEqualsTo(DataTypeID aDataTypeID, const void* aDataPtr1, const void* aDataPtr2) const;
 
 		bool AreDataTypesRelated(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const;
+		[[nodiscard]] eDataTypeRelation GetDataTypeRelation(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const;
 
 		const std::string& GetName(DataTypeID aDataTypeID) const;
 
-		SetPinValueInterface GetSetPinValueInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
-		SetPinValueFromPinInterface GetSetPinValueFromPinInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
+		[[nodiscard]] SetPinValueInterface GetSetPinValueInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
+		[[nodiscard]] SetPinValueFromPinInterface GetSetPinValueFromPinInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
 
-		DataTypeID GetDataTypeIDByName(const std::string& aName) const;
+		[[nodiscard]] DataTypeID GetDataTypeIDByName(const std::string& aName) const;
 
 		void SetEditorNullptrFunction(void(*aFunction)());
 
 		const std::unordered_map<DataTypeID, DataType>& GetDataTypes() const;
 
-		DataType* Find(DataTypeID aDataTypeID);
-		const DataType* Find(DataTypeID aDataTypeID) const;
+		[[nodiscard]] DataType* Find(DataTypeID aDataTypeID);
+		[[nodiscard]] const DataType* Find(DataTypeID aDataTypeID) const;
 
 		template<typename T>
-		DataType* Find();
+		[[nodiscard]] DataType* Find();
 
 		template<typename T>
-		const DataType* Find() const;
+		[[nodiscard]] const DataType* Find() const;
 
 		template<Decayed T>
 		bool IsRegistered() const;
@@ -405,7 +409,7 @@ namespace FLY_NAMESPACE
 
 		void SetDefaultColor(const Color& aColor);
 
-		Color GetDefaultColor() const;
+		[[nodiscard]] Color GetDefaultColor() const;
 
 		template<typename T>
 		void Register(const std::string& aName, const Color& aColor, bool aIsTargetable);

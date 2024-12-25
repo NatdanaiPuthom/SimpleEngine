@@ -1,6 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyStructInstance.hpp"
+#include "FlyVariableContainerInstance.hpp"
 #include "FlyNodeGraphInstance.hpp"
 
 namespace FLY_NAMESPACE
@@ -13,13 +13,13 @@ namespace FLY_NAMESPACE
 	public:
 
 
-		ClassInstance(Class& aClass);
+		ClassInstance(ClassID aClassID);
 		~ClassInstance();
 
 		void InitRuntime();
 
-		Class* mClass;
-		StructInstance mStructInstance;
+		ClassID mClassID;
+		VariableContainerInstance mVariableContainerInstance;
 		NodeGraphInstance mEventGraphInstance;
 
 	private:

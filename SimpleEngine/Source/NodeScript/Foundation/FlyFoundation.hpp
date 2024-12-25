@@ -6,6 +6,7 @@
 #include "../Graph/FlyEventGraph.hpp"
 #include "../Type/FlyTypeManager.hpp"
 #include <memory>
+#include <string_view>
 #include "../Memory/FlyHeapObject.hpp"
 
 namespace FLY_NAMESPACE
@@ -13,6 +14,7 @@ namespace FLY_NAMESPACE
 	class NodeExecutor;
 	class TypeManager;
 	class Class;
+	class Struct;
 
 	class Foundation final
 	{
@@ -38,9 +40,11 @@ namespace FLY_NAMESPACE
 
 		void ClearClasses();
 
-		Class& CreateClass(const DataTypeID aTargetID, std::string_view aName);
+		StructID CreateStruct(std::string_view aName);
+		ClassID CreateClass(const DataTypeID aTargetID, std::string_view aName);
 		void DestroyClass(Class& aClass);
 
+		Struct& GetStruct(StructID aID);
 		const std::vector<HeapObject<Class>>& GetClasses() const;
 
 		TypeManager& GetTypeManager();
@@ -59,6 +63,7 @@ namespace FLY_NAMESPACE
 		MemoryPool mMemoryPool;
 		TypeManager mTypeManager;
 		std::vector<HeapObject<Class>> mClasses;
+		std::vector<HeapObject<Struct>> mStructs;
 
 		HeapObject<NodeExecutor> mNodeExecutor;
 		EventGraph mNodeGraphCopy;

@@ -79,7 +79,7 @@ namespace Editor
 
 		if (ImGui::Button("Create Variable"))
 		{
-			myParentWindow.GetNodeContext().myClassFacade.CreateVariable(Fly::DataTypeFacade(Fly::GetDataTypeID<bool>()), nullptr);
+			myParentWindow.GetNodeContext().myClassFacade.CreateVariable(Fly::DataTypeFacade(Fly::GetDataTypeID<bool>()), "Var", nullptr);
 			ImGui::SetNextItemOpen(true);
 		}
 
@@ -143,13 +143,13 @@ namespace Editor
 
 		ImGui::Text("Default Value:");
 		ImGui::SameLine();
-		aVariableFacade.EditDefaultValue(nullptr);
+		aVariableFacade.ViewAndEditDefaultValue(nullptr);
 
 		ImGui::Separator();
 
 		if (ImGui::Button("Create Getter"))
 		{
-			myParentWindow.GetNodeContext().myClassFacade.GetEventGraphFacade().CreateGetterNode(aVariableFacade, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
+			//myParentWindow.GetNodeContext().myClassFacade.GetEventGraphFacade().CreateGetterNode(aVariableFacade, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
 			ImGui::CloseCurrentPopup();
 
 		}
@@ -158,7 +158,7 @@ namespace Editor
 
 		if (ImGui::Button("Create Setter"))
 		{
-			myParentWindow.GetNodeContext().myClassFacade.GetEventGraphFacade().CreateSetterNode(aVariableFacade, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
+			//myParentWindow.GetNodeContext().myClassFacade.GetEventGraphFacade().CreateSetterNode(aVariableFacade, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
 		}
 
 		if (ImGui::Button("Delete Variable"))

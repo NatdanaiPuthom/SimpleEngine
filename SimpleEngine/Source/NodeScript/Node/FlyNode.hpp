@@ -16,6 +16,8 @@ namespace FLY_NAMESPACE
 			: mTypeID(aTypeID)
 			, mInputPins(std::vector<PinID>(aInputPins.begin(), aInputPins.end()))
 			, mOutputPins(std::vector<PinID>(aOutputPins.begin(), aOutputPins.end()))
+			, mSplitInputPins(mInputPins)
+			, mSplitOutputPins(mOutputPins)
 		{
 
 		}
@@ -24,6 +26,8 @@ namespace FLY_NAMESPACE
 			: mTypeID(aTypeID)
 			, mInputPins(aInputPins)
 			, mOutputPins(aOutputPins)
+			, mSplitInputPins(mInputPins)
+			, mSplitOutputPins(mOutputPins)
 		{
 
 		}
@@ -41,6 +45,8 @@ namespace FLY_NAMESPACE
 		const NodeTypeID mTypeID;
 		std::vector<PinID> mInputPins;
 		std::vector<PinID> mOutputPins;
+		std::vector<PinID> mSplitInputPins;
+		std::vector<PinID> mSplitOutputPins;
 
 		Vec2 mPosition;
 		bool mIsDestroyed = false;

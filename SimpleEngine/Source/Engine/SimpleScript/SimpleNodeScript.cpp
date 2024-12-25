@@ -15,5 +15,5 @@ void SimpleNodeScript::Init()
 {
 	Fly::InitializeFoundation();
 
-	Fly::LoadAllClasses(ASSET_FILE_PATH);
+	Fly::LoadAllFlyFiles(ASSET_FILE_PATH);
 }

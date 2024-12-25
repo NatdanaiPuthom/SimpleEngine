@@ -117,6 +117,7 @@ namespace Editor
 		ID3D11ShaderResourceView* jpgIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::JPG)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* objIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::OBJ)->GetShaderResourceView().Get();
 		ID3D11ShaderResourceView* mp3Icon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::MP3)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* flyScriptIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::FlyScript)->GetShaderResourceView().Get();
 
 		static constexpr float padding = 16.0f;
 		static constexpr float thumbnailSize = 64.0f;
@@ -187,6 +188,10 @@ namespace Editor
 			else if (extension == ".cur")
 			{
 				textureID = cursorIcon;
+			}
+			else if (extension == ".fly")
+			{
+				textureID = flyScriptIcon;
 			}
 
 			ImGui::ImageButton(fileNames[i].c_str(), textureID, { thumbnailSize, thumbnailSize });
@@ -264,7 +269,47 @@ namespace Editor
 				}
 			}
 
+			myCanOpenPopup = false;
+
 			ImGui::EndPopup();
+		}
+		else
+		{
+			myCanOpenPopup |= true;
+		}
+
+		static constexpr const char* CreateAssetMenuPopupName = "CreateAssetMenu";
+
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered() && myCanOpenPopup)
+		{
+			ImGui::OpenPopup(CreateAssetMenuPopupName);
+		}
+
+		if (ImGui::BeginPopup(CreateAssetMenuPopupName))
+		{
+
+			if (ImGui::BeginMainMenuBar())
+			{
+				ImGui::Text("Create Asset");
+				ImGui::EndMainMenuBar();
+			}
+			if (ImGui::BeginMenu("Fly##Create"))
+			{
+				if (ImGui::MenuItem("Struct##CreateFlyStruct"))
+				{
+					Fly::CreateStruct("TestStruct", aDirectory);
+				}
+
+				ImGui::EndMenu();
+			}
+
+			myCanOpenPopup = false;
+
+			ImGui::EndPopup();
+		}
+		else
+		{
+			myCanOpenPopup |= true;
 		}
 	}
 }

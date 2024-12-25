@@ -174,10 +174,16 @@ namespace FLY_NAMESPACE
 
 	struct RegisterMemberVariable final
 	{
+		constexpr RegisterMemberVariable()
+		{
+		}
+
 		template<typename ParentType, typename MemberType, typename... Extra>
-		constexpr RegisterMemberVariable(MemberType ParentType::* aMember, const std::string& aName, [[maybe_unused]] Extra&&... aExtra)
+		static constexpr RegisterMemberVariable Member(MemberType ParentType::* aMember, const std::string& aName, [[maybe_unused]] Extra&&... aExtra)
 		{
 			DataTypeRegistry::RegisterMemberVariable(aMember, aName);
+
+			return RegisterMemberVariable();
 		}
 	};
 }
@@ -185,4 +191,4 @@ namespace FLY_NAMESPACE
 #define FLY_POINTERTYPE(Type, ...) inline static FLY_NAMESPACE::RegisterType fly_registeredType##Type = FLY_NAMESPACE::RegisterType::Class<Type>(#Type, __VA_ARGS__);
 #define FLY_VALUETYPE(Type, ...) inline static FLY_NAMESPACE::RegisterType fly_registeredType##Type = FLY_NAMESPACE::RegisterType::Struct<Type>(#Type, __VA_ARGS__);
 
-#define FLY_MEMBER(member, ...) inline static FLY_NAMESPACE::RegisterMemberVariable FLY_UNIQUE_NAME(fly_member)(&member, #member);
+#define FLY_MEMBER(member, ...) inline static FLY_NAMESPACE::RegisterMemberVariable FLY_UNIQUE_NAME(fly_member) = FLY_NAMESPACE::RegisterMemberVariable::Member(&member, #member);

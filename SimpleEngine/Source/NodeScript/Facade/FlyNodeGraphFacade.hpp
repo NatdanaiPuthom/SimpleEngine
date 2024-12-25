@@ -56,8 +56,8 @@ namespace FLY_NAMESPACE
 		NodeFacade CreateNode(const NodeTypeFacade& aNodeTypeFacade, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeFacade CreateNode(std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);
 		NodeFacade CreateNodeAutoLink(NodeTypeFacade aNodeTypeFacade, PinID aConnection, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-		NodeFacade CreateGetterNode(VariableFacade aVariableFacade, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
-		NodeFacade CreateSetterNode(VariableFacade aVariableFacade, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+		//NodeFacade CreateGetterNode(VariableFacade aVariableFacade, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
+		//NodeFacade CreateSetterNode(VariableFacade aVariableFacade, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 
 		void DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, CommandTracker* aCommandTracker);
 		LinkFacade TryCreateLink(PinFacade aPinFacade1, PinFacade aPinFacade2, CommandTracker* aCommandTracker);

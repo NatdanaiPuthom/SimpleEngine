@@ -170,7 +170,9 @@ namespace FLY_NAMESPACE
 			[aFlowType, dataTypeID = aDataTypeFacade.GetID()](const Pin& aPin) -> bool
 			{
 				const PinType& pinType = Global::GetPinTypeManager().GetPinType(aPin.mTypeID);
-				return aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType && Global::GetDataTypeManager().AreDataTypesRelated(dataTypeID, pinType.mDataTypeID);
+				const bool a = aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType;
+
+				return a && Internal::AreDataTypesLinkable(SelectByFlowType(aFlowType, dataTypeID, pinType.mDataTypeID), pinType.mDataTypeID);
 			},
 			*this
 		);
@@ -199,40 +201,40 @@ namespace FLY_NAMESPACE
 
 	NodeFacade NodeGraphFacade::CreateNode(const NodeTypeFacade& aNodeTypeFacade, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
-		const NodeID nodeID = Internal::CreateNode(GetVariant(), aNodeTypeFacade.GetID(), aPosition, aCommandTracker);
+		const NodeID nodeID = Internal::CreateNode(mNodeGraphVariant, aNodeTypeFacade.GetID(), aPosition, aCommandTracker);
 		return NodeFacade(nodeID, *this);
 	}
 
-	NodeFacade NodeGraphFacade::CreateNode(std::string_view aName, bool& aSuccess, Vec2 aPosition, CommandTracker* aCommandTracker, bool aCreateIfNameNotFound)
+	NodeFacade NodeGraphFacade::CreateNode(const std::string_view aName, bool& aSuccess, const Vec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
 	{
-		const NodeID nodeID = Internal::CreateNode(GetVariant(), aName, aSuccess, aPosition, aCreateIfNameNotFound, aCommandTracker);
+		const NodeID nodeID = Internal::CreateNode(mNodeGraphVariant, aName, aSuccess, aPosition, aCreateIfNameNotFound, aCommandTracker);
 		return NodeFacade(nodeID, *this);
 	}
 
-	NodeFacade NodeGraphFacade::CreateNodeAutoLink(NodeTypeFacade aNodeTypeFacade, PinID aConnection, Vec2 aPosition, CommandTracker* aCommandTracker)
+	NodeFacade NodeGraphFacade::CreateNodeAutoLink(const NodeTypeFacade aNodeTypeFacade, const PinID aConnection, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
-		const NodeID nodeID = Internal::CreateNodeAutoLink(GetVariant(), aNodeTypeFacade.GetID(), aConnection, aPosition, aCommandTracker);
+		const NodeID nodeID = Internal::CreateNodeAutoLink(mNodeGraphVariant, aNodeTypeFacade.GetID(), aConnection, aPosition, aCommandTracker);
 		return NodeFacade(nodeID, *this);
 	}
 
-	NodeFacade NodeGraphFacade::CreateGetterNode(VariableFacade aVariableFacade, Vec2 aPosition, CommandTracker* aCommandTracker)
+	/*NodeFacade NodeGraphFacade::CreateGetterNode(const VariableFacade aVariableFacade, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		const NodeID nodeID = Internal::CreateGetterNode(GetNodeGraph(), aVariableFacade.GetID(), aVariableFacade.GetClass(), aVariableFacade.GetDataType().GetID(), aPosition, aCommandTracker);
 		return NodeFacade(nodeID, *this);
 	}
 
-	NodeFacade NodeGraphFacade::CreateSetterNode(VariableFacade aVariableFacade, Vec2 aPosition, CommandTracker* aCommandTracker)
+	NodeFacade NodeGraphFacade::CreateSetterNode(const VariableFacade aVariableFacade, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
 		const NodeID nodeID = Internal::CreateSetterNode(GetNodeGraph(), aVariableFacade.GetID(), aVariableFacade.GetClass(), aVariableFacade.GetDataType().GetID(), aPosition, aCommandTracker);
 		return NodeFacade(nodeID, *this);
-	}
+	}*/
 
 	void NodeGraphFacade::DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, CommandTracker* const aCommandTracker)
 	{
 		Internal::DestroySelection(aNodeIDs, aLinkIDs, GetNodeGraph(), aCommandTracker);
 	}
 
-	LinkFacade NodeGraphFacade::TryCreateLink(PinFacade aPinFacade1, PinFacade aPinFacade2, CommandTracker* const aCommandTracker)
+	LinkFacade NodeGraphFacade::TryCreateLink(const PinFacade aPinFacade1, const PinFacade aPinFacade2, CommandTracker* const aCommandTracker)
 	{
 		const LinkID linkID = Internal::TryCreateLink(GetNodeGraph(), aPinFacade1.GetID(), aPinFacade2.GetID(), aCommandTracker);
 		return LinkFacade(linkID, *this);
@@ -243,12 +245,12 @@ namespace FLY_NAMESPACE
 		Internal::CommitNodeDrag(aNodeDragData, GetNodeGraph(), aCommandTracker);
 	}
 
-	void NodeGraphFacade::ReplaceTemplateNode(NodeFacade aReplaceNodeFacade, DataTypeFacade aDataTypeFacade, CommandTracker* aCommandTracker)
+	void NodeGraphFacade::ReplaceTemplateNode(const NodeFacade aReplaceNodeFacade, const DataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)
 	{
 		Internal::ReplaceTemplateNode(GetNodeGraph(), aReplaceNodeFacade.GetID(), aDataTypeFacade.GetID(), aCommandTracker);
 	}
 
-	void NodeGraphFacade::ReplaceTemplateNode(PinFacade aReplacePinFacade, DataTypeFacade aDataTypeFacade, CommandTracker* aCommandTracker)
+	void NodeGraphFacade::ReplaceTemplateNode(const PinFacade aReplacePinFacade, const DataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)
 	{
 		Internal::ReplaceTemplateNode(GetNodeGraph(), aReplacePinFacade.GetNodeID(), aDataTypeFacade.GetID(), aCommandTracker);
 	}
@@ -261,20 +263,6 @@ namespace FLY_NAMESPACE
 	bool operator==(const NodeGraphFacade& a, const NodeGraphFacade& b)
 	{
 		return a.mNodeGraphVariant == b.mNodeGraphVariant;
-		/*return std::visit([](const auto& aArg, const auto& bArg) -> bool
-			{
-				using T1 = std::decay_t<decltype(aArg)>;
-				using T2 = std::decay_t<decltype(bArg)>;
-				if constexpr (std::same_as<T1, T2>)
-				{
-					return aArg == bArg;
-				}
-				else
-				{
-					return false;
-				}
-			}, a.mNodeGraphVariant, b.mNodeGraphVariant
-		);*/
 	}
 
 	NodeGraphFacade::operator bool() const
@@ -291,6 +279,4 @@ namespace FLY_NAMESPACE
 			}, mNodeGraphVariant
 		);
 	}
-
-
 }

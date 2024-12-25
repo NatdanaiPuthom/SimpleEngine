@@ -22,9 +22,11 @@ namespace Editor
 	private:
 		std::string myFilePopUpID;
 		std::string myFileToRemove;
+		bool myCanOpenPopup = false;
 
 	public:
 		ActiveWindowData* myActiveWindowData;
 		NodeScriptingWindow* myNodeScriptingWindow;
+
 	};
 }

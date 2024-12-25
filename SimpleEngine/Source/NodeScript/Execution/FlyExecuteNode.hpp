@@ -184,7 +184,7 @@ namespace FLY_NAMESPACE
 				// Evaluate input values
 				if constexpr (HasInputs)
 				{
-					EvaluateInputValues(node.mInputPins, aContext);
+					EvaluateInputValues(node.mSplitInputPins, aContext);
 				}
 
 				// Set current node data before calling function

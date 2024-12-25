@@ -53,11 +53,12 @@ namespace FLY_NAMESPACE
 		None = 0,
 		Fundamental = 1 << 0,
 		ViewAndEditable = 1 << 1,
-		SaveLoadable = 1 << 2,
-		Targetable = 1 << 3,
-		Pointer = 1 << 4,
-		TriviallyCopyable = 1 << 5,
-		All = Fundamental | ViewAndEditable | SaveLoadable | Targetable
+		Viewable = 1 << 2,
+		SaveLoadable = 1 << 3,
+		Targetable = 1 << 4,
+		Pointer = 1 << 5,
+		TriviallyCopyable = 1 << 6,
+		All = Fundamental | ViewAndEditable | Viewable | SaveLoadable | Targetable | TriviallyCopyable
 	};
 
 	struct DataType
@@ -77,5 +78,13 @@ namespace FLY_NAMESPACE
 	struct TemplateDataType
 	{
 		const std::string mName;
+	};
+
+	enum class eDataTypeRelation : uint8_t
+	{
+		None,
+		Same,
+		Pointer_Value,
+		Value_Pointer
 	};
 }

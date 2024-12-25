@@ -1,6 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyStruct.hpp"
+#include "FlyVariableContainer.hpp"
 #include "../Graph/FlyEventGraph.hpp"
 #include "../Memory/FlyHeapObject.hpp"
 
@@ -15,7 +15,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-		Class(DataTypeID aTargetID = GetDataTypeID<None>(), const std::string& aName = "Default Script");
+		Class(DataTypeID aTargetID = GetDataTypeID<None>(), const std::string& aName = "Default Class");
 		~Class();
 
 		Class(const Class&) = delete;
@@ -23,16 +23,13 @@ namespace FLY_NAMESPACE
 		Class& operator=(const Class&) = delete;
 		Class& operator=(Class&&) = delete;
 
-		ClassInstance& CreateClassInstance();
-		void DestroyClassInstance(ClassInstance& aClassInstance);
-
 		void BindFunction(FunctionID aFunctionID);
 		const std::vector<FunctionID>& GetMemberFunctionIDs() const;
 
 	public:
 
 		EventGraph mEventGraph;
-		Struct mStruct;
+		VariableContainer mVariableContainer;
 
 		std::vector<FunctionID> mMemberFunctionIDs;
 		std::vector<HeapObject<ClassInstance>> mClassInstances;

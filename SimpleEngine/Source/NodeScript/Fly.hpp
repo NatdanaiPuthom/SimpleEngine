@@ -3,15 +3,16 @@
 #include "SystemTypes/FlyVec2.hpp"
 #include "Pin/FlyPin.hpp"
 #include "Pin/FlyPinType.hpp"
+#include "Utilities/FlyMeta.hpp"
+#include "Utilities/FlyUtilities.hpp"
 #include "Facade/FlyNodeFacade.hpp"
 #include "Facade/FlyVariableFacade.hpp"
 #include "Facade/FlyLinkFacade.hpp"
-#include "Utilities/FlyUtilities.hpp"
-#include "Utilities/FlyMeta.hpp"
 #include "Facade/FlyFunctionFacade.hpp"
 #include "Facade/FlyCustomEventFacade.hpp"
 #include "Facade/FlyDataTypeFacade.hpp"
 #include "Facade/FlyClassFacade.hpp"
+#include "Facade/FlyStructFacade.hpp"
 #include "Facade/FlyNodeGraphFacade.hpp"
 #include "Facade/FlyClassInstanceFacade.hpp"
 #include "SystemTypes/FlyNone.hpp"
@@ -27,12 +28,14 @@ namespace FLY_NAMESPACE
 	void InitializeFoundation();
 	void DestroyFoundation();
 
-	void LoadAllClasses(std::string_view aFilePath);
+	void LoadAllFlyFiles(std::string_view aFilePath);
 	void SaveCustomEvents(std::string_view aFilePath);
 
+	StructFacade CreateStruct(std::string_view aName, std::string_view aSavePath);
 	ClassFacade CreateClass(DataTypeFacade aTargetFacade, std::string_view aName, std::string_view aSavePath);
 	ClassFacade CreateClassWithoutTarget(std::string_view aName, std::string_view aSavePath);
 
+	StructFacade FindStructByName(std::string_view aName);
 	ClassFacade FindClassByName(std::string_view aName);
 
 	void SetDefaultDataTypeColor(const Fly::Color& aColor);
@@ -58,12 +61,11 @@ namespace FLY_NAMESPACE
 
 	std::vector<LinkFacade> GetTraversedLinks();
 
-	std::vector<NodeTypeFacade> GetNodeTypesFilteredByDataTypeAndFlowType(DataTypeID aDataTypeID, eFlowType aFlowType);
 	std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(DataTypeID aDataTypeID, eFlowType aFlowType, eNodeTrait aNodeTrait, bool(*)(eNodeTrait, eNodeTrait));
 	std::vector<NodeTypeFacade> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);
 
 	std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> GetClasses();
-	std::vector<ClassFacade> GetClassesByDataType(DataTypeFacade aDataTypeFacade);
+	std::vector<ClassFacade> GetClassesByTargetDataType(DataTypeFacade aDataTypeFacade);
 
 	template<Predicate<const DataTypeFacade&> FilterPredicate>
 	std::vector<DataTypeFacade> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate)

@@ -14,21 +14,6 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	ClassInstance& Class::CreateClassInstance()
-	{
-		return *mClassInstances.emplace_back(HeapObject<ClassInstance>(*this));
-	}
-
-	void Class::DestroyClassInstance(ClassInstance& aClassInstance)
-	{
-		std::erase_if(mClassInstances,
-			[&aClassInstance](const HeapObject<ClassInstance>& aClassInstanceIter) -> bool
-			{
-				return &aClassInstance == &*aClassInstanceIter;
-			}
-		);
-	}
-
 	void Class::BindFunction(FunctionID aFunctionID)
 	{
 		mMemberFunctionIDs.push_back(aFunctionID);

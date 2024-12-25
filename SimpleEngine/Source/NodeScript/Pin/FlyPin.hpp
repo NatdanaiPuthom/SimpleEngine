@@ -7,10 +7,13 @@ namespace FLY_NAMESPACE
 
 	struct Pin final
 	{
-		NodeID mNodeID;
-		PinTypeID mTypeID;
+		PinTypeID mTypeID = InvalidID<PinTypeID>();
 		OwningPtr<void> mDataPtr;
 		std::vector<PinID> mConnectedPinIDs;
+		std::vector<PinID> mSubPinIDs;
+		NodeID mNodeID = InvalidID<NodeID>();
+		PinID mParentPinID = InvalidID<PinID>();
+		bool mIsSplit = false;
 	};
 
 	struct Link final

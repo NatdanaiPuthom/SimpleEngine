@@ -70,7 +70,7 @@ namespace FLY_NAMESPACE
 	inline T* GetterNode(InternalExecutionContextPtr aContext)
 	{
 		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
-		VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariableInstances[variableRef.GetVarID()];
+		VariableInstance& variableInstance = aContext->mClassInstance->mVariableContainerInstance.mVariableInstances[variableRef.GetVarID()];
 		T* outputValue = reinterpret_cast<T*>(variableInstance.mRuntimeValueDataPtr.Get());
 		return outputValue;
 	}
@@ -79,7 +79,7 @@ namespace FLY_NAMESPACE
 	inline void SetterNode(InternalExecutionContextPtr aContext, const T& aValue)
 	{
 		const VariableRef& variableRef = Internal::GetVariableRefByNodeRef(CreateGlobalNodeRef(aContext->mNodeData.mNodeRef, *aContext->mClass));
-		VariableInstance& variableInstance = aContext->mClassInstance->mStructInstance.mVariableInstances[variableRef.GetVarID()];
+		VariableInstance& variableInstance = aContext->mClassInstance->mVariableContainerInstance.mVariableInstances[variableRef.GetVarID()];
 		T& runtimeValue = *reinterpret_cast<T*>(variableInstance.mRuntimeValueDataPtr.Get());
 		runtimeValue = aValue;
 	}

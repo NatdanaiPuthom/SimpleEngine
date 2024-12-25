@@ -5,8 +5,31 @@ namespace Fly
 	class DataTypeFacade;
 }
 
+namespace ImGui
+{
+	
+	template<size_t MaxSize>
+	bool InputString(const char* aText, std::string& aString)
+	{
+		char buffer[MaxSize]{};
+		strcpy_s(buffer, aString.c_str());
+		if (ImGui::InputText(aText, buffer, MaxSize))
+		{
+			aString = buffer;
+			return true;
+		}
+
+		return false;
+	}
+}
+
 namespace Editor
 {
+	template<typename T>
+	constexpr std::string Combine(const char* aName, const T& aValue)
+	{
+		return std::string(aName) + std::to_string(aValue);
+	}
 
 	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade);
 	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade);

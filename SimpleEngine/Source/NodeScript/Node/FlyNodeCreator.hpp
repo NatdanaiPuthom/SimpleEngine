@@ -114,9 +114,9 @@ namespace FLY_NAMESPACE
 					if constexpr (!PointerType<T>)
 					{
 						// Since ReadFromPin is pointer -> ReadFromPin.mDataPtr is actually T**
-						const T* read = reinterpret_cast<const T*>(readFromPin.mDataPtr.Get());
-						const T** read2 = (const T**)read;
-						writeToValue = **read2;
+						//const T* read = reinterpret_cast<const T*>(readFromPin.mDataPtr.Get());
+						//const T** read2 = ((const T**)(const T*)readFromPin.mDataPtr.Get());
+						writeToValue = **((const T**)((const T*)readFromPin.mDataPtr.Get()));
 					}
 					else
 					{
@@ -131,7 +131,14 @@ namespace FLY_NAMESPACE
 					}
 					else
 					{
-						writeToValue = readFromValue;
+						using RemovePtrType = std::remove_pointer_t<T>;
+						/*RemovePtrType* r = (RemovePtrType*)readFromValue;
+						r;*/
+						 RemovePtrType* const* r1 = reinterpret_cast<const T*>(readFromPin.mDataPtr.Get());
+						 RemovePtrType* r = (RemovePtrType*)r1;
+						 //r1;
+						 r;
+						writeToValue = r;
 					}
 				}
 
@@ -186,12 +193,11 @@ namespace FLY_NAMESPACE
 	using TransformType_t = typename TransformType<T>::type;
 
 	template<size_t Index, size_t Size, eFlowType FlowType, typename Type, typename... Types>
-	constexpr void CreatePinTypesInternal(std::vector<PinTypeID>& aPinTypeIDArray, const NodeCreationData& aCreationData)
+	constexpr void CreatePinTypesInternal(auto& aPinTypeIDs, const NodeCreationData& aCreationData)
 	{
 		static_assert(!std::is_reference_v<Type>);
 		if constexpr (Index < Size)
 		{
-			//using DecayedT = std::decay_t<Type>;
 			using AllocationType = TransformType_t<Type>;
 
 			const std::vector<std::string>& pinNames = SelectByFlowType(FlowType, aCreationData.mDescription.mInputPinNames, aCreationData.mDescription.mOutputPinNames);
@@ -205,11 +211,11 @@ namespace FLY_NAMESPACE
 					defaultValueMemoryID = Global::Internal::GetMemoryPool().Allocate<AllocationType>(std::any_cast<AllocationType>(defaultValueAny));
 				}
 			}
-			aPinTypeIDArray[Index] = Global::GetPinTypeManager().Create<AllocationType>(pinNames[Index], FlowType, CreateSetPinValueInterface<AllocationType, FlowType>(), CreateSetPinValueFromPinInterface<AllocationType, FlowType>(), defaultValueMemoryID);
+			aPinTypeIDs[Index] = Global::GetPinTypeManager().CreatePinType<AllocationType>(pinNames[Index], FlowType, CreateSetPinValueInterface<AllocationType, FlowType>(), CreateSetPinValueFromPinInterface<AllocationType, FlowType>(), defaultValueMemoryID);
 
 			if constexpr (Index + 1 < Size)
 			{
-				CreatePinTypesInternal<Index + 1, Size, FlowType, Types...>(aPinTypeIDArray, aCreationData);
+				CreatePinTypesInternal<Index + 1, Size, FlowType, Types...>(aPinTypeIDs, aCreationData);
 			}
 		}
 	}
@@ -218,13 +224,13 @@ namespace FLY_NAMESPACE
 	constexpr std::vector<PinTypeID> CreatePinTypes(const NodeCreationData& aCreationData)
 	{
 		constexpr size_t Size = sizeof...(Types);
-		std::vector<PinTypeID> pinTypeIDArray(Size);
+		std::vector<PinTypeID> pinTypeIDs(Size);
 
 		if constexpr (!EmptyParameterPack<Types...>)
 		{
-			CreatePinTypesInternal<0, Size, FlowType, Types...>(pinTypeIDArray, aCreationData);
+			CreatePinTypesInternal<0, Size, FlowType, Types...>(pinTypeIDs, aCreationData);
 		}
-		return pinTypeIDArray;
+		return pinTypeIDs;
 	}
 
 	// Creates an input for a node instance

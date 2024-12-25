@@ -6,9 +6,15 @@
 namespace FLY_NAMESPACE
 {
 
-	VariableFacade::VariableFacade(const VarID aVarID, const ClassFacade& aClassView)
+	VariableFacade::VariableFacade(const VarID aVarID, const ClassFacade& aClassFacade)
 		: mVarID(aVarID)
-		, mClass(&aClassView.GetClass())
+		, mOwner(&aClassFacade.GetVariableContainer())
+	{
+	}
+
+	VariableFacade::VariableFacade(VarID aVarID, const StructFacade& aStructFacade)
+		: mVarID(aVarID)
+		, mOwner(&aStructFacade.GetVariableContainer())
 	{
 	}
 
@@ -33,29 +39,24 @@ namespace FLY_NAMESPACE
 		return mVarID;
 	}
 
-	Class& VariableFacade::GetClass() const
-	{
-		return *mClass;
-	}
-
 	void VariableFacade::SetName(const std::string_view aName, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetVariableName(mVarID, *mClass, aName, aCommandTracker);
+		Internal::SetVariableName(mVarID, *mOwner, aName, aCommandTracker);
 	}
 
 	void VariableFacade::Destroy(CommandTracker* const aCommandTracker)
 	{
-		Internal::DestroyVariable(mVarID, *mClass, aCommandTracker);
+		Internal::DestroyVariable(mVarID, *mOwner, aCommandTracker);
 	}
 
-	void VariableFacade::EditDefaultValue(CommandTracker* const aCommandTracker)
+	void VariableFacade::ViewAndEditDefaultValue(CommandTracker* const aCommandTracker)
 	{
-		Internal::EditVariableDefaultValue(mVarID, *mClass, aCommandTracker);
+		Internal::ViewAndEditVariableDefaultValue(mVarID, *mOwner, aCommandTracker);
 	}
 
 	void VariableFacade::SetDataType(const DataTypeFacade aDataTypeView, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetVariableDataType(mVarID , *mClass, aDataTypeView.GetID(), aCommandTracker);
+		Internal::SetVariableDataType(mVarID , *mOwner, aDataTypeView.GetID(), aCommandTracker);
 	}
 
 	VariableFacade::operator bool() const
@@ -65,6 +66,6 @@ namespace FLY_NAMESPACE
 
 	const Variable& VariableFacade::GetVariable() const
 	{
-		return mClass->mStruct.mVariables.at(mVarID);
+		return mOwner->mVariables.at(mVarID);
 	}
 }

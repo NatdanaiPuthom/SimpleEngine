@@ -6,25 +6,21 @@
 
 namespace FLY_NAMESPACE
 {
-	ClassFacade::ClassFacade()
-		: mClass(nullptr)
+
+	ClassFacade::ClassFacade(const ClassID aClassID)
+		: mClassID(aClassID)
 	{
+		assert(&mClassID);
 	}
 
-	ClassFacade::ClassFacade(Class& aClass)
-		: mClass(&aClass)
+	std::string_view ClassFacade::GetName() const
 	{
-		assert(&mClass);
-	}
-
-	const std::string& ClassFacade::GetName() const
-	{
-		return mClass->mName;
+		return GetClass().mName;
 	}
 
 	DataTypeFacade ClassFacade::GetTargetDataType() const
 	{
-		const DataTypeID targetID = mClass->mTargetID;
+		const DataTypeID targetID = GetClass().mTargetID;
 		return DataTypeFacade(targetID);
 	}
 
@@ -35,7 +31,7 @@ namespace FLY_NAMESPACE
 
 	std::vector<VariableFacade> ClassFacade::GetVariables(const bool aIncludeDestroyed) const
 	{
-		const std::vector<Variable>& variables = mClass->mStruct.mVariables;
+		const std::vector<Variable>& variables = GetClass().mVariableContainer.mVariables;
 		std::vector<VariableFacade> variableFacades;
 
 		variableFacades.reserve(variables.size());
@@ -65,7 +61,7 @@ namespace FLY_NAMESPACE
 
 	std::vector<FunctionFacade> ClassFacade::GetFunctions() const
 	{
-		const std::vector<FunctionID>& functionIDs = mClass->GetMemberFunctionIDs();
+		const std::vector<FunctionID>& functionIDs = GetClass().GetMemberFunctionIDs();
 		std::vector<FunctionFacade> functionFacades;
 
 		functionFacades.reserve(functionIDs.size());
@@ -78,20 +74,15 @@ namespace FLY_NAMESPACE
 		return functionFacades;
 	}
 
-	Class& ClassFacade::GetClass() const
+	VariableFacade ClassFacade::CreateVariable(const DataTypeFacade aDataTypeFacade, const std::string_view aName, CommandTracker* const aCommandTracker)
 	{
-		return *mClass;
-	}
-
-	VariableFacade ClassFacade::CreateVariable(const DataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)
-	{
-		const VarID varID = Internal::CreateVariable(GetClass(), aDataTypeFacade.GetID(), aCommandTracker);
+		const VarID varID = Internal::CreateVariable(GetClass().mVariableContainer, aDataTypeFacade.GetID(), aName, aCommandTracker);
 		return VariableFacade(varID, *this);
 	}
 
 	ClassInstanceFacade ClassFacade::CreateClassInstance()
 	{
-		return ClassInstanceFacade(GetClass().CreateClassInstance());
+		return ClassInstanceFacade(Internal::CreateClassInstance(mClassID));
 	}
 
 	FunctionFacade ClassFacade::CreateMemberFunction(const std::string_view aName)
@@ -102,9 +93,19 @@ namespace FLY_NAMESPACE
 		return FunctionFacade(id);
 	}
 
-	void ClassFacade::SetName(std::string_view aName)
+	VariableContainer& ClassFacade::GetVariableContainer() const
 	{
-		GetClass().mName = aName;
+		return GetClass().mVariableContainer;
+	}
+
+	ClassID ClassFacade::GetID() const
+	{
+		return mClassID;
+	}
+
+	void ClassFacade::SetName(std::string_view aName, CommandTracker* const aCommandTracker)
+	{
+		Internal::SetClassName(mClassID, aName, aCommandTracker);
 	}
 
 	void ClassFacade::Save(const std::string_view aSavePath) const
@@ -112,23 +113,18 @@ namespace FLY_NAMESPACE
 		Internal::SaveClass(GetClass(), aSavePath);
 	}
 
-	void ClassFacade::Load(std::string_view aFilePath)
-	{
-		Internal::LoadClass(GetClass(), aFilePath);
-	}
-
-	bool ClassFacade::operator==(const ClassFacade& aOther) const
-	{
-		return mClass == aOther.mClass;
-	}
-
-	bool ClassFacade::operator!=(const ClassFacade& aOther) const
-	{
-		return !(*this == aOther);
-	}
-
 	ClassFacade::operator bool() const
 	{
-		return mClass != nullptr;
+		return mClassID != InvalidID<ClassID>();
+	}
+
+	bool operator==(const ClassFacade& a, const ClassFacade& b)
+	{
+		return a.mClassID == b.mClassID;
+	}
+
+	Class& ClassFacade::GetClass() const
+	{
+		return Internal::GetClassByID(mClassID);
 	}
 }

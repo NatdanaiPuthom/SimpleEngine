@@ -18,17 +18,28 @@ namespace FLY_NAMESPACE
 		{
 			return aDataType.mInterface.function.viewAndEdit(aDataPtr);
 		}
+		else if (HasFlag(aDataType.mTypeTraits, eDataTypeTrait::Pointer))
+		{
+			if (const DataType* valueDataType = Find(aDataType.mToValueDataTypeID))
+			{
+				void* valuePtr = *((void**)aDataPtr);
+				if (valuePtr)
+				{
+					return ViewAndEditData(*valueDataType, valuePtr);
+				}
+			}
+		}
 
 		ViewAndEditResult viewAndEditResult;
 		// View and edit member variables instead
-		for (const Variable& variable : aDataType.mVariables)
+		/*for (const Variable& variable : aDataType.mVariables)
 		{
 			if (const DataType* variableDataType = Find(variable.mDataTypeID))
 			{
 				void* const propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
 				viewAndEditResult.mIsItemActive |= ViewAndEditData(*variableDataType, propertyDataPtr).mIsItemActive;
 			}
-		}
+		}*/
 
 		return viewAndEditResult;
 	}
@@ -187,13 +198,13 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
-	bool DataTypeManager::AreDataTypesRelated(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const
+	bool DataTypeManager::AreDataTypesRelated(const DataTypeID aDataTypeID1, const DataTypeID aDataTypeID2) const
 	{
 		if (aDataTypeID1 == aDataTypeID2)
 		{
 			return true;
 		}
-		auto checker = [this](DataTypeID a, DataTypeID b) -> bool
+		auto checker = [this](const DataTypeID a, const DataTypeID b) -> bool
 			{
 				if (const DataType* dataType = Find(a))
 				{
@@ -203,6 +214,29 @@ namespace FLY_NAMESPACE
 			};
 
 		return checker(aDataTypeID1, aDataTypeID2) || checker(aDataTypeID2, aDataTypeID1);
+	}
+
+	eDataTypeRelation DataTypeManager::GetDataTypeRelation(const DataTypeID aDataTypeID1, const DataTypeID aDataTypeID2) const
+	{
+		if (aDataTypeID1 == aDataTypeID2)
+		{
+			return eDataTypeRelation::Same;
+		}
+
+		if (const DataType* dataType = Find(aDataTypeID1))
+		{
+			if (dataType->mToPointerDataTypeID == aDataTypeID2)
+			{
+				return eDataTypeRelation::Value_Pointer;
+			}
+			else if (dataType->mToValueDataTypeID == aDataTypeID2)
+			{
+				return eDataTypeRelation::Pointer_Value;
+			}
+		}
+
+		return eDataTypeRelation::None;
+
 	}
 
 	const std::string& DataTypeManager::GetName(const DataTypeID aDataTypeID) const

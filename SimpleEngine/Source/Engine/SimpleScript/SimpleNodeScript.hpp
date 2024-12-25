@@ -9,5 +9,5 @@ public:
 
 	void Init();
 
-	static constexpr const char* ASSET_FILE_PATH = "Assets/Classes/";
+	static constexpr const char* ASSET_FILE_PATH = "Assets/FlyClasses";
 };

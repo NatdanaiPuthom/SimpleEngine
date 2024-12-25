@@ -33,16 +33,42 @@ namespace FLY_NAMESPACE
 	using ObjectTypeID = size_t;
 	using EventID = size_t;
 
-	constexpr const char* TypeIdentifierStr = "#T";
-
 	template<std::integral IDType>
-	inline constexpr IDType InvalidID()
+	constexpr IDType InvalidID()
 	{
 		return std::numeric_limits<IDType>::max();
 	}
 
+	template<typename IDType>
+	struct IDWrapper
+	{
+		using id_type = IDType;
+
+		constexpr friend bool operator==(const IDWrapper& a, const IDWrapper& b)
+		{
+			return a.mID == b.mID;
+		}
+		constexpr operator IDType() const
+		{
+			return mID;
+		}
+		IDType mID = InvalidID<IDType>();
+	};
+
+	template<typename IDWrapperType> requires std::is_base_of_v<IDWrapper<typename IDWrapperType::id_type>, IDWrapperType>
+	constexpr IDWrapperType InvalidID()
+	{
+		return IDWrapperType{ InvalidID<typename IDWrapperType::id_type>() };
+	}
+
+	struct DataTypeIDWrapper final : IDWrapper<size_t> {};
+	struct StructID final : IDWrapper<size_t> {};
+	struct ClassID final : IDWrapper<size_t> {};
+
+	constexpr const char* TypeIdentifierStr = "#T";
+
 	template<typename T>
-	inline constexpr DataTypeID GetDataTypeID()
+	constexpr DataTypeID GetDataTypeID()
 	{
 		return typeid(T).hash_code();
 	}
@@ -74,27 +100,27 @@ namespace FLY_NAMESPACE
 	class OwningPtr final
 	{
 	public:
-		OwningPtr(T* const aPtr)
+		constexpr OwningPtr(T* const aPtr)
 			: mPtr(aPtr)
 		{
 		}
 
-		T* Get() noexcept
+		constexpr T* Get() noexcept
 		{
 			return mPtr;
 		}
 
-		const T* Get() const noexcept
+		constexpr const T* Get() const noexcept
 		{
 			return mPtr;
 		}
 
-		operator T* () noexcept
+		constexpr operator T* () noexcept
 		{
 			return Get();
 		}
 
-		operator const T* () const noexcept
+		constexpr operator const T* () const noexcept
 		{
 			return Get();
 		}

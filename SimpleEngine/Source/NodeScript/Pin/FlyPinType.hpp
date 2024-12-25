@@ -2,6 +2,7 @@
 #include "../FlyDefines.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
 #include <string>
+#include <vector>
 
 namespace FLY_NAMESPACE
 {
@@ -34,11 +35,12 @@ namespace FLY_NAMESPACE
 	struct PinType final
 	{
 		std::string mName;
-		const eFlowType mFlowType = eFlowType::Input;
 		const DataTypeID mDataTypeID = InvalidID<DataTypeID>();
 		const SetPinValueInterface mSetPinValueFunction = nullptr;
 		const SetPinValueFromPinInterface mSetPinValueFromPinFunction = nullptr;
 		MemoryPoolID mDefaultValueID = InvalidID<MemoryPoolID>();
+		std::vector<PinTypeID> mSubPinTypeIDs;
+		const eFlowType mFlowType = eFlowType::Input;
 	};
 
 

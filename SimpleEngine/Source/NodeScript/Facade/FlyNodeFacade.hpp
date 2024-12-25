@@ -23,6 +23,8 @@ namespace FLY_NAMESPACE
 
 		[[nodiscard]] std::vector<PinFacade> GetInputPinFacades() const;
 		[[nodiscard]] std::vector<PinFacade> GetOutputPinFacades() const;
+		[[nodiscard]] std::vector<PinFacade> GetSplitInputPinFacades() const;
+		[[nodiscard]] std::vector<PinFacade> GetSplitOutputPinFacades() const;
 
 		[[nodiscard]] NodeID GetID() const;
 
@@ -33,7 +35,7 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] bool HasAnyConnectedLinks() const;
 		[[nodiscard]] bool IsReplacable() const;
 
-		[[nodiscard]] VariableFacade GetVariableFacade() const;
+		//[[nodiscard]] VariableFacade GetVariableFacade() const;
 		[[nodiscard]] NodeTypeFacade GetNodeTypeFacade() const;
 
 		void Destroy(CommandTracker* aCommandTracker);
@@ -52,7 +54,9 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] const Node& GetNode() const;
 		[[nodiscard]] const NodeType& GetNodeType() const;
 
+		[[nodiscard]] std::vector<PinFacade> GetPinFacades(const std::vector<PinID>& aPinIDs) const;
 		[[nodiscard]] std::vector<PinFacade> GetPinFacades(const eFlowType aFlowType) const;
+		[[nodiscard]] std::vector<PinFacade> GetSplitPinFacades(const eFlowType aFlowType) const;
 
 	private:
 

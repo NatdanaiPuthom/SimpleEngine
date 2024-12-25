@@ -19,11 +19,11 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] const std::string& GetName() const;
 		[[nodiscard]] Color GetColor() const;
 		[[nodiscard]] eDataTypeTrait GetTypeTraits() const;
-		//[[nodiscard]] std::vector<MemberVariableFacade> GetMemberVariables() const;
 
 		[[nodiscard]] bool IsTargetable() const;
 		[[nodiscard]] bool IsPointer() const;
 		[[nodiscard]] bool IsViewAndEditable() const;
+		[[nodiscard]] bool IsViewable() const;
 
 		[[nodiscard]] std::optional<const std::vector<NodeTypeID>*> GetNodeTypesIDs() const;
 

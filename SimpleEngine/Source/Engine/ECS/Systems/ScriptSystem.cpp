@@ -3,6 +3,7 @@
 #include "NodeScript/FlyExecution.hpp"
 #include "NodeScript/NodeTypes/ExecutionNodes.hpp"
 #include "NodeScript/FlyRegistration.hpp"
+#include "NodeScript/Fly.hpp"
 #include <imgui.h>
 
 namespace ECS
@@ -64,11 +65,11 @@ namespace ECS
 
 namespace Math
 {
-	static Fly::EditAndViewResult ViewAndEdit(Vector3f& aValue)
+	static Fly::ViewAndEditResult ViewAndEdit(Vector3f& aValue)
 	{
 		ImGui::DragFloat3("##", &aValue.x);
 
-		Fly::EditAndViewResult result;
+		Fly::ViewAndEditResult result;
 		result.mIsItemActive = ImGui::IsItemActive();
 		return result;
 	}
@@ -87,11 +88,11 @@ namespace Math
 		aValue.z = aJson["z"];
 	}
 
-	static Fly::EditAndViewResult ViewAndEdit(Vector2f& aValue)
+	static Fly::ViewAndEditResult ViewAndEdit(Vector2f& aValue)
 	{
 		ImGui::DragFloat2("##", &aValue.x);
 
-		Fly::EditAndViewResult result;
+		Fly::ViewAndEditResult result;
 		result.mIsItemActive = ImGui::IsItemActive();
 		return result;
 	}
@@ -109,18 +110,93 @@ namespace Math
 	}
 }
 
+namespace SimpleUtilities
+{
+
+	static Fly::ViewAndEditResult ViewAndEdit(Color& aValue)
+	{
+		ImGui::ColorEdit4("##", &aValue.r);
+
+		Fly::ViewAndEditResult result;
+		result.mIsItemActive = ImGui::IsItemActive();
+		return result;
+	}
+
+	static void Save(const Color& aValue, nlohmann::json& aJson)
+	{
+		aJson["x"] = aValue.r;
+		aJson["g"] = aValue.g;
+		aJson["b"] = aValue.b;
+		aJson["a"] = aValue.a;
+	}
+
+	static void Load(Color& aValue, const nlohmann::json& aJson)
+	{
+		aValue.r = aJson["r"];
+		aValue.g = aJson["g"];
+		aValue.b = aJson["b"];
+		aValue.a = aJson["a"];
+	}
+}
+
+namespace Fly
+{
+
+	static Fly::ViewAndEditResult ViewAndEdit(DataTypeFacade& aValue)
+	{
+		Fly::ViewAndEditResult result;
+		if (ImGui::BeginCombo("##", aValue.GetName().c_str()))
+		{
+
+			result.mIsItemActive = ImGui::IsItemActive();
+
+			const std::vector<Fly::DataTypeFacade> dataTypeFacades = Fly::GetDataTypes();
+
+			for (const DataTypeFacade& dataTypeFacade : dataTypeFacades)
+			{
+				if (ImGui::Selectable(dataTypeFacade.GetName().c_str()))
+				{
+					aValue = dataTypeFacade;
+				}
+			}
+			ImGui::EndCombo();
+		}
+
+		return result;
+	}
+
+	static void Save(const DataTypeFacade& aValue, nlohmann::json& aJson)
+	{
+		aJson["Name"] = aValue.GetName();
+	}
+
+	static void Load(DataTypeFacade& aValue, const nlohmann::json& aJson)
+	{
+		const std::string& name = aJson["Name"];
+		aValue = DataTypeFacade(Global::GetDataTypeManager().GetDataTypeIDByName(name));
+	}
+}
+
 namespace ECS
 {
 
 	using Transform = Math::Transform;
 	using Vector3f = Math::Vector3f;
 	using Vector2f = Math::Vector2f;
+	using Color = SimpleUtilities::Color;
+	using DataType = Fly::DataTypeFacade;
 
-	FLY_STRUCT(Transform, Fly::eNodeOperatorTrait::None, Fly::DefaultColor, Fly::NonTargetable{});
-	FLY_STRUCT(Vector3f, Fly::DefaultColor, Fly::NonTargetable{});
-	FLY_STRUCT(Vector2f, Fly::DefaultColor, Fly::NonTargetable{});
-	FLY_CLASS(Entity, Fly::Colors::Pink);
-	FLY_CLASS(TransformComponent, Fly::DefaultColor, Fly::NonTargetable{});
+	FLY_VALUETYPE(Transform, Fly::eNodeOperatorTrait::None, Fly::NonTargetable{});
+	FLY_VALUETYPE(Vector3f, Fly::NonTargetable{});
+
+	FLY_MEMBER(Vector3f::x);
+	FLY_MEMBER(Vector3f::y);
+	FLY_MEMBER(Vector3f::z);
+	FLY_VALUETYPE(Vector2f, Fly::NonTargetable{});
+	FLY_POINTERTYPE(Entity, Fly::Colors::Pink);
+	FLY_POINTERTYPE(TransformComponent, Fly::NonTargetable{});
+	FLY_VALUETYPE(Color);
+	FLY_VALUETYPE(DataType);
 
 	TransformComponent* GetTransformComponent(Entity* aEntity)
 	{
@@ -142,6 +218,11 @@ namespace ECS
 		return t;
 	}
 
+	std::tuple<Vector3f, Vector3f, Vector3f> BreakTransform(const Transform& aTransform)
+	{
+		return std::tuple{ aTransform.GetPosition(), aTransform.GetRotation(), aTransform.GetScale() };
+	}
+
 	size_t GetStringLength(const std::string& aString)
 	{
 		return aString.size();
@@ -160,26 +241,6 @@ namespace ECS
 	Vector3f MakeVector3f(const float aX, const float aY, const float aZ)
 	{
 		return Vector3f(aX, aY, aZ);
-	}
-
-	Fly::Flow ImGuiButton(const std::string& aLabel, Math::Vector2f aSize)
-	{
-		const std::string label = aLabel.empty() ? "Label" : aLabel;
-		const bool wasClicked = ImGui::Button(label.c_str(), ImVec2{ aSize.x, aSize.y });
-		return Fly::Flow(wasClicked);
-	}
-
-	struct ImGuiCheckboxState final
-	{
-		bool v = false;
-	};
-
-	std::tuple<Fly::Flow, Fly::Flow, Fly::Flow> ImGuiCheckbox(Fly::NodeState<ImGuiCheckboxState> aState, const std::string& aLabel)
-	{
-		const std::string label = aLabel.empty() ? "Label" : aLabel;
-		bool wasClicked = ImGui::Checkbox(label.c_str(), &aState.mValue.v);
-
-		return { Fly::Flow(wasClicked), Fly::Flow(aState.mValue.v), Fly::Flow(!aState.mValue.v) };
 	}
 
 	void SetEntityPosition(Entity* aEntity, const Vector3f& aPosition)
@@ -207,15 +268,23 @@ namespace ECS
 		*aBool = !*aBool;
 	}
 
-	FLY_FUNCTION(ImGuiButton, Fly::Directory{ "ImGui" }, Fly::InputNames{ "Label", "Size" }, Fly::OutputNames{ "On Click" }, Fly::DefaultValues{ std::string("Label") });
-	FLY_FUNCTION(ImGuiCheckbox, Fly::Directory{ "ImGui" }, Fly::InputNames{ "Label" }, Fly::OutputNames{ "On Click", "On Checked", "On Unchecked" }, Fly::DefaultValues{ std::string("Label") });
+	void SetDataTypeColor(Fly::DataTypeFacade aFacade, SimpleUtilities::Color aColor)
+	{
+		if (aFacade)
+		{
+			aFacade.SetColor(Fly::Color(aColor.r, aColor.g, aColor.b, aColor.a));
+		}
+	}
+
 	FLY_FUNCTION(SetEntityPosition, Fly::MemberOf<Entity>{}, Fly::InputNames{ "Entity", "Position" });
 	FLY_FUNCTION(BreakVector3f, Fly::MemberOf<Vector3f>{}, Fly::OutputNames{ "X", "Y", "Z" }, Fly::Pure{});
 	FLY_FUNCTION(MakeVector3f, Fly::MemberOf<Vector3f>{}, Fly::InputNames{ "X", "Y", "Z" }, Fly::Pure{});
-	FLY_FUNCTION(MakeTransfrom, Fly::MemberOf<Transform>{}, Fly::InputNames{ "Position", "Rotation", "Scale" }, Fly::Pure{})
+	FLY_FUNCTION(MakeTransfrom, Fly::MemberOf<Transform>{}, Fly::InputNames{ "Position", "Rotation", "Scale" }, Fly::Pure{});
+	FLY_FUNCTION(BreakTransform, Fly::MemberOf<Transform>{}, Fly::OutputNames{ "Position", "Rotation", "Scale" }, Fly::Pure{});
 	FLY_FUNCTION(GetStringLength, Fly::Pure{});
 	FLY_FUNCTION(ClearString);
 	FLY_FUNCTION(MakeString, Fly::Pure{});
 	FLY_FUNCTION(ToggleBool);
 	FLY_FUNCTION(OnDoorOpen, Fly::Event{});
+	FLY_FUNCTION(SetDataTypeColor)
 }

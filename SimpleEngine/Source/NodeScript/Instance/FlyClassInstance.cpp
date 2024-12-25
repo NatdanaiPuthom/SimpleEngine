@@ -1,13 +1,14 @@
 #include "FlyClassInstance.hpp"
 #include "../DataType/FlyClass.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
 
-	ClassInstance::ClassInstance(Class& aClass)
-		: mClass(&aClass)
-		, mStructInstance(aClass.mStruct)
-		, mEventGraphInstance(aClass.mEventGraph.mNodeGraph)
+	ClassInstance::ClassInstance(ClassID aClassID)
+		: mClassID(aClassID)
+		, mVariableContainerInstance(Internal::GetClassByID(aClassID).mVariableContainer)
+		, mEventGraphInstance(Internal::GetClassByID(aClassID).mEventGraph.mNodeGraph)
 	{
 	}
 
@@ -17,6 +18,6 @@ namespace FLY_NAMESPACE
 
 	void ClassInstance::InitRuntime()
 	{
-		mStructInstance.InitRuntime();
+		mVariableContainerInstance.InitRuntime();
 	}
 }

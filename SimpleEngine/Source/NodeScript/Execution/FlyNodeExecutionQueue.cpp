@@ -5,14 +5,6 @@
 namespace FLY_NAMESPACE
 {
 
-	ExecutionQueue::ExecutionQueue()
-	{
-	}
-
-	ExecutionQueue::~ExecutionQueue()
-	{
-	}
-
 	void ExecutionQueue::Push(const NodeExecutionData& aNode)
 	{
 		mExecutionQueue.push(aNode);

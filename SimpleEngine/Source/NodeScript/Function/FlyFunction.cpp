@@ -6,7 +6,7 @@
 namespace FLY_NAMESPACE
 {
 
-	static Flow CallerNode(const InternalExecutionContext* aContext, Flow)
+	static Flow CallerNode(InternalExecutionContextPtr aContext, Flow)
 	{
 		const Node& callerNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
 
@@ -28,7 +28,7 @@ namespace FLY_NAMESPACE
 		return Flow(true);
 	}
 
-	static void OutputNode(const InternalExecutionContext* aContext, Flow)
+	static void OutputNode(InternalExecutionContextPtr aContext, Flow)
 	{
 		const Node& outputNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
 

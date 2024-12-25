@@ -16,35 +16,39 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-		ClassFacade();
-		explicit ClassFacade(Class& aClass);
+		ClassFacade() = default;
+		explicit ClassFacade(ClassID aClassID);
 		
-		const std::string& GetName() const;
-		DataTypeFacade GetTargetDataType() const;
+		[[nodiscard]] std::string_view GetName() const;
+		[[nodiscard]] DataTypeFacade GetTargetDataType() const;
 
-		NodeGraphFacade GetEventGraphFacade() const;
+		[[nodiscard]] NodeGraphFacade GetEventGraphFacade() const;
 
-		std::vector<VariableFacade> GetVariables(bool aIncludeDestroyed = false) const;
-		std::vector<FunctionFacade> GetFunctions() const;
+		[[nodiscard]] std::vector<VariableFacade> GetVariables(bool aIncludeDestroyed = false) const;
+		[[nodiscard]] std::vector<FunctionFacade> GetFunctions() const;
 
-		Class& GetClass() const;
-
-		VariableFacade CreateVariable(DataTypeFacade aDataTypeFacade, CommandTracker* aCommandTracker);
+		VariableFacade CreateVariable(DataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* aCommandTracker);
 		ClassInstanceFacade CreateClassInstance();
 		FunctionFacade CreateMemberFunction(std::string_view aName);
 
-		void SetName(std::string_view aName);
+		[[nodiscard]] VariableContainer& GetVariableContainer() const;
+
+		[[nodiscard]] ClassID GetID() const;
+
+		void SetName(std::string_view aName, CommandTracker* aCommandTracker);
 
 		void Save(std::string_view aSavePath) const;
-		void Load(std::string_view aFilePath);
-
-		bool operator==(const ClassFacade& aOther) const;
-		bool operator!=(const ClassFacade& aOther) const;
 
 		explicit operator bool() const;
 
+		friend bool operator==(const ClassFacade& a, const ClassFacade& b);
+
 	private:
 
-		Class* mClass;
+		[[nodiscard]] Class& GetClass() const;
+
+	private:
+
+		ClassID mClassID = InvalidID<ClassID>();
 	};
 }

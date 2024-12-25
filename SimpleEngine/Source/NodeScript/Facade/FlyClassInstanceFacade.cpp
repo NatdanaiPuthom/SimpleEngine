@@ -18,19 +18,19 @@ namespace FLY_NAMESPACE
 		mClassInstance->InitRuntime();
 	}
 
-	void ClassInstanceFacade::EditVariableDefaultValues(CommandTracker* const aCommandTracker)
+	void ClassInstanceFacade::ViewAndEditVariableDefaultValues(CommandTracker* const aCommandTracker)
 	{
-		Internal::EditClassInstanceVariableDefaultValue(*mClassInstance, aCommandTracker);
+		Internal::ViewAndEditClassInstanceVariableDefaultValue(*mClassInstance, aCommandTracker);
 	}
 
 	void ClassInstanceFacade::Destroy()
 	{
-		GetClassInstance().mClass->DestroyClassInstance(GetClassInstance());
+		Internal::DestroyClassInstance(*mClassInstance);
 	}
 
-	const std::string& ClassInstanceFacade::GetName() const
+	std::string_view ClassInstanceFacade::GetName() const
 	{
-		return mClassInstance->mClass->mName;
+		return GetClass().mName;
 	}
 
 	ClassInstance& ClassInstanceFacade::GetClassInstance()
@@ -43,9 +43,14 @@ namespace FLY_NAMESPACE
 		return mClassInstance != nullptr;
 	}
 
+	Class& ClassInstanceFacade::GetClass() const
+	{
+		return Internal::GetClassByID(mClassInstance->mClassID);
+	}
+
 	bool ClassInstanceFacade::IsSameTarget(DataTypeID aDataTypeID) const
 	{
-		return mClassInstance->mClass->mTargetID == aDataTypeID;
+		return GetClass().mTargetID == aDataTypeID;
 	}
 
 	void ClassInstanceFacade::ExecuteEventInternal(const EventID aEventID, void* const aTarget, const ExecutionContextBase& aContext)

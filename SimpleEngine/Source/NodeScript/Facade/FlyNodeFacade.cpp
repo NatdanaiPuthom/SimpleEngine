@@ -35,6 +35,16 @@ namespace FLY_NAMESPACE
 		return GetPinFacades(eFlowType::Output);
 	}
 
+	std::vector<PinFacade> NodeFacade::GetSplitInputPinFacades() const
+	{
+		return GetSplitPinFacades(eFlowType::Input);
+	}
+
+	std::vector<PinFacade> NodeFacade::GetSplitOutputPinFacades() const
+	{
+		return GetSplitPinFacades(eFlowType::Output);
+	}
+
 	const Node& NodeFacade::GetNode() const
 	{
 		return GetNodeGraph().mNodes.at(mNodeID);
@@ -44,22 +54,6 @@ namespace FLY_NAMESPACE
 	{
 		const Node& node = GetNode();
 		return Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
-	}
-
-	std::vector<PinFacade> NodeFacade::GetPinFacades(const eFlowType aFlowType) const
-	{
-		const Node& node = GetNode();
-		std::vector<PinFacade> pinFacades;
-
-		const std::vector<PinID>& pinIDs = SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins);
-		pinFacades.reserve(pinIDs.size());
-
-		for (const PinID pinID : pinIDs)
-		{
-			pinFacades.emplace_back(PinFacade(pinID, NodeGraphFacade(mNodeGraphVariant)));
-		}
-
-		return pinFacades;
 	}
 
 	NodeID NodeFacade::GetID() const
@@ -108,11 +102,11 @@ namespace FLY_NAMESPACE
 		return Internal::IsNodeReplacable(NodeGraphFacade(mNodeGraphVariant).GetNodeGraph(), GetID());
 	}
 
-	VariableFacade NodeFacade::GetVariableFacade() const
+	/*VariableFacade NodeFacade::GetVariableFacade() const
 	{
 		const VariableRef variableRef = Internal::GetVariableRefByNodeRef(GlobalNodeRef(mNodeID, GetNodeGraph()));
 		return VariableFacade(variableRef.GetVarID(), ClassFacade(variableRef.GetClass()));
-	}
+	}*/
 
 	NodeTypeFacade NodeFacade::GetNodeTypeFacade() const
 	{
@@ -139,6 +133,31 @@ namespace FLY_NAMESPACE
 		return NodeGraphFacade(mNodeGraphVariant).GetNodeGraph();
 	}
 
+	std::vector<PinFacade> NodeFacade::GetPinFacades(const std::vector<PinID>& aPinIDs) const
+	{
+		std::vector<PinFacade> pinFacades;
+
+		pinFacades.reserve(aPinIDs.size());
+
+		for (const PinID pinID : aPinIDs)
+		{
+			pinFacades.emplace_back(PinFacade(pinID, NodeGraphFacade(mNodeGraphVariant)));
+		}
+
+		return pinFacades;
+	}
+
+	std::vector<PinFacade> NodeFacade::GetPinFacades(const eFlowType aFlowType) const
+	{
+		const Node& node = GetNode();
+		return GetPinFacades(SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins));
+	}
+
+	std::vector<PinFacade> NodeFacade::GetSplitPinFacades(const eFlowType aFlowType) const
+	{
+		const Node& node = GetNode();
+		return GetPinFacades(SelectByFlowType(aFlowType, node.mSplitInputPins, node.mSplitOutputPins));
+	}
 
 	bool operator==(const NodeFacade& a, const NodeFacade& b)
 	{

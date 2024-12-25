@@ -65,6 +65,12 @@ namespace FLY_NAMESPACE
 		return HasFlag(GetTypeTraits(), eDataTypeTrait::ViewAndEditable);
 	}
 
+	bool DataTypeFacade::IsViewable() const
+	{
+		return HasFlag(GetTypeTraits(), eDataTypeTrait::Viewable);
+	}
+
+
 	std::optional<const std::vector<NodeTypeID>*> DataTypeFacade::GetNodeTypesIDs() const
 	{
 		const DataType* dataType = GetDataType();
