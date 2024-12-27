@@ -4,16 +4,16 @@
 namespace FLY_NAMESPACE
 {
 
-	static void CustomEventCallerNode(const InternalExecutionContext* aContext)
+	static void CustomEventCallerNode(InternalExecutionContextPtr aContext)
 	{
 		// Sets the values of the custom 
 
 		const Node& callerNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
-		const CustomEventID customEventID = Global::GetNodeTypeManager().GetCustomEventID(callerNode.mTypeID);
+		const CustomEventID customEventID = Internal::GetNodeTypeManager().GetCustomEventID(callerNode.mTypeID);
 
-		const CustomEvent& customEvent = Global::GetNodeTypeManager().GetCustomEvent(customEventID);
+		const CustomEvent& customEvent = Internal::GetNodeTypeManager().GetCustomEvent(customEventID);
 
-		const NodeType& executorNodeType = Global::GetNodeTypeManager().GetNodeType(customEvent.GetExecutorTypeID());
+		const NodeType& executorNodeType = Internal::GetNodeTypeManager().GetNodeType(customEvent.GetExecutorTypeID());
 		const std::vector<NodeRef>& executorNodeRefs = executorNodeType.mNodeRefs;
 
 		for (const NodeRef& executorNodeRef : executorNodeRefs)

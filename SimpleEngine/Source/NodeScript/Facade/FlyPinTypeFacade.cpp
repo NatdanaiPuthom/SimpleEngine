@@ -1,6 +1,6 @@
 #include "FlyPinTypeFacade.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -39,11 +39,11 @@ namespace FLY_NAMESPACE
 
 	PinType& PinTypeFacade::GetPinType() 
 	{
-		return Global::GetPinTypeManager().GetPinType(mPinTypeID);
+		return Internal::GetPinTypeManager().GetPinType(mPinTypeID);
 	}
 
 	const PinType& PinTypeFacade::GetPinType() const
 	{
-		return Global::GetPinTypeManager().GetPinType(mPinTypeID);
+		return Internal::GetPinTypeManager().GetPinType(mPinTypeID);
 	}
 }

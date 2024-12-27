@@ -1,7 +1,6 @@
 #include "FlyNodeGraphFacade.hpp"
 #include "../Graph/FlyEventGraph.hpp"
 #include "FlyFunctionFacade.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
 #include "../Internal/FlyInternal.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
@@ -38,7 +37,7 @@ namespace FLY_NAMESPACE
 		std::vector<NodeFacade> nodeFacades;
 		nodeFacades.reserve(nodes.size());
 
-		for (NodeID nodeID = 0; nodeID < nodes.size(); ++nodeID)
+		for (NodeID nodeID{ 0 }; nodeID < nodes.size(); ++nodeID)
 		{
 			NodeFacade nodeFacade(nodeID, *this);
 			if (!aIncludeDestroyed && nodeFacade.IsDestroyed())
@@ -58,7 +57,7 @@ namespace FLY_NAMESPACE
 		std::vector<PinFacade> pinFacades;
 		pinFacades.reserve(pins.size());
 
-		for (PinID pinID = 0; pinID < pins.size(); ++pinID)
+		for (PinID pinID{ 0 }; pinID < pins.size(); ++pinID)
 		{
 			PinFacade pinFacade(pinID, *this);
 			NodeFacade nodeFacade(pinFacade.GetNodeID(), *this);
@@ -104,7 +103,7 @@ namespace FLY_NAMESPACE
 		const NodeGraph& nodeGraph = aNodeGraphFacade.GetNodeGraph();
 		pinFacades.reserve(nodeGraph.mPins.size());
 
-		for (PinID pinID = 0; pinID < nodeGraph.mPins.size(); ++pinID)
+		for (PinID pinID{ 0 }; pinID < nodeGraph.mPins.size(); ++pinID)
 		{
 			const Pin& pin = nodeGraph.mPins[pinID];
 			if (aPredicate(pin))
@@ -120,7 +119,7 @@ namespace FLY_NAMESPACE
 	{
 		return GetPinFacadesFiltered([](const Pin& aPin)-> bool
 			{
-				return aPin.mConnectedPinIDs.empty() && Global::GetPinTypeManager().GetPinType(aPin.mTypeID).mFlowType == eFlowType::Input;
+				return aPin.mConnectedPinIDs.empty() && Internal::GetPinTypeManager().GetPinType(aPin.mTypeID).mFlowType == eFlowType::Input;
 			},
 			*this
 		);
@@ -130,7 +129,7 @@ namespace FLY_NAMESPACE
 	{
 		return GetPinFacadesFiltered([](const Pin& aPin)-> bool
 			{
-				return aPin.mConnectedPinIDs.empty() && Global::GetPinTypeManager().GetPinType(aPin.mTypeID).mFlowType == eFlowType::Output;
+				return aPin.mConnectedPinIDs.empty() && Internal::GetPinTypeManager().GetPinType(aPin.mTypeID).mFlowType == eFlowType::Output;
 			},
 			*this
 		);
@@ -157,7 +156,7 @@ namespace FLY_NAMESPACE
 		return GetPinFacadesFiltered(
 			[aFlowType, dataTypeID = aDataTypeFacade.GetID()](const Pin& aPin) -> bool
 			{
-				const PinType& pinType = Global::GetPinTypeManager().GetPinType(aPin.mTypeID);
+				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(aPin.mTypeID);
 				return aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType && pinType.mDataTypeID == dataTypeID;
 			},
 			*this
@@ -169,7 +168,7 @@ namespace FLY_NAMESPACE
 		return GetPinFacadesFiltered(
 			[aFlowType, dataTypeID = aDataTypeFacade.GetID()](const Pin& aPin) -> bool
 			{
-				const PinType& pinType = Global::GetPinTypeManager().GetPinType(aPin.mTypeID);
+				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(aPin.mTypeID);
 				const bool a = aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType;
 
 				return a && Internal::AreDataTypesLinkable(SelectByFlowType(aFlowType, dataTypeID, pinType.mDataTypeID), pinType.mDataTypeID);
@@ -185,7 +184,7 @@ namespace FLY_NAMESPACE
 		std::vector<LinkFacade> linkFacades;
 		linkFacades.reserve(links.size());
 
-		for (LinkID linkID = 0; linkID < links.size(); linkID++)
+		for (LinkID linkID{ 0 }; linkID < links.size(); linkID++)
 		{
 			const Link& link = links[linkID];
 			if (!aIncludeDestroyed && link.mIsDestroyed)

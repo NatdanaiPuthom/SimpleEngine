@@ -12,6 +12,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
+		NodeTypeFacade() = default;
 		explicit NodeTypeFacade(NodeTypeID anID);
 
 		[[nodiscard]] const std::string& GetName() const;
@@ -30,7 +31,6 @@ namespace FLY_NAMESPACE
 		explicit operator bool() const;
 
 		bool operator==(const NodeTypeFacade& aOther) const;
-		bool operator!=(const NodeTypeFacade& aOther) const;
 
 	private:
 
@@ -39,6 +39,6 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		NodeTypeID mNodeTypeID;
+		NodeTypeID mNodeTypeID = InvalidID<NodeTypeID>();
 	};
 }

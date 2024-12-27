@@ -1,6 +1,5 @@
 #include "FlyNodeFacade.hpp"
 #include "../Graph/FlyNodeGraph.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
 #include "FlyNodeGraphFacade.hpp"
 #include "Fly.hpp"
@@ -53,7 +52,7 @@ namespace FLY_NAMESPACE
 	const NodeType& NodeFacade::GetNodeType() const
 	{
 		const Node& node = GetNode();
-		return Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+		return Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
 	}
 
 	NodeID NodeFacade::GetID() const

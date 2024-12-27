@@ -12,7 +12,6 @@
 #include "../SystemTypes/FlyWildcard.hpp"
 #include "../SystemTypes/FlyFlow.hpp"
 #include "../Utilities/FlyMeta.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "../SystemTypes/FlyReferenceWrapper.hpp"
 #include "../Execution/FlyExecuteNode.hpp"
@@ -21,7 +20,7 @@
 
 namespace FLY_NAMESPACE
 {
-	
+
 	struct NodeCreationData final
 	{
 		EventID mEventID = InvalidID<EventID>();
@@ -43,7 +42,7 @@ namespace FLY_NAMESPACE
 				//const Pin& readFromPin = aSetPinValueData.mNodeGraph->mPins[aSetPinValueData.mReadFromPinID];
 				Pin& writeToPin = aSetPinValueData.mNodeGraph->mPins[aSetPinValueData.mWriteToPinID];
 				//const PinType& readFromPinType = Global::GetPinTypeManager().GetPinType(readFromPin.mTypeID);
-				[[maybe_unused]] const PinType& writeToPinType = Global::GetPinTypeManager().GetPinType(writeToPin.mTypeID);
+				[[maybe_unused]] const PinType& writeToPinType = Internal::GetPinTypeManager().GetPinType(writeToPin.mTypeID);
 #ifdef FLY_DEBUG
 				//assert(readFromPinType.mDataTypeID == GetDataTypeID<T>());
 				assert(writeToPinType.mDataTypeID == GetDataTypeID<T>());
@@ -78,12 +77,12 @@ namespace FLY_NAMESPACE
 							{
 								const Pin& connectedInputPin = aSetPinValueData.mNodeGraph->mPins[connectedInputPinID];
 								aContext.mExecutionQueue->Push(NodeExecutionData{ NodeRef(connectedInputPin.mNodeID, *aSetPinValueData.mNodeGraph), eNodeTriggerReason::Flow });
-								
+
 #ifdef FLY_DEBUG
 								const LinkID linkID = Internal::GetLinkIDByPinIDs(*aSetPinValueData.mNodeGraph, connectedInputPinID, aSetPinValueData.mWriteToPinID);
 								aContext.mNodeExecutor->GetDebugger().AddTraversedLink(linkID, aContext.mNodeGraphVariantHandle);
 #endif
-							
+
 							}
 						}
 					}
@@ -98,8 +97,8 @@ namespace FLY_NAMESPACE
 			{
 				const Pin& readFromPin = aSetPinValueData.mNodeGraph->mPins[aSetPinValueData.mReadFromPinID];
 				Pin& writeToPin = aSetPinValueData.mNodeGraph->mPins[aSetPinValueData.mWriteToPinID];
-				const PinType& readFromPinType = Global::GetPinTypeManager().GetPinType(readFromPin.mTypeID);
-				const PinType& writeToPinType = Global::GetPinTypeManager().GetPinType(writeToPin.mTypeID);
+				const PinType& readFromPinType = Internal::GetPinTypeManager().GetPinType(readFromPin.mTypeID);
+				const PinType& writeToPinType = Internal::GetPinTypeManager().GetPinType(writeToPin.mTypeID);
 
 
 				//assert(readFromPinType.mDataTypeID == GetDataTypeID<T>());
@@ -109,13 +108,11 @@ namespace FLY_NAMESPACE
 
 				T& writeToValue = *reinterpret_cast<T*>(writeToPin.mDataPtr.Get());
 
-				if (HasFlag(Global::GetDataTypeManager().Find(readFromPinType.mDataTypeID)->mTypeTraits, eDataTypeTrait::Pointer))
+				if (HasFlag(Internal::GetDataTypeManager().Find(readFromPinType.mDataTypeID)->mTypeTraits, eDataTypeTrait::Pointer))
 				{
 					if constexpr (!PointerType<T>)
 					{
 						// Since ReadFromPin is pointer -> ReadFromPin.mDataPtr is actually T**
-						//const T* read = reinterpret_cast<const T*>(readFromPin.mDataPtr.Get());
-						//const T** read2 = ((const T**)(const T*)readFromPin.mDataPtr.Get());
 						writeToValue = **((const T**)((const T*)readFromPin.mDataPtr.Get()));
 					}
 					else
@@ -132,12 +129,10 @@ namespace FLY_NAMESPACE
 					else
 					{
 						using RemovePtrType = std::remove_pointer_t<T>;
-						/*RemovePtrType* r = (RemovePtrType*)readFromValue;
-						r;*/
-						 RemovePtrType* const* r1 = reinterpret_cast<const T*>(readFromPin.mDataPtr.Get());
-						 RemovePtrType* r = (RemovePtrType*)r1;
-						 //r1;
-						 r;
+
+						RemovePtrType* const* r1 = reinterpret_cast<const T*>(readFromPin.mDataPtr.Get());
+						RemovePtrType* r = (RemovePtrType*)r1;
+
 						writeToValue = r;
 					}
 				}
@@ -208,10 +203,10 @@ namespace FLY_NAMESPACE
 				const std::any& defaultValueAny = aCreationData.mDescription.mDefaultValues.at(Index);
 				if (defaultValueAny.has_value())
 				{
-					defaultValueMemoryID = Global::Internal::GetMemoryPool().Allocate<AllocationType>(std::any_cast<AllocationType>(defaultValueAny));
+					defaultValueMemoryID = Internal::GetMemoryPool().Allocate<AllocationType>(std::any_cast<AllocationType>(defaultValueAny));
 				}
 			}
-			aPinTypeIDs[Index] = Global::GetPinTypeManager().CreatePinType<AllocationType>(pinNames[Index], FlowType, CreateSetPinValueInterface<AllocationType, FlowType>(), CreateSetPinValueFromPinInterface<AllocationType, FlowType>(), defaultValueMemoryID);
+			aPinTypeIDs[Index] = Internal::GetPinTypeManager().CreatePinType<AllocationType>(pinNames[Index], FlowType, CreateSetPinValueInterface<AllocationType, FlowType>(), CreateSetPinValueFromPinInterface<AllocationType, FlowType>(), defaultValueMemoryID);
 
 			if constexpr (Index + 1 < Size)
 			{
@@ -241,15 +236,15 @@ namespace FLY_NAMESPACE
 
 		using DecayedType = std::decay_t<InputType>;
 
-		const PinTypeID pinTypeID = Global::GetNodeTypeManager().GetNodeType(aNodeTypeID).mNodeRecipe.mInputPinTypeIDs[anIndex];
+		const PinTypeID pinTypeID = Internal::GetNodeTypeManager().GetNodeType(aNodeTypeID).mNodeRecipe.mInputPinTypeIDs[anIndex];
 
 		void* const dataPtr = [pinTypeID, &aNodeGraph]() -> void*
 			{
-				const PinType& pinType = Global::GetPinTypeManager().GetPinType(pinTypeID);
+				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(pinTypeID);
 				MemoryArena<NodeGraphBufferSize>& memoryArena = aNodeGraph.mMemoryArena;
 				if (pinType.mDefaultValueID != InvalidID<MemoryPoolID>())
 				{
-					const MemoryPool& globalMemoryPool = Global::Internal::GetMemoryPool();
+					const MemoryPool& globalMemoryPool = Internal::GetMemoryPool();
 					return &memoryArena.Allocate<DecayedType>(globalMemoryPool.At<InputType>(pinType.mDefaultValueID));
 				}
 				else
@@ -259,8 +254,8 @@ namespace FLY_NAMESPACE
 			}();
 
 		return Internal::CreatePin(aNodeGraph, aNodeID, pinTypeID, dataPtr);
-
 	}
+
 	template<size_t Index, size_t InputSize, typename InputType, typename... InputTypes>
 	void CreateInputPinsInternal(const NodeID aNodeID, const NodeTypeID aNodeTypeID, std::array<PinID, InputSize>& aPinIDs, NodeGraph& aNodeGraph)
 	{
@@ -300,7 +295,7 @@ namespace FLY_NAMESPACE
 		if constexpr (Index < OutputSize)
 		{
 
-			const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(aNodeTypeID);
+			const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(aNodeTypeID);
 			const PinTypeID pinTypeID = nodeType.mNodeRecipe.mOutputPinTypeIDs.at(Index);
 
 			aPinIDs[Index] = CreateOutputPin<OutputType>(aNodeID, pinTypeID, aNodeGraph);
@@ -402,7 +397,7 @@ namespace FLY_NAMESPACE
 		DataTypeID nodeStateDataTypeID = InvalidID<DataTypeID>();
 		if constexpr (TakesNodeState)
 		{
-			Global::GetDataTypeManager().Register<NodeStateDataType>(typeid(NodeStateDataType).name(), false);
+			Internal::GetDataTypeManager().Register<NodeStateDataType>(typeid(NodeStateDataType).name(), false);
 			nodeStateDataTypeID = GetDataTypeID<NodeStateDataType>();
 		}
 
@@ -418,7 +413,7 @@ namespace FLY_NAMESPACE
 		const std::vector<PinTypeID> inputPinTypeIDs = CreatePinTypes<eFlowType::Input, TransformType_t<InputTypes>...>(aCreationData);
 		const std::vector<PinTypeID> outputPinTypeIDs = CreatePinTypes<eFlowType::Output, OutputTypes...>(aCreationData);
 
-		MemoryPool& foundationMemoryPool = Global::Internal::GetMemoryPool();
+		MemoryPool& foundationMemoryPool = Internal::GetMemoryPool();
 		const MemoryPoolID functionMemoryID = foundationMemoryPool.Allocate<Callable>(aCallable);
 
 

@@ -6,12 +6,9 @@
 namespace FLY_NAMESPACE
 {
 
-	ViewAndEditResult Edit(StructInstance& aStructInstance);
-
-	FLY_VALUETYPE(StructInstance);
+	ViewAndEditResult ViewAndEdit(StructInstance& aStructInstance);
 
 	StructInstance StructInstanceTest(const StructInstance& aStructInstance);
-
 
 	FLY_FUNCTION(StructInstanceTest);
 }

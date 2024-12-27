@@ -2,7 +2,6 @@
 #include "../DataType/FlyClass.hpp"
 #include "FlyNodeTypeManager.hpp"
 #include "FlyClassInstance.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
@@ -20,7 +19,7 @@ namespace FLY_NAMESPACE
 	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
 	{
 		const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().mNodes[aNodeExecutionData.mNodeRef.GetNodeID()];
-		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
 		nodeType.mNodeRecipe.mExecuteFunction(aNodeExecutionData, mExecutionContext);
 	}
 

@@ -1,6 +1,6 @@
 #include "FlyMemoryArena.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
-#include "../Global/FlyGlobal.hpp"
+#include "../Internal/FlyInternal.hpp"
 #include <cassert>
 
 namespace FLY_NAMESPACE
@@ -160,7 +160,7 @@ namespace FLY_NAMESPACE
 
 	static DataType* GetDataType(DataTypeID aDataTypeID)
 	{
-		return Global::GetDataTypeManager().Find(aDataTypeID);
+		return Internal::GetDataTypeManager().Find(aDataTypeID);
 	}
 
 	MemoryObject::MemoryObject(void* const aDataPtr, const DataTypeID aDataTypeID)

@@ -1,6 +1,6 @@
 #include "FlyDataTypeFacade.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -27,7 +27,7 @@ namespace FLY_NAMESPACE
 
 	const std::string& DataTypeFacade::GetName() const
 	{
-		return Global::GetDataTypeManager().GetName(mDataTypeID);
+		return Internal::GetDataTypeManager().GetName(mDataTypeID);
 	}
 
 	Color DataTypeFacade::GetColor() const
@@ -37,7 +37,7 @@ namespace FLY_NAMESPACE
 		{
 			return dataType->mColor;
 		}
-		return Global::GetDataTypeManager().GetDefaultColor();
+		return Internal::GetDataTypeManager().GetDefaultColor();
 	}
 
 	eDataTypeTrait DataTypeFacade::GetTypeTraits() const
@@ -103,11 +103,11 @@ namespace FLY_NAMESPACE
 
 	DataType* DataTypeFacade::GetDataType()
 	{
-		return Global::GetDataTypeManager().Find(mDataTypeID);
+		return Internal::GetDataTypeManager().Find(mDataTypeID);
 	}
 
 	const DataType* DataTypeFacade::GetDataType() const
 	{
-		return Global::GetDataTypeManager().Find(mDataTypeID);
+		return Internal::GetDataTypeManager().Find(mDataTypeID);
 	}
 }

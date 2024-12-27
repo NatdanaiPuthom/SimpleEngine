@@ -174,7 +174,7 @@ namespace Fly
 	static void Load(DataTypeFacade& aValue, const nlohmann::json& aJson)
 	{
 		const std::string& name = aJson["Name"];
-		aValue = DataTypeFacade(Global::GetDataTypeManager().GetDataTypeIDByName(name));
+		aValue = Fly::GetDataTypeFacadeByName(name);
 	}
 }
 

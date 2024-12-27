@@ -5,7 +5,7 @@
 #include "../Node/FlyNodeTrait.hpp"
 #include "../SystemTypes/FlyVec2.hpp"
 #include "../Node/FlyNodeRef.hpp"
-#include "../Variable/FlyVariableRef.hpp"
+#include "../DataType/FlyVariableRef.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
 #include "../Node/NodeDragData.hpp"
 #include <string>
@@ -20,25 +20,51 @@ namespace FLY_NAMESPACE
 	class CommandTracker;
 	class EventGraph;
 	struct NodeType;
+	class StructInstance;
 	class ClassInstance;
 	class VariableContainer;
+	class Foundation;
+	class NodeExecutor;
+	class DataTypeManager;
+	class NodeTypeManager;
+	class PinTypeManager;
+	
+	template<size_t> class MemoryArena;
+	class MemoryPool;
 
 	namespace Internal
 	{
-		NodeGraph& GetNodeGraph(const NodeGraphVariantHandle& aNodeGraphVariantHandle);
-		const Pin& GetPin(PinID aPinID, const NodeGraph& aNodeGraph);
-		Pin& GetPin(PinID aPinID, NodeGraph& aNodeGraph);
-		const PinType& GetPinType(const Pin& aPin);
-		Node& GetNode(NodeID aNodeID, NodeGraph& aNodeGraph);
-		const Node& GetNode(NodeID aNodeID, const NodeGraph& aNodeGraph);
-		const NodeType& GetNodeType(NodeID aNodeID, const NodeGraph& aNodeGraph);
-		Class& GetClassByID(ClassID aClassID);
-		Struct& GetStructByID(StructID aStructID);
+
+
+		[[nodiscard]] Foundation& GetFoundation();
+		[[nodiscard]] NodeExecutor& GetNodeExecutor();
+		[[nodiscard]] DataTypeManager& GetDataTypeManager();
+		[[nodiscard]] NodeTypeManager& GetNodeTypeManager();
+		[[nodiscard]] PinTypeManager& GetPinTypeManager();
+
+		[[nodiscard]] bool& IsDebugging();
+
+		[[nodiscard]] MemoryArena<1024>& GetFrameMemoryArena();
+		[[nodiscard]] MemoryArena<10000>& GetEditMemoryArena();
+		[[nodiscard]] MemoryPool& GetMemoryPool();
+		[[nodiscard]] EventGraph& GetNodeGraphCopy();
+
+		[[nodiscard]] NodeGraph& GetNodeGraph(const NodeGraphVariantHandle& aNodeGraphVariantHandle);
+		[[nodiscard]] const Pin& GetPin(PinID aPinID, const NodeGraph& aNodeGraph);
+		[[nodiscard]] Pin& GetPin(PinID aPinID, NodeGraph& aNodeGraph);
+		[[nodiscard]] const PinType& GetPinType(const Pin& aPin);
+		[[nodiscard]] Node& GetNode(NodeID aNodeID, NodeGraph& aNodeGraph);
+		[[nodiscard]] const Node& GetNode(NodeID aNodeID, const NodeGraph& aNodeGraph);
+		[[nodiscard]] const NodeType& GetNodeType(NodeID aNodeID, const NodeGraph& aNodeGraph);
+		[[nodiscard]] Class& GetClassByID(ClassID aClassID);
+		[[nodiscard]] Struct& GetStructByID(StructID aStructID);
 
 		void InitializeSubPins();
 
 		StructID CreateStruct(std::string_view aName);
 		void SetStructName(StructID aStructID, std::string_view aName, CommandTracker* aCommandTracker);
+
+		StructInstance* CreateStructInstance(StructID aStructID);
 
 		ClassID CreateClass(DataTypeID aTargetID, std::string_view aName);
 		void SetClassName(ClassID aClassID, std::string_view aName, CommandTracker* aCommandTracker);

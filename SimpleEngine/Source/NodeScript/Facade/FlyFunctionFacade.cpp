@@ -1,14 +1,9 @@
 #include "FlyFunctionFacade.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
 #include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
-	FunctionFacade::FunctionFacade()
-		: mFunctionID(InvalidID<FunctionID>())
-	{
-	}
 
 	FunctionFacade::FunctionFacade(const FunctionID aFunctionID)
 		: mFunctionID(aFunctionID)
@@ -62,7 +57,7 @@ namespace FLY_NAMESPACE
 
 	void FunctionFacade::SetName(const std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 	{
-		Function& function = Global::GetNodeTypeManager().GetFunction(mFunctionID);
+		Function& function = Internal::GetNodeTypeManager().GetFunction(mFunctionID);
 
 		function.mName = aName;
 	}
@@ -94,11 +89,11 @@ namespace FLY_NAMESPACE
 
 	Function& FunctionFacade::GetFunction()
 	{
-		return Global::GetNodeTypeManager().GetFunction(mFunctionID);
+		return Internal::GetNodeTypeManager().GetFunction(mFunctionID);
 	}
 
 	const Function& FunctionFacade::GetFunction() const
 	{
-		return Global::GetNodeTypeManager().GetFunction(mFunctionID);
+		return Internal::GetNodeTypeManager().GetFunction(mFunctionID);
 	}
 }

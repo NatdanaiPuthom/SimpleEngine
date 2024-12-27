@@ -2,7 +2,6 @@
 #include "CustomEventWindow.hpp"
 #include "NodeScriptingWindow.hpp"
 #include "NodeScript/Fly.hpp"
-#include "NodeScript/Global/FlyGlobal.hpp"
 #include "FlyScriptEditorUtilities.hpp"
 
 namespace Editor

@@ -36,9 +36,11 @@ namespace FLY_NAMESPACE
 			return mVariableContainer != nullptr;
 		}
 
+		friend bool operator==(const VariableContainerInstance& a, const VariableContainerInstance& b);
+
 	public:
 
-		const VariableContainer* mVariableContainer;
+		const VariableContainer* mVariableContainer = nullptr;
 		std::vector<VariableInstance> mVariableInstances;
 		MemoryArena<MemoryAlignment> mMemoryArena;
 	};

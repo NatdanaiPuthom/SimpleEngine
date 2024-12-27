@@ -17,10 +17,10 @@ namespace FLY_NAMESPACE
 		~NodeGraph();
 
 		NodeGraph(const NodeGraph&);
-		NodeGraph(NodeGraph&&) = default;
+		NodeGraph(NodeGraph&&) noexcept = default;
 
-		NodeGraph& operator=(const NodeGraph&) = delete;
-		NodeGraph& operator=(NodeGraph&&) = default;
+		NodeGraph& operator=(const NodeGraph&);
+		NodeGraph& operator=(NodeGraph&&) noexcept = default;
 
 	public:
 

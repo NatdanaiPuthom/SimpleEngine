@@ -8,7 +8,7 @@
 #include "../DataType/FlyDataTypeManager.hpp"
 #include "../DataType/FlyClass.hpp"
 #include "../Instance/FlyClassInstance.hpp"
-#include "../Variable/FlyVariableRef.hpp"
+#include "../DataType/FlyVariableRef.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -47,17 +47,17 @@ namespace FLY_NAMESPACE
 
 		for (size_t i = 0; i < aDescription.mInputPinNames.size(); ++i)
 		{
-			Global::GetPinTypeManager().GetPinType(aNodeRecipe.mInputPinTypeIDs[i]).mName = aDescription.mInputPinNames[i];
+			Internal::GetPinTypeManager().GetPinType(aNodeRecipe.mInputPinTypeIDs[i]).mName = aDescription.mInputPinNames[i];
 		}
 		for (size_t i = 0; i < aDescription.mOutputPinNames.size(); ++i)
 		{
-			Global::GetPinTypeManager().GetPinType(aNodeRecipe.mOutputPinTypeIDs[i]).mName = aDescription.mOutputPinNames[i];
+			Internal::GetPinTypeManager().GetPinType(aNodeRecipe.mOutputPinTypeIDs[i]).mName = aDescription.mOutputPinNames[i];
 		}
 		aNodeRecipe.mName = CleanUpNodeName(aNodeRecipe.mName);
 
 		assert(!aNodeRecipe.mName.empty());
 
-		return Global::GetNodeTypeManager().Register(NodeType{ .mNodeRecipe = std::move(aNodeRecipe) });
+		return Internal::GetNodeTypeManager().Register(NodeType{ .mNodeRecipe = std::move(aNodeRecipe) });
 	}
 
 	template<eNodeTrait Traits = eNodeTrait::None, typename OutputType, typename... InputTypes>
@@ -87,23 +87,23 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	inline void RegisterGetterNodeType()
 	{
-		const std::string& typeName = Global::GetDataTypeManager().GetName(GetDataTypeID<T>());
+		const std::string& typeName = Internal::GetDataTypeManager().GetName(GetDataTypeID<T>());
 		NodeCreationData getterData;
 		getterData.mName = "Get " + typeName;
 		const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>, getterData));
-		Global::GetNodeTypeManager().SetGetterNodeTypeID(GetDataTypeID<T>(), nodeTypeID);
+		Internal::GetNodeTypeManager().SetGetterNodeTypeID(GetDataTypeID<T>(), nodeTypeID);
 	}
 
 
 	template<typename T>
 	inline void RegisterSetterNodeType()
 	{
-		const std::string& typeName = Global::GetDataTypeManager().GetName(GetDataTypeID<T>());
+		const std::string& typeName = Internal::GetDataTypeManager().GetName(GetDataTypeID<T>());
 
 		NodeCreationData setterData;
 		setterData.mName = "Set " + typeName;
 		const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Setter | eNodeTrait::HasImplicitFlow>(SetterNode<T>, setterData));
-		Global::GetNodeTypeManager().SetSetterNodeTypeID(GetDataTypeID<T>(), nodeTypeID);
+		Internal::GetNodeTypeManager().SetSetterNodeTypeID(GetDataTypeID<T>(), nodeTypeID);
 	}
 
 	template<PointerType T>
@@ -129,7 +129,7 @@ namespace FLY_NAMESPACE
 			aCreationData.mOwnerDataTypeID = GetDataTypeID<ClassType*>();
 			const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<Traits>(aFunction, std::forward<NodeCreationData>(aCreationData)), std::forward<NodeTypeDesc>(aCreationData.mDescription));
 
-			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType*>())
+			if (DataType* dataType = Internal::GetDataTypeManager().Find<ClassType*>())
 			{
 				dataType->mNodeTypeIDs.push_back(nodeTypeID);
 			}
@@ -141,7 +141,7 @@ namespace FLY_NAMESPACE
 			aCreationData.mOwnerDataTypeID = GetDataTypeID<ClassType*>();
 			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction, std::forward<NodeCreationData>(aCreationData)), std::forward<NodeTypeDesc>(aCreationData.mDescription));
 
-			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType*>())
+			if (DataType* dataType = Internal::GetDataTypeManager().Find<ClassType*>())
 			{
 				dataType->mNodeTypeIDs.push_back(nodeTypeID);
 			}
@@ -153,7 +153,7 @@ namespace FLY_NAMESPACE
 			aCreationData.mOwnerDataTypeID = GetDataTypeID<ClassType*>();
 			const NodeTypeID nodeTypeID = RegisterInternal(FilterMemberNodeType(aFunction, std::forward<NodeCreationData>(aCreationData)), std::forward<NodeTypeDesc>(aCreationData.mDescription));
 
-			if (DataType* dataType = Global::GetDataTypeManager().Find<ClassType*>())
+			if (DataType* dataType = Internal::GetDataTypeManager().Find<ClassType*>())
 			{
 				dataType->mNodeTypeIDs.push_back(nodeTypeID);
 			}
@@ -185,7 +185,7 @@ namespace FLY_NAMESPACE
 				)
 			);
 
-			DataType* dataType = Global::GetDataTypeManager().Find<ClassType*>();
+			DataType* dataType = Internal::GetDataTypeManager().Find<ClassType*>();
 			if (dataType)
 			{
 				dataType->mNodeTypeIDs.push_back(getterNodeTypeID);
@@ -504,8 +504,8 @@ namespace FLY_NAMESPACE
 			{
 				if constexpr (!std::same_as<ClassType, None>)
 				{
-					const DataType* c = Global::GetDataTypeManager().Find(GetDataTypeID<ClassType>());
-					const DataType* classDataType = c ? c : Global::GetDataTypeManager().Find<ClassType*>();
+					const DataType* c = Internal::GetDataTypeManager().Find(GetDataTypeID<ClassType>());
+					const DataType* classDataType = c ? c : Internal::GetDataTypeManager().Find<ClassType*>();
 					assert(classDataType);
 					nodeCreationData.mName = classDataType->mName + "/" + aFunctionName;
 				}

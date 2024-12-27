@@ -8,4 +8,14 @@ namespace FLY_NAMESPACE
         , mVariableContainerInstance(aStruct.mVariableContainer)
     {
     }
+
+    bool operator==(const StructInstance& a, const StructInstance& b)
+    {
+        if (!a && !b)
+        {
+            return true;
+        }
+
+        return a.mVariableContainerInstance == b.mVariableContainerInstance;
+    }
 }

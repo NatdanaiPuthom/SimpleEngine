@@ -1,8 +1,6 @@
 #pragma once
 #include "FlyDefines.hpp"
 #include "SystemTypes/FlyVec2.hpp"
-#include "Pin/FlyPin.hpp"
-#include "Pin/FlyPinType.hpp"
 #include "Utilities/FlyMeta.hpp"
 #include "Utilities/FlyUtilities.hpp"
 #include "Facade/FlyNodeFacade.hpp"
@@ -35,8 +33,8 @@ namespace FLY_NAMESPACE
 	ClassFacade CreateClass(DataTypeFacade aTargetFacade, std::string_view aName, std::string_view aSavePath);
 	ClassFacade CreateClassWithoutTarget(std::string_view aName, std::string_view aSavePath);
 
-	StructFacade FindStructByName(std::string_view aName);
-	ClassFacade FindClassByName(std::string_view aName);
+	[[nodiscard]] StructFacade FindStructByName(std::string_view aName);
+	[[nodiscard]] ClassFacade FindClassByName(std::string_view aName);
 
 	void SetDefaultDataTypeColor(const Fly::Color& aColor);
 	void SetEditorNullptrFunction(void(*aFunction)());
@@ -48,27 +46,29 @@ namespace FLY_NAMESPACE
 	FunctionFacade CreateGlobalFunction(const std::string_view aName);
 
 	void BeginFrame(CommandTracker* aCommandTracker);
+	[[nodiscard]] bool& IsDebugging();
 
-	std::vector<DataTypeFacade> GetDataTypes();
-
-	template<Predicate<const DataTypeFacade&> FilterPredicate>
-	std::vector<DataTypeFacade> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate);
-
-	std::vector<NodeTypeFacade> GetNodeTypes();
-
-	std::vector<FunctionFacade> GetFunctions();
-	std::vector<CustomEventFacade> GetCustomEvents();
-
-	std::vector<LinkFacade> GetTraversedLinks();
-
-	std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(DataTypeID aDataTypeID, eFlowType aFlowType, eNodeTrait aNodeTrait, bool(*)(eNodeTrait, eNodeTrait));
-	std::vector<NodeTypeFacade> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);
-
-	std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> GetClasses();
-	std::vector<ClassFacade> GetClassesByTargetDataType(DataTypeFacade aDataTypeFacade);
+	[[nodiscard]] std::vector<DataTypeFacade> GetDataTypes();
+	[[nodiscard]] DataTypeFacade GetDataTypeFacadeByName(std::string_view aName);
 
 	template<Predicate<const DataTypeFacade&> FilterPredicate>
-	std::vector<DataTypeFacade> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate)
+	[[nodiscard]] std::vector<DataTypeFacade> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate);
+
+	[[nodiscard]] std::vector<NodeTypeFacade> GetNodeTypes();
+
+	[[nodiscard]] std::vector<FunctionFacade> GetFunctions();
+	[[nodiscard]] std::vector<CustomEventFacade> GetCustomEvents();
+
+	[[nodiscard]] std::vector<LinkFacade> GetTraversedLinks();
+
+	[[nodiscard]] std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(DataTypeID aDataTypeID, eFlowType aFlowType, eNodeTrait aNodeTrait, bool(*)(eNodeTrait, eNodeTrait));
+	[[nodiscard]] std::vector<NodeTypeFacade> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);
+
+	[[nodiscard]] std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> GetClasses();
+	[[nodiscard]] std::vector<ClassFacade> GetClassesByTargetDataType(DataTypeFacade aDataTypeFacade);
+
+	template<Predicate<const DataTypeFacade&> FilterPredicate>
+	[[nodiscard]] std::vector<DataTypeFacade> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate)
 	{
 		const std::vector<DataTypeFacade> dataTypes = GetDataTypes();
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyNodeManagerInstance.hpp"
+#include "../Memory/FlyMemoryArena.hpp"
+#include <unordered_map>
 
 namespace FLY_NAMESPACE
 {

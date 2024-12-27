@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <string_view>
 #include <string>
+#include <variant>
+#include <xhash>
 #include "SystemTypes/FlyNone.hpp"
 
 #undef max
@@ -19,17 +21,9 @@
 
 namespace FLY_NAMESPACE
 {
-	using NodeID = int;
-	using PinID = int;
-	using LinkID = int;
-
-	using NodeTypeID = size_t;
 	using CustomEventID = size_t;
 	using FunctionID = size_t;
-	using PinTypeID = size_t;
-	using VarID = size_t;
 	using MemoryPoolID = size_t;
-	using DataTypeID = size_t;
 	using ObjectTypeID = size_t;
 	using EventID = size_t;
 
@@ -52,6 +46,18 @@ namespace FLY_NAMESPACE
 		{
 			return mID;
 		}
+
+		IDWrapper operator++(int)
+		{
+			mID++;
+			return *this;
+		}
+
+		IDWrapper& operator++()
+		{
+			++mID;
+			return *this;
+		}
 		IDType mID = InvalidID<IDType>();
 	};
 
@@ -61,16 +67,29 @@ namespace FLY_NAMESPACE
 		return IDWrapperType{ InvalidID<typename IDWrapperType::id_type>() };
 	}
 
-	struct DataTypeIDWrapper final : IDWrapper<size_t> {};
+	struct PinID final : IDWrapper<int> {};
+	struct LinkID final : IDWrapper<int> {};
+	struct NodeID final : IDWrapper<int> {};
+	struct DataTypeID final : IDWrapper<size_t> {};
 	struct StructID final : IDWrapper<size_t> {};
 	struct ClassID final : IDWrapper<size_t> {};
+	struct PinTypeID final : IDWrapper<size_t> {};
+	struct NodeTypeID final : IDWrapper<size_t> {};
+	struct VarID final : IDWrapper<size_t> {};
+	struct GenericDataTypeID : IDWrapper<std::variant<DataTypeID, StructID, ClassID>> {};
+
+	template<>
+	constexpr GenericDataTypeID InvalidID()
+	{
+		return GenericDataTypeID{ DataTypeID{} };
+	}
 
 	constexpr const char* TypeIdentifierStr = "#T";
 
 	template<typename T>
 	constexpr DataTypeID GetDataTypeID()
 	{
-		return typeid(T).hash_code();
+		return DataTypeID{ typeid(T).hash_code() };
 	}
 
 	template<typename Output, typename... Inputs>
@@ -184,14 +203,14 @@ namespace FLY_NAMESPACE
 
 	};
 
-	constexpr inline Color operator+(const Color& aColor1, const Color& aColor2)
+	constexpr Color operator+(const Color& aColor1, const Color& aColor2)
 	{
 		Color c = { aColor1.r + aColor2.r, aColor1.g + aColor2.g, aColor1.b + aColor2.b, aColor1.a + aColor2.a };
 		c.Clamp();
 		return c;
 	}
 
-	constexpr inline Color operator-(const Color& aColor1, const Color& aColor2)
+	constexpr Color operator-(const Color& aColor1, const Color& aColor2)
 	{
 		Color c = { aColor1.r - aColor2.r, aColor1.g - aColor2.g, aColor1.b - aColor2.b, aColor1.a - aColor2.a };
 		c.Clamp();
@@ -216,4 +235,27 @@ namespace FLY_NAMESPACE
 	{
 		bool mIsItemActive = false;
 	};
+
+}
+
+namespace std
+{
+
+	template<typename IDType>
+	struct hash<Fly::IDWrapper<IDType>>
+	{
+		IDType operator()(const Fly::IDWrapper<IDType>& aIDWrapper) const
+		{
+			return aIDWrapper.mID;
+		}
+	};
+
+	template<>
+	struct hash<Fly::DataTypeID> : hash<Fly::IDWrapper<Fly::DataTypeID::id_type>> {};
+
+	template<>
+	struct hash<Fly::NodeID> : hash<Fly::IDWrapper<Fly::NodeID::id_type>> {};
+
+	template<>
+	struct hash<Fly::NodeTypeID> : hash<Fly::IDWrapper<Fly::NodeTypeID::id_type>> {};
 }

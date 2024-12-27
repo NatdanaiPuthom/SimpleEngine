@@ -1,6 +1,5 @@
 #include "FlyExecuteNode.hpp"
 #include "../Pin/FlyPin.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "FlyNodeExecutor.hpp"
 #include "../Utilities/FlyUtilities.hpp"
@@ -18,7 +17,7 @@ namespace FLY_NAMESPACE
 			const PinID inputPinID = aInputPinIDs[i];
 
 			const Pin& inputPin = currentNodeGraph.mPins[inputPinID];
-			const PinType& inputPinType = Global::GetPinTypeManager().GetPinType(inputPin.mTypeID);
+			const PinType& inputPinType = Internal::GetPinTypeManager().GetPinType(inputPin.mTypeID);
 
 			if (inputPinType.mDataTypeID == Flow::mTypeID)
 			{
@@ -36,11 +35,11 @@ namespace FLY_NAMESPACE
 			const NodeID connectedNodeID = connectedOutputPin.mNodeID;
 
 			const Node& connectedNode = currentNodeGraph.mNodes[connectedNodeID];
-			const NodeType& connectedNodeType = Global::GetNodeTypeManager().GetNodeType(connectedNode.mTypeID);
+			const NodeType& connectedNodeType = Internal::GetNodeTypeManager().GetNodeType(connectedNode.mTypeID);
 
 			if (!HasFlag(connectedNodeType.mNodeRecipe.mTraits, eNodeTrait::HasFlow))
 			{
-				Global::GetNodeExecutor().ExecuteNode(NodeExecutionData{ CreateContextualNodeRef(connectedNodeID, aContext.mNodeData.mNodeRef.GetNodeGraph()), eNodeTriggerReason::Read });
+				Internal::GetNodeExecutor().ExecuteNode(NodeExecutionData{ CreateContextualNodeRef(connectedNodeID, aContext.mNodeData.mNodeRef.GetNodeGraph()), eNodeTriggerReason::Read });
 			}
 
 			inputPinType.mSetPinValueFromPinFunction(SetPinValueFromPinData{ .mNodeGraph = &currentNodeGraph, .mWriteToPinID = inputPinID, .mReadFromPinID = connectedOutputPinID }, aContext);

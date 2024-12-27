@@ -1,5 +1,4 @@
 #include "FlyNodeRef.hpp"
-#include "../Global/FlyGlobal.hpp"
 
 namespace FLY_NAMESPACE
 {

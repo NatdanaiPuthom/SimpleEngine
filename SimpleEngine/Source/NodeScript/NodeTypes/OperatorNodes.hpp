@@ -317,7 +317,7 @@ namespace FLY_NAMESPACE
 
 		if constexpr (!std::same_as<T, Wildcard>)
 		{
-			const std::string& customTypeName = Global::GetDataTypeManager().GetName(dataTypeID);
+			const std::string& customTypeName = Internal::GetDataTypeManager().GetName(dataTypeID);
 			if (!customTypeName.empty())
 			{
 				aDefaultNodeName += " (" + customTypeName + ")";
@@ -335,7 +335,7 @@ namespace FLY_NAMESPACE
 
 		const NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits>(operatorFunc, NodeCreationData{ .mOperatorTrait = OperatorTrait, .mName = aDefaultNodeName });
 
-		Global::GetNodeTypeManager().SetOperatorNodeTypeID(dataTypeID, OperatorTrait, nodeTypeID);
+		Internal::GetNodeTypeManager().SetOperatorNodeTypeID(dataTypeID, OperatorTrait, nodeTypeID);
 	}
 
 	template<Decayed T, eNodeOperatorTrait OperatorTrait, eNodeOperatorTrait RegisteredTraits, eNodeTrait ExtraTraits = eNodeTrait::None>

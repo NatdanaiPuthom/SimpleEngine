@@ -1,6 +1,6 @@
 #include "FlyMemberVariableFacade.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -27,11 +27,11 @@ namespace FLY_NAMESPACE
 
 	const DataType& MemberVariableFacade::GetParentDataType() const
 	{
-		return *Global::GetDataTypeManager().Find(mParentDataTypeID);
+		return *Internal::GetDataTypeManager().Find(mParentDataTypeID);
 	}
 
 	const Variable& MemberVariableFacade::GetVariable() const
 	{
-		return Global::GetDataTypeManager().Find(mParentDataTypeID)->mVariables[mMemberIndex];
+		return Internal::GetDataTypeManager().Find(mParentDataTypeID)->mVariables[mMemberIndex];
 	}
 }

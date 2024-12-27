@@ -14,8 +14,8 @@ namespace FLY_NAMESPACE
 		template<typename IteratorType1, typename IteratorType2>
 		Node(const NodeTypeID aTypeID, const IteratorType1& aInputPins, const IteratorType2& aOutputPins)
 			: mTypeID(aTypeID)
-			, mInputPins(std::vector<PinID>(aInputPins.begin(), aInputPins.end()))
-			, mOutputPins(std::vector<PinID>(aOutputPins.begin(), aOutputPins.end()))
+			, mInputPins(begin(aInputPins), end(aInputPins))
+			, mOutputPins(begin(aOutputPins), end(aOutputPins))
 			, mSplitInputPins(mInputPins)
 			, mSplitOutputPins(mOutputPins)
 		{
@@ -32,17 +32,10 @@ namespace FLY_NAMESPACE
 
 		}
 
-		~Node() = default;
-
-		Node(const Node&) = default;
-		Node(Node&&) = default;
-		Node& operator=(const Node&) = delete;
-		Node& operator=(Node&&) = delete;
-
 	public:
 
 
-		const NodeTypeID mTypeID;
+		NodeTypeID mTypeID;
 		std::vector<PinID> mInputPins;
 		std::vector<PinID> mOutputPins;
 		std::vector<PinID> mSplitInputPins;

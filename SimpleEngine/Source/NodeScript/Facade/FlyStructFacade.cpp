@@ -1,8 +1,7 @@
 #include "FlyStructFacade.hpp"
 #include "../DataType/FlyStruct.hpp"
-#include "../Global/FlyGlobal.hpp"
-#include "../Foundation/FlyFoundation.hpp"
 #include "../Internal/FlyInternal.hpp"
+#include "../Internal/FlyFoundation.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -37,7 +36,7 @@ namespace FLY_NAMESPACE
 			{
 				continue;
 			}
-			variableFacades.push_back(VariableFacade(i, *this));
+			variableFacades.push_back(VariableFacade(VarID{ i }, *this));
 		}
 
 		return variableFacades;
@@ -62,7 +61,7 @@ namespace FLY_NAMESPACE
 
 	Struct& StructFacade::GetStruct() const
 	{
-		return *Global::GetFoundation().mStructs.at(mStructID);
+		return Internal::GetStructByID(mStructID);
 	}
 
 	StructFacade::operator bool() const

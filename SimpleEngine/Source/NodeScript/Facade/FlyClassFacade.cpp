@@ -38,9 +38,9 @@ namespace FLY_NAMESPACE
 
 		if (!aIncludeDestroyed)
 		{
-			for (VarID varID = 0; varID < variables.size(); ++varID)
+			for (VarID varID{ 0 }; varID < variables.size(); ++varID)
 			{
-				const Variable& variable = variables.at(varID);
+				const Variable& variable = variables[varID];
 				if (variable.mIsDestroyed)
 				{
 					continue;
@@ -50,7 +50,7 @@ namespace FLY_NAMESPACE
 		}
 		else
 		{
-			for (VarID varID = 0; varID < variables.size(); ++varID)
+			for (VarID varID{ 0 }; varID < variables.size(); ++varID)
 			{
 				variableFacades.push_back(VariableFacade(varID, *this));
 			}

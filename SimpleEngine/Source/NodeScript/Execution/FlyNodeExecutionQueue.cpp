@@ -1,6 +1,6 @@
 #include "FlyNodeExecutionQueue.hpp"
-#include "Global/FlyGlobal.hpp"
 #include "FlyNodeExecutor.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -14,7 +14,7 @@ namespace FLY_NAMESPACE
 	{
 		while (!mExecutionQueue.empty())
 		{
-			Global::GetNodeExecutor().ExecuteNode(mExecutionQueue.front());
+			Internal::GetNodeExecutor().ExecuteNode(mExecutionQueue.front());
 			mExecutionQueue.pop();
 		}
 	}

@@ -1,18 +1,19 @@
 #pragma once
-#include "FlyDefines.hpp"
-#include "Memory/FlyMemoryArena.hpp"
-#include "Variable/FlyVariableRef.hpp"
-#include "Node/FlyNodeRef.hpp"
+#include "../FlyDefines.hpp"
+#include "../Memory/FlyMemoryArena.hpp"
+#include "../DataType/FlyVariableRef.hpp"
+#include "../Node/FlyNodeRef.hpp"
 #include "../Graph/FlyEventGraph.hpp"
-#include "../Type/FlyTypeManager.hpp"
+#include "../DataType/FlyDataTypeManager.hpp"
+#include "../Node/FlyNodeTypeManager.hpp"
+#include "../Pin/FlyPinTypeManager.hpp"
+#include "../Memory/FlyHeapObject.hpp"
 #include <memory>
 #include <string_view>
-#include "../Memory/FlyHeapObject.hpp"
 
 namespace FLY_NAMESPACE
 {
 	class NodeExecutor;
-	class TypeManager;
 	class Class;
 	class Struct;
 
@@ -38,16 +39,6 @@ namespace FLY_NAMESPACE
 
 		void Initialize();
 
-		void ClearClasses();
-
-		StructID CreateStruct(std::string_view aName);
-		ClassID CreateClass(const DataTypeID aTargetID, std::string_view aName);
-		void DestroyClass(Class& aClass);
-
-		Struct& GetStruct(StructID aID);
-		const std::vector<HeapObject<Class>>& GetClasses() const;
-
-		TypeManager& GetTypeManager();
 		NodeExecutor& GetNodeExecutor();
 
 		const VariableRef& GetVariableRefByNodeRef(const GlobalNodeRef& aNodeRef) const;
@@ -61,9 +52,9 @@ namespace FLY_NAMESPACE
 	public:
 
 		MemoryPool mMemoryPool;
-		TypeManager mTypeManager;
-		std::vector<HeapObject<Class>> mClasses;
-		std::vector<HeapObject<Struct>> mStructs;
+		NodeTypeManager mNodeTypeManager;
+		PinTypeManager mPinTypeManager;
+		DataTypeManager mDataTypeManager;
 
 		HeapObject<NodeExecutor> mNodeExecutor;
 		EventGraph mNodeGraphCopy;

@@ -327,4 +327,75 @@ namespace FLY_NAMESPACE
 	{
 		return mDefaultColor;
 	}
+
+	StructID DataTypeManager::CreateStruct(const std::string_view aName)
+	{
+		StructID structID{ mStructs.size() };
+		mStructs.push_back(HeapObject<Struct>(aName));
+		return structID;
+	}
+
+	Struct& DataTypeManager::GetStruct(const StructID aStructID)
+	{
+		return *mStructs[aStructID];
+	}
+
+	const Struct& DataTypeManager::GetStruct(const StructID aStructID) const
+	{
+		return *mStructs[aStructID];
+	}
+
+	StructID DataTypeManager::GetStructIDByName(std::string_view aName) const
+	{
+		for (size_t i = 0; i < mStructs.size(); i++)
+		{
+			if (mStructs[i]->mName == aName)
+			{
+				return StructID{ i };
+			}
+		}
+
+		return StructID{};
+	}
+
+	const std::vector<HeapObject<Struct>>& DataTypeManager::GetStructs() const
+	{
+		return mStructs;
+	}
+
+	ClassID DataTypeManager::CreateClass(const DataTypeID aTargetID, const std::string_view aName)
+	{
+		ClassID id{ mClasses.size() };
+		mClasses.emplace_back(HeapObject<Class>(aTargetID, std::string(aName)));
+		return id;
+	}
+
+	Class& DataTypeManager::GetClass(const ClassID aClassID)
+	{
+		return *mClasses[aClassID];
+	}
+
+	const Class& DataTypeManager::GetClass(const ClassID aClassID) const
+	{
+		return *mClasses[aClassID];
+	}
+
+	ClassID DataTypeManager::GetClassIDByName(std::string_view aName) const
+	{
+		for (size_t i = 0; i < mClasses.size(); i++)
+		{
+			if (mClasses[i]->mName == aName)
+			{
+				return ClassID{ i };
+			}
+		}
+
+		return ClassID{};
+	}
+
+
+	const std::vector<HeapObject<Class>>& DataTypeManager::GetClasses() const
+	{
+		return mClasses;
+	}
 }

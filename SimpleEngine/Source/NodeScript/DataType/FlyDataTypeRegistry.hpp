@@ -33,7 +33,7 @@ namespace FLY_NAMESPACE
 	template<typename T, eNodeOperatorTrait Operators, template<typename> typename... Templates>
 	inline void DataTypeRegistry::Register(const std::string& aName, const Color& aColor, const bool aIsTargetable)
 	{
-		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
+		DataTypeManager& dataTypeManager = Internal::GetDataTypeManager();
 
 		if (dataTypeManager.IsRegistered<T>())
 		{
@@ -65,13 +65,13 @@ namespace FLY_NAMESPACE
 	template<template<typename> typename TemplateType>
 	inline void DataTypeRegistry::RegisterTemplateType(const std::string& aName)
 	{
-		Global::GetDataTypeManager().RegisterTemplateType<TemplateType>(aName);
+		Internal::GetDataTypeManager().RegisterTemplateType<TemplateType>(aName);
 	}
 
 	template<typename ClassType, typename MemberType>
 	inline void DataTypeRegistry::RegisterMemberVariable(MemberType ClassType::* aMemberVariable, const std::string& aName)
 	{
-		DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
+		DataTypeManager& dataTypeManager = Internal::GetDataTypeManager();
 		dataTypeManager.RegisterMemberVariable(aMemberVariable, aName);
 		const std::string directory = GetClassNameFromMemberName(aName);
 		NodeTypeRegistry::RegisterMemberVariable(aMemberVariable, directory, aName);
@@ -82,9 +82,9 @@ namespace FLY_NAMESPACE
 	{
 		std::string templateTypeName;
 
-		if (Global::GetDataTypeManager().mTemplateDataTypes.contains(typeid(TemplateType).hash_code()))
+		if (Internal::GetDataTypeManager().mTemplateDataTypes.contains(typeid(TemplateType).hash_code()))
 		{
-			templateTypeName = Global::GetDataTypeManager().mTemplateDataTypes.at(typeid(TemplateType).hash_code()).name;
+			templateTypeName = Internal::GetDataTypeManager().mTemplateDataTypes.at(typeid(TemplateType).hash_code()).name;
 		}
 		else
 		{
@@ -93,7 +93,7 @@ namespace FLY_NAMESPACE
 
 		using Specification = TemplateType<T>;
 
-		Global::GetDataTypeManager().RegisterTemplateSpecification<Specification>(templateTypeName + std::string("<") + aTemplateName + ">");
+		Internal::GetDataTypeManager().RegisterTemplateSpecification<Specification>(templateTypeName + std::string("<") + aTemplateName + ">");
 		RegisterGetterNodeType<Specification>();
 		RegisterSetterNodeType<Specification>();
 		RegisterOperatorNodeTypes<Specification, eNodeOperatorTrait::All>();
@@ -115,7 +115,7 @@ namespace FLY_NAMESPACE
 		template<typename T, eNodeOperatorTrait Operators, typename... Traits>
 		constexpr static RegisterType Struct_Impl(const char* aName, [[maybe_unused]] Traits&&... aTraits)
 		{
-			Color color = Global::GetDataTypeManager().GetDefaultColor();
+			Color color = Internal::GetDataTypeManager().GetDefaultColor();
 			if constexpr (ContainsType<Color, Traits...>)
 			{
 				color = Extract<Color>(std::forward<Traits>(aTraits)...);
@@ -141,7 +141,7 @@ namespace FLY_NAMESPACE
 		constexpr static RegisterType Class_Impl(const char* aName, [[maybe_unused]] Traits&&... aTraits)
 		{
 			const bool isTargetable = !ContainsType<NonTargetable, Traits...>;
-			Color color = Global::GetDataTypeManager().GetDefaultColor();
+			Color color = Internal::GetDataTypeManager().GetDefaultColor();
 			if constexpr (ContainsType<Color, Traits...>)
 			{
 				color = Extract<Color>(std::forward<Traits>(aTraits)...);

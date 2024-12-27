@@ -1,5 +1,4 @@
 #include "FlyClassInstanceFacade.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../Execution/FlyNodeExecutor.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "../DataType/FlyClass.hpp"
@@ -55,12 +54,12 @@ namespace FLY_NAMESPACE
 
 	void ClassInstanceFacade::ExecuteEventInternal(const EventID aEventID, void* const aTarget, const ExecutionContextBase& aContext)
 	{
-		Global::GetNodeExecutor().ExecuteEvent(aEventID, *mClassInstance, aTarget, aContext);
+		Internal::GetNodeExecutor().ExecuteEvent(aEventID, *mClassInstance, aTarget, aContext);
 	}
 
 	void ClassInstanceFacade::ExecuteAutoTickersInternal(void* const aTarget, const ExecutionContextBase& aContext)
 	{
-		Global::GetNodeExecutor().ExecuteEvent(AutoTickEventID, *mClassInstance, aTarget, aContext);
+		Internal::GetNodeExecutor().ExecuteEvent(AutoTickEventID, *mClassInstance, aTarget, aContext);
 	}
 
 	bool operator==(const ClassInstanceFacade& a, const ClassInstanceFacade& b)

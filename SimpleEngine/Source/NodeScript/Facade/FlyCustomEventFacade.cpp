@@ -1,6 +1,5 @@
 #include "FlyCustomEventFacade.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../Fly.hpp"
 #include "../Internal/FlyInternal.hpp"
 
@@ -59,7 +58,7 @@ namespace FLY_NAMESPACE
 
 	const CustomEvent& CustomEventFacade::GetCustomEvent() const
 	{
-		return Global::GetNodeTypeManager().GetCustomEvent(mCustomEventID);
+		return Internal::GetNodeTypeManager().GetCustomEvent(mCustomEventID);
 	}
 
 	bool operator==(const CustomEventFacade& a, const CustomEventFacade& b)

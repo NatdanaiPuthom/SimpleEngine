@@ -44,11 +44,11 @@ namespace FLY_NAMESPACE
 
 			const Pin& destinationPin = aDestinationNodeGraph.mPins[destinationPinID];
 
-			const PinType& outputPinType = Global::GetPinTypeManager().GetPinType(destinationPin.mTypeID);
+			const PinType& outputPinType = Internal::GetPinTypeManager().GetPinType(destinationPin.mTypeID);
 
 			const PinID sourcePinID = aSource[i];
 			const Pin& sourcePin = aSourceNodeGraph.mPins[sourcePinID];
-			[[maybe_unused]] const PinType& sourcePinType = Global::GetPinTypeManager().GetPinType(sourcePin.mTypeID);
+			[[maybe_unused]] const PinType& sourcePinType = Internal::GetPinTypeManager().GetPinType(sourcePin.mTypeID);
 
 			outputPinType.mSetPinValueFunction(SetPinValueData
 				{ 

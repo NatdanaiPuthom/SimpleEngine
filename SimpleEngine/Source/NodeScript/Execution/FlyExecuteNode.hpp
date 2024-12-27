@@ -4,10 +4,10 @@
 #include "../Node/FlyNodeTypeManager.hpp"
 #include "FlyInternalExecutionContext.hpp"
 #include "FlyExecutionTypes.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../SystemTypes/FlyReferenceWrapper.hpp"
 #include "../Instance/FlyNodeGraphInstance.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -22,7 +22,7 @@ namespace FLY_NAMESPACE
 		{
 			const PinID outputPinID = aOutputPinIDs[Index];
 			const Pin& pin = aContext.mNodeData.mNodeRef.GetNodeGraph().mPins[outputPinID];
-			const PinType& pinType = Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+			const PinType& pinType = Internal::GetPinTypeManager().GetPinType(pin.mTypeID);
 			assert(pinType.mFlowType == eFlowType::Output);
 
 			const void* dataPtr = &std::get<Index>(aOutputValues);
@@ -48,9 +48,9 @@ namespace FLY_NAMESPACE
 	void CallFunction(InternalExecutionContext& aContext, TypeList<OutputTypes...>, TypeList<InputTypes...>)
 	{
 		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext.mNodeData.mNodeRef.GetNodeID()];
-		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
-		MemoryPool& foundationMemoryPool = Global::Internal::GetMemoryPool();
+		MemoryPool& foundationMemoryPool = Internal::GetMemoryPool();
 
 		MemoryPoolID functionMemoryID = nodeType.mNodeRecipe.mFunctionMemoryID;
 		Callable& callable = foundationMemoryPool.At<Callable>(functionMemoryID);
@@ -111,9 +111,9 @@ namespace FLY_NAMESPACE
 	{
 
 		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext.mNodeData.mNodeRef.GetNodeID()];
-		const NodeType& nodeType = Global::GetNodeTypeManager().GetNodeType(node.mTypeID);
+		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
-		MemoryPool& foundationMemoryPool = Global::Internal::GetMemoryPool();
+		MemoryPool& foundationMemoryPool = Internal::GetMemoryPool();
 
 		MemoryPoolID functionMemoryID = nodeType.mNodeRecipe.mFunctionMemoryID;
 		Callable& callable = foundationMemoryPool.At<Callable>(functionMemoryID);

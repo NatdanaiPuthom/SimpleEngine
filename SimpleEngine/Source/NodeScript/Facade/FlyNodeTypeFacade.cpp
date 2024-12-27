@@ -1,6 +1,6 @@
 #include "FlyNodeTypeFacade.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
-#include "../Global/FlyGlobal.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -16,12 +16,12 @@ namespace FLY_NAMESPACE
 
 	std::string NodeTypeFacade::GetShortName() const
 	{
-		return Global::GetNodeTypeManager().GetShortName(mNodeTypeID);
+		return Internal::GetNodeTypeManager().GetShortName(mNodeTypeID);
 	}
 
 	std::string NodeTypeFacade::GetNameDirectory() const
 	{
-		return Global::GetNodeTypeManager().GetNameDirectory(mNodeTypeID);
+		return Internal::GetNodeTypeManager().GetNameDirectory(mNodeTypeID);
 	}
 
 	eNodeTrait NodeTypeFacade::GetTraits() const
@@ -48,7 +48,7 @@ namespace FLY_NAMESPACE
 	{
 		std::vector<DataTypeFacade> dataTypeFacades;
 
-		auto& dataTypes = Global::GetNodeTypeManager().GetTemplateMapByOperator(GetNodeType().mNodeRecipe.mOperatorTrait);
+		auto& dataTypes = Internal::GetNodeTypeManager().GetTemplateMapByOperator(GetNodeType().mNodeRecipe.mOperatorTrait);
 		dataTypeFacades.reserve(dataTypes.size());
 		for (auto& [dataTypeID, nodeTypeID] : dataTypes)
 		{
@@ -73,14 +73,9 @@ namespace FLY_NAMESPACE
 		return mNodeTypeID == aOther.mNodeTypeID;
 	}
 
-	bool NodeTypeFacade::operator!=(const NodeTypeFacade& aOther) const
-	{
-		return !(*this == aOther);
-	}
-
 	const NodeType& NodeTypeFacade::GetNodeType() const
 	{
-		return Global::GetNodeTypeManager().GetNodeType(mNodeTypeID);
+		return Internal::GetNodeTypeManager().GetNodeType(mNodeTypeID);
 	}
 
 	std::vector<PinTypeFacade> NodeTypeFacade::GetPinTypes(const eFlowType aFlowType) const

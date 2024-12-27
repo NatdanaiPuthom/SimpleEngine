@@ -15,7 +15,7 @@ namespace FLY_NAMESPACE
 
 	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
 	{
-		NodeTypeID id = mNodeTypes.size();
+		NodeTypeID id{ mNodeTypes.size() };
 		mNodeTypes.emplace_back(std::move(aNodeType));
 		Assert();
 
@@ -45,13 +45,13 @@ namespace FLY_NAMESPACE
 
 	Node NodeTypeManager::CreateSetterNode(NodeGraph& aNodeGraph, const NodeID aNodeID, const DataTypeID aDataTypeID)
 	{
-		NodeTypeID typeID = mSetterNodeTypeIDs.at(aDataTypeID);
+		const NodeTypeID typeID = mSetterNodeTypeIDs.at(aDataTypeID);
 		return CreateNode(aNodeGraph, aNodeID, typeID);
 	}
 
 	Node NodeTypeManager::CreateOperatorNode(NodeGraph& aNodeGraph, const NodeID aNodeID, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID)
 	{
-		const std::unordered_map<size_t, NodeTypeID>& operatorNodes = mTemplateNodeTypeIDMap.at(aOperatorTrait);
+		const std::unordered_map<DataTypeID, NodeTypeID>& operatorNodes = mTemplateNodeTypeIDMap.at(aOperatorTrait);
 		const NodeTypeID typeID = operatorNodes.at(aDataTypeID);
 		return CreateNode(aNodeGraph, aNodeID, typeID);
 	}
@@ -142,14 +142,14 @@ namespace FLY_NAMESPACE
 
 	NodeTypeID NodeTypeManager::GetTypeID(std::string_view aName)
 	{
-		for (NodeTypeID id = 0; id < mNodeTypes.size(); ++id)
+		for (NodeTypeID id{ 0 }; id < mNodeTypes.size(); ++id)
 		{
 			if (GetShortName(id) == aName)
 			{
 				return id;
 			}
 		}
-		return 0;
+		return NodeTypeID{};
 	}
 
 	const std::string& NodeTypeManager::GetFullName(const NodeTypeID anID) const
@@ -217,7 +217,7 @@ namespace FLY_NAMESPACE
 	{
 		NodeRecipe recipe
 		{
-			.mCreateFunction = [](const NodeID, const NodeTypeID, NodeGraph&)->Node {return Node(0, std::array<PinID, 0>(), std::array<PinID, 0>()); },
+			.mCreateFunction = [](const NodeID, const NodeTypeID, NodeGraph&)->Node {return Node(NodeTypeID{ 0 }, std::array<PinID, 0>(), std::array<PinID, 0>()); },
 			.mExecuteFunction = [](const NodeExecutionData&, InternalExecutionContext&) {},
 			.mTraits = eNodeTrait::Invalid,
 			.mName = "Invalid Node"

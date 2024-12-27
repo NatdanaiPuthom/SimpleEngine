@@ -1,6 +1,5 @@
 #include "FlyPinFacade.hpp"
 #include "../Graph/FlyNodeGraph.hpp"
-#include "../Global/FlyGlobal.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
 #include "FlyNodeGraphFacade.hpp"
@@ -31,7 +30,7 @@ namespace FLY_NAMESPACE
 		const PinType& pinType = GetPinType();
 		if (pinType.mName == TypeIdentifierStr)
 		{
-			return Global::GetDataTypeManager().GetName(pinType.mDataTypeID);
+			return Internal::GetDataTypeManager().GetName(pinType.mDataTypeID);
 		}
 		return pinType.mName;
 	}
@@ -94,7 +93,7 @@ namespace FLY_NAMESPACE
 		const NodeGraph& nodeGraph = aNodeGraphFacade.GetNodeGraph();
 		pinFacades.reserve(nodeGraph.mPins.size());
 
-		for (PinID pinID = 0; pinID < nodeGraph.mPins.size(); ++pinID)
+		for (PinID pinID{ 0 }; pinID < nodeGraph.mPins.size(); ++pinID)
 		{
 			const Pin& pin = nodeGraph.mPins[pinID];
 			if (aPredicate(pin))
@@ -113,7 +112,7 @@ namespace FLY_NAMESPACE
 		return GetPinFacadesFiltered(
 			[flowType, dataTypeID](const Pin& aPin) -> bool
 			{
-				const PinType& pinType = Global::GetPinTypeManager().GetPinType(aPin.mTypeID);
+				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(aPin.mTypeID);
 				const bool a = aPin.mConnectedPinIDs.empty() && pinType.mFlowType == InvertFlowType(flowType);
 
 				return a && Internal::AreDataTypesLinkable(SelectByFlowType(flowType, dataTypeID, pinType.mDataTypeID), SelectByFlowType(flowType, pinType.mDataTypeID, dataTypeID));
@@ -185,7 +184,7 @@ namespace FLY_NAMESPACE
 	const PinType& PinFacade::GetPinType() const
 	{
 		const Pin& pin = GetPin();
-		return Global::GetPinTypeManager().GetPinType(pin.mTypeID);
+		return Internal::GetPinTypeManager().GetPinType(pin.mTypeID);
 	}
 
 	bool operator==(const PinFacade& a, const PinFacade& b)

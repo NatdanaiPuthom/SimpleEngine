@@ -10,7 +10,7 @@ namespace FLY_NAMESPACE
 	{
 		const Node& callerNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
 
-		NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
+		NodeTypeManager& nodeTypeManager = Internal::GetNodeTypeManager();
 		const FunctionID functionID = nodeTypeManager.GetFunctionID(callerNode.mTypeID);
 		Function& function = nodeTypeManager.GetFunction(functionID);
 		const Node& inputNode = function.mNodeGraph.mNodes[function.mInputNodeID];
@@ -32,7 +32,7 @@ namespace FLY_NAMESPACE
 	{
 		const Node& outputNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
 
-		const NodeTypeManager& nodeTypeManager = Global::GetNodeTypeManager();
+		const NodeTypeManager& nodeTypeManager = Internal::GetNodeTypeManager();
 		const FunctionID functionID = nodeTypeManager.GetFunctionID(outputNode.mTypeID);
 		const Function& function = nodeTypeManager.GetFunction(functionID);
 

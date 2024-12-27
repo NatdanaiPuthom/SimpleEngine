@@ -1,6 +1,10 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "FlyDataType.hpp"
+#include "FlyStruct.hpp"
+#include "../Instance/FlyStructInstance.hpp"
+#include "FlyClass.hpp"
+#include "../Instance/FlyClassInstance.hpp"
 #include "../Utilities/FlyMeta.hpp"
 #include "../Utilities/FlyUtilities.hpp"
 #include "../Memory/FlyMemoryArena.hpp"
@@ -371,18 +375,29 @@ namespace FLY_NAMESPACE
 		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr) const;
 
 		template<size_t BufferCapacity>
-		void* AllocateData(DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* aDefaultValue = nullptr) const;
+		[[nodiscard]] void* AllocateData(DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& aArena, const void* aDefaultValue = nullptr) const;
+
+		template<size_t BufferCapacity>
+		[[nodiscard]] StructInstance* AllocateStructInstance(StructID aStructID, MemoryArena<BufferCapacity>& aArena) const;
+
+		template<size_t BufferCapacity>
+		[[nodiscard]] ClassInstance* AllocateClassInstance(ClassID aClassID, MemoryArena<BufferCapacity>& aArena) const;
+
 
 		void ReleaseData(DataTypeID aDataTypeID, void* aDataPtr) const;
 
 		void CopyData(DataTypeID aDataTypeID, void* aDestination, const void* aSource) const;
 		void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2) const;
-		bool DataEqualsTo(DataTypeID aDataTypeID, const void* aDataPtr1, const void* aDataPtr2) const;
+		[[nodiscard]] bool DataEqualsTo(DataTypeID aDataTypeID, const void* aDataPtr1, const void* aDataPtr2) const;
 
-		bool AreDataTypesRelated(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const;
+		template<size_t BufferCapacity>
+		[[nodiscard]] void* AllocateDataGeneric(GenericDataTypeID aDataTypeID, MemoryArena<BufferCapacity>& aArena, const void* aDefaultValue = nullptr) const;
+
+
+		[[nodiscard]] bool AreDataTypesRelated(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const;
 		[[nodiscard]] eDataTypeRelation GetDataTypeRelation(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const;
 
-		const std::string& GetName(DataTypeID aDataTypeID) const;
+		[[nodiscard]] const std::string& GetName(DataTypeID aDataTypeID) const;
 
 		[[nodiscard]] SetPinValueInterface GetSetPinValueInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
 		[[nodiscard]] SetPinValueFromPinInterface GetSetPinValueFromPinInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
@@ -391,7 +406,7 @@ namespace FLY_NAMESPACE
 
 		void SetEditorNullptrFunction(void(*aFunction)());
 
-		const std::unordered_map<DataTypeID, DataType>& GetDataTypes() const;
+		[[nodiscard]] const std::unordered_map<DataTypeID, DataType>& GetDataTypes() const;
 
 		[[nodiscard]] DataType* Find(DataTypeID aDataTypeID);
 		[[nodiscard]] const DataType* Find(DataTypeID aDataTypeID) const;
@@ -418,6 +433,18 @@ namespace FLY_NAMESPACE
 		void Register(const std::string& aName, bool aIsTargetable);
 
 
+		StructID CreateStruct(std::string_view aName);
+		[[nodiscard]] Struct& GetStruct(StructID aStructID);
+		[[nodiscard]] const Struct& GetStruct(StructID aStructID) const;
+		[[nodiscard]] StructID GetStructIDByName(std::string_view aName) const;
+		[[nodiscard]] const std::vector<HeapObject<Struct>>& GetStructs() const;
+
+		ClassID CreateClass(DataTypeID aTargetID, std::string_view aName);
+		[[nodiscard]] Class& GetClass(ClassID aClassID);
+		[[nodiscard]] const Class& GetClass(ClassID aClassID) const;
+		[[nodiscard]] ClassID GetClassIDByName(std::string_view aName) const;
+		[[nodiscard]] const std::vector<HeapObject<Class>>& GetClasses() const;
+
 	private:
 
 		template<template<typename> typename TemplateType>
@@ -439,6 +466,8 @@ namespace FLY_NAMESPACE
 
 		std::unordered_map<DataTypeID, DataType> mDataTypes;
 		std::unordered_map<DataTypeID, TemplateDataType> mTemplateDataTypes;
+		std::vector<HeapObject<Struct>> mStructs;
+		std::vector<HeapObject<Class>> mClasses;
 
 		std::string mNullNameStr;
 		Fly::Color mDefaultColor = Color(1.000f, 0.131f, 0.978f, 1.000f);
@@ -539,7 +568,7 @@ namespace FLY_NAMESPACE
 			.mTypeTraits = typeTraits,
 		};
 
-		auto [it, success] = mDataTypes.emplace(typeInfo.hash_code(), dataType);
+		auto [it, success] = mDataTypes.emplace(GetDataTypeID<T>(), dataType);
 		if (!success && aName != it->second.mName)
 		{
 			throw std::runtime_error("Two data types have the same hash value");
@@ -575,24 +604,57 @@ namespace FLY_NAMESPACE
 	}
 
 	template<size_t BufferCapacity>
-	inline void* DataTypeManager::AllocateData(const DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& anArena, const void* const aDefaultValue) const
+	inline void* DataTypeManager::AllocateData(const DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& aArena, const void* const aDefaultValue) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
 			if (dataType->mInterface.fundamental.allocate)
 			{
-				void* dataPtr = anArena.AllocateSize(dataType->mSize);
+				void* dataPtr = aArena.AllocateSize(dataType->mSize);
 				dataType->mInterface.fundamental.allocate(dataPtr, aDefaultValue);
 
 				if (HasNotFlag(dataType->mTypeTraits, eDataTypeTrait::TriviallyCopyable))
 				{
-					anArena.RegisterMemoryObject(dataPtr, aDataTypeID);
+					aArena.RegisterMemoryObject(dataPtr, aDataTypeID);
 				}
 
 				return dataPtr;
 			}
 		}
 		return nullptr;
+	}
+
+	template<size_t BufferCapacity>
+	inline StructInstance* DataTypeManager::AllocateStructInstance(const StructID aStructID, MemoryArena<BufferCapacity>& aArena) const
+	{
+		const Struct& s = GetStruct(aStructID);
+		return &aArena.Allocate<StructInstance>(s);
+	}
+
+	template<size_t BufferCapacity>
+	inline ClassInstance* DataTypeManager::AllocateClassInstance(const ClassID aClassID, MemoryArena<BufferCapacity>& aArena) const
+	{
+		return &aArena.Allocate<ClassInstance>(aClassID);
+	}
+
+	template<size_t BufferCapacity>
+	inline void* DataTypeManager::AllocateDataGeneric(const GenericDataTypeID aDataTypeID, MemoryArena<BufferCapacity>& aArena, const void* aDefaultValue) const
+	{
+		return std::visit(Visitor{
+			[this, &aArena, aDefaultValue](const DataTypeID aDataTypeID) -> void*
+			{
+				return AllocateData(aDataTypeID, aArena, aDefaultValue);
+			},
+			[this, &aArena](const StructID aStructID) -> void*
+			{
+				return AllocateStructInstance(aStructID, aArena);
+			},
+			[this, &aArena](const ClassID aClassID) -> void*
+			{
+				return AllocateClassInstance(aClassID, aArena);
+			}
+			}, aDataTypeID.mID
+		);
 	}
 
 	template<typename T>

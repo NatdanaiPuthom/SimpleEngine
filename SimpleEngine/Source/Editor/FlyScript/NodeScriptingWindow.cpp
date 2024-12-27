@@ -161,7 +161,8 @@ namespace Editor
 				{
 					std::vector<Fly::NodeID> selectedNodes(numSelectedNodes);
 
-					ImNodes::GetSelectedNodes(selectedNodes.data());
+
+					ImNodes::GetSelectedNodes(reinterpret_cast<int*>(selectedNodes.data()));
 
 					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().myNodeGraphFacade);
 				}
@@ -181,7 +182,7 @@ namespace Editor
 				{
 					std::vector<Fly::NodeID> selectedNodes(numSelectedNodes);
 
-					ImNodes::GetSelectedNodes(selectedNodes.data());
+					ImNodes::GetSelectedNodes(reinterpret_cast<int*>(selectedNodes.data()));
 
 					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().myNodeGraphFacade);
 					GetNodeContext().myNodeGraphFacade.DestroySelection(selectedNodes, {}, nullptr);
@@ -197,7 +198,7 @@ namespace Editor
 				mySearchNodeData.myCurrentIndex++;
 			}
 
-			bool& isDebugging = Fly::Global::IsDebugging();
+			bool& isDebugging = Fly::IsDebugging();
 
 			ImGui::Checkbox("Debug", &isDebugging);
 
@@ -505,7 +506,7 @@ namespace Editor
 					nodeLabel = nodeFacade.GetNodeTypeFacade().GetShortName();
 				}
 
-				if (Fly::Global::IsDebugging())
+				if (Fly::IsDebugging())
 				{
 					nodeLabel += ", ID: " + std::to_string(nodeFacade.GetID());
 				}
@@ -573,7 +574,7 @@ namespace Editor
 					std::string pinLabel = aInputPinFacade.GetPinTypeName();
 					if (!pinLabel.empty())
 					{
-						if (Fly::Global::IsDebugging())
+						if (Fly::IsDebugging())
 						{
 							pinLabel += ", " + std::to_string(aInputPinFacade.GetID());
 						}
@@ -637,7 +638,7 @@ namespace Editor
 					const float plusWidth = std::max(nodeWidthLeft + extraWidth, nodeNameWidth - nodeWidthRight);
 					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + plusWidth + extraWidth + nodeWidthRight - ImGui::CalcTextSize(pinLabel.c_str()).x);
 
-					if (Fly::Global::IsDebugging())
+					if (Fly::IsDebugging())
 					{
 						pinLabel += ", " + std::to_string(outputPinFacade.GetID());
 					}
@@ -740,7 +741,7 @@ namespace Editor
 		}
 
 		Fly::NodeID hoveredNodeID = Fly::InvalidID<Fly::NodeID>();
-		if (ImNodes::IsNodeHovered(&hoveredNodeID) && ImGui::IsKeyPressed(ImGuiKey_MouseRight))
+		if (ImNodes::IsNodeHovered(&hoveredNodeID.mID) && ImGui::IsKeyPressed(ImGuiKey_MouseRight))
 		{
 			myClickedNodeFacade = Fly::NodeFacade(hoveredNodeID, currentNodeContext.myNodeGraphFacade);
 
@@ -792,7 +793,7 @@ namespace Editor
 		}
 
 		Fly::PinID hoveredPinID;
-		if (ImNodes::IsPinHovered(&hoveredPinID) && ImGui::IsKeyPressed(ImGuiKey_MouseRight))
+		if (ImNodes::IsPinHovered(&hoveredPinID.mID) && ImGui::IsKeyPressed(ImGuiKey_MouseRight))
 		{
 			myClickedPinFacade = Fly::PinFacade(hoveredPinID, currentNodeContext.myNodeGraphFacade);
 
@@ -869,10 +870,10 @@ namespace Editor
 
 		// See if links should be created
 
-		Fly::PinID createdLinkPinID1 = Fly::InvalidID<Fly::PinID>();
-		Fly::PinID createdLinkPinID2 = Fly::InvalidID<Fly::PinID>();
+		Fly::PinID createdLinkPinID1;
+		Fly::PinID createdLinkPinID2;
 
-		if (ImNodes::IsLinkCreated(&createdLinkPinID1, &createdLinkPinID2))
+		if (ImNodes::IsLinkCreated(&createdLinkPinID1.mID, &createdLinkPinID2.mID))
 		{
 			currentNodeContext.myNodeGraphFacade.TryCreateLink(Fly::PinFacade(createdLinkPinID1, GetNodeContext().myNodeGraphFacade), Fly::PinFacade(createdLinkPinID2, GetNodeContext().myNodeGraphFacade), myCommandTracker.get());
 			currentNodeContext.myPinFacadesToHighlight.clear();
@@ -887,12 +888,12 @@ namespace Editor
 
 			if (!selectedLinks.empty())
 			{
-				ImNodes::GetSelectedLinks(selectedLinks.data());
+				ImNodes::GetSelectedLinks(reinterpret_cast<int*>(selectedLinks.data()));
 			}
 
 			if (!selectedNodes.empty())
 			{
-				ImNodes::GetSelectedNodes(selectedNodes.data());
+				ImNodes::GetSelectedNodes(reinterpret_cast<int*>(selectedNodes.data()));
 			}
 
 			if (!selectedLinks.empty() || !selectedNodes.empty())
@@ -905,27 +906,29 @@ namespace Editor
 		}
 
 		// Highlight pins
-		Fly::PinID startedPinID = Fly::InvalidID<Fly::PinID>();
-		if (ImNodes::IsLinkStarted(&startedPinID))
 		{
-			currentNodeContext.myStartedLinkPinID = startedPinID;
+			Fly::PinID startedPinID;
+			if (ImNodes::IsLinkStarted(&startedPinID.mID))
+			{
+				currentNodeContext.myStartedLinkPinID = startedPinID;
 
-			const Fly::PinFacade startedPin(startedPinID, currentNodeContext.myNodeGraphFacade);
+				const Fly::PinFacade startedPin(startedPinID, currentNodeContext.myNodeGraphFacade);
 
-			currentNodeContext.myPinFacadesToHighlight = startedPin.GetPotentialConnections();// GetNodeContext().myNodeGraphFacade.GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(InvertFlowType(startedPin.GetFlowType()), Fly::DataTypeFacade(startedPin.GetDataTypeID()));
+				currentNodeContext.myPinFacadesToHighlight = startedPin.GetPotentialConnections();// GetNodeContext().myNodeGraphFacade.GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(InvertFlowType(startedPin.GetFlowType()), Fly::DataTypeFacade(startedPin.GetDataTypeID()));
 
-			std::erase_if(currentNodeContext.myPinFacadesToHighlight,
-				[&](const Fly::PinFacade& aPinFacade)-> bool
-				{
-					return aPinFacade.GetID() == startedPin.GetID();
-				}
-			);
+				std::erase_if(currentNodeContext.myPinFacadesToHighlight,
+					[&](const Fly::PinFacade& aPinFacade)-> bool
+					{
+						return aPinFacade.GetID() == startedPin.GetID();
+					}
+				);
+			}
 		}
 
 		// Dropped link
 		Fly::PinID droppedPinID = Fly::InvalidID<Fly::PinID>();
 
-		if (ImNodes::IsLinkDropped(&droppedPinID))
+		if (ImNodes::IsLinkDropped(&droppedPinID.mID))
 		{
 			ImGui::OpenPopup(NODE_SEARCH_POPUP_NAME);
 			currentNodeContext.myLinkCreationPinID = droppedPinID;
@@ -975,7 +978,7 @@ namespace Editor
 			mySearchNodeData.myOnClickFunction = onClickCallback;
 		}
 
-		if (Fly::Global::IsDebugging())
+		if (Fly::IsDebugging())
 		{
 
 			if (ImGui::Begin("Debug Data"))

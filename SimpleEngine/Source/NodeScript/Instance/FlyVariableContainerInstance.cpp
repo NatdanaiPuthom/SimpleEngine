@@ -1,7 +1,7 @@
 #include "FlyVariableContainerInstance.hpp"
 #include "../DataType/FlyVariableContainer.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
-#include "../Global/FlyGlobal.hpp"
+#include "../Internal/FlyInternal.hpp"
 #include "../Memory/FlyMemoryArena.hpp"
 
 namespace FLY_NAMESPACE
@@ -11,12 +11,12 @@ namespace FLY_NAMESPACE
 		: mVariableContainer(&aVariableContainer)
 		, mVariableInstances(aVariableContainer.mVariables.size())
 	{
-		for (VarID varID = 0; varID < aVariableContainer.mVariables.size(); ++varID)
+		for (VarID varID{ 0 }; varID < aVariableContainer.mVariables.size(); ++varID)
 		{
 			const Variable& variable = aVariableContainer.mVariables[varID];
 			VariableInstance& variableInstance = mVariableInstances[varID];
-			variableInstance.mDefaultValueDataPtr = Global::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
-			variableInstance.mRuntimeValueDataPtr = Global::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
+			variableInstance.mDefaultValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
+			variableInstance.mRuntimeValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
 		}
 	}
 
@@ -54,23 +54,58 @@ namespace FLY_NAMESPACE
 	{
 		const size_t previousSize = mVariableInstances.size();
 		mVariableInstances.resize(mVariableContainer->mVariables.size());
-		for (VarID varID = previousSize; varID < mVariableContainer->mVariables.size(); ++varID)
+		for (VarID varID{ previousSize }; varID < mVariableContainer->mVariables.size(); ++varID)
 		{
 			const Variable& variable = mVariableContainer->mVariables[varID];
 			VariableInstance& variableInstance = mVariableInstances[varID];
 
-			variableInstance.mDefaultValueDataPtr = Global::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
-			variableInstance.mRuntimeValueDataPtr = Global::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
+			variableInstance.mDefaultValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
+			variableInstance.mRuntimeValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
 		}
 	}
 
 	void VariableContainerInstance::InitRuntime()
 	{
-		for (VarID varID = 0; varID < mVariableContainer->mVariables.size(); ++varID)
+		for (VarID varID{ 0 }; varID < mVariableContainer->mVariables.size(); ++varID)
 		{
 			const Variable& variable = mVariableContainer->mVariables[varID];
 			VariableInstance& variableInstance = mVariableInstances[varID];
-			Global::GetDataTypeManager().CopyData(variable.mDataTypeID, variableInstance.mRuntimeValueDataPtr, variableInstance.mDefaultValueDataPtr);
+			Internal::GetDataTypeManager().CopyData(variable.mDataTypeID, variableInstance.mRuntimeValueDataPtr, variableInstance.mDefaultValueDataPtr);
 		}
+	}
+
+	bool operator==(const VariableContainerInstance& a, const VariableContainerInstance& b)
+	{
+		if (a.mVariableContainer == nullptr && b.mVariableContainer == nullptr)
+		{
+			return true;
+		}
+
+		if (a.mVariableInstances.size() != b.mVariableInstances.size())
+		{
+			return false;
+		}
+
+		for (size_t i = 0; i < a.mVariableInstances.size(); i++)
+		{
+			const VariableInstance& variableInstanceA = a.mVariableInstances[i];
+			const VariableInstance& variableInstanceB = b.mVariableInstances[i];
+
+			const Variable& variableA = a.mVariableContainer->mVariables[i];
+			const Variable& variableB = b.mVariableContainer->mVariables[i];
+
+			if (variableA.mDataTypeID != variableB.mDataTypeID)
+			{
+				return false;
+			}
+
+			if (!Internal::GetDataTypeManager().DataEqualsTo(variableA.mDataTypeID, variableInstanceA.mDefaultValueDataPtr, variableInstanceB.mDefaultValueDataPtr))
+			{
+				return false;
+			}
+
+		}
+
+		return false;
 	}
 }

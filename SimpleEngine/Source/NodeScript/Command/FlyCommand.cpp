@@ -1,12 +1,12 @@
 #include "FlyCommand.hpp"
-#include "../Global/FlyGlobal.hpp"
+#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
 
 	void Command::DoCommand() const
 	{
-		if (Global::IsDebugging())
+		if (Internal::IsDebugging())
 		{
 			std::cout << "Do Command: " << mName << std::endl;
 		}
@@ -15,7 +15,7 @@ namespace FLY_NAMESPACE
 
 	void Command::UndoCommand() const
 	{
-		if (Global::IsDebugging())
+		if (Internal::IsDebugging())
 		{
 			std::cout << "Undo Command: " << mName << std::endl;
 		}

@@ -12,7 +12,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
-		FunctionFacade();
+		FunctionFacade() = default;
 		explicit FunctionFacade(FunctionID aFunctionID);
 
 		const std::string& GetName() const;
@@ -41,6 +41,6 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		FunctionID mFunctionID;
+		FunctionID mFunctionID = InvalidID<FunctionID>();
 	};
 }

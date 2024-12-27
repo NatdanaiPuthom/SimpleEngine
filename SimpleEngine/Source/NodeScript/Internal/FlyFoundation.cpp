@@ -4,7 +4,6 @@
 #include "FlyDataTypes.hpp"
 #include "Serialization/FlySerializer.hpp"
 #include "Execution/FlyNodeExecutor.hpp"
-#include "Type/FlyTypeManager.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -28,48 +27,9 @@ namespace FLY_NAMESPACE
 
 	void Foundation::Initialize()
 	{
-		mTypeManager.GetNodeTypeManager().Assert();
+		mNodeTypeManager.Assert();
 
 		Internal::InitializeSubPins();
-	}
-
-	void Foundation::ClearClasses()
-	{
-		mClasses.clear();
-	}
-
-	StructID Foundation::CreateStruct(const std::string_view aName)
-	{
-		StructID id{ mStructs.size() };
-		mStructs.emplace_back(HeapObject<Struct>(aName));
-		return id;
-	}
-
-	ClassID Foundation::CreateClass(const DataTypeID aTargetID, const std::string_view aName)
-	{
-		ClassID id{ mClasses.size() };
-		mClasses.emplace_back(HeapObject<Class>(aTargetID, std::string(aName)));
-		return id;
-	}
-
-	void Foundation::DestroyClass(Class& aClass)
-	{
-		std::erase_if(mClasses, [&aClass](HeapObject<Class>& aClassIter) -> bool { return &aClass == &*aClassIter; });
-	}
-
-	Struct& Foundation::GetStruct(const StructID aID)
-	{
-		return *mStructs[aID];
-	}
-
-	const std::vector<HeapObject<Class>>& Foundation::GetClasses() const
-	{
-		return mClasses;
-	}
-
-	TypeManager& Foundation::GetTypeManager()
-	{
-		return mTypeManager;
 	}
 
 	NodeExecutor& Foundation::GetNodeExecutor()

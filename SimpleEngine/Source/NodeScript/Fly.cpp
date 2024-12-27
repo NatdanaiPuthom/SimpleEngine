@@ -34,7 +34,7 @@ namespace FLY_NAMESPACE
 	StructFacade CreateStruct(std::string_view aName, std::string_view aSavePath)
 	{
 		StructID structID = Internal::CreateStruct(aName);
-		Internal::SaveStruct(Global::GetFoundation().GetStruct(structID), aSavePath);
+		Internal::SaveStruct(Internal::GetStructByID(structID), aSavePath);
 		return StructFacade(structID);
 	}
 
@@ -53,22 +53,12 @@ namespace FLY_NAMESPACE
 
 	StructFacade FindStructByName(const std::string_view aName)
 	{
-		auto& structs = Global::GetFoundation().mStructs;
-
-		for (size_t i = 0; i < structs.size(); i++)
-		{
-			if (structs[i]->mName == aName)
-			{
-				return StructFacade(StructID{ i });
-			}
-		}
-
-		return StructFacade();
+		return StructFacade{ Internal::GetDataTypeManager().GetStructIDByName(aName) };
 	}
 
 	ClassFacade FindClassByName(const std::string_view aName)
 	{
-		auto& classes = Global::GetFoundation().mClasses;
+		auto& classes = Internal::GetDataTypeManager().GetClasses();
 
 		for (size_t i = 0; i < classes.size(); ++i)
 		{
@@ -85,12 +75,12 @@ namespace FLY_NAMESPACE
 
 	void SetDefaultDataTypeColor(const Fly::Color& aColor)
 	{
-		Global::GetDataTypeManager().SetDefaultColor(aColor);
+		Internal::GetDataTypeManager().SetDefaultColor(aColor);
 	}
 
 	void SetEditorNullptrFunction(void(*aFunction)())
 	{
-		Global::GetDataTypeManager().SetEditorNullptrFunction(aFunction);
+		Internal::GetDataTypeManager().SetEditorNullptrFunction(aFunction);
 	}
 
 	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraphFacade aCopiedFromNodeGraphFacade)
@@ -100,7 +90,7 @@ namespace FLY_NAMESPACE
 			return;
 		}
 		const NodeGraph& copiedFromNodeGraph = aCopiedFromNodeGraphFacade.GetNodeGraph();
-		EventGraph& eventGraphCopy = Global::Internal::GetNodeGraphCopy();
+		EventGraph& eventGraphCopy = Internal::GetNodeGraphCopy();
 		eventGraphCopy = EventGraph{};
 
 		NodeGraph& nodeGraphCopy = eventGraphCopy.mNodeGraph;
@@ -135,7 +125,7 @@ namespace FLY_NAMESPACE
 			for (const PinID copiedInputPinID : copiedNode.mInputPins)
 			{
 				const Pin& copiedInputPin = Internal::GetPin(copiedInputPinID, copiedFromNodeGraph);
-				const PinType& copiedInputPinType = Global::GetPinTypeManager().GetPinType(copiedInputPin.mTypeID);
+				const PinType& copiedInputPinType = Internal::GetPinTypeManager().GetPinType(copiedInputPin.mTypeID);
 
 				const NodeID createdNodeID = nodeConverter.at(copiedNodeID);
 				const PinID createdInputPinID = Internal::GetOpposingPinID(copiedFromNodeGraph, copiedInputPinID, nodeGraphCopy, createdNodeID);
@@ -163,14 +153,14 @@ namespace FLY_NAMESPACE
 
 				Pin& createdInputPin = Internal::GetPin(createdInputPinID, nodeGraphCopy);
 
-				Global::GetDataTypeManager().CopyData(copiedInputPinType.mDataTypeID, createdInputPin.mDataPtr, copiedInputPin.mDataPtr);
+				Internal::GetDataTypeManager().CopyData(copiedInputPinType.mDataTypeID, createdInputPin.mDataPtr, copiedInputPin.mDataPtr);
 			}
 		}
 	}
 
 	void PasteCopyBuffer(const Vec2 aPosition, NodeGraphFacade aTargetNodeGraphFacade, CommandTracker* const aCommandTracker)
 	{
-		const NodeGraph& nodeGraphCopy = Global::Internal::GetNodeGraphCopy().mNodeGraph;
+		const NodeGraph& nodeGraphCopy = Internal::GetNodeGraphCopy().mNodeGraph;
 
 		if (aCommandTracker)
 		{
@@ -181,18 +171,18 @@ namespace FLY_NAMESPACE
 
 		std::unordered_map<NodeID, NodeID> nodeConverter;
 
-		for (NodeID sourceNodeID = 0; sourceNodeID < nodeGraphCopy.mNodes.size(); sourceNodeID++)
+		for (NodeID sourceNodeID{ 0 }; sourceNodeID < nodeGraphCopy.mNodes.size(); sourceNodeID++)
 		{
 			const Node& node = nodeGraphCopy.mNodes.at(sourceNodeID);
 			const NodeID createdNodeID = Internal::CreateNode(aTargetNodeGraphFacade.GetVariant(), node.mTypeID, aPosition + node.mPosition, aCommandTracker);
 			nodeConverter.emplace(sourceNodeID, createdNodeID);
 
 			const Node& createdNode = Internal::GetNode(createdNodeID, targetNodeGraph);
-			DataTypeManager& dataTypeManager = Global::GetDataTypeManager();
+			DataTypeManager& dataTypeManager = Internal::GetDataTypeManager();
 			for (const PinID createdInputPinID : createdNode.mInputPins)
 			{
 				Pin& createdInputPin = Internal::GetPin(createdInputPinID, targetNodeGraph);
-				const PinType& createdInputPinType = Global::GetPinTypeManager().GetPinType(createdInputPin.mTypeID);
+				const PinType& createdInputPinType = Internal::GetPinTypeManager().GetPinType(createdInputPin.mTypeID);
 
 				const PinID sourcePinID = Internal::GetOpposingPinID(targetNodeGraph, createdInputPinID, nodeGraphCopy, sourceNodeID);
 				const Pin& sourcePin = nodeGraphCopy.mPins.at(sourcePinID);
@@ -251,9 +241,14 @@ namespace FLY_NAMESPACE
 		return pinFacades;
 	}
 
+	bool& IsDebugging()
+	{
+		return Internal::IsDebugging();
+	}
+
 	std::vector<DataTypeFacade> GetDataTypes()
 	{
-		const auto& dataTypes = Global::GetDataTypeManager().GetDataTypes();
+		const auto& dataTypes = Internal::GetDataTypeManager().GetDataTypes();
 		std::vector<DataTypeFacade> dataTypeFacades;
 		dataTypeFacades.reserve(dataTypes.size());
 
@@ -265,13 +260,18 @@ namespace FLY_NAMESPACE
 		return dataTypeFacades;
 	}
 
+	DataTypeFacade GetDataTypeFacadeByName(std::string_view aName)
+	{
+		return DataTypeFacade(Internal::GetDataTypeManager().GetDataTypeIDByName(std::string(aName)));
+	}
+
 	std::vector<NodeTypeFacade> GetNodeTypes()
 	{
-		const auto& nodeTypes = Global::GetNodeTypeManager().GetNodeTypes();
+		const auto& nodeTypes = Internal::GetNodeTypeManager().GetNodeTypes();
 		std::vector<NodeTypeFacade> views;
 		views.reserve(nodeTypes.size());
 
-		for (NodeTypeID nodeTypeID = 0; nodeTypeID < nodeTypes.size(); ++nodeTypeID)
+		for (NodeTypeID nodeTypeID{ 0 }; nodeTypeID < nodeTypes.size(); ++nodeTypeID)
 		{
 			views.push_back(NodeTypeFacade(nodeTypeID));
 		}
@@ -281,7 +281,7 @@ namespace FLY_NAMESPACE
 
 	std::vector<FunctionFacade> GetFunctions()
 	{
-		const auto& mFunctions = Global::GetNodeTypeManager().GetFunctions();
+		const auto& mFunctions = Internal::GetNodeTypeManager().GetFunctions();
 		std::vector<FunctionFacade> views;
 		views.reserve(mFunctions.size());
 
@@ -295,7 +295,7 @@ namespace FLY_NAMESPACE
 
 	std::vector<CustomEventFacade> GetCustomEvents()
 	{
-		const auto& customEvents = Global::GetNodeTypeManager().GetCustomEvents();
+		const auto& customEvents = Internal::GetNodeTypeManager().GetCustomEvents();
 		std::vector<CustomEventFacade> customEventFacades;
 		customEventFacades.reserve(customEvents.size());
 
@@ -310,7 +310,7 @@ namespace FLY_NAMESPACE
 	std::vector<LinkFacade> GetTraversedLinks()
 	{
 		std::vector<LinkFacade> linkFacades;
-		const std::vector<LinkRef> linkRefs = Global::GetNodeExecutor().GetDebugger().GetTraversedLinks();
+		const std::vector<LinkRef> linkRefs = Internal::GetNodeExecutor().GetDebugger().GetTraversedLinks();
 		linkFacades.reserve(linkRefs.size());
 
 		for (auto& linkRef : linkRefs)
@@ -325,9 +325,9 @@ namespace FLY_NAMESPACE
 	std::vector<NodeTypeFacade> GetNodeTypesFiltered(FilterFunction&& aFilter)
 	{
 		std::vector<NodeTypeFacade> facades;
-		const std::vector<NodeType>& nodeTypes = Global::GetNodeTypeManager().GetNodeTypes();
+		const std::vector<NodeType>& nodeTypes = Internal::GetNodeTypeManager().GetNodeTypes();
 		facades.reserve(nodeTypes.size());
-		for (NodeTypeID id = 0; id < nodeTypes.size(); id++)
+		for (NodeTypeID id{ 0 }; id < nodeTypes.size(); id++)
 		{
 			if (aFilter(nodeTypes[id]))
 			{
@@ -344,7 +344,7 @@ namespace FLY_NAMESPACE
 				const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, aNodeType.mNodeRecipe.mInputPinTypeIDs, aNodeType.mNodeRecipe.mOutputPinTypeIDs);
 				for (const PinTypeID pinTypeID : pinTypeIDs)
 				{
-					const PinType& pinType = Global::GetPinTypeManager().GetPinType(pinTypeID);
+					const PinType& pinType = Internal::GetPinTypeManager().GetPinType(pinTypeID);
 					if (pinType.mDataTypeID == aDataTypeID)
 					{
 						return true;
@@ -366,7 +366,7 @@ namespace FLY_NAMESPACE
 				const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, aNodeType.mNodeRecipe.mInputPinTypeIDs, aNodeType.mNodeRecipe.mOutputPinTypeIDs);
 				for (const PinTypeID pinTypeID : pinTypeIDs)
 				{
-					const PinType& pinType = Global::GetPinTypeManager().GetPinType(pinTypeID);
+					const PinType& pinType = Internal::GetPinTypeManager().GetPinType(pinTypeID);
 					const DataTypeID inputDataTypeID = SelectByFlowType(aFlowType, pinType.mDataTypeID, aDataTypeID);
 					const DataTypeID outputDataTypeID = SelectByFlowType(aFlowType, aDataTypeID, pinType.mDataTypeID);
 					if (Internal::AreDataTypesLinkable(inputDataTypeID, outputDataTypeID))
@@ -390,7 +390,7 @@ namespace FLY_NAMESPACE
 
 	std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> GetClasses()
 	{
-		auto& classes = Foundation::GetInstance().mClasses;
+		auto& classes = Internal::GetDataTypeManager().GetClasses();
 
 		std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> views;
 
@@ -402,9 +402,9 @@ namespace FLY_NAMESPACE
 		return views;
 	}
 
-	std::vector<ClassFacade> GetClassesByTargetDataType(DataTypeFacade aDataTypeFacade)
+	std::vector<ClassFacade> GetClassesByTargetDataType(const DataTypeFacade aDataTypeFacade)
 	{
-		auto& classes = Foundation::GetInstance().mClasses;
+		auto& classes = Internal::GetDataTypeManager().GetClasses();
 
 		std::vector<ClassFacade> views;
 
