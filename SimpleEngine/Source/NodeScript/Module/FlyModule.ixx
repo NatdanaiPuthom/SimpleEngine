@@ -1,4 +1,15 @@
-//export module FlyModule;
+export module MOD_NodeScript_FlyModule;
+
+import MOD_NodeScript_FlyCore;
+
+namespace FlyInternal
+{
+	export class NodeEmilTest
+	{
+	public:
+		int x = 0;
+	};
+}
 //
 //import FlyCore;
 //
