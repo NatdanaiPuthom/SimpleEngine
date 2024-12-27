@@ -89,7 +89,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 		libdirs { dirs.Lib	}
 
 	filter "configurations:Simple"
-		defines { "_SIMPLE" }
+		defines { "_SIMPLE", "NDEBUG" }
 		symbols "Off"
 		optimize "Full"
 		runtime "Release"
