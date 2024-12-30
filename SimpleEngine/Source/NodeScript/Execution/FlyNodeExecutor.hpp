@@ -15,7 +15,6 @@ namespace FLY_NAMESPACE
 	public:
 
 		NodeExecutor();
-		~NodeExecutor();
 
 		void ExecuteNode(const NodeExecutionData& aNodeExecutionData);
 		
@@ -28,7 +27,6 @@ namespace FLY_NAMESPACE
 
 
 		Debugger& GetDebugger();
-	
 
 	private:
 

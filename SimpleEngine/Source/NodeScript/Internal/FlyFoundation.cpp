@@ -1,9 +1,5 @@
 #include "FlyFoundation.hpp"
-#include "FlyClass.hpp"
 #include "NodeTypes/SystemNodes.hpp"
-#include "FlyDataTypes.hpp"
-#include "Serialization/FlySerializer.hpp"
-#include "Execution/FlyNodeExecutor.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -54,4 +50,8 @@ namespace FLY_NAMESPACE
 		}
 		return nodeIDs;
 	}
+
+	FLY_VALUETYPE(Wildcard, Colors::Gray);
+	FLY_VALUETYPE(Flow, eNodeOperatorTrait::None, Color(0.9f, 0.9f, 0.9f));
+	FLY_POINTERTYPE(None, Colors::Black);
 }

@@ -3,6 +3,7 @@
 #include "FlyNodeTypeManager.hpp"
 #include "FlyClassInstance.hpp"
 #include "../Internal/FlyInternal.hpp"
+#include "FlyNodeExecutionQueue.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -10,10 +11,6 @@ namespace FLY_NAMESPACE
 	NodeExecutor::NodeExecutor()
 	{
 		mExecutionContext.mNodeExecutor = this;
-	}
-
-	NodeExecutor::~NodeExecutor()
-	{
 	}
 
 	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
@@ -33,23 +30,37 @@ namespace FLY_NAMESPACE
 		mExecutionContext.mTarget = aTarget;
 		mExecutionContext.mNodeGraphVariantHandle = &c.mEventGraph;
 
+
+
+
 #ifdef FLY_DEBUG
 		if (aTarget == nullptr)
 		{
-			assert(c.mTargetID == GetDataTypeID<None>());
+			assert(c.mTargetID == GetDataTypeID<None*>());
 		}
 #endif
 
 		EventGraph& eventGraph = c.mEventGraph;
 		auto it = eventGraph.mEventNodes.find(anEventID);
 
-		if (it != eventGraph.mEventNodes.end())
+
+		if (it == eventGraph.mEventNodes.end())
 		{
-			for (const NodeID nodeID : it->second)
-			{
-				ExecuteNode(NodeExecutionData{ .mNodeRef = NodeRef(nodeID, eventGraph.mNodeGraph), .mTriggerReason = eNodeTriggerReason::Event });
-			}
+			return;
 		}
+
+
+		NodeExecutionQueue nodeExecutionQueue(*this);
+
+		mExecutionContext.mNodeExecutionQueue = &nodeExecutionQueue;
+
+		for (const NodeID nodeID : it->second)
+		{
+			nodeExecutionQueue.Push(NodeExecutionData{.mNodeRef = NodeRef{nodeID, eventGraph.mNodeGraph},
+				.mTriggerReason = eNodeTriggerReason::Event });
+		}
+
+		nodeExecutionQueue.Execute();
 	}
 
 	Debugger& NodeExecutor::GetDebugger()

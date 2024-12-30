@@ -1,16 +1,13 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyDataTypeFacade.hpp"
 
 namespace FLY_NAMESPACE
 {
-
-	class Class;
+	class StructFacade;
+	class DataTypeFacade;
 	class ClassFacade;
 	struct Variable;
 	class CommandTracker;
-	class StructFacade;
-	class VariableContainer;
 
 	class VariableFacade final
 	{
@@ -19,11 +16,13 @@ namespace FLY_NAMESPACE
 		VariableFacade() = default;
 		VariableFacade(VarID aVarID, const ClassFacade& aClassFacade);
 		VariableFacade(VarID aVarID, const StructFacade& aStructFacade);
+		VariableFacade(VarID aVarID, const DataTypeFacade& aDataTypeFacade);
 
-		[[nodiscard]] const std::string& GetName() const;
-		[[nodiscard]] DataTypeFacade GetDataType() const;
+		[[nodiscard]] std::string_view GetName() const;
+		[[nodiscard]] DataTypeID GetDataTypeID() const;
 		[[nodiscard]] bool IsDestroyed() const;
 		[[nodiscard]] VarID GetID() const;
+		[[nodiscard]] size_t GetByteOffset() const;
 
 		void SetName(std::string_view aName, CommandTracker* aCommandTracker);
 		void Destroy(CommandTracker* aCommandTracker);
@@ -34,10 +33,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		const Variable& GetVariable() const;
-	private:
-
 		VarID mVarID = InvalidID<VarID>();
-		VariableContainer* mOwner = nullptr;
+		GenericDataTypeID mOwnerID;
 	};
 }

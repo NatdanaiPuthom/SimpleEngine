@@ -21,6 +21,8 @@ namespace FLY_NAMESPACE
 			return CreatePinType(aName, aFlowType, GetDataTypeID<T>(), aSetPinValueFunction, aSetPinValueFromPinInterface, aDefaultValueMemoryID);
 		}
 
+		PinTypeID CreatePinType(std::string_view aName, eFlowType aFlowType, GenericDataTypeID aDataTypeID);
+
 		PinType& GetPinType(PinTypeID aID)
 		{
 			return mPinTypes[aID];

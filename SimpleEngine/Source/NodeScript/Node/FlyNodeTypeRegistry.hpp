@@ -107,11 +107,38 @@ namespace FLY_NAMESPACE
 	}
 
 	template<PointerType T>
-	static T GetTargetNode(const InternalExecutionContext* aContext)
+	static T GetTargetNode(InternalExecutionContextPtr aContext)
 	{
 		return reinterpret_cast<T>(aContext->mTarget);
 	}
 
+
+	template<typename ContainerType>
+	std::tuple<Flow, std::add_pointer_t<typename ContainerType::value_type>, Flow> ForEach(InternalExecutionContextPtr aContext, Flow, const ContainerType& aContainer)
+	{
+
+		const Node& node = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
+		const NodeExecutionData nodeData = aContext->mNodeData;
+		NodeExecutionQueue* previousNodeExecutionQueue = aContext->mNodeExecutionQueue;
+
+		for (auto& element : aContainer)
+		{
+
+			NodeExecutionQueue nodeExecutionQueue(*aContext->mNodeExecutor);
+			aContext->mNodeExecutionQueue = &nodeExecutionQueue;
+
+			SetOutputValues(std::tuple{ Flow(true), &element }, node.mOutputPins, *aContext);
+
+			nodeExecutionQueue.Execute();
+
+			aContext->mNodeData = nodeData;
+
+		}
+
+		aContext->mNodeExecutionQueue = previousNodeExecutionQueue;
+
+		return { Flow(false), nullptr, Flow(true) };
+	}
 
 	class NodeTypeRegistry
 	{
@@ -443,7 +470,7 @@ namespace FLY_NAMESPACE
 			NodeCreationData nodeCreationData;
 			if constexpr (ContainsType<Event, Extra...>)
 			{
-				const EventID eventID = std::hash<Function>()(aFunction);
+				const EventID eventID{ std::hash<Function>()(aFunction) };
 				nodeCreationData.mEventID = eventID;
 			}
 

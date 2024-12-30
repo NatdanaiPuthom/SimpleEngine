@@ -17,7 +17,7 @@ namespace FLY_NAMESPACE
 
 		CopyPinData(*aContext, inputNode.mOutputPins, callerNode.mInputPins, function.mNodeGraph, aContext->mNodeData.mNodeRef.GetNodeGraph(), 1);
 
-		aContext->mExecutionQueue->Push(NodeExecutionData{ CreateContextualNodeRef(function.mInputNodeID, function.mNodeGraph), eNodeTriggerReason::Flow});
+		aContext->mNodeExecutionQueue->Push(NodeExecutionData{ CreateContextualNodeRef(function.mInputNodeID, function.mNodeGraph), eNodeTriggerReason::Flow});
 		aContext->mNodeExecutor->GetCallStack().Push(aContext->mNodeData.mNodeRef);
 
 		return Flow(true);

@@ -7,16 +7,16 @@ namespace FLY_NAMESPACE
 	struct Variable final
 	{
 		DataTypeID mDataTypeID = InvalidID<DataTypeID>();
-		OwningPtr<void> mDefaultValueDataPtr = nullptr;
+		OwningPtr<void> mDefaultValueDataPtr;
 		std::string mName = "Var";
 		size_t mByteOffset = 0;
 		bool mIsDestroyed = false;
 	};
 
-	struct MemberVariable final
+	struct DataTypeVariable final
 	{
-		DataTypeID mDataTypeID = InvalidID<DataTypeID>();
-		OwningPtr<void> mDefaultValueDataPtr = nullptr;
+		DataTypeID mDataTypeID;
+		OwningPtr<void> mDefaultValueDataPtr;
 		std::string mName;
 		size_t mByteOffset = 0;
 	};

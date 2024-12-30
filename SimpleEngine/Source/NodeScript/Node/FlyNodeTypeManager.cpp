@@ -187,7 +187,7 @@ namespace FLY_NAMESPACE
 
 	CustomEventID NodeTypeManager::CreateCustomEvent(std::string_view aName)
 	{
-		const CustomEventID id = mCustomEvents.size();
+		const CustomEventID id{ mCustomEvents.size() };
 		const CustomEvent& customEvent = mCustomEvents.emplace_back(CustomEvent(aName));
 
 		mToCustomEventID.emplace(customEvent.GetCallerTypeID(), id);
@@ -198,11 +198,11 @@ namespace FLY_NAMESPACE
 
 	FunctionID NodeTypeManager::CreateFunction(std::string_view aName)
 	{
-		const FunctionID id = mFunctions.size();
+		const FunctionID id{ mFunctions.size() };
 		const HeapObject<Function>& function = mFunctions.emplace_back(HeapObject<Function>(aName));
 
 		mToFunctionID.emplace(function->mCallerNodeTypeID, id);
-		mToFunctionID.emplace(function.Get()->mInputNodeTypeID, id);
+		mToFunctionID.emplace(function->mInputNodeTypeID, id);
 		mToFunctionID.emplace(function->mOutputNodeTypeID, id);
 
 		return id;

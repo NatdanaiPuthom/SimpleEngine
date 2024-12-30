@@ -1,7 +1,7 @@
 #include "FlyStructFacade.hpp"
 #include "../DataType/FlyStruct.hpp"
 #include "../Internal/FlyInternal.hpp"
-#include "../Internal/FlyFoundation.hpp"
+#include "FlyDataTypeFacade.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -43,7 +43,7 @@ namespace FLY_NAMESPACE
 
 	}
 
-	VariableFacade StructFacade::CreateVariable(const DataTypeFacade aDataTypeFacade, const std::string_view aName, CommandTracker* const aCommandTracker)
+	VariableFacade StructFacade::CreateVariable(const DataTypeFacade& aDataTypeFacade, const std::string_view aName, CommandTracker* const aCommandTracker)
 	{
 		VarID varID = Internal::CreateVariable(GetStruct().mVariableContainer, aDataTypeFacade.GetID(), aName, aCommandTracker);
 		return VariableFacade(varID, *this);
@@ -52,11 +52,6 @@ namespace FLY_NAMESPACE
 	void StructFacade::SetName(std::string_view aName, CommandTracker* const aCommandTracker)
 	{
 		Internal::SetStructName(mStructID, aName, aCommandTracker);
-	}
-
-	VariableContainer& StructFacade::GetVariableContainer() const
-	{
-		return GetStruct().mVariableContainer;
 	}
 
 	Struct& StructFacade::GetStruct() const

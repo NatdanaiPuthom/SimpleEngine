@@ -11,7 +11,6 @@ namespace Editor
 		bool wasSelected = false;
 		if (ImGui::BeginCombo(aComboLabel, aDataTypeFacade.GetName().c_str()))
 		{
-
 			const std::vector<Fly::DataTypeFacade> dataTypes = Fly::GetDataTypesFiltered(aFilterPredicate);
 
 			for (const Fly::DataTypeFacade& dataType : dataTypes)
@@ -36,5 +35,10 @@ namespace Editor
 	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade)
 	{
 		return DataTypeCombo(aComboLabel, aDataTypeFacade, [](const Fly::DataTypeFacade& aDataType) -> bool { return aDataType.IsTargetable(); });
+	}
+
+	bool DataTypeComboNoFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade)
+	{
+		return DataTypeCombo(aComboLabel, aDataTypeFacade, [](const Fly::DataTypeFacade&) -> bool { return true; });
 	}
 }

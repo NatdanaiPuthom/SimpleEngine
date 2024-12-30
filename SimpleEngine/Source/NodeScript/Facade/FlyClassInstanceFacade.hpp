@@ -55,7 +55,7 @@ namespace FLY_NAMESPACE
 	template<typename EventFunction, typename TargetType>
 	inline void ClassInstanceFacade::ExecuteEvent(EventFunction aEventFunction, TargetType* aTarget, const ExecutionContextBase& aContext)
 	{
-		const EventID eventID = std::hash<EventFunction>()(aEventFunction);
+		const EventID eventID{ std::hash<EventFunction>()(aEventFunction) };
 		assert(IsSameTarget(GetDataTypeID<TargetType*>()));
 		ExecuteEventInternal(eventID, aTarget, aContext);
 	}

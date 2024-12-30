@@ -1,24 +1,38 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "FlyInternalExecutionContext.hpp"
-#include <queue>
 
 namespace FLY_NAMESPACE
 {
 
-	class ExecutionQueue final
+	class NodeExecutor;
+
+	class NodeExecutionQueue final
 	{
 	public:
 
-		ExecutionQueue() = default;
+		NodeExecutionQueue(NodeExecutor& aNodeExecutor);
 
-		void Push(const NodeExecutionData& aNode);
+		void Push(const NodeExecutionData& aNode)
+		{
+			mExecutionQueue.insert(mExecutionQueue.begin() + mCurrentInsertionIndex, aNode);
+			++mCurrentInsertionIndex;
+		}
+
 		void Execute();
+
+		void Clear()
+		{
+			mExecutionQueue.clear();
+		}
 
 	private:
 
+		std::vector<NodeExecutionData> mExecutionQueue;
 
-		std::queue<NodeExecutionData> mExecutionQueue;
+		size_t mCurrentInsertionIndex = 0;
+
+		NodeExecutor* mNodeExecutor = nullptr;
 
 	};
 }

@@ -5,6 +5,7 @@
 #include "FunctionSettingsWindow.hpp"
 #include "FlyClassWindow.hpp"
 #include "StructCreatorWindow.hpp"
+#include "FlyReflectionMemoryWindow.hpp"
 #include "NodeScript/Fly.hpp"
 #include <External/imgui.h>
 #include <vector>
@@ -26,11 +27,6 @@ namespace Editor
 		std::vector<NodeTypeCategory> childCategories;
 		std::vector<Fly::NodeTypeFacade> nodeTypes;
 	};
-
-	inline constexpr unsigned int ToImGuiColor(const Fly::Color& aColor)
-	{
-		return IM_COL32(aColor.r * 255, aColor.g * 255, aColor.b * 255, 255);
-	}
 
 	struct NodeContext final
 	{
@@ -122,6 +118,7 @@ namespace Editor
 		CustomEventWindow myCustomEventWindow;
 		FunctionSettingsWindow myFunctionSettingsWindow;
 		StructCreatorWindow myStructCreatorWindow;
+		FlyReflectionMemoryWindow myReflectionMemoryWindow;
 
 		NodeContextHistory myNodeContextHistory;
 

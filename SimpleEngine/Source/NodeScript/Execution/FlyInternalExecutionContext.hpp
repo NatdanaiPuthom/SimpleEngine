@@ -37,6 +37,7 @@ namespace FLY_NAMESPACE
 	class ClassInstance;
 	class NodeGraphInstance;
 	class NodeExecutor;
+	class NodeExecutionQueue;
 
 	struct InternalExecutionContext final
 	{
@@ -44,7 +45,7 @@ namespace FLY_NAMESPACE
 		const ExecutionContextBase* mExecutionContext = nullptr;
 		NodeExecutionData mNodeData;
 		NodeGraphVariantHandle mNodeGraphVariantHandle;
-		ExecutionQueue* mExecutionQueue = nullptr;
+		NodeExecutionQueue* mNodeExecutionQueue = nullptr;
 		void* mTarget = nullptr;
 		ClassInstance* mClassInstance = nullptr;
 		NodeGraphInstance* mNodeGraphInstance = nullptr;

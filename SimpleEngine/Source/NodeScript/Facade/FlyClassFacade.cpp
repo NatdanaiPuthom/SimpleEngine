@@ -93,11 +93,6 @@ namespace FLY_NAMESPACE
 		return FunctionFacade(id);
 	}
 
-	VariableContainer& ClassFacade::GetVariableContainer() const
-	{
-		return GetClass().mVariableContainer;
-	}
-
 	ClassID ClassFacade::GetID() const
 	{
 		return mClassID;

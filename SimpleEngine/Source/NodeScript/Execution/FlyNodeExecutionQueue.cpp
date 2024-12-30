@@ -1,21 +1,20 @@
 #include "FlyNodeExecutionQueue.hpp"
 #include "FlyNodeExecutor.hpp"
-#include "../Internal/FlyInternal.hpp"
 
 namespace FLY_NAMESPACE
 {
-
-	void ExecutionQueue::Push(const NodeExecutionData& aNode)
+	NodeExecutionQueue::NodeExecutionQueue(NodeExecutor& aNodeExecutor)
+		: mNodeExecutor(&aNodeExecutor)
 	{
-		mExecutionQueue.push(aNode);
 	}
 
-	void ExecutionQueue::Execute()
+	void NodeExecutionQueue::Execute()
 	{
-		while (!mExecutionQueue.empty())
+		mExecutionQueue.shrink_to_fit();
+		for (size_t i = 0; i < mExecutionQueue.size(); i++)
 		{
-			Internal::GetNodeExecutor().ExecuteNode(mExecutionQueue.front());
-			mExecutionQueue.pop();
+			mCurrentInsertionIndex = i + 1;
+			mNodeExecutor->ExecuteNode(mExecutionQueue[i]);
 		}
 	}
 }

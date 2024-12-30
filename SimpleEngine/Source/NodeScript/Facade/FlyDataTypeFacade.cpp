@@ -5,11 +5,6 @@
 namespace FLY_NAMESPACE
 {
 
-	DataTypeFacade::DataTypeFacade()
-		: DataTypeFacade(GetDataTypeID<None>())
-	{
-	}
-
 	DataTypeFacade::DataTypeFacade(const DataTypeID aDataTypeID)
 		: mDataTypeID(aDataTypeID)
 	{
@@ -50,6 +45,26 @@ namespace FLY_NAMESPACE
 		return eDataTypeTrait::None;
 	}
 
+	size_t DataTypeFacade::GetSize() const
+	{
+		const DataType* dataType = GetDataType();
+		if (dataType)
+		{
+			return dataType->mSize;
+		}
+		return 0;
+	}
+
+	size_t DataTypeFacade::GetAlignment() const
+	{
+		const DataType* dataType = GetDataType();
+		if (dataType)
+		{
+			return dataType->mAlignment;
+		}
+		return 0;
+	}
+
 	bool DataTypeFacade::IsTargetable() const
 	{
 		return HasFlag(GetTypeTraits(), eDataTypeTrait::Targetable);
@@ -68,6 +83,24 @@ namespace FLY_NAMESPACE
 	bool DataTypeFacade::IsViewable() const
 	{
 		return HasFlag(GetTypeTraits(), eDataTypeTrait::Viewable);
+	}
+
+	std::vector<VariableFacade> DataTypeFacade::GetMemberVariables() const
+	{
+		const DataType* dataType = GetDataType();
+		if (!dataType)
+		{
+			return {};
+		}
+
+		std::vector<VariableFacade> memberVariables;
+		memberVariables.reserve(dataType->mVariables.size());
+		for (VarID varID{ 0 }; varID < dataType->mVariables.size(); ++varID)
+		{
+			VariableFacade facade(varID, *this);
+			memberVariables.push_back(facade);
+		}
+		return memberVariables;
 	}
 
 

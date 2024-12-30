@@ -285,7 +285,7 @@ namespace FLY_NAMESPACE
 		std::vector<FunctionFacade> views;
 		views.reserve(mFunctions.size());
 
-		for (FunctionID functionID = 0; functionID < mFunctions.size(); ++functionID)
+		for (FunctionID functionID{ 0 }; functionID < mFunctions.size(); ++functionID)
 		{
 			views.push_back(FunctionFacade(functionID));
 		}
@@ -299,7 +299,7 @@ namespace FLY_NAMESPACE
 		std::vector<CustomEventFacade> customEventFacades;
 		customEventFacades.reserve(customEvents.size());
 
-		for (CustomEventID customEventID = 0; customEventID < customEvents.size(); ++customEventID)
+		for (CustomEventID customEventID{ 0 }; customEventID < customEvents.size(); ++customEventID)
 		{
 			customEventFacades.push_back(CustomEventFacade(customEventID));
 		}

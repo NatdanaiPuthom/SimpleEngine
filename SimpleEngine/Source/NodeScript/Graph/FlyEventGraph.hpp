@@ -6,7 +6,7 @@
 namespace FLY_NAMESPACE
 {
 	
-	constexpr size_t AutoTickEventID = 0;
+	constexpr EventID AutoTickEventID{ 0 };
 
 	class EventGraph final
 	{

@@ -1,6 +1,8 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "SimpleNodeScript.hpp"
 #include "NodeScript/Fly.hpp"
+#include "NodeScriptDataTypes.hpp"
+#include <set>
 
 SimpleNodeScript::SimpleNodeScript()
 {

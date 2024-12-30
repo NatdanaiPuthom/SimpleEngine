@@ -36,6 +36,7 @@ namespace FLY_NAMESPACE
 	{
 		std::string mName;
 		const DataTypeID mDataTypeID = InvalidID<DataTypeID>();
+		const GenericDataTypeID mGenericDataTypeID;
 		const SetPinValueInterface mSetPinValueFunction = nullptr;
 		const SetPinValueFromPinInterface mSetPinValueFromPinFunction = nullptr;
 		MemoryPoolID mDefaultValueID = InvalidID<MemoryPoolID>();

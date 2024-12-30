@@ -24,6 +24,11 @@ namespace FLY_NAMESPACE
 		return { Flow(aCondition), Flow(!aCondition) };
 	}
 
+	std::tuple<Flow, Flow, Flow, Flow> Sequence(Flow)
+	{
+		return { Flow(true), Flow(true), Flow(true), Flow(true) };
+	}
+
 	enum class eComparatorType
 	{
 		Equal,
@@ -215,15 +220,15 @@ namespace FLY_NAMESPACE
 
 	std::tuple<Flow, int, Flow> ForLoop(InternalExecutionContextPtr aContext, Flow, int aStartIndex, int aEndIndex, int aIncrement, eComparatorType aComparatorType)
 	{
-		ExecutionQueue* previousQueue = aContext->mExecutionQueue;
-		NodeExecutionData nodeExecutionData = aContext->mNodeData;
+		NodeExecutionQueue* previousNodeExecutionQueue = aContext->mNodeExecutionQueue;
+		const NodeExecutionData nodeExecutionData = aContext->mNodeData;
 		const Node& node = nodeExecutionData.mNodeRef.GetNodeGraph().mNodes[nodeExecutionData.mNodeRef.GetNodeID()];
 
 		for (int i = aStartIndex; Compare(i, aEndIndex, aComparatorType); i += aIncrement)
 		{
-			ExecutionQueue executionQueue;
+			NodeExecutionQueue executionQueue(*aContext->mNodeExecutor);
 
-			aContext->mExecutionQueue = &executionQueue;
+			aContext->mNodeExecutionQueue = &executionQueue;
 
 			SetOutputValues(std::tuple{ Flow(true), i }, node.mOutputPins, *aContext);
 
@@ -233,8 +238,7 @@ namespace FLY_NAMESPACE
 
 		}
 
-		aContext->mExecutionQueue = previousQueue;
-		aContext->mNodeData = nodeExecutionData;
+		aContext->mNodeExecutionQueue = previousNodeExecutionQueue;
 
 		return { Flow(false), 0, Flow(true) };
 	}
@@ -279,6 +283,7 @@ namespace FLY_NAMESPACE
 	{
 		float a = 4.f;
 		int b = 2;
+		std::vector<std::string> s;
 	};
 
 	struct Emil2
@@ -289,7 +294,7 @@ namespace FLY_NAMESPACE
 	FLY_VALUETYPE(Emil);
 
 	FLY_MEMBER(Emil::a);
-	FLY_MEMBER(Emil::b);
+	FLY_MEMBER(Emil::s);
 
 	FLY_VALUETYPE(Emil2);
 	FLY_MEMBER(Emil2::e);
@@ -303,7 +308,6 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-
 	FLY_FUNCTION(EmilTest);
 	FLY_FUNCTION(EmilTest2);
 
@@ -313,6 +317,7 @@ namespace FLY_NAMESPACE
 
 	FLY_FUNCTION(ForLoop, Directory{ "Execution" }, InputNames{ "Flow", "Start Index", "End Index", "Increment", "Comparator" }, OutputNames{ "Flow", "Index", "Complete" }, DefaultValues{ Flow(true), 0, 0, 1, eComparatorType::Less }, Pure{});
 	FLY_FUNCTION(Branch, Directory{ "Execution" }, InputNames{ "Flow", "Condition" }, OutputNames{ "True", "False" }, Pure{});
+	FLY_FUNCTION(Sequence, Directory{ "Execution" }, InputNames{ "Flow" }, Pure{});
 	FLY_FUNCTION(FlipFlop, Directory{ "Execution" }, OutputNames{ "Flip", "Flop" }, Pure{});
 	FLY_FUNCTION(Delay, Directory{ "Execution" }, InputNames{ "Flow", "Duration", "Reset On Flow" }, DefaultValues{ Flow(false), 1.f, false }, AutoTick{}, Pure{});
 }

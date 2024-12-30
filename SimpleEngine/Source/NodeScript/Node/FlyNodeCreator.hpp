@@ -76,7 +76,7 @@ namespace FLY_NAMESPACE
 							for (const PinID connectedInputPinID : writeToPin.mConnectedPinIDs)
 							{
 								const Pin& connectedInputPin = aSetPinValueData.mNodeGraph->mPins[connectedInputPinID];
-								aContext.mExecutionQueue->Push(NodeExecutionData{ NodeRef(connectedInputPin.mNodeID, *aSetPinValueData.mNodeGraph), eNodeTriggerReason::Flow });
+								aContext.mNodeExecutionQueue->Push(NodeExecutionData{ NodeRef(connectedInputPin.mNodeID, *aSetPinValueData.mNodeGraph), eNodeTriggerReason::Flow });
 
 #ifdef FLY_DEBUG
 								const LinkID linkID = Internal::GetLinkIDByPinIDs(*aSetPinValueData.mNodeGraph, connectedInputPinID, aSetPinValueData.mWriteToPinID);
@@ -146,7 +146,7 @@ namespace FLY_NAMESPACE
 							for (const PinID connectedInputPinID : writeToPin.mConnectedPinIDs)
 							{
 								const Pin& connectedInputPin = aSetPinValueData.mNodeGraph->mPins[connectedInputPinID];
-								aContext.mExecutionQueue->Push(NodeExecutionData{ NodeRef(connectedInputPin.mNodeID, *aSetPinValueData.mNodeGraph), eNodeTriggerReason::Flow });
+								aContext.mNodeExecutionQueue->Push(NodeExecutionData{ NodeRef(connectedInputPin.mNodeID, *aSetPinValueData.mNodeGraph), eNodeTriggerReason::Flow });
 							}
 						}
 					}

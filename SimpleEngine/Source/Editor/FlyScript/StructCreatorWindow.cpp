@@ -45,14 +45,14 @@ namespace Editor
 	{
 
 		Fly::VarID varID = aVariable.GetID();
-		std::string name = aVariable.GetName();
+		std::string name(aVariable.GetName());
 
 		if (ImGui::InputString<32>(Combine("##StructVariableName", varID).c_str(), name))
 		{
 			aVariable.SetName(name, &myParentWindow->GetCommandTracker());
 		}
 
-		Fly::DataTypeFacade currentDataType = aVariable.GetDataType();
+		Fly::DataTypeFacade currentDataType(aVariable.GetDataTypeID());
 		if (DataTypeComboEditableFilter(Combine("##VarDataType", varID).c_str(), currentDataType))
 		{
 			aVariable.SetDataType(currentDataType, &myParentWindow->GetCommandTracker());

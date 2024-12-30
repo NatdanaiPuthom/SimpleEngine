@@ -21,11 +21,8 @@
 
 namespace FLY_NAMESPACE
 {
-	using CustomEventID = size_t;
-	using FunctionID = size_t;
 	using MemoryPoolID = size_t;
 	using ObjectTypeID = size_t;
-	using EventID = size_t;
 
 	template<std::integral IDType>
 	constexpr IDType InvalidID()
@@ -36,6 +33,7 @@ namespace FLY_NAMESPACE
 	template<typename IDType>
 	struct IDWrapper
 	{
+
 		using id_type = IDType;
 
 		constexpr friend bool operator==(const IDWrapper& a, const IDWrapper& b)
@@ -58,7 +56,23 @@ namespace FLY_NAMESPACE
 			++mID;
 			return *this;
 		}
-		IDType mID = InvalidID<IDType>();
+
+	private:
+
+		static constexpr IDType Initialize()
+		{
+			if constexpr (std::is_fundamental_v<IDType>)
+			{
+				return InvalidID<IDType>();
+			}
+			else
+			{
+				return IDType{};
+			}
+		}
+
+	public:
+		IDType mID = Initialize();
 	};
 
 	template<typename IDWrapperType> requires std::is_base_of_v<IDWrapper<typename IDWrapperType::id_type>, IDWrapperType>
@@ -76,7 +90,11 @@ namespace FLY_NAMESPACE
 	struct PinTypeID final : IDWrapper<size_t> {};
 	struct NodeTypeID final : IDWrapper<size_t> {};
 	struct VarID final : IDWrapper<size_t> {};
-	struct GenericDataTypeID : IDWrapper<std::variant<DataTypeID, StructID, ClassID>> {};
+	struct FunctionID final : IDWrapper<size_t> {};
+	struct CustomEventID final : IDWrapper<size_t> {};
+	struct EventID final : IDWrapper<size_t> {};
+    struct GenericDataTypeID final : IDWrapper<std::variant<DataTypeID, StructID, ClassID>> {};
+	struct TraitID final : IDWrapper<size_t> {};
 
 	template<>
 	constexpr GenericDataTypeID InvalidID()
@@ -105,7 +123,6 @@ namespace FLY_NAMESPACE
 	class NodeGraph;
 	struct InternalExecutionContext;
 	struct NodeExecutionData;
-	class ExecutionQueue;
 
 	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, NodeGraph&);
 	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);
@@ -119,6 +136,8 @@ namespace FLY_NAMESPACE
 	class OwningPtr final
 	{
 	public:
+
+		constexpr OwningPtr() = default;
 		constexpr OwningPtr(T* const aPtr)
 			: mPtr(aPtr)
 		{
@@ -145,7 +164,7 @@ namespace FLY_NAMESPACE
 		}
 
 	private:
-		T* mPtr;
+		T* mPtr = nullptr;
 	};
 
 	template<typename T>
@@ -254,8 +273,20 @@ namespace std
 	struct hash<Fly::DataTypeID> : hash<Fly::IDWrapper<Fly::DataTypeID::id_type>> {};
 
 	template<>
+	struct hash<Fly::ClassID> : hash<Fly::IDWrapper<Fly::ClassID::id_type>> {};
+
+	template<>
 	struct hash<Fly::NodeID> : hash<Fly::IDWrapper<Fly::NodeID::id_type>> {};
 
 	template<>
 	struct hash<Fly::NodeTypeID> : hash<Fly::IDWrapper<Fly::NodeTypeID::id_type>> {};
+
+	template<>
+	struct hash<Fly::CustomEventID> : hash<Fly::IDWrapper<Fly::CustomEventID::id_type>> {};
+
+	template<>
+	struct hash<Fly::EventID> : hash<Fly::IDWrapper<Fly::EventID::id_type>> {};
+
+	template<>
+	struct hash<Fly::TraitID> : hash<Fly::IDWrapper<Fly::TraitID::id_type>> {};
 }

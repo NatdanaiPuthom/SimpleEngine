@@ -18,7 +18,7 @@ namespace FLY_NAMESPACE
 
 		for (const NodeRef& executorNodeRef : executorNodeRefs)
 		{
-			aContext->mExecutionQueue->Push(NodeExecutionData{ executorNodeRef, eNodeTriggerReason::Flow });
+			aContext->mNodeExecutionQueue->Push(NodeExecutionData{ executorNodeRef, eNodeTriggerReason::Flow });
 
 			const Node& executorNode = executorNodeRef.GetNodeGraph().mNodes[executorNodeRef.GetNodeID()];
 

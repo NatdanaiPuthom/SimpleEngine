@@ -107,7 +107,7 @@ namespace FLY_NAMESPACE
 
 					nlohmann::json defaultValueJson = nlohmann::json::object();
 
-					GetDataTypeManager().SaveData(variable.mDataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+					GetDataTypeManager().SaveData(variable.mDataTypeID, variable.mDefaultValueDataPtr, defaultValueJson);
 
 					variableJson["DefaultValue"] = defaultValueJson;
 
@@ -177,7 +177,7 @@ namespace FLY_NAMESPACE
 
 					Internal::SetVariableDataType(varID, aStruct.mVariableContainer, dataTypeID, nullptr);
 
-					GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+					GetDataTypeManager().LoadData(dataTypeID, variable.mDefaultValueDataPtr, defaultValueJson);
 
 				}
 
@@ -306,7 +306,7 @@ namespace FLY_NAMESPACE
 						pinDataJson["DataType"] = GetDataTypeManager().GetName(pinType.mDataTypeID);
 
 						nlohmann::json valueJson = nlohmann::json::object();
-						GetDataTypeManager().SaveData(pinType.mDataTypeID, valueJson, pin.mDataPtr);
+						GetDataTypeManager().SaveData(pinType.mDataTypeID, pin.mDataPtr, valueJson);
 						pinDataJson["Value"] = valueJson;
 					}
 
@@ -334,7 +334,7 @@ namespace FLY_NAMESPACE
 
 					nlohmann::json defaultValueJson = nlohmann::json::object();
 
-					GetDataTypeManager().SaveData(variable.mDataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+					GetDataTypeManager().SaveData(variable.mDataTypeID, variable.mDefaultValueDataPtr, defaultValueJson);
 
 					variableJson["DefaultValue"] = defaultValueJson;
 
@@ -442,7 +442,7 @@ namespace FLY_NAMESPACE
 
 
 				const nlohmann::json& valueJson = pinData["Value"];
-				GetDataTypeManager().LoadData(pinType.mDataTypeID, valueJson, pin.mDataPtr);
+				GetDataTypeManager().LoadData(pinType.mDataTypeID, pin.mDataPtr, valueJson);
 			}
 
 			const nlohmann::json& variableDataJson = dataJson["Variables"];
@@ -467,7 +467,7 @@ namespace FLY_NAMESPACE
 
 					Internal::SetVariableDataType(varID, aClass.mVariableContainer, dataTypeID, nullptr);
 
-					GetDataTypeManager().LoadData(dataTypeID, defaultValueJson, variable.mDefaultValueDataPtr);
+					GetDataTypeManager().LoadData(dataTypeID, variable.mDefaultValueDataPtr, defaultValueJson);
 
 				}
 

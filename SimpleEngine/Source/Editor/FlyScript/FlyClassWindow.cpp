@@ -92,12 +92,12 @@ namespace Editor
 			for (Fly::VariableFacade& variableFacade : variableFacades)
 			{
 				const std::string treeNodeStrID = std::string("##ScriptVariable" + std::to_string(variableFacade.GetID()));
-				if (ImGui::TreeNode(treeNodeStrID.c_str(), variableFacade.GetName().c_str()))
+				if (ImGui::TreeNode(treeNodeStrID.c_str(), std::string(variableFacade.GetName()).c_str()))
 				{
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(variableFacade.GetDataType().GetColor())));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::DataTypeFacade(variableFacade.GetDataTypeID()).GetColor())));
 					ImGui::EndDisabled();
 
 					ModifyVariablePopup(variableFacade);
@@ -109,7 +109,7 @@ namespace Editor
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(variableFacade.GetDataType().GetColor())));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::DataTypeFacade(variableFacade.GetDataTypeID()).GetColor())));
 					ImGui::EndDisabled();
 				}
 
@@ -125,15 +125,14 @@ namespace Editor
 
 	void FlyClassWindow::ModifyVariablePopup(Fly::VariableFacade& aVariableFacade)
 	{
-		char buffer[35]{};
-		strcpy_s(buffer, aVariableFacade.GetName().c_str());
+		std::string variableName(aVariableFacade.GetName());
 
-		if (ImGui::InputText("##VariableName", buffer, IM_ARRAYSIZE(buffer)))
+		if (ImGui::InputString<35>("##VariableName", variableName))
 		{
-			aVariableFacade.SetName(buffer, nullptr);
+			aVariableFacade.SetName(variableName, nullptr);
 		}
 
-		Fly::DataTypeFacade currentDataTypeFacade = aVariableFacade.GetDataType();
+		Fly::DataTypeFacade currentDataTypeFacade(aVariableFacade.GetDataTypeID());
 
 		ImGui::Separator();
 		if (DataTypeComboEditableFilter("##ChangeDataType", currentDataTypeFacade))

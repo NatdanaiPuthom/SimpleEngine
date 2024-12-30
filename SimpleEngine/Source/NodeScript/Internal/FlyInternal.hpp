@@ -28,6 +28,7 @@ namespace FLY_NAMESPACE
 	class DataTypeManager;
 	class NodeTypeManager;
 	class PinTypeManager;
+	struct DataType;
 	
 	template<size_t> class MemoryArena;
 	class MemoryPool;
@@ -56,15 +57,14 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] Node& GetNode(NodeID aNodeID, NodeGraph& aNodeGraph);
 		[[nodiscard]] const Node& GetNode(NodeID aNodeID, const NodeGraph& aNodeGraph);
 		[[nodiscard]] const NodeType& GetNodeType(NodeID aNodeID, const NodeGraph& aNodeGraph);
-		[[nodiscard]] Class& GetClassByID(ClassID aClassID);
+		[[nodiscard]] const DataType* GetDataTypeByID(DataTypeID aDataTypeID);
 		[[nodiscard]] Struct& GetStructByID(StructID aStructID);
+		[[nodiscard]] Class& GetClassByID(ClassID aClassID);
 
 		void InitializeSubPins();
 
 		StructID CreateStruct(std::string_view aName);
 		void SetStructName(StructID aStructID, std::string_view aName, CommandTracker* aCommandTracker);
-
-		StructInstance* CreateStructInstance(StructID aStructID);
 
 		ClassID CreateClass(DataTypeID aTargetID, std::string_view aName);
 		void SetClassName(ClassID aClassID, std::string_view aName, CommandTracker* aCommandTracker);
@@ -99,7 +99,9 @@ namespace FLY_NAMESPACE
 		PinID CreatePin(NodeGraph& aNodeGraph, NodeID aNodeID, PinTypeID aPinTypeID);
 		PinID CreatePin(NodeGraph& aNodeGraph, NodeID aNodeID, PinTypeID aPinTypeID, void* aDataPtr);
 
+		void ViewAndEditPinGeneric(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 		void ViewAndEditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		void ViewPinGeneric(PinID aPinID, const NodeGraph& aNodeGraph);
 		void ViewPin(PinID aPinID, const NodeGraph& aNodeGraph);
 		void SplitPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 		void RecombinePin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
@@ -109,6 +111,7 @@ namespace FLY_NAMESPACE
 		bool IsNodeReplacable(NodeGraph& aNodeGraph, NodeID aNodeID);
 
 		LinkID TryCreateLink(NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2, CommandTracker* aCommandTracker);
+		LinkID CreateLinkGeneric(NodeGraph& aNodeGraph, PinID aInputPinID, PinID aOutputPinID, CommandTracker* aCommandTracker);
 		LinkID CreateLink(NodeGraph& aNodeGraph, PinID aInputPinID, PinID aOutputPinID, CommandTracker* aCommandTracker);
 		void DestroyLink(NodeGraph& aNodeGraph, LinkID aLinkID, CommandTracker* aCommandTracker);
 		void DestroyLinksByPin(NodeGraph& aNodeGraph, PinID aPinID, CommandTracker* aCommandTracker);

@@ -80,22 +80,52 @@ namespace FLY_NAMESPACE
 			};
 	}
 
+	// Primary template: assumes T is not a specialization of the given class template
+	template <template <typename...> class Template, typename T>
+	struct is_specialization_of : std::false_type {};
+
+	// Specialization: detects if T is a specialization of the given class template
+	template <template <typename...> class Template, typename... Args>
+	struct is_specialization_of<Template, Template<Args...>> : std::true_type {};
+
+	// Helper variable template for convenience
+	template <template <typename...> class Template, typename T>
+	constexpr bool is_specialization_of_v = is_specialization_of<Template, T>::value;
+
+	//template<typename T>
+	//void DoSomething()
+	//{
+	//	if constexpr (/*T Is std::vector*/)
+	//	{
+	//		// Do something
+	//	}
+	//}
+
 	template<typename T>
 	constexpr EqualsInterface CreateEqualsInterface()
 	{
-		if constexpr (HasOperator_EqualTo<T>)
+		if constexpr (is_specialization_of_v<std::vector, T>)
 		{
-			return [](const void* aDataPtr1, const void* aDataPtr2) -> bool
-				{
-					const T& value1 = *reinterpret_cast<const T*>(aDataPtr1);
-					const T& value2 = *reinterpret_cast<const T*>(aDataPtr2);
-
-					return value1 == value2;
-				};
+			return nullptr;
 		}
 		else
 		{
-			return nullptr;
+
+
+			if constexpr (HasOperator_EqualTo<T>)
+			{
+				return [](const void* aDataPtr1, const void* aDataPtr2) -> bool
+					{
+						const T& value1 = *reinterpret_cast<const T*>(aDataPtr1);
+						const T& value2 = *reinterpret_cast<const T*>(aDataPtr2);
+
+						return value1 == value2;
+					};
+			}
+			else
+			{
+				return nullptr;
+			}
 		}
 	}
 
@@ -352,6 +382,12 @@ namespace FLY_NAMESPACE
 		};
 	}
 
+
+
+	struct FlyCustomVectorType;
+
+	using GenericDataTypePtr = std::variant<DataType*, Struct*, Class*>;
+
 	class DataTypeManager final
 	{
 		friend class DataTypeRegistry;
@@ -364,15 +400,15 @@ namespace FLY_NAMESPACE
 
 		[[nodiscard]] ViewAndEditResult ViewAndEditData(const DataType& aDataType, void* aDataPtr) const;
 		void ViewData(const DataType& aDataType, const void* aDataPtr) const;
-		bool SaveData(const DataType& aDataType, nlohmann::json& aJson, const void* aDataPtr) const;
-		bool LoadData(const DataType& aDataType, const nlohmann::json& aJson, void* aDataPtr) const;
+		bool SaveData(const DataType& aDataType, const void* aDataPtr, nlohmann::json& aJson) const;
+		bool LoadData(const DataType& aDataType, void* aDataPtr, const nlohmann::json& aJson) const;
 
 	public:
 
 		[[nodiscard]] ViewAndEditResult ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr) const;
 		void ViewData(DataTypeID aDataTypeID, const void* aDataPtr) const;
-		bool SaveData(DataTypeID aDataTypeID, nlohmann::json& aJson, const void* aDataPtr) const;
-		bool LoadData(DataTypeID aDataTypeID, const nlohmann::json& aJson, void* aDataPtr) const;
+		bool SaveData(DataTypeID aDataTypeID, const void* aDataPtr, nlohmann::json& aJson) const;
+		bool LoadData(DataTypeID aDataTypeID, void* aDataPtr, const nlohmann::json& aJson) const;
 
 		template<size_t BufferCapacity>
 		[[nodiscard]] void* AllocateData(DataTypeID aDataTypeID, MemoryArena<BufferCapacity>& aArena, const void* aDefaultValue = nullptr) const;
@@ -390,14 +426,26 @@ namespace FLY_NAMESPACE
 		void SwapData(DataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2) const;
 		[[nodiscard]] bool DataEqualsTo(DataTypeID aDataTypeID, const void* aDataPtr1, const void* aDataPtr2) const;
 
-		template<size_t BufferCapacity>
-		[[nodiscard]] void* AllocateDataGeneric(GenericDataTypeID aDataTypeID, MemoryArena<BufferCapacity>& aArena, const void* aDefaultValue = nullptr) const;
 
+		[[nodiscard]] ViewAndEditResult ViewAndEditData(GenericDataTypeID aDataTypeID, void* aDataPtr) const;
+		void ViewData(GenericDataTypeID aDataTypeID, const void* aDataPtr) const;
+		bool SaveData(GenericDataTypeID aDataTypeID, const void* aDataPtr, nlohmann::json& aJson) const;
+		bool LoadData(GenericDataTypeID aDataTypeID, void* aDataPtr, const nlohmann::json& aJson) const;
+
+		template<size_t BufferCapacity>
+		[[nodiscard]] void* AllocateData(GenericDataTypeID aDataTypeID, MemoryArena<BufferCapacity>& aArena, const void* aDefaultValue = nullptr) const;
+		void ReleaseData(GenericDataTypeID aDataTypeID, void* aDataPtr) const;
+
+		void CopyData(GenericDataTypeID aDataTypeID, void* aDestination, const void* aSource) const;
+		void SwapData(GenericDataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2) const;
 
 		[[nodiscard]] bool AreDataTypesRelated(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const;
+		[[nodiscard]] bool AreDataTypesRelated(GenericDataTypeID aDataTypeID1, GenericDataTypeID aDataTypeID2) const;
 		[[nodiscard]] eDataTypeRelation GetDataTypeRelation(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const;
+		[[nodiscard]] eDataTypeRelation GetDataTypeRelation(GenericDataTypeID aDataTypeID1, GenericDataTypeID aDataTypeID2) const;
 
 		[[nodiscard]] const std::string& GetName(DataTypeID aDataTypeID) const;
+		[[nodiscard]] std::string_view GetName(GenericDataTypeID aDataTypeID) const;
 
 		[[nodiscard]] SetPinValueInterface GetSetPinValueInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
 		[[nodiscard]] SetPinValueFromPinInterface GetSetPinValueFromPinInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
@@ -416,6 +464,8 @@ namespace FLY_NAMESPACE
 
 		template<typename T>
 		[[nodiscard]] const DataType* Find() const;
+
+		[[nodiscard]] GenericDataTypePtr Find(GenericDataTypeID aDataTypeID);
 
 		template<Decayed T>
 		bool IsRegistered() const;
@@ -560,6 +610,7 @@ namespace FLY_NAMESPACE
 		{
 			.mName = aName,
 			.mSize = sizeof(T),
+			.mAlignment = alignof(T),
 			.mColor = aColor,
 			.mTypeInfo = &typeInfo,
 			.mInterface = anInterface,
@@ -582,18 +633,18 @@ namespace FLY_NAMESPACE
 
 		const DataTypeID dataTypeID = GetDataTypeID<MemberType>();
 
-		Variable variable
-		{
-			.mDataTypeID = dataTypeID,
-			.mName = aName,
-			.mByteOffset = byteOffset
-		};
-
-		DataType* parentDataType = Find<ClassType>();
+		DataType* const parentDataType = Find<ClassType>();
 
 		if (parentDataType)
 		{
-			parentDataType->mVariables.push_back(variable);
+			parentDataType->mVariables.push_back(
+				Variable
+				{
+					.mDataTypeID = dataTypeID,
+					.mName = aName,
+					.mByteOffset = byteOffset
+				}
+			);
 		}
 	}
 
@@ -638,7 +689,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<size_t BufferCapacity>
-	inline void* DataTypeManager::AllocateDataGeneric(const GenericDataTypeID aDataTypeID, MemoryArena<BufferCapacity>& aArena, const void* aDefaultValue) const
+	inline void* DataTypeManager::AllocateData(const GenericDataTypeID aDataTypeID, MemoryArena<BufferCapacity>& aArena, const void* aDefaultValue) const
 	{
 		return std::visit(Visitor{
 			[this, &aArena, aDefaultValue](const DataTypeID aDataTypeID) -> void*

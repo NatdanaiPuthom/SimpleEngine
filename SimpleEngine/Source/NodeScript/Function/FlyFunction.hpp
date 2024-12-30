@@ -5,7 +5,6 @@
 
 namespace FLY_NAMESPACE
 {
-	class Class;
 
 	class Function final
 	{

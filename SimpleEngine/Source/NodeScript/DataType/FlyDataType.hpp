@@ -48,7 +48,7 @@ namespace FLY_NAMESPACE
 		const ExecutionInterface execution;
 	};
 
-	enum class eDataTypeTrait
+	enum class eDataTypeTrait : unsigned int
 	{
 		None = 0,
 		Fundamental = 1 << 0,
@@ -61,12 +61,13 @@ namespace FLY_NAMESPACE
 		All = Fundamental | ViewAndEditable | Viewable | SaveLoadable | Targetable | TriviallyCopyable
 	};
 
-	struct DataType
+	struct DataType final
 	{
 		const std::string mName;
 		const size_t mSize = 0;
+		const size_t mAlignment = 0;
 		Color mColor;
-		const std::type_info* mTypeInfo;
+		const std::type_info* mTypeInfo = nullptr;
 		const DataTypeInterface mInterface;
 		std::vector<Variable> mVariables;
 		std::vector<NodeTypeID> mNodeTypeIDs;

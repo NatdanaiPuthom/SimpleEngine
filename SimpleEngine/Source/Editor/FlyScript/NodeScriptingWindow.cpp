@@ -221,6 +221,7 @@ namespace Editor
 			myClassWindow.Draw();
 			myCustomEventWindow.Update();
 			myStructCreatorWindow.Update();
+			myReflectionMemoryWindow.Update();
 
 
 			if (GetNodeContext().myNodeGraphFacade.GetType() == Fly::eNodeGraphType::Function)

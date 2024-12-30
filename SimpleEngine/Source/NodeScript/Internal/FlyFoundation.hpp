@@ -7,6 +7,7 @@
 #include "../DataType/FlyDataTypeManager.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
+#include "../Function/FlyTraitManager.hpp"
 #include "../Memory/FlyHeapObject.hpp"
 #include <memory>
 #include <string_view>
@@ -55,6 +56,7 @@ namespace FLY_NAMESPACE
 		NodeTypeManager mNodeTypeManager;
 		PinTypeManager mPinTypeManager;
 		DataTypeManager mDataTypeManager;
+		TraitManager mTraitManager;
 
 		HeapObject<NodeExecutor> mNodeExecutor;
 		EventGraph mNodeGraphCopy;

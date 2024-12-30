@@ -65,7 +65,7 @@ namespace FLY_NAMESPACE
 
 	}
 
-	bool DataTypeManager::SaveData(const DataType& aDataType, nlohmann::json& aJson, const void* aDataPtr) const
+	bool DataTypeManager::SaveData(const DataType& aDataType, const void* aDataPtr, nlohmann::json& aJson) const
 	{
 		// If data type has a valid save function
 		if (aDataType.mInterface.function.save)
@@ -81,7 +81,7 @@ namespace FLY_NAMESPACE
 			{
 				nlohmann::json variableJson;
 				const void* variableDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
-				if (SaveData(*variableDataType, variableJson, variableDataPtr))
+				if (SaveData(*variableDataType, variableDataPtr, variableJson))
 				{
 					aJson[variable.mName] = variableJson;
 				}
@@ -91,7 +91,7 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
-	bool DataTypeManager::LoadData(const DataType& aDataType, const nlohmann::json& aJson, void* const aDataPtr) const
+	bool DataTypeManager::LoadData(const DataType& aDataType, void* const aDataPtr, const nlohmann::json& aJson) const
 	{
 		// If data type has a valid load function
 		if (aDataType.mInterface.function.load)
@@ -109,7 +109,7 @@ namespace FLY_NAMESPACE
 				if (it != aJson.end())
 				{
 					void* propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
-					LoadData(*dataType, it.value(), propertyDataPtr);
+					LoadData(*dataType, propertyDataPtr, it.value());
 				}
 			}
 		}
@@ -135,20 +135,20 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	bool DataTypeManager::SaveData(const DataTypeID aDataTypeID, nlohmann::json& aJson, const void* const aDataPtr) const
+	bool DataTypeManager::SaveData(const DataTypeID aDataTypeID, const void* const aDataPtr, nlohmann::json& aJson) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			return SaveData(*dataType, aJson, aDataPtr);
+			return SaveData(*dataType, aDataPtr, aJson);
 		}
 		return false;
 	}
 
-	bool DataTypeManager::LoadData(const DataTypeID aDataTypeID, const nlohmann::json& aJson, void* const aDataPtr) const
+	bool DataTypeManager::LoadData(const DataTypeID aDataTypeID, void* const aDataPtr, const nlohmann::json& aJson) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			return LoadData(*dataType, aJson, aDataPtr);
+			return LoadData(*dataType, aDataPtr, aJson);
 		}
 		return false;
 	}
@@ -198,6 +198,138 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
+	ViewAndEditResult DataTypeManager::ViewAndEditData(GenericDataTypeID aDataTypeID, void* aDataPtr) const
+	{
+		return std::visit(Visitor{
+			[this, aDataPtr](const DataTypeID aDataTypeID) -> ViewAndEditResult
+			{
+				return ViewAndEditData(aDataTypeID, aDataPtr);
+			},
+			[this, aDataPtr](const StructID) -> ViewAndEditResult
+			{
+				return ViewAndEditData(GetDataTypeID<StructInstance>(), aDataPtr);
+			},
+			[this, aDataPtr](const ClassID) -> ViewAndEditResult
+			{
+				assert(false);
+				return ViewAndEditData(GetDataTypeID<ClassInstance>(), aDataPtr);
+			}
+			}, aDataTypeID.mID);
+	}
+
+	void DataTypeManager::ViewData(GenericDataTypeID aDataTypeID, const void* aDataPtr) const
+	{
+		std::visit(Visitor{
+			[this, aDataPtr](const DataTypeID aDataTypeID) -> void
+			{
+				ViewData(aDataTypeID, aDataPtr);
+			},
+			[this, aDataPtr](const StructID) -> void
+			{
+				ViewData(GetDataTypeID<StructInstance>(), aDataPtr);
+			},
+			[this, aDataPtr](const ClassID) -> void
+			{
+				assert(false);
+				ViewData(GetDataTypeID<ClassInstance>(), aDataPtr);
+			}
+			}, aDataTypeID.mID);
+	}
+
+	bool DataTypeManager::SaveData(const GenericDataTypeID aDataTypeID, const void* const  aDataPtr, nlohmann::json& aJson) const
+	{
+		return std::visit(Visitor{
+			[this, aDataPtr, &aJson](const DataTypeID aDataTypeID) -> bool
+			{
+				return SaveData(aDataTypeID, aDataPtr, aJson);
+			},
+			[this, aDataPtr, &aJson](const StructID) -> bool
+			{
+				return SaveData(GetDataTypeID<StructInstance>(), aDataPtr, aJson);
+			},
+			[this, aDataPtr, &aJson](const ClassID) -> bool
+			{
+				assert(false);
+				return SaveData(GetDataTypeID<ClassInstance>(), aDataPtr, aJson);
+			}
+			}, aDataTypeID.mID);
+	}
+
+	bool DataTypeManager::LoadData(const GenericDataTypeID aDataTypeID, void* const aDataPtr, const nlohmann::json& aJson) const
+	{
+		return std::visit(Visitor{
+			[this, aDataPtr, &aJson](const DataTypeID aDataTypeID) -> bool
+			{
+				return LoadData(aDataTypeID, aDataPtr, aJson);
+			},
+			[this, aDataPtr, &aJson](const StructID) -> bool
+			{
+				return LoadData(GetDataTypeID<StructInstance>(), aDataPtr, aJson);
+			},
+			[this, aDataPtr, &aJson](const ClassID) -> bool
+			{
+				assert(false);
+				return LoadData(GetDataTypeID<ClassInstance>(), aDataPtr, aJson);
+			}
+			}, aDataTypeID.mID);
+	}
+
+	void DataTypeManager::ReleaseData(const GenericDataTypeID aDataTypeID, void* const aDataPtr) const
+	{
+		std::visit(Visitor{
+			   [this, aDataPtr](const DataTypeID aDataTypeID) -> void
+			   {
+				   ReleaseData(aDataTypeID, aDataPtr);
+			   },
+			   [this, aDataPtr](const StructID) -> void
+			   {
+				   ReleaseData(GetDataTypeID<StructInstance>(), aDataPtr);
+			   },
+			   [this, aDataPtr](const ClassID) -> void
+			   {
+					assert(false);
+			   }
+			}, aDataTypeID.mID);
+	}
+
+	void DataTypeManager::CopyData(GenericDataTypeID aDataTypeID, void* aDestination, const void* aSource) const
+	{
+		std::visit(Visitor{
+			[this, aDestination, aSource](const DataTypeID aDataTypeID) -> void
+			{
+				CopyData(aDataTypeID, aDestination, aSource);
+			},
+			[this, aDestination, aSource](const StructID) -> void
+			{
+				CopyData(GetDataTypeID<StructInstance>(), aDestination, aSource);
+			},
+			[this, aDestination, aSource](const ClassID) -> void
+			{
+				assert(false);
+				CopyData(GetDataTypeID<ClassInstance>(), aDestination, aSource);
+			}
+			}, aDataTypeID.mID);
+	}
+
+	void DataTypeManager::SwapData(GenericDataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2) const
+	{
+		std::visit(Visitor{
+			[this, aDataPtr1, aDataPtr2](const DataTypeID aDataTypeID) -> void
+			{
+				SwapData(aDataTypeID, aDataPtr1, aDataPtr2);
+			},
+			[this, aDataPtr1, aDataPtr2](const StructID) -> void
+			{
+				SwapData(GetDataTypeID<StructInstance>(), aDataPtr1, aDataPtr2);
+			},
+			[this, aDataPtr1, aDataPtr2](const ClassID) -> void
+			{
+				assert(false);
+				SwapData(GetDataTypeID<ClassInstance>(), aDataPtr1, aDataPtr2);
+			}
+			}, aDataTypeID.mID);
+	}
+
 	bool DataTypeManager::AreDataTypesRelated(const DataTypeID aDataTypeID1, const DataTypeID aDataTypeID2) const
 	{
 		if (aDataTypeID1 == aDataTypeID2)
@@ -214,6 +346,28 @@ namespace FLY_NAMESPACE
 			};
 
 		return checker(aDataTypeID1, aDataTypeID2) || checker(aDataTypeID2, aDataTypeID1);
+	}
+
+	bool DataTypeManager::AreDataTypesRelated(GenericDataTypeID aDataTypeID1, GenericDataTypeID aDataTypeID2) const
+	{
+		return std::visit(Visitor{
+			[this](const DataTypeID aDataTypeID1, const DataTypeID aDataTypeID2)
+			{
+				return AreDataTypesRelated(aDataTypeID1, aDataTypeID2);
+			},
+			[](const StructID aStructID1, const StructID aStructID2)
+			{
+				return aStructID1 == aStructID2;
+			},
+			[](const ClassID aClassID1, const ClassID aClassID2)
+			{
+				return aClassID1 == aClassID2;
+			},
+			[](const auto, const auto)
+			{
+				return false;
+			}
+			}, aDataTypeID1.mID, aDataTypeID2.mID);
 	}
 
 	eDataTypeRelation DataTypeManager::GetDataTypeRelation(const DataTypeID aDataTypeID1, const DataTypeID aDataTypeID2) const
@@ -239,6 +393,36 @@ namespace FLY_NAMESPACE
 
 	}
 
+	eDataTypeRelation DataTypeManager::GetDataTypeRelation(const GenericDataTypeID aDataTypeID1, const GenericDataTypeID aDataTypeID2) const
+	{
+		return std::visit(Visitor{
+			[this](const DataTypeID aDataTypeID1, const DataTypeID aDataTypeID2)
+			{
+				return GetDataTypeRelation(aDataTypeID1, aDataTypeID2);
+			},
+			[](const StructID aStructID1, const StructID aStructID2)
+			{
+				if (aStructID1 == aStructID2)
+				{
+					return eDataTypeRelation::Same;
+				}
+				return eDataTypeRelation::None;
+			},
+			[](const ClassID aClassID1, const ClassID aClassID2)
+			{
+				if (aClassID1 == aClassID2)
+				{
+					return eDataTypeRelation::Same;
+				}
+				return eDataTypeRelation::None;
+			},
+			[](const auto, const auto)
+			{
+				return eDataTypeRelation::None;
+			}
+			}, aDataTypeID1.mID, aDataTypeID2.mID);
+	}
+
 	const std::string& DataTypeManager::GetName(const DataTypeID aDataTypeID) const
 	{
 		if (mDataTypes.contains(aDataTypeID))
@@ -246,6 +430,25 @@ namespace FLY_NAMESPACE
 			return mDataTypes.at(aDataTypeID).mName;
 		}
 		return mNullNameStr;
+	}
+
+	std::string_view DataTypeManager::GetName(GenericDataTypeID aDataTypeID) const
+	{
+		return std::visit(Visitor
+			{
+			[this](const DataTypeID aDataTypeID) -> std::string_view
+			{
+				return GetName(aDataTypeID);
+			},
+			[this](const StructID aStructID) -> std::string_view
+			{
+				return GetStruct(aStructID).mName;
+			},
+			[this](const ClassID aClassID) -> std::string_view
+			{
+				return GetClass(aClassID).mName;
+			}
+			}, aDataTypeID.mID);
 	}
 
 	SetPinValueInterface DataTypeManager::GetSetPinValueInterface(const DataTypeID aDataTypeID, const eFlowType aFlowType) const
@@ -311,6 +514,25 @@ namespace FLY_NAMESPACE
 			return &it->second;
 		}
 		return nullptr;
+	}
+
+	GenericDataTypePtr DataTypeManager::Find(GenericDataTypeID aDataTypeID)
+	{
+		return std::visit(Visitor
+			{
+			[this](const DataTypeID aDataTypeID) -> GenericDataTypePtr
+			{
+				return Find(aDataTypeID);
+			},
+			[this](const StructID aStructID) -> GenericDataTypePtr
+			{
+				return &GetStruct(aStructID);
+			},
+			[this](const ClassID aClassID) -> GenericDataTypePtr
+			{
+				return &GetClass(aClassID);
+			}
+			}, aDataTypeID.mID);
 	}
 
 	bool DataTypeManager::IsRegistered(const DataTypeID aDataTypeID) const

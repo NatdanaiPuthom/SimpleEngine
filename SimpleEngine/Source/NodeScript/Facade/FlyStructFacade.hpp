@@ -6,6 +6,7 @@ namespace FLY_NAMESPACE
 {
 
 	class Struct;
+	class DataTypeFacade;
 
 	class StructFacade final
 	{
@@ -18,10 +19,8 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] StructID GetID() const;
 		[[nodiscard]] std::vector<VariableFacade> GetMemberVariables(bool aIncludeDestroyed = false) const;
 
-		VariableFacade CreateVariable(DataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* const aCommandTracker);
+		VariableFacade CreateVariable(const DataTypeFacade& aDataTypeFacade, std::string_view aName, CommandTracker* const aCommandTracker);
 		void SetName(std::string_view aName, CommandTracker* aCommandTracker);
-
-		[[nodiscard]] VariableContainer& GetVariableContainer() const;
 
 		explicit operator bool() const;
 

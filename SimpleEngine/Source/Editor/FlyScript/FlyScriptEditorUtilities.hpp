@@ -33,7 +33,7 @@ namespace Editor
 
 	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade);
 	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade);
-
+	bool DataTypeComboNoFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade);
 
 	static bool StringCompare(std::string_view aStr1, std::string_view aStr2)
 	{
@@ -43,6 +43,11 @@ namespace Editor
 			[](unsigned char ch1, unsigned char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
 		);
 		return it != aStr1.end();
+	}
+
+	inline constexpr unsigned int ToImGuiColor(const Fly::Color& aColor)
+	{
+		return IM_COL32(aColor.r * 255, aColor.g * 255, aColor.b * 255, 255);
 	}
 	
 	template<typename T>

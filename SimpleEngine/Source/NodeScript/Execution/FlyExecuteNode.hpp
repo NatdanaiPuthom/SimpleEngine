@@ -190,14 +190,13 @@ namespace FLY_NAMESPACE
 				// Set current node data before calling function
 				aContext.mNodeData = aNodeExecutionData;
 
-				ExecutionQueue executionQueue;
-				aContext.mExecutionQueue = &executionQueue;
-
 				// Call function and retrieve output values
 				if constexpr (sizeof...(OutputTypes) > 0)
 				{
 					std::tuple<OutputTypes...> outputValues = CallFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext,
 						NodeExecutionContextType, NodeStateDataType, Callable>(aContext, TypeList<OutputTypes...>{}, TypeList<InputTypes...>{});
+
+					// Set output of function
 					SetOutputValues(std::forward<std::tuple<OutputTypes...>>(std::move(outputValues)), node.mOutputPins, aContext);
 				}
 				else
@@ -205,11 +204,6 @@ namespace FLY_NAMESPACE
 					CallFunction<TakesExecutionContext, TakesNodeState, TakesInternalExecutionContext,
 						NodeExecutionContextType, NodeStateDataType, Callable>(aContext, TypeList<OutputTypes...>{}, TypeList<InputTypes...>{});
 				}
-
-				// Set output of function
-
-				aContext.mExecutionQueue = nullptr;
-				executionQueue.Execute();
 			};
 	}
 }

@@ -31,8 +31,6 @@ namespace FLY_NAMESPACE
 		ClassInstanceFacade CreateClassInstance();
 		FunctionFacade CreateMemberFunction(std::string_view aName);
 
-		[[nodiscard]] VariableContainer& GetVariableContainer() const;
-
 		[[nodiscard]] ClassID GetID() const;
 
 		void SetName(std::string_view aName, CommandTracker* aCommandTracker);
