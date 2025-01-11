@@ -20,6 +20,7 @@ namespace Simple
 namespace Graphics
 {
 	class ConstantBuffer;
+	class ConstantBufferManager;
 }
 
 namespace Graphics
@@ -131,11 +132,7 @@ namespace Graphics
 		void CreateBlendStates();
 		void CreateRasterizerStates();
 
-		void CreateCameraConstantBuffer();
-		void CreateTimeConstantBuffer();
-		void CreateLightConstantBuffer();
 		void CreatePostProcessingConstantBuffer();
-		void CreateJointsConstantBuffer();
 
 		void CreateGRenderTarget(const Math::Vector2ui aResolution);
 		void CreateDeferredRenderTarget(const Math::Vector2ui aResolution);
@@ -160,9 +157,6 @@ namespace Graphics
 		void ClearDepthStencilView();
 
 		void UnbindAllRenderTargets();
-
-		void UpdateCameraConstantBuffer();
-		void UpdateTimeConstantBuffer();
 	private:
 		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
@@ -185,11 +179,7 @@ namespace Graphics
 
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
-		std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
-		std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
-		std::unique_ptr<ConstantBuffer> myJointsConstantBuffer;
-		std::unique_ptr<ConstantBuffer> myLightConstantBuffer;
-		std::unique_ptr<ConstantBuffer> myPointLightConstantBuffer;
+		std::unique_ptr<ConstantBufferManager> myBufferManager;
 		std::unique_ptr<ConstantBuffer> myPostProcessConstantBuffer;
 
 		std::unique_ptr<LightBufferData> myLightBufferData;

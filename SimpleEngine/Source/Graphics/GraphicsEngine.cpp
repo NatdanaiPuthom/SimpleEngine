@@ -1,6 +1,7 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Graphics/ConstantBuffer/ConstantBuffer.hpp"
+#include "Graphics/ConstantBuffer/ConstantBufferManager.hpp"
 #include "Engine/Global.hpp"
 #include "Engine/ImGui/ImGuiEngine.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
@@ -31,12 +32,8 @@ namespace Graphics
 
 	void GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
 	{
-		myCameraConstantBuffer = std::make_unique<ConstantBuffer>();
-		myTimeConstantBuffer = std::make_unique<ConstantBuffer>();
-		myJointsConstantBuffer = std::make_unique<ConstantBuffer>();
-		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
 		myPostProcessConstantBuffer = std::make_unique<ConstantBuffer>();
-		myPointLightConstantBuffer = std::make_unique<ConstantBuffer>();
+		myBufferManager = std::make_unique<ConstantBufferManager>();
 
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 		myLightBufferData = std::make_unique<LightBufferData>();
@@ -66,10 +63,8 @@ namespace Graphics
 		CreateSamplerState();
 		CreateBlendStates();
 
-		CreateCameraConstantBuffer();
-		CreateTimeConstantBuffer();
-		CreateLightConstantBuffer();
-		CreateJointsConstantBuffer();
+		myBufferManager->Init();
+
 		CreatePostProcessingConstantBuffer();
 
 		PreloadTextures();
@@ -86,11 +81,6 @@ namespace Graphics
 
 		myContext->RSSetViewports(1, myViewPort.get());
 
-		myCameraConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Camera);
-		myTimeConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Time);
-		myLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Light);
-		myJointsConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Joints);
-		myPointLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Pointlight);
 		myPostProcessConstantBuffer->SetSlot(5);
 
 		myLightBufferData->directionalLightDirection.x = 0.0f;
@@ -106,8 +96,8 @@ namespace Graphics
 		ClearAllRenderTargets();
 		ClearPointLightCount();
 
-		UpdateTimeConstantBuffer();
-		UpdateCameraConstantBuffer();
+		myBufferManager->UpdateTimeConstantBuffer();
+		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw);
 
 		{
 			myPostProcessConstantBuffer->Bind(myPostProcessConstantBuffer->GetSlot());
@@ -527,50 +517,14 @@ namespace Graphics
 		myContext->OMSetRenderTargets(maxRenderTargetSupportedByDX11, nullViews, nullptr);
 	}
 
-	void GraphicsEngine::UpdateCameraConstantBuffer()
-	{
-		CameraBufferData frameBuffer = {};
-		frameBuffer.worldToClipMatrix = myCurrentCameraRaw->GetWorldToClipMatrix();
-		frameBuffer.cameraPosition = myCurrentCameraRaw->GetPosition();
-		frameBuffer.resolution = Global::GetResolution();
-
-		myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
-		myCameraConstantBuffer->Update(sizeof(CameraBufferData), &frameBuffer);
-	}
-
-	void GraphicsEngine::UpdateTimeConstantBuffer()
-	{
-		TimeBufferData timeBuffer = {};
-		timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
-		timeBuffer.deltaTime = static_cast<float>(Global::GetDeltaTime());
-		myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
-		myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
-	}
-
 	void GraphicsEngine::UpdatePointlights(const size_t aLightIndex)
 	{
-		PointLightBufferData pointLightData;
-		pointLightData.currentPointLightCount = myPointLightBufferData->currentPointLightCount;
-
-		for (size_t i = 0; i < myPointLightBufferData->currentPointLightCount; i++)
-		{
-			pointLightData.pointLightData[i] = myPointLightBufferData->pointLightData[aLightIndex];
-		}
-
-		myPointLightConstantBuffer->Bind(myPointLightConstantBuffer->GetSlot());
-		myPointLightConstantBuffer->Update(sizeof(PointLightBufferData), &pointLightData);
+		myBufferManager->UpdatePointlights(aLightIndex, myPointLightBufferData.get());
 	}
 
 	void GraphicsEngine::UpdateLightBuffer()
 	{
-		LightBufferData lightBufferData;
-
-		lightBufferData.ambientLightColorAndIntensity = myLightBufferData->ambientLightColorAndIntensity;
-		lightBufferData.directionalLightColorAndIntensity = myLightBufferData->directionalLightColorAndIntensity;
-		lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
-		
-		myLightConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
-		myLightConstantBuffer->Update(sizeof(LightBufferData), &lightBufferData);
+		myBufferManager->UpdateLightConstantBuffer(myLightBufferData.get());
 	}
 
 	void GraphicsEngine::SetGlobalGraphicsEngineToThis()
@@ -663,7 +617,7 @@ namespace Graphics
 	void GraphicsEngine::SetCamera(Graphics::Camera* aCamera)
 	{
 		myCurrentCameraRaw = aCamera;
-		UpdateCameraConstantBuffer();
+		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw);
 	}
 
 	void GraphicsEngine::SetToDefaultCamera()
@@ -1163,14 +1117,6 @@ namespace Graphics
 		myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = nullptr;
 	}
 
-	void GraphicsEngine::CreateJointsConstantBuffer()
-	{
-		JointsBufferData bonesBufferData;
-
-		if (myJointsConstantBuffer->Init(sizeof(JointsBufferData), &bonesBufferData) == false)
-			assert(false && "Failed to create BoneConstantBuffer");
-	}
-
 	void GraphicsEngine::CreateGRenderTarget(const Math::Vector2ui aResolution)
 	{
 		std::array<DXGI_FORMAT, 5> formats =
@@ -1464,48 +1410,6 @@ namespace Graphics
 
 		result = myDevice->CreateSamplerState(&samplerDesc2, &mySamplerStates[static_cast<size_t>(eSamplerState::Trilinear_Clamp)]);
 		assert(SUCCEEDED(result) && "Failed to create SamplerState");
-	}
-
-	void GraphicsEngine::CreateCameraConstantBuffer()
-	{
-		CameraBufferData cameraBuffer;
-
-		cameraBuffer.worldToClipMatrix = Math::Matrix4x4f::Identity();
-		cameraBuffer.cameraPosition = Math::Vector3f{ 0.0f,0.0f,0.0f };
-
-		if (!myCameraConstantBuffer->Init(sizeof(CameraBufferData), &cameraBuffer))
-			assert(false && "Failed to create CameraConstantBuffer");
-	}
-
-	void GraphicsEngine::CreateTimeConstantBuffer()
-	{
-		TimeBufferData timeBuffer;
-
-		timeBuffer.totalTime = 0.0f;
-		timeBuffer.deltaTime = 0.0f;
-
-		if (!myTimeConstantBuffer->Init(sizeof(TimeBufferData), &timeBuffer))
-			assert(false && "Failed to create TimeConstantBuffer");
-	}
-
-	void GraphicsEngine::CreateLightConstantBuffer()
-	{
-		LightBufferData lightBufferData;
-
-		lightBufferData.directionalLightColorAndIntensity = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-		lightBufferData.directionalLightDirection = Math::Vector3f(0.0f, 0.0f, 0.0f);
-
-		if (myLightConstantBuffer->Init(sizeof(LightBufferData), &lightBufferData) == false)
-		{
-			assert(false && "Failed to create LightConstantBuffer");
-		}
-
-		PointLightBufferData pointLightBufferData;
-
-		if (myPointLightConstantBuffer->Init(sizeof(PointLightBufferData), &pointLightBufferData) == false)
-		{
-			assert(false && "Failed to create PointLightConstantBuffer");
-		}
 	}
 
 	void GraphicsEngine::CreatePostProcessingConstantBuffer()
