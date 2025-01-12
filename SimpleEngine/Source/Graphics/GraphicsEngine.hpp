@@ -132,8 +132,6 @@ namespace Graphics
 		void CreateBlendStates();
 		void CreateRasterizerStates();
 
-		void CreatePostProcessingConstantBuffer();
-
 		void CreateGRenderTarget(const Math::Vector2ui aResolution);
 		void CreateDeferredRenderTarget(const Math::Vector2ui aResolution);
 		void CreatePostProcessingRenderTarget(const Math::Vector2ui aResolution);
@@ -180,7 +178,6 @@ namespace Graphics
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
 		std::unique_ptr<ConstantBufferManager> myBufferManager;
-		std::unique_ptr<ConstantBuffer> myPostProcessConstantBuffer;
 
 		std::unique_ptr<LightBufferData> myLightBufferData;
 		std::unique_ptr<PointLightBufferData> myPointLightBufferData;

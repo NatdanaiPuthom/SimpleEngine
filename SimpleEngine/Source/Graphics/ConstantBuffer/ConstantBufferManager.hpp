@@ -20,7 +20,7 @@ namespace Graphics
 		void UpdateCameraConstantBuffer(const Camera* aCamera);
 		void UpdateTimeConstantBuffer();
 		void UpdateLightConstantBuffer(const LightBufferData* aLightBufferData);
-		//void UpdatePostProcessConstantBuffer(const PostProcessData* aPostProcessData);
+		void UpdatePostProcessConstantBuffer(PostProcessData& aPostProcessData);
 		void UpdatePointlights(const size_t aLightIndex, const PointLightBufferData* aPointLightBufferData);
 
 	private:
@@ -29,13 +29,13 @@ namespace Graphics
 		void CreateJointsConstantBuffer();
 		void CreateLightConstantBuffer();
 		void CreatePointLightConstantBuffer();
-		//void CreatePostProcessingConstantBuffer();
+		void CreatePostProcessingConstantBuffer();
 	private:
 		std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myJointsConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myLightConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myPointLightConstantBuffer;
-		//std::unique_ptr<ConstantBuffer> myPostProcessConstantBuffer;
+		std::unique_ptr<ConstantBuffer> myPostProcessConstantBuffer;
 	};
 }

@@ -32,7 +32,6 @@ namespace Graphics
 
 	void GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
 	{
-		myPostProcessConstantBuffer = std::make_unique<ConstantBuffer>();
 		myBufferManager = std::make_unique<ConstantBufferManager>();
 
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
@@ -65,8 +64,6 @@ namespace Graphics
 
 		myBufferManager->Init();
 
-		CreatePostProcessingConstantBuffer();
-
 		PreloadTextures();
 		PreloadShaders();
 
@@ -80,8 +77,6 @@ namespace Graphics
 		SetSamplerState(eSamplerState::Bilinear_Warp);
 
 		myContext->RSSetViewports(1, myViewPort.get());
-
-		myPostProcessConstantBuffer->SetSlot(5);
 
 		myLightBufferData->directionalLightDirection.x = 0.0f;
 		myLightBufferData->directionalLightDirection.y = -1.0f;
@@ -98,11 +93,7 @@ namespace Graphics
 
 		myBufferManager->UpdateTimeConstantBuffer();
 		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw);
-
-		{
-			myPostProcessConstantBuffer->Bind(myPostProcessConstantBuffer->GetSlot());
-			myPostProcessConstantBuffer->Update(sizeof(PostProcessData), &myPostProcessData);
-		}
+		myBufferManager->UpdatePostProcessConstantBuffer(myPostProcessData);
 	}
 
 	bool GraphicsEngine::BeginFrame()
@@ -1410,16 +1401,6 @@ namespace Graphics
 
 		result = myDevice->CreateSamplerState(&samplerDesc2, &mySamplerStates[static_cast<size_t>(eSamplerState::Trilinear_Clamp)]);
 		assert(SUCCEEDED(result) && "Failed to create SamplerState");
-	}
-
-	void GraphicsEngine::CreatePostProcessingConstantBuffer()
-	{
-		PostProcessData postProcessingData;
-
-		if (myPostProcessConstantBuffer->Init(sizeof(LightBufferData), &postProcessingData) == false)
-		{
-			assert(false && "Failed to create LightConstantBuffer");
-		}
 	}
 
 	void GraphicsEngine::CreateBlendStates()

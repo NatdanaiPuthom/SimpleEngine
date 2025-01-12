@@ -20,14 +20,14 @@ namespace Graphics
 		myTimeConstantBuffer = std::make_unique<ConstantBuffer>();
 		myJointsConstantBuffer = std::make_unique<ConstantBuffer>();
 		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
-		//myPostProcessConstantBuffer = std::make_unique<ConstantBuffer>();
+		myPostProcessConstantBuffer = std::make_unique<ConstantBuffer>();
 		myPointLightConstantBuffer = std::make_unique<ConstantBuffer>();
 
 		CreateCameraConstantBuffer();
 		CreateTimeConstantBuffer();
 		CreateLightConstantBuffer();
 		CreatePointLightConstantBuffer();
-		//CreatePostProcessingConstantBuffer();
+		CreatePostProcessingConstantBuffer();
 		CreateJointsConstantBuffer();
 
 		myCameraConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Camera);
@@ -35,7 +35,7 @@ namespace Graphics
 		myLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Light);
 		myJointsConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Joints);
 		myPointLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Pointlight);
-		//myPostProcessConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_PostProcess);
+		myPostProcessConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_PostProcess);
 	}
 
 	void ConstantBufferManager::UpdateCameraConstantBuffer(const Camera* aCamera)
@@ -70,11 +70,11 @@ namespace Graphics
 		myLightConstantBuffer->Update(sizeof(LightBufferData), &lightBufferData);
 	}
 
-	/*void BufferManager::UpdatePostProcessConstantBuffer(const PostProcessData* aPostProcessData)
+	void ConstantBufferManager::UpdatePostProcessConstantBuffer(PostProcessData& aPostProcessData)
 	{
 		myPostProcessConstantBuffer->Bind(myPostProcessConstantBuffer->GetSlot());
 		myPostProcessConstantBuffer->Update(sizeof(PostProcessData), &aPostProcessData);
-	}*/
+	}
 
 	void ConstantBufferManager::UpdatePointlights(const size_t aLightIndex, const PointLightBufferData* aPointLightBufferData)
 	{
@@ -135,7 +135,7 @@ namespace Graphics
 		}
 	}
 
-	/*void BufferManager::CreatePostProcessingConstantBuffer()
+	void ConstantBufferManager::CreatePostProcessingConstantBuffer()
 	{
 		PostProcessData postProcessingData;
 
@@ -143,7 +143,7 @@ namespace Graphics
 		{
 			assert(false && "Failed to create LightConstantBuffer");
 		}
-	}*/
+	}
 
 	void ConstantBufferManager::CreateJointsConstantBuffer()
 	{
