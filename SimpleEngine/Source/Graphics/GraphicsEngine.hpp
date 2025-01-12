@@ -8,6 +8,7 @@
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/Model/Factory/ModelFactory.hpp"
 #include "Graphics/Texture/TextureManager.hpp"
+#include "Graphics/DataContainer/GraphicsDataContainer.hpp"
 #include <unordered_map>
 #include <memory>
 #include <array>
@@ -70,11 +71,8 @@ namespace Graphics
 		void SetBlendState(const eBlendState aBlendState);
 		void SetSamplerState(const eSamplerState aSamplerState);
 		void SetUseToneMapping(const bool aShouldUseToneMapping);
-		void SetDirectionalLightColor(const Math::Vector4f& aColor);
 		void SetRasterizerState(const eRasterizerState aRasterizerState);
-		void SetDirectionalLightDirection(const Math::Vector3f& aDirection);
 		void SetDepthStencilState(const eDepthStencilState aDepthStencilState);
-		void SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity);
 		void SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer = nullptr);
 
 		//NOTE(v9.37.0?): Call SetWindowSizeNextFrame instead.
@@ -95,6 +93,7 @@ namespace Graphics
 		const Graphics::Camera* GetCurrentCamera() const;
 		const std::shared_ptr<Camera> GetEditorCamera() const;
 
+		GraphicsDataContainer* GetDataContainer();
 		TextureManager* GetTextureManager();
 
 		//NOTE(v9.36.1): Will Add and cache the shader if it does not already exist
@@ -106,9 +105,6 @@ namespace Graphics
 		const Drawer::Renderer* GetRenderer() const;
 		const ModelFactory* GetModelFactory() const;
 
-		Math::Vector4f GetAmbientLightColorAndIntensity() const;
-		Math::Vector4f GetDirectionalLightColor() const;
-		Math::Vector3f GetDirectionalLightDirection() const;
 		PointLightData* GetPointLightDataArray() const;
 		size_t GetPointLightCount() const;
 
@@ -171,10 +167,10 @@ namespace Graphics
 
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
+		std::unique_ptr<GraphicsDataContainer> myDataContainer;
 		std::unique_ptr<ConstantBufferManager> myBufferManager;
 		std::unique_ptr<TextureManager> myTextureManager;
 
-		std::unique_ptr<LightBufferData> myLightBufferData;
 		std::unique_ptr<PointLightBufferData> myPointLightBufferData;
 
 		std::unique_ptr<ModelFactory> myModelFactory;

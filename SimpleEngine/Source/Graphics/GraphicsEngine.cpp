@@ -34,9 +34,9 @@ namespace Graphics
 	{
 		myBufferManager = std::make_unique<ConstantBufferManager>();
 		myTextureManager = std::make_unique<TextureManager>();
+		myDataContainer = std::make_unique<GraphicsDataContainer>();
 
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
-		myLightBufferData = std::make_unique<LightBufferData>();
 		myPointLightBufferData = std::make_unique<PointLightBufferData>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
 
@@ -65,6 +65,7 @@ namespace Graphics
 
 		myBufferManager->Init();
 		myTextureManager->Init();
+		myDataContainer->Init();
 
 		PreloadShaders();
 
@@ -78,10 +79,6 @@ namespace Graphics
 		SetSamplerState(eSamplerState::Bilinear_Warp);
 
 		myContext->RSSetViewports(1, myViewPort.get());
-
-		myLightBufferData->directionalLightDirection.x = 0.0f;
-		myLightBufferData->directionalLightDirection.y = -1.0f;
-		myLightBufferData->directionalLightDirection.z = 0.0f;
 
 		myCurrentCameraRaw = myEditorCamera.get();
 	}
@@ -450,7 +447,7 @@ namespace Graphics
 
 	void GraphicsEngine::UpdateLightBuffer()
 	{
-		myBufferManager->UpdateLightConstantBuffer(myLightBufferData.get());
+		myBufferManager->UpdateLightConstantBuffer(myDataContainer->GetLightBufferData());
 	}
 
 	void GraphicsEngine::SetGlobalGraphicsEngineToThis()
@@ -594,21 +591,6 @@ namespace Graphics
 
 		if (myVSync == false)
 			myFPSLevelCap = aCapLevel;
-	}
-
-	void GraphicsEngine::SetDirectionalLightDirection(const Math::Vector3f& aDirection)
-	{
-		myLightBufferData->directionalLightDirection = aDirection;
-	}
-
-	void GraphicsEngine::SetDirectionalLightColor(const Math::Vector4f& aColor)
-	{
-		myLightBufferData->directionalLightColorAndIntensity = aColor;
-	}
-
-	void GraphicsEngine::SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity)
-	{
-		myLightBufferData->ambientLightColorAndIntensity = aColorAndIntensity;
 	}
 
 	void GraphicsEngine::SetUseToneMapping(const bool aShouldUseToneMapping)
@@ -765,6 +747,11 @@ namespace Graphics
 		return myEditorCamera;
 	}
 
+	GraphicsDataContainer* GraphicsEngine::GetDataContainer()
+	{
+		return myDataContainer.get();
+	}
+
 	TextureManager* GraphicsEngine::GetTextureManager()
 	{
 		return myTextureManager.get();
@@ -793,21 +780,6 @@ namespace Graphics
 	const eRasterizerState GraphicsEngine::GetCurrentRasterizerState() const
 	{
 		return myCurrentRasterizerState;
-	}
-
-	Math::Vector4f GraphicsEngine::GetAmbientLightColorAndIntensity() const
-	{
-		return myLightBufferData->ambientLightColorAndIntensity;
-	}
-
-	Math::Vector4f GraphicsEngine::GetDirectionalLightColor() const
-	{
-		return myLightBufferData->directionalLightColorAndIntensity;
-	}
-
-	Math::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
-	{
-		return myLightBufferData->directionalLightDirection;
 	}
 
 	unsigned int GraphicsEngine::GetFPSLevelCap() const
