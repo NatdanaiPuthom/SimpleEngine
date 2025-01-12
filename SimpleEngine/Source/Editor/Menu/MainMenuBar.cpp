@@ -167,7 +167,7 @@ namespace Editor
 						{
 							operation = ImGuizmo::OPERATION::ROTATE;
 						}
-						else if (MainSingleton::GetInputManager().IsKeyPressed('S'))
+						else if (MainSingleton::GetInputManager().IsKeyPressed('S') && !MainSingleton::GetInputManager().GetMouseIsHidden())
 						{
 							operation = ImGuizmo::OPERATION::SCALE;
 						}
