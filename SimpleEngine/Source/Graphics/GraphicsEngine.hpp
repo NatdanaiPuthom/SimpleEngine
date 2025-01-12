@@ -7,6 +7,7 @@
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/Model/Factory/ModelFactory.hpp"
+#include "Graphics/Texture/TextureManager.hpp"
 #include <unordered_map>
 #include <memory>
 #include <array>
@@ -46,7 +47,6 @@ namespace Graphics
 		void ClearAllRenderTargets();
 
 		void AddPointLight(const PointLightData& aPointLightData);
-		const bool AddTexture(const char* aFileName, const unsigned int aSlot = 0);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 
 		void UpdatePointlights(const size_t aLightIndex);
@@ -95,11 +95,7 @@ namespace Graphics
 		const Graphics::Camera* GetCurrentCamera() const;
 		const std::shared_ptr<Camera> GetEditorCamera() const;
 
-		//NOTE(v9.35.5): Will Add and cache the texture if it does not already exist. aSlot is used to set slot when adding texture
-		std::shared_ptr<const Texture> GetTexture(const char* aFilePath);
-		std::shared_ptr<const Texture> GetTexture(const eTextureType aTextureType);
-		std::shared_ptr<const Texture> GetSkyBox(const eSkyBox aSkyBox);
-		std::shared_ptr<const Texture> GetIcon(const eIconType aIcon);
+		TextureManager* GetTextureManager();
 
 		//NOTE(v9.36.1): Will Add and cache the shader if it does not already exist
 		std::shared_ptr<const Shader> GetShader(const char* aPSFile, const char* aVSFile);
@@ -143,7 +139,6 @@ namespace Graphics
 		void LoadSettingsFromJson();
 
 		void PrepareFrame();
-		void PreloadTextures();
 		void PreloadShaders();
 
 		void FilterPixelForBloom();
@@ -156,7 +151,6 @@ namespace Graphics
 
 		void UnbindAllRenderTargets();
 	private:
-		std::unordered_map<std::string, const std::shared_ptr<const Texture>> myLoadedTextures;
 		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
 		std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
 		std::array<ComPtr<ID3D11RasterizerState>, static_cast<size_t>(eRasterizerState::Count)> myRasterizerStates;
@@ -178,6 +172,7 @@ namespace Graphics
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
 		std::unique_ptr<ConstantBufferManager> myBufferManager;
+		std::unique_ptr<TextureManager> myTextureManager;
 
 		std::unique_ptr<LightBufferData> myLightBufferData;
 		std::unique_ptr<PointLightBufferData> myPointLightBufferData;

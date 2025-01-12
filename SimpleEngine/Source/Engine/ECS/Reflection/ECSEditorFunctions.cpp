@@ -434,7 +434,7 @@ namespace ECS
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
 					{
 						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
-						aTexture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str()).get();
+						aTexture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(fileName.c_str()).get();
 					}
 					ImGui::EndDragDropTarget();
 				}
@@ -638,7 +638,7 @@ namespace ECS
 						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Assets_Browser"))
 						{
 							const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
-							const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(fileName.c_str());
+							const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(fileName.c_str());
 
 							bool isCubeMap = false;
 
