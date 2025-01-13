@@ -1,11 +1,15 @@
 #pragma once
-#include "Graphics/BufferData.hpp"
 #include <memory>
+
+struct PointLightBufferData;
 
 namespace Graphics
 {
 	class ConstantBuffer;
 	class Camera;
+
+	struct LightBufferData;
+	struct PostProcessData;
 }
 
 namespace Graphics
@@ -20,7 +24,7 @@ namespace Graphics
 		void UpdateCameraConstantBuffer(const Camera* aCamera);
 		void UpdateTimeConstantBuffer();
 		void UpdateLightConstantBuffer(const LightBufferData* aLightBufferData);
-		void UpdatePostProcessConstantBuffer(PostProcessData& aPostProcessData);
+		void UpdatePostProcessConstantBuffer(const PostProcessData* aPostProcessData);
 		void UpdatePointlights(const size_t aLightIndex, const PointLightBufferData* aPointLightBufferData);
 
 	private:

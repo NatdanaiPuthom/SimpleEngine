@@ -91,7 +91,7 @@ namespace Graphics
 
 		myBufferManager->UpdateTimeConstantBuffer();
 		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw);
-		myBufferManager->UpdatePostProcessConstantBuffer(myPostProcessData);
+		myBufferManager->UpdatePostProcessConstantBuffer(myDataContainer->GetPostProcessData());
 	}
 
 	bool GraphicsEngine::BeginFrame()
@@ -384,7 +384,7 @@ namespace Graphics
 
 	void GraphicsEngine::ApplyBloom()
 	{
-		if (myPostProcessData.useBloom == false)
+		if (myDataContainer->GetPostProcessData()->useBloom == false)
 		{
 			SetRenderTarget(eRenderTargetType::Bloom);
 			RenderFullScreenCopy(eRenderTargetType::Deferred);
@@ -593,51 +593,6 @@ namespace Graphics
 			myFPSLevelCap = aCapLevel;
 	}
 
-	void GraphicsEngine::SetUseToneMapping(const bool aShouldUseToneMapping)
-	{
-		myPostProcessData.useToneMapping = aShouldUseToneMapping;
-	}
-
-	void GraphicsEngine::SetUseBloom(const bool aShouldUseBloom)
-	{
-		myPostProcessData.useBloom = aShouldUseBloom;
-	}
-
-	void GraphicsEngine::SetBloomPixelThreshold(const float aValue)
-	{
-		myPostProcessData.bloomPixelFilterThreshold = aValue;
-	}
-
-	void GraphicsEngine::SetSaturation(const float aValue)
-	{
-		myPostProcessData.saturation = aValue;
-	}
-
-	void GraphicsEngine::SetExposure(const float aValue)
-	{
-		myPostProcessData.exposure = aValue;
-	}
-
-	void GraphicsEngine::SetContrast(const float aValue)
-	{
-		myPostProcessData.contrast = aValue;
-	}
-
-	void GraphicsEngine::SetBlackPoint(const float aValue)
-	{
-		myPostProcessData.blackpoint = aValue;
-	}
-
-	void GraphicsEngine::SetBloom(const float aValue)
-	{
-		myPostProcessData.bloom = aValue;
-	}
-
-	void GraphicsEngine::SetTint(const Math::Vector3f& aColor)
-	{
-		myPostProcessData.tint = aColor;
-	}
-
 	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
 	{
 		auto shader = myLoadedShaders.find({ aPSFile, aVSFile });
@@ -785,11 +740,6 @@ namespace Graphics
 	unsigned int GraphicsEngine::GetFPSLevelCap() const
 	{
 		return myFPSLevelCap;
-	}
-
-	const PostProcessData& GraphicsEngine::GetPostProcessData() const
-	{
-		return myPostProcessData;
 	}
 
 	void GraphicsEngine::CreateViewport(const Math::Vector2ui aSize)

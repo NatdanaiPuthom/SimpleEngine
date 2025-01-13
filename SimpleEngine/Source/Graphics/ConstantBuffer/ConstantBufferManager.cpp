@@ -2,6 +2,8 @@
 #include "Graphics/ConstantBuffer/ConstantBufferManager.hpp"
 #include "Graphics/ConstantBuffer/ConstantBuffer.hpp"
 #include "Graphics/Camera/Camera.hpp"
+#include "Graphics/DataContainer/GraphicsDataContainer.hpp"
+#include "Graphics/BufferData.hpp"
 #include "Engine/Global.hpp"
 
 namespace Graphics
@@ -70,10 +72,10 @@ namespace Graphics
 		myLightConstantBuffer->Update(sizeof(LightBufferData), &lightBufferData);
 	}
 
-	void ConstantBufferManager::UpdatePostProcessConstantBuffer(PostProcessData& aPostProcessData)
+	void ConstantBufferManager::UpdatePostProcessConstantBuffer(const PostProcessData* aPostProcessData)
 	{
 		myPostProcessConstantBuffer->Bind(myPostProcessConstantBuffer->GetSlot());
-		myPostProcessConstantBuffer->Update(sizeof(PostProcessData), &aPostProcessData);
+		myPostProcessConstantBuffer->Update(sizeof(PostProcessData), aPostProcessData);
 	}
 
 	void ConstantBufferManager::UpdatePointlights(const size_t aLightIndex, const PointLightBufferData* aPointLightBufferData)

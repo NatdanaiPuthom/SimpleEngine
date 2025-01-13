@@ -17,95 +17,96 @@ namespace Editor
 
 	void Editor::PostProcessingWindow::Draw()
 	{
-		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-		const PostProcessData& postProcessData = graphicsEngine->GetPostProcessData();
+		Graphics::GraphicsEngine* const graphicsEngine = Global::GetGraphicsEngine();
+		Graphics::GraphicsDataContainer* const graphicsDataContainer = graphicsEngine->GetDataContainer();
+		const Graphics::PostProcessData* const postProcessData = graphicsDataContainer->GetPostProcessData();
 
 		if (ImGui::Begin("PostProcess##Windows", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
 		{
-			Math::Vector3f tintValue = postProcessData.tint;
+			Math::Vector3f tintValue = postProcessData->tint;
 			if (ImGui::ColorPicker3("Tint##PostProcessValue", &tintValue.x))
 			{
-				graphicsEngine->SetTint(tintValue);
+				graphicsDataContainer->SetTint(tintValue);
 			}
 
-			float saturation = postProcessData.saturation;
+			float saturation = postProcessData->saturation;
 			if (ImGui::DragFloat("Saturation##PostProcessValue", &saturation, 0.01f))
 			{
-				graphicsEngine->SetSaturation(saturation);
+				graphicsDataContainer->SetSaturation(saturation);
 			}
 
-			float exposure = postProcessData.exposure;
+			float exposure = postProcessData->exposure;
 			if (ImGui::DragFloat("Exposure##PostProcessValue", &exposure, 0.01f))
 			{
-				graphicsEngine->SetExposure(exposure);
+				graphicsDataContainer->SetExposure(exposure);
 			}
 
-			float contrast = postProcessData.contrast;
+			float contrast = postProcessData->contrast;
 			if (ImGui::DragFloat("Contrast##PostProcessValue", &contrast, 0.01f))
 			{
-				graphicsEngine->SetContrast(contrast);
+				graphicsDataContainer->SetContrast(contrast);
 			}
 
-			float blackpoint = postProcessData.blackpoint;
+			float blackpoint = postProcessData->blackpoint;
 			if (ImGui::DragFloat("Blackpoint##PostProcessValue", &blackpoint, 0.01f))
 			{
-				graphicsEngine->SetBlackPoint(blackpoint);
+				graphicsDataContainer->SetBlackPoint(blackpoint);
 			}
 
 			ImGui::Separator();
 
-			float bloom = postProcessData.bloom;
+			float bloom = postProcessData->bloom;
 			if (ImGui::DragFloat("Bloom##PostProcessBloomValue", &bloom, 0.01f))
 			{
-				graphicsEngine->SetBloom(bloom);
+				graphicsDataContainer->SetBloom(bloom);
 			}
 
-			float bloomPixelFilterThreshold = postProcessData.bloomPixelFilterThreshold;
+			float bloomPixelFilterThreshold = postProcessData->bloomPixelFilterThreshold;
 			if (ImGui::DragFloat("Threshold##PostProcessBloomThreshold", &bloomPixelFilterThreshold, 0.001f))
 			{
-				graphicsEngine->SetBloomPixelThreshold(bloomPixelFilterThreshold);
+				graphicsDataContainer->SetBloomPixelThreshold(bloomPixelFilterThreshold);
 			}
 
 			ImGui::Separator();
 
 			if (ImGui::Button("Reset##PostProcessReset"))
 			{
-				graphicsEngine->SetTint({1.0f, 1.0f, 1.0f});
-				graphicsEngine->SetSaturation(1.0f);
-				graphicsEngine->SetExposure(0.0f);
-				graphicsEngine->SetContrast(1.0f);
-				graphicsEngine->SetBlackPoint(0.0f);
-				graphicsEngine->SetBloom(1.0f);
-				graphicsEngine->SetBloomPixelThreshold(0.50f);
+				graphicsDataContainer->SetTint({1.0f, 1.0f, 1.0f});
+				graphicsDataContainer->SetSaturation(1.0f);
+				graphicsDataContainer->SetExposure(0.0f);
+				graphicsDataContainer->SetContrast(1.0f);
+				graphicsDataContainer->SetBlackPoint(0.0f);
+				graphicsDataContainer->SetBloom(1.0f);
+				graphicsDataContainer->SetBloomPixelThreshold(0.50f);
 			}
 
 			ImGui::SameLine();
 			
 			if (ImGui::Button("Default##PostProcessRestoreDefault"))
 			{
-				PostProcessData tempPostProcessData;
+				Graphics::PostProcessData tempPostProcessData;
 
-				graphicsEngine->SetTint(tempPostProcessData.tint);
-				graphicsEngine->SetSaturation(tempPostProcessData.saturation);
-				graphicsEngine->SetExposure(tempPostProcessData.exposure);
-				graphicsEngine->SetContrast(tempPostProcessData.contrast);
-				graphicsEngine->SetBlackPoint(tempPostProcessData.blackpoint);
-				graphicsEngine->SetBloom(tempPostProcessData.bloom);
-				graphicsEngine->SetBloomPixelThreshold(tempPostProcessData.bloomPixelFilterThreshold);
+				graphicsDataContainer->SetTint(tempPostProcessData.tint);
+				graphicsDataContainer->SetSaturation(tempPostProcessData.saturation);
+				graphicsDataContainer->SetExposure(tempPostProcessData.exposure);
+				graphicsDataContainer->SetContrast(tempPostProcessData.contrast);
+				graphicsDataContainer->SetBlackPoint(tempPostProcessData.blackpoint);
+				graphicsDataContainer->SetBloom(tempPostProcessData.bloom);
+				graphicsDataContainer->SetBloomPixelThreshold(tempPostProcessData.bloomPixelFilterThreshold);
 			}
 
 			ImGui::Separator();
 
-			bool useToneMapping = static_cast<bool>(postProcessData.useToneMapping);
+			bool useToneMapping = static_cast<bool>(postProcessData->useToneMapping);
 			if (ImGui::Checkbox("Use ACES Film ToneMapping##PostProcessUseToneMapping", &useToneMapping))
 			{
-				graphicsEngine->SetUseToneMapping(useToneMapping);
+				graphicsEngine->GetDataContainer()->SetUseToneMapping(useToneMapping);
 			}
 
-			bool useBloom = static_cast<bool>(postProcessData.useBloom);
+			bool useBloom = static_cast<bool>(postProcessData->useBloom);
 			if (ImGui::Checkbox("Use Bloom (does not work properly)##PostProcessUseBloom", &useBloom))
 			{
-				graphicsEngine->SetUseBloom(useBloom);
+				graphicsDataContainer->SetUseBloom(useBloom);
 			}
 		}
 

@@ -56,21 +56,13 @@ namespace Graphics
 		bool IsVSyncActive() const;
 	public:
 		void SetToDefaultCamera();
-		void SetBloom(const float aValue);
-		void SetExposure(const float aValue);
-		void SetContrast(const float aValue);
 		void SetGlobalGraphicsEngineToThis();
-		void SetSaturation(const float aValue);
-		void SetBlackPoint(const float aValue);
 		void SetVSync(const bool aShouldTurnOn);
-		void SetTint(const Math::Vector3f& aColor);
-		void SetUseBloom(const bool aShouldUseBloom);
-		void SetBloomPixelThreshold(const float aValue);
 		void SetCamera(Graphics::Camera* aCamera);
 		void SetFPSLevelCap(const unsigned int aCapLevel);
 		void SetBlendState(const eBlendState aBlendState);
 		void SetSamplerState(const eSamplerState aSamplerState);
-		void SetUseToneMapping(const bool aShouldUseToneMapping);
+		
 		void SetRasterizerState(const eRasterizerState aRasterizerState);
 		void SetDepthStencilState(const eDepthStencilState aDepthStencilState);
 		void SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer = nullptr);
@@ -109,9 +101,6 @@ namespace Graphics
 		size_t GetPointLightCount() const;
 
 		unsigned int GetFPSLevelCap() const;
-
-		const PostProcessData& GetPostProcessData() const;
-
 	private:
 		void CreateViewport(const Math::Vector2ui aSize);
 
@@ -154,8 +143,6 @@ namespace Graphics
 		std::array<ComPtr<ID3D11BlendState>, static_cast<size_t>(eBlendState::Count)> myBlendStates;
 		std::array<ComPtr<ID3D11SamplerState>, static_cast<size_t>(eSamplerState::Count)> mySamplerStates;
 		std::array<float, 4> myClearColor;
-
-		PostProcessData myPostProcessData;
 
 		ComPtr<ID3D11Device> myDevice;
 		ComPtr<ID3D11DeviceContext> myContext;

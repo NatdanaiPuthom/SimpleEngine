@@ -14,6 +14,7 @@ namespace Graphics
 	void GraphicsDataContainer::Init()
 	{
 		myLightBufferData = std::make_unique<LightBufferData>();
+		myPostProcessData = std::make_unique<PostProcessData>();
 
 		myLightBufferData->directionalLightDirection.x = 0.0f;
 		myLightBufferData->directionalLightDirection.y = -1.0f;
@@ -35,9 +36,59 @@ namespace Graphics
 		myLightBufferData->directionalLightDirection = aDirection;
 	}
 
+	void GraphicsDataContainer::SetUseToneMapping(const bool aShouldUseToneMapping)
+	{
+		myPostProcessData->useToneMapping = aShouldUseToneMapping;
+	}
+
+	void GraphicsDataContainer::SetUseBloom(const bool aShouldUseBloom)
+	{
+		myPostProcessData->useBloom = aShouldUseBloom;
+	}
+
+	void GraphicsDataContainer::SetBloomPixelThreshold(const float aValue)
+	{
+		myPostProcessData->bloomPixelFilterThreshold = aValue;
+	}
+
+	void GraphicsDataContainer::SetSaturation(const float aValue)
+	{
+		myPostProcessData->saturation = aValue;
+	}
+
+	void GraphicsDataContainer::SetExposure(const float aValue)
+	{
+		myPostProcessData->exposure = aValue;
+	}
+
+	void GraphicsDataContainer::SetContrast(const float aValue)
+	{
+		myPostProcessData->contrast = aValue;
+	}
+
+	void GraphicsDataContainer::SetBlackPoint(const float aValue)
+	{
+		myPostProcessData->blackpoint = aValue;
+	}
+
+	void GraphicsDataContainer::SetBloom(const float aValue)
+	{
+		myPostProcessData->bloom = aValue;
+	}
+
+	void GraphicsDataContainer::SetTint(const Math::Vector3f& aColor)
+	{
+		myPostProcessData->tint = aColor;
+	}
+
 	LightBufferData* GraphicsDataContainer::GetLightBufferData()
 	{
 		return myLightBufferData.get();
+	}
+
+	PostProcessData* GraphicsDataContainer::GetPostProcessData()
+	{
+		return myPostProcessData.get();
 	}
 
 	Math::Vector4f GraphicsDataContainer::GetAmbientLightColorAndIntensity() const
