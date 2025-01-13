@@ -6,11 +6,11 @@
 
 namespace Graphics
 {
-	class GraphicsDataContainer
+	class LightManager
 	{
 	public:
-		GraphicsDataContainer();
-		~GraphicsDataContainer();
+		LightManager();
+		~LightManager();
 
 		void Init();
 	public:

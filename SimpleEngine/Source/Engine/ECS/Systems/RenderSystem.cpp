@@ -20,7 +20,7 @@ namespace ECS
 	{
 		Graphics::GraphicsEngine* const graphicsEngine = Global::GetGraphicsEngine();
 		Drawer::Renderer* const renderer = graphicsEngine->GetRenderer();
-		Graphics::GraphicsDataContainer* const graphicsDataContainer = graphicsEngine->GetDataContainer();
+		Graphics::LightManager* const graphicsDataContainer = graphicsEngine->GetLightManager();
 
 		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();

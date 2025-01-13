@@ -34,7 +34,7 @@ namespace Graphics
 	{
 		myBufferManager = std::make_unique<ConstantBufferManager>();
 		myTextureManager = std::make_unique<TextureManager>();
-		myDataContainer = std::make_unique<GraphicsDataContainer>();
+		myLightManager = std::make_unique<LightManager>();
 
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
@@ -64,7 +64,7 @@ namespace Graphics
 
 		myBufferManager->Init();
 		myTextureManager->Init();
-		myDataContainer->Init();
+		myLightManager->Init();
 
 		PreloadShaders();
 
@@ -86,11 +86,11 @@ namespace Graphics
 	{
 		ClearDepthStencilView();
 		ClearAllRenderTargets();
-		myDataContainer->ClearPointLightCount();
+		myLightManager->ClearPointLightCount();
 
 		myBufferManager->UpdateTimeConstantBuffer();
 		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw);
-		myBufferManager->UpdatePostProcessConstantBuffer(myDataContainer->GetPostProcessData());
+		myBufferManager->UpdatePostProcessConstantBuffer(myLightManager->GetPostProcessData());
 	}
 
 	bool GraphicsEngine::BeginFrame()
@@ -378,7 +378,7 @@ namespace Graphics
 
 	void GraphicsEngine::ApplyBloom()
 	{
-		if (myDataContainer->GetPostProcessData()->useBloom == false)
+		if (myLightManager->GetPostProcessData()->useBloom == false)
 		{
 			SetRenderTarget(eRenderTargetType::Bloom);
 			RenderFullScreenCopy(eRenderTargetType::Deferred);
@@ -420,12 +420,12 @@ namespace Graphics
 
 	void GraphicsEngine::UpdatePointlights(const size_t aLightIndex)
 	{
-		myBufferManager->UpdatePointlights(aLightIndex, myDataContainer->GetPointLightBufferData());
+		myBufferManager->UpdatePointlights(aLightIndex, myLightManager->GetPointLightBufferData());
 	}
 
 	void GraphicsEngine::UpdateLightBuffer()
 	{
-		myBufferManager->UpdateLightConstantBuffer(myDataContainer->GetLightBufferData());
+		myBufferManager->UpdateLightConstantBuffer(myLightManager->GetLightBufferData());
 	}
 
 	void GraphicsEngine::SetGlobalGraphicsEngineToThis()
@@ -680,9 +680,9 @@ namespace Graphics
 		return myEditorCamera;
 	}
 
-	GraphicsDataContainer* GraphicsEngine::GetDataContainer()
+	LightManager* GraphicsEngine::GetLightManager()
 	{
-		return myDataContainer.get();
+		return myLightManager.get();
 	}
 
 	TextureManager* GraphicsEngine::GetTextureManager()

@@ -18,7 +18,7 @@ namespace Editor
 	void Editor::PostProcessingWindow::Draw()
 	{
 		Graphics::GraphicsEngine* const graphicsEngine = Global::GetGraphicsEngine();
-		Graphics::GraphicsDataContainer* const graphicsDataContainer = graphicsEngine->GetDataContainer();
+		Graphics::LightManager* const graphicsDataContainer = graphicsEngine->GetLightManager();
 		const Graphics::PostProcessData* const postProcessData = graphicsDataContainer->GetPostProcessData();
 
 		if (ImGui::Begin("PostProcess##Windows", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
@@ -100,7 +100,7 @@ namespace Editor
 			bool useToneMapping = static_cast<bool>(postProcessData->useToneMapping);
 			if (ImGui::Checkbox("Use ACES Film ToneMapping##PostProcessUseToneMapping", &useToneMapping))
 			{
-				graphicsEngine->GetDataContainer()->SetUseToneMapping(useToneMapping);
+				graphicsEngine->GetLightManager()->SetUseToneMapping(useToneMapping);
 			}
 
 			bool useBloom = static_cast<bool>(postProcessData->useBloom);

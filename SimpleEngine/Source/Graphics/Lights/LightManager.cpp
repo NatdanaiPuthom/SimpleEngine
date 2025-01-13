@@ -1,17 +1,17 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
-#include "Graphics/DataContainer/GraphicsDataContainer.hpp"
+#include "Graphics/Lights/LightManager.hpp"
 
 namespace Graphics
 {
-	GraphicsDataContainer::GraphicsDataContainer()
+	LightManager::LightManager()
 	{
 	}
 
-	GraphicsDataContainer::~GraphicsDataContainer()
+	LightManager::~LightManager()
 	{
 	}
 
-	void GraphicsDataContainer::Init()
+	void LightManager::Init()
 	{
 		myLightBufferData = std::make_unique<LightBufferData>();
 		myPostProcessData = std::make_unique<PostProcessData>();
@@ -22,113 +22,113 @@ namespace Graphics
 		myLightBufferData->directionalLightDirection.z = 0.0f;
 	}
 
-	void GraphicsDataContainer::ClearPointLightCount()
+	void LightManager::ClearPointLightCount()
 	{
 		myPointLightBufferData->currentPointLightCount = 0;
 	}
 
-	void GraphicsDataContainer::AddPointLight(const PointLightData& aPointLightData)
+	void LightManager::AddPointLight(const PointLightData& aPointLightData)
 	{
 		myPointLightBufferData->pointLightData[myPointLightBufferData->currentPointLightCount] = aPointLightData;
 		++myPointLightBufferData->currentPointLightCount;
 	}
 
-	void GraphicsDataContainer::SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity)
+	void LightManager::SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity)
 	{
 		myLightBufferData->ambientLightColorAndIntensity = aColorAndIntensity;
 	}
 
-	void GraphicsDataContainer::SetDirectionalLightColor(const Math::Vector4f& aColor)
+	void LightManager::SetDirectionalLightColor(const Math::Vector4f& aColor)
 	{
 		myLightBufferData->directionalLightColorAndIntensity = aColor;
 	}
 
-	void GraphicsDataContainer::SetDirectionalLightDirection(const Math::Vector3f& aDirection)
+	void LightManager::SetDirectionalLightDirection(const Math::Vector3f& aDirection)
 	{
 		myLightBufferData->directionalLightDirection = aDirection;
 	}
 
-	void GraphicsDataContainer::SetUseToneMapping(const bool aShouldUseToneMapping)
+	void LightManager::SetUseToneMapping(const bool aShouldUseToneMapping)
 	{
 		myPostProcessData->useToneMapping = aShouldUseToneMapping;
 	}
 
-	void GraphicsDataContainer::SetUseBloom(const bool aShouldUseBloom)
+	void LightManager::SetUseBloom(const bool aShouldUseBloom)
 	{
 		myPostProcessData->useBloom = aShouldUseBloom;
 	}
 
-	void GraphicsDataContainer::SetBloomPixelThreshold(const float aValue)
+	void LightManager::SetBloomPixelThreshold(const float aValue)
 	{
 		myPostProcessData->bloomPixelFilterThreshold = aValue;
 	}
 
-	void GraphicsDataContainer::SetSaturation(const float aValue)
+	void LightManager::SetSaturation(const float aValue)
 	{
 		myPostProcessData->saturation = aValue;
 	}
 
-	void GraphicsDataContainer::SetExposure(const float aValue)
+	void LightManager::SetExposure(const float aValue)
 	{
 		myPostProcessData->exposure = aValue;
 	}
 
-	void GraphicsDataContainer::SetContrast(const float aValue)
+	void LightManager::SetContrast(const float aValue)
 	{
 		myPostProcessData->contrast = aValue;
 	}
 
-	void GraphicsDataContainer::SetBlackPoint(const float aValue)
+	void LightManager::SetBlackPoint(const float aValue)
 	{
 		myPostProcessData->blackpoint = aValue;
 	}
 
-	void GraphicsDataContainer::SetBloom(const float aValue)
+	void LightManager::SetBloom(const float aValue)
 	{
 		myPostProcessData->bloom = aValue;
 	}
 
-	void GraphicsDataContainer::SetTint(const Math::Vector3f& aColor)
+	void LightManager::SetTint(const Math::Vector3f& aColor)
 	{
 		myPostProcessData->tint = aColor;
 	}
 
-	LightBufferData* GraphicsDataContainer::GetLightBufferData()
+	LightBufferData* LightManager::GetLightBufferData()
 	{
 		return myLightBufferData.get();
 	}
 
-	PostProcessData* GraphicsDataContainer::GetPostProcessData()
+	PostProcessData* LightManager::GetPostProcessData()
 	{
 		return myPostProcessData.get();
 	}
 
-	Math::Vector4f GraphicsDataContainer::GetAmbientLightColorAndIntensity() const
+	Math::Vector4f LightManager::GetAmbientLightColorAndIntensity() const
 	{
 		return myLightBufferData->ambientLightColorAndIntensity;
 	}
 
-	Math::Vector4f GraphicsDataContainer::GetDirectionalLightColor() const
+	Math::Vector4f LightManager::GetDirectionalLightColor() const
 	{
 		return myLightBufferData->directionalLightColorAndIntensity;
 	}
 
-	Math::Vector3f GraphicsDataContainer::GetDirectionalLightDirection() const
+	Math::Vector3f LightManager::GetDirectionalLightDirection() const
 	{
 		return myLightBufferData->directionalLightDirection;
 	}
 
-	PointLightData* GraphicsDataContainer::GetPointLightDataArray() const
+	PointLightData* LightManager::GetPointLightDataArray() const
 	{
 		return myPointLightBufferData->pointLightData;
 	}
 
-	PointLightBufferData* GraphicsDataContainer::GetPointLightBufferData()
+	PointLightBufferData* LightManager::GetPointLightBufferData()
 	{
 		return myPointLightBufferData.get();
 	}
 
-	size_t GraphicsDataContainer::GetPointLightCount() const
+	size_t LightManager::GetPointLightCount() const
 	{
 		return myPointLightBufferData->currentPointLightCount;
 	}

@@ -2,7 +2,7 @@
 #include "Graphics/ConstantBuffer/ConstantBufferManager.hpp"
 #include "Graphics/ConstantBuffer/ConstantBuffer.hpp"
 #include "Graphics/Camera/Camera.hpp"
-#include "Graphics/DataContainer/GraphicsDataContainer.hpp"
+#include "Graphics/Lights/LightManager.hpp"
 #include "Graphics/BufferData.hpp"
 #include "Engine/Global.hpp"
 

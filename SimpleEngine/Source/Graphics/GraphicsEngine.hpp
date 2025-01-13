@@ -7,7 +7,7 @@
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/Model/Factory/ModelFactory.hpp"
 #include "Graphics/Texture/TextureManager.hpp"
-#include "Graphics/DataContainer/GraphicsDataContainer.hpp"
+#include "Graphics/Lights/LightManager.hpp"
 #include <unordered_map>
 #include <memory>
 #include <array>
@@ -83,7 +83,7 @@ namespace Graphics
 		const Graphics::Camera* GetCurrentCamera() const;
 		const std::shared_ptr<Camera> GetEditorCamera() const;
 
-		GraphicsDataContainer* GetDataContainer();
+		LightManager* GetLightManager();
 		TextureManager* GetTextureManager();
 
 		//NOTE(v9.36.1): Will Add and cache the shader if it does not already exist
@@ -148,10 +148,9 @@ namespace Graphics
 
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
-		std::unique_ptr<GraphicsDataContainer> myDataContainer;
+		std::unique_ptr<LightManager> myLightManager;
 		std::unique_ptr<ConstantBufferManager> myBufferManager;
 		std::unique_ptr<TextureManager> myTextureManager;
-
 		std::unique_ptr<ModelFactory> myModelFactory;
 		std::unique_ptr<Drawer::Renderer> myRenderer;
 		std::unique_ptr<Simple::ImGuiEngine> myImGuiEngine;
