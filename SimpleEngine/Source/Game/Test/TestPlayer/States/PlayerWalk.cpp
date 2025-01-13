@@ -60,6 +60,7 @@
 //	position += 2.0f * velocity * Global::GetDeltaTime();
 //
 //	myPlayer->SetPosition(position);
+
 //
 //	auto lookAt = position + 2.0f * velocity;
 //	myPlayer->LookAt(lookAt);*/

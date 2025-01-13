@@ -124,7 +124,7 @@ namespace Graphics
 		PROFILER_END();
 
 		PROFILER_BEGIN("Present frame");
-		const HRESULT result = mySwapChain->Present(myFPSLevelCap, 0);
+		[[maybe_unused]] const HRESULT result = mySwapChain->Present(myFPSLevelCap, 0);
 		assert(SUCCEEDED(result) && "Failed to present frame");
 		PROFILER_END();
 	}
@@ -470,7 +470,7 @@ namespace Graphics
 		backBuffer->Release();
 		myDepthBuffer->Release();
 
-		const HRESULT result = mySwapChain->ResizeBuffers(0, newWindowSize.x, newWindowSize.y, DXGI_FORMAT_UNKNOWN, 0);
+		[[maybe_unused]] const HRESULT result = mySwapChain->ResizeBuffers(0, newWindowSize.x, newWindowSize.y, DXGI_FORMAT_UNKNOWN, 0);
 		assert(SUCCEEDED(result) && "Failed to resize buffer");
 
 		{ //TO-DO(v10.0.5): Figure a out to resize buffers properly
@@ -874,7 +874,7 @@ namespace Graphics
 		creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-		const HRESULT result = D3D11CreateDeviceAndSwapChain(
+		[[maybe_unused]] const HRESULT result = D3D11CreateDeviceAndSwapChain(
 			nullptr,
 			D3D_DRIVER_TYPE_HARDWARE,
 			nullptr,
