@@ -1,7 +1,6 @@
 #pragma once
+#include "Engine/Math/Vector2.hpp"
 #include <memory>
-
-struct PointLightBufferData;
 
 namespace Graphics
 {
@@ -10,6 +9,7 @@ namespace Graphics
 
 	struct LightBufferData;
 	struct PostProcessData;
+	struct PointLightBufferData;
 }
 
 namespace Graphics
@@ -21,8 +21,8 @@ namespace Graphics
 		~ConstantBufferManager();
 
 		void Init();
-		void UpdateCameraConstantBuffer(const Camera* aCamera);
-		void UpdateTimeConstantBuffer();
+		void UpdateCameraConstantBuffer(const Camera* aCamera, const Math::Vector2ui& aResolution);
+		void UpdateTimeConstantBuffer(const float aTotalTime, const float aDeltaTime);
 		void UpdateLightConstantBuffer(const LightBufferData* aLightBufferData);
 		void UpdatePostProcessConstantBuffer(const PostProcessData* aPostProcessData);
 		void UpdatePointlights(const size_t aLightIndex, const PointLightBufferData* aPointLightBufferData);

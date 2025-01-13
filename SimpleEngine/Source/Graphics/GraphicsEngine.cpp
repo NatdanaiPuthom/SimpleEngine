@@ -9,7 +9,6 @@
 #include <External/imgui.h>
 #include <External/nlohmann/json.hpp>
 #include <fstream>
-#include <cmath>
 
 #ifdef _DEBUG
 #define REPORT_DX_WARNINGS
@@ -78,8 +77,8 @@ namespace Graphics
 		ClearAllRenderTargets();
 		myLightManager->ClearPointLightCount();
 
-		myBufferManager->UpdateTimeConstantBuffer();
-		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw);
+		myBufferManager->UpdateTimeConstantBuffer(static_cast<float>(Global::GetTotalTime()), Global::GetDeltaTime());
+		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw, Global::GetResolution());
 		myBufferManager->UpdatePostProcessConstantBuffer(myLightManager->GetPostProcessData());
 	}
 
@@ -508,7 +507,7 @@ namespace Graphics
 	void GraphicsEngine::SetCamera(Graphics::Camera* aCamera)
 	{
 		myCurrentCameraRaw = aCamera;
-		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw);
+		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw, Global::GetResolution());
 	}
 
 	void GraphicsEngine::SetToDefaultCamera()

@@ -2,9 +2,9 @@
 #include "Graphics/Managers/ConstantBufferManager.hpp"
 #include "Graphics/ConstantBuffer/ConstantBuffer.hpp"
 #include "Graphics/Camera/Camera.hpp"
-#include "Graphics/Managers/LightManager.hpp"
 #include "Graphics/BufferData.hpp"
-#include "Engine/Global.hpp"
+#include "Graphics/Defines.hpp"
+#include <cassert>
 
 namespace Graphics
 {
@@ -40,22 +40,22 @@ namespace Graphics
 		myPostProcessConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_PostProcess);
 	}
 
-	void ConstantBufferManager::UpdateCameraConstantBuffer(const Camera* aCamera)
+	void ConstantBufferManager::UpdateCameraConstantBuffer(const Camera* aCamera, const Math::Vector2ui& aResolution)
 	{
 		CameraBufferData frameBuffer = {};
 		frameBuffer.worldToClipMatrix = aCamera->GetWorldToClipMatrix();
 		frameBuffer.cameraPosition = aCamera->GetPosition();
-		frameBuffer.resolution = Global::GetResolution();
+		frameBuffer.resolution = aResolution;
 
 		myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
 		myCameraConstantBuffer->Update(sizeof(CameraBufferData), &frameBuffer);
 	}
 
-	void ConstantBufferManager::UpdateTimeConstantBuffer()
+	void ConstantBufferManager::UpdateTimeConstantBuffer(const float aTotalTime, const float aDeltaTime)
 	{
 		TimeBufferData timeBuffer = {};
-		timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
-		timeBuffer.deltaTime = static_cast<float>(Global::GetDeltaTime());
+		timeBuffer.totalTime = aTotalTime;
+		timeBuffer.deltaTime = aDeltaTime;
 		myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
 		myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
 	}

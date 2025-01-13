@@ -6,11 +6,6 @@
 
 namespace Graphics
 {
-	class Texture;
-}
-
-namespace Graphics
-{
 	enum class eTextureType
 	{
 		Default,
