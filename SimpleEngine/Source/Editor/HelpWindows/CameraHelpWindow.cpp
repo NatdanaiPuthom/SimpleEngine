@@ -59,7 +59,7 @@ namespace Editor
 			ImGui::Text("Rotate Up    - C");
 			ImGui::Text("Rotate Down  - Z");
 			ImGui::Text("Movespeed    - Scroll");
-			ImGui::Text("FreeFly      - Hold Right-Click");
+			ImGui::Text("LookAround      - Hold Right-Click");
 		}
 		ImGui::End();
 	}
