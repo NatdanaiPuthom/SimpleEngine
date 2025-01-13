@@ -21,7 +21,6 @@ namespace Graphics
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
 		, myFPSLevelCap(0)
-		, myCurrentRasterizerState(eRasterizerState::BackfaceCulling)
 		, myCurrentCameraRaw(nullptr)
 	{
 	}
@@ -32,15 +31,13 @@ namespace Graphics
 
 	void GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
 	{
+		myStateManager = std::make_unique<StateManager>();
 		myBufferManager = std::make_unique<ConstantBufferManager>();
 		myTextureManager = std::make_unique<TextureManager>();
 		myLightManager = std::make_unique<LightManager>();
-
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
-
 		myEditorCamera = std::make_shared<Graphics::Camera>();
-
 		myRenderer = std::make_unique<Drawer::Renderer>();
 		myModelFactory = std::make_unique<ModelFactory>();
 
@@ -48,35 +45,28 @@ namespace Graphics
 
 		CreateSwapChain(aWindowHandle, aWindowSize);
 		CreateViewport(aWindowSize);
-
 		CreateBackBuffer();
 		CreateGRenderTarget(aWindowSize);
 		CreateDeferredRenderTarget(aWindowSize);
 		CreatePostProcessingRenderTarget(aWindowSize);
 		CreateBloomDownAndUpSampleRenderTarget(aWindowSize);
 		CreateBloomRenderTarget(aWindowSize);
-
 		CreateDepthBuffer(aWindowSize);
-		CreateDepthStencilState();
-		CreateRasterizerStates();
-		CreateSamplerState();
-		CreateBlendStates();
 
+		myStateManager->Init(myDevice);
 		myBufferManager->Init();
 		myTextureManager->Init();
 		myLightManager->Init();
-
-		PreloadShaders();
-
 		myEditorCamera->Init();
 		myImGuiEngine->Init();
 		myRenderer->Init();
 		myModelFactory->Init();
 
-		SetRasterizerState(eRasterizerState::BackfaceCulling);
-		SetDepthStencilState(eDepthStencilState::Less_Equal);
-		SetSamplerState(eSamplerState::Bilinear_Warp);
+		PreloadShaders();
 
+		myStateManager->SetRasterizerState(myContext, eRasterizerState::BackfaceCulling);
+		myStateManager->SetDepthStencilState(myContext, eDepthStencilState::Less_Equal);
+		myStateManager->SetSamplerState(myContext, eSamplerState::Bilinear_Warp);
 		myContext->RSSetViewports(1, myViewPort.get());
 
 		myCurrentCameraRaw = myEditorCamera.get();
@@ -201,7 +191,7 @@ namespace Graphics
 
 		ID3D11RenderTargetView* renderTargetPointer = nullptr;
 
-		SetBlendState(eBlendState::Disabled);
+		myStateManager->SetBlendState(myContext, eBlendState::Disabled);
 
 		for (size_t i = 0; i < myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)].size(); ++i)
 		{
@@ -239,7 +229,7 @@ namespace Graphics
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 		}
 
-		SetBlendState(eBlendState::AlphaBlend);
+		myStateManager->SetBlendState(myContext, eBlendState::AlphaBlend);
 
 		for (size_t i = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)].size(); i > 1; --i)
 		{
@@ -269,7 +259,7 @@ namespace Graphics
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 		}
 
-		SetBlendState(eBlendState::Disabled);
+		myStateManager->SetBlendState(myContext, eBlendState::Disabled);
 
 		myContext->RSSetViewports(1, myViewPort.get());
 	}
@@ -387,13 +377,13 @@ namespace Graphics
 
 		FilterPixelForBloom();
 
-		SetSamplerState(eSamplerState::Trilinear_Clamp);
+		myStateManager->SetSamplerState(myContext, eSamplerState::Trilinear_Clamp);
 
 		DownAndUpSampleForBloom();
 		RenderBloom();
 
-		SetBlendState(eBlendState::Disabled);
-		SetSamplerState(eSamplerState::Bilinear_Warp);
+		myStateManager->SetBlendState(myContext, eBlendState::Disabled);
+		myStateManager->SetSamplerState(myContext, eSamplerState::Bilinear_Warp);
 	}
 
 	void GraphicsEngine::RenderFullScreenCopy(const eRenderTargetType aRenderTargetType)
@@ -531,27 +521,6 @@ namespace Graphics
 		return myRenderTargets[static_cast<size_t>(aRenderTargetType)];
 	}
 
-	void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)
-	{
-		myCurrentRasterizerState = aRasterizerState;
-		myContext->RSSetState(myRasterizerStates[static_cast<int>(myCurrentRasterizerState)].Get());
-	}
-
-	void GraphicsEngine::SetBlendState(const eBlendState aBlendState)
-	{
-		myContext->OMSetBlendState(myBlendStates[static_cast<size_t>(aBlendState)].Get(), nullptr, 0xffffffff);
-	}
-
-	void GraphicsEngine::SetDepthStencilState(const eDepthStencilState aDepthStencilState)
-	{
-		myContext->OMSetDepthStencilState(myDepthStencilStates[static_cast<size_t>(aDepthStencilState)].Get(), 0);
-	}
-
-	void GraphicsEngine::SetSamplerState(const eSamplerState aSamplerState)
-	{
-		myContext->PSSetSamplers(0, 1, mySamplerStates[static_cast<size_t>(aSamplerState)].GetAddressOf());
-	}
-
 	void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
 	{
 		myVSync = aShouldTurnOn;
@@ -680,6 +649,11 @@ namespace Graphics
 		return myEditorCamera;
 	}
 
+	StateManager* GraphicsEngine::GetStateManager()
+	{
+		return myStateManager.get();
+	}
+
 	LightManager* GraphicsEngine::GetLightManager()
 	{
 		return myLightManager.get();
@@ -710,11 +684,6 @@ namespace Graphics
 		return myDepthBuffer;
 	}
 
-	const eRasterizerState GraphicsEngine::GetCurrentRasterizerState() const
-	{
-		return myCurrentRasterizerState;
-	}
-
 	unsigned int GraphicsEngine::GetFPSLevelCap() const
 	{
 		return myFPSLevelCap;
@@ -737,73 +706,6 @@ namespace Graphics
 	bool GraphicsEngine::IsVSyncActive() const
 	{
 		return myVSync;
-	}
-
-	void GraphicsEngine::CreateRasterizerStates()
-	{
-		HRESULT result = S_OK;
-
-		D3D11_RASTERIZER_DESC rasterizerDesc = {};
-		rasterizerDesc.AntialiasedLineEnable = false;
-		rasterizerDesc.CullMode = D3D11_CULL_BACK;
-		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
-		rasterizerDesc.DepthBias = 0;
-		rasterizerDesc.DepthBiasClamp = 0.0f;
-		rasterizerDesc.DepthClipEnable = true;
-		rasterizerDesc.FrontCounterClockwise = false;
-		rasterizerDesc.MultisampleEnable = true;
-		rasterizerDesc.ScissorEnable = false;
-		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-
-		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::Wireframe)]);
-		assert(SUCCEEDED(result) && "Failed to create RasterizerState: Wireframe");
-
-		rasterizerDesc = {};
-		rasterizerDesc.AntialiasedLineEnable = false;
-		rasterizerDesc.CullMode = D3D11_CULL_NONE;
-		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
-		rasterizerDesc.DepthBias = 0;
-		rasterizerDesc.DepthBiasClamp = 0.0f;
-		rasterizerDesc.DepthClipEnable = true;
-		rasterizerDesc.FrontCounterClockwise = false;
-		rasterizerDesc.MultisampleEnable = true;
-		rasterizerDesc.ScissorEnable = false;
-		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-
-		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)]);
-		assert(SUCCEEDED(result) && "Failed to create RasterizerState: WireframeNoCulling");
-
-		rasterizerDesc = {};
-		rasterizerDesc.AntialiasedLineEnable = false;
-		rasterizerDesc.CullMode = D3D11_CULL_NONE;
-		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-		rasterizerDesc.DepthBias = 0;
-		rasterizerDesc.DepthBiasClamp = 0.0f;
-		rasterizerDesc.DepthClipEnable = true;
-		rasterizerDesc.FrontCounterClockwise = false;
-		rasterizerDesc.MultisampleEnable = true;
-		rasterizerDesc.ScissorEnable = false;
-		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-
-		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)]);
-		assert(SUCCEEDED(result) && "Failed to create RasterizerState: NoFaceCulling");
-
-		rasterizerDesc = {};
-		rasterizerDesc.AntialiasedLineEnable = false;
-		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
-		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-		rasterizerDesc.DepthBias = 0;
-		rasterizerDesc.DepthBiasClamp = 0.0f;
-		rasterizerDesc.DepthClipEnable = true;
-		rasterizerDesc.FrontCounterClockwise = false;
-		rasterizerDesc.MultisampleEnable = true;
-		rasterizerDesc.ScissorEnable = false;
-		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-
-		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)]);
-		assert(SUCCEEDED(result) && "Failed to create RasterizerState: FrontFaceCulling");
-
-		myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = nullptr;
 	}
 
 	void GraphicsEngine::CreateGRenderTarget(const Math::Vector2ui aResolution)
@@ -1040,105 +942,5 @@ namespace Graphics
 
 		result = myDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, myDepthBuffer.GetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create DepthStencilView");
-	}
-
-	void GraphicsEngine::CreateDepthStencilState()
-	{
-		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
-		depthStencilDesc.DepthEnable = true;
-		depthStencilDesc.StencilEnable = false;
-
-		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-
-		HRESULT result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilStates[static_cast<size_t>(eDepthStencilState::Less_Equal)].ReleaseAndGetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create DepthStencilState");
-
-		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-		depthStencilDesc.DepthFunc = D3D11_COMPARISON_GREATER;
-		result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilStates[static_cast<size_t>(eDepthStencilState::Greater)].GetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create DepthStencilState");
-	}
-
-	void GraphicsEngine::CreateSamplerState()
-	{
-		HRESULT result = S_OK;
-
-		D3D11_SAMPLER_DESC samplerDesc = {};
-		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.MipLODBias = 0.0f;
-		samplerDesc.MaxAnisotropy = 16;
-		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		samplerDesc.BorderColor[0] = 0;
-		samplerDesc.BorderColor[1] = 0;
-		samplerDesc.BorderColor[2] = 0;
-		samplerDesc.BorderColor[3] = 0;
-		samplerDesc.MinLOD = 0;
-		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-		result = myDevice->CreateSamplerState(&samplerDesc, &mySamplerStates[static_cast<size_t>(eSamplerState::Bilinear_Warp)]);
-		assert(SUCCEEDED(result) && "Failed to create SamplerState");
-
-		D3D11_SAMPLER_DESC samplerDesc2 = {};
-		samplerDesc2.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		samplerDesc2.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc2.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc2.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc2.MipLODBias = 0.0f;
-		samplerDesc2.MaxAnisotropy = 16;
-		samplerDesc2.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		samplerDesc2.BorderColor[0] = 0;
-		samplerDesc2.BorderColor[1] = 0;
-		samplerDesc2.BorderColor[2] = 0;
-		samplerDesc2.BorderColor[3] = 0;
-		samplerDesc2.MinLOD = 0;
-		samplerDesc2.MaxLOD = D3D11_FLOAT32_MAX;
-
-		result = myDevice->CreateSamplerState(&samplerDesc2, &mySamplerStates[static_cast<size_t>(eSamplerState::Trilinear_Clamp)]);
-		assert(SUCCEEDED(result) && "Failed to create SamplerState");
-	}
-
-	void GraphicsEngine::CreateBlendStates()
-	{
-		HRESULT result = S_OK;
-
-		D3D11_BLEND_DESC blendStateDescription = {};
-		blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
-		blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendStateDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		blendStateDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		result = myDevice->CreateBlendState(&blendStateDescription, myBlendStates[static_cast<size_t>(eBlendState::Disabled)].ReleaseAndGetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create blend state");
-
-		D3D11_BLEND_DESC blendStateDescription2 = {};
-		blendStateDescription2.RenderTarget[0].BlendEnable = TRUE;
-		blendStateDescription2.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		blendStateDescription2.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-		blendStateDescription2.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendStateDescription2.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDescription2.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDescription2.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
-		blendStateDescription2.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		result = myDevice->CreateBlendState(&blendStateDescription2, myBlendStates[static_cast<size_t>(eBlendState::AdditiveBlend)].ReleaseAndGetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create blend state");
-
-		D3D11_BLEND_DESC blendStateDescription3 = {};
-		blendStateDescription3.RenderTarget[0].BlendEnable = TRUE;
-		blendStateDescription3.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		blendStateDescription3.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-		blendStateDescription3.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendStateDescription3.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDescription3.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDescription3.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
-		blendStateDescription3.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		result = myDevice->CreateBlendState(&blendStateDescription, myBlendStates[static_cast<size_t>(eBlendState::AlphaBlend)].ReleaseAndGetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create blend state");
 	}
 }

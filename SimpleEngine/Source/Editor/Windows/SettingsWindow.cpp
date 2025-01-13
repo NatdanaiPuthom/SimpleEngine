@@ -393,7 +393,8 @@ namespace Editor
 
 		if (ImGui::Combo("RasterizerState##SettingWindow", &mySelectedRasterizerState, rasterizerStates.data(), static_cast<int>(rasterizerStates.size())))
 		{
-			Global::GetGraphicsEngine()->SetRasterizerState(static_cast<Graphics::eRasterizerState>(mySelectedRasterizerState));
+			Graphics::GraphicsEngine* const graphicsEngine = Global::GetGraphicsEngine();
+			graphicsEngine->GetStateManager()->SetRasterizerState(graphicsEngine->GetContext(), static_cast<Graphics::eRasterizerState>(mySelectedRasterizerState));
 		}
 	}
 

@@ -44,10 +44,10 @@ namespace ECS
 		}
 	}
 
-	void RenderLightSystem::LateRender(EntityComponentSystem* /*aEntityComponentSystem§*/)
+	void RenderLightSystem::LateRender(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-		ID3D11DeviceContext* context = graphicsEngine->GetContext().Get(); context;
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext> context = graphicsEngine->GetContext();
 		Drawer::Renderer* renderer = Global::GetRenderer();
 
 		std::vector<Graphics::RenderTarget>& gBuffers = graphicsEngine->GetRenderTargets(Graphics::eRenderTargetType::GBuffer);
@@ -66,11 +66,12 @@ namespace ECS
 		std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(Graphics::eTextureType::Default);
 		Math::Transform transform;
 
-		const Graphics::eRasterizerState previousRasterizerState = graphicsEngine->GetCurrentRasterizerState();
+		Graphics::StateManager* const stateManager = graphicsEngine->GetStateManager();
+		const Graphics::eRasterizerState previousRasterizerState = stateManager->GetCurrentRasterizerState();
 
-		graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
-		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Greater);
-		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
+		stateManager->SetRasterizerState(context, Graphics::eRasterizerState::FrontFaceCulling);
+		stateManager->SetDepthStencilState(context, Graphics::eDepthStencilState::Greater);
+		stateManager->SetBlendState(context, Graphics::eBlendState::AdditiveBlend);
 		graphicsEngine->UpdateLightBuffer();
 
 		Graphics::LightManager* graphicsDataContainer = graphicsEngine->GetLightManager();
@@ -86,9 +87,9 @@ namespace ECS
 			renderer->RenderUnlitStaticModel(transform.GetMatrix(), mesh, shader.get(), texture.get());
 		}
 
-		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Less_Equal);
-		graphicsEngine->SetRasterizerState(previousRasterizerState);
-		graphicsEngine->SetBlendState(Graphics::eBlendState::Disabled);
+		stateManager->SetDepthStencilState(context, Graphics::eDepthStencilState::Less_Equal);
+		stateManager->SetRasterizerState(context,previousRasterizerState);
+		stateManager->SetBlendState(context, Graphics::eBlendState::Disabled);
 
 		ID3D11ShaderResourceView* nullSRVs[5] = { NULL };
 		context->PSSetShaderResources(5, 5, nullSRVs);

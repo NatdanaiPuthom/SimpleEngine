@@ -6,7 +6,7 @@
 
 namespace Graphics
 {
-	class LightManager
+	class LightManager final
 	{
 	public:
 		LightManager();

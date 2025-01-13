@@ -125,7 +125,7 @@ namespace Editor
 			if (ImGui::Begin("Game##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
 			{
 				Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-				const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetCurrentRasterizerState();
+				const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetStateManager()->GetCurrentRasterizerState();
 
 				ImTextureID textureID = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::PostProcessing).Get();
 
