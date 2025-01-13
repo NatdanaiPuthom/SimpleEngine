@@ -40,7 +40,7 @@ namespace ECS
 			pointLight.position = transformComponent->transform.GetPosition();
 			pointLight.radius = pointLightComponent->pointLightData.radius;
 
-			graphicsEngine->AddPointLight(pointLight);
+			graphicsEngine->GetDataContainer()->AddPointLight(pointLight);
 		}
 	}
 
@@ -73,9 +73,10 @@ namespace ECS
 		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
 		graphicsEngine->UpdateLightBuffer();
 
-		Graphics::PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
+		Graphics::GraphicsDataContainer* graphicsDataContainer = graphicsEngine->GetDataContainer();
+		Graphics::PointLightData* pointLightBuffer = graphicsDataContainer->GetPointLightDataArray();
 
-		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
+		for (size_t i = 0; i < graphicsDataContainer->GetPointLightCount(); ++i)
 		{
 			graphicsEngine->UpdatePointlights(i);
 
@@ -97,7 +98,7 @@ namespace ECS
 			Drawer::Sphere pointLightDebugSpheres;
 			pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
-			for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
+			for (size_t i = 0; i < graphicsDataContainer->GetPointLightCount(); ++i)
 			{
 				pointLightDebugSpheres.position = pointLightBuffer[i].position;
 				pointLightDebugSpheres.radius = pointLightBuffer[i].radius;

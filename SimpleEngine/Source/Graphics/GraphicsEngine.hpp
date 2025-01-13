@@ -3,7 +3,6 @@
 #include "Graphics/BufferData.hpp"
 #include "Graphics/GraphicsDeclarations.hpp"
 #include "Graphics/Camera/Camera.hpp"
-#include "Graphics/Texture/Texture.hpp"
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/Model/Factory/ModelFactory.hpp"
@@ -47,7 +46,6 @@ namespace Graphics
 
 		void ClearAllRenderTargets();
 
-		void AddPointLight(const PointLightData& aPointLightData);
 		const bool AddShader(const char* aPSFile, const char* aVSFile);
 
 		void UpdatePointlights(const size_t aLightIndex);
@@ -97,9 +95,6 @@ namespace Graphics
 		const Drawer::Renderer* GetRenderer() const;
 		const ModelFactory* GetModelFactory() const;
 
-		PointLightData* GetPointLightDataArray() const;
-		size_t GetPointLightCount() const;
-
 		unsigned int GetFPSLevelCap() const;
 	private:
 		void CreateViewport(const Math::Vector2ui aSize);
@@ -130,7 +125,6 @@ namespace Graphics
 		void DownAndUpSampleForBloom();
 		void RenderBloom();
 
-		void ClearPointLightCount();
 		void ClearRenderTarget(const eRenderTargetType aRenderTargetType);
 		void ClearDepthStencilView();
 
@@ -157,8 +151,6 @@ namespace Graphics
 		std::unique_ptr<GraphicsDataContainer> myDataContainer;
 		std::unique_ptr<ConstantBufferManager> myBufferManager;
 		std::unique_ptr<TextureManager> myTextureManager;
-
-		std::unique_ptr<PointLightBufferData> myPointLightBufferData;
 
 		std::unique_ptr<ModelFactory> myModelFactory;
 		std::unique_ptr<Drawer::Renderer> myRenderer;

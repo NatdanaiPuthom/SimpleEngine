@@ -37,7 +37,6 @@ namespace Graphics
 		myDataContainer = std::make_unique<GraphicsDataContainer>();
 
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
-		myPointLightBufferData = std::make_unique<PointLightBufferData>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
 
 		myEditorCamera = std::make_shared<Graphics::Camera>();
@@ -87,7 +86,7 @@ namespace Graphics
 	{
 		ClearDepthStencilView();
 		ClearAllRenderTargets();
-		ClearPointLightCount();
+		myDataContainer->ClearPointLightCount();
 
 		myBufferManager->UpdateTimeConstantBuffer();
 		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw);
@@ -298,11 +297,6 @@ namespace Graphics
 		}
 	}
 
-	void GraphicsEngine::ClearPointLightCount()
-	{
-		myPointLightBufferData->currentPointLightCount = 0;
-	}
-
 	void GraphicsEngine::ClearRenderTarget(const eRenderTargetType aRenderTargetType)
 	{
 		const std::vector<RenderTarget>& renderTargets = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
@@ -417,22 +411,6 @@ namespace Graphics
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 	}
 
-	void GraphicsEngine::AddPointLight(const PointLightData& aPointLightData)
-	{
-		myPointLightBufferData->pointLightData[myPointLightBufferData->currentPointLightCount] = aPointLightData;
-		++myPointLightBufferData->currentPointLightCount;
-	}
-
-	PointLightData* GraphicsEngine::GetPointLightDataArray() const
-	{
-		return myPointLightBufferData->pointLightData;
-	}
-
-	size_t GraphicsEngine::GetPointLightCount() const
-	{
-		return myPointLightBufferData->currentPointLightCount;
-	}
-
 	void GraphicsEngine::UnbindAllRenderTargets()
 	{
 		static constexpr size_t maxRenderTargetSupportedByDX11 = 8;
@@ -442,7 +420,7 @@ namespace Graphics
 
 	void GraphicsEngine::UpdatePointlights(const size_t aLightIndex)
 	{
-		myBufferManager->UpdatePointlights(aLightIndex, myPointLightBufferData.get());
+		myBufferManager->UpdatePointlights(aLightIndex, myDataContainer->GetPointLightBufferData());
 	}
 
 	void GraphicsEngine::UpdateLightBuffer()

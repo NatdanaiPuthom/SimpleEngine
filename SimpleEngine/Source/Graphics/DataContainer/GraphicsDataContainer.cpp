@@ -15,10 +15,22 @@ namespace Graphics
 	{
 		myLightBufferData = std::make_unique<LightBufferData>();
 		myPostProcessData = std::make_unique<PostProcessData>();
+		myPointLightBufferData = std::make_unique<PointLightBufferData>();
 
 		myLightBufferData->directionalLightDirection.x = 0.0f;
 		myLightBufferData->directionalLightDirection.y = -1.0f;
 		myLightBufferData->directionalLightDirection.z = 0.0f;
+	}
+
+	void GraphicsDataContainer::ClearPointLightCount()
+	{
+		myPointLightBufferData->currentPointLightCount = 0;
+	}
+
+	void GraphicsDataContainer::AddPointLight(const PointLightData& aPointLightData)
+	{
+		myPointLightBufferData->pointLightData[myPointLightBufferData->currentPointLightCount] = aPointLightData;
+		++myPointLightBufferData->currentPointLightCount;
 	}
 
 	void GraphicsDataContainer::SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity)
@@ -104,5 +116,20 @@ namespace Graphics
 	Math::Vector3f GraphicsDataContainer::GetDirectionalLightDirection() const
 	{
 		return myLightBufferData->directionalLightDirection;
+	}
+
+	PointLightData* GraphicsDataContainer::GetPointLightDataArray() const
+	{
+		return myPointLightBufferData->pointLightData;
+	}
+
+	PointLightBufferData* GraphicsDataContainer::GetPointLightBufferData()
+	{
+		return myPointLightBufferData.get();
+	}
+
+	size_t GraphicsDataContainer::GetPointLightCount() const
+	{
+		return myPointLightBufferData->currentPointLightCount;
 	}
 }
