@@ -44,6 +44,8 @@
 #include "Graphics/Model/Skeleton.hpp"
 #include "Graphics/Animation/Animation.hpp"
 #include "Graphics/Animation/AnimationPlayer.hpp"
+#include "Graphics/DataContainer/GraphicsDataContainer.hpp"
+#include "Graphics/Texture/TextureManager.hpp"
 
 #pragma message("---------Never give up on your dreams!---------------")
 
