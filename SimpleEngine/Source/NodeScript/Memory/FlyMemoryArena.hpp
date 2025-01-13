@@ -77,17 +77,17 @@ namespace FLY_NAMESPACE
 		MemoryPoolID Allocate(Args&&... aArgs);
 
 		template<typename T>
-		T& At(MemoryPoolID anID);
+		[[nodiscard]] T& At(MemoryPoolID anID);
 
 		template<typename T>
-		const T& At(MemoryPoolID anID) const;
+		[[nodiscard]] const T& At(MemoryPoolID anID) const;
 
-		size_t GetCapacity() const;
-		size_t GetSize() const;
-		size_t GetSizeLeft() const;
+		[[nodiscard]] size_t GetCapacity() const;
+		[[nodiscard]] size_t GetSize() const;
+		[[nodiscard]] size_t GetSizeLeft() const;
 
-		Byte* MemoryAt(MemoryPoolID anID);
-		const Byte* MemoryAt(MemoryPoolID anID) const;
+		[[nodiscard]] Byte* MemoryAt(MemoryPoolID anID);
+		[[nodiscard]] const Byte* MemoryAt(MemoryPoolID anID) const;
 
 		void Clear();
 

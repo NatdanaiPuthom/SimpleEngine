@@ -79,7 +79,7 @@ namespace FLY_NAMESPACE
 			return *mUniquePtr;
 		}
 
-		void Reset(T* aPointer = nullptr)
+		void Reset(T* aPointer = nullptr) noexcept
 		{
 			mUniquePtr.reset(aPointer);
 		}

@@ -15,7 +15,7 @@ namespace Editor
 	private:
 
 
-		Fly::DataTypeFacade myCurrentDataType;
+		Fly::GenericDataTypeFacade myCurrentDataType;
 
 	};
 

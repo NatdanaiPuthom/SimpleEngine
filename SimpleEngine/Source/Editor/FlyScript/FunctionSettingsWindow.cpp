@@ -38,7 +38,7 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button("Add Input"))
 			{
-				myParent.GetCurrentFunctionFacade().AddPin(Fly::DataTypeFacade(Fly::GetDataTypeID<bool>()), Fly::eFlowType::Input, "Pin", nullptr);
+				myParent.GetCurrentFunctionFacade().AddPin(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), Fly::eFlowType::Input, "Pin", nullptr);
 			}
 			ImGui::Separator();
 
@@ -50,7 +50,7 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button("Add Output"))
 			{
-				myParent.GetCurrentFunctionFacade().AddPin(Fly::DataTypeFacade(Fly::GetDataTypeID<bool>()), Fly::eFlowType::Output, "Pin", nullptr);
+				myParent.GetCurrentFunctionFacade().AddPin(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), Fly::eFlowType::Output, "Pin", nullptr);
 			}
 			ImGui::Separator();
 
@@ -87,13 +87,13 @@ namespace Editor
 
 			const std::string comboLabel = dataTypeStrID + inputOutputLabel + std::to_string(i);
 
-			const Fly::DataTypeFacade pinTypeDataType = Fly::DataTypeFacade(pinType.GetDataTypeID());
+			const Fly::GenericDataTypeFacade pinTypeDataType(pinType.GetDataTypeID());
 
-			if (ImGui::BeginCombo(comboLabel.c_str(), pinTypeDataType.GetName().c_str()))
+			if (ImGui::BeginCombo(comboLabel.c_str(), std::string(pinTypeDataType.GetName()).c_str()))
 			{
-				for (const Fly::DataTypeFacade& dataTypeFacade : Fly::GetDataTypes())
+				for (const Fly::GenericDataTypeFacade& dataTypeFacade : Fly::GetGenericDataTypes())
 				{
-					if (ImGui::Selectable(dataTypeFacade.GetName().c_str()))
+					if (ImGui::Selectable(std::string(dataTypeFacade.GetName()).c_str()))
 					{
 						functionFacade.SetPinDataTypeAtIndex(dataTypeFacade, i, aFlowType, nullptr);
 					}

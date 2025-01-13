@@ -15,7 +15,7 @@ namespace FLY_NAMESPACE
 		return GetVariable().mName;
 	}
 
-	DataTypeID MemberVariableFacade::GetDataTypeID() const
+	GenericDataTypeID MemberVariableFacade::GetDataTypeID() const
 	{
 		return GetVariable().mDataTypeID;
 	}
@@ -32,6 +32,6 @@ namespace FLY_NAMESPACE
 
 	const Variable& MemberVariableFacade::GetVariable() const
 	{
-		return Internal::GetDataTypeManager().Find(mParentDataTypeID)->mVariables[mMemberIndex];
+		return Internal::GetDataTypeManager().Find(mParentDataTypeID)->mVariableContainer.mVariables[mMemberIndex];
 	}
 }

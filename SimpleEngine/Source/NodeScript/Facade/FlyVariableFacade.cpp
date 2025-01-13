@@ -1,8 +1,10 @@
 #include "FlyVariableFacade.hpp"
+#include "../DataType/FlyDataType.hpp"
 #include "../DataType/FlyClass.hpp"
 #include "../DataType/FlyStruct.hpp"
 #include "../Fly.hpp"
 #include "../Internal/FlyInternal.hpp"
+#include "../DataType/FlyDataTypeManager.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -25,6 +27,12 @@ namespace FLY_NAMESPACE
 	{
 	}
 
+	VariableFacade::VariableFacade(VarID aVarID, const GenericDataTypeFacade& aGenericDataTypeFacade)
+		: mVarID(aVarID)
+		, mOwnerID(aGenericDataTypeFacade.GetID())
+	{
+	}
+
 	// Temp
 	static VariableContainer* GetVariableContainer(GenericDataTypeID aDataTypeID)
 	{
@@ -38,32 +46,17 @@ namespace FLY_NAMESPACE
 
 	std::string_view VariableFacade::GetName() const
 	{
-		return std::visit(Visitor
-			{
-			[&](const DataTypeID aDataTypeID) -> std::string_view { return Internal::GetDataTypeByID(aDataTypeID)->mVariables[mVarID].mName; },
-			[&](const StructID aStructID) -> std::string_view { return Internal::GetStructByID(aStructID).mVariableContainer.mVariables[mVarID].mName; },
-			[&](const ClassID aClassID) -> std::string_view { return Internal::GetClassByID(aClassID).mVariableContainer.mVariables[mVarID].mName; }
-			}, mOwnerID.mID);
+		return Internal::GetDataTypeManager().Find(mOwnerID)->mVariableContainer.mVariables[mVarID].mName;
 	}
 
-	DataTypeID VariableFacade::GetDataTypeID() const
+	GenericDataTypeID VariableFacade::GetDataTypeID() const
 	{
-		return std::visit(Visitor
-			{
-			[&](const DataTypeID aDataTypeID) -> DataTypeID { return aDataTypeID; },
-			[&](const StructID aStructID) -> DataTypeID { return Internal::GetStructByID(aStructID).mVariableContainer.mVariables[mVarID].mDataTypeID; },
-			[&](const ClassID aClassID) -> DataTypeID { return Internal::GetClassByID(aClassID).mVariableContainer.mVariables[mVarID].mDataTypeID; }
-			}, mOwnerID.mID);
+		return GetVariable().mDataTypeID;
 	}
 
 	bool VariableFacade::IsDestroyed() const
 	{
-		return std::visit(Visitor
-			{
-			[&](const DataTypeID) -> bool { return false; },
-			[&](const StructID aStructID) -> bool { return Internal::GetStructByID(aStructID).mVariableContainer.mVariables[mVarID].mIsDestroyed; },
-			[&](const ClassID aClassID) -> bool { return Internal::GetClassByID(aClassID).mVariableContainer.mVariables[mVarID].mIsDestroyed; }
-			}, mOwnerID.mID);
+		return GetVariable().mIsDestroyed;
 	}
 
 	VarID VariableFacade::GetID() const
@@ -73,12 +66,7 @@ namespace FLY_NAMESPACE
 
 	size_t VariableFacade::GetByteOffset() const
 	{
-		return std::visit(Visitor
-			{
-			[&](const DataTypeID aDataTypeID) -> size_t { return Internal::GetDataTypeByID(aDataTypeID)->mVariables[mVarID].mByteOffset; },
-			[&](const StructID aStructID) -> size_t { assert(false); return Internal::GetStructByID(aStructID).mVariableContainer.mVariables[mVarID].mByteOffset; },
-			[&](const ClassID aClassID) -> size_t { assert(false); return Internal::GetClassByID(aClassID).mVariableContainer.mVariables[mVarID].mByteOffset; }
-			}, mOwnerID.mID);
+		return GetVariable().mByteOffset;
 	}
 
 	void VariableFacade::SetName(const std::string_view aName, CommandTracker* const aCommandTracker)
@@ -96,13 +84,18 @@ namespace FLY_NAMESPACE
 		Internal::ViewAndEditVariableDefaultValue(mVarID, *GetVariableContainer(mOwnerID), aCommandTracker);
 	}
 
-	void VariableFacade::SetDataType(const DataTypeFacade aDataTypeView, CommandTracker* const aCommandTracker)
+	void VariableFacade::SetDataType(const GenericDataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetVariableDataType(mVarID, *GetVariableContainer(mOwnerID), aDataTypeView.GetID(), aCommandTracker);
+		Internal::SetVariableDataType(mVarID, *GetVariableContainer(mOwnerID), aDataTypeFacade.GetID(), aCommandTracker);
 	}
 
 	VariableFacade::operator bool() const
 	{
 		return mVarID != InvalidID<VarID>();
+	}
+
+	const Variable& VariableFacade::GetVariable() const
+	{
+		return Internal::GetDataTypeByID(mOwnerID)->mVariableContainer.mVariables[mVarID];
 	}
 }

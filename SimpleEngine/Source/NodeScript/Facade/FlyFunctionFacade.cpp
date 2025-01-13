@@ -62,7 +62,7 @@ namespace FLY_NAMESPACE
 		function.mName = aName;
 	}
 
-	void FunctionFacade::AddPin(DataTypeFacade aDataTypeFacade, eFlowType aFlowType, std::string_view aName, CommandTracker* aCommandTracker)
+	void FunctionFacade::AddPin(GenericDataTypeFacade aDataTypeFacade, eFlowType aFlowType, std::string_view aName, CommandTracker* aCommandTracker)
 	{
 		Internal::AddPinToFunction(mFunctionID, aDataTypeFacade.GetID(), aFlowType, aName, aCommandTracker); 
 	}
@@ -72,7 +72,7 @@ namespace FLY_NAMESPACE
 		Internal::SetPinNameAtIndexFunction(mFunctionID, aName, aIndex, aFlowType, aCommandTracker);
 	}
 
-	void FunctionFacade::SetPinDataTypeAtIndex(DataTypeFacade aDataTypeFacade, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker)
+	void FunctionFacade::SetPinDataTypeAtIndex(GenericDataTypeFacade aDataTypeFacade, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker)
 	{
 		Internal::SetPinDataTypeAtIndexFunction(mFunctionID, aDataTypeFacade.GetID(), aIndex, aFlowType, aCommandTracker);
 	}

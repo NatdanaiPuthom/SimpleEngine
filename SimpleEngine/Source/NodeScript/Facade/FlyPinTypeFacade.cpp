@@ -20,9 +20,14 @@ namespace FLY_NAMESPACE
 		return GetPinType().mFlowType;
 	}
 
-	DataTypeID PinTypeFacade::GetDataTypeID() const
+	/*DataTypeID PinTypeFacade::GetDataTypeID() const
 	{
 		return GetPinType().mDataTypeID;
+	}*/
+
+	GenericDataTypeID PinTypeFacade::GetDataTypeID() const
+	{
+		return GetPinType().mGenericDataTypeID;
 	}
 
 	PinTypeID PinTypeFacade::GetID() const

@@ -50,10 +50,7 @@ namespace FLY_NAMESPACE
 		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext.mNodeData.mNodeRef.GetNodeID()];
 		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
-		MemoryPool& foundationMemoryPool = Internal::GetMemoryPool();
-
-		MemoryPoolID functionMemoryID = nodeType.mNodeRecipe.mFunctionMemoryID;
-		Callable& callable = foundationMemoryPool.At<Callable>(functionMemoryID);
+		Callable& callable = aContext.mFoundationMemoryPool->At<Callable>(nodeType.mNodeRecipe.mFunctionMemoryID);
 
 		std::tuple<ReferenceWrapper<InputTypes>...> inputTuple = CreateInputPack<InputTypes...>(node.mInputPins, aContext);
 
@@ -113,10 +110,7 @@ namespace FLY_NAMESPACE
 		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext.mNodeData.mNodeRef.GetNodeID()];
 		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
 
-		MemoryPool& foundationMemoryPool = Internal::GetMemoryPool();
-
-		MemoryPoolID functionMemoryID = nodeType.mNodeRecipe.mFunctionMemoryID;
-		Callable& callable = foundationMemoryPool.At<Callable>(functionMemoryID);
+		Callable& callable = aContext.mFoundationMemoryPool->At<Callable>(nodeType.mNodeRecipe.mFunctionMemoryID);
 
 		std::tuple<ReferenceWrapper<InputTypes>...> inputTuple = CreateInputPack<InputTypes...>(node.mInputPins, aContext);
 
@@ -206,4 +200,75 @@ namespace FLY_NAMESPACE
 				}
 			};
 	}
+
+	template<typename First, typename... Rest>
+	auto GetFirstParamAsTuple(const void* aPtr)
+	{
+		const First& value = *reinterpret_cast<const First*>(aPtr);
+		return std::tuple<First>{ value };
+	}
+
+	template<typename First, typename... Rest>
+	decltype(auto) GetRestAsTuple(const void* aRestTuple)
+	{
+		return *reinterpret_cast<const std::tuple<Rest...>*>(aRestTuple);
+	}
+
+	template<bool TakesInternalExecutionContext, typename Callable, typename... InputTypes>
+	FastExecuteFunction CreateFastExecuteFunction(Callable)
+	{
+		//using OutputType = GetOutputType<Callable>;
+		return []([[maybe_unused]] InternalExecutionContext& aContext, const MemoryPool& aFoundationMemoryPool, const NodeType& aNodeType, const void* aMainInput, const void* aInputTuple, void* aOutputValue) -> void
+			{
+				aMainInput;
+				aMainInput;
+				aInputTuple;
+				aOutputValue;
+				aFoundationMemoryPool;
+				aNodeType;
+
+
+
+				auto firstTuple = GetFirstParamAsTuple<InputTypes...>(aMainInput);
+				auto restTuple = GetRestAsTuple<InputTypes...>(aInputTuple);
+
+				if constexpr (false)
+				{
+
+					auto inputTuple = std::tuple_cat(std::make_tuple(&aContext), firstTuple, restTuple);
+
+					const Callable& callable = aFoundationMemoryPool.At<Callable>(aNodeType.mNodeRecipe.mFunctionMemoryID);
+
+					using OutputType = decltype(std::apply(callable, inputTuple));
+					if constexpr (!std::same_as<OutputType, void>)
+					{
+
+						OutputType outputValue = std::apply(callable, inputTuple);
+
+
+						OutputType& output = *reinterpret_cast<OutputType*>(aOutputValue);
+						output = outputValue;
+					}
+				}
+				else
+				{
+					auto inputTuple = std::tuple_cat(firstTuple, restTuple);
+
+					const Callable& callable = aFoundationMemoryPool.At<Callable>(aNodeType.mNodeRecipe.mFunctionMemoryID);
+
+					using OutputType = decltype(std::apply(callable, inputTuple));
+					if constexpr (!std::same_as<OutputType, void>)
+					{
+
+						OutputType outputValue = std::apply(callable, inputTuple);
+
+
+						OutputType& output = *reinterpret_cast<OutputType*>(aOutputValue);
+						output = outputValue;
+					}
+				}
+			};
+	}
+
+
 }

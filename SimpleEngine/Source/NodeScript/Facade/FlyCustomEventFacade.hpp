@@ -7,6 +7,7 @@ namespace FLY_NAMESPACE
 {
 	
 	class DataTypeFacade;
+	class GenericDataTypeFacade;
 	class CommandTracker;
 
 	class CustomEventFacade final
@@ -21,9 +22,9 @@ namespace FLY_NAMESPACE
 		CustomEventID GetID() const;
 
 		void SetName(std::string_view aName, CommandTracker* aCommandTracker);
-		void AddPin(DataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* aCommandTracker);
+		void AddPin(GenericDataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* aCommandTracker);
 		void SetPinNameAtIndex(std::string_view aName, size_t aIndex, CommandTracker* aCommandTracker);
-		void SetPinDataTypeAtIndex(DataTypeFacade aDataTypeFacade, size_t aIndex, CommandTracker* aCommandTracker);
+		void SetPinDataTypeAtIndex(GenericDataTypeFacade aDataTypeFacade, size_t aIndex, CommandTracker* aCommandTracker);
 		void DeletePinAtIndex(size_t aIndex, CommandTracker* aCommandTracker);
 
 		explicit operator bool() const;

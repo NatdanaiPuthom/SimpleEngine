@@ -11,14 +11,16 @@ namespace FLY_NAMESPACE
 	{
 		const CreateNodeSignature mCreateFunction = nullptr;
 		const ExecuteNodeSignature mExecuteFunction = nullptr;
+		const FastExecuteFunction mFastExecuteFunction = nullptr;
 		const eNodeTrait mTraits = eNodeTrait::None;
 		const EventID mEventID = InvalidID<EventID>();
-		const DataTypeID mOwnerDataTypeID = InvalidID<DataTypeID>();
+		const DataTypeID mOwnerDataTypeID;
 		std::vector<PinTypeID> mInputPinTypeIDs;
 		std::vector<PinTypeID> mOutputPinTypeIDs;
 		const MemoryPoolID mFunctionMemoryID = InvalidID<MemoryPoolID>();
-		const DataTypeID mNodeStateDataTypeID = InvalidID<DataTypeID>();
+		const DataTypeID mNodeStateDataTypeID;
 		std::string mName;
+		const TraitID mTraitID;
 		const eNodeOperatorTrait mOperatorTrait = eNodeOperatorTrait::None;
 	};
 

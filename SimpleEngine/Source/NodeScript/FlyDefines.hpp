@@ -123,9 +123,12 @@ namespace FLY_NAMESPACE
 	class NodeGraph;
 	struct InternalExecutionContext;
 	struct NodeExecutionData;
+	class MemoryPool;
+	struct NodeType;
 
-	using CreateNodeSignature = Node(*)(const NodeID, const NodeTypeID, NodeGraph&);
-	using ExecuteNodeSignature = void(*)(const NodeExecutionData&, InternalExecutionContext&);
+	using CreateNodeSignature = Node(*)(const NodeID aNodeID, const NodeTypeID aNodeTypeID, NodeGraph& aNodeGraph);
+	using ExecuteNodeSignature = void(*)(const NodeExecutionData& aNodeExecutionData, InternalExecutionContext& aContext);
+	using FastExecuteFunction = void(*)(InternalExecutionContext& aContext, const MemoryPool& aFoundationMemoryPool, const NodeType& aNodeType, const void* aMainInput, const void* aInputTuple, void* aOutputValue);
 
 	struct SetPinValueData;
 	struct SetPinValueFromPinData;
@@ -172,6 +175,7 @@ namespace FLY_NAMESPACE
 	{
 	public:
 
+		constexpr NonOwningPtr() = default;
 		constexpr NonOwningPtr(T* aPtr)
 			: mPtr(aPtr)
 		{
@@ -187,14 +191,9 @@ namespace FLY_NAMESPACE
 			return Get();
 		}
 
-		constexpr T& operator*() const
-		{
-			return *mPtr;
-		}
-
 	private:
 
-		T* mPtr;
+		T* mPtr = nullptr;
 	};
 
 	// Struct for color - values between 0 and 1

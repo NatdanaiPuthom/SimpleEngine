@@ -8,7 +8,7 @@ namespace FLY_NAMESPACE
 {
 
 
-	enum class eNodeTriggerReason
+	enum class eNodeTriggerReason : uint8_t
 	{
 		Flow,
 		Event,
@@ -38,6 +38,10 @@ namespace FLY_NAMESPACE
 	class NodeGraphInstance;
 	class NodeExecutor;
 	class NodeExecutionQueue;
+	class NodeTypeManager;
+	class PinTypeManager;
+	class DataTypeManager;
+	class MemoryPool;
 
 	struct InternalExecutionContext final
 	{
@@ -50,6 +54,10 @@ namespace FLY_NAMESPACE
 		ClassInstance* mClassInstance = nullptr;
 		NodeGraphInstance* mNodeGraphInstance = nullptr;
 		NodeExecutor* mNodeExecutor = nullptr;
+		NodeTypeManager* mNodeTypeManager = nullptr;
+		PinTypeManager* mPinTypeManager = nullptr;
+		DataTypeManager* mDataTypeManager = nullptr;
+		MemoryPool* mFoundationMemoryPool = nullptr;
 	};
 }
 

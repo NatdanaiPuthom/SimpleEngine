@@ -48,13 +48,11 @@ namespace std
 
 namespace FLY_NAMESPACE
 {
-	using String = std::string;
-
-	FLY_VALUETYPE(bool, Color(1.f, 0.1f, 0.1f));
-	FLY_VALUETYPE(int, Color(0.f, 0.2f, 1.f));
-	FLY_VALUETYPE(float, Color(0.55f, 0.2f, 0.65f));
-	FLY_VALUETYPE(uint32, Color(0.f, 0.4f, 1.f));
-	FLY_VALUETYPE(uint64, Color(0.1f, 0.5f, 1.f));
-	FLY_VALUETYPE(char, Color(0.2f, 0.7f, 0.4f));
-	FLY_VALUETYPE(String, Color(0.3f, 0.8f, 0.2f));
+	FLY_VALUETYPE(bool, Fly::CustomName{ "Bool" }, Fly::Color(1.f, 0.1f, 0.1f));
+	FLY_VALUETYPE(int, Fly::CustomName{ "Int" }, Fly::Color(0.f, 0.2f, 1.f));
+	FLY_VALUETYPE(float, Fly::CustomName{ "Float" }, Fly::Color(0.55f, 0.2f, 0.65f));
+	FLY_VALUETYPE(uint32, Fly::CustomName{ "UInt32" }, Fly::Color(0.f, 0.4f, 1.f));
+	FLY_VALUETYPE(uint64, Fly::CustomName{ "UInt64" }, Fly::Color(0.1f, 0.5f, 1.f));
+	FLY_VALUETYPE(char, Fly::CustomName{ "Char" }, Fly::Color(0.2f, 0.7f, 0.4f));
+	FLY_VALUETYPE(std::string, Fly::CustomName{ "String" }, Fly::Color(0.3f, 0.8f, 0.2f));
 }

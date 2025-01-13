@@ -15,7 +15,7 @@ namespace FLY_NAMESPACE
 		MemberVariableFacade(DataTypeID aParentDataTypeID, size_t aMemberIndex);
 
 		[[nodiscard]] std::string_view GetName() const;
-		[[nodiscard]] DataTypeID GetDataTypeID() const;
+		[[nodiscard]] GenericDataTypeID GetDataTypeID() const;
 		[[nodiscard]] size_t GetByteOffset() const;
 
 	private:

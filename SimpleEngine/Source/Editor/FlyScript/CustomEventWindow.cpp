@@ -62,7 +62,7 @@ namespace Editor
 
 		if (ImGui::Button("Add Pin"))
 		{
-			aCustomEventFacade.AddPin(Fly::DataTypeFacade(Fly::GetDataTypeID<bool>()), "Pin", nullptr);
+			aCustomEventFacade.AddPin(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), "Pin", nullptr);
 		}
 
 		ImGui::Separator();
@@ -94,7 +94,7 @@ namespace Editor
 			}
 
 			const std::string comboLabel = "##CustomEventPinType" + std::to_string(i);
-			Fly::DataTypeFacade currentDataTypeFacade(outputPinType.GetDataTypeID());
+			Fly::GenericDataTypeFacade currentDataTypeFacade(outputPinType.GetDataTypeID());
 			if (DataTypeComboEditableFilter(comboLabel.c_str(), currentDataTypeFacade))
 			{
 				aCustomEventFacade.SetPinDataTypeAtIndex(currentDataTypeFacade, i, nullptr);

@@ -14,9 +14,9 @@ namespace FLY_NAMESPACE
 		VariableContainer() = default;
 		~VariableContainer() = default;
 
-		VariableContainer(const VariableContainer&) = delete;
+		VariableContainer(const VariableContainer& aOther);
 		VariableContainer(VariableContainer&&) = default;
-		VariableContainer& operator=(const VariableContainer&) = delete;
+		VariableContainer& operator=(const VariableContainer& aOther);
 		VariableContainer& operator=(VariableContainer&&) = default;
 
 	public:

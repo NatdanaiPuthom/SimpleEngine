@@ -79,7 +79,7 @@ namespace Editor
 
 		if (ImGui::Button("Create Variable"))
 		{
-			myParentWindow.GetNodeContext().myClassFacade.CreateVariable(Fly::DataTypeFacade(Fly::GetDataTypeID<bool>()), "Var", nullptr);
+			myParentWindow.GetNodeContext().myClassFacade.CreateVariable(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), "Var", nullptr);
 			ImGui::SetNextItemOpen(true);
 		}
 
@@ -97,7 +97,7 @@ namespace Editor
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::DataTypeFacade(variableFacade.GetDataTypeID()).GetColor())));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::GenericDataTypeFacade(variableFacade.GetDataTypeID()).GetColor())));
 					ImGui::EndDisabled();
 
 					ModifyVariablePopup(variableFacade);
@@ -109,7 +109,7 @@ namespace Editor
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::DataTypeFacade(variableFacade.GetDataTypeID()).GetColor())));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::GenericDataTypeFacade(variableFacade.GetDataTypeID()).GetColor())));
 					ImGui::EndDisabled();
 				}
 
@@ -132,7 +132,7 @@ namespace Editor
 			aVariableFacade.SetName(variableName, nullptr);
 		}
 
-		Fly::DataTypeFacade currentDataTypeFacade(aVariableFacade.GetDataTypeID());
+		Fly::GenericDataTypeFacade currentDataTypeFacade(aVariableFacade.GetDataTypeID());
 
 		ImGui::Separator();
 		if (DataTypeComboEditableFilter("##ChangeDataType", currentDataTypeFacade))

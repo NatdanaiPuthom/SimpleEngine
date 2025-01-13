@@ -6,6 +6,8 @@
 namespace FLY_NAMESPACE
 {
 
+	void TestUtilityFunction();
+
 	ViewAndEditResult ViewAndEdit(StructInstance& aStructInstance);
 
 	StructInstance StructInstanceTest(const StructInstance& aStructInstance);

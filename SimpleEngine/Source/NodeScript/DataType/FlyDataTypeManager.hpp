@@ -2,23 +2,20 @@
 #include "../FlyDefines.hpp"
 #include "FlyDataType.hpp"
 #include "FlyStruct.hpp"
-#include "../Instance/FlyStructInstance.hpp"
 #include "FlyClass.hpp"
+#include "../Instance/FlyStructInstance.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "../Utilities/FlyMeta.hpp"
 #include "../Utilities/FlyUtilities.hpp"
 #include "../Memory/FlyMemoryArena.hpp"
+#include "FlyGenericDataType.hpp"
 #include "../Pin/FlyPinType.hpp"
 #include <nlohmann/json.hpp>
 
 namespace FLY_NAMESPACE
 {
-	template<typename T>
-	concept Fundamental = std::is_fundamental_v<T>;
 
-
-	inline void(*editorNullptrFunction)();
-
+	constexpr const char* NullptrString = "Nullptr";
 
 	template<typename T>
 	constexpr AllocateInterface CreateAllocateInterface()
@@ -80,18 +77,6 @@ namespace FLY_NAMESPACE
 			};
 	}
 
-	// Primary template: assumes T is not a specialization of the given class template
-	template <template <typename...> class Template, typename T>
-	struct is_specialization_of : std::false_type {};
-
-	// Specialization: detects if T is a specialization of the given class template
-	template <template <typename...> class Template, typename... Args>
-	struct is_specialization_of<Template, Template<Args...>> : std::true_type {};
-
-	// Helper variable template for convenience
-	template <template <typename...> class Template, typename T>
-	constexpr bool is_specialization_of_v = is_specialization_of<Template, T>::value;
-
 	//template<typename T>
 	//void DoSomething()
 	//{
@@ -129,12 +114,14 @@ namespace FLY_NAMESPACE
 		}
 	}
 
+	void RunEditorNullptrFunction();
+
 	template<typename T>
 	constexpr ViewAndEditInterface CreateViewAndEditInterface()
 	{
 		if constexpr (ViewAndEditable<T>)
 		{
-			return [](void* aDataPtr) -> ViewAndEditResult
+			return [](void* aDataPtr, EditorTextFunction) -> ViewAndEditResult
 				{
 					T& value = *reinterpret_cast<T*>(aDataPtr);
 					return ViewAndEdit(value);
@@ -148,7 +135,7 @@ namespace FLY_NAMESPACE
 			}
 			else
 			{
-				return [](void*) -> ViewAndEditResult
+				return [](void*, EditorTextFunction aTextFunction) -> ViewAndEditResult
 					{
 						//T& value = *reinterpret_cast<T*>(aDataPtr);
 						//if (value)
@@ -157,7 +144,10 @@ namespace FLY_NAMESPACE
 						//}
 						//else if (editorNullptrFunction)
 						//{
-						editorNullptrFunction();
+						if (aTextFunction)
+						{
+							aTextFunction(NullptrString);
+						}
 						//}
 
 						return ViewAndEditResult{};
@@ -166,7 +156,7 @@ namespace FLY_NAMESPACE
 		}
 		else if constexpr (Fundamental<T>)
 		{
-			return [](void* aDataPtr) -> ViewAndEditResult
+			return [](void* aDataPtr, EditorTextFunction) -> ViewAndEditResult
 				{
 					T& value = *reinterpret_cast<T*>(aDataPtr);
 					return ::ViewAndEdit(value);
@@ -183,7 +173,7 @@ namespace FLY_NAMESPACE
 	{
 		if constexpr (Viewable<T>)
 		{
-			return [](const void* aDataPtr) -> void
+			return [](const void* aDataPtr, EditorTextFunction) -> void
 				{
 					const T& value = *reinterpret_cast<const T*>(aDataPtr);
 					View(value);
@@ -193,7 +183,7 @@ namespace FLY_NAMESPACE
 		{
 			if constexpr (Viewable<std::remove_pointer_t<T>>)
 			{
-				return [](const void* aDataPtr) -> void
+				return [](const void* aDataPtr, EditorTextFunction aTextFunction) -> void
 					{
 						const T& value = *reinterpret_cast<const T*>(aDataPtr);
 
@@ -201,9 +191,9 @@ namespace FLY_NAMESPACE
 						{
 							View(*value);
 						}
-						else if (editorNullptrFunction)
+						else if (aTextFunction)
 						{
-							editorNullptrFunction();
+							aTextFunction(NullptrString);
 						}
 					};
 			}
@@ -211,7 +201,7 @@ namespace FLY_NAMESPACE
 			{
 				if constexpr (GlobalViewable<std::remove_pointer_t<T>>)
 				{
-					return [](const void* aDataPtr) -> void
+					return [](const void* aDataPtr, EditorTextFunction aTextFunction) -> void
 						{
 							const T& value = *reinterpret_cast<const T*>(aDataPtr);
 
@@ -219,9 +209,9 @@ namespace FLY_NAMESPACE
 							{
 								::View(*value);
 							}
-							else if (editorNullptrFunction)
+							else if (aTextFunction)
 							{
-								editorNullptrFunction();
+								aTextFunction(NullptrString);
 							}
 						};
 				}
@@ -236,9 +226,9 @@ namespace FLY_NAMESPACE
 			}
 
 		}
-		else if constexpr (Fundamental<T> and GlobalViewable<T>)
+		else if constexpr (Fundamental<T> && GlobalViewable<T>)
 		{
-			return [](const void* aDataPtr) -> void
+			return [](const void* aDataPtr, EditorTextFunction) -> void
 				{
 					const T& value = *reinterpret_cast<const T*>(aDataPtr);
 
@@ -256,7 +246,7 @@ namespace FLY_NAMESPACE
 	{
 		if constexpr (Savable<T, nlohmann::json>)
 		{
-			return [](nlohmann::json& aJson, const void* aDataPtr) -> void
+			return [](const void* aDataPtr, nlohmann::json& aJson) -> void
 				{
 					const T& value = *reinterpret_cast<const T*>(aDataPtr);
 					Save(value, aJson);
@@ -264,7 +254,7 @@ namespace FLY_NAMESPACE
 		}
 		else if constexpr (Fundamental<T>)
 		{
-			return [](nlohmann::json& aJson, const void* aDataPtr) -> void
+			return [](const void* aDataPtr, nlohmann::json& aJson) -> void
 				{
 					const T& value = *reinterpret_cast<const T*>(aDataPtr);
 					::Save(value, aJson);
@@ -282,7 +272,7 @@ namespace FLY_NAMESPACE
 	{
 		if constexpr (Loadable<T, nlohmann::json>)
 		{
-			return [](const nlohmann::json& aJson, void* aDataPtr) -> void
+			return [](void* aDataPtr, const nlohmann::json& aJson) -> void
 				{
 					T& value = *reinterpret_cast<T*>(aDataPtr);
 					Load(value, aJson);
@@ -290,7 +280,7 @@ namespace FLY_NAMESPACE
 		}
 		else if constexpr (Fundamental<T>)
 		{
-			return [](const nlohmann::json& aJson, void* aDataPtr) -> void
+			return [](void* aDataPtr, const nlohmann::json& aJson) -> void
 				{
 					T& value = *reinterpret_cast<T*>(aDataPtr);
 					::Load(value, aJson);
@@ -357,8 +347,6 @@ namespace FLY_NAMESPACE
 		};
 	}
 
-
-
 	template<typename T>
 	constexpr ExecutionInterface CreateExecutionInterface()
 	{
@@ -383,10 +371,7 @@ namespace FLY_NAMESPACE
 	}
 
 
-
 	struct FlyCustomVectorType;
-
-	using GenericDataTypePtr = std::variant<DataType*, Struct*, Class*>;
 
 	class DataTypeManager final
 	{
@@ -438,6 +423,7 @@ namespace FLY_NAMESPACE
 
 		void CopyData(GenericDataTypeID aDataTypeID, void* aDestination, const void* aSource) const;
 		void SwapData(GenericDataTypeID aDataTypeID, void* aDataPtr1, void* aDataPtr2) const;
+		[[nodiscard]] bool DataEqualsTo(GenericDataTypeID aDataTypeID, const void* aDataPtr1, const void* aDataPtr2) const;
 
 		[[nodiscard]] bool AreDataTypesRelated(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const;
 		[[nodiscard]] bool AreDataTypesRelated(GenericDataTypeID aDataTypeID1, GenericDataTypeID aDataTypeID2) const;
@@ -445,19 +431,32 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] eDataTypeRelation GetDataTypeRelation(GenericDataTypeID aDataTypeID1, GenericDataTypeID aDataTypeID2) const;
 
 		[[nodiscard]] const std::string& GetName(DataTypeID aDataTypeID) const;
-		[[nodiscard]] std::string_view GetName(GenericDataTypeID aDataTypeID) const;
+		[[nodiscard]] const std::string& GetName(GenericDataTypeID aDataTypeID) const;
+
+		[[nodiscard]] Color GetDataTypeColor(GenericDataTypeID aDataTypeID) const;
+		[[nodiscard]] eDataTypeTrait GetDataTypeTraits(GenericDataTypeID aDataTypeID) const;
+		[[nodiscard]] size_t GetDataTypeSize(GenericDataTypeID aDataTypeID) const;
+		[[nodiscard]] size_t GetDataTypeAlignment(GenericDataTypeID aDataTypeID) const;
 
 		[[nodiscard]] SetPinValueInterface GetSetPinValueInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
+		[[nodiscard]] SetPinValueInterface GetSetPinValueInterface(GenericDataTypeID aDataTypeID, eFlowType aFlowType) const;
 		[[nodiscard]] SetPinValueFromPinInterface GetSetPinValueFromPinInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
+		[[nodiscard]] SetPinValueFromPinInterface GetSetPinValueFromPinInterface(GenericDataTypeID aDataTypeID, eFlowType aFlowType) const;
 
 		[[nodiscard]] DataTypeID GetDataTypeIDByName(const std::string& aName) const;
+		[[nodiscard]] GenericDataTypeID GetGenericDataTypeIDByName(const std::string& aName) const;
 
-		void SetEditorNullptrFunction(void(*aFunction)());
+		[[nodiscard]] EditorTextFunction GetEditorTextFunction() const;
+		void SetEditorTextFunction(EditorTextFunction aTextFunction);
 
 		[[nodiscard]] const std::unordered_map<DataTypeID, DataType>& GetDataTypes() const;
 
 		[[nodiscard]] DataType* Find(DataTypeID aDataTypeID);
 		[[nodiscard]] const DataType* Find(DataTypeID aDataTypeID) const;
+		[[nodiscard]] DataType* Find(StructID aStructID);
+		[[nodiscard]] const DataType* Find(StructID aStructID) const;
+		[[nodiscard]] DataType* Find(ClassID aClassID);
+		[[nodiscard]] const DataType* Find(ClassID aClassID) const;
 
 		template<typename T>
 		[[nodiscard]] DataType* Find();
@@ -465,13 +464,16 @@ namespace FLY_NAMESPACE
 		template<typename T>
 		[[nodiscard]] const DataType* Find() const;
 
-		[[nodiscard]] GenericDataTypePtr Find(GenericDataTypeID aDataTypeID);
+		[[nodiscard]] DataType* Find(GenericDataTypeID aDataTypeID);
+		[[nodiscard]] const DataType* Find(GenericDataTypeID aDataTypeID) const;
 
 		template<Decayed T>
 		bool IsRegistered() const;
 
 		bool IsRegistered(DataTypeID aDataTypeID) const;
 
+
+		void SetDataTypeColor(GenericDataTypeID aDataTypeID, const Color& aColor);
 		void SetDefaultColor(const Color& aColor);
 
 		[[nodiscard]] Color GetDefaultColor() const;
@@ -482,6 +484,8 @@ namespace FLY_NAMESPACE
 		template<typename T>
 		void Register(const std::string& aName, bool aIsTargetable);
 
+		template<typename T>
+		DataTypeID CreateDataTypeDuplication();
 
 		StructID CreateStruct(std::string_view aName);
 		[[nodiscard]] Struct& GetStruct(StructID aStructID);
@@ -516,12 +520,39 @@ namespace FLY_NAMESPACE
 
 		std::unordered_map<DataTypeID, DataType> mDataTypes;
 		std::unordered_map<DataTypeID, TemplateDataType> mTemplateDataTypes;
+		std::vector<HeapObject<DataType>> mStructsNew;
+		std::vector<HeapObject<DataType>> mClassesNew;
 		std::vector<HeapObject<Struct>> mStructs;
 		std::vector<HeapObject<Class>> mClasses;
 
 		std::string mNullNameStr;
-		Fly::Color mDefaultColor = Color(1.000f, 0.131f, 0.978f, 1.000f);
+		Color mDefaultColor = Color(1.f, 0.131f, 0.978f, 1.f);
+		Color mDefaultStructColor = Color(0.f, 0.6f, 1.f, 1.f);
+		Color mDefaultClassColor = Color(1.f, 0.6f, 0.f, 1.f);
+
+		DataTypeID mDataTypeIDCounter{ 0 };
+
+		EditorTextFunction mEditorTextFunction = nullptr;
+
 	};
+
+	template<typename T>
+	DataTypeID DataTypeManager::CreateDataTypeDuplication()
+	{
+		const DataType* dataType = Find<T>();
+
+		if (!dataType)
+		{
+			return InvalidID<DataTypeID>();
+		}
+
+		const DataTypeID dataTypeID = mDataTypeIDCounter;
+		mDataTypes.emplace(mDataTypeIDCounter, *dataType);
+
+		mDataTypeIDCounter++;
+
+		return dataTypeID;
+	}
 
 	template<typename T>
 	inline void DataTypeManager::Register(const std::string& aName, const Color& aColor, const bool aIsTargetable)
@@ -619,7 +650,7 @@ namespace FLY_NAMESPACE
 			.mTypeTraits = typeTraits,
 		};
 
-		auto [it, success] = mDataTypes.emplace(GetDataTypeID<T>(), dataType);
+		auto [it, success] = mDataTypes.emplace(GetDataTypeID<T>(), std::move(dataType));
 		if (!success && aName != it->second.mName)
 		{
 			throw std::runtime_error("Two data types have the same hash value");
@@ -637,10 +668,10 @@ namespace FLY_NAMESPACE
 
 		if (parentDataType)
 		{
-			parentDataType->mVariables.push_back(
+			parentDataType->mVariableContainer.mVariables.push_back(
 				Variable
 				{
-					.mDataTypeID = dataTypeID,
+					.mDataTypeID = GenericDataTypeID{ dataTypeID },
 					.mName = aName,
 					.mByteOffset = byteOffset
 				}

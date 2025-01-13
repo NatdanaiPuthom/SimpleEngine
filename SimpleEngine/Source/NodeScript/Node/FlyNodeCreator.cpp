@@ -35,31 +35,18 @@ namespace FLY_NAMESPACE
 			};
 	}*/
 
-	void CopyPinData(const InternalExecutionContext& aContext, const std::vector<PinID>& aDestination, const std::vector<PinID>& aSource, NodeGraph& aDestinationNodeGraph, const NodeGraph& aSourceNodeGraph, const size_t aStartIndex)
+	void CopyPinValueFromPin(const InternalExecutionContext& aContext, const PinID aDestinationPinID, NodeGraph& aDestinationNodeGraph, const PinID aSourcePinID, const NodeGraph& aSourceNodeGraph)
 	{
-		assert(aDestination.size() == aSource.size());
-		for (size_t i = aStartIndex; i < aDestination.size(); i++)
-		{
-			const PinID destinationPinID = aDestination[i];
+		const Pin& destinationPin = aDestinationNodeGraph.mPins[aDestinationPinID];
 
-			const Pin& destinationPin = aDestinationNodeGraph.mPins[destinationPinID];
+		const PinType& outputPinType = aContext.mPinTypeManager->GetPinType(destinationPin.mTypeID);
 
-			const PinType& outputPinType = Internal::GetPinTypeManager().GetPinType(destinationPin.mTypeID);
-
-			const PinID sourcePinID = aSource[i];
-			const Pin& sourcePin = aSourceNodeGraph.mPins[sourcePinID];
-			[[maybe_unused]] const PinType& sourcePinType = Internal::GetPinTypeManager().GetPinType(sourcePin.mTypeID);
-
-			outputPinType.mSetPinValueFunction(SetPinValueData
-				{ 
-				.mNodeGraph = &aDestinationNodeGraph, 
-				.mReadFromDataPtr = sourcePin.mDataPtr, 
-				.mWriteToPinID = destinationPinID,
-#ifdef FLY_DEBUG
-				.mReadFromDataTypeID = sourcePinType.mDataTypeID
-#endif
-				}, aContext);
-		}
+		outputPinType.mSetPinValueFromPinFunction(SetPinValueFromPinData
+			{
+				.mWriteToPinNodeGraph = &aDestinationNodeGraph,
+				.mReadFromPinNodeGraph = &aSourceNodeGraph,
+				.mWriteToPinID = aDestinationPinID,
+				.mReadFromPinID = aSourcePinID,
+			}, aContext);
 	}
-
 }

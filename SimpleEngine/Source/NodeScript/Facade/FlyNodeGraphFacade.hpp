@@ -4,8 +4,9 @@
 #include "FlyPinFacade.hpp"
 #include "FlyLinkFacade.hpp"
 #include "FlyDataTypeFacade.hpp"
+#include "FlyGenericDataTypeFacade.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
-#include "../Node/NodeDragData.hpp"
+#include "../Node/FlyNodeDragData.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -48,10 +49,10 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] std::vector<PinFacade> GetNonConnectedInputPinFacades() const;
 		[[nodiscard]] std::vector<PinFacade> GetNonConnectedOutputPinFacades() const;
 		[[nodiscard]] std::vector<PinFacade> GetNonConnectedPinFacadesByFlowType(eFlowType aFlowType) const;
-		[[nodiscard]] std::vector<PinFacade> GetNonConnectedPinFacadesByFlowTypeAndDataType(eFlowType aFlowType, DataTypeFacade aDataTypeFacade) const;
-		[[nodiscard]] std::vector<PinFacade> GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(eFlowType aFlowType, DataTypeFacade aDataTypeFacade) const;
+		[[nodiscard]] std::vector<PinFacade> GetNonConnectedPinFacadesByFlowTypeAndDataType(eFlowType aFlowType, GenericDataTypeFacade aDataTypeFacade) const;
+		[[nodiscard]] std::vector<PinFacade> GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(eFlowType aFlowType, GenericDataTypeFacade aDataTypeFacade) const;
 
-		[[nodiscard]] std::vector<LinkFacade> GetLinkFacades(bool aIncludeDestroyed = false);
+		[[nodiscard]] std::vector<LinkFacade> GetLinkFacades(bool aIncludeDestroyed = false) const;
 
 		NodeFacade CreateNode(const NodeTypeFacade& aNodeTypeFacade, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeFacade CreateNode(std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);

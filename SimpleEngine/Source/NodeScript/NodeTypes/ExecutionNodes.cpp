@@ -299,12 +299,12 @@ namespace FLY_NAMESPACE
 	FLY_VALUETYPE(Emil2);
 	FLY_MEMBER(Emil2::e);
 
-	Emil EmilTest(Emil e)
+	std::tuple<Emil> EmilTest(InternalExecutionContextPtr, Emil e)
 	{
 		return e;
 	}
 
-	void EmilTest2(Emil2, Emil2)
+	void EmilTest2(Emil2, Emil2, float**)
 	{
 	}
 

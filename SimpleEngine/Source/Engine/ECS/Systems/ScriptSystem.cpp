@@ -182,37 +182,35 @@ namespace Fly
 namespace ECS
 {
 
-	using Transform = Math::Transform;
-	using Vector3f = Math::Vector3f;
-	using Vector2f = Math::Vector2f;
-	using Color = SimpleUtilities::Color;
-	using DataType = Fly::DataTypeFacade;
-
-	FLY_VALUETYPE(Transform, Fly::eNodeOperatorTrait::None, Fly::NonTargetable{});
-	FLY_VALUETYPE(Vector3f, Fly::NonTargetable{});
-
-	FLY_MEMBER(Vector3f::x);
-	FLY_MEMBER(Vector3f::y);
-	FLY_MEMBER(Vector3f::z);
-	FLY_VALUETYPE(Vector2f, Fly::NonTargetable{});
-	FLY_POINTERTYPE(Entity, Fly::Colors::Pink);
+	FLY_VALUETYPE(Math::Transform, Fly::CustomName{ "Transform" }, Fly::eNodeOperatorTrait::None, Fly::NonTargetable{});
+	FLY_VALUETYPE(Math::Vector3f, Fly::CustomName{ "Vector3f" }, Fly::NonTargetable{});
+	FLY_MEMBER(Math::Vector3f::x);
+	FLY_MEMBER(Math::Vector3f::y);
+	FLY_MEMBER(Math::Vector3f::z);
+	FLY_VALUETYPE(Math::Vector2f, Fly::CustomName{ "Vector2f" }, Fly::NonTargetable{});
+	FLY_POINTERTYPE(Entity);
 	FLY_POINTERTYPE(TransformComponent, Fly::NonTargetable{});
-	FLY_VALUETYPE(Color);
-	FLY_VALUETYPE(DataType);
+	FLY_VALUETYPE(SimpleUtilities::Color, Fly::CustomName{ "Color" });
+	FLY_VALUETYPE(Fly::DataTypeFacade, Fly::CustomName{ "FlyDataType" });
 
 	TransformComponent* GetTransformComponent(Entity* aEntity)
 	{
 		return aEntity->GetComponent<TransformComponent>();
 	}
 
-	std::tuple<float, float, float> BreakVector3f(const Vector3f& aVector)
+	std::tuple<float, float, float> BreakVector3f(const Math::Vector3f& aVector)
 	{
 		return { aVector.x, aVector.y, aVector.z };
 	}
 
-	Transform MakeTransfrom(const Vector3f& aPosition, const Vector3f& aRotation, const Vector3f& aScale)
+	Math::Vector3f MakeVector3f(const float aX, const float aY, const float aZ)
 	{
-		Transform t;
+		return Math::Vector3f(aX, aY, aZ);
+	}
+
+	Math::Transform MakeTransfrom(const Math::Vector3f& aPosition, const Math::Vector3f& aRotation, const Math::Vector3f& aScale)
+	{
+		Math::Transform t;
 		t.SetPosition(aPosition);
 		t.SetRotation(aRotation);
 		t.SetScale(aScale);
@@ -220,7 +218,7 @@ namespace ECS
 		return t;
 	}
 
-	std::tuple<Vector3f, Vector3f, Vector3f> BreakTransform(const Transform& aTransform)
+	std::tuple<Math::Vector3f, Math::Vector3f, Math::Vector3f> BreakTransform(const Math::Transform& aTransform)
 	{
 		return std::tuple{ aTransform.GetPosition(), aTransform.GetRotation(), aTransform.GetScale() };
 	}
@@ -240,12 +238,7 @@ namespace ECS
 		return aString;
 	}
 
-	Vector3f MakeVector3f(const float aX, const float aY, const float aZ)
-	{
-		return Vector3f(aX, aY, aZ);
-	}
-
-	void SetEntityPosition(Entity* aEntity, const Vector3f& aPosition)
+	void SetEntityPosition(Entity* aEntity, const Math::Vector3f& aPosition)
 	{
 		if (!aEntity)
 		{
@@ -279,10 +272,10 @@ namespace ECS
 	}
 
 	FLY_FUNCTION(SetEntityPosition, Fly::MemberOf<Entity>{}, Fly::InputNames{ "Entity", "Position" });
-	FLY_FUNCTION(BreakVector3f, Fly::MemberOf<Vector3f>{}, Fly::OutputNames{ "X", "Y", "Z" }, Fly::Pure{});
-	FLY_FUNCTION(MakeVector3f, Fly::MemberOf<Vector3f>{}, Fly::InputNames{ "X", "Y", "Z" }, Fly::Pure{});
-	FLY_FUNCTION(MakeTransfrom, Fly::MemberOf<Transform>{}, Fly::InputNames{ "Position", "Rotation", "Scale" }, Fly::Pure{});
-	FLY_FUNCTION(BreakTransform, Fly::MemberOf<Transform>{}, Fly::OutputNames{ "Position", "Rotation", "Scale" }, Fly::Pure{});
+	FLY_FUNCTION(BreakVector3f, Fly::MemberOf<Math::Vector3f>{}, Fly::OutputNames{ "X", "Y", "Z" }, Fly::Pure{});
+	FLY_FUNCTION(MakeVector3f, Fly::MemberOf<Math::Vector3f>{}, Fly::InputNames{ "X", "Y", "Z" }, Fly::Pure{});
+	FLY_FUNCTION(MakeTransfrom, Fly::MemberOf<Math::Transform>{}, Fly::InputNames{ "Position", "Rotation", "Scale" }, Fly::Pure{});
+	FLY_FUNCTION(BreakTransform, Fly::MemberOf<Math::Transform>{}, Fly::OutputNames{ "Position", "Rotation", "Scale" }, Fly::Pure{});
 	FLY_FUNCTION(GetStringLength, Fly::Pure{});
 	FLY_FUNCTION(ClearString);
 	FLY_FUNCTION(MakeString, Fly::Pure{});

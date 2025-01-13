@@ -17,15 +17,14 @@ namespace FLY_NAMESPACE
 		};
 	public:
 
-		CompositeCommand(const std::string& aName = std::string());
+		CompositeCommand(std::string aName = std::string());
 
-		template<typename... Args>
-		void AddCommand(Args&&... aArgs);
+		void AddCommand(Command&& aCommand);
 
 		void Do() const;
 		void Undo() const;
 
-		void Begin(const std::string& aName);
+		void Begin(std::string_view aName);
 		eEndCode End();
 
 		const std::string& GetName();
@@ -36,17 +35,4 @@ namespace FLY_NAMESPACE
 		std::vector<Command> mCommands;
 		std::string mName;
 	};
-
-	template<typename ...Args>
-	inline void CompositeCommand::AddCommand(Args && ...aArgs)
-	{
-		if (mCurrentChild)
-		{
-			mCurrentChild->AddCommand(std::forward<Args>(aArgs)...);
-		}
-		else
-		{
-			mCommands.emplace_back(std::forward<Args>(aArgs)...);
-		}
-	}
 }

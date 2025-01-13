@@ -13,6 +13,13 @@ namespace FLY_NAMESPACE
 		mExecutionContext.mNodeExecutor = this;
 	}
 
+	void NodeExecutor::Initialize()
+	{
+		mExecutionContext.mNodeTypeManager = &Internal::GetNodeTypeManager();
+		mExecutionContext.mPinTypeManager = &Internal::GetPinTypeManager();
+		mExecutionContext.mDataTypeManager = &Internal::GetDataTypeManager();
+	}
+
 	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
 	{
 		const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().mNodes[aNodeExecutionData.mNodeRef.GetNodeID()];
@@ -20,7 +27,7 @@ namespace FLY_NAMESPACE
 		nodeType.mNodeRecipe.mExecuteFunction(aNodeExecutionData, mExecutionContext);
 	}
 
-	void NodeExecutor::ExecuteEvent(const EventID anEventID, ClassInstance& aClassInstance, void* const aTarget, const ExecutionContextBase& anExecutionContext)
+	void NodeExecutor::ExecuteEvent(const EventID aEventID, ClassInstance& aClassInstance, void* const aTarget, const ExecutionContextBase& anExecutionContext)
 	{
 		Class& c = Internal::GetClassByID(aClassInstance.mClassID);
 		mExecutionContext.mClass = &c;
@@ -41,7 +48,7 @@ namespace FLY_NAMESPACE
 #endif
 
 		EventGraph& eventGraph = c.mEventGraph;
-		auto it = eventGraph.mEventNodes.find(anEventID);
+		auto it = eventGraph.mEventNodes.find(aEventID);
 
 
 		if (it == eventGraph.mEventNodes.end())

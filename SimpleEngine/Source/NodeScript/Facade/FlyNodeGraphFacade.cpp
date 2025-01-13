@@ -135,7 +135,7 @@ namespace FLY_NAMESPACE
 		);
 	}
 
-	std::vector<PinFacade> NodeGraphFacade::GetNonConnectedPinFacadesByFlowType(eFlowType aFlowType) const
+	std::vector<PinFacade> NodeGraphFacade::GetNonConnectedPinFacadesByFlowType(const eFlowType aFlowType) const
 	{
 		switch (aFlowType)
 		{
@@ -151,19 +151,19 @@ namespace FLY_NAMESPACE
 		return std::vector<PinFacade>();
 	}
 
-	std::vector<PinFacade> NodeGraphFacade::GetNonConnectedPinFacadesByFlowTypeAndDataType(const eFlowType aFlowType, const DataTypeFacade aDataTypeFacade) const
+	std::vector<PinFacade> NodeGraphFacade::GetNonConnectedPinFacadesByFlowTypeAndDataType(const eFlowType aFlowType, const GenericDataTypeFacade aDataTypeFacade) const
 	{
 		return GetPinFacadesFiltered(
 			[aFlowType, dataTypeID = aDataTypeFacade.GetID()](const Pin& aPin) -> bool
 			{
 				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(aPin.mTypeID);
-				return aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType && pinType.mDataTypeID == dataTypeID;
+				return aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType && pinType.mGenericDataTypeID == dataTypeID;
 			},
 			*this
 		);
 	}
 
-	std::vector<PinFacade> NodeGraphFacade::GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(const eFlowType aFlowType, const DataTypeFacade aDataTypeFacade) const
+	std::vector<PinFacade> NodeGraphFacade::GetNonConnectedPinFacadesByFlowTypeAndRelatedDataTypes(const eFlowType aFlowType, const GenericDataTypeFacade aDataTypeFacade) const
 	{
 		return GetPinFacadesFiltered(
 			[aFlowType, dataTypeID = aDataTypeFacade.GetID()](const Pin& aPin) -> bool
@@ -171,14 +171,14 @@ namespace FLY_NAMESPACE
 				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(aPin.mTypeID);
 				const bool a = aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType;
 
-				return a && Internal::AreDataTypesLinkable(SelectByFlowType(aFlowType, dataTypeID, pinType.mDataTypeID), pinType.mDataTypeID);
+				return a && Internal::AreDataTypesLinkable(SelectByFlowType(aFlowType, dataTypeID, pinType.mGenericDataTypeID), pinType.mGenericDataTypeID);
 			},
 			*this
 		);
 	}
 
 
-	std::vector<LinkFacade> NodeGraphFacade::GetLinkFacades(const bool aIncludeDestroyed)
+	std::vector<LinkFacade> NodeGraphFacade::GetLinkFacades(const bool aIncludeDestroyed) const
 	{
 		const std::vector<Link>& links = GetNodeGraph().mLinks;
 		std::vector<LinkFacade> linkFacades;
@@ -246,7 +246,7 @@ namespace FLY_NAMESPACE
 
 	void NodeGraphFacade::ReplaceTemplateNode(const NodeFacade aReplaceNodeFacade, const DataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)
 	{
-		Internal::ReplaceTemplateNode(GetNodeGraph(), aReplaceNodeFacade.GetID(), aDataTypeFacade.GetID(), aCommandTracker);
+		Internal::ReplaceNode(GetNodeGraph(), aReplaceNodeFacade.GetID(), aDataTypeFacade.GetID(), aCommandTracker);
 	}
 
 	void NodeGraphFacade::ReplaceTemplateNode(const PinFacade aReplacePinFacade, const DataTypeFacade aDataTypeFacade, CommandTracker* const aCommandTracker)

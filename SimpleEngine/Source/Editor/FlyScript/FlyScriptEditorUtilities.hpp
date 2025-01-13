@@ -1,13 +1,20 @@
 #pragma once
+#include "NodeScript/Fly.hpp"
+#include <functional>
+#include <memory>
+#include "ImGui/imgui.h"
 
 namespace Fly
 {
 	class DataTypeFacade;
+	class GenericDataTypeFacade;
+	class NodeGraphFacade;
+	class CommandTracker;
 }
 
 namespace ImGui
 {
-	
+
 	template<size_t MaxSize>
 	bool InputString(const char* aText, std::string& aString)
 	{
@@ -23,17 +30,77 @@ namespace ImGui
 	}
 }
 
+struct ImNodesContext;
+
+
 namespace Editor
 {
+	struct NodeTypeCategory final
+	{
+		std::string myName;
+		std::vector<NodeTypeCategory> myChildCategories;
+		std::vector<Fly::NodeTypeFacade> myNodeTypes;
+	};
+
+
+
+
+	struct NodeGraphContext final
+	{
+		static constexpr size_t TEXT_MAX_LENGTH = 40;
+		static constexpr Fly::Color TRAVERSED_LINK_COLOR{ 0.2f, 0.9f, 0.7f, 1.f };
+		static constexpr Fly::Color SELECTION_TINT{ 0.2f, 0.2f, 0.2f, 0.f };
+		static constexpr Fly::Color HOVER_TINT{ 0.1f, 0.1f, 0.1f, 0.f };
+		static constexpr const char* NODE_SEARCH_POPUP_NAME = "NodeSearchPopup";
+
+		NodeGraphContext();
+		~NodeGraphContext();
+
+		ImNodesContext* myImNodesContext = nullptr;
+		Fly::ClassFacade myClassFacade;
+		Fly::NodeGraphFacade myNodeGraphFacade;
+		Fly::ClassInstanceFacade myClassInstanceFacade;
+
+		std::vector<Fly::PinFacade> myPinFacadesToHighlight;
+		std::unordered_map<Fly::NodeID, Fly::NodeDragData> myNodeDragData;
+		Fly::PinID myLinkCreationPinID;
+		Fly::PinID myStartedLinkPinID;
+		Fly::NodeFacade myClickedNodeFacade;
+		Fly::LinkFacade myHoveredLinkFacade;
+		Fly::PinFacade myHoveredPinFacade;
+		Fly::PinFacade myClickedPinFacade;
+		std::vector<Fly::LinkFacade> myTraversedLinks;
+		std::unique_ptr<Fly::CommandTracker> myCommandTracker;
+
+		bool myIsDraggingNode = false;
+		ImVec2 myDragStartPos;
+		ImVec2 myDragEndPos;
+		bool myIsNodeEditorHovered = false;
+
+		struct SearchNodeData
+		{
+			std::function<void(NodeTypeCategory&)> myCategoryFunction;
+			std::function<void(const Fly::NodeTypeFacade&)> myOnClickFunction;
+
+			int myCurrentIndex = 0;
+			char myNodeTypeSearch[TEXT_MAX_LENGTH] = "";
+		};
+
+		SearchNodeData mySearchNodeData;
+		ImVec2 myNodeCreationClickPos;
+
+
+	};
+
 	template<typename T>
 	constexpr std::string Combine(const char* aName, const T& aValue)
 	{
 		return std::string(aName) + std::to_string(aValue);
 	}
 
-	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade);
-	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade);
-	bool DataTypeComboNoFilter(const char* aComboLabel, Fly::DataTypeFacade& aDataTypeFacade);
+	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::GenericDataTypeFacade& aDataTypeFacade);
+	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::GenericDataTypeFacade& aDataTypeFacade);
+	bool DataTypeComboNoFilter(const char* aComboLabel, Fly::GenericDataTypeFacade& aDataTypeFacade);
 
 	static bool StringCompare(std::string_view aStr1, std::string_view aStr2)
 	{
@@ -45,11 +112,17 @@ namespace Editor
 		return it != aStr1.end();
 	}
 
-	inline constexpr unsigned int ToImGuiColor(const Fly::Color& aColor)
+	constexpr unsigned int ToImGuiColor(const Fly::Color& aColor)
 	{
 		return IM_COL32(aColor.r * 255, aColor.g * 255, aColor.b * 255, 255);
 	}
-	
+
+
+	constexpr Fly::Vec2 ToFlyVec2(ImVec2 aVec)
+	{
+		return { aVec.x, aVec.y };
+	}
+
 	template<typename T>
 	concept Iteratable = requires(T && a)
 	{
@@ -64,4 +137,20 @@ namespace Editor
 
 		return it != end(aSearchIn);
 	}
+
+
+	void UpdateClickPos(NodeGraphContext& aNodeGraphContext);
+	ImVec2 GetMousePos(const NodeGraphContext& aNodeGraphContext);
+	
+	void ShowNodeGraph(NodeGraphContext& aNodeGraphContext);
+	void VisualizeNodeGraph(NodeGraphContext& aNodeGraphContext);
+	void UpdateNodeGraph(NodeGraphContext& aNodeGraphFacade);
+
+	void NodeCreation(NodeGraphContext& aNodeGraphContext);
+	bool ShowNodeSearchMenu(const std::vector<Fly::NodeTypeFacade>& aNodeTypes, const NodeGraphContext& aNodeGraphContext);
+	bool ShowNodeSearchMenuByCategory(const NodeTypeCategory& aCategory, const NodeGraphContext& aNodeGraphContext);
+	void ShowNodeSearchMenu(NodeGraphContext& aNodeGraphContext);
+	void PopulateNodeCategories(const std::string& aName, const Fly::NodeTypeFacade& aNodeType, NodeTypeCategory& aCategory);
+
+
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "../DataType/FlyDataType.hpp"
+#include "../DataType/FlyDataTypeTrait.hpp"
 #include "../Facade/FlyVariableFacade.hpp"
 #include <vector>
 #include <optional>

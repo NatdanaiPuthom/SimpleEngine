@@ -7,7 +7,7 @@
 #include "../Node/FlyNodeRef.hpp"
 #include "../DataType/FlyVariableRef.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
-#include "../Node/NodeDragData.hpp"
+#include "../Node/FlyNodeDragData.hpp"
 #include <string>
 #include <variant>
 #include <unordered_map>
@@ -28,7 +28,9 @@ namespace FLY_NAMESPACE
 	class DataTypeManager;
 	class NodeTypeManager;
 	class PinTypeManager;
+	class TraitManager;
 	struct DataType;
+	class Trait;
 	
 	template<size_t> class MemoryArena;
 	class MemoryPool;
@@ -42,6 +44,7 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] DataTypeManager& GetDataTypeManager();
 		[[nodiscard]] NodeTypeManager& GetNodeTypeManager();
 		[[nodiscard]] PinTypeManager& GetPinTypeManager();
+		[[nodiscard]] TraitManager& GetTraitManager();
 
 		[[nodiscard]] bool& IsDebugging();
 
@@ -53,23 +56,32 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] NodeGraph& GetNodeGraph(const NodeGraphVariantHandle& aNodeGraphVariantHandle);
 		[[nodiscard]] const Pin& GetPin(PinID aPinID, const NodeGraph& aNodeGraph);
 		[[nodiscard]] Pin& GetPin(PinID aPinID, NodeGraph& aNodeGraph);
+		[[nodiscard]] const PinType& GetPinType(PinID aPinID, const NodeGraph& aNodeGraph);
 		[[nodiscard]] const PinType& GetPinType(const Pin& aPin);
+		[[nodiscard]] const PinType& GetPinType(PinTypeID aPinTypeID);
 		[[nodiscard]] Node& GetNode(NodeID aNodeID, NodeGraph& aNodeGraph);
 		[[nodiscard]] const Node& GetNode(NodeID aNodeID, const NodeGraph& aNodeGraph);
+		[[nodiscard]] const NodeType& GetNodeType(const Node& aNode);
 		[[nodiscard]] const NodeType& GetNodeType(NodeID aNodeID, const NodeGraph& aNodeGraph);
+		[[nodiscard]] const NodeType& GetNodeType(NodeTypeID aNodeTypeID);
 		[[nodiscard]] const DataType* GetDataTypeByID(DataTypeID aDataTypeID);
+		[[nodiscard]] const DataType* GetDataTypeByID(GenericDataTypeID aDataTypeID);
 		[[nodiscard]] Struct& GetStructByID(StructID aStructID);
 		[[nodiscard]] Class& GetClassByID(ClassID aClassID);
+		[[nodiscard]] Trait& GetTraitByID(TraitID aTraitID);
 
 		void InitializeSubPins();
 
 		StructID CreateStruct(std::string_view aName);
 		void SetStructName(StructID aStructID, std::string_view aName, CommandTracker* aCommandTracker);
 
-		ClassID CreateClass(DataTypeID aTargetID, std::string_view aName);
+		ClassID CreateClass(GenericDataTypeID aTargetID, std::string_view aName);
 		void SetClassName(ClassID aClassID, std::string_view aName, CommandTracker* aCommandTracker);
 		ClassInstance& CreateClassInstance(ClassID aClassID);
 		void DestroyClassInstance(ClassInstance& aClassInstance);
+
+		TraitID CreateTrait(std::string_view aName);
+		void CreateTraitImplementation(DataTypeID aDataTypeID, TraitID aTraitID);
 
 		CustomEventID CreateCustomEvent(std::string_view aName);
 		FunctionID CreateFunction(std::string_view aName);
@@ -100,9 +112,9 @@ namespace FLY_NAMESPACE
 		PinID CreatePin(NodeGraph& aNodeGraph, NodeID aNodeID, PinTypeID aPinTypeID, void* aDataPtr);
 
 		void ViewAndEditPinGeneric(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
-		void ViewAndEditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
+		//void ViewAndEditPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 		void ViewPinGeneric(PinID aPinID, const NodeGraph& aNodeGraph);
-		void ViewPin(PinID aPinID, const NodeGraph& aNodeGraph);
+		//void ViewPin(PinID aPinID, const NodeGraph& aNodeGraph);
 		void SplitPin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 		void RecombinePin(PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* aCommandTracker);
 
@@ -116,8 +128,8 @@ namespace FLY_NAMESPACE
 		void DestroyLink(NodeGraph& aNodeGraph, LinkID aLinkID, CommandTracker* aCommandTracker);
 		void DestroyLinksByPin(NodeGraph& aNodeGraph, PinID aPinID, CommandTracker* aCommandTracker);
 
-		VarID CreateVariable(VariableContainer& aVariableContainer, DataTypeID aDataTypeID, std::string_view aName, CommandTracker* aCommandTracker);
-		void SetVariableDataType(VarID aVarID, VariableContainer& aVariableContainer, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
+		VarID CreateVariable(VariableContainer& aVariableContainer, GenericDataTypeID aDataTypeID, std::string_view aName, CommandTracker* aCommandTracker);
+		void SetVariableDataType(VarID aVarID, VariableContainer& aVariableContainer, GenericDataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 		void SetVariableName(VarID aVarID, VariableContainer& aVariableContainer, std::string_view aName, CommandTracker* aCommandTracker);
 		void DestroyVariable(VarID aVarID, VariableContainer& aVariableContainer, CommandTracker* aCommandTracker);
 		//void DestroyVariableNodes(VarID aVarID, VariableContainer& aVariableContainer, CommandTracker* aCommandTracker);
@@ -131,16 +143,17 @@ namespace FLY_NAMESPACE
 		void SetPinTypeName(PinTypeID aPinTypeID, std::string_view aName);
 
 		void SetCustomEventName(CustomEventID aCustomEventID, std::string_view aName, CommandTracker* aCommandTracker);
-		void AddPinToCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, std::string_view aPinName, CommandTracker* aCommandTracker);
-		void SetPinDataTypeAtIndexCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, size_t aIndex, CommandTracker* aCommandTracker);
+		void AddPinToCustomEvent(CustomEventID aCustomEventID, GenericDataTypeID aDataTypeID, std::string_view aPinName, CommandTracker* aCommandTracker);
+		void SetPinDataTypeAtIndexCustomEvent(CustomEventID aCustomEventID, GenericDataTypeID aDataTypeID, size_t aIndex, CommandTracker* aCommandTracker);
 		void SetPinNameAtIndexCustomEvent(CustomEventID aCustomEventID, std::string_view aName, size_t aIndex, CommandTracker* aCommandTracker);
 		void DeletePinAtIndexCustomEvent(CustomEventID aCustomEventID, size_t aIndex, CommandTracker* aCommandTracker);
 
-		void AddPinToFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName, CommandTracker* aCommandTracker);
-		void SetPinDataTypeAtIndexFunction(FunctionID aFunctionID, DataTypeID aDataTypeID, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
+		void AddPinToFunction(FunctionID aFunctionID, GenericDataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName, CommandTracker* aCommandTracker);
+		void SetPinDataTypeAtIndexFunction(FunctionID aFunctionID, GenericDataTypeID aDataTypeID, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
 		void SetPinNameAtIndexFunction(FunctionID aFunctionID, std::string_view aName, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
 		void DeletePinAtIndexFunction(FunctionID aFunctionID, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
 
+		void ReplaceNode(NodeGraph& aNodeGraph, NodeID aNodeID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 		void ReplaceTemplateNodeWithLink(NodeGraph& aNodeGraph, PinID aWildcardPinID, PinID aConnectedPinID, CommandTracker* aCommandTracker);
 		void ReplaceTemplateNode(NodeGraph& aNodeGraph, NodeID aNodeID, DataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 
@@ -157,6 +170,7 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] size_t GetPinIndex(const NodeGraph& aNodeGraph, const PinID aPinID);
 		[[nodiscard]] PinID GetOpposingPinID(const NodeGraph& aPreviousNodeGraph, const PinID aPreviousPinID, const NodeGraph& aNewNodeGraph, const NodeID aNodeID);
 
+		[[nodiscard]] bool AreDataTypesLinkable(GenericDataTypeID aInputDataTypeID, GenericDataTypeID aOutputDataTypeID);
 		[[nodiscard]] bool AreDataTypesLinkable(DataTypeID aInputDataTypeID, DataTypeID aOutputDataTypeID);
 		[[nodiscard]] bool ArePinTypesLinkableByDataType(PinTypeID aInputPinTypeID, PinTypeID aOutputPinTypeID);
 		[[nodiscard]] Link ArePinsLinkable(const NodeGraph& aNodeGraph, PinID aPinID1, PinID aPinID2);

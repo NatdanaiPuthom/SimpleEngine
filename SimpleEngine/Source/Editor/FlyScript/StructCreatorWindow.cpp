@@ -22,7 +22,7 @@ namespace Editor
 
 			if (ImGui::Button("Create Variable"))
 			{
-				myStructFacade.CreateVariable(Fly::DataTypeFacade(Fly::GetDataTypeID<bool>()), "Var", nullptr);
+				myStructFacade.CreateVariable(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), "Var", nullptr);
 			}
 
 			ImGui::Separator();
@@ -52,7 +52,7 @@ namespace Editor
 			aVariable.SetName(name, &myParentWindow->GetCommandTracker());
 		}
 
-		Fly::DataTypeFacade currentDataType(aVariable.GetDataTypeID());
+		Fly::GenericDataTypeFacade currentDataType(aVariable.GetDataTypeID());
 		if (DataTypeComboEditableFilter(Combine("##VarDataType", varID).c_str(), currentDataType))
 		{
 			aVariable.SetDataType(currentDataType, &myParentWindow->GetCommandTracker());

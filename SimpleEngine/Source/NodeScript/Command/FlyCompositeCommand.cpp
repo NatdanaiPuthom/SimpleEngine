@@ -3,22 +3,22 @@
 namespace FLY_NAMESPACE
 {
 
-	CompositeCommand::CompositeCommand(const std::string& aName)
-		: mName(aName)
+	CompositeCommand::CompositeCommand(std::string aName)
+		: mName(std::move(aName))
 	{
 	}
 
-	/*void CompositeCommand::AddCommand(Command&& aCommand)
+	void CompositeCommand::AddCommand(Command&& aCommand)
 	{
 		if (mCurrentChild)
 		{
-			mCurrentChild->AddCommand(std::forward<Command>(aCommand));
+			mCurrentChild->AddCommand(std::move(aCommand));
 		}
 		else
 		{
-			mCommands.emplace_back(std::forward<Command>(aCommand));
+			mCommands.emplace_back(std::move(aCommand));
 		}
-	}*/
+	}
 
 	void CompositeCommand::Do() const
 	{
@@ -36,7 +36,7 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void CompositeCommand::Begin(const std::string& aName)
+	void CompositeCommand::Begin(std::string_view aName)
 	{
 		if (mCurrentChild)
 		{
@@ -44,7 +44,7 @@ namespace FLY_NAMESPACE
 		}
 		else
 		{
-			mCurrentChild = HeapObject<CompositeCommand, false>(aName);
+			mCurrentChild = HeapObject<CompositeCommand, false>(std::string(aName));
 		}
 
 	}

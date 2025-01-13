@@ -19,23 +19,24 @@ namespace FLY_NAMESPACE
 		NodeGraph* mNodeGraph = nullptr;
 		NodeGraphVariantHandle mNodeGraphVariantHandle;
 		const void* mReadFromDataPtr = nullptr;
-		PinID mWriteToPinID = InvalidID<PinID>();
+		PinID mWriteToPinID;
 #ifdef FLY_DEBUG
-		DataTypeID mReadFromDataTypeID = InvalidID<DataTypeID>();
+		GenericDataTypeID mReadFromDataTypeID;
 #endif
 	};
 
-	struct SetPinValueFromPinData
+	struct SetPinValueFromPinData final
 	{
-		NodeGraph* mNodeGraph = nullptr;
-		PinID mWriteToPinID = InvalidID<PinID>();
-		PinID mReadFromPinID = InvalidID<PinID>();
+		NodeGraph* mWriteToPinNodeGraph = nullptr;
+		const NodeGraph* mReadFromPinNodeGraph = nullptr;
+		PinID mWriteToPinID;
+		PinID mReadFromPinID;
 	};
 
 	struct PinType final
 	{
 		std::string mName;
-		const DataTypeID mDataTypeID = InvalidID<DataTypeID>();
+		//const DataTypeID mDataTypeID = InvalidID<DataTypeID>();
 		const GenericDataTypeID mGenericDataTypeID;
 		const SetPinValueInterface mSetPinValueFunction = nullptr;
 		const SetPinValueFromPinInterface mSetPinValueFromPinFunction = nullptr;

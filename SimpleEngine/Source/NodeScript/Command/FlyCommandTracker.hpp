@@ -18,13 +18,11 @@ namespace FLY_NAMESPACE
 		void Clear();
 
 
-		template<typename... Args>
-		void DoCommand(Args&&... aArgs);
+		void DoCommand(Command aCommand);
 
-		template<typename... Args>
-		void RegisterCommand(Args&&... aArgs);
+		void RegisterCommand(Command aCommand);
 
-		void BeginComposite(const std::string& aName);
+		void BeginComposite(std::string_view aName);
 		void EndComposite();
 
 		void UndoCommand();
@@ -35,48 +33,14 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		template<typename... Args>
-		void DoCommandInternal(bool aExecute, Args&&... aArgs);
+		void DoCommandInternal(bool aExecute, Command&& aCommand);
 
 	private:
 
 
-		std::stack<HeapObject<Command>> mUndoStack;
-		std::stack<HeapObject<Command>> mRedoStack;
+		std::stack<Command> mUndoStack;
+		std::stack<Command> mRedoStack;
 		HeapObject<CompositeCommand, false> mCurrentCompositeCommand;
 
 	};
-
-
-	template<typename ...Args>
-	inline void CommandTracker::DoCommand(Args && ...aArgs)
-	{
-		DoCommandInternal(true, std::forward<Args>(aArgs)...);
-	}
-
-	template<typename ...Args>
-	inline void CommandTracker::RegisterCommand(Args && ...aArgs)
-	{
-		DoCommandInternal(false, std::forward<Args>(aArgs)...);
-	}
-
-	template<typename... Args>
-	inline void CommandTracker::DoCommandInternal(bool aExecute, Args&&... aArgs)
-	{
-		if (mCurrentCompositeCommand)
-		{
-			mCurrentCompositeCommand->AddCommand(std::forward<Args>(aArgs)...);
-			return;
-		}
-
-		HeapObject<Command> command(std::forward<Args>(aArgs)...);
-		if (aExecute)
-		{
-			command->DoCommand();
-		}
-
-		mUndoStack.push(std::move(command));
-
-		mRedoStack = {};
-	}
 }

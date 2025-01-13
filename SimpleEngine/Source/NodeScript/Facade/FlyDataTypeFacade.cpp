@@ -94,8 +94,8 @@ namespace FLY_NAMESPACE
 		}
 
 		std::vector<VariableFacade> memberVariables;
-		memberVariables.reserve(dataType->mVariables.size());
-		for (VarID varID{ 0 }; varID < dataType->mVariables.size(); ++varID)
+		memberVariables.reserve(dataType->mVariableContainer.mVariables.size());
+		for (VarID varID{ 0 }; varID < dataType->mVariableContainer.mVariables.size(); ++varID)
 		{
 			VariableFacade facade(varID, *this);
 			memberVariables.push_back(facade);

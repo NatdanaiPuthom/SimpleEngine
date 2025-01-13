@@ -1,7 +1,8 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "FlyVariable.hpp"
 #include "nlohmann/json.hpp"
+#include "FlyDataTypeTrait.hpp"
+#include "FlyVariableContainer.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -20,60 +21,48 @@ namespace FLY_NAMESPACE
 		const EqualsInterface equals = nullptr;
 	};
 
-	using ViewAndEditInterface = ViewAndEditResult(*)(void* aDataPtr);
-	using ViewInterface = void(*)(const void* aDataPtr);
-	using SaveInterface = void(*)(nlohmann::json& aSaveObject, const void* aDataPtr);
-	using LoadInterface = void(*)(const nlohmann::json& aLoadObject, void* aDataPtr);
+	using EditorTextFunction = void(*)(const std::string& aText);
+	using ViewAndEditInterface = ViewAndEditResult(*)(void* aDataPtr, EditorTextFunction aNullptrFunction);
+	using ViewInterface = void(*)(const void* aDataPtr, EditorTextFunction aNullptrFunction);
+	using SaveInterface = void(*)(const void* aDataPtr, nlohmann::json& aSaveObject);
+	using LoadInterface = void(*)(void* aDataPtr, const nlohmann::json& aLoadObject);
 
 	struct FunctionInterface final
 	{
-		const ViewAndEditInterface viewAndEdit = nullptr;
-		const ViewInterface view = nullptr;
-		const SaveInterface save = nullptr;
-		const LoadInterface load = nullptr;
+		ViewAndEditInterface viewAndEdit = nullptr;
+		ViewInterface view = nullptr;
+		SaveInterface save = nullptr;
+		LoadInterface load = nullptr;
 	};
 
 	struct ExecutionInterface final
 	{
-		const SetPinValueInterface setInputPinValue = nullptr;
-		const SetPinValueInterface setOutputPinValue = nullptr;
-		const SetPinValueFromPinInterface setInputPinValueFromPin = nullptr;
-		const SetPinValueFromPinInterface setOutputPinValueFromPin = nullptr;
+		SetPinValueInterface setInputPinValue = nullptr;
+		SetPinValueInterface setOutputPinValue = nullptr;
+		SetPinValueFromPinInterface setInputPinValueFromPin = nullptr;
+		SetPinValueFromPinInterface setOutputPinValueFromPin = nullptr;
 	};
 
 	struct DataTypeInterface final
 	{
-		const FundamentalInterface fundamental;
-		const FunctionInterface function;
-		const ExecutionInterface execution;
-	};
-
-	enum class eDataTypeTrait : unsigned int
-	{
-		None = 0,
-		Fundamental = 1 << 0,
-		ViewAndEditable = 1 << 1,
-		Viewable = 1 << 2,
-		SaveLoadable = 1 << 3,
-		Targetable = 1 << 4,
-		Pointer = 1 << 5,
-		TriviallyCopyable = 1 << 6,
-		All = Fundamental | ViewAndEditable | Viewable | SaveLoadable | Targetable | TriviallyCopyable
+		FundamentalInterface fundamental;
+		FunctionInterface function;
+		ExecutionInterface execution;
 	};
 
 	struct DataType final
 	{
-		const std::string mName;
-		const size_t mSize = 0;
-		const size_t mAlignment = 0;
+		std::string mName;
+		size_t mSize = 0;
+		size_t mAlignment = 0;
 		Color mColor;
 		const std::type_info* mTypeInfo = nullptr;
-		const DataTypeInterface mInterface;
-		std::vector<Variable> mVariables;
+		DataTypeInterface mInterface;
+		VariableContainer mVariableContainer;
 		std::vector<NodeTypeID> mNodeTypeIDs;
-		const DataTypeID mToPointerDataTypeID = InvalidID<DataTypeID>();
-		const DataTypeID mToValueDataTypeID = InvalidID<DataTypeID>();
-		const eDataTypeTrait mTypeTraits = eDataTypeTrait::None;
+		DataTypeID mToPointerDataTypeID;
+		DataTypeID mToValueDataTypeID;
+		eDataTypeTrait mTypeTraits = eDataTypeTrait::None;
 	};
 
 	struct TemplateDataType

@@ -24,7 +24,7 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] std::vector<PinTypeFacade> GetInputPinTypeFacades() const;
 		[[nodiscard]] std::vector<PinTypeFacade> GetOutputPinTypeFacades() const;
 
-		[[nodiscard]] std::vector<DataTypeFacade> GetReplacableDataTypes() const;
+		[[nodiscard]] std::vector<DataTypeFacade> GetReplacableDataTypes(bool aUseTraits = true) const;
 
 		[[nodiscard]] NodeTypeID GetID() const;
 

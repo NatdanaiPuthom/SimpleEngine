@@ -10,6 +10,7 @@
 #include "FlyWildcard.hpp"
 #include "FlyFoundation.hpp"
 #include "Node/FlyNodeTypeRegistry.hpp"
+#include "../Trait/FlyTraitObject.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -44,6 +45,11 @@ namespace FLY_NAMESPACE
 		PinTypeManager& GetPinTypeManager()
 		{
 			return GetFoundation().mPinTypeManager;
+		}
+
+		TraitManager& GetTraitManager()
+		{
+			return GetFoundation().mTraitManager;
 		}
 
 		bool& IsDebugging()
@@ -153,6 +159,11 @@ namespace FLY_NAMESPACE
 			return GetPinTypeManager().GetPinType(aPin.mTypeID);
 		}
 
+		const PinType& GetPinType(const PinTypeID aPinTypeID)
+		{
+			return GetPinTypeManager().GetPinType(aPinTypeID);
+		}
+
 		Node& GetNode(const NodeID aNodeID, NodeGraph& aNodeGraph)
 		{
 			return aNodeGraph.mNodes.at(aNodeID);
@@ -174,9 +185,24 @@ namespace FLY_NAMESPACE
 			return GetNodeTypeManager().GetNodeType(node.mTypeID);
 		}
 
+		const NodeType& GetNodeType(const NodeTypeID aNodeTypeID)
+		{
+			return GetNodeTypeManager().GetNodeType(aNodeTypeID);
+		}
+
 		const DataType* GetDataTypeByID(const DataTypeID aDataTypeID)
 		{
 			return GetDataTypeManager().Find(aDataTypeID);
+		}
+
+		const DataType* GetDataTypeByID(const GenericDataTypeID aDataTypeID)
+		{
+			return GetDataTypeManager().Find(aDataTypeID);
+		}
+
+		Struct& GetStructByID(const StructID aStructID)
+		{
+			return GetDataTypeManager().GetStruct(aStructID);
 		}
 
 		Class& GetClassByID(const ClassID aClassID)
@@ -184,9 +210,9 @@ namespace FLY_NAMESPACE
 			return GetDataTypeManager().GetClass(aClassID);
 		}
 
-		Struct& GetStructByID(const StructID aStructID)
+		Trait& GetTraitByID(const TraitID aTraitID)
 		{
-			return GetDataTypeManager().GetStruct(aStructID);
+			return GetTraitManager().GetTrait(aTraitID);
 		}
 
 		void InitializeSubPinsRecursivelyGeneric(const eFlowType aFlowType, const std::vector<PinTypeID>& aPinTypeIDs)
@@ -196,9 +222,9 @@ namespace FLY_NAMESPACE
 
 			for (const PinTypeID pinTypeID : aPinTypeIDs)
 			{
-				if (const DataType* dataType = dataTypeManager.Find(pinTypeManager.GetPinType(pinTypeID).mDataTypeID))
+				if (const DataType* dataType = dataTypeManager.Find(pinTypeManager.GetPinType(pinTypeID).mGenericDataTypeID))
 				{
-					for (const Variable& variable : dataType->mVariables)
+					for (const Variable& variable : dataType->mVariableContainer.mVariables)
 					{
 						if (const DataType* dataType2 = dataTypeManager.Find(variable.mDataTypeID))
 						{
@@ -220,9 +246,9 @@ namespace FLY_NAMESPACE
 
 			for (const PinTypeID pinTypeID : aPinTypeIDs)
 			{
-				if (const DataType* dataType = dataTypeManager.Find(pinTypeManager.GetPinType(pinTypeID).mDataTypeID))
+				if (const DataType* dataType = dataTypeManager.Find(pinTypeManager.GetPinType(pinTypeID).mGenericDataTypeID))
 				{
-					for (const Variable& variable : dataType->mVariables)
+					for (const Variable& variable : dataType->mVariableContainer.mVariables)
 					{
 						if (const DataType* dataType2 = dataTypeManager.Find(variable.mDataTypeID))
 						{
@@ -288,7 +314,7 @@ namespace FLY_NAMESPACE
 		{
 			struct SetStructNameData final
 			{
-				StructID mStructID = InvalidID<StructID>();
+				StructID mStructID;
 				std::string mNewName;
 				std::string mOldName;
 			} data;
@@ -317,16 +343,17 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		ClassID CreateClass(const DataTypeID aTargetID, const std::string_view aName)
+		ClassID CreateClass(const GenericDataTypeID aTargetID, const std::string_view aName)
 		{
-			return GetDataTypeManager().CreateClass(aTargetID, aName);
+			const DataTypeID* dataTypeID = std::get_if<DataTypeID>(&aTargetID.mID);
+			return GetDataTypeManager().CreateClass(*dataTypeID, aName);
 		}
 
 		void SetClassName(const ClassID aClassID, const std::string_view aName, CommandTracker* const aCommandTracker)
 		{
 			struct SetClassNameData final
 			{
-				ClassID mClassID = InvalidID<ClassID>();
+				ClassID mClassID;
 				std::string mNewName;
 				std::string mOldName;
 			} data;
@@ -368,6 +395,32 @@ namespace FLY_NAMESPACE
 
 			std::erase_if(c.mClassInstances,
 				[eraseClassInstance = aClassInstance](const auto& aClassInstance) { return &eraseClassInstance == aClassInstance.Get(); });
+		}
+
+		TraitID CreateTrait(std::string_view aName)
+		{
+			return GetTraitManager().CreateTrait(aName);
+		}
+
+		Flow InputTraitNode()
+		{
+			return Flow(true);
+		}
+
+		void OutputTraitNode(Flow)
+		{
+
+		}
+
+		void CreateTraitImplementation(const DataTypeID aDataTypeID, const TraitID aTraitID)
+		{
+			TraitManager& traitManager = GetTraitManager();
+			traitManager.CreateTraitImplementation(aDataTypeID, aTraitID);
+			TraitImplementation* traitImplementaion = traitManager.GetTraitImplementation(aDataTypeID, aTraitID);
+			const Trait& trait = traitManager.GetTrait(aTraitID);
+			traitImplementaion;
+			trait;
+
 		}
 
 		CustomEventID CreateCustomEvent(const std::string_view aName)
@@ -507,6 +560,13 @@ namespace FLY_NAMESPACE
 
 		}
 
+		NodeID CreateTraitNode(NodeGraph& aNodeGraph, const TraitID aTraitID, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
+		{
+			const NodeID id = GetCurrentNodeID(aNodeGraph);
+			AddNode(aNodeGraph, GetNodeTypeManager().CreateTraitNode(aNodeGraph, id, aTraitID, aDataTypeID), id, aCommandTracker);
+			return id;
+		}
+
 		NodeID CreateOperatorNode(NodeGraph& aNodeGraph, const eNodeOperatorTrait aOperatorTrait, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
 			const NodeID id = GetCurrentNodeID(aNodeGraph);
@@ -527,7 +587,7 @@ namespace FLY_NAMESPACE
 
 			struct CreateNodeData
 			{
-				NodeID mNodeID = InvalidID<NodeID>();
+				NodeID mNodeID;
 				NodeGraph* mNodeGraph = nullptr;
 			} data;
 
@@ -697,7 +757,7 @@ namespace FLY_NAMESPACE
 
 		void SetNodePosition(const NodeID aNodeID, const Vec2 aPosition, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
 		{
-			const Vec2 oldPos = aNodeGraph.mNodes.at(aNodeID).mPosition;
+			const Vec2 oldPos = aNodeGraph.mNodes[aNodeID].mPosition;
 			SetNodePosition(aNodeID, aPosition, oldPos, aNodeGraph, aCommandTracker);
 		}
 
@@ -706,7 +766,7 @@ namespace FLY_NAMESPACE
 
 			struct SetNodePositionData final
 			{
-				NodeID mNodeID = InvalidID<NodeID>();
+				NodeID mNodeID;
 				Vec2 mOldPos;
 				Vec2 mNewPos;
 				NodeGraph* mNodeGraph = nullptr;
@@ -798,7 +858,7 @@ namespace FLY_NAMESPACE
 
 		PinID CreatePin(NodeGraph& aNodeGraph, const NodeID aNodeID, const PinTypeID aPinTypeID)
 		{
-			const auto dataTypeID = GetPinTypeManager().GetPinType(aPinTypeID).mDataTypeID;
+			const auto dataTypeID = GetPinTypeManager().GetPinType(aPinTypeID).mGenericDataTypeID;
 
 			void* const dataPtr = GetDataTypeManager().AllocateData(dataTypeID, aNodeGraph.mMemoryArena);
 
@@ -815,20 +875,17 @@ namespace FLY_NAMESPACE
 
 			std::vector<PinID> subPinIDs;
 			subPinIDs.reserve(pinType.mSubPinTypeIDs.size());
-			const DataType* dataType = GetDataTypeManager().Find(pinType.mDataTypeID);
+			const DataType* dataType = GetDataTypeManager().Find(pinType.mGenericDataTypeID);
+			if (!dataType)
+			{
+				return createdPinID;
+			}
+			const std::vector<Variable>& variables = dataType->mVariableContainer.mVariables;
 
-			GenericDataTypePtr d = GetDataTypeManager().Find(pinType.mGenericDataTypeID);
-
-			/*const std::vector<Variable>& variables = std::visit(Visitor{
-				[](const DataType* aDataType) -> const std::vector<Variable>& { return aDataType->mVariables; },
-				[](const Struct* aDataType) -> const std::vector<Variable>& { return aDataType->mVariableContainer.mVariables; },
-				[](const Class* aDataType) -> const std::vector<Variable>& { return aDataType->mVariableContainer.mVariables; }
-				}, d);*/
-
-			assert(pinType.mSubPinTypeIDs.size() == dataType->mVariables.size());
+			assert(pinType.mSubPinTypeIDs.size() == variables.size());
 			for (size_t i = 0; i < pinType.mSubPinTypeIDs.size(); i++)
 			{
-				void* const dataPtr = reinterpret_cast<char*>(aDataPtr) + dataType->mVariables[i].mByteOffset;
+				void* const dataPtr = reinterpret_cast<char*>(aDataPtr) + variables[i].mByteOffset;
 
 				const PinID createdSubPinID = CreatePin(aNodeGraph, aNodeID, pinType.mSubPinTypeIDs[i], dataPtr);
 				subPinIDs.push_back(createdSubPinID);
@@ -877,7 +934,7 @@ namespace FLY_NAMESPACE
 				return;
 			}
 
-			void* const previousDataPtr = GetDataTypeManager().AllocateData(pinType.mDataTypeID, Internal::GetEditMemoryArena(), copyDataPtr);
+			void* const previousDataPtr = GetDataTypeManager().AllocateData(pinType.mGenericDataTypeID, Internal::GetEditMemoryArena(), copyDataPtr);
 
 			struct EditPinData
 			{
@@ -910,7 +967,7 @@ namespace FLY_NAMESPACE
 		}
 
 
-		void ViewAndEditPin(const PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
+		/*void ViewAndEditPin(const PinID aPinID, NodeGraph& aNodeGraph, CommandTracker* const aCommandTracker)
 		{
 			Pin& pin = GetPin(aPinID, aNodeGraph);
 
@@ -949,7 +1006,7 @@ namespace FLY_NAMESPACE
 
 			struct EditPinData
 			{
-				PinID mPinID = InvalidID<PinID>();
+				PinID mPinID;
 				void* mPreviousDataPtr = nullptr;
 				NodeGraph* mNodeGraph = nullptr;
 			} data;
@@ -975,17 +1032,17 @@ namespace FLY_NAMESPACE
 				};
 
 			gChangePinValueCommand = Command(data, doCommandFunction, undoCommandFunction, "Edit Pin");
-		}
+		}*/
 
 		void ViewPinGeneric(PinID aPinID, const NodeGraph& aNodeGraph)
 		{
 			GetDataTypeManager().ViewData(GetPinType(aPinID, aNodeGraph).mGenericDataTypeID, GetPin(aPinID, aNodeGraph).mDataPtr);
 		}
 
-		void ViewPin(const PinID aPinID, const NodeGraph& aNodeGraph)
+		/*void ViewPin(const PinID aPinID, const NodeGraph& aNodeGraph)
 		{
 			GetDataTypeManager().ViewData(GetPinType(aPinID, aNodeGraph).mDataTypeID, GetPin(aPinID, aNodeGraph).mDataPtr);
-		}
+		}*/
 
 		static void SplitPinInternal(const PinID aPinID, NodeGraph& aNodeGraph, const size_t aIndex)
 		{
@@ -1142,8 +1199,8 @@ namespace FLY_NAMESPACE
 		bool IsNodeReplacable(NodeGraph& aNodeGraph, NodeID aNodeID)
 		{
 			const NodeType& nodeType = GetNodeType(aNodeID, aNodeGraph);
-
-			return nodeType.mNodeRecipe.mOperatorTrait != eNodeOperatorTrait::None;
+			return nodeType.mNodeRecipe.mTraitID != InvalidID<TraitID>();
+			//return nodeType.mNodeRecipe.mOperatorTrait != eNodeOperatorTrait::None;
 		}
 
 		void ActivateLink(NodeGraph& aNodeGraph, const LinkID aLinkID)
@@ -1196,11 +1253,11 @@ namespace FLY_NAMESPACE
 				const PinType& pinType1 = GetPinTypeManager().GetPinType(pin1.mTypeID);
 				const PinType& pinType2 = GetPinTypeManager().GetPinType(pin2.mTypeID);
 
-				if (pinType1.mDataTypeID == GetDataTypeID<Wildcard>())
+				if (pinType1.mGenericDataTypeID == GenericDataTypeID{ GetDataTypeID<Wildcard>() })
 				{
 					ReplaceTemplateNodeWithLink(aNodeGraph, aPinID1, aPinID2, aCommandTracker);
 				}
-				else if (pinType2.mDataTypeID == GetDataTypeID<Wildcard>())
+				else if (pinType2.mGenericDataTypeID == GenericDataTypeID{ GetDataTypeID<Wildcard>() })
 				{
 					ReplaceTemplateNodeWithLink(aNodeGraph, aPinID2, aPinID1, aCommandTracker);
 				}
@@ -1229,7 +1286,7 @@ namespace FLY_NAMESPACE
 			const Pin& inputPin = aNodeGraph.mPins.at(aInputPinID);
 			const Pin& outputPin = aNodeGraph.mPins.at(aOutputPinID);
 			const PinType& inputPinType = GetPinTypeManager().GetPinType(inputPin.mTypeID);
-			const PinType& outputPinType = GetPinTypeManager().GetPinType(outputPin.mTypeID);
+			[[maybe_unused]] const PinType& outputPinType = GetPinTypeManager().GetPinType(outputPin.mTypeID);
 			assert(inputPinType.mFlowType == eFlowType::Input);
 			assert(outputPinType.mFlowType == eFlowType::Output);
 			assert(GetDataTypeManager().AreDataTypesRelated(inputPinType.mGenericDataTypeID, outputPinType.mGenericDataTypeID));
@@ -1304,14 +1361,12 @@ namespace FLY_NAMESPACE
 			const Pin& inputPin = aNodeGraph.mPins.at(aInputPinID);
 			const Pin& outputPin = aNodeGraph.mPins.at(aOutputPinID);
 			const PinType& inputPinType = GetPinTypeManager().GetPinType(inputPin.mTypeID);
-			const PinType& outputPinType = GetPinTypeManager().GetPinType(outputPin.mTypeID);
-			const DataTypeID inputPinDataType = inputPinType.mDataTypeID;
-			const DataTypeID outputPinDataType = outputPinType.mDataTypeID;
+			[[maybe_unused]] const PinType& outputPinType = GetPinTypeManager().GetPinType(outputPin.mTypeID);
 			assert(inputPinType.mFlowType == eFlowType::Input);
 			assert(outputPinType.mFlowType == eFlowType::Output);
-			assert(GetDataTypeManager().AreDataTypesRelated(inputPinDataType, outputPinDataType));
+			assert(GetDataTypeManager().AreDataTypesRelated(inputPinType.mGenericDataTypeID, outputPinType.mGenericDataTypeID));
 
-			if (inputPinDataType != GetDataTypeID<Flow>())
+			if (inputPinType.mGenericDataTypeID != GenericDataTypeID{ GetDataTypeID<Flow>() })
 			{
 				const std::vector<LinkID> inputLinkIDs = GetLinkIDsByPin(aNodeGraph, aInputPinID);
 				if (!inputLinkIDs.empty())
@@ -1420,7 +1475,7 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		VarID CreateVariable(VariableContainer& aVariableContainer, const DataTypeID aDataTypeID, const std::string_view aName, CommandTracker* const aCommandTracker)
+		VarID CreateVariable(VariableContainer& aVariableContainer, const GenericDataTypeID aDataTypeID, const std::string_view aName, CommandTracker* const aCommandTracker)
 		{
 			std::vector<Variable>& variables = aVariableContainer.mVariables;
 			const VarID varID{ variables.size() };
@@ -1449,7 +1504,7 @@ namespace FLY_NAMESPACE
 			return varID;
 		}
 
-		void SetVariableDataType(const VarID aVarID, VariableContainer& aVariableContainer, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
+		void SetVariableDataType(const VarID aVarID, VariableContainer& aVariableContainer, const GenericDataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
 		{
 			Variable& variable = aVariableContainer.mVariables.at(aVarID);
 
@@ -1649,7 +1704,7 @@ namespace FLY_NAMESPACE
 			pinType.mName = aName;
 		}
 
-		static PinTypeID AddPinToNodeType(const NodeTypeID aNodeTypeID, const DataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName)
+		static PinTypeID AddPinToNodeType(const NodeTypeID aNodeTypeID, const GenericDataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName)
 		{
 			NodeType& nodeType = GetNodeTypeManager().GetNodeType(aNodeTypeID);
 
@@ -1672,7 +1727,7 @@ namespace FLY_NAMESPACE
 		}
 
 
-		static void SetPinAtIndexNodeType(const NodeTypeID aNodeTypeID, const size_t aIndex, const DataTypeID aDataTypeID, const eFlowType aFlowType)
+		static void SetPinAtIndexNodeType(const NodeTypeID aNodeTypeID, const size_t aIndex, const GenericDataTypeID aDataTypeID, const eFlowType aFlowType)
 		{
 			NodeTypeManager& nodeTypeManager = GetNodeTypeManager();
 			PinTypeManager& pinTypeManager = GetPinTypeManager();
@@ -1719,7 +1774,7 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		void SetCustomEventName(CustomEventID aCustomEventID, std::string_view aName, [[maybe_unused]] CommandTracker* aCommandTracker)
+		void SetCustomEventName(const CustomEventID aCustomEventID, std::string_view aName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			const CustomEvent& customEvent = GetNodeTypeManager().GetCustomEvent(aCustomEventID);
 			NodeType& executorNodeType = GetNodeTypeManager().GetNodeType(customEvent.GetExecutorTypeID());
@@ -1730,7 +1785,7 @@ namespace FLY_NAMESPACE
 			callerNodeType.mNodeRecipe.mName = nameDirectory + "Call " + std::string(aName);
 		}
 
-		void AddPinToCustomEvent(const CustomEventID aCustomEventID, const DataTypeID aDataTypeID, const std::string_view aPinName, [[maybe_unused]] CommandTracker* const aCommandTracker)
+		void AddPinToCustomEvent(const CustomEventID aCustomEventID, const GenericDataTypeID aDataTypeID, const std::string_view aPinName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			const CustomEvent& customEvent = GetNodeTypeManager().GetCustomEvent(aCustomEventID);
 
@@ -1738,7 +1793,7 @@ namespace FLY_NAMESPACE
 			AddPinToNodeType(customEvent.GetCallerTypeID(), aDataTypeID, eFlowType::Input, aPinName);
 		}
 
-		void SetPinDataTypeAtIndexCustomEvent(CustomEventID aCustomEventID, DataTypeID aDataTypeID, size_t aIndex, [[maybe_unused]] CommandTracker* const aCommandTracker)
+		void SetPinDataTypeAtIndexCustomEvent(const CustomEventID aCustomEventID, const GenericDataTypeID aDataTypeID, const size_t aIndex, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			if (aIndex == 0)
 			{
@@ -1785,7 +1840,7 @@ namespace FLY_NAMESPACE
 			DeletePinAtIndexNodeType(customEvent.GetExecutorTypeID(), aIndex, eFlowType::Output);
 		}
 
-		void AddPinToFunction(const FunctionID aFunctionID, const DataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName, [[maybe_unused]] CommandTracker* const aCommandTracker)
+		void AddPinToFunction(const FunctionID aFunctionID, const GenericDataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			const NodeTypeManager& nodeTypeManager = GetNodeTypeManager();
 			const Function& function = nodeTypeManager.GetFunction(aFunctionID);
@@ -1797,7 +1852,7 @@ namespace FLY_NAMESPACE
 			AddPinToNodeType(inputOutputNodeTypeID, aDataTypeID, InvertFlowType(aFlowType), aPinName);
 		}
 
-		void SetPinDataTypeAtIndexFunction(const FunctionID aFunctionID, const DataTypeID aDataTypeID, const size_t aIndex, const eFlowType aFlowType, [[maybe_unused]] CommandTracker* const aCommandTracker)
+		void SetPinDataTypeAtIndexFunction(const FunctionID aFunctionID, const GenericDataTypeID aDataTypeID, const size_t aIndex, const eFlowType aFlowType, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			const Function& function = GetNodeTypeManager().GetFunction(aFunctionID);
 
@@ -1842,6 +1897,44 @@ namespace FLY_NAMESPACE
 			DeletePinAtIndexNodeType(inputOutputNodeTypeID, aIndex, InvertFlowType(aFlowType));
 		}
 
+		void ReplaceNode(NodeGraph& aNodeGraph, const NodeID aReplacedNodeID, const DataTypeID aDataTypeID, CommandTracker* const aCommandTracker)
+		{
+			const NodeType& replacedNodeType = GetNodeType(aReplacedNodeID, aNodeGraph);
+
+			if (replacedNodeType.mNodeRecipe.mTraitID == InvalidID<TraitID>())
+			{
+				return;
+			}
+
+			//const DataTypeID* dataTypeID = std::get_if<DataTypeID>(&aDataTypeID.mID);
+
+			/*if (!dataTypeID)
+			{
+				return;
+			}*/
+
+			const bool canReplace = GetNodeTypeManager().CanCreateNodeByTrait(replacedNodeType.mNodeRecipe.mTraitID, aDataTypeID);
+			if (!canReplace)
+			{
+				return;
+			}
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Replace node composite");
+			}
+
+			const NodeID createdNodeID = CreateTraitNode(aNodeGraph, replacedNodeType.mNodeRecipe.mTraitID, aDataTypeID, aCommandTracker);
+			const Node& replacedNode = GetNode(aReplacedNodeID, aNodeGraph);
+			SetNodePosition(createdNodeID, replacedNode.mPosition, aNodeGraph, aCommandTracker);
+			DestroyNode(aNodeGraph, aReplacedNodeID, aCommandTracker);
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+		}
+
 		void ReplaceTemplateNodeWithLink(NodeGraph& aNodeGraph, const PinID aWildcardPinID, const PinID aConnectedPinID, CommandTracker* const aCommandTracker)
 		{
 			const Pin& wildcardPin = GetPin(aWildcardPinID, aNodeGraph);
@@ -1856,9 +1949,17 @@ namespace FLY_NAMESPACE
 				return;
 			}
 
+
 			const PinType& wildcardPinType = GetPinTypeManager().GetPinType(wildcardPin.mTypeID);
 			const PinType& connectedPinType = GetPinTypeManager().GetPinType(connectedPin.mTypeID);
-			const bool canReplace = GetNodeTypeManager().CanCreateOperatorNode(wildcardNodeType.mNodeRecipe.mOperatorTrait, connectedPinType.mDataTypeID);
+			const DataTypeID* dataTypeID = std::get_if<DataTypeID>(&connectedPinType.mGenericDataTypeID.mID);
+
+			if (!dataTypeID)
+			{
+				return;
+			}
+
+			const bool canReplace = GetNodeTypeManager().CanCreateOperatorNode(wildcardNodeType.mNodeRecipe.mOperatorTrait, *dataTypeID);
 			if (!canReplace)
 			{
 				return;
@@ -1869,7 +1970,7 @@ namespace FLY_NAMESPACE
 				aCommandTracker->BeginComposite("Replace node composite");
 			}
 
-			const NodeID createdNodeID = CreateOperatorNode(aNodeGraph, wildcardNodeType.mNodeRecipe.mOperatorTrait, connectedPinType.mDataTypeID, aCommandTracker);
+			const NodeID createdNodeID = CreateOperatorNode(aNodeGraph, wildcardNodeType.mNodeRecipe.mOperatorTrait, *dataTypeID, aCommandTracker);
 
 
 
@@ -1931,6 +2032,13 @@ namespace FLY_NAMESPACE
 			{
 				return;
 			}
+
+			//const DataTypeID* dataTypeID = std::get_if<DataTypeID>(&aDataTypeID.mID);
+
+			/*if (!dataTypeID)
+			{
+				return;
+			}*/
 
 			const bool canReplace = GetNodeTypeManager().CanCreateOperatorNode(replacedNodeType.mNodeRecipe.mOperatorTrait, aDataTypeID);
 			if (!canReplace)
@@ -2112,7 +2220,7 @@ namespace FLY_NAMESPACE
 			const PinType& inputPinType = GetPinTypeManager().GetPinType(aInputPinTypeID);
 			const PinType& outputPinType = GetPinTypeManager().GetPinType(aOutputPinTypeID);
 
-			return AreDataTypesLinkable(inputPinType.mDataTypeID, outputPinType.mDataTypeID);
+			return AreDataTypesLinkable(inputPinType.mGenericDataTypeID, outputPinType.mGenericDataTypeID);
 		}
 
 		static bool ArePinsLinkableByDataType(const NodeGraph& aNodeGraph, const PinID aInputPinID, const PinID aOutputPinID)

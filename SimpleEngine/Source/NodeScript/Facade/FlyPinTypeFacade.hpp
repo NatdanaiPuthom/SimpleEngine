@@ -12,7 +12,8 @@ namespace FLY_NAMESPACE
 
 		[[nodiscard]] const std::string& GetName() const;
 		[[nodiscard]] eFlowType GetFlowType() const;
-		[[nodiscard]] DataTypeID GetDataTypeID() const;
+		//[[nodiscard]] DataTypeID GetDataTypeID() const;
+		[[nodiscard]] GenericDataTypeID GetDataTypeID() const;
 
 		[[nodiscard]] PinTypeID GetID() const;
 

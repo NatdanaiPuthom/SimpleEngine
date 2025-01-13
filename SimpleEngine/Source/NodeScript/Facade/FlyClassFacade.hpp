@@ -27,7 +27,7 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] std::vector<VariableFacade> GetVariables(bool aIncludeDestroyed = false) const;
 		[[nodiscard]] std::vector<FunctionFacade> GetFunctions() const;
 
-		VariableFacade CreateVariable(DataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* aCommandTracker);
+		VariableFacade CreateVariable(GenericDataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* aCommandTracker);
 		ClassInstanceFacade CreateClassInstance();
 		FunctionFacade CreateMemberFunction(std::string_view aName);
 

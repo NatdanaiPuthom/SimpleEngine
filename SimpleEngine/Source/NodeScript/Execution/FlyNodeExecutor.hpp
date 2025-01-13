@@ -16,6 +16,8 @@ namespace FLY_NAMESPACE
 
 		NodeExecutor();
 
+		void Initialize();
+
 		void ExecuteNode(const NodeExecutionData& aNodeExecutionData);
 		
 		CallStack& GetCallStack()

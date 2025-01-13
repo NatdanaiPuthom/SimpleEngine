@@ -74,7 +74,7 @@ namespace FLY_NAMESPACE
 		return functionFacades;
 	}
 
-	VariableFacade ClassFacade::CreateVariable(const DataTypeFacade aDataTypeFacade, const std::string_view aName, CommandTracker* const aCommandTracker)
+	VariableFacade ClassFacade::CreateVariable(const GenericDataTypeFacade aDataTypeFacade, const std::string_view aName, CommandTracker* const aCommandTracker)
 	{
 		const VarID varID = Internal::CreateVariable(GetClass().mVariableContainer, aDataTypeFacade.GetID(), aName, aCommandTracker);
 		return VariableFacade(varID, *this);

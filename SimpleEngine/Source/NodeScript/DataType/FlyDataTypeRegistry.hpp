@@ -90,22 +90,25 @@ namespace FLY_NAMESPACE
 		NodeTypeRegistry::RegisterMemberVariable(aMemberVariable, directory, aName);
 	}
 
-	struct NonTargetable
+	struct NonTargetable final
 	{
+	};
+
+	struct CustomName final
+	{
+		std::string mName;
 	};
 
 	struct RegisterType final
 	{
 
 		template<typename T, eNodeOperatorTrait Operators, typename... Traits>
-		constexpr static RegisterType ValueType_Impl(const char* aName, [[maybe_unused]] Traits&&... aTraits)
+		constexpr static RegisterType ValueType_Impl(const std::string aName, [[maybe_unused]] Traits&&... aTraits)
 		{
-			Color color = Internal::GetDataTypeManager().GetDefaultColor();
-			if constexpr (ContainsType<Color, Traits...>)
-			{
-				color = Extract<Color>(std::forward<Traits>(aTraits)...);
-			}
-			DataTypeRegistry::Register<T, Operators>(aName, color, false);
+			const Color color = TryExtract(Internal::GetDataTypeManager().GetDefaultColor(), std::forward<Traits>(aTraits)...);
+			const CustomName customName = TryExtract(CustomName{ aName }, std::forward<Traits>(aTraits)...);
+
+			DataTypeRegistry::Register<T, Operators>(customName.mName, color, false);
 
 			return RegisterType{};
 		}
@@ -167,7 +170,7 @@ namespace FLY_NAMESPACE
 	};
 }
 
-#define FLY_POINTERTYPE(Type, ...) inline static FLY_NAMESPACE::RegisterType fly_registeredType##Type = FLY_NAMESPACE::RegisterType::PointerType<Type>(#Type, __VA_ARGS__);
-#define FLY_VALUETYPE(Type, ...) inline static FLY_NAMESPACE::RegisterType fly_registeredType##Type = FLY_NAMESPACE::RegisterType::ValueType<Type>(#Type, __VA_ARGS__);
+#define FLY_POINTERTYPE(Type, ...) inline static FLY_NAMESPACE::RegisterType FLY_UNIQUE_NAME(fly_pointertype) = FLY_NAMESPACE::RegisterType::PointerType<Type>(#Type, __VA_ARGS__);
+#define FLY_VALUETYPE(Type, ...) inline static FLY_NAMESPACE::RegisterType FLY_UNIQUE_NAME(fly_valuetype) = FLY_NAMESPACE::RegisterType::ValueType<Type>(#Type, __VA_ARGS__);
 
 #define FLY_MEMBER(member, ...) inline static FLY_NAMESPACE::RegisterMemberVariable FLY_UNIQUE_NAME(fly_member) = FLY_NAMESPACE::RegisterMemberVariable::Member(&member, #member);

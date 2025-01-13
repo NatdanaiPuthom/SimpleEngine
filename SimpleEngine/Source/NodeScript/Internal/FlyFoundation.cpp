@@ -23,9 +23,14 @@ namespace FLY_NAMESPACE
 
 	void Foundation::Initialize()
 	{
+		mNodeExecutor->Initialize();
 		mNodeTypeManager.Assert();
 
 		Internal::InitializeSubPins();
+
+
+
+		TestUtilityFunction();
 	}
 
 	NodeExecutor& Foundation::GetNodeExecutor()

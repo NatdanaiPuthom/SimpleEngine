@@ -26,9 +26,9 @@ namespace FLY_NAMESPACE
 		FunctionID GetID() const;
 
 		void SetName(std::string_view aName, CommandTracker* aCommandTracker);
-		void AddPin(DataTypeFacade aDataTypeFacade, eFlowType aFlowType, std::string_view aName, CommandTracker* aCommandTracker);
+		void AddPin(GenericDataTypeFacade aDataTypeFacade, eFlowType aFlowType, std::string_view aName, CommandTracker* aCommandTracker);
 		void SetPinNameAtIndex(std::string_view aName, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
-		void SetPinDataTypeAtIndex(DataTypeFacade aDataTypeFacade, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
+		void SetPinDataTypeAtIndex(GenericDataTypeFacade aDataTypeFacade, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
 
 		explicit operator bool() const;
 

@@ -7,7 +7,7 @@
 #include "../DataType/FlyDataTypeManager.hpp"
 #include "../Node/FlyNodeTypeManager.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
-#include "../Function/FlyTraitManager.hpp"
+#include "../Trait/FlyTraitManager.hpp"
 #include "../Memory/FlyHeapObject.hpp"
 #include <memory>
 #include <string_view>

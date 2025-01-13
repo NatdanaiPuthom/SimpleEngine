@@ -30,21 +30,13 @@ namespace FLY_NAMESPACE
 	struct NodeRef final
 	{
 		NodeRef() = default;
-#ifdef FLY_DEBUG
+
 		NodeRef(NodeID aNodeID, NodeGraph& aNodeGraph)
 			: mNodeGraph(&aNodeGraph)
 			, mNodeID(aNodeID)
 
 		{
 		}
-#else
-		NodeRef(NodeID aNodeID, NodeGraph& aNodeGraph, Class* = nullptr)
-			: mNodeGraph(&aNodeGraph)
-			, mNodeID(aNodeID)
-
-		{
-		}
-#endif
 		NodeGraph& GetNodeGraph() const
 		{
 			return *mNodeGraph;

@@ -31,7 +31,7 @@ namespace FLY_NAMESPACE
 		Internal::SetCustomEventName(GetID(), aName, aCommandTracker);
 	}
 
-	void CustomEventFacade::AddPin(DataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* aCommandTracker)
+	void CustomEventFacade::AddPin(GenericDataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* aCommandTracker)
 	{
 		Internal::AddPinToCustomEvent(GetID(), aDataTypeFacade.GetID(), aName, aCommandTracker);
 	}
@@ -41,7 +41,7 @@ namespace FLY_NAMESPACE
 		Internal::SetPinNameAtIndexCustomEvent(GetID(), aName, aIndex, aCommandTracker);
 	} 
 
-	void CustomEventFacade::SetPinDataTypeAtIndex(DataTypeFacade aDataTypeFacade, size_t aIndex, CommandTracker* aCommandTracker)
+	void CustomEventFacade::SetPinDataTypeAtIndex(GenericDataTypeFacade aDataTypeFacade, size_t aIndex, CommandTracker* aCommandTracker)
 	{
 		Internal::SetPinDataTypeAtIndexCustomEvent(GetID(), aDataTypeFacade.GetID(), aIndex, aCommandTracker);
 	}

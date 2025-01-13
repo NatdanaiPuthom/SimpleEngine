@@ -17,7 +17,17 @@ namespace FLY_NAMESPACE
 		mRedoStack = {};
 	}
 
-	void CommandTracker::BeginComposite(const std::string& aName)
+	void CommandTracker::DoCommand(Command aCommand)
+	{
+		DoCommandInternal(true, std::move(aCommand));
+	}
+
+	void CommandTracker::RegisterCommand(Command aCommand)
+	{
+		DoCommandInternal(false, std::move(aCommand));
+	}
+
+	void CommandTracker::BeginComposite(std::string_view aName)
 	{
 		if (mCurrentCompositeCommand)
 		{
@@ -25,7 +35,7 @@ namespace FLY_NAMESPACE
 		}
 		else
 		{
-			mCurrentCompositeCommand = HeapObject<CompositeCommand, false>(aName);
+			mCurrentCompositeCommand = HeapObject<CompositeCommand, false>(std::string(aName));
 		}
 	}
 
@@ -49,8 +59,8 @@ namespace FLY_NAMESPACE
 	{
 		if (!mUndoStack.empty())
 		{
-			HeapObject<Command>& topCommand = mUndoStack.top();
-			topCommand->UndoCommand();
+			Command& topCommand = mUndoStack.top();
+			topCommand.UndoCommand();
 			mRedoStack.push(std::move(topCommand));
 			mUndoStack.pop();
 		}
@@ -60,8 +70,8 @@ namespace FLY_NAMESPACE
 	{
 		if (!mRedoStack.empty())
 		{
-			HeapObject<Command>& topCommand = mRedoStack.top();
-			topCommand->DoCommand();
+			Command& topCommand = mRedoStack.top();
+			topCommand.DoCommand();
 			mUndoStack.push(std::move(topCommand));
 			mRedoStack.pop();
 		}
@@ -75,6 +85,24 @@ namespace FLY_NAMESPACE
 	size_t CommandTracker::GetRedoSize() const
 	{
 		return mRedoStack.size();
+	}
+
+	void CommandTracker::DoCommandInternal(const bool aExecute, Command&& aCommand)
+	{
+		if (mCurrentCompositeCommand)
+		{
+			mCurrentCompositeCommand->AddCommand(std::move(aCommand));
+			return;
+		}
+
+		if (aExecute)
+		{
+			aCommand.DoCommand();
+		}
+
+		mUndoStack.push(std::move(aCommand));
+
+		mRedoStack = {};
 	}
 }
 

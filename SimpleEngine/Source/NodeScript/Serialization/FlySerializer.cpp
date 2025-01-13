@@ -159,7 +159,7 @@ namespace FLY_NAMESPACE
 
 			for (const nlohmann::json& variableJson : variableDataJson)
 			{
-				const VarID varID = Internal::CreateVariable(aStruct.mVariableContainer, GetDataTypeID<bool>(), "Var", nullptr);
+				const VarID varID = Internal::CreateVariable(aStruct.mVariableContainer, GenericDataTypeID{ GetDataTypeID<bool>() }, "Var", nullptr);
 				Variable& variable = aStruct.mVariableContainer.mVariables.at(varID);
 
 				const std::string& dataTypeStr = variableJson["DataType"];
@@ -170,9 +170,9 @@ namespace FLY_NAMESPACE
 				const nlohmann::json& defaultValueJson = variableJson["DefaultValue"];
 
 
-				const DataTypeID dataTypeID = GetDataTypeManager().GetDataTypeIDByName(dataTypeStr);
+				const GenericDataTypeID dataTypeID = GetDataTypeManager().GetGenericDataTypeIDByName(dataTypeStr);
 
-				if (dataTypeID != InvalidID<DataTypeID>())
+				if (dataTypeID != GenericDataTypeID{})
 				{
 
 					Internal::SetVariableDataType(varID, aStruct.mVariableContainer, dataTypeID, nullptr);
@@ -303,10 +303,10 @@ namespace FLY_NAMESPACE
 					{
 						const PinType& pinType = GetPinTypeManager().GetPinType(pin.mTypeID);
 
-						pinDataJson["DataType"] = GetDataTypeManager().GetName(pinType.mDataTypeID);
+						pinDataJson["DataType"] = GetDataTypeManager().GetName(pinType.mGenericDataTypeID);
 
 						nlohmann::json valueJson = nlohmann::json::object();
-						GetDataTypeManager().SaveData(pinType.mDataTypeID, pin.mDataPtr, valueJson);
+						GetDataTypeManager().SaveData(pinType.mGenericDataTypeID, pin.mDataPtr, valueJson);
 						pinDataJson["Value"] = valueJson;
 					}
 
@@ -371,7 +371,7 @@ namespace FLY_NAMESPACE
 		{
 			const std::string& className = aJsonData["Name"];
 			const std::string& targetName = aJsonData["Target"];
-			const ClassID createdClassID = Internal::CreateClass(GetDataTypeManager().GetDataTypeIDByName(targetName), className);
+			const ClassID createdClassID = Internal::CreateClass(GetDataTypeManager().GetGenericDataTypeIDByName(targetName), className);
 			LoadClass(aJsonData["Data"], GetClassByID(createdClassID));
 		}
 
@@ -442,14 +442,14 @@ namespace FLY_NAMESPACE
 
 
 				const nlohmann::json& valueJson = pinData["Value"];
-				GetDataTypeManager().LoadData(pinType.mDataTypeID, pin.mDataPtr, valueJson);
+				GetDataTypeManager().LoadData(pinType.mGenericDataTypeID, pin.mDataPtr, valueJson);
 			}
 
 			const nlohmann::json& variableDataJson = dataJson["Variables"];
 
 			for (const nlohmann::json& variableJson : variableDataJson)
 			{
-				const VarID varID = Internal::CreateVariable(aClass.mVariableContainer, GetDataTypeID<bool>(), "Var", nullptr);
+				const VarID varID = Internal::CreateVariable(aClass.mVariableContainer, GenericDataTypeID{ GetDataTypeID<bool>() }, "Var", nullptr);
 				Variable& variable = aClass.mVariableContainer.mVariables.at(varID);
 
 				const std::string& dataTypeStr = variableJson["DataType"];
@@ -460,9 +460,9 @@ namespace FLY_NAMESPACE
 				const nlohmann::json& defaultValueJson = variableJson["DefaultValue"];
 
 
-				const DataTypeID dataTypeID = GetDataTypeManager().GetDataTypeIDByName(dataTypeStr);
+				const GenericDataTypeID dataTypeID = GetDataTypeManager().GetGenericDataTypeIDByName(dataTypeStr);
 
-				if (dataTypeID != InvalidID<DataTypeID>())
+				if (dataTypeID != GenericDataTypeID{})
 				{
 
 					Internal::SetVariableDataType(varID, aClass.mVariableContainer, dataTypeID, nullptr);
@@ -573,7 +573,7 @@ namespace FLY_NAMESPACE
 					const PinType& pinType = GetPinTypeManager().GetPinType(pinTypeID);
 
 					customEventPinJson["Name"] = pinType.mName;
-					customEventPinJson["DataType"] = GetDataTypeManager().GetName(pinType.mDataTypeID);
+					customEventPinJson["DataType"] = GetDataTypeManager().GetName(pinType.mGenericDataTypeID);
 
 					pinArrayJson.push_back(customEventPinJson);
 				}
@@ -622,7 +622,7 @@ namespace FLY_NAMESPACE
 					const std::string& pinName = pinJson["Name"];
 					const std::string& dataTypeName = pinJson["DataType"];
 
-					const DataTypeID dataTypeID = GetDataTypeManager().GetDataTypeIDByName(dataTypeName);
+					const GenericDataTypeID dataTypeID = GetDataTypeManager().GetGenericDataTypeIDByName(dataTypeName);
 
 					Internal::AddPinToCustomEvent(customEventID, dataTypeID, pinName, nullptr);
 				}

@@ -18,10 +18,11 @@ namespace FLY_NAMESPACE
 		PinFacade(PinID aPinID, const NodeGraphFacade& aNodeGraphFacade);
 
 		[[nodiscard]] const std::vector<PinID>& GetConnectedPinIDs() const;
-		[[nodiscard]] DataTypeID GetDataTypeID() const;
-		[[nodiscard]] const std::string& GetPinTypeName() const;
+		[[nodiscard]] GenericDataTypeID GetDataTypeID() const;
+		[[nodiscard]] std::string_view GetPinTypeName() const;
 		[[nodiscard]] eFlowType GetFlowType() const;
 		[[nodiscard]] NodeID GetNodeID() const;
+		[[nodiscard]] PinTypeID GetPinTypeID() const;
 
 		[[nodiscard]] PinID GetID() const;
 
@@ -53,7 +54,7 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		PinID mPinID = InvalidID<PinID>();
+		PinID mPinID;
 		NodeGraphVariantHandle mNodeGraphVariant;
 	};
 }

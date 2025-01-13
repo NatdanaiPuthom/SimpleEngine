@@ -21,6 +21,24 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	concept NotPointerType = !PointerType<T>;
 
+	template<typename T>
+	concept Fundamental = std::is_fundamental_v<T>;
+
+	// Primary template: assumes T is not a specialization of the given class template
+	template<template<typename...> typename Template, typename T>
+	struct is_specialization_of : std::false_type {};
+
+	// Specialization: detects if T is a specialization of the given class template
+	template<template<typename...> typename Template, typename... Args>
+	struct is_specialization_of<Template, Template<Args...>> : std::true_type {};
+
+	// Helper variable template for convenience
+	template<template<typename...> typename Template, typename T>
+	constexpr bool is_specialization_of_v = is_specialization_of<Template, T>::value;
+
+	template<typename T, template<typename...>  typename TemplateType>
+	concept SpecializationOf = is_specialization_of_v<T, TemplateType>;
+
 	template<int Value, int Min, int Max>
 	concept InRange = Value >= Min && Value <= Max;
 
@@ -243,7 +261,7 @@ namespace FLY_NAMESPACE
 
 	template<typename T>
 	concept IsRawReference = S_IsRawReference_T<T>;
-		
+
 	template<typename... Args>
 	concept AnyArgIsRawReference = (IsRawReference<Args> || ...);
 
@@ -276,7 +294,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T, typename First, typename... Rest>
-	constexpr T Extract_Impl(First&& aFirst, [[maybe_unused]] Rest&&... aRest)
+	constexpr decltype(auto) Extract_Impl(First&& aFirst, [[maybe_unused]] Rest&&... aRest)
 	{
 		if constexpr (std::same_as<T, std::decay_t<First>>)
 		{
@@ -289,7 +307,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	constexpr T&& Extract_Impl()
+	constexpr decltype(auto) Extract_Impl()
 	{
 		//static_assert(false);
 		return T{};
@@ -299,6 +317,20 @@ namespace FLY_NAMESPACE
 	constexpr decltype(auto) Extract(Types&&... aTypes)
 	{
 		return Extract_Impl<T, Types...>(std::forward<Types>(aTypes)...);
+	}
+
+
+	template<typename T, typename... Types>
+	constexpr decltype(auto) TryExtract(const T& aDefaultValue, [[maybe_unused]] Types&&... aTypes)
+	{
+		if constexpr (ContainsType<T, Types...>)
+		{
+			return Extract_Impl<T, Types...>(std::forward<Types>(aTypes)...);
+		}
+		else
+		{
+			return aDefaultValue;
+		}
 	}
 
 	template<typename, template <typename...> typename>

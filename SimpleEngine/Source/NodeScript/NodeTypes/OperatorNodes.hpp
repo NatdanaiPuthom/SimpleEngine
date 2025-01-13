@@ -333,7 +333,7 @@ namespace FLY_NAMESPACE
 
 		auto operatorFunc = GetFunctionByOperator<T, OperatorTrait>();
 
-		const NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits>(operatorFunc, NodeCreationData{ .mOperatorTrait = OperatorTrait, .mName = aDefaultNodeName });
+		const NodeTypeID nodeTypeID = RegisterSystemNodeType<Traits>(operatorFunc, NodeCreationData{ .mName = aDefaultNodeName, .mOperatorTrait = OperatorTrait });
 
 		Internal::GetNodeTypeManager().SetOperatorNodeTypeID(dataTypeID, OperatorTrait, nodeTypeID);
 	}

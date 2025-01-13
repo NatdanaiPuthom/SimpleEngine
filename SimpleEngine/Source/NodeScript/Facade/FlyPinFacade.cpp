@@ -20,17 +20,17 @@ namespace FLY_NAMESPACE
 		return GetPin().mConnectedPinIDs;
 	}
 
-	DataTypeID PinFacade::GetDataTypeID() const
+	GenericDataTypeID PinFacade::GetDataTypeID() const
 	{
-		return GetPinType().mDataTypeID;
+		return GetPinType().mGenericDataTypeID;
 	}
 
-	const std::string& PinFacade::GetPinTypeName() const
+	std::string_view PinFacade::GetPinTypeName() const
 	{
 		const PinType& pinType = GetPinType();
 		if (pinType.mName == TypeIdentifierStr)
 		{
-			return Internal::GetDataTypeManager().GetName(pinType.mDataTypeID);
+			return Internal::GetDataTypeManager().GetName(pinType.mGenericDataTypeID);
 		}
 		return pinType.mName;
 	}
@@ -43,6 +43,11 @@ namespace FLY_NAMESPACE
 	NodeID PinFacade::GetNodeID() const
 	{
 		return GetPin().mNodeID;
+	}
+
+	PinTypeID PinFacade::GetPinTypeID() const
+	{
+		return GetPin().mTypeID;
 	}
 
 	PinID PinFacade::GetID() const
@@ -62,12 +67,12 @@ namespace FLY_NAMESPACE
 
 	bool PinFacade::IsViewAndEditable() const
 	{
-		return DataTypeFacade(GetPinType().mDataTypeID).IsViewAndEditable();
+		return GenericDataTypeFacade(GetPinType().mGenericDataTypeID).IsViewAndEditable();
 	}
 
 	bool PinFacade::IsViewable() const
 	{
-		return DataTypeFacade(GetPinType().mDataTypeID).IsViewable();
+		return GenericDataTypeFacade(GetPinType().mGenericDataTypeID).IsViewable();
 	}
 
 	bool PinFacade::IsSplitable() const
@@ -108,14 +113,14 @@ namespace FLY_NAMESPACE
 	std::vector<PinFacade> PinFacade::GetPotentialConnections() const
 	{
 		const eFlowType flowType = GetFlowType();
-		const DataTypeID dataTypeID = GetDataTypeID();
+		const GenericDataTypeID dataTypeID = GetDataTypeID();
 		return GetPinFacadesFiltered(
 			[flowType, dataTypeID](const Pin& aPin) -> bool
 			{
 				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(aPin.mTypeID);
 				const bool a = aPin.mConnectedPinIDs.empty() && pinType.mFlowType == InvertFlowType(flowType);
 
-				return a && Internal::AreDataTypesLinkable(SelectByFlowType(flowType, dataTypeID, pinType.mDataTypeID), SelectByFlowType(flowType, pinType.mDataTypeID, dataTypeID));
+				return a && Internal::AreDataTypesLinkable(SelectByFlowType(flowType, dataTypeID, pinType.mGenericDataTypeID), SelectByFlowType(flowType, pinType.mGenericDataTypeID, dataTypeID));
 			},
 			NodeGraphFacade(mNodeGraphVariant)
 		);
@@ -153,12 +158,12 @@ namespace FLY_NAMESPACE
 
 	void PinFacade::ViewAndEdit(CommandTracker* const aCommandTracker)
 	{
-		Internal::ViewAndEditPin(GetID(), Internal::GetNodeGraph(mNodeGraphVariant), aCommandTracker);
+		Internal::ViewAndEditPinGeneric(mPinID, Internal::GetNodeGraph(mNodeGraphVariant), aCommandTracker);
 	}
 
 	void PinFacade::View() const
 	{
-		Internal::ViewPin(mPinID, Internal::GetNodeGraph(mNodeGraphVariant));
+		Internal::ViewPinGeneric(mPinID, Internal::GetNodeGraph(mNodeGraphVariant));
 	}
 
 	void PinFacade::Split(CommandTracker* const aCommandTracker)

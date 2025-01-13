@@ -6,9 +6,11 @@
 #include "../Utilities/FlyMeta.hpp"
 #include "../Pin/FlyPinTypeManager.hpp"
 #include "../DataType/FlyDataTypeManager.hpp"
+#include "../Trait/FlyTraitManager.hpp"
 #include "../DataType/FlyClass.hpp"
 #include "../Instance/FlyClassInstance.hpp"
 #include "../DataType/FlyVariableRef.hpp"
+#include "../Trait/FlyTraitObject.hpp"
 
 namespace FLY_NAMESPACE
 {
@@ -31,6 +33,26 @@ namespace FLY_NAMESPACE
 			result += aStr[i];
 		}
 		return result;
+	}
+
+	inline std::string GetTraitFunctionName(const std::string& aNodeFullName)
+	{
+		const size_t directoryIndex = aNodeFullName.find_first_of('/');
+
+		if (directoryIndex == std::string::npos)
+		{
+			assert(false);
+			return std::string();
+		}
+
+
+		const size_t parenthesisIndex = aNodeFullName.find_first_of('(');
+		if (parenthesisIndex == std::string::npos)
+		{
+			assert(false);
+		}
+
+		return std::string();
 	}
 
 	inline std::string GetClassNameFromMemberName(const std::string& aStr)
@@ -61,7 +83,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<eNodeTrait Traits = eNodeTrait::None, typename OutputType, typename... InputTypes>
-	inline NodeTypeID RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...> aFunction, auto&& aCreationData = NodeCreationData())
+	inline NodeTypeID RegisterSystemNodeType(FuncPtr<OutputType, InputTypes...> aFunction, NodeCreationData&& aCreationData = NodeCreationData())
 	{
 		return RegisterInternal(FilterNodeType<Traits>(aFunction, std::forward<NodeCreationData>(aCreationData)), std::forward<NodeTypeDesc>(aCreationData.mDescription));
 	}
@@ -313,7 +335,13 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	struct MemberOf final
 	{
-		using Type = T;
+		using type = T;
+	};
+
+	template<typename T>
+	struct TraitImplOf final
+	{
+		using type = T;
 	};
 
 	// Helper to get the type at a given index in a parameter pack
@@ -386,6 +414,12 @@ namespace FLY_NAMESPACE
 	//		return std::make_tuple(static_cast<Pack2>(std::get<Indices>(inputTuple))...);
 	//	}(std::make_index_sequence<sizeof...(Pack1)>{});
 	//}
+
+
+
+	template<typename TraitType>
+	struct TraitModel final : TraitObject {};
+
 
 	struct RegisterFunctionNode final
 	{
@@ -538,7 +572,7 @@ namespace FLY_NAMESPACE
 				}
 				else
 				{
-					if (aFunctionName.find("::") == std::string::npos)
+					if (aFunctionName.find("::") == std::string::npos && aFunctionName.find('/') == std::string::npos)
 					{
 						nodeCreationData.mName = "Default/" + aFunctionName;
 					}
@@ -555,13 +589,13 @@ namespace FLY_NAMESPACE
 
 
 		template<typename OutputType, typename... InputTypes, typename... Extra>
-		constexpr static RegisterFunctionNode Register(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
+		constexpr static RegisterFunctionNode RegisterFunction(FuncPtr<OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
 			constexpr eNodeTrait Traits = ContainsType<Pure, Extra...> || ContainsType<Event, Extra...> ? eNodeTrait::None : eNodeTrait::HasImplicitFlow;
 
 			if constexpr (ContainsTemplateType<MemberOf, Extra...>)
 			{
-				using ClassType = std::decay_t<decltype(ExtractTemplate<MemberOf, Extra...>(std::forward<Extra>(aExtraTypes)...))>::Type;
+				using ClassType = std::decay_t<decltype(ExtractTemplate<MemberOf, Extra...>(std::forward<Extra>(aExtraTypes)...))>::type;
 				NodeTypeRegistry::RegisterFakeMemberNodeType<Traits, ClassType>(aFunction, CreateNodeCreationData<ClassType>(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
 			}
 			else
@@ -574,7 +608,7 @@ namespace FLY_NAMESPACE
 
 
 		template<typename ClassType, typename OutputType, typename... InputTypes, typename... Extra>
-		constexpr static RegisterFunctionNode Register(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
+		static constexpr RegisterFunctionNode RegisterFunction(FuncPtrMember<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
 			//NodeTypeRegistry::RegisterMemberNodeType(aFunction, GetNodeCreationData<ClassType>(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
 
@@ -582,17 +616,182 @@ namespace FLY_NAMESPACE
 		}
 
 		template<typename ClassType, typename OutputType, typename... InputTypes, typename... Extra>
-		constexpr static RegisterFunctionNode Register(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
+		static constexpr RegisterFunctionNode RegisterFunction(FuncPtrMember_Const<ClassType, OutputType, InputTypes...> aFunction, const std::string& aFunctionName, Extra&&... aExtraTypes)
 		{
 			//NodeTypeRegistry::RegisterMemberNodeType(aFunction, GetNodeCreationData<ClassType>(aFunction, aFunctionName, std::forward<Extra>(aExtraTypes)...));
 
 			return RegisterFunctionNode();
 		}
+
+
+
+		template<typename TraitType, typename OutputType, typename... InputTypes>
+		static OutputType CallerTraitNode(InternalExecutionContextPtr aContext, TraitModel<TraitType> aTraitObject, InputTypes... aInputTypes)
+		{
+			TraitImplementation* traitImplementation = Internal::GetTraitManager().GetTraitImplementation(aTraitObject.mDataTypeID, aTraitObject.mTraitID);
+
+			if (!traitImplementation)
+			{
+				assert(false);
+				return OutputType{};
+			}
+
+			return std::visit(Visitor{
+				[aContext, aTraitObject, &aInputTypes...](const CPPTraitImplementation& aTraitImplementation) -> OutputType
+				{
+					const NodeType& nodeType = aContext->mNodeTypeManager->GetNodeType(aTraitImplementation.mNodeTypeID);
+
+					std::tuple<InputTypes...> inputTuple{};
+
+					OutputType outputValue{};
+
+					nodeType.mNodeRecipe.mFastExecuteFunction(*aContext, *aContext->mFoundationMemoryPool, nodeType, aTraitObject.mDataPtr.Get(), &inputTuple, &outputValue);
+					return outputValue;
+				},
+				[aContext, &aInputTypes...](FlyTraitImplementation& aTraitImplementation) -> OutputType
+				{
+
+					const Node& inputNode = aTraitImplementation.mNodeGraph.mNodeGraph.mNodes[FlyTraitImplementation::sInputNodeID];
+
+					SetPinValues(*aContext, inputNode.mInputPins, aTraitImplementation.mNodeGraph.mNodeGraph, std::forward<InputTypes>(aInputTypes)...);
+
+					aContext->mNodeExecutionQueue->Push(NodeExecutionData{.mNodeRef = NodeRef{ FlyTraitImplementation::sInputNodeID, aTraitImplementation.mNodeGraph.mNodeGraph }, .mTriggerReason = eNodeTriggerReason::Flow });
+
+
+					return OutputType{};
+				}
+				}, *traitImplementation);
+		}
+
+		template<typename TraitType>
+		static constexpr RegisterFunctionNode RegisterTrait(const std::string_view aTraitName)
+		{
+			Internal::GetTraitManager().CreateTrait(aTraitName, GetDataTypeID<TraitType>());
+
+			Internal::GetDataTypeManager().Register<TraitModel<TraitType>>(std::string(aTraitName), Colors::Orange, false);
+
+			//static_assert(ViewAndEditable<TraitModel<TraitType>>);
+
+			Internal::GetDataTypeManager().CreateDataTypeDuplication<TraitObject>();
+
+			return RegisterFunctionNode();
+		}
+
+		template<typename TraitType, typename OutputType, typename... InputTypes, typename... Extra>
+		static constexpr RegisterFunctionNode RegisterTraitFunction(FuncPtrMember<TraitType, OutputType, InputTypes...>, const std::string& aFunctionName, [[maybe_unused]] Extra&&... aExtraTypes)
+		{
+			const TraitID traitID = Internal::GetTraitManager().GetTraitIDByDataTypeID(GetDataTypeID<TraitType>());
+
+			Trait& trait = Internal::GetTraitManager().GetTrait(traitID);
+
+			const size_t functionIndex = trait.mFunctions.size();
+			TraitFunction& traitFunction = trait.mFunctions.emplace_back();
+
+			NodeCreationData nodeCreationData;
+			nodeCreationData.mDescription.mDefaultValues.resize(2);
+			TraitModel<TraitType> t;
+			t.mTraitID = traitID;
+			t.mFunctionIndex = functionIndex;
+			nodeCreationData.mDescription.mDefaultValues[1] = t;
+			nodeCreationData.mTraitID = traitID;
+			nodeCreationData.mName = aFunctionName;
+
+			const NodeTypeID callerNodeTypeID = RegisterSystemNodeType<eNodeTrait::HasImplicitFlow>(CallerTraitNode<TraitType, OutputType, InputTypes...>, std::move(nodeCreationData));
+
+			Internal::GetNodeTypeManager().MapNodeTypeIDToTrait(traitID, GetDataTypeID<TraitObject>(), callerNodeTypeID);
+
+			traitFunction.mCallerNodeTypeID = callerNodeTypeID;
+
+
+			return RegisterFunctionNode();
+		}
+
+		template<typename TraitImplOf, typename OutputType, typename... InputTypes>
+		static constexpr RegisterFunctionNode RegisterTraitImplementation(FuncPtr<OutputType, InputTypes...> aFunction)
+		{
+			using TraitType = TraitImplOf::type;
+
+
+			const TraitID traitID = Internal::GetTraitManager().GetTraitIDByDataTypeID(GetDataTypeID<TraitType>());
+
+			Trait& trait = Internal::GetTraitManager().GetTrait(traitID);
+
+
+			using OverloadedT = TypeAtIndex_t<0, InputTypes...>;
+
+			const DataTypeID overloadedTypeID = GetDataTypeID<OverloadedT>();
+
+
+
+			Internal::GetTraitManager().CreateTraitImplementation(overloadedTypeID, traitID);
+
+			const NodeTypeID traitObjectNodeTypeID = Internal::GetNodeTypeManager().GetNodeTypeIDByTraitAndDataType(traitID, GetDataTypeID<TraitObject>());
+			const std::string traitFunctionName = Internal::GetNodeTypeManager().GetShortName(traitObjectNodeTypeID);
+
+			NodeCreationData nodeCreationData;
+			nodeCreationData.mName = trait.mName + "/" + traitFunctionName + " (" + Internal::GetDataTypeManager().GetName(overloadedTypeID) + ")";
+			nodeCreationData.mTraitID = traitID;
+
+
+			
+
+			const NodeTypeID nodeTypeID = RegisterSystemNodeType<eNodeTrait::HasImplicitFlow | eNodeTrait::Trait>(aFunction, std::move(nodeCreationData));
+
+			const NodeType& traitObjectNodeType = Internal::GetNodeType(traitObjectNodeTypeID);
+			const NodeType& createdNodeType = Internal::GetNodeType(nodeTypeID);
+
+			auto areParameterTypesEqual = [](const std::vector<PinTypeID>& aPinTypeIDs1, const std::vector<PinTypeID>& aPinTypeIDs2, const size_t aExceptionIndex = std::numeric_limits<size_t>::max()) -> bool
+				{
+					if (aPinTypeIDs1.size() != aPinTypeIDs2.size())
+					{
+						return false;
+					}
+					for (size_t i = 0; i < aPinTypeIDs1.size(); i++)
+					{
+						if (i == aExceptionIndex)
+						{
+							continue;
+						}
+						if (Internal::GetPinType(aPinTypeIDs1[i]).mGenericDataTypeID != Internal::GetPinType(aPinTypeIDs2[i]).mGenericDataTypeID)
+						{
+							return false;
+						}
+					}
+
+					return true;
+				};
+
+			if (!areParameterTypesEqual(traitObjectNodeType.mNodeRecipe.mInputPinTypeIDs, createdNodeType.mNodeRecipe.mInputPinTypeIDs, 1))
+			{
+				assert(false && "Input Parameter types are not equal");
+			}
+			if (!areParameterTypesEqual(traitObjectNodeType.mNodeRecipe.mOutputPinTypeIDs, createdNodeType.mNodeRecipe.mOutputPinTypeIDs))
+			{
+				assert(false && "Output Parameter types are not equal");
+			}
+			
+
+
+			Internal::GetNodeTypeManager().MapNodeTypeIDToTrait(traitID, overloadedTypeID, nodeTypeID);
+
+
+			return RegisterFunctionNode();
+		}
+
 	};
 
 
 
 }
 
-#define FLY_FUNCTION(function, ...) \
-    inline static FLY_NAMESPACE::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = FLY_NAMESPACE::RegisterFunctionNode::Register(&function, #function, __VA_ARGS__);
+#define FLY_FUNCTION(Function, ...) \
+    inline static FLY_NAMESPACE::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = FLY_NAMESPACE::RegisterFunctionNode::RegisterFunction(&Function, #Function, __VA_ARGS__);
+
+#define FLY_TRAIT(Trait, ...) \
+	inline static FLY_NAMESPACE::RegisterFunctionNode FLY_UNIQUE_NAME(fly_trait) = FLY_NAMESPACE::RegisterFunctionNode::RegisterTrait<Trait>(#Trait);
+
+#define FLY_TRAIT_FUNCTION(Function, ...) \
+	inline static FLY_NAMESPACE::RegisterFunctionNode FLY_UNIQUE_NAME(fly_trait_function) = FLY_NAMESPACE::RegisterFunctionNode::RegisterTraitFunction(&Function, #Function, __VA_ARGS__);
+
+#define FLY_TRAIT_IMPLEMENTATION(Function, TraitImplOf) \
+	inline static FLY_NAMESPACE::RegisterFunctionNode FLY_UNIQUE_NAME(fly_trait_impl) = FLY_NAMESPACE::RegisterFunctionNode::RegisterTraitImplementation<TraitImplOf>(&Function);

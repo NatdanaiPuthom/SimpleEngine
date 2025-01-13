@@ -20,9 +20,10 @@ namespace FLY_NAMESPACE
 		TakesExecutionContext = 1 << 9,
 		TakesInternalExecutionContext = 1 << 10,
 		Target = 1 << 11,
+		Trait = 1 << 12,
 		NonTrivial = Invalid | Getter | Setter | Operator | TemplateSpec | CustomEvent | Target,
 		Accessor = Getter | Setter,
-		All = Invalid | Getter | Setter | Operator | CustomEvent | HasFlow | TakesExecutionContext | TakesInternalExecutionContext | HasImplicitFlow | Target,
+		All = ~None
 	};
 
 	enum class eNodeOperatorTrait : unsigned int
