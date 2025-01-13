@@ -13,7 +13,7 @@ namespace Drawer
 		, myInstanceData(std::make_unique<Data>())
 		, myInstanceSizeLimit(32768)
 	{
-		myShader = Global::GetGraphicsEngine()->GetShader("Shaders\\LinePS.cso", "Shaders\\DefaultVS.cso");
+		myShader = Global::GetGraphicsEngine()->GetShaderManager()->GetShader("Shaders\\LinePS.cso", "Shaders\\DefaultVS.cso");
 
 		CreateBuffers();
 		CreateInstanceBuffer();

@@ -107,14 +107,14 @@ namespace Drawer
 
 	void BoundingBoxDrawer::InitMeshData2D()
 	{
-		myShader2D = Global::GetGraphicsEngine()->GetShader("Shaders\\LinePS.cso", "Shaders\\Line2DVS.cso");
+		myShader2D = Global::GetGraphicsEngine()->GetShaderManager()->GetShader("Shaders\\LinePS.cso", "Shaders\\Line2DVS.cso");
 	}
 
 	void BoundingBoxDrawer::InitMeshData3D()
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
-		myShader3D = graphicsEngine->GetShader("Shaders\\LinePS.cso", "Shaders\\DefaultVS.cso");
+		myShader3D = graphicsEngine->GetShaderManager()->GetShader("Shaders\\LinePS.cso", "Shaders\\DefaultVS.cso");
 
 		myMeshData3D.vertices.reserve(24);
 		myMeshData3D.vertices.resize(24, Vertex{});

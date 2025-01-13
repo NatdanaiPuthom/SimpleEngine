@@ -12,7 +12,7 @@ namespace ECS
 
 		mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 
-		shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
+		shader = graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::PBR_Default).get();
 
 		textures[Graphics::Global_Slot_Albedo] = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Albedo).get();
 		textures[Graphics::Global_Slot_Normal] = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Normal).get();
