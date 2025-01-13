@@ -1,5 +1,5 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
-#include "Graphics/Texture/TextureManager.hpp"
+#include "Graphics/Managers/TextureManager.hpp"
 
 namespace Graphics
 {

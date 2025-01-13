@@ -1,5 +1,5 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
-#include "Graphics/Lights/LightManager.hpp"
+#include "Graphics/Managers/LightManager.hpp"
 
 namespace Graphics
 {

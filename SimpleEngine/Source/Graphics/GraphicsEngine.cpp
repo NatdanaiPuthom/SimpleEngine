@@ -1,7 +1,7 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Graphics/ConstantBuffer/ConstantBuffer.hpp"
-#include "Graphics/ConstantBuffer/ConstantBufferManager.hpp"
+#include "Graphics/Managers/ConstantBufferManager.hpp"
 #include "Engine/Global.hpp"
 #include "Engine/ImGui/ImGuiEngine.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"

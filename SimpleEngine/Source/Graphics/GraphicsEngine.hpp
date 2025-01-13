@@ -6,8 +6,8 @@
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/Model/Factory/ModelFactory.hpp"
-#include "Graphics/Texture/TextureManager.hpp"
-#include "Graphics/Lights/LightManager.hpp"
+#include "Graphics/Managers/TextureManager.hpp"
+#include "Graphics/Managers/LightManager.hpp"
 #include <unordered_map>
 #include <memory>
 #include <array>
@@ -83,15 +83,14 @@ namespace Graphics
 		const Graphics::Camera* GetCurrentCamera() const;
 		const std::shared_ptr<Camera> GetEditorCamera() const;
 
-		LightManager* GetLightManager();
-		TextureManager* GetTextureManager();
-
 		//NOTE(v9.36.1): Will Add and cache the shader if it does not already exist
 		std::shared_ptr<const Shader> GetShader(const char* aPSFile, const char* aVSFile);
 		std::shared_ptr<const Shader> GetShader(const eShaderType aShaderType);
 
-		Drawer::Renderer* GetRenderer();
+		LightManager* GetLightManager();
+		TextureManager* GetTextureManager();
 		ModelFactory* GetModelFactory();
+		Drawer::Renderer* GetRenderer();
 		const Drawer::Renderer* GetRenderer() const;
 		const ModelFactory* GetModelFactory() const;
 
