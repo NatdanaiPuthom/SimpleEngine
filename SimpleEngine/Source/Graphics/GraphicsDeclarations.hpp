@@ -65,40 +65,6 @@ namespace Graphics
 		Count
 	};
 
-	enum class eTextureType
-	{
-		Default,
-		Default_Albedo,
-		Default_Normal,
-		Default_Material,
-		Simple,
-		DirectionalLight
-	};
-
-	enum class eSkyBox
-	{
-		DayCloud,
-		NightStar,
-		DayGrassland,
-		AutumnForest,
-		TGA_Skansen
-	};
-
-	enum class eIconType
-	{
-		FBX,
-		Folder,
-		CubeMap,
-		PNG,
-		JPG,
-		OBJ,
-		MP3,
-		Scene,
-		Cursor,
-		FlyScript,
-		Unknown
-	};
-
 	struct RenderTarget final
 	{
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView;

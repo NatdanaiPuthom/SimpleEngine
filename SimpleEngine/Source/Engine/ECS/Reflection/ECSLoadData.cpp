@@ -140,7 +140,7 @@ namespace ECS
 	bool LoadAndSetDataFromJSON(const Graphics::Texture*& aTexture, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
 		const std::string filePath = aJSONData[aVariableName];
-		aTexture = Global::GetGraphicsEngine()->GetTexture(filePath.c_str()).get();
+		aTexture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(filePath.c_str()).get();
 
 		return true;
 	}
@@ -222,7 +222,7 @@ namespace ECS
 
 				if (albedoTexture.empty() == false)
 				{
-					aTextures[i] = graphicsEngine->GetTexture(albedoTexture.c_str()).get();
+					aTextures[i] = graphicsEngine->GetTextureManager()->GetTexture(albedoTexture.c_str()).get();
 					success = true;
 				}
 
@@ -232,7 +232,7 @@ namespace ECS
 
 				if (normalTexture.empty() == false)
 				{
-					aTextures[i] = graphicsEngine->GetTexture(normalTexture.c_str()).get();
+					aTextures[i] = graphicsEngine->GetTextureManager()->GetTexture(normalTexture.c_str()).get();
 					success = true;
 				}
 
@@ -242,7 +242,7 @@ namespace ECS
 
 				if (materialTexture.empty() == false)
 				{
-					aTextures[i] = graphicsEngine->GetTexture(materialTexture.c_str()).get();
+					aTextures[i] = graphicsEngine->GetTextureManager()->GetTexture(materialTexture.c_str()).get();
 					success = true;
 				}
 

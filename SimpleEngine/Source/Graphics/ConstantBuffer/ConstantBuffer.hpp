@@ -12,7 +12,7 @@ namespace Graphics
 		~ConstantBuffer();
 
 		bool Init(const unsigned int aSize, void* aData);
-		void Update(const unsigned int aSize, void* aData);
+		void Update(const unsigned int aSize, const void* aData);
 		void Bind(const int aSlot);
 	public:
 		void SetSlot(const unsigned int aSlot);

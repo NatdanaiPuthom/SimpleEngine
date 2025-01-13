@@ -40,14 +40,14 @@ namespace ECS
 			pointLight.position = transformComponent->transform.GetPosition();
 			pointLight.radius = pointLightComponent->pointLightData.radius;
 
-			graphicsEngine->AddPointLight(pointLight);
+			graphicsEngine->GetLightManager()->AddPointLight(pointLight);
 		}
 	}
 
-	void RenderLightSystem::LateRender(EntityComponentSystem* /*aEntityComponentSystem§*/)
+	void RenderLightSystem::LateRender(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-		ID3D11DeviceContext* context = graphicsEngine->GetContext().Get(); context;
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext> context = graphicsEngine->GetContext();
 		Drawer::Renderer* renderer = Global::GetRenderer();
 
 		std::vector<Graphics::RenderTarget>& gBuffers = graphicsEngine->GetRenderTargets(Graphics::eRenderTargetType::GBuffer);
@@ -63,19 +63,21 @@ namespace ECS
 
 		const Graphics::Mesh* mesh = Global::GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Sphere);
 		std::shared_ptr<const Graphics::Shader> shader = Global::GetGraphicsEngine()->GetShader(Graphics::eShaderType::PointLight);
-		std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(Graphics::eTextureType::Default);
+		std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(Graphics::eTextureType::Default);
 		Math::Transform transform;
 
-		const Graphics::eRasterizerState previousRasterizerState = graphicsEngine->GetCurrentRasterizerState();
+		Graphics::StateManager* const stateManager = graphicsEngine->GetStateManager();
+		const Graphics::eRasterizerState previousRasterizerState = stateManager->GetCurrentRasterizerState();
 
-		graphicsEngine->SetRasterizerState(Graphics::eRasterizerState::FrontFaceCulling);
-		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Greater);
-		graphicsEngine->SetBlendState(Graphics::eBlendState::AdditiveBlend);
+		stateManager->SetRasterizerState(context, Graphics::eRasterizerState::FrontFaceCulling);
+		stateManager->SetDepthStencilState(context, Graphics::eDepthStencilState::Greater);
+		stateManager->SetBlendState(context, Graphics::eBlendState::AdditiveBlend);
 		graphicsEngine->UpdateLightBuffer();
 
-		Graphics::PointLightData* pointLightBuffer = graphicsEngine->GetPointLightDataArray();
+		Graphics::LightManager* graphicsDataContainer = graphicsEngine->GetLightManager();
+		Graphics::PointLightData* pointLightBuffer = graphicsDataContainer->GetPointLightDataArray();
 
-		for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
+		for (size_t i = 0; i < graphicsDataContainer->GetPointLightCount(); ++i)
 		{
 			graphicsEngine->UpdatePointlights(i);
 
@@ -85,9 +87,9 @@ namespace ECS
 			renderer->RenderUnlitStaticModel(transform.GetMatrix(), mesh, shader.get(), texture.get());
 		}
 
-		graphicsEngine->SetDepthStencilState(Graphics::eDepthStencilState::Less_Equal);
-		graphicsEngine->SetRasterizerState(previousRasterizerState);
-		graphicsEngine->SetBlendState(Graphics::eBlendState::Disabled);
+		stateManager->SetDepthStencilState(context, Graphics::eDepthStencilState::Less_Equal);
+		stateManager->SetRasterizerState(context,previousRasterizerState);
+		stateManager->SetBlendState(context, Graphics::eBlendState::Disabled);
 
 		ID3D11ShaderResourceView* nullSRVs[5] = { NULL };
 		context->PSSetShaderResources(5, 5, nullSRVs);
@@ -97,7 +99,7 @@ namespace ECS
 			Drawer::Sphere pointLightDebugSpheres;
 			pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
-			for (size_t i = 0; i < graphicsEngine->GetPointLightCount(); ++i)
+			for (size_t i = 0; i < graphicsDataContainer->GetPointLightCount(); ++i)
 			{
 				pointLightDebugSpheres.position = pointLightBuffer[i].position;
 				pointLightDebugSpheres.radius = pointLightBuffer[i].radius;

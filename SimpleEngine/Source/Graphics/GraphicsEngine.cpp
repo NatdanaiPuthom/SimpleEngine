@@ -1,6 +1,7 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "Graphics/GraphicsEngine.hpp"
 #include "Graphics/ConstantBuffer/ConstantBuffer.hpp"
+#include "Graphics/Managers/ConstantBufferManager.hpp"
 #include "Engine/Global.hpp"
 #include "Engine/ImGui/ImGuiEngine.hpp"
 #include "Engine/SimpleUtilities/Utility.hpp"
@@ -8,7 +9,6 @@
 #include <External/imgui.h>
 #include <External/nlohmann/json.hpp>
 #include <fstream>
-#include <cmath>
 
 #ifdef _DEBUG
 #define REPORT_DX_WARNINGS
@@ -20,7 +20,6 @@ namespace Graphics
 		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
 		, myVSync(true)
 		, myFPSLevelCap(0)
-		, myCurrentRasterizerState(eRasterizerState::BackfaceCulling)
 		, myCurrentCameraRaw(nullptr)
 	{
 	}
@@ -31,20 +30,13 @@ namespace Graphics
 
 	void GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
 	{
-		myCameraConstantBuffer = std::make_unique<ConstantBuffer>();
-		myTimeConstantBuffer = std::make_unique<ConstantBuffer>();
-		myJointsConstantBuffer = std::make_unique<ConstantBuffer>();
-		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
-		myPostProcessConstantBuffer = std::make_unique<ConstantBuffer>();
-		myPointLightConstantBuffer = std::make_unique<ConstantBuffer>();
-
+		myStateManager = std::make_unique<StateManager>();
+		myBufferManager = std::make_unique<ConstantBufferManager>();
+		myTextureManager = std::make_unique<TextureManager>();
+		myLightManager = std::make_unique<LightManager>();
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
-		myLightBufferData = std::make_unique<LightBufferData>();
-		myPointLightBufferData = std::make_unique<PointLightBufferData>();
 		myViewPort = std::make_shared<D3D11_VIEWPORT>();
-
 		myEditorCamera = std::make_shared<Graphics::Camera>();
-
 		myRenderer = std::make_unique<Drawer::Renderer>();
 		myModelFactory = std::make_unique<ModelFactory>();
 
@@ -52,50 +44,29 @@ namespace Graphics
 
 		CreateSwapChain(aWindowHandle, aWindowSize);
 		CreateViewport(aWindowSize);
-
 		CreateBackBuffer();
 		CreateGRenderTarget(aWindowSize);
 		CreateDeferredRenderTarget(aWindowSize);
 		CreatePostProcessingRenderTarget(aWindowSize);
 		CreateBloomDownAndUpSampleRenderTarget(aWindowSize);
 		CreateBloomRenderTarget(aWindowSize);
-
 		CreateDepthBuffer(aWindowSize);
-		CreateDepthStencilState();
-		CreateRasterizerStates();
-		CreateSamplerState();
-		CreateBlendStates();
 
-		CreateCameraConstantBuffer();
-		CreateTimeConstantBuffer();
-		CreateLightConstantBuffer();
-		CreateJointsConstantBuffer();
-		CreatePostProcessingConstantBuffer();
-
-		PreloadTextures();
-		PreloadShaders();
-
+		myStateManager->Init(myDevice);
+		myBufferManager->Init();
+		myTextureManager->Init();
+		myLightManager->Init();
 		myEditorCamera->Init();
 		myImGuiEngine->Init();
 		myRenderer->Init();
 		myModelFactory->Init();
 
-		SetRasterizerState(eRasterizerState::BackfaceCulling);
-		SetDepthStencilState(eDepthStencilState::Less_Equal);
-		SetSamplerState(eSamplerState::Bilinear_Warp);
+		PreloadShaders();
 
+		myStateManager->SetRasterizerState(myContext, eRasterizerState::BackfaceCulling);
+		myStateManager->SetDepthStencilState(myContext, eDepthStencilState::Less_Equal);
+		myStateManager->SetSamplerState(myContext, eSamplerState::Bilinear_Warp);
 		myContext->RSSetViewports(1, myViewPort.get());
-
-		myCameraConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Camera);
-		myTimeConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Time);
-		myLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Light);
-		myJointsConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Joints);
-		myPointLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Pointlight);
-		myPostProcessConstantBuffer->SetSlot(5);
-
-		myLightBufferData->directionalLightDirection.x = 0.0f;
-		myLightBufferData->directionalLightDirection.y = -1.0f;
-		myLightBufferData->directionalLightDirection.z = 0.0f;
 
 		myCurrentCameraRaw = myEditorCamera.get();
 	}
@@ -104,15 +75,11 @@ namespace Graphics
 	{
 		ClearDepthStencilView();
 		ClearAllRenderTargets();
-		ClearPointLightCount();
+		myLightManager->ClearPointLightCount();
 
-		UpdateTimeConstantBuffer();
-		UpdateCameraConstantBuffer();
-
-		{
-			myPostProcessConstantBuffer->Bind(myPostProcessConstantBuffer->GetSlot());
-			myPostProcessConstantBuffer->Update(sizeof(PostProcessData), &myPostProcessData);
-		}
+		myBufferManager->UpdateTimeConstantBuffer(static_cast<float>(Global::GetTotalTime()), Global::GetDeltaTime());
+		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw, Global::GetResolution());
+		myBufferManager->UpdatePostProcessConstantBuffer(myLightManager->GetPostProcessData());
 	}
 
 	bool GraphicsEngine::BeginFrame()
@@ -183,36 +150,6 @@ namespace Graphics
 		SetVSync(json["Game_Settings"]["VSync"]);
 	}
 
-	void GraphicsEngine::PreloadTextures()
-	{
-		if (!AddTexture("Assets\\Textures\\T_SimpleTexture_C.dds", Global_Slot_Albedo))
-			assert(false && "Failed to add Texture");
-
-		if (!AddTexture("Assets\\Textures\\T_Cat_C.dds", Global_Slot_Albedo))
-			assert(false && "Failed to add Texture");
-
-		if (!AddTexture("Assets\\Textures\\T_Hamster_C.dds", Global_Slot_Albedo))
-			assert(false && "Failed to add Texture");
-
-		if (!AddTexture("Assets\\Textures\\T_CatScared_C.dds", Global_Slot_Albedo))
-			assert(false && "Failed to add Texture");
-
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_CloudAnime_E.dds", Global_Slot_CubeMap))
-			assert(false && "Failed to add Texture");
-
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_NightStars_E.dds", Global_Slot_CubeMap))
-			assert(false && "Failed to add Texture");
-
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_DayCloud_E.dds", Global_Slot_CubeMap))
-			assert(false && "Failed to add Texture");
-
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_AutumnForest_E.dds", Global_Slot_CubeMap))
-			assert(false && "Failed to add Texture");
-
-		if (!AddTexture("Assets\\Textures\\Cubemaps\\T_Skansen_E.dds", Global_Slot_CubeMap))
-			assert(false && "Failed to add Texture");
-	}
-
 	void GraphicsEngine::PreloadShaders()
 	{
 		for (size_t i = 0; i < static_cast<size_t>(eShaderType::Count); ++i)
@@ -253,7 +190,7 @@ namespace Graphics
 
 		ID3D11RenderTargetView* renderTargetPointer = nullptr;
 
-		SetBlendState(eBlendState::Disabled);
+		myStateManager->SetBlendState(myContext, eBlendState::Disabled);
 
 		for (size_t i = 0; i < myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)].size(); ++i)
 		{
@@ -291,7 +228,7 @@ namespace Graphics
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 		}
 
-		SetBlendState(eBlendState::AlphaBlend);
+		myStateManager->SetBlendState(myContext, eBlendState::AlphaBlend);
 
 		for (size_t i = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)].size(); i > 1; --i)
 		{
@@ -321,7 +258,7 @@ namespace Graphics
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 		}
 
-		SetBlendState(eBlendState::Disabled);
+		myStateManager->SetBlendState(myContext, eBlendState::Disabled);
 
 		myContext->RSSetViewports(1, myViewPort.get());
 	}
@@ -349,11 +286,6 @@ namespace Graphics
 		}
 	}
 
-	void GraphicsEngine::ClearPointLightCount()
-	{
-		myPointLightBufferData->currentPointLightCount = 0;
-	}
-
 	void GraphicsEngine::ClearRenderTarget(const eRenderTargetType aRenderTargetType)
 	{
 		const std::vector<RenderTarget>& renderTargets = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
@@ -367,42 +299,6 @@ namespace Graphics
 	void GraphicsEngine::ClearDepthStencilView()
 	{
 		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	}
-
-	const bool GraphicsEngine::AddTexture(const char* aFileName, const unsigned int aSlot)
-	{
-		auto it = myLoadedTextures.find(aFileName);
-
-		if (it != myLoadedTextures.end())
-		{
-			return false;
-		}
-
-		std::shared_ptr<Texture> texture = std::make_shared<Texture>();
-
-		if (!texture->LoadDDS(aFileName))
-			return false;
-
-		if (SimpleUtilities::FindSuffix(aFileName, "_C"))
-		{
-			texture->SetSlot(Global_Slot_Albedo);
-		}
-		else if (SimpleUtilities::FindSuffix(aFileName, "_N"))
-		{
-			texture->SetSlot(Global_Slot_Normal);
-		}
-		else if (SimpleUtilities::FindSuffix(aFileName, "_M"))
-		{
-			texture->SetSlot(Global_Slot_Material);
-		}
-		else
-		{
-			texture->SetSlot(aSlot);
-		}
-
-		myLoadedTextures.emplace(aFileName, texture);
-
-		return true;
 	}
 
 	const bool GraphicsEngine::AddShader(const char* aPSFile, const char* aVSFile)
@@ -471,7 +367,7 @@ namespace Graphics
 
 	void GraphicsEngine::ApplyBloom()
 	{
-		if (myPostProcessData.useBloom == false)
+		if (myLightManager->GetPostProcessData()->useBloom == false)
 		{
 			SetRenderTarget(eRenderTargetType::Bloom);
 			RenderFullScreenCopy(eRenderTargetType::Deferred);
@@ -480,13 +376,13 @@ namespace Graphics
 
 		FilterPixelForBloom();
 
-		SetSamplerState(eSamplerState::Trilinear_Clamp);
+		myStateManager->SetSamplerState(myContext, eSamplerState::Trilinear_Clamp);
 
 		DownAndUpSampleForBloom();
 		RenderBloom();
 
-		SetBlendState(eBlendState::Disabled);
-		SetSamplerState(eSamplerState::Bilinear_Warp);
+		myStateManager->SetBlendState(myContext, eBlendState::Disabled);
+		myStateManager->SetSamplerState(myContext, eSamplerState::Bilinear_Warp);
 	}
 
 	void GraphicsEngine::RenderFullScreenCopy(const eRenderTargetType aRenderTargetType)
@@ -504,22 +400,6 @@ namespace Graphics
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 	}
 
-	void GraphicsEngine::AddPointLight(const PointLightData& aPointLightData)
-	{
-		myPointLightBufferData->pointLightData[myPointLightBufferData->currentPointLightCount] = aPointLightData;
-		++myPointLightBufferData->currentPointLightCount;
-	}
-
-	PointLightData* GraphicsEngine::GetPointLightDataArray() const
-	{
-		return myPointLightBufferData->pointLightData;
-	}
-
-	size_t GraphicsEngine::GetPointLightCount() const
-	{
-		return myPointLightBufferData->currentPointLightCount;
-	}
-
 	void GraphicsEngine::UnbindAllRenderTargets()
 	{
 		static constexpr size_t maxRenderTargetSupportedByDX11 = 8;
@@ -527,50 +407,14 @@ namespace Graphics
 		myContext->OMSetRenderTargets(maxRenderTargetSupportedByDX11, nullViews, nullptr);
 	}
 
-	void GraphicsEngine::UpdateCameraConstantBuffer()
-	{
-		CameraBufferData frameBuffer = {};
-		frameBuffer.worldToClipMatrix = myCurrentCameraRaw->GetWorldToClipMatrix();
-		frameBuffer.cameraPosition = myCurrentCameraRaw->GetPosition();
-		frameBuffer.resolution = Global::GetResolution();
-
-		myCameraConstantBuffer->Bind(myCameraConstantBuffer->GetSlot());
-		myCameraConstantBuffer->Update(sizeof(CameraBufferData), &frameBuffer);
-	}
-
-	void GraphicsEngine::UpdateTimeConstantBuffer()
-	{
-		TimeBufferData timeBuffer = {};
-		timeBuffer.totalTime = static_cast<float>(Global::GetTotalTime());
-		timeBuffer.deltaTime = static_cast<float>(Global::GetDeltaTime());
-		myTimeConstantBuffer->Bind(myTimeConstantBuffer->GetSlot());
-		myTimeConstantBuffer->Update(sizeof(TimeBufferData), &timeBuffer);
-	}
-
 	void GraphicsEngine::UpdatePointlights(const size_t aLightIndex)
 	{
-		PointLightBufferData pointLightData;
-		pointLightData.currentPointLightCount = myPointLightBufferData->currentPointLightCount;
-
-		for (size_t i = 0; i < myPointLightBufferData->currentPointLightCount; i++)
-		{
-			pointLightData.pointLightData[i] = myPointLightBufferData->pointLightData[aLightIndex];
-		}
-
-		myPointLightConstantBuffer->Bind(myPointLightConstantBuffer->GetSlot());
-		myPointLightConstantBuffer->Update(sizeof(PointLightBufferData), &pointLightData);
+		myBufferManager->UpdatePointlights(aLightIndex, myLightManager->GetPointLightBufferData());
 	}
 
 	void GraphicsEngine::UpdateLightBuffer()
 	{
-		LightBufferData lightBufferData;
-
-		lightBufferData.ambientLightColorAndIntensity = myLightBufferData->ambientLightColorAndIntensity;
-		lightBufferData.directionalLightColorAndIntensity = myLightBufferData->directionalLightColorAndIntensity;
-		lightBufferData.directionalLightDirection = myLightBufferData->directionalLightDirection;
-		
-		myLightConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
-		myLightConstantBuffer->Update(sizeof(LightBufferData), &lightBufferData);
+		myBufferManager->UpdateLightConstantBuffer(myLightManager->GetLightBufferData());
 	}
 
 	void GraphicsEngine::SetGlobalGraphicsEngineToThis()
@@ -663,7 +507,7 @@ namespace Graphics
 	void GraphicsEngine::SetCamera(Graphics::Camera* aCamera)
 	{
 		myCurrentCameraRaw = aCamera;
-		UpdateCameraConstantBuffer();
+		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw, Global::GetResolution());
 	}
 
 	void GraphicsEngine::SetToDefaultCamera()
@@ -674,27 +518,6 @@ namespace Graphics
 	std::vector<RenderTarget>& GraphicsEngine::GetRenderTargets(const eRenderTargetType aRenderTargetType)
 	{
 		return myRenderTargets[static_cast<size_t>(aRenderTargetType)];
-	}
-
-	void GraphicsEngine::SetRasterizerState(const eRasterizerState aRasterizerState)
-	{
-		myCurrentRasterizerState = aRasterizerState;
-		myContext->RSSetState(myRasterizerStates[static_cast<int>(myCurrentRasterizerState)].Get());
-	}
-
-	void GraphicsEngine::SetBlendState(const eBlendState aBlendState)
-	{
-		myContext->OMSetBlendState(myBlendStates[static_cast<size_t>(aBlendState)].Get(), nullptr, 0xffffffff);
-	}
-
-	void GraphicsEngine::SetDepthStencilState(const eDepthStencilState aDepthStencilState)
-	{
-		myContext->OMSetDepthStencilState(myDepthStencilStates[static_cast<size_t>(aDepthStencilState)].Get(), 0);
-	}
-
-	void GraphicsEngine::SetSamplerState(const eSamplerState aSamplerState)
-	{
-		myContext->PSSetSamplers(0, 1, mySamplerStates[static_cast<size_t>(aSamplerState)].GetAddressOf());
 	}
 
 	void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
@@ -714,208 +537,6 @@ namespace Graphics
 
 		if (myVSync == false)
 			myFPSLevelCap = aCapLevel;
-	}
-
-	void GraphicsEngine::SetDirectionalLightDirection(const Math::Vector3f& aDirection)
-	{
-		myLightBufferData->directionalLightDirection = aDirection;
-	}
-
-	void GraphicsEngine::SetDirectionalLightColor(const Math::Vector4f& aColor)
-	{
-		myLightBufferData->directionalLightColorAndIntensity = aColor;
-	}
-
-	void GraphicsEngine::SetAmbientLightColorAndIntensity(const Math::Vector4f& aColorAndIntensity)
-	{
-		myLightBufferData->ambientLightColorAndIntensity = aColorAndIntensity;
-	}
-
-	void GraphicsEngine::SetUseToneMapping(const bool aShouldUseToneMapping)
-	{
-		myPostProcessData.useToneMapping = aShouldUseToneMapping;
-	}
-
-	void GraphicsEngine::SetUseBloom(const bool aShouldUseBloom)
-	{
-		myPostProcessData.useBloom = aShouldUseBloom;
-	}
-
-	void GraphicsEngine::SetBloomPixelThreshold(const float aValue)
-	{
-		myPostProcessData.bloomPixelFilterThreshold = aValue;
-	}
-
-	void GraphicsEngine::SetSaturation(const float aValue)
-	{
-		myPostProcessData.saturation = aValue;
-	}
-
-	void GraphicsEngine::SetExposure(const float aValue)
-	{
-		myPostProcessData.exposure = aValue;
-	}
-
-	void GraphicsEngine::SetContrast(const float aValue)
-	{
-		myPostProcessData.contrast = aValue;
-	}
-
-	void GraphicsEngine::SetBlackPoint(const float aValue)
-	{
-		myPostProcessData.blackpoint = aValue;
-	}
-
-	void GraphicsEngine::SetBloom(const float aValue)
-	{
-		myPostProcessData.bloom = aValue;
-	}
-
-	void GraphicsEngine::SetTint(const Math::Vector3f& aColor)
-	{
-		myPostProcessData.tint = aColor;
-	}
-
-	std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const char* aFilePath)
-	{
-		auto it = myLoadedTextures.find(aFilePath);
-
-		if (it != myLoadedTextures.end())
-		{
-			return it->second;
-		}
-		else
-		{
-			unsigned int slot = Graphics::Global_Slot_Albedo;
-
-			if (SimpleUtilities::FindSuffix(aFilePath, "_C"))
-			{
-				slot = Graphics::Global_Slot_Albedo;
-			}
-			else if (SimpleUtilities::FindSuffix(aFilePath, "_M"))
-			{
-				slot = Graphics::Global_Slot_Material;
-			}
-			else if (SimpleUtilities::FindSuffix(aFilePath, "_N"))
-			{
-				slot = Graphics::Global_Slot_Normal;
-			}
-			else if (SimpleUtilities::FindSuffix(aFilePath, "_E"))
-			{
-				slot = Global_Slot_CubeMap;
-			}
-
-			if (AddTexture(aFilePath, slot) == true)
-			{
-				it = myLoadedTextures.find(aFilePath);
-
-				if (it != myLoadedTextures.end())
-				{
-					return it->second;
-				}
-			}
-		}
-
-		return nullptr;
-	}
-
-	std::shared_ptr<const Texture> GraphicsEngine::GetTexture(const eTextureType aTextureType)
-	{
-		std::shared_ptr<const Texture> texture = nullptr;
-
-		switch (aTextureType)
-		{
-		case eTextureType::Default:
-			texture = GetTexture("Assets\\Textures\\T_SimpleTexture_C.dds");
-			break;
-		case eTextureType::Default_Albedo:
-			texture = GetTexture("Assets\\Textures\\Materials\\T_DefaultMaterial_C.dds");
-			break;
-		case eTextureType::Default_Normal:
-			texture = GetTexture("Assets\\Textures\\Materials\\T_DefaultMaterial_N.dds");
-			break;
-		case eTextureType::Default_Material:
-			texture = GetTexture("Assets\\Textures\\Materials\\T_DefaultMaterial_M.dds");
-			break;
-		case eTextureType::Simple:
-			texture = GetTexture("Assets\\Textures\\T_Hamster_C.dds");
-			break;
-		case eTextureType::DirectionalLight:
-			texture = GetTexture("Assets\\Textures\\T_Sunlight_C.dds");
-			break;
-		}
-
-		return texture;
-	}
-
-	std::shared_ptr<const Texture> GraphicsEngine::GetSkyBox(const eSkyBox aSkyBox)
-	{
-		std::shared_ptr<const Texture> texture = nullptr;
-
-		switch (aSkyBox)
-		{
-		case eSkyBox::DayCloud:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_DayCloud_E.dds");
-			break;
-		case eSkyBox::NightStar:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_NightStars_E.dds");
-			break;
-		case eSkyBox::DayGrassland:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_CloudAnime_E.dds");
-			break;
-		case eSkyBox::AutumnForest:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_AutumnForest_E.dds");
-			break;
-		case eSkyBox::TGA_Skansen:
-			texture = GetTexture("Assets\\Textures\\Cubemaps\\T_Skansen_E.dds");
-			break;
-		}
-
-		return texture;
-	}
-
-	std::shared_ptr<const Texture> GraphicsEngine::GetIcon(const eIconType aIcon)
-	{
-		std::shared_ptr<const Texture> texture = nullptr;
-
-		switch (aIcon)
-		{
-		case eIconType::FBX:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_FBX.dds");
-			break;
-		case eIconType::Folder:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Folder.dds");
-			break;
-		case eIconType::CubeMap:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_CubeMap.dds");
-			break;
-		case eIconType::PNG:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_PNG.dds");
-			break;
-		case eIconType::JPG:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_JPG.dds");
-			break;
-		case eIconType::OBJ:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_OBJ.dds");
-			break;
-		case eIconType::MP3:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_MP3.dds");
-			break;
-		case eIconType::Scene:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Scene.dds");
-			break;
-		case eIconType::Cursor:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Cursor.dds");
-			break;
-		case eIconType::FlyScript:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_FlyScript.dds");
-			break;
-		case eIconType::Unknown:
-			texture = GetTexture("Assets\\Textures\\Icons_Editor\\Icon_Question.dds");
-			break;
-		}
-
-		return texture;
 	}
 
 	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
@@ -1027,6 +648,21 @@ namespace Graphics
 		return myEditorCamera;
 	}
 
+	StateManager* GraphicsEngine::GetStateManager()
+	{
+		return myStateManager.get();
+	}
+
+	LightManager* GraphicsEngine::GetLightManager()
+	{
+		return myLightManager.get();
+	}
+
+	TextureManager* GraphicsEngine::GetTextureManager()
+	{
+		return myTextureManager.get();
+	}
+
 	ComPtr<ID3D11Device> GraphicsEngine::GetDevice()
 	{
 		return myDevice;
@@ -1047,34 +683,9 @@ namespace Graphics
 		return myDepthBuffer;
 	}
 
-	const eRasterizerState GraphicsEngine::GetCurrentRasterizerState() const
-	{
-		return myCurrentRasterizerState;
-	}
-
-	Math::Vector4f GraphicsEngine::GetAmbientLightColorAndIntensity() const
-	{
-		return myLightBufferData->ambientLightColorAndIntensity;
-	}
-
-	Math::Vector4f GraphicsEngine::GetDirectionalLightColor() const
-	{
-		return myLightBufferData->directionalLightColorAndIntensity;
-	}
-
-	Math::Vector3f GraphicsEngine::GetDirectionalLightDirection() const
-	{
-		return myLightBufferData->directionalLightDirection;
-	}
-
 	unsigned int GraphicsEngine::GetFPSLevelCap() const
 	{
 		return myFPSLevelCap;
-	}
-
-	const PostProcessData& GraphicsEngine::GetPostProcessData() const
-	{
-		return myPostProcessData;
 	}
 
 	void GraphicsEngine::CreateViewport(const Math::Vector2ui aSize)
@@ -1094,81 +705,6 @@ namespace Graphics
 	bool GraphicsEngine::IsVSyncActive() const
 	{
 		return myVSync;
-	}
-
-	void GraphicsEngine::CreateRasterizerStates()
-	{
-		HRESULT result = S_OK;
-
-		D3D11_RASTERIZER_DESC rasterizerDesc = {};
-		rasterizerDesc.AntialiasedLineEnable = false;
-		rasterizerDesc.CullMode = D3D11_CULL_BACK;
-		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
-		rasterizerDesc.DepthBias = 0;
-		rasterizerDesc.DepthBiasClamp = 0.0f;
-		rasterizerDesc.DepthClipEnable = true;
-		rasterizerDesc.FrontCounterClockwise = false;
-		rasterizerDesc.MultisampleEnable = true;
-		rasterizerDesc.ScissorEnable = false;
-		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-
-		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::Wireframe)]);
-		assert(SUCCEEDED(result) && "Failed to create RasterizerState: Wireframe");
-
-		rasterizerDesc = {};
-		rasterizerDesc.AntialiasedLineEnable = false;
-		rasterizerDesc.CullMode = D3D11_CULL_NONE;
-		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
-		rasterizerDesc.DepthBias = 0;
-		rasterizerDesc.DepthBiasClamp = 0.0f;
-		rasterizerDesc.DepthClipEnable = true;
-		rasterizerDesc.FrontCounterClockwise = false;
-		rasterizerDesc.MultisampleEnable = true;
-		rasterizerDesc.ScissorEnable = false;
-		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-
-		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::WireframeNoCulling)]);
-		assert(SUCCEEDED(result) && "Failed to create RasterizerState: WireframeNoCulling");
-
-		rasterizerDesc = {};
-		rasterizerDesc.AntialiasedLineEnable = false;
-		rasterizerDesc.CullMode = D3D11_CULL_NONE;
-		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-		rasterizerDesc.DepthBias = 0;
-		rasterizerDesc.DepthBiasClamp = 0.0f;
-		rasterizerDesc.DepthClipEnable = true;
-		rasterizerDesc.FrontCounterClockwise = false;
-		rasterizerDesc.MultisampleEnable = true;
-		rasterizerDesc.ScissorEnable = false;
-		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-
-		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::NoFaceCulling)]);
-		assert(SUCCEEDED(result) && "Failed to create RasterizerState: NoFaceCulling");
-
-		rasterizerDesc = {};
-		rasterizerDesc.AntialiasedLineEnable = false;
-		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
-		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-		rasterizerDesc.DepthBias = 0;
-		rasterizerDesc.DepthBiasClamp = 0.0f;
-		rasterizerDesc.DepthClipEnable = true;
-		rasterizerDesc.FrontCounterClockwise = false;
-		rasterizerDesc.MultisampleEnable = true;
-		rasterizerDesc.ScissorEnable = false;
-		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-
-		result = myDevice->CreateRasterizerState(&rasterizerDesc, &myRasterizerStates[static_cast<int>(eRasterizerState::FrontFaceCulling)]);
-		assert(SUCCEEDED(result) && "Failed to create RasterizerState: FrontFaceCulling");
-
-		myRasterizerStates[static_cast<int>(eRasterizerState::BackfaceCulling)] = nullptr;
-	}
-
-	void GraphicsEngine::CreateJointsConstantBuffer()
-	{
-		JointsBufferData bonesBufferData;
-
-		if (myJointsConstantBuffer->Init(sizeof(JointsBufferData), &bonesBufferData) == false)
-			assert(false && "Failed to create BoneConstantBuffer");
 	}
 
 	void GraphicsEngine::CreateGRenderTarget(const Math::Vector2ui aResolution)
@@ -1405,157 +941,5 @@ namespace Graphics
 
 		result = myDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, myDepthBuffer.GetAddressOf());
 		assert(SUCCEEDED(result) && "Failed to create DepthStencilView");
-	}
-
-	void GraphicsEngine::CreateDepthStencilState()
-	{
-		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
-		depthStencilDesc.DepthEnable = true;
-		depthStencilDesc.StencilEnable = false;
-
-		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-
-		HRESULT result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilStates[static_cast<size_t>(eDepthStencilState::Less_Equal)].ReleaseAndGetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create DepthStencilState");
-
-		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-		depthStencilDesc.DepthFunc = D3D11_COMPARISON_GREATER;
-		result = myDevice->CreateDepthStencilState(&depthStencilDesc, myDepthStencilStates[static_cast<size_t>(eDepthStencilState::Greater)].GetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create DepthStencilState");
-	}
-
-	void GraphicsEngine::CreateSamplerState()
-	{
-		HRESULT result = S_OK;
-
-		D3D11_SAMPLER_DESC samplerDesc = {};
-		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.MipLODBias = 0.0f;
-		samplerDesc.MaxAnisotropy = 16;
-		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		samplerDesc.BorderColor[0] = 0;
-		samplerDesc.BorderColor[1] = 0;
-		samplerDesc.BorderColor[2] = 0;
-		samplerDesc.BorderColor[3] = 0;
-		samplerDesc.MinLOD = 0;
-		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-		result = myDevice->CreateSamplerState(&samplerDesc, &mySamplerStates[static_cast<size_t>(eSamplerState::Bilinear_Warp)]);
-		assert(SUCCEEDED(result) && "Failed to create SamplerState");
-
-		D3D11_SAMPLER_DESC samplerDesc2 = {};
-		samplerDesc2.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		samplerDesc2.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc2.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc2.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc2.MipLODBias = 0.0f;
-		samplerDesc2.MaxAnisotropy = 16;
-		samplerDesc2.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		samplerDesc2.BorderColor[0] = 0;
-		samplerDesc2.BorderColor[1] = 0;
-		samplerDesc2.BorderColor[2] = 0;
-		samplerDesc2.BorderColor[3] = 0;
-		samplerDesc2.MinLOD = 0;
-		samplerDesc2.MaxLOD = D3D11_FLOAT32_MAX;
-
-		result = myDevice->CreateSamplerState(&samplerDesc2, &mySamplerStates[static_cast<size_t>(eSamplerState::Trilinear_Clamp)]);
-		assert(SUCCEEDED(result) && "Failed to create SamplerState");
-	}
-
-	void GraphicsEngine::CreateCameraConstantBuffer()
-	{
-		CameraBufferData cameraBuffer;
-
-		cameraBuffer.worldToClipMatrix = Math::Matrix4x4f::Identity();
-		cameraBuffer.cameraPosition = Math::Vector3f{ 0.0f,0.0f,0.0f };
-
-		if (!myCameraConstantBuffer->Init(sizeof(CameraBufferData), &cameraBuffer))
-			assert(false && "Failed to create CameraConstantBuffer");
-	}
-
-	void GraphicsEngine::CreateTimeConstantBuffer()
-	{
-		TimeBufferData timeBuffer;
-
-		timeBuffer.totalTime = 0.0f;
-		timeBuffer.deltaTime = 0.0f;
-
-		if (!myTimeConstantBuffer->Init(sizeof(TimeBufferData), &timeBuffer))
-			assert(false && "Failed to create TimeConstantBuffer");
-	}
-
-	void GraphicsEngine::CreateLightConstantBuffer()
-	{
-		LightBufferData lightBufferData;
-
-		lightBufferData.directionalLightColorAndIntensity = Math::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-		lightBufferData.directionalLightDirection = Math::Vector3f(0.0f, 0.0f, 0.0f);
-
-		if (myLightConstantBuffer->Init(sizeof(LightBufferData), &lightBufferData) == false)
-		{
-			assert(false && "Failed to create LightConstantBuffer");
-		}
-
-		PointLightBufferData pointLightBufferData;
-
-		if (myPointLightConstantBuffer->Init(sizeof(PointLightBufferData), &pointLightBufferData) == false)
-		{
-			assert(false && "Failed to create PointLightConstantBuffer");
-		}
-	}
-
-	void GraphicsEngine::CreatePostProcessingConstantBuffer()
-	{
-		PostProcessData postProcessingData;
-
-		if (myPostProcessConstantBuffer->Init(sizeof(LightBufferData), &postProcessingData) == false)
-		{
-			assert(false && "Failed to create LightConstantBuffer");
-		}
-	}
-
-	void GraphicsEngine::CreateBlendStates()
-	{
-		HRESULT result = S_OK;
-
-		D3D11_BLEND_DESC blendStateDescription = {};
-		blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
-		blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendStateDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-		blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		blendStateDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		result = myDevice->CreateBlendState(&blendStateDescription, myBlendStates[static_cast<size_t>(eBlendState::Disabled)].ReleaseAndGetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create blend state");
-
-		D3D11_BLEND_DESC blendStateDescription2 = {};
-		blendStateDescription2.RenderTarget[0].BlendEnable = TRUE;
-		blendStateDescription2.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		blendStateDescription2.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-		blendStateDescription2.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendStateDescription2.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDescription2.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDescription2.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
-		blendStateDescription2.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		result = myDevice->CreateBlendState(&blendStateDescription2, myBlendStates[static_cast<size_t>(eBlendState::AdditiveBlend)].ReleaseAndGetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create blend state");
-
-		D3D11_BLEND_DESC blendStateDescription3 = {};
-		blendStateDescription3.RenderTarget[0].BlendEnable = TRUE;
-		blendStateDescription3.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		blendStateDescription3.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-		blendStateDescription3.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendStateDescription3.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDescription3.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
-		blendStateDescription3.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
-		blendStateDescription3.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		result = myDevice->CreateBlendState(&blendStateDescription, myBlendStates[static_cast<size_t>(eBlendState::AlphaBlend)].ReleaseAndGetAddressOf());
-		assert(SUCCEEDED(result) && "Failed to create blend state");
 	}
 }

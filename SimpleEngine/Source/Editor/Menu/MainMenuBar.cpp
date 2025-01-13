@@ -125,7 +125,7 @@ namespace Editor
 			if (ImGui::Begin("Game##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
 			{
 				Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-				const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetCurrentRasterizerState();
+				const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetStateManager()->GetCurrentRasterizerState();
 
 				ImTextureID textureID = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::PostProcessing).Get();
 
@@ -167,7 +167,7 @@ namespace Editor
 						{
 							operation = ImGuizmo::OPERATION::ROTATE;
 						}
-						else if (MainSingleton::GetInputManager().IsKeyPressed('S'))
+						else if (MainSingleton::GetInputManager().IsKeyPressed('S') && !MainSingleton::GetInputManager().GetMouseIsHidden())
 						{
 							operation = ImGuizmo::OPERATION::SCALE;
 						}

@@ -14,8 +14,8 @@ namespace ECS
 
 		shader = graphicsEngine->GetShader(Graphics::eShaderType::PBR_Default).get();
 
-		textures[Graphics::Global_Slot_Albedo] = graphicsEngine->GetTexture(Graphics::eTextureType::Default_Albedo).get();
-		textures[Graphics::Global_Slot_Normal] = graphicsEngine->GetTexture(Graphics::eTextureType::Default_Normal).get();
-		textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTexture(Graphics::eTextureType::Default_Material).get();
+		textures[Graphics::Global_Slot_Albedo] = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Albedo).get();
+		textures[Graphics::Global_Slot_Normal] = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Normal).get();
+		textures[Graphics::Global_Slot_Material] = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Material).get();
 	}
 }

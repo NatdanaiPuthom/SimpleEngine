@@ -38,13 +38,12 @@ namespace Graphics
 		~ModelFactory();
 
 		void Init();
-
+	public:
 		const Mesh* LoadMesh(const std::string& aRelativePath);
 		const Skeleton* LoadSkeleton(const std::string& aRelativePath);
 		const Animation* LoadAnimationFBX(const std::string& aRelativePath);
-
+	public:
 		const Mesh* GetPrimitiveShape(const ePrimitiveShape aShape);
-
 	private:
 		void AddMesh(const std::string& aName, std::unique_ptr<const Mesh> aMesh);
 		void AddSkeleton(const std::string& aName, std::unique_ptr<const Skeleton> aSkeleton);

@@ -8,7 +8,7 @@ namespace ECS
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::SkyBox);
-		texture = graphicsEngine->GetSkyBox(Graphics::eSkyBox::AutumnForest).get();
+		texture = graphicsEngine->GetTextureManager()->GetSkyBox(Graphics::eSkyBox::AutumnForest).get();
 		shader = graphicsEngine->GetShader(Graphics::eShaderType::SkyBox).get();
 	}
 }

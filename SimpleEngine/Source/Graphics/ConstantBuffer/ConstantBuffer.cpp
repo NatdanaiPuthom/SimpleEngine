@@ -31,7 +31,7 @@ namespace Graphics
 		return true;
 	}
 
-	void ConstantBuffer::Update(const unsigned int aSize, void* aData)
+	void ConstantBuffer::Update(const unsigned int aSize, const void* aData)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
 		Global::GetGraphicsEngine()->GetContext()->Map(myBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);

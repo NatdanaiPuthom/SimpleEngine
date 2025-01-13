@@ -106,18 +106,19 @@ namespace Editor
 	{
 		const std::vector<std::string> fileNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(aDirectory, true);
 
-		ID3D11ShaderResourceView* unknownIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Unknown)->GetShaderResourceView().Get();
+		Graphics::TextureManager* textureManager = Global::GetGraphicsEngine()->GetTextureManager();
 
-		ID3D11ShaderResourceView* cubeMapIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::CubeMap)->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* folderIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Folder)->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* cursorIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Cursor)->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* sceneIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::Scene)->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* fbxIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::FBX)->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* pngIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::PNG)->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* jpgIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::JPG)->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* objIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::OBJ)->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* mp3Icon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::MP3)->GetShaderResourceView().Get();
-		ID3D11ShaderResourceView* flyScriptIcon = Global::GetGraphicsEngine()->GetIcon(Graphics::eIconType::FlyScript)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* unknownIcon = textureManager->GetIcon(Graphics::eIconType::Unknown)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* cubeMapIcon = textureManager->GetIcon(Graphics::eIconType::CubeMap)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* folderIcon = textureManager->GetIcon(Graphics::eIconType::Folder)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* cursorIcon = textureManager->GetIcon(Graphics::eIconType::Cursor)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* sceneIcon = textureManager->GetIcon(Graphics::eIconType::Scene)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* fbxIcon = textureManager->GetIcon(Graphics::eIconType::FBX)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* pngIcon = textureManager->GetIcon(Graphics::eIconType::PNG)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* jpgIcon = textureManager->GetIcon(Graphics::eIconType::JPG)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* objIcon = textureManager->GetIcon(Graphics::eIconType::OBJ)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* mp3Icon = textureManager->GetIcon(Graphics::eIconType::MP3)->GetShaderResourceView().Get();
+		ID3D11ShaderResourceView* flyScriptIcon = textureManager->GetIcon(Graphics::eIconType::FlyScript)->GetShaderResourceView().Get();
 
 		static constexpr float padding = 16.0f;
 		static constexpr float thumbnailSize = 64.0f;
@@ -149,7 +150,7 @@ namespace Editor
 			else if (extension == ".dds")
 			{
 				const std::string texturePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(aDirectory) + "\\" + fileNames[i];
-				const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTexture(texturePath.c_str());
+				const std::shared_ptr<const Graphics::Texture> texture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(texturePath.c_str());
 
 				if (texture->GetSlot() != Graphics::Global_Slot_CubeMap)
 				{

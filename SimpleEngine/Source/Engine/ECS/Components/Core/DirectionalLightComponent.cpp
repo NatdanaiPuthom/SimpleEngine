@@ -9,7 +9,7 @@ namespace ECS
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 		mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
-		texture = graphicsEngine->GetTexture(Graphics::eTextureType::DirectionalLight).get();
+		texture = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::DirectionalLight).get();
 		shader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
 	}
 }

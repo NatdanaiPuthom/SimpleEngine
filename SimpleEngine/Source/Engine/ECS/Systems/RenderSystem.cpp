@@ -18,8 +18,9 @@ namespace ECS
 
 	void RenderSystem::Render(EntityComponentSystem* aEntityComponentSystem)
 	{
-		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
-		Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
+		Graphics::GraphicsEngine* const graphicsEngine = Global::GetGraphicsEngine();
+		Drawer::Renderer* const renderer = graphicsEngine->GetRenderer();
+		Graphics::LightManager* const graphicsDataContainer = graphicsEngine->GetLightManager();
 
 		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
@@ -36,13 +37,13 @@ namespace ECS
 			const DirectionalLightComponent* directionalLightComponent = directionalLight.GetComponent<DirectionalLightComponent>();
 			const Math::Vector3f forward = directionalLightComponent->transform.GetMatrix().GetForward();
 
-			graphicsEngine->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
-			graphicsEngine->SetDirectionalLightColor({ 1.0f, 1.0f, 1.0f,1.0f }); //TO-DO(v11.1.0): add color to the component to retrieve data instead of hardcoded
+			graphicsDataContainer->SetDirectionalLightDirection(forward.GetNormalized() * -1.0f);
+			graphicsDataContainer->SetDirectionalLightColor({ 1.0f, 1.0f, 1.0f,1.0f }); //TO-DO(v11.1.0): add color to the component to retrieve data instead of hardcoded
 		}
 		else
 		{
-			graphicsEngine->SetDirectionalLightDirection({ 0.0f,0.0f, -1.0f });
-			graphicsEngine->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
+			graphicsDataContainer->SetDirectionalLightDirection({ 0.0f,0.0f, -1.0f });
+			graphicsDataContainer->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
 		}
 
 		std::vector<Entity>& entities = aEntityComponentSystem->GetAllEntities();
