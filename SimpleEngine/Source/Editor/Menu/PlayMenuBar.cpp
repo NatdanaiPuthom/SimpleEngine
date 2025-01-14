@@ -67,14 +67,14 @@ namespace Editor
 				ImGui::PopStyleColor();
 			}
 
-			ImGui::BeginDisabled();
+			/*ImGui::BeginDisabled();
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10);
 			if (ImGui::Button(ICON_FA_STOP))
 			{
 
 			}
 			ImGui::PopStyleVar();
-			ImGui::EndDisabled();
+			ImGui::EndDisabled();*/
 
 			ImGui::EndMainMenuBar();
 		}
