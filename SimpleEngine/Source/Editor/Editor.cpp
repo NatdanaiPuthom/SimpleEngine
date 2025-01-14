@@ -7,6 +7,7 @@
 #include "Editor/Menu/SceneMenuBar.hpp"
 #include "Editor/Menu/PlayMenuBar.hpp"
 #include "Editor/Menu/BuildMenuBar.hpp"
+#include "Editor/Menu/SettingsMenuBar.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #endif
 
@@ -21,6 +22,7 @@ namespace Editor
 		AddTool(std::make_unique<SceneMenuBar>());
 		AddTool(std::make_unique<MainMenuBar>());
 		AddTool(std::make_unique<HelpMenuBar>());
+		AddTool(std::make_unique<SettingsMenuBar>());
 		AddTool(std::make_unique<PlayMenuBar>());
 	}
 

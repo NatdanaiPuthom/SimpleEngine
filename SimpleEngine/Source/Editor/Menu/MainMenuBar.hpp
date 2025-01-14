@@ -6,7 +6,6 @@ namespace Editor
 {
 	class HierarchyWindow;
 	class AssetWindow;
-	class SettingsWindow;
 	class DeferredSceneWindow;
 	class PostProcessingWindow;
 	class NodeScriptingWindow;
@@ -52,7 +51,6 @@ namespace Editor
 		void DrawTools();
 		void LoadSettingsFromJson();
 	private:
-		std::unique_ptr<SettingsWindow> mySettingsWindow;
 		std::unique_ptr<HierarchyWindow> myHierarchyWindow;
 		std::unique_ptr<AssetWindow> myAssetWindow;
 		std::unique_ptr<DeferredSceneWindow> myDeferredSceneWindow;
