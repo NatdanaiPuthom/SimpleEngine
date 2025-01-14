@@ -47,12 +47,13 @@ namespace Editor
 
 		if (MainSingleton::GetInputManager().IsKeyPressed(VK_DELETE))
 		{
-			if (const size_t count = entities.size() > 0)
+			if (entities.size() > 0)
 			{
 				if (selected >= 0)
 				{
 					RemoveEntity(entities, selected);
-					EditorEngine::mySelectedEntityID = entities[selected].GetID();
+					//EditorEngine::mySelectedEntityID = entities[selected].GetID();
+					EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
 					return;
 				}
 			}
@@ -202,6 +203,7 @@ namespace Editor
 						if (ImGui::MenuItem("Remove##SceneHierachy"))
 						{
 							RemoveEntity(aEntities, aSelected);
+							EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
 							ImGui::EndPopup();
 							break;
 						}

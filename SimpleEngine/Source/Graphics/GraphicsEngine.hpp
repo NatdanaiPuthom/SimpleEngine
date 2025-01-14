@@ -1,14 +1,13 @@
 #pragma once
-#include "Engine/SimpleUtilities/HashStuff.hpp"
 #include "Graphics/BufferData.hpp"
 #include "Graphics/GraphicsDeclarations.hpp"
 #include "Graphics/Camera/Camera.hpp"
-#include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/Model/Factory/ModelFactory.hpp"
 #include "Graphics/Managers/TextureManager.hpp"
 #include "Graphics/Managers/LightManager.hpp"
 #include "Graphics/Managers/StateManager.hpp"
+#include "Graphics/Managers/ShaderManager.hpp"
 #include <unordered_map>
 #include <memory>
 #include <array>
@@ -42,17 +41,11 @@ namespace Graphics
 		void ApplyAmbientAndDirectionalLightDeferred(const eRenderTargetType aRenderTargetType);
 		void ApplyPostProcessing(const eRenderTargetType aRenderTargetType);
 		void ApplyBloom();
-
 		void RenderFullScreenQuad();
 		void RenderFullScreenCopy(const eRenderTargetType aRenderTargetType);
-
 		void ClearAllRenderTargets();
-
-		const bool AddShader(const char* aPSFile, const char* aVSFile);
-
 		void UpdatePointlights(const size_t aLightIndex);
 		void UpdateLightBuffer();
-
 		bool IsVSyncActive() const;
 	public:
 		void SetToDefaultCamera();
@@ -61,8 +54,6 @@ namespace Graphics
 		void SetCamera(Graphics::Camera* aCamera);
 		void SetFPSLevelCap(const unsigned int aCapLevel);
 		void SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer = nullptr);
-
-		//NOTE(v9.37.0?): Call SetWindowSizeNextFrame instead.
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
 	public:
 		std::vector<RenderTarget>& GetRenderTargets(const eRenderTargetType aRenderTargetType);
@@ -75,10 +66,7 @@ namespace Graphics
 		const Graphics::Camera* GetCurrentCamera() const;
 		const std::shared_ptr<Camera> GetEditorCamera() const;
 
-		//NOTE(v9.36.1): Will Add and cache the shader if it does not already exist
-		std::shared_ptr<const Shader> GetShader(const char* aPSFile, const char* aVSFile);
-		std::shared_ptr<const Shader> GetShader(const eShaderType aShaderType);
-
+		ShaderManager* GetShaderManager();
 		StateManager* GetStateManager();
 		LightManager* GetLightManager();
 		TextureManager* GetTextureManager();
@@ -109,7 +97,6 @@ namespace Graphics
 		void ClearDepthStencilView();
 		void UnbindAllRenderTargets();
 	private:
-		std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<const Shader>, SimpleUtilities::PairHash, SimpleUtilities::PairEqual> myLoadedShaders;
 		std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
 		std::array<float, 4> myClearColor;
 
@@ -121,7 +108,8 @@ namespace Graphics
 		std::shared_ptr<Camera> myEditorCamera;
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
-		std::unique_ptr<ConstantBufferManager> myBufferManager;
+		std::unique_ptr<ConstantBufferManager> myConstantBufferManager;
+		std::unique_ptr<ShaderManager> myShaderManager;
 		std::unique_ptr<StateManager> myStateManager;
 		std::unique_ptr<LightManager> myLightManager;
 		std::unique_ptr<TextureManager> myTextureManager;

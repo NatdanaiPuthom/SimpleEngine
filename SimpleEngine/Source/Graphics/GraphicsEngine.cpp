@@ -31,7 +31,8 @@ namespace Graphics
 	void GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
 	{
 		myStateManager = std::make_unique<StateManager>();
-		myBufferManager = std::make_unique<ConstantBufferManager>();
+		myShaderManager = std::make_unique<ShaderManager>();
+		myConstantBufferManager = std::make_unique<ConstantBufferManager>();
 		myTextureManager = std::make_unique<TextureManager>();
 		myLightManager = std::make_unique<LightManager>();
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
@@ -53,7 +54,8 @@ namespace Graphics
 		CreateDepthBuffer(aWindowSize);
 
 		myStateManager->Init(myDevice);
-		myBufferManager->Init();
+		myShaderManager->Init(myDevice);
+		myConstantBufferManager->Init();
 		myTextureManager->Init();
 		myLightManager->Init();
 		myEditorCamera->Init();
@@ -77,9 +79,9 @@ namespace Graphics
 		ClearAllRenderTargets();
 		myLightManager->ClearPointLightCount();
 
-		myBufferManager->UpdateTimeConstantBuffer(static_cast<float>(Global::GetTotalTime()), Global::GetDeltaTime());
-		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw, Global::GetResolution());
-		myBufferManager->UpdatePostProcessConstantBuffer(myLightManager->GetPostProcessData());
+		myConstantBufferManager->UpdateTimeConstantBuffer(static_cast<float>(Global::GetTotalTime()), Global::GetDeltaTime());
+		myConstantBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw, Global::GetResolution());
+		myConstantBufferManager->UpdatePostProcessConstantBuffer(myLightManager->GetPostProcessData());
 	}
 
 	bool GraphicsEngine::BeginFrame()
@@ -124,7 +126,7 @@ namespace Graphics
 		PROFILER_END();
 
 		PROFILER_BEGIN("Present frame");
-		const HRESULT result = mySwapChain->Present(myFPSLevelCap, 0);
+		[[maybe_unused]] const HRESULT result = mySwapChain->Present(myFPSLevelCap, 0);
 		assert(SUCCEEDED(result) && "Failed to present frame");
 		PROFILER_END();
 	}
@@ -154,7 +156,7 @@ namespace Graphics
 	{
 		for (size_t i = 0; i < static_cast<size_t>(eShaderType::Count); ++i)
 		{
-			GetShader(static_cast<eShaderType>(i));
+			myShaderManager->GetShader(static_cast<eShaderType>(i));
 		}
 	}
 
@@ -164,7 +166,7 @@ namespace Graphics
 
 		SetRenderTarget(eRenderTargetType::Bloom);
 
-		const std::shared_ptr<const Shader> bloomPixelFilterShader = GetShader(eShaderType::BloomPixelFilter);
+		const std::shared_ptr<const Shader> bloomPixelFilterShader = myShaderManager->GetShader(eShaderType::BloomPixelFilter);
 		bloomPixelFilterShader->BindThisShader(myContext.Get());
 
 		ID3D11ShaderResourceView* shaderResourceViews[shaderResourceViewCount] = {};
@@ -219,7 +221,7 @@ namespace Graphics
 
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
-			const std::shared_ptr<const Graphics::Shader> gaussianBlurShader = GetShader(Graphics::eShaderType::GaussianBlur);
+			const std::shared_ptr<const Graphics::Shader> gaussianBlurShader = myShaderManager->GetShader(Graphics::eShaderType::GaussianBlur);
 			gaussianBlurShader->BindThisShader(myContext.Get());
 
 			RenderFullScreenQuad();
@@ -249,7 +251,7 @@ namespace Graphics
 			shaderResources[0] = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i - 1].shaderResourceView.Get();
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
-			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::GaussianBlur);
+			const std::shared_ptr<const Graphics::Shader> shader = myShaderManager->GetShader(Graphics::eShaderType::GaussianBlur);
 			shader->BindThisShader(myContext.Get());
 
 			RenderFullScreenQuad();
@@ -276,7 +278,7 @@ namespace Graphics
 			shaderResourceViews[1] = myRenderTargets[static_cast<size_t>(eRenderTargetType::BloomDownAndUpScale)][i].shaderResourceView.Get();
 			myContext->PSSetShaderResources(Global_StartSlot_GBuffer, shaderResourceViewCount, shaderResourceViews);
 
-			const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Bloom);
+			const std::shared_ptr<const Graphics::Shader> shader = myShaderManager->GetShader(Graphics::eShaderType::Bloom);
 			shader->BindThisShader(myContext.Get());
 
 			RenderFullScreenQuad();
@@ -301,21 +303,6 @@ namespace Graphics
 		myContext->ClearDepthStencilView(myDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 
-	const bool GraphicsEngine::AddShader(const char* aPSFile, const char* aVSFile)
-	{
-		std::string PSKey(aPSFile);
-		std::string VSKey(aVSFile);
-
-		std::shared_ptr<Shader> shader = std::make_shared<Shader>();
-
-		if (!shader->Init(myDevice.Get(), PSKey, VSKey))
-			return false;
-
-		myLoadedShaders.emplace(std::make_pair(PSKey, VSKey), shader);
-
-		return true;
-	}
-
 	void GraphicsEngine::ApplyAmbientAndDirectionalLightDeferred(const eRenderTargetType aRenderTargetType)
 	{
 		static constexpr size_t gBufferCount = Global_GBuffer_Count;
@@ -331,7 +318,7 @@ namespace Graphics
 
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, gBufferCount, shaderResources);
 
-		std::shared_ptr<const Shader> shader = GetShader(eShaderType::Deferred);
+		std::shared_ptr<const Shader> shader = myShaderManager->GetShader(eShaderType::Deferred);
 		shader->BindThisShader(myContext.Get());
 
 		RenderFullScreenQuad();
@@ -356,7 +343,7 @@ namespace Graphics
 		shaderResources[0] = GetRenderTargets(aRenderTargetType)[0].shaderResourceView.Get();
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
-		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::PostProcessing);
+		const std::shared_ptr<const Graphics::Shader> shader = myShaderManager->GetShader(Graphics::eShaderType::PostProcessing);
 		shader->BindThisShader(myContext.Get());
 
 		RenderFullScreenQuad();
@@ -391,7 +378,7 @@ namespace Graphics
 		shaderResources[0] = GetRenderTargets(aRenderTargetType)[0].shaderResourceView.Get();
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, shaderResources);
 
-		const std::shared_ptr<const Graphics::Shader> shader = GetShader(Graphics::eShaderType::Copy);
+		const std::shared_ptr<const Graphics::Shader> shader = myShaderManager->GetShader(Graphics::eShaderType::Copy);
 		shader->BindThisShader(myContext.Get());
 
 		RenderFullScreenQuad();
@@ -409,12 +396,12 @@ namespace Graphics
 
 	void GraphicsEngine::UpdatePointlights(const size_t aLightIndex)
 	{
-		myBufferManager->UpdatePointlights(aLightIndex, myLightManager->GetPointLightBufferData());
+		myConstantBufferManager->UpdatePointlights(aLightIndex, myLightManager->GetPointLightBufferData());
 	}
 
 	void GraphicsEngine::UpdateLightBuffer()
 	{
-		myBufferManager->UpdateLightConstantBuffer(myLightManager->GetLightBufferData());
+		myConstantBufferManager->UpdateLightConstantBuffer(myLightManager->GetLightBufferData());
 	}
 
 	void GraphicsEngine::SetGlobalGraphicsEngineToThis()
@@ -470,7 +457,7 @@ namespace Graphics
 		backBuffer->Release();
 		myDepthBuffer->Release();
 
-		const HRESULT result = mySwapChain->ResizeBuffers(0, newWindowSize.x, newWindowSize.y, DXGI_FORMAT_UNKNOWN, 0);
+		[[maybe_unused]] const HRESULT result = mySwapChain->ResizeBuffers(0, newWindowSize.x, newWindowSize.y, DXGI_FORMAT_UNKNOWN, 0);
 		assert(SUCCEEDED(result) && "Failed to resize buffer");
 
 		{ //TO-DO(v10.0.5): Figure a out to resize buffers properly
@@ -507,7 +494,7 @@ namespace Graphics
 	void GraphicsEngine::SetCamera(Graphics::Camera* aCamera)
 	{
 		myCurrentCameraRaw = aCamera;
-		myBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw, Global::GetResolution());
+		myConstantBufferManager->UpdateCameraConstantBuffer(myCurrentCameraRaw, Global::GetResolution());
 	}
 
 	void GraphicsEngine::SetToDefaultCamera()
@@ -537,75 +524,6 @@ namespace Graphics
 
 		if (myVSync == false)
 			myFPSLevelCap = aCapLevel;
-	}
-
-	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const char* aPSFile, const char* aVSFile)
-	{
-		auto shader = myLoadedShaders.find({ aPSFile, aVSFile });
-
-		if (shader != myLoadedShaders.end())
-		{
-			return shader->second;
-		}
-		else if (shader == myLoadedShaders.end())
-		{
-			const bool success = AddShader(aPSFile, aVSFile);
-			if (success == false)
-				assert(false && "Unable to create Shader");
-			else
-			{
-				shader = myLoadedShaders.find({ aPSFile, aVSFile });
-				return shader->second;
-			}
-		}
-
-		return nullptr;
-	}
-
-	std::shared_ptr<const Shader> GraphicsEngine::GetShader(const eShaderType aShaderType)
-	{
-		std::shared_ptr<const Shader> shader = nullptr;
-
-		switch (aShaderType)
-		{
-		case eShaderType::Unlit_Default:
-			shader = GetShader("Shaders\\DefaultPS.cso", "Shaders\\DefaultVS.cso");
-			break;
-		case eShaderType::PBR_Default:
-			shader = GetShader("Shaders\\GBufferPS.cso", "Shaders\\DefaultVS.cso");
-			break;
-		case eShaderType::Animated:
-			shader = GetShader("Shaders\\GBufferPS.cso", "Shaders\\AnimatedModelVS.cso");
-			break;
-		case eShaderType::SkyBox:
-			shader = GetShader("Shaders\\SkyBoxPS.cso", "Shaders\\DefaultVS.cso");
-			break;
-		case eShaderType::Deferred:
-			shader = GetShader("Shaders\\DeferredPS.cso", "Shaders\\FullScreenVS.cso");
-			break;
-		case eShaderType::PointLight:
-			shader = GetShader("Shaders\\PointLightCullPS.cso", "Shaders\\DefaultVS.cso");
-			break;
-		case eShaderType::PostProcessing:
-			shader = GetShader("Shaders\\PostProcessingPS.cso", "Shaders\\FullScreenVS.cso");
-			break;
-		case eShaderType::GaussianBlur:
-			shader = GetShader("Shaders\\GaussianBlurPS.cso", "Shaders\\FullScreenVS.cso");
-			break;
-		case eShaderType::Bloom:
-			shader = GetShader("Shaders\\BloomPS.cso", "Shaders\\FullScreenVS.cso");
-			break;
-		case eShaderType::BloomPixelFilter:
-			shader = GetShader("Shaders\\BloomPixelFilterPS.cso", "Shaders\\FullScreenVS.cso");
-			break;
-		case eShaderType::Copy:
-			shader = GetShader("Shaders\\FullScreenCopyPS.cso", "Shaders\\FullScreenVS.cso");
-			break;
-		default:
-			break;
-		}
-
-		return shader;
 	}
 
 	Drawer::Renderer* GraphicsEngine::GetRenderer()
@@ -646,6 +564,11 @@ namespace Graphics
 	const std::shared_ptr<Camera> GraphicsEngine::GetEditorCamera() const
 	{
 		return myEditorCamera;
+	}
+
+	ShaderManager* GraphicsEngine::GetShaderManager()
+	{
+		return myShaderManager.get();
 	}
 
 	StateManager* GraphicsEngine::GetStateManager()
@@ -874,7 +797,7 @@ namespace Graphics
 		creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-		const HRESULT result = D3D11CreateDeviceAndSwapChain(
+		[[maybe_unused]] const HRESULT result = D3D11CreateDeviceAndSwapChain(
 			nullptr,
 			D3D_DRIVER_TYPE_HARDWARE,
 			nullptr,

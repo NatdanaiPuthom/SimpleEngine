@@ -1,7 +1,7 @@
 #include "Game/Precomplied/GamePch.hpp"
 #include "Game/GameWorld.hpp"
-#include "Game/ECS/Components/AddComponents/AllGameComponents.hpp"
-#include "Game/ECS/Systems/AddSystems/AllGameSystems.hpp"
+#include "Game/ECS/Components/AllGameComponents.hpp"
+#include "Game/ECS/Systems/AllGameSystems.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
 namespace Simple

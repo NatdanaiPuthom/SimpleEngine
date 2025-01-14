@@ -112,25 +112,31 @@ namespace ECS
 
 	bool EntityManager::DestroyEntity(const EntityID aEntityID)
 	{
-		const size_t entityToRemoveIndex = myEntityIDToIndex.at(aEntityID);
-		const size_t lastEntityIndex = myAllEntities.size() - 1;
-		const size_t lastEntityID = myIndexToEntityID.at(lastEntityIndex);
-
-		myAllEntities[entityToRemoveIndex] = myAllEntities[lastEntityIndex];
-		myAllEntities.pop_back();
-
-		myIndexToEntityID[lastEntityIndex] = lastEntityID;
-		myEntityIDToIndex[lastEntityID] = lastEntityIndex;
-
-		myIndexToEntityID.erase(entityToRemoveIndex);
-		myEntityIDToIndex.erase(aEntityID);
-
-		const std::unordered_map<ComponentType, ComponentID>& entityComponents = myEntityComponents[aEntityID];
+		std::unordered_map<ComponentType, ComponentID>& entityComponents = myEntityComponents.at(aEntityID);
 
 		for (const auto& [typeIndex, componentID] : entityComponents)
 		{
-			assert(myComponentManager->RemoveComponentByTypeIndex(typeIndex, aEntityID, componentID) && "Failed to remove component by type index");
+			[[maybe_unused]] const bool success = myComponentManager->RemoveComponentByTypeIndex(typeIndex, aEntityID, componentID);
+			assert(success && "Failed to remove component by type index"); //TO-DO(v11.4.3): Make a Logger instead
 		}
+
+		entityComponents.clear();
+		myEntityComponents.erase(aEntityID);
+
+		size_t entityToRemoveIndex1 = myEntityIDToIndex.at(aEntityID);
+		size_t entityToRemoveID1 = aEntityID;
+
+		size_t entityToReplaceIndex1 = myAllEntities.size() - 1;
+		size_t entityToReplaceID1 = myIndexToEntityID.at(entityToReplaceIndex1);
+
+		myAllEntities[entityToRemoveIndex1] = std::move(myAllEntities[entityToReplaceIndex1]);
+		myAllEntities.pop_back();
+
+		myIndexToEntityID[entityToRemoveIndex1] = entityToReplaceID1;
+		myEntityIDToIndex[entityToReplaceID1] = entityToRemoveIndex1;
+
+		myIndexToEntityID.erase(entityToReplaceIndex1);
+		myEntityIDToIndex.erase(entityToRemoveID1);
 
 		return true;
 	}

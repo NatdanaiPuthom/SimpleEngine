@@ -1,6 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/MainMenuBar.hpp"
-#include "Editor/Windows/SettingsWindow.hpp"
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/Windows/AssetWindow.hpp"
 #include "Editor/Windows/DeferredSceneWindow.hpp"
@@ -40,7 +39,6 @@ namespace Editor
 
 	void MainMenuBar::Init()
 	{
-		mySettingsWindow = std::make_unique<SettingsWindow>();
 		myAssetWindow = std::make_unique<AssetWindow>();
 		myHierarchyWindow = std::make_unique<HierarchyWindow>();
 		myDeferredSceneWindow = std::make_unique<DeferredSceneWindow>();
@@ -49,7 +47,6 @@ namespace Editor
 
 		LoadSettingsFromJson();
 
-		mySettingsWindow->Init();
 		myAssetWindow->Init();
 		myHierarchyWindow->Init();
 		myDeferredSceneWindow->Init();
@@ -109,7 +106,6 @@ namespace Editor
 
 		if (myActiveWindowData.IsWindowActive(eWindowType::Editor))
 		{
-			mySettingsWindow->Update();
 			myHierarchyWindow->Update();
 			myAssetWindow->Update();
 		}
@@ -227,7 +223,6 @@ namespace Editor
 	{
 		if (myActiveWindowData.IsWindowActive(eWindowType::Editor))
 		{
-			mySettingsWindow->Draw();
 			myAssetWindow->Draw();
 			myHierarchyWindow->Draw(); //TO-DO(v9.31.1): For now HierachyWindow should always be run last due to removing Entities during run time. Fix/Look into it in future
 		}

@@ -390,7 +390,7 @@ namespace ECS
 			SimpleUtilities::AppendStringInFront("Shaders\\", pixelShader);
 			SimpleUtilities::AppendStringInFront("Shaders\\", vertexShader);
 
-			const Graphics::Shader* shader = Global::GetGraphicsEngine()->GetShader(pixelShader.c_str(), vertexShader.c_str()).get();
+			const Graphics::Shader* shader = Global::GetGraphicsEngine()->GetShaderManager()->GetShader(pixelShader.c_str(), vertexShader.c_str()).get();
 
 			if (shader != nullptr)
 			{

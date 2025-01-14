@@ -130,7 +130,7 @@ namespace ECS
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
 
-		const Graphics::Shader* unlitShader = graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default).get();
+		const Graphics::Shader* unlitShader = graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::Unlit_Default).get();
 		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 

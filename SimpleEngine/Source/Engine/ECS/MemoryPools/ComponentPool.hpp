@@ -3,6 +3,7 @@
 #include <vector>
 #include <typeindex>
 #include <iostream>
+#include <string>
 
 namespace ECS
 {
@@ -11,7 +12,7 @@ namespace ECS
 	{
 		using ComponentID = size_t;
 	public:
-		ComponentPool(const size_t aDefaultSize = 16);
+		ComponentPool(const size_t aDefaultSize = 16, const std::string& aComponentName = "Unnamed ComponentPool");
 		~ComponentPool();
 
 		ComponentPool(const ComponentPool& aOther);
@@ -19,24 +20,22 @@ namespace ECS
 		ComponentPool& operator=(const ComponentPool& aOther);
 		ComponentPool& operator=(ComponentPool&& aOther) noexcept;
 
+		void PrintMemoryState() const;
+		bool SwapWithLastComponentAndRemove(const size_t aComponentID, const std::type_index& aTypeIndex);
+	public:
 		template<typename T>
 		char* CreateComponent(const size_t aComponentID, const T& aValue = T());
-
-		bool SwapWithLastComponentAndRemove(const size_t aComponentID, const std::type_index& aTypeIndex);
-
+	public:
 		size_t GetCapacity() const;
 		size_t GetComponentCount() const;
 		size_t GetComponentTypeSize() const;
 		size_t GetOccupiedMemorySpace() const;
 		size_t GetAvailableMemorySpace() const;
 		size_t GetComponentIndexByMemoryAddress(char* aAddress) const;
-
 		std::unordered_map<size_t, char*>& GetComponentIDToPointerMap();
 		const std::unordered_map<size_t, char*>& GetComponentIDToPointerMap() const;
-
 		char* GetStartMemoryAddress();
 		char* GetComponentAddressByID(const size_t aComponentID);
-
 	private:
 		void Reallocate();
 		void Remap(const std::vector<ComponentID>& aComponentIDs, const size_t aSize);
@@ -49,10 +48,12 @@ namespace ECS
 		std::unordered_map<ComponentID, char*> myIDToPointer;
 		std::unordered_map<char*, ComponentID> myPointerToID;
 
+		std::string myComponentTypeName;
+
 		size_t myComponentTypeSize;
 		size_t myTypeHashCode;
 
-		char myPadding[56] = "Never Give Up On Your Dreams! Believe!!!!!!!!!!!!!!!!!\0";
+		char myPadding[16] = "Never Give Up!\0";
 	};
 
 	template<typename T>

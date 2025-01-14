@@ -80,7 +80,7 @@ namespace Drawer
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		ID3D11DeviceContext* context = graphicsEngine->GetContext().Get();
 
-		graphicsEngine->GetShader(Graphics::eShaderType::Unlit_Default)->BindOnlyThisPixelShader(context);
+		graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::Unlit_Default)->BindOnlyThisPixelShader(context);
 		aAnimationPlayerComponent->shader->BindOnlyThisVertexShader(context);
 		aMeshComponent->textures[Graphics::Global_Slot_Albedo]->Bind(context);
 

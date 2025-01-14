@@ -157,7 +157,7 @@ namespace ECS
 
 		if (vertexShaderPath.empty() == false && pixelShaderPath.empty() == false)
 		{
-			aShader = graphicsEngine->GetShader(pixelShaderPath.c_str(), vertexShaderPath.c_str()).get();
+			aShader = graphicsEngine->GetShaderManager()->GetShader(pixelShaderPath.c_str(), vertexShaderPath.c_str()).get();
 			return true;
 		}
 
