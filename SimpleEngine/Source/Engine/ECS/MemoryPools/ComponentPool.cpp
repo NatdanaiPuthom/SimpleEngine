@@ -181,6 +181,19 @@ namespace ECS
 		return *this;
 	}
 
+	void ComponentPool::PrintMemoryState() const
+	{
+		std::cout << "Memory State:" << std::endl;
+		std::cout << "Start Address: " << static_cast<void*>(myStartMemoryAddress) << std::endl;
+		std::cout << "Current Address: " << static_cast<void*>(myCurrentMemoryAddress) << std::endl;
+		std::cout << "End Address: " << static_cast<void*>(myEndMemoryAddress) << std::endl;
+		std::cout << "Component Count: " << myIDToPointer.size() << std::endl;
+		for (const auto& [id, ptr] : myIDToPointer)
+		{
+			std::cout << "Component ID: " << id << ", Address: " << static_cast<void*>(ptr) << std::endl;
+		}
+	}
+
 	void ComponentPool::Reallocate()
 	{
 		char* oldMemoryArray = myStartMemoryAddress;
