@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/SimpleUtilities/Utility.hpp"
 #include "Engine/ECS/MemoryPools/ComponentPool.hpp"
 #include <unordered_map>
 #include <unordered_set>
@@ -25,10 +26,12 @@ namespace ECS
 		ComponentManager& operator=(ComponentManager&&) = default;
 
 		template<typename T>
+		void PrintMemoryPoolMemoryStateOfType() const;
+	public:
+		template<typename T>
 		ComponentID CreateComponent(const EntityID aEntityID, const T& aComponent = T());
-
+	public:
 		bool RemoveComponentByTypeIndex(const ComponentType& aComponentType, const EntityID aEntityID, const ComponentID aComponentID);
-
 	public:
 		void* GetComponentByComponentID(const ComponentID aID);
 
@@ -40,7 +43,6 @@ namespace ECS
 
 		template<typename T>
 		const T* GetComponentByComponentID(const ComponentID aID) const;
-
 	private:
 		ComponentManager();
 		~ComponentManager();
@@ -54,9 +56,21 @@ namespace ECS
 	};
 
 	template<typename T>
+	inline void ComponentManager::PrintMemoryPoolMemoryStateOfType() const
+	{
+		myComponents.at(typeid(T)).PrintMemoryState();
+	}
+
+	template<typename T>
 	inline ComponentID ComponentManager::CreateComponent(const EntityID aEntityID, const T& aComponent)
 	{
 		myCurrentComponentID++;
+
+		if (!myComponents.contains(typeid(T)))
+		{
+			const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+			myComponents.emplace(typeid(T), ComponentPool(16, componentName));
+		}
 
 		myComponents[typeid(T)].CreateComponent<T>(myCurrentComponentID, aComponent);
 
