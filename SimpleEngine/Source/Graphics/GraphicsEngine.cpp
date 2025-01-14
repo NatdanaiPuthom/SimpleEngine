@@ -17,10 +17,7 @@
 namespace Graphics
 {
 	GraphicsEngine::GraphicsEngine()
-		: myClearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
-		, myVSync(true)
-		, myFPSLevelCap(0)
-		, myCurrentCameraRaw(nullptr)
+		: myCurrentCameraRaw(nullptr)
 	{
 	}
 
@@ -30,6 +27,7 @@ namespace Graphics
 
 	void GraphicsEngine::Init(HWND& aWindowHandle, const Math::Vector2ui& aWindowSize)
 	{
+		myGenericDataManager = std::make_unique<GenericDataManager>();
 		myStateManager = std::make_unique<StateManager>();
 		myShaderManager = std::make_unique<ShaderManager>();
 		myConstantBufferManager = std::make_unique<ConstantBufferManager>();
@@ -53,6 +51,7 @@ namespace Graphics
 		CreateBloomRenderTarget(aWindowSize);
 		CreateDepthBuffer(aWindowSize);
 
+		myGenericDataManager->Init();
 		myStateManager->Init(myDevice);
 		myShaderManager->Init(myDevice);
 		myConstantBufferManager->Init();
@@ -126,7 +125,7 @@ namespace Graphics
 		PROFILER_END();
 
 		PROFILER_BEGIN("Present frame");
-		[[maybe_unused]] const HRESULT result = mySwapChain->Present(myFPSLevelCap, 0);
+		[[maybe_unused]] const HRESULT result = mySwapChain->Present(myGenericDataManager->GetFPSLevelCap(), 0);
 		assert(SUCCEEDED(result) && "Failed to present frame");
 		PROFILER_END();
 	}
@@ -149,7 +148,7 @@ namespace Graphics
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
-		SetVSync(json["Game_Settings"]["VSync"]);
+		myGenericDataManager->SetVSync(json["Game_Settings"]["VSync"]);
 	}
 
 	void GraphicsEngine::PreloadShaders()
@@ -291,10 +290,11 @@ namespace Graphics
 	void GraphicsEngine::ClearRenderTarget(const eRenderTargetType aRenderTargetType)
 	{
 		const std::vector<RenderTarget>& renderTargets = myRenderTargets[static_cast<size_t>(aRenderTargetType)];
+		const std::array<float, 4>& clearColor = myGenericDataManager->GetClearColor();
 
 		for (size_t i = 0; i < renderTargets.size(); ++i)
 		{
-			myContext->ClearRenderTargetView(renderTargets[i].renderTargetView.Get(), &myClearColor[0]);
+			myContext->ClearRenderTargetView(renderTargets[i].renderTargetView.Get(), &clearColor[0]);
 		}
 	}
 
@@ -507,25 +507,6 @@ namespace Graphics
 		return myRenderTargets[static_cast<size_t>(aRenderTargetType)];
 	}
 
-	void GraphicsEngine::SetVSync(const bool aShouldTurnOn)
-	{
-		myVSync = aShouldTurnOn;
-
-		if (myVSync)
-			myFPSLevelCap = 1;
-		else
-			myFPSLevelCap = 0;
-	}
-
-	void GraphicsEngine::SetFPSLevelCap(const unsigned int aCapLevel)
-	{
-		if (aCapLevel > 4)
-			myFPSLevelCap = 4;
-
-		if (myVSync == false)
-			myFPSLevelCap = aCapLevel;
-	}
-
 	Drawer::Renderer* GraphicsEngine::GetRenderer()
 	{
 		return myRenderer.get();
@@ -564,6 +545,11 @@ namespace Graphics
 	const std::shared_ptr<Camera> GraphicsEngine::GetEditorCamera() const
 	{
 		return myEditorCamera;
+	}
+
+	GenericDataManager* GraphicsEngine::GetGenericDataManager()
+	{
+		return myGenericDataManager.get();
 	}
 
 	ShaderManager* GraphicsEngine::GetShaderManager()
@@ -606,11 +592,6 @@ namespace Graphics
 		return myDepthBuffer;
 	}
 
-	unsigned int GraphicsEngine::GetFPSLevelCap() const
-	{
-		return myFPSLevelCap;
-	}
-
 	void GraphicsEngine::CreateViewport(const Math::Vector2ui aSize)
 	{
 		std::shared_ptr<D3D11_VIEWPORT> viewport = std::make_shared<D3D11_VIEWPORT>();
@@ -623,11 +604,6 @@ namespace Graphics
 		viewport->MaxDepth = 1.0f;
 
 		myViewPort = viewport;
-	}
-
-	bool GraphicsEngine::IsVSyncActive() const
-	{
-		return myVSync;
 	}
 
 	void GraphicsEngine::CreateGRenderTarget(const Math::Vector2ui aResolution)

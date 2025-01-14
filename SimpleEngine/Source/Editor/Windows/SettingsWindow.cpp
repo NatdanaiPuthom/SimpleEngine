@@ -260,11 +260,12 @@ namespace Editor
 
 	void SettingsWindow::ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
-		bool vsync = aGraphicsEngine->IsVSyncActive();
+		Graphics::GenericDataManager* graphicsGenericDataManager = aGraphicsEngine->GetGenericDataManager();
+		bool vsync = graphicsGenericDataManager->IsVSyncOn();
 
 		if (ImGui::Checkbox("VSync##SettingWindow", &vsync))
 		{
-			aGraphicsEngine->SetVSync(vsync);
+			graphicsGenericDataManager->SetVSync(vsync);
 		}
 	}
 
@@ -464,7 +465,9 @@ namespace Editor
 			fpsCapAsConstChar.push_back(fpsString.c_str());
 		}
 
-		int selectedFPSLevelCap = aGraphicsEngine->GetFPSLevelCap();
+		Graphics::GenericDataManager* genericDataManager = aGraphicsEngine->GetGenericDataManager();
+		int selectedFPSLevelCap = genericDataManager->GetFPSLevelCap();
+
 		if (selectedFPSLevelCap == 1)
 		{
 			ImGui::Text("FPS Capped: %s", fpsCapAsConstChar[selectedFPSLevelCap]);
@@ -476,9 +479,13 @@ namespace Editor
 			if (ImGui::Combo("FPS Cap##SettingWindow", &selectedFPSLevelCap, fpsCapAsConstChar.data(), static_cast<int>(fpsCapAsConstChar.size())))
 			{
 				if (selectedFPSLevelCap == 1)
-					aGraphicsEngine->SetVSync(true);
+				{
+					genericDataManager->SetVSync(true);
+				}
 				else
-					aGraphicsEngine->SetFPSLevelCap(selectedFPSLevelCap);
+				{
+					genericDataManager->SetFPSLevelCap(selectedFPSLevelCap);
+				}
 			}
 		}
 	}

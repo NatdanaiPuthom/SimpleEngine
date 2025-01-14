@@ -4,6 +4,7 @@
 #include "Graphics/Camera/Camera.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/Model/Factory/ModelFactory.hpp"
+#include "Graphics/Managers/DataManager.hpp"
 #include "Graphics/Managers/TextureManager.hpp"
 #include "Graphics/Managers/LightManager.hpp"
 #include "Graphics/Managers/StateManager.hpp"
@@ -46,13 +47,10 @@ namespace Graphics
 		void ClearAllRenderTargets();
 		void UpdatePointlights(const size_t aLightIndex);
 		void UpdateLightBuffer();
-		bool IsVSyncActive() const;
 	public:
 		void SetToDefaultCamera();
 		void SetGlobalGraphicsEngineToThis();
-		void SetVSync(const bool aShouldTurnOn);
 		void SetCamera(Graphics::Camera* aCamera);
-		void SetFPSLevelCap(const unsigned int aCapLevel);
 		void SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer = nullptr);
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
 	public:
@@ -66,6 +64,7 @@ namespace Graphics
 		const Graphics::Camera* GetCurrentCamera() const;
 		const std::shared_ptr<Camera> GetEditorCamera() const;
 
+		GenericDataManager* GetGenericDataManager();
 		ShaderManager* GetShaderManager();
 		StateManager* GetStateManager();
 		LightManager* GetLightManager();
@@ -74,7 +73,6 @@ namespace Graphics
 		Drawer::Renderer* GetRenderer();
 		const Drawer::Renderer* GetRenderer() const;
 		const ModelFactory* GetModelFactory() const;
-		unsigned int GetFPSLevelCap() const;
 	private:
 		void CreateViewport(const Math::Vector2ui aSize);
 		void CreateSwapChain(HWND& aWindowHandle, const Math::Vector2ui aSize);
@@ -98,7 +96,6 @@ namespace Graphics
 		void UnbindAllRenderTargets();
 	private:
 		std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
-		std::array<float, 4> myClearColor;
 
 		ComPtr<ID3D11Device> myDevice;
 		ComPtr<ID3D11DeviceContext> myContext;
@@ -108,6 +105,7 @@ namespace Graphics
 		std::shared_ptr<Camera> myEditorCamera;
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
+		std::unique_ptr<GenericDataManager> myGenericDataManager;
 		std::unique_ptr<ConstantBufferManager> myConstantBufferManager;
 		std::unique_ptr<ShaderManager> myShaderManager;
 		std::unique_ptr<StateManager> myStateManager;
@@ -118,8 +116,5 @@ namespace Graphics
 		std::unique_ptr<Simple::ImGuiEngine> myImGuiEngine;
 
 		Camera* myCurrentCameraRaw;
-
-		unsigned int myFPSLevelCap;
-		bool myVSync;
 	};
 }
