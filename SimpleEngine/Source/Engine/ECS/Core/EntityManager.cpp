@@ -141,6 +141,24 @@ namespace ECS
 		return true;
 	}
 
+	EntityID EntityManager::DuplicateEntity(const Entity& aSourceEntity, const EntityManager* aSourceEntityManager)
+	{
+		Entity& newEntity = this->CreateEntity(0);
+		auto& allAttachedComponents = aSourceEntityManager->GetComponentMap(aSourceEntity.GetID());
+
+		for (const auto& component : allAttachedComponents)
+		{
+			const TypeErasureObject& typeErasureComponent = MainSingleton::GetComponentRegistry()->myTypeErasureComponents.at(component.first.hash_code());
+			ComponentID componentID = typeErasureComponent.AddComponentFunctionPointer(newEntity);
+
+			void* newComponentAddress = this->GetComponentPointerByComponentID(componentID);
+			const void* sourceComponentAddress = aSourceEntityManager->GetComponentPointerByComponentID(component.second);
+			typeErasureComponent.CopyFunctionPointer(newComponentAddress, sourceComponentAddress);
+		}
+
+		return newEntity.GetID();
+	}
+
 	bool EntityManager::FindAndRemoveComponent(const ComponentType& aComponentType, const EntityID aEntityID)
 	{
 		if (myEntityComponents.contains(aEntityID) == false)
@@ -170,6 +188,16 @@ namespace ECS
 		return FindAndRemoveComponent(aComponentType, aEntityID);
 	}
 
+	void* EntityManager::GetComponentPointerByComponentID(const ComponentID aComponentID)
+	{
+		return myComponentManager->GetComponentByComponentID(aComponentID);
+	}
+
+	const void* EntityManager::GetComponentPointerByComponentID(const ComponentID aComponentID) const
+	{
+		return myComponentManager->GetComponentByComponentID(aComponentID);
+	}
+
 	Entity& EntityManager::GetEntity(const EntityID aEntityID)
 	{
 		return myAllEntities[myEntityIDToIndex.at(aEntityID)];
@@ -180,8 +208,8 @@ namespace ECS
 		return myAllEntities;
 	}
 
-	const std::unordered_map<ComponentType, ComponentID>& EntityManager::GetComponentMap(const EntityID aEntityID)
+	const std::unordered_map<ComponentType, ComponentID>& EntityManager::GetComponentMap(const EntityID aEntityID) const
 	{
-		return myEntityComponents[aEntityID];
+		return myEntityComponents.at(aEntityID);
 	}
 }

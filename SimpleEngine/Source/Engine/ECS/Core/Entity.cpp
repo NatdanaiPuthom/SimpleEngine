@@ -1,5 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Core/Entity.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace ECS
 {
@@ -24,6 +25,16 @@ namespace ECS
 	bool Entity::DestroyThis()
 	{
 		return myEntityManager->DestroyEntity(myID);
+	}
+
+	EntityID Entity::DuplicateThisToAnotherECS(EntityManager* aDestinationEntityManager) const
+	{
+		return aDestinationEntityManager->DuplicateEntity(*this, myEntityManager);
+	}
+
+	EntityID Entity::DuplicateThis() const
+	{
+		return myEntityManager->DuplicateEntity(*this, myEntityManager);
 	}
 
 	void Entity::SetName(const std::string& aName)

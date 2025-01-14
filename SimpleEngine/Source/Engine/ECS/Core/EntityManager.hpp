@@ -28,6 +28,9 @@ namespace ECS
 		Entity& CreateEntity(EntityID aEntityID);
 		bool DestroyEntity(const EntityID aID);
 
+		//NOTE(v11.4.4): In case of different ECS instance
+		EntityID DuplicateEntity(const Entity& aSourceEntity, const EntityManager* aSourceEntityManager);
+
 		template<typename T>
 		const ComponentID AddComponent(const EntityID aEntityID, const T& aValue);
 
@@ -37,6 +40,9 @@ namespace ECS
 		bool RemoveComponentByTypeIndex(const ComponentType& aComponentType, const EntityID aEntityID);
 
 	public:
+		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
+		const void* GetComponentPointerByComponentID(const ComponentID aComponentID) const;
+
 		template<typename T>
 		T* GetComponent(const EntityID aEntityID);
 
@@ -46,7 +52,7 @@ namespace ECS
 		Entity& GetEntity(const EntityID aEntityID);
 		std::vector<Entity>& GetAllEntities();
 
-		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap(const EntityID aEntityID);
+		const std::unordered_map<ComponentType, ComponentID>& GetComponentMap(const EntityID aEntityID) const;
 
 	private:
 		explicit EntityManager(ComponentManager* aComponentManager);

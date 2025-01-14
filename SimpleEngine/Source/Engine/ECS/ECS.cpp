@@ -111,6 +111,11 @@ namespace ECS
 		return myEntityManager.DestroyEntity(aEntityID);
 	}
 
+	EntityManager* EntityComponentSystem::GetEntityManager()
+	{
+		return &myEntityManager;
+	}
+
 	ECS::Entity& EntityComponentSystem::GetEntity(const EntityID aID)
 	{
 		return myEntityManager.GetEntity(aID);

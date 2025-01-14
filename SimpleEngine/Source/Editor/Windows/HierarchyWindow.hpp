@@ -1,5 +1,11 @@
 #pragma once
 #include "Editor/Template/ToolInterface.hpp"
+#include <memory>
+
+namespace ECS
+{
+	class EntityComponentSystem;
+}
 
 namespace Editor
 {
@@ -22,6 +28,7 @@ namespace Editor
 
 		void RemoveEntity(std::vector<ECS::Entity>& aEntities, int& aSelected);
 	private:
+		std::unique_ptr<ECS::EntityComponentSystem> myTemporaryECSEditor;
 		bool myShowAdvanced;
 	};
 }

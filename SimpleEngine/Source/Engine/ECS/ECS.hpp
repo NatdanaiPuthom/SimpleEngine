@@ -47,6 +47,7 @@ namespace ECS
 	public:
 		bool RemoveEntity(const EntityID aEntityID);
 	public:
+		EntityManager* GetEntityManager();
 		ECS::Entity& GetEntity(const EntityID aID);
 		std::vector<ECS::Entity>& GetAllEntities();
 		void* GetComponentPointerByComponentID(const ComponentID aComponentID);

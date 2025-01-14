@@ -29,6 +29,8 @@ namespace ECS
 		bool RemoveComponentByTypeIndex(const std::type_index& aTypeIndex);
 
 		bool DestroyThis();
+		EntityID DuplicateThisToAnotherECS(EntityManager* aDestinationEntityManager) const;
+		EntityID DuplicateThis() const;
 
 	public:
 		void SetName(const std::string& aName);
