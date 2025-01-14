@@ -1,5 +1,5 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
-#include "Graphics/Managers/DataManager.hpp"
+#include "Graphics/Managers/GenericDataManager.hpp"
 
 namespace Graphics
 {

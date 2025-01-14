@@ -49,6 +49,7 @@
 #include "Graphics/Managers/LightManager.hpp"
 #include "Graphics/Managers/TextureManager.hpp"
 #include "Graphics/Managers/StateManager.hpp"
+#include "Graphics/Managers/GenericDataManager.hpp"
 
 #pragma message("---------Never give up on your dreams!---------------")
 

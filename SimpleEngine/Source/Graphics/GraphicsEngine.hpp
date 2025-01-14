@@ -4,7 +4,7 @@
 #include "Graphics/Camera/Camera.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/Model/Factory/ModelFactory.hpp"
-#include "Graphics/Managers/DataManager.hpp"
+#include "Graphics/Managers/GenericDataManager.hpp"
 #include "Graphics/Managers/TextureManager.hpp"
 #include "Graphics/Managers/LightManager.hpp"
 #include "Graphics/Managers/StateManager.hpp"
