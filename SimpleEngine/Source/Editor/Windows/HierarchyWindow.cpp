@@ -4,6 +4,7 @@
 #include "Engine/ECS/Components/AllEngineComponents.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
+#include "Engine/ECS/ECS.hpp"
 
 namespace Editor
 {
@@ -14,6 +15,8 @@ namespace Editor
 
 	void HierarchyWindow::Init()
 	{
+		myTemporaryECSEditor = std::make_unique<ECS::EntityComponentSystem>();
+		myTemporaryECSEditor->Init();
 	}
 
 	void HierarchyWindow::Update()
@@ -47,13 +50,52 @@ namespace Editor
 
 		if (MainSingleton::GetInputManager().IsKeyPressed(VK_DELETE))
 		{
-			if (const size_t count = entities.size() > 0)
+			if (entities.size() > 0)
 			{
 				if (selected >= 0)
 				{
 					RemoveEntity(entities, selected);
-					EditorEngine::mySelectedEntityID = entities[selected].GetID();
+					//EditorEngine::mySelectedEntityID = entities[selected].GetID();
+					EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
 					return;
+				}
+			}
+		}
+
+		if (MainSingleton::GetInputManager().IsKeyPressed('K'))
+		{
+			if (entities.size() > 0)
+			{
+				if (selected >= 0)
+				{
+					entities[selected].DuplicateThis();
+				}
+			}
+		}
+
+		static ECS::EntityID tempEntityID = static_cast<size_t>(-1);
+
+		if (MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL) && MainSingleton::GetInputManager().IsKeyPressed('C'))
+		{
+			if (entities.size() > 0)
+			{
+				if (selected >= 0)
+				{
+					tempEntityID = entities[selected].DuplicateThisToAnotherECS(myTemporaryECSEditor->GetEntityManager());
+				}
+			}
+		}
+		else if (MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL) && MainSingleton::GetInputManager().IsKeyPressed('V'))
+		{
+			if (entities.size() > 0)
+			{
+				if (selected >= 0)
+				{
+					if (tempEntityID != static_cast<size_t>(-1))
+					{
+						ECS::Entity& tempEntity = myTemporaryECSEditor->GetEntity(tempEntityID);
+						tempEntity.DuplicateThisToAnotherECS(activeECS.GetEntityManager());
+					}
 				}
 			}
 		}
@@ -202,6 +244,7 @@ namespace Editor
 						if (ImGui::MenuItem("Remove##SceneHierachy"))
 						{
 							RemoveEntity(aEntities, aSelected);
+							EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
 							ImGui::EndPopup();
 							break;
 						}

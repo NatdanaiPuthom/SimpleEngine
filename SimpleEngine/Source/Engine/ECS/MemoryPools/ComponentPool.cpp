@@ -6,13 +6,14 @@
 
 namespace ECS
 {
-	ComponentPool::ComponentPool(const size_t aDefaultSize)
+	ComponentPool::ComponentPool(const size_t aDefaultSize, const std::string& aComponentName)
 		: myComponentTypeSize(0)
 		, myTypeHashCode(static_cast<size_t>(-1))
 	{
 		myStartMemoryAddress = new char[aDefaultSize];
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;
 		myCurrentMemoryAddress = myStartMemoryAddress;
+		myComponentTypeName = aComponentName;
 
 		memset(myCurrentMemoryAddress, '\0', GetAvailableMemorySpace());
 	}
@@ -54,6 +55,7 @@ namespace ECS
 		this->myEndMemoryAddress = this->myStartMemoryAddress + size;
 		this->myCurrentMemoryAddress = this->myStartMemoryAddress + offsetFromStart;
 		this->myTypeHashCode = aOther.myTypeHashCode;
+		this->myComponentTypeName = aOther.myComponentTypeName;
 
 		memset(this->myCurrentMemoryAddress, '\0', this->GetAvailableMemorySpace());
 
@@ -96,6 +98,7 @@ namespace ECS
 		, myPointerToID(std::move(aOther.myPointerToID))
 		, myComponentTypeSize(aOther.myComponentTypeSize)
 		, myTypeHashCode(aOther.myTypeHashCode)
+		, myComponentTypeName(std::move(aOther.myComponentTypeName))
 	{
 
 		aOther.myStartMemoryAddress = nullptr;
@@ -126,6 +129,7 @@ namespace ECS
 		this->myEndMemoryAddress = this->myStartMemoryAddress + size;
 		this->myCurrentMemoryAddress = this->myStartMemoryAddress + offsetFromStart;
 		this->myTypeHashCode = aOther.myTypeHashCode;
+		this->myComponentTypeName = aOther.myComponentTypeName;
 
 		memset(this->myCurrentMemoryAddress, '\0', this->GetAvailableMemorySpace());
 
@@ -171,6 +175,7 @@ namespace ECS
 
 		this->myComponentTypeSize = aOther.myComponentTypeSize;
 		this->myTypeHashCode = aOther.myTypeHashCode;
+		this->myComponentTypeName = std::move(aOther.myComponentTypeName);
 
 		aOther.myStartMemoryAddress = nullptr;
 		aOther.myEndMemoryAddress = nullptr;
@@ -179,6 +184,23 @@ namespace ECS
 		aOther.myComponentTypeSize = 0;
 
 		return *this;
+	}
+
+	void ComponentPool::PrintMemoryState() const
+	{
+		std::cout << "----------" << std::endl;
+		std::cout << "Memory State:" << myComponentTypeName << std::endl;
+		std::cout << "Start Address: " << static_cast<void*>(myStartMemoryAddress) << std::endl;
+		std::cout << "Current Address: " << static_cast<void*>(myCurrentMemoryAddress) << std::endl;
+		std::cout << "End Address: " << static_cast<void*>(myEndMemoryAddress) << std::endl;
+		std::cout << "Component Count: " << myIDToPointer.size() << std::endl;
+
+		for (const auto& [id, ptr] : myIDToPointer)
+		{
+			std::cout << "Component ID: " << id << ", Address: " << static_cast<void*>(ptr) << std::endl;
+		}
+
+		std::cout << std::endl << "----------" << std::endl;;
 	}
 
 	void ComponentPool::Reallocate()
@@ -262,26 +284,39 @@ namespace ECS
 			return false;
 		}
 
-		char* componentToRemove = myIDToPointer.at(aComponentID);
-		myCurrentMemoryAddress -= myComponentTypeSize;
-
-		const size_t lastComponentID = myPointerToID.at(myCurrentMemoryAddress);
 		const size_t componentHashCode = aTypeIndex.hash_code();
-
 		const ComponentRegistry* componentRegister = MainSingleton::GetComponentRegistry();
 
-		componentRegister->myTypeErasureComponents.at(componentHashCode).CopyFunctionPointer(componentToRemove, myCurrentMemoryAddress);
-		componentRegister->myTypeErasureComponentDestructorInvoker.at(componentHashCode)(static_cast<void*>(myCurrentMemoryAddress));
-		memset(myCurrentMemoryAddress, '\0', myComponentTypeSize);
+		char* componentToRemoveAddress = myIDToPointer.at(aComponentID);
+		char* lastComponentAddress = myCurrentMemoryAddress - myComponentTypeSize;
 
-		myPointerToID.erase(myCurrentMemoryAddress);
-		myIDToPointer.erase(aComponentID);
-
-		if (componentToRemove > myStartMemoryAddress)
+		if (GetComponentCount() == 1)
 		{
-			myPointerToID[componentToRemove] = lastComponentID;
-			myIDToPointer[lastComponentID] = componentToRemove;
+			myPointerToID.clear();
+			myIDToPointer.clear();
+
+			componentRegister->myTypeErasureComponentDestructorInvoker.at(componentHashCode)(static_cast<void*>(componentToRemoveAddress));
+
+			myCurrentMemoryAddress -= myComponentTypeSize;
+			memset(myCurrentMemoryAddress, '\0', myComponentTypeSize);
+
+			return true;
 		}
+
+		const size_t lastComponentID = myPointerToID.at(lastComponentAddress);
+
+
+		myPointerToID.at(componentToRemoveAddress) = lastComponentID;
+		myIDToPointer.at(lastComponentID) = componentToRemoveAddress;
+
+		myIDToPointer.erase(aComponentID);
+		myPointerToID.erase(lastComponentAddress);
+
+		componentRegister->myTypeErasureComponentDestructorInvoker.at(componentHashCode)(static_cast<void*>(componentToRemoveAddress));
+		componentRegister->myTypeErasureComponents.at(componentHashCode).CopyFunctionPointer(componentToRemoveAddress, lastComponentAddress);
+
+		myCurrentMemoryAddress -= myComponentTypeSize;
+		memset(myCurrentMemoryAddress, '\0', myComponentTypeSize);
 
 		return true;
 	}

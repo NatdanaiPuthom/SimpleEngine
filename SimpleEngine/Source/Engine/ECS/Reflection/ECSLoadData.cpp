@@ -9,6 +9,7 @@
 #include "Graphics/Model/Skeleton.hpp"
 #include "Graphics/Animation/Animation.hpp"
 #include "Graphics/BufferData.hpp"
+#include <filesystem>
 
 namespace ECS
 {
@@ -110,16 +111,18 @@ namespace ECS
 	{
 		const Math::Vector2ui resolution = Global::GetResolution();
 
+		const auto& data = aJSONData[aVariableName];
+
 		Math::Vector3f position;
-		position.x = aJSONData[aVariableName]["Position"]["x"];
-		position.y = aJSONData[aVariableName]["Position"]["y"];
-		position.z = aJSONData[aVariableName]["Position"]["z"];
+		position.x = data["Position"]["x"];
+		position.y = data["Position"]["y"];
+		position.z = data["Position"]["z"];
 
 		aCamera.SetPosition(position);
-		aCamera.SetMoveSpeed(aJSONData[aVariableName]["MoveSpeed"]);
-		aCamera.SetHorizontalFoV(aJSONData[aVariableName]["HorizontalFoV"], resolution);
-		aCamera.SetNearPlane(aJSONData[aVariableName]["NearPlane"], resolution);
-		aCamera.SetFarPlane(aJSONData[aVariableName]["FarPlane"], resolution);
+		aCamera.SetMoveSpeed(data["MoveSpeed"]);
+		aCamera.SetHorizontalFoV(data["HorizontalFoV"], resolution);
+		aCamera.SetNearPlane(data["NearPlane"], resolution);
+		aCamera.SetFarPlane(data["FarPlane"], resolution);
 
 		return true;
 	}
@@ -130,8 +133,17 @@ namespace ECS
 
 		if (filePath.empty() == false)
 		{
-			aMesh = Global::GetGraphicsEngine()->GetModelFactory()->LoadMesh(filePath);
-			return true;
+			if (std::filesystem::exists(filePath) || filePath.find("Primitive") != std::string::npos)
+			{
+				aMesh = Global::GetGraphicsEngine()->GetModelFactory()->LoadMesh(filePath);
+				return true;
+			}
+			else
+			{
+				const std::string text = "Mesh Error: Could not find file at " + filePath + ". Primitive Mesh has replaced.";
+				Simple::Console::Print(text.c_str(), Simple::ConsoleTextColor::Red);
+				return false;
+			}
 		}
 
 		return false;
@@ -140,7 +152,17 @@ namespace ECS
 	bool LoadAndSetDataFromJSON(const Graphics::Texture*& aTexture, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
 		const std::string filePath = aJSONData[aVariableName];
-		aTexture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(filePath.c_str()).get();
+
+		if (std::filesystem::exists(filePath))
+		{
+			aTexture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(filePath.c_str()).get();
+		}
+		else
+		{
+			aTexture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Albedo).get();
+			const std::string text = "Texture Error: Could not find file at " + filePath + ". Default Texture has replaced.";
+			Simple::Console::Print(text.c_str(), Simple::ConsoleTextColor::Red);
+		}
 
 		return true;
 	}
@@ -215,15 +237,23 @@ namespace ECS
 
 		for (size_t i = 0; i < aTextures.size(); ++i)
 		{
+			bool isValidFile = false;
+			std::string loadFailureText;
+
 			switch (i)
 			{
 			case Graphics::Global_Slot_Albedo:
 				albedoTexture = aJSONData[aVariableName]["Albedo"];
 
-				if (albedoTexture.empty() == false)
+				if (albedoTexture.empty() == false && std::filesystem::exists(albedoTexture))
 				{
 					aTextures[i] = graphicsEngine->GetTextureManager()->GetTexture(albedoTexture.c_str()).get();
 					success = true;
+					isValidFile = true;
+				}
+				else
+				{
+					loadFailureText = albedoTexture;
 				}
 
 				break;
@@ -234,6 +264,11 @@ namespace ECS
 				{
 					aTextures[i] = graphicsEngine->GetTextureManager()->GetTexture(normalTexture.c_str()).get();
 					success = true;
+					isValidFile = true;
+				}
+				else
+				{
+					loadFailureText = normalTexture;
 				}
 
 				break;
@@ -244,9 +279,21 @@ namespace ECS
 				{
 					aTextures[i] = graphicsEngine->GetTextureManager()->GetTexture(materialTexture.c_str()).get();
 					success = true;
+					isValidFile = true;
+				}
+				else
+				{
+					loadFailureText = materialTexture;
 				}
 
 				break;
+			}
+
+			if (isValidFile == false)
+			{
+				aTextures[i] = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Albedo).get();
+				const std::string text = "Texture Error: Could not find file at " + loadFailureText + ". Default Texture has replaced.";
+				Simple::Console::Print(text.c_str(), Simple::ConsoleTextColor::Red);
 			}
 		}
 

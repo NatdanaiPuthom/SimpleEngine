@@ -7,6 +7,7 @@
 #include "Editor/Menu/SceneMenuBar.hpp"
 #include "Editor/Menu/PlayMenuBar.hpp"
 #include "Editor/Menu/BuildMenuBar.hpp"
+#include "Editor/Menu/SettingsMenuBar.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #endif
 
@@ -21,6 +22,7 @@ namespace Editor
 		AddTool(std::make_unique<SceneMenuBar>());
 		AddTool(std::make_unique<MainMenuBar>());
 		AddTool(std::make_unique<HelpMenuBar>());
+		AddTool(std::make_unique<SettingsMenuBar>());
 		AddTool(std::make_unique<PlayMenuBar>());
 	}
 
@@ -60,6 +62,14 @@ namespace Editor
 			{
 				tool->Draw();
 			}
+		}
+
+		{	//Render Orientation Cube  
+			//TO-DO(v11.4.4): Make own class for this
+            const Graphics::Camera* camera = Global::GetGraphicsEngine()->GetCurrentCamera();  
+            Math::Matrix4x4f view = camera->GetViewMatrix();  
+            ImVec2 windowPos = ImGui::GetWindowPos();  
+            ImGuizmo::ViewManipulate(&view(1, 1), 16, ImVec2(windowPos.x + 775, windowPos.y + 375), ImVec2(64, 64), 0x00000000);
 		}
 	}
 

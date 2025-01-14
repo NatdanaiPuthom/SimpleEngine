@@ -74,14 +74,14 @@ namespace Editor
 						currentByteLeft--;
 
 					}
-		
+
 				}
 
 
 				ImGui::EndTable();
 			}
 
-			ImGui::End();
 		}
+		ImGui::End();
 	}
 }

@@ -55,7 +55,7 @@ namespace Editor
 
 	void SettingsWindow::Draw()
 	{
-		if (ImGui::Begin("Settings##SettingWindow"))
+		if (ImGui::Begin("General Settings##SettingWindow"))
 		{
 			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 			static constexpr unsigned int heightPadding = 2;
