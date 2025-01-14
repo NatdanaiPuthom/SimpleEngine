@@ -14,7 +14,6 @@ namespace ECS
 
 	void BasicPlayerSystem::Init(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
-		std::cout << "Initialized BasicPlayerSystem!" << std::endl;
 	}
 
 	void BasicPlayerSystem::Update(EntityComponentSystem* aEntityComponentSystem)
