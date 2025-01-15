@@ -6,11 +6,6 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
-struct ID3D11DeviceContext;
-struct ID3D11DepthStencilView;
-struct ID3D11Device;
-struct IDXGISwapChain;
-
 namespace Graphics
 {
 	class RenderTargetManager final
@@ -19,7 +14,8 @@ namespace Graphics
 		RenderTargetManager();
 		~RenderTargetManager();
 		
-		void Init(Microsoft::WRL::ComPtr<ID3D11Device> aDevice, Microsoft::WRL::ComPtr<IDXGISwapChain> aSwapChain, const Math::Vector2ui& aResolution);
+		void Init(Microsoft::WRL::ComPtr<ID3D11Device> aDevice, Microsoft::WRL::ComPtr<IDXGISwapChain> aSwapChain, Microsoft::WRL::ComPtr<ID3D11DeviceContext> aContext, const Math::Vector2ui& aResolution);
+		void ReInit(Microsoft::WRL::ComPtr<ID3D11Device> aDevice, Microsoft::WRL::ComPtr<IDXGISwapChain> aSwapChain, Microsoft::WRL::ComPtr<ID3D11DeviceContext> aContext, const Math::Vector2ui& aResolution);
 
 		void UnbindAllRenderTargets(Microsoft::WRL::ComPtr<ID3D11DeviceContext> aContext);
 		void ClearRenderTarget(Microsoft::WRL::ComPtr<ID3D11DeviceContext> aContext, const eRenderTargetType aRenderTargetType, const std::array<float, 4>& aClearColor);
@@ -35,13 +31,16 @@ namespace Graphics
 		void CreatePostProcessingRenderTarget(Microsoft::WRL::ComPtr<ID3D11Device> aDevice, const Math::Vector2ui& aResolution);
 		void CreateDeferredRenderTarget(Microsoft::WRL::ComPtr<ID3D11Device> aDevice, const Math::Vector2ui& aResolution);
 		void CreateGRenderTarget(Microsoft::WRL::ComPtr<ID3D11Device> aDevice, const Math::Vector2ui& aResolution);
+		void CreateViewport(const Math::Vector2ui& aSize);
 	public:
 		void SetRenderTarget(Microsoft::WRL::ComPtr<ID3D11DeviceContext> aContext, eRenderTargetType aRenderTargetType, const bool aUseDepthBuffer);
 	public:
 		std::vector<RenderTarget>& GetRenderTargets(const eRenderTargetType aRenderTargetType);
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetShaderResourceView(const eRenderTargetType aRenderTargetType, const size_t aIndex = 0);
+		std::shared_ptr<const D3D11_VIEWPORT> GetViewPort() const;
 	private:
 		std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> myDepthBuffer;
+		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 	};
 }

@@ -35,7 +35,6 @@ namespace Graphics
 		myTextureManager = std::make_unique<TextureManager>();
 		myLightManager = std::make_unique<LightManager>();
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
-		myViewPort = std::make_shared<D3D11_VIEWPORT>();
 		myEditorCamera = std::make_shared<Graphics::Camera>();
 		myRenderer = std::make_unique<Drawer::Renderer>();
 		myModelFactory = std::make_unique<ModelFactory>();
@@ -43,10 +42,9 @@ namespace Graphics
 		LoadSettingsFromJson();
 
 		CreateSwapChain(aWindowHandle, aWindowSize);
-		CreateViewport(aWindowSize);
 
 		myGenericDataManager->Init();
-		myRenderTargetManager->Init(myDevice, mySwapChain, aWindowSize);
+		myRenderTargetManager->Init(myDevice, mySwapChain, myContext, aWindowSize);
 		myStateManager->Init(myDevice);
 		myShaderManager->Init(myDevice);
 		myConstantBufferManager->Init();
@@ -62,7 +60,6 @@ namespace Graphics
 		myStateManager->SetRasterizerState(myContext, eRasterizerState::BackfaceCulling);
 		myStateManager->SetDepthStencilState(myContext, eDepthStencilState::Less_Equal);
 		myStateManager->SetSamplerState(myContext, eSamplerState::Bilinear_Warp);
-		myContext->RSSetViewports(1, myViewPort.get());
 
 		myCurrentCameraRaw = myEditorCamera.get();
 	}
@@ -251,7 +248,7 @@ namespace Graphics
 
 		myStateManager->SetBlendState(myContext, eBlendState::Disabled);
 
-		myContext->RSSetViewports(1, myViewPort.get());
+		myContext->RSSetViewports(1, myRenderTargetManager->GetViewPort().get());
 	}
 
 	void GraphicsEngine::RenderBloom()
@@ -428,11 +425,8 @@ namespace Graphics
 		assert(SUCCEEDED(result) && "Failed to resize buffer");
 
 		{ //TO-DO(v10.0.5): Figure a out to resize buffers properly
-			CreateViewport(newWindowSize);
-			myRenderTargetManager->Init(myDevice, mySwapChain, newWindowSize);
+			myRenderTargetManager->ReInit(myDevice, mySwapChain, myContext, newWindowSize);
 		}
-
-		myContext->RSSetViewports(1, myViewPort.get());
 	}
 
 	void GraphicsEngine::SetCamera(Graphics::Camera* aCamera)
@@ -529,20 +523,6 @@ namespace Graphics
 	ComPtr<ID3D11DeviceContext> GraphicsEngine::GetContext()
 	{
 		return myContext;
-	}
-
-	void GraphicsEngine::CreateViewport(const Math::Vector2ui aSize)
-	{
-		std::shared_ptr<D3D11_VIEWPORT> viewport = std::make_shared<D3D11_VIEWPORT>();
-
-		viewport->TopLeftX = 0.0f;
-		viewport->TopLeftY = 0.0f;
-		viewport->Width = static_cast<float> (aSize.x);
-		viewport->Height = static_cast<float> (aSize.y);
-		viewport->MinDepth = 0.0f;
-		viewport->MaxDepth = 1.0f;
-
-		myViewPort = viewport;
 	}
 
 	void GraphicsEngine::CreateSwapChain(HWND& aWindowHandle, const Math::Vector2ui aSize)

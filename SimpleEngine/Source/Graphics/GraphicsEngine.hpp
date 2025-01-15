@@ -15,6 +15,7 @@
 #include <array>
 #include <string>
 #include <vector>
+#include <d3d11.h>
 
 namespace Simple
 {
@@ -48,14 +49,14 @@ namespace Graphics
 		void UpdatePointlights(const size_t aLightIndex);
 		void UpdateLightBuffer();
 	public:
+		void SetGlobalGraphicsEngineToThis();
 		void SetRenderTarget(eRenderTargetType aRenderTargetType, const bool aUseDepthBuffer = false);
 		void SetToDefaultCamera();
-		void SetGlobalGraphicsEngineToThis();
 		void SetCamera(Graphics::Camera* aCamera);
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
 	public:
-		ComPtr<ID3D11Device> GetDevice();
-		ComPtr<ID3D11DeviceContext> GetContext();
+		Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetContext();
 		Graphics::Camera* GetCurrentCamera();
 		std::shared_ptr<Camera> GetEditorCamera();
 		const Graphics::Camera* GetCurrentCamera() const;
@@ -69,10 +70,10 @@ namespace Graphics
 		TextureManager* GetTextureManager();
 		ModelFactory* GetModelFactory();
 		Drawer::Renderer* GetRenderer();
+
 		const Drawer::Renderer* GetRenderer() const;
 		const ModelFactory* GetModelFactory() const;
 	private:
-		void CreateViewport(const Math::Vector2ui aSize);
 		void CreateSwapChain(HWND& aWindowHandle, const Math::Vector2ui aSize);
 	private:
 		void LoadSettingsFromJson();
@@ -82,12 +83,11 @@ namespace Graphics
 		void DownAndUpSampleForBloom();
 		void RenderBloom();
 	private:
-		ComPtr<ID3D11Device> myDevice;
-		ComPtr<ID3D11DeviceContext> myContext;
-		ComPtr<IDXGISwapChain> mySwapChain;
+		Microsoft::WRL::ComPtr<ID3D11Device> myDevice;
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext> myContext;
+		Microsoft::WRL::ComPtr<IDXGISwapChain> mySwapChain;
 
 		std::shared_ptr<Camera> myEditorCamera;
-		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
 		std::unique_ptr<GenericDataManager> myGenericDataManager;
 		std::unique_ptr<RenderTargetManager> myRenderTargetManager;

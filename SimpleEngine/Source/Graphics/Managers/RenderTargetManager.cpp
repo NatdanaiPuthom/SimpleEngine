@@ -5,7 +5,6 @@ namespace Graphics
 {
 	RenderTargetManager::RenderTargetManager()
 	{
-
 	}
 
 	RenderTargetManager::~RenderTargetManager()
@@ -15,6 +14,17 @@ namespace Graphics
 	void RenderTargetManager::Init(
 		Microsoft::WRL::ComPtr<ID3D11Device> aDevice, 
 		Microsoft::WRL::ComPtr<IDXGISwapChain> aSwapChain,
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext> aContext,
+		const Math::Vector2ui& aResolution)
+	{
+		myViewPort = std::make_shared<D3D11_VIEWPORT>();
+		ReInit(aDevice, aSwapChain, aContext, aResolution);
+	}
+
+	void RenderTargetManager::ReInit(
+		Microsoft::WRL::ComPtr<ID3D11Device> aDevice, 
+		Microsoft::WRL::ComPtr<IDXGISwapChain> aSwapChain, 
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext> aContext, 
 		const Math::Vector2ui& aResolution)
 	{
 		CreateBackBuffer(aDevice, aSwapChain);
@@ -24,6 +34,9 @@ namespace Graphics
 		CreatePostProcessingRenderTarget(aDevice, aResolution);
 		CreateBloomDownAndUpSampleRenderTarget(aDevice, aResolution);
 		CreateBloomRenderTarget(aDevice, aResolution);
+		CreateViewport(aResolution);
+
+		aContext->RSSetViewports(1, myViewPort.get());
 	}
 
 	void RenderTargetManager::UnbindAllRenderTargets(Microsoft::WRL::ComPtr<ID3D11DeviceContext> aContext)
@@ -258,6 +271,20 @@ namespace Graphics
 		myRenderTargets[static_cast<size_t>(eRenderTargetType::GBuffer)] = CreateRenderTargets(aDevice, formats.size(), &formats[0], aResolution);
 	}
 
+	void RenderTargetManager::CreateViewport(const Math::Vector2ui& aSize)
+	{
+		std::shared_ptr<D3D11_VIEWPORT> viewport = std::make_shared<D3D11_VIEWPORT>();
+
+		viewport->TopLeftX = 0.0f;
+		viewport->TopLeftY = 0.0f;
+		viewport->Width = static_cast<float> (aSize.x);
+		viewport->Height = static_cast<float> (aSize.y);
+		viewport->MinDepth = 0.0f;
+		viewport->MaxDepth = 1.0f;
+
+		myViewPort = viewport;
+	}
+
 	void RenderTargetManager::SetRenderTarget(Microsoft::WRL::ComPtr<ID3D11DeviceContext> aContext, eRenderTargetType aRenderTargetType, const bool aUseDepthBuffer)
 	{
 		UnbindAllRenderTargets(aContext);
@@ -290,5 +317,10 @@ namespace Graphics
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> RenderTargetManager::GetShaderResourceView(const eRenderTargetType aRenderTargetType, const size_t aIndex)
 	{
 		return myRenderTargets[static_cast<size_t>(aRenderTargetType)][aIndex].shaderResourceView;
+	}
+
+	std::shared_ptr<const D3D11_VIEWPORT> RenderTargetManager::GetViewPort() const
+	{
+		return myViewPort;
 	}
 }
