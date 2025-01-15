@@ -43,11 +43,11 @@ namespace ECS
 	{
 		myRayCollider->GetShape<Ray>() = Global::GetMouseRay();
 
-		myCollisionSystem.RenderColliders();
+		/*myCollisionSystem.RenderColliders();
 
-		myCollisionSystem.ProcessCollisions();
+		myCollisionSystem.ProcessCollisions();*/
 
-		std::vector<Collider*> colliders = myCollisionSystem.PollCollisions(Ray());
+		//std::vector<Collider*> colliders = myCollisionSystem.PollCollisions(Ray());
 	}
 
 	std::unique_ptr<System> ECSCollisionSystem::Clone() const
