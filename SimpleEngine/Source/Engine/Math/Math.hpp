@@ -6,7 +6,7 @@
 
 namespace Math
 {
-	constexpr float GLOBAL_PI = 3.141592f;
+	constexpr float GLOBAL_PI = 3.14159265358979323846f;
 	constexpr float GLOBAL_DEGREE_TO_RADIAN = GLOBAL_PI / 180.0f;
 	constexpr float GLOBAL_RADIAN_TO_DEGREE = (180.0f / GLOBAL_PI);
 
