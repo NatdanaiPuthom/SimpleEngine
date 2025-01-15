@@ -33,13 +33,13 @@ namespace ECS
 		}
 		else
 		{
-			ECS::Entity& entity = aEntityComponentSystem->GetEntity(*entitiesIDWithCameraComponent.begin());
-			CameraComponent* camera = entity.GetComponent<ECS::CameraComponent>();
+			ECS::Entity& cameraEntity = aEntityComponentSystem->GetEntity(*entitiesIDWithCameraComponent.begin());
+			CameraComponent* cameraComponent = cameraEntity.GetComponent<ECS::CameraComponent>();
 
-			const TransformComponent* transform = entity.GetComponent<ECS::TransformComponent>();
+			const TransformComponent* transform = cameraEntity.GetComponent<ECS::TransformComponent>();
 
-			camera->camera.SetPosition(transform->transform.GetPosition());
-			camera->camera.SetRotation(transform->transform.GetRotation());
+			cameraComponent->camera.SetPosition(transform->transform.GetPosition());
+			cameraComponent->camera.SetRotation(transform->transform.GetRotation());
 		}
 	}
 
