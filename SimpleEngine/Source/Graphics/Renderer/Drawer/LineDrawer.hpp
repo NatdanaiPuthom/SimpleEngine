@@ -1,5 +1,6 @@
 #pragma once
 #include "Graphics/Model/Mesh.hpp"
+#include "SimpleUtilities/Color.hpp"
 #include <memory>
 #include <vector>
 
@@ -15,7 +16,7 @@ namespace Drawer
 {
 	struct Line final
 	{
-		Math::Vector4f color = { 0.0f, 1.0f, 0.0f, 1.0f };
+		Simple::Color color = { 0.0f, 1.0f, 0.0f, 1.0f };
 		Math::Vector3f startPosition;
 		Math::Vector3f endPosition;
 	};

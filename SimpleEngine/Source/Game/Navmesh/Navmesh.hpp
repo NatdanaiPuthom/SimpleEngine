@@ -49,7 +49,7 @@ namespace Simple
 		};
 
 		NodeData myData;
-		SimpleUtilities::Plane myPlane;
+		Simple::Plane myPlane;
 		Math::Vector3f myCenter;
 		std::array<int, 3> myConnections;
 		std::array<int, 3> myIndices;

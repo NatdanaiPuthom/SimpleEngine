@@ -99,7 +99,7 @@ namespace ECS
 
 		if (renderer->GetShouldRenderDebugLines() == true)
 		{
-			Drawer::Sphere pointLightDebugSpheres;
+			/*Drawer::Sphere pointLightDebugSpheres;
 			pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 			for (size_t i = 0; i < lightManager->GetPointLightCount(); ++i)
@@ -110,7 +110,7 @@ namespace ECS
 
 				pointLightDebugSpheres.radius = 0.1f;
 				renderer->Push(pointLightDebugSpheres);
-			}
+			}*/
 		}
 	}
 

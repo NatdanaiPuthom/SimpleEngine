@@ -19,7 +19,7 @@ namespace Simple
 		void Update();
 		void Render();
 
-		SimpleUtilities::Ray GetScreenPointToRay(const Math::Vector2f& aPosition);
+		Simple::Ray GetScreenPointToRay(const Math::Vector2f& aPosition);
 	private:
 		void CheckAABB3DCollision();
 		void CheckRayNavmesh();

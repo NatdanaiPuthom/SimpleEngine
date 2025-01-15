@@ -26,7 +26,7 @@ namespace Drawer
 		InitObjectBuffer();
 	}
 
-	void BoundingBoxDrawer::Render(const Simple::BoundingBox3D& aBoundingBox3D, const Math::Matrix4x4f& aModelToWorldMatrix)
+	void BoundingBoxDrawer::Render(const Simple::BoundingBox3D& aBoundingBox3D, const Math::Matrix4x4f& aModelToWorldMatrix, const Simple::Color& aColor)
 	{
 		const Math::Vector3f minPoint = aBoundingBox3D.min;
 		const Math::Vector3f  maxPoint = aBoundingBox3D.max;
@@ -77,7 +77,7 @@ namespace Drawer
 
 		for (auto& vertice : myMeshData3D.vertices)
 		{
-			vertice.color = {1.0f, 1.0f, 0.0f, 1.0f};
+			vertice.color = Math::Vector4f(aColor.r, aColor.g, aColor.b, aColor.a);
 		}
 
 		auto context = Global::GetGraphicsEngine()->GetContext();

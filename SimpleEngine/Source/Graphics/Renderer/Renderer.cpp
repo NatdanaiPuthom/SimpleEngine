@@ -239,7 +239,7 @@ namespace Drawer
 
 		for (size_t i = 0; i < myBoundingBoxesData.size(); i++)
 		{
-			myBoundingBoxDrawer->Render(myBoundingBoxesData[i].boundingBox, myBoundingBoxesData[i].modelToWorld);
+			myBoundingBoxDrawer->Render(myBoundingBoxesData[i].boundingBox, myBoundingBoxesData[i].modelToWorld, myBoundingBoxesData[i].color);
 			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
 		}
 

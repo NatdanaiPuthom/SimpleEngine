@@ -1,9 +1,11 @@
 #include "Engine/Precomplied/EnginePch.hpp"
+#include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/ECS/Core/SystemManager.hpp"
 #include "Engine/ECS/Core/System.hpp"
 #include "Engine/ECS/Systems/AnimationSystem.hpp"
 #include "Engine/ECS/Systems/ScriptSystem.hpp"
 #include "Engine/ECS/Systems/CameraSystem.hpp"
+#include "Engine/ECS/Systems/ECSCollisionSystem.hpp"
 
 namespace ECS
 {
@@ -14,6 +16,7 @@ namespace ECS
 		AddSystem<CameraSystem>();
 		AddSystem<AnimationSystem>();
 		AddSystem<ScriptSystem>();
+		AddSystem<ECSCollisionSystem>();
 	}
 
 	SystemManager::~SystemManager()

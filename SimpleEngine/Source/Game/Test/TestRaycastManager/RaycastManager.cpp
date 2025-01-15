@@ -75,7 +75,7 @@ namespace Simple
 		}*/
 	}
 
-	SimpleUtilities::Ray RaycastManager::GetScreenPointToRay(const Math::Vector2f& aPosition)
+	Simple::Ray RaycastManager::GetScreenPointToRay(const Math::Vector2f& aPosition)
 	{
 		const auto camera = Global::GetGraphicsEngine()->GetCurrentCamera();
 
@@ -104,7 +104,7 @@ namespace Simple
 		myRaycastLine->startPosition.x += 0.05f;
 		myRaycastLine->endPosition = myRaycastLine->startPosition + mouseRay * 10000.0f;
 
-		SimpleUtilities::Ray ray(camera->GetPosition(), mouseRay);
+		Simple::Ray ray(camera->GetPosition(), mouseRay);
 		return ray;
 	}
 

@@ -32,13 +32,9 @@ namespace Drawer
 {
 	struct BoundingBox3DData
 	{
-		BoundingBox3DData(const Math::Matrix4x4f& aModelToWorld, const Simple::BoundingBox3D& aBoundingBox)
-			: modelToWorld(aModelToWorld)
-			, boundingBox(aBoundingBox)
-		{}
-
 		const Math::Matrix4x4f modelToWorld;
 		const Simple::BoundingBox3D boundingBox;
+		Simple::Color color;
 	};
 
 	class Renderer final

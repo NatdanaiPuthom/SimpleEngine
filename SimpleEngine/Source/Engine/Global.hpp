@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <unordered_map>
 #include <string>
+#include "SimpleUtilities/Ray.hpp"
 
 namespace Global
 {
@@ -29,6 +30,8 @@ namespace Global
 	bool GetGameIsRunning();
 
 	bool IsFullScreen();
+
+	Simple::Ray GetMouseRay();
 
 	void SetGameShouldClose(const bool aShouldClose);
 	void SetCustomCursor(const std::string& aCursorName);

@@ -2,7 +2,7 @@
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Math.hpp"
 
-namespace SimpleUtilities
+namespace Simple
 {
 	class Plane final
 	{
