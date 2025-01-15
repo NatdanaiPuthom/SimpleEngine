@@ -72,14 +72,17 @@ namespace ECS
 		stateManager->SetRasterizerState(context, Graphics::eRasterizerState::FrontFaceCulling);
 		stateManager->SetDepthStencilState(context, Graphics::eDepthStencilState::Greater);
 		stateManager->SetBlendState(context, Graphics::eBlendState::AdditiveBlend);
-		graphicsEngine->UpdateLightBuffer();
 
-		Graphics::LightManager* graphicsDataContainer = graphicsEngine->GetLightManager();
-		Graphics::PointLightData* pointLightBuffer = graphicsDataContainer->GetPointLightDataArray();
+		Graphics::LightManager* const lightManager = graphicsEngine->GetLightManager();
+		Graphics::ConstantBufferManager* const constantBufferManager = graphicsEngine->GetConstantBufferManager();
 
-		for (size_t i = 0; i < graphicsDataContainer->GetPointLightCount(); ++i)
+		constantBufferManager->UpdateLightConstantBuffer(lightManager->GetLightBufferData());
+
+		Graphics::PointLightData* pointLightBuffer = lightManager->GetPointLightDataArray();
+
+		for (size_t i = 0; i < lightManager->GetPointLightCount(); ++i)
 		{
-			graphicsEngine->UpdatePointlights(i);
+			constantBufferManager->UpdatePointlights(i, lightManager->GetPointLightBufferData());
 
 			transform.SetPosition(pointLightBuffer[i].position);
 			transform.SetScale(pointLightBuffer[i].radius);
@@ -99,7 +102,7 @@ namespace ECS
 			Drawer::Sphere pointLightDebugSpheres;
 			pointLightDebugSpheres.color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
-			for (size_t i = 0; i < graphicsDataContainer->GetPointLightCount(); ++i)
+			for (size_t i = 0; i < lightManager->GetPointLightCount(); ++i)
 			{
 				pointLightDebugSpheres.position = pointLightBuffer[i].position;
 				pointLightDebugSpheres.radius = pointLightBuffer[i].radius;

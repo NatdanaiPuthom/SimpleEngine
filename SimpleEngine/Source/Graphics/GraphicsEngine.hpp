@@ -10,6 +10,7 @@
 #include "Graphics/Managers/StateManager.hpp"
 #include "Graphics/Managers/ShaderManager.hpp"
 #include "Graphics/Managers/RenderTargetManager.hpp"
+#include "Graphics/Managers/ConstantBufferManager.hpp"
 #include <unordered_map>
 #include <memory>
 #include <array>
@@ -25,7 +26,6 @@ namespace Simple
 namespace Graphics
 {
 	class ConstantBuffer;
-	class ConstantBufferManager;
 }
 
 namespace Graphics
@@ -46,8 +46,6 @@ namespace Graphics
 		void ApplyBloom();
 		void RenderFullScreenQuad();
 		void RenderFullScreenCopy(const eRenderTargetType aRenderTargetType);
-		void UpdatePointlights(const size_t aLightIndex);
-		void UpdateLightBuffer();
 	public:
 		void SetGlobalGraphicsEngineToThis();
 		void SetRenderTarget(eRenderTargetType aRenderTargetType, const bool aUseDepthBuffer = false);
@@ -62,6 +60,7 @@ namespace Graphics
 		const Graphics::Camera* GetCurrentCamera() const;
 		const std::shared_ptr<Camera> GetEditorCamera() const;
 
+		ConstantBufferManager* GetConstantBufferManager();
 		RenderTargetManager* GetRenderTargetManager();
 		GenericDataManager* GetGenericDataManager();
 		ShaderManager* GetShaderManager();

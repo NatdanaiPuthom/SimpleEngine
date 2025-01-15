@@ -358,16 +358,6 @@ namespace Graphics
 		myContext->PSSetShaderResources(Global_StartSlot_GBuffer, 1, &nullViews);
 	}
 
-	void GraphicsEngine::UpdatePointlights(const size_t aLightIndex)
-	{
-		myConstantBufferManager->UpdatePointlights(aLightIndex, myLightManager->GetPointLightBufferData());
-	}
-
-	void GraphicsEngine::UpdateLightBuffer()
-	{
-		myConstantBufferManager->UpdateLightConstantBuffer(myLightManager->GetLightBufferData());
-	}
-
 	void GraphicsEngine::SetGlobalGraphicsEngineToThis()
 	{
 		Impl::SimpleGlobalGraphics::SetGraphicsEngine(this);
@@ -483,6 +473,11 @@ namespace Graphics
 	const std::shared_ptr<Camera> GraphicsEngine::GetEditorCamera() const
 	{
 		return myEditorCamera;
+	}
+
+	ConstantBufferManager* GraphicsEngine::GetConstantBufferManager()
+	{
+		return myConstantBufferManager.get();
 	}
 
 	RenderTargetManager* GraphicsEngine::GetRenderTargetManager()
