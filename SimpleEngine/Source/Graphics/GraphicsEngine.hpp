@@ -9,6 +9,7 @@
 #include "Graphics/Managers/LightManager.hpp"
 #include "Graphics/Managers/StateManager.hpp"
 #include "Graphics/Managers/ShaderManager.hpp"
+#include "Graphics/Managers/RenderTargetManager.hpp"
 #include <unordered_map>
 #include <memory>
 #include <array>
@@ -44,26 +45,23 @@ namespace Graphics
 		void ApplyBloom();
 		void RenderFullScreenQuad();
 		void RenderFullScreenCopy(const eRenderTargetType aRenderTargetType);
-		void ClearAllRenderTargets();
 		void UpdatePointlights(const size_t aLightIndex);
 		void UpdateLightBuffer();
 	public:
+		void SetRenderTarget(eRenderTargetType aRenderTargetType, const bool aUseDepthBuffer = false);
 		void SetToDefaultCamera();
 		void SetGlobalGraphicsEngineToThis();
 		void SetCamera(Graphics::Camera* aCamera);
-		void SetRenderTarget(eRenderTargetType aRenderTargetType, ID3D11DepthStencilView* aDepthBuffer = nullptr);
 		void SetWindowSize(const Math::Vector2ui& aWindowSize, const bool aSetFullScreen);
 	public:
-		std::vector<RenderTarget>& GetRenderTargets(const eRenderTargetType aRenderTargetType);
 		ComPtr<ID3D11Device> GetDevice();
 		ComPtr<ID3D11DeviceContext> GetContext();
-		ComPtr<ID3D11ShaderResourceView> GetShaderResourceView(const eRenderTargetType aRenderTargetType, const size_t aIndex = 0);
-		ComPtr<ID3D11DepthStencilView> GetDepthBuffer();
 		Graphics::Camera* GetCurrentCamera();
 		std::shared_ptr<Camera> GetEditorCamera();
 		const Graphics::Camera* GetCurrentCamera() const;
 		const std::shared_ptr<Camera> GetEditorCamera() const;
 
+		RenderTargetManager* GetRenderTargetManager();
 		GenericDataManager* GetGenericDataManager();
 		ShaderManager* GetShaderManager();
 		StateManager* GetStateManager();
@@ -76,14 +74,6 @@ namespace Graphics
 	private:
 		void CreateViewport(const Math::Vector2ui aSize);
 		void CreateSwapChain(HWND& aWindowHandle, const Math::Vector2ui aSize);
-		void CreateBackBuffer();
-		void CreateDepthBuffer(const Math::Vector2ui aSize);
-		void CreateGRenderTarget(const Math::Vector2ui aResolution);
-		void CreateDeferredRenderTarget(const Math::Vector2ui aResolution);
-		void CreatePostProcessingRenderTarget(const Math::Vector2ui aResolution);
-		void CreateBloomDownAndUpSampleRenderTarget(const Math::Vector2ui aResolution);
-		void CreateBloomRenderTarget(const Math::Vector2ui aResolution);
-		std::vector<RenderTarget> CreateRenderTargets(const size_t aRenderTargetCount, DXGI_FORMAT* aArrayOfFormats, const Math::Vector2ui& aResolution);
 	private:
 		void LoadSettingsFromJson();
 		void PrepareFrame();
@@ -91,21 +81,16 @@ namespace Graphics
 		void FilterPixelForBloom();
 		void DownAndUpSampleForBloom();
 		void RenderBloom();
-		void ClearRenderTarget(const eRenderTargetType aRenderTargetType);
-		void ClearDepthStencilView();
-		void UnbindAllRenderTargets();
 	private:
-		std::array<std::vector<RenderTarget>, static_cast<size_t>(eRenderTargetType::Count)> myRenderTargets;
-
 		ComPtr<ID3D11Device> myDevice;
 		ComPtr<ID3D11DeviceContext> myContext;
 		ComPtr<IDXGISwapChain> mySwapChain;
-		ComPtr<ID3D11DepthStencilView> myDepthBuffer;
 
 		std::shared_ptr<Camera> myEditorCamera;
 		std::shared_ptr<const D3D11_VIEWPORT> myViewPort;
 
 		std::unique_ptr<GenericDataManager> myGenericDataManager;
+		std::unique_ptr<RenderTargetManager> myRenderTargetManager;
 		std::unique_ptr<ConstantBufferManager> myConstantBufferManager;
 		std::unique_ptr<ShaderManager> myShaderManager;
 		std::unique_ptr<StateManager> myStateManager;

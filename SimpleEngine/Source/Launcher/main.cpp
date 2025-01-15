@@ -115,7 +115,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_END();
 
 		PROFILER_BEGIN("Render To GBuffer");
-		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, graphicsEngine.GetDepthBuffer().Get());
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, true);
 		gameWorld.Render();
 		gameWorld.RenderBloomEntities();
 		PROFILER_END();
@@ -124,7 +124,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred);
 		graphicsEngine.ApplyAmbientAndDirectionalLightDeferred(Graphics::eRenderTargetType::GBuffer);
 
-		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, graphicsEngine.GetDepthBuffer().Get());
+		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::Deferred, true);
 		gameWorld.LateRender();
 		PROFILER_END();
 

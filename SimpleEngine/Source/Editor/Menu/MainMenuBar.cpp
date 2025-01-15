@@ -121,14 +121,15 @@ namespace Editor
 			if (ImGui::Begin("Game##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
 			{
 				Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+				Graphics::RenderTargetManager* const renderTargetManager = graphicsEngine->GetRenderTargetManager();
 				const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetStateManager()->GetCurrentRasterizerState();
 
-				ImTextureID textureID = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::PostProcessing).Get();
+				ImTextureID textureID = renderTargetManager->GetShaderResourceView(Graphics::eRenderTargetType::PostProcessing).Get();
 
 				if (currentRasterizerState != Graphics::eRasterizerState::BackfaceCulling
 					&& currentRasterizerState != Graphics::eRasterizerState::NoFaceCulling)
 				{
-					textureID = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::Deferred).Get();
+					textureID = renderTargetManager->GetShaderResourceView(Graphics::eRenderTargetType::Deferred).Get();
 				}
 
 				const ImVec2 size = ImGui::GetContentRegionAvail();

@@ -50,7 +50,7 @@ namespace ECS
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext> context = graphicsEngine->GetContext();
 		Drawer::Renderer* renderer = Global::GetRenderer();
 
-		std::vector<Graphics::RenderTarget>& gBuffers = graphicsEngine->GetRenderTargets(Graphics::eRenderTargetType::GBuffer);
+		std::vector<Graphics::RenderTarget>& gBuffers = graphicsEngine->GetRenderTargetManager()->GetRenderTargets(Graphics::eRenderTargetType::GBuffer);
 
 		ID3D11ShaderResourceView* shaderResources[5] = {};
 

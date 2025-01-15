@@ -20,6 +20,7 @@ namespace Editor
 		static constexpr float aspectRatio = 16.0f / 9.0f; //TO-DO(v10.0.4): should read from some json file
 
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+		Graphics::RenderTargetManager* const renderTargetManager = graphicsEngine->GetRenderTargetManager();
 
 		const ImVec2 screenSize = { static_cast<float>(Global::GetResolution().x), static_cast<float>(Global::GetResolution().y) };
 		const float quadWidth = screenSize.x / 3.0f;
@@ -91,7 +92,7 @@ namespace Editor
 					newWidth = newHeight * aspectRatio;
 				}
 
-				ImTextureID texture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::GBuffer, i).Get();
+				ImTextureID texture = renderTargetManager->GetShaderResourceView(Graphics::eRenderTargetType::GBuffer, i).Get();
 				ImGui::Image(texture, ImVec2(newWidth, newHeight));
 			}
 			ImGui::PopStyleColor();
@@ -113,7 +114,7 @@ namespace Editor
 				newWidth = newHeight * aspectRatio;
 			}
 
-			ImTextureID texture = graphicsEngine->GetShaderResourceView(Graphics::eRenderTargetType::Deferred, 0).Get();
+			ImTextureID texture = renderTargetManager->GetShaderResourceView(Graphics::eRenderTargetType::Deferred, 0).Get();
 			ImGui::Image(texture, ImVec2(newWidth, newHeight));
 		}
 
