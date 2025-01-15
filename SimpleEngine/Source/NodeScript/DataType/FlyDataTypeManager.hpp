@@ -371,6 +371,14 @@ namespace FLY_NAMESPACE
 	}
 
 
+	struct TypeParameters final
+	{
+		std::string mName;
+		Color mColor;
+		bool mIsTargetable = false;
+		bool mRegisterPointer = true;
+	};
+
 	struct FlyCustomVectorType;
 
 	class DataTypeManager final
@@ -479,10 +487,7 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] Color GetDefaultColor() const;
 
 		template<typename T>
-		void Register(const std::string& aName, const Color& aColor, bool aIsTargetable);
-
-		template<typename T>
-		void Register(const std::string& aName, bool aIsTargetable);
+		void Register(const TypeParameters& aTypeParameters);
 
 		template<typename T>
 		DataTypeID CreateDataTypeDuplication();
@@ -555,20 +560,17 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	inline void DataTypeManager::Register(const std::string& aName, const Color& aColor, const bool aIsTargetable)
+	inline void DataTypeManager::Register(const TypeParameters& aTypeParameters)
 	{
-		RegisterInternal<T>(aName, aColor, CreateDataTypeInterface<T>(), aIsTargetable);
+		RegisterInternal<T>(aTypeParameters.mName, aTypeParameters.mColor, CreateDataTypeInterface<T>(), aTypeParameters.mIsTargetable);
 
 		if constexpr (!PointerType<T>)
 		{
-			RegisterInternal<T*>(aName + " (Ptr)", aColor, CreateDataTypeInterface<T*>(), false);
+			if (aTypeParameters.mRegisterPointer)
+			{
+				RegisterInternal<T*>(aTypeParameters.mName + " (Ptr)", aTypeParameters.mColor, CreateDataTypeInterface<T*>(), false);
+			}
 		}
-	}
-
-	template<typename T>
-	inline void DataTypeManager::Register(const std::string& aName, const bool aIsTargetable)
-	{
-		Register<T>(aName, mDefaultColor, aIsTargetable);
 	}
 
 	template<template<typename> typename TemplateType>

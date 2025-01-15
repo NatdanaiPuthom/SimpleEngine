@@ -12,7 +12,7 @@ namespace FLY_NAMESPACE
 	public:
 
 		template<typename T, eNodeOperatorTrait Operators = eNodeOperatorTrait::All, bool Container = false>
-		static void Register(const std::string& aName, const Color& aColor, bool aIsTargetable);
+		static void Register(const TypeParameters& aTypeParameters);
 
 		template<typename ClassType, typename MemberType>
 		static void RegisterMemberVariable(MemberType ClassType::* aMemberVariable, const std::string& aName);
@@ -20,7 +20,7 @@ namespace FLY_NAMESPACE
 	};
 
 	template<typename T, eNodeOperatorTrait Operators, bool Container>
-	inline void DataTypeRegistry::Register(const std::string& aName, const Color& aColor, const bool aIsTargetable)
+	inline void DataTypeRegistry::Register(const TypeParameters& aTypeParameters)
 	{
 		DataTypeManager& dataTypeManager = Internal::GetDataTypeManager();
 
@@ -28,7 +28,7 @@ namespace FLY_NAMESPACE
 		{
 			return;
 		}
-		dataTypeManager.Register<T>(aName, aColor, aIsTargetable);
+		dataTypeManager.Register<T>(aTypeParameters);
 
 
 		if constexpr (DefaultConstructible<T>)
@@ -41,10 +41,10 @@ namespace FLY_NAMESPACE
 
 		if constexpr (PointerType<T>)
 		{
-			if (aIsTargetable)
+			if (aTypeParameters.mIsTargetable)
 			{
 				NodeCreationData nodeData;
-				nodeData.mName = aName + "/" + aName + "::Get Target";
+				nodeData.mName = aTypeParameters.mName + "/" + aTypeParameters.mName + "::Get Target";
 				RegisterSystemNodeType<eNodeTrait::Target>(GetTargetNode<T>, std::move(nodeData));
 			}
 		}
@@ -62,7 +62,14 @@ namespace FLY_NAMESPACE
 				if constexpr (!std::same_as<VectorType, std::vector<bool>>)
 				{
 					const std::string& typeName = Internal::GetDataTypeManager().GetName(Fly::GetDataTypeID<T>());
-					Register<VectorType, eNodeOperatorTrait::None, true>("Vector <" + typeName + ">", Colors::Purple, false);
+
+					TypeParameters containerTypeParams;
+					containerTypeParams.mName = "Vector <" + typeName + ">";
+					containerTypeParams.mColor = Colors::Purple;
+					containerTypeParams.mIsTargetable = false;
+					containerTypeParams.mRegisterPointer = true;
+
+					Register<VectorType, eNodeOperatorTrait::None, true>(containerTypeParams);
 
 
 					RegisterSystemNodeType(ForEach<VectorType>, NodeCreationData{ .mName = "Execution/For Each " + typeName });
@@ -103,12 +110,18 @@ namespace FLY_NAMESPACE
 	{
 
 		template<typename T, eNodeOperatorTrait Operators, typename... Traits>
-		constexpr static RegisterType ValueType_Impl(const std::string aName, [[maybe_unused]] Traits&&... aTraits)
+		constexpr static RegisterType ValueType_Impl(const std::string& aName, [[maybe_unused]] Traits&&... aTraits)
 		{
 			const Color color = TryExtract(Internal::GetDataTypeManager().GetDefaultColor(), std::forward<Traits>(aTraits)...);
 			const CustomName customName = TryExtract(CustomName{ aName }, std::forward<Traits>(aTraits)...);
 
-			DataTypeRegistry::Register<T, Operators>(customName.mName, color, false);
+			TypeParameters typeParameters;
+			typeParameters.mName = customName.mName;
+			typeParameters.mColor = color;
+			typeParameters.mIsTargetable = false;
+			typeParameters.mRegisterPointer = true;
+
+			DataTypeRegistry::Register<T, Operators>(typeParameters);
 
 			return RegisterType{};
 		}
@@ -129,12 +142,17 @@ namespace FLY_NAMESPACE
 		constexpr static RegisterType PointerType_Impl(const char* aName, [[maybe_unused]] Traits&&... aTraits)
 		{
 			const bool isTargetable = !ContainsType<NonTargetable, Traits...>;
-			Color color = Internal::GetDataTypeManager().GetDefaultColor();
-			if constexpr (ContainsType<Color, Traits...>)
-			{
-				color = Extract<Color>(std::forward<Traits>(aTraits)...);
-			}
-			DataTypeRegistry::Register<T*, Operators>(aName, color, isTargetable);
+
+			const Color color = TryExtract(Internal::GetDataTypeManager().GetDefaultColor(), std::forward<Traits>(aTraits)...);
+			const CustomName customName = TryExtract(CustomName{ aName }, std::forward<Traits>(aTraits)...);
+
+			TypeParameters typeParameters;
+			typeParameters.mName = customName.mName;
+			typeParameters.mColor = color;
+			typeParameters.mIsTargetable = isTargetable;
+			typeParameters.mRegisterPointer = false;
+
+			DataTypeRegistry::Register<T*, Operators>(typeParameters);
 
 			return RegisterType{};
 		}

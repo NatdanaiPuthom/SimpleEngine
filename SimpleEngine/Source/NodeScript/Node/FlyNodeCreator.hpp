@@ -419,7 +419,12 @@ namespace FLY_NAMESPACE
 		DataTypeID nodeStateDataTypeID = InvalidID<DataTypeID>();
 		if constexpr (TakesNodeState)
 		{
-			Internal::GetDataTypeManager().Register<NodeStateDataType>(typeid(NodeStateDataType).name(), false);
+			TypeParameters nodeStateTypeParams;
+			nodeStateTypeParams.mColor = Internal::GetDataTypeManager().GetDefaultColor();
+			nodeStateTypeParams.mName = typeid(NodeStateDataType).name();
+			nodeStateTypeParams.mIsTargetable = false;
+			nodeStateTypeParams.mRegisterPointer = false;
+			Internal::GetDataTypeManager().Register<NodeStateDataType>(nodeStateTypeParams);
 			nodeStateDataTypeID = GetDataTypeID<NodeStateDataType>();
 		}
 
