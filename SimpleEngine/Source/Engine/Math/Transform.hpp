@@ -66,16 +66,23 @@ namespace Math
 	{
 		myRotation = aRotationInDegree;
 
-		if (myRotation.x < 0.0f) myRotation.x += 360.0f;
-		else if (myRotation.x > 360.0f) myRotation.x -= 360.0f;
+		Vector3f rotationInRadian = myRotation;
 
-		if (myRotation.y < 0.0f) myRotation.y += 360.0f;
-		else if (myRotation.y > 360.0f) myRotation.y -= 360.0f;
+		// Convert degrees to range -180 to 180
+		if (rotationInRadian.x > 180.0f) rotationInRadian.x -= 360.0f;
+		if (rotationInRadian.y > 180.0f) rotationInRadian.y -= 360.0f;
+		if (rotationInRadian.z > 180.0f) rotationInRadian.z -= 360.0f;
 
-		if (myRotation.z < 0.0f) myRotation.z += 360.0f;
-		else if (myRotation.z > 360.0f) myRotation.z -= 360.0f;
+		if (rotationInRadian.x < -180.0f) rotationInRadian.x += 360.0f;
+		if (rotationInRadian.y < -180.0f) rotationInRadian.y += 360.0f;
+		if (rotationInRadian.z < -180.0f) rotationInRadian.z += 360.0f;
 
-		myMatrix.SetWorldRotation(myRotation);
+		rotationInRadian *= Math::GLOBAL_DEGREE_TO_RADIAN;
+
+		Quaternion newRotation(rotationInRadian);
+
+		myMatrix = myMatrix.CreateScaleMatrix(myScale) * newRotation.GetRotationMatrix4x4();
+		myMatrix.SetPosition(myPosition);
 	}
 
 	inline void Transform::SetScale(const Vector3f& aScale)
