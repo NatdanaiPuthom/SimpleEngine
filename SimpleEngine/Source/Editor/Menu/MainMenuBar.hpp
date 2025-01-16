@@ -13,7 +13,6 @@ namespace Editor
 
 namespace Editor
 {
-
 	enum class eWindowType
 	{
 		Editor,
@@ -26,14 +25,10 @@ namespace Editor
 	class ActiveWindowData
 	{
 	public:
-
 		ActiveWindowData() = default;
 		bool IsWindowActive(eWindowType aWindowType) const;
 		void SetActiveWindow(eWindowType aWindowType, bool aIsActive = true);
-
-
 	private:
-
 		std::array<bool, static_cast<size_t>(eWindowType::Count)> myIsWindowActive;
 	};
 
