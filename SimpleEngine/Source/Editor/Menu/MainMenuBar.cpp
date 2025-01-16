@@ -155,7 +155,7 @@ namespace Editor
 
 						static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
 
-						if (!MainSingleton::GetInputManager().GetMouseIsHidden())
+						if (!MainSingleton::GetInputManager().GetMouseIsHidden() && !MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL))
 						{
 							if (MainSingleton::GetInputManager().IsKeyPressed('T'))
 							{

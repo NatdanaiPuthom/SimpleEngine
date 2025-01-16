@@ -599,6 +599,19 @@ namespace ECS
 			isValid = true;
 		}
 
+		ImTextureID albedoTextureID = aTextures[Graphics::Global_Slot_Albedo]->GetShaderResourceView().Get();
+		ImTextureID normalTextureID = aTextures[Graphics::Global_Slot_Normal]->GetShaderResourceView().Get();
+		ImTextureID materialTextureID = aTextures[Graphics::Global_Slot_Material]->GetShaderResourceView().Get();
+
+		ImGui::Dummy(ImVec2(0, 10));
+
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		const float imageWidth = 64.0f;
+		const float imageHeight = 64.0f;
+		const float totalSpacing = windowSize.x - (imageWidth * 3);
+		const float spacing = totalSpacing / 4.0f;
+
 		for (size_t i = 0; i < aTextures.size(); ++i)
 		{
 			std::string textureName;
@@ -608,23 +621,39 @@ namespace ECS
 				textureName = aTextures[i]->GetTextureName();
 			}
 
+			ImTextureID textureID = nullptr;
+			const char* labelText = "";
+			float xPosition = 0.0f;
+
 			switch (i)
 			{
 			case Graphics::Global_Slot_Albedo:
-				ImGui::Text("Albedo:");
+				textureID = albedoTextureID;
+				labelText = "Albedo";
+				xPosition = spacing;
 				break;
 			case Graphics::Global_Slot_Normal:
-				ImGui::Text("Normal:");
+				textureID = normalTextureID;
+				labelText = "Normal";
+				xPosition = spacing * 2 + imageWidth;
 				break;
 			case Graphics::Global_Slot_Material:
-				ImGui::Text("Material:");
+				textureID = materialTextureID;
+				labelText = "Material";
+				xPosition = windowSize.x - imageWidth - spacing;
 				break;
 			}
 
-			ImGui::SameLine();
-			ImGui::BeginDisabled();
-			ImGui::InputText("", textureName.data(), textureName.size());
-			ImGui::EndDisabled();
+			ImGui::SetCursorPos(ImVec2(xPosition, ImGui::GetCursorPosY()));
+			const ImVec2 imagePos = ImGui::GetCursorScreenPos();
+
+			ImGui::BeginGroup();
+			ImGui::Image(textureID, ImVec2(imageWidth, imageHeight));
+
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			const ImVec2 imageMin = imagePos;
+			const ImVec2 imageMax = ImVec2(imagePos.x + imageWidth, imagePos.y + imageHeight);
+			drawList->AddRect(imageMin, imageMax, IM_COL32(0, 0, 0, 255), 0.0f, ImDrawFlags_None, 2.0f);
 
 			if (const ImGuiPayload* currentPayload = ImGui::GetDragDropPayload())
 			{
@@ -643,6 +672,20 @@ namespace ECS
 							bool isCubeMap = false;
 
 							ID3D11ShaderResourceView* shaderResourceView = texture.get()->GetShaderResourceView().Get();
+
+							switch (i)
+							{
+							case Graphics::Global_Slot_Albedo:
+
+								albedoTextureID = shaderResourceView;
+								break;
+							case Graphics::Global_Slot_Normal:
+								normalTextureID = shaderResourceView;
+								break;
+							case Graphics::Global_Slot_Material:
+								materialTextureID = shaderResourceView;
+								break;
+							}
 
 							ID3D11Resource* resource = nullptr;
 							shaderResourceView->GetResource(&resource);
@@ -674,7 +717,21 @@ namespace ECS
 
 						ImGui::EndDragDropTarget();
 					}
+
 				}
+			}
+
+			ImGui::Text("%s", labelText);
+			ImGui::EndGroup();
+
+			if (ImGui::IsItemHovered())
+			{		
+				ImGui::SetTooltip(textureName.c_str());
+			}
+
+			if (i < aTextures.size() - 1)
+			{
+				ImGui::SameLine();
 			}
 		}
 
