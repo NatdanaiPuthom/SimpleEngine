@@ -66,9 +66,17 @@ namespace Math
 	{
 		myRotation = aRotationInDegree;
 
+		if (myRotation.x < 0.0f) myRotation.x += 360.0f;
+		else if (myRotation.x > 360.0f) myRotation.x -= 360.0f;
+
+		if (myRotation.y < 0.0f) myRotation.y += 360.0f;
+		else if (myRotation.y > 360.0f) myRotation.y -= 360.0f;
+
+		if (myRotation.z < 0.0f) myRotation.z += 360.0f;
+		else if (myRotation.z > 360.0f) myRotation.z -= 360.0f;
+
 		Vector3f rotationInRadian = myRotation;
 
-		// Convert degrees to range -180 to 180
 		if (rotationInRadian.x > 180.0f) rotationInRadian.x -= 360.0f;
 		if (rotationInRadian.y > 180.0f) rotationInRadian.y -= 360.0f;
 		if (rotationInRadian.z > 180.0f) rotationInRadian.z -= 360.0f;
