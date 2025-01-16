@@ -80,9 +80,7 @@ namespace ECS
 		transformComponent->transform.SetPosition(position);
 		transformComponent->transform.SetRotation(rotation);
 
-		Math::Vector3f newCameraPosition = position;
-		newCameraPosition.z -= 7;
-		newCameraPosition.y += 2;
+		const Math::Vector3f newCameraPosition = position + basicPlayerComponent->cameraOffsetDistance;
 		cameraEntity.GetComponent<TransformComponent>()->transform.SetPosition(newCameraPosition);
 	}
 
