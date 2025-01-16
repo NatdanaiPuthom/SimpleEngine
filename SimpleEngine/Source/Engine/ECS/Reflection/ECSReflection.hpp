@@ -52,6 +52,7 @@ namespace ECS
 	{
 	public:
 		std::string myComponentName;
+		std::string myComponentPrettyName;
 		std::vector<ComponentProperty> myComponentProperties;
 
 		const ComponentID(*AddComponentFunctionPointer)(ECS::Entity& aEntity) = nullptr;
@@ -132,6 +133,7 @@ namespace ECS
 		typeErasureComponent.hasBeenAdded = true;
 
 		typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+		typeErasureComponent.myComponentPrettyName = SimpleUtilities::RemoveSubStringIfExist(typeErasureComponent.myComponentName, "Component");
 
 		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> const ComponentID
 			{

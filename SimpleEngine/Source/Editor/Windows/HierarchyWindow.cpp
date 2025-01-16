@@ -184,7 +184,8 @@ namespace Editor
 				{
 					for (const auto& [hashCode, componentType] : MainSingleton::GetComponentRegistry()->myTypeErasureComponents)
 					{
-						if (ImGui::Selectable(componentType.myComponentName.c_str()))
+						const std::string componentNameLabel = componentType.myComponentPrettyName + "##Component";
+						if (ImGui::Selectable(componentNameLabel.c_str()))
 						{
 							componentType.AddComponentFunctionPointer(selectedEntity);
 						}
@@ -324,7 +325,7 @@ namespace Editor
 				continue;
 			}
 
-			const std::string& componentName = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentName;
+			const std::string& componentName = MainSingleton::GetComponentRegistry()->myTypeErasureComponents[componentHashCode].myComponentPrettyName + "##Component";
 			const std::string componentIDAsText = "ID:" + std::to_string(componentID);
 			void* componentPointer = aActiveECS.GetComponentPointerByComponentID(componentID);
 
