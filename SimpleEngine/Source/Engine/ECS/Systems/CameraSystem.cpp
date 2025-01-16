@@ -17,6 +17,7 @@ namespace ECS
 
 	void CameraSystem::Render(EntityComponentSystem* aEntityComponentSystem)
 	{
+
 		if (MainSingleton::GetSceneManager().GetIsPlaying() == false) //TO-DO(v11.4.1): Better architecture/flow
 		{
 			return;
@@ -29,17 +30,17 @@ namespace ECS
 		if (entitiesIDWithCameraComponent.empty())
 		{
 			graphicsEngine->SetCamera(graphicsEngine->GetEditorCamera().get());
-			//Simple::Console::Print("No Camera found in current scene", Simple::ConsoleTextColor::Red);
+			Simple::Console::Print("No Camera found in current scene", Simple::ConsoleTextColor::Red);
 		}
 		else
 		{
 			ECS::Entity& cameraEntity = aEntityComponentSystem->GetEntity(*entitiesIDWithCameraComponent.begin());
 			CameraComponent* cameraComponent = cameraEntity.GetComponent<ECS::CameraComponent>();
-
 			const TransformComponent* transform = cameraEntity.GetComponent<ECS::TransformComponent>();
 
 			cameraComponent->camera.SetPosition(transform->transform.GetPosition());
 			cameraComponent->camera.SetRotation(transform->transform.GetRotation());
+			graphicsEngine->SetCamera(&cameraComponent->camera);
 		}
 	}
 

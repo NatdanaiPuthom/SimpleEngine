@@ -35,6 +35,7 @@ namespace Simple
 #pragma warning( pop )
 	}
 
+#ifndef _SIMPLE
 	void Console::Print(const char* aText, const ConsoleTextColor aColor, const bool aShouldEndline)
 	{
 		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -70,4 +71,9 @@ namespace Simple
 
 		SetConsoleTextAttribute(hConsole, defaultAttributes);
 	}
+#else
+	void Console::Print(const char* /*aText*/, const ConsoleTextColor /*aColor*/, const bool /*aShouldEndline*/)
+	{
+	}
+#endif
 }
