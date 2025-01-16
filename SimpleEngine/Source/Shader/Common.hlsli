@@ -108,15 +108,14 @@ struct GBufferOutput
 
 struct VertexInputType
 {
-    float4 position             : POSITION0;
-    float4 color                : COLOR0;
-    float4 bones                : BONES0;
-    float4 weights              : WEIGHTS0;
-    float3 normal               : NORMAL0;
-    float3 tangent              : TANGENT0;
-    float3 bitangent            : BITANGENT0;
-    float2 uv                   : TEXCOORD0;
-    float4x4 instanceTransform  : INSTANCE_TRANSFORM;
+    float4 position     : POSITION0;
+    float4 color        : COLOR0;
+    float4 bones        : BONES0;
+    float4 weights      : WEIGHTS0;
+    float3 normal       : NORMAL0;
+    float3 tangent      : TANGENT0;
+    float3 bitangent    : BITANGENT0;
+    float2 uv           : TEXCOORD0;
 };
 
 struct PixelInputType
