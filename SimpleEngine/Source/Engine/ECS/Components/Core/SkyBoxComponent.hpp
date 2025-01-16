@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 #include "Engine/Math/Transform.hpp"
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Texture/Texture.hpp"
@@ -6,7 +7,7 @@
 
 namespace ECS
 {
-	struct SkyBoxComponent final
+	COMPONENT(SkyBoxComponent) final
 	{
 		SkyBoxComponent();
 
@@ -17,12 +18,8 @@ namespace ECS
 	};
 }
 
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
-
 namespace ECS
 {
-	REGISTER_COMPONENT(SkyBoxComponent);
-
 	//REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::transform, false, false);
 	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::mesh);
 	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::texture);

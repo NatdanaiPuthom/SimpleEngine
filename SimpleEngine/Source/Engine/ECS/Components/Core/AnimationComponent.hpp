@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 #include "Engine/Math/Matrix4x4.hpp"
 #include "Graphics/Defines.hpp"
 #include "Graphics/Shaders/Shader.hpp"
@@ -8,7 +9,7 @@
 
 namespace ECS
 {
-	struct AnimationComponent final
+	COMPONENT(AnimationComponent) final
 	{
 		AnimationComponent();
 
@@ -22,11 +23,8 @@ namespace ECS
 	};
 }
 
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
-
 namespace ECS
 {
-	REGISTER_COMPONENT(AnimationComponent);
 	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::animation);
 	REGISTER_AND_EXPOSE_PROPERTY(&AnimationComponent::skeleton);
 }

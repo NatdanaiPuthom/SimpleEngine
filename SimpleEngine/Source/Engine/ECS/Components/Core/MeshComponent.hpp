@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Texture/Texture.hpp"
@@ -6,7 +7,7 @@
 
 namespace ECS
 {
-	struct MeshComponent final
+	COMPONENT(MeshComponent) final
 	{
 		MeshComponent();
 
@@ -16,11 +17,8 @@ namespace ECS
 	};
 }
 
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
-
 namespace ECS
 {
-	REGISTER_COMPONENT(MeshComponent);
 	REGISTER_AND_EXPOSE_PROPERTY(&MeshComponent::mesh);
 	REGISTER_AND_EXPOSE_PROPERTY(&MeshComponent::textures);
 	//REGISTER_AND_EXPOSE_PROPERTY(&MeshComponent::shader);

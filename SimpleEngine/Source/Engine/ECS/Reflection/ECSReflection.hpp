@@ -289,8 +289,15 @@ namespace ECS
 
 #include "Engine/SimpleUtilities/MacroUtility.hpp"
 
+#define COMPONENT(ComponentType) \
+    struct ComponentType; \
+    inline static bool ComponentRegistered_##ComponentType = []() { \
+        ECS::__RegisterComponent<ComponentType> Reflection_ECS_Registered_Component_##ComponentType; \
+        return true; \
+    }(); \
+    struct ComponentType
+
 #define REGISTER_DATATYPE(aDataType) inline ECS::__RegisterDataType<aDataType> Reflection_ECS_Registered_Datatype_##aDataType;
-#define REGISTER_COMPONENT(aComponent) inline ECS::__RegisterComponent<aComponent> Reflection_ECS_Registered_Component_##aComponent;
 
 #define REGISTER_AND_EXPOSE_PROPERTY(aVariable, ...) \
 	inline ECS::__RegisterProperty COMBINE_FOR_UNIQUE_NAME(Reflection_ECS_Registered_Property_, __COUNTER__) = \
