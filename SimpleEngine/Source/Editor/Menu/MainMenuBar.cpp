@@ -8,7 +8,6 @@
 #include "MainSingleton/MainSingleton.hpp"
 #include "External/dearimgui/imguizmo/ImGuizmo.h"
 #include "Editor/Editor.hpp"
-#include "Engine/Math/Quaternion.hpp"
 
 namespace Editor
 {
@@ -185,10 +184,8 @@ namespace Editor
 								transformComponent->transform.SetPosition(objectMatrix.GetPosition());
 								break;
 							case ImGuizmo::OPERATION::ROTATE:
-							{
 								transformComponent->transform.SetMatrix(objectMatrix);
-							}
-							break;
+								break;
 							case ImGuizmo::OPERATION::SCALE:
 								transformComponent->transform.SetScale(objectMatrix.GetScale());
 								break;
