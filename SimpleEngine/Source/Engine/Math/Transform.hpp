@@ -19,6 +19,7 @@ namespace Math
 		void SetRotation(const Vector3f& aRotationInDegree);
 		void SetScale(const Vector3f& aScale);
 		void SetScale(const float aScale);
+		void SetMatrix(const Matrix4x4f& aMatrix);
 	public:
 		Matrix4x4f GetMatrix() const;
 		Vector3f GetPosition() const;
@@ -112,6 +113,15 @@ namespace Math
 	{
 		myScale = { aScale, aScale, aScale };
 		myMatrix.SetScale(myScale);
+	}
+
+	inline void Transform::SetMatrix(const Matrix4x4f& aMatrix)
+	{
+		myMatrix = aMatrix;
+		myScale = aMatrix.GetScale();
+		myRotation = myMatrix.GetEulerRotationInDegree();
+		myPosition = myMatrix.GetPosition();
+		ConvertRotationToBetweenZeroAndThreeSixty();
 	}
 
 	inline Vector3f Transform::GetPosition() const
