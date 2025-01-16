@@ -12,5 +12,5 @@ namespace ECS
 
 namespace ECS
 {
-	REGISTER_COMPONENT(BloomComponent);
+	//REGISTER_COMPONENT(BloomComponent);
 }
