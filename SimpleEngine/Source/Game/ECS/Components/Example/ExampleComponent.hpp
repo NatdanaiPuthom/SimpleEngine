@@ -28,10 +28,10 @@ namespace ECS
 {
 	REGISTER_COMPONENT(ExampleComponent);
 
-	REGISTER_AND_EXPOSE_PROPERTY(&ExampleComponent::isExample);
+	REGISTER_AND_EXPOSE_PROPERTY(&ExampleComponent::isExample); //Will be visible and editable in the inspector
+	REGISTER_AND_EXPOSE_PROPERTY(&ExampleComponent::youCanSeeMeAndTouchMe, true); //Will be visible and editable in the inspector
 
-	REGISTER_AND_EXPOSE_PROPERTY(&ExampleComponent::youCanSeeMeAndTouchMe, true);
-	REGISTER_AND_EXPOSE_PROPERTY(&ExampleComponent::isVisible, false);
+	REGISTER_AND_EXPOSE_PROPERTY(&ExampleComponent::isVisible, false); //Will not be visible in inspector
 
-	REGISTER_AND_EXPOSE_PROPERTY(&ExampleComponent::youCanSeeMeButCannotTouch, true, false);
+	REGISTER_AND_EXPOSE_PROPERTY(&ExampleComponent::youCanSeeMeButCannotTouch, true, false); //Is visible but cannot edit in inspector
 }
