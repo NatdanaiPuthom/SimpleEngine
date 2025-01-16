@@ -9,21 +9,21 @@ namespace Math
 	{
 	public:
 		Transform();
-		Transform(const Vector3f& aPosition, const Vector3f& aRotation, const Vector3f& aScale);
+		Transform(const Vector3f& aPosition, const Vector3f& aRotationInDegree, const Vector3f& aScale);
+		Transform(const Matrix4x4f& aMatrix);
 		~Transform();
 
 		void LookAt(const Vector3f& aTargetPoint);
+	public:
 		void SetPosition(const Vector3f& aPosition);
 		void SetRotation(const Vector3f& aRotationInDegree);
 		void SetScale(const Vector3f& aScale);
 		void SetScale(const float aScale);
-
+	public:
 		Matrix4x4f GetMatrix() const;
-
 		Vector3f GetPosition() const;
 		Vector3f GetRotation() const;
 		Vector3f GetScale() const;
-
 	private:
 		void ConvertRotationToBetweenZeroAndThreeSixty();
 	private:
@@ -38,14 +38,24 @@ namespace Math
 	{
 	}
 
-	inline Transform::Transform(const Vector3f& aPosition, const Vector3f& aRotation, const Vector3f& aScale)
+	inline Transform::Transform(const Vector3f& aPosition, const Vector3f& aRotationInDegree, const Vector3f& aScale)
 		: myPosition(aPosition)
-		, myRotation(aRotation)
+		, myRotation(aRotationInDegree)
 		, myScale(aScale)
 	{
 		SetScale(aScale);
-		SetRotation(aRotation);
+		SetRotation(aRotationInDegree);
 		SetPosition(aPosition);
+		ConvertRotationToBetweenZeroAndThreeSixty();
+	}
+
+	inline Transform::Transform(const Matrix4x4f& aMatrix)
+		: myMatrix(aMatrix)
+	{
+		myScale = aMatrix.GetScale();
+		myRotation = aMatrix.GetEulerRotationInDegree();
+		myPosition = aMatrix.GetPosition();
+		ConvertRotationToBetweenZeroAndThreeSixty();
 	}
 
 	inline Transform::~Transform()
