@@ -39,6 +39,10 @@ namespace Graphics
 		friend class Drawer::Renderer;
 		friend class Drawer::BoundingBoxDrawer;
 	public:
+		MeshData myMeshData;
+
+		ComPtr<ID3D11Buffer> myVertexBuffer;
+		ComPtr<ID3D11Buffer> myIndexBuffer;
 		Mesh();
 		~Mesh();
 
@@ -52,12 +56,10 @@ namespace Graphics
 		bool CreateIndexBuffer(ComPtr<ID3D11Device> aDevice);
 		void CreateBoundingBox();
 	private:
-		MeshData myMeshData;
+		
 		std::string myName;
 		std::string myRelativePath;
 		Simple::BoundingBox3D myBoundingBox;
 
-		ComPtr<ID3D11Buffer> myVertexBuffer;
-		ComPtr<ID3D11Buffer> myIndexBuffer;
 	};
 }

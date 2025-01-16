@@ -62,6 +62,8 @@ namespace Graphics
 		myStateManager->SetSamplerState(myContext, eSamplerState::Bilinear_Warp);
 
 		myCurrentCameraRaw = myEditorCamera.get();
+
+		CreateInstanceBuffer();
 	}
 
 	void GraphicsEngine::PrepareFrame()
