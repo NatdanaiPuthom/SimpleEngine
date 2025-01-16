@@ -25,6 +25,8 @@ namespace Math
 		Vector3f GetScale() const;
 
 	private:
+		void ConvertRotationToBetweenZeroAndThreeSixty();
+	private:
 		Matrix4x4f myMatrix;
 		Vector3f myPosition;
 		Vector3f myRotation;
@@ -41,9 +43,9 @@ namespace Math
 		, myRotation(aRotation)
 		, myScale(aScale)
 	{
-		myMatrix.SetPosition(myPosition);
-		myMatrix.SetWorldRotation(myRotation);
-		myMatrix.SetScale(myScale);
+		SetScale(aScale);
+		SetRotation(aRotation);
+		SetPosition(aPosition);
 	}
 
 	inline Transform::~Transform()
@@ -53,7 +55,11 @@ namespace Math
 	inline void Transform::LookAt(const Vector3f& aTargetPoint)
 	{
 		myMatrix.LookAt(aTargetPoint);
-		myRotation = myMatrix.GetEulerRotationInDegree();
+
+		const Quaternion quaternion(myMatrix);
+		myRotation = quaternion.GetEulerAngleInDegree();
+
+		ConvertRotationToBetweenZeroAndThreeSixty();
 	}
 
 	inline void Transform::SetPosition(const Vector3f& aPosition)
@@ -66,14 +72,7 @@ namespace Math
 	{
 		myRotation = aRotationInDegree;
 
-		if (myRotation.x < 0.0f) myRotation.x += 360.0f;
-		else if (myRotation.x > 360.0f) myRotation.x -= 360.0f;
-
-		if (myRotation.y < 0.0f) myRotation.y += 360.0f;
-		else if (myRotation.y > 360.0f) myRotation.y -= 360.0f;
-
-		if (myRotation.z < 0.0f) myRotation.z += 360.0f;
-		else if (myRotation.z > 360.0f) myRotation.z -= 360.0f;
+		ConvertRotationToBetweenZeroAndThreeSixty();
 
 		Vector3f rotationInRadian = myRotation;
 
@@ -87,7 +86,7 @@ namespace Math
 
 		rotationInRadian *= Math::GLOBAL_DEGREE_TO_RADIAN;
 
-		Quaternion newRotation(rotationInRadian);
+		const Quaternion newRotation(rotationInRadian);
 
 		myMatrix = myMatrix.CreateScaleMatrix(myScale) * newRotation.GetRotationMatrix4x4();
 		myMatrix.SetPosition(myPosition);
@@ -123,5 +122,35 @@ namespace Math
 	inline Matrix4x4f Transform::GetMatrix() const
 	{
 		return myMatrix;
+	}
+
+	inline void Transform::ConvertRotationToBetweenZeroAndThreeSixty()
+	{
+		if (myRotation.x < 0.0f)
+		{
+			myRotation.x += 360.0f;
+		}
+		else if (myRotation.x > 360.0f)
+		{
+			myRotation.x -= 360.0f;
+		}
+
+		if (myRotation.y < 0.0f)
+		{
+			myRotation.y += 360.0f;
+		}
+		else if (myRotation.y > 360.0f)
+		{
+			myRotation.y -= 360.0f;
+		}
+
+		if (myRotation.z < 0.0f)
+		{
+			myRotation.z += 360.0f;
+		}
+		else if (myRotation.z > 360.0f)
+		{
+			myRotation.z -= 360.0f;
+		}
 	}
 }
