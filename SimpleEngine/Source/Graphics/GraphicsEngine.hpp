@@ -156,7 +156,8 @@ namespace Graphics
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext> myContext;
 		Microsoft::WRL::ComPtr<IDXGISwapChain> mySwapChain;
 
-		std::shared_ptr<Camera> myEditorCamera;
+		std::shared_ptr<Camera> myEditorCamera; //TO-DO(v11.4.5): Shouldn't be here
+		std::shared_ptr<Camera> myDefaultCamera;
 
 		std::unique_ptr<GenericDataManager> myGenericDataManager;
 		std::unique_ptr<RenderTargetManager> myRenderTargetManager;

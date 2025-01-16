@@ -76,7 +76,7 @@ namespace Drawer
 	{
 		for (auto& vertex : myMeshData->vertices)
 		{
-			vertex.color = aSphere.color;
+			vertex.color = Math::Vector4f(aSphere.color.r, aSphere.color.g, aSphere.color.b, aSphere.color.a);
 		}
 
 		auto context = Global::GetGraphicsEngine()->GetContext();

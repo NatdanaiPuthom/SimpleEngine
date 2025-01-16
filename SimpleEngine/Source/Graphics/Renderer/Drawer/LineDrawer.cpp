@@ -38,7 +38,7 @@ namespace Drawer
 
 		for (auto& vertex : myData->meshData.vertices)
 		{
-			vertex.color = aLine.color;
+			vertex.color = Math::Vector4f(aLine.color.r, aLine.color.g, aLine.color.b, aLine.color.a);
 		}
 
 		auto context = Global::GetGraphicsEngine()->GetContext();
@@ -74,10 +74,10 @@ namespace Drawer
 			const size_t endVertex = i * 2 + 1;
 
 			myInstanceData->meshData.vertices[startVertex].position = Math::AsVector4(aLines[i].startPosition);
-			myInstanceData->meshData.vertices[startVertex].color = aLines[i].color;
+			myInstanceData->meshData.vertices[startVertex].color = Math::Vector4f(aLines[i].color.r, aLines[i].color.g, aLines[i].color.b, aLines[i].color.a);
 
 			myInstanceData->meshData.vertices[endVertex].position = Math::AsVector4(aLines[i].endPosition);
-			myInstanceData->meshData.vertices[endVertex].color = aLines[i].color;
+			myInstanceData->meshData.vertices[endVertex].color = Math::Vector4f(aLines[i].color.r, aLines[i].color.g, aLines[i].color.b, aLines[i].color.a);
 		}
 
 		for (unsigned int i = 0; i < vertexCount; ++i)

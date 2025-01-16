@@ -8,7 +8,7 @@
 
 namespace Math
 {
-	static bool IntersectionPlaneRay(const SimpleUtilities::Plane& aPlane, const SimpleUtilities::Ray& aRay, Math::Vector3f& aOutIntersectionPoint)
+	static bool IntersectionPlaneRay(const Simple::Plane& aPlane, const Simple::Ray& aRay, Math::Vector3f& aOutIntersectionPoint)
 	{
 		const float dotProduct = Math::Dot(aPlane.GetNormal(), aRay.GetDirection());
 
@@ -27,7 +27,7 @@ namespace Math
 		return false;
 	}
 
-	static inline bool IntersectionAABB3DRay(const SimpleUtilities::AABB3D& aAABB, const SimpleUtilities::Ray& aRay, Math::Vector3f& aOutIntersectionPoint)
+	static inline bool IntersectionAABB3DRay(const Simple::AABB3D& aAABB, const Simple::Ray& aRay, Math::Vector3f& aOutIntersectionPoint)
 	{
 		const Math::Vector3f& rayOrigin = aRay.GetOrigin();
 		const Math::Vector3f& rayDirection = aRay.GetDirection();

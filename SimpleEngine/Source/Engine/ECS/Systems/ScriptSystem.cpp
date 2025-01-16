@@ -112,7 +112,7 @@ namespace Math
 	}
 }
 
-namespace SimpleUtilities
+namespace Simple
 {
 
 	static Fly::ViewAndEditResult ViewAndEdit(Color& aValue)
@@ -190,7 +190,7 @@ namespace ECS
 	FLY_VALUETYPE(Math::Vector2f, Fly::CustomName{ "Vector2f" }, Fly::NonTargetable{});
 	FLY_POINTERTYPE(Entity);
 	FLY_POINTERTYPE(TransformComponent, Fly::NonTargetable{});
-	FLY_VALUETYPE(SimpleUtilities::Color, Fly::CustomName{ "Color" });
+	FLY_VALUETYPE(Simple::Color, Fly::CustomName{ "Color" });
 	FLY_VALUETYPE(Fly::DataTypeFacade, Fly::CustomName{ "FlyDataType" });
 
 	TransformComponent* GetTransformComponent(Entity* aEntity)
@@ -263,7 +263,7 @@ namespace ECS
 		*aBool = !*aBool;
 	}
 
-	void SetDataTypeColor(Fly::DataTypeFacade aFacade, SimpleUtilities::Color aColor)
+	void SetDataTypeColor(Fly::DataTypeFacade aFacade, Simple::Color aColor)
 	{
 		if (aFacade)
 		{

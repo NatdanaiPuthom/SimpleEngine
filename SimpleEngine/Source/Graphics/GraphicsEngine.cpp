@@ -36,6 +36,7 @@ namespace Graphics
 		myLightManager = std::make_unique<LightManager>();
 		myImGuiEngine = std::make_unique<Simple::ImGuiEngine>();
 		myEditorCamera = std::make_shared<Graphics::Camera>();
+		myDefaultCamera = std::make_shared<Graphics::Camera>();
 		myRenderer = std::make_unique<Drawer::Renderer>();
 		myModelFactory = std::make_unique<ModelFactory>();
 
@@ -51,6 +52,7 @@ namespace Graphics
 		myTextureManager->Init();
 		myLightManager->Init();
 		myEditorCamera->Init();
+		myDefaultCamera->Init();
 		myImGuiEngine->Init();
 		myRenderer->Init();
 		myModelFactory->Init();
@@ -464,17 +466,25 @@ namespace Graphics
 
 	std::shared_ptr<Graphics::Camera> GraphicsEngine::GetEditorCamera()
 	{
+#ifndef _SIMPLE
 		return myEditorCamera;
+#else
+		return myDefaultCamera;
+#endif
+	}
+
+	const std::shared_ptr<Camera> GraphicsEngine::GetEditorCamera() const
+	{
+#ifndef _SIMPLE
+		return myEditorCamera;
+#else
+		return myDefaultCamera;
+#endif
 	}
 
 	const Graphics::Camera* GraphicsEngine::GetCurrentCamera() const
 	{
 		return myCurrentCameraRaw;
-	}
-
-	const std::shared_ptr<Camera> GraphicsEngine::GetEditorCamera() const
-	{
-		return myEditorCamera;
 	}
 
 	ConstantBufferManager* GraphicsEngine::GetConstantBufferManager()

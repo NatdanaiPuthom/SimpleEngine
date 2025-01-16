@@ -11,7 +11,6 @@
 
 namespace Editor
 {
-
 	MainMenuBar::MainMenuBar()
 	{
 	}
@@ -156,17 +155,20 @@ namespace Editor
 
 						static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
 
-						if (MainSingleton::GetInputManager().IsKeyPressed('T'))
+						if (!MainSingleton::GetInputManager().GetMouseIsHidden() && !MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL))
 						{
-							operation = ImGuizmo::OPERATION::TRANSLATE;
-						}
-						else if (MainSingleton::GetInputManager().IsKeyPressed('R'))
-						{
-							operation = ImGuizmo::OPERATION::ROTATE;
-						}
-						else if (MainSingleton::GetInputManager().IsKeyPressed('S') && !MainSingleton::GetInputManager().GetMouseIsHidden())
-						{
-							operation = ImGuizmo::OPERATION::SCALE;
+							if (MainSingleton::GetInputManager().IsKeyPressed('T'))
+							{
+								operation = ImGuizmo::OPERATION::TRANSLATE;
+							}
+							else if (MainSingleton::GetInputManager().IsKeyPressed('R'))
+							{
+								operation = ImGuizmo::OPERATION::ROTATE;
+							}
+							else if (MainSingleton::GetInputManager().IsKeyPressed('S'))
+							{
+								operation = ImGuizmo::OPERATION::SCALE;
+							}
 						}
 
 						if (ImGuizmo::Manipulate(&view(1, 1),
@@ -182,7 +184,7 @@ namespace Editor
 								transformComponent->transform.SetPosition(objectMatrix.GetPosition());
 								break;
 							case ImGuizmo::OPERATION::ROTATE:
-								//TO-DO(v11.4.1): Fix Quaternion and Rotation pls!!! It has been forever!
+								transformComponent->transform.SetMatrix(objectMatrix);
 								break;
 							case ImGuizmo::OPERATION::SCALE:
 								transformComponent->transform.SetScale(objectMatrix.GetScale());

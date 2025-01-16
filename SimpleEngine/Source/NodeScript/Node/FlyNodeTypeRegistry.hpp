@@ -655,7 +655,7 @@ namespace FLY_NAMESPACE
 
 					SetPinValues(*aContext, inputNode.mInputPins, aTraitImplementation.mNodeGraph.mNodeGraph, std::forward<InputTypes>(aInputTypes)...);
 
-					aContext->mNodeExecutionQueue->Push(NodeExecutionData{.mNodeRef = NodeRef{ FlyTraitImplementation::sInputNodeID, aTraitImplementation.mNodeGraph.mNodeGraph }, .mTriggerReason = eNodeTriggerReason::Flow });
+					aContext->mNodeExecutionQueue->Push(NodeExecutionData{ .mNodeRef = NodeRef{ FlyTraitImplementation::sInputNodeID, aTraitImplementation.mNodeGraph.mNodeGraph }, .mTriggerReason = eNodeTriggerReason::Flow });
 
 
 					return OutputType{};
@@ -668,7 +668,12 @@ namespace FLY_NAMESPACE
 		{
 			Internal::GetTraitManager().CreateTrait(aTraitName, GetDataTypeID<TraitType>());
 
-			Internal::GetDataTypeManager().Register<TraitModel<TraitType>>(std::string(aTraitName), Colors::Orange, false);
+			TypeParameters typeParameters;
+			typeParameters.mName = std::string(aTraitName);
+			typeParameters.mColor = Colors::Orange;
+			typeParameters.mIsTargetable = false;
+			typeParameters.mRegisterPointer = false;
+			Internal::GetDataTypeManager().Register<TraitModel<TraitType>>(typeParameters);
 
 			//static_assert(ViewAndEditable<TraitModel<TraitType>>);
 

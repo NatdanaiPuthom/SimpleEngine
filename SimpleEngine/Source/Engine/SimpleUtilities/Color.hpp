@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SimpleUtilities
+namespace Simple
 {
 
 	class Color final

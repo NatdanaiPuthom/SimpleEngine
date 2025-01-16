@@ -1,4 +1,5 @@
 #pragma once
+#include "SimpleUtilities/Color.hpp"
 
 struct ID3D11Buffer;
 
@@ -14,7 +15,7 @@ namespace Drawer
 {
 	struct Sphere
 	{
-		Math::Vector4f color = { 1.0f, 0.0f, 0.0f , 1.0f };
+		Simple::Color color = { 1.0f, 0.0f, 0.0f , 1.0f };
 		Math::Vector3f position = { 0.0f, 0.0f,0.0f };
 		float radius = 1.0f;
 	};

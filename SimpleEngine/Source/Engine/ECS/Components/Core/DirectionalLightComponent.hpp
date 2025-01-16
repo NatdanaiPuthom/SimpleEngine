@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/ECS/Reflection/ECSReflection.hpp"
 #include "Engine/Math/Transform.hpp"
 #include "Graphics/Model/Mesh.hpp"
 #include "Graphics/Texture/Texture.hpp"
@@ -6,7 +7,7 @@
 
 namespace ECS
 {
-	struct DirectionalLightComponent final
+	COMPONENT(DirectionalLightComponent) final
 	{
 		DirectionalLightComponent();
 
@@ -17,11 +18,8 @@ namespace ECS
 	};
 }
 
-#include "Engine/ECS/Reflection/ECSReflection.hpp"
-
 namespace ECS
 {
-	REGISTER_COMPONENT(DirectionalLightComponent);
 	REGISTER_AND_EXPOSE_PROPERTY(&DirectionalLightComponent::transform);
 	REGISTER_AND_EXPOSE_PROPERTY(&DirectionalLightComponent::mesh);
 	REGISTER_AND_EXPOSE_PROPERTY(&DirectionalLightComponent::texture);

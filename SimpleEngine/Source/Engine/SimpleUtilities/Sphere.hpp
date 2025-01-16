@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/Math/Vector3.hpp"
 
-namespace SimpleUtilities
+namespace Simple
 {
 
 	class Sphere final

@@ -1,5 +1,6 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
+#include "Game/Test/TestRaycastManager/RaycastManager.hpp"
 #include "Engine/Engine.hpp"
 #include <atomic>
 
@@ -164,6 +165,12 @@ namespace Global
 	bool IsFullScreen()
 	{
 		return localIsFullScreen;
+	}
+
+	Simple::Ray GetMouseRay()
+	{
+		Simple::RaycastManager r;
+		return r.GetScreenPointToRay(MainSingleton::GetInputManager().GetMousePosition());
 	}
 
 	void SetGameShouldClose(const bool aShouldClose)

@@ -47,24 +47,26 @@ namespace ECS
 
 	bool LoadAndSetDataFromJSON(Math::Transform& aTransform, const std::string& aVariableName, const nlohmann::json& aJSONData)
 	{
+		const auto& data = aJSONData[aVariableName];
+
 		Math::Vector3f position;
-		position.x = aJSONData[aVariableName]["Position"]["x"];
-		position.y = aJSONData[aVariableName]["Position"]["y"];
-		position.z = aJSONData[aVariableName]["Position"]["z"];
+		position.x = data["Position"]["x"];
+		position.y = data["Position"]["y"];
+		position.z = data["Position"]["z"];
 
 		Math::Vector3f rotation;
-		rotation.x = aJSONData[aVariableName]["Rotation"]["x"];
-		rotation.y = aJSONData[aVariableName]["Rotation"]["y"];
-		rotation.z = aJSONData[aVariableName]["Rotation"]["z"];
+		rotation.x = data["Rotation"]["x"];
+		rotation.y = data["Rotation"]["y"];
+		rotation.z = data["Rotation"]["z"];
 
 		Math::Vector3f scale;
-		scale.x = aJSONData[aVariableName]["Scale"]["x"];
-		scale.y = aJSONData[aVariableName]["Scale"]["y"];
-		scale.z = aJSONData[aVariableName]["Scale"]["z"];
+		scale.x = data["Scale"]["x"];
+		scale.y = data["Scale"]["y"];
+		scale.z = data["Scale"]["z"];
 
-		aTransform.SetPosition(position);
-		aTransform.SetRotation(rotation);
 		aTransform.SetScale(scale);
+		aTransform.SetRotation(rotation);
+		aTransform.SetPosition(position);
 
 		return true;
 	}

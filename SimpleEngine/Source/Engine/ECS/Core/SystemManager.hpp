@@ -9,7 +9,7 @@ namespace ECS
 {
 	class System;
 	class EntityComponentSystem;
-	
+
 	class SystemManager final
 	{
 		using SystemHashCode = size_t;
@@ -34,7 +34,7 @@ namespace ECS
 		void LateUpdate(EntityComponentSystem* aEntityComponentSystem);
 		void LateRender(EntityComponentSystem* aEntityComponentSystem);
 	private:
-		 SystemManager();
+		SystemManager();
 		~SystemManager();
 	private:
 		std::unordered_map<SystemHashCode, std::unique_ptr<System>> mySystems;

@@ -9,16 +9,13 @@ namespace Fly
 
 namespace ECS
 {
-	
-	struct ScriptComponent final
+	COMPONENT(ScriptComponent) final
 	{
 		Fly::ClassInstanceFacade classInstanceFacade;
 	};
 }
 
-
 namespace ECS
 {
-	REGISTER_COMPONENT(ScriptComponent);
 	REGISTER_AND_EXPOSE_PROPERTY(&ScriptComponent::classInstanceFacade);
 }

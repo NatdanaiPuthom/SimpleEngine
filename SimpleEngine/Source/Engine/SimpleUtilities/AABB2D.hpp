@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/Math/Vector2.hpp"
 
-namespace SimpleUtilities
+namespace Simple
 {
 	class AABB2D
 	{

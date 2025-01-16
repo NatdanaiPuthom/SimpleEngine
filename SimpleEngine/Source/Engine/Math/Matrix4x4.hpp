@@ -324,7 +324,8 @@ namespace Math
 	}
 
 	//TO-DO: Fix so it work with scaling and also show rotation values and rotate correct
-	//NOTE(v9.19.1) : Did I fixed the issue with scale changes when rotation the objects?
+	//NOTE(v9.19.1): Did I fixed the issue with scale changes when rotation the objects?
+	//NOTE(v11.4.4): Maybe fixed? It look opposite direction so had to multiply forward with negative one
 	template<typename T>
 	inline void Matrix4x4<T>::LookAt(const Vector3<T>& aTargetPoint)
 	{
@@ -333,6 +334,7 @@ namespace Math
 
 		Vector3<T> forward = (aTargetPoint - position);
 		forward.Normalize();
+		forward *= -1.0f;
 
 		Vector3<T> right = Math::Cross({ 0,1,0 }, forward);
 		right.Normalize();

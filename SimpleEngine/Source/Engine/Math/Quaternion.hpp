@@ -21,8 +21,8 @@ namespace Math
 
 		Quaternion<T>();
 		Quaternion<T>(const T& aW, const T& aX, const T& aY, const T& aZ);
-		Quaternion<T>(const Vector3<T>& aVector);
-		Quaternion<T>(const Vector3<T>& aVector, const T aAngle);
+		Quaternion<T>(const Vector3<T>& aAngleInRadian);
+		Quaternion<T>(const Vector3<T>& aAxis, const T aAngle);
 		Quaternion<T>(const Matrix4x4<T>& aMatrix);
 
 		Quaternion<T>& operator=(const Quaternion<T>& aQuat) = default;
@@ -79,14 +79,14 @@ namespace Math
 	}
 
 	template<typename T>
-	inline Quaternion<T>::Quaternion(const Vector3<T>& aVector)
+	inline Quaternion<T>::Quaternion(const Vector3<T>& aAngleInRadian)
 	{
-		const T cx = std::cos(aVector.x * T(0.5));
-		const T cy = std::cos(aVector.y * T(0.5));
-		const T cz = std::cos(aVector.z * T(0.5));
-		const T sx = std::sin(aVector.x * T(0.5));
-		const T sy = std::sin(aVector.y * T(0.5));
-		const T sz = std::sin(aVector.z * T(0.5));
+		const T cx = std::cos(aAngleInRadian.x * T(0.5));
+		const T cy = std::cos(aAngleInRadian.y * T(0.5));
+		const T cz = std::cos(aAngleInRadian.z * T(0.5));
+		const T sx = std::sin(aAngleInRadian.x * T(0.5));
+		const T sy = std::sin(aAngleInRadian.y * T(0.5));
+		const T sz = std::sin(aAngleInRadian.z * T(0.5));
 
 		w = cx * cy * cz + sx * sy * sz;
 
@@ -96,7 +96,7 @@ namespace Math
 	}
 
 	template<typename T>
-	inline Quaternion<T>::Quaternion(const Vector3<T>& aVector, const T aAngle)
+	inline Quaternion<T>::Quaternion(const Vector3<T>& aAxis, const T aAngle)
 	{
 		const T halfAngle = aAngle / T(2);
 
@@ -104,9 +104,9 @@ namespace Math
 
 		const T halfAngleSin = sin(halfAngle);
 
-		x = aVector.x * halfAngleSin;
-		y = aVector.y * halfAngleSin;
-		z = aVector.z * halfAngleSin;
+		x = aAxis.x * halfAngleSin;
+		y = aAxis.y * halfAngleSin;
+		z = aAxis.z * halfAngleSin;
 	}
 
 	template<typename T>

@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Math/Matrix4x4.hpp"
 #include "Graphics/Model/Mesh.hpp"
+#include "SimpleUtilities/Color.hpp"
 
 struct ID3D11Buffer;
 
@@ -20,7 +21,7 @@ namespace Drawer
 		~BoundingBoxDrawer();
 
 		void Init();
-		void Render(const Simple::BoundingBox3D& aBoundingBox3D, const Math::Matrix4x4f& aModelToWorldMatrix);
+		void Render(const Simple::BoundingBox3D& aBoundingBox3D, const Math::Matrix4x4f& aModelToWorldMatrix, const Simple::Color& aColor);
 
 	private:
 		void InitMeshData2D();
