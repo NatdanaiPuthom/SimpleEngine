@@ -1,6 +1,7 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/ConstantBuffer/ConstantBuffer.hpp"
+#include "Graphics/Managers/InstancerManager.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include "Engine/Global.hpp"
 #include "Engine/Math/Math.hpp"
@@ -15,210 +16,9 @@
 #include <cassert>
 #include <d3d11.h>
 
-constexpr size_t MAX_INSTANCE = 1024;
-
 namespace Drawer
 {
 	using namespace Simple;
-
-	void GenerateInstanceDataWithTextures(std::vector<TestMeshInstance>& instanceData, int type, const Math::Vector3f& offset)
-	{
-		instanceData.clear();
-
-		auto graphicsEngine = Global::GetGraphicsEngine();
-		auto context = graphicsEngine->GetContext();
-
-		std::shared_ptr<const Graphics::Texture> albedo;
-		std::shared_ptr<const Graphics::Texture> normal;
-		std::shared_ptr<const Graphics::Texture> material;
-
-		switch (type)
-		{
-		case 1:
-			albedo = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Albedo);
-			normal = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Normal);
-			material = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Material);
-			break;
-		case 2:
-			albedo = graphicsEngine->GetTextureManager()->GetTexture("Assets\\Textures\\T_Hamster_C.dds");
-			normal = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Normal);
-			material = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Material);
-			break;
-		case 3:
-			albedo = graphicsEngine->GetTextureManager()->GetTexture("Assets\\Textures\\T_CatScared_C.dds");
-			normal = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Normal);
-			material = graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Material);
-			break;
-		default:
-			break;
-		}
-
-		const Graphics::Mesh* mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
-
-		int instanceCount = 100;
-		int modelsPerLine = 5;
-		float spacing = 2.0f;
-		float lineSpacing = 2.0f;
-
-		for (int i = 0; i < instanceCount; ++i)
-		{
-			TestMeshInstance data;
-			data.mesh = mesh;
-			data.albedoTexture = albedo.get();
-			data.normalTexture = normal.get();
-			data.materialTexture = material.get();
-
-			float x = (i % modelsPerLine) * spacing - (modelsPerLine / 2) * spacing;
-			float z = (i / modelsPerLine) * lineSpacing;
-			data.transform.SetPosition(Math::Vector3f(x + offset.x * spacing, 0.0f + offset.y * spacing, z + offset.z * spacing));
-			instanceData.push_back(data);
-		}
-	}
-
-	void SortInstancesByMeshAndTexture(const std::vector<TestMeshInstance>& instances, std::unordered_map<MeshTextureKey, std::vector<TestMeshInstance>, MeshTextureKeyHash>& sortedInstances)
-	{
-		for (const auto& instance : instances)
-		{
-			MeshTextureKey key = std::make_tuple(instance.mesh, instance.albedoTexture, instance.normalTexture, instance.materialTexture);
-			sortedInstances[key].push_back(instance);
-		}
-	}
-
-	void Renderer::RenderSortedInstances()
-	{
-		std::vector<TestMeshInstance> test1;
-		std::vector<TestMeshInstance> test2;
-		std::vector<TestMeshInstance> test3;
-
-		GenerateInstanceDataWithTextures(test1, 1, Math::Vector3f(0, 0, 0));
-		GenerateInstanceDataWithTextures(test2, 2, Math::Vector3f(-6, 0, 0));
-		GenerateInstanceDataWithTextures(test3, 3, Math::Vector3f(6, 0, 0));
-
-		std::unordered_map<MeshTextureKey, std::vector<TestMeshInstance>, MeshTextureKeyHash> sortedInstances;
-
-		SortInstancesByMeshAndTexture(test1, sortedInstances);
-		SortInstancesByMeshAndTexture(test2, sortedInstances);
-		SortInstancesByMeshAndTexture(test3, sortedInstances);
-
-		auto graphicsEngine = Global::GetGraphicsEngine();
-		auto context = graphicsEngine->GetContext();
-
-		for (const auto& pair : sortedInstances)
-		{
-			const auto& key = pair.first;
-			const auto& instances = pair.second;
-
-			const Graphics::Mesh* mesh = std::get<0>(key);
-
-			ID3D11Buffer* vertexBuffer = mesh->myVertexBuffer.Get();
-			ID3D11Buffer* indexBuffer = mesh->myIndexBuffer.Get();
-			UINT indexCount = static_cast<UINT>(mesh->myMeshData.indices.size());
-
-			std::vector<TransformBufferData> instanceData;
-			instanceData.resize(instances.size());
-
-			for (size_t i = 0; i < instances.size(); ++i)
-			{
-				instanceData[i].modelWorldMatrix = instances[i].transform.GetMatrix();
-			}
-
-			UpdateInstanceBuffer(instanceData);
-
-			UINT strides[2] = { sizeof(Graphics::Vertex), sizeof(TransformBufferData) };
-			UINT offsets[2] = { 0, 0 };
-			ID3D11Buffer* buffers[2] = { vertexBuffer, myInstanceBuffer.Get() };
-
-			context->IASetVertexBuffers(0, 2, buffers, strides, offsets);
-			context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-			context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-			graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::Instanced_Unlit_Default)->BindThisShader(context.Get());
-
-			const Graphics::Texture* albedoTexture = std::get<1>(key);
-			const Graphics::Texture* normalTexture = std::get<2>(key);
-			const Graphics::Texture* materialTexture = std::get<3>(key);
-			albedoTexture->Bind(context.Get());
-			normalTexture->Bind(context.Get());
-			materialTexture->Bind(context.Get());
-
-			context->DrawIndexedInstanced(indexCount, static_cast<UINT>(instances.size()), 0, 0, 0);
-			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
-
-			ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-			context->PSSetShaderResources(0, 1, nullSRV);
-			context->PSSetShaderResources(1, 1, nullSRV);
-			context->PSSetShaderResources(2, 1, nullSRV);
-		}
-	}
-
-	void Renderer::GenerateInstanceData(std::vector<TransformBufferData>& instanceData)
-	{
-		instanceData.clear();
-
-		int instanceCount = MAX_INSTANCE;
-		int modelsPerLine = 40;
-		float spacing = 2.0f;
-		float lineSpacing = 2.0f;
-
-		for (int i = 0; i < instanceCount; ++i)
-		{
-			TransformBufferData data;
-			data.modelWorldMatrix = Math::Matrix4x4f();
-			float x = (i % modelsPerLine) * spacing - (modelsPerLine / 2) * spacing;
-			float z = (i / modelsPerLine) * lineSpacing;
-			data.modelWorldMatrix.SetPosition(Math::Vector3f(x, 0.0f, z));
-			instanceData.push_back(data);
-		}
-	}
-
-	void Renderer::UpdateInstanceBuffer(const std::vector<TransformBufferData>& instanceData)
-	{
-		auto context = Global::GetGraphicsEngine()->GetContext();
-
-		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		HRESULT hr = context->Map(myInstanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-
-		if (FAILED(hr))
-		{
-			std::cout << "error" << std::endl;
-			return;
-		}
-
-		memcpy(mappedResource.pData, instanceData.data(), sizeof(TransformBufferData) * instanceData.size());
-		context->Unmap(myInstanceBuffer.Get(), 0);
-	}
-
-	void Renderer::RenderInstances()
-	{
-		auto graphicsEngine = Global::GetGraphicsEngine();
-		auto context = graphicsEngine->GetContext();
-		const Graphics::Mesh* mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
-
-		ID3D11Buffer* vertexBuffer = mesh->myVertexBuffer.Get();
-		ID3D11Buffer* indexBuffer = mesh->myIndexBuffer.Get();
-		UINT indexCount = static_cast<UINT>(mesh->myMeshData.indices.size());
-
-		std::vector<TransformBufferData> instanceData;
-		GenerateInstanceData(instanceData);
-
-		UpdateInstanceBuffer(instanceData);
-
-		UINT strides[2] = { sizeof(Graphics::Vertex), sizeof(TransformBufferData) };
-		UINT offsets[2] = { 0, 0 };
-		ID3D11Buffer* buffers[2] = { vertexBuffer, myInstanceBuffer.Get() };
-
-		context->IASetVertexBuffers(0, 2, buffers, strides, offsets);
-		context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::Instanced_Unlit_Default)->BindThisShader(context.Get());
-		graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Albedo)->Bind(context.Get());
-		graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Normal)->Bind(context.Get());
-		graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Material)->Bind(context.Get());
-
-		context->DrawIndexedInstanced(indexCount, static_cast<UINT>(instanceData.size()), 0, 0, 0);
-		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
-	}
 
 	Renderer::Renderer()
 		: myIsUsingPBR(true)
@@ -242,6 +42,7 @@ namespace Drawer
 		myLineDrawer = std::make_unique<Drawer::LineDrawer>();
 		mySphereDrawer = std::make_unique<Drawer::SphereDrawer>();
 		mySpriteDrawer = std::make_unique<Drawer::SpriteDrawer>();
+		myInstancerManager = std::make_unique<Graphics::InstancerManager>();
 
 		LoadSettingsFromJson();
 
@@ -255,12 +56,8 @@ namespace Drawer
 			assert(false && "Failed to create BoneBuffer");
 		}
 
-		if (!CreateInstanceBuffer())
-		{
-			assert(false && "Failed to create InstanceBuffer");
-		}
-
 		myBoundingBoxDrawer->Init();
+		myInstancerManager->Init(Global::GetGraphicsEngine()->GetDevice());
 
 		myTransformBuffer->SetSlot(Graphics::Global_Constant_Buffer_Slot_Transform);
 		myJointBuffer->SetSlot(Graphics::Global_Constant_Buffer_Slot_Joints);
@@ -416,6 +213,57 @@ namespace Drawer
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
+	void Renderer::RenderSortedInstances()
+	{
+		auto sortedInstances = myInstancerManager->CreateTestInstanceData();
+
+		auto graphicsEngine = Global::GetGraphicsEngine();
+		auto context = graphicsEngine->GetContext();
+
+		for (const auto& pair : sortedInstances)
+		{
+			const auto& key = pair.first;
+			const auto& instances = pair.second;
+
+			const Graphics::Mesh* mesh = std::get<0>(key);
+
+			ID3D11Buffer* vertexBuffer = mesh->myVertexBuffer.Get();
+			ID3D11Buffer* indexBuffer = mesh->myIndexBuffer.Get();
+			UINT indexCount = static_cast<UINT>(mesh->myMeshData.indices.size());
+
+			std::vector<TransformBufferData> instanceData;
+			instanceData.resize(instances.size());
+
+			for (size_t i = 0; i < instances.size(); ++i)
+			{
+				instanceData[i].modelWorldMatrix = instances[i].transform.GetMatrix();
+			}
+
+			myInstancerManager->UpdateInstanceBuffer(instanceData);
+
+			UINT strides[2] = { sizeof(Graphics::Vertex), sizeof(TransformBufferData) };
+			UINT offsets[2] = { 0, 0 };
+			ID3D11Buffer* buffers[2] = { vertexBuffer, myInstancerManager->GetInstanceBuffer().Get() };
+
+			context->IASetVertexBuffers(0, 2, buffers, strides, offsets);
+			context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+			context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::Instanced_Unlit_Default)->BindThisShader(context.Get());
+
+			const Graphics::Texture* albedoTexture = std::get<1>(key);
+			const Graphics::Texture* normalTexture = std::get<2>(key);
+			const Graphics::Texture* materialTexture = std::get<3>(key);
+
+			albedoTexture->Bind(context.Get());
+			normalTexture->Bind(context.Get());
+			materialTexture->Bind(context.Get());
+
+			context->DrawIndexedInstanced(indexCount, static_cast<UINT>(instances.size()), 0, 0, 0);
+			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		}
+	}
+
 	void Renderer::Push(const Drawer::Line& aLine)
 	{
 		myDebugLines.push_back(aLine);
@@ -552,20 +400,6 @@ namespace Drawer
 			return false;
 
 		return true;
-	}
-
-	const bool Renderer::CreateInstanceBuffer()
-	{
-		D3D11_BUFFER_DESC instanceBufferDesc = {};
-		instanceBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		instanceBufferDesc.ByteWidth = sizeof(TransformBufferData) * MAX_INSTANCE;
-		instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		instanceBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		instanceBufferDesc.MiscFlags = 0;
-		instanceBufferDesc.StructureByteStride = 0;
-
-		const HRESULT result = Global::GetGraphicsEngine()->GetDevice()->CreateBuffer(&instanceBufferDesc, nullptr, &myInstanceBuffer);
-		return SUCCEEDED(result);
 	}
 
 	void Renderer::BindTextures(const ECS::MeshComponent* aMeshComponent, ID3D11DeviceContext* aContext) const

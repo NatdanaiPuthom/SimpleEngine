@@ -26,40 +26,13 @@ namespace Graphics
 	class Mesh;
 	class Shader;
 	class Texture;
+	class InstancerManager;
 }
 
 namespace Simple
 {
 	struct BoundingBox3D;
 }
-
-
-
-
-#include <unordered_map>
-#include <tuple>
-
-using MeshTextureKey = std::tuple<const Graphics::Mesh*, const Graphics::Texture*, const Graphics::Texture*, const Graphics::Texture*>;
-
-struct TestMeshInstance
-{
-	Math::Transform transform;
-	const Graphics::Mesh* mesh;
-	const Graphics::Texture* albedoTexture;
-	const Graphics::Texture* normalTexture;
-	const Graphics::Texture* materialTexture;
-};
-
-struct MeshTextureKeyHash
-{
-	std::size_t operator()(const MeshTextureKey& key) const
-	{
-		return std::hash<const Graphics::Mesh*>()(std::get<0>(key)) ^
-			std::hash<const Graphics::Texture*>()(std::get<1>(key)) ^
-			std::hash<const Graphics::Texture*>()(std::get<2>(key)) ^
-			std::hash<const Graphics::Texture*>()(std::get<3>(key));
-	}
-};
 
 namespace Drawer
 {
@@ -73,11 +46,6 @@ namespace Drawer
 	class Renderer final
 	{
 	public:
-		void RenderSortedInstances();
-		void GenerateInstanceData(std::vector<TransformBufferData>& instanceData);
-		void UpdateInstanceBuffer(const std::vector<TransformBufferData>& instanceData);
-		void RenderInstances();
-
 		Renderer();
 		~Renderer();
 
@@ -90,6 +58,7 @@ namespace Drawer
 		void RenderUnlitStaticAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const;
 
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
+		void RenderSortedInstances();
 
 		void Push(const Drawer::Line& aLine);
 		void Push(const Drawer::Sphere& aSphere);
@@ -118,12 +87,12 @@ namespace Drawer
 	private:
 		const bool CreateObjectBuffer();
 		const bool CreateBoneBuffer();
-		const bool CreateInstanceBuffer();
 	private:
 		std::vector<Line> myDebugLines;
 		std::vector<Sphere> myDebugSpheres;
 		std::vector<BoundingBox3DData> myBoundingBoxesData;
 
+		std::unique_ptr<Graphics::InstancerManager> myInstancerManager;
 		std::unique_ptr<LineDrawer> myLineDrawer;
 		std::unique_ptr<SphereDrawer> mySphereDrawer;
 		std::unique_ptr<SpriteDrawer> mySpriteDrawer;
@@ -131,8 +100,6 @@ namespace Drawer
 
 		std::unique_ptr<Graphics::ConstantBuffer> myTransformBuffer;
 		std::unique_ptr<Graphics::ConstantBuffer> myJointBuffer;
-
-		Microsoft::WRL::ComPtr<ID3D11Buffer> myInstanceBuffer;
 
 		bool myIsUsingPBR;
 		bool myShouldRenderMesh;

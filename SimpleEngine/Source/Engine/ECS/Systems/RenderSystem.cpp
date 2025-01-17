@@ -153,7 +153,6 @@ namespace ECS
 		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 
-		//graphicsEngine->GetRenderer()->RenderInstances(); //TO-DO(v11.4.5): Better structure
 		graphicsEngine->GetRenderer()->RenderSortedInstances(); //TO-DO(v11.4.5): Better structure
 
 		for (size_t i = 0; i < myStaticModelToRender.size(); ++i)
