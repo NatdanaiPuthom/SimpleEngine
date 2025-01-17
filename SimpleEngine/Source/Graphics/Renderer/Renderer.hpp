@@ -8,10 +8,10 @@
 #include "Graphics/BufferData.hpp"
 #include <memory>
 #include <vector>
-
 #include <wrl/client.h>
 
 struct ID3D11Buffer;
+struct ID3D11DeviceContext;
 
 namespace ECS
 {
@@ -33,6 +33,34 @@ namespace Simple
 	struct BoundingBox3D;
 }
 
+
+
+
+#include <unordered_map>
+#include <tuple>
+
+using MeshTextureKey = std::tuple<const Graphics::Mesh*, const Graphics::Texture*, const Graphics::Texture*, const Graphics::Texture*>;
+
+struct TestMeshInstance
+{
+	Math::Transform transform;
+	const Graphics::Mesh* mesh;
+	const Graphics::Texture* albedoTexture;
+	const Graphics::Texture* normalTexture;
+	const Graphics::Texture* materialTexture;
+};
+
+struct MeshTextureKeyHash
+{
+	std::size_t operator()(const MeshTextureKey& key) const
+	{
+		return std::hash<const Graphics::Mesh*>()(std::get<0>(key)) ^
+			std::hash<const Graphics::Texture*>()(std::get<1>(key)) ^
+			std::hash<const Graphics::Texture*>()(std::get<2>(key)) ^
+			std::hash<const Graphics::Texture*>()(std::get<3>(key));
+	}
+};
+
 namespace Drawer
 {
 	struct BoundingBox3DData
@@ -45,6 +73,7 @@ namespace Drawer
 	class Renderer final
 	{
 	public:
+		void RenderSortedInstances();
 		void GenerateInstanceData(std::vector<TransformBufferData>& instanceData);
 		void UpdateInstanceBuffer(const std::vector<TransformBufferData>& instanceData);
 		void RenderInstances();
