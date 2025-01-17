@@ -13,10 +13,82 @@
 #include "External/nlohmann/json.hpp"
 #include <fstream>
 #include <cassert>
+#include <d3d11.h>
+
+constexpr size_t MAX_INSTANCE = 1024;
 
 namespace Drawer
 {
 	using namespace Simple;
+
+    void Renderer::GenerateInstanceData(std::vector<TransformBufferData>& instanceData)
+    {
+        instanceData.clear();
+
+        int instanceCount = MAX_INSTANCE;
+        int modelsPerLine = 40;
+        float spacing = 2.0f;
+        float lineSpacing = 2.0f;
+
+        for (int i = 0; i < instanceCount; ++i)
+        {
+            TransformBufferData data;
+            data.modelWorldMatrix = Math::Matrix4x4f();
+            float x = (i % modelsPerLine) * spacing - (modelsPerLine / 2) * spacing;
+            float z = (i / modelsPerLine) * lineSpacing;
+            data.modelWorldMatrix.SetPosition(Math::Vector3f(x, 0.0f, z));
+            instanceData.push_back(data);
+        }
+    }
+
+	void Renderer::UpdateInstanceBuffer(const std::vector<TransformBufferData>& instanceData)
+	{
+		auto context = Global::GetGraphicsEngine()->GetContext();
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		HRESULT hr = context->Map(myInstanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+		if (FAILED(hr))
+		{
+			std::cout << "error" << std::endl;
+			return;
+		}
+
+		memcpy(mappedResource.pData, instanceData.data(), sizeof(TransformBufferData) * instanceData.size());
+		context->Unmap(myInstanceBuffer.Get(), 0);
+	}
+
+	void Renderer::RenderInstances()
+	{
+		auto graphicsEngine = Global::GetGraphicsEngine();
+		auto context = graphicsEngine->GetContext();
+		const Graphics::Mesh* mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
+
+		ID3D11Buffer* vertexBuffer = mesh->myVertexBuffer.Get();
+		ID3D11Buffer* indexBuffer = mesh->myIndexBuffer.Get();
+		UINT indexCount = static_cast<UINT>(mesh->myMeshData.indices.size());
+
+		std::vector<TransformBufferData> instanceData;
+		GenerateInstanceData(instanceData);
+
+		UpdateInstanceBuffer(instanceData);
+
+		UINT strides[2] = { sizeof(Graphics::Vertex), sizeof(TransformBufferData) };
+		UINT offsets[2] = { 0, 0 };
+		ID3D11Buffer* buffers[2] = { vertexBuffer, myInstanceBuffer.Get() };
+
+		context->IASetVertexBuffers(0, 2, buffers, strides, offsets);
+		context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::Instanced_Unlit_Default)->BindThisShader(context.Get());
+		graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Albedo)->Bind(context.Get());
+		graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Normal)->Bind(context.Get());
+		graphicsEngine->GetTextureManager()->GetTexture(Graphics::eTextureType::Default_Material)->Bind(context.Get());
+	
+		context->DrawIndexedInstanced(indexCount, static_cast<UINT>(instanceData.size()), 0, 0, 0);
+		Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+	}
 
 	Renderer::Renderer()
 		: myIsUsingPBR(true)
@@ -44,10 +116,19 @@ namespace Drawer
 		LoadSettingsFromJson();
 
 		if (!CreateObjectBuffer())
+		{
 			assert(false && "Failed to create ObjectBuffer");
+		}
 
 		if (!CreateBoneBuffer())
-			assert(false && "Failed to create ObjectBuffer");
+		{
+			assert(false && "Failed to create BoneBuffer");
+		}
+
+		if (!CreateInstanceBuffer())
+		{
+			assert(false && "Failed to create InstanceBuffer");
+		}
 
 		myBoundingBoxDrawer->Init();
 
@@ -343,6 +424,20 @@ namespace Drawer
 		return true;
 	}
 
+	const bool Renderer::CreateInstanceBuffer()
+	{
+		D3D11_BUFFER_DESC instanceBufferDesc = {};
+		instanceBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		instanceBufferDesc.ByteWidth = sizeof(TransformBufferData) * MAX_INSTANCE;
+		instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		instanceBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		instanceBufferDesc.MiscFlags = 0;
+		instanceBufferDesc.StructureByteStride = 0;
+
+		const HRESULT result = Global::GetGraphicsEngine()->GetDevice()->CreateBuffer(&instanceBufferDesc, nullptr, &myInstanceBuffer);
+		return SUCCEEDED(result);
+	}
+
 	void Renderer::BindTextures(const ECS::MeshComponent* aMeshComponent, ID3D11DeviceContext* aContext) const
 	{
 		for (size_t i = 0; i < aMeshComponent->textures.size(); ++i)
@@ -374,12 +469,12 @@ namespace Drawer
 
 	void Renderer::LoadSettingsFromJson()
 	{
- 		const nlohmann::json jsonData = SimpleUtilities::FileManager::GetDataAsJson(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR));
+		const nlohmann::json jsonData = SimpleUtilities::FileManager::GetDataAsJson(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR));
 
 		myShouldRenderDebugLines = jsonData["Editor_Settings"]["Render_DebugLine"];
 		myShouldRenderMesh = jsonData["Editor_Settings"]["Render_Mesh"];
 		myShouldRenderSkeletonLines = jsonData["Editor_Settings"]["Render_Skeleton"];
-		myShouldRenderBoundingBox = jsonData["Editor_Settings"]["Render_BoundingBox"];		
-		myIsUsingPBR = jsonData["Editor_Settings"]["Render_PBR"];		
+		myShouldRenderBoundingBox = jsonData["Editor_Settings"]["Render_BoundingBox"];
+		myIsUsingPBR = jsonData["Editor_Settings"]["Render_PBR"];
 	}
 }

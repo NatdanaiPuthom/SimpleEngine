@@ -53,6 +53,7 @@ namespace Graphics
 	{
 		Unlit_Default,
 		PBR_Default,
+		Instanced_Unlit_Default,
 		Animated,
 		SkyBox,
 		Deferred,

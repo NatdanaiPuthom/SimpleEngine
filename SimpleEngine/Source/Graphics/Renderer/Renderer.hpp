@@ -5,8 +5,13 @@
 #include "Graphics/Renderer/Drawer/LineDrawer.hpp"
 #include "Graphics/Renderer/Drawer/SphereDrawer.hpp"
 #include "Graphics/Renderer/Drawer/SpriteDrawer.hpp"
+#include "Graphics/BufferData.hpp"
 #include <memory>
 #include <vector>
+
+#include <wrl/client.h>
+
+struct ID3D11Buffer;
 
 namespace ECS
 {
@@ -40,6 +45,10 @@ namespace Drawer
 	class Renderer final
 	{
 	public:
+		void GenerateInstanceData(std::vector<TransformBufferData>& instanceData);
+		void UpdateInstanceBuffer(const std::vector<TransformBufferData>& instanceData);
+		void RenderInstances();
+
 		Renderer();
 		~Renderer();
 
@@ -80,6 +89,7 @@ namespace Drawer
 	private:
 		const bool CreateObjectBuffer();
 		const bool CreateBoneBuffer();
+		const bool CreateInstanceBuffer();
 	private:
 		std::vector<Line> myDebugLines;
 		std::vector<Sphere> myDebugSpheres;
@@ -92,6 +102,8 @@ namespace Drawer
 
 		std::unique_ptr<Graphics::ConstantBuffer> myTransformBuffer;
 		std::unique_ptr<Graphics::ConstantBuffer> myJointBuffer;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> myInstanceBuffer;
 
 		bool myIsUsingPBR;
 		bool myShouldRenderMesh;
