@@ -15,7 +15,7 @@
 #include <cassert>
 #include <d3d11.h>
 
-constexpr size_t MAX_INSTANCE = 50;
+constexpr size_t MAX_INSTANCE = 1024;
 
 namespace Drawer
 {
@@ -55,7 +55,7 @@ namespace Drawer
 
 		const Graphics::Mesh* mesh = graphicsEngine->GetModelFactory()->GetPrimitiveShape(Graphics::ePrimitiveShape::Cube);
 
-		int instanceCount = MAX_INSTANCE;
+		int instanceCount = 100;
 		int modelsPerLine = 5;
 		float spacing = 2.0f;
 		float lineSpacing = 2.0f;
