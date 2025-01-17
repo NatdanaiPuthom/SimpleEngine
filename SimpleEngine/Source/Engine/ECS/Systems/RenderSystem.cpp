@@ -5,6 +5,7 @@
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
 #include "Engine/ECS/Components/Core/AnimationComponent.hpp"
+#include "Graphics/GraphicsDeclarations.hpp"
 
 namespace ECS
 {
@@ -87,7 +88,7 @@ namespace ECS
 			}
 			else
 			{
-				myStaticModelToRender.emplace_back(StaticModelToRender(transform, mesh)); //NOTE(v11.3.2): Because deferred rendering so it has to be rendered after lightning pass, it works but may need to refactor in future
+				myStaticModelToRender.emplace_back(Graphics::MeshInstance(transform, mesh)); //NOTE(v11.3.2): Because deferred rendering so it has to be rendered after lightning pass, it works but may need to refactor in future
 			}
 		}
 
@@ -149,18 +150,10 @@ namespace ECS
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
 
-		const Graphics::Shader* unlitShader = graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::Unlit_Default).get();
 		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 
-		graphicsEngine->GetRenderer()->RenderSortedInstances(); //TO-DO(v11.4.5): Better structure
-
-		for (size_t i = 0; i < myStaticModelToRender.size(); ++i)
-		{
-			const TransformComponent* transform = myStaticModelToRender[i].transformComponent;
-			const MeshComponent* mesh = myStaticModelToRender[i].meshComponent;
-			renderer->RenderUnlitStaticModel(transform->transform.GetMatrix(), mesh->mesh, unlitShader, mesh->textures[Graphics::Global_Slot_Albedo]);
-		}
+		graphicsEngine->GetRenderer()->RenderInstancer(myStaticModelToRender);
 
 		for (size_t i = 0; i < myAnimatedModelToRender.size(); ++i)
 		{

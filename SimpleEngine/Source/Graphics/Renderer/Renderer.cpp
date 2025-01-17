@@ -213,12 +213,12 @@ namespace Drawer
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
 	}
 
-	void Renderer::RenderSortedInstances()
+	void Renderer::RenderInstancer(const std::vector<Graphics::MeshInstance>& aInstancesData)
 	{
-		auto sortedInstances = myInstancerManager->CreateTestInstanceData();
-
 		auto graphicsEngine = Global::GetGraphicsEngine();
 		auto context = graphicsEngine->GetContext();
+
+		auto sortedInstances = myInstancerManager->SortInstances(aInstancesData);
 
 		for (const auto& pair : sortedInstances)
 		{
@@ -236,7 +236,7 @@ namespace Drawer
 
 			for (size_t i = 0; i < instances.size(); ++i)
 			{
-				instanceData[i].modelWorldMatrix = instances[i].transform.GetMatrix();
+				instanceData[i].modelWorldMatrix = instances[i].transform->GetMatrix();
 			}
 
 			myInstancerManager->UpdateInstanceBuffer(instanceData);

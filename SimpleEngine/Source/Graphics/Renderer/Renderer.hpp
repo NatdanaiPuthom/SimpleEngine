@@ -58,7 +58,7 @@ namespace Drawer
 		void RenderUnlitStaticAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const;
 
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
-		void RenderSortedInstances();
+		void RenderInstancer(const std::vector<Graphics::MeshInstance>& aInstancesData);
 
 		void Push(const Drawer::Line& aLine);
 		void Push(const Drawer::Sphere& aSphere);

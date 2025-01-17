@@ -10,22 +10,15 @@ namespace ECS
 	struct AnimationComponent;
 }
 
+namespace Graphics
+{
+	struct MeshInstance;
+}
+
 namespace ECS
 {
 	class RenderSystem : public ECS::System
 	{
-		struct StaticModelToRender
-		{
-			StaticModelToRender(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent)
-				: transformComponent(aTransformComponent)
-				, meshComponent(aMeshComponent)
-			{
-			}
-
-			const ECS::TransformComponent* const transformComponent;
-			const ECS::MeshComponent* const meshComponent;
-		};
-
 		struct AnimatedModelToRender
 		{
 			AnimatedModelToRender(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationComponent)
@@ -51,7 +44,7 @@ namespace ECS
 	private:
 		void RenderUnlitModels(EntityComponentSystem* aEntityComponentSystem);
 	private:
-		std::vector<StaticModelToRender> myStaticModelToRender;
+		std::vector<Graphics::MeshInstance> myStaticModelToRender;
 		std::vector<AnimatedModelToRender> myAnimatedModelToRender;
 	};
 }
