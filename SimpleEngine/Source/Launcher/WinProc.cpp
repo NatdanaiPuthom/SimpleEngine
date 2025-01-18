@@ -36,7 +36,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_DWMNCRENDERINGCHANGED:
 	{
-		COLORREF COLOR = 0xFF00FF; //0xBGR
+		//const COLORREF COLOR = 0xFF00FF; //0xBGR Pink
+		const COLORREF COLOR = 0x252525; //0xBGR DarkGray
 		DwmSetWindowAttribute(hWnd, DWMWINDOWATTRIBUTE::DWMWA_CAPTION_COLOR, &COLOR, sizeof(COLOR));
 		break;
 	}
