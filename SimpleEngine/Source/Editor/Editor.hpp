@@ -1,10 +1,19 @@
 #pragma once
-#include <memory>
+#include "Editor/Core/MainMenuTab.hpp"
+#include "Editor/Core/PopUp.hpp"
 #include <vector>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <typeindex>
 
 namespace Editor
 {
-	class ToolInterface;
+	template <typename T>
+	concept DerivedFromPopUpWindow = std::is_base_of_v<PopUp, T>&& std::is_class_v<T>;
+
+	template <typename T>
+	concept DerivedFromMainMenuTab = std::is_base_of_v<MainMenuTab, T>&& std::is_class_v<T>;
 }
 
 namespace Editor
@@ -21,9 +30,26 @@ namespace Editor
 		void Update();
 		void Render();
 
-		void AddTool(std::unique_ptr<ToolInterface> aTool);
+		template<DerivedFromPopUpWindow T>
+		std::shared_ptr<T> AddPopUpWindow()
+		{
+			const std::string prettyName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+			std::shared_ptr<T> window = std::make_shared<T>(prettyName);
+			myPopUpWindows.push_back(window);
+			return window;
+		}
+
+		template<DerivedFromMainMenuTab T>
+		std::shared_ptr<T> AddMenuTab()
+		{
+			const std::string prettyName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+			std::shared_ptr<T> tab = std::make_shared<T>(prettyName);
+			myMainMenuTabs.push_back(tab);
+			return tab;
+		}
 
 	private:
-		std::vector<std::unique_ptr<ToolInterface>> myTools;
+		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
+		std::vector<std::shared_ptr<MainMenuTab>> myMainMenuTabs;
 	};
 }
