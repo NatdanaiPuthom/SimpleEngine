@@ -14,6 +14,8 @@
 
 //#include "Launcher/Client/Client.hpp"
 
+#include "Launcher/removeMeLater.hpp"
+
 static void Run(HINSTANCE& hInstance, int nCmdShow);
 static void RunWithSEH(HINSTANCE& hInstance, int nCmdShow);
 
@@ -82,6 +84,9 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		return;
 	}*/
 
+	SimpleTest::TestTree tree;
+	tree.Init();
+
 	while (const bool isRunning = Global::GetGameIsRunning())
 	{
 		PROFILER_FUNCTION(profiler::colors::Blue);
@@ -97,6 +102,8 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 		PROFILER_BEGIN("Engine Update");
 		engine.Update();
 		PROFILER_END();
+
+		tree.Update();
 
 		/*if (client.Update(isRunning) == false)
 		{
