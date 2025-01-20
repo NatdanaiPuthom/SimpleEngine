@@ -1,14 +1,14 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/PopUps/CameraControlsPopUp.hpp"
+#include "Editor/PopUps/Camera/CameraControlsGuidePopUp.hpp"
 
 namespace Editor
 {
-	CameraControlsPopUp::CameraControlsPopUp(const std::string& aName)
+	CameraControlsGuidePopUp::CameraControlsGuidePopUp(const std::string& aName)
 		: PopUp(aName)
 	{
 	}
 
-	void CameraControlsPopUp::Render()
+	void CameraControlsGuidePopUp::Render()
 	{
 		if (ImGui::Begin(myImGuiName.c_str(), &myIsActive))
 		{

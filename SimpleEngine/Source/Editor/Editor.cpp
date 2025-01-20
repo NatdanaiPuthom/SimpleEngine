@@ -3,11 +3,15 @@
 
 #include "MainSingleton/MainSingleton.hpp"
 
-#include "Editor/PopUps/CameraControlsPopUp.hpp"
+#include "Editor/PopUps/Camera/CameraControlsGuidePopUp.hpp"
+#include "Editor/PopUps/Camera/CameraSettingsPopUp.hpp"
+
 #include "Editor/MainMenuTabs/Files.hpp"
 #include "Editor/MainMenuTabs/Settings.hpp"
 #include "Editor/MainMenuTabs/Help.hpp"
+
 #include "Editor/MainMenuItems/Audio.hpp"
+#include "Editor/MainMenuItems/CameraSettingsItem.hpp"
 #include "Editor/MainMenuItems/Help/CameraHelpItem.hpp"
 
 namespace Editor
@@ -19,7 +23,6 @@ namespace Editor
 		/*AddTool(std::make_unique<BuildMenuBar>());
 		AddTool(std::make_unique<SceneMenuBar>());
 		AddTool(std::make_unique<MainMenuBar>());
-		AddTool(std::make_unique<HelpMenuBar>());
 		AddTool(std::make_unique<SettingsMenuBar>());
 		AddTool(std::make_unique<PlayMenuBar>());*/
 	}
@@ -30,20 +33,24 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		std::shared_ptr<Files> file = AddMenuTab<Files>();
-		std::shared_ptr<Settings> settings = AddMenuTab<Settings>();
-		std::shared_ptr<Help> help = AddMenuTab<Help>();
+		std::shared_ptr<Files> fileTab = AddMenuTab<Files>();
+		std::shared_ptr<Settings> settingsTab = AddMenuTab<Settings>();
+		std::shared_ptr<Help> helpTab = AddMenuTab<Help>();
 
-		std::shared_ptr<CameraControlsPopUp> cameraControlsPopUp = AddPopUpWindow<CameraControlsPopUp>();
+		std::shared_ptr<CameraControlsGuidePopUp> cameraControlsPopUp = AddPopUpWindow<CameraControlsGuidePopUp>();
+		std::shared_ptr<CameraSettingsPopUp> cameraSettingsPopUp = AddPopUpWindow<CameraSettingsPopUp>();
 
-		std::shared_ptr<CameraHelpItem> cameraHelpItem = help->AddChildren<CameraHelpItem>();
-		std::shared_ptr<Audio> audio = settings->AddChildren<Audio>();
+		std::shared_ptr<CameraHelpItem> cameraHelpItem = helpTab->AddChildren<CameraHelpItem>();
+		std::shared_ptr<CameraHelpItem> cameraSettingsItem = settingsTab->AddChildren<CameraHelpItem>();
+		std::shared_ptr<Audio> audio = settingsTab->AddChildren<Audio>();
 
 		cameraHelpItem->AddPopUpWindows(cameraControlsPopUp);
+		cameraSettingsItem->AddPopUpWindows(cameraSettingsPopUp)->SetWindowName("Camera Settings");
 
 		cameraControlsPopUp->SetWindowName("Editor Camera");
 		cameraHelpItem->SetWindowName("Camera Controls");
-		file->SetWindowName("File");
+		cameraSettingsItem->SetWindowName("Camera");
+		fileTab->SetWindowName("File");
 	}
 
 	void EditorEngine::Update()

@@ -3,10 +3,10 @@
 
 namespace Editor
 {
-	class CameraControlsPopUp final : public PopUp
+	class CameraControlsGuidePopUp final : public PopUp
 	{
 	public:
-		CameraControlsPopUp(const std::string& aName);
+		CameraControlsGuidePopUp(const std::string& aName);
 		void Render() override;
 	};
 }
