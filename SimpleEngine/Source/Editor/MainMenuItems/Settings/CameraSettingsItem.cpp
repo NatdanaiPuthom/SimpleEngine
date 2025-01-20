@@ -1,5 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/MainMenuItems/CameraSettingsItem.hpp"
+#include "Editor/MainMenuItems/Settings/CameraSettingsItem.hpp"
 
 namespace Editor
 {

@@ -1,5 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/PopUps/Camera/CameraSettingsPopUp.hpp"
+#include "Editor/PopUps/Settings/CameraSettingsPopUp.hpp"
 #include "Engine/Global.hpp"
 
 namespace Editor

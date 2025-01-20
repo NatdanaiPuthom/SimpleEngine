@@ -23,7 +23,6 @@ namespace Editor
 	private:
 		void ShowDrawCalls();
 		void ShowFPS();
-		void ShowMusic();
 	private:
 		void ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleConsole();

@@ -3,9 +3,9 @@
 
 namespace Editor
 {
-	class Audio final : public MainMenuItem
+	class AudioItem final : public MainMenuItem
 	{
 	public:
-		Audio(const std::string& aName);
+		AudioItem(const std::string& aName);
 	};
 }
