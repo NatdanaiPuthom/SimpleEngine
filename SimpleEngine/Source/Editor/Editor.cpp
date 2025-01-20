@@ -20,7 +20,7 @@ namespace Editor
 
 	EditorEngine::EditorEngine()
 	{
-		/*AddTool(std::make_unique<BuildMenuBar>());
+		/*
 		AddTool(std::make_unique<SceneMenuBar>());
 		AddTool(std::make_unique<MainMenuBar>());
 		AddTool(std::make_unique<SettingsMenuBar>());
@@ -58,6 +58,18 @@ namespace Editor
 		if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
 		{
 			Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
+		}
+
+		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
+		{
+			if (Global::IsFullScreen())
+			{
+				Global::SetWindowSizeNextFrame({ 1280,720 }, false);
+			}
+			else
+			{
+				Global::SetWindowSizeNextFrame({ 0,0 }, true);
+			}
 		}
 
 		for (const std::shared_ptr<MainMenuTab> window : myMainMenuTabs)
