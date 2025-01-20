@@ -10,6 +10,14 @@ namespace Editor
 	{
 	}
 
+	void AudioSettingsPopUp::Init()
+	{
+		if (myMusicIsActive)
+		{
+			MainSingleton::GetAudioManager().PlayMusic(MainSingleton::GetAudioManager().GetMainMusicName());
+		}
+	}
+
 	void AudioSettingsPopUp::Render()
 	{
 		if (ImGui::Begin(myImGuiName.c_str(), &myIsActive))

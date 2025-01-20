@@ -7,6 +7,8 @@ namespace Editor
 	{
 	public:
 		AudioSettingsPopUp(const std::string& aName);
+
+		void Init() override;
 		void Render() override;
 	private:
 		bool myMusicIsActive;

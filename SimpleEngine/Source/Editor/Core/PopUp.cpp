@@ -8,6 +8,10 @@ namespace Editor
 	{
 	}
 
+	void PopUp::Init()
+	{
+	}
+
 	void PopUp::Update()
 	{
 		if (myIsActive)

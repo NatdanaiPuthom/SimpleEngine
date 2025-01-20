@@ -11,13 +11,11 @@ namespace Editor
 		: mySelectedWindowSize(0)
 		, mySelectedRasterizerState(0)
 		, myConsoleIsOpen(true)
-		, myMusicIsActive(true)
 	{
 	}
 
 	void SettingsWindow::Init()
 	{
-		LoadDataFromJson();
 		UpdateAndFetchCurrentMonitorResolution();
 
 		myWindowSizes.push_back(Math::Vector2ui(1280, 720));
@@ -28,11 +26,6 @@ namespace Editor
 			myWindowSizes.back().y < myMonitorResolution.y)
 		{
 			myWindowSizes.push_back(myMonitorResolution);
-		}
-
-		if (myMusicIsActive)
-		{
-			MainSingleton::GetAudioManager().PlayMusic(MainSingleton::GetAudioManager().GetMainMusicName());
 		}
 	}
 
@@ -146,19 +139,6 @@ namespace Editor
 
 		myMonitorResolution.x = static_cast<unsigned int>(monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left);
 		myMonitorResolution.y = static_cast<unsigned int>(monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top);
-	}
-
-	void SettingsWindow::LoadDataFromJson()
-	{
-		const std::string editorJsonFileName = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR);
-		std::ifstream editorFile(editorJsonFileName);
-		assert(editorFile.is_open() && "Failed To Open file");
-
-		const nlohmann::json editorJson = nlohmann::json::parse(editorFile);
-		editorFile.close();
-
-		const nlohmann::json editorSettings = editorJson["Editor_Settings"];
-		myMusicIsActive = editorSettings["MusicActive"];
 	}
 
 	void SettingsWindow::CheckCursorIndexOnce(const std::unordered_map<std::string, const HCURSOR>& aLoadedCursors, int& aSelectedCursor)

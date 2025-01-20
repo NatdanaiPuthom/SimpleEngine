@@ -9,7 +9,9 @@ namespace Editor
 		PopUp(const std::string& aWindowName);
 
 		void Update();
+		virtual void Init();
 		virtual void Render() = 0;
+		virtual void LoadSettingsFromJson(const std::string& aAbsoluteFilePath) { aAbsoluteFilePath; };
 	};
 }
 

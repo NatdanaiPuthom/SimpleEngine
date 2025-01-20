@@ -55,6 +55,11 @@ namespace Editor
 		settingsCameraItem->SetWindowName("Camera");
 		fileTab->SetWindowName("File");
 		settingsAudioItem->SetWindowName("Audio");
+
+		for (const std::shared_ptr<PopUp> popUpWindow : myPopUpWindows)
+		{
+			popUpWindow->Init();
+		}
 	}
 
 	void EditorEngine::Update()
