@@ -11,6 +11,14 @@ namespace Editor
 	{
 	}
 
+	void MainMenuItem::Update()
+	{
+		for (std::shared_ptr<PopUp> popUpWindow : myPopUpWindows)
+		{
+			myPopUpIsActive = popUpWindow->IsActive();
+		}
+	}
+
 	void MainMenuItem::Render()
 	{
 		if (ImGui::MenuItem(myImGuiName.c_str(), myHotKeyShortCutText, &myPopUpIsActive))

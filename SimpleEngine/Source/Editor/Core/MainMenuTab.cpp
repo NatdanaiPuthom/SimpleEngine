@@ -10,13 +10,21 @@ namespace Editor
 	{
 	}
 
+	void MainMenuTab::Update()
+	{
+		for (std::shared_ptr<MainMenuItem> child : myMainMenuItems)
+		{
+			child->Update();
+		}
+	}
+
 	void MainMenuTab::Render()
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu(myImGuiName.c_str()))
 			{
-				for (std::shared_ptr<MainMenuItem> child : myMainMenuChildrenTabs)
+				for (std::shared_ptr<MainMenuItem> child : myMainMenuItems)
 				{
 					child->Render();
 				}

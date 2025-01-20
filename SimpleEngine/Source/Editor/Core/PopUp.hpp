@@ -8,9 +8,8 @@ namespace Editor
 	public:
 		PopUp(const std::string& aWindowName);
 
+		void Update();
 		virtual void Render() = 0;
-
-		void InternalUpdate();
 	};
 }
 

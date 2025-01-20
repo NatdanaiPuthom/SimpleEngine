@@ -8,11 +8,11 @@ namespace Editor
 	{
 	}
 
-	void PopUp::InternalUpdate()
+	void PopUp::Update()
 	{
 		if (myIsActive)
 		{
-			if (ImGui::Begin(myImGuiName.c_str()))
+			if (ImGui::Begin(myImGuiName.c_str(), &myIsActive))
 			{
 				myIsFocus = ImGui::IsWindowFocused();
 			}

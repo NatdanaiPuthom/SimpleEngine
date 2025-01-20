@@ -20,6 +20,7 @@ namespace Editor
 	public:
 		MainMenuTab(const std::string& aWindowName);
 
+		void Update();
 		void Render();
 
 		template<DerivedFromMainMenuItem T>
@@ -28,13 +29,13 @@ namespace Editor
 			const std::string prettyName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
 			std::shared_ptr<T> menuItem = std::make_shared<T>(prettyName);
-			myMainMenuChildrenTabs.push_back(menuItem);
+			myMainMenuItems.push_back(menuItem);
 
 			return menuItem;
 		}
 
 	protected:
-		std::vector<std::shared_ptr<MainMenuItem>> myMainMenuChildrenTabs;
+		std::vector<std::shared_ptr<MainMenuItem>> myMainMenuItems;
 	};
 }
 

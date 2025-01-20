@@ -3,7 +3,7 @@
 
 #include "MainSingleton/MainSingleton.hpp"
 
-#include "Editor/PopUps/Build.hpp"
+#include "Editor/PopUps/CameraControlsPopUp.hpp"
 #include "Editor/MainMenuTabs/Files.hpp"
 #include "Editor/MainMenuTabs/Settings.hpp"
 #include "Editor/MainMenuTabs/Help.hpp"
@@ -30,23 +30,32 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		AddMenuTab<Files>();
-		auto build = AddPopUpWindow<Build>();
-
+		std::shared_ptr<Files> file = AddMenuTab<Files>();
 		std::shared_ptr<Settings> settings = AddMenuTab<Settings>();
-		settings->AddChildren<Audio>();
-
 		std::shared_ptr<Help> help = AddMenuTab<Help>();
-		std::shared_ptr<CameraHelpItem> cameraHelpItem =  help->AddChildren<CameraHelpItem>();
+
+		std::shared_ptr<CameraControlsPopUp> cameraControlsPopUp = AddPopUpWindow<CameraControlsPopUp>();
+
+		std::shared_ptr<CameraHelpItem> cameraHelpItem = help->AddChildren<CameraHelpItem>();
+		std::shared_ptr<Audio> audio = settings->AddChildren<Audio>();
+
+		cameraHelpItem->AddPopUpWindows(cameraControlsPopUp);
+
+		cameraControlsPopUp->SetWindowName("Editor Camera");
 		cameraHelpItem->SetWindowName("Camera Controls");
-		cameraHelpItem->AddPopUpWindows(build);
+		file->SetWindowName("File");
 	}
 
 	void EditorEngine::Update()
 	{
+		for (const std::shared_ptr<MainMenuTab> window : myMainMenuTabs)
+		{
+			window->Update();
+		}
+
 		for (const std::shared_ptr<PopUp> window : myPopUpWindows)
 		{
-			window->InternalUpdate();
+			window->Update();
 		}
 
 		/*if (MainSingleton::GetSceneManager().GetIsPlaying() == false)

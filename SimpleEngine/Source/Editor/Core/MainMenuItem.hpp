@@ -13,6 +13,7 @@ namespace Editor
 	public:
 		MainMenuItem(const std::string& aWindowName);
 
+		void Update();
 		void Render();
 	public:
 		template<DerivedFromPopUpWindow T>
