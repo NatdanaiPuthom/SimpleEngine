@@ -55,6 +55,11 @@ namespace Editor
 
 	void EditorEngine::Update()
 	{
+		if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
+		{
+			Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
+		}
+
 		for (const std::shared_ptr<MainMenuTab> window : myMainMenuTabs)
 		{
 			window->Update();
@@ -64,19 +69,6 @@ namespace Editor
 		{
 			window->Update();
 		}
-
-		/*if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
-		{
-			Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
-		}
-
-		for (const std::unique_ptr<ToolInterface>& tool : myTools)
-		{
-			if (tool->myIsActive == true)
-			{
-				tool->Update();
-			}
-		}*/
 	}
 
 	void EditorEngine::Render()
@@ -96,14 +88,6 @@ namespace Editor
 				window->Render();
 			}
 		}
-
-		//for (const std::unique_ptr<ToolInterface>& tool : myTools)
-		//{
-		//	if (tool->myIsActive == true)
-		//	{
-		//		tool->Draw();
-		//	}
-		//}
 
 		//{	//Render Orientation Cube  
 		//	//TO-DO(v11.4.4): Make own class for this
