@@ -6,6 +6,7 @@
 #include "Editor/PopUps/Help/CameraControlsGuidePopUp.hpp"
 #include "Editor/PopUps/Settings/CameraSettingsPopUp.hpp"
 #include "Editor/PopUps/Settings/AudioSettingsPopUp.hpp"
+#include "Editor/PopUps/Settings/GraphicsSettingsPopUp.hpp"
 
 #include "Editor/MainMenuTabs/Files.hpp"
 #include "Editor/MainMenuTabs/Settings.hpp"
@@ -13,6 +14,7 @@
 
 #include "Editor/MainMenuItems/Settings/AudioItem.hpp"
 #include "Editor/MainMenuItems/Settings/CameraSettingsItem.hpp"
+#include "Editor/MainMenuItems/Settings/GraphicsSettingsItem.hpp"
 #include "Editor/MainMenuItems/Help/CameraHelpItem.hpp"
 
 namespace Editor
@@ -41,20 +43,24 @@ namespace Editor
 		std::shared_ptr<CameraControlsGuidePopUp> cameraControlsHelpPopUp = AddPopUpWindow<CameraControlsGuidePopUp>();
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingsPopUp = AddPopUpWindow<CameraSettingsPopUp>();
 		std::shared_ptr<AudioSettingsPopUp> audioSettingsPopUp = AddPopUpWindow<AudioSettingsPopUp>();
+		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingsPopUp = AddPopUpWindow<GraphicsSettingsPopUp>();
 
-		std::shared_ptr<CameraHelpItem> helpCameraItem = helpTab->AddChildren<CameraHelpItem>();
-		std::shared_ptr<CameraHelpItem> settingsCameraItem = settingsTab->AddChildren<CameraHelpItem>();
 		std::shared_ptr<AudioItem> settingsAudioItem = settingsTab->AddChildren<AudioItem>();
+		std::shared_ptr<CameraHelpItem> settingsCameraItem = settingsTab->AddChildren<CameraHelpItem>();
+		std::shared_ptr<GraphicsSettingsItem> settingsGraphicsItem = settingsTab->AddChildren<GraphicsSettingsItem>();
+		std::shared_ptr<CameraHelpItem> helpCameraItem = helpTab->AddChildren<CameraHelpItem>();
 
 		helpCameraItem->AddPopUpWindows(cameraControlsHelpPopUp);
 		settingsCameraItem->AddPopUpWindows(cameraSettingsPopUp)->SetWindowName("Camera Settings");
 		settingsAudioItem->AddPopUpWindows(audioSettingsPopUp)->SetWindowName("Audio Settings");
+		settingsGraphicsItem->AddPopUpWindows(graphicsSettingsPopUp)->SetWindowName("Graphics Settings");
 
 		cameraControlsHelpPopUp->SetWindowName("Editor Camera");
 		helpCameraItem->SetWindowName("Camera Controls");
 		settingsCameraItem->SetWindowName("Camera");
 		fileTab->SetWindowName("File");
 		settingsAudioItem->SetWindowName("Audio");
+		settingsGraphicsItem->SetWindowName("Graphics");
 
 		for (const std::shared_ptr<PopUp> popUpWindow : myPopUpWindows)
 		{

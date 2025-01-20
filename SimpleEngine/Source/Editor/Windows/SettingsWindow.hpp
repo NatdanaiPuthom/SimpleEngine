@@ -20,22 +20,12 @@ namespace Editor
 		void Init() override;
 		void Update() override;
 		void Draw() override;
-	private:
-		void ShowDrawCalls();
-		void ShowFPS();
+
 	private:
 		void ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine);
 		void ToggleConsole();
-		void ToggleUsingPBR(Graphics::GraphicsEngine* aGraphicsEngine);
-		void ToggleRenderDebugLines(Graphics::GraphicsEngine* aGraphicsEngine);
-		void ToggleShouldRenderMesh(Graphics::GraphicsEngine* aGraphicsEngine);
-		void ToggleShouldRenderSkeletonLine(Graphics::GraphicsEngine* aGraphicsEngine);
-		void ToggleShouldRenderBoundingBox(Graphics::GraphicsEngine* aGraphicsEngine);
 		void AdjustWindowSize();
-		void AdjustRasterizerState();
 		void AdjustEditorStyle();
-		void AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine);
-
 		void SetCustomCursorIcon();
 	private:
 		void UpdateAndFetchCurrentMonitorResolution();
@@ -46,8 +36,6 @@ namespace Editor
 		Math::Vector2ui myMonitorResolution;
 
 		int mySelectedWindowSize;
-		int mySelectedRasterizerState;
-
 		bool myConsoleIsOpen;
 
 		std::vector<Math::Vector2ui> myWindowSizes;

@@ -9,7 +9,6 @@ namespace Editor
 {
 	SettingsWindow::SettingsWindow()
 		: mySelectedWindowSize(0)
-		, mySelectedRasterizerState(0)
 		, myConsoleIsOpen(true)
 	{
 	}
@@ -50,53 +49,8 @@ namespace Editor
 	{
 		if (ImGui::Begin("General Settings##SettingWindow"))
 		{
-			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 			static constexpr unsigned int heightPadding = 2;
 
-			ShowFPS();
-
-			ImGui::SameLine(ImGui::GetWindowWidth() - 100);
-			ShowDrawCalls();
-
-			ImGui::Dummy(ImVec2(0, heightPadding));
-			ImGui::AlignTextToFramePadding();
-			ImGui::SeparatorText("Render");
-			ImGui::Dummy(ImVec2(0, heightPadding));
-
-			ToggleVSync(graphicsEngine);
-
-			ImGui::SameLine();
-			ImGui::Dummy(ImVec2(3, 0));
-			ImGui::SameLine();
-
-			ToggleRenderDebugLines(graphicsEngine);
-
-			ImGui::SameLine();
-			ImGui::Dummy(ImVec2(3, 0));
-			ImGui::SameLine();
-
-			ToggleShouldRenderBoundingBox(graphicsEngine);
-
-			ToggleShouldRenderMesh(graphicsEngine);
-
-			ImGui::SameLine();
-			ImGui::Dummy(ImVec2(10, 0));
-			ImGui::SameLine();
-
-			ToggleUsingPBR(graphicsEngine);
-
-			ImGui::SameLine();
-			ImGui::Dummy(ImVec2(10, 0));
-			ImGui::SameLine();
-
-			ToggleShouldRenderSkeletonLine(graphicsEngine);
-
-			ImGui::Dummy(ImVec2(0, heightPadding));
-			ImGui::Separator();
-			ImGui::Dummy(ImVec2(0, heightPadding));
-
-			AdjustFPSCap(graphicsEngine);
-			AdjustRasterizerState();
 			AdjustWindowSize();
 
 			ImGui::Dummy(ImVec2(0, heightPadding));
@@ -177,61 +131,6 @@ namespace Editor
 		}
 	}
 
-	void SettingsWindow::ToggleRenderDebugLines(Graphics::GraphicsEngine* aGraphicsEngine)
-	{
-		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
-		bool shouldRenderDebugLines = renderer->GetShouldRenderDebugLines();
-
-		if (ImGui::Checkbox("DebugLines##SettingWindow", &shouldRenderDebugLines))
-		{
-			renderer->SetShouldRenderDebugLines(shouldRenderDebugLines);
-		}
-	}
-
-	void SettingsWindow::ToggleUsingPBR(Graphics::GraphicsEngine* aGraphicsEngine)
-	{
-		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
-		bool isUsingPBR = renderer->GetIsUsingPBR();
-
-		if (ImGui::Checkbox("PBR##SettingWindow", &isUsingPBR))
-		{
-			renderer->SetIsUsingPBR(isUsingPBR);
-		}
-	}
-
-	void SettingsWindow::ToggleShouldRenderMesh(Graphics::GraphicsEngine* aGraphicsEngine)
-	{
-		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
-		bool shouldRenderMesh = renderer->GetShouldRenderMesh();
-
-		if (ImGui::Checkbox("Mesh##SettingWindow", &shouldRenderMesh))
-		{
-			renderer->SetShouldRenderMesh(shouldRenderMesh);
-		}
-	}
-
-	void SettingsWindow::ToggleShouldRenderSkeletonLine(Graphics::GraphicsEngine* aGraphicsEngine)
-	{
-		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
-		bool shouldRenderSkeleton = renderer->GetShouldRenderSkeletonLines();
-
-		if (ImGui::Checkbox("Skeleton##SettingWindow", &shouldRenderSkeleton))
-		{
-			renderer->SetShouldRenderSkeletonLines(shouldRenderSkeleton);
-		}
-	}
-
-	void SettingsWindow::ToggleShouldRenderBoundingBox(Graphics::GraphicsEngine* aGraphicsEngine)
-	{
-		Drawer::Renderer* renderer = aGraphicsEngine->GetRenderer();
-		bool shouldRenderBoundingBox = renderer->GetShouldRenderBoundingBox();
-
-		if (ImGui::Checkbox("BoundingBox##SettingWindow", &shouldRenderBoundingBox))
-		{
-			renderer->SetShouldRenderBoundingBox(shouldRenderBoundingBox);
-		}
-	}
-
 	void SettingsWindow::ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
 		Graphics::GenericDataManager* graphicsGenericDataManager = aGraphicsEngine->GetGenericDataManager();
@@ -241,18 +140,6 @@ namespace Editor
 		{
 			graphicsGenericDataManager->SetVSync(vsync);
 		}
-	}
-
-	void SettingsWindow::ShowDrawCalls()
-	{
-		std::string drawCalls = "DrawCalls: " + std::to_string(Global::GetDrawCalls());
-		ImGui::Text(drawCalls.c_str());
-	}
-
-	void SettingsWindow::ShowFPS()
-	{
-		std::string fps = "FPS: " + std::to_string(Global::GetFPS());
-		ImGui::Text(fps.c_str());
 	}
 
 	void SettingsWindow::AdjustWindowSize()
@@ -294,24 +181,6 @@ namespace Editor
 		}
 	}
 
-	void SettingsWindow::AdjustRasterizerState()
-	{
-		ImGui::SetNextItemWidth(200);
-
-		std::array<const char*, static_cast<int>(Graphics::eRasterizerState::Count)> rasterizerStates = {};
-		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::BackfaceCulling)] = "BackfaceCulling";
-		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::NoFaceCulling)] = "NoFaceCulling";
-		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::Wireframe)] = "Wireframe";
-		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::WireframeNoCulling)] = "WireframeNoCulling";
-		rasterizerStates[static_cast<int>(Graphics::eRasterizerState::FrontFaceCulling)] = "FrontFaceCulling";
-
-		if (ImGui::Combo("RasterizerState##SettingWindow", &mySelectedRasterizerState, rasterizerStates.data(), static_cast<int>(rasterizerStates.size())))
-		{
-			Graphics::GraphicsEngine* const graphicsEngine = Global::GetGraphicsEngine();
-			graphicsEngine->GetStateManager()->SetRasterizerState(graphicsEngine->GetContext(), static_cast<Graphics::eRasterizerState>(mySelectedRasterizerState));
-		}
-	}
-
 	void SettingsWindow::AdjustEditorStyle()
 	{
 		std::vector<const char*> editorStyles(3);
@@ -339,66 +208,6 @@ namespace Editor
 			default:
 				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Simple);
 				break;
-			}
-		}
-	}
-
-	void SettingsWindow::AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine)
-	{
-		int monitorUpdateFrequency = 0;
-
-		{
-			HDC hdc = GetDC(0);
-			DEVMODE devMode;
-			devMode.dmSize = sizeof(DEVMODE);
-			EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &devMode);
-
-			monitorUpdateFrequency = static_cast<int>(devMode.dmDisplayFrequency);
-			ReleaseDC(0, hdc);
-		}
-
-		std::vector<std::string> fpsCapAsString;
-		fpsCapAsString.reserve(5);
-		fpsCapAsString.push_back("Uncapped");
-
-		for (int i = 1; i <= 4; ++i)
-		{
-			const int hz = monitorUpdateFrequency / i;
-
-			if (hz >= 60)
-			{
-				fpsCapAsString.push_back(std::to_string(hz));
-			}
-		}
-
-		std::vector<const char*> fpsCapAsConstChar;
-		fpsCapAsConstChar.reserve(fpsCapAsString.size());
-		for (const std::string& fpsString : fpsCapAsString)
-		{
-			fpsCapAsConstChar.push_back(fpsString.c_str());
-		}
-
-		Graphics::GenericDataManager* genericDataManager = aGraphicsEngine->GetGenericDataManager();
-		int selectedFPSLevelCap = genericDataManager->GetFPSLevelCap();
-
-		if (selectedFPSLevelCap == 1)
-		{
-			ImGui::Text("FPS Capped: %s", fpsCapAsConstChar[selectedFPSLevelCap]);
-		}
-		else
-		{
-			ImGui::SetNextItemWidth(200);
-
-			if (ImGui::Combo("FPS Cap##SettingWindow", &selectedFPSLevelCap, fpsCapAsConstChar.data(), static_cast<int>(fpsCapAsConstChar.size())))
-			{
-				if (selectedFPSLevelCap == 1)
-				{
-					genericDataManager->SetVSync(true);
-				}
-				else
-				{
-					genericDataManager->SetFPSLevelCap(selectedFPSLevelCap);
-				}
 			}
 		}
 	}
