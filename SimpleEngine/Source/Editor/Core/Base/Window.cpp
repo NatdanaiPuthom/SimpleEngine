@@ -23,6 +23,12 @@ namespace Editor
 		myIsFocus = aIsFocused;
 	}
 
+	void Window::SetWindowName(const std::string& aNewName)
+	{
+		myName = aNewName;
+		myImGuiName = myName + myImGuiTag;
+	}
+
 	bool Window::IsActive() const
 	{
 		return myIsActive;

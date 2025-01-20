@@ -11,7 +11,10 @@ namespace Editor
 {
 	template <typename T>
 	concept DerivedFromMainMenuItem = std::is_base_of_v<MainMenuItem, T>&& std::is_class_v<T>;
+}
 
+namespace Editor
+{
 	class MainMenuTab : public Window
 	{
 	public:
@@ -20,13 +23,23 @@ namespace Editor
 		void Render();
 
 		template<DerivedFromMainMenuItem T>
-		void AddChildren()
+		std::shared_ptr<T> AddChildren()
 		{
 			const std::string prettyName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
-			myMainMenuChildrenTabs.push_back(std::make_shared<T>(prettyName));
+
+			std::shared_ptr<T> menuItem = std::make_shared<T>(prettyName);
+			myMainMenuChildrenTabs.push_back(menuItem);
+
+			return menuItem;
 		}
 
 	protected:
 		std::vector<std::shared_ptr<MainMenuItem>> myMainMenuChildrenTabs;
 	};
+}
+
+namespace Editor
+{
+	template <typename T>
+	concept DerivedFromMainMenuTab = std::is_base_of_v<MainMenuTab, T>&& std::is_class_v<T>;
 }

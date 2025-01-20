@@ -8,7 +8,7 @@ namespace Editor
 	{
 	}
 
-	void PopUp::Update()
+	void PopUp::InternalUpdate()
 	{
 		if (myIsActive)
 		{

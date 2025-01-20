@@ -3,10 +3,12 @@
 
 #include "MainSingleton/MainSingleton.hpp"
 
-#include "Editor/Temp/Build.hpp"
-#include "Editor/Temp/Files.hpp"
-#include "Editor/Temp/Settings.hpp"
-#include "Editor/Temp/Audio.hpp"
+#include "Editor/PopUps/Build.hpp"
+#include "Editor/MainMenuTabs/Files.hpp"
+#include "Editor/MainMenuTabs/Settings.hpp"
+#include "Editor/MainMenuTabs/Help.hpp"
+#include "Editor/MainMenuItems/Audio.hpp"
+#include "Editor/MainMenuItems/Help/CameraHelpItem.hpp"
 
 namespace Editor
 {
@@ -28,15 +30,25 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		AddPopUpWindow<Build>();
 		AddMenuTab<Files>();
+		auto build = AddPopUpWindow<Build>();
 
 		std::shared_ptr<Settings> settings = AddMenuTab<Settings>();
 		settings->AddChildren<Audio>();
+
+		std::shared_ptr<Help> help = AddMenuTab<Help>();
+		std::shared_ptr<CameraHelpItem> cameraHelpItem =  help->AddChildren<CameraHelpItem>();
+		cameraHelpItem->SetWindowName("Camera Controls");
+		cameraHelpItem->AddPopUpWindows(build);
 	}
 
 	void EditorEngine::Update()
 	{
+		for (const std::shared_ptr<PopUp> window : myPopUpWindows)
+		{
+			window->InternalUpdate();
+		}
+
 		/*if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
 		{
 			Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
@@ -53,11 +65,6 @@ namespace Editor
 
 	void EditorEngine::Render()
 	{
-		for (const std::shared_ptr<PopUp> window : myPopUpWindows)
-		{
-			window->Update();
-		}
-
 		for (const std::shared_ptr<MainMenuTab> menuTab : myMainMenuTabs)
 		{
 			if (menuTab->IsActive())

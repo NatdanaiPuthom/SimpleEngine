@@ -23,8 +23,8 @@ namespace Editor
 
 				ImGui::EndMenu();
 			}
-		}
 
-		ImGui::EndMainMenuBar();
+			ImGui::EndMainMenuBar();
+		}
 	}
 }

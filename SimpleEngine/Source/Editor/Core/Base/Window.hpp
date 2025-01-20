@@ -15,6 +15,7 @@ namespace Editor
 	public:
 		void SetActive(bool aIsActive);
 		void SetFocused(bool aIsFocused);
+		void SetWindowName(const std::string& aNewName);
 	public:
 		bool IsActive() const;
 		bool IsFocused() const;

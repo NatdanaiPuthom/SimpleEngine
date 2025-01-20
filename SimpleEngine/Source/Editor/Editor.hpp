@@ -9,15 +9,6 @@
 
 namespace Editor
 {
-	template <typename T>
-	concept DerivedFromPopUpWindow = std::is_base_of_v<PopUp, T>&& std::is_class_v<T>;
-
-	template <typename T>
-	concept DerivedFromMainMenuTab = std::is_base_of_v<MainMenuTab, T>&& std::is_class_v<T>;
-}
-
-namespace Editor
-{
 	class EditorEngine final
 	{
 	public:
