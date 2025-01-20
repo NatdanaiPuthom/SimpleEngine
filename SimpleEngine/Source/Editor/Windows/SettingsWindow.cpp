@@ -52,33 +52,6 @@ namespace Editor
 			static constexpr unsigned int heightPadding = 2;
 
 			AdjustWindowSize();
-
-			ImGui::Dummy(ImVec2(0, heightPadding));
-			ImGui::Separator();
-			ImGui::Dummy(ImVec2(0, heightPadding));
-
-			ToggleConsole();
-
-			if (ImGui::Button("Clear Console##SettingsWindow"))
-			{
-				system("CLS");
-			}
-
-			ImGui::Dummy(ImVec2(0, heightPadding));
-			ImGui::Separator();
-			ImGui::Dummy(ImVec2(0, heightPadding));
-
-			AdjustEditorStyle();
-
-			ImGui::Dummy(ImVec2(0, heightPadding));
-			ImGui::Separator();
-			ImGui::Dummy(ImVec2(0, heightPadding));
-
-			SetCustomCursorIcon();
-
-			ImGui::Dummy(ImVec2(0, heightPadding));
-			ImGui::Separator();
-			ImGui::Dummy(ImVec2(0, heightPadding));
 		}
 
 		ImGui::End();
@@ -93,42 +66,6 @@ namespace Editor
 
 		myMonitorResolution.x = static_cast<unsigned int>(monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left);
 		myMonitorResolution.y = static_cast<unsigned int>(monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top);
-	}
-
-	void SettingsWindow::CheckCursorIndexOnce(const std::unordered_map<std::string, const HCURSOR>& aLoadedCursors, int& aSelectedCursor)
-	{
-		const HCURSOR currentCursor = Global::GetCurrentCustomCursor();
-
-		static bool alreadyRunOnce = false;
-
-		if (alreadyRunOnce == false)
-		{
-			unsigned int index = 0;
-
-			for (const auto& [name, cursor] : aLoadedCursors)
-			{
-				if (currentCursor == cursor)
-				{
-					aSelectedCursor = index;
-					break;
-				}
-
-				index++;
-			}
-		}
-	}
-
-	void SettingsWindow::ToggleConsole()
-	{
-		if (ImGui::Checkbox("Show Console##SettingWindow", &myConsoleIsOpen))
-		{
-			HWND consoleWindow = GetConsoleWindow();
-
-			if (myConsoleIsOpen)
-				ShowWindow(consoleWindow, SW_SHOW);
-			else
-				ShowWindow(consoleWindow, SW_HIDE);
-		}
 	}
 
 	void SettingsWindow::ToggleVSync(Graphics::GraphicsEngine* aGraphicsEngine)
@@ -178,64 +115,6 @@ namespace Editor
 					Global::SetWindowSizeNextFrame(myWindowSizes[mySelectedWindowSize]);
 				}
 			}
-		}
-	}
-
-	void SettingsWindow::AdjustEditorStyle()
-	{
-		std::vector<const char*> editorStyles(3);
-
-		editorStyles[0] = "Simple";
-		editorStyles[1] = "Dark";
-		editorStyles[2] = "Light";
-
-		static int selectedStyle = 0;
-
-		ImGui::SetNextItemWidth(200);
-		if (ImGui::Combo("Editor Style##SettingWindow", &selectedStyle, editorStyles.data(), static_cast<int>(editorStyles.size())))
-		{
-			switch (selectedStyle)
-			{
-			case 0:
-				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Simple);
-				break;
-			case 1:
-				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Dark);
-				break;
-			case 2:
-				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Light);
-				break;
-			default:
-				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Simple);
-				break;
-			}
-		}
-	}
-
-	void SettingsWindow::SetCustomCursorIcon()
-	{
-		const std::unordered_map<std::string, const HCURSOR>& loadedCursors = Global::GetLoadedCustomCursors();
-		std::vector<std::string> cursorNames;
-		std::string cursors;
-
-		for (const auto& [name, cursor] : loadedCursors)
-		{
-			cursorNames.push_back(name);
-			cursors += name;
-			cursors += '\0';
-		}
-
-		cursors += '\0';
-
-		static int selectedCursor = 0;
-
-		CheckCursorIndexOnce(loadedCursors, selectedCursor);
-
-		ImGui::SetNextItemWidth(200);
-
-		if (ImGui::Combo("Cursors##SettingWindow", &selectedCursor, cursors.c_str()))
-		{
-			Global::SetCustomCursor(cursorNames[selectedCursor]);
 		}
 	}
 }
