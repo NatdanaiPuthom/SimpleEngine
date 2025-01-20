@@ -1,6 +1,8 @@
 #include "Engine/Precomplied/EnginePch.hpp"
 #include "CollisionSystem.hpp"
 #include "CStyleCollider.hpp"
+#include "CollisionSystem.hpp"
+#include "CollisionSystem.hpp"
 
 namespace Simple
 {

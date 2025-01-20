@@ -51,7 +51,7 @@ namespace Graphics
 		bool CreateVertexBuffer(ComPtr<ID3D11Device> aDevice);
 		bool CreateIndexBuffer(ComPtr<ID3D11Device> aDevice);
 		void CreateBoundingBox();
-	private:
+	public:
 		MeshData myMeshData;
 
 		std::string myName;

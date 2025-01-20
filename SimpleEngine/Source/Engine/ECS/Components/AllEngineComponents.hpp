@@ -10,3 +10,4 @@
 #include "Engine/ECS/Components/Core/ScriptComponent.hpp"
 #include "Engine/ECS/Components/Core/CameraComponent.hpp"
 #include "Engine/ECS/Components/Core/BloomComponent.hpp"
+#include "Engine/ECS/Components/ColliderComponent.hpp"
