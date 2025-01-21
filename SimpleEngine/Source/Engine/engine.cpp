@@ -5,6 +5,8 @@
 #include "MainSingleton/MainSingleton.hpp"
 #include <External/nlohmann/json.hpp>
 #include <fstream>
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -165,20 +167,14 @@ namespace Simple
 	{
 		WNDCLASSEXW wcex = {};
 		wcex.cbSize = sizeof(WNDCLASSEX);
-		wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+		wcex.style = CS_OWNDC;
 		wcex.lpfnWndProc = WndProc;
 		wcex.hInstance = hInstance;
 		wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 		wcex.lpszClassName = L"Natdanai";
 		wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 		wcex.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
-
-		assert(wcex.hCursor && "Failed to load cursor");
-		assert(wcex.hIcon != NULL && "Failed to load icon");
-		assert(wcex.hIconSm != NULL && "Failed to load small icon");
-
-		wcex.style &= ~CS_DROPSHADOW;
 
 		if (!RegisterClassExW(&wcex))
 		{
@@ -186,32 +182,30 @@ namespace Simple
 			return nullptr;
 		}
 
-		RECT wr = {};
-		wr.left = 0;
-		wr.right = aWidth + wr.left;
-		wr.top = 0;
-		wr.bottom = aHeight + wr.top;
-
+		RECT wr = { 0, 0, aWidth, aHeight };
 		AdjustWindowRect(&wr, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
 
 		const std::string filename = SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_ENGINE);
 
 		std::ifstream file(filename);
-		assert(file.is_open() && "Failed To Open File");
+		assert(file.is_open() && "Failed to open file");
 
 		const nlohmann::json json = nlohmann::json::parse(file);
 		file.close();
 
 		const nlohmann::json& engineSettings = json["Engine_Settings"];
-
-		const std::string engineNameAndVersionString = std::string(engineSettings["Name"]) + " " + std::string(engineSettings["Version"]) + " " + std::string(engineSettings["Quote"]);
-		const std::wstring engineNameAndVersionWide = std::wstring(engineNameAndVersionString.begin(), engineNameAndVersionString.end());
+		const std::string engineNameAndVersionString =
+			std::string(engineSettings["Name"]) + " " +
+			std::string(engineSettings["Version"]) + " " +
+			std::string(engineSettings["Quote"]);
+		const std::wstring engineNameAndVersionWide(engineNameAndVersionString.begin(), engineNameAndVersionString.end());
 
 		WCHAR engineNameAndVersion[MAX_PATH];
-		wcsncpy_s(engineNameAndVersion, engineNameAndVersionWide.c_str(), MAX_PATH - 1); //NOTE(v11.0.4): disgusting will in future try to figure a better way when I am smarter
+		wcsncpy_s(engineNameAndVersion, engineNameAndVersionWide.c_str(), MAX_PATH - 1);
 		engineNameAndVersion[MAX_PATH - 1] = L'\0';
 
-		return CreateWindow(
+		HWND hwnd = CreateWindowEx(
+			0,
 			L"Natdanai",
 			engineNameAndVersion,
 			WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
@@ -223,6 +217,22 @@ namespace Simple
 			nullptr,
 			hInstance,
 			nullptr);
+
+		if (hwnd)
+		{
+			//NOTE(v11.4.5): Disable rounded corners
+			enum DWM_WINDOW_CORNER_PREFERENCE {
+				DWMWCP_DEFAULT = 0,
+				DWMWCP_DONOTROUND = 1,
+				DWMWCP_ROUND = 2,
+				DWMWCP_ROUNDSMALL = 3
+			};
+
+			DWM_WINDOW_CORNER_PREFERENCE preference = DWMWCP_DONOTROUND;
+			DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &preference, sizeof(preference));
+		}
+
+		return hwnd;
 	}
 
 	void Engine::SetGlobalPointerToThis()
