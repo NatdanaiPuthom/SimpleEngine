@@ -7,5 +7,16 @@ namespace Editor
 	{
 	public:
 		SceneTab(const std::string& aName);
+
+		void OnClick() override;
+	private:
+		void SetActiveSceneAsStart();
+	private:
+		void CreateNewScene();
+	private:
+		void SaveActiveScene();
+		void ReloadScene();
+		void ShowSceneList();
+		void ShowHoveredToolTips(const char* aToolTipText, float& aTimer);
 	};
 }
