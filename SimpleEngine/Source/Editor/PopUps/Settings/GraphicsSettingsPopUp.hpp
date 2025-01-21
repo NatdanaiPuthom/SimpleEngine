@@ -1,5 +1,6 @@
 #pragma once
 #include "Editor/Core/PopUp.hpp"
+#include "Engine/Math/Vector2.hpp"
 #include "Graphics/GraphicsDeclarations.hpp"
 #include <vector>
 #include <string>
@@ -21,12 +22,31 @@ namespace Editor
 	private:
 		void SameLineDummy(float aWidthOffset, float aHeightOffset);
 		void SeparatorDummy(float aWidthOffset, float aHeightOffset);
-		void AdjustFPSCap(Graphics::GraphicsEngine* aGraphicsEngine);
+		void SeparatorTextDummy(float aWidthOffset, float aHeightOffset, const char* aText = "");
+	private:
+		void InitRasterizerStatesStrings();
+		void UpdateFPSCapSettings(Graphics::GraphicsEngine* aGraphicsEngine);
+		void UpdateConsoleSettings();
+		void UpdateCursorSettings();
+		void UpdateWindowsSizeSettings();
+		void UpdateAndFetchCurrentMonitorResolution();
+		void UpdateAndFetchFPSCapStrings();
+		void UpdateAndFetchCurrentCursorSettings();
 	private:
 		std::array<const char*, static_cast<int>(Graphics::eRasterizerState::Count)> myRasterizerStatesConstChar;
+
 		std::vector<std::string> myFPSCapAsString;
+		std::vector<std::string> myCursorNames;
 		std::vector<const char*> myFPSCapAsConstChar;
+		std::vector<Math::Vector2ui> myWindowSizes;
+
+		std::string myLongCursorStringName;
+
+		Math::Vector2ui myMonitorResolution;
+
+		int mySelectedWindowSize;
 		int mySelectedRasterizerState;
+		int mySelectedCursor;
 		bool myConsoleIsOpen;
 	};
 }
