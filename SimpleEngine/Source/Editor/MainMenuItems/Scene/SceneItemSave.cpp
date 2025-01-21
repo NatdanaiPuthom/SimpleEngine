@@ -27,11 +27,12 @@ namespace Editor
 
 	void SceneItemSave::SaveActiveScene()
 	{
+		const Simpleton::SceneInfo* sceneInfo = MainSingleton::GetSceneManager().GetCurrentSceneInfo();
 		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
-		ECS::EntityComponentSystem::SaveData(ecs, MainSingleton::GetSceneManager().GetCurrentSceneInfo()->relativePath);
+		ECS::EntityComponentSystem::SaveData(ecs, sceneInfo->relativePath);
 
 		Simple::Console::Print("Scene: ", Simple::ConsoleTextColor::White, false);
-		Simple::Console::Print(MainSingleton::GetSceneManager().GetCurrentSceneInfo()->name.c_str(), Simple::ConsoleTextColor::Green, false);
+		Simple::Console::Print(sceneInfo->name.c_str(), Simple::ConsoleTextColor::Green, false);
 		Simple::Console::Print(" has been saved!", Simple::ConsoleTextColor::White, true);
 	}
 }
