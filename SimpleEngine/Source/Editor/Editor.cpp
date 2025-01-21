@@ -16,6 +16,7 @@
 #include "Editor/MainMenuItems/Settings/CameraSettingsItem.hpp"
 #include "Editor/MainMenuItems/Settings/GraphicsSettingsItem.hpp"
 #include "Editor/MainMenuItems/Help/CameraHelpItem.hpp"
+#include "Editor/MainMenuItems/Scene/SceneItemSave.hpp"
 
 namespace Editor
 {
@@ -102,6 +103,10 @@ namespace Editor
 	{
 		std::shared_ptr<SceneTab> sceneTab = AddMenuTab<SceneTab>();
 		sceneTab->SetWindowName("Scene");
+
+		std::shared_ptr<SceneItemSave> sceneSaveItem = sceneTab->AddChildren<SceneItemSave>();
+		sceneSaveItem->SetWindowName("Save");
+		sceneSaveItem->SetHotKeyShortCutText("Ctrl + S");
 	}
 
 	void EditorEngine::SetupSettingsTab()

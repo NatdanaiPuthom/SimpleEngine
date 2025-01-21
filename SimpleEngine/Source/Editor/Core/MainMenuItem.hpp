@@ -24,9 +24,14 @@ namespace Editor
 		void Update();
 		void Render();
 
+		//NOTE(v11.4.5): Invoked only if there are no ItemChildren and PopUpChildren. TO-DO: Improve this somehow to work as a button instead of menu
 		virtual void OnClick() {};
 	public:
 		bool IsPopUpActive() const;
+	public:
+		void SetHotKeyShortCutText(const char* aHotKeyShortCut);
+	public:
+		const char* GetHotKeyShortCutText() const;
 	public:
 		template<DerivedFromPopUpWindow T>
 		std::shared_ptr<T> AddPopUpWindows(std::shared_ptr<T> aPopUpWindow);

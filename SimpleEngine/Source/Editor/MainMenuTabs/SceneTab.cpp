@@ -20,11 +20,6 @@ namespace Editor
 			}
 		}
 
-		if (ImGui::MenuItem("Save", "Ctrl + S"))
-		{
-			SaveActiveScene();
-		}
-
 		if (ImGui::BeginMenu("Load##SceneMenuItem"))
 		{
 			ShowSceneList();

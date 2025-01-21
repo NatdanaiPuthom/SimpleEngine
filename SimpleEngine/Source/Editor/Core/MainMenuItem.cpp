@@ -23,11 +23,21 @@ namespace Editor
 	{
 		if (myChildren.empty())
 		{
-			if (ImGui::MenuItem(myImGuiName.c_str(), myHotKeyShortCutText, &myPopUpIsActive))
+			if (myPopUpWindows.empty())
 			{
-				for (std::shared_ptr<PopUp> popUpWindow : myPopUpWindows)
+				if (ImGui::MenuItem(myImGuiName.c_str(), myHotKeyShortCutText))
 				{
-					popUpWindow->SetActive(myPopUpIsActive);
+					OnClick();
+				}
+			}
+			else
+			{
+				if (ImGui::MenuItem(myImGuiName.c_str(), myHotKeyShortCutText, &myPopUpIsActive))
+				{
+					for (std::shared_ptr<PopUp> popUpWindow : myPopUpWindows)
+					{
+						popUpWindow->SetActive(myPopUpIsActive);
+					}
 				}
 			}
 		}
@@ -54,5 +64,15 @@ namespace Editor
 	bool MainMenuItem::IsPopUpActive() const
 	{
 		return myPopUpIsActive;
+	}
+
+	void MainMenuItem::SetHotKeyShortCutText(const char* aHotKeyShortCut)
+	{
+		myHotKeyShortCutText = aHotKeyShortCut;
+	}
+
+	const char* MainMenuItem::GetHotKeyShortCutText() const
+	{
+		return myHotKeyShortCutText;
 	}
 }
