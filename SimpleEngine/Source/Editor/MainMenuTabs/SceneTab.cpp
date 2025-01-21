@@ -12,13 +12,6 @@ namespace Editor
 
 	void SceneTab::OnClick()
 	{
-		if (MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL))
-		{
-			if (MainSingleton::GetInputManager().IsKeyPressed('S'))
-			{
-				SaveActiveScene();
-			}
-		}
 
 		if (ImGui::BeginMenu("Load##SceneMenuItem"))
 		{
@@ -31,14 +24,6 @@ namespace Editor
 			CreateNewScene();
 			ImGui::EndMenu();
 		}
-
-		if (ImGui::MenuItem("Reload##SceneMenuItem"))
-		{
-			ReloadScene();
-		}
-
-		static float resetCurrentSceneTooltipDelayTimer = 0.0f;
-		ShowHoveredToolTips("Reset current scene", resetCurrentSceneTooltipDelayTimer);
 	}
 
 	void SceneTab::CreateNewScene()
@@ -79,22 +64,10 @@ namespace Editor
 
 			if (i == 1) //NOTE(v11.4.2): Shouldn't be hardcoded value, whole Editor project need refactor someday
 			{
-				static float createNewSceneAsCopyTooltipDelayTimer = 0.0f;
-				ShowHoveredToolTips("Create new copy of this scene", createNewSceneAsCopyTooltipDelayTimer);
+				//static float createNewSceneAsCopyTooltipDelayTimer = 0.0f;
+				//ShowHoveredToolTips("Create new copy of this scene", createNewSceneAsCopyTooltipDelayTimer);
 			}
 		}
-	}
-
-	void SceneTab::SaveActiveScene()
-	{
-		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
-		ECS::EntityComponentSystem::SaveData(ecs, MainSingleton::GetSceneManager().GetCurrentSceneInfo()->relativePath);
-	}
-
-	void SceneTab::ReloadScene()
-	{
-		Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
-		sceneManager.ReloadSceneFromFile(sceneManager.GetCurrentSceneInfo()->relativePath);
 	}
 
 	void SceneTab::ShowSceneList()
@@ -109,27 +82,6 @@ namespace Editor
 				MainSingleton::GetSceneManager().ChangeScene(scenePath);
 				break;
 			}
-		}
-	}
-
-	void SceneTab::ShowHoveredToolTips(const char* aToolTipText, float& aTimer)
-	{
-		if (ImGui::IsItemHovered())
-		{
-			aTimer += Global::GetDeltaTime();
-
-			if (aTimer > 0.33f)
-			{
-				if (ImGui::BeginTooltip())
-				{
-					ImGui::Text(aToolTipText);
-					ImGui::EndTooltip();
-				}
-			}
-		}
-		else
-		{
-			aTimer = 0.0f;
 		}
 	}
 }

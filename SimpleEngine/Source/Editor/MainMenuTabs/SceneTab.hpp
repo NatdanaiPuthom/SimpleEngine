@@ -12,9 +12,6 @@ namespace Editor
 	private:
 		void CreateNewScene();
 	private:
-		void SaveActiveScene();
-		void ReloadScene();
 		void ShowSceneList();
-		void ShowHoveredToolTips(const char* aToolTipText, float& aTimer);
 	};
 }
