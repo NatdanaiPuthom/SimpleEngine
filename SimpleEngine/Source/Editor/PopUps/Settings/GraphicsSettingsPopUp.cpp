@@ -118,31 +118,7 @@ namespace Editor
 
 			Simple::ImGuiEngine::SeparatorDummy(0, heightPadding);
 
-			static std::vector<const char*> editorStyles = { "Simple","Dark", "Light" };
-
-			static int selectedStyle = 0;
-
-			ImGui::SetNextItemWidth(200);
-
-			static const std::string editorStyle = std::string("Editor Style").append(myImGuiTag).c_str();
-			if (ImGui::Combo(editorStyle.c_str(), &selectedStyle, editorStyles.data(), static_cast<int>(editorStyles.size())))
-			{
-				switch (selectedStyle)
-				{
-				case 0:
-					Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Simple);
-					break;
-				case 1:
-					Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Dark);
-					break;
-				case 2:
-					Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Light);
-					break;
-				default:
-					Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Simple);
-					break;
-				}
-			}
+			UpdateAndSetEditorStyle();
 
 			Simple::ImGuiEngine::SeparatorDummy(0, heightPadding);
 			UpdateCursorSettings();
@@ -363,6 +339,35 @@ namespace Editor
 			}
 
 			index++;
+		}
+	}
+
+	void GraphicsSettingsPopUp::UpdateAndSetEditorStyle() const
+	{
+		static std::vector<const char*> editorStyles = { "Simple","Dark", "Light" };
+
+		static int selectedStyle = 0;
+
+		ImGui::SetNextItemWidth(200);
+
+		static const std::string editorStyle = std::string("Editor Style").append(myImGuiTag).c_str();
+		if (ImGui::Combo(editorStyle.c_str(), &selectedStyle, editorStyles.data(), static_cast<int>(editorStyles.size())))
+		{
+			switch (selectedStyle)
+			{
+			case 0:
+				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Simple);
+				break;
+			case 1:
+				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Dark);
+				break;
+			case 2:
+				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Light);
+				break;
+			default:
+				Simple::ImGuiEngine::SetEditorStyle(Simple::eImGuiEditorStyle::Simple);
+				break;
+			}
 		}
 	}
 }

@@ -28,6 +28,7 @@ namespace Editor
 		void UpdateAndFetchCurrentMonitorResolution();
 		void UpdateAndFetchFPSCapStrings();
 		void UpdateAndFetchCurrentCursorSettings();
+		void UpdateAndSetEditorStyle() const;
 	private:
 		std::array<const char*, static_cast<int>(Graphics::eRasterizerState::Count)> myRasterizerStatesConstChar;
 
