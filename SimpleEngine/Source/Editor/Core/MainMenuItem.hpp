@@ -23,6 +23,7 @@ namespace Editor
 
 		void Update();
 		void Render();
+		bool IsPopUpActive() const;
 	public:
 		template<DerivedFromPopUpWindow T>
 		std::shared_ptr<T> AddPopUpWindows(std::shared_ptr<T> aPopUpWindow);

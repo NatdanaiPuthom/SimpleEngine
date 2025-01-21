@@ -14,7 +14,10 @@ namespace Editor
 	{
 		for (std::shared_ptr<MainMenuItem> child : myMainMenuItems)
 		{
-			child->Update();
+			if (child->IsPopUpActive())
+			{
+				child->Update();
+			}
 		}
 	}
 

@@ -50,4 +50,9 @@ namespace Editor
 			}
 		}
 	}
+
+	bool MainMenuItem::IsPopUpActive() const
+	{
+		return myPopUpIsActive;
+	}
 }
