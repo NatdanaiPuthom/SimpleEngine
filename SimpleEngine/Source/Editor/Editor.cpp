@@ -20,6 +20,7 @@
 #include "Editor/MainMenuItems/Scene/SceneItemLoad.hpp"
 #include "Editor/MainMenuItems/Scene/SceneItemCreate.hpp"
 #include "Editor/MainMenuItems/Scene/SceneItemReload.hpp"
+#include "Editor/MainMenuItems/Scene/SceneItemSetStart.hpp"
 
 namespace Editor
 {
@@ -111,15 +112,18 @@ namespace Editor
 		std::shared_ptr<SceneItemLoad> sceneLoadItem = sceneTab->AddChildren<SceneItemLoad>();
 		std::shared_ptr<SceneItemCreate> sceneCreateItem = sceneTab->AddChildren<SceneItemCreate>();
 		std::shared_ptr<SceneItemReload> sceneReloadItem = sceneTab->AddChildren<SceneItemReload>();
+		std::shared_ptr<SceneItemSetAsStart> sceneSetAsStartItem = sceneTab->AddChildren<SceneItemSetAsStart>();
 
 		sceneSaveItem->SetWindowName("Save");
 		sceneLoadItem->SetWindowName("Load");
 		sceneCreateItem->SetWindowName("Create");
 		sceneReloadItem->SetWindowName("Reload");
+		sceneSetAsStartItem->SetWindowName("Set As Start");
 
 		sceneSaveItem->SetHotKeyShortCutText("Ctrl + S");
 
 		sceneReloadItem->SetShowToolTips(true);
+		sceneSetAsStartItem->SetShowToolTips(true);
 	}
 
 	void EditorEngine::SetupSettingsTab()

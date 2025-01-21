@@ -39,26 +39,6 @@ namespace Editor
 
 		static float resetCurrentSceneTooltipDelayTimer = 0.0f;
 		ShowHoveredToolTips("Reset current scene", resetCurrentSceneTooltipDelayTimer);
-
-		if (ImGui::MenuItem("Set As Start##SceneMenuItem"))
-		{
-			SetActiveSceneAsStart();
-		}
-
-		static float setSceneAsStartTooltipDelayTimer = 0.0f;
-		ShowHoveredToolTips("Open this scene on startup", setSceneAsStartTooltipDelayTimer);
-	}
-
-	void SceneTab::SetActiveSceneAsStart()
-	{
-		nlohmann::json jsonData = SimpleUtilities::FileManager::GetDataAsJson(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME));
-		jsonData["Game_Settings"]["Start_Scene_RelativePath"] = MainSingleton::GetSceneManager().GetCurrentSceneInfo()->relativePath;
-
-		std::ofstream writeFile(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME));
-		assert(writeFile.is_open() && "Failed to open the file");
-
-		writeFile << jsonData;
-		writeFile.close();
 	}
 
 	void SceneTab::CreateNewScene()

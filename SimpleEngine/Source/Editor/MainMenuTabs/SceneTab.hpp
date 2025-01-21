@@ -10,8 +10,6 @@ namespace Editor
 
 		void OnClick();
 	private:
-		void SetActiveSceneAsStart();
-	private:
 		void CreateNewScene();
 	private:
 		void SaveActiveScene();
