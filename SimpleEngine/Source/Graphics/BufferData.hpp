@@ -55,7 +55,7 @@ struct alignas(16) CameraBufferData final
 	Math::Vector3f cameraPosition = { 0.0f, 0.0f, 0.0f };
 	const float paddingCameraPos = -1.0f;
 
-	Math::Vector2ui resolution;
+	Math::Vector2ui resolution = { 1280, 720 };
 	const float paddingResolution[2] = { -1.0f };
 };
 
@@ -74,4 +74,10 @@ struct alignas(16) TimeBufferData final
 struct alignas(16) JointsBufferData final
 {
 	Math::Matrix4x4f bonesTransform[Graphics::Global_Max_Joints];
+};
+
+struct alignas(16) SkyBoxBufferData final
+{
+	int skyBoxUseFlooring = 0;
+	const int skyBoxUseFlooringPadding[3] = { -1 };
 };

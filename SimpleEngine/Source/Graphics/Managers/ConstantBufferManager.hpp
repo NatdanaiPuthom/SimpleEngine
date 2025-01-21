@@ -26,7 +26,7 @@ namespace Graphics
 		void UpdateLightConstantBuffer(const LightBufferData* aLightBufferData);
 		void UpdatePostProcessConstantBuffer(const PostProcessData* aPostProcessData);
 		void UpdatePointlights(const size_t aLightIndex, const PointLightBufferData* aPointLightBufferData);
-
+		void UpdateSkyBoxConstantBuffer(const bool aShouldUseFlooring);
 	private:
 		void CreateCameraConstantBuffer();
 		void CreateTimeConstantBuffer();
@@ -34,6 +34,7 @@ namespace Graphics
 		void CreateLightConstantBuffer();
 		void CreatePointLightConstantBuffer();
 		void CreatePostProcessingConstantBuffer();
+		void CreateSkyBoxConstantBuffer();
 	private:
 		std::unique_ptr<ConstantBuffer> myCameraConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myTimeConstantBuffer;
@@ -41,5 +42,6 @@ namespace Graphics
 		std::unique_ptr<ConstantBuffer> myLightConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myPointLightConstantBuffer;
 		std::unique_ptr<ConstantBuffer> myPostProcessConstantBuffer;
+		std::unique_ptr<ConstantBuffer> mySkyBoxConstantBuffer;
 	};
 }

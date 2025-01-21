@@ -167,6 +167,8 @@ namespace ECS
 		{
 			ECS::Entity skyBox = aEntityComponentSystem->GetEntity(*entitiesWithSkyBoxComponent.begin());
 			SkyBoxComponent* skyBoxComponent = skyBox.GetComponent<SkyBoxComponent>();
+
+			graphicsEngine->GetConstantBufferManager()->UpdateSkyBoxConstantBuffer(skyBoxComponent->useSkyBoxFlooring);
 			skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
 
 			renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);

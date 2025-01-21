@@ -24,6 +24,7 @@ namespace Graphics
 		myLightConstantBuffer = std::make_unique<ConstantBuffer>();
 		myPostProcessConstantBuffer = std::make_unique<ConstantBuffer>();
 		myPointLightConstantBuffer = std::make_unique<ConstantBuffer>();
+		mySkyBoxConstantBuffer = std::make_unique<ConstantBuffer>();
 
 		CreateCameraConstantBuffer();
 		CreateTimeConstantBuffer();
@@ -31,6 +32,7 @@ namespace Graphics
 		CreatePointLightConstantBuffer();
 		CreatePostProcessingConstantBuffer();
 		CreateJointsConstantBuffer();
+		CreateSkyBoxConstantBuffer();
 
 		myCameraConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Camera);
 		myTimeConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Time);
@@ -38,6 +40,7 @@ namespace Graphics
 		myJointsConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Joints);
 		myPointLightConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_Pointlight);
 		myPostProcessConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_PostProcess);
+		mySkyBoxConstantBuffer->SetSlot(Global_Constant_Buffer_Slot_SkyBox);
 	}
 
 	void ConstantBufferManager::UpdateCameraConstantBuffer(const Camera* aCamera, const Math::Vector2ui& aResolution)
@@ -90,6 +93,15 @@ namespace Graphics
 
 		myPointLightConstantBuffer->Bind(myPointLightConstantBuffer->GetSlot());
 		myPointLightConstantBuffer->Update(sizeof(PointLightBufferData), &pointLightData);
+	}
+
+	void ConstantBufferManager::UpdateSkyBoxConstantBuffer(const bool aShouldUseFlooring)
+	{
+		SkyBoxBufferData skyBoxBufferData;
+		skyBoxBufferData.skyBoxUseFlooring = aShouldUseFlooring;
+
+		mySkyBoxConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
+		mySkyBoxConstantBuffer->Update(sizeof(SkyBoxBufferData), &skyBoxBufferData);
 	}
 
 	void ConstantBufferManager::CreateCameraConstantBuffer()
@@ -154,6 +166,16 @@ namespace Graphics
 		if (myJointsConstantBuffer->Init(sizeof(JointsBufferData), &bonesBufferData) == false)
 		{
 			assert(false && "Failed to create BoneConstantBuffer");
+		}
+	}
+
+	void ConstantBufferManager::CreateSkyBoxConstantBuffer()
+	{
+		SkyBoxBufferData skyBufferData;
+
+		if (mySkyBoxConstantBuffer->Init(sizeof(JointsBufferData), &skyBufferData) == false)
+		{
+			assert(false && "Failed to create SkyConstantBuffer");
 		}
 	}
 }
