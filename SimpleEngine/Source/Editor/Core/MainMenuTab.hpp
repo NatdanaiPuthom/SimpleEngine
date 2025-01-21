@@ -15,7 +15,7 @@ namespace Editor
 		MainMenuTab(const std::string& aWindowName);
 
 		void Update();
-		void Render();
+		void Render() override final;
 
 		template<DerivedFromMainMenuItem T>
 		std::shared_ptr<T> AddChildren()

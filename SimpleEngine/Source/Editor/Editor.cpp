@@ -8,7 +8,7 @@
 #include "Editor/PopUps/Settings/AudioSettingsPopUp.hpp"
 #include "Editor/PopUps/Settings/GraphicsSettingsPopUp.hpp"
 
-#include "Editor/MainMenuTabs/Files.hpp"
+#include "Editor/MainMenuTabs/SceneTab.hpp"
 #include "Editor/MainMenuTabs/Settings.hpp"
 #include "Editor/MainMenuTabs/Help.hpp"
 
@@ -36,7 +36,7 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		std::shared_ptr<Files> fileTab = AddMenuTab<Files>();
+		std::shared_ptr<SceneTab> sceneTab = AddMenuTab<SceneTab>();
 		std::shared_ptr<Settings> settingsTab = AddMenuTab<Settings>();
 		std::shared_ptr<Help> helpTab = AddMenuTab<Help>();
 
@@ -58,7 +58,7 @@ namespace Editor
 		cameraControlsHelpPopUp->SetWindowName("Editor Camera");
 		helpCameraItem->SetWindowName("Camera Controls");
 		settingsCameraItem->SetWindowName("Camera");
-		fileTab->SetWindowName("File");
+		sceneTab->SetWindowName("Scene");
 		settingsAudioItem->SetWindowName("Audio");
 		settingsGraphicsItem->SetWindowName("Graphics");
 

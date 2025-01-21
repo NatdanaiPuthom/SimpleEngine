@@ -1,9 +1,9 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/MainMenuTabs/Files.hpp"
+#include "Editor/MainMenuTabs/SceneTab.hpp"
 
 namespace Editor
 {
-	Files::Files(const std::string& aName)
+	SceneTab::SceneTab(const std::string& aName)
 		: MainMenuTab(aName)
 	{
 	}

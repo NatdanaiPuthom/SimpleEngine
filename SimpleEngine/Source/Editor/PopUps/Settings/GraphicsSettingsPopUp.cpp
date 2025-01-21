@@ -152,6 +152,15 @@ namespace Editor
 		ImGui::End();
 	}
 
+	void GraphicsSettingsPopUp::InitRasterizerStatesStrings()
+	{
+		myRasterizerStatesConstChar[static_cast<int>(Graphics::eRasterizerState::BackfaceCulling)] = "BackfaceCulling";
+		myRasterizerStatesConstChar[static_cast<int>(Graphics::eRasterizerState::NoFaceCulling)] = "NoFaceCulling";
+		myRasterizerStatesConstChar[static_cast<int>(Graphics::eRasterizerState::Wireframe)] = "Wireframe";
+		myRasterizerStatesConstChar[static_cast<int>(Graphics::eRasterizerState::WireframeNoCulling)] = "WireframeNoCulling";
+		myRasterizerStatesConstChar[static_cast<int>(Graphics::eRasterizerState::FrontFaceCulling)] = "FrontFaceCulling";
+	}
+
 	void GraphicsSettingsPopUp::UpdateFPSCapSettings(Graphics::GraphicsEngine* aGraphicsEngine)
 	{
 		Graphics::GenericDataManager* genericDataManager = aGraphicsEngine->GetGenericDataManager();
@@ -266,15 +275,6 @@ namespace Editor
 				}
 			}
 		}
-	}
-
-	void GraphicsSettingsPopUp::InitRasterizerStatesStrings()
-	{
-		myRasterizerStatesConstChar[static_cast<int>(Graphics::eRasterizerState::BackfaceCulling)] = "BackfaceCulling";
-		myRasterizerStatesConstChar[static_cast<int>(Graphics::eRasterizerState::NoFaceCulling)] = "NoFaceCulling";
-		myRasterizerStatesConstChar[static_cast<int>(Graphics::eRasterizerState::Wireframe)] = "Wireframe";
-		myRasterizerStatesConstChar[static_cast<int>(Graphics::eRasterizerState::WireframeNoCulling)] = "WireframeNoCulling";
-		myRasterizerStatesConstChar[static_cast<int>(Graphics::eRasterizerState::FrontFaceCulling)] = "FrontFaceCulling";
 	}
 
 	void GraphicsSettingsPopUp::UpdateAndFetchCurrentMonitorResolution()

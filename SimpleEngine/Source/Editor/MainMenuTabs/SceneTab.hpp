@@ -3,9 +3,9 @@
 
 namespace Editor
 {
-	class Files final : public MainMenuTab
+	class SceneTab final : public MainMenuTab
 	{
 	public:
-		Files(const std::string& aName);
+		SceneTab(const std::string& aName);
 	};
 }
