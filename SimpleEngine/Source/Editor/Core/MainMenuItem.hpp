@@ -21,8 +21,11 @@ namespace Editor
 	public:
 		MainMenuItem(const std::string& aWindowName);
 
-		void Update();
+		void InternalUpdate();
 		void Render();
+
+		//NOTE(v11.4.5): Always Update in background
+		virtual void Update() {};
 
 		//NOTE(v11.4.5): Invoked only if there are no ItemChildren and PopUpChildren. TO-DO: Improve this somehow to work as a button instead of menu
 		virtual void OnClick() {};

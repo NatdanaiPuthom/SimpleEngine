@@ -16,8 +16,10 @@ namespace Editor
 		{
 			if (child->IsPopUpActive())
 			{
-				child->Update();
+				child->InternalUpdate();
 			}
+
+			child->Update();
 		}
 	}
 

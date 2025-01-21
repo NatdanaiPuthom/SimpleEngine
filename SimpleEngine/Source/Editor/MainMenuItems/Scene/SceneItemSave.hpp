@@ -8,6 +8,9 @@ namespace Editor
 	public:
 		SceneItemSave(const std::string& aName);
 
+		void Update() override;
 		void OnClick() override;
+	private:
+		void SaveActiveScene();
 	};
 }

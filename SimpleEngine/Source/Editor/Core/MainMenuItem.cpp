@@ -14,7 +14,7 @@ namespace Editor
 	{
 	}
 
-	void MainMenuItem::Update()
+	void MainMenuItem::InternalUpdate()
 	{
 		for (std::shared_ptr<PopUp> popUpWindow : myPopUpWindows)
 		{
