@@ -23,6 +23,9 @@ namespace Editor
 
 		void Update();
 		void Render();
+
+		virtual void OnClick() {};
+	public:
 		bool IsPopUpActive() const;
 	public:
 		template<DerivedFromPopUpWindow T>

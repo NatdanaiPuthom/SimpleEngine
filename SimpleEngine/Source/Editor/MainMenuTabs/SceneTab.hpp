@@ -8,7 +8,7 @@ namespace Editor
 	public:
 		SceneTab(const std::string& aName);
 
-		void OnClick() override;
+		void OnClick();
 	private:
 		void SetActiveSceneAsStart();
 	private:

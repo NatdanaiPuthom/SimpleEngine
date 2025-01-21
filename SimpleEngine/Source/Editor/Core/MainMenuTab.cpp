@@ -27,16 +27,9 @@ namespace Editor
 		{
 			if (ImGui::BeginMenu(myImGuiName.c_str()))
 			{
-				if (myMainMenuItems.empty())
+				for (std::shared_ptr<MainMenuItem> child : myMainMenuItems)
 				{
-					OnClick();
-				}
-				else
-				{
-					for (std::shared_ptr<MainMenuItem> child : myMainMenuItems)
-					{
-						child->Render();
-					}
+					child->Render();
 				}
 
 				ImGui::EndMenu();
@@ -44,10 +37,5 @@ namespace Editor
 
 			ImGui::EndMainMenuBar();
 		}
-	}
-
-	void MainMenuTab::OnClick()
-	{
-		ImGui::MenuItem("Default##MainMenuTab");
 	}
 }

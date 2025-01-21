@@ -15,12 +15,7 @@ namespace Editor
 		MainMenuTab(const std::string& aWindowName);
 
 		void Update();
-
-		//NOTE(v11.4.5): Internal only
 		void Render() override final; 
-
-		//NOTE(v11.4.5): Only get called when children is empty
-		virtual void OnClick();
 
 		template<DerivedFromMainMenuItem T>
 		std::shared_ptr<T> AddChildren()
