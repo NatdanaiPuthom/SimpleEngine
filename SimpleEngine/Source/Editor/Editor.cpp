@@ -17,6 +17,9 @@
 #include "Editor/MainMenuItems/Settings/GraphicsSettingsItem.hpp"
 #include "Editor/MainMenuItems/Help/CameraHelpItem.hpp"
 #include "Editor/MainMenuItems/Scene/SceneItemSave.hpp"
+#include "Editor/MainMenuItems/Scene/SceneItemLoad.hpp"
+#include "Editor/MainMenuItems/Scene/SceneItemCreate.hpp"
+#include "Editor/MainMenuItems/Scene/SceneItemReload.hpp"
 
 namespace Editor
 {
@@ -105,8 +108,18 @@ namespace Editor
 		sceneTab->SetWindowName("Scene");
 
 		std::shared_ptr<SceneItemSave> sceneSaveItem = sceneTab->AddChildren<SceneItemSave>();
+		std::shared_ptr<SceneItemLoad> sceneLoadItem = sceneTab->AddChildren<SceneItemLoad>();
+		std::shared_ptr<SceneItemCreate> sceneCreateItem = sceneTab->AddChildren<SceneItemCreate>();
+		std::shared_ptr<SceneItemReload> sceneReloadItem = sceneTab->AddChildren<SceneItemReload>();
+
 		sceneSaveItem->SetWindowName("Save");
+		sceneLoadItem->SetWindowName("Load");
+		sceneCreateItem->SetWindowName("Create");
+		sceneReloadItem->SetWindowName("Reload");
+
 		sceneSaveItem->SetHotKeyShortCutText("Ctrl + S");
+
+		sceneReloadItem->SetShowToolTips(true);
 	}
 
 	void EditorEngine::SetupSettingsTab()

@@ -26,10 +26,14 @@ namespace Editor
 
 		//NOTE(v11.4.5): Invoked only if there are no ItemChildren and PopUpChildren. TO-DO: Improve this somehow to work as a button instead of menu
 		virtual void OnClick() {};
+
+		//TO-DO(v11.4.5): May need improvement in future, but not today
+		virtual void ToolTips() {};
 	public:
 		bool IsPopUpActive() const;
 	public:
 		void SetHotKeyShortCutText(const char* aHotKeyShortCut);
+		void SetShowToolTips(const bool aShowToolTips);
 	public:
 		const char* GetHotKeyShortCutText() const;
 	public:
@@ -42,8 +46,9 @@ namespace Editor
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
 		std::vector<std::shared_ptr<MainMenuItem>> myChildren;
 		const char* myHotKeyShortCutText;
+		float myTooltipsTimer;
 		bool myPopUpIsActive;
-
+		bool myShowTooltips;
 	};
 
 	template<DerivedFromPopUpWindow T>

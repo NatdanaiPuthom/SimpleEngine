@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Core/MainMenuItem.hpp"
+#include "Engine/Global.hpp"
 #include <typeindex>
 
 namespace Editor
@@ -7,7 +8,9 @@ namespace Editor
 	MainMenuItem::MainMenuItem(const std::string& aWindowName)
 		: Window(aWindowName, typeid(MainMenuItem).name())
 		, myHotKeyShortCutText("")
+		, myTooltipsTimer(0.0f)
 		, myPopUpIsActive(false)
+		, myShowTooltips(false)
 	{
 	}
 
@@ -59,6 +62,27 @@ namespace Editor
 				ImGui::EndMenu();
 			}
 		}
+
+		if (myShowTooltips)
+		{
+			if (ImGui::IsItemHovered())
+			{
+				myTooltipsTimer += Global::GetDeltaTime();
+
+				if (myTooltipsTimer > 0.33f)
+				{
+					if (ImGui::BeginTooltip())
+					{
+						ToolTips();
+						ImGui::EndTooltip();
+					}
+				}
+			}
+			else
+			{
+				myTooltipsTimer = 0.0f;
+			}
+		}
 	}
 
 	bool MainMenuItem::IsPopUpActive() const
@@ -69,6 +93,11 @@ namespace Editor
 	void MainMenuItem::SetHotKeyShortCutText(const char* aHotKeyShortCut)
 	{
 		myHotKeyShortCutText = aHotKeyShortCut;
+	}
+
+	void MainMenuItem::SetShowToolTips(const bool aShowToolTips)
+	{
+		myShowTooltips = aShowToolTips;
 	}
 
 	const char* MainMenuItem::GetHotKeyShortCutText() const
