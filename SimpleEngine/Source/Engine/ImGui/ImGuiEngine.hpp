@@ -21,7 +21,6 @@ namespace Simple
 	class ImGuiEngine final
 	{
 	public:
-
 		ImGuiEngine();
 		~ImGuiEngine();
 
@@ -33,6 +32,10 @@ namespace Simple
 	public:
 		static void SetEditorStyle(const eImGuiEditorStyle aStyle);
 		static void SetEditorMode(const eImGuiEditorMode aMode);
+	public:
+		static void SameLineDummy(float aWidthOffset, float aHeightOffset);
+		static void SeparatorDummy(float aWidthOffset, float aHeightOffset);
+		static void SeparatorTextDummy(float aWidthOffset, float aHeightOffset, const char* aText = "");
 	private:
 		void LoadFronts();
 		void LoadColors();

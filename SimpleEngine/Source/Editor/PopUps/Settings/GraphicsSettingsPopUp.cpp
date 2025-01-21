@@ -52,7 +52,7 @@ namespace Editor
 			ImGui::SameLine(ImGui::GetWindowWidth() - 100);
 			ImGui::Text(fps.c_str());
 			
-			SeparatorTextDummy(0, 0, "Render");
+			Simple::ImGuiEngine::SeparatorTextDummy(0, 0, "Render");
 
 			static const std::string vSync = std::string("VSync").append(myImGuiTag).c_str();
 			if (ImGui::Checkbox(vSync.c_str(), &vsync))
@@ -60,7 +60,7 @@ namespace Editor
 				graphicsGenericDataManager->SetVSync(vsync);
 			}
 
-			SameLineDummy(3, 0);
+			Simple::ImGuiEngine::SameLineDummy(3, 0);
 
 			static const std::string debugLines = std::string("DebugLines").append(myImGuiTag).c_str();
 			if (ImGui::Checkbox(debugLines.c_str(), &shouldRenderDebugLines))
@@ -68,7 +68,7 @@ namespace Editor
 				renderer->SetShouldRenderDebugLines(shouldRenderDebugLines);
 			}
 
-			SameLineDummy(3, 0);
+			Simple::ImGuiEngine::SameLineDummy(3, 0);
 
 			static const std::string boundingBox = std::string("BoundingBox").append(myImGuiTag).c_str();
 			if (ImGui::Checkbox(boundingBox.c_str(), &shouldRenderBoundingBox))
@@ -82,7 +82,7 @@ namespace Editor
 				renderer->SetShouldRenderMesh(shouldRenderMesh);
 			}
 
-			SameLineDummy(10, 0);
+			Simple::ImGuiEngine::SameLineDummy(10, 0);
 
 			static const std::string pbr = std::string("PBR").append(myImGuiTag).c_str();
 			if (ImGui::Checkbox(pbr.c_str(), &isUsingPBR))
@@ -90,7 +90,7 @@ namespace Editor
 				renderer->SetIsUsingPBR(isUsingPBR);
 			}
 
-			SameLineDummy(52, 0);
+			Simple::ImGuiEngine::SameLineDummy(52, 0);
 
 			static const std::string skeleton = std::string("Skeleton").append(myImGuiTag).c_str();
 			if (ImGui::Checkbox(skeleton.c_str(), &shouldRenderSkeleton))
@@ -98,7 +98,7 @@ namespace Editor
 				renderer->SetShouldRenderSkeletonLines(shouldRenderSkeleton);
 			}
 
-			SeparatorDummy(0, heightPadding);
+			Simple::ImGuiEngine::SeparatorDummy(0, heightPadding);
 
 			UpdateFPSCapSettings(graphicsEngine);
 
@@ -112,11 +112,11 @@ namespace Editor
 
 			UpdateWindowsSizeSettings();
 
-			SeparatorDummy(0, heightPadding);
+			Simple::ImGuiEngine::SeparatorDummy(0, heightPadding);
 
 			UpdateConsoleSettings();
 
-			SeparatorDummy(0, heightPadding);
+			Simple::ImGuiEngine::SeparatorDummy(0, heightPadding);
 
 			static std::vector<const char*> editorStyles = { "Simple","Dark", "Light" };
 
@@ -144,35 +144,12 @@ namespace Editor
 				}
 			}
 
-			SeparatorDummy(0, heightPadding);
+			Simple::ImGuiEngine::SeparatorDummy(0, heightPadding);
 			UpdateCursorSettings();
-			SeparatorDummy(0, heightPadding);
+			Simple::ImGuiEngine::SeparatorDummy(0, heightPadding);
 		}
 
 		ImGui::End();
-	}
-
-	void GraphicsSettingsPopUp::SameLineDummy(float aWidthOffset, float aHeightOffset)
-	{
-		ImGui::SameLine();
-		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
-		ImGui::SameLine();
-	}
-
-	void GraphicsSettingsPopUp::SeparatorDummy(float aWidthOffset, float aHeightOffset)
-	{
-		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
-		ImGui::Separator();
-		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
-	}
-
-	void GraphicsSettingsPopUp::SeparatorTextDummy(float aWidthOffset, float aHeightOffset, const char* aText)
-	{
-		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
-		ImGui::PushStyleVar(ImGuiStyleVar_SeparatorTextAlign, ImVec2(0.50f, 0.5f));
-		ImGui::SeparatorText(aText);
-		ImGui::PopStyleVar(1);
-		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
 	}
 
 	void GraphicsSettingsPopUp::UpdateFPSCapSettings(Graphics::GraphicsEngine* aGraphicsEngine)

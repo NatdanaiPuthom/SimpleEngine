@@ -20,10 +20,6 @@ namespace Editor
 		void Init() override;
 		void Render() override;
 	private:
-		void SameLineDummy(float aWidthOffset, float aHeightOffset);
-		void SeparatorDummy(float aWidthOffset, float aHeightOffset);
-		void SeparatorTextDummy(float aWidthOffset, float aHeightOffset, const char* aText = "");
-	private:
 		void InitRasterizerStatesStrings();
 		void UpdateFPSCapSettings(Graphics::GraphicsEngine* aGraphicsEngine);
 		void UpdateConsoleSettings();

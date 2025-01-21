@@ -135,6 +135,29 @@ namespace Simple
 		}
 	}
 
+	void ImGuiEngine::SameLineDummy(float aWidthOffset, float aHeightOffset)
+	{
+		ImGui::SameLine();
+		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
+		ImGui::SameLine();
+	}
+
+	void ImGuiEngine::SeparatorDummy(float aWidthOffset, float aHeightOffset)
+	{
+		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
+		ImGui::Separator();
+		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
+	}
+
+	void ImGuiEngine::SeparatorTextDummy(float aWidthOffset, float aHeightOffset, const char* aText)
+	{
+		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
+		ImGui::PushStyleVar(ImGuiStyleVar_SeparatorTextAlign, ImVec2(0.50f, 0.5f));
+		ImGui::SeparatorText(aText);
+		ImGui::PopStyleVar(1);
+		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
+	}
+
 	void ImGuiEngine::LoadFronts()
 	{
 		ImGuiIO& io = ImGui::GetIO();
