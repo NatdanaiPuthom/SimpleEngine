@@ -9,12 +9,6 @@
 
 namespace Editor
 {
-	template <typename T>
-	concept DerivedFromMainMenuItem = std::is_base_of_v<MainMenuItem, T>&& std::is_class_v<T>;
-}
-
-namespace Editor
-{
 	class MainMenuTab : public Window
 	{
 	public:

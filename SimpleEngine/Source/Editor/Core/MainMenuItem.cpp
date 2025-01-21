@@ -21,11 +21,32 @@ namespace Editor
 
 	void MainMenuItem::Render()
 	{
-		if (ImGui::MenuItem(myImGuiName.c_str(), myHotKeyShortCutText, &myPopUpIsActive))
+		if (myChildren.empty())
 		{
-			for (std::shared_ptr<PopUp> popUpWindow : myPopUpWindows)
+			if (ImGui::MenuItem(myImGuiName.c_str(), myHotKeyShortCutText, &myPopUpIsActive))
 			{
-				popUpWindow->SetActive(myPopUpIsActive);
+				for (std::shared_ptr<PopUp> popUpWindow : myPopUpWindows)
+				{
+					popUpWindow->SetActive(myPopUpIsActive);
+				}
+			}
+		}
+		else
+		{
+			if (ImGui::BeginMenu(myImGuiName.c_str()))
+			{
+				for (std::shared_ptr<MainMenuItem> child : myChildren)
+				{
+					if (ImGui::MenuItem(child->myImGuiName.c_str(), child->myHotKeyShortCutText, &child->myPopUpIsActive))
+					{
+						for (std::shared_ptr<PopUp> popUpWindow : child->myPopUpWindows)
+						{
+							popUpWindow->SetActive(child->myPopUpIsActive);
+						}
+					}
+				}
+
+				ImGui::EndMenu();
 			}
 		}
 	}
