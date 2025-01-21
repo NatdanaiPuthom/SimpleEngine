@@ -19,6 +19,9 @@ namespace Editor
 	public:
 		bool IsActive() const;
 		bool IsFocused() const;
+	public:
+		const std::string& GetWindowName() const;
+		const std::string& GetImGuiName() const;
 	protected:
 		std::string myName;
 		std::string myImGuiTag;

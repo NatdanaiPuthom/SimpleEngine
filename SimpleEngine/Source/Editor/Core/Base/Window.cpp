@@ -38,4 +38,14 @@ namespace Editor
 	{
 		return myIsFocus;
 	}
+
+	const std::string& Window::GetWindowName() const
+	{
+		return myName;
+	}
+
+	const std::string& Window::GetImGuiName() const
+	{
+		return myImGuiName;
+	}
 }
