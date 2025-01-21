@@ -12,7 +12,7 @@ namespace
 	Simple::Engine* localEngine = nullptr;
 	Graphics::GraphicsEngine* localGraphicsEngine = nullptr;
 
-	const float localUpdatePeriodically = 0.2f;
+	constexpr float localUpdatePeriodically = 0.2f;
 
 	float localFPSCounterTime = 0;
 
@@ -35,7 +35,7 @@ namespace Impl
 
 		if (localFPSCounterTime >= localUpdatePeriodically)
 		{
-			localFramesPerSecond = static_cast<int>(localFrames / localFPSCounterTime);
+			localFramesPerSecond = static_cast<int>(localFrames * (1.0 / localFPSCounterTime));
 			localFrames = 0;
 			localFPSCounterTime = 0;
 		}
