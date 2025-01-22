@@ -36,9 +36,10 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		SetUpHelpTab();
-		/*SetUpSceneTab();
 		SetupSettingsTab();
+		SetUpHelpTab();
+		/*
+		SetUpSceneTab();
 		*/
 
 		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
@@ -127,20 +128,28 @@ namespace Editor
 
 	void EditorEngine::SetupSettingsTab()
 	{
-		std::shared_ptr<Settings> settingsTab = AddMenuTab<Settings>();
+		std::shared_ptr<MainMenuItemParent> settingsTab = AddMenuParent<MainMenuItemParent>();
 
-		std::shared_ptr<AudioItem> settingsAudioItem = settingsTab->AddChildren<AudioItem>();
-		std::shared_ptr<GraphicsSettingsItem> settingsGraphicsItem = settingsTab->AddChildren<GraphicsSettingsItem>();
+		std::shared_ptr<MainMenuItemPopUp> audioSettingButton = std::make_shared<MainMenuItemPopUp>("Audio");
+		std::shared_ptr<MainMenuItemPopUp> cameraSettingButton = std::make_shared<MainMenuItemPopUp>("Camera");
+		std::shared_ptr<MainMenuItemPopUp> graphicsSettingButton = std::make_shared<MainMenuItemPopUp>("Graphics");
 
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingsPopUp = AddPopUpWindow<CameraSettingsPopUp>();
 		std::shared_ptr<AudioSettingsPopUp> audioSettingsPopUp = AddPopUpWindow<AudioSettingsPopUp>();
 		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingsPopUp = AddPopUpWindow<GraphicsSettingsPopUp>();
 
-		settingsAudioItem->AddPopUpWindows(audioSettingsPopUp)->SetWindowName("Audio Settings");
-		settingsGraphicsItem->AddPopUpWindows(graphicsSettingsPopUp)->SetWindowName("Graphics Settings");
+		settingsTab->AddChild(audioSettingButton);
+		settingsTab->AddChild(cameraSettingButton);
+		settingsTab->AddChild(graphicsSettingButton);
 
-		settingsAudioItem->SetWindowName("Audio");
-		settingsGraphicsItem->SetWindowName("Graphics");
+		audioSettingButton->AddPopUpWindows(audioSettingsPopUp);
+		cameraSettingButton->AddPopUpWindows(cameraSettingsPopUp);
+		graphicsSettingButton->AddPopUpWindows(graphicsSettingsPopUp);
+
+		settingsTab->SetWindowName("Settings");
+		cameraSettingsPopUp->SetWindowName("Camera Settings");
+		audioSettingsPopUp->SetWindowName("Audio Settings");
+		graphicsSettingsPopUp->SetWindowName("Graphics Settings");
 	}
 
 	void EditorEngine::SetUpHelpTab()
