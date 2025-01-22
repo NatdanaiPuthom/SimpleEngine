@@ -159,6 +159,44 @@ namespace Editor
 		std::vector<std::shared_ptr<MainMenuItemTest>> myButtons;
 	};
 
+	class MainMenuItemSelector : public MainMenuItemTest
+	{
+	public:
+		MainMenuItemSelector(const std::string& aWindowName) : MainMenuItemTest(aWindowName) {}
+
+		virtual void Invoke(const char* aText) = 0;
+
+		void AddString(const std::string& aString)
+		{
+			myStrings.push_back(aString);
+		}
+
+		void ClearStrings()
+		{
+			myStrings.clear();
+		}
+
+		void Render()
+		{
+			if (ImGui::BeginMenu(myImGuiName.c_str()))
+			{
+				for (const auto& text : myStrings)
+				{
+					if (ImGui::Selectable(text.c_str()))
+					{
+						Invoke(text.c_str());
+						break;
+					}
+				}
+
+				ImGui::EndMenu();
+			}
+		}
+
+	public:
+		std::vector<std::string> myStrings;
+	};
+
 	class TestButton : public MainMenuItemButton
 	{
 	public:
@@ -167,18 +205,19 @@ namespace Editor
 		void Invoke() override
 		{
 			std::cout << "button clicked!" << std::endl;
-			//const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
+		}
+	};
 
-			//for (const auto& name : sceneNames)
-			//{
-			//	if (ImGui::Selectable(name.c_str()))
-			//	{
-			//		/*const std::string scenePath = std::string(SIMPLE_DIR_SCENES) + "\\" + name;
-			//		MainSingleton::GetSceneManager().ChangeScene(scenePath);*/
-			//		std::cout << name.c_str() << std::endl;
-			//		break;
-			//	}
-			//}
+	class TestSelector : public MainMenuItemSelector
+	{
+	public:
+		TestSelector(const std::string& aWindowName) : MainMenuItemSelector(aWindowName) {}
+
+		void Invoke(const char* aText)
+		{
+			const std::string scenePath = std::string(SIMPLE_DIR_SCENES) + "\\" + aText;
+			MainSingleton::GetSceneManager().ChangeScene(scenePath);
+			std::cout << "loadddd!" << std::endl;
 		}
 	};
 }

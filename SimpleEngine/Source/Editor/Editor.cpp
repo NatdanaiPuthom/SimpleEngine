@@ -124,16 +124,25 @@ namespace Editor
 		std::shared_ptr<MainMenuItemParent> sceneTab = AddMenuParent<MainMenuItemParent>();
 
 		std::shared_ptr<TestButton> saveButton = std::make_shared<TestButton>("Save");
-		std::shared_ptr<TestButton> loadButton = std::make_shared<TestButton>("Load");
 		std::shared_ptr<MainMenuItemList> createButtonList = std::make_shared<MainMenuItemList>("Create");
 		std::shared_ptr<TestButton> reloadButton = std::make_shared<TestButton>("Reload");
 		std::shared_ptr<TestButton> setAsActiveButton = std::make_shared<TestButton>("Set As Active");
+
+
+		std::shared_ptr<TestSelector> test = std::make_shared<TestSelector>("Load");
+
+		const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
+
+		for (const auto& name : sceneNames)
+		{
+			test->AddString(name);
+		}
 
 		std::shared_ptr<TestButton> testCreateNewButton = std::make_shared<TestButton>("New");
 		std::shared_ptr<TestButton> testCreateCopyButton = std::make_shared<TestButton>("Copy");
 
 		sceneTab->AddChild(saveButton);
-		sceneTab->AddChild(loadButton);
+		sceneTab->AddChild(test);
 		sceneTab->AddChild(createButtonList);
 		sceneTab->AddChild(reloadButton);
 		sceneTab->AddChild(setAsActiveButton);
