@@ -9,7 +9,6 @@
 #include "Editor/PopUps/Settings/GraphicsSettingsPopUp.hpp"
 
 #include "Editor/MainMenuTabs/SceneTab.hpp"
-#include "Editor/MainMenuTabs/Settings.hpp"
 
 #include "Editor/MainMenuItems/Settings/AudioItem.hpp"
 #include "Editor/MainMenuItems/Settings/CameraSettingsItem.hpp"
@@ -36,17 +35,14 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
+		SetUpSceneTab();
 		SetupSettingsTab();
 		SetUpHelpTab();
-		/*
-		SetUpSceneTab();
-		*/
 
 		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
 		{
 			popUp->Init();
 		}
-
 	}
 
 	void EditorEngine::Update()
@@ -105,7 +101,7 @@ namespace Editor
 
 	void EditorEngine::SetUpSceneTab()
 	{
-		std::shared_ptr<SceneTab> sceneTab = AddMenuTab<SceneTab>();
+	/*	std::shared_ptr<SceneTab> sceneTab = AddMenuTab<SceneTab>();
 		sceneTab->SetWindowName("Scene");
 
 		std::shared_ptr<SceneItemSave> sceneSaveItem = sceneTab->AddChildren<SceneItemSave>();
@@ -123,7 +119,29 @@ namespace Editor
 		sceneSaveItem->SetHotKeyShortCutText("Ctrl + S");
 
 		sceneReloadItem->SetShowToolTips(true);
-		sceneSetAsStartItem->SetShowToolTips(true);
+		sceneSetAsStartItem->SetShowToolTips(true);*/
+
+		std::shared_ptr<MainMenuItemParent> sceneTab = AddMenuParent<MainMenuItemParent>();
+
+		std::shared_ptr<TestButton> saveButton = std::make_shared<TestButton>("Save");
+		std::shared_ptr<TestButton> loadButton = std::make_shared<TestButton>("Load");
+		std::shared_ptr<MainMenuItemList> createButtonList = std::make_shared<MainMenuItemList>("Create");
+		std::shared_ptr<TestButton> reloadButton = std::make_shared<TestButton>("Reload");
+		std::shared_ptr<TestButton> setAsActiveButton = std::make_shared<TestButton>("Set As Active");
+
+		std::shared_ptr<TestButton> testCreateNewButton = std::make_shared<TestButton>("New");
+		std::shared_ptr<TestButton> testCreateCopyButton = std::make_shared<TestButton>("Copy");
+
+		sceneTab->AddChild(saveButton);
+		sceneTab->AddChild(loadButton);
+		sceneTab->AddChild(createButtonList);
+		sceneTab->AddChild(reloadButton);
+		sceneTab->AddChild(setAsActiveButton);
+
+		createButtonList->AddChild(testCreateNewButton);
+		createButtonList->AddChild(testCreateCopyButton);
+
+		sceneTab->SetWindowName("Scene");
 	}
 
 	void EditorEngine::SetupSettingsTab()

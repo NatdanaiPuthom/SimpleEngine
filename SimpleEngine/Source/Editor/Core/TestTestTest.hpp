@@ -1,6 +1,7 @@
 #pragma once
 #include "Editor/Core/Base/Window.hpp"
 #include "Editor/Core/PopUp.hpp"
+#include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include <string>
 #include <memory>
 #include <vector>
@@ -165,7 +166,19 @@ namespace Editor
 
 		void Invoke() override
 		{
-			std::cout << "hello world" << std::endl;
+			std::cout << "button clicked!" << std::endl;
+			//const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
+
+			//for (const auto& name : sceneNames)
+			//{
+			//	if (ImGui::Selectable(name.c_str()))
+			//	{
+			//		/*const std::string scenePath = std::string(SIMPLE_DIR_SCENES) + "\\" + name;
+			//		MainSingleton::GetSceneManager().ChangeScene(scenePath);*/
+			//		std::cout << name.c_str() << std::endl;
+			//		break;
+			//	}
+			//}
 		}
 	};
 }
