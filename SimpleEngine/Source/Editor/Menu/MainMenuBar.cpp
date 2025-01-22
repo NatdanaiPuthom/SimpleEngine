@@ -3,7 +3,6 @@
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/Windows/AssetWindow.hpp"
 #include "Editor/Windows/DeferredSceneWindow.hpp"
-#include "Editor/Windows/PostProcessingWindow.hpp"
 #include "Editor/FlyScript/NodeScriptingWindow.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #include "External/dearimgui/imguizmo/ImGuizmo.h"
@@ -41,7 +40,6 @@ namespace Editor
 		myAssetWindow = std::make_unique<AssetWindow>();
 		myHierarchyWindow = std::make_unique<HierarchyWindow>();
 		myDeferredSceneWindow = std::make_unique<DeferredSceneWindow>();
-		myPostProcessWindow = std::make_unique<PostProcessingWindow>();
 		myNodeScriptingWindow = std::make_unique<NodeScriptingWindow>();
 
 		LoadSettingsFromJson();
@@ -49,7 +47,6 @@ namespace Editor
 		myAssetWindow->Init();
 		myHierarchyWindow->Init();
 		myDeferredSceneWindow->Init();
-		myPostProcessWindow->Init();
 		myNodeScriptingWindow->Init();
 
 		myAssetWindow->myActiveWindowData = &myActiveWindowData;
@@ -60,8 +57,8 @@ namespace Editor
 	{
 		Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
 
-		static const char* const windowNames[] = { "Editor", "Deferred", "PostProcess", "NodeScript" };
-		static const char* const keyShortCuts[] = { "F1", "F2", "F3", "F4" };
+		static const char* const windowNames[] = { "Editor", "Deferred", "NodeScript" };
+		static const char* const keyShortCuts[] = { "F1", "F2", "F4" };
 
 		for (unsigned int i = 0; i < static_cast<unsigned int>(eWindowType::Count); ++i)
 		{
@@ -233,11 +230,6 @@ namespace Editor
 		if (myActiveWindowData.IsWindowActive(eWindowType::Deferred))
 		{
 			myDeferredSceneWindow->Draw();
-		}
-
-		if (myActiveWindowData.IsWindowActive(eWindowType::PostProcess))
-		{
-			myPostProcessWindow->Draw();
 		}
 
 		if (myActiveWindowData.IsWindowActive(eWindowType::NodeScript))

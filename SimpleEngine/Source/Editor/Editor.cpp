@@ -42,8 +42,8 @@ namespace Editor
 		SetupSettingsTab();
 		SetUpHelpTab();
 
-		auto a = AddPopUpWindow<PostProcessPopUp>();
-		a->SetActive(true);
+		//auto postprocess = AddPopUpWindow<PostProcessPopUp>();
+		//postprocess->SetActive(true);
 
 		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
 		{

@@ -7,7 +7,6 @@ namespace Editor
 	class HierarchyWindow;
 	class AssetWindow;
 	class DeferredSceneWindow;
-	class PostProcessingWindow;
 	class NodeScriptingWindow;
 }
 
@@ -17,7 +16,6 @@ namespace Editor
 	{
 		Editor,
 		Deferred,
-		PostProcess,
 		NodeScript,
 		Count
 	};
@@ -49,7 +47,6 @@ namespace Editor
 		std::unique_ptr<HierarchyWindow> myHierarchyWindow;
 		std::unique_ptr<AssetWindow> myAssetWindow;
 		std::unique_ptr<DeferredSceneWindow> myDeferredSceneWindow;
-		std::unique_ptr<PostProcessingWindow> myPostProcessWindow;
 		std::unique_ptr<NodeScriptingWindow> myNodeScriptingWindow;
 
 		ActiveWindowData myActiveWindowData;
