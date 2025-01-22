@@ -20,7 +20,7 @@ namespace Editor
 		sceneManager.CreateNewScene(absolutePath);
 		sceneManager.ChangeScene(relativePath);
 
-		Simple::Console::Print("New scene: ", Simple::ConsoleTextColor::White, false);
+		Simple::Console::Print("New scene ", Simple::ConsoleTextColor::White, false);
 		Simple::Console::Print(sceneManager.GetCurrentSceneInfo()->name.c_str(), Simple::ConsoleTextColor::Green, false);
 		Simple::Console::Print(" has been created!", Simple::ConsoleTextColor::White, true);
 	}

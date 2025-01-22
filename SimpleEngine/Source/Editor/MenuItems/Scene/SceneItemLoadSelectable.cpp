@@ -13,7 +13,7 @@ namespace Editor
 	{
 		const std::string scenePath = std::string(SIMPLE_DIR_SCENES) + "\\" + aText;
 		MainSingleton::GetSceneManager().ChangeScene(scenePath);
-		Simple::Console::Print("Loaded: ", Simple::ConsoleTextColor::White, false);
+		Simple::Console::Print("Loaded scene ", Simple::ConsoleTextColor::White, false);
 		Simple::Console::Print(aText, Simple::ConsoleTextColor::Green, false);
 		Simple::Console::Print("!", Simple::ConsoleTextColor::White, true);
 	}
