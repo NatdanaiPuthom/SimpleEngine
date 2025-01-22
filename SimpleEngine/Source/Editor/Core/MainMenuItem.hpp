@@ -2,6 +2,7 @@
 #include "Editor/Core/Base/Window.hpp"
 #include <string>
 #include <type_traits>
+#include <typeindex>
 
 namespace Editor
 {

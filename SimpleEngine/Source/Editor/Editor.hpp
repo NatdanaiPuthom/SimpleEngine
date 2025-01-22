@@ -31,6 +31,8 @@ namespace Editor
 		void SetupSettingsTab();
 		void SetUpHelpTab();
 	private:
+		void TempPlayMenuBar();
+	private:
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
 		std::vector<std::shared_ptr<MainMenuItemTab>> myMainMenuTabs;
 	};
