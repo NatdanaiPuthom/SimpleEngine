@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/PopUps/PostProcessPopUp.hpp"
+#include "Engine/Global.hpp"
 
 namespace Editor
 {

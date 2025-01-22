@@ -6,7 +6,6 @@ namespace Editor
 {
 	class HierarchyWindow;
 	class AssetWindow;
-	class DeferredSceneWindow;
 	class NodeScriptingWindow;
 }
 
@@ -15,7 +14,6 @@ namespace Editor
 	enum class eWindowType
 	{
 		Editor,
-		Deferred,
 		NodeScript,
 		Count
 	};
@@ -46,7 +44,6 @@ namespace Editor
 	private:
 		std::unique_ptr<HierarchyWindow> myHierarchyWindow;
 		std::unique_ptr<AssetWindow> myAssetWindow;
-		std::unique_ptr<DeferredSceneWindow> myDeferredSceneWindow;
 		std::unique_ptr<NodeScriptingWindow> myNodeScriptingWindow;
 
 		ActiveWindowData myActiveWindowData;

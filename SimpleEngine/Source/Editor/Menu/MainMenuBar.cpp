@@ -2,7 +2,6 @@
 #include "Editor/Menu/MainMenuBar.hpp"
 #include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/Windows/AssetWindow.hpp"
-#include "Editor/Windows/DeferredSceneWindow.hpp"
 #include "Editor/FlyScript/NodeScriptingWindow.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #include "External/dearimgui/imguizmo/ImGuizmo.h"
@@ -39,14 +38,12 @@ namespace Editor
 	{
 		myAssetWindow = std::make_unique<AssetWindow>();
 		myHierarchyWindow = std::make_unique<HierarchyWindow>();
-		myDeferredSceneWindow = std::make_unique<DeferredSceneWindow>();
 		myNodeScriptingWindow = std::make_unique<NodeScriptingWindow>();
 
 		LoadSettingsFromJson();
 
 		myAssetWindow->Init();
 		myHierarchyWindow->Init();
-		myDeferredSceneWindow->Init();
 		myNodeScriptingWindow->Init();
 
 		myAssetWindow->myActiveWindowData = &myActiveWindowData;
@@ -57,8 +54,8 @@ namespace Editor
 	{
 		Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
 
-		static const char* const windowNames[] = { "Editor", "Deferred", "NodeScript" };
-		static const char* const keyShortCuts[] = { "F1", "F2", "F4" };
+		static const char* const windowNames[] = { "Editor", "NodeScript" };
+		static const char* const keyShortCuts[] = { "F1", "F4" };
 
 		for (unsigned int i = 0; i < static_cast<unsigned int>(eWindowType::Count); ++i)
 		{
@@ -225,11 +222,6 @@ namespace Editor
 		{
 			myAssetWindow->Draw();
 			myHierarchyWindow->Draw(); //TO-DO(v9.31.1): For now HierachyWindow should always be run last due to removing Entities during run time. Fix/Look into it in future
-		}
-
-		if (myActiveWindowData.IsWindowActive(eWindowType::Deferred))
-		{
-			myDeferredSceneWindow->Draw();
 		}
 
 		if (myActiveWindowData.IsWindowActive(eWindowType::NodeScript))

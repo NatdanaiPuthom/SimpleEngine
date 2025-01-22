@@ -1,21 +1,14 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Windows/DeferredSceneWindow.hpp"
+#include "Editor/PopUps/DeferredPopUp.hpp"
+#include "Engine/Global.hpp"
 
 namespace Editor
 {
-	Editor::DeferredSceneWindow::DeferredSceneWindow()
+	DeferredPopUp::DeferredPopUp(const std::string& aName) : PopUp(aName)
 	{
 	}
 
-	void Editor::DeferredSceneWindow::Init()
-	{
-	}
-
-	void Editor::DeferredSceneWindow::Update()
-	{
-	}
-
-	void Editor::DeferredSceneWindow::Draw() //NOTE(v11.2.5): a lot of magic numbers but at this point I dont care anymore, it works fine for now. When I get less depressed from aligning windows properly I may try again
+	void DeferredPopUp::Render()
 	{
 		static constexpr float aspectRatio = 16.0f / 9.0f; //TO-DO(v10.0.4): should read from some json file
 

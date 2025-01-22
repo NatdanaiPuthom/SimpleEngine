@@ -21,6 +21,7 @@
 #include "Editor/MenuItems/Scene/SceneItemSetAsStartButton.hpp"
 
 #include "Editor/PopUps/PostProcessPopUp.hpp"
+#include "Editor/PopUps/DeferredPopUp.hpp"
 
 #include "Engine/ImGui/ImGuiEngine.hpp" //TempPlayMenuBar
 
@@ -44,6 +45,9 @@ namespace Editor
 
 		//auto postprocess = AddPopUpWindow<PostProcessPopUp>();
 		//postprocess->SetActive(true);
+
+		//auto deferred = AddPopUpWindow<DeferredPopUp>();
+		//deferred->SetActive(true);
 
 		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
 		{
