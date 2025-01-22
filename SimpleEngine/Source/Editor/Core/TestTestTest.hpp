@@ -14,6 +14,7 @@ namespace Editor
 
 		virtual void InternalUpdate() {};
 		virtual void Render() = 0;
+		virtual void Invoke() {};
 
 		const char* myHotKeyShortCutText = nullptr;
 		bool myPopUpIsActive = false;
@@ -24,18 +25,18 @@ namespace Editor
 	public:
 		MainMenuItemButton(const std::string& aWindowName) : MainMenuItemTest(aWindowName) {}
 
-		virtual void OnInvoke() = 0;
+		virtual void Invoke() = 0;
 
 		void Render() override final
 		{
 			if (ImGui::MenuItem(myImGuiName.c_str(), myHotKeyShortCutText))
 			{
-				OnInvoke();
+				Invoke();
 			}
 		};
 	};
 
-	class MainMenuItemParent : public MainMenuItemTest
+	class MainMenuItemParent final : public MainMenuItemTest
 	{
 	public:
 		MainMenuItemParent(const std::string& aWindowName) : MainMenuItemTest(aWindowName) {}
@@ -66,16 +67,31 @@ namespace Editor
 			}
 		};
 
-	public:
+		template<typename T> requires std::is_base_of_v<MainMenuItemTest, T>&& std::is_class_v<T>
+		std::shared_ptr<T> AddChild(std::shared_ptr<T> aChild)
+		{
+			for (const auto& existingPopUpWindow : myChildren)
+			{
+				if (existingPopUpWindow == aChild)
+				{
+					return aChild;
+				}
+			}
+
+			myChildren.push_back(aChild);
+			return aChild;
+		}
+
+	private:
 		std::vector<std::shared_ptr<MainMenuItemTest>> myChildren;
 	};
 
-	class MainMenuItemPopUp : public MainMenuItemTest
+	class MainMenuItemPopUp final : public MainMenuItemTest
 	{
 	public:
 		MainMenuItemPopUp(const std::string& aWindowName) : MainMenuItemTest(aWindowName) {}
 
-		void Render() override final 
+		void Render() override final
 		{
 			if (ImGui::MenuItem(myImGuiName.c_str(), myHotKeyShortCutText, &myPopUpIsActive))
 			{
@@ -86,10 +102,26 @@ namespace Editor
 			}
 		};
 
+		template<typename T> requires std::is_base_of_v<PopUp, T>&& std::is_class_v<T>
+		std::shared_ptr<T> AddPopUpWindows(std::shared_ptr<T> aPopUpWindow)
+		{
+			for (const auto& existingPopUpWindow : myPopUpWindows)
+			{
+				if (existingPopUpWindow == aPopUpWindow)
+				{
+					return aPopUpWindow;
+				}
+			}
+
+			myPopUpWindows.push_back(aPopUpWindow);
+			return aPopUpWindow;
+		}
+
+	private:
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
 	};
 
-	class MainMenuItemList : public MainMenuItemTest
+	class MainMenuItemList final : public MainMenuItemTest
 	{
 	public:
 		MainMenuItemList(const std::string& aWindowName) : MainMenuItemTest(aWindowName) {}
@@ -98,19 +130,23 @@ namespace Editor
 		{
 			if (ImGui::BeginMenu(myImGuiName.c_str()))
 			{
-				for (std::shared_ptr<MainMenuItemButton> button : myButtons)
+				for (std::shared_ptr<MainMenuItemTest> button : myButtons)
 				{
-					if (ImGui::Selectable(button->GetWindowName().c_str()))
-					{
-						button->OnInvoke();
-					}
+					button->Render();
 				}
 
 				ImGui::EndMenu();
 			}
 		}
 
-		std::vector<std::shared_ptr<MainMenuItemButton>> myButtons;
+		template<typename T> requires std::derived_from<T, MainMenuItemButton> || std::derived_from<T, MainMenuItemPopUp>
+		void AddChild(std::shared_ptr<T> aButton)
+		{
+			myButtons.push_back(aButton);
+		}
+
+	private:
+		std::vector<std::shared_ptr<MainMenuItemTest>> myButtons;
 	};
 
 	class TestButton : public MainMenuItemButton
@@ -118,7 +154,7 @@ namespace Editor
 	public:
 		TestButton(const std::string& aWindowName) : MainMenuItemButton(aWindowName) {}
 
-		void OnInvoke() override
+		void Invoke() override
 		{
 			std::cout << "hello world" << std::endl;
 		}

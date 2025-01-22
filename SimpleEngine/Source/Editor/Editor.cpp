@@ -109,13 +109,14 @@ namespace Editor
 			std::shared_ptr<TestButton> buttonchild1 = std::make_shared<TestButton>("buttonchild1");
 			std::shared_ptr<TestButton> buttonchild2 = std::make_shared<TestButton>("buttonchild2");
 
-			list->myButtons.push_back(buttonchild1);
-			list->myButtons.push_back(buttonchild2);
+			list->AddChild(buttonchild1);
+			list->AddChild(popUp);
 
-			popUp->myPopUpWindows.push_back(myPopUpWindows.back());
-			parent.myChildren.push_back(popUp);
-			parent.myChildren.push_back(button);
-			parent.myChildren.push_back(list);
+			popUp->AddPopUpWindows(myPopUpWindows.back());
+
+			parent.AddChild(popUp);
+			parent.AddChild(button);
+			parent.AddChild(list);
 
 
 			runOnce = false;
@@ -126,7 +127,6 @@ namespace Editor
 		{
 			parent.InternalUpdate();
 			parent.Render();
-			//list->Render();
 
 			ImGui::EndMainMenuBar();
 		}
