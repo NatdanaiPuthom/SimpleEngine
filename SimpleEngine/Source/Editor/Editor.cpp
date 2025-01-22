@@ -3,12 +3,17 @@
 
 #include "MainSingleton/MainSingleton.hpp"
 
+#include "Editor/Core/MainMenuItem.hpp"
+#include "Editor/Core/MainMenuItemButton.hpp"
+#include "Editor/Core/MainMenuItemList.hpp"
+#include "Editor/Core/MainMenuItemSelectable.hpp"
+
 #include "Editor/PopUps/Help/CameraControlsGuidePopUp.hpp"
 #include "Editor/PopUps/Settings/CameraSettingsPopUp.hpp"
 #include "Editor/PopUps/Settings/AudioSettingsPopUp.hpp"
 #include "Editor/PopUps/Settings/GraphicsSettingsPopUp.hpp"
 
-#include "Editor/Core/TestTestTest.hpp"
+#include "Editor/MenuTabs/TestTestTest.hpp"
 
 namespace Editor
 {
@@ -58,7 +63,7 @@ namespace Editor
 			popUp->Update();
 		}
 
-		for (const std::shared_ptr<MainMenuItemParent> tab : myMainMenuTabParents)
+		for (const std::shared_ptr<MainMenuItemTab> tab : myMainMenuTabs)
 		{
 			tab->InternalUpdate();
 		}
@@ -66,7 +71,7 @@ namespace Editor
 
 	void EditorEngine::Render()
 	{
-		for (const std::shared_ptr<MainMenuItemParent> tab : myMainMenuTabParents)
+		for (const std::shared_ptr<MainMenuItemTab> tab : myMainMenuTabs)
 		{
 			tab->Render();
 		}
@@ -131,7 +136,7 @@ namespace Editor
 		//	}
 		//}
 
-		std::shared_ptr<MainMenuItemParent> sceneTab = AddMenuParent<MainMenuItemParent>();
+		std::shared_ptr<MainMenuItemTab> sceneTab = AddMenuTab<MainMenuItemTab>();
 
 		std::shared_ptr<TestButton> saveButton = std::make_shared<TestButton>("Save");
 		std::shared_ptr<MainMenuItemList> createButtonList = std::make_shared<MainMenuItemList>("Create");
@@ -139,20 +144,20 @@ namespace Editor
 		std::shared_ptr<TestButton> setAsActiveButton = std::make_shared<TestButton>("Set As Active");
 
 
-		std::shared_ptr<TestSelector> test = std::make_shared<TestSelector>("Load");
+		std::shared_ptr<TestSelector> loadSelector = std::make_shared<TestSelector>("Load");
 
 		const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
 
 		for (const auto& name : sceneNames)
 		{
-			test->AddString(name);
+			loadSelector->AddString(name);
 		}
 
 		std::shared_ptr<TestButton> testCreateNewButton = std::make_shared<TestButton>("New");
 		std::shared_ptr<TestButton> testCreateCopyButton = std::make_shared<TestButton>("Copy");
 
 		sceneTab->AddChild(saveButton);
-		sceneTab->AddChild(test);
+		sceneTab->AddChild(loadSelector);
 		sceneTab->AddChild(createButtonList);
 		sceneTab->AddChild(reloadButton);
 		sceneTab->AddChild(setAsActiveButton);
@@ -165,7 +170,7 @@ namespace Editor
 
 	void EditorEngine::SetupSettingsTab()
 	{
-		std::shared_ptr<MainMenuItemParent> settingsTab = AddMenuParent<MainMenuItemParent>();
+		std::shared_ptr<MainMenuItemTab> settingsTab = AddMenuTab<MainMenuItemTab>();
 
 		std::shared_ptr<MainMenuItemPopUp> audioSettingButton = std::make_shared<MainMenuItemPopUp>("Audio");
 		std::shared_ptr<MainMenuItemPopUp> cameraSettingButton = std::make_shared<MainMenuItemPopUp>("Camera");
@@ -191,7 +196,7 @@ namespace Editor
 
 	void EditorEngine::SetUpHelpTab()
 	{
-		std::shared_ptr<MainMenuItemParent> helpTab = AddMenuParent<MainMenuItemParent>();
+		std::shared_ptr<MainMenuItemTab> helpTab = AddMenuTab<MainMenuItemTab>();
 
 		std::shared_ptr<MainMenuItemPopUp> cameraHelpButton = std::make_shared<MainMenuItemPopUp>("Camera Controls");
 		std::shared_ptr<CameraControlsGuidePopUp> cameraControlsHelpPopUp = AddPopUpWindow<CameraControlsGuidePopUp>();

@@ -1,5 +1,6 @@
 #pragma once
 #include "Editor/Core/Base/Window.hpp"
+#include <type_traits>
 
 namespace Editor
 {
