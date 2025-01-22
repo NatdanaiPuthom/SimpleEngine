@@ -5,10 +5,10 @@
 
 namespace Editor
 {
-	class MainMenuItemSelector : public MainMenuItem
+	class MainMenuItemSelectable : public MainMenuItem
 	{
 	public:
-		MainMenuItemSelector(const std::string& aWindowName);
+		MainMenuItemSelectable(const std::string& aWindowName);
 
 		virtual void Invoke(const char* aText) = 0;
 

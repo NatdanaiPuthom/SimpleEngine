@@ -16,17 +16,4 @@ namespace Editor
 			std::cout << "button clicked!" << std::endl;
 		}
 	};
-
-	class TestSelector : public MainMenuItemSelector
-	{
-	public:
-		TestSelector(const std::string& aWindowName) : MainMenuItemSelector(aWindowName) {}
-
-		void Invoke(const char* aText)
-		{
-			const std::string scenePath = std::string(SIMPLE_DIR_SCENES) + "\\" + aText;
-			MainSingleton::GetSceneManager().ChangeScene(scenePath);
-			std::cout << "loadddd!" << std::endl;
-		}
-	};
 }

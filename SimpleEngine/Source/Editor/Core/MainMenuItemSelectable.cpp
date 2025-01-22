@@ -3,21 +3,21 @@
 
 namespace Editor
 {
-	MainMenuItemSelector::MainMenuItemSelector(const std::string& aWindowName): MainMenuItem(aWindowName)
+	MainMenuItemSelectable::MainMenuItemSelectable(const std::string& aWindowName): MainMenuItem(aWindowName)
 	{
 	}
 
-	void MainMenuItemSelector::AddString(const std::string& aString)
+	void MainMenuItemSelectable::AddString(const std::string& aString)
 	{
 		myStrings.push_back(aString);
 	}
 
-	void MainMenuItemSelector::ClearStrings()
+	void MainMenuItemSelectable::ClearStrings()
 	{
 		myStrings.clear();
 	}
 
-	void MainMenuItemSelector::Render()
+	void MainMenuItemSelectable::Render()
 	{
 		if (ImGui::BeginMenu(myImGuiName.c_str()))
 		{

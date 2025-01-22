@@ -13,7 +13,8 @@
 #include "Editor/PopUps/Settings/AudioSettingsPopUp.hpp"
 #include "Editor/PopUps/Settings/GraphicsSettingsPopUp.hpp"
 
-#include "Editor/MenuTabs/TestTestTest.hpp"
+#include "Editor/MenuItems/TestTestTest.hpp"
+#include "Editor/MenuItems/Scene/SceneItemLoadSelectable.hpp"
 
 namespace Editor
 {
@@ -144,7 +145,7 @@ namespace Editor
 		std::shared_ptr<TestButton> setAsActiveButton = std::make_shared<TestButton>("Set As Active");
 
 
-		std::shared_ptr<TestSelector> loadSelector = std::make_shared<TestSelector>("Load");
+		std::shared_ptr<SceneItemLoadSelectable> loadSelector = std::make_shared<SceneItemLoadSelectable>("Load");
 
 		const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
 
