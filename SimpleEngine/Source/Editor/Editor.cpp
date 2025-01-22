@@ -8,17 +8,6 @@
 #include "Editor/PopUps/Settings/AudioSettingsPopUp.hpp"
 #include "Editor/PopUps/Settings/GraphicsSettingsPopUp.hpp"
 
-#include "Editor/MainMenuTabs/SceneTab.hpp"
-
-#include "Editor/MainMenuItems/Settings/AudioItem.hpp"
-#include "Editor/MainMenuItems/Settings/CameraSettingsItem.hpp"
-#include "Editor/MainMenuItems/Settings/GraphicsSettingsItem.hpp"
-#include "Editor/MainMenuItems/Scene/SceneItemSave.hpp"
-#include "Editor/MainMenuItems/Scene/SceneItemLoad.hpp"
-#include "Editor/MainMenuItems/Scene/SceneItemCreate.hpp"
-#include "Editor/MainMenuItems/Scene/SceneItemReload.hpp"
-#include "Editor/MainMenuItems/Scene/SceneItemSetStart.hpp"
-
 #include "Editor/Core/TestTestTest.hpp"
 
 namespace Editor
@@ -47,22 +36,22 @@ namespace Editor
 
 	void EditorEngine::Update()
 	{
-		/*if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
+		if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
 		{
 			Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
-		}*/
+		}
 
-		/*	if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
+		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
+		{
+			if (Global::IsFullScreen())
 			{
-				if (Global::IsFullScreen())
-				{
-					Global::SetWindowSizeNextFrame({ 1280,720 }, false);
-				}
-				else
-				{
-					Global::SetWindowSizeNextFrame({ 0,0 }, true);
-				}
-			}*/
+				Global::SetWindowSizeNextFrame({ 1280,720 }, false);
+			}
+			else
+			{
+				Global::SetWindowSizeNextFrame({ 0,0 }, true);
+			}
+		}
 
 		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
 		{
@@ -101,25 +90,46 @@ namespace Editor
 
 	void EditorEngine::SetUpSceneTab()
 	{
-	/*	std::shared_ptr<SceneTab> sceneTab = AddMenuTab<SceneTab>();
-		sceneTab->SetWindowName("Scene");
+		//const static std::vector<std::string> menuNames({ "New scene", "Copy scene" });
+		//Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
 
-		std::shared_ptr<SceneItemSave> sceneSaveItem = sceneTab->AddChildren<SceneItemSave>();
-		std::shared_ptr<SceneItemLoad> sceneLoadItem = sceneTab->AddChildren<SceneItemLoad>();
-		std::shared_ptr<SceneItemCreate> sceneCreateItem = sceneTab->AddChildren<SceneItemCreate>();
-		std::shared_ptr<SceneItemReload> sceneReloadItem = sceneTab->AddChildren<SceneItemReload>();
-		std::shared_ptr<SceneItemSetAsStart> sceneSetAsStartItem = sceneTab->AddChildren<SceneItemSetAsStart>();
+		//for (size_t i = 0; i < menuNames.size(); i++)
+		//{
+		//	if (ImGui::Selectable(menuNames[i].c_str()))
+		//	{
+		//		switch (i)
+		//		{
+		//		case 0:
+		//		{
+		//			const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SimpleUtilities::AppendCounterIfAlreadyExist(std::string(SIMPLE_DIR_SCENES) + "\\" + std::string(SIMPLE_FILENAME_NEWSCENE)));
+		//			const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(absolutePath);
+		//			sceneManager.CreateNewScene(absolutePath);
+		//			sceneManager.ChangeScene(relativePath);
+		//			break;
+		//		}
+		//		case 1:
+		//		{
+		//			const std::string absolutePath = sceneManager.GetCurrentSceneInfo()->absolutePath;
+		//			const std::string newCopyName = SimpleUtilities::AppendStringBeforeDot("_Copy", absolutePath);
+		//			const std::string newFileName = SimpleUtilities::AppendCounterIfAlreadyExist(newCopyName);
+		//			const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(newFileName);
 
-		sceneSaveItem->SetWindowName("Save");
-		sceneLoadItem->SetWindowName("Load");
-		sceneCreateItem->SetWindowName("Create");
-		sceneReloadItem->SetWindowName("Reload");
-		sceneSetAsStartItem->SetWindowName("Set As Start");
+		//			std::filesystem::copy_file(absolutePath, newFileName, std::filesystem::copy_options::overwrite_existing);
+		//			sceneManager.ChangeScene(relativePath);
+		//			break;
+		//		}
+		//		default:
+		//			break;
+		//		}
+		//		break;
+		//	}
 
-		sceneSaveItem->SetHotKeyShortCutText("Ctrl + S");
-
-		sceneReloadItem->SetShowToolTips(true);
-		sceneSetAsStartItem->SetShowToolTips(true);*/
+		//	if (i == 1) //NOTE(v11.4.2): Shouldn't be hardcoded value, whole Editor project need refactor someday
+		//	{
+		//		//static float createNewSceneAsCopyTooltipDelayTimer = 0.0f;
+		//		//ShowHoveredToolTips("Create new copy of this scene", createNewSceneAsCopyTooltipDelayTimer);
+		//	}
+		//}
 
 		std::shared_ptr<MainMenuItemParent> sceneTab = AddMenuParent<MainMenuItemParent>();
 

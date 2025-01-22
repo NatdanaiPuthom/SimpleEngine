@@ -1,5 +1,4 @@
 #pragma once
-#include "Editor/Core/MainMenuTab.hpp"
 #include "Editor/Core/PopUp.hpp"
 #include "Editor/Core/TestTestTest.hpp"
 #include <vector>
@@ -30,9 +29,6 @@ namespace Editor
 		template<DerivedFromPopUpWindow T>
 		std::shared_ptr<T> AddPopUpWindow();
 
-		template<DerivedFromMainMenuTab T>
-		std::shared_ptr<T> AddMenuTab();
-
 		template<DerivedFromMainMenuParent T>
 		std::shared_ptr<T> AddMenuParent();
 	private:
@@ -41,8 +37,6 @@ namespace Editor
 		void SetUpHelpTab();
 	private:
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
-		std::vector<std::shared_ptr<MainMenuTab>> myMainMenuTabs;
-
 		std::vector<std::shared_ptr<MainMenuItemParent>> myMainMenuTabParents;
 
 	};
@@ -54,15 +48,6 @@ namespace Editor
 		std::shared_ptr<T> window = std::make_shared<T>(prettyName);
 		myPopUpWindows.push_back(window);
 		return window;
-	}
-
-	template<DerivedFromMainMenuTab T>
-	inline std::shared_ptr<T> EditorEngine::AddMenuTab()
-	{
-		const std::string prettyName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
-		std::shared_ptr<T> tab = std::make_shared<T>(prettyName);
-		myMainMenuTabs.push_back(tab);
-		return tab;
 	}
 
 	template<DerivedFromMainMenuParent T>
