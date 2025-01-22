@@ -13,8 +13,8 @@ namespace Editor
 		MainMenuItemTest(const std::string& aWindowName) : Window(aWindowName, typeid(MainMenuItemTest).name()) {}
 
 		virtual void InternalUpdate() {};
-		virtual void Render() = 0;
 		virtual void Invoke() {};
+		virtual void Render() = 0;
 
 		const char* myHotKeyShortCutText = nullptr;
 		bool myPopUpIsActive = false;
@@ -43,27 +43,27 @@ namespace Editor
 
 		void InternalUpdate() override final
 		{
-			if (ImGui::BeginMenu(myImGuiName.c_str()))
+			for (std::shared_ptr<MainMenuItemTest> child : myChildren)
 			{
-				for (std::shared_ptr<MainMenuItemTest> child : myChildren)
-				{
-					child->InternalUpdate();
-				}
-
-				ImGui::EndMenu();
+				child->InternalUpdate();
 			}
 		}
 
 		void Render() override final
 		{
-			if (ImGui::BeginMenu(myImGuiName.c_str()))
+			if (ImGui::BeginMainMenuBar())
 			{
-				for (std::shared_ptr<MainMenuItemTest> child : myChildren)
+				if (ImGui::BeginMenu(myImGuiName.c_str()))
 				{
-					child->Render();
+					for (std::shared_ptr<MainMenuItemTest> child : myChildren)
+					{
+						child->Render();
+					}
+
+					ImGui::EndMenu();
 				}
 
-				ImGui::EndMenu();
+				ImGui::EndMainMenuBar();
 			}
 		};
 
@@ -91,6 +91,15 @@ namespace Editor
 	public:
 		MainMenuItemPopUp(const std::string& aWindowName) : MainMenuItemTest(aWindowName) {}
 
+		void InternalUpdate() override final
+		{
+			if (!myPopUpWindows.empty())
+			{
+				myPopUpIsActive = myPopUpWindows.front()->IsActive();
+
+			}
+		}
+
 		void Render() override final
 		{
 			if (ImGui::MenuItem(myImGuiName.c_str(), myHotKeyShortCutText, &myPopUpIsActive))
@@ -102,7 +111,7 @@ namespace Editor
 			}
 		};
 
-		template<typename T> requires std::is_base_of_v<PopUp, T>&& std::is_class_v<T>
+		template<typename T> requires  std::is_base_of_v<PopUp, T>&& std::is_class_v<T>
 		std::shared_ptr<T> AddPopUpWindows(std::shared_ptr<T> aPopUpWindow)
 		{
 			for (const auto& existingPopUpWindow : myPopUpWindows)

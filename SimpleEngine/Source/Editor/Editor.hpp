@@ -1,10 +1,17 @@
 #pragma once
 #include "Editor/Core/MainMenuTab.hpp"
 #include "Editor/Core/PopUp.hpp"
+#include "Editor/Core/TestTestTest.hpp"
 #include <vector>
 #include <memory>
 #include <string>
 #include <typeindex>
+
+namespace Editor
+{
+	template <typename T>
+	concept DerivedFromMainMenuParent = std::derived_from<MainMenuItemParent, T>;
+}
 
 namespace Editor
 {
@@ -25,6 +32,9 @@ namespace Editor
 
 		template<DerivedFromMainMenuTab T>
 		std::shared_ptr<T> AddMenuTab();
+
+		template<DerivedFromMainMenuParent T>
+		std::shared_ptr<T> AddMenuParent();
 	private:
 		void SetUpSceneTab();
 		void SetupSettingsTab();
@@ -32,6 +42,9 @@ namespace Editor
 	private:
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
 		std::vector<std::shared_ptr<MainMenuTab>> myMainMenuTabs;
+
+		std::vector<std::shared_ptr<MainMenuItemParent>> myMainMenuTabParents;
+
 	};
 
 	template<DerivedFromPopUpWindow T>
@@ -49,6 +62,17 @@ namespace Editor
 		const std::string prettyName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 		std::shared_ptr<T> tab = std::make_shared<T>(prettyName);
 		myMainMenuTabs.push_back(tab);
+		return tab;
+	}
+
+	template<DerivedFromMainMenuParent T>
+	inline std::shared_ptr<T> EditorEngine::AddMenuParent()
+	{
+		const std::string prettyName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+
+		std::shared_ptr<T> tab = std::make_shared<T>(prettyName);
+		myMainMenuTabParents.push_back(tab);
+
 		return tab;
 	}
 }

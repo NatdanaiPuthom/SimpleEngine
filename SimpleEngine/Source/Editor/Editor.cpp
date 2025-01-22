@@ -10,12 +10,10 @@
 
 #include "Editor/MainMenuTabs/SceneTab.hpp"
 #include "Editor/MainMenuTabs/Settings.hpp"
-#include "Editor/MainMenuTabs/Help.hpp"
 
 #include "Editor/MainMenuItems/Settings/AudioItem.hpp"
 #include "Editor/MainMenuItems/Settings/CameraSettingsItem.hpp"
 #include "Editor/MainMenuItems/Settings/GraphicsSettingsItem.hpp"
-#include "Editor/MainMenuItems/Help/CameraHelpItem.hpp"
 #include "Editor/MainMenuItems/Scene/SceneItemSave.hpp"
 #include "Editor/MainMenuItems/Scene/SceneItemLoad.hpp"
 #include "Editor/MainMenuItems/Scene/SceneItemCreate.hpp"
@@ -38,99 +36,62 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		SetUpSceneTab();
-		SetupSettingsTab();
 		SetUpHelpTab();
+		/*SetUpSceneTab();
+		SetupSettingsTab();
+		*/
 
-		for (const std::shared_ptr<PopUp> popUpWindow : myPopUpWindows)
+		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
 		{
-			popUpWindow->Init();
+			popUp->Init();
 		}
 
 	}
 
 	void EditorEngine::Update()
 	{
-		if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
+		/*if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
 		{
 			Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
-		}
+		}*/
 
-		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
-		{
-			if (Global::IsFullScreen())
+		/*	if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
 			{
-				Global::SetWindowSizeNextFrame({ 1280,720 }, false);
-			}
-			else
-			{
-				Global::SetWindowSizeNextFrame({ 0,0 }, true);
-			}
+				if (Global::IsFullScreen())
+				{
+					Global::SetWindowSizeNextFrame({ 1280,720 }, false);
+				}
+				else
+				{
+					Global::SetWindowSizeNextFrame({ 0,0 }, true);
+				}
+			}*/
+
+		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
+		{
+			popUp->Update();
 		}
 
-		for (const std::shared_ptr<MainMenuTab> window : myMainMenuTabs)
+		for (const std::shared_ptr<MainMenuItemParent> tab : myMainMenuTabParents)
 		{
-			window->Update();
-		}
-
-		for (const std::shared_ptr<PopUp> window : myPopUpWindows)
-		{
-			window->Update();
+			tab->InternalUpdate();
 		}
 	}
 
 	void EditorEngine::Render()
 	{
-		for (const std::shared_ptr<MainMenuTab> menuTab : myMainMenuTabs)
+		for (const std::shared_ptr<MainMenuItemParent> tab : myMainMenuTabParents)
 		{
-			if (menuTab->IsActive())
+			tab->Render();
+		}
+
+		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
+		{
+			if (popUp->IsActive())
 			{
-				menuTab->Render();
+				popUp->Render();
 			}
 		}
-
-		for (const std::shared_ptr<PopUp> window : myPopUpWindows)
-		{
-			if (window->IsActive())
-			{
-				window->Render();
-			}
-		}
-
-		static MainMenuItemParent parent("parent");
-		static std::shared_ptr<MainMenuItemList> list = std::make_shared<MainMenuItemList>("list");
-		static std::shared_ptr<MainMenuItemPopUp> popUp = std::make_shared<MainMenuItemPopUp>("popUp");
-
-		static bool runOnce = true;
-
-		if (runOnce)
-		{
-			std::shared_ptr<TestButton> button = std::make_shared<TestButton>("button");
-			std::shared_ptr<TestButton> buttonchild1 = std::make_shared<TestButton>("buttonchild1");
-			std::shared_ptr<TestButton> buttonchild2 = std::make_shared<TestButton>("buttonchild2");
-
-			list->AddChild(buttonchild1);
-			list->AddChild(popUp);
-
-			popUp->AddPopUpWindows(myPopUpWindows.back());
-
-			parent.AddChild(popUp);
-			parent.AddChild(button);
-			parent.AddChild(list);
-
-
-			runOnce = false;
-		}
-
-
-		if (ImGui::BeginMainMenuBar())
-		{
-			parent.InternalUpdate();
-			parent.Render();
-
-			ImGui::EndMainMenuBar();
-		}
-
 
 		//{	//Render Orientation Cube  
 		//	//TO-DO(v11.4.4): Make own class for this
@@ -169,18 +130,14 @@ namespace Editor
 		std::shared_ptr<Settings> settingsTab = AddMenuTab<Settings>();
 
 		std::shared_ptr<AudioItem> settingsAudioItem = settingsTab->AddChildren<AudioItem>();
-		std::shared_ptr<CameraHelpItem> settingsCameraItem = settingsTab->AddChildren<CameraHelpItem>();
 		std::shared_ptr<GraphicsSettingsItem> settingsGraphicsItem = settingsTab->AddChildren<GraphicsSettingsItem>();
 
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingsPopUp = AddPopUpWindow<CameraSettingsPopUp>();
 		std::shared_ptr<AudioSettingsPopUp> audioSettingsPopUp = AddPopUpWindow<AudioSettingsPopUp>();
 		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingsPopUp = AddPopUpWindow<GraphicsSettingsPopUp>();
 
-		settingsCameraItem->AddPopUpWindows(cameraSettingsPopUp)->SetWindowName("Camera Settings");
 		settingsAudioItem->AddPopUpWindows(audioSettingsPopUp)->SetWindowName("Audio Settings");
 		settingsGraphicsItem->AddPopUpWindows(graphicsSettingsPopUp)->SetWindowName("Graphics Settings");
-
-		settingsCameraItem->SetWindowName("Camera");
 
 		settingsAudioItem->SetWindowName("Audio");
 		settingsGraphicsItem->SetWindowName("Graphics");
@@ -188,15 +145,15 @@ namespace Editor
 
 	void EditorEngine::SetUpHelpTab()
 	{
-		std::shared_ptr<Help> helpTab = AddMenuTab<Help>();
+		std::shared_ptr<MainMenuItemParent> helpTab = AddMenuParent<MainMenuItemParent>();
 
-		std::shared_ptr<CameraHelpItem> helpCameraItem = helpTab->AddChildren<CameraHelpItem>();
-
+		std::shared_ptr<MainMenuItemPopUp> cameraHelpButton = std::make_shared<MainMenuItemPopUp>("Camera Controls");
 		std::shared_ptr<CameraControlsGuidePopUp> cameraControlsHelpPopUp = AddPopUpWindow<CameraControlsGuidePopUp>();
 
-		helpCameraItem->AddPopUpWindows(cameraControlsHelpPopUp);
+		helpTab->AddChild(cameraHelpButton);
+		cameraHelpButton->AddPopUpWindows(cameraControlsHelpPopUp);
 
+		helpTab->SetWindowName("Help");
 		cameraControlsHelpPopUp->SetWindowName("Editor Camera");
-		helpCameraItem->SetWindowName("Camera Controls");
 	}
 }
