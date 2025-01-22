@@ -22,6 +22,8 @@
 #include "Editor/MainMenuItems/Scene/SceneItemReload.hpp"
 #include "Editor/MainMenuItems/Scene/SceneItemSetStart.hpp"
 
+#include "Editor/Core/TestTestTest.hpp"
+
 namespace Editor
 {
 	size_t EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
@@ -44,6 +46,7 @@ namespace Editor
 		{
 			popUpWindow->Init();
 		}
+
 	}
 
 	void EditorEngine::Update()
@@ -93,6 +96,41 @@ namespace Editor
 				window->Render();
 			}
 		}
+
+		static MainMenuItemParent parent("parent");
+		static std::shared_ptr<MainMenuItemList> list = std::make_shared<MainMenuItemList>("list");
+		static std::shared_ptr<MainMenuItemPopUp> popUp = std::make_shared<MainMenuItemPopUp>("popUp");
+
+		static bool runOnce = true;
+
+		if (runOnce)
+		{
+			std::shared_ptr<TestButton> button = std::make_shared<TestButton>("button");
+			std::shared_ptr<TestButton> buttonchild1 = std::make_shared<TestButton>("buttonchild1");
+			std::shared_ptr<TestButton> buttonchild2 = std::make_shared<TestButton>("buttonchild2");
+
+			list->myButtons.push_back(buttonchild1);
+			list->myButtons.push_back(buttonchild2);
+
+			popUp->myPopUpWindows.push_back(myPopUpWindows.back());
+			parent.myChildren.push_back(popUp);
+			parent.myChildren.push_back(button);
+			parent.myChildren.push_back(list);
+
+
+			runOnce = false;
+		}
+
+
+		if (ImGui::BeginMainMenuBar())
+		{
+			parent.InternalUpdate();
+			parent.Render();
+			//list->Render();
+
+			ImGui::EndMainMenuBar();
+		}
+
 
 		//{	//Render Orientation Cube  
 		//	//TO-DO(v11.4.4): Make own class for this
