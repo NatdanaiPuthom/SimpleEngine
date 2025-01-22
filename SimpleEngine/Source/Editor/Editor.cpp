@@ -13,8 +13,12 @@
 #include "Editor/PopUps/Settings/AudioSettingsPopUp.hpp"
 #include "Editor/PopUps/Settings/GraphicsSettingsPopUp.hpp"
 
-#include "Editor/MenuItems/TestTestTest.hpp"
 #include "Editor/MenuItems/Scene/SceneItemLoadSelectable.hpp"
+#include "Editor/MenuItems/Scene/SceneItemSaveButton.hpp"
+#include "Editor/MenuItems/Scene/SceneItemCreateNewButton.hpp"
+#include "Editor/MenuItems/Scene/SceneItemCreateCopyButton.hpp"
+#include "Editor/MenuItems/Scene/SceneItemReloadButton.hpp"
+#include "Editor/MenuItems/Scene/SceneItemSetAsStartButton.hpp"
 
 namespace Editor
 {
@@ -139,13 +143,11 @@ namespace Editor
 
 		std::shared_ptr<MainMenuItemTab> sceneTab = AddMenuTab<MainMenuItemTab>();
 
-		std::shared_ptr<TestButton> saveButton = std::make_shared<TestButton>("Save");
-		std::shared_ptr<MainMenuItemList> createButtonList = std::make_shared<MainMenuItemList>("Create");
-		std::shared_ptr<TestButton> reloadButton = std::make_shared<TestButton>("Reload");
-		std::shared_ptr<TestButton> setAsActiveButton = std::make_shared<TestButton>("Set As Active");
-
-
+		std::shared_ptr<SceneItemSaveButton> saveButton = std::make_shared<SceneItemSaveButton>("Save");
 		std::shared_ptr<SceneItemLoadSelectable> loadSelector = std::make_shared<SceneItemLoadSelectable>("Load");
+		std::shared_ptr<MainMenuItemList> createButtonList = std::make_shared<MainMenuItemList>("Create");
+		std::shared_ptr<SceneItemReloadButton> reloadButton = std::make_shared<SceneItemReloadButton>("Reload");
+		std::shared_ptr<SceneItemSetAsStartButton> setAsActiveButton = std::make_shared<SceneItemSetAsStartButton>("Set As Start");
 
 		const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
 
@@ -154,8 +156,8 @@ namespace Editor
 			loadSelector->AddString(name);
 		}
 
-		std::shared_ptr<TestButton> testCreateNewButton = std::make_shared<TestButton>("New");
-		std::shared_ptr<TestButton> testCreateCopyButton = std::make_shared<TestButton>("Copy");
+		std::shared_ptr<SceneItemCreateNewButton> testCreateNewButton = std::make_shared<SceneItemCreateNewButton>("New");
+		std::shared_ptr<SceneItemCreateNewCopyButton> testCreateCopyButton = std::make_shared<SceneItemCreateNewCopyButton>("Copy");
 
 		sceneTab->AddChild(saveButton);
 		sceneTab->AddChild(loadSelector);
