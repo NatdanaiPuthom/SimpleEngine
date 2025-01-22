@@ -20,6 +20,8 @@
 #include "Editor/MenuItems/Scene/SceneItemReloadButton.hpp"
 #include "Editor/MenuItems/Scene/SceneItemSetAsStartButton.hpp"
 
+#include "Editor/PopUps/PostProcessPopUp.hpp"
+
 #include "Engine/ImGui/ImGuiEngine.hpp" //TempPlayMenuBar
 
 namespace Editor
@@ -39,6 +41,9 @@ namespace Editor
 		SetUpSceneTab();
 		SetupSettingsTab();
 		SetUpHelpTab();
+
+		auto a = AddPopUpWindow<PostProcessPopUp>();
+		a->SetActive(true);
 
 		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
 		{
