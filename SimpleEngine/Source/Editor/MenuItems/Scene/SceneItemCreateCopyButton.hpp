@@ -1,17 +1,13 @@
 #pragma once
 #include "Editor/Core/MainMenuItemButton.hpp"
-#include <iostream>
 
 namespace Editor
 {
-	class SceneItemCreateNewCopyButton : public MainMenuItemButton
+	class SceneItemCreateNewCopyButton final : public MainMenuItemButton
 	{
 	public:
-		SceneItemCreateNewCopyButton(const std::string& aWindowName) : MainMenuItemButton(aWindowName) {}
+		SceneItemCreateNewCopyButton(const std::string& aWindowName);
 
-		void Invoke() override
-		{
-			std::cout << "create new copy!" << std::endl;
-		}
+		void Invoke() override final;
 	};
 }

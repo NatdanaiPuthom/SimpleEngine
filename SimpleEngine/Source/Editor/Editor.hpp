@@ -33,7 +33,6 @@ namespace Editor
 	private:
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
 		std::vector<std::shared_ptr<MainMenuItemTab>> myMainMenuTabs;
-
 	};
 
 	template<DerivedFromPopUpWindow T>
