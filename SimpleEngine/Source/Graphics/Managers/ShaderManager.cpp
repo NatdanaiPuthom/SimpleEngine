@@ -68,6 +68,9 @@ namespace Graphics
 		case eShaderType::PBR_Default:
 			shader = GetShader("Shaders\\GBufferPS.cso", "Shaders\\DefaultVS.cso");
 			break;
+		case eShaderType::Instanced_Unlit_Default:
+			shader = GetShader("Shaders\\DefaultPS.cso", "Shaders\\InstancedDefaultVS.cso");
+			break;
 		case eShaderType::Animated:
 			shader = GetShader("Shaders\\GBufferPS.cso", "Shaders\\AnimatedModelVS.cso");
 			break;

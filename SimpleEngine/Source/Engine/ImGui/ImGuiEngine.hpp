@@ -21,6 +21,7 @@ namespace Simple
 	class ImGuiEngine final
 	{
 	public:
+
 		ImGuiEngine();
 		~ImGuiEngine();
 
@@ -40,6 +41,10 @@ namespace Simple
 		static ImGuiStyle myStyle;
 		static ImVec4 myColors[static_cast<size_t>(ImGuiCol_COUNT)];
 		static ImVec4 myPlayModeBackgroundColor;
+		static ImVec4 myInteractiveColor;
+		static const ImVec4 myLegacyPinkColor;
+		static const ImVec4 mySoftBlueColor;
+		static const ImVec4 myDarkGrayColor;
 		static eImGuiEditorStyle myCurrentColorStyle;
 	};
 }

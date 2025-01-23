@@ -238,4 +238,19 @@ namespace SimpleUtilities
 
 		return filteredString;
 	}
+
+	static inline std::string RemoveSubStringIfExist(const std::string& aOriginalString, const std::string& aStringToRemove)
+	{
+		std::string modifiedString = ToLower(aOriginalString);
+		const size_t pos = modifiedString.find(ToLower(aStringToRemove));
+
+		if (pos != std::string::npos)
+		{
+			modifiedString = aOriginalString;
+			modifiedString.erase(pos, aStringToRemove.length());
+			return modifiedString;
+		}
+
+		return aOriginalString;
+	}
 }

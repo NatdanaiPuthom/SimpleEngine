@@ -1,6 +1,7 @@
 #include "Graphics/Precomplied/GraphicsPch.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/ConstantBuffer/ConstantBuffer.hpp"
+#include "Graphics/Managers/InstancerManager.hpp"
 #include "Engine/NoClueWhatToName/SimpleGlobalImp.hpp"
 #include "Engine/Global.hpp"
 #include "Engine/Math/Math.hpp"
@@ -13,6 +14,7 @@
 #include "External/nlohmann/json.hpp"
 #include <fstream>
 #include <cassert>
+#include <d3d11.h>
 
 namespace Drawer
 {
@@ -40,16 +42,22 @@ namespace Drawer
 		myLineDrawer = std::make_unique<Drawer::LineDrawer>();
 		mySphereDrawer = std::make_unique<Drawer::SphereDrawer>();
 		mySpriteDrawer = std::make_unique<Drawer::SpriteDrawer>();
+		myInstancerManager = std::make_unique<Graphics::InstancerManager>();
 
 		LoadSettingsFromJson();
 
 		if (!CreateObjectBuffer())
+		{
 			assert(false && "Failed to create ObjectBuffer");
+		}
 
 		if (!CreateBoneBuffer())
-			assert(false && "Failed to create ObjectBuffer");
+		{
+			assert(false && "Failed to create BoneBuffer");
+		}
 
 		myBoundingBoxDrawer->Init();
+		myInstancerManager->Init(Global::GetGraphicsEngine()->GetDevice());
 
 		myTransformBuffer->SetSlot(Graphics::Global_Constant_Buffer_Slot_Transform);
 		myJointBuffer->SetSlot(Graphics::Global_Constant_Buffer_Slot_Joints);
@@ -203,6 +211,57 @@ namespace Drawer
 		BindTextures(aMeshComponent, context);
 
 		RenderModel(aTransformComponent->transform.GetMatrix(), aMeshComponent->mesh, context);
+	}
+
+	void Renderer::RenderInstancer(const std::vector<Graphics::MeshInstance>& aInstancesData)
+	{
+		auto graphicsEngine = Global::GetGraphicsEngine();
+		auto context = graphicsEngine->GetContext();
+
+		auto sortedInstances = myInstancerManager->SortInstances(aInstancesData);
+
+		for (const auto& pair : sortedInstances)
+		{
+			const auto& key = pair.first;
+			const auto& instances = pair.second;
+
+			const Graphics::Mesh* mesh = std::get<0>(key);
+
+			ID3D11Buffer* vertexBuffer = mesh->myVertexBuffer.Get();
+			ID3D11Buffer* indexBuffer = mesh->myIndexBuffer.Get();
+			UINT indexCount = static_cast<UINT>(mesh->myMeshData.indices.size());
+
+			std::vector<TransformBufferData> instanceData;
+			instanceData.resize(instances.size());
+
+			for (size_t i = 0; i < instances.size(); ++i)
+			{
+				instanceData[i].modelWorldMatrix = instances[i].transform->GetMatrix();
+			}
+
+			myInstancerManager->UpdateInstanceBuffer(instanceData);
+
+			UINT strides[2] = { sizeof(Graphics::Vertex), sizeof(TransformBufferData) };
+			UINT offsets[2] = { 0, 0 };
+			ID3D11Buffer* buffers[2] = { vertexBuffer, myInstancerManager->GetInstanceBuffer().Get() };
+
+			context->IASetVertexBuffers(0, 2, buffers, strides, offsets);
+			context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+			context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::Instanced_Unlit_Default)->BindThisShader(context.Get());
+
+			const Graphics::Texture* albedoTexture = std::get<1>(key);
+			const Graphics::Texture* normalTexture = std::get<2>(key);
+			const Graphics::Texture* materialTexture = std::get<3>(key);
+
+			albedoTexture->Bind(context.Get());
+			normalTexture->Bind(context.Get());
+			materialTexture->Bind(context.Get());
+
+			context->DrawIndexedInstanced(indexCount, static_cast<UINT>(instances.size()), 0, 0, 0);
+			Impl::SimpleGlobalRenderer::IncreaseDrawCall();
+		}
 	}
 
 	void Renderer::Push(const Drawer::Line& aLine)
@@ -374,12 +433,12 @@ namespace Drawer
 
 	void Renderer::LoadSettingsFromJson()
 	{
- 		const nlohmann::json jsonData = SimpleUtilities::FileManager::GetDataAsJson(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR));
+		const nlohmann::json jsonData = SimpleUtilities::FileManager::GetDataAsJson(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_EDITOR));
 
 		myShouldRenderDebugLines = jsonData["Editor_Settings"]["Render_DebugLine"];
 		myShouldRenderMesh = jsonData["Editor_Settings"]["Render_Mesh"];
 		myShouldRenderSkeletonLines = jsonData["Editor_Settings"]["Render_Skeleton"];
-		myShouldRenderBoundingBox = jsonData["Editor_Settings"]["Render_BoundingBox"];		
-		myIsUsingPBR = jsonData["Editor_Settings"]["Render_PBR"];		
+		myShouldRenderBoundingBox = jsonData["Editor_Settings"]["Render_BoundingBox"];
+		myIsUsingPBR = jsonData["Editor_Settings"]["Render_PBR"];
 	}
 }

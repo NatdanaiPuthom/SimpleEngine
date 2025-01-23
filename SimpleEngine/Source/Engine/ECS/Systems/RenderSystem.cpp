@@ -5,6 +5,7 @@
 #include "Engine/ECS/Components/Core/TransformComponent.hpp"
 #include "Engine/ECS/Components/Core/MeshComponent.hpp"
 #include "Engine/ECS/Components/Core/AnimationComponent.hpp"
+#include "Graphics/GraphicsDeclarations.hpp"
 
 namespace ECS
 {
@@ -46,29 +47,64 @@ namespace ECS
 			graphicsDataContainer->SetDirectionalLightColor({ 0.4f, 0.4f, 0.4f,0.4f });
 		}
 
-		std::vector<Entity>& entities = aEntityComponentSystem->GetAllEntities();
+		const bool isUsingPBR = renderer->GetIsUsingPBR();
 		const bool shouldRenderMesh = renderer->GetShouldRenderMesh();
+		const bool shouldRenderBoundingBox = renderer->GetShouldRenderBoundingBox();
 
-		for (size_t i = 0; i < entities.size(); ++i)
+		std::unordered_set<EntityID> entitiesIDWithMesh = aEntityComponentSystem->GetEntityIDsWithThisComponent<MeshComponent>();
+		const std::unordered_set<EntityID>& entitiesIDWithAnimation = aEntityComponentSystem->GetEntityIDsWithThisComponent<AnimationComponent>();
+
+		for (auto it = entitiesIDWithMesh.begin(); it != entitiesIDWithMesh.end(); )
 		{
-			ECS::Entity& entity = entities[i];
-			const MeshComponent* mesh = entity.GetComponent<ECS::MeshComponent>(); //To-DO(v9.37.2): Disgusting, fix pls
-			const TransformComponent* transform = entity.GetComponent<ECS::TransformComponent>(); //TO-DO(v9.37.2): Disgusting, fix pls
-
-			if (mesh == nullptr || transform == nullptr)
+			if (entitiesIDWithAnimation.find(*it) != entitiesIDWithAnimation.end())
 			{
-				continue;
+				it = entitiesIDWithMesh.erase(it);
 			}
+			else
+			{
+				++it;
+			}
+		}
 
-			const AnimationComponent* animated = entity.GetComponent<ECS::AnimationComponent>();
-			const bool isUsingPBR = renderer->GetIsUsingPBR();
+		for (const ECS::EntityID& id : entitiesIDWithMesh)
+		{
+			ECS::Entity& entity = aEntityComponentSystem->GetEntity(id);
+			const MeshComponent* mesh = entity.GetComponent<ECS::MeshComponent>();
+			const TransformComponent* transform = entity.GetComponent<ECS::TransformComponent>();
 
-			if (renderer->GetShouldRenderBoundingBox() == true)
+			if (shouldRenderBoundingBox == true)
 			{
 				renderer->Push(Drawer::BoundingBox3DData(transform->transform.GetMatrix(), mesh->mesh->GetBoundingBox()));
 			}
 
-			if (animated != nullptr && animated->skeleton != nullptr && animated->shader != nullptr)
+			if (shouldRenderMesh == false)
+			{
+				continue;
+			}
+
+			if (isUsingPBR == true)
+			{
+				renderer->RenderPBRStaticModel(transform, mesh);
+			}
+			else
+			{
+				myStaticModelToRender.emplace_back(Graphics::MeshInstance(transform, mesh)); //NOTE(v11.3.2): Because deferred rendering so it has to be rendered after lightning pass, it works but may need to refactor in future
+			}
+		}
+
+		for (const ECS::EntityID& id : entitiesIDWithAnimation)
+		{
+			ECS::Entity& entity = aEntityComponentSystem->GetEntity(id);
+			const MeshComponent* mesh = entity.GetComponent<ECS::MeshComponent>();
+			const TransformComponent* transform = entity.GetComponent<ECS::TransformComponent>();
+			const AnimationComponent* animated = entity.GetComponent<ECS::AnimationComponent>();
+
+			if (shouldRenderBoundingBox == true)
+			{
+				renderer->Push(Drawer::BoundingBox3DData(transform->transform.GetMatrix(), mesh->mesh->GetBoundingBox()));
+			}
+
+			if (animated->skeleton != nullptr && animated->shader != nullptr)
 			{
 				if (renderer->GetShouldRenderSkeletonLines() == true)
 				{
@@ -96,22 +132,6 @@ namespace ECS
 					myAnimatedModelToRender.emplace_back(AnimatedModelToRender(transform, mesh, animated)); //NOTE(v11.3.2): Because deferred rendering so it has to be rendered after lightning pass, it works but may need to refactor in future
 				}
 			}
-			else
-			{
-				if (shouldRenderMesh == false)
-				{
-					continue;
-				}
-
-				if (isUsingPBR == true)
-				{
-					renderer->RenderPBRStaticModel(transform, mesh);
-				}
-				else
-				{
-					myStaticModelToRender.emplace_back(StaticModelToRender(transform, mesh)); //NOTE(v11.3.2): Because deferred rendering so it has to be rendered after lightning pass, it works but may need to refactor in future
-				}
-			}
 		}
 	}
 
@@ -130,16 +150,10 @@ namespace ECS
 		Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 		Drawer::Renderer* renderer = graphicsEngine->GetRenderer();
 
-		const Graphics::Shader* unlitShader = graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::Unlit_Default).get();
 		const std::unordered_set<EntityID>& entitiesWithSkyBoxComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<SkyBoxComponent>();
 		const std::unordered_set<EntityID>& entitiesWithDirectionalLightComponent = aEntityComponentSystem->GetEntityIDsWithThisComponent<DirectionalLightComponent>();
 
-		for (size_t i = 0; i < myStaticModelToRender.size(); ++i)
-		{
-			const TransformComponent* transform = myStaticModelToRender[i].transformComponent;
-			const MeshComponent* mesh = myStaticModelToRender[i].meshComponent;
-			renderer->RenderUnlitStaticModel(transform->transform.GetMatrix(), mesh->mesh, unlitShader, mesh->textures[Graphics::Global_Slot_Albedo]);
-		}
+		graphicsEngine->GetRenderer()->RenderInstancer(myStaticModelToRender);
 
 		for (size_t i = 0; i < myAnimatedModelToRender.size(); ++i)
 		{

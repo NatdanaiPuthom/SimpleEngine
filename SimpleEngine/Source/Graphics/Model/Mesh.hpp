@@ -53,8 +53,10 @@ namespace Graphics
 		void CreateBoundingBox();
 	private:
 		MeshData myMeshData;
+
 		std::string myName;
 		std::string myRelativePath;
+
 		Simple::BoundingBox3D myBoundingBox;
 
 		ComPtr<ID3D11Buffer> myVertexBuffer;

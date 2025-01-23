@@ -5,8 +5,13 @@
 #include "Graphics/Renderer/Drawer/LineDrawer.hpp"
 #include "Graphics/Renderer/Drawer/SphereDrawer.hpp"
 #include "Graphics/Renderer/Drawer/SpriteDrawer.hpp"
+#include "Graphics/BufferData.hpp"
 #include <memory>
 #include <vector>
+#include <wrl/client.h>
+
+struct ID3D11Buffer;
+struct ID3D11DeviceContext;
 
 namespace ECS
 {
@@ -21,6 +26,7 @@ namespace Graphics
 	class Mesh;
 	class Shader;
 	class Texture;
+	class InstancerManager;
 }
 
 namespace Simple
@@ -52,6 +58,7 @@ namespace Drawer
 		void RenderUnlitStaticAnimatedModel(const ECS::TransformComponent* aTransformComponent, const ECS::MeshComponent* aMeshComponent, const ECS::AnimationComponent* aAnimationPlayerComponent) const;
 
 		void RenderSprite2D(const Drawer::Sprite2D& aSprite);
+		void RenderInstancer(const std::vector<Graphics::MeshInstance>& aInstancesData);
 
 		void Push(const Drawer::Line& aLine);
 		void Push(const Drawer::Sphere& aSphere);
@@ -85,6 +92,7 @@ namespace Drawer
 		std::vector<Sphere> myDebugSpheres;
 		std::vector<BoundingBox3DData> myBoundingBoxesData;
 
+		std::unique_ptr<Graphics::InstancerManager> myInstancerManager;
 		std::unique_ptr<LineDrawer> myLineDrawer;
 		std::unique_ptr<SphereDrawer> mySphereDrawer;
 		std::unique_ptr<SpriteDrawer> mySpriteDrawer;
