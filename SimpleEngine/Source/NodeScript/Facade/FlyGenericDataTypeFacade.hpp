@@ -17,7 +17,6 @@ namespace FLY_NAMESPACE
 		explicit GenericDataTypeFacade(GenericDataTypeID aDataTypeID);
 		explicit GenericDataTypeFacade(const DataTypeFacade& aDataTypeFacade);
 		explicit GenericDataTypeFacade(DataTypeID aDataTypeID);
-		explicit GenericDataTypeFacade(StructID aStructID);
 		explicit GenericDataTypeFacade(ClassID aClassID);
 
 		[[nodiscard]] GenericDataTypeID GetID() const;
@@ -35,6 +34,7 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] std::vector<VariableFacade> GetMemberVariables() const;
 
 		void SetColor(const Color& aColor);
+		VariableFacade CreateMemberVariable(GenericDataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* const aCommandTracker);
 
 		[[nodiscard]] explicit operator bool() const;
 

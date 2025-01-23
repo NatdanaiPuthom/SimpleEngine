@@ -30,15 +30,15 @@ namespace FLY_NAMESPACE
 	void LoadAllFlyFiles(std::string_view aFilePath);
 	void SaveCustomEvents(std::string_view aFilePath);
 
-	StructFacade CreateStruct(std::string_view aName, std::string_view aSavePath);
+	GenericDataTypeFacade CreateStruct(std::string_view aName, std::string_view aSavePath);
 	ClassFacade CreateClass(GenericDataTypeFacade aTargetFacade, std::string_view aName, std::string_view aSavePath);
 	ClassFacade CreateClassWithoutTarget(std::string_view aName, std::string_view aSavePath);
 
-	[[nodiscard]] StructFacade FindStructByName(std::string_view aName);
+	[[nodiscard]] GenericDataTypeFacade FindDataTypeByName(std::string_view aName);
 	[[nodiscard]] ClassFacade FindClassByName(std::string_view aName);
 
 	void SetDefaultDataTypeColor(const Fly::Color& aColor);
-	void SetEditorTextFunction(void(*aTextFunction)(const std::string&) );
+	void SetEditorTextFunction(void(*aTextFunction)(const std::string&));
 
 	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, NodeGraphFacade aCopiedFromNodeGraphFacade);
 	void PasteCopyBuffer(Vec2 aPosition, NodeGraphFacade aTargetNodeGraphFacade, CommandTracker* aCommandTracker);

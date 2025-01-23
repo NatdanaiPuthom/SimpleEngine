@@ -31,11 +31,11 @@ namespace FLY_NAMESPACE
 		Internal::SaveCustomEvents(aFilePath);
 	}
 
-	StructFacade CreateStruct(std::string_view aName, std::string_view aSavePath)
+	GenericDataTypeFacade CreateStruct(std::string_view aName, std::string_view aSavePath)
 	{
-		StructID structID = Internal::CreateStruct(aName);
-		Internal::SaveStruct(Internal::GetStructByID(structID), aSavePath);
-		return StructFacade(structID);
+		const DataTypeID dataTypeID = Internal::CreateStruct(aName);
+		Internal::SaveDataType(*Internal::GetDataTypeByID(dataTypeID), aSavePath);
+		return GenericDataTypeFacade(dataTypeID);
 	}
 
 	ClassFacade CreateClass(const GenericDataTypeFacade aTargetFacade, const std::string_view aName, const std::string_view aSavePath)
@@ -50,10 +50,9 @@ namespace FLY_NAMESPACE
 		return CreateClass(GenericDataTypeFacade(GetDataTypeID<None*>()), aName, aSavePath);
 	}
 
-
-	StructFacade FindStructByName(const std::string_view aName)
+	GenericDataTypeFacade FindDataTypeByName(const std::string_view aName)
 	{
-		return StructFacade{ Internal::GetDataTypeManager().GetStructIDByName(aName) };
+		return GenericDataTypeFacade{ Internal::GetDataTypeManager().GetDataTypeIDByName(aName) };
 	}
 
 	ClassFacade FindClassByName(const std::string_view aName)
@@ -78,7 +77,7 @@ namespace FLY_NAMESPACE
 		Internal::GetDataTypeManager().SetDefaultColor(aColor);
 	}
 
-	void SetEditorTextFunction(EditorTextFunction aTextFunction)
+	void SetEditorTextFunction(void(*aTextFunction)(const std::string&))
 	{
 		Internal::GetDataTypeManager().SetEditorTextFunction(aTextFunction);
 	}

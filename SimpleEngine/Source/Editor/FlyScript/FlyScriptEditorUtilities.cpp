@@ -198,7 +198,7 @@ namespace Editor
 					const float itemWidth = std::max(20.f, nodeWidthLeft);
 					ImGui::PushItemWidth(itemWidth);
 
-					inputPinFacade.ViewAndEdit(nullptr/*myCommandTracker.get()*/);
+					inputPinFacade.ViewAndEdit(aNodeGraphContext.myCommandTracker.get());
 
 					ImGui::PopItemWidth();
 				}

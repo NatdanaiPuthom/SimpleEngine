@@ -41,6 +41,7 @@ namespace FLY_NAMESPACE
 	class NodeTypeManager;
 	class PinTypeManager;
 	class DataTypeManager;
+	class TraitManager;
 	class MemoryPool;
 
 	struct InternalExecutionContext final
@@ -57,6 +58,7 @@ namespace FLY_NAMESPACE
 		NodeTypeManager* mNodeTypeManager = nullptr;
 		PinTypeManager* mPinTypeManager = nullptr;
 		DataTypeManager* mDataTypeManager = nullptr;
+		TraitManager* mTraitManager = nullptr;
 		MemoryPool* mFoundationMemoryPool = nullptr;
 	};
 }

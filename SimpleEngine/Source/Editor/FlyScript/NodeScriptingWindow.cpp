@@ -17,7 +17,6 @@ namespace Editor
 		, myFunctionSettingsWindow(*this)
 		, myStructCreatorWindow(this)
 	{
-		myCommandTracker = std::make_unique<Fly::CommandTracker>();
 
 		Fly::SetEditorTextFunction([](const std::string& aText) { ImGui::TextWrapped(aText.c_str()); });
 	}
@@ -73,7 +72,7 @@ namespace Editor
 			return true;
 		}
 
-		if (Fly::StructFacade structFacade = Fly::FindStructByName(aName))
+		if (Fly::GenericDataTypeFacade structFacade = Fly::FindDataTypeByName(aName))
 		{
 			myStructCreatorWindow.SetStructFacade(structFacade);
 			return true;
@@ -134,13 +133,13 @@ namespace Editor
 
 			if (ImGui::IsKeyDown(ImGuiMod_Ctrl) && ImGui::IsKeyPressed(ImGuiKey_Z))
 			{
-				myCommandTracker->UndoCommand();
+				GetNodeContext().myCommandTracker->UndoCommand();
 			}
 			else if (ImGui::IsKeyDown(ImGuiMod_Ctrl) && ImGui::IsKeyPressed(ImGuiKey_Y))
 			{
-				myCommandTracker->RedoCommand();
+				GetNodeContext().myCommandTracker->RedoCommand();
 			}
-			Fly::BeginFrame(myCommandTracker.get());
+			Fly::BeginFrame(GetNodeContext().myCommandTracker.get());
 
 			if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_C))
 			{
@@ -161,7 +160,7 @@ namespace Editor
 
 				const Fly::Vec2 mousePos = Fly::Vec2{ GetMousePos().x, GetMousePos().y };
 
-				Fly::PasteCopyBuffer(mousePos, GetNodeContext().myNodeGraphFacade, myCommandTracker.get());
+				Fly::PasteCopyBuffer(mousePos, GetNodeContext().myNodeGraphFacade, GetNodeContext().myCommandTracker.get());
 			}
 			else if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_X))
 			{
@@ -194,9 +193,9 @@ namespace Editor
 			if (isDebugging)
 			{
 
-				ImGui::Text((std::string("Undo Stack size: ") + std::to_string(myCommandTracker->GetUndoSize())).c_str());
+				ImGui::Text((std::string("Undo Stack size: ") + std::to_string(GetNodeContext().myCommandTracker->GetUndoSize())).c_str());
 				ImGui::SameLine();
-				ImGui::Text((std::string("Redo Stack size: ") + std::to_string(myCommandTracker->GetRedoSize())).c_str());
+				ImGui::Text((std::string("Redo Stack size: ") + std::to_string(GetNodeContext().myCommandTracker->GetRedoSize())).c_str());
 
 			}
 
@@ -287,14 +286,14 @@ namespace Editor
 			ImGui::EndCombo();
 		}
 
-		const bool canSave = myCommandTracker->GetUndoSize() == 0;
+		const bool canSave = GetNodeContext().myCommandTracker->GetUndoSize() == 0;
 
 		ImGui::BeginDisabled(canSave);
 
 		if (ImGui::Button("Save"))
 		{
 			currentClass.Save(ASSET_FILE_PATH);
-			myCommandTracker->Clear();
+			GetNodeContext().myCommandTracker->Clear();
 		}
 
 		ImGui::EndDisabled();

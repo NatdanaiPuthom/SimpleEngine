@@ -2,6 +2,7 @@
 #include "../FlyDefines.hpp"
 #include "FlyHeapObject.hpp"
 #include <vector>
+#include <array>
 #include <cassert>
 
 namespace FLY_NAMESPACE
@@ -236,10 +237,9 @@ namespace FLY_NAMESPACE
 		}
 
 		MemoryBuffer(const MemoryBuffer& aOther)
-			: mBuffer{}
+			: mBuffer(aOther.mBuffer)
 			, mSize(aOther.mSize)
 		{
-			std::memcpy(mBuffer, aOther.mBuffer, Capacity);
 			mMemoryObjects.reserve(aOther.mMemoryObjects.size());
 			for (const MemoryObject& memoryObject : aOther.mMemoryObjects)
 			{
@@ -249,18 +249,11 @@ namespace FLY_NAMESPACE
 			}
 		}
 
-		MemoryBuffer(MemoryBuffer&& aOther)
-			: mBuffer{}
-			, mSize(aOther.mSize)
-			, mMemoryObjects(std::move(aOther.mMemoryObjects))
-		{
-			std::memmove(mBuffer, aOther.mBuffer, Capacity);
-			aOther.mSize = 0;
-		}
+		MemoryBuffer(MemoryBuffer&&) noexcept = default;
 
 		MemoryBuffer& operator=(const MemoryBuffer& aOther)
 		{
-			std::memcpy(mBuffer, aOther.mBuffer, Capacity);
+			mBuffer = aOther.mBuffer;
 			mSize = aOther.mSize;
 
 			mMemoryObjects.clear();
@@ -275,15 +268,7 @@ namespace FLY_NAMESPACE
 			return *this;
 		}
 
-		MemoryBuffer& operator=(MemoryBuffer&& aOther) noexcept
-		{
-			std::memmove(mBuffer, aOther.mBuffer, Capacity);
-			mSize = aOther.mSize;
-			mMemoryObjects = std::move(aOther.mMemoryObjects);
-
-			aOther.mSize = 0;
-			return *this;
-		}
+		MemoryBuffer& operator=(MemoryBuffer&&) noexcept = default;
 
 		template<MemSizeLessEqual<Capacity> T, typename... Args>
 		T& Allocate(Args&&... aArgs)
@@ -341,7 +326,7 @@ namespace FLY_NAMESPACE
 		}
 	private:
 
-		char mBuffer[Capacity];
+		std::array<std::byte, Capacity> mBuffer;
 		size_t mSize;
 
 		std::vector<MemoryObject> mMemoryObjects;
@@ -531,6 +516,22 @@ namespace FLY_NAMESPACE
 
 	}
 
+
+	template<size_t Size>
+	class TestStackAllocator
+	{
+	public:
+
+
+		[[nodiscard]] void* allocate(const size_t aNumObjects)
+		{
+			
+		}
+
+	private:
+
+		std::array<std::byte, Size> mBytes;
+	};
 
 
 }

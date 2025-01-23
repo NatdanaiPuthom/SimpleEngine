@@ -790,7 +790,7 @@ namespace FLY_NAMESPACE
 }
 
 #define FLY_FUNCTION(Function, ...) \
-    inline static FLY_NAMESPACE::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = FLY_NAMESPACE::RegisterFunctionNode::RegisterFunction(&Function, #Function, __VA_ARGS__);
+    inline FLY_NAMESPACE::RegisterFunctionNode FLY_UNIQUE_NAME(fly_function) = FLY_NAMESPACE::RegisterFunctionNode::RegisterFunction(&Function, #Function, __VA_ARGS__);
 
 #define FLY_TRAIT(Trait, ...) \
 	inline static FLY_NAMESPACE::RegisterFunctionNode FLY_UNIQUE_NAME(fly_trait) = FLY_NAMESPACE::RegisterFunctionNode::RegisterTrait<Trait>(#Trait);

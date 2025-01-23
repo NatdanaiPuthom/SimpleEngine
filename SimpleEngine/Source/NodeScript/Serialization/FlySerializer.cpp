@@ -53,15 +53,15 @@ namespace FLY_NAMESPACE
 			}
 			else if (flyType == "Struct")
 			{
-				LoadStruct(jsonDoc);
+				LoadDataType(jsonDoc);
 			}
 		}
 
 
-		void SaveStruct(const Struct& aStruct, std::string_view aFilePath)
+		void SaveDataType(const DataType& aDataType, std::string_view aFilePath)
 		{
 			std::filesystem::path fileDirectory = aFilePath;
-			std::filesystem::path filePath = fileDirectory.string() + "/" + aStruct.mName + FLY_FILE_EXTENSION;
+			std::filesystem::path filePath = fileDirectory.string() + "/" + aDataType.mName + FLY_FILE_EXTENSION;
 
 			std::filesystem::create_directories(std::string(aFilePath));
 			if (!std::filesystem::exists(fileDirectory))
@@ -83,7 +83,7 @@ namespace FLY_NAMESPACE
 			nlohmann::json jsonDoc;
 
 			jsonDoc["Type"] = "Struct";
-			jsonDoc["Name"] = aStruct.mName;
+			jsonDoc["Name"] = aDataType.mName;
 
 			nlohmann::json& dataJson = jsonDoc["Data"];
 
@@ -91,9 +91,9 @@ namespace FLY_NAMESPACE
 				dataJson["Variables"] = nlohmann::json::array();
 				nlohmann::json& variableDataJson = dataJson["Variables"];
 
-				for (VarID varID{ 0 }; varID < aStruct.mVariableContainer.mVariables.size(); ++varID)
+				for (VarID varID{ 0 }; varID < aDataType.mVariableContainer.mVariables.size(); ++varID)
 				{
-					const Variable& variable = aStruct.mVariableContainer.mVariables.at(varID);
+					const Variable& variable = aDataType.mVariableContainer.mVariables.at(varID);
 
 					if (variable.mIsDestroyed)
 					{
@@ -137,20 +137,10 @@ namespace FLY_NAMESPACE
 			}
 
 			ofs << jsonDoc;
-			ofs.close();
-
-			
-		}
-
-		void LoadStruct(const nlohmann::json& aJsonData)
-		{
-			const std::string& structName = aJsonData["Name"];
-			const StructID createdStructID = Internal::CreateStruct(structName);
-			LoadStruct(aJsonData["Data"], GetStructByID(createdStructID));
 		}
 
 
-		void LoadStruct(const nlohmann::json& aJsonData, Struct& aStruct)
+		void LoadDataType(const nlohmann::json& aJsonData, DataType& aDataType)
 		{
 			const nlohmann::json& dataJson = aJsonData;
 
@@ -159,13 +149,13 @@ namespace FLY_NAMESPACE
 
 			for (const nlohmann::json& variableJson : variableDataJson)
 			{
-				const VarID varID = Internal::CreateVariable(aStruct.mVariableContainer, GenericDataTypeID{ GetDataTypeID<bool>() }, "Var", nullptr);
-				Variable& variable = aStruct.mVariableContainer.mVariables.at(varID);
+				const VarID varID = Internal::CreateVariable(aDataType.mVariableContainer, GenericDataTypeID{ GetDataTypeID<bool>() }, "Var", nullptr);
+				Variable& variable = aDataType.mVariableContainer.mVariables.at(varID);
 
 				const std::string& dataTypeStr = variableJson["DataType"];
 
 				const std::string variableName = variableJson["Name"];
-				Internal::SetVariableName(varID, aStruct.mVariableContainer, variableName, nullptr);
+				Internal::SetVariableName(varID, aDataType.mVariableContainer, variableName, nullptr);
 
 				const nlohmann::json& defaultValueJson = variableJson["DefaultValue"];
 
@@ -175,7 +165,7 @@ namespace FLY_NAMESPACE
 				if (dataTypeID != GenericDataTypeID{})
 				{
 
-					Internal::SetVariableDataType(varID, aStruct.mVariableContainer, dataTypeID, nullptr);
+					Internal::SetVariableDataType(varID, aDataType.mVariableContainer, dataTypeID, nullptr);
 
 					GetDataTypeManager().LoadData(dataTypeID, variable.mDefaultValueDataPtr, defaultValueJson);
 
@@ -196,6 +186,141 @@ namespace FLY_NAMESPACE
 				}*/
 			}
 		}
+
+		//void SaveStruct(const Struct& aStruct, std::string_view aFilePath)
+		//{
+		//	std::filesystem::path fileDirectory = aFilePath;
+		//	std::filesystem::path filePath = fileDirectory.string() + "/" + aStruct.mName + FLY_FILE_EXTENSION;
+
+		//	std::filesystem::create_directories(std::string(aFilePath));
+		//	if (!std::filesystem::exists(fileDirectory))
+		//	{
+		//		throw std::runtime_error("Failed to create directory: " + fileDirectory.string());
+		//		return;
+
+		//	}
+
+		//	std::ofstream ofs(filePath, std::ios::out);
+
+		//	if (!ofs.is_open())
+		//	{
+		//		throw std::runtime_error("Failed to open file for writing: " + filePath.string());
+		//		return;
+		//	}
+
+
+		//	nlohmann::json jsonDoc;
+
+		//	jsonDoc["Type"] = "Struct";
+		//	jsonDoc["Name"] = aStruct.mName;
+
+		//	nlohmann::json& dataJson = jsonDoc["Data"];
+
+		//	{
+		//		dataJson["Variables"] = nlohmann::json::array();
+		//		nlohmann::json& variableDataJson = dataJson["Variables"];
+
+		//		for (VarID varID{ 0 }; varID < aStruct.mVariableContainer.mVariables.size(); ++varID)
+		//		{
+		//			const Variable& variable = aStruct.mVariableContainer.mVariables.at(varID);
+
+		//			if (variable.mIsDestroyed)
+		//			{
+		//				continue;
+		//			}
+
+		//			nlohmann::json variableJson;
+
+		//			variableJson["Name"] = variable.mName;
+		//			variableJson["DataType"] = GetDataTypeManager().GetName(variable.mDataTypeID);
+
+		//			nlohmann::json defaultValueJson = nlohmann::json::object();
+
+		//			GetDataTypeManager().SaveData(variable.mDataTypeID, variable.mDefaultValueDataPtr, defaultValueJson);
+
+		//			variableJson["DefaultValue"] = defaultValueJson;
+
+		//			/*variableJson["Nodes"] = nlohmann::json::array();
+		//			nlohmann::json& variableNodesJson = variableJson["Nodes"];
+
+		//			for (const NodeRef& nodeRef : variableManager.GetNodeRefsByVarID(varID))
+		//			{
+
+		//				const Node& node = nodeRef.GetNodeGraph().mNodes.at(nodeRef.GetNodeID());
+
+		//				if (!node.mIsDestroyed)
+		//				{
+		//					nlohmann::json& varNodeJson = variableNodesJson.emplace_back();
+		//					const NodeID cleanNodeID = cleanedNodeIDs.at(nodeRef.GetNodeID());
+		//					varNodeJson["NodeID"] = cleanNodeID;
+		//					nlohmann::json& graphJson = varNodeJson["Graph"];
+		//					assert(nodeRef.GetClass());
+		//					graphJson["ClassName"] = nodeRef.GetClass()->mName;
+		//					graphJson
+		//					variableNodesJson.push_back(varNodeJson);
+		//				}
+		//			}*/
+
+		//			variableDataJson.push_back(variableJson);
+		//		}
+		//	}
+
+		//	ofs << jsonDoc;
+		//}
+
+		void LoadDataType(const nlohmann::json& aJsonData)
+		{
+			const std::string& structName = aJsonData["Name"];
+			const DataTypeID createdStructID = Internal::CreateStruct(structName);
+			LoadDataType(aJsonData["Data"], *GetDataTypeManager().Find(createdStructID));
+		}
+
+		//void LoadStruct(const nlohmann::json& aJsonData, Struct& aStruct)
+		//{
+		//	const nlohmann::json& dataJson = aJsonData;
+
+
+		//	const nlohmann::json& variableDataJson = dataJson["Variables"];
+
+		//	for (const nlohmann::json& variableJson : variableDataJson)
+		//	{
+		//		const VarID varID = Internal::CreateVariable(aStruct.mVariableContainer, GenericDataTypeID{ GetDataTypeID<bool>() }, "Var", nullptr);
+		//		Variable& variable = aStruct.mVariableContainer.mVariables.at(varID);
+
+		//		const std::string& dataTypeStr = variableJson["DataType"];
+
+		//		const std::string variableName = variableJson["Name"];
+		//		Internal::SetVariableName(varID, aStruct.mVariableContainer, variableName, nullptr);
+
+		//		const nlohmann::json& defaultValueJson = variableJson["DefaultValue"];
+
+
+		//		const GenericDataTypeID dataTypeID = GetDataTypeManager().GetGenericDataTypeIDByName(dataTypeStr);
+
+		//		if (dataTypeID != GenericDataTypeID{})
+		//		{
+
+		//			Internal::SetVariableDataType(varID, aStruct.mVariableContainer, dataTypeID, nullptr);
+
+		//			GetDataTypeManager().LoadData(dataTypeID, variable.mDefaultValueDataPtr, defaultValueJson);
+
+		//		}
+
+		//		/*const json& variableNodesJson = variableJson["Nodes"];
+
+		//		for (const NodeID nodeID : variableNodesJson)
+		//		{
+		//			if (!failedNodeIDs.contains(nodeID))
+		//			{
+		//				InternalModifier::BindVariable(aScript, NodeRef{.nodeID = nodeID, .nodeGraph = , varID, nullptr);
+		//			}
+		//			else
+		//			{
+		//				std::cout << "Couldn't bind node to variable" << std::endl;
+		//			}
+		//		}*/
+		//	}
+		//}
 
 		void SaveClass(const Class& aClass, const std::string_view aFilePath)
 		{

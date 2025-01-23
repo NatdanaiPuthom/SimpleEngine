@@ -65,7 +65,7 @@ namespace Editor
 
 		Fly::CommandTracker& GetCommandTracker()
 		{
-			return *myCommandTracker;
+			return *GetNodeContext().myCommandTracker;
 		}
 
 	private:
@@ -78,11 +78,6 @@ namespace Editor
 		Fly::GenericDataTypeFacade mySelectedTargetDataType;
 		char myCreateCopyNameText[NodeGraphContext::TEXT_MAX_LENGTH]{};
 
-		std::unique_ptr<Fly::CommandTracker> myCommandTracker;
-
-		//std::unordered_map<Fly::NodeGraphFacade, ImNodesContext*> myImNodesContexts;
-
-		
 		FlyClassWindow myClassWindow;
 		CustomEventWindow myCustomEventWindow;
 		FunctionSettingsWindow myFunctionSettingsWindow;

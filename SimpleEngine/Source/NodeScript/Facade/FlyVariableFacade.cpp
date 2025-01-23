@@ -15,12 +15,6 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	VariableFacade::VariableFacade(const VarID aVarID, const StructFacade& aStructFacade)
-		: mVarID(aVarID)
-		, mOwnerID(GenericDataTypeID{ aStructFacade.GetID() })
-	{
-	}
-
 	VariableFacade::VariableFacade(const VarID aVarID, const DataTypeFacade& aDataTypeFacade)
 		: mVarID(aVarID)
 		, mOwnerID(GenericDataTypeID{ aDataTypeFacade.GetID() })
@@ -38,8 +32,7 @@ namespace FLY_NAMESPACE
 	{
 		return std::visit(Visitor
 			{
-			[&](const DataTypeID) -> VariableContainer* { assert(false); return nullptr; },
-			[&](const StructID aStructID) -> VariableContainer* { return &Internal::GetStructByID(aStructID).mVariableContainer; },
+			[&](const DataTypeID aDataTypeID) -> VariableContainer* { return &Internal::GetDataTypeManager().Find(aDataTypeID)->mVariableContainer; },
 			[&](const ClassID aClassID) -> VariableContainer* { return &Internal::GetClassByID(aClassID).mVariableContainer; }
 			}, aDataTypeID.mID);
 	}

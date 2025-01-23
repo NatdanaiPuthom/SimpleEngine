@@ -16,9 +16,9 @@ namespace Editor
 
 		void Update();
 
-		void SetStructFacade(Fly::StructFacade aStructFacade)
+		void SetStructFacade(Fly::GenericDataTypeFacade aDataTypeFacade)
 		{
-			myStructFacade = aStructFacade;
+			myGenericDataTypeFacade = aDataTypeFacade;
 		}
 	private:
 
@@ -27,7 +27,7 @@ namespace Editor
 	private:
 
 		NodeScriptingWindow* myParentWindow;
-		Fly::StructFacade myStructFacade;
+		Fly::GenericDataTypeFacade myGenericDataTypeFacade;
 
 	};
 }

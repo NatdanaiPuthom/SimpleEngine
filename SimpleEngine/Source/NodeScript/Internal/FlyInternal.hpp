@@ -63,17 +63,16 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] const Node& GetNode(NodeID aNodeID, const NodeGraph& aNodeGraph);
 		[[nodiscard]] const NodeType& GetNodeType(const Node& aNode);
 		[[nodiscard]] const NodeType& GetNodeType(NodeID aNodeID, const NodeGraph& aNodeGraph);
-		[[nodiscard]] const NodeType& GetNodeType(NodeTypeID aNodeTypeID);
+		[[nodiscard]] NodeType& GetNodeType(NodeTypeID aNodeTypeID);
 		[[nodiscard]] const DataType* GetDataTypeByID(DataTypeID aDataTypeID);
 		[[nodiscard]] const DataType* GetDataTypeByID(GenericDataTypeID aDataTypeID);
-		[[nodiscard]] Struct& GetStructByID(StructID aStructID);
 		[[nodiscard]] Class& GetClassByID(ClassID aClassID);
 		[[nodiscard]] Trait& GetTraitByID(TraitID aTraitID);
 
 		void InitializeSubPins();
 
-		StructID CreateStruct(std::string_view aName);
-		void SetStructName(StructID aStructID, std::string_view aName, CommandTracker* aCommandTracker);
+		DataTypeID CreateStruct(std::string_view aName);
+		//void SetStructName(StructID aStructID, std::string_view aName, CommandTracker* aCommandTracker);
 
 		ClassID CreateClass(GenericDataTypeID aTargetID, std::string_view aName);
 		void SetClassName(ClassID aClassID, std::string_view aName, CommandTracker* aCommandTracker);

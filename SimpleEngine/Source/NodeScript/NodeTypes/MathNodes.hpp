@@ -13,4 +13,6 @@ namespace FLY_NAMESPACE
 	StructInstance StructInstanceTest(const StructInstance& aStructInstance);
 
 	FLY_FUNCTION(StructInstanceTest);
+
+	inline Fly::RegisterType fly_valuetype191 = Fly::RegisterType::ValueType<StructInstance>("StructInstance");;
 }

@@ -21,11 +21,6 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	GenericDataTypeFacade::GenericDataTypeFacade(const StructID aStructID)
-		: GenericDataTypeFacade(GenericDataTypeID{ aStructID })
-	{
-	}
-
 	GenericDataTypeFacade::GenericDataTypeFacade(const ClassID aClassID)
 		: GenericDataTypeFacade(GenericDataTypeID{ aClassID })
 	{
@@ -107,6 +102,22 @@ namespace FLY_NAMESPACE
 	void GenericDataTypeFacade::SetColor(const Color& aColor)
 	{
 		Internal::GetDataTypeManager().SetDataTypeColor(mDataTypeID, aColor);
+	}
+
+	VariableFacade GenericDataTypeFacade::CreateMemberVariable(GenericDataTypeFacade aDataTypeFacade, std::string_view aName, CommandTracker* const aCommandTracker)
+	{
+		VariableContainer& varContainer = std::visit(Visitor{
+			[](const DataTypeID aDataTypeID) -> VariableContainer&
+			{
+				return Internal::GetDataTypeManager().Find(aDataTypeID)->mVariableContainer;
+			},
+			[](const ClassID aClassID) -> VariableContainer&
+			{
+				return Internal::GetDataTypeManager().Find(aClassID)->mVariableContainer;
+			}
+			}, mDataTypeID.mID);
+		VarID varID = Internal::CreateVariable(varContainer, aDataTypeFacade.GetID(), aName, aCommandTracker);
+		return VariableFacade(varID, *this);
 	}
 
 	GenericDataTypeFacade::operator bool() const

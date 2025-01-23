@@ -188,7 +188,7 @@ namespace FLY_NAMESPACE
 	};
 }
 
-#define FLY_POINTERTYPE(Type, ...) inline static FLY_NAMESPACE::RegisterType FLY_UNIQUE_NAME(fly_pointertype) = FLY_NAMESPACE::RegisterType::PointerType<Type>(#Type, __VA_ARGS__);
-#define FLY_VALUETYPE(Type, ...) inline static FLY_NAMESPACE::RegisterType FLY_UNIQUE_NAME(fly_valuetype) = FLY_NAMESPACE::RegisterType::ValueType<Type>(#Type, __VA_ARGS__);
+#define FLY_POINTERTYPE(Type, ...) inline FLY_NAMESPACE::RegisterType FLY_UNIQUE_NAME(fly_pointertype) = FLY_NAMESPACE::RegisterType::PointerType<Type>(#Type, __VA_ARGS__);
+#define FLY_VALUETYPE(Type, ...) inline FLY_NAMESPACE::RegisterType FLY_UNIQUE_NAME(fly_valuetype) = FLY_NAMESPACE::RegisterType::ValueType<Type>(#Type, __VA_ARGS__);
 
-#define FLY_MEMBER(member, ...) inline static FLY_NAMESPACE::RegisterMemberVariable FLY_UNIQUE_NAME(fly_member) = FLY_NAMESPACE::RegisterMemberVariable::Member(&member, #member);
+#define FLY_MEMBER(member) inline FLY_NAMESPACE::RegisterMemberVariable FLY_UNIQUE_NAME(fly_member) = FLY_NAMESPACE::RegisterMemberVariable::Member(&member, #member);

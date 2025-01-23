@@ -52,12 +52,15 @@ namespace FLY_NAMESPACE
 
 	void StructFacade::SetName(std::string_view aName, CommandTracker* const aCommandTracker)
 	{
-		Internal::SetStructName(mStructID, aName, aCommandTracker);
+		aName;
+		aCommandTracker;
+		//Internal::SetStructName(mStructID, aName, aCommandTracker);
 	}
 
 	Struct& StructFacade::GetStruct() const
 	{
-		return Internal::GetStructByID(mStructID);
+		static Struct s;
+		return s;
 	}
 
 	StructFacade::operator bool() const

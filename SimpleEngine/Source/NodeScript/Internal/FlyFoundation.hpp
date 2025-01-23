@@ -15,19 +15,22 @@
 namespace FLY_NAMESPACE
 {
 	class NodeExecutor;
-	class Class;
-	class Struct;
 
 	class Foundation final
 	{
+		struct FoundationProxy
+		{
+			FoundationProxy(Foundation*& aStaticFoundation)
+			{
+				aStaticFoundation = new Foundation();
+			}
+		};
+
 	public:
 
 		inline static Foundation& GetInstance()
 		{
-			if (!sInstance)
-			{
-				sInstance = new Foundation();
-			}
+			static FoundationProxy p(sInstance);
 			return *sInstance;
 		}
 

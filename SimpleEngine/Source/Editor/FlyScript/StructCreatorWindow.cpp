@@ -11,23 +11,21 @@ namespace Editor
 	}
 	void StructCreatorWindow::Update()
 	{
-		if (!myStructFacade)
+		if (!myGenericDataTypeFacade)
 		{
 			return;
 		}
 
-		if (ImGui::Begin(std::string("Create Struct - " + std::string(myStructFacade.GetName())).c_str()))
+		if (ImGui::Begin(std::string("Create Struct - " + std::string(myGenericDataTypeFacade.GetName())).c_str()))
 		{
-
-
 			if (ImGui::Button("Create Variable"))
 			{
-				myStructFacade.CreateVariable(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), "Var", nullptr);
+				myGenericDataTypeFacade.CreateMemberVariable(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), "Var", nullptr);
 			}
 
 			ImGui::Separator();
 
-			auto members = myStructFacade.GetMemberVariables();
+			auto members = myGenericDataTypeFacade.GetMemberVariables();
 
 
 			for (auto& member : members)
