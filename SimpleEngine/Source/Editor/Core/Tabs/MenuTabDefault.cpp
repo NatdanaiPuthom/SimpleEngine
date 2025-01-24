@@ -1,5 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Core/Tabs/MenuItemTab.hpp"
+#include "Editor/Core/Tabs/MenuTabDefault.hpp"
 #include "External/imgui.h"
 
 namespace Editor

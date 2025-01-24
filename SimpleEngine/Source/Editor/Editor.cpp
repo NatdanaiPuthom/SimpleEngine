@@ -14,8 +14,8 @@
 
 #include "Engine/ImGui/ImGuiEngine.hpp" //TempPlayMenuBar
 
-#include "Editor/Core/Tabs/MenuItemWindow.hpp"
-#include "Editor/Core/Tabs/MenuItemTab.hpp"
+#include "Editor/Core/Tabs/MenuTabWindow.hpp"
+#include "Editor/Core/Tabs/MenuTabDefault.hpp"
 
 namespace Editor
 {
