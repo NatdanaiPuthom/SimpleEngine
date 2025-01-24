@@ -20,22 +20,6 @@
 
 namespace Editor
 {
-	static void IWasClicked()
-	{
-		std::cout << "i was click" << std::endl;
-	}
-
-	static void SelectableClick(const std::string& aString)
-	{
-		std::cout << aString << " was clicked!" << std::endl;
-	}
-
-	static void IWasClickedWithParameters(int value)
-	{
-		std::cout << "i was click with value: " << value << std::endl;
-	}
-
-
 	class EditorCallbacks
 	{
 	public:
@@ -184,10 +168,16 @@ namespace Editor
 
 		std::unique_ptr<MenuItemPopUp> helpCameraControlsPopUpButton = std::make_unique<MenuItemPopUp>("Camera Controls");
 
+		std::unique_ptr<MenuItemPopUp> editorPopUpButton = std::make_unique<MenuItemPopUp>("Editor");
+		std::unique_ptr<MenuItemPopUp> deferredPopUpButton = std::make_unique<MenuItemPopUp>("Deferred");
+		std::unique_ptr<MenuItemPopUp> postProcessPopUpButton = std::make_unique<MenuItemPopUp>("PostProcess");
+
 		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUp = std::make_shared<AudioSettingsPopUp>("Audio Settings");
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = std::make_shared<CameraSettingsPopUp>("Camera Settings");
 		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUp = std::make_shared<GraphicsSettingsPopUp>("Graphics Settings");
 		std::shared_ptr<CameraControlsGuidePopUp> cameraHelpPopUp = std::make_shared<CameraControlsGuidePopUp>("Editor Camera Control");
+		std::shared_ptr<DeferredPopUp> deferredPopUp = std::make_shared<DeferredPopUp>("Deferred Window");
+		std::shared_ptr<PostProcessPopUp> postProcessPopUp = std::make_shared<PostProcessPopUp>("PostProcess Window");
 
 		sceneCreateNewButton->SetCallback(SceneSettingsFunction::CreateNew());
 		sceneCreateCopyButton->SetCallback(SceneSettingsFunction::CreateCopy());
@@ -226,11 +216,25 @@ namespace Editor
 			settingsGraphicsButton->SetCallback(std::move(popUpCallback));
 		}
 
+		{
+			auto popUpCallback = EditorCallbacks::SetPopUpActive(deferredPopUp, &deferredPopUpButton->myTestBool);
+			deferredPopUpButton->SetCallback(std::move(popUpCallback));
+		}
+
+		{
+			auto popUpCallback = EditorCallbacks::SetPopUpActive(postProcessPopUp, &postProcessPopUpButton->myTestBool);
+			postProcessPopUpButton->SetCallback(std::move(popUpCallback));
+		}
+
 		sceneTab->AddButton(std::move(sceneSaveButton));
 		sceneTab->AddSelectable(std::move(sceneLoadSelectable));
 		sceneTab->AddMenu(std::move(sceneCreateMenu));
 		sceneTab->AddButton(std::move(sceneReloadButton));
 		sceneTab->AddButton(std::move(sceneSetAsActiveButton));
+
+		windowsTab->AddPopUp(std::move(editorPopUpButton));
+		windowsTab->AddPopUp(std::move(deferredPopUpButton));
+		windowsTab->AddPopUp(std::move(postProcessPopUpButton));
 
 		settingsTab->AddPopUp(std::move(settingsAudioButton));
 		settingsTab->AddPopUp(std::move(settingsCameraButton));
@@ -247,6 +251,8 @@ namespace Editor
 		myPopUpWindows.push_back(cameraSettingPopUp);
 		myPopUpWindows.push_back(graphicsSettingPopUp);
 		myPopUpWindows.push_back(cameraHelpPopUp);
+		myPopUpWindows.push_back(deferredPopUp);
+		myPopUpWindows.push_back(postProcessPopUp);
 
 		for (auto& t : myMainMenuTabs)
 		{
