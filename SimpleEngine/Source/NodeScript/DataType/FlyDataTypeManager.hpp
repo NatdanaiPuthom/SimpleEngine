@@ -389,14 +389,14 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		[[nodiscard]] ViewAndEditResult ViewAndEditData(const DataType& aDataType, void* aDataPtr) const;
+		[[nodiscard]] ViewAndEditResult ViewAndEditData(const DataType& aDataType, void* aDataPtr, const bool aViewAndEditMembers) const;
 		void ViewData(const DataType& aDataType, const void* aDataPtr) const;
 		bool SaveData(const DataType& aDataType, const void* aDataPtr, nlohmann::json& aJson) const;
 		bool LoadData(const DataType& aDataType, void* aDataPtr, const nlohmann::json& aJson) const;
 
 	public:
 
-		[[nodiscard]] ViewAndEditResult ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr) const;
+		[[nodiscard]] ViewAndEditResult ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr, const bool aViewAndEditMembers = false) const;
 		void ViewData(DataTypeID aDataTypeID, const void* aDataPtr) const;
 		bool SaveData(DataTypeID aDataTypeID, const void* aDataPtr, nlohmann::json& aJson) const;
 		bool LoadData(DataTypeID aDataTypeID, void* aDataPtr, const nlohmann::json& aJson) const;
@@ -520,7 +520,7 @@ namespace FLY_NAMESPACE
 		std::vector<HeapObject<Class>> mClasses;
 
 		std::string mNullNameStr;
-		Color mDefaultColor = Color(1.f, 0.131f, 0.978f, 1.f);
+		Color mDefaultColor = Color(0.3f, 0.78f, 0.72f, 1.f);
 		Color mDefaultStructColor = Color(0.f, 0.6f, 1.f, 1.f);
 		Color mDefaultClassColor = Color(1.f, 0.6f, 0.f, 1.f);
 

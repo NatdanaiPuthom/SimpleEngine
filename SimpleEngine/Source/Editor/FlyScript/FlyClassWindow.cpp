@@ -30,22 +30,22 @@ namespace Editor
 
 	void FlyClassWindow::DrawGraphSelection()
 	{
-		Fly::ClassFacade currentClassFacade = myParentWindow.GetNodeContext().myClassFacade;
-		if (ImGui::Selectable("Event Graph", currentClassFacade.GetEventGraphFacade() == myParentWindow.GetNodeContext().myNodeGraphFacade))
+		Fly::ClassProxy currentClassProxy = myParentWindow.GetNodeContext().myClassProxy;
+		if (ImGui::Selectable("Event Graph", currentClassProxy.GetEventGraph() == myParentWindow.GetNodeContext().myNodeGraphProxy))
 		{
-			myParentWindow.SetNodeContext(currentClassFacade.GetEventGraphFacade(), currentClassFacade);
+			myParentWindow.SetNodeContext(currentClassProxy.GetEventGraph(), currentClassProxy);
 		}
 	}
 
 	void FlyClassWindow::DrawFunctionSelection()
 	{
-		Fly::ClassFacade currentClassFacade = myParentWindow.GetNodeContext().myClassFacade;
+		Fly::ClassProxy currentClassProxy = myParentWindow.GetNodeContext().myClassProxy;
 
 		if (ImGui::Button("Create Member Function"))
 		{
-			Fly::FunctionFacade createdFunctionFacade = currentClassFacade.CreateMemberFunction("Function1");
-			myParentWindow.SetNodeContext(createdFunctionFacade.GetNodeGraphFacade(), currentClassFacade);
-			myParentWindow.SetSelectedFunctionFacade(createdFunctionFacade);
+			Fly::FunctionProxy createdFunctionProxy = currentClassProxy.CreateMemberFunction("Function1");
+			myParentWindow.SetNodeContext(createdFunctionProxy.GetNodeGraph(), currentClassProxy);
+			myParentWindow.SetSelectedFunctionProxy(createdFunctionProxy);
 			ImGui::SetNextItemOpen(true);
 		}
 
@@ -53,15 +53,15 @@ namespace Editor
 		if (ImGui::TreeNode("Member Functions"))
 		{
 
-			std::vector<Fly::FunctionFacade> memberFunctions = currentClassFacade.GetFunctions();
+			std::vector<Fly::FunctionProxy> memberFunctions = currentClassProxy.GetFunctions();
 
-			for (Fly::FunctionFacade& memberFunctionFacade : memberFunctions)
+			for (Fly::FunctionProxy& memberFunctionProxy : memberFunctions)
 			{
 
-				if (ImGui::Selectable(memberFunctionFacade.GetName().c_str(), memberFunctionFacade.GetNodeGraphFacade() == myParentWindow.GetNodeContext().myNodeGraphFacade))
+				if (ImGui::Selectable(memberFunctionProxy.GetName().c_str(), memberFunctionProxy.GetNodeGraph() == myParentWindow.GetNodeContext().myNodeGraphProxy))
 				{
-					myParentWindow.SetNodeContext(memberFunctionFacade.GetNodeGraphFacade(), myParentWindow.GetNodeContext().myClassFacade);
-					myParentWindow.SetSelectedFunctionFacade(memberFunctionFacade);
+					myParentWindow.SetNodeContext(memberFunctionProxy.GetNodeGraph(), myParentWindow.GetNodeContext().myClassProxy);
+					myParentWindow.SetSelectedFunctionProxy(memberFunctionProxy);
 					break;
 				}
 			}
@@ -75,11 +75,11 @@ namespace Editor
 
 	void FlyClassWindow::DrawVariables()
 	{
-		Fly::ClassFacade currentClass = myParentWindow.GetNodeContext().myClassFacade;
+		Fly::ClassProxy currentClass = myParentWindow.GetNodeContext().myClassProxy;
 
 		if (ImGui::Button("Create Variable"))
 		{
-			myParentWindow.GetNodeContext().myClassFacade.CreateVariable(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), "Var", nullptr);
+			myParentWindow.GetNodeContext().myClassProxy.CreateVariable(Fly::GenericDataTypeProxy(Fly::GetDataTypeID<bool>()), "Var", nullptr);
 			ImGui::SetNextItemOpen(true);
 		}
 
@@ -88,19 +88,19 @@ namespace Editor
 
 			ImGui::Separator();
 
-			std::vector<Fly::VariableFacade> variableFacades = currentClass.GetVariables();
-			for (Fly::VariableFacade& variableFacade : variableFacades)
+			std::vector<Fly::VariableProxy> variableProxys = currentClass.GetVariables();
+			for (Fly::VariableProxy& variableProxy : variableProxys)
 			{
-				const std::string treeNodeStrID = std::string("##ScriptVariable" + std::to_string(variableFacade.GetID()));
-				if (ImGui::TreeNode(treeNodeStrID.c_str(), std::string(variableFacade.GetName()).c_str()))
+				const std::string treeNodeStrID = std::string("##ScriptVariable" + std::to_string(variableProxy.GetID()));
+				if (ImGui::TreeNode(treeNodeStrID.c_str(), std::string(variableProxy.GetName()).c_str()))
 				{
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::GenericDataTypeFacade(variableFacade.GetDataTypeID()).GetColor())));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::GenericDataTypeProxy(variableProxy.GetDataTypeID()).GetColor())));
 					ImGui::EndDisabled();
 
-					ModifyVariablePopup(variableFacade);
+					ModifyVariablePopup(variableProxy);
 
 					ImGui::TreePop();
 				}
@@ -109,7 +109,7 @@ namespace Editor
 					ImGui::SameLine(ImGui::GetWindowWidth() - 30.f);
 
 					ImGui::BeginDisabled();
-					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::GenericDataTypeFacade(variableFacade.GetDataTypeID()).GetColor())));
+					ImGui::ColorButton("  ##Color", ImGui::ColorConvertU32ToFloat4(ToImGuiColor(Fly::GenericDataTypeProxy(variableProxy.GetDataTypeID()).GetColor())));
 					ImGui::EndDisabled();
 				}
 
@@ -123,32 +123,32 @@ namespace Editor
 
 	}
 
-	void FlyClassWindow::ModifyVariablePopup(Fly::VariableFacade& aVariableFacade)
+	void FlyClassWindow::ModifyVariablePopup(Fly::VariableProxy& aVariableProxy)
 	{
-		std::string variableName(aVariableFacade.GetName());
+		std::string variableName(aVariableProxy.GetName());
 
 		if (ImGui::InputString<35>("##VariableName", variableName))
 		{
-			aVariableFacade.SetName(variableName, nullptr);
+			aVariableProxy.SetName(variableName, nullptr);
 		}
 
-		Fly::GenericDataTypeFacade currentDataTypeFacade(aVariableFacade.GetDataTypeID());
+		Fly::GenericDataTypeProxy currentDataTypeProxy(aVariableProxy.GetDataTypeID());
 
 		ImGui::Separator();
-		if (DataTypeComboEditableFilter("##ChangeDataType", currentDataTypeFacade))
+		if (DataTypeComboEditableFilter("##ChangeDataType", currentDataTypeProxy))
 		{
-			aVariableFacade.SetDataType(currentDataTypeFacade, nullptr);
+			aVariableProxy.SetDataType(currentDataTypeProxy, nullptr);
 		}
 
 		ImGui::Text("Default Value:");
 		ImGui::SameLine();
-		aVariableFacade.ViewAndEditDefaultValue(nullptr);
+		aVariableProxy.ViewAndEditDefaultValue(nullptr);
 
 		ImGui::Separator();
 
 		if (ImGui::Button("Create Getter"))
 		{
-			//myParentWindow.GetNodeContext().myClassFacade.GetEventGraphFacade().CreateGetterNode(aVariableFacade, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
+			//myParentWindow.GetNodeContext().myClassProxy.GetEventGraphProxy().CreateGetterNode(aVariableProxy, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
 			ImGui::CloseCurrentPopup();
 
 		}
@@ -157,12 +157,12 @@ namespace Editor
 
 		if (ImGui::Button("Create Setter"))
 		{
-			//myParentWindow.GetNodeContext().myClassFacade.GetEventGraphFacade().CreateSetterNode(aVariableFacade, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
+			//myParentWindow.GetNodeContext().myClassProxy.GetEventGraphProxy().CreateSetterNode(aVariableProxy, Fly::Vec2{}, &myParentWindow.GetCommandTracker());
 		}
 
 		if (ImGui::Button("Delete Variable"))
 		{
-			aVariableFacade.Destroy(nullptr);
+			aVariableProxy.Destroy(nullptr);
 		}
 	}
 

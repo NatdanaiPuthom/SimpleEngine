@@ -35,46 +35,43 @@ namespace Editor
 		return *myNodeContextHistory.history[myNodeContextHistory.currentIndex];
 	}
 
-
-
-	void NodeScriptingWindow::SetNodeContext(const Fly::NodeGraphFacade aNodeGraphFacade, Fly::ClassFacade aClassFacade)
+	void NodeScriptingWindow::SetNodeContext(const Fly::NodeGraphProxy aNodeGraphProxy, Fly::ClassProxy aClassProxy)
 	{
-		assert(aNodeGraphFacade);
-		assert(aClassFacade);
+		assert(aNodeGraphProxy);
+		assert(aClassProxy);
 
 		std::unique_ptr<NodeGraphContext> nodeContext = std::make_unique<NodeGraphContext>();
 
-		nodeContext->myClassFacade = aClassFacade;
-		nodeContext->myNodeGraphFacade = aNodeGraphFacade;
-		nodeContext->myClassInstanceFacade = aClassFacade.CreateClassInstance();
+		nodeContext->myClassProxy = aClassProxy;
+		nodeContext->myNodeGraphProxy = aNodeGraphProxy;
+		nodeContext->myClassInstanceProxy = aClassProxy.CreateClassInstance();
 
 		ImNodes::SetCurrentContext(nodeContext->myImNodesContext);
 		myNodeContextHistory.history.push_back(std::move(nodeContext));
 		myNodeContextHistory.currentIndex++;
-
 	}
 
 	eGraphMode NodeScriptingWindow::GetCurrentMode() const
 	{
-		return GetNodeContext().myClassFacade ? eGraphMode::Class : eGraphMode::Global;
+		return GetNodeContext().myClassProxy ? eGraphMode::Class : eGraphMode::Global;
 	}
 
-	void NodeScriptingWindow::SetSelectedFunctionFacade(Fly::FunctionFacade aFunctionFacade)
+	void NodeScriptingWindow::SetSelectedFunctionProxy(Fly::FunctionProxy aFunctionProxy)
 	{
-		mySelectedFunctionFacade = aFunctionFacade;
+		mySelectedFunctionProxy = aFunctionProxy;
 	}
 
 	bool NodeScriptingWindow::OpenClassByName(std::string_view aName)
 	{
-		if (Fly::ClassFacade classFacade = Fly::FindClassByName(aName))
+		if (Fly::ClassProxy classProxy = Fly::FindClassByName(aName))
 		{
-			SetNodeContext(classFacade.GetEventGraphFacade(), classFacade);
+			SetNodeContext(classProxy.GetEventGraph(), classProxy);
 			return true;
 		}
 
-		if (Fly::GenericDataTypeFacade structFacade = Fly::FindDataTypeByName(aName))
+		if (Fly::GenericDataTypeProxy structProxy = Fly::FindDataTypeByName(aName))
 		{
-			myStructCreatorWindow.SetStructFacade(structFacade);
+			myStructCreatorWindow.SetStructProxy(structProxy);
 			return true;
 		}
 
@@ -94,11 +91,11 @@ namespace Editor
 			classes = Fly::GetClasses();
 			if (classes.begin()->second.empty())
 			{
-				Fly::CreateClass(Fly::GenericDataTypeFacade(Fly::GetClasses().begin()->first), "Default Class", ASSET_FILE_PATH);
+				Fly::CreateClass(Fly::GenericDataTypeProxy(Fly::GetClasses().begin()->first), "Default Class", ASSET_FILE_PATH);
 			}
 
-			Fly::ClassFacade flyClass = classes.begin()->second.front();
-			SetNodeContext(flyClass.GetEventGraphFacade(), flyClass);
+			Fly::ClassProxy flyClass = classes.begin()->second.front();
+			SetNodeContext(flyClass.GetEventGraph(), flyClass);
 		}
 
 
@@ -152,7 +149,7 @@ namespace Editor
 
 					ImNodes::GetSelectedNodes(reinterpret_cast<int*>(selectedNodes.data()));
 
-					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().myNodeGraphFacade);
+					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().myNodeGraphProxy);
 				}
 			}
 			else if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_V))
@@ -160,7 +157,7 @@ namespace Editor
 
 				const Fly::Vec2 mousePos = Fly::Vec2{ GetMousePos().x, GetMousePos().y };
 
-				Fly::PasteCopyBuffer(mousePos, GetNodeContext().myNodeGraphFacade, GetNodeContext().myCommandTracker.get());
+				Fly::PasteCopyBuffer(mousePos, GetNodeContext().myNodeGraphProxy, GetNodeContext().myCommandTracker.get());
 			}
 			else if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_X))
 			{
@@ -172,8 +169,8 @@ namespace Editor
 
 					ImNodes::GetSelectedNodes(reinterpret_cast<int*>(selectedNodes.data()));
 
-					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().myNodeGraphFacade);
-					GetNodeContext().myNodeGraphFacade.DestroySelection(selectedNodes, {}, nullptr);
+					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().myNodeGraphProxy);
+					GetNodeContext().myNodeGraphProxy.DestroySelection(selectedNodes, {}, nullptr);
 				}
 			}
 
@@ -213,7 +210,7 @@ namespace Editor
 			myTraitWindow.Update();
 
 
-			if (GetNodeContext().myNodeGraphFacade.GetType() == Fly::eNodeGraphType::Function)
+			if (GetNodeContext().myNodeGraphProxy.GetType() == Fly::eNodeGraphType::Function)
 			{
 				myFunctionSettingsWindow.Update();
 			}
@@ -250,17 +247,17 @@ namespace Editor
 		{
 			ImGui::SameLine();
 
-			std::string className = std::string(GetNodeContext().myClassFacade.GetName());
+			std::string className = std::string(GetNodeContext().myClassProxy.GetName());
 			if (ImGui::InputString<32>("##", className))
 			{
-				GetNodeContext().myClassFacade.SetName(className, nullptr);
+				GetNodeContext().myClassProxy.SetName(className, nullptr);
 			}
 		}
 	}
 
 	void NodeScriptingWindow::ShowLoadingMenu()
 	{
-		Fly::ClassFacade currentClass = GetNodeContext().myClassFacade;
+		Fly::ClassProxy currentClass = GetNodeContext().myClassProxy;
 
 		std::string currentClassName = currentClass ? std::string(currentClass.GetName()) : "None";
 
@@ -268,15 +265,15 @@ namespace Editor
 		{
 			const auto classes = Fly::GetClasses();
 
-			for (auto& [dataTypeFacade, classesByDataTypeID] : classes)
+			for (auto& [dataTypeProxy, classesByDataTypeID] : classes)
 			{
-				if (ImGui::BeginMenu(dataTypeFacade.GetName().c_str()))
+				if (ImGui::BeginMenu(dataTypeProxy.GetName().c_str()))
 				{
 					for (auto& flyClass : classesByDataTypeID)
 					{
 						if (ImGui::MenuItem(std::string(flyClass.GetName()).c_str()))
 						{
-							SetNodeContext(flyClass.GetEventGraphFacade(), flyClass);
+							SetNodeContext(flyClass.GetEventGraph(), flyClass);
 						}
 					}
 
@@ -321,7 +318,7 @@ namespace Editor
 
 			if (ImGui::Button("Create", ImVec2(120, 0)))
 			{
-				Fly::ClassFacade createdClassFacade = Fly::CreateClass(mySelectedTargetDataType, myNewClassNameText, ASSET_FILE_PATH);
+				Fly::ClassProxy createdClassProxy = Fly::CreateClass(mySelectedTargetDataType, myNewClassNameText, ASSET_FILE_PATH);
 				myNewClassNameText[0] = (char)0;
 
 
@@ -395,7 +392,7 @@ namespace Editor
 
 			if (ImGui::Button("Execute Event"))
 			{
-				Fly::ClassInstanceFacade classInstanceFacade = GetNodeContext().myClassFacade.CreateClassInstance();
+				Fly::ClassInstanceProxy classInstanceProxy = GetNodeContext().myClassProxy.CreateClassInstance();
 				Fly::ExecutionContextBase c
 				{
 					.mDeltaTime = Global::GetDeltaTime()
@@ -405,13 +402,13 @@ namespace Editor
 				switch (currentEventIndex)
 				{
 				case 0:
-					classInstanceFacade.ExecuteEvent(Fly::BeginPlay, &none, c);
+					classInstanceProxy.ExecuteEvent(Fly::BeginPlay, &none, c);
 					break;
 				case 1:
-					classInstanceFacade.ExecuteEvent(Fly::Tick, &none, c);
+					classInstanceProxy.ExecuteEvent(Fly::Tick, &none, c);
 					break;
 				case 2:
-					classInstanceFacade.ExecuteEvent(Fly::EndPlay, &none, c);
+					classInstanceProxy.ExecuteEvent(Fly::EndPlay, &none, c);
 					break;
 				case 3:
 					break;
@@ -419,20 +416,20 @@ namespace Editor
 					break;
 				}
 
-				classInstanceFacade.Destroy();
+				classInstanceProxy.Destroy();
 			}
 		}
 
-		if (GetNodeContext().myClassFacade.GetTargetDataType().GetID() == Fly::GetDataTypeID<Fly::None*>())
+		if (GetNodeContext().myClassProxy.GetTargetDataType().GetID() == Fly::GetDataTypeID<Fly::None*>())
 		{
-			GetNodeContext().myClassInstanceFacade.GetClassInstance().mEventGraphInstance.Mirror();
+			GetNodeContext().myClassInstanceProxy.GetClassInstance().mEventGraphInstance.Mirror();
 			Fly::ExecutionContextBase c
 			{
 				.mDeltaTime = Global::GetDeltaTime()
 			};
 			Fly::None none;
 			PROFILER_BEGIN("Execute Event");
-			GetNodeContext().myClassInstanceFacade.ExecuteEvent(EditorUpdate, &none, c);
+			GetNodeContext().myClassInstanceProxy.ExecuteEvent(EditorUpdate, &none, c);
 			PROFILER_END();
 
 			GetNodeContext().myTraversedLinks = Fly::GetTraversedLinks();
@@ -445,9 +442,9 @@ namespace Editor
 		return currentImNodesContext->CanvasOriginScreenSpace + ImNodes::EditorContextGetPanning() / 2.f;
 	}
 
-	Fly::FunctionFacade NodeScriptingWindow::GetCurrentFunctionFacade()
+	Fly::FunctionProxy NodeScriptingWindow::GetCurrentFunctionProxy()
 	{
-		return mySelectedFunctionFacade;
+		return mySelectedFunctionProxy;
 	}
 
 

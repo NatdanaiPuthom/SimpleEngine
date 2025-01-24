@@ -31,7 +31,7 @@ namespace ECS
 
 			ScriptComponent* const scriptComponent = entity.GetComponent<ScriptComponent>();
 
-			scriptComponent->classInstanceFacade.InitRuntime();
+			scriptComponent->classInstance.InitRuntime();
 		}
 	}
 
@@ -50,11 +50,11 @@ namespace ECS
 				.mDeltaTime = Global::GetDeltaTime()
 			};
 
-			scriptComponent->classInstanceFacade.ExecuteEvent(Fly::Tick, &entity, executionContext);
+			scriptComponent->classInstance.ExecuteEvent(Fly::Tick, &entity, executionContext);
 
 			if (MainSingleton::GetInputManager().IsKeyPressed('H'))
 			{
-				scriptComponent->classInstanceFacade.ExecuteEvent(OnDoorOpen, &entity, Fly::ExecutionContextBase{});
+				scriptComponent->classInstance.ExecuteEvent(OnDoorOpen, &entity, Fly::ExecutionContextBase{});
 			}
 		}
 	}
@@ -144,7 +144,7 @@ namespace Simple
 namespace Fly
 {
 
-	static Fly::ViewAndEditResult ViewAndEdit(DataTypeFacade& aValue)
+	static Fly::ViewAndEditResult ViewAndEdit(DataTypeProxy& aValue)
 	{
 		Fly::ViewAndEditResult result;
 		if (ImGui::BeginCombo("##", aValue.GetName().c_str()))
@@ -152,13 +152,13 @@ namespace Fly
 
 			result.mIsItemActive = ImGui::IsItemActive();
 
-			const std::vector<Fly::DataTypeFacade> dataTypeFacades = Fly::GetDataTypes();
+			const std::vector<Fly::DataTypeProxy> dataTypes = Fly::GetDataTypes();
 
-			for (const DataTypeFacade& dataTypeFacade : dataTypeFacades)
+			for (const DataTypeProxy& dataType : dataTypes)
 			{
-				if (ImGui::Selectable(dataTypeFacade.GetName().c_str()))
+				if (ImGui::Selectable(dataType.GetName().c_str()))
 				{
-					aValue = dataTypeFacade;
+					aValue = dataType;
 				}
 			}
 			ImGui::EndCombo();
@@ -167,15 +167,15 @@ namespace Fly
 		return result;
 	}
 
-	static void Save(const DataTypeFacade& aValue, nlohmann::json& aJson)
+	static void Save(const DataTypeProxy& aValue, nlohmann::json& aJson)
 	{
 		aJson["Name"] = aValue.GetName();
 	}
 
-	static void Load(DataTypeFacade& aValue, const nlohmann::json& aJson)
+	static void Load(DataTypeProxy& aValue, const nlohmann::json& aJson)
 	{
 		const std::string& name = aJson["Name"];
-		aValue = Fly::GetDataTypeFacadeByName(name);
+		aValue = Fly::GetDataTypeProxyByName(name);
 	}
 }
 
@@ -191,7 +191,7 @@ namespace ECS
 	FLY_POINTERTYPE(Entity);
 	FLY_POINTERTYPE(TransformComponent, Fly::NonTargetable{});
 	FLY_VALUETYPE(Simple::Color, Fly::CustomName{ "Color" });
-	FLY_VALUETYPE(Fly::DataTypeFacade, Fly::CustomName{ "FlyDataType" });
+	FLY_VALUETYPE(Fly::DataTypeProxy, Fly::CustomName{ "FlyDataType" });
 
 	TransformComponent* GetTransformComponent(Entity* aEntity)
 	{
@@ -263,11 +263,11 @@ namespace ECS
 		*aBool = !*aBool;
 	}
 
-	void SetDataTypeColor(Fly::DataTypeFacade aFacade, Simple::Color aColor)
+	void SetDataTypeColor(Fly::DataTypeProxy aDataType, Simple::Color aColor)
 	{
-		if (aFacade)
+		if (aDataType)
 		{
-			aFacade.SetColor(Fly::Color(aColor.r, aColor.g, aColor.b, aColor.a));
+			aDataType.SetColor(Fly::Color(aColor.r, aColor.g, aColor.b, aColor.a));
 		}
 	}
 

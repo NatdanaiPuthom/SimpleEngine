@@ -16,7 +16,7 @@ namespace Editor
 
 	private:
 
-		Fly::GenericDataTypeFacade mySelectedDataType;
+		Fly::GenericDataTypeProxy mySelectedDataType;
 		Fly::TraitID myCurrentTraitID;
 
 		NodeGraphContext myNodeGraphContext;

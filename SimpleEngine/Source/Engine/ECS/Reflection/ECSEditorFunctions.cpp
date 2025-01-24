@@ -544,21 +544,21 @@ namespace ECS
 		bool isOpen = false;
 	};
 
-	bool ViewAndEditValue(Fly::ClassInstanceFacade& aClassInstanceFacade, [[maybe_unused]] const std::string& aVariableName)
+	bool ViewAndEditValue(Fly::ClassInstanceProxy& aClassInstance, [[maybe_unused]] const std::string& aVariableName)
 	{
 
 		bool wasChanged = false;
 
-		Fly::DataTypeFacade entityDataTypeFacade(Fly::GetDataTypeID<Entity*>());
-		auto entityClasses = Fly::GetClassesByTargetDataType(entityDataTypeFacade);
+		Fly::DataTypeProxy entityDataType(Fly::GetDataTypeID<Entity*>());
+		auto entityClasses = Fly::GetClassesByTargetDataType(entityDataType);
 
-		std::string_view preview = aClassInstanceFacade ? aClassInstanceFacade.GetName() : "None";
+		std::string_view preview = aClassInstance ? aClassInstance.GetName() : "None";
 		Combo classCombo("Entity Class", std::string(preview).c_str(), [&]() -> void
 			{
 
 				for (auto& entityClass : entityClasses)
 				{
-					const bool isSelected = aClassInstanceFacade ? aClassInstanceFacade.GetClassInstance().mClassID == entityClass.GetID() : false;
+					const bool isSelected = aClassInstance ? aClassInstance.GetClassInstance().mClassID == entityClass.GetID() : false;
 					if (ImGui::Selectable(std::string(entityClass.GetName()).c_str(), isSelected))
 					{
 						if (isSelected)
@@ -566,24 +566,24 @@ namespace ECS
 							continue;
 						}
 
-						if (aClassInstanceFacade)
+						if (aClassInstance)
 						{
-							aClassInstanceFacade.Destroy();
+							aClassInstance.Destroy();
 						}
 
-						aClassInstanceFacade = entityClass.CreateClassInstance();
+						aClassInstance = entityClass.CreateClassInstance();
 
 						wasChanged = true;
 					}
 				}
 			});
 
-		if (!aClassInstanceFacade)
+		if (!aClassInstance)
 		{
 			return wasChanged;
 		}
 
-		aClassInstanceFacade.ViewAndEditVariableDefaultValues(nullptr);
+		aClassInstance.ViewAndEditVariableDefaultValues(nullptr);
 
 		return wasChanged;
 	}

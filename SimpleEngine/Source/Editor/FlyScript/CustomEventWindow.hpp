@@ -3,7 +3,7 @@
 
 namespace Fly
 {
-	class CustomEventFacade;
+	class CustomEventProxy;
 }
 
 namespace Editor
@@ -20,7 +20,7 @@ namespace Editor
 
 	private:
 
-		void EditInputs(Fly::CustomEventFacade& aCustomEventFacade);
+		void EditInputs(Fly::CustomEventProxy& aCustomEventProxy);
 
 	private:
 

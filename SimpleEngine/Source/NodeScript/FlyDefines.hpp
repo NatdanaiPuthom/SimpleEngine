@@ -196,7 +196,7 @@ namespace FLY_NAMESPACE
 		T* mPtr = nullptr;
 	};
 
-	// Struct for color - values between 0 and 1
+	// Values between 0 and 1
 	struct Color final
 	{
 

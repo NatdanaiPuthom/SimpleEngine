@@ -3,20 +3,20 @@
 #include "SystemTypes/FlyVec2.hpp"
 #include "Utilities/FlyMeta.hpp"
 #include "Utilities/FlyUtilities.hpp"
-#include "Facade/FlyNodeFacade.hpp"
-#include "Facade/FlyVariableFacade.hpp"
-#include "Facade/FlyLinkFacade.hpp"
-#include "Facade/FlyFunctionFacade.hpp"
-#include "Facade/FlyCustomEventFacade.hpp"
-#include "Facade/FlyDataTypeFacade.hpp"
-#include "Facade/FlyStructFacade.hpp"
-#include "Facade/FlyClassFacade.hpp"
-#include "Facade/FlyGenericDataTypeFacade.hpp"
-#include "Facade/FlyNodeGraphFacade.hpp"
-#include "Facade/FlyClassInstanceFacade.hpp"
+#include "Proxy/FlyNodeProxy.hpp"
+#include "Proxy/FlyVariableProxy.hpp"
+#include "Proxy/FlyLinkProxy.hpp"
+#include "Proxy/FlyFunctionProxy.hpp"
+#include "Proxy/FlyCustomEventProxy.hpp"
+#include "Proxy/FlyDataTypeProxy.hpp"
+#include "Proxy/FlyStructProxy.hpp"
+#include "Proxy/FlyClassProxy.hpp"
+#include "Proxy/FlyGenericDataTypeProxy.hpp"
+#include "Proxy/FlyNodeGraphProxy.hpp"
+#include "Proxy/FlyClassInstanceProxy.hpp"
 #include "SystemTypes/FlyNone.hpp"
 #include "SystemTypes/FlyWildcard.hpp"
-#include "Facade/FlyFacade.hpp"
+#include "Proxy/FlyProxy.hpp"
 #include <unordered_map>
 
 namespace FLY_NAMESPACE
@@ -30,54 +30,54 @@ namespace FLY_NAMESPACE
 	void LoadAllFlyFiles(std::string_view aFilePath);
 	void SaveCustomEvents(std::string_view aFilePath);
 
-	GenericDataTypeFacade CreateStruct(std::string_view aName, std::string_view aSavePath);
-	ClassFacade CreateClass(GenericDataTypeFacade aTargetFacade, std::string_view aName, std::string_view aSavePath);
-	ClassFacade CreateClassWithoutTarget(std::string_view aName, std::string_view aSavePath);
+	GenericDataTypeProxy CreateStruct(std::string_view aName, std::string_view aSavePath);
+	ClassProxy CreateClass(GenericDataTypeProxy aTargetProxy, std::string_view aName, std::string_view aSavePath);
+	ClassProxy CreateClassWithoutTarget(std::string_view aName, std::string_view aSavePath);
 
-	[[nodiscard]] GenericDataTypeFacade FindDataTypeByName(std::string_view aName);
-	[[nodiscard]] ClassFacade FindClassByName(std::string_view aName);
+	[[nodiscard]] GenericDataTypeProxy FindDataTypeByName(std::string_view aName);
+	[[nodiscard]] ClassProxy FindClassByName(std::string_view aName);
 
 	void SetDefaultDataTypeColor(const Fly::Color& aColor);
 	void SetEditorTextFunction(void(*aTextFunction)(const std::string&));
 
-	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, NodeGraphFacade aCopiedFromNodeGraphFacade);
-	void PasteCopyBuffer(Vec2 aPosition, NodeGraphFacade aTargetNodeGraphFacade, CommandTracker* aCommandTracker);
+	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, NodeGraphProxy aCopiedFromNodeGraphProxy);
+	void PasteCopyBuffer(Vec2 aPosition, NodeGraphProxy aTargetNodeGraphProxy, CommandTracker* aCommandTracker);
 
-	CustomEventFacade CreateCustomEvent(std::string_view aName);
-	FunctionFacade CreateGlobalFunction(std::string_view aName);
+	CustomEventProxy CreateCustomEvent(std::string_view aName);
+	FunctionProxy CreateGlobalFunction(std::string_view aName);
 
 	void BeginFrame(CommandTracker* aCommandTracker);
 	[[nodiscard]] bool& IsDebugging();
 
-	[[nodiscard]] std::vector<DataTypeFacade> GetDataTypes();
-	[[nodiscard]] std::vector<GenericDataTypeFacade> GetGenericDataTypes();
-	[[nodiscard]] DataTypeFacade GetDataTypeFacadeByName(std::string_view aName);
+	[[nodiscard]] std::vector<DataTypeProxy> GetDataTypes();
+	[[nodiscard]] std::vector<GenericDataTypeProxy> GetGenericDataTypes();
+	[[nodiscard]] DataTypeProxy GetDataTypeProxyByName(std::string_view aName);
 
-	template<Predicate<const DataTypeFacade&> FilterPredicate>
-	[[nodiscard]] std::vector<DataTypeFacade> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate);
+	template<Predicate<const DataTypeProxy&> FilterPredicate>
+	[[nodiscard]] std::vector<DataTypeProxy> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate);
 
-	[[nodiscard]] std::vector<NodeTypeFacade> GetNodeTypes();
+	[[nodiscard]] std::vector<NodeTypeProxy> GetNodeTypes();
 
-	[[nodiscard]] std::vector<FunctionFacade> GetFunctions();
-	[[nodiscard]] std::vector<CustomEventFacade> GetCustomEvents();
+	[[nodiscard]] std::vector<FunctionProxy> GetFunctions();
+	[[nodiscard]] std::vector<CustomEventProxy> GetCustomEvents();
 
-	[[nodiscard]] std::vector<LinkFacade> GetTraversedLinks();
+	[[nodiscard]] std::vector<LinkProxy> GetTraversedLinks();
 
-	[[nodiscard]] std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(GenericDataTypeID aDataTypeID, eFlowType aFlowType, eNodeTrait aNodeTrait, bool(*aBitOperator)(eNodeTrait, eNodeTrait));
-	[[nodiscard]] std::vector<NodeTypeFacade> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);
+	[[nodiscard]] std::vector<NodeTypeProxy> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(GenericDataTypeID aDataTypeID, eFlowType aFlowType, eNodeTrait aNodeTrait, bool(*aBitOperator)(eNodeTrait, eNodeTrait));
+	[[nodiscard]] std::vector<NodeTypeProxy> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);
 
-	[[nodiscard]] std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> GetClasses();
-	[[nodiscard]] std::vector<ClassFacade> GetClassesByTargetDataType(DataTypeFacade aDataTypeFacade);
+	[[nodiscard]] std::unordered_map<DataTypeProxy, std::vector<ClassProxy>> GetClasses();
+	[[nodiscard]] std::vector<ClassProxy> GetClassesByTargetDataType(DataTypeProxy aDataTypeProxy);
 
-	template<Predicate<const DataTypeFacade&> FilterPredicate>
-	[[nodiscard]] std::vector<DataTypeFacade> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate)
+	template<Predicate<const DataTypeProxy&> FilterPredicate>
+	[[nodiscard]] std::vector<DataTypeProxy> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate)
 	{
-		const std::vector<DataTypeFacade> dataTypes = GetDataTypes();
+		const std::vector<DataTypeProxy> dataTypes = GetDataTypes();
 
-		std::vector<DataTypeFacade> filtered;
+		std::vector<DataTypeProxy> filtered;
 		filtered.reserve(dataTypes.size());
 
-		for (const DataTypeFacade& dataType : dataTypes)
+		for (const DataTypeProxy& dataType : dataTypes)
 		{
 			if (aFilterPredicate(dataType))
 			{
@@ -88,15 +88,15 @@ namespace FLY_NAMESPACE
 		return filtered;
 	}
 
-	template<Predicate<const GenericDataTypeFacade&> FilterPredicate>
-	[[nodiscard]] std::vector<GenericDataTypeFacade> GetGenericDataTypesFiltered(FilterPredicate&& aFilterPredicate)
+	template<Predicate<const GenericDataTypeProxy&> FilterPredicate>
+	[[nodiscard]] std::vector<GenericDataTypeProxy> GetGenericDataTypesFiltered(FilterPredicate&& aFilterPredicate)
 	{
-		const std::vector<GenericDataTypeFacade> dataTypes = GetGenericDataTypes();
+		const std::vector<GenericDataTypeProxy> dataTypes = GetGenericDataTypes();
 
-		std::vector<GenericDataTypeFacade> filtered;
+		std::vector<GenericDataTypeProxy> filtered;
 		filtered.reserve(dataTypes.size());
 
-		for (const GenericDataTypeFacade& dataType : dataTypes)
+		for (const GenericDataTypeProxy& dataType : dataTypes)
 		{
 			if (aFilterPredicate(dataType))
 			{

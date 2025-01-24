@@ -11,21 +11,21 @@ namespace Editor
 	}
 	void StructCreatorWindow::Update()
 	{
-		if (!myGenericDataTypeFacade)
+		if (!myGenericDataType)
 		{
 			return;
 		}
 
-		if (ImGui::Begin(std::string("Create Struct - " + std::string(myGenericDataTypeFacade.GetName())).c_str()))
+		if (ImGui::Begin(std::string("Create Struct - " + std::string(myGenericDataType.GetName())).c_str()))
 		{
 			if (ImGui::Button("Create Variable"))
 			{
-				myGenericDataTypeFacade.CreateMemberVariable(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), "Var", nullptr);
+				myGenericDataType.CreateMemberVariable(Fly::GenericDataTypeProxy(Fly::GetDataTypeID<bool>()), "Var", nullptr);
 			}
 
 			ImGui::Separator();
 
-			auto members = myGenericDataTypeFacade.GetMemberVariables();
+			auto members = myGenericDataType.GetMemberVariables();
 
 
 			for (auto& member : members)
@@ -39,7 +39,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void StructCreatorWindow::ShowStructMember(Fly::VariableFacade aVariable)
+	void StructCreatorWindow::ShowStructMember(Fly::VariableProxy aVariable)
 	{
 
 		Fly::VarID varID = aVariable.GetID();
@@ -50,7 +50,7 @@ namespace Editor
 			aVariable.SetName(name, &myParentWindow->GetCommandTracker());
 		}
 
-		Fly::GenericDataTypeFacade currentDataType(aVariable.GetDataTypeID());
+		Fly::GenericDataTypeProxy currentDataType(aVariable.GetDataTypeID());
 		if (DataTypeComboEditableFilter(Combine("##VarDataType", varID).c_str(), currentDataType))
 		{
 			aVariable.SetDataType(currentDataType, &myParentWindow->GetCommandTracker());

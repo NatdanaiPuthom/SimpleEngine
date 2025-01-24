@@ -24,11 +24,11 @@ namespace Editor
 
 				if (ImGui::BeginTable("MemoryTable", static_cast<int>(alignment)))
 				{
-					std::vector<Fly::VariableFacade> variables = myCurrentDataType.GetMemberVariables();
+					std::vector<Fly::VariableProxy> variables = myCurrentDataType.GetMemberVariables();
 
 
-					Fly::VariableFacade currentVariable;
-					Fly::GenericDataTypeFacade currentDataType;
+					Fly::VariableProxy currentVariable;
+					Fly::GenericDataTypeProxy currentDataType;
 					int currentByteLeft = 0;
 
 					for (size_t i = 0; i < myCurrentDataType.GetSize(); i++)
@@ -40,20 +40,20 @@ namespace Editor
 
 						if (currentByteLeft == 0)
 						{
-							currentVariable = Fly::VariableFacade();
+							currentVariable = Fly::VariableProxy();
 						}
 
 						if (!currentVariable)
 						{
-							for (const Fly::VariableFacade& variableFacade : variables)
+							for (const Fly::VariableProxy& variableProxy : variables)
 							{
-								const size_t byteOffset = variableFacade.GetByteOffset();
-								const Fly::GenericDataTypeFacade variableDataTypeFacade(variableFacade.GetDataTypeID());
-								if (i >= byteOffset && i < byteOffset + variableDataTypeFacade.GetSize())
+								const size_t byteOffset = variableProxy.GetByteOffset();
+								const Fly::GenericDataTypeProxy variableDataTypeProxy(variableProxy.GetDataTypeID());
+								if (i >= byteOffset && i < byteOffset + variableDataTypeProxy.GetSize())
 								{
-									currentVariable = variableFacade;
-									currentDataType = variableDataTypeFacade;
-									currentByteLeft = static_cast<int>(variableDataTypeFacade.GetSize());
+									currentVariable = variableProxy;
+									currentDataType = variableDataTypeProxy;
+									currentByteLeft = static_cast<int>(variableDataTypeProxy.GetSize());
 									break;
 								}
 							}

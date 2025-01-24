@@ -11,7 +11,7 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataType& aDataType, void* const aDataPtr) const
+	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataType& aDataType, void* const aDataPtr, const bool aViewAndEditMembers) const
 	{
 		// If data type has a valid edit function
 		if (aDataType.mInterface.function.viewAndEdit)
@@ -25,21 +25,26 @@ namespace FLY_NAMESPACE
 				void* valuePtr = *((void**)aDataPtr);
 				if (valuePtr)
 				{
-					return ViewAndEditData(*valueDataType, valuePtr);
+					return ViewAndEditData(*valueDataType, valuePtr, aViewAndEditMembers);
 				}
 			}
 		}
 
 		ViewAndEditResult viewAndEditResult;
 		// View and edit member variables instead
-		/*for (const Variable& variable : aDataType.mVariables)
+
+		if (aViewAndEditMembers)
 		{
-			if (const DataType* variableDataType = Find(variable.mDataTypeID))
+
+			for (const Variable& variable : aDataType.mVariableContainer.mVariables)
 			{
-				void* const propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
-				viewAndEditResult.mIsItemActive |= ViewAndEditData(*variableDataType, propertyDataPtr).mIsItemActive;
+				if (const DataType* variableDataType = Find(variable.mDataTypeID))
+				{
+					void* const propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
+					viewAndEditResult.mIsItemActive |= ViewAndEditData(*variableDataType, propertyDataPtr, aViewAndEditMembers).mIsItemActive;
+				}
 			}
-		}*/
+		}
 
 		return viewAndEditResult;
 	}
@@ -117,11 +122,11 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
-	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataTypeID aDataTypeID, void* const aDataPtr) const
+	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataTypeID aDataTypeID, void* const aDataPtr, const bool aViewAndEditMembers) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			return ViewAndEditData(*dataType, aDataPtr);
+			return ViewAndEditData(*dataType, aDataPtr, aViewAndEditMembers);
 		}
 
 		return ViewAndEditResult{ .mIsItemActive = false };
