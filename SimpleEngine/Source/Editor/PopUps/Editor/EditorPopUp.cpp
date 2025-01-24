@@ -99,6 +99,99 @@ namespace Editor
 				}
 			}
 		}
+
+		RemoveMeLater();
+	}
+
+	void EditorPopUp::RemoveMeLater()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 3));
+
+		if (ImGui::Begin("Game##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
+		{
+			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
+			Graphics::RenderTargetManager* const renderTargetManager = graphicsEngine->GetRenderTargetManager();
+			const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetStateManager()->GetCurrentRasterizerState();
+
+			ImTextureID textureID = renderTargetManager->GetShaderResourceView(Graphics::eRenderTargetType::PostProcessing).Get();
+
+			if (currentRasterizerState != Graphics::eRasterizerState::BackfaceCulling
+				&& currentRasterizerState != Graphics::eRasterizerState::NoFaceCulling)
+			{
+				textureID = renderTargetManager->GetShaderResourceView(Graphics::eRenderTargetType::Deferred).Get();
+			}
+
+			const ImVec2 size = ImGui::GetContentRegionAvail();
+			ImGui::Image(textureID, size);
+
+			if (EditorEngine::mySelectedEntityID != static_cast<size_t>(-1)) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
+			{
+				const ImVec2 topLeft = ImGui::GetItemRectMin();
+				const ImVec2 bottomRight = ImGui::GetItemRectMax();
+				ImGuizmo::SetOrthographic(false);
+				ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
+				ImGuizmo::SetRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+
+				ECS::Entity& selectedEntity = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(EditorEngine::mySelectedEntityID);
+				ECS::TransformComponent* transformComponent = selectedEntity.GetComponent<ECS::TransformComponent>();
+
+				if (transformComponent != nullptr)
+				{
+					const Graphics::Camera* camera = Global::GetGraphicsEngine()->GetCurrentCamera();
+
+					Math::Matrix4x4f objectMatrix = transformComponent->transform.GetMatrix();
+					const Math::Matrix4x4f view = camera->GetViewMatrix();
+					const Math::Matrix4x4f proj = camera->GetProjectionMatrix();
+
+					static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
+
+					if (!MainSingleton::GetInputManager().GetMouseIsHidden() && !MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL))
+					{
+						if (MainSingleton::GetInputManager().IsKeyPressed('T'))
+						{
+							operation = ImGuizmo::OPERATION::TRANSLATE;
+						}
+						else if (MainSingleton::GetInputManager().IsKeyPressed('R'))
+						{
+							operation = ImGuizmo::OPERATION::ROTATE;
+						}
+						else if (MainSingleton::GetInputManager().IsKeyPressed('S'))
+						{
+							operation = ImGuizmo::OPERATION::SCALE;
+						}
+					}
+
+					if (ImGuizmo::Manipulate(&view(1, 1),
+						&proj(1, 1),
+						operation,
+						ImGuizmo::MODE::WORLD,
+						&objectMatrix(1, 1)
+					))
+					{
+						switch (operation)
+						{
+						case ImGuizmo::OPERATION::TRANSLATE:
+							transformComponent->transform.SetPosition(objectMatrix.GetPosition());
+							break;
+						case ImGuizmo::OPERATION::ROTATE:
+							transformComponent->transform.SetMatrix(objectMatrix);
+							break;
+						case ImGuizmo::OPERATION::SCALE:
+							transformComponent->transform.SetScale(objectMatrix.GetScale());
+							break;
+						default:
+							break;
+						}
+					}
+				}
+			}
+		}
+		ImGui::End();
+
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
+
 	}
 
 	void EditorPopUp::ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
