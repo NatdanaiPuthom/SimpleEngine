@@ -76,7 +76,7 @@ namespace std
 namespace FLY_NAMESPACE
 {
 
-	using TestVariant = std::variant<int, float, std::string, EmilStruct>;
+	using TestVariant = std::variant<int, float, std::string>;
 
 	inline Fly::RegisterType fly_valuetype11 = Fly::RegisterType::ValueType<TestVariant, eNodeOperatorTrait::None>("TestVariant", CustomName{ "TestVariant" });;
 
