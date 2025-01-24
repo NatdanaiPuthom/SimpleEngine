@@ -1,32 +1,26 @@
 #pragma once
-#include "Editor/Template/ToolInterface.hpp"
+#include "Editor/Core/PopUp.hpp"
 #include <string>
 
 namespace Editor
 {
-
 	class ActiveWindowData;
 	class NodeScriptingWindow;
 
-	class AssetWindow final : public Editor::ToolInterface
+	class AssetBrowserPopUp final : public PopUp
 	{
 	public:
-		AssetWindow();
-
-		void Init() override;
-		void Update() override;
-		void Draw() override;
+		AssetBrowserPopUp(const std::string& aName);
+		void Render() override;
 	private:
 		void ViewFolders(const std::string& aStartDirectory, const std::string& aWindowName);
 		void DrawFilesInFolder(const std::string& aDirectory);
+
 	private:
 		std::string myFilePopUpID;
 		std::string myFileToRemove;
 		bool myCanOpenPopup = false;
-
-	public:
 		ActiveWindowData* myActiveWindowData;
 		NodeScriptingWindow* myNodeScriptingWindow;
-
 	};
 }

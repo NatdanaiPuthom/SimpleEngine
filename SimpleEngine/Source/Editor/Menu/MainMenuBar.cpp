@@ -1,6 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/MainMenuBar.hpp"
-#include "Editor/Windows/AssetWindow.hpp"
 #include "Editor/FlyScript/NodeScriptingWindow.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #include "External/dearimgui/imguizmo/ImGuizmo.h"
@@ -35,16 +34,11 @@ namespace Editor
 
 	void MainMenuBar::Init()
 	{
-		myAssetWindow = std::make_unique<AssetWindow>();
 		myNodeScriptingWindow = std::make_unique<NodeScriptingWindow>();
 
 		LoadSettingsFromJson();
 
-		myAssetWindow->Init();
 		myNodeScriptingWindow->Init();
-
-		myAssetWindow->myActiveWindowData = &myActiveWindowData;
-		myAssetWindow->myNodeScriptingWindow = myNodeScriptingWindow.get();
 	}
 
 	void MainMenuBar::Update()
@@ -92,11 +86,6 @@ namespace Editor
 			}
 
 			ImGui::EndMainMenuBar();
-		}
-
-		if (myActiveWindowData.IsWindowActive(eWindowType::Editor))
-		{
-			myAssetWindow->Update();
 		}
 	}
 
@@ -214,11 +203,6 @@ namespace Editor
 
 	void MainMenuBar::DrawTools()
 	{
-		if (myActiveWindowData.IsWindowActive(eWindowType::Editor))
-		{
-			myAssetWindow->Draw();
-		}
-
 		if (myActiveWindowData.IsWindowActive(eWindowType::NodeScript))
 		{
 			myNodeScriptingWindow->Draw();

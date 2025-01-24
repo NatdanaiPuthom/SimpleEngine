@@ -1,23 +1,21 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Windows/AssetWindow.hpp"
+#include "Editor/PopUps/Editor/AssetBrowser.hpp"
+
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "Engine/Debugger/Console/Console.hpp"
-#include "Menu/MainMenuBar.hpp"
+#include "Editor/Menu/MainMenuBar.hpp"
 #include "FlyScript/NodeScriptingWindow.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
 {
-	AssetWindow::AssetWindow()
-		: myActiveWindowData(nullptr)
+	AssetBrowserPopUp::AssetBrowserPopUp(const std::string& aName) : PopUp(aName)
+		, myActiveWindowData(nullptr)
 		, myNodeScriptingWindow(nullptr)
 	{
 	}
 
-	void AssetWindow::Init()
-	{
-	}
-
-	void AssetWindow::Update()
+	void AssetBrowserPopUp::Render()
 	{
 		if (ImGui::Begin("Assets"))
 		{
@@ -67,11 +65,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void AssetWindow::Draw()
-	{
-	}
-
-	void AssetWindow::ViewFolders(const std::string& aStartDirectory, const std::string& aWindowName)
+	void AssetBrowserPopUp::ViewFolders(const std::string& aStartDirectory, const std::string& aWindowName)
 	{
 		std::vector<std::string> fileNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(aStartDirectory, true);
 
@@ -102,7 +96,7 @@ namespace Editor
 		}
 	}
 
-	void AssetWindow::DrawFilesInFolder(const std::string& aDirectory)
+	void AssetBrowserPopUp::DrawFilesInFolder(const std::string& aDirectory)
 	{
 		const std::vector<std::string> fileNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(aDirectory, true);
 

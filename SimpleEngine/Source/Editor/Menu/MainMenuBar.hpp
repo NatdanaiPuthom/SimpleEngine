@@ -4,7 +4,6 @@
 
 namespace Editor
 {
-	class AssetWindow;
 	class NodeScriptingWindow;
 }
 
@@ -41,7 +40,6 @@ namespace Editor
 		void DrawTools();
 		void LoadSettingsFromJson();
 	private:
-		std::unique_ptr<AssetWindow> myAssetWindow;
 		std::unique_ptr<NodeScriptingWindow> myNodeScriptingWindow;
 
 		ActiveWindowData myActiveWindowData;
