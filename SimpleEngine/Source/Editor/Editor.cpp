@@ -15,6 +15,7 @@
 #include "Engine/ImGui/ImGuiEngine.hpp" //TempPlayMenuBar
 
 #include "Engine/Debugger/Console/Console.hpp"
+#include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
@@ -60,6 +61,56 @@ namespace Editor
 				};
 		}
 
+        static std::function<void(const std::string&)> Load()
+        {
+            return [](const std::string& aString) -> void
+            {
+                const std::string scenePath = std::string(SIMPLE_DIR_SCENES) + "\\" + aString;
+                MainSingleton::GetSceneManager().ChangeScene(scenePath);
+                Simple::Console::Print("Loaded scene ", Simple::ConsoleTextColor::White, false);
+                Simple::Console::Print(aString.c_str(), Simple::ConsoleTextColor::Green, false);
+                Simple::Console::Print("!", Simple::ConsoleTextColor::White, true);
+            };
+        }
+
+		static std::function<void()> CreateNew()
+		{
+			return []() -> void
+				{
+					Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
+
+					const std::string absolutePath = SimpleUtilities::GetAbsolutePath(SimpleUtilities::AppendCounterIfAlreadyExist(std::string(SIMPLE_DIR_SCENES) + "\\" + std::string(SIMPLE_FILENAME_NEWSCENE)));
+					const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(absolutePath);
+
+					sceneManager.CreateNewScene(absolutePath);
+					sceneManager.ChangeScene(relativePath);
+
+					Simple::Console::Print("New scene ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(sceneManager.GetCurrentSceneInfo()->name.c_str(), Simple::ConsoleTextColor::Green, false);
+					Simple::Console::Print(" has been created!", Simple::ConsoleTextColor::White, true);
+				};
+		}
+
+		static std::function<void()> CreateCopy()
+		{
+			return []() -> void
+				{
+					Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
+
+					const std::string absolutePath = sceneManager.GetCurrentSceneInfo()->absolutePath;
+					const std::string newCopyName = SimpleUtilities::AppendStringBeforeDot("_Copy", absolutePath);
+					const std::string newFileName = SimpleUtilities::AppendCounterIfAlreadyExist(newCopyName);
+					const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(newFileName);
+
+					std::filesystem::copy_file(absolutePath, newFileName, std::filesystem::copy_options::overwrite_existing);
+					sceneManager.ChangeScene(relativePath);
+
+					Simple::Console::Print("New scene ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(sceneManager.GetCurrentSceneInfo()->name.c_str(), Simple::ConsoleTextColor::Green, false);
+					Simple::Console::Print(" has been created!", Simple::ConsoleTextColor::White, true);
+				};
+		}
+
 		static std::function<void()> Reload()
 		{
 			return []() -> void
@@ -92,7 +143,6 @@ namespace Editor
 					Simple::Console::Print(" has been set as start!", Simple::ConsoleTextColor::White, true);
 				};
 		}
-
 	};
 }
 
@@ -121,23 +171,29 @@ namespace Editor
 		std::unique_ptr<MenuItemButton> sceneReloadButton = std::make_unique<MenuItemButton>("Reload");
 		std::unique_ptr<MenuItemButton> sceneSetAsActiveButton = std::make_unique<MenuItemButton>("Set As Active");
 
+		std::unique_ptr<MenuItemButton> sceneCreateNewButton = std::make_unique<MenuItemButton>("New");
+		std::unique_ptr<MenuItemButton> sceneCreateCopyButton = std::make_unique<MenuItemButton>("Copy");
+
 		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUP = std::make_shared<AudioSettingsPopUp>("Audio Settings");
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = std::make_shared<CameraSettingsPopUp>("Camera Settings");
 		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUP = std::make_shared<GraphicsSettingsPopUp>("Graphics Settings");
+
+		sceneCreateNewButton->SetCallback(SceneSettingsFunction::CreateNew());
+		sceneCreateCopyButton->SetCallback(SceneSettingsFunction::CreateCopy());
 
 		sceneSaveButton->SetCallback(SceneSettingsFunction::Save());
 		sceneReloadButton->SetCallback(SceneSettingsFunction::Reload());
 		sceneSetAsActiveButton->SetCallback(SceneSettingsFunction::SetAsActive());
 
 		{
-			std::vector<std::string> strings;
-			strings.push_back("Emil");
-			strings.push_back("Erico");
-			strings.push_back("Test");
+			const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
 
-			sceneLoadSelectable->SetStrings(strings);
-			sceneLoadSelectable->SetCallback(SelectableClick);
+			sceneLoadSelectable->SetStrings(sceneNames);
+			sceneLoadSelectable->SetCallback(SceneSettingsFunction::Load());
 		}
+
+		sceneCreateMenu->AddChild(std::move(sceneCreateNewButton));
+		sceneCreateMenu->AddChild(std::move(sceneCreateCopyButton));
 
 		sceneTab->AddButton(std::move(sceneSaveButton));
 		sceneTab->AddSelectable(std::move(sceneLoadSelectable));
