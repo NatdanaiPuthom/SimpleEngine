@@ -296,7 +296,7 @@ namespace Editor
 
 	void EditorEngine::Update()
 	{
-		/*if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
+		if (MainSingleton::GetSceneManager().GetIsPlaying() == false)
 		{
 			Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
 		}
@@ -313,14 +313,9 @@ namespace Editor
 			}
 		}
 
-		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
+		/*for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
 		{
 			popUp->Update();
-		}
-
-		for (const std::shared_ptr<MainMenuItemTab> tab : myMainMenuTabs)
-		{
-			tab->InternalUpdate();
 		}*/
 	}
 
