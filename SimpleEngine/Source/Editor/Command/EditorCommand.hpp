@@ -1,0 +1,201 @@
+#pragma once
+#include <string>
+#include <memory>
+
+namespace Editor
+{
+
+	template<typename T>
+	concept Commandable = requires(const T & aData)
+	{
+		{ Do(aData) };
+		{ Undo(aData) };
+	};
+
+	template<typename T>
+	concept MemberCommandable = requires(const T & aData)
+	{
+		{ aData.Do() };
+		{ aData.Undo() };
+	};
+
+	template<typename T, typename Ret, typename... Args>
+	concept ValidCallable = requires(T && aFunc, Args&&... args)
+	{
+		{ aFunc(std::forward<Args>(args)...) } -> std::same_as<Ret>;
+	};
+
+	template<typename T>
+	using FunctionType = void(*)(const T&);
+
+	class Command final
+	{
+	public:
+		
+		Command() = default;
+
+		template<typename T> requires Commandable<T> or MemberCommandable<T>
+		Command(const T& aData, const std::string& aName)
+			: myConcept(std::make_unique<CommandModel<T>>(aData))
+			, myName(aName)
+		{
+		}
+
+
+		template<typename T, ValidCallable<void, const T&> DoFunc, ValidCallable<void, const T&> UndoFunc>
+		Command(const T& aData, DoFunc aDoFunction, UndoFunc aUndoFunction, const std::string& aName)
+			: myConcept(std::make_unique<CommandModel<T, FunctionType<T>, FunctionType<T>>>(aData, aDoFunction, aUndoFunction))
+			, myName(aName)
+		{
+		}
+
+
+		Command(const Command& aOther)
+			: myConcept(aOther.myConcept->Clone())
+			, myName(aOther.myName)
+		{
+
+		}
+
+		Command(Command&&) = default;
+
+		Command& operator=(const Command& aOther)
+		{
+			Command temp(aOther);
+			std::swap(myConcept, temp.myConcept);
+			myName = aOther.myName;
+			return *this;
+		}
+
+		Command& operator=(Command&&) = default;
+
+		void DoCommand() const;
+		void UndoCommand() const;
+
+
+	private:
+
+		class CommandConcept
+		{
+		public:
+
+			virtual ~CommandConcept() = default;
+
+			virtual void DoCommand() const = 0;
+			virtual void UndoCommand() const = 0;
+
+			virtual std::unique_ptr<CommandConcept> Clone() const = 0;
+
+		};
+
+		template<typename... T>
+		class CommandModel;
+
+		template<Commandable T>
+		class CommandModel<T> final : public CommandConcept
+		{
+		public:
+
+			CommandModel(const T& aData)
+				: myData(aData)
+			{
+
+			}
+
+			void DoCommand() const override
+			{
+				Do(myData);
+			}
+
+			void UndoCommand() const override
+			{
+				Undo(myData);
+			}
+
+			std::unique_ptr<CommandConcept> Clone() const override
+			{
+				return std::make_unique<CommandModel<T>>(*this);
+			}
+
+		private:
+
+			T myData;
+		};
+
+		template<MemberCommandable T>
+		class CommandModel<T> final : public CommandConcept
+		{
+		public:
+
+			CommandModel(const T& aData)
+				: myData(aData)
+			{
+
+			}
+
+			void DoCommand() const override
+			{
+				myData.Do();
+			}
+
+			void UndoCommand() const override
+			{
+				myData.Undo();
+			}
+
+			std::unique_ptr<CommandConcept> Clone() const override
+			{
+				return std::make_unique<CommandModel<T>>(*this);
+			}
+
+		private:
+
+			T myData;
+		};
+
+		template<typename T>
+		class CommandModel<T, FunctionType<T>, FunctionType<T>> final : public CommandConcept
+		{
+			using FunctionType = void(*)(const T&);
+		public:
+
+			CommandModel(const T& aData, FunctionType aDoFunction, FunctionType aUndoFunction)
+				: myData(aData)
+				, myDoFunction(aDoFunction)
+				, myUndoFunction(aUndoFunction)
+			{
+			}
+
+			void DoCommand() const override
+			{
+				myDoFunction(myData);
+			}
+
+			void UndoCommand() const override
+			{
+				myUndoFunction(myData);
+			}
+
+			std::unique_ptr<CommandConcept> Clone() const override
+			{
+				return std::make_unique<CommandModel>(*this);
+			}
+
+		private:
+
+			T myData;
+			FunctionType myDoFunction;
+			FunctionType myUndoFunction;
+
+		
+		};
+
+
+	private:
+
+
+		std::unique_ptr<CommandConcept> myConcept;
+		std::string myName;
+	};
+
+}
