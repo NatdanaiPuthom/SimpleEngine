@@ -3,7 +3,6 @@
 
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "Engine/Debugger/Console/Console.hpp"
-#include "Editor/Menu/MainMenuBar.hpp"
 #include "FlyScript/NodeScriptingWindow.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
@@ -232,7 +231,7 @@ namespace Editor
 					{
 						if (myNodeScriptingWindow->OpenClassByName(baseName))
 						{
-							myActiveWindowData->SetActiveWindow(eWindowType::NodeScript);
+							//myActiveWindowData->SetActiveWindow(eWindowType::NodeScript);
 						}
 					}
 				}

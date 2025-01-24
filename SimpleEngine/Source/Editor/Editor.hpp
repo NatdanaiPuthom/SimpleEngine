@@ -8,6 +8,11 @@
 
 namespace Editor
 {
+	class NodeScriptingWindow;
+}
+
+namespace Editor
+{
 	class EditorEngine final
 	{
 	public:
@@ -27,6 +32,8 @@ namespace Editor
 	private:
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
 		std::vector<std::unique_ptr<MainMenuTabBase>> myMainMenuTabs;
+
+		std::unique_ptr<NodeScriptingWindow> myNodeScriptingWindow;
 	};
 
 	template<DerivedFromPopUpWindow T>

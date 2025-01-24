@@ -20,6 +20,8 @@
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
+#include "Editor/FlyScript/NodeScriptingWindow.hpp"
+
 namespace Editor
 {
 	class EditorCallbacks
@@ -151,6 +153,11 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
+
+		myNodeScriptingWindow = std::make_unique<NodeScriptingWindow>();
+		myNodeScriptingWindow->Init();
+
+
 		std::unique_ptr<MenuTabDefault> sceneTab = std::make_unique< MenuTabDefault>("Scene");
 		std::unique_ptr<MenuTabWindow> windowsTab = std::make_unique< MenuTabWindow>("Windows");
 		std::unique_ptr<MenuTabDefault> settingsTab = std::make_unique< MenuTabDefault>("Settings");
@@ -333,6 +340,8 @@ namespace Editor
 				popUp->Render();
 			}
 		}
+
+		myNodeScriptingWindow->Draw();
 
 		//TempPlayMenuBar();
 
