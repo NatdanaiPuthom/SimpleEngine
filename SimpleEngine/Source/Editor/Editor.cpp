@@ -96,7 +96,7 @@ namespace Editor
 		}
 
 		void Invoke()
-		{	
+		{
 			if (!myCallback.empty() && myCallback.front())
 			{
 				for (auto& callback : myCallback)
@@ -197,7 +197,7 @@ namespace Editor
 		return [=]() -> void
 			{
 				aPopUp->SetActive(*aBoolean);
-				std::cout << aPopUp->GetWindowName() << " was clicked!" << std::endl;
+				std::cout << aPopUp->GetWindowName() << " was set " << *aBoolean << std::endl;
 			};
 	}
 
@@ -255,24 +255,18 @@ namespace Editor
 
 						if (ImGui::MenuItem(currentButton->GetName().c_str(), nullptr, &currentButton->myTestBool))
 						{
-							if (currentButton->myTestBool == false)
-							{
-								currentButton->myTestBool = true;
-								break;
-							}
+							currentButton->Invoke();
 
 							for (size_t i = 0; i < myButtons.size(); ++i)
 							{
 								if (i != currentButtonIndex)
 								{
-									auto&otherButton = myButtons[i];
+									auto& otherButton = myButtons[i];
 
 									otherButton->myTestBool = false;
 									otherButton->Invoke();
 								}
 							}
-
-							currentButton->Invoke();
 
 							break;
 						}
@@ -434,20 +428,18 @@ namespace Editor
 
 		std::unique_ptr<MenuItemPopUpTest> windowPopUp1 = std::make_unique<MenuItemPopUpTest>("Window1!!");
 		std::unique_ptr<MenuItemPopUpTest> windowPopUp2 = std::make_unique<MenuItemPopUpTest>("Window2!!");
-		std::unique_ptr<MenuItemPopUpTest> windowPopUp3 = std::make_unique<MenuItemPopUpTest>("Window3!!");
 		std::unique_ptr<MenuWindowTest> window = std::make_unique< MenuWindowTest>("Windows");
 
 		auto windowCallback1 = SetPopUpActive(cameraSettingPopUp, &windowPopUp1->myTestBool);
-		auto windowCallback3 = SetPopUpActive(audioSettingPopUP, &windowPopUp1->myTestBool);
+		auto windowCallback2 = SetPopUpActive(graphicsSettingPopUP, &windowPopUp1->myTestBool);
 		windowPopUp1->SetCallback(std::move(windowCallback1));
-		windowPopUp1->SetCallback(std::move(windowCallback3));
+		windowPopUp1->SetCallback(std::move(windowCallback2));
 
-		auto windowCallback2 = SetPopUpActive(graphicsSettingPopUP, &windowPopUp2->myTestBool);
-		windowPopUp2->SetCallback(std::move(windowCallback2));
+		auto windowCallback3 = SetPopUpActive(audioSettingPopUP, &windowPopUp2->myTestBool);
+		windowPopUp2->SetCallback(std::move(windowCallback3));
 
 		window->AddPopUp(std::move(windowPopUp1));
 		window->AddPopUp(std::move(windowPopUp2));
-		window->AddPopUp(std::move(windowPopUp3));
 
 		window->Init();
 
