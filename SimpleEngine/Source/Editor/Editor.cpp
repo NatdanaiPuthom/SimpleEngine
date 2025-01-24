@@ -178,6 +178,10 @@ namespace Editor
 		std::unique_ptr<MenuItemButton> sceneCreateNewButton = std::make_unique<MenuItemButton>("New");
 		std::unique_ptr<MenuItemButton> sceneCreateCopyButton = std::make_unique<MenuItemButton>("Copy");
 
+		std::unique_ptr<MenuItemPopUp> settingsAudioButton = std::make_unique<MenuItemPopUp>("Audio");
+		std::unique_ptr<MenuItemPopUp> settingsCameraButton = std::make_unique<MenuItemPopUp>("Camera");
+		std::unique_ptr<MenuItemPopUp> settingsGraphicsButton = std::make_unique<MenuItemPopUp>("Graphics");
+
 		std::unique_ptr<MenuItemPopUp> helpCameraControlsPopUpButton = std::make_unique<MenuItemPopUp>("Camera Controls");
 
 		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUp = std::make_shared<AudioSettingsPopUp>("Audio Settings");
@@ -207,11 +211,30 @@ namespace Editor
 			helpCameraControlsPopUpButton->SetCallback(std::move(popUpCallback));
 		}
 
+		{
+			auto popUpCallback = EditorCallbacks::SetPopUpActive(audioSettingPopUp, &settingsAudioButton->myTestBool);
+			settingsAudioButton->SetCallback(std::move(popUpCallback));
+		}
+
+		{
+			auto popUpCallback = EditorCallbacks::SetPopUpActive(cameraSettingPopUp, &settingsCameraButton->myTestBool);
+			settingsCameraButton->SetCallback(std::move(popUpCallback));
+		}
+
+		{
+			auto popUpCallback = EditorCallbacks::SetPopUpActive(graphicsSettingPopUp, &settingsGraphicsButton->myTestBool);
+			settingsGraphicsButton->SetCallback(std::move(popUpCallback));
+		}
+
 		sceneTab->AddButton(std::move(sceneSaveButton));
 		sceneTab->AddSelectable(std::move(sceneLoadSelectable));
 		sceneTab->AddMenu(std::move(sceneCreateMenu));
 		sceneTab->AddButton(std::move(sceneReloadButton));
 		sceneTab->AddButton(std::move(sceneSetAsActiveButton));
+
+		settingsTab->AddPopUp(std::move(settingsAudioButton));
+		settingsTab->AddPopUp(std::move(settingsCameraButton));
+		settingsTab->AddPopUp(std::move(settingsGraphicsButton));
 
 		helpTab->AddPopUp(std::move(helpCameraControlsPopUpButton));
 
