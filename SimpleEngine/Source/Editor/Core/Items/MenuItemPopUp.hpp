@@ -8,8 +8,6 @@ namespace Editor
 	class MenuItemPopUp final : public MenuItemBase
 	{
 	public:
-		bool myTestBool = false;
-	public:
 		MenuItemPopUp(const char* aName, std::function<void()> aCallback = nullptr);
 
 		void Render() override final;
@@ -17,7 +15,11 @@ namespace Editor
 
 	public:
 		void SetCallback(std::function<void()> aCallback);
+		void SetIsActive(const bool aShouldActive);
+	public:
+		bool& GetIsActiveRef();
 	private:
 		std::vector< std::function<void()>> myCallback;
+		bool myIsActive;
 	};
 }

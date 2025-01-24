@@ -139,18 +139,18 @@ namespace Editor
 		sceneCreateMenu->AddChild(std::move(sceneCreateNewButton));
 		sceneCreateMenu->AddChild(std::move(sceneCreateCopyButton));
 
-		helpCameraControlsPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(cameraHelpPopUp, &helpCameraControlsPopUpButton->myTestBool)));
-		settingsAudioButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(audioSettingPopUp, &settingsAudioButton->myTestBool)));
-		settingsCameraButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(cameraSettingPopUp, &settingsCameraButton->myTestBool)));
-		settingsGraphicsButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(graphicsSettingPopUp, &settingsGraphicsButton->myTestBool)));
-		deferredPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(deferredPopUp, &deferredPopUpButton->myTestBool)));
-		postProcessPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(postProcessPopUp, &postProcessPopUpButton->myTestBool)));
-		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(editorPopUp, &editorPopUpButton->myTestBool)));
-		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(assetBrowserPopUp, &editorPopUpButton->myTestBool)));
-		nodeScriptingPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(nodeScriptingPopUp, &nodeScriptingPopUpButton->myTestBool)));
+		helpCameraControlsPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(cameraHelpPopUp, &helpCameraControlsPopUpButton->GetIsActiveRef())));
+		settingsAudioButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(audioSettingPopUp, &settingsAudioButton->GetIsActiveRef())));
+		settingsCameraButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(cameraSettingPopUp, &settingsCameraButton->GetIsActiveRef())));
+		settingsGraphicsButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(graphicsSettingPopUp, &settingsGraphicsButton->GetIsActiveRef())));
+		deferredPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(deferredPopUp, &deferredPopUpButton->GetIsActiveRef())));
+		postProcessPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(postProcessPopUp, &postProcessPopUpButton->GetIsActiveRef())));
+		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(editorPopUp, &editorPopUpButton->GetIsActiveRef())));
+		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(assetBrowserPopUp, &editorPopUpButton->GetIsActiveRef())));
+		nodeScriptingPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(nodeScriptingPopUp, &nodeScriptingPopUpButton->GetIsActiveRef())));
 
 		{ //TO-DO(v11.4.5): Temp should be refactor
-			editorPopUpButton->myTestBool = true;
+			editorPopUpButton->SetIsActive(true);
 			editorPopUpButton->Invoke();
 		}
 

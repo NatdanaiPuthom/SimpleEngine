@@ -20,7 +20,7 @@ namespace Editor
 				{
 					auto& currentButton = myButtons[currentButtonIndex];
 
-					if (ImGui::MenuItem(currentButton->GetName().c_str(), nullptr, &currentButton->myTestBool))
+					if (ImGui::MenuItem(currentButton->GetName().c_str(), nullptr, &currentButton->GetIsActiveRef()))
 					{
 						currentButton->Invoke();
 
@@ -30,7 +30,7 @@ namespace Editor
 							{
 								auto& otherButton = myButtons[i];
 
-								otherButton->myTestBool = false;
+								otherButton->SetIsActive(false);
 								otherButton->Invoke();
 							}
 						}

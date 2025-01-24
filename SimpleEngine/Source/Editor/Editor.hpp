@@ -24,7 +24,6 @@ namespace Editor
 		std::shared_ptr<T> AddPopUpWindow();
 	private:
 		void SetUpDefaultLayout();
-		void TempPlayMenuBar();
 	private:
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
 		std::vector<std::unique_ptr<MainMenuTabBase>> myMainMenuTabs;

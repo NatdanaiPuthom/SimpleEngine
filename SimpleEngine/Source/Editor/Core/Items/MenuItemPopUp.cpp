@@ -4,12 +4,13 @@
 namespace Editor
 {
 	MenuItemPopUp::MenuItemPopUp(const char* aName, std::function<void()> aCallback) : MenuItemBase(aName)
+		, myIsActive(false)
 	{
 	}
 
 	void MenuItemPopUp::Render()
 	{
-		if (ImGui::MenuItem(myName.c_str(), nullptr, &myTestBool) && !myCallback.empty() && myCallback.front())
+		if (ImGui::MenuItem(myName.c_str(), nullptr, &myIsActive) && !myCallback.empty() && myCallback.front())
 		{
 			for (auto& callback : myCallback)
 			{
@@ -21,6 +22,16 @@ namespace Editor
 	void MenuItemPopUp::SetCallback(std::function<void()> aCallback)
 	{
 		myCallback.push_back(std::move(aCallback));
+	}
+
+	void MenuItemPopUp::SetIsActive(const bool aShouldActive)
+	{
+		myIsActive = aShouldActive;
+	}
+
+	bool& MenuItemPopUp::GetIsActiveRef()
+	{
+		return myIsActive;
 	}
 
 	void MenuItemPopUp::Invoke()
