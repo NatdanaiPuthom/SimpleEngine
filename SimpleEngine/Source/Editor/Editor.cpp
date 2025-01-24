@@ -82,7 +82,7 @@ namespace Editor
 		globalPopUps.push_back(cameraSettingPopUp);
 		globalPopUps.push_back(graphicsSettingPopUP);
 
-		std::unique_ptr<MenuItemPopUpTest> popUpTest = std::make_unique<MenuItemPopUpTest>("Pop Up!");
+		std::unique_ptr<MenuItemPopUp> popUpTest = std::make_unique<MenuItemPopUp>("Pop Up!");
 
 		auto testtt = SetPopUpActive(audioSettingPopUP, &popUpTest->myTestBool);
 
@@ -103,8 +103,8 @@ namespace Editor
 
 		globalMainMenuTabs.push_back(std::move(scene));
 
-		std::unique_ptr<MenuItemPopUpTest> windowPopUp1 = std::make_unique<MenuItemPopUpTest>("Window1!!");
-		std::unique_ptr<MenuItemPopUpTest> windowPopUp2 = std::make_unique<MenuItemPopUpTest>("Window2!!");
+		std::unique_ptr<MenuItemPopUp> windowPopUp1 = std::make_unique<MenuItemPopUp>("Window1!!");
+		std::unique_ptr<MenuItemPopUp> windowPopUp2 = std::make_unique<MenuItemPopUp>("Window2!!");
 
 		std::unique_ptr<MenuTabWindow> window = std::make_unique< MenuTabWindow>("Windows");
 
@@ -175,22 +175,7 @@ namespace Editor
 			}
 		}
 
-		/*for (const std::shared_ptr<MainMenuItemTab> tab : myMainMenuTabs)
-		{
-			tab->Render();
-		}
-
-		for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
-		{
-			if (popUp->IsActive())
-			{
-				popUp->Render();
-			}
-		}*/
-
 		//TempPlayMenuBar();
-
-
 
 		//{	//Render Orientation Cube  
 		//	//TO-DO(v11.4.4): Make own class for this

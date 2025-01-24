@@ -54,10 +54,10 @@ namespace Editor
 		std::function<void()> myCallback;
 	};
 
-	class MenuItemPopUpTest final : public MenuItem
+	class MenuItemPopUp final : public MenuItem
 	{
 	public:
-		MenuItemPopUpTest(const char* aName, std::function<void()> aCallback = nullptr) : MenuItem(aName)
+		MenuItemPopUp(const char* aName, std::function<void()> aCallback = nullptr) : MenuItem(aName)
 		{
 
 		}
@@ -185,9 +185,9 @@ namespace Editor
 	public:
 		MenuTabWindow(const char* aName) : MainMenuTabBase(aName) {}
 
-		MenuItemPopUpTest* AddPopUp(std::unique_ptr<MenuItemPopUpTest> aButton)
+		MenuItemPopUp* AddPopUp(std::unique_ptr<MenuItemPopUp> aButton)
 		{
-			MenuItemPopUpTest* buttonPointer = aButton.get();
+			MenuItemPopUp* buttonPointer = aButton.get();
 			myButtons.push_back(std::move(aButton));
 			return buttonPointer;
 		}
@@ -235,7 +235,7 @@ namespace Editor
 		}
 
 	private:
-		std::vector<std::unique_ptr<MenuItemPopUpTest>> myButtons;
+		std::vector<std::unique_ptr<MenuItemPopUp>> myButtons;
 	};
 
 	class MenuTabNormal final : public MainMenuTabBase
@@ -258,9 +258,9 @@ namespace Editor
 			return buttonPointer;
 		}
 
-		MenuItemPopUpTest* AddPopUp(std::unique_ptr<MenuItemPopUpTest> aButton)
+		MenuItemPopUp* AddPopUp(std::unique_ptr<MenuItemPopUp> aButton)
 		{
-			MenuItemPopUpTest* buttonPointer = aButton.get();
+			MenuItemPopUp* buttonPointer = aButton.get();
 			myButtons.push_back(std::move(aButton));
 			return buttonPointer;
 		}
