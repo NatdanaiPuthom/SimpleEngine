@@ -114,8 +114,6 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void RunEditorNullptrFunction();
-
 	template<typename T>
 	constexpr ViewAndEditInterface CreateViewAndEditInterface()
 	{
@@ -391,14 +389,14 @@ namespace FLY_NAMESPACE
 
 	private:
 
-		[[nodiscard]] ViewAndEditResult ViewAndEditData(const DataType& aDataType, void* aDataPtr) const;
+		[[nodiscard]] ViewAndEditResult ViewAndEditData(const DataType& aDataType, void* aDataPtr, const bool aViewAndEditMembers) const;
 		void ViewData(const DataType& aDataType, const void* aDataPtr) const;
 		bool SaveData(const DataType& aDataType, const void* aDataPtr, nlohmann::json& aJson) const;
 		bool LoadData(const DataType& aDataType, void* aDataPtr, const nlohmann::json& aJson) const;
 
 	public:
 
-		[[nodiscard]] ViewAndEditResult ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr) const;
+		[[nodiscard]] ViewAndEditResult ViewAndEditData(DataTypeID aDataTypeID, void* aDataPtr, const bool aViewAndEditMembers = false) const;
 		void ViewData(DataTypeID aDataTypeID, const void* aDataPtr) const;
 		bool SaveData(DataTypeID aDataTypeID, const void* aDataPtr, nlohmann::json& aJson) const;
 		bool LoadData(DataTypeID aDataTypeID, void* aDataPtr, const nlohmann::json& aJson) const;
@@ -451,8 +449,8 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] SetPinValueFromPinInterface GetSetPinValueFromPinInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
 		[[nodiscard]] SetPinValueFromPinInterface GetSetPinValueFromPinInterface(GenericDataTypeID aDataTypeID, eFlowType aFlowType) const;
 
-		[[nodiscard]] DataTypeID GetDataTypeIDByName(const std::string& aName) const;
-		[[nodiscard]] GenericDataTypeID GetGenericDataTypeIDByName(const std::string& aName) const;
+		[[nodiscard]] DataTypeID GetDataTypeIDByName(std::string_view aName) const;
+		[[nodiscard]] GenericDataTypeID GetGenericDataTypeIDByName(std::string_view aName) const;
 
 		[[nodiscard]] EditorTextFunction GetEditorTextFunction() const;
 		void SetEditorTextFunction(EditorTextFunction aTextFunction);
@@ -461,8 +459,6 @@ namespace FLY_NAMESPACE
 
 		[[nodiscard]] DataType* Find(DataTypeID aDataTypeID);
 		[[nodiscard]] const DataType* Find(DataTypeID aDataTypeID) const;
-		[[nodiscard]] DataType* Find(StructID aStructID);
-		[[nodiscard]] const DataType* Find(StructID aStructID) const;
 		[[nodiscard]] DataType* Find(ClassID aClassID);
 		[[nodiscard]] const DataType* Find(ClassID aClassID) const;
 
@@ -480,7 +476,6 @@ namespace FLY_NAMESPACE
 
 		bool IsRegistered(DataTypeID aDataTypeID) const;
 
-
 		void SetDataTypeColor(GenericDataTypeID aDataTypeID, const Color& aColor);
 		void SetDefaultColor(const Color& aColor);
 
@@ -492,11 +487,7 @@ namespace FLY_NAMESPACE
 		template<typename T>
 		DataTypeID CreateDataTypeDuplication();
 
-		StructID CreateStruct(std::string_view aName);
-		[[nodiscard]] Struct& GetStruct(StructID aStructID);
-		[[nodiscard]] const Struct& GetStruct(StructID aStructID) const;
-		[[nodiscard]] StructID GetStructIDByName(std::string_view aName) const;
-		[[nodiscard]] const std::vector<HeapObject<Struct>>& GetStructs() const;
+		DataTypeID CreateStruct(std::string_view aName);
 
 		ClassID CreateClass(DataTypeID aTargetID, std::string_view aName);
 		[[nodiscard]] Class& GetClass(ClassID aClassID);
@@ -525,13 +516,11 @@ namespace FLY_NAMESPACE
 
 		std::unordered_map<DataTypeID, DataType> mDataTypes;
 		std::unordered_map<DataTypeID, TemplateDataType> mTemplateDataTypes;
-		std::vector<HeapObject<DataType>> mStructsNew;
 		std::vector<HeapObject<DataType>> mClassesNew;
-		std::vector<HeapObject<Struct>> mStructs;
 		std::vector<HeapObject<Class>> mClasses;
 
 		std::string mNullNameStr;
-		Color mDefaultColor = Color(1.f, 0.131f, 0.978f, 1.f);
+		Color mDefaultColor = Color(0.3f, 0.78f, 0.72f, 1.f);
 		Color mDefaultStructColor = Color(0.f, 0.6f, 1.f, 1.f);
 		Color mDefaultClassColor = Color(1.f, 0.6f, 0.f, 1.f);
 
@@ -706,13 +695,6 @@ namespace FLY_NAMESPACE
 			}
 		}
 		return nullptr;
-	}
-
-	template<size_t BufferCapacity>
-	inline StructInstance* DataTypeManager::AllocateStructInstance(const StructID aStructID, MemoryArena<BufferCapacity>& aArena) const
-	{
-		const Struct& s = GetStruct(aStructID);
-		return &aArena.Allocate<StructInstance>(s);
 	}
 
 	template<size_t BufferCapacity>

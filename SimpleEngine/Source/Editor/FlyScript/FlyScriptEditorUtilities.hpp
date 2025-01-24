@@ -6,9 +6,9 @@
 
 namespace Fly
 {
-	class DataTypeFacade;
-	class GenericDataTypeFacade;
-	class NodeGraphFacade;
+	class DataTypeProxy;
+	class GenericDataTypeProxy;
+	class NodeGraphProxy;
 	class CommandTracker;
 }
 
@@ -39,11 +39,8 @@ namespace Editor
 	{
 		std::string myName;
 		std::vector<NodeTypeCategory> myChildCategories;
-		std::vector<Fly::NodeTypeFacade> myNodeTypes;
+		std::vector<Fly::NodeTypeProxy> myNodeTypes;
 	};
-
-
-
 
 	struct NodeGraphContext final
 	{
@@ -57,19 +54,19 @@ namespace Editor
 		~NodeGraphContext();
 
 		ImNodesContext* myImNodesContext = nullptr;
-		Fly::ClassFacade myClassFacade;
-		Fly::NodeGraphFacade myNodeGraphFacade;
-		Fly::ClassInstanceFacade myClassInstanceFacade;
+		Fly::ClassProxy myClassProxy;
+		Fly::NodeGraphProxy myNodeGraphProxy;
+		Fly::ClassInstanceProxy myClassInstanceProxy;
 
-		std::vector<Fly::PinFacade> myPinFacadesToHighlight;
+		std::vector<Fly::PinProxy> myPinProxysToHighlight;
 		std::unordered_map<Fly::NodeID, Fly::NodeDragData> myNodeDragData;
 		Fly::PinID myLinkCreationPinID;
 		Fly::PinID myStartedLinkPinID;
-		Fly::NodeFacade myClickedNodeFacade;
-		Fly::LinkFacade myHoveredLinkFacade;
-		Fly::PinFacade myHoveredPinFacade;
-		Fly::PinFacade myClickedPinFacade;
-		std::vector<Fly::LinkFacade> myTraversedLinks;
+		Fly::NodeProxy myClickedNodeProxy;
+		Fly::LinkProxy myHoveredLinkProxy;
+		Fly::PinProxy myHoveredPinProxy;
+		Fly::PinProxy myClickedPinProxy;
+		std::vector<Fly::LinkProxy> myTraversedLinks;
 		std::unique_ptr<Fly::CommandTracker> myCommandTracker;
 
 		bool myIsDraggingNode = false;
@@ -80,7 +77,7 @@ namespace Editor
 		struct SearchNodeData
 		{
 			std::function<void(NodeTypeCategory&)> myCategoryFunction;
-			std::function<void(const Fly::NodeTypeFacade&)> myOnClickFunction;
+			std::function<void(const Fly::NodeTypeProxy&)> myOnClickFunction;
 
 			int myCurrentIndex = 0;
 			char myNodeTypeSearch[TEXT_MAX_LENGTH] = "";
@@ -88,8 +85,6 @@ namespace Editor
 
 		SearchNodeData mySearchNodeData;
 		ImVec2 myNodeCreationClickPos;
-
-
 	};
 
 	template<typename T>
@@ -98,9 +93,9 @@ namespace Editor
 		return std::string(aName) + std::to_string(aValue);
 	}
 
-	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::GenericDataTypeFacade& aDataTypeFacade);
-	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::GenericDataTypeFacade& aDataTypeFacade);
-	bool DataTypeComboNoFilter(const char* aComboLabel, Fly::GenericDataTypeFacade& aDataTypeFacade);
+	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::GenericDataTypeProxy& aDataTypeProxy);
+	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::GenericDataTypeProxy& aDataTypeProxy);
+	bool DataTypeComboNoFilter(const char* aComboLabel, Fly::GenericDataTypeProxy& aDataTypeProxy);
 
 	static bool StringCompare(std::string_view aStr1, std::string_view aStr2)
 	{
@@ -116,7 +111,6 @@ namespace Editor
 	{
 		return IM_COL32(aColor.r * 255, aColor.g * 255, aColor.b * 255, 255);
 	}
-
 
 	constexpr Fly::Vec2 ToFlyVec2(ImVec2 aVec)
 	{
@@ -138,19 +132,18 @@ namespace Editor
 		return it != end(aSearchIn);
 	}
 
-
 	void UpdateClickPos(NodeGraphContext& aNodeGraphContext);
 	ImVec2 GetMousePos(const NodeGraphContext& aNodeGraphContext);
 	
 	void ShowNodeGraph(NodeGraphContext& aNodeGraphContext);
 	void VisualizeNodeGraph(NodeGraphContext& aNodeGraphContext);
-	void UpdateNodeGraph(NodeGraphContext& aNodeGraphFacade);
+	void UpdateNodeGraph(NodeGraphContext& aNodeGraphProxy);
 
 	void NodeCreation(NodeGraphContext& aNodeGraphContext);
-	bool ShowNodeSearchMenu(const std::vector<Fly::NodeTypeFacade>& aNodeTypes, const NodeGraphContext& aNodeGraphContext);
+	bool ShowNodeSearchMenu(const std::vector<Fly::NodeTypeProxy>& aNodeTypes, const NodeGraphContext& aNodeGraphContext);
 	bool ShowNodeSearchMenuByCategory(const NodeTypeCategory& aCategory, const NodeGraphContext& aNodeGraphContext);
 	void ShowNodeSearchMenu(NodeGraphContext& aNodeGraphContext);
-	void PopulateNodeCategories(const std::string& aName, const Fly::NodeTypeFacade& aNodeType, NodeTypeCategory& aCategory);
+	void PopulateNodeCategories(const std::string& aName, const Fly::NodeTypeProxy& aNodeType, NodeTypeCategory& aCategory);
 
 
 }

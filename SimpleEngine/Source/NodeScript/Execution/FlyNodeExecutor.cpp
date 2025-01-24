@@ -18,6 +18,7 @@ namespace FLY_NAMESPACE
 		mExecutionContext.mNodeTypeManager = &Internal::GetNodeTypeManager();
 		mExecutionContext.mPinTypeManager = &Internal::GetPinTypeManager();
 		mExecutionContext.mDataTypeManager = &Internal::GetDataTypeManager();
+		mExecutionContext.mTraitManager = &Internal::GetTraitManager();
 	}
 
 	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)

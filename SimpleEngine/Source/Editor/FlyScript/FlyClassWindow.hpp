@@ -2,7 +2,7 @@
 
 namespace Fly
 {
-	class VariableFacade;
+	class VariableProxy;
 }
 
 namespace Editor
@@ -26,7 +26,7 @@ namespace Editor
 
 
 		void DrawVariables();
-		void ModifyVariablePopup(Fly::VariableFacade& aVariableFacade);
+		void ModifyVariablePopup(Fly::VariableProxy& aVariableProxy);
 
 	private:
 

@@ -17,19 +17,19 @@ namespace Editor
 
 	void FunctionSettingsWindow::Update()
 	{
-		if (!myParent.GetCurrentFunctionFacade())
+		if (!myParent.GetCurrentFunctionProxy())
 		{
 			return;
 		}
 
 		if (ImGui::Begin("Function Settings"))
 		{
-			const std::string& functionName = myParent.GetCurrentFunctionFacade().GetName();
+			const std::string& functionName = myParent.GetCurrentFunctionProxy().GetName();
 			char nameBuffer[40]{};
 			strcpy_s(nameBuffer, functionName.c_str());
 			if (ImGui::InputText("Name", nameBuffer, IM_ARRAYSIZE(nameBuffer)))
 			{
-				myParent.GetCurrentFunctionFacade().SetName(nameBuffer, nullptr);
+				myParent.GetCurrentFunctionProxy().SetName(nameBuffer, nullptr);
 			}
 
 			ImGui::Separator();
@@ -38,7 +38,7 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button("Add Input"))
 			{
-				myParent.GetCurrentFunctionFacade().AddPin(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), Fly::eFlowType::Input, "Pin", nullptr);
+				myParent.GetCurrentFunctionProxy().AddPin(Fly::GenericDataTypeProxy(Fly::GetDataTypeID<bool>()), Fly::eFlowType::Input, "Pin", nullptr);
 			}
 			ImGui::Separator();
 
@@ -50,7 +50,7 @@ namespace Editor
 			ImGui::SameLine();
 			if (ImGui::Button("Add Output"))
 			{
-				myParent.GetCurrentFunctionFacade().AddPin(Fly::GenericDataTypeFacade(Fly::GetDataTypeID<bool>()), Fly::eFlowType::Output, "Pin", nullptr);
+				myParent.GetCurrentFunctionProxy().AddPin(Fly::GenericDataTypeProxy(Fly::GetDataTypeID<bool>()), Fly::eFlowType::Output, "Pin", nullptr);
 			}
 			ImGui::Separator();
 
@@ -68,13 +68,13 @@ namespace Editor
 		constexpr static const char* dataTypeStrID = "Data Type##FunctionSettings_";
 		constexpr static const char* pinTypeNameStrID = "Name##FunctionSettings_";
 
-		Fly::FunctionFacade functionFacade = myParent.GetCurrentFunctionFacade();
-		const Fly::NodeTypeFacade callerNodeTypeFacade = functionFacade.GetCallerNodeTypeFacade();
+		Fly::FunctionProxy functionProxy = myParent.GetCurrentFunctionProxy();
+		const Fly::NodeTypeProxy callerNodeTypeProxy = functionProxy.GetCallerNodeType();
 
-		const std::vector<Fly::PinTypeFacade> pinTypes = Fly::SelectByFlowType(aFlowType, callerNodeTypeFacade.GetInputPinTypeFacades(), callerNodeTypeFacade.GetOutputPinTypeFacades());
+		const std::vector<Fly::PinTypeProxy> pinTypes = Fly::SelectByFlowType(aFlowType, callerNodeTypeProxy.GetInputPinTypes(), callerNodeTypeProxy.GetOutputPinTypes());
 		for (size_t i = 1; i < pinTypes.size(); ++i)
 		{
-			const Fly::PinTypeFacade& pinType = pinTypes.at(i);
+			const Fly::PinTypeProxy& pinType = pinTypes.at(i);
 
 			const std::string& pinTypeName = pinType.GetName();
 
@@ -82,20 +82,20 @@ namespace Editor
 			strcpy_s(newName, pinTypeName.c_str());
 			if (ImGui::InputText(std::string(pinTypeNameStrID + inputOutputLabel + std::to_string(i)).c_str(), newName, IM_ARRAYSIZE(newName)))
 			{
-				functionFacade.SetPinNameAtIndex(newName, i, aFlowType, nullptr);
+				functionProxy.SetPinNameAtIndex(newName, i, aFlowType, nullptr);
 			}
 
 			const std::string comboLabel = dataTypeStrID + inputOutputLabel + std::to_string(i);
 
-			const Fly::GenericDataTypeFacade pinTypeDataType(pinType.GetDataTypeID());
+			const Fly::GenericDataTypeProxy pinTypeDataType(pinType.GetDataTypeID());
 
 			if (ImGui::BeginCombo(comboLabel.c_str(), std::string(pinTypeDataType.GetName()).c_str()))
 			{
-				for (const Fly::GenericDataTypeFacade& dataTypeFacade : Fly::GetGenericDataTypes())
+				for (const Fly::GenericDataTypeProxy& dataTypeProxy : Fly::GetGenericDataTypes())
 				{
-					if (ImGui::Selectable(std::string(dataTypeFacade.GetName()).c_str()))
+					if (ImGui::Selectable(std::string(dataTypeProxy.GetName()).c_str()))
 					{
-						functionFacade.SetPinDataTypeAtIndex(dataTypeFacade, i, aFlowType, nullptr);
+						functionProxy.SetPinDataTypeAtIndex(dataTypeProxy, i, aFlowType, nullptr);
 					}
 				}
 				ImGui::EndCombo();

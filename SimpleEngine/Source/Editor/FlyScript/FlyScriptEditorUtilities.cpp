@@ -9,18 +9,18 @@
 namespace Editor
 {
 
-	static bool DataTypeCombo(const char* aComboLabel, Fly::GenericDataTypeFacade& aDataTypeFacade, auto aFilterPredicate)
+	static bool DataTypeCombo(const char* aComboLabel, Fly::GenericDataTypeProxy& aDataTypeProxy, auto aFilterPredicate)
 	{
 		bool wasSelected = false;
-		if (ImGui::BeginCombo(aComboLabel, aDataTypeFacade.GetName().c_str()))
+		if (ImGui::BeginCombo(aComboLabel, aDataTypeProxy.GetName().c_str()))
 		{
-			const std::vector<Fly::GenericDataTypeFacade> dataTypes = Fly::GetGenericDataTypesFiltered(aFilterPredicate);
+			const std::vector<Fly::GenericDataTypeProxy> dataTypes = Fly::GetGenericDataTypesFiltered(aFilterPredicate);
 
-			for (const Fly::GenericDataTypeFacade& dataType : dataTypes)
+			for (const Fly::GenericDataTypeProxy& dataType : dataTypes)
 			{
-				if (ImGui::Selectable(dataType.GetName().c_str(), aDataTypeFacade == dataType))
+				if (ImGui::Selectable(dataType.GetName().c_str(), aDataTypeProxy == dataType))
 				{
-					aDataTypeFacade = dataType;
+					aDataTypeProxy = dataType;
 					wasSelected = true;
 				}
 			}
@@ -30,19 +30,19 @@ namespace Editor
 		return wasSelected;
 	}
 
-	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::GenericDataTypeFacade& aDataTypeFacade)
+	bool DataTypeComboEditableFilter(const char* aComboLabel, Fly::GenericDataTypeProxy& aDataTypeProxy)
 	{
-		return DataTypeCombo(aComboLabel, aDataTypeFacade, [](const Fly::GenericDataTypeFacade& aDataType) -> bool { return aDataType.IsViewAndEditable(); });
+		return DataTypeCombo(aComboLabel, aDataTypeProxy, [](const Fly::GenericDataTypeProxy& aDataType) -> bool { return aDataType.IsViewAndEditable(); });
 	}
 
-	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::GenericDataTypeFacade& aDataTypeFacade)
+	bool DataTypeComboTargetableFilter(const char* aComboLabel, Fly::GenericDataTypeProxy& aDataTypeProxy)
 	{
-		return DataTypeCombo(aComboLabel, aDataTypeFacade, [](const Fly::GenericDataTypeFacade& aDataType) -> bool { return aDataType.IsTargetable(); });
+		return DataTypeCombo(aComboLabel, aDataTypeProxy, [](const Fly::GenericDataTypeProxy& aDataType) -> bool { return aDataType.IsTargetable(); });
 	}
 
-	bool DataTypeComboNoFilter(const char* aComboLabel, Fly::GenericDataTypeFacade& aDataTypeFacade)
+	bool DataTypeComboNoFilter(const char* aComboLabel, Fly::GenericDataTypeProxy& aDataTypeProxy)
 	{
-		return DataTypeCombo(aComboLabel, aDataTypeFacade, [](const Fly::GenericDataTypeFacade&) -> bool { return true; });
+		return DataTypeCombo(aComboLabel, aDataTypeProxy, [](const Fly::GenericDataTypeProxy&) -> bool { return true; });
 	}
 
 	void UpdateClickPos(NodeGraphContext& aNodeGraphContext)
@@ -66,21 +66,21 @@ namespace Editor
 	void VisualizeNodeGraph(NodeGraphContext& aNodeGraphContext)
 	{
 		
-		const Fly::NodeGraphFacade& nodeGraphFacade = aNodeGraphContext.myNodeGraphFacade;
+		const Fly::NodeGraphProxy& nodeGraphProxy = aNodeGraphContext.myNodeGraphProxy;
 		ImNodes::BeginNodeEditor();
 
-		const std::vector<Fly::NodeFacade> nodeFacades = nodeGraphFacade.GetNodeFacades();
+		const std::vector<Fly::NodeProxy> nodeProxys = nodeGraphProxy.GetNodeProxys();
 
-		for (const Fly::NodeFacade& nodeFacade : nodeFacades)
+		for (const Fly::NodeProxy& nodeProxy : nodeProxys)
 		{
-			if (nodeFacade.IsDestroyed())
+			if (nodeProxy.IsDestroyed())
 			{
 				continue;
 			}
 
 			ImNodesStyle& style = ImNodes::GetStyle();
 
-			if (nodeFacade.GetEventID() == Fly::InvalidID<Fly::EventID>())
+			if (nodeProxy.GetEventID() == Fly::InvalidID<Fly::EventID>())
 			{
 				style.Colors[ImNodesCol_TitleBar] = ToImGuiColor(Fly::Color{ 0.1f, 0.3f, 0.6f, 1.f });
 				style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(Fly::Color{ 0.1f, 0.3f, 0.7f, 1.f });
@@ -93,10 +93,10 @@ namespace Editor
 				style.Colors[ImNodesCol_TitleBarSelected] = ToImGuiColor(Fly::Color{ 1.f, 0.1f, 0.1f, 1.f });
 			}
 
-			style.Colors[ImNodesCol_NodeOutline] = ImNodes::IsNodeSelected(nodeFacade.GetID()) ? ToImGuiColor(Fly::Color(0.8f, 0.8f, 0.8f, 1.f)) : ToImGuiColor(Fly::Color(0.f, 0.f, 0.f, 1.f));
+			style.Colors[ImNodesCol_NodeOutline] = ImNodes::IsNodeSelected(nodeProxy.GetID()) ? ToImGuiColor(Fly::Color(0.8f, 0.8f, 0.8f, 1.f)) : ToImGuiColor(Fly::Color(0.f, 0.f, 0.f, 1.f));
 
-			ImNodes::SetNodeGridSpacePos(nodeFacade.GetID(), ImVec2{ nodeFacade.GetPosition().x, nodeFacade.GetPosition().y });
-			ImNodes::BeginNode(nodeFacade.GetID());
+			ImNodes::SetNodeGridSpacePos(nodeProxy.GetID(), ImVec2{ nodeProxy.GetPosition().x, nodeProxy.GetPosition().y });
+			ImNodes::BeginNode(nodeProxy.GetID());
 
 			float nodeNameWidth = 0;
 
@@ -106,21 +106,21 @@ namespace Editor
 
 				std::string nodeLabel;
 
-				if (nodeFacade.IsAccessor())
+				if (nodeProxy.IsAccessor())
 				{
-					/*const Fly::VariableFacade variable = nodeFacade.GetVariableFacade();
-					const bool isGetter = Fly::HasFlag(nodeFacade.GetTraits(), Fly::eNodeTrait::Getter);
+					/*const Fly::VariableProxy variable = nodeProxy.GetVariableProxy();
+					const bool isGetter = Fly::HasFlag(nodeProxy.GetTraits(), Fly::eNodeTrait::Getter);
 					const char* const prefixLabel = isGetter ? "Get " : "Set ";
 					nodeLabel = prefixLabel + variable.GetName();*/
 				}
 				else
 				{
-					nodeLabel = nodeFacade.GetNodeTypeFacade().GetShortName();
+					nodeLabel = nodeProxy.GetNodeType().GetShortName();
 				}
 
 				if (Fly::IsDebugging())
 				{
-					nodeLabel += ", ID: " + std::to_string(nodeFacade.GetID());
+					nodeLabel += ", ID: " + std::to_string(nodeProxy.GetID());
 				}
 				ImGui::TextUnformatted(nodeLabel.c_str());
 
@@ -131,12 +131,12 @@ namespace Editor
 
 			ImVec2 cursorPos = ImGui::GetCursorPos();
 
-			std::vector<Fly::PinFacade> inputPinFacades = nodeFacade.GetSplitInputPinFacades();
-			float nodeWidthLeft = inputPinFacades.empty() ? 0.f : 100.f;
+			std::vector<Fly::PinProxy> inputPinProxys = nodeProxy.GetSplitInputPins();
+			float nodeWidthLeft = inputPinProxys.empty() ? 0.f : 100.f;
 
-			for (const Fly::PinFacade& inputPinFacade : inputPinFacades)
+			for (const Fly::PinProxy& inputPinProxy : inputPinProxys)
 			{
-				const std::string_view pinLabel = inputPinFacade.GetPinTypeName();
+				const std::string_view pinLabel = inputPinProxy.GetPinTypeName();
 				const float labelWidth = ImGui::CalcTextSize(std::string(pinLabel).c_str()).x;
 
 				nodeWidthLeft = std::max(nodeWidthLeft, labelWidth);
@@ -144,11 +144,11 @@ namespace Editor
 
 			float nodeWidthRight = 0.f;
 
-			std::vector<Fly::PinFacade> outputPinFacades = nodeFacade.GetSplitOutputPinFacades();
+			std::vector<Fly::PinProxy> outputPins = nodeProxy.GetSplitOutputPins();
 
-			for (const Fly::PinFacade& outputPinFacade : outputPinFacades)
+			for (const Fly::PinProxy& outputPinProxy : outputPins)
 			{
-				const std::string_view pinLabel = outputPinFacade.GetPinTypeName();
+				const std::string_view pinLabel = outputPinProxy.GetPinTypeName();
 				const float labelWidth = ImGui::CalcTextSize(std::string(pinLabel).c_str()).x;
 
 				nodeWidthRight = std::max(nodeWidthRight, labelWidth);
@@ -162,43 +162,43 @@ namespace Editor
 			}
 
 			// Render input pins
-			for (Fly::PinFacade& inputPinFacade : inputPinFacades)
+			for (Fly::PinProxy& inputPinProxy : inputPinProxys)
 			{
-				const Fly::GenericDataTypeFacade pinDataType(inputPinFacade.GetDataTypeID());
+				const Fly::GenericDataTypeProxy pinDataType(inputPinProxy.GetDataTypeID());
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
 				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(pinDataType.GetColor()/* - myHoverTint*/));
 
-				const bool shouldBeHighlighted = false;// std::find(currentNodeContext.myPinFacadesToHighlight.begin(), currentNodeContext.myPinFacadesToHighlight.end(), inputPinFacade) != currentNodeContext.myPinFacadesToHighlight.end();
+				const bool shouldBeHighlighted = false;// std::find(currentNodeContext.myPinProxysToHighlight.begin(), currentNodeContext.myPinProxysToHighlight.end(), inputPinProxy) != currentNodeContext.myPinProxysToHighlight.end();
 
 
-				const ImNodesPinShape shape = [shouldBeHighlighted, inputPinFacade]()
+				const ImNodesPinShape shape = [shouldBeHighlighted, inputPinProxy]()
 					{
 						if (shouldBeHighlighted)
 						{
 							return ImNodesPinShape_Triangle;
 						}
 
-						const bool isPointer = Fly::GenericDataTypeFacade(inputPinFacade.GetDataTypeID()).IsPointer();
+						const bool isPointer = Fly::GenericDataTypeProxy(inputPinProxy.GetDataTypeID()).IsPointer();
 						return isPointer ? ImNodesPinShape_QuadFilled : ImNodesPinShape_CircleFilled;
 					}();
-				ImNodes::BeginInputAttribute(inputPinFacade.GetID(), shape);
+				ImNodes::BeginInputAttribute(inputPinProxy.GetID(), shape);
 
-				std::string pinLabel(inputPinFacade.GetPinTypeName());
+				std::string pinLabel(inputPinProxy.GetPinTypeName());
 				if (!pinLabel.empty())
 				{
 					if (Fly::IsDebugging())
 					{
-						pinLabel += ", " + std::to_string(inputPinFacade.GetID());
+						pinLabel += ", " + std::to_string(inputPinProxy.GetID());
 					}
 					ImGui::TextUnformatted(pinLabel.c_str());
 				}
 
-				if (inputPinFacade.GetConnectedPinIDs().empty())
+				if (inputPinProxy.GetConnectedPinIDs().empty())
 				{
 					const float itemWidth = std::max(20.f, nodeWidthLeft);
 					ImGui::PushItemWidth(itemWidth);
 
-					inputPinFacade.ViewAndEdit(nullptr/*myCommandTracker.get()*/);
+					inputPinProxy.ViewAndEdit(aNodeGraphContext.myCommandTracker.get());
 
 					ImGui::PopItemWidth();
 				}
@@ -212,28 +212,28 @@ namespace Editor
 			ImGui::SetCursorPos(cursorPos);
 
 			// Render output pins
-			for (const Fly::PinFacade& outputPinFacade : outputPinFacades)
+			for (const Fly::PinProxy& outputPinProxy : outputPins)
 			{
-				const Fly::GenericDataTypeFacade pinDataType(outputPinFacade.GetDataTypeID());
+				const Fly::GenericDataTypeProxy pinDataType(outputPinProxy.GetDataTypeID());
 				ImNodes::PushColorStyle(ImNodesCol_Pin, ToImGuiColor(pinDataType.GetColor()));
 				ImNodes::PushColorStyle(ImNodesCol_PinHovered, ToImGuiColor(pinDataType.GetColor() - NodeGraphContext::HOVER_TINT));
 
-				const bool shouldBeHighlighted = std::find(aNodeGraphContext.myPinFacadesToHighlight.begin(), aNodeGraphContext.myPinFacadesToHighlight.end(), outputPinFacade) != aNodeGraphContext.myPinFacadesToHighlight.end();
+				const bool shouldBeHighlighted = std::find(aNodeGraphContext.myPinProxysToHighlight.begin(), aNodeGraphContext.myPinProxysToHighlight.end(), outputPinProxy) != aNodeGraphContext.myPinProxysToHighlight.end();
 
-				const ImNodesPinShape shape = [shouldBeHighlighted, outputPinFacade]()
+				const ImNodesPinShape shape = [shouldBeHighlighted, outputPinProxy]()
 					{
 						if (shouldBeHighlighted)
 						{
 							return ImNodesPinShape_Triangle;
 						}
 
-						const bool isPointer = Fly::GenericDataTypeFacade(outputPinFacade.GetDataTypeID()).IsPointer();
+						const bool isPointer = Fly::GenericDataTypeProxy(outputPinProxy.GetDataTypeID()).IsPointer();
 						return isPointer ? ImNodesPinShape_QuadFilled : ImNodesPinShape_CircleFilled;
 					}();
 
-				ImNodes::BeginOutputAttribute(outputPinFacade.GetID(), shape);
+				ImNodes::BeginOutputAttribute(outputPinProxy.GetID(), shape);
 
-				std::string pinLabel(outputPinFacade.GetPinTypeName());
+				std::string pinLabel(outputPinProxy.GetPinTypeName());
 
 				if (!pinLabel.empty())
 				{
@@ -242,7 +242,7 @@ namespace Editor
 
 					if (Fly::IsDebugging())
 					{
-						pinLabel += ", " + std::to_string(outputPinFacade.GetID());
+						pinLabel += ", " + std::to_string(outputPinProxy.GetID());
 					}
 					ImGui::TextUnformatted(pinLabel.c_str());
 				}
@@ -255,20 +255,20 @@ namespace Editor
 			ImNodes::EndNode();
 		}
 
-		std::vector<Fly::LinkFacade> linkFacades = nodeGraphFacade.GetLinkFacades();
+		std::vector<Fly::LinkProxy> linkProxys = nodeGraphProxy.GetLinks();
 
-		for (const Fly::LinkFacade& linkFacade : linkFacades)
+		for (const Fly::LinkProxy& linkProxy : linkProxys)
 		{
-			if (linkFacade.IsDestroyed())
+			if (linkProxy.IsDestroyed())
 			{
 				continue;
 			}
-			const Fly::PinFacade pinFacade = linkFacade.GetInputPin();
-			const Fly::GenericDataTypeFacade pinDataType(pinFacade.GetDataTypeID());
+			const Fly::PinProxy pinProxy = linkProxy.GetInputPin();
+			const Fly::GenericDataTypeProxy pinDataType(pinProxy.GetDataTypeID());
 
 			const Fly::Color dataTypeColor = pinDataType.GetColor();
 			Fly::Color linkColor = dataTypeColor;
-			if (std::find(aNodeGraphContext.myTraversedLinks.begin(), aNodeGraphContext.myTraversedLinks.end(), linkFacade) != aNodeGraphContext.myTraversedLinks.end())
+			if (std::find(aNodeGraphContext.myTraversedLinks.begin(), aNodeGraphContext.myTraversedLinks.end(), linkProxy) != aNodeGraphContext.myTraversedLinks.end())
 			{
 				linkColor = NodeGraphContext::TRAVERSED_LINK_COLOR;
 			}
@@ -276,7 +276,7 @@ namespace Editor
 			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(linkColor - NodeGraphContext::SELECTION_TINT));
 			ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(linkColor - NodeGraphContext::HOVER_TINT));
 
-			ImNodes::Link(linkFacade.GetID(), linkFacade.GetInputPin().GetID(), linkFacade.GetOutputPin().GetID());
+			ImNodes::Link(linkProxy.GetID(), linkProxy.GetInputPin().GetID(), linkProxy.GetOutputPin().GetID());
 
 			ImNodes::PopColorStyle();
 			ImNodes::PopColorStyle();
@@ -293,7 +293,7 @@ namespace Editor
 
 	void UpdateNodeGraph(NodeGraphContext& aNodeGraphContext)
 	{
-		Fly::NodeGraphFacade& nodeGraphFacade = aNodeGraphContext.myNodeGraphFacade;
+		Fly::NodeGraphProxy& nodeGraphProxy = aNodeGraphContext.myNodeGraphProxy;
 		bool dragStarted = ImGui::IsKeyDown(ImGuiKey_MouseLeft) && !aNodeGraphContext.myIsDraggingNode;
 		if (dragStarted)
 		{
@@ -309,24 +309,24 @@ namespace Editor
 			aNodeGraphContext.myIsDraggingNode = false;
 		}
 
-		const std::vector<Fly::NodeFacade> nodeFacades = nodeGraphFacade.GetNodeFacades();
+		const std::vector<Fly::NodeProxy> nodeProxys = nodeGraphProxy.GetNodeProxys();
 
-		for (Fly::NodeFacade nodeFacade : nodeFacades)
+		for (Fly::NodeProxy nodeProxy : nodeProxys)
 		{
-			if (nodeFacade.IsDestroyed())
+			if (nodeProxy.IsDestroyed())
 			{
 				continue;
 			}
 
-			const Fly::Vec2 newPos = ToFlyVec2(ImNodes::GetNodeGridSpacePos(nodeFacade.GetID()));
-			Fly::Vec2 oldPos = nodeFacade.GetPosition();
-			if (dragStarted && ImNodes::IsNodeSelected(nodeFacade.GetID()))
+			const Fly::Vec2 newPos = ToFlyVec2(ImNodes::GetNodeGridSpacePos(nodeProxy.GetID()));
+			Fly::Vec2 oldPos = nodeProxy.GetPosition();
+			if (dragStarted && ImNodes::IsNodeSelected(nodeProxy.GetID()))
 			{
-				aNodeGraphContext.myNodeDragData.emplace(nodeFacade.GetID(), Fly::NodeDragData{ .mStartPos = oldPos });
+				aNodeGraphContext.myNodeDragData.emplace(nodeProxy.GetID(), Fly::NodeDragData{ .mStartPos = oldPos });
 			}
 			else if (dragEnded)
 			{
-				auto it = aNodeGraphContext.myNodeDragData.find(nodeFacade.GetID());
+				auto it = aNodeGraphContext.myNodeDragData.find(nodeProxy.GetID());
 
 				if (it != aNodeGraphContext.myNodeDragData.end())
 				{
@@ -335,20 +335,20 @@ namespace Editor
 			}
 			if (newPos != oldPos)
 			{
-				nodeFacade.SetPosition(newPos);
+				nodeProxy.SetPosition(newPos);
 			}
 		}
 
 		if (dragEnded)
 		{
-			aNodeGraphContext.myNodeGraphFacade.CommitNodeDrag(aNodeGraphContext.myNodeDragData, aNodeGraphContext.myCommandTracker.get());
+			aNodeGraphContext.myNodeGraphProxy.CommitNodeDrag(aNodeGraphContext.myNodeDragData, aNodeGraphContext.myCommandTracker.get());
 			aNodeGraphContext.myNodeDragData.clear();
 		}
 
 		Fly::NodeID hoveredNodeID = Fly::InvalidID<Fly::NodeID>();
 		if (ImNodes::IsNodeHovered(&hoveredNodeID.mID) && ImGui::IsKeyPressed(ImGuiKey_MouseRight))
 		{
-			aNodeGraphContext.myClickedNodeFacade = Fly::NodeFacade(hoveredNodeID, aNodeGraphContext.myNodeGraphFacade);
+			aNodeGraphContext.myClickedNodeProxy = Fly::NodeProxy(hoveredNodeID, aNodeGraphContext.myNodeGraphProxy);
 
 			ImGui::OpenPopup("Node Popup");
 		}
@@ -360,28 +360,28 @@ namespace Editor
 			ImGui::Separator();
 			if (ImGui::Selectable("Destroy Node"))
 			{
-				aNodeGraphContext.myClickedNodeFacade.Destroy(aNodeGraphContext.myCommandTracker.get());
+				aNodeGraphContext.myClickedNodeProxy.Destroy(aNodeGraphContext.myCommandTracker.get());
 				ImGui::CloseCurrentPopup();
 			}
 
-			ImGui::BeginDisabled(!aNodeGraphContext.myClickedNodeFacade.HasAnyConnectedLinks());
+			ImGui::BeginDisabled(!aNodeGraphContext.myClickedNodeProxy.HasAnyConnectedLinks());
 			if (ImGui::Selectable("Destroy Links"))
 			{
-				aNodeGraphContext.myClickedNodeFacade.DestroyConnectedLinks(aNodeGraphContext.myCommandTracker.get());
+				aNodeGraphContext.myClickedNodeProxy.DestroyConnectedLinks(aNodeGraphContext.myCommandTracker.get());
 			}
 			ImGui::EndDisabled();
 
 			ImGui::Separator();
 
-			if (aNodeGraphContext.myClickedNodeFacade.IsReplacable() && ImGui::BeginMenu("Data Type"))
+			if (aNodeGraphContext.myClickedNodeProxy.IsReplacable() && ImGui::BeginMenu("Data Type"))
 			{
-				const std::vector<Fly::DataTypeFacade> replacableDataTypeFacades = aNodeGraphContext.myClickedNodeFacade.GetNodeTypeFacade().GetReplacableDataTypes();
-				for (const Fly::DataTypeFacade& replacableDataTypeFacade : replacableDataTypeFacades)
+				const std::vector<Fly::DataTypeProxy> replacableDataTypeProxys = aNodeGraphContext.myClickedNodeProxy.GetNodeType().GetReplacableDataTypes();
+				for (const Fly::DataTypeProxy& replacableDataTypeProxy : replacableDataTypeProxys)
 				{
-					ImGui::PushID(static_cast<int>(replacableDataTypeFacade.GetID()));
-					if (ImGui::Selectable(replacableDataTypeFacade.GetName().c_str()))
+					ImGui::PushID(static_cast<int>(replacableDataTypeProxy.GetID()));
+					if (ImGui::Selectable(replacableDataTypeProxy.GetName().c_str()))
 					{
-						aNodeGraphContext.myNodeGraphFacade.ReplaceTemplateNode(aNodeGraphContext.myClickedNodeFacade, replacableDataTypeFacade, aNodeGraphContext.myCommandTracker.get());
+						aNodeGraphContext.myNodeGraphProxy.ReplaceTemplateNode(aNodeGraphContext.myClickedNodeProxy, replacableDataTypeProxy, aNodeGraphContext.myCommandTracker.get());
 						ImGui::CloseCurrentPopup();
 					}
 					ImGui::PopID();
@@ -394,13 +394,13 @@ namespace Editor
 		}
 		else
 		{
-			aNodeGraphContext.myClickedNodeFacade = {};
+			aNodeGraphContext.myClickedNodeProxy = {};
 		}
 
 		Fly::PinID hoveredPinID;
 		if (ImNodes::IsPinHovered(&hoveredPinID.mID) && ImGui::IsKeyPressed(ImGuiKey_MouseRight))
 		{
-			aNodeGraphContext.myClickedPinFacade = Fly::PinFacade(hoveredPinID, aNodeGraphContext.myNodeGraphFacade);
+			aNodeGraphContext.myClickedPinProxy = Fly::PinProxy(hoveredPinID, aNodeGraphContext.myNodeGraphProxy);
 
 			ImGui::OpenPopup("Pin Popup");
 
@@ -413,57 +413,57 @@ namespace Editor
 
 			ImGui::Separator();
 
-			Fly::GenericDataTypeFacade pinDataType(aNodeGraphContext.myClickedPinFacade.GetDataTypeID());
+			Fly::GenericDataTypeProxy pinDataType(aNodeGraphContext.myClickedPinProxy.GetDataTypeID());
 			ImGui::Text("Type: %s", pinDataType.GetName().c_str());
 			
 
-			if (aNodeGraphContext.myClickedPinFacade.GetFlowType() == Fly::eFlowType::Input)
+			if (aNodeGraphContext.myClickedPinProxy.GetFlowType() == Fly::eFlowType::Input)
 			{
-				aNodeGraphContext.myClickedPinFacade.ViewAndEdit(aNodeGraphContext.myCommandTracker.get());
+				aNodeGraphContext.myClickedPinProxy.ViewAndEdit(aNodeGraphContext.myCommandTracker.get());
 			}
 			else
 			{
-				aNodeGraphContext.myClickedPinFacade.View();
+				aNodeGraphContext.myClickedPinProxy.View();
 			}
 
 			ImGui::Separator();
 
-			ImGui::BeginDisabled(!aNodeGraphContext.myClickedPinFacade.IsSplitable());
+			ImGui::BeginDisabled(!aNodeGraphContext.myClickedPinProxy.IsSplitable());
 			if (ImGui::Selectable("Split Pin"))
 			{
-				aNodeGraphContext.myClickedPinFacade.Split(aNodeGraphContext.myCommandTracker.get());
+				aNodeGraphContext.myClickedPinProxy.Split(aNodeGraphContext.myCommandTracker.get());
 			}
 			ImGui::EndDisabled();
 
-			ImGui::BeginDisabled(!aNodeGraphContext.myClickedPinFacade.IsRecombinable());
+			ImGui::BeginDisabled(!aNodeGraphContext.myClickedPinProxy.IsRecombinable());
 			if (ImGui::Selectable("Recombine Pin"))
 			{
-				aNodeGraphContext.myClickedPinFacade.RecombineParentPin(aNodeGraphContext.myCommandTracker.get());
+				aNodeGraphContext.myClickedPinProxy.RecombineParentPin(aNodeGraphContext.myCommandTracker.get());
 			}
 			ImGui::EndDisabled();
 
-			ImGui::BeginDisabled(!aNodeGraphContext.myClickedPinFacade.HasAnyConnectedLinks());
+			ImGui::BeginDisabled(!aNodeGraphContext.myClickedPinProxy.HasAnyConnectedLinks());
 			if (ImGui::Selectable("Destroy Links"))
 			{
-				aNodeGraphContext.myClickedPinFacade.DestroyConnectedLinks(aNodeGraphContext.myCommandTracker.get());
+				aNodeGraphContext.myClickedPinProxy.DestroyConnectedLinks(aNodeGraphContext.myCommandTracker.get());
 			}
 			ImGui::EndDisabled();
 
 			ImGui::Separator();
 
-			if (aNodeGraphContext.myClickedPinFacade.IsParentNodeReplacable() && ImGui::BeginMenu("Choose Type"))
+			if (aNodeGraphContext.myClickedPinProxy.IsParentNodeReplacable() && ImGui::BeginMenu("Choose Type"))
 			{
-				const Fly::GenericDataTypeID d = aNodeGraphContext.myClickedPinFacade.GetDataTypeID();
+				const Fly::GenericDataTypeID d = aNodeGraphContext.myClickedPinProxy.GetDataTypeID();
 				const Fly::DataTypeID* clickedPinDataTypeID = std::get_if<Fly::DataTypeID>(&d.mID);
 				if (clickedPinDataTypeID)
 				{
-					const std::vector<Fly::DataTypeFacade> replacableDataTypeFacades = Fly::GetNodeOwner(aNodeGraphContext.myClickedPinFacade).GetNodeTypeFacade().GetReplacableDataTypes();
-					for (const Fly::DataTypeFacade& replacableDataTypeFacade : replacableDataTypeFacades)
+					const std::vector<Fly::DataTypeProxy> replacableDataTypes = Fly::GetNodeOwner(aNodeGraphContext.myClickedPinProxy).GetNodeType().GetReplacableDataTypes();
+					for (const Fly::DataTypeProxy& replacableDataType : replacableDataTypes)
 					{
-						ImGui::PushID(static_cast<int>(replacableDataTypeFacade.GetID()));
-						if (ImGui::Selectable(replacableDataTypeFacade.GetName().c_str(), replacableDataTypeFacade.GetID() == *clickedPinDataTypeID))
+						ImGui::PushID(static_cast<int>(replacableDataType.GetID()));
+						if (ImGui::Selectable(replacableDataType.GetName().c_str(), replacableDataType.GetID() == *clickedPinDataTypeID))
 						{
-							aNodeGraphContext.myNodeGraphFacade.ReplaceTemplateNode(aNodeGraphContext.myClickedPinFacade, replacableDataTypeFacade, aNodeGraphContext.myCommandTracker.get());
+							aNodeGraphContext.myNodeGraphProxy.ReplaceTemplateNode(aNodeGraphContext.myClickedPinProxy, replacableDataType, aNodeGraphContext.myCommandTracker.get());
 							ImGui::CloseCurrentPopup();
 						}
 						ImGui::PopID();
@@ -479,7 +479,7 @@ namespace Editor
 		}
 		else
 		{
-			aNodeGraphContext.myClickedPinFacade = Fly::PinFacade();
+			aNodeGraphContext.myClickedPinProxy = Fly::PinProxy();
 		}
 
 
@@ -490,8 +490,8 @@ namespace Editor
 
 		if (ImNodes::IsLinkCreated(&createdLinkPinID1.mID, &createdLinkPinID2.mID))
 		{
-			aNodeGraphContext.myNodeGraphFacade.TryCreateLink(Fly::PinFacade(createdLinkPinID1, aNodeGraphContext.myNodeGraphFacade), Fly::PinFacade(createdLinkPinID2, aNodeGraphContext.myNodeGraphFacade), aNodeGraphContext.myCommandTracker.get());
-			aNodeGraphContext.myPinFacadesToHighlight.clear();
+			aNodeGraphContext.myNodeGraphProxy.TryCreateLink(Fly::PinProxy(createdLinkPinID1, aNodeGraphContext.myNodeGraphProxy), Fly::PinProxy(createdLinkPinID2, aNodeGraphContext.myNodeGraphProxy), aNodeGraphContext.myCommandTracker.get());
+			aNodeGraphContext.myPinProxysToHighlight.clear();
 		}
 
 		// See if links or nodes should be destroyed
@@ -513,7 +513,7 @@ namespace Editor
 
 			if (!selectedLinks.empty() || !selectedNodes.empty())
 			{
-				aNodeGraphContext.myNodeGraphFacade.DestroySelection(selectedNodes, selectedLinks, aNodeGraphContext.myCommandTracker.get());
+				aNodeGraphContext.myNodeGraphProxy.DestroySelection(selectedNodes, selectedLinks, aNodeGraphContext.myCommandTracker.get());
 			}
 
 			ImNodes::ClearNodeSelection();
@@ -527,14 +527,14 @@ namespace Editor
 			{
 				aNodeGraphContext.myStartedLinkPinID = startedPinID;
 
-				const Fly::PinFacade startedPin(startedPinID, aNodeGraphContext.myNodeGraphFacade);
+				const Fly::PinProxy startedPin(startedPinID, aNodeGraphContext.myNodeGraphProxy);
 
-				aNodeGraphContext.myPinFacadesToHighlight = startedPin.GetPotentialConnections();
+				aNodeGraphContext.myPinProxysToHighlight = startedPin.GetPotentialConnections();
 
-				std::erase_if(aNodeGraphContext.myPinFacadesToHighlight,
-					[&](const Fly::PinFacade& aPinFacade)-> bool
+				std::erase_if(aNodeGraphContext.myPinProxysToHighlight,
+					[&](const Fly::PinProxy& aPinProxy)-> bool
 					{
-						return aPinFacade.GetID() == startedPin.GetID();
+						return aPinProxy.GetID() == startedPin.GetID();
 					}
 				);
 			}
@@ -547,27 +547,27 @@ namespace Editor
 		{
 			ImGui::OpenPopup(NodeGraphContext::NODE_SEARCH_POPUP_NAME);
 			aNodeGraphContext.myLinkCreationPinID = droppedPinID;
-			aNodeGraphContext.myPinFacadesToHighlight.clear();
+			aNodeGraphContext.myPinProxysToHighlight.clear();
 			aNodeGraphContext.mySearchNodeData.myNodeTypeSearch[0] = '\0';
 
 			UpdateClickPos(aNodeGraphContext);
 
 			auto categoryFunc = [&aNodeGraphContext](NodeTypeCategory& aMainCategory) -> void
 				{
-					const Fly::PinFacade pinFacade(aNodeGraphContext.myLinkCreationPinID, aNodeGraphContext.myNodeGraphFacade);
+					const Fly::PinProxy pinProxy(aNodeGraphContext.myLinkCreationPinID, aNodeGraphContext.myNodeGraphProxy);
 
-					const std::vector<Fly::NodeTypeFacade> filteredNodeTypesByDataTypeAndFlowType = Fly::GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(pinFacade.GetDataTypeID(), InvertFlowType(pinFacade.GetFlowType()), Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
+					const std::vector<Fly::NodeTypeProxy> filteredNodeTypesByDataTypeAndFlowType = Fly::GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(pinProxy.GetDataTypeID(), InvertFlowType(pinProxy.GetFlowType()), Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
 
 					if (aNodeGraphContext.mySearchNodeData.myNodeTypeSearch[0] == '\0')
 					{
-						for (const Fly::NodeTypeFacade& nodeType : filteredNodeTypesByDataTypeAndFlowType)
+						for (const Fly::NodeTypeProxy& nodeType : filteredNodeTypesByDataTypeAndFlowType)
 						{
 							PopulateNodeCategories(nodeType.GetName(), nodeType, aMainCategory);
 						}
 					}
 					else
 					{
-						for (const Fly::NodeTypeFacade& nodeType : filteredNodeTypesByDataTypeAndFlowType)
+						for (const Fly::NodeTypeProxy& nodeType : filteredNodeTypesByDataTypeAndFlowType)
 						{
 							const bool isSearched = SearchString(nodeType.GetName(), std::string_view(aNodeGraphContext.mySearchNodeData.myNodeTypeSearch));
 							if (isSearched)
@@ -579,11 +579,11 @@ namespace Editor
 
 				};
 
-			auto onClickCallback = [&aNodeGraphContext](const Fly::NodeTypeFacade& aNodeTypeFacade) -> void
+			auto onClickCallback = [&aNodeGraphContext](const Fly::NodeTypeProxy& aNodeTypeProxy) -> void
 				{
-					aNodeGraphContext.myNodeGraphFacade.CreateNodeAutoLink(aNodeTypeFacade, aNodeGraphContext.myLinkCreationPinID, Fly::Vec2{ aNodeGraphContext.myNodeCreationClickPos.x,aNodeGraphContext.myNodeCreationClickPos.y }, aNodeGraphContext.myCommandTracker.get());
+					aNodeGraphContext.myNodeGraphProxy.CreateNodeAutoLink(aNodeTypeProxy, aNodeGraphContext.myLinkCreationPinID, Fly::Vec2{ aNodeGraphContext.myNodeCreationClickPos.x,aNodeGraphContext.myNodeCreationClickPos.y }, aNodeGraphContext.myCommandTracker.get());
 
-					aNodeGraphContext.myPinFacadesToHighlight.clear();
+					aNodeGraphContext.myPinProxysToHighlight.clear();
 					aNodeGraphContext.mySearchNodeData.myNodeTypeSearch[0] = '\0';
 				};
 
@@ -599,25 +599,25 @@ namespace Editor
 
 				ImGui::Text("Links:");
 
-				const std::vector<Fly::LinkFacade> linkFacades = aNodeGraphContext.myNodeGraphFacade.GetLinkFacades();
+				const std::vector<Fly::LinkProxy> linkProxys = aNodeGraphContext.myNodeGraphProxy.GetLinks();
 
-				for (const Fly::LinkFacade& linkFacade : linkFacades)
+				for (const Fly::LinkProxy& linkProxy : linkProxys)
 				{
-					if (linkFacade.IsDestroyed())
+					if (linkProxy.IsDestroyed())
 					{
 						continue;
 					}
 					ImGui::Separator();
-					ImGui::Text("In: %d, Out: %d", linkFacade.GetInputPin().GetID(), linkFacade.GetOutputPin().GetID());
+					ImGui::Text("In: %d, Out: %d", linkProxy.GetInputPin().GetID(), linkProxy.GetOutputPin().GetID());
 				}
 
 				ImGui::Separator();
 
-				if (aNodeGraphContext.myHoveredPinFacade)
+				if (aNodeGraphContext.myHoveredPinProxy)
 				{
-					ImGui::Text("Hovered PinID: %d", aNodeGraphContext.myHoveredPinFacade.GetID());
+					ImGui::Text("Hovered PinID: %d", aNodeGraphContext.myHoveredPinProxy.GetID());
 					ImGui::Text("Connections:");
-					for (const Fly::PinID connectionID : aNodeGraphContext.myHoveredPinFacade.GetConnectedPinIDs())
+					for (const Fly::PinID connectionID : aNodeGraphContext.myHoveredPinProxy.GetConnectedPinIDs())
 					{
 						ImGui::Text("%d", connectionID);
 					}
@@ -632,7 +632,7 @@ namespace Editor
 	void NodeCreation(NodeGraphContext& aNodeGraphContext)
 	{
 
-		if (ImGui::IsKeyPressed(ImGuiKey_MouseRight) && aNodeGraphContext.myIsNodeEditorHovered && !aNodeGraphContext.myClickedPinFacade && !aNodeGraphContext.myClickedNodeFacade)
+		if (ImGui::IsKeyPressed(ImGuiKey_MouseRight) && aNodeGraphContext.myIsNodeEditorHovered && !aNodeGraphContext.myClickedPinProxy && !aNodeGraphContext.myClickedNodeProxy)
 		{
 			ImGui::OpenPopup(NodeGraphContext::NODE_SEARCH_POPUP_NAME);
 			UpdateClickPos(aNodeGraphContext);
@@ -645,18 +645,18 @@ namespace Editor
 					if (aNodeGraphContext.mySearchNodeData.myNodeTypeSearch[0] == '\0')
 					{
 
-						const std::vector<Fly::NodeTypeFacade> filteredNodeTypes = Fly::GetNodeTypesFilteredByTrait(Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
+						const std::vector<Fly::NodeTypeProxy> filteredNodeTypes = Fly::GetNodeTypesFilteredByTrait(Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
 
-						for (const Fly::NodeTypeFacade& nodeType : filteredNodeTypes)
+						for (const Fly::NodeTypeProxy& nodeType : filteredNodeTypes)
 						{
 							PopulateNodeCategories(nodeType.GetName(), nodeType, aMainCategory);
 						}
 					}
 					else
 					{
-						const std::vector<Fly::NodeTypeFacade> filteredNodeTypes = Fly::GetNodeTypesFilteredByTrait(Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
+						const std::vector<Fly::NodeTypeProxy> filteredNodeTypes = Fly::GetNodeTypesFilteredByTrait(Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
 
-						for (const Fly::NodeTypeFacade& nodeType : filteredNodeTypes)
+						for (const Fly::NodeTypeProxy& nodeType : filteredNodeTypes)
 						{
 							const bool isSearched = SearchString(nodeType.GetName(), std::string_view(aNodeGraphContext.mySearchNodeData.myNodeTypeSearch));
 							if (isSearched)
@@ -667,13 +667,13 @@ namespace Editor
 					}
 				};
 
-			auto onClickCallback = [&](const Fly::NodeTypeFacade& aNodeTypeFacade) -> void
+			auto onClickCallback = [&](const Fly::NodeTypeProxy& aNodeTypeProxy) -> void
 				{
 
-					aNodeGraphContext.myNodeGraphFacade.CreateNode(aNodeTypeFacade, Fly::Vec2{ aNodeGraphContext.myNodeCreationClickPos.x,aNodeGraphContext.myNodeCreationClickPos.y }, aNodeGraphContext.myCommandTracker.get());
+					aNodeGraphContext.myNodeGraphProxy.CreateNode(aNodeTypeProxy, Fly::Vec2{ aNodeGraphContext.myNodeCreationClickPos.x,aNodeGraphContext.myNodeCreationClickPos.y }, aNodeGraphContext.myCommandTracker.get());
 
 
-					aNodeGraphContext.myPinFacadesToHighlight.clear();
+					aNodeGraphContext.myPinProxysToHighlight.clear();
 					aNodeGraphContext.mySearchNodeData.myNodeTypeSearch[0] = '\0';
 				};
 			aNodeGraphContext.mySearchNodeData.myCategoryFunction = categoryFunc;
@@ -683,12 +683,12 @@ namespace Editor
 		ShowNodeSearchMenu(aNodeGraphContext);
 	}
 
-	bool ShowNodeSearchMenu(const std::vector<Fly::NodeTypeFacade>& aNodeTypes, const NodeGraphContext& aNodeGraphContext)
+	bool ShowNodeSearchMenu(const std::vector<Fly::NodeTypeProxy>& aNodeTypes, const NodeGraphContext& aNodeGraphContext)
 	{
 		bool wasClicked = false;
 		for (int i = 0; i < aNodeTypes.size(); i++)
 		{
-			const Fly::NodeTypeFacade& nodeType = aNodeTypes[i];
+			const Fly::NodeTypeProxy& nodeType = aNodeTypes[i];
 
 			const bool isCurrentlySelected = aNodeGraphContext.mySearchNodeData.myCurrentIndex == i;
 			if (ImGui::MenuItem(nodeType.GetShortName().c_str(), nullptr, isCurrentlySelected) ||
@@ -758,7 +758,7 @@ namespace Editor
 		}
 	}
 
-	void PopulateNodeCategories(const std::string& aName, const Fly::NodeTypeFacade& aNodeType, NodeTypeCategory& aCategory)
+	void PopulateNodeCategories(const std::string& aName, const Fly::NodeTypeProxy& aNodeType, NodeTypeCategory& aCategory)
 	{
 		std::string categoryName = aName.substr(0, aName.find_first_of('/'));
 		std::string rest = aName.substr(categoryName.length(), aName.length() - 1);

@@ -46,9 +46,9 @@ namespace Editor
 
 		NodeGraphContext& GetNodeContext();
 		const NodeGraphContext& GetNodeContext() const;
-		void SetNodeContext(Fly::NodeGraphFacade aNodeGraphFacade, Fly::ClassFacade aClassFacade);
+		void SetNodeContext(Fly::NodeGraphProxy aNodeGraphProxy, Fly::ClassProxy aClassProxy);
 		eGraphMode GetCurrentMode() const;
-		void SetSelectedFunctionFacade(Fly::FunctionFacade aFunctionFacade);
+		void SetSelectedFunctionProxy(Fly::FunctionProxy aFunctionProxy);
 
 		bool OpenClassByName(std::string_view aName);
 
@@ -61,11 +61,11 @@ namespace Editor
 
 		ImVec2 GetMiddlePos() const;
 
-		Fly::FunctionFacade GetCurrentFunctionFacade();
+		Fly::FunctionProxy GetCurrentFunctionProxy();
 
 		Fly::CommandTracker& GetCommandTracker()
 		{
-			return *myCommandTracker;
+			return *GetNodeContext().myCommandTracker;
 		}
 
 	private:
@@ -75,14 +75,9 @@ namespace Editor
 
 	private:
 		char myNewClassNameText[NodeGraphContext::TEXT_MAX_LENGTH] = "";
-		Fly::GenericDataTypeFacade mySelectedTargetDataType;
+		Fly::GenericDataTypeProxy mySelectedTargetDataType;
 		char myCreateCopyNameText[NodeGraphContext::TEXT_MAX_LENGTH]{};
 
-		std::unique_ptr<Fly::CommandTracker> myCommandTracker;
-
-		//std::unordered_map<Fly::NodeGraphFacade, ImNodesContext*> myImNodesContexts;
-
-		
 		FlyClassWindow myClassWindow;
 		CustomEventWindow myCustomEventWindow;
 		FunctionSettingsWindow myFunctionSettingsWindow;
@@ -96,7 +91,7 @@ namespace Editor
 		bool myIsContextSensitive = false;
 		bool myIsNodeEditorHovered = false;
 		
-		Fly::FunctionFacade mySelectedFunctionFacade;
+		Fly::FunctionProxy mySelectedFunctionProxy;
 
 		static constexpr const char* ASSET_FILE_PATH = "Assets/FlyClasses";
 

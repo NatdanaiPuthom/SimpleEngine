@@ -28,8 +28,6 @@ namespace FLY_NAMESPACE
 
 		Internal::InitializeSubPins();
 
-
-
 		TestUtilityFunction();
 	}
 
