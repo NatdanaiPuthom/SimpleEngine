@@ -46,11 +46,6 @@ namespace Editor
 
 namespace Editor
 {
-	std::vector<std::shared_ptr<PopUp>> globalPopUps;
-}
-
-namespace Editor
-{
 	size_t EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
 
 	EditorEngine::EditorEngine()
@@ -74,6 +69,14 @@ namespace Editor
 		std::unique_ptr<MenuItemButton> sceneReloadButton = std::make_unique<MenuItemButton>("Reload");
 		std::unique_ptr<MenuItemButton> sceneSetAsActiveButton = std::make_unique<MenuItemButton>("Set As Active");
 
+		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUP = std::make_shared<AudioSettingsPopUp>("Audio Settings");
+		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = std::make_shared<CameraSettingsPopUp>("Camera Settings");
+		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUP = std::make_shared<GraphicsSettingsPopUp>("Graphics Settings");
+
+		audioSettingPopUP->SetActive(true);
+		cameraSettingPopUp->SetActive(true);
+		graphicsSettingPopUP->SetActive(true);
+
 		{
 			std::vector<std::string> strings;
 			strings.push_back("Emil");
@@ -95,44 +98,29 @@ namespace Editor
 		myMainMenuTabs.push_back(std::move(settingsTab));
 		myMainMenuTabs.push_back(std::move(helpTab));
 
+		myPopUpWindows.push_back(audioSettingPopUP);
+		myPopUpWindows.push_back(cameraSettingPopUp);
+		myPopUpWindows.push_back(graphicsSettingPopUP);
 
-		//auto saveButton = scene->AddButton("Save", IWasClicked); saveButton;
+		for (auto& t : myMainMenuTabs)
+		{
+			t->Init();
+		}
+
+		for (auto& p : myPopUpWindows)
+		{
+			p->Init();
+		}
+	
 		//auto newMenu = scene->AddMenu("A New Menu");
-
-		//std::unique_ptr<MenuItemButton> button = std::make_unique<MenuItemButton>("New Child Button", IWasClicked);
-		//std::unique_ptr<MenuItemButton> subMenuButton = std::make_unique<MenuItemButton>("New Sub Child Button", IWasClicked);
-		//std::unique_ptr<MenuItemMenu> subMenu = std::make_unique<MenuItemMenu>("New Child Menu Button");
-
-		//auto selectable = scene->AddSelectable("Selectable", SelectableClick); selectable;
-
-		//std::shared_ptr<AudioSettingsPopUp> audioSettingPopUP = std::make_shared<AudioSettingsPopUp>("Audio");
-		//std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = std::make_shared<CameraSettingsPopUp>("Camera");
-		//std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUP = std::make_shared<GraphicsSettingsPopUp>("Graphics");
-
-		//globalPopUps.push_back(audioSettingPopUP);
-		//globalPopUps.push_back(cameraSettingPopUp);
-		//globalPopUps.push_back(graphicsSettingPopUP);
-
 		//std::unique_ptr<MenuItemPopUp> popUpTest = std::make_unique<MenuItemPopUp>("Pop Up!");
-
 		//auto testtt = SetPopUpActive(audioSettingPopUP, &popUpTest->myTestBool);
-
 		//popUpTest->SetCallback(std::move(testtt));
-
 		//scene->AddPopUp(std::move(popUpTest));
-
-		//std::vector<std::string> strings;
-		//strings.push_back("Emil");
-		//strings.push_back("Erico");
-		//strings.push_back("Test");
-
-		//selectable->SetStrings(strings);
 
 		//auto newButton = newMenu->AddChild(std::move(button)); newButton;
 		//auto newMenuButton = newMenu->AddChild(std::move(subMenu)); newMenuButton;
 		//newMenuButton->AddChild(std::move(subMenuButton));
-
-		//globalMainMenuTabs.push_back(std::move(scene));
 
 		//std::unique_ptr<MenuItemPopUp> windowPopUp1 = std::make_unique<MenuItemPopUp>("Window1!!");
 		//std::unique_ptr<MenuItemPopUp> windowPopUp2 = std::make_unique<MenuItemPopUp>("Window2!!");
@@ -146,17 +134,6 @@ namespace Editor
 
 		//auto windowCallback3 = SetPopUpActive(audioSettingPopUP, &windowPopUp2->myTestBool);
 		//windowPopUp2->SetCallback(std::move(windowCallback3));
-
-		//window->AddPopUp(std::move(windowPopUp1));
-		//window->AddPopUp(std::move(windowPopUp2));
-
-		//window->Init();
-
-		//for (auto& p : globalPopUps)
-		//{
-		//	p->Init();
-		//}
-
 	}
 
 	void EditorEngine::Update()
@@ -196,7 +173,7 @@ namespace Editor
 			tab->Render();
 		}
 
-		for (auto& popUp : globalPopUps)
+		for (auto& popUp : myPopUpWindows)
 		{
 			if (popUp->IsActive())
 			{
