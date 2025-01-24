@@ -11,8 +11,8 @@
 namespace Editor
 {
 
-	NodeScriptingWindow::NodeScriptingWindow()
-		: myClassWindow(*this)
+	NodeScriptingWindow::NodeScriptingWindow(const std::string& aName) : PopUp(aName)
+		, myClassWindow(*this)
 		, myCustomEventWindow(*this)
 		, myFunctionSettingsWindow(*this)
 		, myStructCreatorWindow(this)
@@ -124,7 +124,7 @@ namespace Editor
 		style.LinkThickness = 3.f;
 	}
 
-	void NodeScriptingWindow::Draw()
+	void NodeScriptingWindow::Render()
 	{
 		PROFILER_FUNCTION(profiler::colors::Amber600);
 		if (ImGui::Begin("Node Scripting"))

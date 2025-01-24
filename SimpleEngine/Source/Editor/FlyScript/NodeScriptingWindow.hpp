@@ -1,5 +1,5 @@
 #pragma once
-#include "Editor/Template/ToolInterface.hpp"
+#include "Editor/Core/PopUp.hpp"
 #include "CustomEventWindow.hpp"
 #include "FunctionWindow.hpp"
 #include "FunctionSettingsWindow.hpp"
@@ -37,11 +37,11 @@ namespace Editor
 		Global
 	};
 
-	class NodeScriptingWindow : public ToolInterface
+	class NodeScriptingWindow : public PopUp
 	{
 	public:
 
-		NodeScriptingWindow();
+		NodeScriptingWindow(const std::string& aName);
 		~NodeScriptingWindow();
 
 		NodeGraphContext& GetNodeContext();
@@ -54,7 +54,7 @@ namespace Editor
 
 		void UpdateContext();
 
-		void Draw() override;
+		void Render() override;
 
 		void ShowSelectionMenu();
 		void ShowLoadingMenu();

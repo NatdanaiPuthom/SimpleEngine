@@ -13,14 +13,13 @@
 #include "Editor/PopUps/DeferredPopUp.hpp"
 #include "Editor/PopUps/Editor/EditorPopUp.hpp"
 #include "Editor/PopUps/Editor/AssetBrowser.hpp"
+#include "Editor/FlyScript/NodeScriptingWindow.hpp"
 
 #include "Engine/ImGui/ImGuiEngine.hpp" //TempPlayMenuBar
 
 #include "Engine/Debugger/Console/Console.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
-
-#include "Editor/FlyScript/NodeScriptingWindow.hpp"
 
 namespace Editor
 {
@@ -32,7 +31,6 @@ namespace Editor
 			return [=]() -> void
 				{
 					aPopUp->SetActive(*aBoolean);
-					std::cout << aPopUp->GetWindowName() << " was set " << *aBoolean << std::endl;
 				};
 		}
 	};
@@ -153,11 +151,6 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-
-		myNodeScriptingWindow = std::make_unique<NodeScriptingWindow>();
-		myNodeScriptingWindow->Init();
-
-
 		std::unique_ptr<MenuTabDefault> sceneTab = std::make_unique< MenuTabDefault>("Scene");
 		std::unique_ptr<MenuTabWindow> windowsTab = std::make_unique< MenuTabWindow>("Windows");
 		std::unique_ptr<MenuTabDefault> settingsTab = std::make_unique< MenuTabDefault>("Settings");
@@ -180,6 +173,7 @@ namespace Editor
 		std::unique_ptr<MenuItemPopUp> editorPopUpButton = std::make_unique<MenuItemPopUp>("Editor");
 		std::unique_ptr<MenuItemPopUp> deferredPopUpButton = std::make_unique<MenuItemPopUp>("Deferred");
 		std::unique_ptr<MenuItemPopUp> postProcessPopUpButton = std::make_unique<MenuItemPopUp>("PostProcess");
+		std::unique_ptr<MenuItemPopUp> nodeScriptingPopUpButton = std::make_unique<MenuItemPopUp>("NodeScript");
 
 		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUp = std::make_shared<AudioSettingsPopUp>("Audio Settings");
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = std::make_shared<CameraSettingsPopUp>("Camera Settings");
@@ -189,6 +183,7 @@ namespace Editor
 		std::shared_ptr<PostProcessPopUp> postProcessPopUp = std::make_shared<PostProcessPopUp>("PostProcess Window");
 		std::shared_ptr<EditorPopUp> editorPopUp = std::make_shared<EditorPopUp>("Editor Window");
 		std::shared_ptr<AssetBrowserPopUp> assetBrowserPopUp = std::make_shared<AssetBrowserPopUp>("AssetBrowser Window");
+		std::shared_ptr<NodeScriptingWindow> nodeScriptingPopUp = std::make_shared<NodeScriptingWindow>("NodeScripting Window");
 
 		sceneCreateNewButton->SetCallback(SceneSettingsFunction::CreateNew());
 		sceneCreateCopyButton->SetCallback(SceneSettingsFunction::CreateCopy());
@@ -247,6 +242,11 @@ namespace Editor
 			editorPopUpButton->SetCallback(std::move(popUpCallback));
 		}
 
+		{
+			auto popUpCallback = EditorCallbacks::SetPopUpActive(nodeScriptingPopUp, &nodeScriptingPopUpButton->myTestBool);
+			nodeScriptingPopUpButton->SetCallback(std::move(popUpCallback));
+		}
+
 		sceneTab->AddButton(std::move(sceneSaveButton));
 		sceneTab->AddSelectable(std::move(sceneLoadSelectable));
 		sceneTab->AddMenu(std::move(sceneCreateMenu));
@@ -256,6 +256,7 @@ namespace Editor
 		windowsTab->AddPopUp(std::move(editorPopUpButton));
 		windowsTab->AddPopUp(std::move(deferredPopUpButton));
 		windowsTab->AddPopUp(std::move(postProcessPopUpButton));
+		windowsTab->AddPopUp(std::move(nodeScriptingPopUpButton));
 
 		settingsTab->AddPopUp(std::move(settingsAudioButton));
 		settingsTab->AddPopUp(std::move(settingsCameraButton));
@@ -276,29 +277,17 @@ namespace Editor
 		myPopUpWindows.push_back(postProcessPopUp);
 		myPopUpWindows.push_back(editorPopUp);
 		myPopUpWindows.push_back(assetBrowserPopUp);
+		myPopUpWindows.push_back(nodeScriptingPopUp);
 
-		for (auto& t : myMainMenuTabs)
+		for (auto& menuTab : myMainMenuTabs)
 		{
-			t->Init();
+			menuTab->Init();
 		}
 
-		for (auto& p : myPopUpWindows)
+		for (auto& window : myPopUpWindows)
 		{
-			p->Init();
+			window->Init();
 		}
-
-		//std::unique_ptr<MenuItemPopUp> windowPopUp1 = std::make_unique<MenuItemPopUp>("Window1!!");
-		//std::unique_ptr<MenuItemPopUp> windowPopUp2 = std::make_unique<MenuItemPopUp>("Window2!!");
-
-		//std::unique_ptr<MenuTabWindow> window = std::make_unique< MenuTabWindow>("Windows");
-
-		//auto windowCallback1 = SetPopUpActive(cameraSettingPopUp, &windowPopUp1->myTestBool);
-		//auto windowCallback2 = SetPopUpActive(graphicsSettingPopUP, &windowPopUp1->myTestBool);
-		//windowPopUp1->SetCallback(std::move(windowCallback1));
-		//windowPopUp1->SetCallback(std::move(windowCallback2));
-
-		//auto windowCallback3 = SetPopUpActive(audioSettingPopUP, &windowPopUp2->myTestBool);
-		//windowPopUp2->SetCallback(std::move(windowCallback3));
 	}
 
 	void EditorEngine::Update()
@@ -341,8 +330,6 @@ namespace Editor
 			}
 		}
 
-		myNodeScriptingWindow->Draw();
-
 		//TempPlayMenuBar();
 
 		//{	//Render Orientation Cube  
@@ -353,7 +340,6 @@ namespace Editor
   //          ImGuizmo::ViewManipulate(&view(1, 1), 16, ImVec2(windowPos.x + 775, windowPos.y + 375), ImVec2(64, 64), 0x00000000);
 		//}
 	}
-
 
 	void EditorEngine::TempPlayMenuBar()
 	{
