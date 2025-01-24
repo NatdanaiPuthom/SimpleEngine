@@ -1,8 +1,8 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Editor.hpp"
 
-#include "MainSingleton/MainSingleton.hpp"
-
+#include "Editor/Core/Tabs/MenuTabWindow.hpp"
+#include "Editor/Core/Tabs/MenuTabDefault.hpp"
 
 #include "Editor/PopUps/Help/CameraControlsGuidePopUp.hpp"
 #include "Editor/PopUps/Settings/CameraSettingsPopUp.hpp"
@@ -14,8 +14,8 @@
 
 #include "Engine/ImGui/ImGuiEngine.hpp" //TempPlayMenuBar
 
-#include "Editor/Core/Tabs/MenuTabWindow.hpp"
-#include "Editor/Core/Tabs/MenuTabDefault.hpp"
+#include "Engine/Debugger/Console/Console.hpp"
+#include "MainSingleton/MainSingleton.hpp"
 
 namespace Editor
 {
@@ -42,6 +42,58 @@ namespace Editor
 				std::cout << aPopUp->GetWindowName() << " was set " << *aBoolean << std::endl;
 			};
 	}
+
+	class SceneSettingsFunction
+	{
+	public:
+		static std::function<void()> Save()
+		{
+			return []() -> void
+				{
+					const Simpleton::SceneInfo* sceneInfo = MainSingleton::GetSceneManager().GetCurrentSceneInfo();
+					ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
+					ECS::EntityComponentSystem::SaveData(ecs, sceneInfo->relativePath);
+
+					Simple::Console::Print("Scene ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(sceneInfo->name.c_str(), Simple::ConsoleTextColor::Green, false);
+					Simple::Console::Print(" has been saved!", Simple::ConsoleTextColor::White, true);
+				};
+		}
+
+		static std::function<void()> Reload()
+		{
+			return []() -> void
+				{
+					Simpleton::SceneManager& sceneManager = MainSingleton::GetSceneManager();
+					sceneManager.ReloadSceneFromFile(sceneManager.GetCurrentSceneInfo()->relativePath);
+
+					Simple::Console::Print("Scene ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(sceneManager.GetCurrentSceneInfo()->name.c_str(), Simple::ConsoleTextColor::Green, false);
+					Simple::Console::Print(" has been reloaded!", Simple::ConsoleTextColor::White, true);
+				};
+		}
+
+		static std::function<void()> SetAsActive()
+		{
+			return []() -> void
+				{
+					const Simpleton::SceneInfo* sceneInfo = MainSingleton::GetSceneManager().GetCurrentSceneInfo();
+					nlohmann::json jsonData = SimpleUtilities::FileManager::GetDataAsJson(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME));
+					jsonData["Game_Settings"]["Start_Scene_RelativePath"] = sceneInfo->relativePath;
+
+					std::ofstream writeFile(SimpleUtilities::GetAbsolutePath(SIMPLE_SETTINGS_GAME));
+					assert(writeFile.is_open() && "Failed to open the file");
+
+					writeFile << jsonData;
+					writeFile.close();
+
+					Simple::Console::Print("Scene ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(sceneInfo->name.c_str(), Simple::ConsoleTextColor::Green, false);
+					Simple::Console::Print(" has been set as start!", Simple::ConsoleTextColor::White, true);
+				};
+		}
+
+	};
 }
 
 namespace Editor
@@ -73,9 +125,9 @@ namespace Editor
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = std::make_shared<CameraSettingsPopUp>("Camera Settings");
 		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUP = std::make_shared<GraphicsSettingsPopUp>("Graphics Settings");
 
-		audioSettingPopUP->SetActive(true);
-		cameraSettingPopUp->SetActive(true);
-		graphicsSettingPopUP->SetActive(true);
+		sceneSaveButton->SetCallback(SceneSettingsFunction::Save());
+		sceneReloadButton->SetCallback(SceneSettingsFunction::Reload());
+		sceneSetAsActiveButton->SetCallback(SceneSettingsFunction::SetAsActive());
 
 		{
 			std::vector<std::string> strings;
@@ -111,7 +163,7 @@ namespace Editor
 		{
 			p->Init();
 		}
-	
+
 		//auto newMenu = scene->AddMenu("A New Menu");
 		//std::unique_ptr<MenuItemPopUp> popUpTest = std::make_unique<MenuItemPopUp>("Pop Up!");
 		//auto testtt = SetPopUpActive(audioSettingPopUP, &popUpTest->myTestBool);
