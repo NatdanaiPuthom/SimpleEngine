@@ -1,9 +1,9 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Core/MenuItemMenu.hpp"
+#include "Editor/Core/Items/MenuItemMenu.hpp"
 
 namespace Editor
 {
-	MenuItemMenu::MenuItemMenu(const char* aName) : MenuItem(aName)
+	MenuItemMenu::MenuItemMenu(const char* aName) : MenuItemBase(aName)
 	{
 	}
 

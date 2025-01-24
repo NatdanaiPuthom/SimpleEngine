@@ -14,7 +14,8 @@
 
 #include "Engine/ImGui/ImGuiEngine.hpp" //TempPlayMenuBar
 
-#include "Editor/Core/MenuItemTab.hpp"
+#include "Editor/Core/Tabs/MenuItemWindow.hpp"
+#include "Editor/Core/Tabs/MenuItemTab.hpp"
 
 namespace Editor
 {
@@ -63,7 +64,7 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		std::unique_ptr<MenuTabNormal> scene = std::make_unique< MenuTabNormal>("Scene");
+		std::unique_ptr<MenuTabDefault> scene = std::make_unique< MenuTabDefault>("Scene");
 
 		auto saveButton = scene->AddButton("Save", IWasClicked); saveButton;
 		auto newMenu = scene->AddMenu("A New Menu");

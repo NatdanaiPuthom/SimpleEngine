@@ -1,10 +1,10 @@
 #pragma once
-#include "Editor/Core/MenuItem.hpp"
+#include "Editor/Core/Base/MenuItemBase.hpp"
 #include <functional>
 
 namespace Editor
 {
-	class MenuItemButton final : public MenuItem
+	class MenuItemButton final : public MenuItemBase
 	{
 	public:
 		MenuItemButton(const char* aName, std::function<void()> aCallback = nullptr);

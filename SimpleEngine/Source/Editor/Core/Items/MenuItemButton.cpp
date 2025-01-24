@@ -1,9 +1,9 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Core/MenuItemButton.hpp"
+#include "Editor/Core/Items/MenuItemButton.hpp"
 
 namespace Editor
 {
-	MenuItemButton::MenuItemButton(const char* aName, std::function<void()> aCallback) : MenuItem(aName)
+	MenuItemButton::MenuItemButton(const char* aName, std::function<void()> aCallback) : MenuItemBase(aName)
 		, myCallback(std::move(aCallback))
 	{
 	}

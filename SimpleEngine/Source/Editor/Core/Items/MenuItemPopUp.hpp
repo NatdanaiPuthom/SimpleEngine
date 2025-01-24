@@ -1,11 +1,11 @@
 #pragma once
-#include "Editor/Core/MenuItem.hpp"
+#include "Editor/Core/Base/MenuItemBase.hpp"
 #include <functional>
 #include <vector>
 
 namespace Editor
 {
-	class MenuItemPopUp final : public MenuItem
+	class MenuItemPopUp final : public MenuItemBase
 	{
 	public:
 		bool myTestBool = false;

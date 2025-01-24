@@ -1,9 +1,9 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Core/MenuItemSelectable.hpp"
+#include "Editor/Core/Items/MenuItemSelectable.hpp"
 
 namespace Editor
 {
-	MenuItemSelectable::MenuItemSelectable(const char* aName, std::function<void(const std::string&)> aCallback) : MenuItem(aName)
+	MenuItemSelectable::MenuItemSelectable(const char* aName, std::function<void(const std::string&)> aCallback) : MenuItemBase(aName)
 		, myCallback(std::move(aCallback))
 	{
 	}

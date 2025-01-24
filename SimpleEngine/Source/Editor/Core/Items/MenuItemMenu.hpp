@@ -1,11 +1,11 @@
 #pragma once
-#include "Editor/Core/MenuItem.hpp"
+#include "Editor/Core/Base/MenuItemBase.hpp"
 #include <memory>
 #include <vector>
 
 namespace Editor
 {
-	class MenuItemMenu final : public MenuItem
+	class MenuItemMenu final : public MenuItemBase
 	{
 	public:
 		MenuItemMenu(const char* aName);
@@ -16,7 +16,7 @@ namespace Editor
 		template<DerivedFromMenuItem T>
 		T* AddChild(std::unique_ptr<T> aChild);
 	private:
-		std::vector<std::unique_ptr<MenuItem>> myItems;
+		std::vector<std::unique_ptr<MenuItemBase>> myItems;
 	};
 
 	template<DerivedFromMenuItem T>

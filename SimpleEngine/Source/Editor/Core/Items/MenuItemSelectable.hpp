@@ -1,12 +1,12 @@
 #pragma once
-#include "Editor/Core/MenuItem.hpp"
+#include "Editor/Core/Base/MenuItemBase.hpp"
 #include <functional>
 #include <string>
 #include <vector>
 
 namespace Editor
 {
-	class MenuItemSelectable final : public MenuItem
+	class MenuItemSelectable final : public MenuItemBase
 	{
 	public:
 		MenuItemSelectable(const char* aName, std::function<void(const std::string&)> aCallback);

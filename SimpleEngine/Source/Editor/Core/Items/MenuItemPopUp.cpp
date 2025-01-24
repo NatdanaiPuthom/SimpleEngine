@@ -1,9 +1,9 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Core/MenuItemPopUP.hpp"
+#include "Editor/Core/Items/MenuItemPopUP.hpp"
 
 namespace Editor
 {
-	MenuItemPopUp::MenuItemPopUp(const char* aName, std::function<void()> aCallback) : MenuItem(aName)
+	MenuItemPopUp::MenuItemPopUp(const char* aName, std::function<void()> aCallback) : MenuItemBase(aName)
 	{
 	}
 
