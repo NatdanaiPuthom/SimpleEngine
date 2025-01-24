@@ -3,188 +3,29 @@
 
 #include "MainSingleton/MainSingleton.hpp"
 
-#include "Editor/Core/MainMenuItem.hpp"
-#include "Editor/Core/MainMenuItemButton.hpp"
-#include "Editor/Core/MainMenuItemList.hpp"
-#include "Editor/Core/MainMenuItemSelectable.hpp"
 
 #include "Editor/PopUps/Help/CameraControlsGuidePopUp.hpp"
 #include "Editor/PopUps/Settings/CameraSettingsPopUp.hpp"
 #include "Editor/PopUps/Settings/AudioSettingsPopUp.hpp"
 #include "Editor/PopUps/Settings/GraphicsSettingsPopUp.hpp"
 
-#include "Editor/MenuItems/Scene/SceneItemLoadSelectable.hpp"
-#include "Editor/MenuItems/Scene/SceneItemSaveButton.hpp"
-#include "Editor/MenuItems/Scene/SceneItemCreateNewButton.hpp"
-#include "Editor/MenuItems/Scene/SceneItemCreateCopyButton.hpp"
-#include "Editor/MenuItems/Scene/SceneItemReloadButton.hpp"
-#include "Editor/MenuItems/Scene/SceneItemSetAsStartButton.hpp"
-
 #include "Editor/PopUps/PostProcessPopUp.hpp"
 #include "Editor/PopUps/DeferredPopUp.hpp"
 
 #include "Engine/ImGui/ImGuiEngine.hpp" //TempPlayMenuBar
 
-#include <functional>
-
-namespace Editor
-{
-	class MenuItemTest
-	{
-	public:
-		MenuItemTest(const char* aName) : myName(aName) {}
-		virtual ~MenuItemTest() = default;
-
-		virtual void Render() = 0;
-
-		const std::string& GetName() const { return myName; }
-
-	protected:
-		std::string myName;
-	};
-
-	template <typename T>
-	concept DerivedFromMenuItemTest = std::is_base_of_v<MenuItemTest, T>&& std::is_class_v<T>;
-
-	class MenuItemButton final : public MenuItemTest
-	{
-	public:
-		MenuItemButton(const char* aName, std::function<void()> aCallback = nullptr) : MenuItemTest(aName)
-			, myCallback(std::move(aCallback))
-		{
-		}
-
-		void SetCallback(std::function<void()> aCallback)
-		{
-			myCallback = aCallback;
-		}
-
-		void Render() override final
-		{
-			if (ImGui::MenuItem(myName.c_str()) && myCallback)
-			{
-				myCallback();
-			}
-		}
-
-	private:
-		std::function<void()> myCallback;
-	};
-
-	class MenuItemPopUpTest final : public MenuItemTest
-	{
-	public:
-		MenuItemPopUpTest(const char* aName, std::function<void()> aCallback = nullptr) : MenuItemTest(aName)
-		{
-
-		}
-
-		void Render() override final
-		{
-			if (ImGui::MenuItem(myName.c_str(), nullptr, &myTestBool) && !myCallback.empty() && myCallback.front())
-			{
-				for (auto& callback : myCallback)
-				{
-					callback();
-				}
-			}
-		}
-
-		void SetCallback(std::function<void()> aCallback)
-		{
-			myCallback.push_back(std::move(aCallback));
-		}
-
-		void Invoke()
-		{
-			if (!myCallback.empty() && myCallback.front())
-			{
-				for (auto& callback : myCallback)
-				{
-					callback();
-				}
-			}
-		}
-
-		bool myTestBool = false;
-
-	private:
-		std::vector< std::function<void()>> myCallback;
-	};
-
-	class MenuItemMenu final : public MenuItemTest
-	{
-	public:
-		MenuItemMenu(const char* aName) : MenuItemTest(aName)
-		{
-		}
-
-		template<DerivedFromMenuItemTest T>
-		T* AddChild(std::unique_ptr<T> aChild)
-		{
-			T* ptr = aChild.get();
-			myChildren.push_back(std::move(aChild));
-			return ptr;
-		}
-
-		void Render() override final
-		{
-			if (ImGui::BeginMenu(myName.c_str()))
-			{
-				for (const auto& child : myChildren)
-				{
-					child->Render();
-				}
-
-				ImGui::EndMenu();
-			}
-		}
-
-	private:
-		std::vector<std::unique_ptr<MenuItemTest>> myChildren;
-	};
-
-	class MenuItemSelectable final : public MenuItemTest
-	{
-	public:
-		MenuItemSelectable(const char* aName, std::function<void(const std::string&)> aCallback) : MenuItemTest(aName)
-			, myCallback(std::move(aCallback))
-		{
-		}
-
-		void Render() override final
-		{
-			if (ImGui::BeginMenu(myName.c_str()))
-			{
-				for (const auto& name : myStrings)
-				{
-					if (ImGui::Selectable(name.c_str()) && myCallback)
-					{
-						myCallback(name);
-					}
-				}
-
-				ImGui::EndMenu();
-			}
-		}
-
-		void SetStrings(const std::vector<std::string> aNewStrings)
-		{
-			myStrings = aNewStrings;
-
-		}
-
-	private:
-		std::function<void(const std::string&)> myCallback;
-		std::vector<std::string> myStrings;
-	};
-}
+#include "Editor/Core/MenuItem.hpp"
 
 namespace Editor
 {
 	static void IWasClicked()
 	{
 		std::cout << "i was click" << std::endl;
+	}
+
+	static void SelectableClick(const std::string& aString)
+	{
+		std::cout << aString << " was clicked!" << std::endl;
 	}
 
 	static void IWasClickedWithParameters(int value)
@@ -200,154 +41,11 @@ namespace Editor
 				std::cout << aPopUp->GetWindowName() << " was set " << *aBoolean << std::endl;
 			};
 	}
+}
 
-	class TestSeletectable
-	{
-	public:
-		static void SelectableClick(const std::string& aString)
-		{
-			std::cout << aString << " was clicked!" << std::endl;
-		}
-
-
-	};
-
-	class MainMenuTabTestBase
-	{
-	public:
-		MainMenuTabTestBase(const char* aName) : myName(aName) {}
-
-		virtual ~MainMenuTabTestBase() = default;
-		virtual void Init() {};
-		virtual void Render() = 0;
-
-	protected:
-		std::string myName;
-	};
-
-	class MenuWindowTest final : public MainMenuTabTestBase
-	{
-	public:
-		MenuWindowTest(const char* aName) : MainMenuTabTestBase(aName) {}
-
-		MenuItemPopUpTest* AddPopUp(std::unique_ptr<MenuItemPopUpTest> aButton)
-		{
-			MenuItemPopUpTest* buttonPointer = aButton.get();
-			myButtons.push_back(std::move(aButton));
-			return buttonPointer;
-		}
-
-		void Init() override final
-		{
-		}
-
-		void Render() override final
-		{
-			if (ImGui::BeginMainMenuBar())
-			{
-				if (ImGui::BeginMenu(myName.c_str()))
-				{
-					size_t currentButtonIndex = 0;
-
-					for (currentButtonIndex; currentButtonIndex < myButtons.size(); ++currentButtonIndex)
-					{
-						auto& currentButton = myButtons[currentButtonIndex];
-
-						if (ImGui::MenuItem(currentButton->GetName().c_str(), nullptr, &currentButton->myTestBool))
-						{
-							currentButton->Invoke();
-
-							for (size_t i = 0; i < myButtons.size(); ++i)
-							{
-								if (i != currentButtonIndex)
-								{
-									auto& otherButton = myButtons[i];
-
-									otherButton->myTestBool = false;
-									otherButton->Invoke();
-								}
-							}
-
-							break;
-						}
-					}
-
-					ImGui::EndMenu();
-				}
-
-				ImGui::EndMainMenuBar();
-			}
-		}
-
-	private:
-		std::vector<std::unique_ptr<MenuItemPopUpTest>> myButtons;
-	};
-
-	class MenuNormalTest final : public MainMenuTabTestBase
-	{
-	public:
-		MenuNormalTest(const char* aName) : MainMenuTabTestBase(aName) {}
-
-		MenuItemButton* AddButton(const char* aButtonName, std::function<void()> aCallback)
-		{
-			std::unique_ptr<MenuItemButton> button = std::make_unique<MenuItemButton>(aButtonName, aCallback);
-			MenuItemButton* buttonPointer = button.get();
-			myButtons.push_back(std::move(button));
-			return buttonPointer;
-		}
-
-		MenuItemButton* AddButton(std::unique_ptr<MenuItemButton> aButton)
-		{
-			MenuItemButton* buttonPointer = aButton.get();
-			myButtons.push_back(std::move(aButton));
-			return buttonPointer;
-		}
-
-		MenuItemPopUpTest* AddPopUp(std::unique_ptr<MenuItemPopUpTest> aButton)
-		{
-			MenuItemPopUpTest* buttonPointer = aButton.get();
-			myButtons.push_back(std::move(aButton));
-			return buttonPointer;
-		}
-
-		MenuItemMenu* AddMenu(const char* aButtonName)
-		{
-			std::unique_ptr<MenuItemMenu> button = std::make_unique<MenuItemMenu>(aButtonName);
-			MenuItemMenu* buttonPointer = button.get();
-			myButtons.push_back(std::move(button));
-			return buttonPointer;
-		}
-
-		MenuItemSelectable* AddSelectable(const char* aButtonName, std::function<void(const std::string&)> aCallback)
-		{
-			std::unique_ptr<MenuItemSelectable> button = std::make_unique<MenuItemSelectable>(aButtonName, std::move(aCallback));
-			MenuItemSelectable* buttonPointer = button.get();
-			myButtons.push_back(std::move(button));
-			return buttonPointer;
-		}
-
-		void Render() override final
-		{
-			if (ImGui::BeginMainMenuBar())
-			{
-				if (ImGui::BeginMenu(myName.c_str()))
-				{
-					for (const auto& button : myButtons)
-					{
-						button->Render();
-					}
-
-					ImGui::EndMenu();
-				}
-
-				ImGui::EndMainMenuBar();
-			}
-		}
-	private:
-		std::vector<std::unique_ptr<MenuItemTest>> myButtons;
-	};
-
-	std::vector<std::unique_ptr<MainMenuTabTestBase>> globalMainMenuTabs;
+namespace Editor
+{
+	std::vector<std::unique_ptr<MainMenuTabBase>> globalMainMenuTabs;
 	std::vector<std::shared_ptr<PopUp>> globalPopUps;
 }
 
@@ -365,36 +63,16 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		/*SetUpSceneTab();
-		SetupSettingsTab();
-		SetUpHelpTab();*/
-
-		//auto postprocess = AddPopUpWindow<PostProcessPopUp>();
-		//postprocess->SetActive(true);
-
-		//auto deferred = AddPopUpWindow<DeferredPopUp>();
-		//deferred->SetActive(true);
-
-		/*for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
-		{
-			popUp->Init();
-		}*/
-
-		std::unique_ptr<MenuNormalTest> scene = std::make_unique< MenuNormalTest>("Scene");
-
+		std::unique_ptr<MenuTabNormal> scene = std::make_unique< MenuTabNormal>("Scene");
 
 		auto saveButton = scene->AddButton("Save", IWasClicked); saveButton;
-
-
 		auto newMenu = scene->AddMenu("A New Menu");
 
 		std::unique_ptr<MenuItemButton> button = std::make_unique<MenuItemButton>("New Child Button", IWasClicked);
 		std::unique_ptr<MenuItemButton> subMenuButton = std::make_unique<MenuItemButton>("New Sub Child Button", IWasClicked);
 		std::unique_ptr<MenuItemMenu> subMenu = std::make_unique<MenuItemMenu>("New Child Menu Button");
 
-
-		auto selectable = scene->AddSelectable("Selectable", TestSeletectable::SelectableClick); selectable;
-
+		auto selectable = scene->AddSelectable("Selectable", SelectableClick); selectable;
 
 		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUP = std::make_shared<AudioSettingsPopUp>("Audio");
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = std::make_shared<CameraSettingsPopUp>("Camera");
@@ -412,7 +90,6 @@ namespace Editor
 
 		scene->AddPopUp(std::move(popUpTest));
 
-
 		std::vector<std::string> strings;
 		strings.push_back("Emil");
 		strings.push_back("Erico");
@@ -428,7 +105,8 @@ namespace Editor
 
 		std::unique_ptr<MenuItemPopUpTest> windowPopUp1 = std::make_unique<MenuItemPopUpTest>("Window1!!");
 		std::unique_ptr<MenuItemPopUpTest> windowPopUp2 = std::make_unique<MenuItemPopUpTest>("Window2!!");
-		std::unique_ptr<MenuWindowTest> window = std::make_unique< MenuWindowTest>("Windows");
+
+		std::unique_ptr<MenuTabWindow> window = std::make_unique< MenuTabWindow>("Windows");
 
 		auto windowCallback1 = SetPopUpActive(cameraSettingPopUp, &windowPopUp1->myTestBool);
 		auto windowCallback2 = SetPopUpActive(graphicsSettingPopUP, &windowPopUp1->myTestBool);
@@ -523,77 +201,6 @@ namespace Editor
 		//}
 	}
 
-	void EditorEngine::SetUpSceneTab()
-	{
-		std::shared_ptr<MainMenuItemTab> sceneTab = AddMenuTab<MainMenuItemTab>();
-
-		std::shared_ptr<SceneItemSaveButton> saveButton = std::make_shared<SceneItemSaveButton>("Save");
-		std::shared_ptr<SceneItemLoadSelectable> loadSelector = std::make_shared<SceneItemLoadSelectable>("Load");
-		std::shared_ptr<MainMenuItemList> createButtonList = std::make_shared<MainMenuItemList>("Create");
-		std::shared_ptr<SceneItemReloadButton> reloadButton = std::make_shared<SceneItemReloadButton>("Reload");
-		std::shared_ptr<SceneItemSetAsStartButton> setAsActiveButton = std::make_shared<SceneItemSetAsStartButton>("Set As Start");
-
-		const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
-
-		for (const auto& name : sceneNames)
-		{
-			loadSelector->AddString(name);
-		}
-
-		std::shared_ptr<SceneItemCreateNewButton> testCreateNewButton = std::make_shared<SceneItemCreateNewButton>("New");
-		std::shared_ptr<SceneItemCreateNewCopyButton> testCreateCopyButton = std::make_shared<SceneItemCreateNewCopyButton>("Copy");
-
-		sceneTab->AddChild(saveButton);
-		sceneTab->AddChild(loadSelector);
-		sceneTab->AddChild(createButtonList);
-		sceneTab->AddChild(reloadButton);
-		sceneTab->AddChild(setAsActiveButton);
-
-		createButtonList->AddChild(testCreateNewButton);
-		createButtonList->AddChild(testCreateCopyButton);
-
-		sceneTab->SetWindowName("Scene");
-	}
-
-	void EditorEngine::SetupSettingsTab()
-	{
-		std::shared_ptr<MainMenuItemTab> settingsTab = AddMenuTab<MainMenuItemTab>();
-
-		std::shared_ptr<MainMenuItemPopUp> audioSettingButton = std::make_shared<MainMenuItemPopUp>("Audio");
-		std::shared_ptr<MainMenuItemPopUp> cameraSettingButton = std::make_shared<MainMenuItemPopUp>("Camera");
-		std::shared_ptr<MainMenuItemPopUp> graphicsSettingButton = std::make_shared<MainMenuItemPopUp>("Graphics");
-
-		std::shared_ptr<CameraSettingsPopUp> cameraSettingsPopUp = AddPopUpWindow<CameraSettingsPopUp>();
-		std::shared_ptr<AudioSettingsPopUp> audioSettingsPopUp = AddPopUpWindow<AudioSettingsPopUp>();
-		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingsPopUp = AddPopUpWindow<GraphicsSettingsPopUp>();
-
-		settingsTab->AddChild(audioSettingButton);
-		settingsTab->AddChild(cameraSettingButton);
-		settingsTab->AddChild(graphicsSettingButton);
-
-		audioSettingButton->AddPopUpWindows(audioSettingsPopUp);
-		cameraSettingButton->AddPopUpWindows(cameraSettingsPopUp);
-		graphicsSettingButton->AddPopUpWindows(graphicsSettingsPopUp);
-
-		settingsTab->SetWindowName("Settings");
-		cameraSettingsPopUp->SetWindowName("Camera Settings");
-		audioSettingsPopUp->SetWindowName("Audio Settings");
-		graphicsSettingsPopUp->SetWindowName("Graphics Settings");
-	}
-
-	void EditorEngine::SetUpHelpTab()
-	{
-		std::shared_ptr<MainMenuItemTab> helpTab = AddMenuTab<MainMenuItemTab>();
-
-		std::shared_ptr<MainMenuItemPopUp> cameraHelpButton = std::make_shared<MainMenuItemPopUp>("Camera Controls");
-		std::shared_ptr<CameraControlsGuidePopUp> cameraControlsHelpPopUp = AddPopUpWindow<CameraControlsGuidePopUp>();
-
-		helpTab->AddChild(cameraHelpButton);
-		cameraHelpButton->AddPopUpWindows(cameraControlsHelpPopUp);
-
-		helpTab->SetWindowName("Help");
-		cameraControlsHelpPopUp->SetWindowName("Editor Camera");
-	}
 
 	void EditorEngine::TempPlayMenuBar()
 	{
