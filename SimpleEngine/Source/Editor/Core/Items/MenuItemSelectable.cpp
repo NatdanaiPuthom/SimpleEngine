@@ -28,4 +28,9 @@ namespace Editor
 	{
 		myStrings = aNewStrings;
 	}
+
+	void MenuItemSelectable::SetCallback(std::function<void(const std::string&)> aCallback)
+	{
+		myCallback = std::move(aCallback);
+	}
 }

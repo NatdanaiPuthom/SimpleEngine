@@ -9,12 +9,13 @@ namespace Editor
 	class MenuItemSelectable final : public MenuItemBase
 	{
 	public:
-		MenuItemSelectable(const char* aName, std::function<void(const std::string&)> aCallback);
+		MenuItemSelectable(const char* aName, std::function<void(const std::string&)> aCallback = nullptr);
 
 		void Render() override final;
 
 	public:
 		void SetStrings(const std::vector<std::string>& aNewStrings);
+		void SetCallback(std::function<void(const std::string&)> aCallback);
 	private:
 		std::function<void(const std::string&)> myCallback;
 		std::vector<std::string> myStrings;

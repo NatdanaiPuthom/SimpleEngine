@@ -56,11 +56,25 @@ namespace Editor
 		return buttonPointer;
 	}
 
+	MenuItemMenu* MenuTabDefault::AddMenu(std::unique_ptr<MenuItemMenu> aMenuButton)
+	{
+		MenuItemMenu* buttonPointer = aMenuButton.get();
+		myButtons.push_back(std::move(aMenuButton));
+		return buttonPointer;
+	}
+
 	MenuItemSelectable* MenuTabDefault::AddSelectable(const char* aButtonName, std::function<void(const std::string&)> aCallback)
 	{
 		std::unique_ptr<MenuItemSelectable> button = std::make_unique<MenuItemSelectable>(aButtonName, std::move(aCallback));
 		MenuItemSelectable* buttonPointer = button.get();
 		myButtons.push_back(std::move(button));
+		return buttonPointer;
+	}
+
+	MenuItemSelectable* MenuTabDefault::AddSelectable(std::unique_ptr<MenuItemSelectable> aSelectableButton)
+	{
+		MenuItemSelectable* buttonPointer = aSelectableButton.get();
+		myButtons.push_back(std::move(aSelectableButton));
 		return buttonPointer;
 	}
 }

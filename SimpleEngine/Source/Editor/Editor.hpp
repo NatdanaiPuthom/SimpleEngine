@@ -1,5 +1,6 @@
 #pragma once
 #include "Editor/Core/PopUp.hpp"
+#include "Editor/Core/Base/MenuItemTabBase.hpp"
 #include <vector>
 #include <memory>
 #include <string>
@@ -21,15 +22,11 @@ namespace Editor
 	private:
 		template<DerivedFromPopUpWindow T>
 		std::shared_ptr<T> AddPopUpWindow();
-
-	private:
-		void SetUpSceneTab();
-		void SetupSettingsTab();
-		void SetUpHelpTab();
 	private:
 		void TempPlayMenuBar();
 	private:
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
+		std::vector<std::unique_ptr<MainMenuTabBase>> myMainMenuTabs;
 	};
 
 	template<DerivedFromPopUpWindow T>

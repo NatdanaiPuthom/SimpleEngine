@@ -20,9 +20,14 @@ namespace Editor
 	public:
 		MenuItemButton* AddButton(const char* aButtonName, std::function<void()> aCallback);
 		MenuItemButton* AddButton(std::unique_ptr<MenuItemButton> aButton);
+
 		MenuItemPopUp* AddPopUp(std::unique_ptr<MenuItemPopUp> aButton);
+
 		MenuItemMenu* AddMenu(const char* aButtonName);
+		MenuItemMenu* AddMenu(std::unique_ptr<MenuItemMenu> aMenuButton);
+
 		MenuItemSelectable* AddSelectable(const char* aButtonName, std::function<void(const std::string&)> aCallback);
+		MenuItemSelectable* AddSelectable(std::unique_ptr<MenuItemSelectable> aSelectableButton);
 	private:
 		std::vector<std::unique_ptr<MenuItemBase>> myButtons;
 	};
