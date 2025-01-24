@@ -1,32 +1,32 @@
 #pragma once
-#include "Editor/Template/ToolInterface.hpp"
+#include "Editor/Core/PopUp.hpp"
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace ECS
 {
 	class EntityComponentSystem;
+	class Entity;
 }
 
 namespace Editor
 {
-	class HierarchyWindow final : public Editor::ToolInterface
+	class EditorPopUp final : public PopUp
 	{
 	public:
-		HierarchyWindow();
+		EditorPopUp(const std::string& aName);
 
 		void Init() override;
-		void Update() override;
-		void Draw() override;
+		void Render() override;
 	private:
 		void ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected);
 		void ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected);
-
-		void ShowActiveSceneName();
-		void ShowSceneEntities(std::vector<ECS::Entity>& aEntities, int& aSelected);
-		void ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected);
 		void ShowComponents(ECS::Entity& aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const;
-
+		void ShowSceneEntities(std::vector<ECS::Entity>& aEntities, int& aSelected);
+		void ShowActiveSceneName();
 		void RemoveEntity(std::vector<ECS::Entity>& aEntities, int& aSelected);
+		void ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected);
 	private:
 		std::unique_ptr<ECS::EntityComponentSystem> myTemporaryECSEditor;
 		bool myShowAdvanced;

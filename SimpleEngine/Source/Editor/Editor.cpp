@@ -11,6 +11,7 @@
 
 #include "Editor/PopUps/PostProcessPopUp.hpp"
 #include "Editor/PopUps/DeferredPopUp.hpp"
+#include "Editor/PopUps/Editor/EditorPopUp.hpp"
 
 #include "Engine/ImGui/ImGuiEngine.hpp" //TempPlayMenuBar
 
@@ -178,6 +179,7 @@ namespace Editor
 		std::shared_ptr<CameraControlsGuidePopUp> cameraHelpPopUp = std::make_shared<CameraControlsGuidePopUp>("Editor Camera Control");
 		std::shared_ptr<DeferredPopUp> deferredPopUp = std::make_shared<DeferredPopUp>("Deferred Window");
 		std::shared_ptr<PostProcessPopUp> postProcessPopUp = std::make_shared<PostProcessPopUp>("PostProcess Window");
+		std::shared_ptr<EditorPopUp> editorPopUp = std::make_shared<EditorPopUp>("Editor Window");
 
 		sceneCreateNewButton->SetCallback(SceneSettingsFunction::CreateNew());
 		sceneCreateCopyButton->SetCallback(SceneSettingsFunction::CreateCopy());
@@ -226,6 +228,11 @@ namespace Editor
 			postProcessPopUpButton->SetCallback(std::move(popUpCallback));
 		}
 
+		{
+			auto popUpCallback = EditorCallbacks::SetPopUpActive(editorPopUp, &editorPopUpButton->myTestBool);
+			editorPopUpButton->SetCallback(std::move(popUpCallback));
+		}
+
 		sceneTab->AddButton(std::move(sceneSaveButton));
 		sceneTab->AddSelectable(std::move(sceneLoadSelectable));
 		sceneTab->AddMenu(std::move(sceneCreateMenu));
@@ -253,6 +260,7 @@ namespace Editor
 		myPopUpWindows.push_back(cameraHelpPopUp);
 		myPopUpWindows.push_back(deferredPopUp);
 		myPopUpWindows.push_back(postProcessPopUp);
+		myPopUpWindows.push_back(editorPopUp);
 
 		for (auto& t : myMainMenuTabs)
 		{

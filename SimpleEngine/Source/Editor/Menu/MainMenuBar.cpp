@@ -1,6 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/Menu/MainMenuBar.hpp"
-#include "Editor/Windows/HierarchyWindow.hpp"
 #include "Editor/Windows/AssetWindow.hpp"
 #include "Editor/FlyScript/NodeScriptingWindow.hpp"
 #include "MainSingleton/MainSingleton.hpp"
@@ -37,13 +36,11 @@ namespace Editor
 	void MainMenuBar::Init()
 	{
 		myAssetWindow = std::make_unique<AssetWindow>();
-		myHierarchyWindow = std::make_unique<HierarchyWindow>();
 		myNodeScriptingWindow = std::make_unique<NodeScriptingWindow>();
 
 		LoadSettingsFromJson();
 
 		myAssetWindow->Init();
-		myHierarchyWindow->Init();
 		myNodeScriptingWindow->Init();
 
 		myAssetWindow->myActiveWindowData = &myActiveWindowData;
@@ -99,7 +96,6 @@ namespace Editor
 
 		if (myActiveWindowData.IsWindowActive(eWindowType::Editor))
 		{
-			myHierarchyWindow->Update();
 			myAssetWindow->Update();
 		}
 	}
@@ -221,7 +217,6 @@ namespace Editor
 		if (myActiveWindowData.IsWindowActive(eWindowType::Editor))
 		{
 			myAssetWindow->Draw();
-			myHierarchyWindow->Draw(); //TO-DO(v9.31.1): For now HierachyWindow should always be run last due to removing Entities during run time. Fix/Look into it in future
 		}
 
 		if (myActiveWindowData.IsWindowActive(eWindowType::NodeScript))
@@ -243,6 +238,5 @@ namespace Editor
 		const nlohmann::json settings = json["Editor_Settings"];
 
 		myActiveWindowData.SetActiveWindow(eWindowType::Editor, settings["Editor"]["Active"]);
-		myHierarchyWindow->myIsActive = settings["Windows"]["Show_Inspector"];
 	}
 }

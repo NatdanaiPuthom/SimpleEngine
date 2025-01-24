@@ -1,25 +1,25 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Windows/HierarchyWindow.hpp"
-#include "Editor/Editor.hpp"
+#include "Editor/PopUps/Editor/EditorPopUp.hpp"
+
 #include "Engine/ECS/Components/AllEngineComponents.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
-#include "Engine/ECS/ECS.hpp"
+#include "Editor/Editor.hpp"
 
 namespace Editor
 {
-	HierarchyWindow::HierarchyWindow()
-		: myShowAdvanced(false)
+	EditorPopUp::EditorPopUp(const std::string& aName) : PopUp(aName)
+		, myShowAdvanced(false)
 	{
 	}
 
-	void HierarchyWindow::Init()
+	void EditorPopUp::Init()
 	{
 		myTemporaryECSEditor = std::make_unique<ECS::EntityComponentSystem>();
 		myTemporaryECSEditor->Init();
 	}
 
-	void HierarchyWindow::Update()
+	void EditorPopUp::Render()
 	{
 		static int selected = 0;
 
@@ -101,41 +101,7 @@ namespace Editor
 		}
 	}
 
-	void HierarchyWindow::Draw()
-	{
-		static bool doOnce = true;
-
-		if (doOnce == true)
-		{
-			doOnce = false;
-			ImGui::SetWindowFocus("Inspector##HierachyWindow");
-		}
-	}
-
-	void HierarchyWindow::ShowActiveSceneName()
-	{
-		ImGui::Separator();
-
-		const Simpleton::SceneInfo* sceneInfo = MainSingleton::GetSceneManager().GetCurrentSceneInfo();
-
-		char sceneName[256]{};
-		memset(sceneName, '\0', sizeof(sceneName));
-		strncpy_s(sceneName, sceneInfo->name.c_str(), sizeof(sceneName));
-		sceneName[sizeof(sceneName) - 1] = '\0';
-
-		if (ImGui::InputTextWithHint("Scene##SceneNameHierachy", "Name", sceneName, sizeof(sceneName)))
-		{
-			if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
-			{
-				std::string newSceneName(sceneName);
-				MainSingleton::GetSceneManager().ChangeSceneName(newSceneName);
-			}
-		}
-
-		ImGui::Separator();
-	}
-
-	void HierarchyWindow::ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
+	void EditorPopUp::ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
 	{
 		if (ImGui::Begin("Inspector##HierachyWindow"))
 		{
@@ -199,7 +165,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void HierarchyWindow::ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
+	void EditorPopUp::ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
 	{
 		if (ImGui::Begin("Hierarchy"))
 		{
@@ -211,105 +177,7 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void HierarchyWindow::ShowSceneEntities(std::vector<ECS::Entity>& aEntities, int& aSelected)
-	{
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
-		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
-		ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
-
-		ImVec2 parentSize = ImGui::GetContentRegionAvail();
-
-		if (ImGui::BeginListBox("##SceneEntities", parentSize))
-		{
-			for (int i = 0; i < aEntities.size(); ++i)
-			{
-				const bool isSelected = (aSelected == i);
-
-				if (ImGui::Selectable(aEntities[i].GetName().c_str(), isSelected))
-				{
-					aSelected = i;
-				}
-
-				if (isSelected)
-				{
-					ImGui::SetItemDefaultFocus();
-
-					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-					{
-						ImGui::OpenPopup("Entity Property##SceneHierachy");
-					}
-
-					if (ImGui::BeginPopup("Entity Property##SceneHierachy"))
-					{
-						if (ImGui::MenuItem("Remove##SceneHierachy"))
-						{
-							RemoveEntity(aEntities, aSelected);
-							EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
-							ImGui::EndPopup();
-							break;
-						}
-
-						ImGui::EndPopup();
-					}
-				}
-			}
-
-			ImGui::EndListBox();
-		}
-
-		ImGui::PopStyleVar();
-		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
-	}
-
-	void HierarchyWindow::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
-	{
-		if (ImGui::Button("Add##SceneHierachy"))
-		{
-			ImGui::OpenPopup("Add Scene Object##SceneHierachy");
-		}
-
-		/*
-		*
-		* TO-DO(v11.0.6): implement name search filter which will require how ecs work i assume?
-		*
-		ImGui::SameLine(ImGui::GetWindowWidth() - 135);
-		ImGui::PushItemWidth(125);
-
-		std::string sceneSearch = "";
-		if (ImGui::InputTextWithHint("##SearchScene", "Search", &sceneSearch[0], sceneSearch.capacity() + 1))
-		{
-		}
-
-		ImGui::PopItemWidth();
-		*/
-
-		if (ImGui::BeginPopup("Add Scene Object##SceneHierachy"))
-		{
-			if (ImGui::MenuItem("Add Entity##SceneHierachy"))
-			{
-				ECS::Entity& entity = aActiveECS.CreateEntity();
-				entity.AddComponent<ECS::TransformComponent>();
-				aSelected = static_cast<int>(aEntities.size()) - 1;
-			}
-
-			if (ImGui::MenuItem("Add Cube##SceneHierachy"))
-			{
-				ECS::Entity& entity = aActiveECS.CreateEntity();
-
-				entity.AddComponent<ECS::TransformComponent>();
-				entity.AddComponent<ECS::MeshComponent>();
-
-				aSelected = static_cast<int>(aEntities.size()) - 1;
-			}
-
-			ImGui::EndPopup();
-		}
-	}
-
-	void HierarchyWindow::ShowComponents(ECS::Entity& aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const
+	void EditorPopUp::ShowComponents(ECS::Entity& aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const
 	{
 		const ECS::EntityID entityID = aSelectedEntity.GetID();
 		const std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = aSelectedEntity.GetComponentMap();
@@ -381,7 +249,83 @@ namespace Editor
 		}
 	}
 
-	void HierarchyWindow::RemoveEntity(std::vector<ECS::Entity>& aEntities, int& aSelected)
+	void EditorPopUp::ShowSceneEntities(std::vector<ECS::Entity>& aEntities, int& aSelected)
+	{
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
+		ImGui::PushStyleColor(ImGuiCol_Border, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+
+		ImVec2 parentSize = ImGui::GetContentRegionAvail();
+
+		if (ImGui::BeginListBox("##SceneEntities", parentSize))
+		{
+			for (int i = 0; i < aEntities.size(); ++i)
+			{
+				const bool isSelected = (aSelected == i);
+
+				if (ImGui::Selectable(aEntities[i].GetName().c_str(), isSelected))
+				{
+					aSelected = i;
+				}
+
+				if (isSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+
+					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+					{
+						ImGui::OpenPopup("Entity Property##SceneHierachy");
+					}
+
+					if (ImGui::BeginPopup("Entity Property##SceneHierachy"))
+					{
+						if (ImGui::MenuItem("Remove##SceneHierachy"))
+						{
+							RemoveEntity(aEntities, aSelected);
+							EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
+							ImGui::EndPopup();
+							break;
+						}
+
+						ImGui::EndPopup();
+					}
+				}
+			}
+
+			ImGui::EndListBox();
+		}
+
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+	}
+
+	void EditorPopUp::ShowActiveSceneName()
+	{
+		ImGui::Separator();
+
+		const Simpleton::SceneInfo* sceneInfo = MainSingleton::GetSceneManager().GetCurrentSceneInfo();
+
+		char sceneName[256]{};
+		memset(sceneName, '\0', sizeof(sceneName));
+		strncpy_s(sceneName, sceneInfo->name.c_str(), sizeof(sceneName));
+		sceneName[sizeof(sceneName) - 1] = '\0';
+
+		if (ImGui::InputTextWithHint("Scene##SceneNameHierachy", "Name", sceneName, sizeof(sceneName)))
+		{
+			if (MainSingleton::GetInputManager().IsKeyPressed(VK_RETURN))
+			{
+				std::string newSceneName(sceneName);
+				MainSingleton::GetSceneManager().ChangeSceneName(newSceneName);
+			}
+		}
+
+		ImGui::Separator();
+	}
+
+	void EditorPopUp::RemoveEntity(std::vector<ECS::Entity>& aEntities, int& aSelected)
 	{
 		aEntities[aSelected].DestroyThis();
 
@@ -393,6 +337,51 @@ namespace Editor
 		if (aSelected < 0 && aEntities.size() > 0)
 		{
 			aSelected = 0;
+		}
+	}
+
+	void EditorPopUp::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
+	{
+		if (ImGui::Button("Add##SceneHierachy"))
+		{
+			ImGui::OpenPopup("Add Scene Object##SceneHierachy");
+		}
+
+		/*
+		*
+		* TO-DO(v11.0.6): implement name search filter which will require how ecs work i assume?
+		*
+		ImGui::SameLine(ImGui::GetWindowWidth() - 135);
+		ImGui::PushItemWidth(125);
+
+		std::string sceneSearch = "";
+		if (ImGui::InputTextWithHint("##SearchScene", "Search", &sceneSearch[0], sceneSearch.capacity() + 1))
+		{
+		}
+
+		ImGui::PopItemWidth();
+		*/
+
+		if (ImGui::BeginPopup("Add Scene Object##SceneHierachy"))
+		{
+			if (ImGui::MenuItem("Add Entity##SceneHierachy"))
+			{
+				ECS::Entity& entity = aActiveECS.CreateEntity();
+				entity.AddComponent<ECS::TransformComponent>();
+				aSelected = static_cast<int>(aEntities.size()) - 1;
+			}
+
+			if (ImGui::MenuItem("Add Cube##SceneHierachy"))
+			{
+				ECS::Entity& entity = aActiveECS.CreateEntity();
+
+				entity.AddComponent<ECS::TransformComponent>();
+				entity.AddComponent<ECS::MeshComponent>();
+
+				aSelected = static_cast<int>(aEntities.size()) - 1;
+			}
+
+			ImGui::EndPopup();
 		}
 	}
 }
