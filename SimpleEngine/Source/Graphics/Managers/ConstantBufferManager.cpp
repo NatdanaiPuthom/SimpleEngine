@@ -100,7 +100,7 @@ namespace Graphics
 		SkyBoxBufferData skyBoxBufferData;
 		skyBoxBufferData.skyBoxUseFlooring = aShouldUseFlooring;
 
-		mySkyBoxConstantBuffer->Bind(myLightConstantBuffer->GetSlot());
+		mySkyBoxConstantBuffer->Bind(mySkyBoxConstantBuffer->GetSlot());
 		mySkyBoxConstantBuffer->Update(sizeof(SkyBoxBufferData), &skyBoxBufferData);
 	}
 
