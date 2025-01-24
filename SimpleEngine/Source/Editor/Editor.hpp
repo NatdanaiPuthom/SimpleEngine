@@ -23,6 +23,7 @@ namespace Editor
 		template<DerivedFromPopUpWindow T>
 		std::shared_ptr<T> AddPopUpWindow();
 	private:
+		void SetUpDefaultLayout();
 		void TempPlayMenuBar();
 	private:
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;

@@ -21,6 +21,7 @@ namespace Editor
 		void Render() override;
 
 		void RemoveMeLater();
+		void RemoveMeLaterLater();
 	private:
 		void ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected);
 		void ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected);
