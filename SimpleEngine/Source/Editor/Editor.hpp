@@ -26,6 +26,7 @@ namespace Editor
 
 		template<DerivedFromMainMenuTab T>
 		std::shared_ptr<T> AddMenuTab();
+
 	private:
 		void SetUpSceneTab();
 		void SetupSettingsTab();
