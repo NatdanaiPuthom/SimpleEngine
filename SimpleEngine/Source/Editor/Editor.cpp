@@ -35,14 +35,19 @@ namespace Editor
 		std::cout << "i was click with value: " << value << std::endl;
 	}
 
-	static std::function<void()> SetPopUpActive(std::shared_ptr<PopUp> aPopUp, bool* aBoolean)
+
+	class EditorCallbacks
 	{
-		return [=]() -> void
-			{
-				aPopUp->SetActive(*aBoolean);
-				std::cout << aPopUp->GetWindowName() << " was set " << *aBoolean << std::endl;
-			};
-	}
+	public:
+		static std::function<void()> SetPopUpActive(std::shared_ptr<PopUp> aPopUp, bool* aBoolean)
+		{
+			return [=]() -> void
+				{
+					aPopUp->SetActive(*aBoolean);
+					std::cout << aPopUp->GetWindowName() << " was set " << *aBoolean << std::endl;
+				};
+		}
+	};
 
 	class SceneSettingsFunction
 	{
@@ -61,17 +66,17 @@ namespace Editor
 				};
 		}
 
-        static std::function<void(const std::string&)> Load()
-        {
-            return [](const std::string& aString) -> void
-            {
-                const std::string scenePath = std::string(SIMPLE_DIR_SCENES) + "\\" + aString;
-                MainSingleton::GetSceneManager().ChangeScene(scenePath);
-                Simple::Console::Print("Loaded scene ", Simple::ConsoleTextColor::White, false);
-                Simple::Console::Print(aString.c_str(), Simple::ConsoleTextColor::Green, false);
-                Simple::Console::Print("!", Simple::ConsoleTextColor::White, true);
-            };
-        }
+		static std::function<void(const std::string&)> Load()
+		{
+			return [](const std::string& aString) -> void
+				{
+					const std::string scenePath = std::string(SIMPLE_DIR_SCENES) + "\\" + aString;
+					MainSingleton::GetSceneManager().ChangeScene(scenePath);
+					Simple::Console::Print("Loaded scene ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(aString.c_str(), Simple::ConsoleTextColor::Green, false);
+					Simple::Console::Print("!", Simple::ConsoleTextColor::White, true);
+				};
+		}
 
 		static std::function<void()> CreateNew()
 		{
@@ -170,13 +175,15 @@ namespace Editor
 		std::unique_ptr<MenuItemMenu> sceneCreateMenu = std::make_unique<MenuItemMenu>("Create");
 		std::unique_ptr<MenuItemButton> sceneReloadButton = std::make_unique<MenuItemButton>("Reload");
 		std::unique_ptr<MenuItemButton> sceneSetAsActiveButton = std::make_unique<MenuItemButton>("Set As Active");
-
 		std::unique_ptr<MenuItemButton> sceneCreateNewButton = std::make_unique<MenuItemButton>("New");
 		std::unique_ptr<MenuItemButton> sceneCreateCopyButton = std::make_unique<MenuItemButton>("Copy");
 
-		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUP = std::make_shared<AudioSettingsPopUp>("Audio Settings");
+		std::unique_ptr<MenuItemPopUp> helpCameraControlsPopUpButton = std::make_unique<MenuItemPopUp>("Camera Controls");
+
+		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUp = std::make_shared<AudioSettingsPopUp>("Audio Settings");
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = std::make_shared<CameraSettingsPopUp>("Camera Settings");
-		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUP = std::make_shared<GraphicsSettingsPopUp>("Graphics Settings");
+		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUp = std::make_shared<GraphicsSettingsPopUp>("Graphics Settings");
+		std::shared_ptr<CameraControlsGuidePopUp> cameraHelpPopUp = std::make_shared<CameraControlsGuidePopUp>("Editor Camera Control");
 
 		sceneCreateNewButton->SetCallback(SceneSettingsFunction::CreateNew());
 		sceneCreateCopyButton->SetCallback(SceneSettingsFunction::CreateCopy());
@@ -195,20 +202,28 @@ namespace Editor
 		sceneCreateMenu->AddChild(std::move(sceneCreateNewButton));
 		sceneCreateMenu->AddChild(std::move(sceneCreateCopyButton));
 
+		{
+			auto popUpCallback = EditorCallbacks::SetPopUpActive(cameraHelpPopUp, &helpCameraControlsPopUpButton->myTestBool);
+			helpCameraControlsPopUpButton->SetCallback(std::move(popUpCallback));
+		}
+
 		sceneTab->AddButton(std::move(sceneSaveButton));
 		sceneTab->AddSelectable(std::move(sceneLoadSelectable));
 		sceneTab->AddMenu(std::move(sceneCreateMenu));
 		sceneTab->AddButton(std::move(sceneReloadButton));
 		sceneTab->AddButton(std::move(sceneSetAsActiveButton));
 
+		helpTab->AddPopUp(std::move(helpCameraControlsPopUpButton));
+
 		myMainMenuTabs.push_back(std::move(sceneTab));
 		myMainMenuTabs.push_back(std::move(windowsTab));
 		myMainMenuTabs.push_back(std::move(settingsTab));
 		myMainMenuTabs.push_back(std::move(helpTab));
 
-		myPopUpWindows.push_back(audioSettingPopUP);
+		myPopUpWindows.push_back(audioSettingPopUp);
 		myPopUpWindows.push_back(cameraSettingPopUp);
-		myPopUpWindows.push_back(graphicsSettingPopUP);
+		myPopUpWindows.push_back(graphicsSettingPopUp);
+		myPopUpWindows.push_back(cameraHelpPopUp);
 
 		for (auto& t : myMainMenuTabs)
 		{
@@ -219,16 +234,6 @@ namespace Editor
 		{
 			p->Init();
 		}
-
-		//auto newMenu = scene->AddMenu("A New Menu");
-		//std::unique_ptr<MenuItemPopUp> popUpTest = std::make_unique<MenuItemPopUp>("Pop Up!");
-		//auto testtt = SetPopUpActive(audioSettingPopUP, &popUpTest->myTestBool);
-		//popUpTest->SetCallback(std::move(testtt));
-		//scene->AddPopUp(std::move(popUpTest));
-
-		//auto newButton = newMenu->AddChild(std::move(button)); newButton;
-		//auto newMenuButton = newMenu->AddChild(std::move(subMenu)); newMenuButton;
-		//newMenuButton->AddChild(std::move(subMenuButton));
 
 		//std::unique_ptr<MenuItemPopUp> windowPopUp1 = std::make_unique<MenuItemPopUp>("Window1!!");
 		//std::unique_ptr<MenuItemPopUp> windowPopUp2 = std::make_unique<MenuItemPopUp>("Window2!!");
