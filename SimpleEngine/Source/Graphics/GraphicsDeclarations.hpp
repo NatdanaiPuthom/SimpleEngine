@@ -70,6 +70,7 @@ namespace Graphics
 		Bloom,
 		BloomPixelFilter,
 		Copy,
+		SkyBox_Unity,
 		Count
 	};
 
