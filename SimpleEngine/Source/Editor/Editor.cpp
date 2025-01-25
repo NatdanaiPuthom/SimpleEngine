@@ -52,7 +52,8 @@ namespace Editor
 			Global::GetGraphicsEngine()->GetEditorCamera()->Update(Global::GetDeltaTime(), Global::GetEngineHWND());
 		}
 
-		if (MainSingleton::GetInputManager().IsKeyPressed(VK_F5))
+		const Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
+		if (inputManager.IsKeyPressed(VK_F5))
 		{
 			if (Global::IsFullScreen())
 			{
@@ -61,6 +62,18 @@ namespace Editor
 			else
 			{
 				Global::SetWindowSizeNextFrame({ 0,0 }, true);
+			}
+		}
+
+		if (inputManager.IsKeyHeld(VK_CONTROL))
+		{
+			if (inputManager.IsKeyPressed('Z'))
+			{
+				myCommandTracker.UndoCommand();
+			}
+			else if (inputManager.IsKeyPressed('Y'))
+			{
+				myCommandTracker.RedoCommand();
 			}
 		}
 
@@ -88,10 +101,10 @@ namespace Editor
 
 	void EditorEngine::SetUpDefaultLayout()
 	{
-		std::unique_ptr<MenuTabDefault> sceneTab = std::make_unique< MenuTabDefault>("Scene");
-		std::unique_ptr<MenuTabWindow> windowsTab = std::make_unique< MenuTabWindow>("Windows");
-		std::unique_ptr<MenuTabDefault> settingsTab = std::make_unique< MenuTabDefault>("Settings");
-		std::unique_ptr<MenuTabDefault> helpTab = std::make_unique< MenuTabDefault>("Help");
+		std::unique_ptr<MenuTabDefault> sceneTab = std::make_unique<MenuTabDefault>("Scene");
+		std::unique_ptr<MenuTabWindow> windowsTab = std::make_unique<MenuTabWindow>("Windows");
+		std::unique_ptr<MenuTabDefault> settingsTab = std::make_unique<MenuTabDefault>("Settings");
+		std::unique_ptr<MenuTabDefault> helpTab = std::make_unique<MenuTabDefault>("Help");
 
 		std::unique_ptr<MenuItemButton> sceneSaveButton = std::make_unique<MenuItemButton>("Save");
 		std::unique_ptr<MenuItemSelectable> sceneLoadSelectable = std::make_unique<MenuItemSelectable>("Load");
@@ -118,7 +131,7 @@ namespace Editor
 		std::shared_ptr<CameraControlsGuidePopUp> cameraHelpPopUp = std::make_shared<CameraControlsGuidePopUp>("Editor Camera Control");
 		std::shared_ptr<DeferredPopUp> deferredPopUp = std::make_shared<DeferredPopUp>("Deferred Window");
 		std::shared_ptr<PostProcessPopUp> postProcessPopUp = std::make_shared<PostProcessPopUp>("PostProcess Window");
-		std::shared_ptr<EditorPopUp> editorPopUp = std::make_shared<EditorPopUp>("Editor Window");
+		std::shared_ptr<EditorPopUp> editorPopUp = std::make_shared<EditorPopUp>("Editor Window", &myCommandTracker);
 		std::shared_ptr<AssetBrowserPopUp> assetBrowserPopUp = std::make_shared<AssetBrowserPopUp>("AssetBrowser Window");
 		std::shared_ptr<NodeScriptingWindow> nodeScriptingPopUp = std::make_shared<NodeScriptingWindow>("NodeScripting Window");
 

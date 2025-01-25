@@ -37,39 +37,30 @@ namespace Editor
 		{
 			DoCommand(Command(compositeCommand.value(), compositeCommand->GetName()));
 		}
-
-		/*if (endCode == CompositeCommand::eEndCode::Ended)
-		{
-			std::unique_ptr<CompositeCommand> tempCommand = std::move(myCurrentCompositeCommand);
-			myCurrentCompositeCommand.reset();
-			DoCommand(Command(*std::move(tempCommand), tempCommand->GetName()));
-		}
-		else if (endCode == CompositeCommand::eEndCode::Ended_Empty)
-		{
-			myCurrentCompositeCommand.reset();
-		}*/
 	}
 
-	void CommandTracker::UndoCommand()
+	void CommandTracker::UndoCommand(const bool aDebugPrint)
 	{
-		if (!myUndoStack.empty())
+		if (myUndoStack.empty())
 		{
-			Command& topCommand = myUndoStack.top();
-			topCommand.UndoCommand();
-			myRedoStack.push(std::move(topCommand));
-			myUndoStack.pop();
+			return;
 		}
+		Command& topCommand = myUndoStack.top();
+		topCommand.UndoCommand(aDebugPrint);
+		myRedoStack.push(std::move(topCommand));
+		myUndoStack.pop();
 	}
 
-	void CommandTracker::RedoCommand()
+	void CommandTracker::RedoCommand(const bool aDebugPrint)
 	{
-		if (!myRedoStack.empty())
+		if (myRedoStack.empty())
 		{
-			Command& topCommand = myRedoStack.top();
-			topCommand.DoCommand();
-			myUndoStack.push(std::move(topCommand));
-			myRedoStack.pop();
+			return;
 		}
+		Command& topCommand = myRedoStack.top();
+		topCommand.DoCommand(aDebugPrint);
+		myUndoStack.push(std::move(topCommand));
+		myRedoStack.pop();
 	}
 
 	size_t CommandTracker::GetUndoSize() const
@@ -92,7 +83,7 @@ namespace Editor
 
 		if (aExecute)
 		{
-			aCommand.DoCommand();
+			aCommand.DoCommand(false);
 		}
 
 		myUndoStack.push(std::move(aCommand));

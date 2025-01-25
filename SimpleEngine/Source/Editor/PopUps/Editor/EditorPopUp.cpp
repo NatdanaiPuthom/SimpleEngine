@@ -8,8 +8,9 @@
 
 namespace Editor
 {
-	EditorPopUp::EditorPopUp(const std::string& aName) : PopUp(aName)
+	EditorPopUp::EditorPopUp(const std::string& aName, CommandTracker* aCommandTracker) : PopUp(aName)
 		, myShowAdvanced(false)
+		, myCommandTracker(aCommandTracker)
 	{
 	}
 
@@ -126,67 +127,7 @@ namespace Editor
 			const ImVec2 size = ImGui::GetContentRegionAvail();
 			ImGui::Image(textureID, size);
 
-			if (EditorEngine::mySelectedEntityID != static_cast<size_t>(-1)) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
-			{
-				const ImVec2 topLeft = ImGui::GetItemRectMin();
-				const ImVec2 bottomRight = ImGui::GetItemRectMax();
-				ImGuizmo::SetOrthographic(false);
-				ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
-				ImGuizmo::SetRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
-
-				ECS::Entity& selectedEntity = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(EditorEngine::mySelectedEntityID);
-				ECS::TransformComponent* transformComponent = selectedEntity.GetComponent<ECS::TransformComponent>();
-
-				if (transformComponent != nullptr)
-				{
-					const Graphics::Camera* camera = Global::GetGraphicsEngine()->GetCurrentCamera();
-
-					Math::Matrix4x4f objectMatrix = transformComponent->transform.GetMatrix();
-					const Math::Matrix4x4f view = camera->GetViewMatrix();
-					const Math::Matrix4x4f proj = camera->GetProjectionMatrix();
-
-					static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
-
-					if (!MainSingleton::GetInputManager().GetMouseIsHidden() && !MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL))
-					{
-						if (MainSingleton::GetInputManager().IsKeyPressed('T'))
-						{
-							operation = ImGuizmo::OPERATION::TRANSLATE;
-						}
-						else if (MainSingleton::GetInputManager().IsKeyPressed('R'))
-						{
-							operation = ImGuizmo::OPERATION::ROTATE;
-						}
-						else if (MainSingleton::GetInputManager().IsKeyPressed('S'))
-						{
-							operation = ImGuizmo::OPERATION::SCALE;
-						}
-					}
-
-					if (ImGuizmo::Manipulate(&view(1, 1),
-						&proj(1, 1),
-						operation,
-						ImGuizmo::MODE::WORLD,
-						&objectMatrix(1, 1)
-					))
-					{
-						switch (operation)
-						{
-						case ImGuizmo::OPERATION::TRANSLATE:
-							transformComponent->transform.SetPosition(objectMatrix.GetPosition());
-							break;
-						case ImGuizmo::OPERATION::ROTATE:
-							transformComponent->transform.SetMatrix(objectMatrix);
-							break;
-						case ImGuizmo::OPERATION::SCALE:
-							transformComponent->transform.SetScale(objectMatrix.GetScale());
-							break;
-						default:
-							break;
-						}
-					}
-				}
-			}
+			ShowEntityTransformGizmo();
 		}
 		ImGui::End();
 
@@ -256,6 +197,93 @@ namespace Editor
 			ImVec2 windowPos = ImGui::GetWindowPos();
 			ImGuizmo::ViewManipulate(&view(1, 1), 16, ImVec2(windowPos.x + 775, windowPos.y + 375), ImVec2(64, 64), 0x00000000);
 		}
+	}
+
+	void EditorPopUp::ShowEntityTransformGizmo()
+	{
+		if (EditorEngine::mySelectedEntityID == static_cast<size_t>(-1)) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
+		{
+			return;
+		}
+		const ImVec2 topLeft = ImGui::GetItemRectMin();
+		const ImVec2 bottomRight = ImGui::GetItemRectMax();
+		ImGuizmo::SetOrthographic(false);
+		ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
+		ImGuizmo::SetRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+
+		ECS::EntityID selectedEntityID = EditorEngine::mySelectedEntityID;
+		ECS::Entity& selectedEntity = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(selectedEntityID);
+		ECS::TransformComponent* transformComponent = selectedEntity.GetComponent<ECS::TransformComponent>();
+
+		if (transformComponent == nullptr)
+		{
+			return;
+		}
+		const Graphics::Camera* camera = Global::GetGraphicsEngine()->GetCurrentCamera();
+
+		Math::Matrix4x4f objectMatrix = transformComponent->transform.GetMatrix();
+		const Math::Matrix4x4f view = camera->GetViewMatrix();
+		const Math::Matrix4x4f proj = camera->GetProjectionMatrix();
+
+		static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
+
+		const Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
+		if (!inputManager.GetMouseIsHidden() && !inputManager.IsKeyHeld(VK_CONTROL))
+		{
+			if (inputManager.IsKeyPressed('T'))
+			{
+				operation = ImGuizmo::OPERATION::TRANSLATE;
+			}
+			else if (inputManager.IsKeyPressed('R'))
+			{
+				operation = ImGuizmo::OPERATION::ROTATE;
+			}
+			else if (inputManager.IsKeyPressed('S'))
+			{
+				operation = ImGuizmo::OPERATION::SCALE;
+			}
+		}
+
+		const bool isManipulatingEntityTransform = ImGuizmo::Manipulate(&view(1, 1),
+			&proj(1, 1),
+			operation,
+			ImGuizmo::MODE::WORLD,
+			&objectMatrix(1, 1)
+		);
+
+		if (isManipulatingEntityTransform && inputManager.IsKeyDown(VK_LBUTTON) && !myIsDraggingEntity)
+		{
+			myIsDraggingEntity = true;
+			mySetEntityTransformCommand.myEntityID = selectedEntityID;
+			mySetEntityTransformCommand.myOldTransform = transformComponent->transform;
+		}
+
+		if (isManipulatingEntityTransform)
+		{
+			switch (operation)
+			{
+			case ImGuizmo::OPERATION::TRANSLATE:
+				transformComponent->transform.SetPosition(objectMatrix.GetPosition());
+				break;
+			case ImGuizmo::OPERATION::ROTATE:
+				transformComponent->transform.SetMatrix(objectMatrix);
+				break;
+			case ImGuizmo::OPERATION::SCALE:
+				transformComponent->transform.SetScale(objectMatrix.GetScale());
+				break;
+			default:
+				break;
+			}
+		}
+
+		
+		if (inputManager.IsKeyReleased(VK_LBUTTON) && myIsDraggingEntity && selectedEntityID == mySetEntityTransformCommand.myEntityID)
+		{
+			myIsDraggingEntity = false;
+			mySetEntityTransformCommand.myNewTransform = transformComponent->transform;
+			myCommandTracker->RegisterCommand(Command(mySetEntityTransformCommand, "Set Entity Transform"));
+		}
+
 	}
 
 	void EditorPopUp::ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)

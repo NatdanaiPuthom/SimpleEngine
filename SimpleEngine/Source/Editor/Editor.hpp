@@ -1,6 +1,7 @@
 #pragma once
 #include "Editor/Core/PopUp.hpp"
 #include "Editor/Core/Base/MenuItemTabBase.hpp"
+#include "Editor/Command/Core/EditorCommandTracker.hpp"
 #include <vector>
 #include <memory>
 #include <string>
@@ -27,6 +28,7 @@ namespace Editor
 	private:
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
 		std::vector<std::unique_ptr<MainMenuTabBase>> myMainMenuTabs;
+		CommandTracker myCommandTracker;
 	};
 
 	template<DerivedFromPopUpWindow T>

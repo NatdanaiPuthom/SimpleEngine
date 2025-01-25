@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include <memory>
-#include "Editor/Command/EditorCommand.hpp"
-#include "Editor/Command/EditorCompositeCommand.hpp"
+#include "Editor/Command/Core/EditorCommand.hpp"
+#include "Editor/Command/Core/EditorCompositeCommand.hpp"
 
 namespace Editor
 {

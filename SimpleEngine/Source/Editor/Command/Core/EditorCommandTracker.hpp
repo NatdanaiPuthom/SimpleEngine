@@ -16,26 +16,23 @@ namespace Editor
 
 		void Clear();
 
-
 		void DoCommand(Command aCommand);
-
 		void RegisterCommand(Command aCommand);
 
 		void BeginComposite(std::string_view aName);
 		void EndComposite();
 
-		void UndoCommand();
-		void RedoCommand();
+		void UndoCommand(const bool aDebugPrint = false);
+		void RedoCommand(const bool aDebugPrint = false);
 
-		size_t GetUndoSize() const;
-		size_t GetRedoSize() const;
+		[[nodiscard]] size_t GetUndoSize() const;
+		[[nodiscard]] size_t GetRedoSize() const;
 
 	private:
 
 		void DoCommandInternal(bool aExecute, Command&& aCommand);
 
 	private:
-
 
 		std::stack<Command> myUndoStack;
 		std::stack<Command> myRedoStack;

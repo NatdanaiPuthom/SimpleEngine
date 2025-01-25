@@ -19,6 +19,13 @@ namespace Editor
 		{ aData.Undo() };
 	};
 
+	template<typename T>
+	concept InternalMemberCommandable = requires(const T & aData)
+	{
+		{ aData.Do(true) };
+		{ aData.Undo(true) };
+	};
+
 	template<typename T, typename Ret, typename... Args>
 	concept ValidCallable = requires(T && aFunc, Args&&... args)
 	{
@@ -34,7 +41,7 @@ namespace Editor
 		
 		Command() = default;
 
-		template<typename T> requires Commandable<T> or MemberCommandable<T>
+		template<typename T> requires Commandable<T> || MemberCommandable<T> || InternalMemberCommandable<T>
 		Command(const T& aData, const std::string& aName)
 			: myConcept(std::make_unique<CommandModel<T>>(aData))
 			, myName(aName)
@@ -49,12 +56,10 @@ namespace Editor
 		{
 		}
 
-
 		Command(const Command& aOther)
-			: myConcept(aOther.myConcept->Clone())
+			: myConcept(aOther.myConcept ? aOther.myConcept->Clone() : nullptr)
 			, myName(aOther.myName)
 		{
-
 		}
 
 		Command(Command&&) = default;
@@ -69,9 +74,8 @@ namespace Editor
 
 		Command& operator=(Command&&) = default;
 
-		void DoCommand() const;
-		void UndoCommand() const;
-
+		void DoCommand(bool aDebugPrint) const;
+		void UndoCommand(bool aDebugPrint) const;
 
 	private:
 
@@ -81,8 +85,8 @@ namespace Editor
 
 			virtual ~CommandConcept() = default;
 
-			virtual void DoCommand() const = 0;
-			virtual void UndoCommand() const = 0;
+			virtual void DoCommand(bool aDebugPrint) const = 0;
+			virtual void UndoCommand(bool aDebugPrint) const = 0;
 
 			virtual std::unique_ptr<CommandConcept> Clone() const = 0;
 
@@ -99,15 +103,14 @@ namespace Editor
 			CommandModel(const T& aData)
 				: myData(aData)
 			{
-
 			}
 
-			void DoCommand() const override
+			void DoCommand(const bool) const override
 			{
 				Do(myData);
 			}
 
-			void UndoCommand() const override
+			void UndoCommand(const bool) const override
 			{
 				Undo(myData);
 			}
@@ -130,17 +133,46 @@ namespace Editor
 			CommandModel(const T& aData)
 				: myData(aData)
 			{
-
 			}
 
-			void DoCommand() const override
+			void DoCommand(const bool) const override
 			{
 				myData.Do();
 			}
 
-			void UndoCommand() const override
+			void UndoCommand(const bool) const override
 			{
 				myData.Undo();
+			}
+
+			std::unique_ptr<CommandConcept> Clone() const override
+			{
+				return std::make_unique<CommandModel<T>>(*this);
+			}
+
+		private:
+
+			T myData;
+		};
+
+		template<InternalMemberCommandable T>
+		class CommandModel<T> final : public CommandConcept
+		{
+		public:
+
+			CommandModel(const T& aData)
+				: myData(aData)
+			{
+			}
+
+			void DoCommand(const bool aDebugPrint) const override
+			{
+				myData.Do(aDebugPrint);
+			}
+
+			void UndoCommand(const bool aDebugPrint) const override
+			{
+				myData.Undo(aDebugPrint);
 			}
 
 			std::unique_ptr<CommandConcept> Clone() const override
@@ -166,12 +198,12 @@ namespace Editor
 			{
 			}
 
-			void DoCommand() const override
+			void DoCommand(const bool aDebugPrint) const override
 			{
 				myDoFunction(myData);
 			}
 
-			void UndoCommand() const override
+			void UndoCommand(const bool aDebugPrint) const override
 			{
 				myUndoFunction(myData);
 			}
@@ -186,13 +218,9 @@ namespace Editor
 			T myData;
 			FunctionType myDoFunction;
 			FunctionType myUndoFunction;
-
-		
 		};
 
-
 	private:
-
 
 		std::unique_ptr<CommandConcept> myConcept;
 		std::string myName;

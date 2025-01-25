@@ -10,19 +10,19 @@ namespace Editor
 	{
 	}
 
-	void CompositeCommand::Do() const
+	void CompositeCommand::Do(const bool aDebugPrint) const
 	{
 		for (const Command& command : myCommands)
 		{
-			command.DoCommand();
+			command.DoCommand(aDebugPrint);
 		}
 	}
 
-	void CompositeCommand::Undo() const
+	void CompositeCommand::Undo(const bool aDebugPrint) const
 	{
 		for (int i = static_cast<int>(myCommands.size()) - 1; i >= 0; --i)
 		{
-			myCommands.at(i).UndoCommand();
+			myCommands[i].UndoCommand(aDebugPrint);
 		}
 	}
 }

@@ -13,8 +13,8 @@ namespace Editor
 		CompositeCommand(std::string aName, std::vector<Command> aCommands);
 
 
-		void Do() const;
-		void Undo() const;
+		void Do(bool aDebugPrint) const;
+		void Undo(bool aDebugPrint) const;
 
 		const std::string& GetName() const
 		{
