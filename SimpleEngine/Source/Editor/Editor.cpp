@@ -121,7 +121,13 @@ namespace Editor
 		std::shared_ptr<EditorPopUp> editorPopUp = std::make_shared<EditorPopUp>("Editor Window");
 		std::shared_ptr<AssetBrowserPopUp> assetBrowserPopUp = std::make_shared<AssetBrowserPopUp>("AssetBrowser Window");
 		std::shared_ptr<NodeScriptingWindow> nodeScriptingPopUp = std::make_shared<NodeScriptingWindow>("NodeScripting Window");
-		assetBrowserPopUp->myNodeScriptingWindow = nodeScriptingPopUp.get();
+
+
+		{	//TO-DO(v12.0.0): Temp should be refactor
+			assetBrowserPopUp->myNodeScriptingWindow = nodeScriptingPopUp.get();
+			assetBrowserPopUp->myNodeScriptParentTab = windowsTab.get();
+			assetBrowserPopUp->myNodeScriptButton = nodeScriptingPopUpButton.get();
+		}
 
 		sceneCreateNewButton->SetCallback(SceneSettingsFunction::CreateNew());
 		sceneCreateCopyButton->SetCallback(SceneSettingsFunction::CreateCopy());

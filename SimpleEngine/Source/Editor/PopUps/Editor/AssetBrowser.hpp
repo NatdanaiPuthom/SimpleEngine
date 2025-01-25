@@ -4,9 +4,13 @@
 
 namespace Editor
 {
-	class ActiveWindowData;
+	class MenuTabWindow;
+	class MenuItemPopUp;
 	class NodeScriptingWindow;
+}
 
+namespace Editor
+{
 	class AssetBrowserPopUp final : public PopUp
 	{
 	public:
@@ -20,8 +24,9 @@ namespace Editor
 		std::string myFilePopUpID;
 		std::string myFileToRemove;
 		bool myCanOpenPopup = false;
-		ActiveWindowData* myActiveWindowData;
 	public:
 		NodeScriptingWindow* myNodeScriptingWindow;
+		MenuTabWindow* myNodeScriptParentTab;
+		MenuItemPopUp* myNodeScriptButton;
 	};
 }

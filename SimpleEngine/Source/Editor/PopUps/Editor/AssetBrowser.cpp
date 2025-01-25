@@ -1,5 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/PopUps/Editor/AssetBrowser.hpp"
+#include "Editor/Core/Tabs/MenuTabWindow.hpp"
 
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "Engine/Debugger/Console/Console.hpp"
@@ -9,7 +10,6 @@
 namespace Editor
 {
 	AssetBrowserPopUp::AssetBrowserPopUp(const std::string& aName) : PopUp(aName)
-		, myActiveWindowData(nullptr)
 		, myNodeScriptingWindow(nullptr)
 	{
 	}
@@ -231,7 +231,7 @@ namespace Editor
 					{
 						if (myNodeScriptingWindow->OpenClassByName(baseName))
 						{
-							//myActiveWindowData->SetActiveWindow(eWindowType::NodeScript);
+							myNodeScriptParentTab->ActiveWindow(myNodeScriptButton, true);
 						}
 					}
 				}

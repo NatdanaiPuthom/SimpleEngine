@@ -12,7 +12,8 @@ namespace Editor
 		MenuTabWindow(const char* aName);
 
 		void Render() override final;
-
+	
+		void ActiveWindow(MenuItemPopUp* aItemPopUp, const bool aShouldActive = true);
 	public:
 		MenuItemPopUp* AddPopUp(std::unique_ptr<MenuItemPopUp> aButton);
 	private:

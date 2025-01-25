@@ -46,6 +46,20 @@ namespace Editor
 		}
 	}
 
+	void MenuTabWindow::ActiveWindow(MenuItemPopUp* aItemPopUp, const bool aShouldActive)
+	{
+		for (size_t i = 0; i < myButtons.size(); ++i)
+		{
+			auto& otherButton = myButtons[i];
+
+			otherButton->SetIsActive(false);
+			otherButton->Invoke();
+		}
+
+		aItemPopUp->SetIsActive(aShouldActive);
+		aItemPopUp->Invoke();
+	}
+
 	MenuItemPopUp* MenuTabWindow::AddPopUp(std::unique_ptr<MenuItemPopUp> aButton)
 	{
 		MenuItemPopUp* buttonPointer = aButton.get();
