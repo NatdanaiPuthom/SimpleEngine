@@ -198,12 +198,12 @@ namespace Editor
 			{
 			}
 
-			void DoCommand(const bool aDebugPrint) const override
+			void DoCommand(const bool) const override
 			{
 				myDoFunction(myData);
 			}
 
-			void UndoCommand(const bool aDebugPrint) const override
+			void UndoCommand(const bool) const override
 			{
 				myUndoFunction(myData);
 			}

@@ -451,7 +451,28 @@ namespace Editor
 
 				if (ImGui::Selectable(aEntities[i].GetName().c_str(), isSelected))
 				{
-					aSelected = i;
+					struct SelectEntityCommandData final
+					{
+						int myNewIndex = -1;
+						int myOldIndex = -1;
+						int* mySelectedEntityIDPtr = nullptr;
+					};
+
+					SelectEntityCommandData selectEntityCommandData;
+					selectEntityCommandData.myNewIndex = i;
+					selectEntityCommandData.myOldIndex = aSelected;
+					selectEntityCommandData.mySelectedEntityIDPtr = &aSelected;
+
+					auto doSelectEntity = [](const SelectEntityCommandData& aData)
+						{
+							*aData.mySelectedEntityIDPtr = aData.myNewIndex;
+						};
+					auto undoSelectEntity = [](const SelectEntityCommandData& aData)
+						{
+							*aData.mySelectedEntityIDPtr = aData.myOldIndex;
+						};
+
+					myCommandTracker->DoCommand(Command(selectEntityCommandData, doSelectEntity, undoSelectEntity, "Select Entity"));
 				}
 
 				if (isSelected)
