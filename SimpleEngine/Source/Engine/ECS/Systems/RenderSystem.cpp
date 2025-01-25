@@ -171,7 +171,15 @@ namespace ECS
 			graphicsEngine->GetConstantBufferManager()->UpdateSkyBoxConstantBuffer(skyBoxComponent->useSkyBoxFlooring);
 			skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
 
-			renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
+			if (skyBoxComponent->useUnityShader == true)
+			{
+				const Graphics::Shader* unityShader = graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::SkyBox_Unity).get();
+				renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, unityShader, skyBoxComponent->texture);
+			}
+			else
+			{
+				renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
+			}
 		}
 
 		if (entitiesWithDirectionalLightComponent.empty() == false)
