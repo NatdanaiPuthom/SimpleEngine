@@ -22,6 +22,7 @@ namespace Simple
 
 		std::vector<std::pair<Collider*, Collider*>> detectedCollisions;
 
+
 		for (int i = 0; i < static_cast<int>(myColliders.size()) - 1; i++)
 		{
 			for (int j = i + 1; j < myColliders.size(); j++)

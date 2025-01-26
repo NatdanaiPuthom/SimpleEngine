@@ -104,6 +104,12 @@ namespace Editor
 		}
 	}
 
+
+	CommandTracker& EditorEngine::GetCommandTracker()
+	{
+		return myCommandTracker;
+	}
+
 	void EditorEngine::SetUpDefaultLayout()
 	{
 		MenuTabDefault* sceneTab = AddMenuTab<MenuTabDefault>("Scene");

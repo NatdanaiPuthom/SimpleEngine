@@ -105,7 +105,7 @@ namespace Simple
 
 		DynamicMemoryArenaHandle memoryHandle{ GetSize() };
 		mySize += aSize;
-		aInplaceAllocateFunction(MemoryAt(memoryHandle));
+		aInplaceAllocateFunction(MemoryAt(memoryHandle), nullptr);
 
 		myObjects.push_back(
 			MemoryObject

@@ -20,7 +20,7 @@ namespace Editor
 		void Init();
 		void Update();
 		void Render();
-
+		CommandTracker& GetCommandTracker();
 	private:
 		template<DerivedFromPopUpWindow T>
 		std::shared_ptr<T> AddPopUpWindow(const char* aName);

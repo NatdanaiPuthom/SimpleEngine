@@ -13,7 +13,7 @@ namespace Simple
 			return myID;
 		}
 	};
-	
+
 	template<typename, typename...>
 	class FunctionPtrWrapper;
 
@@ -22,7 +22,7 @@ namespace Simple
 	{
 		using FunctionType = Ret(Args...);
 	public:
-		
+
 		constexpr FunctionPtrWrapper(FunctionType* aFunctionPtr)
 			: myFunctionPtr(aFunctionPtr)
 		{
@@ -43,9 +43,9 @@ namespace Simple
 		FunctionType* myFunctionPtr = nullptr;
 	};
 
-	struct InplaceAllocateFunction final : FunctionPtrWrapper<void(void*)>
+	struct InplaceAllocateFunction final : FunctionPtrWrapper<void(void*, const void*)>
 	{
-		using FunctionPtrWrapper<void(void*)>::FunctionPtrWrapper;
+		using FunctionPtrWrapper<void(void*, const void*)>::FunctionPtrWrapper;
 	};
 
 	struct DestructFunction final : FunctionPtrWrapper<void(void*)>
@@ -64,9 +64,17 @@ namespace Simple
 		template<typename T>
 		constexpr InplaceAllocateFunction CreateInplaceAllocateFunction()
 		{
-			return [](void* aPtr) -> void
+			return [](void* aPtr, const void* aDefaultValuePtr) -> void
 				{
-					new(aPtr)T();
+					if (aDefaultValuePtr)
+					{
+						const T& defaultValue = *reinterpret_cast<const T*>(aDefaultValuePtr);
+						new(aPtr)T(defaultValue);
+					}
+					else
+					{
+						new(aPtr)T();
+					}
 				};
 		}
 

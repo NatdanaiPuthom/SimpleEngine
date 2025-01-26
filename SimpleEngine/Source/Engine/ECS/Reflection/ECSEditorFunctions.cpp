@@ -8,6 +8,7 @@
 #include "Graphics/Texture/Texture.hpp"
 #include "Graphics/BufferData.hpp"
 #include "Graphics/Camera/Camera.hpp"
+#include "Engine/Collision/CollisionShape.hpp"
 
 #include "NodeScript/Fly.hpp"
 #include "NodeScript/Instance/FlyClassInstance.hpp"
@@ -322,6 +323,188 @@ namespace ECS
 		return viewAndEditResult;
 	}
 
+	template<typename ShapeType>
+	static constexpr const char* GetShapeName()
+	{
+		if constexpr (std::same_as<ShapeType, Simple::Sphere>)
+		{
+			return "Sphere";
+		}
+		else if constexpr (std::same_as<ShapeType, Simple::AABB3D>)
+		{
+			return "AABB";
+		}
+		else if constexpr (std::same_as<ShapeType, Simple::Ray>)
+		{
+			return "Ray";
+		}
+		else
+		{
+			return "Null";
+		}
+	}
+
+	static constexpr const char* GetCurrentSelectedCollisionShapeName(const Simple::CollisionShape& aCollisionShape)
+	{
+		if (const Simple::Sphere* sphere = std::get_if<Simple::Sphere>(&aCollisionShape))
+		{
+			return GetShapeName<Simple::Sphere>();
+		}
+		else if (const Simple::AABB3D* aabb = std::get_if<Simple::AABB3D>(&aCollisionShape))
+		{
+			return GetShapeName<Simple::AABB3D>();
+		}
+		else if (const Simple::Ray* ray = std::get_if<Simple::Ray>(&aCollisionShape))
+		{
+			return GetShapeName<Simple::Ray>();
+		}
+
+		return "Null";
+	}
+
+	template<typename ShapeType>
+	static bool ShowShapeSelectable(Simple::CollisionShape& aCollisionShape)
+	{
+		ShapeType* shape = std::get_if<ShapeType>(&aCollisionShape);
+		const bool isSelected = shape != nullptr;
+		if (ImGui::Selectable(GetShapeName<ShapeType>(), isSelected))
+		{
+			if (!isSelected)
+			{
+
+				aCollisionShape = ShapeType{};
+				return true;
+			}
+		}
+
+
+		return false;
+	}
+
+	template<typename Type, typename... Types, typename... VariantTypes>
+	static ComponentHashCode GetVariantHashCodeInternal(const std::variant<VariantTypes...>& aVariant)
+	{
+		const Type* value = std::get_if<Type>(&aVariant);
+		if (value != nullptr)
+		{
+			return typeid(Type).hash_code();
+		}
+
+		if constexpr (sizeof...(Types) > 0)
+		{
+			return GetVariantHashCodeInternal<Types...>(aVariant);
+		}
+		else
+		{
+			return std::numeric_limits<size_t>::max();
+		}
+	}
+
+	template<typename... VariantTypes>
+	static ComponentHashCode GetVariantHashCode(const std::variant<VariantTypes...>& aVariant)
+	{
+		return GetVariantHashCodeInternal<VariantTypes...>(aVariant);
+	}
+
+	template<typename Type, typename... Types, typename... VariantTypes>
+	static void* GetVariantDataPtrInternal(std::variant<VariantTypes...>& aVariant)
+	{
+		Type* value = std::get_if<Type>(&aVariant);
+		if (value != nullptr)
+		{
+			return value;
+		}
+
+		if constexpr (sizeof...(Types) > 0)
+		{
+			return GetVariantDataPtrInternal<Types...>(aVariant);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	template<typename... VariantTypes>
+	static void* GetVariantDataPtr(std::variant<VariantTypes...>& aVariant)
+	{
+		return GetVariantDataPtrInternal<VariantTypes...>(aVariant);
+	}
+
+	ViewAndEditResult ViewAndEditValue(Simple::CollisionShape& aCollisionShape, const std::string& /*aVariableName*/)
+	{
+		ViewAndEditResult viewAndEditResult;
+
+		if (ImGui::BeginCombo("Shape Type", GetCurrentSelectedCollisionShapeName(aCollisionShape)))
+		{
+			viewAndEditResult.myIsEdited |= ShowShapeSelectable<Simple::Sphere>(aCollisionShape);
+			viewAndEditResult.myIsEdited |= ShowShapeSelectable<Simple::AABB3D>(aCollisionShape);
+			viewAndEditResult.myIsEdited |= ShowShapeSelectable<Simple::Ray>(aCollisionShape);
+
+			viewAndEditResult.myIsActive = true;
+
+			ImGui::EndCombo();
+		}
+
+
+		viewAndEditResult |= MainSingleton::GetComponentRegistry()->InspectComponentProperties(GetVariantHashCode(aCollisionShape), GetVariantDataPtr(aCollisionShape));
+
+		return viewAndEditResult;
+	}
+
+	ViewAndEditResult ViewAndEditValue(Simple::AABB3D& aAABB, const std::string& /*aVariableName*/)
+	{
+		ViewAndEditResult viewAndEditResult;
+
+		{
+			Math::Vector3f center = aAABB.GetCenter();
+			ViewAndEditResult centerViewAndEditResult = ViewAndEditValue(center, "Center");
+			viewAndEditResult |= centerViewAndEditResult;
+			if (centerViewAndEditResult.myIsEdited)
+			{
+				aAABB.SetCenter(center);
+			}
+		}
+		{
+			Math::Vector3f extent = aAABB.GetExtent();
+			ViewAndEditResult extentViewAndEditResult = ViewAndEditValue(extent, "Extent");
+			viewAndEditResult |= extentViewAndEditResult;
+			if (extentViewAndEditResult.myIsEdited)
+			{
+				aAABB.SetExtent(extent);
+			}
+		}
+
+		return viewAndEditResult;
+	}
+
+	ViewAndEditResult ViewAndEditValue(Simple::Ray& aRay, const std::string& /*aVariableName*/)
+	{
+		ViewAndEditResult viewAndEditResult;
+
+		{
+			Math::Vector3f origin = aRay.GetOrigin();
+			ViewAndEditResult originViewAndEditResult = ViewAndEditValue(origin, "Origin");
+			viewAndEditResult |= originViewAndEditResult;
+			if (originViewAndEditResult.myIsEdited)
+			{
+				aRay.SetOrigin(origin);
+			}
+		}
+		{
+			Math::Vector3f direction = aRay.GetDirection();
+			ViewAndEditResult directionViewAndEditResult = ViewAndEditValue(direction, "Direction");
+			viewAndEditResult |= directionViewAndEditResult;
+			if (directionViewAndEditResult.myIsEdited)
+			{
+				direction.Normalize();
+				aRay.SetDirection(direction);
+			}
+		}
+
+		return viewAndEditResult;
+	}
+
 	ViewAndEditResult ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& /*aVariableName*/)
 	{
 		ViewAndEditResult viewAndEditResult;
@@ -492,7 +675,7 @@ namespace ECS
 					{
 						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
 						aTexture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(fileName.c_str()).get();
-						viewAndEditResult.myIsEdited = true; 
+						viewAndEditResult.myIsEdited = true;
 						viewAndEditResult.myIsActive = true;
 					}
 					ImGui::EndDragDropTarget();

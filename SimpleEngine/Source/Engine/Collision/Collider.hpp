@@ -8,13 +8,12 @@
 
 namespace Simple
 {
-
 	using Shape = std::variant<Sphere, AABB3D, Ray>;
 
 	class Collider
 	{
-		friend class CollisionSystem;
 		using CollisionCallback = std::function<void(Collider* aCollider)>;
+		friend class CollisionSystem;
 	public:
 
 		Collider() = default;
@@ -74,7 +73,7 @@ namespace Simple
 			return std::find(begin(myCurrentFrameCollisions), end(myCurrentFrameCollisions), &aCollider) != end(myCurrentFrameCollisions);
 		}
 
-	private:
+	public:
 
 		Shape myShape;
 

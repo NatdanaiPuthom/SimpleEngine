@@ -4,5 +4,8 @@
 
 namespace Editor
 {
-	
+	CommandTracker& EditorProxy::GetCommandTracker()
+	{
+		return myEditorEngine->GetCommandTracker();
+	}
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "Editor/Core/PopUp.hpp"
-#include "Editor/Command/Commands/SetEntityTransformCommand.hpp"
+#include "Editor/Tools/TransformEntityTool.hpp"
 #include <memory>
 #include <string>
 #include <vector>
@@ -30,7 +30,6 @@ namespace Editor
 		void RemoveMeLaterLater();
 		ECS::Entity* GetSelectedEntity() const;
 	private:
-		void ShowEntityTransformGizmo();
 		void ShowInspector(ECS::EntityComponentSystem& aActiveECS);
 		void ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS);
 		void ShowComponents(ECS::Entity& aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const;
@@ -46,8 +45,7 @@ namespace Editor
 		std::vector<ECS::EntityID> myVisibleEntityIDs;
 		CommandTracker* myCommandTracker = nullptr;
 		size_t mySelectedEntityIndex = 0;
-		SetEntityTransformCommand mySetEntityTransformCommand;
-		bool myIsDraggingEntity = false;
 		bool myShowAdvanced = false;
+		TransformEntityTool myTransformEntityTool;
 	};
 }

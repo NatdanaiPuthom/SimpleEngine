@@ -9,7 +9,6 @@ namespace ECS
 	{
 	public:
 		ECSCollisionSystem();
-		~ECSCollisionSystem();
 
 		void Init(EntityComponentSystem*) override;
 		void Update(EntityComponentSystem*) override;
@@ -17,15 +16,8 @@ namespace ECS
 
 		std::unique_ptr<System> Clone() const override;
 
-		void OnKnifePickup(Simple::Collider*);
-		void OnKnifeHovered(Simple::Collider*);
-
 	private:
-		
-		Simple::Collider* myKnifeCollider = nullptr;
-		Simple::Collider* myEnemyCollider = nullptr;
-		Simple::Collider* myRayCollider = nullptr;
 
-		Simple::CollisionSystem myCollisionSystem;
+		std::vector<std::pair<EntityID, EntityID>> myPreviousFrameCollisions;
 	};
 }

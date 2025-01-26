@@ -10,6 +10,8 @@ namespace Editor
 		EditorProxy() = delete;
 		~EditorProxy() = delete;
 
+		static CommandTracker& GetCommandTracker();
+
 	private:
 		inline static EditorEngine* myEditorEngine = nullptr;
 	};

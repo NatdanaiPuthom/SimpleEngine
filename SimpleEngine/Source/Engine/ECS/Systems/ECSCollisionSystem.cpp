@@ -4,6 +4,7 @@
 #include "Engine/engine.hpp"
 #include "Global.hpp"
 #include "Collision/CollisionFunctions.hpp"
+#include "Engine/ECS/Components/Core/ColliderComponent.hpp"
 
 using namespace Simple;
 
@@ -13,57 +14,115 @@ namespace ECS
 	{
 	}
 
-	ECSCollisionSystem::~ECSCollisionSystem()
-	{
-	}
-
 	void ECSCollisionSystem::Init(EntityComponentSystem*)
 	{
 
-		myKnifeCollider = &myCollisionSystem.CreateCollider(Sphere(Math::Vector3f(0, 7, 0), 5.f), eCollisionLayer::Interactable, eCollisionLayer::None);
-		myEnemyCollider = &myCollisionSystem.CreateCollider(AABB3D(Math::Vector3f(0, 0, 0), Math::Vector3f(5, 5, 3)), eCollisionLayer::Enemy, eCollisionLayer::Player | eCollisionLayer::Wall);
-		myRayCollider = &myCollisionSystem.CreateCollider(Ray(), eCollisionLayer::Player, eCollisionLayer::Interactable | eCollisionLayer::Enemy);
-
-		myKnifeCollider->SetColor(Colors::Green);
-		myEnemyCollider->SetColor(Colors::Blue);
-		myRayCollider->SetColor(Colors::Red);
-
-		myKnifeCollider->SetOnEnterCallback(std::bind(&ECSCollisionSystem::OnKnifePickup, this, std::placeholders::_1));
-		myKnifeCollider->SetOnOverlapCallback(std::bind(&ECSCollisionSystem::OnKnifeHovered, this, std::placeholders::_1));
-		myKnifeCollider->SetOnExitCallback([](Collider*) -> void { std::cout << "Knife exit!" << std::endl; });
-		//myEnemyCollider->SetOnEnterCallback([](Collider*) -> void { std::cout << "Enemy Collided!" << std::endl; });
-		//myRayCollider->SetOnEnterCallback([](Collider*) -> void { std::cout << "Ray Collided!" << std::endl; });
 	}
 
-	void ECSCollisionSystem::Update(EntityComponentSystem*)
+	void ECSCollisionSystem::Update(EntityComponentSystem* aECS)
 	{
+		auto& entityIDsSet = aECS->GetEntityIDsWithThisComponent<ColliderComponent>();
+
+		std::vector<EntityID> entityIDs(begin(entityIDsSet), end(entityIDsSet));
+
+		for (ECS::EntityID entityID : entityIDs)
+		{
+			ColliderComponent* colliderComponent = aECS->GetComponent<ColliderComponent>(entityID);
+			ColliderComponentFunctions::UpdateFrameCollisions(*colliderComponent);
+		}
+
+		std::vector<std::pair<EntityID, EntityID>> detectedCollisions;
+
+		for (int i = 0; i < static_cast<int>(entityIDs.size()) - 1; i++)
+		{
+			for (int j = i + 1; j < entityIDs.size(); j++)
+			{
+				ECS::EntityID entityID1 = entityIDs[i];
+				ECS::EntityID entityID2 = entityIDs[i];
+				ColliderComponent* colliderComponent1 = aECS->GetComponent<ColliderComponent>(entityID1);
+				ColliderComponent* colliderComponent2 = aECS->GetComponent<ColliderComponent>(entityID2);
+				if ((colliderComponent1->myOwnCollisionLayer & colliderComponent2->myCollidesWithLayer) == eCollisionLayer::None &&
+					(colliderComponent2->myOwnCollisionLayer & colliderComponent1->myCollidesWithLayer) == eCollisionLayer::None)
+				{
+					continue;
+				}
+
+				if (ColliderComponentFunctions::DoesCollideWith(colliderComponent1->myShape, colliderComponent2->myShape))
+				{
+					detectedCollisions.push_back({ entityID1, entityID2 });
+					colliderComponent1->myCurrentFrameCollisions.push_back(entityID2);
+					colliderComponent2->myCurrentFrameCollisions.push_back(entityID1);
+				}
+			}
+		}
+
+		for (const auto& collision : detectedCollisions)
+		{
+			EntityID entityID1 = collision.first;
+			EntityID entityID2 = collision.second;
+
+			ColliderComponent* colliderComponent1 = aECS->GetComponent<ColliderComponent>(entityID1);
+			ColliderComponent* colliderComponent2 = aECS->GetComponent<ColliderComponent>(entityID2);
+
+			if (!ColliderComponentFunctions::DidCollidePreviousFrame(*colliderComponent1, entityID2))
+			{
+				if (colliderComponent1->myOnEnterCallback)
+				{
+					colliderComponent1->myOnEnterCallback(entityID2);
+				}
+				if (colliderComponent2->myOnEnterCallback)
+				{
+					colliderComponent2->myOnEnterCallback(entityID1);
+				}
+			}
+
+			if (colliderComponent1->myOnOverlapCallback)
+			{
+				colliderComponent1->myOnOverlapCallback(entityID2);
+			}
+			if (colliderComponent2->myOnOverlapCallback)
+			{
+				colliderComponent2->myOnOverlapCallback(entityID1);
+			}
+		}
+
+		for (const auto& collision : myPreviousFrameCollisions)
+		{
+			EntityID entityID1 = collision.first;
+			EntityID entityID2 = collision.second;
+
+			ColliderComponent* colliderComponent1 = aECS->GetComponent<ColliderComponent>(entityID1);
+			ColliderComponent* colliderComponent2 = aECS->GetComponent<ColliderComponent>(entityID2);
+			if (!ColliderComponentFunctions::DidCollideCurrentFrame(*colliderComponent1, entityID2))
+			{
+				if (colliderComponent1->myOnExitCallback)
+				{
+					colliderComponent1->myOnExitCallback(entityID2);
+				}
+				if (colliderComponent2->myOnExitCallback)
+				{
+					colliderComponent2->myOnExitCallback(entityID1);
+				}
+			}
+		}
+
+		myPreviousFrameCollisions = detectedCollisions;
 	}
 
-	void ECSCollisionSystem::Render(EntityComponentSystem*)
+	void ECSCollisionSystem::Render(EntityComponentSystem* aECS)
 	{
-		myRayCollider->GetShape<Ray>() = Global::GetMouseRay();
+		auto& entityIDsSet = aECS->GetEntityIDsWithThisComponent<ColliderComponent>();
 
-		/*myCollisionSystem.RenderColliders();
-
-		myCollisionSystem.ProcessCollisions();*/
-
-		//std::vector<Collider*> colliders = myCollisionSystem.PollCollisions(Ray());
+		for (auto& entityID : entityIDsSet)
+		{
+			ColliderComponent* colliderComponent = aECS->GetComponent<ColliderComponent>(entityID);
+			ColliderComponentFunctions::Render(*colliderComponent);
+		}
 	}
 
 	std::unique_ptr<System> ECSCollisionSystem::Clone() const
 	{
 		return std::make_unique<ECSCollisionSystem>(*this);
-	}
-
-
-	void ECSCollisionSystem::OnKnifePickup(Collider*)
-	{
-		std::cout << "Knife pickup!" << std::endl;
-	}
-
-	void ECSCollisionSystem::OnKnifeHovered(Collider*)
-	{
-		std::cout << "Knife hovered!" << std::endl;
 	}
 }
 

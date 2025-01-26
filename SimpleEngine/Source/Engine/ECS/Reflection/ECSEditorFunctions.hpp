@@ -3,6 +3,7 @@
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Vector4.hpp"
 #include "Engine/Math/Transform.hpp"
+#include "Engine/Collision/CollisionShape.hpp"
 
 #include <string>
 #include <array>
@@ -48,7 +49,7 @@ namespace ECS
 		bool myIsActive = false;
 		bool myIsEdited = false;
 
-		void operator |=(const ViewAndEditResult aOther)
+		void operator|=(const ViewAndEditResult aOther)
 		{
 			myIsActive |= aOther.myIsActive;
 			myIsEdited |= aOther.myIsEdited;
@@ -73,6 +74,9 @@ namespace ECS
 	ViewAndEditResult ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName);
 	ViewAndEditResult ViewAndEditValue(Graphics::PointLightData& aPointLightData, const std::string& aVariableName);
 	ViewAndEditResult ViewAndEditValue(Graphics::Camera& aCamera, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(Simple::CollisionShape& aCollisionShape, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(Simple::AABB3D& aAABB, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(Simple::Ray& aRay, const std::string& aVariableName);
 
 	ViewAndEditResult ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& aVariableName);
 	ViewAndEditResult ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& aVariableName);
