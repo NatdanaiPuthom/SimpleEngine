@@ -21,7 +21,7 @@ namespace Graphics
 
 namespace Fly
 {
-	class ClassInstanceFacade;
+	class ClassInstanceProxy;
 }
 
 namespace ECS
@@ -43,34 +43,49 @@ namespace ECS
 
 namespace ECS
 {
-	bool ViewAndEditValue(char& aValue, const std::string& aVariableName);
+	struct ViewAndEditResult final
+	{
+		bool myIsActive = false;
+		bool myIsEdited = false;
 
-	bool ViewAndEditValue(bool& aValue, const std::string& aVariableName);
-	bool ViewAndEditValue(int& aValue, const std::string& aVariableName);
-	bool ViewAndEditValue(int*& aValue, const std::string& aVariableName);
-	bool ViewAndEditValue(float& aValue, const std::string& aVariableName);
+		void operator |=(const ViewAndEditResult aOther)
+		{
+			myIsActive |= aOther.myIsActive;
+			myIsEdited |= aOther.myIsEdited;
+		}
+	};
+}
 
-	bool ViewAndEditValue(std::string& aValue, const std::string& aVariableName);
+namespace ECS
+{
+	ViewAndEditResult ViewAndEditValue(char& aValue, const std::string& aVariableName);
 
-	bool ViewAndEditValue(Math::Vector2f& aValue, const std::string& aVariableName);
-	bool ViewAndEditValue(Math::Vector3f& aValue, const std::string& aVariableName);
-	bool ViewAndEditValue(Math::Vector4f& aValue, const std::string& aVariableName);
-	bool ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName);
-	bool ViewAndEditValue(Graphics::PointLightData& aPointLightData, const std::string& aVariableName);
-	bool ViewAndEditValue(Graphics::Camera& aCamera, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(bool& aValue, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(int& aValue, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(int*& aValue, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(float& aValue, const std::string& aVariableName);
 
-	bool ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& aVariableName);
-	bool ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& aVariableName);
-	bool ViewAndEditValue(const Graphics::Texture*& aTexture, const std::string& aVariableName);
-	bool ViewAndEditValue(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName);
-	bool ViewAndEditValue(const Graphics::Animation*& aAnimation, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(std::string& aValue, const std::string& aVariableName);
 
-	bool ViewAndEditValue(Fly::ClassInstanceFacade& aClassInstanceView, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(Math::Vector2f& aValue, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(Math::Vector3f& aValue, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(Math::Vector4f& aValue, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(Math::Transform& aValue, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(Graphics::PointLightData& aPointLightData, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(Graphics::Camera& aCamera, const std::string& aVariableName);
 
-	bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(const Graphics::Texture*& aTexture, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(const Graphics::Skeleton*& aSkeleton, const std::string& aVariableName);
+	ViewAndEditResult ViewAndEditValue(const Graphics::Animation*& aAnimation, const std::string& aVariableName);
+
+	ViewAndEditResult ViewAndEditValue(Fly::ClassInstanceProxy& aClassInstanceView, const std::string& aVariableName);
+
+	ViewAndEditResult CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& aVariableName);
 
 	template<typename T, size_t N>
-	bool ViewAndEditValue(std::array<T, N>& aValue, const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(std::array<T, N>& aValue, const std::string& aVariableName)
 	{
 		return CustomViewAndEditValue(aValue, aVariableName);
 	}

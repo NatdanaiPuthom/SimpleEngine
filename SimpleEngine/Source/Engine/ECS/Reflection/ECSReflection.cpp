@@ -43,6 +43,11 @@ namespace ECS
 		myTypeErasureComponents.at(aHashCode).CopyFunctionPointer(aDestination, aSource);
 	}
 
+	void ComponentRegistry::SwapComponent(ComponentHashCode aHashCode, void* aDataPtr1, void* aDataPtr2) const
+	{
+		myTypeErasureComponents.at(aHashCode).SwapFunctionPointer(aDataPtr1, aDataPtr2);
+	}
+
 	size_t ComponentRegistry::GetComponentSize(ComponentHashCode aHashCode) const
 	{
 		return myTypeErasureComponents.at(aHashCode).mySize;
@@ -63,54 +68,62 @@ namespace ECS
 		return myTypeErasureComponents.at(aHashCode).CopyFunctionPointer;
 	}
 
-	void ComponentRegistry::InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName)
+	ViewAndEditResult ComponentRegistry::InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName) const
 	{
 		auto it = myTypeErasureComponents.find(aHashCode);
 
-		if (it != myTypeErasureComponents.end())
+		if (it == myTypeErasureComponents.end())
 		{
-			if (it->second.EditorFunctionPointer != nullptr)
+			return ViewAndEditResult{};
+		}
+
+		if (it->second.EditorFunctionPointer != nullptr)
+		{
+			return it->second.EditorFunctionPointer(aData, aVariableName);
+		}
+
+		ViewAndEditResult viewAndEditResult;
+		for (auto& componentProperty : it->second.myComponentProperties)
+		{
+			if (componentProperty.shouldExpose == false)
 			{
-				it->second.EditorFunctionPointer(aData, aVariableName);
+				continue;
 			}
 
-			for (auto& componentProperty : it->second.myComponentProperties)
+			if (componentProperty.canEdit == false)
 			{
-				if (componentProperty.shouldExpose == false)
-				{
-					continue;
-				}
+				ImGui::BeginDisabled();
+			}
 
-				if (componentProperty.canEdit == false)
-				{
-					ImGui::BeginDisabled();
-				}
+			viewAndEditResult |= ExposeProperty(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.customVariableName);
 
-				ExposeProperty(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.customVariableName);
-
-				if (componentProperty.canEdit == false)
-				{
-					ImGui::EndDisabled();
-				}
+			if (componentProperty.canEdit == false)
+			{
+				ImGui::EndDisabled();
 			}
 		}
+		return viewAndEditResult;
 	}
 
-	void ComponentRegistry::ExposeProperty(size_t aHashCode, void* aData, const std::string& aVariableName)
+	ViewAndEditResult ComponentRegistry::ExposeProperty(size_t aHashCode, void* aData, const std::string& aVariableName) const
 	{
 		auto it = myTypeErasureDataTypes.find(aHashCode);
 
-		if (it != myTypeErasureDataTypes.end())
+		if (it == myTypeErasureDataTypes.end())
 		{
-			if (it->second.EditorFunctionPointer != nullptr)
-			{
-				it->second.EditorFunctionPointer(aData, aVariableName);
-			}
-
-			for (auto& componentProperty : it->second.myComponentProperties)
-			{
-				ExposeProperty(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.name);
-			}
+			return ViewAndEditResult{};
 		}
+
+		if (it->second.EditorFunctionPointer != nullptr)
+		{
+			return it->second.EditorFunctionPointer(aData, aVariableName);
+		}
+
+		ViewAndEditResult viewAndEditResult;
+		for (auto& componentProperty : it->second.myComponentProperties)
+		{
+			viewAndEditResult |= ExposeProperty(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.name);
+		}
+		return viewAndEditResult;
 	}
 }

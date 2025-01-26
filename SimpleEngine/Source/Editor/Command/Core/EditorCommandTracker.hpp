@@ -17,6 +17,8 @@ namespace Editor
 		void Clear();
 
 		void ExecuteCommand(Command aCommand);
+
+		// Register Command without executing it
 		void RegisterCommand(Command aCommand);
 
 		void BeginComposite(std::string_view aName);

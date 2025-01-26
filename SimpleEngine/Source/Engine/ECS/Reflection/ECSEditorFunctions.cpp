@@ -16,9 +16,9 @@
 
 namespace Editor
 {
-	static bool CustomDragFloat3(const char* aLabel, Math::Vector3f& aVector3)
+	static ECS::ViewAndEditResult CustomDragFloat3(const char* aLabel, Math::Vector3f& aVector3)
 	{
-		bool edited = false;
+		ECS::ViewAndEditResult viewAndEditResult;
 
 		const float width = ImGui::GetContentRegionAvail().x / 5.0f;
 
@@ -38,7 +38,7 @@ namespace Editor
 		const char* floatXX = floatX.c_str();
 		if (ImGui::DragFloat(floatXX, &aVector3.x, 0.1f))
 		{
-			edited = true;
+			viewAndEditResult.myIsEdited = true;
 		}
 
 		ImGui::SameLine();
@@ -56,7 +56,7 @@ namespace Editor
 		const char* floatYY = floatY.c_str();
 		if (ImGui::DragFloat(floatYY, &aVector3.y, 0.1f))
 		{
-			edited = true;
+			viewAndEditResult.myIsEdited = true;
 		}
 
 		ImGui::SameLine();
@@ -74,7 +74,7 @@ namespace Editor
 		const char* floatZZ = floatZ.c_str();
 		if (ImGui::DragFloat(floatZZ, &aVector3.z, 0.1f))
 		{
-			edited = true;
+			viewAndEditResult.myIsEdited = true;
 		}
 		ImGui::PopStyleVar();
 
@@ -84,7 +84,7 @@ namespace Editor
 		ImGui::Text(aLabel);
 		ImGui::PopID();
 
-		return edited;
+		return viewAndEditResult;
 	}
 }
 
@@ -104,20 +104,27 @@ namespace ECS
 		return aString;
 	}
 
-	bool ViewAndEditValue(char& aValue, const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(char& aValue, const std::string& aVariableName)
 	{
+		ViewAndEditResult viewAndEditResult;
 		const std::string constCharToString(1, aValue);
 
 		std::string variableNameWithoutImGuiID = ExtractStringFromImGuiIDFullName(aVariableName);
 		variableNameWithoutImGuiID += ": " + constCharToString;
 
-		ImGui::Text(variableNameWithoutImGuiID.c_str());
+		char c[1]{ aValue };
+		if (ImGui::InputText(variableNameWithoutImGuiID.c_str(), c, 1))
+		{
+			aValue = c[0];
+			viewAndEditResult.myIsEdited;
+		}
 
-		return true;
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(std::string& aValue, const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(std::string& aValue, const std::string& aVariableName)
 	{
+		ViewAndEditResult viewAndEditResult;
 		char buffer[256]{};
 		memset(buffer, '\0', sizeof(buffer));
 		strncpy_s(buffer, aValue.c_str(), sizeof(buffer));
@@ -126,109 +133,149 @@ namespace ECS
 		if (ImGui::InputTextWithHint(aVariableName.c_str(), "Text", buffer, sizeof(buffer)))
 		{
 			aValue = std::string(buffer);
-			return true;
+			viewAndEditResult.myIsEdited = true;
 		}
 
-		return false;
+		viewAndEditResult.myIsActive = ImGui::IsItemActive();
+
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(int& aValue, const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(int& aValue, const std::string& aVariableName)
 	{
-		return ImGui::DragInt(aVariableName.c_str(), &aValue);
+		ViewAndEditResult viewAndEditResult;
+		viewAndEditResult.myIsEdited = ImGui::DragInt(aVariableName.c_str(), &aValue);
+		viewAndEditResult.myIsActive = ImGui::IsItemActive();
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(int*& aValue, const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(int*& aValue, const std::string& aVariableName)
 	{
+		ViewAndEditResult viewAndEditResult;
 		if (aValue == nullptr)
 		{
 			int nullValue = INT_MIN;
 			ImGui::DragInt(aVariableName.c_str(), &nullValue);
 
-			return false;
+			return viewAndEditResult;
 		}
 
-		return ImGui::DragInt(aVariableName.c_str(), aValue);
+		viewAndEditResult.myIsEdited |= ImGui::DragInt(aVariableName.c_str(), aValue);
+		viewAndEditResult.myIsActive = ImGui::IsItemActive();
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(float& aValue, const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(float& aValue, const std::string& aVariableName)
 	{
-		return ImGui::DragFloat(aVariableName.c_str(), &aValue);
+		ViewAndEditResult viewAndEditResult;
+		viewAndEditResult.myIsEdited = ImGui::DragFloat(aVariableName.c_str(), &aValue);
+		viewAndEditResult.myIsActive = ImGui::IsItemActive();
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(bool& aValue, const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(bool& aValue, const std::string& aVariableName)
 	{
-		return ImGui::Checkbox(aVariableName.c_str(), &aValue);
+		ViewAndEditResult viewAndEditResult;
+		viewAndEditResult.myIsEdited = ImGui::Checkbox(aVariableName.c_str(), &aValue);
+		viewAndEditResult.myIsActive = ImGui::IsItemActive();
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(Math::Vector2f& aValue, const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(Math::Vector2f& aValue, const std::string& aVariableName)
 	{
-		return ImGui::DragFloat2(aVariableName.c_str(), &aValue.x);
+		ViewAndEditResult viewAndEditResult;
+		viewAndEditResult.myIsEdited = ImGui::DragFloat2(aVariableName.c_str(), &aValue.x);
+		viewAndEditResult.myIsActive = ImGui::IsItemActive();
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(Math::Vector3f& aValue, const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(Math::Vector3f& aValue, const std::string& aVariableName)
 	{
-		return ImGui::DragFloat3(aVariableName.c_str(), &aValue.x);
+		ViewAndEditResult viewAndEditResult;
+		viewAndEditResult.myIsEdited = ImGui::DragFloat3(aVariableName.c_str(), &aValue.x);
+		viewAndEditResult.myIsActive = ImGui::IsItemActive();
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(Math::Vector4f& aValue, const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(Math::Vector4f& aValue, const std::string& aVariableName)
 	{
-		return ImGui::DragFloat4(aVariableName.c_str(), &aValue.x);
+		ViewAndEditResult viewAndEditResult;
+		viewAndEditResult.myIsEdited = ImGui::DragFloat4(aVariableName.c_str(), &aValue.x);
+		viewAndEditResult.myIsActive = ImGui::IsItemActive();
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(Math::Transform& aValue, const std::string& /*aVariableName*/)
+	ViewAndEditResult ViewAndEditValue(Math::Transform& aValue, const std::string& /*aVariableName*/)
 	{
-		bool edited = false;
+		ViewAndEditResult viewAndEditResult;
 
-		Math::Vector3f position = aValue.GetPosition();
-		if (Editor::CustomDragFloat3("Position", position))
 		{
-			edited = true;
-			aValue.SetPosition(position);
+			Math::Vector3f position = aValue.GetPosition();
+			ViewAndEditResult viewAndEditPosition = Editor::CustomDragFloat3("Position", position);
+			viewAndEditResult |= viewAndEditPosition;
+			if (viewAndEditPosition.myIsEdited)
+			{
+				viewAndEditResult.myIsEdited = true;
+				aValue.SetPosition(position);
+			}
 		}
 
 		Math::Vector3f rotation = aValue.GetRotation();
-		if (Editor::CustomDragFloat3("Rotation", rotation))
 		{
-			edited = true;
-			aValue.SetRotation(rotation);
+			ViewAndEditResult viewAndEditRotation = Editor::CustomDragFloat3("Rotation", rotation);
+			viewAndEditResult |= viewAndEditRotation;
+			if (viewAndEditRotation.myIsEdited)
+			{
+				aValue.SetRotation(rotation);
+			}
 		}
 
 		Math::Vector3f scale = aValue.GetScale();
-		if (Editor::CustomDragFloat3("Scale", scale))
 		{
-			if (scale.x < 0.001f)
+			ViewAndEditResult viewAndEditScale = Editor::CustomDragFloat3("Scale", scale);
+			viewAndEditResult |= viewAndEditScale;
+			if (viewAndEditScale.myIsEdited)
 			{
-				scale.x = 0.001f;
+				if (scale.x < 0.001f)
+				{
+					scale.x = 0.001f;
+				}
+
+				if (scale.y < 0.001f)
+				{
+					scale.y = 0.001f;
+				}
+
+				if (scale.z < 0.001f)
+				{
+					scale.z = 0.001f;
+				}
+
+				aValue.SetScale(scale);
 			}
 
-			if (scale.y < 0.001f)
-			{
-				scale.y = 0.001f;
-			}
-
-			if (scale.z < 0.001f)
-			{
-				scale.z = 0.001f;
-			}
-
-			edited = true;
-			aValue.SetScale(scale);
 		}
 
-		return edited;
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(Graphics::PointLightData& aPointLightData, const std::string& /*aVariableName*/)
+	ViewAndEditResult ViewAndEditValue(Graphics::PointLightData& aPointLightData, const std::string& /*aVariableName*/)
 	{
+		ViewAndEditResult viewAndEditResult;
 		const bool editedColor = ImGui::DragFloat3("Color", &aPointLightData.color.x, 0.1f, 0.0f);
+		viewAndEditResult.myIsActive |= ImGui::IsItemActive();
 		const bool editedIntensity = ImGui::DragFloat("Intensity", &aPointLightData.color.w, 0.1f, 0.0f);
+		viewAndEditResult.myIsActive |= ImGui::IsItemActive();
 		const bool editedRadius = ImGui::DragFloat("Radius", &aPointLightData.radius, 0.2f, 0.1f);
+		viewAndEditResult.myIsActive |= ImGui::IsItemActive();
 
-		return (editedColor || editedIntensity || editedRadius);
+		viewAndEditResult.myIsEdited = (editedColor || editedIntensity || editedRadius);
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(Graphics::Camera& aCamera, const std::string& /*aVariableName*/)
+	ViewAndEditResult ViewAndEditValue(Graphics::Camera& aCamera, const std::string& /*aVariableName*/)
 	{
+		ViewAndEditResult viewAndEditResult;
 		const Math::Vector2ui resolution = Global::GetResolution();
 
 		float moveSpeed = aCamera.GetMoveSpeed();
@@ -236,37 +283,40 @@ namespace ECS
 		float nearPlane = aCamera.GetNearPlane();
 		float farPlane = aCamera.GetFarPlane();
 
-		bool hasEdited = false;
-
 		if (ImGui::DragFloat("Speed", &moveSpeed))
 		{
 			aCamera.SetMoveSpeed(moveSpeed);
-			hasEdited = true;
+			viewAndEditResult.myIsEdited = true;
+			viewAndEditResult.myIsActive = ImGui::IsItemActive();
 		}
 
 		if (ImGui::DragFloat("HorizontalFoV", &horizontalFoV))
 		{
 			aCamera.SetHorizontalFoV(horizontalFoV, resolution);
-			hasEdited = true;
+			viewAndEditResult.myIsEdited = true;
+			viewAndEditResult.myIsActive = ImGui::IsItemActive();
 		}
 
 		if (ImGui::DragFloat("NearPlane", &nearPlane))
 		{
 			aCamera.SetNearPlane(nearPlane, resolution);
-			hasEdited = true;
+			viewAndEditResult.myIsEdited = true;
+			viewAndEditResult.myIsActive = ImGui::IsItemActive();
 		}
 
 		if (ImGui::DragFloat("FarPlane", &farPlane))
 		{
 			aCamera.SetFarPlane(farPlane, resolution);
-			hasEdited = true;
+			viewAndEditResult.myIsEdited = true;
+			viewAndEditResult.myIsActive = ImGui::IsItemActive();
 		}
 
-		return hasEdited;
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& /*aVariableName*/)
+	ViewAndEditResult ViewAndEditValue(const Graphics::Mesh*& aMesh, const std::string& /*aVariableName*/)
 	{
+		ViewAndEditResult viewAndEditResult;
 		std::string mesh;
 
 		if (aMesh != nullptr)
@@ -295,19 +345,19 @@ namespace ECS
 					{
 						const std::string meshRelativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(SimpleUtilities::CheckAndReturnAsAbsolutePath(payloadData));
 						aMesh = Global::GetModelFactory()->LoadMesh(meshRelativePath);
+						viewAndEditResult.myIsEdited = true;
 					}
 					ImGui::EndDragDropTarget();
 				}
 			}
 		}
 
-		return true;
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& /*aVariableName*/)
+	ViewAndEditResult ViewAndEditValue(const Graphics::Shader*& aShader, const std::string& /*aVariableName*/)
 	{
-		bool isValid = false;
-		bool changed = false;
+		ViewAndEditResult viewAndEditResult;
 
 		static int selectedPixelShader = 0;
 		static int selectedVertexShader = 0;
@@ -325,7 +375,6 @@ namespace ECS
 		{
 			pixelShader += aShader->GetPixelShaderName();
 			vertexShader += aShader->GetVertexShaderName();
-			isValid = true;
 		}
 
 		for (size_t i = 0; i < pixelShaderFileNames.size(); ++i)
@@ -371,7 +420,7 @@ namespace ECS
 
 		if (ImGui::Combo("##PixelShaderECSEditorFunction", &selectedPixelShader, pixelShaderNames.c_str()))
 		{
-			changed = true;
+			viewAndEditResult.myIsEdited = true;
 			pixelShader = pixelShaderFileNames[selectedPixelShader];
 		}
 
@@ -381,11 +430,11 @@ namespace ECS
 
 		if (ImGui::Combo("##VertexShaderECSEditorFunction", &selectedVertexShader, vertexShaderNames.c_str()))
 		{
-			changed = true;
+			viewAndEditResult.myIsEdited = true;
 			vertexShader = vertexShaderFileNames[selectedVertexShader];
 		}
 
-		if (changed == true)
+		if (viewAndEditResult.myIsEdited == true)
 		{
 			SimpleUtilities::AppendStringInFront("Shaders\\", pixelShader);
 			SimpleUtilities::AppendStringInFront("Shaders\\", vertexShader);
@@ -398,19 +447,18 @@ namespace ECS
 			}
 		}
 
-		return isValid;
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(const Graphics::Texture*& aTexture, const std::string& /*aVariableName*/)
+	ViewAndEditResult ViewAndEditValue(const Graphics::Texture*& aTexture, const std::string& /*aVariableName*/)
 	{
-		bool isValid = false;
+		ViewAndEditResult viewAndEditResult;
 
 		std::string texture;
 
 		if (aTexture != nullptr)
 		{
 			texture = aTexture->GetTextureName();
-			isValid = true;
 		}
 
 		ImGui::AlignTextToFramePadding();
@@ -435,17 +483,19 @@ namespace ECS
 					{
 						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
 						aTexture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(fileName.c_str()).get();
+						viewAndEditResult.myIsEdited = true;
 					}
 					ImGui::EndDragDropTarget();
 				}
 			}
 		}
 
-		return isValid;
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(const Graphics::Skeleton*& aSkeleton, const std::string& /*aVariableName*/)
+	ViewAndEditResult ViewAndEditValue(const Graphics::Skeleton*& aSkeleton, const std::string& /*aVariableName*/)
 	{
+		ViewAndEditResult viewAndEditResult;
 		std::string name;
 
 		if (aSkeleton != nullptr)
@@ -474,17 +524,19 @@ namespace ECS
 					{
 						const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
 						aSkeleton = Global::GetModelFactory()->LoadSkeleton(relativePath);
+						viewAndEditResult.myIsEdited = true;
 					}
 					ImGui::EndDragDropTarget();
 				}
 			}
 		}
 
-		return true;
+		return viewAndEditResult;
 	}
 
-	bool ViewAndEditValue(const Graphics::Animation*& aAnimation, const std::string& /*aVariableName*/)
+	ViewAndEditResult ViewAndEditValue(const Graphics::Animation*& aAnimation, const std::string& /*aVariableName*/)
 	{
+		ViewAndEditResult viewAndEditResult;
 		std::string name;
 
 		if (aAnimation != nullptr)
@@ -513,13 +565,14 @@ namespace ECS
 					{
 						const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
 						aAnimation = Global::GetModelFactory()->LoadAnimationFBX(relativePath);
+						viewAndEditResult.myIsEdited = true;
 					}
 					ImGui::EndDragDropTarget();
 				}
 			}
 		}
 
-		return true;
+		return viewAndEditResult;
 	}
 
 	struct Combo
@@ -544,10 +597,10 @@ namespace ECS
 		bool isOpen = false;
 	};
 
-	bool ViewAndEditValue(Fly::ClassInstanceProxy& aClassInstance, [[maybe_unused]] const std::string& aVariableName)
+	ViewAndEditResult ViewAndEditValue(Fly::ClassInstanceProxy& aClassInstance, [[maybe_unused]] const std::string& aVariableName)
 	{
 
-		bool wasChanged = false;
+		ViewAndEditResult viewAndEditResult;
 
 		Fly::DataTypeProxy entityDataType(Fly::GetDataTypeID<Entity*>());
 		auto entityClasses = Fly::GetClassesByTargetDataType(entityDataType);
@@ -573,31 +626,26 @@ namespace ECS
 
 						aClassInstance = entityClass.CreateClassInstance();
 
-						wasChanged = true;
+						viewAndEditResult.myIsEdited = true;
 					}
 				}
 			});
 
 		if (!aClassInstance)
 		{
-			return wasChanged;
+			return viewAndEditResult;
 		}
 
 		aClassInstance.ViewAndEditVariableDefaultValues(nullptr);
 
-		return wasChanged;
+		return viewAndEditResult;
 	}
 
-	bool CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& /*aVariableName*/)
+	ViewAndEditResult CustomViewAndEditValue(std::array<const Graphics::Texture*, 3>& aTextures, const std::string& /*aVariableName*/)
 	{
-		bool isValid = false;
+		ViewAndEditResult viewAndEditResult;
 
 		ImGui::AlignTextToFramePadding();
-
-		if (aTextures[0] != nullptr)
-		{
-			isValid = true;
-		}
 
 		ImTextureID albedoTextureID = aTextures[Graphics::Global_Slot_Albedo]->GetShaderResourceView().Get();
 		ImTextureID normalTextureID = aTextures[Graphics::Global_Slot_Normal]->GetShaderResourceView().Get();
@@ -712,6 +760,8 @@ namespace ECS
 							if (isCubeMap == false)
 							{
 								aTextures[i] = texture.get();
+								viewAndEditResult.myIsEdited = true;
+								viewAndEditResult.myIsActive = true;
 							}
 						}
 
@@ -725,7 +775,7 @@ namespace ECS
 			ImGui::EndGroup();
 
 			if (ImGui::IsItemHovered())
-			{		
+			{
 				ImGui::SetTooltip(textureName.c_str());
 			}
 
@@ -735,6 +785,6 @@ namespace ECS
 			}
 		}
 
-		return isValid;
+		return viewAndEditResult;
 	}
 }
