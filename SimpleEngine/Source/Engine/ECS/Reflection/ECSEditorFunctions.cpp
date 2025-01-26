@@ -40,6 +40,7 @@ namespace Editor
 		{
 			viewAndEditResult.myIsEdited = true;
 		}
+		viewAndEditResult.myIsActive |= ImGui::IsItemActive();
 
 		ImGui::SameLine();
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.60f, 0.0f, 1.0f));
@@ -58,6 +59,7 @@ namespace Editor
 		{
 			viewAndEditResult.myIsEdited = true;
 		}
+		viewAndEditResult.myIsActive |= ImGui::IsItemActive();
 
 		ImGui::SameLine();
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
@@ -76,6 +78,8 @@ namespace Editor
 		{
 			viewAndEditResult.myIsEdited = true;
 		}
+		viewAndEditResult.myIsActive |= ImGui::IsItemActive();
+
 		ImGui::PopStyleVar();
 
 		ImGui::SameLine();
@@ -211,18 +215,17 @@ namespace ECS
 
 		{
 			Math::Vector3f position = aValue.GetPosition();
-			ViewAndEditResult viewAndEditPosition = Editor::CustomDragFloat3("Position", position);
+			const ViewAndEditResult viewAndEditPosition = Editor::CustomDragFloat3("Position", position);
 			viewAndEditResult |= viewAndEditPosition;
 			if (viewAndEditPosition.myIsEdited)
 			{
-				viewAndEditResult.myIsEdited = true;
 				aValue.SetPosition(position);
 			}
 		}
 
-		Math::Vector3f rotation = aValue.GetRotation();
 		{
-			ViewAndEditResult viewAndEditRotation = Editor::CustomDragFloat3("Rotation", rotation);
+			Math::Vector3f rotation = aValue.GetRotation();
+			const ViewAndEditResult viewAndEditRotation = Editor::CustomDragFloat3("Rotation", rotation);
 			viewAndEditResult |= viewAndEditRotation;
 			if (viewAndEditRotation.myIsEdited)
 			{
@@ -230,9 +233,9 @@ namespace ECS
 			}
 		}
 
-		Math::Vector3f scale = aValue.GetScale();
 		{
-			ViewAndEditResult viewAndEditScale = Editor::CustomDragFloat3("Scale", scale);
+			Math::Vector3f scale = aValue.GetScale();
+			const ViewAndEditResult viewAndEditScale = Editor::CustomDragFloat3("Scale", scale);
 			viewAndEditResult |= viewAndEditScale;
 			if (viewAndEditScale.myIsEdited)
 			{
@@ -253,7 +256,6 @@ namespace ECS
 
 				aValue.SetScale(scale);
 			}
-
 		}
 
 		return viewAndEditResult;
