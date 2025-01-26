@@ -9,7 +9,7 @@ namespace Editor
 	class MenuTabWindow final : public MainMenuTabBase
 	{
 	public:
-		MenuTabWindow(const char* aName);
+		MenuTabWindow(const char* aName, const char* aImGuiTag);
 
 		void Render() override final;
 	

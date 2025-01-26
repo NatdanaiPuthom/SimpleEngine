@@ -18,6 +18,8 @@
 #include "Editor/Functions/SceneSettingFunctions.hpp"
 #include "Editor/Functions/EditorCallbackFunctions.hpp"
 
+#include "Editor/EditorProxy.hpp"
+
 namespace Editor
 {
 	size_t EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
@@ -32,6 +34,8 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
+		EditorProxy::myEditorEngine = this;
+
 		SetUpDefaultLayout();
 
 		for (auto& menuTab : myMainMenuTabs)
@@ -101,14 +105,14 @@ namespace Editor
 
 	void EditorEngine::SetUpDefaultLayout()
 	{
-		std::unique_ptr<MenuTabDefault> sceneTab = std::make_unique<MenuTabDefault>("Scene");
-		std::unique_ptr<MenuTabWindow> windowsTab = std::make_unique<MenuTabWindow>("Windows");
-		std::unique_ptr<MenuTabDefault> settingsTab = std::make_unique<MenuTabDefault>("Settings");
-		std::unique_ptr<MenuTabDefault> helpTab = std::make_unique<MenuTabDefault>("Help");
+		MenuTabDefault* sceneTab = AddMenuTab<MenuTabDefault>("Scene");
+		MenuTabWindow* windowsTab = AddMenuTab<MenuTabWindow>("Windows");
+		MenuTabDefault* settingsTab = AddMenuTab<MenuTabDefault>("Settings");
+		MenuTabDefault* helpTab = AddMenuTab<MenuTabDefault>("Help");
 
-		std::unique_ptr<MenuItemButton> sceneSaveButton = std::make_unique<MenuItemButton>("Save");
-		std::unique_ptr<MenuItemSelectable> sceneLoadSelectable = std::make_unique<MenuItemSelectable>("Load");
 		std::unique_ptr<MenuItemMenu> sceneCreateMenu = std::make_unique<MenuItemMenu>("Create");
+		std::unique_ptr<MenuItemSelectable> sceneLoadSelectable = std::make_unique<MenuItemSelectable>("Load");
+		std::unique_ptr<MenuItemButton> sceneSaveButton = std::make_unique<MenuItemButton>("Save");
 		std::unique_ptr<MenuItemButton> sceneReloadButton = std::make_unique<MenuItemButton>("Reload");
 		std::unique_ptr<MenuItemButton> sceneSetAsActiveButton = std::make_unique<MenuItemButton>("Set As Active");
 		std::unique_ptr<MenuItemButton> sceneCreateNewButton = std::make_unique<MenuItemButton>("New");
@@ -117,7 +121,6 @@ namespace Editor
 		std::unique_ptr<MenuItemPopUp> settingsAudioButton = std::make_unique<MenuItemPopUp>("Audio");
 		std::unique_ptr<MenuItemPopUp> settingsCameraButton = std::make_unique<MenuItemPopUp>("Camera");
 		std::unique_ptr<MenuItemPopUp> settingsGraphicsButton = std::make_unique<MenuItemPopUp>("Graphics");
-
 		std::unique_ptr<MenuItemPopUp> helpCameraControlsPopUpButton = std::make_unique<MenuItemPopUp>("Camera Controls");
 
 		std::unique_ptr<MenuItemPopUp> editorPopUpButton = std::make_unique<MenuItemPopUp>("Editor");
@@ -131,33 +134,28 @@ namespace Editor
 		std::shared_ptr<CameraControlsGuidePopUp> cameraHelpPopUp = std::make_shared<CameraControlsGuidePopUp>("Editor Camera Control");
 		std::shared_ptr<DeferredPopUp> deferredPopUp = std::make_shared<DeferredPopUp>("Deferred Window");
 		std::shared_ptr<PostProcessPopUp> postProcessPopUp = std::make_shared<PostProcessPopUp>("PostProcess Window");
+
 		std::shared_ptr<EditorPopUp> editorPopUp = std::make_shared<EditorPopUp>("Editor Window", &myCommandTracker);
 		std::shared_ptr<AssetBrowserPopUp> assetBrowserPopUp = std::make_shared<AssetBrowserPopUp>("AssetBrowser Window");
 		std::shared_ptr<NodeScriptingWindow> nodeScriptingPopUp = std::make_shared<NodeScriptingWindow>("NodeScripting Window");
 
-
 		{	//TO-DO(v12.0.0): Temp should be refactor
 			assetBrowserPopUp->myNodeScriptingWindow = nodeScriptingPopUp.get();
-			assetBrowserPopUp->myNodeScriptParentTab = windowsTab.get();
+			assetBrowserPopUp->myNodeScriptParentTab = windowsTab;
 			assetBrowserPopUp->myNodeScriptButton = nodeScriptingPopUpButton.get();
 		}
 
-		sceneCreateNewButton->SetCallback(SceneSettingsFunction::CreateNew());
-		sceneCreateCopyButton->SetCallback(SceneSettingsFunction::CreateCopy());
-
-		sceneSaveButton->SetCallback(SceneSettingsFunction::Save());
-		sceneReloadButton->SetCallback(SceneSettingsFunction::Reload());
-		sceneSetAsActiveButton->SetCallback(SceneSettingsFunction::SetAsActive());
-
 		{
 			const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
-
 			sceneLoadSelectable->SetStrings(sceneNames);
-			sceneLoadSelectable->SetCallback(SceneSettingsFunction::Load());
 		}
 
-		sceneCreateMenu->AddChild(std::move(sceneCreateNewButton));
-		sceneCreateMenu->AddChild(std::move(sceneCreateCopyButton));
+		sceneSaveButton->SetCallback(SceneSettingsFunction::Save());
+		sceneLoadSelectable->SetCallback(SceneSettingsFunction::Load());
+		sceneCreateNewButton->SetCallback(SceneSettingsFunction::CreateNew());
+		sceneCreateCopyButton->SetCallback(SceneSettingsFunction::CreateCopy());
+		sceneReloadButton->SetCallback(SceneSettingsFunction::Reload());
+		sceneSetAsActiveButton->SetCallback(SceneSettingsFunction::SetAsActive());
 
 		helpCameraControlsPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(cameraHelpPopUp, &helpCameraControlsPopUpButton->GetIsActiveRef())));
 		settingsAudioButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(audioSettingPopUp, &settingsAudioButton->GetIsActiveRef())));
@@ -173,6 +171,9 @@ namespace Editor
 			editorPopUpButton->SetIsActive(true);
 			editorPopUpButton->Invoke();
 		}
+
+		sceneCreateMenu->AddChild(std::move(sceneCreateNewButton));
+		sceneCreateMenu->AddChild(std::move(sceneCreateCopyButton));
 
 		sceneTab->AddButton(std::move(sceneSaveButton));
 		sceneTab->AddSelectable(std::move(sceneLoadSelectable));
@@ -190,11 +191,6 @@ namespace Editor
 		settingsTab->AddPopUp(std::move(settingsGraphicsButton));
 
 		helpTab->AddPopUp(std::move(helpCameraControlsPopUpButton));
-
-		myMainMenuTabs.push_back(std::move(sceneTab));
-		myMainMenuTabs.push_back(std::move(windowsTab));
-		myMainMenuTabs.push_back(std::move(settingsTab));
-		myMainMenuTabs.push_back(std::move(helpTab));
 
 		myPopUpWindows.push_back(audioSettingPopUp);
 		myPopUpWindows.push_back(cameraSettingPopUp);

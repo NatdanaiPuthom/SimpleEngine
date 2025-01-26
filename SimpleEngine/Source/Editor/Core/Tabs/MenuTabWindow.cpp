@@ -4,7 +4,8 @@
 
 namespace Editor
 {
-	MenuTabWindow::MenuTabWindow(const char* aName) : MainMenuTabBase(aName)
+	MenuTabWindow::MenuTabWindow(const char* aName, const char* aImGuiTag)
+		: MainMenuTabBase(aName, aImGuiTag)
 	{
 	}
 

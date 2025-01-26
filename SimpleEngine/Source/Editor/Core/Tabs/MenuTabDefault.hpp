@@ -13,7 +13,7 @@ namespace Editor
 	class MenuTabDefault final : public MainMenuTabBase
 	{
 	public:
-		MenuTabDefault(const char* aName);
+		MenuTabDefault(const char* aName, const char* aImGuiTag);
 
 		void Render() override final;
 

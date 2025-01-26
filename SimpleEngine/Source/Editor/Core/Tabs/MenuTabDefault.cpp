@@ -4,7 +4,8 @@
 
 namespace Editor
 {
-	MenuTabDefault::MenuTabDefault(const char* aName) : MainMenuTabBase(aName)
+	MenuTabDefault::MenuTabDefault(const char* aName, const char* aImGuiTag) 
+		: MainMenuTabBase(aName, aImGuiTag)
 	{
 	}
 
