@@ -211,8 +211,10 @@ namespace ECS
 
 		{
 			Math::Vector3f position = aValue.GetPosition();
+
 			ViewAndEditResult viewAndEditPosition = Editor::CustomDragFloat3("Position", position);
 			viewAndEditResult |= viewAndEditPosition;
+
 			if (viewAndEditPosition.myIsEdited)
 			{
 				viewAndEditResult.myIsEdited = true;
@@ -220,20 +222,24 @@ namespace ECS
 			}
 		}
 
-		Math::Vector3f rotation = aValue.GetRotation();
 		{
+			Math::Vector3f rotation = aValue.GetRotation();
+
 			ViewAndEditResult viewAndEditRotation = Editor::CustomDragFloat3("Rotation", rotation);
 			viewAndEditResult |= viewAndEditRotation;
+
 			if (viewAndEditRotation.myIsEdited)
 			{
 				aValue.SetRotation(rotation);
 			}
 		}
 
-		Math::Vector3f scale = aValue.GetScale();
 		{
+			Math::Vector3f scale = aValue.GetScale();
+
 			ViewAndEditResult viewAndEditScale = Editor::CustomDragFloat3("Scale", scale);
 			viewAndEditResult |= viewAndEditScale;
+
 			if (viewAndEditScale.myIsEdited)
 			{
 				if (scale.x < 0.001f)
@@ -253,7 +259,6 @@ namespace ECS
 
 				aValue.SetScale(scale);
 			}
-
 		}
 
 		return viewAndEditResult;
@@ -655,8 +660,8 @@ namespace ECS
 
 		ImVec2 windowSize = ImGui::GetWindowSize();
 
-		const float imageWidth = 64.0f;
-		const float imageHeight = 64.0f;
+		constexpr float imageWidth = 64.0f;
+		constexpr float imageHeight = 64.0f;
 		const float totalSpacing = windowSize.x - (imageWidth * 3);
 		const float spacing = totalSpacing / 4.0f;
 
