@@ -42,6 +42,7 @@ namespace ECS
 	struct ComponentProperty final
 	{
 		std::string name = "UnknownProperty";
+		std::string customVariableName = "UnknownCustomNameProperty";
 		size_t id = 0;
 		size_t byteOffset = 0;
 		bool shouldExpose = true;
@@ -107,7 +108,7 @@ namespace ECS
 		void RegisterDataType();
 
 		template<typename DataType, typename Component>
-		void RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName, const bool aShouldExpose, const bool aCanEdit);
+		void RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName, const char* aCustomName, const bool aShouldExpose, const bool aCanEdit);
 
 		template<typename DataType, typename PropertyType>
 		constexpr size_t GetByteOffset(PropertyType DataType::* aProperty);
@@ -230,14 +231,21 @@ namespace ECS
 	}
 
 	template<typename DataType, typename Component>
-	inline void ComponentRegistry::RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName, const bool aShouldExpose, const bool aCanEdit)
+	inline void ComponentRegistry::RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName, const char* aCustomName, const bool aShouldExpose, const bool aCanEdit)
 	{
+		aCustomName;
 		ComponentProperty componentProperty;
 		componentProperty.name = aVariableName;
+		componentProperty.customVariableName = aVariableName;
 		componentProperty.id = typeid(DataType).hash_code();
 		componentProperty.byteOffset = GetByteOffset(aVariable);
 		componentProperty.shouldExpose = aShouldExpose;
 		componentProperty.canEdit = aCanEdit;
+
+		if (aCustomName != nullptr)
+		{
+			componentProperty.customVariableName = aCustomName;
+		}
 
 		const bool componentDoesExist = myTypeErasureComponents.contains(typeid(Component).hash_code());
 
@@ -280,9 +288,9 @@ namespace ECS
 	{
 	public:
 		template<typename DataType, typename Component>
-		__RegisterProperty(DataType Component::* aVariable, const char* aVariableName, const bool aShouldExpose = true, const bool aCanEdit = true)
+		__RegisterProperty(DataType Component::* aVariable, const char* aVariableName, const char* aCustomName = nullptr, const bool aShouldExpose = true, const bool aCanEdit = true)
 		{
-			ECS::ComponentRegistry::GetInstance()->RegisterProperty(aVariable, aVariableName, aShouldExpose, aCanEdit);
+			ECS::ComponentRegistry::GetInstance()->RegisterProperty(aVariable, aVariableName, aCustomName, aShouldExpose, aCanEdit);
 		}
 	};
 }

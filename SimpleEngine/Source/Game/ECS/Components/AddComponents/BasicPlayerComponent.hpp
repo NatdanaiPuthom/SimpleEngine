@@ -13,6 +13,6 @@ namespace ECS
 
 namespace ECS
 {
-	REGISTER_AND_EXPOSE_PROPERTY(&BasicPlayerComponent::moveSpeed);
+	REGISTER_AND_EXPOSE_PROPERTY(&BasicPlayerComponent::moveSpeed, "Move Speed");
 	REGISTER_AND_EXPOSE_PROPERTY(&BasicPlayerComponent::cameraOffsetDistance);
 }
