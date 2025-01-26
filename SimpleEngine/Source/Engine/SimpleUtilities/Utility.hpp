@@ -253,4 +253,35 @@ namespace SimpleUtilities
 
 		return aOriginalString;
 	}
+
+    static inline std::string ConvertAndAddSpaceToSubStringWithUpperCase(const std::string& aString)
+    {
+        if (aString.empty())
+        {
+            return aString;
+        }
+
+        std::string newString = aString;
+
+		for (char& c : newString)
+		{
+			if (c == '_')
+			{
+				c = ' ';
+			}
+		}
+
+        for (size_t i = 1; i < newString.length(); ++i)
+        {
+            if (std::isupper(static_cast<unsigned char>(newString[i])))
+            {
+                newString.insert(i, " ");
+                ++i;
+            }
+        }
+
+        newString[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(newString[0])));
+
+        return newString;
+    }
 }

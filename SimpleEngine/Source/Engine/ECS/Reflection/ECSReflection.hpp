@@ -275,10 +275,8 @@ namespace ECS
 	template<typename DataType, typename Component>
 	inline void ComponentRegistry::RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName, const char* aCustomName, const bool aShouldExpose, const bool aCanEdit)
 	{
-		aCustomName;
 		ComponentProperty componentProperty;
 		componentProperty.name = aVariableName;
-		componentProperty.customVariableName = aVariableName;
 		componentProperty.id = typeid(DataType).hash_code();
 		componentProperty.byteOffset = GetByteOffset(aVariable);
 		componentProperty.shouldExpose = aShouldExpose;
@@ -287,6 +285,10 @@ namespace ECS
 		if (aCustomName != nullptr)
 		{
 			componentProperty.customVariableName = aCustomName;
+		}
+		else
+		{
+			componentProperty.customVariableName =SimpleUtilities::ConvertAndAddSpaceToSubStringWithUpperCase(aVariableName);
 		}
 
 		const bool componentDoesExist = myTypeErasureComponents.contains(typeid(Component).hash_code());
