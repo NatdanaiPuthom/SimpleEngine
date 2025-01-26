@@ -58,7 +58,17 @@ namespace ECS
 		{
 			if (entitiesIDWithAnimation.find(*it) != entitiesIDWithAnimation.end())
 			{
-				it = entitiesIDWithMesh.erase(it);
+				ECS::Entity& entity = aEntityComponentSystem->GetEntity(*it);
+				const AnimationComponent* animated = entity.GetComponent<ECS::AnimationComponent>();
+
+				if (animated->skeleton != nullptr && animated->animation != nullptr)
+				{
+					it = entitiesIDWithMesh.erase(it);
+				}
+				else
+				{
+					++it;
+				}
 			}
 			else
 			{
