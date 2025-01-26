@@ -21,10 +21,12 @@ namespace ECS
 
 namespace ECS
 {
+
+
 	template<typename T>
 	concept Editable = requires(T & aData, const std::string & aVariableName)
 	{
-		{ ECS::ViewAndEditValue(aData, aVariableName) } -> std::same_as<bool>;
+		{ ECS::ViewAndEditValue(aData, aVariableName) } -> std::same_as<ViewAndEditResult>;
 	};
 
 	template<typename T>
@@ -52,6 +54,7 @@ namespace ECS
 	using InplaceAllocateFunction = void (*)(void* aData);
 	using DestroyFunction = void(*)(void* aData);
 	using CopyFunction = void (*)(void* aDestination, const void* aSource);
+	using SwapFunction = void (*)(void* aDataPtr1, void* aDataPtr2);
 
 	class TypeErasureObject final
 	{
@@ -61,7 +64,7 @@ namespace ECS
 		std::vector<ComponentProperty> myComponentProperties;
 
 		ComponentID(*AddComponentFunctionPointer)(ECS::Entity& aEntity) = nullptr;
-		bool(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
+		ViewAndEditResult(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
 
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
 		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
@@ -69,6 +72,7 @@ namespace ECS
 		InplaceAllocateFunction InplaceAllocate = nullptr;
 		DestroyFunction Destroy = nullptr;
 		CopyFunction CopyFunctionPointer = nullptr;
+		SwapFunction SwapFunctionPointer = nullptr;
 
 		size_t mySize = 0;
 		bool hasBeenAdded = false;
@@ -93,15 +97,15 @@ namespace ECS
 		std::unordered_map<ComponentName, ComponentHashCode> myComponentNameToHashCode;
 		std::unordered_map<ComponentHashCode, void(*)(void*)> myTypeErasureComponentDestructorInvoker;
 	public:
-		void InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "");
 
-		ComponentRegistry(const ComponentRegistry&) = delete;
-		ComponentRegistry(const ComponentRegistry&&) = delete;
-		ComponentRegistry operator=(const ComponentRegistry&) = delete;
-		ComponentRegistry operator=(const ComponentRegistry&&) = delete;
+		ViewAndEditResult InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "") const;
+
+	
 
 		ComponentID AddComponent(ComponentHashCode aHashCode, Entity& aEntity) const;
 		void CopyComponent(ComponentHashCode aHashCode, void* aDestination, const void* aSource) const;
+		void SwapComponent(ComponentHashCode aHashCode, void* aDataPtr1, void* aDataPtr2) const;
+
 		size_t GetComponentSize(ComponentHashCode aHashCode) const;
 		InplaceAllocateFunction GetInplaceAllocateFunction(ComponentHashCode aHashCode) const;
 		DestroyFunction GetDestroyFunction(ComponentHashCode aHashCode) const;
@@ -113,7 +117,7 @@ namespace ECS
 
 		void Destroy();
 
-		void ExposeProperty(size_t aHashCode, void* aData, const std::string& aVariableName = "");
+		ViewAndEditResult ExposeProperty(size_t aHashCode, void* aData, const std::string& aVariableName = "") const;
 
 		template<typename T>
 		void RegisterComponentType();
@@ -129,6 +133,11 @@ namespace ECS
 	private:
 		ComponentRegistry();
 		~ComponentRegistry();
+
+		ComponentRegistry(const ComponentRegistry&) = delete;
+		ComponentRegistry(const ComponentRegistry&&) = delete;
+		ComponentRegistry operator=(const ComponentRegistry&) = delete;
+		ComponentRegistry operator=(const ComponentRegistry&&) = delete;
 	private:
 		inline static ComponentRegistry* myPtr = nullptr;
 	};
@@ -156,6 +165,19 @@ namespace ECS
 				return aEntity.AddComponent<T>();
 			};
 
+	
+
+		typeErasureComponent.InplaceAllocate = [](void* aDataPtr) -> void
+			{
+				new(aDataPtr)T();
+			};
+
+		typeErasureComponent.Destroy = [](void* aDataPtr) -> void
+			{
+				T& value = *reinterpret_cast<T*>(aDataPtr);
+				value.~T();
+			};
+
 		typeErasureComponent.CopyFunctionPointer = [](void* aDestination, const void* aSource) -> void
 			{
 				if constexpr (std::is_trivially_copyable_v<T>)
@@ -170,16 +192,16 @@ namespace ECS
 				}
 			};
 
-		typeErasureComponent.InplaceAllocate = [](void* aDataPtr) -> void
+
+		typeErasureComponent.SwapFunctionPointer = [](void* aDataPtr1, void* aDataPtr2) -> void
 			{
-				new(aDataPtr)T();
+				using std::swap;
+
+				T& value1 = *reinterpret_cast<T*>(aDataPtr1);
+				T& value2 = *reinterpret_cast<T*>(aDataPtr2);
+				swap(value1, value2);
 			};
 
-		typeErasureComponent.Destroy = [](void* aDataPtr) -> void
-			{
-				T& value = *reinterpret_cast<T*>(aDataPtr);
-				value.~T();
-			};
 
 		if constexpr (ECS::Editable<T>)
 		{
@@ -222,7 +244,7 @@ namespace ECS
 
 		if constexpr (ECS::Editable<T>)
 		{
-			dataType.EditorFunctionPointer = [](void* aDataPointer, const std::string& aVariableName) -> bool
+			dataType.EditorFunctionPointer = [](void* aDataPointer, const std::string& aVariableName) -> ViewAndEditResult
 				{
 					T* pointer = reinterpret_cast<T*>(aDataPointer);
 					return ECS::ViewAndEditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));

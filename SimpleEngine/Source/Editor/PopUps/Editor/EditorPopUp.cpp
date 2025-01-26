@@ -6,6 +6,7 @@
 #include "Engine/ImGui/ImGuiEngine.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 #include "Editor/Command/Commands/SelectEntityCommand.hpp"
+#include "Engine/Memory/DynamicMemoryArena.hpp"
 
 namespace Editor
 {
@@ -397,6 +398,16 @@ namespace Editor
 		const ECS::EntityID entityID = aSelectedEntity.GetID();
 		const std::unordered_map<ECS::ComponentType, ECS::ComponentID>& componentMap = aSelectedEntity.GetComponentMap();
 
+		static bool previousFrameEditingAnyActive = false;
+		static Simple::DynamicMemoryArenaHandle copiedComponentMemoryHandle;
+		static ECS::ComponentID editedComponentID = GetInvalidIndex<ECS::ComponentID>();
+		static ECS::ComponentHashCode editedComponentHashCode = GetInvalidIndex<ECS::ComponentHashCode>();
+		bool anyComponentsActiveCurrentFrame = false;
+
+		Simple::DynamicMemoryArena componentFrameBufferArena(1000);
+
+		static Simple::DynamicMemoryArena componentBufferArena(10000);
+
 		for (const auto& [componentType, componentID] : componentMap)
 		{
 			ImGui::AlignTextToFramePadding();
@@ -434,7 +445,34 @@ namespace Editor
 
 			if (isOpen)
 			{
-				MainSingleton::GetComponentRegistry()->InspectComponentProperties(componentHashCode, componentPointer);
+				const ECS::ComponentRegistry& componentRegistry = *MainSingleton::GetComponentRegistry();
+
+				const size_t componentSize = componentRegistry.GetComponentSize(componentHashCode);
+				ECS::InplaceAllocateFunction inplaceAllocateFunction = componentRegistry.GetInplaceAllocateFunction(componentHashCode);
+				ECS::DestroyFunction destroyFunction = componentRegistry.GetDestroyFunction(componentHashCode);
+				ECS::CopyFunction copyFunction = componentRegistry.GetCopyFunction(componentHashCode);
+
+				Simple::DynamicMemoryArenaHandle temporaryComponentHandle = componentFrameBufferArena.AllocateUnsafe(componentSize, 
+					inplaceAllocateFunction, destroyFunction,copyFunction);
+
+				componentRegistry.CopyComponent(componentHashCode, componentFrameBufferArena.MemoryAt(temporaryComponentHandle), componentPointer);
+				
+				const ECS::ViewAndEditResult viewAndEditResult = componentRegistry.InspectComponentProperties(componentHashCode, componentPointer);
+				
+				anyComponentsActiveCurrentFrame |= viewAndEditResult.myIsActive;
+				if (viewAndEditResult.myIsActive && !previousFrameEditingAnyActive)
+				{
+					copiedComponentMemoryHandle = componentBufferArena.AllocateUnsafe(componentSize,
+						inplaceAllocateFunction,destroyFunction, copyFunction);
+
+					std::byte* componentPtr1 = componentFrameBufferArena.MemoryAt(temporaryComponentHandle);
+					std::byte* componentPtr2 = componentBufferArena.MemoryAt(copiedComponentMemoryHandle);
+					componentRegistry.SwapComponent(componentHashCode, componentPtr1, componentPtr2);
+
+					editedComponentID = componentID;
+					editedComponentHashCode = componentHashCode;
+				}
+
 			}
 
 			if (ImGui::BeginPopup(std::string("ElementList" + std::to_string(entityID)).c_str()))
@@ -462,6 +500,51 @@ namespace Editor
 
 			ImGui::Separator();
 		}
+
+		if (previousFrameEditingAnyActive && !anyComponentsActiveCurrentFrame)
+		{
+
+			class SetComponentValueCommand final
+			{
+			public:
+
+				ECS::ComponentHashCode myComponentHashCode;
+				ECS::ComponentID myComponentID;
+				Simple::DynamicMemoryArenaHandle myMemoryHandle;
+				Simple::DynamicMemoryArena* myMemoryArena = nullptr;
+				
+				void Execute() const
+				{
+					SwapDataPtrs();
+				}
+
+				void Undo() const
+				{
+					SwapDataPtrs();
+				}
+
+			private:
+
+				void SwapDataPtrs() const
+				{
+					const ECS::ComponentRegistry& componentRegistry = *MainSingleton::GetComponentRegistry();
+
+					void* dataPtr1 = MainSingleton::GetSceneManager().GetCurrentECS().GetComponentPointerByComponentID(myComponentID);
+					std::byte* dataPtr2 = myMemoryArena->MemoryAt(myMemoryHandle);
+					componentRegistry.SwapComponent(myComponentHashCode, dataPtr1, dataPtr2);
+				}
+			};
+
+			SetComponentValueCommand setComponentValueCommand;
+			setComponentValueCommand.myMemoryArena = &componentBufferArena;
+			setComponentValueCommand.myMemoryHandle = copiedComponentMemoryHandle;
+			setComponentValueCommand.myComponentHashCode = editedComponentHashCode;
+			setComponentValueCommand.myComponentID = editedComponentID;
+
+			myCommandTracker->RegisterCommand(Command(setComponentValueCommand, "Set Component Value"));
+		}
+
+		previousFrameEditingAnyActive = anyComponentsActiveCurrentFrame;
 	}
 
 	void EditorPopUp::ShowSceneEntities()
