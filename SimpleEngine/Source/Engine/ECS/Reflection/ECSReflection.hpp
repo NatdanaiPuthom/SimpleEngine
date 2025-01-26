@@ -100,17 +100,16 @@ namespace ECS
 
 		ViewAndEditResult InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "") const;
 
-	
-
 		ComponentID AddComponent(ComponentHashCode aHashCode, Entity& aEntity) const;
+
 		void CopyComponent(ComponentHashCode aHashCode, void* aDestination, const void* aSource) const;
 		void SwapComponent(ComponentHashCode aHashCode, void* aDataPtr1, void* aDataPtr2) const;
 
+	public:
 		size_t GetComponentSize(ComponentHashCode aHashCode) const;
 		InplaceAllocateFunction GetInplaceAllocateFunction(ComponentHashCode aHashCode) const;
 		DestroyFunction GetDestroyFunction(ComponentHashCode aHashCode) const;
 		CopyFunction GetCopyFunction(ComponentHashCode aHashCode) const;
-
 	private:
 		//NOTE(v11.1.2): Calling GetInstance first time is not thread safe but shouldn't matter since there should never be multiple threads calling GetInstance at the sametime during dynamic initialization phase...?
 		static ComponentRegistry* GetInstance();
