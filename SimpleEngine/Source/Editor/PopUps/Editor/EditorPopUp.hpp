@@ -1,6 +1,7 @@
 #pragma once
 #include "Editor/Core/PopUp.hpp"
 #include "Editor/Tools/TransformEntityTool.hpp"
+#include "Editor/Tools/GridSnapTool.hpp"
 #include <memory>
 #include <string>
 #include <vector>
@@ -47,5 +48,6 @@ namespace Editor
 		size_t mySelectedEntityIndex = 0;
 		bool myShowAdvanced = false;
 		TransformEntityTool myTransformEntityTool;
+		GridSnapTool myGridSnapTool;
 	};
 }
