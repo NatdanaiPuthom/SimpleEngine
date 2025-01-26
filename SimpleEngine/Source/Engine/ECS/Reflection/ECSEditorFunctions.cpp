@@ -354,6 +354,7 @@ namespace ECS
 						const std::string meshRelativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(SimpleUtilities::CheckAndReturnAsAbsolutePath(payloadData));
 						aMesh = Global::GetModelFactory()->LoadMesh(meshRelativePath);
 						viewAndEditResult.myIsEdited = true;
+						viewAndEditResult.myIsActive = true;
 					}
 					ImGui::EndDragDropTarget();
 				}
@@ -428,7 +429,6 @@ namespace ECS
 
 		if (ImGui::Combo("##PixelShaderECSEditorFunction", &selectedPixelShader, pixelShaderNames.c_str()))
 		{
-			viewAndEditResult.myIsEdited = true;
 			pixelShader = pixelShaderFileNames[selectedPixelShader];
 		}
 
@@ -438,7 +438,6 @@ namespace ECS
 
 		if (ImGui::Combo("##VertexShaderECSEditorFunction", &selectedVertexShader, vertexShaderNames.c_str()))
 		{
-			viewAndEditResult.myIsEdited = true;
 			vertexShader = vertexShaderFileNames[selectedVertexShader];
 		}
 
@@ -452,6 +451,8 @@ namespace ECS
 			if (shader != nullptr)
 			{
 				aShader = shader;
+				viewAndEditResult.myIsEdited = true;
+				viewAndEditResult.myIsActive = true;
 			}
 		}
 
@@ -491,7 +492,8 @@ namespace ECS
 					{
 						const std::string fileName = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
 						aTexture = Global::GetGraphicsEngine()->GetTextureManager()->GetTexture(fileName.c_str()).get();
-						viewAndEditResult.myIsEdited = true;
+						viewAndEditResult.myIsEdited = true; 
+						viewAndEditResult.myIsActive = true;
 					}
 					ImGui::EndDragDropTarget();
 				}
@@ -533,6 +535,7 @@ namespace ECS
 						const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
 						aSkeleton = Global::GetModelFactory()->LoadSkeleton(relativePath);
 						viewAndEditResult.myIsEdited = true;
+						viewAndEditResult.myIsActive = true;
 					}
 					ImGui::EndDragDropTarget();
 				}
