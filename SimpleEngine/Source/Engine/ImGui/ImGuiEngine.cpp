@@ -149,7 +149,7 @@ namespace Simple
 		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
 	}
 
-	void ImGuiEngine::SeparatorTextDummy(float aWidthOffset, float aHeightOffset, const char* aText)
+	void ImGuiEngine::SeparatorTextDummy(const char* aText, float aWidthOffset, float aHeightOffset)
 	{
 		ImGui::Dummy(ImVec2(aWidthOffset, aHeightOffset));
 		ImGui::PushStyleVar(ImGuiStyleVar_SeparatorTextAlign, ImVec2(0.50f, 0.5f));

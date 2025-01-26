@@ -129,12 +129,12 @@ namespace Graphics
 				targetRotation.y += myRotateSpeed * aDeltaTime;
 			}
 
-			if (myInput->IsKeyHeld('Z'))
+			if (myInput->IsKeyHeld('C'))
 			{
 				targetRotation.x -= myRotateSpeed * aDeltaTime;
 			}
 
-			if (myInput->IsKeyHeld('C'))
+			if (myInput->IsKeyHeld('Z'))
 			{
 				targetRotation.x += myRotateSpeed * aDeltaTime;
 			}

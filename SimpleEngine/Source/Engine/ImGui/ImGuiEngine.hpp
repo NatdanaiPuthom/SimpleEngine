@@ -35,7 +35,7 @@ namespace Simple
 	public:
 		static void SameLineDummy(float aWidthOffset, float aHeightOffset);
 		static void SeparatorDummy(float aWidthOffset, float aHeightOffset);
-		static void SeparatorTextDummy(float aWidthOffset, float aHeightOffset, const char* aText = "");
+		static void SeparatorTextDummy(const char* aText = "", float aWidthOffset = 0.0f, float aHeightOffset = 0.0f);
 	private:
 		void LoadFronts();
 		void LoadColors();

@@ -52,7 +52,7 @@ namespace Editor
 			ImGui::SameLine(ImGui::GetWindowWidth() - 100);
 			ImGui::Text(fps.c_str());
 			
-			Simple::ImGuiEngine::SeparatorTextDummy(0, 0, "Render");
+			Simple::ImGuiEngine::SeparatorTextDummy("Render");
 
 			static const std::string vSync = std::string("VSync").append(myImGuiTag).c_str();
 			if (ImGui::Checkbox(vSync.c_str(), &vsync))
