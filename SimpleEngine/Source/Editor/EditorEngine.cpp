@@ -81,6 +81,7 @@ namespace Editor
 			}
 		}
 
+		//TO-DO(v12.0.0): Should fix as currently updating IsFocused for all windows not working
 		/*for (const std::shared_ptr<PopUp> popUp : myPopUpWindows)
 		{
 			popUp->Update();
