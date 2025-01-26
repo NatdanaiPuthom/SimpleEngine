@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/ECS/Reflection/ECSGameSystems.hpp"
 #include "Game/ECS/Systems/AddSystems/BasicPlayerSystem.hpp"
+#include "Game/ECS/Systems/AddSystems/StatsSystem.hpp"
+#include "Game/ECS/Systems/AddSystems/AbilitySystem.hpp"
 
 namespace ECS
 {
@@ -11,6 +13,8 @@ namespace ECS
 		static void AddSystems() //NOTE(v11.3.1): Order of Init, Update and Render are based on order of AddSystem here
 		{
 			ECS::ECSGameSystem::AddSystem<ECS::BasicPlayerSystem>();
+			ECS::ECSGameSystem::AddSystem<ECS::StatsSystem>();
+			ECS::ECSGameSystem::AddSystem<ECS::AbilitySystem>();
 		}
 	};
 }
