@@ -1,11 +1,12 @@
 #pragma once
+#include "Editor/Utility/EditorUtilities.hpp"
 
 namespace Editor
 {
 	class SetEntityTransformCommand final
 	{
 	public:
-		ECS::EntityID myEntityID = static_cast<size_t>(-1);
+		ECS::EntityID myEntityID = GetInvalidIndex<ECS::EntityID>();
 		Math::Transform myOldTransform;
 		Math::Transform myNewTransform;
 

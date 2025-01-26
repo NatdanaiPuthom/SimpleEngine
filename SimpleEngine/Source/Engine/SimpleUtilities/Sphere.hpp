@@ -37,7 +37,7 @@ namespace Simple
 			return myRadius;
 		}
 
-	private:
+	public:
 
 		Math::Vector3f myCenter;
 		float myRadius = 0.f;

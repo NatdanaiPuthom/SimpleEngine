@@ -34,7 +34,7 @@ namespace ECS
 		{
 			const size_t componentOffset = i * myComponentTypeSize;
 			void* sourceAddress = myStartMemoryAddress + componentOffset;
-			componentRegistry->myTypeErasureComponentDestructorInvoker.at(myTypeHashCode)(sourceAddress);;
+			componentRegistry->DestroyComponent(myTypeHashCode, sourceAddress);
 		}
 
 		delete[] myStartMemoryAddress;
@@ -295,7 +295,7 @@ namespace ECS
 			myPointerToID.clear();
 			myIDToPointer.clear();
 
-			componentRegister->myTypeErasureComponentDestructorInvoker.at(componentHashCode)(static_cast<void*>(componentToRemoveAddress));
+			componentRegister->DestroyComponent(componentHashCode, static_cast<void*>(componentToRemoveAddress));
 
 			myCurrentMemoryAddress -= myComponentTypeSize;
 			memset(myCurrentMemoryAddress, '\0', myComponentTypeSize);
@@ -312,7 +312,7 @@ namespace ECS
 		myIDToPointer.erase(aComponentID);
 		myPointerToID.erase(lastComponentAddress);
 
-		componentRegister->myTypeErasureComponentDestructorInvoker.at(componentHashCode)(static_cast<void*>(componentToRemoveAddress));
+		componentRegister->DestroyComponent(componentHashCode, static_cast<void*>(componentToRemoveAddress));
 		componentRegister->myTypeErasureComponents.at(componentHashCode).CopyFunctionPointer(componentToRemoveAddress, lastComponentAddress);
 
 		myCurrentMemoryAddress -= myComponentTypeSize;

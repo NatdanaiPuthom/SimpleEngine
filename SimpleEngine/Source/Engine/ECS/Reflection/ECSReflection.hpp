@@ -14,7 +14,7 @@ class MainSingleton;
 
 namespace ECS
 {
-	using InplaceAllocateFunction = void (*)(void* aData);
+	using InplaceAllocateFunction = void(*)(void* aData, const void* aDefaultValuePtr);
 	using DestroyFunction = void(*)(void* aData);
 	using CopyFunction = void (*)(void* aDestination, const void* aSource);
 	using SwapFunction = void (*)(void* aDataPtr1, void* aDataPtr2);
@@ -76,6 +76,8 @@ namespace ECS
 		CopyFunction CopyFunctionPointer = nullptr;
 		SwapFunction SwapFunctionPointer = nullptr;
 
+		bool myIsComponent = false;
+
 		size_t mySize = 0;
 		bool hasBeenAdded = false;
 	private:
@@ -95,15 +97,16 @@ namespace ECS
 		std::unordered_map<ComponentHashCode, TypeErasureObject> myTypeErasureComponents;
 		std::unordered_map<ComponentHashCode, TypeErasureObject> myTypeErasureDataTypes;
 		std::unordered_map<ComponentName, ComponentHashCode> myComponentNameToHashCode;
-		std::unordered_map<ComponentHashCode, void(*)(void*)> myTypeErasureComponentDestructorInvoker;
 	public:
 
 		ViewAndEditResult InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "") const;
 
 		ComponentID AddComponent(ComponentHashCode aHashCode, Entity& aEntity) const;
 
+		void InplaceAllocateComponent(ComponentHashCode aHashCode, void* aDestination, const void* aDefaultValuePtr = nullptr) const;
 		void CopyComponent(ComponentHashCode aHashCode, void* aDestination, const void* aSource) const;
 		void SwapComponent(ComponentHashCode aHashCode, void* aDataPtr1, void* aDataPtr2) const;
+		void DestroyComponent(ComponentHashCode aHashCode, void* aDataPtr) const;
 
 	public:
 		size_t GetComponentSize(ComponentHashCode aHashCode) const;
@@ -164,11 +167,17 @@ namespace ECS
 				return aEntity.AddComponent<T>();
 			};
 
-
-
-		typeErasureComponent.InplaceAllocate = [](void* aDataPtr) -> void
+		typeErasureComponent.InplaceAllocate = [](void* aDataPtr, const void* aDefaultValuePtr) -> void
 			{
-				new(aDataPtr)T();
+				if (aDefaultValuePtr != nullptr)
+				{
+					const T& defaultValue = *reinterpret_cast<const T*>(aDefaultValuePtr);
+					new(aDataPtr)T(defaultValue);
+				}
+				else
+				{
+					new(aDataPtr)T();
+				}
 			};
 
 		typeErasureComponent.Destroy = [](void* aDataPtr) -> void
@@ -191,7 +200,6 @@ namespace ECS
 				}
 			};
 
-
 		typeErasureComponent.SwapFunctionPointer = [](void* aDataPtr1, void* aDataPtr2) -> void
 			{
 				using std::swap;
@@ -212,11 +220,6 @@ namespace ECS
 		}
 
 		myTypeErasureComponents[hashCode] = typeErasureComponent;
-
-		myTypeErasureComponentDestructorInvoker[typeid(T).hash_code()] = [](void* aPointer) -> void
-			{
-				static_cast<T*>(aPointer)->~T();
-			};
 
 		myComponentNameToHashCode[typeErasureComponent.myComponentName] = hashCode;
 	}

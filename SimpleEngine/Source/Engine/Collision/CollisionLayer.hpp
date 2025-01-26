@@ -3,13 +3,14 @@
 namespace Simple
 {
 
-	enum class eCollisionLayer : unsigned int
+	enum class eCollisionLayer : uint8_t
 	{
 		None = 0,
 		Player = 1 << 0,
 		Enemy = 1 << 1,
 		Wall = 1 << 2,
 		Interactable = 1 << 3,
+		All = 0xFF
 	};
 	
 

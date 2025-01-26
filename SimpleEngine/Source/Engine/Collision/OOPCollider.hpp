@@ -9,15 +9,15 @@ namespace Simple
 	template<typename T>
 	class CollisionModel;
 
-	class CollisionShape
+	class CollisionShapeOOP
 	{
 	public:
 
-		CollisionShape() = default;
-		virtual ~CollisionShape() = default;
+		CollisionShapeOOP() = default;
+		virtual ~CollisionShapeOOP() = default;
 
 
-		virtual bool TryCollision(const CollisionShape& aOther) const = 0;
+		virtual bool TryCollision(const CollisionShapeOOP& aOther) const = 0;
 		virtual bool TryCollision(const CollisionModel<Sphere>& aOther) const = 0;
 		virtual bool TryCollision(const CollisionModel<AABB3D>& aOther) const = 0;
 		virtual bool TryCollision(const CollisionModel<Ray>& aOther) const = 0;
@@ -25,7 +25,7 @@ namespace Simple
 	};
 
 	template<typename ShapeType>
-	class CollisionModel : public CollisionShape
+	class CollisionModel : public CollisionShapeOOP
 	{
 	public:
 
@@ -34,7 +34,7 @@ namespace Simple
 		{
 		}
 
-		bool TryCollision(const CollisionShape& aOther) const override
+		bool TryCollision(const CollisionShapeOOP& aOther) const override
 		{
 			return aOther.TryCollision(*this);
 		}
@@ -77,7 +77,7 @@ namespace Simple
 	private:
 
 
-		std::unique_ptr<CollisionShape> myCollisionShape;
+		std::unique_ptr<CollisionShapeOOP> myCollisionShape;
 
 	};
 }

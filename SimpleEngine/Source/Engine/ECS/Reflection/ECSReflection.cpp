@@ -31,12 +31,15 @@ namespace ECS
 		}
 	}
 
-
 	ComponentID ComponentRegistry::AddComponent(ComponentHashCode aHashCode, Entity& aEntity) const
 	{
 		return myTypeErasureComponents.at(aHashCode).AddComponentFunctionPointer(aEntity);
 	}
 
+	void ComponentRegistry::InplaceAllocateComponent(ComponentHashCode aHashCode, void* aDataPtr, const void* aDefaultValuePtr) const
+	{
+		myTypeErasureComponents.at(aHashCode).InplaceAllocate(aDataPtr, aDefaultValuePtr);
+	}
 
 	void ComponentRegistry::CopyComponent(ComponentHashCode aHashCode, void* aDestination, const void* aSource) const
 	{
@@ -46,6 +49,11 @@ namespace ECS
 	void ComponentRegistry::SwapComponent(ComponentHashCode aHashCode, void* aDataPtr1, void* aDataPtr2) const
 	{
 		myTypeErasureComponents.at(aHashCode).SwapFunctionPointer(aDataPtr1, aDataPtr2);
+	}
+
+	void ComponentRegistry::DestroyComponent(ComponentHashCode aHashCode, void* aDataPtr) const
+	{
+		myTypeErasureComponents.at(aHashCode).Destroy(aDataPtr);
 	}
 
 	size_t ComponentRegistry::GetComponentSize(ComponentHashCode aHashCode) const
