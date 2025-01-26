@@ -577,6 +577,7 @@ namespace ECS
 						const std::string relativePath = SimpleUtilities::ConvertAbsolutePathToRelativePath(payloadData);
 						aAnimation = Global::GetModelFactory()->LoadAnimationFBX(relativePath);
 						viewAndEditResult.myIsEdited = true;
+						viewAndEditResult.myIsActive = true;
 					}
 					ImGui::EndDragDropTarget();
 				}
@@ -638,6 +639,7 @@ namespace ECS
 						aClassInstance = entityClass.CreateClassInstance();
 
 						viewAndEditResult.myIsEdited = true;
+						viewAndEditResult.myIsActive = true;
 					}
 				}
 			});
