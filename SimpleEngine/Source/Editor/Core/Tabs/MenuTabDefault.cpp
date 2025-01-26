@@ -27,9 +27,9 @@ namespace Editor
 		}
 	}
 
-	MenuItemButton* MenuTabDefault::AddButton(const char* aButtonName, std::function<void()> aCallback)
+	MenuItemButton* MenuTabDefault::AddButton(const char* aButtonName)
 	{
-		std::unique_ptr<MenuItemButton> button = std::make_unique<MenuItemButton>(aButtonName, aCallback);
+		std::unique_ptr<MenuItemButton> button = std::make_unique<MenuItemButton>(aButtonName);
 
 		MenuItemButton* buttonPointer = button.get();
 		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
@@ -38,27 +38,20 @@ namespace Editor
 		return buttonPointer;
 	}
 
-	MenuItemButton* MenuTabDefault::AddButton(std::unique_ptr<MenuItemButton> aButton)
+	MenuItemPopUp* MenuTabDefault::AddPopUp(const char* aPopUpName)
 	{
-		MenuItemButton* buttonPointer = aButton.get();
+		std::unique_ptr<MenuItemPopUp> button = std::make_unique<MenuItemPopUp>(aPopUpName);
+
+		MenuItemPopUp* buttonPointer = button.get();;
 		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
 
-		myButtons.push_back(std::move(aButton));
+		myButtons.push_back(std::move(button));
 		return buttonPointer;
 	}
 
-	MenuItemPopUp* MenuTabDefault::AddPopUp(std::unique_ptr<MenuItemPopUp> aButton)
+	MenuItemMenu* MenuTabDefault::AddMenu(const char* aMenuButtonName)
 	{
-		MenuItemPopUp* buttonPointer = aButton.get();
-		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
-
-		myButtons.push_back(std::move(aButton));
-		return buttonPointer;
-	}
-
-	MenuItemMenu* MenuTabDefault::AddMenu(const char* aButtonName)
-	{
-		std::unique_ptr<MenuItemMenu> button = std::make_unique<MenuItemMenu>(aButtonName);
+		std::unique_ptr<MenuItemMenu> button = std::make_unique<MenuItemMenu>(aMenuButtonName);
 
 		MenuItemMenu* buttonPointer = button.get();
 		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
@@ -67,32 +60,14 @@ namespace Editor
 		return buttonPointer;
 	}
 
-	MenuItemMenu* MenuTabDefault::AddMenu(std::unique_ptr<MenuItemMenu> aMenuButton)
+	MenuItemSelectable* MenuTabDefault::AddSelectable(const char* aSelectableButtonName)
 	{
-		MenuItemMenu* buttonPointer = aMenuButton.get();
-		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
-
-		myButtons.push_back(std::move(aMenuButton));
-		return buttonPointer;
-	}
-
-	MenuItemSelectable* MenuTabDefault::AddSelectable(const char* aButtonName, std::function<void(const std::string&)> aCallback)
-	{
-		std::unique_ptr<MenuItemSelectable> button = std::make_unique<MenuItemSelectable>(aButtonName, std::move(aCallback));
+		std::unique_ptr<MenuItemSelectable> button = std::make_unique<MenuItemSelectable>(aSelectableButtonName);
 
 		MenuItemSelectable* buttonPointer = button.get();
 		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
 
 		myButtons.push_back(std::move(button));
-		return buttonPointer;
-	}
-
-	MenuItemSelectable* MenuTabDefault::AddSelectable(std::unique_ptr<MenuItemSelectable> aSelectableButton)
-	{
-		MenuItemSelectable* buttonPointer = aSelectableButton.get();
-		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
-
-		myButtons.push_back(std::move(aSelectableButton));
 		return buttonPointer;
 	}
 }

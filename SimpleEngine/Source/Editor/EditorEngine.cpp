@@ -110,26 +110,27 @@ namespace Editor
 		MenuTabDefault* settingsTab = AddMenuTab<MenuTabDefault>("Settings");
 		MenuTabDefault* helpTab = AddMenuTab<MenuTabDefault>("Help");
 
-		std::unique_ptr<MenuItemMenu> sceneCreateMenu = std::make_unique<MenuItemMenu>("Create");
-		std::unique_ptr<MenuItemSelectable> sceneLoadSelectable = std::make_unique<MenuItemSelectable>("Load");
-		std::unique_ptr<MenuItemButton> sceneSaveButton = std::make_unique<MenuItemButton>("Save");
-		std::unique_ptr<MenuItemButton> sceneReloadButton = std::make_unique<MenuItemButton>("Reload");
-		std::unique_ptr<MenuItemButton> sceneSetAsActiveButton = std::make_unique<MenuItemButton>("Set As Active");
-		std::unique_ptr<MenuItemButton> sceneCreateNewButton = std::make_unique<MenuItemButton>("New");
-		std::unique_ptr<MenuItemButton> sceneCreateCopyButton = std::make_unique<MenuItemButton>("Copy");
+		MenuItemButton* sceneSaveButton = sceneTab->AddButton("Save");
+		MenuItemSelectable* sceneLoadSelectable = sceneTab->AddSelectable("Load");
+		MenuItemMenu* sceneCreateMenu = sceneTab->AddMenu("Create");
+		MenuItemButton* sceneReloadButton = sceneTab->AddButton("Reload");
+		MenuItemButton* sceneSetAsActiveButton = sceneTab->AddButton("Set As Active");
+	
+		MenuItemButton* sceneCreateNewButton = sceneCreateMenu->AddChild<MenuItemButton>("New");
+		MenuItemButton* sceneCreateCopyButton = sceneCreateMenu->AddChild<MenuItemButton>("Copy");
 
-		std::unique_ptr<MenuItemPopUp> settingsAudioButton = std::make_unique<MenuItemPopUp>("Audio");
-		std::unique_ptr<MenuItemPopUp> settingsCameraButton = std::make_unique<MenuItemPopUp>("Camera");
-		std::unique_ptr<MenuItemPopUp> settingsGraphicsButton = std::make_unique<MenuItemPopUp>("Graphics");
-		std::unique_ptr<MenuItemPopUp> helpCameraControlsPopUpButton = std::make_unique<MenuItemPopUp>("Camera Controls");
+		MenuItemPopUp* settingsAudioButton = settingsTab->AddPopUp("Audio");
+		MenuItemPopUp* settingsCameraButton = settingsTab->AddPopUp("Camera");
+		MenuItemPopUp* settingsGraphicsButton = settingsTab->AddPopUp("Graphics");
 
-		std::unique_ptr<MenuItemPopUp> editorPopUpButton = std::make_unique<MenuItemPopUp>("Editor");
-		std::unique_ptr<MenuItemPopUp> deferredPopUpButton = std::make_unique<MenuItemPopUp>("Deferred");
-		std::unique_ptr<MenuItemPopUp> postProcessPopUpButton = std::make_unique<MenuItemPopUp>("PostProcess");
-		std::unique_ptr<MenuItemPopUp> nodeScriptingPopUpButton = std::make_unique<MenuItemPopUp>("NodeScript");
+		MenuItemPopUp* helpCameraControlsPopUpButton = helpTab->AddPopUp("Camera Controls");
+
+		MenuItemPopUp* editorPopUpButton = windowsTab->AddPopUp("Editor");
+		MenuItemPopUp* deferredPopUpButton = windowsTab->AddPopUp("Deferred");
+		MenuItemPopUp* postProcessPopUpButton = windowsTab->AddPopUp("PostProcess");
+		MenuItemPopUp* nodeScriptingPopUpButton = windowsTab->AddPopUp("NodeScript");
 
 		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUp = AddPopUpWindow<AudioSettingsPopUp>("Audio Settings");
-
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = AddPopUpWindow<CameraSettingsPopUp>("Camera Settings");
 		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUp = AddPopUpWindow<GraphicsSettingsPopUp>("Graphics Settings");
 		std::shared_ptr<CameraControlsGuidePopUp> cameraHelpPopUp = AddPopUpWindow<CameraControlsGuidePopUp>("Editor Camera Control");
@@ -148,7 +149,7 @@ namespace Editor
 		{	//TO-DO(v12.0.0): Temp should be refactor
 			assetBrowserPopUp->myNodeScriptingWindow = nodeScriptingPopUp.get();
 			assetBrowserPopUp->myNodeScriptParentTab = windowsTab;
-			assetBrowserPopUp->myNodeScriptButton = nodeScriptingPopUpButton.get();
+			assetBrowserPopUp->myNodeScriptButton = nodeScriptingPopUpButton;
 		}
 
 		{
@@ -177,25 +178,5 @@ namespace Editor
 			editorPopUpButton->SetIsActive(true);
 			editorPopUpButton->Invoke();
 		}
-
-		sceneCreateMenu->AddChild(std::move(sceneCreateNewButton));
-		sceneCreateMenu->AddChild(std::move(sceneCreateCopyButton));
-
-		sceneTab->AddButton(std::move(sceneSaveButton));
-		sceneTab->AddSelectable(std::move(sceneLoadSelectable));
-		sceneTab->AddMenu(std::move(sceneCreateMenu));
-		sceneTab->AddButton(std::move(sceneReloadButton));
-		sceneTab->AddButton(std::move(sceneSetAsActiveButton));
-
-		windowsTab->AddPopUp(std::move(editorPopUpButton));
-		windowsTab->AddPopUp(std::move(deferredPopUpButton));
-		windowsTab->AddPopUp(std::move(postProcessPopUpButton));
-		windowsTab->AddPopUp(std::move(nodeScriptingPopUpButton));
-
-		settingsTab->AddPopUp(std::move(settingsAudioButton));
-		settingsTab->AddPopUp(std::move(settingsCameraButton));
-		settingsTab->AddPopUp(std::move(settingsGraphicsButton));
-
-		helpTab->AddPopUp(std::move(helpCameraControlsPopUpButton));
 	}
 }

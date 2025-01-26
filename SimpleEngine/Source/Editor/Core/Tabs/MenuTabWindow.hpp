@@ -15,7 +15,7 @@ namespace Editor
 	
 		void ActiveWindow(MenuItemPopUp* aItemPopUp, const bool aShouldActive = true);
 	public:
-		MenuItemPopUp* AddPopUp(std::unique_ptr<MenuItemPopUp> aButton);
+		MenuItemPopUp* AddPopUp(const char* aPopUpButtonName);
 	private:
 		std::vector<std::unique_ptr<MenuItemPopUp>> myButtons;
 	};

@@ -18,16 +18,10 @@ namespace Editor
 		void Render() override final;
 
 	public:
-		MenuItemButton* AddButton(const char* aButtonName, std::function<void()> aCallback);
-		MenuItemButton* AddButton(std::unique_ptr<MenuItemButton> aButton);
-
-		MenuItemPopUp* AddPopUp(std::unique_ptr<MenuItemPopUp> aButton);
-
-		MenuItemMenu* AddMenu(const char* aButtonName);
-		MenuItemMenu* AddMenu(std::unique_ptr<MenuItemMenu> aMenuButton);
-
-		MenuItemSelectable* AddSelectable(const char* aButtonName, std::function<void(const std::string&)> aCallback);
-		MenuItemSelectable* AddSelectable(std::unique_ptr<MenuItemSelectable> aSelectableButton);
+		MenuItemButton* AddButton(const char* aButtonName);
+		MenuItemPopUp* AddPopUp(const char* aPopUpName);
+		MenuItemMenu* AddMenu(const char* aMenuButtonName);
+		MenuItemSelectable* AddSelectable(const char* aSelectableButtonName);
 	private:
 		std::vector<std::unique_ptr<MenuItemBase>> myButtons;
 	};

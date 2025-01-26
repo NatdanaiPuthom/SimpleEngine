@@ -14,16 +14,20 @@ namespace Editor
 
 	public:
 		template<DerivedFromMenuItem T>
-		T* AddChild(std::unique_ptr<T> aChild);
+		T* AddChild(const char* aName);
 	private:
 		std::vector<std::unique_ptr<MenuItemBase>> myItems;
 	};
 
 	template<DerivedFromMenuItem T>
-	inline T* MenuItemMenu::AddChild(std::unique_ptr<T> aChild)
+	inline T* MenuItemMenu::AddChild(const char* aName)
 	{
-		T* ptr = aChild.get();
-		myItems.push_back(std::move(aChild));
+		std::unique_ptr<T> child = std::make_unique<T>(aName);
+
+		T* ptr = child.get();
+		ptr->SetImGuiTag(std::string("##" + myName).c_str());
+
+		myItems.push_back(std::move(child));
 		return ptr;
 	}
 }
