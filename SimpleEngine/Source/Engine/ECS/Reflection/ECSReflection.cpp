@@ -86,7 +86,7 @@ namespace ECS
 					ImGui::BeginDisabled();
 				}
 
-				ExposeProperty(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.name);
+				ExposeProperty(componentProperty.id, reinterpret_cast<void*>((reinterpret_cast<size_t>(aData) + componentProperty.byteOffset)), componentProperty.customVariableName);
 
 				if (componentProperty.canEdit == false)
 				{
