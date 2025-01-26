@@ -1,5 +1,5 @@
 #pragma once
-#include "Editor/Editor.hpp"
+#include "Editor/EditorEngine.hpp"
 
 namespace Editor
 {

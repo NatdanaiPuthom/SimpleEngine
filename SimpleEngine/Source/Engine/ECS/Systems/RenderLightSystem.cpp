@@ -5,7 +5,6 @@
 #include "Engine/ECS/Components/Core/SkyBoxComponent.hpp"
 #include "Engine/ECS/Components/Core/DirectionalLightComponent.hpp"
 #include "Engine/ECS/Components/Core/PointLightComponent.hpp"
-#include "Editor/Editor.hpp"
 #include "Graphics/BufferData.hpp"
 
 namespace ECS

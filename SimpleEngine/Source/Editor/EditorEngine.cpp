@@ -1,5 +1,5 @@
 #include "Editor/Precomplied/EditorPch.hpp"
-#include "Editor/Editor.hpp"
+#include "Editor/EditorEngine.hpp"
 
 #include "Editor/Core/Tabs/MenuTabWindow.hpp"
 #include "Editor/Core/Tabs/MenuTabDefault.hpp"
