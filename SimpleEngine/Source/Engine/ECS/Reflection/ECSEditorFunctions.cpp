@@ -40,7 +40,6 @@ namespace Editor
 		{
 			viewAndEditResult.myIsEdited = true;
 		}
-		viewAndEditResult.myIsActive |= ImGui::IsItemActive();
 
 		ImGui::SameLine();
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.60f, 0.0f, 1.0f));
@@ -59,7 +58,6 @@ namespace Editor
 		{
 			viewAndEditResult.myIsEdited = true;
 		}
-		viewAndEditResult.myIsActive |= ImGui::IsItemActive();
 
 		ImGui::SameLine();
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
@@ -78,8 +76,6 @@ namespace Editor
 		{
 			viewAndEditResult.myIsEdited = true;
 		}
-		viewAndEditResult.myIsActive |= ImGui::IsItemActive();
-
 		ImGui::PopStyleVar();
 
 		ImGui::SameLine();
@@ -215,18 +211,23 @@ namespace ECS
 
 		{
 			Math::Vector3f position = aValue.GetPosition();
-			const ViewAndEditResult viewAndEditPosition = Editor::CustomDragFloat3("Position", position);
+
+			ViewAndEditResult viewAndEditPosition = Editor::CustomDragFloat3("Position", position);
 			viewAndEditResult |= viewAndEditPosition;
+
 			if (viewAndEditPosition.myIsEdited)
 			{
+				viewAndEditResult.myIsEdited = true;
 				aValue.SetPosition(position);
 			}
 		}
 
 		{
 			Math::Vector3f rotation = aValue.GetRotation();
-			const ViewAndEditResult viewAndEditRotation = Editor::CustomDragFloat3("Rotation", rotation);
+
+			ViewAndEditResult viewAndEditRotation = Editor::CustomDragFloat3("Rotation", rotation);
 			viewAndEditResult |= viewAndEditRotation;
+
 			if (viewAndEditRotation.myIsEdited)
 			{
 				aValue.SetRotation(rotation);
@@ -235,8 +236,10 @@ namespace ECS
 
 		{
 			Math::Vector3f scale = aValue.GetScale();
-			const ViewAndEditResult viewAndEditScale = Editor::CustomDragFloat3("Scale", scale);
+
+			ViewAndEditResult viewAndEditScale = Editor::CustomDragFloat3("Scale", scale);
 			viewAndEditResult |= viewAndEditScale;
+
 			if (viewAndEditScale.myIsEdited)
 			{
 				if (scale.x < 0.001f)
@@ -657,8 +660,8 @@ namespace ECS
 
 		ImVec2 windowSize = ImGui::GetWindowSize();
 
-		const float imageWidth = 64.0f;
-		const float imageHeight = 64.0f;
+		constexpr float imageWidth = 64.0f;
+		constexpr float imageHeight = 64.0f;
 		const float totalSpacing = windowSize.x - (imageWidth * 3);
 		const float spacing = totalSpacing / 4.0f;
 

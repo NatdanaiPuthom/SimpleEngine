@@ -10,6 +10,15 @@
 
 namespace Editor
 {
+	template<std::integral T>
+	constexpr T GetInvalidIndex()
+	{
+		return std::numeric_limits<T>::max();
+	}
+}
+
+namespace Editor
+{
 	EditorPopUp::EditorPopUp(const std::string& aName, CommandTracker* aCommandTracker)
 		: PopUp(aName)
 		, myShowAdvanced(false)
@@ -31,12 +40,6 @@ namespace Editor
 		{
 			myVisibleEntityIDs[i] = entities[i].GetID();
 		}
-	}
-
-	template<std::integral T>
-	constexpr T GetInvalidIndex()
-	{
-		return std::numeric_limits<T>::max();
 	}
 
 	void EditorPopUp::Render()
@@ -121,8 +124,8 @@ namespace Editor
 			}
 		}
 
-		RemoveMeLater();
-		RemoveMeLaterLater();
+		RemoveMeLater(); //NOTE(v12.0.0): This is a temporary fix, should be refactored
+		RemoveMeLaterLater(); //NOTE(v12.0.0): This is a temporary fix, should be refactored
 	}
 
 	void EditorPopUp::RemoveMeLater()
@@ -132,6 +135,26 @@ namespace Editor
 
 		if (ImGui::Begin("Game##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
 		{
+			{	//Render Orientation Cube  
+				//TO-DO(v11.4.4): Make own class for this
+				//TO-DO(v12.0.0): The cube doesn't render when the window is pop out for unknown reason
+
+				const Graphics::Camera* camera = Global::GetGraphicsEngine()->GetCurrentCamera();
+				Math::Matrix4x4f view = camera->GetViewMatrix();
+
+				constexpr float cubeSize = 64.0f;
+
+				ImVec2 windowPos = ImGui::GetWindowPos();
+				ImVec2 windowSize = ImGui::GetWindowSize();
+
+				ImVec2 cubePos = ImVec2(
+					windowPos.x + windowSize.x - cubeSize - 10.0f,
+					windowPos.y + windowSize.y - cubeSize - 10.0f
+				);
+
+				ImGuizmo::ViewManipulate(&view(1, 1), 16, cubePos, ImVec2(cubeSize, cubeSize), 0x00000000);
+			}
+
 			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 			Graphics::RenderTargetManager* const renderTargetManager = graphicsEngine->GetRenderTargetManager();
 			const Graphics::eRasterizerState currentRasterizerState = graphicsEngine->GetStateManager()->GetCurrentRasterizerState();
@@ -208,14 +231,6 @@ namespace Editor
 			}
 
 			ImGui::EndMainMenuBar();
-		}
-
-		{	//Render Orientation Cube  
-			//TO-DO(v11.4.4): Make own class for this
-			const Graphics::Camera* camera = Global::GetGraphicsEngine()->GetCurrentCamera();
-			Math::Matrix4x4f view = camera->GetViewMatrix();
-			ImVec2 windowPos = ImGui::GetWindowPos();
-			ImGuizmo::ViewManipulate(&view(1, 1), 16, ImVec2(windowPos.x + 775, windowPos.y + 375), ImVec2(64, 64), 0x00000000);
 		}
 	}
 
@@ -306,14 +321,12 @@ namespace Editor
 			}
 		}
 
-
 		if (inputManager.IsKeyReleased(VK_LBUTTON) && myIsDraggingEntity && selectedEntityID == mySetEntityTransformCommand.myEntityID)
 		{
 			myIsDraggingEntity = false;
 			mySetEntityTransformCommand.myNewTransform = transformComponent->transform;
 			myCommandTracker->RegisterCommand(Command(mySetEntityTransformCommand, "Set Entity Transform"));
 		}
-
 	}
 
 	void EditorPopUp::ShowInspector(ECS::EntityComponentSystem& aActiveECS)
@@ -452,18 +465,18 @@ namespace Editor
 				ECS::DestroyFunction destroyFunction = componentRegistry.GetDestroyFunction(componentHashCode);
 				ECS::CopyFunction copyFunction = componentRegistry.GetCopyFunction(componentHashCode);
 
-				Simple::DynamicMemoryArenaHandle temporaryComponentHandle = componentFrameBufferArena.AllocateUnsafe(componentSize, 
-					inplaceAllocateFunction, destroyFunction,copyFunction);
+				Simple::DynamicMemoryArenaHandle temporaryComponentHandle = componentFrameBufferArena.AllocateUnsafe(componentSize,
+					inplaceAllocateFunction, destroyFunction, copyFunction);
 
 				componentRegistry.CopyComponent(componentHashCode, componentFrameBufferArena.MemoryAt(temporaryComponentHandle), componentPointer);
-				
+
 				const ECS::ViewAndEditResult viewAndEditResult = componentRegistry.InspectComponentProperties(componentHashCode, componentPointer);
-				
+
 				anyComponentsActiveCurrentFrame |= viewAndEditResult.myIsActive;
 				if (viewAndEditResult.myIsActive && !previousFrameEditingAnyActive)
 				{
 					copiedComponentMemoryHandle = componentBufferArena.AllocateUnsafe(componentSize,
-						inplaceAllocateFunction,destroyFunction, copyFunction);
+						inplaceAllocateFunction, destroyFunction, copyFunction);
 
 					std::byte* componentPtr1 = componentFrameBufferArena.MemoryAt(temporaryComponentHandle);
 					std::byte* componentPtr2 = componentBufferArena.MemoryAt(copiedComponentMemoryHandle);
@@ -508,11 +521,11 @@ namespace Editor
 			{
 			public:
 
-				ECS::ComponentHashCode myComponentHashCode;
-				ECS::ComponentID myComponentID;
 				Simple::DynamicMemoryArenaHandle myMemoryHandle;
 				Simple::DynamicMemoryArena* myMemoryArena = nullptr;
-				
+				ECS::ComponentHashCode myComponentHashCode = GetInvalidIndex<size_t>();
+				ECS::ComponentID myComponentID = GetInvalidIndex<size_t>();
+
 				void Execute() const
 				{
 					SwapDataPtrs();
