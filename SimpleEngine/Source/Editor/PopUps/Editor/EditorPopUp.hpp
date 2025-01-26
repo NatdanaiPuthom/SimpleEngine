@@ -1,6 +1,7 @@
 #pragma once
 #include "Editor/Core/PopUp.hpp"
 #include "Editor/Command/Commands/SetEntityTransformCommand.hpp"
+#include "Engine/Memory/DynamicMemoryArena.hpp"
 #include <memory>
 #include <string>
 #include <vector>
@@ -28,18 +29,24 @@ namespace Editor
 
 		void RemoveMeLater();
 		void RemoveMeLaterLater();
+		ECS::Entity* GetSelectedEntity() const;
 	private:
 		void ShowEntityTransformGizmo();
-		void ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected);
-		void ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected);
+		void ShowInspector(ECS::EntityComponentSystem& aActiveECS);
+		void ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS);
 		void ShowComponents(ECS::Entity& aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const;
-		void ShowSceneEntities(std::vector<ECS::Entity>& aEntities, int& aSelected);
+		void ShowSceneEntities();
 		void ShowActiveSceneName();
-		void RemoveEntity(std::vector<ECS::Entity>& aEntities, int& aSelected);
-		void ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected);
+		void RemoveSelectedEntity();
+		void RemoveEntity(size_t aEntityIndex);
+		ECS::EntityID CreateEntity();
+		void ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS);
+		void SelectEntity(size_t aNewIndex);
 	private:
 		std::unique_ptr<ECS::EntityComponentSystem> myTemporaryECSEditor;
+		std::vector<ECS::EntityID> myVisibleEntityIDs;
 		CommandTracker* myCommandTracker = nullptr;
+		size_t mySelectedEntityIndex = 0;
 		SetEntityTransformCommand mySetEntityTransformCommand;
 		bool myIsDraggingEntity = false;
 		bool myShowAdvanced = false;

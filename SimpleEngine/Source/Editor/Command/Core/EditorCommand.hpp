@@ -8,21 +8,21 @@ namespace Editor
 	template<typename T>
 	concept Commandable = requires(const T & aData)
 	{
-		{ Do(aData) };
+		{ Execute(aData) };
 		{ Undo(aData) };
 	};
 
 	template<typename T>
 	concept MemberCommandable = requires(const T & aData)
 	{
-		{ aData.Do() };
+		{ aData.Execute() };
 		{ aData.Undo() };
 	};
 
 	template<typename T>
 	concept InternalMemberCommandable = requires(const T & aData)
 	{
-		{ aData.Do(true) };
+		{ aData.Execute(true) };
 		{ aData.Undo(true) };
 	};
 
@@ -74,7 +74,7 @@ namespace Editor
 
 		Command& operator=(Command&&) = default;
 
-		void DoCommand(bool aDebugPrint) const;
+		void ExecuteCommand(bool aDebugPrint) const;
 		void UndoCommand(bool aDebugPrint) const;
 
 	private:
@@ -85,7 +85,7 @@ namespace Editor
 
 			virtual ~CommandConcept() = default;
 
-			virtual void DoCommand(bool aDebugPrint) const = 0;
+			virtual void ExecuteCommand(bool aDebugPrint) const = 0;
 			virtual void UndoCommand(bool aDebugPrint) const = 0;
 
 			virtual std::unique_ptr<CommandConcept> Clone() const = 0;
@@ -105,7 +105,7 @@ namespace Editor
 			{
 			}
 
-			void DoCommand(const bool) const override
+			void ExecuteCommand(const bool) const override
 			{
 				Do(myData);
 			}
@@ -135,9 +135,9 @@ namespace Editor
 			{
 			}
 
-			void DoCommand(const bool) const override
+			void ExecuteCommand(const bool) const override
 			{
-				myData.Do();
+				myData.Execute();
 			}
 
 			void UndoCommand(const bool) const override
@@ -165,9 +165,9 @@ namespace Editor
 			{
 			}
 
-			void DoCommand(const bool aDebugPrint) const override
+			void ExecuteCommand(const bool aDebugPrint) const override
 			{
-				myData.Do(aDebugPrint);
+				myData.Execute(aDebugPrint);
 			}
 
 			void UndoCommand(const bool aDebugPrint) const override
@@ -191,16 +191,16 @@ namespace Editor
 			using FunctionType = void(*)(const T&);
 		public:
 
-			CommandModel(const T& aData, FunctionType aDoFunction, FunctionType aUndoFunction)
+			CommandModel(const T& aData, FunctionType aExecuteFunction, FunctionType aUndoFunction)
 				: myData(aData)
-				, myDoFunction(aDoFunction)
+				, myExecuteFunction(aExecuteFunction)
 				, myUndoFunction(aUndoFunction)
 			{
 			}
 
 			void DoCommand(const bool) const override
 			{
-				myDoFunction(myData);
+				myExecuteFunction(myData);
 			}
 
 			void UndoCommand(const bool) const override
@@ -216,7 +216,7 @@ namespace Editor
 		private:
 
 			T myData;
-			FunctionType myDoFunction;
+			FunctionType myExecuteFunction;
 			FunctionType myUndoFunction;
 		};
 

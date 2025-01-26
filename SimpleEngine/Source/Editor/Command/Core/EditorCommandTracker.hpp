@@ -16,7 +16,7 @@ namespace Editor
 
 		void Clear();
 
-		void DoCommand(Command aCommand);
+		void ExecuteCommand(Command aCommand);
 		void RegisterCommand(Command aCommand);
 
 		void BeginComposite(std::string_view aName);
@@ -30,7 +30,7 @@ namespace Editor
 
 	private:
 
-		void DoCommandInternal(bool aExecute, Command&& aCommand);
+		void ExecuteCommandInternal(bool aExecute, Command&& aCommand);
 
 	private:
 

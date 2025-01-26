@@ -14,14 +14,14 @@ namespace Editor
 		myRedoStack = {};
 	}
 
-	void CommandTracker::DoCommand(Command aCommand)
+	void CommandTracker::ExecuteCommand(Command aCommand)
 	{
-		DoCommandInternal(true, std::move(aCommand));
+		ExecuteCommandInternal(true, std::move(aCommand));
 	}
 
 	void CommandTracker::RegisterCommand(Command aCommand)
 	{
-		DoCommandInternal(false, std::move(aCommand));
+		ExecuteCommandInternal(false, std::move(aCommand));
 	}
 
 	void CommandTracker::BeginComposite(std::string_view aName)
@@ -35,7 +35,7 @@ namespace Editor
 
 		if (compositeCommand)
 		{
-			DoCommand(Command(compositeCommand.value(), compositeCommand->GetName()));
+			ExecuteCommand(Command(compositeCommand.value(), compositeCommand->GetName()));
 		}
 	}
 
@@ -58,7 +58,7 @@ namespace Editor
 			return;
 		}
 		Command& topCommand = myRedoStack.top();
-		topCommand.DoCommand(aDebugPrint);
+		topCommand.ExecuteCommand(aDebugPrint);
 		myUndoStack.push(std::move(topCommand));
 		myRedoStack.pop();
 	}
@@ -73,7 +73,7 @@ namespace Editor
 		return myRedoStack.size();
 	}
 
-	void CommandTracker::DoCommandInternal(const bool aExecute, Command&& aCommand)
+	void CommandTracker::ExecuteCommandInternal(const bool aExecute, Command&& aCommand)
 	{
 		if (myCompositeCommandBuilder.IsActive())
 		{
@@ -83,7 +83,7 @@ namespace Editor
 
 		if (aExecute)
 		{
-			aCommand.DoCommand(false);
+			aCommand.ExecuteCommand(false);
 		}
 
 		myUndoStack.push(std::move(aCommand));

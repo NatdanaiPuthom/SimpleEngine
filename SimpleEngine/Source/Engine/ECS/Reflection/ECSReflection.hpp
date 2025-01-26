@@ -48,6 +48,10 @@ namespace ECS
 		bool canEdit = true;
 	};
 
+	using InplaceAllocateFunction = void (*)(void* aData);
+	using DestroyFunction = void(*)(void* aData);
+	using CopyFunction = void (*)(void* aDestination, const void* aSource);
+
 	class TypeErasureObject final
 	{
 	public:
@@ -55,23 +59,26 @@ namespace ECS
 		std::string myComponentPrettyName;
 		std::vector<ComponentProperty> myComponentProperties;
 
-		const ComponentID(*AddComponentFunctionPointer)(ECS::Entity& aEntity) = nullptr;
+		ComponentID(*AddComponentFunctionPointer)(ECS::Entity& aEntity) = nullptr;
 		bool(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
 
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
 		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
 
-		void (*CreateComponent)(void* aDestination, const void* aSource) = nullptr;
-		void (*CopyFunctionPointer)(void* aDestination, const void* aSource) = nullptr;
+		InplaceAllocateFunction InplaceAllocate = nullptr;
+		DestroyFunction Destroy = nullptr;
+		CopyFunction CopyFunctionPointer = nullptr;
 
+		size_t mySize = 0;
 		bool hasBeenAdded = false;
 	private:
-		char myPadding[8] = "Believ\0";
+		char myPadding[7] = "Belie\0";
 	};
+
+	using ComponentHashCode = size_t;
 
 	class ComponentRegistry final
 	{
-		using ComponentHashCode = size_t;
 		using ComponentName = std::string;
 
 		friend class MainSingleton;
@@ -91,6 +98,13 @@ namespace ECS
 		ComponentRegistry(const ComponentRegistry&&) = delete;
 		ComponentRegistry operator=(const ComponentRegistry&) = delete;
 		ComponentRegistry operator=(const ComponentRegistry&&) = delete;
+
+		ComponentID AddComponent(ComponentHashCode aHashCode, Entity& aEntity) const;
+		void CopyComponent(ComponentHashCode aHashCode, void* aDestination, const void* aSource) const;
+		size_t GetComponentSize(ComponentHashCode aHashCode) const;
+		InplaceAllocateFunction GetInplaceAllocateFunction(ComponentHashCode aHashCode) const;
+		DestroyFunction GetDestroyFunction(ComponentHashCode aHashCode) const;
+		CopyFunction GetCopyFunction(ComponentHashCode aHashCode) const;
 
 	private:
 		//NOTE(v11.1.2): Calling GetInstance first time is not thread safe but shouldn't matter since there should never be multiple threads calling GetInstance at the sametime during dynamic initialization phase...?
@@ -131,11 +145,12 @@ namespace ECS
 
 		TypeErasureObject typeErasureComponent;
 		typeErasureComponent.hasBeenAdded = true;
+		typeErasureComponent.mySize = sizeof(T);
 
 		typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 		typeErasureComponent.myComponentPrettyName = SimpleUtilities::RemoveSubStringIfExist(typeErasureComponent.myComponentName, "Component");
 
-		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> const ComponentID
+		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> ComponentID
 			{
 				return aEntity.AddComponent<T>();
 			};
@@ -154,10 +169,15 @@ namespace ECS
 				}
 			};
 
-		typeErasureComponent.CreateComponent = [](void* aDestination, const void* aSource) -> void
+		typeErasureComponent.InplaceAllocate = [](void* aDataPtr) -> void
 			{
-				const T& source = *reinterpret_cast<const T*>(aSource);
-				new(aDestination)T(source);
+				new(aDataPtr)T();
+			};
+
+		typeErasureComponent.Destroy = [](void* aDataPtr) -> void
+			{
+				T& value = *reinterpret_cast<T*>(aDataPtr);
+				value.~T();
 			};
 
 		if constexpr (ECS::Editable<T>)
@@ -194,7 +214,7 @@ namespace ECS
 
 		dataType.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-		dataType.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> const ComponentID
+		dataType.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> ComponentID
 			{
 				return aEntity.AddComponent<T>();
 			};

@@ -10,11 +10,11 @@ namespace Editor
 	{
 	}
 
-	void CompositeCommand::Do(const bool aDebugPrint) const
+	void CompositeCommand::Execute(const bool aDebugPrint) const
 	{
 		for (const Command& command : myCommands)
 		{
-			command.DoCommand(aDebugPrint);
+			command.ExecuteCommand(aDebugPrint);
 		}
 	}
 

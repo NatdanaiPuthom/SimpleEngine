@@ -9,7 +9,7 @@ namespace Editor
 		Math::Transform myOldTransform;
 		Math::Transform myNewTransform;
 
-		void Do() const;
+		void Execute() const;
 		void Undo() const;
 
 	private:

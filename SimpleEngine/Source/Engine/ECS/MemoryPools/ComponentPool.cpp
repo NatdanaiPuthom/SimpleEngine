@@ -75,7 +75,7 @@ namespace ECS
 			void* newAddress = this->myStartMemoryAddress + componentOffset;
 			const void* sourceAddress = aOther.myStartMemoryAddress + componentOffset;
 
-			componentRegistry->myTypeErasureComponents.at(myTypeHashCode).CreateComponent(newAddress, sourceAddress);
+			componentRegistry->CopyComponent(myTypeHashCode, newAddress, sourceAddress);
 		}
 
 		const std::vector<ComponentID> sortedComponentIDs = aOther.ReturnComponentIDsSortedByAddress();

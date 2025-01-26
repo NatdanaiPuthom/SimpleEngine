@@ -4,7 +4,7 @@
 namespace Editor
 {
 
-	void SetEntityTransformCommand::Do() const
+	void SetEntityTransformCommand::Execute() const
 	{
 		SetTransform(myNewTransform);
 	}

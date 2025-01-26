@@ -31,6 +31,38 @@ namespace ECS
 		}
 	}
 
+
+	ComponentID ComponentRegistry::AddComponent(ComponentHashCode aHashCode, Entity& aEntity) const
+	{
+		return myTypeErasureComponents.at(aHashCode).AddComponentFunctionPointer(aEntity);
+	}
+
+
+	void ComponentRegistry::CopyComponent(ComponentHashCode aHashCode, void* aDestination, const void* aSource) const
+	{
+		myTypeErasureComponents.at(aHashCode).CopyFunctionPointer(aDestination, aSource);
+	}
+
+	size_t ComponentRegistry::GetComponentSize(ComponentHashCode aHashCode) const
+	{
+		return myTypeErasureComponents.at(aHashCode).mySize;
+	}
+
+	InplaceAllocateFunction ComponentRegistry::GetInplaceAllocateFunction(ComponentHashCode aHashCode) const
+	{
+		return myTypeErasureComponents.at(aHashCode).InplaceAllocate;
+	}
+
+	DestroyFunction ComponentRegistry::GetDestroyFunction(ComponentHashCode aHashCode) const
+	{
+		return myTypeErasureComponents.at(aHashCode).Destroy;
+	}
+
+	CopyFunction ComponentRegistry::GetCopyFunction(ComponentHashCode aHashCode) const
+	{
+		return myTypeErasureComponents.at(aHashCode).CopyFunctionPointer;
+	}
+
 	void ComponentRegistry::InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName)
 	{
 		auto it = myTypeErasureComponents.find(aHashCode);

@@ -5,10 +5,12 @@
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "Engine/ImGui/ImGuiEngine.hpp"
 #include "MainSingleton/MainSingleton.hpp"
+#include "Editor/Command/Commands/SelectEntityCommand.hpp"
 
 namespace Editor
 {
-	EditorPopUp::EditorPopUp(const std::string& aName, CommandTracker* aCommandTracker) : PopUp(aName)
+	EditorPopUp::EditorPopUp(const std::string& aName, CommandTracker* aCommandTracker)
+		: PopUp(aName)
 		, myShowAdvanced(false)
 		, myCommandTracker(aCommandTracker)
 	{
@@ -18,46 +20,58 @@ namespace Editor
 	{
 		myTemporaryECSEditor = std::make_unique<ECS::EntityComponentSystem>();
 		myTemporaryECSEditor->Init();
-	}
-
-	void EditorPopUp::Render()
-	{
-		static int selected = 0;
 
 		ECS::EntityComponentSystem& activeECS = MainSingleton::GetSceneManager().GetCurrentECS();
 		std::vector<ECS::Entity>& entities = activeECS.GetAllEntities();
 
-		ShowSceneHierachy(activeECS, entities, selected);
+		myVisibleEntityIDs.resize(entities.size());
 
-		if (selected < 0)
+		for (size_t i = 0; i < myVisibleEntityIDs.size(); i++)
 		{
-			selected = 0;
+			myVisibleEntityIDs[i] = entities[i].GetID();
 		}
-		else if (selected >= static_cast<int>(entities.size()))
+	}
+
+	template<std::integral T>
+	constexpr T GetInvalidIndex()
+	{
+		return std::numeric_limits<T>::max();
+	}
+
+	void EditorPopUp::Render()
+	{
+		ECS::EntityComponentSystem& activeECS = MainSingleton::GetSceneManager().GetCurrentECS();
+
+		ShowSceneHierachy(activeECS);
+
+		if (mySelectedEntityIndex < 0)
 		{
-			selected = static_cast<int>(entities.size() - 1);
+			mySelectedEntityIndex = 0;
+		}
+		else if (mySelectedEntityIndex >= static_cast<int>(myVisibleEntityIDs.size()))
+		{
+			mySelectedEntityIndex = static_cast<int>(myVisibleEntityIDs.size() - 1);
 		}
 
-		if (entities.empty() == false)
+		if (myVisibleEntityIDs.empty() == false)
 		{
-			EditorEngine::mySelectedEntityID = entities[selected].GetID();
+			EditorEngine::mySelectedEntityID = myVisibleEntityIDs[mySelectedEntityIndex];
 		}
 		else
 		{
-			EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
+			EditorEngine::mySelectedEntityID = GetInvalidIndex<ECS::EntityID>();
 		}
 
-		ShowInspector(activeECS, entities, selected);
+		ShowInspector(activeECS);
 
 		if (MainSingleton::GetInputManager().IsKeyPressed(VK_DELETE))
 		{
-			if (entities.size() > 0)
+			if (!myVisibleEntityIDs.empty())
 			{
-				if (selected >= 0)
+				if (mySelectedEntityIndex >= 0)
 				{
-					RemoveEntity(entities, selected);
-					//EditorEngine::mySelectedEntityID = entities[selected].GetID();
-					EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
+					RemoveSelectedEntity();
+					EditorEngine::mySelectedEntityID = GetInvalidIndex<ECS::EntityID>();
 					return;
 				}
 			}
@@ -65,37 +79,42 @@ namespace Editor
 
 		if (MainSingleton::GetInputManager().IsKeyPressed('K'))
 		{
-			if (entities.size() > 0)
+			if (!myVisibleEntityIDs.empty())
 			{
-				if (selected >= 0)
+				if (mySelectedEntityIndex >= 0)
 				{
-					entities[selected].DuplicateThis();
+					ECS::EntityID createdEntityID = GetSelectedEntity()->DuplicateThis();
+					myVisibleEntityIDs.insert(begin(myVisibleEntityIDs) + mySelectedEntityIndex + 1, createdEntityID);
 				}
 			}
 		}
 
-		static ECS::EntityID tempEntityID = static_cast<size_t>(-1);
+		static ECS::EntityID tempEntityID = GetInvalidIndex<ECS::EntityID>();
 
 		if (MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL) && MainSingleton::GetInputManager().IsKeyPressed('C'))
 		{
-			if (entities.size() > 0)
+			if (!myVisibleEntityIDs.empty())
 			{
-				if (selected >= 0)
+				if (mySelectedEntityIndex >= 0)
 				{
-					tempEntityID = entities[selected].DuplicateThisToAnotherECS(myTemporaryECSEditor->GetEntityManager());
+					tempEntityID = GetSelectedEntity()->DuplicateThisToAnotherECS(myTemporaryECSEditor->GetEntityManager());
 				}
 			}
 		}
 		else if (MainSingleton::GetInputManager().IsKeyHeld(VK_CONTROL) && MainSingleton::GetInputManager().IsKeyPressed('V'))
 		{
-			if (entities.size() > 0)
+			if (!myVisibleEntityIDs.empty())
 			{
-				if (selected >= 0)
+				if (mySelectedEntityIndex >= 0)
 				{
-					if (tempEntityID != static_cast<size_t>(-1))
+					if (tempEntityID != GetInvalidIndex<ECS::EntityID>())
 					{
 						ECS::Entity& tempEntity = myTemporaryECSEditor->GetEntity(tempEntityID);
-						tempEntity.DuplicateThisToAnotherECS(activeECS.GetEntityManager());
+						ECS::EntityID createdEntityID = tempEntity.DuplicateThisToAnotherECS(activeECS.GetEntityManager());
+
+						myVisibleEntityIDs.push_back(createdEntityID);
+
+						SelectEntity(myVisibleEntityIDs.size());
 					}
 				}
 			}
@@ -199,12 +218,22 @@ namespace Editor
 		}
 	}
 
+	ECS::Entity* EditorPopUp::GetSelectedEntity() const
+	{
+		if (mySelectedEntityIndex == GetInvalidIndex<size_t>())
+		{
+			return nullptr;
+		}
+		return &MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(myVisibleEntityIDs[mySelectedEntityIndex]);
+	}
+
 	void EditorPopUp::ShowEntityTransformGizmo()
 	{
-		if (EditorEngine::mySelectedEntityID == static_cast<size_t>(-1)) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
+		if (EditorEngine::mySelectedEntityID == GetInvalidIndex<ECS::EntityID>()) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
 		{
 			return;
 		}
+
 		const ImVec2 topLeft = ImGui::GetItemRectMin();
 		const ImVec2 bottomRight = ImGui::GetItemRectMax();
 		ImGuizmo::SetOrthographic(false);
@@ -276,7 +305,7 @@ namespace Editor
 			}
 		}
 
-		
+
 		if (inputManager.IsKeyReleased(VK_LBUTTON) && myIsDraggingEntity && selectedEntityID == mySetEntityTransformCommand.myEntityID)
 		{
 			myIsDraggingEntity = false;
@@ -286,17 +315,18 @@ namespace Editor
 
 	}
 
-	void EditorPopUp::ShowInspector(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
+	void EditorPopUp::ShowInspector(ECS::EntityComponentSystem& aActiveECS)
 	{
 		if (ImGui::Begin("Inspector##HierachyWindow"))
 		{
-			if (aEntities.empty() == true)
+			if (myVisibleEntityIDs.empty() == true)
 			{
 				ImGui::End();
 				return;
 			}
 
-			ECS::Entity& selectedEntity = aEntities[aSelected];
+			ECS::EntityID selectedEntityID = myVisibleEntityIDs[mySelectedEntityIndex];
+			ECS::Entity& selectedEntity = aActiveECS.GetEntity(selectedEntityID);
 			const std::string selectedEntityName = selectedEntity.GetName();
 
 			char buffer[256];
@@ -322,7 +352,7 @@ namespace Editor
 			ImGui::Checkbox("Show Advanced", &myShowAdvanced);
 			ImGui::Separator();
 
-			if (aEntities.size() > 0)
+			if (myVisibleEntityIDs.size() > 0)
 			{
 				ShowComponents(selectedEntity, aActiveECS);
 
@@ -350,13 +380,13 @@ namespace Editor
 		ImGui::End();
 	}
 
-	void EditorPopUp::ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
+	void EditorPopUp::ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS)
 	{
 		if (ImGui::Begin("Hierarchy"))
 		{
-			ShowAddPopUps(aActiveECS, aEntities, aSelected);
+			ShowAddPopUps(aActiveECS);
 			ShowActiveSceneName();
-			ShowSceneEntities(aEntities, aSelected);
+			ShowSceneEntities();
 		}
 
 		ImGui::End();
@@ -434,7 +464,7 @@ namespace Editor
 		}
 	}
 
-	void EditorPopUp::ShowSceneEntities(std::vector<ECS::Entity>& aEntities, int& aSelected)
+	void EditorPopUp::ShowSceneEntities()
 	{
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor(0.18f, 0.18f, 0.18f, 0.80f).Value);
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImColor(0.12f, 0.12f, 0.12f, 0.0f).Value);
@@ -445,57 +475,38 @@ namespace Editor
 
 		if (ImGui::BeginListBox("##SceneEntities", parentSize))
 		{
-			for (int i = 0; i < aEntities.size(); ++i)
+			for (int i = 0; i < myVisibleEntityIDs.size(); ++i)
 			{
-				const bool isSelected = (aSelected == i);
+				ECS::Entity& entity = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(myVisibleEntityIDs[i]);
+				const bool isSelected = (mySelectedEntityIndex == i);
 
-				if (ImGui::Selectable(aEntities[i].GetName().c_str(), isSelected))
+				if (ImGui::Selectable(entity.GetName().c_str(), isSelected))
 				{
-					struct SelectEntityCommandData final
-					{
-						int myNewIndex = -1;
-						int myOldIndex = -1;
-						int* mySelectedEntityIDPtr = nullptr;
-					};
-
-					SelectEntityCommandData selectEntityCommandData;
-					selectEntityCommandData.myNewIndex = i;
-					selectEntityCommandData.myOldIndex = aSelected;
-					selectEntityCommandData.mySelectedEntityIDPtr = &aSelected;
-
-					auto doSelectEntity = [](const SelectEntityCommandData& aData)
-						{
-							*aData.mySelectedEntityIDPtr = aData.myNewIndex;
-						};
-					auto undoSelectEntity = [](const SelectEntityCommandData& aData)
-						{
-							*aData.mySelectedEntityIDPtr = aData.myOldIndex;
-						};
-
-					myCommandTracker->DoCommand(Command(selectEntityCommandData, doSelectEntity, undoSelectEntity, "Select Entity"));
+					SelectEntity(i);
 				}
 
-				if (isSelected)
+				if (isSelected == false)
 				{
-					ImGui::SetItemDefaultFocus();
+					continue;
+				}
 
-					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+				ImGui::SetItemDefaultFocus();
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+				{
+					ImGui::OpenPopup("Entity Property##SceneHierachy");
+				}
+
+				if (ImGui::BeginPopup("Entity Property##SceneHierachy"))
+				{
+					if (ImGui::MenuItem("Remove##SceneHierachy"))
 					{
-						ImGui::OpenPopup("Entity Property##SceneHierachy");
+						RemoveEntity(mySelectedEntityIndex);
+
+						EditorEngine::mySelectedEntityID = GetInvalidIndex<ECS::EntityID>();
 					}
 
-					if (ImGui::BeginPopup("Entity Property##SceneHierachy"))
-					{
-						if (ImGui::MenuItem("Remove##SceneHierachy"))
-						{
-							RemoveEntity(aEntities, aSelected);
-							EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
-							ImGui::EndPopup();
-							break;
-						}
-
-						ImGui::EndPopup();
-					}
+					ImGui::EndPopup();
 				}
 			}
 
@@ -531,22 +542,90 @@ namespace Editor
 		ImGui::Separator();
 	}
 
-	void EditorPopUp::RemoveEntity(std::vector<ECS::Entity>& aEntities, int& aSelected)
+	void EditorPopUp::RemoveSelectedEntity()
 	{
-		aEntities[aSelected].DestroyThis();
-
-		if (aSelected >= static_cast<int>(aEntities.size() - 1))
-		{
-			aSelected--;
-		}
-
-		if (aSelected < 0 && aEntities.size() > 0)
-		{
-			aSelected = 0;
-		}
+		RemoveEntity(mySelectedEntityIndex);
 	}
 
-	void EditorPopUp::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS, std::vector<ECS::Entity>& aEntities, int& aSelected)
+	void EditorPopUp::RemoveEntity(size_t aEntityIndex)
+	{
+
+		class RemoveEntityCommand final
+		{
+		public:
+			size_t myHierarchyIndex = GetInvalidIndex<size_t>();
+			ECS::EntityID myEntityID = GetInvalidIndex<ECS::EntityID>();
+			std::vector<ECS::EntityID>* myEntityIDs = nullptr;
+
+			void Execute() const
+			{
+				myEntityIDs->erase(begin(*myEntityIDs) + myHierarchyIndex);
+			}
+
+			void Undo() const
+			{
+				myEntityIDs->insert(begin(*myEntityIDs) + myHierarchyIndex, myEntityID);
+			}
+		};
+
+		RemoveEntityCommand removeEntityCommand;
+		removeEntityCommand.myHierarchyIndex = aEntityIndex;
+		removeEntityCommand.myEntityIDs = &myVisibleEntityIDs;
+		removeEntityCommand.myEntityID = myVisibleEntityIDs[aEntityIndex];
+
+		myCommandTracker->BeginComposite("Remove Entity Composite");
+
+		myCommandTracker->ExecuteCommand(Command(removeEntityCommand, "Remove Entity"));
+
+		size_t newSelectedIndex = mySelectedEntityIndex;
+		if (mySelectedEntityIndex >= myVisibleEntityIDs.size() - 1)
+		{
+			newSelectedIndex = mySelectedEntityIndex - 1;
+		}
+		SelectEntity(newSelectedIndex);
+
+		if (mySelectedEntityIndex < 0 && myVisibleEntityIDs.size() > 0)
+		{
+			mySelectedEntityIndex = 0;
+		}
+
+		myCommandTracker->EndComposite();
+	}
+
+	ECS::EntityID EditorPopUp::CreateEntity()
+	{
+
+		ECS::Entity& entity = MainSingleton::GetSceneManager().GetCurrentECS().CreateEntity();
+
+		class CreateEntityCommand final
+		{
+		public:
+			size_t myHierarchyIndex = GetInvalidIndex<size_t>();
+			ECS::EntityID myEntityID = GetInvalidIndex<ECS::EntityID>();
+			std::vector<ECS::EntityID>* myEntityIDs = nullptr;
+
+			void Execute() const
+			{
+				myEntityIDs->push_back(myEntityID);
+			}
+
+			void Undo() const
+			{
+				myEntityIDs->erase(begin(*myEntityIDs) + myHierarchyIndex);
+			}
+		};
+
+		CreateEntityCommand createEntityCommand;
+		createEntityCommand.myHierarchyIndex = myVisibleEntityIDs.size();
+		createEntityCommand.myEntityIDs = &myVisibleEntityIDs;
+		createEntityCommand.myEntityID = entity.GetID();
+
+		myCommandTracker->ExecuteCommand(Command(createEntityCommand, "Create Entity"));
+
+		return entity.GetID();
+	}
+
+	void EditorPopUp::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS)
 	{
 		if (ImGui::Button("Add##SceneHierachy"))
 		{
@@ -572,22 +651,47 @@ namespace Editor
 		{
 			if (ImGui::MenuItem("Add Entity##SceneHierachy"))
 			{
-				ECS::Entity& entity = aActiveECS.CreateEntity();
+				myCommandTracker->BeginComposite("Create Entity Composite");
+				ECS::EntityID createdEntityID = CreateEntity();
+				ECS::Entity& entity = aActiveECS.GetEntity(createdEntityID);
+
 				entity.AddComponent<ECS::TransformComponent>();
-				aSelected = static_cast<int>(aEntities.size()) - 1;
+
+				SelectEntity(static_cast<int>(myVisibleEntityIDs.size()));
+
+				myCommandTracker->EndComposite();
 			}
 
 			if (ImGui::MenuItem("Add Cube##SceneHierachy"))
 			{
-				ECS::Entity& entity = aActiveECS.CreateEntity();
+				myCommandTracker->BeginComposite("Create Entity Composite");
+
+				ECS::EntityID createdEntityID = CreateEntity();
+				ECS::Entity& entity = aActiveECS.GetEntity(createdEntityID);
 
 				entity.AddComponent<ECS::TransformComponent>();
 				entity.AddComponent<ECS::MeshComponent>();
 
-				aSelected = static_cast<int>(aEntities.size()) - 1;
+				SelectEntity(static_cast<int>(myVisibleEntityIDs.size()));
+
+				myCommandTracker->EndComposite();
 			}
 
 			ImGui::EndPopup();
 		}
+	}
+
+	void EditorPopUp::SelectEntity(size_t aNewIndex)
+	{
+		if (aNewIndex == mySelectedEntityIndex)
+		{
+			return;
+		}
+		SelectEntityCommand selectEntityCommand;
+		selectEntityCommand.myNewIndex = aNewIndex;
+		selectEntityCommand.myOldIndex = mySelectedEntityIndex;
+		selectEntityCommand.mySelectedEntityIndexPtr = &mySelectedEntityIndex;
+
+		myCommandTracker->ExecuteCommand(Command(selectEntityCommand, "Select Entity"));
 	}
 }

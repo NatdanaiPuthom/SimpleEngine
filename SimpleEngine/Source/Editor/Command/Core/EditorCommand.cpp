@@ -4,13 +4,13 @@
 namespace Editor
 {
 
-	void Command::DoCommand(const bool aDebugPrint) const
+	void Command::ExecuteCommand(const bool aDebugPrint) const
 	{
 		if (aDebugPrint)
 		{
 			std::cout << "Do Command: " << myName << std::endl;
 		}
-		myConcept->DoCommand(aDebugPrint);
+		myConcept->ExecuteCommand(aDebugPrint);
 	}
 
 	void Command::UndoCommand(const bool aDebugPrint) const
