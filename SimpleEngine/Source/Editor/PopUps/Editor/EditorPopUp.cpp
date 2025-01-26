@@ -1,6 +1,6 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/PopUps/Editor/EditorPopUp.hpp"
-#include "Editor/Editor.hpp"
+#include "Editor/EditorEngine.hpp"
 #include "Engine/ECS/Components/AllEngineComponents.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "Engine/ImGui/ImGuiEngine.hpp"

@@ -3,7 +3,8 @@
 
 namespace Editor
 {
-	MenuItemButton::MenuItemButton(const char* aName, std::function<void()> aCallback) : MenuItemBase(aName)
+	MenuItemButton::MenuItemButton(const char* aName, std::function<void()> aCallback) 
+		: MenuItemBase(aName)
 		, myCallback(std::move(aCallback))
 	{
 	}

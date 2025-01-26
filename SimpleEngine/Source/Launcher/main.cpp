@@ -9,7 +9,7 @@
 #include "Graphics/GraphicsEngine.hpp"
 #include "Game/GameWorld.hpp"
 #include "MainSingleton/MainSingleton.hpp"
-#include "Editor/Editor.hpp"
+#include "Editor/EditorEngine.hpp"
 #include "Engine/SimpleScript/SimpleNodeScript.hpp"
 
 //#include "Launcher/Client/Client.hpp"

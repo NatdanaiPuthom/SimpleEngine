@@ -9,13 +9,13 @@ namespace Editor
 	class MenuTabWindow final : public MainMenuTabBase
 	{
 	public:
-		MenuTabWindow(const char* aName);
+		MenuTabWindow(const char* aName, const char* aImGuiTag);
 
 		void Render() override final;
 	
 		void ActiveWindow(MenuItemPopUp* aItemPopUp, const bool aShouldActive = true);
 	public:
-		MenuItemPopUp* AddPopUp(std::unique_ptr<MenuItemPopUp> aButton);
+		MenuItemPopUp* AddPopUp(const char* aPopUpButtonName);
 	private:
 		std::vector<std::unique_ptr<MenuItemPopUp>> myButtons;
 	};

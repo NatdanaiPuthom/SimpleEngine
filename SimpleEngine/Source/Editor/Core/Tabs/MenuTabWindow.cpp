@@ -4,7 +4,8 @@
 
 namespace Editor
 {
-	MenuTabWindow::MenuTabWindow(const char* aName) : MainMenuTabBase(aName)
+	MenuTabWindow::MenuTabWindow(const char* aName, const char* aImGuiTag)
+		: MainMenuTabBase(aName, aImGuiTag)
 	{
 	}
 
@@ -60,10 +61,14 @@ namespace Editor
 		aItemPopUp->Invoke();
 	}
 
-	MenuItemPopUp* MenuTabWindow::AddPopUp(std::unique_ptr<MenuItemPopUp> aButton)
+	MenuItemPopUp* MenuTabWindow::AddPopUp(const char* aPopUpButtonName)
 	{
-		MenuItemPopUp* buttonPointer = aButton.get();
-		myButtons.push_back(std::move(aButton));
+		std::unique_ptr<MenuItemPopUp> popUpButton = std::make_unique<MenuItemPopUp>(aPopUpButtonName);
+
+		MenuItemPopUp* buttonPointer = popUpButton.get();
+		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
+
+		myButtons.push_back(std::move(popUpButton));
 		return buttonPointer;
 	}
 }
