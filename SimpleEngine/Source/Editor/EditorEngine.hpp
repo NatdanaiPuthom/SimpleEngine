@@ -23,7 +23,7 @@ namespace Editor
 
 	private:
 		template<DerivedFromPopUpWindow T>
-		std::shared_ptr<T> AddPopUpWindow();
+		std::shared_ptr<T> AddPopUpWindow(const char* aName);
 
 		template<DerivedFromMainMenuTabBase T>
 		T* AddMenuTab(const char* aName);
@@ -37,10 +37,13 @@ namespace Editor
 	};
 
 	template<DerivedFromPopUpWindow T>
-	inline std::shared_ptr<T> EditorEngine::AddPopUpWindow()
+	inline std::shared_ptr<T> EditorEngine::AddPopUpWindow(const char* aName)
 	{
-		const std::string prettyName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
-		std::shared_ptr<T> window = std::make_shared<T>(prettyName);
+		const std::string tag = std::string("##") + SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+
+		std::shared_ptr<T> window = std::make_shared<T>(aName);
+		window.get()->SetImGuiTag(tag.c_str());
+
 		myPopUpWindows.push_back(window);
 		return window;
 	}

@@ -3,7 +3,8 @@
 
 namespace Editor
 {
-	MenuItemSelectable::MenuItemSelectable(const char* aName, std::function<void(const std::string&)> aCallback) : MenuItemBase(aName)
+	MenuItemSelectable::MenuItemSelectable(const char* aName, std::function<void(const std::string&)> aCallback) 
+		: MenuItemBase(aName)
 		, myCallback(std::move(aCallback))
 	{
 	}

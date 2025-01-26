@@ -30,7 +30,10 @@ namespace Editor
 	MenuItemButton* MenuTabDefault::AddButton(const char* aButtonName, std::function<void()> aCallback)
 	{
 		std::unique_ptr<MenuItemButton> button = std::make_unique<MenuItemButton>(aButtonName, aCallback);
+
 		MenuItemButton* buttonPointer = button.get();
+		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
+
 		myButtons.push_back(std::move(button));
 		return buttonPointer;
 	}
@@ -38,6 +41,8 @@ namespace Editor
 	MenuItemButton* MenuTabDefault::AddButton(std::unique_ptr<MenuItemButton> aButton)
 	{
 		MenuItemButton* buttonPointer = aButton.get();
+		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
+
 		myButtons.push_back(std::move(aButton));
 		return buttonPointer;
 	}
@@ -45,6 +50,8 @@ namespace Editor
 	MenuItemPopUp* MenuTabDefault::AddPopUp(std::unique_ptr<MenuItemPopUp> aButton)
 	{
 		MenuItemPopUp* buttonPointer = aButton.get();
+		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
+
 		myButtons.push_back(std::move(aButton));
 		return buttonPointer;
 	}
@@ -52,7 +59,10 @@ namespace Editor
 	MenuItemMenu* MenuTabDefault::AddMenu(const char* aButtonName)
 	{
 		std::unique_ptr<MenuItemMenu> button = std::make_unique<MenuItemMenu>(aButtonName);
+
 		MenuItemMenu* buttonPointer = button.get();
+		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
+
 		myButtons.push_back(std::move(button));
 		return buttonPointer;
 	}
@@ -60,6 +70,8 @@ namespace Editor
 	MenuItemMenu* MenuTabDefault::AddMenu(std::unique_ptr<MenuItemMenu> aMenuButton)
 	{
 		MenuItemMenu* buttonPointer = aMenuButton.get();
+		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
+
 		myButtons.push_back(std::move(aMenuButton));
 		return buttonPointer;
 	}
@@ -67,7 +79,10 @@ namespace Editor
 	MenuItemSelectable* MenuTabDefault::AddSelectable(const char* aButtonName, std::function<void(const std::string&)> aCallback)
 	{
 		std::unique_ptr<MenuItemSelectable> button = std::make_unique<MenuItemSelectable>(aButtonName, std::move(aCallback));
+
 		MenuItemSelectable* buttonPointer = button.get();
+		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
+
 		myButtons.push_back(std::move(button));
 		return buttonPointer;
 	}
@@ -75,6 +90,8 @@ namespace Editor
 	MenuItemSelectable* MenuTabDefault::AddSelectable(std::unique_ptr<MenuItemSelectable> aSelectableButton)
 	{
 		MenuItemSelectable* buttonPointer = aSelectableButton.get();
+		buttonPointer->SetImGuiTag(std::string("##" + myName).c_str());
+
 		myButtons.push_back(std::move(aSelectableButton));
 		return buttonPointer;
 	}

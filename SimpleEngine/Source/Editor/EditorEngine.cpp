@@ -128,16 +128,22 @@ namespace Editor
 		std::unique_ptr<MenuItemPopUp> postProcessPopUpButton = std::make_unique<MenuItemPopUp>("PostProcess");
 		std::unique_ptr<MenuItemPopUp> nodeScriptingPopUpButton = std::make_unique<MenuItemPopUp>("NodeScript");
 
-		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUp = std::make_shared<AudioSettingsPopUp>("Audio Settings");
-		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = std::make_shared<CameraSettingsPopUp>("Camera Settings");
-		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUp = std::make_shared<GraphicsSettingsPopUp>("Graphics Settings");
-		std::shared_ptr<CameraControlsGuidePopUp> cameraHelpPopUp = std::make_shared<CameraControlsGuidePopUp>("Editor Camera Control");
-		std::shared_ptr<DeferredPopUp> deferredPopUp = std::make_shared<DeferredPopUp>("Deferred Window");
-		std::shared_ptr<PostProcessPopUp> postProcessPopUp = std::make_shared<PostProcessPopUp>("PostProcess Window");
+		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUp = AddPopUpWindow<AudioSettingsPopUp>("Audio Settings");
+
+		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = AddPopUpWindow<CameraSettingsPopUp>("Camera Settings");
+		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUp = AddPopUpWindow<GraphicsSettingsPopUp>("Graphics Settings");
+		std::shared_ptr<CameraControlsGuidePopUp> cameraHelpPopUp = AddPopUpWindow<CameraControlsGuidePopUp>("Editor Camera Control");
+		std::shared_ptr<DeferredPopUp> deferredPopUp = AddPopUpWindow<DeferredPopUp>("Deferred Window");
+		std::shared_ptr<PostProcessPopUp> postProcessPopUp = AddPopUpWindow<PostProcessPopUp>("PostProcess Window");
 
 		std::shared_ptr<EditorPopUp> editorPopUp = std::make_shared<EditorPopUp>("Editor Window", &myCommandTracker);
-		std::shared_ptr<AssetBrowserPopUp> assetBrowserPopUp = std::make_shared<AssetBrowserPopUp>("AssetBrowser Window");
-		std::shared_ptr<NodeScriptingWindow> nodeScriptingPopUp = std::make_shared<NodeScriptingWindow>("NodeScripting Window");
+
+		{ //TO-DO(v12.0.0): Temp should be refactor
+			myPopUpWindows.push_back(editorPopUp);
+		}
+
+		std::shared_ptr<AssetBrowserPopUp> assetBrowserPopUp = AddPopUpWindow<AssetBrowserPopUp>("AssetBrowser Window");
+		std::shared_ptr<NodeScriptingWindow> nodeScriptingPopUp = AddPopUpWindow<NodeScriptingWindow>("NodeScripting Window");
 
 		{	//TO-DO(v12.0.0): Temp should be refactor
 			assetBrowserPopUp->myNodeScriptingWindow = nodeScriptingPopUp.get();
@@ -191,15 +197,5 @@ namespace Editor
 		settingsTab->AddPopUp(std::move(settingsGraphicsButton));
 
 		helpTab->AddPopUp(std::move(helpCameraControlsPopUpButton));
-
-		myPopUpWindows.push_back(audioSettingPopUp);
-		myPopUpWindows.push_back(cameraSettingPopUp);
-		myPopUpWindows.push_back(graphicsSettingPopUp);
-		myPopUpWindows.push_back(cameraHelpPopUp);
-		myPopUpWindows.push_back(deferredPopUp);
-		myPopUpWindows.push_back(postProcessPopUp);
-		myPopUpWindows.push_back(editorPopUp);
-		myPopUpWindows.push_back(assetBrowserPopUp);
-		myPopUpWindows.push_back(nodeScriptingPopUp);
 	}
 }

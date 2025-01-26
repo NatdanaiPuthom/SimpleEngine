@@ -29,6 +29,12 @@ namespace Editor
 		myImGuiName = myName + myImGuiTag;
 	}
 
+	void Window::SetImGuiTag(const char* aNewTag)
+	{
+		myImGuiTag = aNewTag;
+		myImGuiName = myName + myImGuiTag;
+	}
+
 	bool Window::IsActive() const
 	{
 		return myIsActive;

@@ -4,7 +4,7 @@
 namespace Editor
 {
 	PopUp::PopUp(const std::string& aWindowName)
-		: Window(aWindowName, typeid(PopUp).name())
+		: Window(aWindowName, "DefaultPopUp")
 	{
 		myIsActive = false;
 	}

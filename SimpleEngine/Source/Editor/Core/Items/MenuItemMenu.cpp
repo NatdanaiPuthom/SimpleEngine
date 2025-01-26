@@ -3,7 +3,8 @@
 
 namespace Editor
 {
-	MenuItemMenu::MenuItemMenu(const char* aName) : MenuItemBase(aName)
+	MenuItemMenu::MenuItemMenu(const char* aName) 
+		: MenuItemBase(aName)
 	{
 	}
 
