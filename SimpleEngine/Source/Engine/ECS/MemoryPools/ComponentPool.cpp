@@ -310,6 +310,7 @@ namespace ECS
 			myIDToPointer.clear();
 
 			componentRegister->DestroyComponent(componentHashCode, static_cast<void*>(componentToRemoveAddress));
+			componentRegister->ClearComponentVector(componentHashCode, myComponentVectorPointer);
 
 			myCurrentMemoryAddress -= myComponentTypeSize;
 			memset(myCurrentMemoryAddress, '\0', myComponentTypeSize);

@@ -66,6 +66,11 @@ namespace ECS
 		myTypeErasureComponents.at(aHashCode).SwapAndPopLastPointer(aVectorPtr, aComponentPtr, aIndex);
 	}
 
+	void ComponentRegistry::ClearComponentVector(ComponentHashCode aHashCode, void* aVectorPtr) const
+	{
+		myTypeErasureComponents.at(aHashCode).ClearComponentVectorPointer(aVectorPtr);
+	}
+
 	size_t ComponentRegistry::GetComponentSize(ComponentHashCode aHashCode) const
 	{
 		return myTypeErasureComponents.at(aHashCode).mySize;

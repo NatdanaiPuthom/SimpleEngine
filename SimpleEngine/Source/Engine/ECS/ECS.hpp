@@ -43,7 +43,7 @@ namespace ECS
 
 	public:
 		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
-	public:
+	public: 
 		ECS::Entity& CreateEntity(const EntityID aEntityID = 0);
 	public:
 		bool RemoveEntity(const EntityID aEntityID);
