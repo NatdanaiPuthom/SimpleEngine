@@ -39,11 +39,17 @@ namespace ECS
 			componentRegistry->DestroyComponent(myTypeHashCode, sourceAddress);
 		}
 
+		if (myComponentVectorPointer != nullptr)
+		{
+			componentRegistry->DeleteComponentVector(this->myTypeHashCode, myComponentVectorPointer);
+		}
+
 		delete[] myStartMemoryAddress;
 
 		myStartMemoryAddress = nullptr;
 		myEndMemoryAddress = nullptr;
 		myCurrentMemoryAddress = nullptr;
+		myComponentVectorPointer = nullptr;
 	}
 
 	ComponentPool::ComponentPool(const ComponentPool& aOther)

@@ -56,6 +56,11 @@ namespace ECS
 		myTypeErasureComponents.at(aHashCode).Destroy(aDataPtr);
 	}
 
+	void ComponentRegistry::DeleteComponentVector(ComponentHashCode aHashCode, void* aDataPtr) const
+	{
+		myTypeErasureComponents.at(aHashCode).DeleteComponentVector(aDataPtr);
+	}
+
 	size_t ComponentRegistry::GetComponentSize(ComponentHashCode aHashCode) const
 	{
 		return myTypeErasureComponents.at(aHashCode).mySize;

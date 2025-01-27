@@ -73,6 +73,7 @@ namespace ECS
 
 		InPlaceAllocateFunction InplaceAllocate = nullptr;
 		DestroyFunction Destroy = nullptr;
+		DestroyFunction DeleteComponentVector = nullptr;
 		CopyFunction CopyFunctionPointer = nullptr;
 		SwapFunction SwapFunctionPointer = nullptr;
 
@@ -107,6 +108,7 @@ namespace ECS
 		void CopyComponent(ComponentHashCode aHashCode, void* aDestination, const void* aSource) const;
 		void SwapComponent(ComponentHashCode aHashCode, void* aDataPtr1, void* aDataPtr2) const;
 		void DestroyComponent(ComponentHashCode aHashCode, void* aDataPtr) const;
+		void DeleteComponentVector(ComponentHashCode aHashCode, void* aDataPtr) const;
 
 	public:
 		size_t GetComponentSize(ComponentHashCode aHashCode) const;
@@ -184,6 +186,12 @@ namespace ECS
 			{
 				T& value = *reinterpret_cast<T*>(aDataPtr);
 				value.~T();
+			};
+
+		typeErasureComponent.DeleteComponentVector = [](void* aDataPtr) -> void
+			{
+				std::vector<T*>* originalVector = reinterpret_cast<std::vector<T*>*>(aDataPtr);
+				delete originalVector;
 			};
 
 		typeErasureComponent.CopyFunctionPointer = [](void* aDestination, const void* aSource) -> void
