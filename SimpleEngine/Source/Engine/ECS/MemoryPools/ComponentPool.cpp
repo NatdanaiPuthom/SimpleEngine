@@ -14,8 +14,10 @@ namespace ECS
 		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultMemoryReserveSize;
 		myCurrentMemoryAddress = myStartMemoryAddress;
 		myComponentTypeName = aComponentName;
+		myComponentVectorPointer = nullptr;
 
-		memset(myCurrentMemoryAddress, '\0', GetAvailableMemorySpace());
+		std::memset(myPadding, -1, sizeof(myPadding));
+		std::memset(myCurrentMemoryAddress, '\0', GetAvailableMemorySpace());
 	}
 
 	ComponentPool::~ComponentPool()
@@ -98,15 +100,18 @@ namespace ECS
 		, myComponentTypeSize(aOther.myComponentTypeSize)
 		, myTypeHashCode(aOther.myTypeHashCode)
 		, myComponentTypeName(std::move(aOther.myComponentTypeName))
+		, myComponentVectorPointer(std::move(aOther.myComponentVectorPointer))
 	{
+		std::memcpy(myPadding, aOther.myPadding, sizeof(myPadding));
+
 		aOther.myStartMemoryAddress = nullptr;
 		aOther.myEndMemoryAddress = nullptr;
 		aOther.myCurrentMemoryAddress = nullptr;
+		aOther.myComponentVectorPointer = nullptr;
 
 		aOther.myComponentTypeSize = 0;
 		aOther.myTypeHashCode = static_cast<size_t>(-1);
 	}
-
 
 	ComponentPool& ComponentPool::operator=(const ComponentPool& aOther)
 	{
@@ -115,6 +120,7 @@ namespace ECS
 		this->myStartMemoryAddress = nullptr;
 		this->myEndMemoryAddress = nullptr;
 		this->myCurrentMemoryAddress = nullptr;
+		this->myComponentVectorPointer = nullptr;
 
 		this->myIDToPointer.clear();
 		this->myPointerToID.clear();
@@ -128,6 +134,7 @@ namespace ECS
 		this->myCurrentMemoryAddress = this->myStartMemoryAddress + offsetFromStart;
 		this->myTypeHashCode = aOther.myTypeHashCode;
 		this->myComponentTypeName = aOther.myComponentTypeName;
+		this->myComponentVectorPointer = aOther.myComponentVectorPointer;
 
 		memset(this->myCurrentMemoryAddress, '\0', this->GetAvailableMemorySpace());
 
@@ -167,6 +174,7 @@ namespace ECS
 		this->myStartMemoryAddress = aOther.myStartMemoryAddress;
 		this->myEndMemoryAddress = aOther.myEndMemoryAddress;
 		this->myCurrentMemoryAddress = aOther.myCurrentMemoryAddress;
+		this->myComponentVectorPointer = aOther.myComponentVectorPointer;
 
 		this->myPointerToID = std::move(aOther.myPointerToID);
 		this->myIDToPointer = std::move(aOther.myIDToPointer);
@@ -178,6 +186,7 @@ namespace ECS
 		aOther.myStartMemoryAddress = nullptr;
 		aOther.myEndMemoryAddress = nullptr;
 		aOther.myCurrentMemoryAddress = nullptr;
+		aOther.myComponentVectorPointer = nullptr;
 		aOther.myTypeHashCode = static_cast<size_t>(-1);
 		aOther.myComponentTypeSize = 0;
 
@@ -191,6 +200,7 @@ namespace ECS
 		std::cout << "Start Address: " << static_cast<void*>(myStartMemoryAddress) << std::endl;
 		std::cout << "Current Address: " << static_cast<void*>(myCurrentMemoryAddress) << std::endl;
 		std::cout << "End Address: " << static_cast<void*>(myEndMemoryAddress) << std::endl;
+		std::cout << "ComponentVector Address: " << static_cast<void*>(myComponentVectorPointer) << std::endl;
 		std::cout << "Component Count: " << myIDToPointer.size() << std::endl;
 
 		for (const auto& [id, ptr] : myIDToPointer)

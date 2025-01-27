@@ -17,8 +17,6 @@ namespace ECS
 	using ComponentID = size_t;
 	using ComponentType = std::type_index;
 	using EntityID = size_t;
-	using ComponentHashCode = size_t;
-	using ComponentVector = std::any;
 
 	class ComponentManager final
 	{
@@ -48,14 +46,13 @@ namespace ECS
 		const T* GetComponentByComponentID(const ComponentID aID) const;
 
 		template<typename T>
-		std::vector<T*> GetAllComponentsOfType();
+		std::vector<T*>* GetAllComponentsOfType();
 	private:
 		ComponentManager();
 		~ComponentManager();
 		ComponentManager(const ComponentManager& aOther);
 	private:
 		std::unordered_map<ComponentType, ComponentPool> myComponents;
-		std::unordered_map<ComponentHashCode, ComponentVector> myCachedComponentVector;
 		std::unordered_map<ComponentType, std::unordered_set<EntityID>> myComponentTypeToEntityIDs;
 		std::unordered_map<ComponentID, ComponentType> myComponentIDToComponentTypeMap;
 		size_t myCurrentComponentID;
@@ -73,10 +70,14 @@ namespace ECS
 	{
 		myCurrentComponentID++;
 
+		const size_t hashCode = typeid(T).hash_code();
+
 		if (myComponents.contains(typeid(T)) == false)
 		{
 			const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
-			myComponents.emplace(typeid(T), ComponentPool(sizeof(T), typeid(T).hash_code(), 16, componentName));
+
+			myComponents.emplace(typeid(T), ComponentPool(sizeof(T), hashCode, 16, componentName));
+			myComponents.at(typeid(T)).ConstructComponentVector<T>();
 		}
 
 		myComponents.at(typeid(T)).CreateComponent<T>(myCurrentComponentID, aComponent);
@@ -132,22 +133,15 @@ namespace ECS
 	}
 
 	template<typename T>
-	inline std::vector<T*> ComponentManager::GetAllComponentsOfType()
+	inline std::vector<T*>* ComponentManager::GetAllComponentsOfType()
 	{
 		if (myComponents.contains(typeid(T)) == false)
 		{
-			return std::vector<T*>();
+			const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+			myComponents.emplace(typeid(T), ComponentPool(sizeof(T), typeid(T).hash_code(), 16, componentName));
+			myComponents.at(typeid(T)).ConstructComponentVector<T>();
 		}
 
-		auto it = myCachedComponentVector.find(typeid(T).hash_code());
-
-		if (it != myCachedComponentVector.end())
-		{
-			return std::any_cast<std::vector<T*>>(it->second);
-		}
-
-		myCachedComponentVector.insert({ typeid(T).hash_code(), myComponents.at(typeid(T)).GetAllComponentsOfType<T>() });
-
-		return std::any_cast<std::vector<T*>>(myCachedComponentVector.at(typeid(T).hash_code()));
+		return myComponents.at(typeid(T)).GetAllComponentsOfType<T>();
 	}
 }

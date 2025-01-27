@@ -12,7 +12,7 @@ namespace ECS
 	{
 		using ComponentID = size_t;
 	public:
-		ComponentPool(const size_t aTypeSize = 0, const size_t aTypeHashCode = 0, const size_t aDefaultMemoryReserveSize = 8 , const std::string& aComponentName = "Unknown Component Type");
+		ComponentPool(const size_t aTypeSize = 0, const size_t aTypeHashCode = 0, const size_t aDefaultMemoryReserveSize = 8, const std::string& aComponentName = "Unknown Component Type");
 		~ComponentPool();
 
 		ComponentPool(const ComponentPool& aOther);
@@ -22,12 +22,12 @@ namespace ECS
 
 		void PrintMemoryState() const;
 		bool SwapWithLastComponentAndRemove(const size_t aComponentID, const std::type_index& aTypeIndex);
-
-		template<typename T>
-		std::vector<T*> GetAllComponentsOfType();
 	public:
 		template<typename T>
 		char* CreateComponent(const size_t aComponentID, const T& aValue = T());
+
+		template<typename T>
+		void ConstructComponentVector();
 	public:
 		size_t GetCapacity() const;
 		size_t GetComponentCount() const;
@@ -39,14 +39,21 @@ namespace ECS
 		const std::unordered_map<size_t, char*>& GetComponentIDToPointerMap() const;
 		char* GetStartMemoryAddress();
 		char* GetComponentAddressByID(const size_t aComponentID);
+
+		template<typename T>
+		inline std::vector<T*>* GetAllComponentsOfType();
 	private:
 		void Reallocate();
 		void Remap(const std::vector<ComponentID>& aComponentIDs, const size_t aSize);
 		std::vector<ComponentID> ReturnComponentIDsSortedByAddress() const;
+
+		template<typename T>
+		void RemapAllComponentsOfType();
 	private:
 		char* myCurrentMemoryAddress;
 		char* myStartMemoryAddress;
 		char* myEndMemoryAddress;
+		char* myComponentVectorPointer;
 
 		std::unordered_map<ComponentID, char*> myIDToPointer;
 		std::unordered_map<char*, ComponentID> myPointerToID;
@@ -56,25 +63,45 @@ namespace ECS
 		size_t myComponentTypeSize;
 		size_t myTypeHashCode;
 
-		char myPadding[16] = "Never Give Up!\0";
+		int myPadding[2];
 	};
 
 	template<typename T>
-	inline std::vector<T*> ComponentPool::GetAllComponentsOfType()
+	inline void ComponentPool::RemapAllComponentsOfType()
 	{
 		const size_t count = GetComponentCount();
 		char* address = nullptr;
 
-		std::vector<T*> components;
-		components.resize(count, nullptr);
+		std::vector<T*>* componentsVector = reinterpret_cast<std::vector<T*>*>(myComponentVectorPointer);
+		componentsVector->clear();
 
 		for (size_t i = 0; i < count; ++i)
 		{
 			address = myStartMemoryAddress + i * myComponentTypeSize;
-			components[i] = reinterpret_cast<T*>(address);
+			componentsVector->push_back(reinterpret_cast<T*>(address));
 		}
+	}
 
-		return components;
+	template<typename T>
+	inline void ComponentPool::ConstructComponentVector()
+	{
+		const size_t count = GetComponentCount();
+		char* address = nullptr;
+
+		std::vector<T*>* componentsVector = new std::vector<T*>(count, nullptr);
+		myComponentVectorPointer = reinterpret_cast<char*>(componentsVector);
+
+		for (size_t i = 0; i < count; ++i)
+		{
+			address = myStartMemoryAddress + i * myComponentTypeSize;
+			(*componentsVector)[i] = reinterpret_cast<T*>(address);
+		}
+	}
+
+	template<typename T>
+	inline std::vector<T*>* ComponentPool::GetAllComponentsOfType()
+	{
+		return reinterpret_cast<std::vector<T*>*>(myComponentVectorPointer);
 	}
 
 	template<typename T>
@@ -97,9 +124,12 @@ namespace ECS
 		if (reallocated)
 		{
 			Remap(oldComponentIDs, sizeof(T));
+			RemapAllComponentsOfType<T>();
 		}
 
 		new(myCurrentMemoryAddress)T(aValue);
+
+		reinterpret_cast<std::vector<T*>*>(myComponentVectorPointer)->push_back(reinterpret_cast<T*>(myCurrentMemoryAddress));
 
 		myIDToPointer.insert({ aComponentID, myCurrentMemoryAddress });
 		myPointerToID.insert({ myCurrentMemoryAddress, aComponentID });

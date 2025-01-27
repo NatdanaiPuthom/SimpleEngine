@@ -54,7 +54,7 @@ namespace ECS
 		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
 
 		template<typename T>
-		std::vector<T*> GetAllComponentsOfType();
+		std::vector<T*>* GetAllComponentsOfType();
 
 		template<typename T>
 		T* GetComponent(EntityID aEntityID);
@@ -63,7 +63,7 @@ namespace ECS
 		const std::unordered_set<EntityID>& GetEntityIDsWithThisComponent();
 	private:
 		static void EraseMissingElementFromJSON(const nlohmann::json& aJsonData, const std::string& aAbsolutePath, const size_t aEntityIndex, const size_t aComponentIndex);
-		static void LoadComponentData(nlohmann::json& aPropertiesJSON, const std::vector<ComponentProperty>& aComponentProperties,const ComponentRegistry* aComponentRegistry, void* aComponentPointer);
+		static void LoadComponentData(nlohmann::json& aPropertiesJSON, const std::vector<ComponentProperty>& aComponentProperties, const ComponentRegistry* aComponentRegistry, void* aComponentPointer);
 	private:
 		EntityManager myEntityManager;
 		ComponentManager myComponentManager;
@@ -71,7 +71,7 @@ namespace ECS
 	};
 
 	template<typename T>
-	inline std::vector<T*> EntityComponentSystem::GetAllComponentsOfType()
+	inline std::vector<T*>* EntityComponentSystem::GetAllComponentsOfType()
 	{
 		return myComponentManager.GetAllComponentsOfType<T>();
 	}
