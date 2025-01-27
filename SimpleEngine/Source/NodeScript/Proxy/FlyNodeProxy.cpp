@@ -14,6 +14,12 @@ namespace FLY_NAMESPACE
 	{
 	}
 
+	NodeProxy::NodeProxy(const NodeID aNodeID, const NodeGraphVariantHandle& aNodeGraphVariantHandle)
+		: mNodeGraphVariant(aNodeGraphVariantHandle)
+		, mNodeID(aNodeID)
+	{
+	}
+
 	Vec2 NodeProxy::GetPosition() const
 	{
 		return GetNode().mPosition;

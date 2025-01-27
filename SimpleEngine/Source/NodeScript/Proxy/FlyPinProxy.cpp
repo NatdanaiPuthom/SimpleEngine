@@ -8,9 +8,15 @@
 namespace FLY_NAMESPACE
 {
 
-	PinProxy::PinProxy(const PinID aPinID, const NodeGraphProxy& aNodeGraphView)
+	PinProxy::PinProxy(const PinID aPinID, const NodeGraphProxy& aNodeGraphProxy)
 		: mPinID(aPinID)
-		, mNodeGraphVariant(aNodeGraphView.GetVariant())
+		, mNodeGraphVariant(aNodeGraphProxy.GetVariant())
+	{
+	}
+
+	PinProxy::PinProxy(const PinID aPinID, const NodeGraphVariantHandle& aNodeGraphVariant)
+		: mPinID(aPinID)
+		, mNodeGraphVariant(aNodeGraphVariant)
 	{
 	}
 

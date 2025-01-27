@@ -8,6 +8,7 @@
 
 namespace FLY_NAMESPACE
 {
+
 	struct NodeType;
 	class NodeGraphProxy;
 
@@ -17,6 +18,7 @@ namespace FLY_NAMESPACE
 
 		NodeProxy() = default;
 		NodeProxy(NodeID aNodeID, const NodeGraphProxy& aNodeGraphProxy);
+		NodeProxy(NodeID aNodeID, const NodeGraphVariantHandle& aNodeGraphVariantHandle);
 
 		[[nodiscard]] Vec2 GetPosition() const;
 		[[nodiscard]] bool IsDestroyed() const;

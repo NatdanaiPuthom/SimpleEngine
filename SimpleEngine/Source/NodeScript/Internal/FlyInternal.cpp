@@ -314,9 +314,21 @@ namespace FLY_NAMESPACE
 			}
 		}
 
+		void BreakNode()
+		{
+
+		}
+
 		DataTypeID CreateStruct(std::string_view aName)
 		{
-			return GetDataTypeManager().CreateStruct(aName);
+			const DataTypeID dataTypeID = GetDataTypeManager().CreateStruct(aName);
+			DataType& dataType = *GetDataTypeManager().Find(dataTypeID);
+
+			const NodeTypeID breakNodeTypeID = RegisterSystemNodeType(BreakNode, NodeCreationData{ .mName = "Default/Break " + dataType.mName });
+			AddPinTypeToNodeType(breakNodeTypeID, GenericDataTypeID{ dataTypeID }, eFlowType::Input, dataType.mName);
+			dataType.mBreakerNodeTypeID = breakNodeTypeID;
+
+			return dataTypeID;
 		}
 
 		/*void SetStructName(const StructID aStructID, std::string_view aName, CommandTracker* const aCommandTracker)
@@ -1483,6 +1495,60 @@ namespace FLY_NAMESPACE
 			}
 		}
 
+		void UpdateStructBreakNode(GenericDataTypeID aDataTypeID)
+		{
+			const DataType* dataType = GetDataTypeByID(aDataTypeID);
+			if (!dataType)
+			{
+				assert(false);
+				return;
+			}
+			NodeType& nodeType = GetNodeType(dataType->mBreakerNodeTypeID);
+			nodeType.mNodeRecipe.mOutputPinTypeIDs.clear();
+
+			for (const Variable& variable : dataType->mVariableContainer.mVariables)
+			{
+				AddPinTypeToNodeType(dataType->mBreakerNodeTypeID, aDataTypeID, eFlowType::Output, variable.mName);
+			}
+		}
+
+		VarID CreateVariable(const GenericDataTypeID aParentDataTypeID, const GenericDataTypeID aDataTypeID, const std::string_view aName, CommandTracker* const aCommandTracker)
+		{
+			const DataTypeID* parentDataTypeID = std::get_if<DataTypeID>(&aParentDataTypeID.mID);
+			if (!parentDataTypeID)
+			{
+				assert(false);
+				return VarID{};
+			}
+			VariableContainer& variableContainer = GetDataTypeManager().Find(*parentDataTypeID)->mVariableContainer;
+			std::vector<Variable>& variables = variableContainer.mVariables;
+			const VarID varID{ variables.size() };
+			variables.emplace_back();
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->BeginComposite("Create Variable");
+			}
+
+			SetVariableName(varID, variableContainer, aName, aCommandTracker);
+			SetVariableDataType(varID, variableContainer, aDataTypeID, aCommandTracker);
+			UpdateStructBreakNode(aParentDataTypeID);
+
+			if (aCommandTracker)
+			{
+				aCommandTracker->EndComposite();
+			}
+
+			/*for (auto& classInstance : aClass.mClassInstances)
+			{
+				classInstance->mVariableContainerInstance.Mirror();
+			}*/
+
+
+
+			return varID;
+		}
+
 		VarID CreateVariable(VariableContainer& aVariableContainer, const GenericDataTypeID aDataTypeID, const std::string_view aName, CommandTracker* const aCommandTracker)
 		{
 			std::vector<Variable>& variables = aVariableContainer.mVariables;
@@ -1712,7 +1778,7 @@ namespace FLY_NAMESPACE
 			pinType.mName = aName;
 		}
 
-		static PinTypeID AddPinToNodeType(const NodeTypeID aNodeTypeID, const GenericDataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName)
+		PinTypeID AddPinTypeToNodeType(const NodeTypeID aNodeTypeID, const GenericDataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName)
 		{
 			NodeType& nodeType = GetNodeType(aNodeTypeID);
 	
@@ -1793,12 +1859,12 @@ namespace FLY_NAMESPACE
 			callerNodeType.mNodeRecipe.mName = nameDirectory + "Call " + std::string(aName);
 		}
 
-		void AddPinToCustomEvent(const CustomEventID aCustomEventID, const GenericDataTypeID aDataTypeID, const std::string_view aPinName, [[maybe_unused]] CommandTracker* const aCommandTracker)
+		void AddPinTypeToCustomEvent(const CustomEventID aCustomEventID, const GenericDataTypeID aDataTypeID, const std::string_view aPinName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			const CustomEvent& customEvent = GetNodeTypeManager().GetCustomEvent(aCustomEventID);
 
-			AddPinToNodeType(customEvent.GetExecutorTypeID(), aDataTypeID, eFlowType::Output, aPinName);
-			AddPinToNodeType(customEvent.GetCallerTypeID(), aDataTypeID, eFlowType::Input, aPinName);
+			AddPinTypeToNodeType(customEvent.GetExecutorTypeID(), aDataTypeID, eFlowType::Output, aPinName);
+			AddPinTypeToNodeType(customEvent.GetCallerTypeID(), aDataTypeID, eFlowType::Input, aPinName);
 		}
 
 		void SetPinDataTypeAtIndexCustomEvent(const CustomEventID aCustomEventID, const GenericDataTypeID aDataTypeID, const size_t aIndex, [[maybe_unused]] CommandTracker* const aCommandTracker)
@@ -1848,16 +1914,16 @@ namespace FLY_NAMESPACE
 			DeletePinAtIndexNodeType(customEvent.GetExecutorTypeID(), aIndex, eFlowType::Output);
 		}
 
-		void AddPinToFunction(const FunctionID aFunctionID, const GenericDataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName, [[maybe_unused]] CommandTracker* const aCommandTracker)
+		void AddPinTypeToFunction(const FunctionID aFunctionID, const GenericDataTypeID aDataTypeID, const eFlowType aFlowType, std::string_view aPinName, [[maybe_unused]] CommandTracker* const aCommandTracker)
 		{
 			const NodeTypeManager& nodeTypeManager = GetNodeTypeManager();
 			const Function& function = nodeTypeManager.GetFunction(aFunctionID);
 
 
-			AddPinToNodeType(function.mCallerNodeTypeID, aDataTypeID, aFlowType, aPinName);
+			AddPinTypeToNodeType(function.mCallerNodeTypeID, aDataTypeID, aFlowType, aPinName);
 
 			const NodeTypeID inputOutputNodeTypeID = SelectByFlowType(aFlowType, function.mInputNodeTypeID, function.mOutputNodeTypeID);
-			AddPinToNodeType(inputOutputNodeTypeID, aDataTypeID, InvertFlowType(aFlowType), aPinName);
+			AddPinTypeToNodeType(inputOutputNodeTypeID, aDataTypeID, InvertFlowType(aFlowType), aPinName);
 		}
 
 		void SetPinDataTypeAtIndexFunction(const FunctionID aFunctionID, const GenericDataTypeID aDataTypeID, const size_t aIndex, const eFlowType aFlowType, [[maybe_unused]] CommandTracker* const aCommandTracker)

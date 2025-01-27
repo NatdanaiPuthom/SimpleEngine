@@ -127,6 +127,7 @@ namespace FLY_NAMESPACE
 		void DestroyLink(NodeGraph& aNodeGraph, LinkID aLinkID, CommandTracker* aCommandTracker);
 		void DestroyLinksByPin(NodeGraph& aNodeGraph, PinID aPinID, CommandTracker* aCommandTracker);
 
+		VarID CreateVariable(GenericDataTypeID aParentDataTypeID, GenericDataTypeID aDataTypeID, std::string_view aName, CommandTracker* aCommandTracker);
 		VarID CreateVariable(VariableContainer& aVariableContainer, GenericDataTypeID aDataTypeID, std::string_view aName, CommandTracker* aCommandTracker);
 		void SetVariableDataType(VarID aVarID, VariableContainer& aVariableContainer, GenericDataTypeID aDataTypeID, CommandTracker* aCommandTracker);
 		void SetVariableName(VarID aVarID, VariableContainer& aVariableContainer, std::string_view aName, CommandTracker* aCommandTracker);
@@ -140,14 +141,15 @@ namespace FLY_NAMESPACE
 		void UnbindVariable(Class& aClass, const NodeRef& aNodeRef, CommandTracker* aCommandTracker);
 
 		void SetPinTypeName(PinTypeID aPinTypeID, std::string_view aName);
+		PinTypeID AddPinTypeToNodeType(NodeTypeID aNodeTypeID, GenericDataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName);
 
 		void SetCustomEventName(CustomEventID aCustomEventID, std::string_view aName, CommandTracker* aCommandTracker);
-		void AddPinToCustomEvent(CustomEventID aCustomEventID, GenericDataTypeID aDataTypeID, std::string_view aPinName, CommandTracker* aCommandTracker);
+		void AddPinTypeToCustomEvent(CustomEventID aCustomEventID, GenericDataTypeID aDataTypeID, std::string_view aPinName, CommandTracker* aCommandTracker);
 		void SetPinDataTypeAtIndexCustomEvent(CustomEventID aCustomEventID, GenericDataTypeID aDataTypeID, size_t aIndex, CommandTracker* aCommandTracker);
 		void SetPinNameAtIndexCustomEvent(CustomEventID aCustomEventID, std::string_view aName, size_t aIndex, CommandTracker* aCommandTracker);
 		void DeletePinAtIndexCustomEvent(CustomEventID aCustomEventID, size_t aIndex, CommandTracker* aCommandTracker);
 
-		void AddPinToFunction(FunctionID aFunctionID, GenericDataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName, CommandTracker* aCommandTracker);
+		void AddPinTypeToFunction(FunctionID aFunctionID, GenericDataTypeID aDataTypeID, eFlowType aFlowType, std::string_view aPinName, CommandTracker* aCommandTracker);
 		void SetPinDataTypeAtIndexFunction(FunctionID aFunctionID, GenericDataTypeID aDataTypeID, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
 		void SetPinNameAtIndexFunction(FunctionID aFunctionID, std::string_view aName, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);
 		void DeletePinAtIndexFunction(FunctionID aFunctionID, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker);

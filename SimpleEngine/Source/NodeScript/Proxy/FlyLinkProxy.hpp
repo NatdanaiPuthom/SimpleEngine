@@ -13,6 +13,7 @@ namespace FLY_NAMESPACE
 
 		LinkProxy() = default;
 		LinkProxy(LinkID aLinkID, const NodeGraphProxy& aNodeGraph);
+		LinkProxy(LinkID aLinkID, const NodeGraphVariantHandle& aNodeGraphVariant);
 
 		[[nodiscard]] bool IsDestroyed() const;
 		[[nodiscard]] PinProxy GetInputPin() const;

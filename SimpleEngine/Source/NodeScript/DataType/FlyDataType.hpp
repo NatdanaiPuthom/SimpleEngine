@@ -60,6 +60,8 @@ namespace FLY_NAMESPACE
 		DataTypeInterface mInterface;
 		VariableContainer mVariableContainer;
 		std::vector<NodeTypeID> mNodeTypeIDs;
+		NodeTypeID mBreakerNodeTypeID;
+		NodeTypeID mMakerNodeTypeID;
 		DataTypeID mToPointerDataTypeID;
 		DataTypeID mToValueDataTypeID;
 		eDataTypeTrait mTypeTraits = eDataTypeTrait::None;
