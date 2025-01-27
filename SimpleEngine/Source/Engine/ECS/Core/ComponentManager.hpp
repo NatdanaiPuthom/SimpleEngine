@@ -73,13 +73,13 @@ namespace ECS
 	{
 		myCurrentComponentID++;
 
-		if (!myComponents.contains(typeid(T)))
+		if (myComponents.contains(typeid(T)) == false)
 		{
 			const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
-			myComponents.emplace(typeid(T), ComponentPool(16, componentName));
+			myComponents.emplace(typeid(T), ComponentPool(sizeof(T), typeid(T).hash_code(), 16, componentName));
 		}
 
-		myComponents[typeid(T)].CreateComponent<T>(myCurrentComponentID, aComponent);
+		myComponents.at(typeid(T)).CreateComponent<T>(myCurrentComponentID, aComponent);
 
 		myComponentTypeToEntityIDs[typeid(T)].insert(aEntityID);
 		myComponentIDToComponentTypeMap.emplace(myCurrentComponentID, typeid(T));

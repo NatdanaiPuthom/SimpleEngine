@@ -12,7 +12,7 @@ namespace ECS
 	{
 		using ComponentID = size_t;
 	public:
-		ComponentPool(const size_t aDefaultSize = 16, const std::string& aComponentName = "Unnamed ComponentPool");
+		ComponentPool(const size_t aTypeSize = 0, const size_t aTypeHashCode = 0, const size_t aDefaultMemoryReserveSize = 8 , const std::string& aComponentName = "Unknown Component Type");
 		~ComponentPool();
 
 		ComponentPool(const ComponentPool& aOther);
@@ -80,9 +80,6 @@ namespace ECS
 	template<typename T>
 	inline char* ComponentPool::CreateComponent(const size_t aComponentID, const T& aValue)
 	{
-		myComponentTypeSize = sizeof(T); //NOTE(v9.30.10): Should only be call once somehow
-		myTypeHashCode = typeid(T).hash_code();
-
 		std::vector<ComponentID> oldComponentIDs;
 
 		const bool reallocated = sizeof(T) > GetAvailableMemorySpace();

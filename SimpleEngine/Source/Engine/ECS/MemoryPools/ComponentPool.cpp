@@ -6,12 +6,12 @@
 
 namespace ECS
 {
-	ComponentPool::ComponentPool(const size_t aDefaultSize, const std::string& aComponentName)
-		: myComponentTypeSize(0)
-		, myTypeHashCode(static_cast<size_t>(-1))
+	ComponentPool::ComponentPool(const size_t aTypeSize, const size_t aTypeHashCode, const size_t aDefaultMemoryReserveSize, const std::string& aComponentName)
+		: myComponentTypeSize(aTypeSize)
+		, myTypeHashCode(aTypeHashCode)
 	{
-		myStartMemoryAddress = new char[aDefaultSize];
-		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultSize;
+		myStartMemoryAddress = new char[aDefaultMemoryReserveSize];
+		myEndMemoryAddress = myStartMemoryAddress + sizeof(char) * aDefaultMemoryReserveSize;
 		myCurrentMemoryAddress = myStartMemoryAddress;
 		myComponentTypeName = aComponentName;
 
@@ -45,11 +45,10 @@ namespace ECS
 	}
 
 	ComponentPool::ComponentPool(const ComponentPool& aOther)
+		: myComponentTypeSize(aOther.myComponentTypeSize)
 	{
 		const size_t size = aOther.GetCapacity();
 		const size_t offsetFromStart = aOther.GetOccupiedMemorySpace();
-
-		this->myComponentTypeSize = aOther.myComponentTypeSize;
 
 		this->myStartMemoryAddress = new char[size];
 		this->myEndMemoryAddress = this->myStartMemoryAddress + size;
@@ -100,7 +99,6 @@ namespace ECS
 		, myTypeHashCode(aOther.myTypeHashCode)
 		, myComponentTypeName(std::move(aOther.myComponentTypeName))
 	{
-
 		aOther.myStartMemoryAddress = nullptr;
 		aOther.myEndMemoryAddress = nullptr;
 		aOther.myCurrentMemoryAddress = nullptr;
