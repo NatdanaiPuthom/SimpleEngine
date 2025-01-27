@@ -1,9 +1,8 @@
 #pragma once
-#include "Engine/SimpleUtilities/Sphere.hpp"
-#include "Engine/SimpleUtilities/AABB3D.hpp"
-#include "Engine/SimpleUtilities/Ray.hpp"
-#include "Engine/SimpleUtilities/Color.hpp"
-#include "Engine/Collision/CollisionLayer.hpp"
+#include "SimpleUtilities/Sphere.hpp"
+#include "SimpleUtilities/AABB3D.hpp"
+#include "SimpleUtilities/Ray.hpp"
+#include "CollisionLayer.hpp"
 #include <variant>
 #include <functional>
 
