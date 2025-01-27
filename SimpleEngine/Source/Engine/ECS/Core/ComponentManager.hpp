@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <typeindex>
 #include <cassert>
+#include <any>
 
 namespace ECS
 {
@@ -16,6 +17,8 @@ namespace ECS
 	using ComponentID = size_t;
 	using ComponentType = std::type_index;
 	using EntityID = size_t;
+	using ComponentHashCode = size_t;
+	using ComponentVector = std::any;
 
 	class ComponentManager final
 	{
@@ -43,16 +46,20 @@ namespace ECS
 
 		template<typename T>
 		const T* GetComponentByComponentID(const ComponentID aID) const;
+
+		template<typename T>
+		std::vector<T*> GetAllComponentsOfType();
 	private:
 		ComponentManager();
 		~ComponentManager();
 		ComponentManager(const ComponentManager& aOther);
 	private:
 		std::unordered_map<ComponentType, ComponentPool> myComponents;
+		std::unordered_map<ComponentHashCode, ComponentVector> myCachedComponentVector;
 		std::unordered_map<ComponentType, std::unordered_set<EntityID>> myComponentTypeToEntityIDs;
 		std::unordered_map<ComponentID, ComponentType> myComponentIDToComponentTypeMap;
 		size_t myCurrentComponentID;
-		char myPadding[8] = "Believ\0";
+		int myPadding[14] = { -1 };
 	};
 
 	template<typename T>
@@ -122,5 +129,25 @@ namespace ECS
 		}
 
 		return nullptr;
+	}
+
+	template<typename T>
+	inline std::vector<T*> ComponentManager::GetAllComponentsOfType()
+	{
+		if (myComponents.contains(typeid(T)) == false)
+		{
+			return std::vector<T*>();
+		}
+
+		auto it = myCachedComponentVector.find(typeid(T).hash_code());
+
+		if (it != myCachedComponentVector.end())
+		{
+			return std::any_cast<std::vector<T*>>(it->second);
+		}
+
+		myCachedComponentVector.insert({ typeid(T).hash_code(), myComponents.at(typeid(T)).GetAllComponentsOfType<T>() });
+
+		return std::any_cast<std::vector<T*>>(myCachedComponentVector.at(typeid(T).hash_code()));
 	}
 }

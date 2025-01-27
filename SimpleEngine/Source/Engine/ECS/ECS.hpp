@@ -40,6 +40,7 @@ namespace ECS
 
 		template<typename T>
 		void PrintMemoryPoolMemoryStateOfType() const;
+
 	public:
 		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
 	public:
@@ -53,10 +54,10 @@ namespace ECS
 		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
 
 		template<typename T>
-		T* GetComponent(EntityID aEntityID)
-		{
-			return myEntityManager.GetComponent<T>(aEntityID);
-		}
+		std::vector<T*> GetAllComponentsOfType();
+
+		template<typename T>
+		T* GetComponent(EntityID aEntityID);
 
 		template<typename T>
 		const std::unordered_set<EntityID>& GetEntityIDsWithThisComponent();
@@ -68,6 +69,18 @@ namespace ECS
 		ComponentManager myComponentManager;
 		SystemManager mySystemManager;
 	};
+
+	template<typename T>
+	inline std::vector<T*> EntityComponentSystem::GetAllComponentsOfType()
+	{
+		return myComponentManager.GetAllComponentsOfType<T>();
+	}
+
+	template<typename T>
+	inline T* EntityComponentSystem::GetComponent(EntityID aEntityID)
+	{
+		return myEntityManager.GetComponent<T>(aEntityID);
+	}
 
 	template<typename T>
 	inline const std::unordered_set<EntityID>& EntityComponentSystem::GetEntityIDsWithThisComponent()

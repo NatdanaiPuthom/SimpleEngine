@@ -20,7 +20,8 @@ namespace ECS
 		, myComponentIDToComponentTypeMap(aOther.myComponentIDToComponentTypeMap)
 		, myCurrentComponentID(aOther.myCurrentComponentID)
 	{
-		strcpy_s(myPadding, aOther.myPadding);
+
+		std::memcpy(myPadding, aOther.myPadding, sizeof(myPadding));
 	}
 
 	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const EntityID aEntityID, const ComponentID aComponentID)

@@ -22,6 +22,9 @@ namespace ECS
 
 		void PrintMemoryState() const;
 		bool SwapWithLastComponentAndRemove(const size_t aComponentID, const std::type_index& aTypeIndex);
+
+		template<typename T>
+		std::vector<T*> GetAllComponentsOfType();
 	public:
 		template<typename T>
 		char* CreateComponent(const size_t aComponentID, const T& aValue = T());
@@ -57,6 +60,24 @@ namespace ECS
 	};
 
 	template<typename T>
+	inline std::vector<T*> ComponentPool::GetAllComponentsOfType()
+	{
+		const size_t count = GetComponentCount();
+		char* address = nullptr;
+
+		std::vector<T*> components;
+		components.resize(count, nullptr);
+
+		for (size_t i = 0; i < count; ++i)
+		{
+			address = myStartMemoryAddress + i * myComponentTypeSize;
+			components[i] = reinterpret_cast<T*>(address);
+		}
+
+		return components;
+	}
+
+	template<typename T>
 	inline char* ComponentPool::CreateComponent(const size_t aComponentID, const T& aValue)
 	{
 		myComponentTypeSize = sizeof(T); //NOTE(v9.30.10): Should only be call once somehow
@@ -83,11 +104,11 @@ namespace ECS
 
 		new(myCurrentMemoryAddress)T(aValue);
 
-		myIDToPointer[aComponentID] = myCurrentMemoryAddress;
-		myPointerToID[myCurrentMemoryAddress] = aComponentID;
+		myIDToPointer.insert({ aComponentID, myCurrentMemoryAddress });
+		myPointerToID.insert({ myCurrentMemoryAddress, aComponentID });
 
 		myCurrentMemoryAddress += sizeof(T);
 
-		return myIDToPointer[aComponentID];
+		return myIDToPointer.at(aComponentID);
 	}
 }
