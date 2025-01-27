@@ -331,6 +331,9 @@ namespace ECS
 
 		myCurrentMemoryAddress -= myComponentTypeSize;
 		memset(myCurrentMemoryAddress, '\0', myComponentTypeSize);
+		
+		const size_t index = (componentToRemoveAddress - myStartMemoryAddress) / myComponentTypeSize;
+		componentRegister->SwapWithLastAndPop(componentHashCode, myComponentVectorPointer, componentToRemoveAddress, index);
 
 		return true;
 	}

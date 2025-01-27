@@ -18,6 +18,7 @@ namespace ECS
 	using DestroyFunction = void(*)(void* aData);
 	using CopyFunction = void (*)(void* aDestination, const void* aSource);
 	using SwapFunction = void (*)(void* aDataPtr1, void* aDataPtr2);
+	using SwapAndPopLastFunction = void(*)(void* aVectorPtr, void* aComponentPtr, size_t aIndex);
 	using ComponentHashCode = size_t;
 }
 
@@ -74,6 +75,7 @@ namespace ECS
 		InPlaceAllocateFunction InplaceAllocate = nullptr;
 		DestroyFunction Destroy = nullptr;
 		DestroyFunction DeleteComponentVector = nullptr;
+		SwapAndPopLastFunction SwapAndPopLastPointer = nullptr;
 		CopyFunction CopyFunctionPointer = nullptr;
 		SwapFunction SwapFunctionPointer = nullptr;
 
@@ -109,6 +111,7 @@ namespace ECS
 		void SwapComponent(ComponentHashCode aHashCode, void* aDataPtr1, void* aDataPtr2) const;
 		void DestroyComponent(ComponentHashCode aHashCode, void* aDataPtr) const;
 		void DeleteComponentVector(ComponentHashCode aHashCode, void* aDataPtr) const;
+		void SwapWithLastAndPop(ComponentHashCode aHashCode, void* aVectorPtr, void* aComponentPtr, const size_t aIndex) const;
 
 	public:
 		size_t GetComponentSize(ComponentHashCode aHashCode) const;
@@ -193,6 +196,13 @@ namespace ECS
 				std::vector<T*>* originalVector = reinterpret_cast<std::vector<T*>*>(aDataPtr);
 				delete originalVector;
 			};
+
+		typeErasureComponent.SwapAndPopLastPointer = [](void* aVectorPtr, void* aComponentPtr, size_t aIndex) -> void
+		{
+				std::vector<T*>* originalVector = reinterpret_cast<std::vector<T*>*>(aVectorPtr);
+				(*originalVector)[aIndex] = reinterpret_cast<T*>(aComponentPtr);
+				originalVector->pop_back();
+		};
 
 		typeErasureComponent.CopyFunctionPointer = [](void* aDestination, const void* aSource) -> void
 			{
