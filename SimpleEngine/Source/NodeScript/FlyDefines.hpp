@@ -93,7 +93,7 @@ namespace FLY_NAMESPACE
 	struct FunctionID final : IDWrapper<size_t> {};
 	struct CustomEventID final : IDWrapper<size_t> {};
 	struct EventID final : IDWrapper<size_t> {};
-    struct GenericDataTypeID final : IDWrapper<std::variant<DataTypeID, StructID, ClassID>> {};
+    struct GenericDataTypeID final : IDWrapper<std::variant<DataTypeID, ClassID>> {};
 	struct TraitID final : IDWrapper<size_t> {};
 
 	template<>
@@ -196,7 +196,7 @@ namespace FLY_NAMESPACE
 		T* mPtr = nullptr;
 	};
 
-	// Struct for color - values between 0 and 1
+	// Values between 0 and 1
 	struct Color final
 	{
 

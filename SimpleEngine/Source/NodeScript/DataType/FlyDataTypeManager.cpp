@@ -11,7 +11,7 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataType& aDataType, void* const aDataPtr) const
+	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataType& aDataType, void* const aDataPtr, const bool aViewAndEditMembers) const
 	{
 		// If data type has a valid edit function
 		if (aDataType.mInterface.function.viewAndEdit)
@@ -25,21 +25,26 @@ namespace FLY_NAMESPACE
 				void* valuePtr = *((void**)aDataPtr);
 				if (valuePtr)
 				{
-					return ViewAndEditData(*valueDataType, valuePtr);
+					return ViewAndEditData(*valueDataType, valuePtr, aViewAndEditMembers);
 				}
 			}
 		}
 
 		ViewAndEditResult viewAndEditResult;
 		// View and edit member variables instead
-		/*for (const Variable& variable : aDataType.mVariables)
+
+		if (aViewAndEditMembers)
 		{
-			if (const DataType* variableDataType = Find(variable.mDataTypeID))
+
+			for (const Variable& variable : aDataType.mVariableContainer.mVariables)
 			{
-				void* const propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
-				viewAndEditResult.mIsItemActive |= ViewAndEditData(*variableDataType, propertyDataPtr).mIsItemActive;
+				if (const DataType* variableDataType = Find(variable.mDataTypeID))
+				{
+					void* const propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
+					viewAndEditResult.mIsItemActive |= ViewAndEditData(*variableDataType, propertyDataPtr, aViewAndEditMembers).mIsItemActive;
+				}
 			}
-		}*/
+		}
 
 		return viewAndEditResult;
 	}
@@ -117,11 +122,11 @@ namespace FLY_NAMESPACE
 		return false;
 	}
 
-	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataTypeID aDataTypeID, void* const aDataPtr) const
+	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataTypeID aDataTypeID, void* const aDataPtr, const bool aViewAndEditMembers) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			return ViewAndEditData(*dataType, aDataPtr);
+			return ViewAndEditData(*dataType, aDataPtr, aViewAndEditMembers);
 		}
 
 		return ViewAndEditResult{ .mIsItemActive = false };
@@ -459,10 +464,6 @@ namespace FLY_NAMESPACE
 			{
 				return GetName(aDataTypeID);
 			},
-			[this](const StructID aStructID) -> const std::string&
-			{
-				return GetStruct(aStructID).mName;
-			},
 			[this](const ClassID aClassID) -> const std::string&
 			{
 				return GetClass(aClassID).mName;
@@ -606,7 +607,7 @@ namespace FLY_NAMESPACE
 		return nullptr;
 	}
 
-	DataTypeID DataTypeManager::GetDataTypeIDByName(const std::string& aName) const
+	DataTypeID DataTypeManager::GetDataTypeIDByName(std::string_view aName) const
 	{
 		for (const auto& [dataTypeID, dataType] : mDataTypes)
 		{
@@ -618,25 +619,17 @@ namespace FLY_NAMESPACE
 		return InvalidID<DataTypeID>();
 	}
 
-	GenericDataTypeID DataTypeManager::GetGenericDataTypeIDByName(const std::string& aName) const
+	GenericDataTypeID DataTypeManager::GetGenericDataTypeIDByName(const std::string_view aName) const
 	{
 		const DataTypeID dataTypeID = GetDataTypeIDByName(aName);
 		if (dataTypeID != InvalidID<DataTypeID>())
 		{
 			return GenericDataTypeID{ dataTypeID };
 		}
-		
-		for (size_t i = 0; i < mStructs.size(); i++)
-		{
-			if (mStructsNew[i]->mName == aName)
-			{
-				return GenericDataTypeID{ StructID{ i } };
-			}
-		}
 
 		for (size_t i = 0; i < mClasses.size(); i++)
 		{
-			if (mClassesNew[i]->mName == aName)
+			if (std::string_view(mClasses[i]->mName) == aName)
 			{
 				return GenericDataTypeID{ ClassID{ i } };
 			}
@@ -681,16 +674,6 @@ namespace FLY_NAMESPACE
 		return nullptr;
 	}
 
-	DataType* DataTypeManager::Find(StructID aStructID)
-	{
-		return mStructsNew[aStructID].Get();
-	}
-
-	const DataType* DataTypeManager::Find(StructID aStructID) const
-	{
-		return mStructsNew[aStructID].Get();
-	}
-
 	DataType* DataTypeManager::Find(ClassID aClassID)
 	{
 		return mClassesNew[aClassID].Get();
@@ -709,10 +692,6 @@ namespace FLY_NAMESPACE
 			{
 				return Find(aDataTypeID);
 			},
-			[this](const StructID aStructID) -> DataType*
-			{
-				return Find(aStructID);
-			},
 			[this](const ClassID aClassID) -> DataType*
 			{
 				return Find(aClassID);
@@ -727,10 +706,6 @@ namespace FLY_NAMESPACE
 			[this](const DataTypeID aDataTypeID) -> const DataType*
 			{
 				return Find(aDataTypeID);
-			},
-			[this](const StructID aStructID) -> const DataType*
-			{
-				return Find(aStructID);
 			},
 			[this](const ClassID aClassID) -> const DataType*
 			{
@@ -771,39 +746,27 @@ namespace FLY_NAMESPACE
 		return mDefaultColor;
 	}
 
-	StructID DataTypeManager::CreateStruct(const std::string_view aName)
+	DataTypeID DataTypeManager::CreateStruct(const std::string_view aName)
 	{
-		StructID structID{ mStructs.size() };
-		mStructs.push_back(HeapObject<Struct>(aName));
-		return structID;
-	}
+		DataType dataType;
 
-	Struct& DataTypeManager::GetStruct(const StructID aStructID)
-	{
-		return *mStructs[aStructID];
-	}
+		const DataType* structInstanceDataType = Find<StructInstance>();
 
-	const Struct& DataTypeManager::GetStruct(const StructID aStructID) const
-	{
-		return *mStructs[aStructID];
-	}
-
-	StructID DataTypeManager::GetStructIDByName(std::string_view aName) const
-	{
-		for (size_t i = 0; i < mStructs.size(); i++)
+		if (!structInstanceDataType)
 		{
-			if (mStructs[i]->mName == aName)
-			{
-				return StructID{ i };
-			}
+			assert(false);
 		}
 
-		return StructID{};
-	}
+		while (mDataTypes.contains(mDataTypeIDCounter))
+		{
+			mDataTypeIDCounter++;
+		}
 
-	const std::vector<HeapObject<Struct>>& DataTypeManager::GetStructs() const
-	{
-		return mStructs;
+		auto pair = mDataTypes.emplace(mDataTypeIDCounter, *structInstanceDataType);
+		pair.first->second.mName = std::string(aName);
+		const DataTypeID dataTypeID = mDataTypeIDCounter;
+		mDataTypeIDCounter++;
+		return dataTypeID;
 	}
 
 	ClassID DataTypeManager::CreateClass(const DataTypeID aTargetID, const std::string_view aName)

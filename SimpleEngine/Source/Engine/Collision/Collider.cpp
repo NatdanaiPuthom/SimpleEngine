@@ -27,8 +27,6 @@ namespace Simple
 
 	};
 
-
-
 	bool Collider::DoesCollideWith(const Shape& aOtherShape) const
 	{
 		return std::visit([](const auto& aShape1, const auto& aShape2) -> bool
@@ -36,8 +34,6 @@ namespace Simple
 				return DetectCollision(aShape1, aShape2);
 			}, myShape, aOtherShape);
 	}
-
-
 
 	void Collider::Render() const
 	{

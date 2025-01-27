@@ -61,10 +61,6 @@ namespace FLY_NAMESPACE
 		return aStructInstance;
 	}
 
-
-	FLY_VALUETYPE(StructInstance);
-	FLY_FUNCTION(StructInstanceTest);
-
 	/*ViewAndEditResult ViewAndEdit(TraitObject& aValue)
 	{
 		aValue;
@@ -78,6 +74,13 @@ namespace FLY_NAMESPACE
 
 	FLY_VALUETYPE(TraitObject);
 
+
+	void VariantTest(TestVariant v)
+	{
+		v;
+	}
+
+	FLY_FUNCTION(VariantTest);
 
 	struct TestTrait
 	{

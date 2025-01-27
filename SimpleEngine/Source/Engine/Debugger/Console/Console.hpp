@@ -10,7 +10,8 @@ namespace Simple
 		White,
 		Red,
 		Green,
-		Blue
+		Blue,
+		Yellow
 	};
 
 	class Console final

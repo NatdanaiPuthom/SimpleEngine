@@ -81,6 +81,12 @@ cbuffer PointLightBufferData : register(b6)
     float3 paddingPointLightCount;
 }
 
+cbuffer SkyBoxBufferData : register(b7)
+{
+    int skyboxUseFlooring;
+    uint3 skybuxUseFloringPadding;
+}
+
 struct FullScreenVertexInput
 {
     unsigned int index : SV_VertexID;

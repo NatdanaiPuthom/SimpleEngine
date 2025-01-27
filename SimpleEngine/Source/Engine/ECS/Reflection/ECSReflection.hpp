@@ -14,6 +14,15 @@ class MainSingleton;
 
 namespace ECS
 {
+	using InplaceAllocateFunction = void(*)(void* aData, const void* aDefaultValuePtr);
+	using DestroyFunction = void(*)(void* aData);
+	using CopyFunction = void (*)(void* aDestination, const void* aSource);
+	using SwapFunction = void (*)(void* aDataPtr1, void* aDataPtr2);
+	using ComponentHashCode = size_t;
+}
+
+namespace ECS
+{
 	class __RegisterProperty;
 	template<typename T> class __RegisterComponent;
 	template<typename T> class __RegisterDataType;
@@ -24,7 +33,7 @@ namespace ECS
 	template<typename T>
 	concept Editable = requires(T & aData, const std::string & aVariableName)
 	{
-		{ ECS::ViewAndEditValue(aData, aVariableName) } -> std::same_as<bool>;
+		{ ECS::ViewAndEditValue(aData, aVariableName) } -> std::same_as<ViewAndEditResult>;
 	};
 
 	template<typename T>
@@ -42,6 +51,7 @@ namespace ECS
 	struct ComponentProperty final
 	{
 		std::string name = "UnknownProperty";
+		std::string customVariableName = "UnknownCustomNameProperty";
 		size_t id = 0;
 		size_t byteOffset = 0;
 		bool shouldExpose = true;
@@ -55,23 +65,27 @@ namespace ECS
 		std::string myComponentPrettyName;
 		std::vector<ComponentProperty> myComponentProperties;
 
-		const ComponentID(*AddComponentFunctionPointer)(ECS::Entity& aEntity) = nullptr;
-		bool(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
+		ComponentID(*AddComponentFunctionPointer)(ECS::Entity& aEntity) = nullptr;
+		ViewAndEditResult(*EditorFunctionPointer)(void* aData, const std::string& aVariableName) = nullptr;
 
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
 		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
 
-		void (*CreateComponent)(void* aDestination, const void* aSource) = nullptr;
-		void (*CopyFunctionPointer)(void* aDestination, const void* aSource) = nullptr;
+		InplaceAllocateFunction InplaceAllocate = nullptr;
+		DestroyFunction Destroy = nullptr;
+		CopyFunction CopyFunctionPointer = nullptr;
+		SwapFunction SwapFunctionPointer = nullptr;
 
+		bool myIsComponent = false;
+
+		size_t mySize = 0;
 		bool hasBeenAdded = false;
 	private:
-		char myPadding[8] = "Believ\0";
+		char myPadding[7] = "Belie\0";
 	};
 
 	class ComponentRegistry final
 	{
-		using ComponentHashCode = size_t;
 		using ComponentName = std::string;
 
 		friend class MainSingleton;
@@ -83,22 +97,29 @@ namespace ECS
 		std::unordered_map<ComponentHashCode, TypeErasureObject> myTypeErasureComponents;
 		std::unordered_map<ComponentHashCode, TypeErasureObject> myTypeErasureDataTypes;
 		std::unordered_map<ComponentName, ComponentHashCode> myComponentNameToHashCode;
-		std::unordered_map<ComponentHashCode, void(*)(void*)> myTypeErasureComponentDestructorInvoker;
 	public:
-		void InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "");
 
-		ComponentRegistry(const ComponentRegistry&) = delete;
-		ComponentRegistry(const ComponentRegistry&&) = delete;
-		ComponentRegistry operator=(const ComponentRegistry&) = delete;
-		ComponentRegistry operator=(const ComponentRegistry&&) = delete;
+		ViewAndEditResult InspectComponentProperties(size_t aHashCode, void* aData, const std::string& aVariableName = "") const;
 
+		ComponentID AddComponent(ComponentHashCode aHashCode, Entity& aEntity) const;
+
+		void InplaceAllocateComponent(ComponentHashCode aHashCode, void* aDestination, const void* aDefaultValuePtr = nullptr) const;
+		void CopyComponent(ComponentHashCode aHashCode, void* aDestination, const void* aSource) const;
+		void SwapComponent(ComponentHashCode aHashCode, void* aDataPtr1, void* aDataPtr2) const;
+		void DestroyComponent(ComponentHashCode aHashCode, void* aDataPtr) const;
+
+	public:
+		size_t GetComponentSize(ComponentHashCode aHashCode) const;
+		InplaceAllocateFunction GetInplaceAllocateFunction(ComponentHashCode aHashCode) const;
+		DestroyFunction GetDestroyFunction(ComponentHashCode aHashCode) const;
+		CopyFunction GetCopyFunction(ComponentHashCode aHashCode) const;
 	private:
 		//NOTE(v11.1.2): Calling GetInstance first time is not thread safe but shouldn't matter since there should never be multiple threads calling GetInstance at the sametime during dynamic initialization phase...?
 		static ComponentRegistry* GetInstance();
 
 		void Destroy();
 
-		void ExposeProperty(size_t aHashCode, void* aData, const std::string& aVariableName = "");
+		ViewAndEditResult ExposeProperty(size_t aHashCode, void* aData, const std::string& aVariableName = "") const;
 
 		template<typename T>
 		void RegisterComponentType();
@@ -107,13 +128,18 @@ namespace ECS
 		void RegisterDataType();
 
 		template<typename DataType, typename Component>
-		void RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName, const bool aShouldExpose, const bool aCanEdit);
+		void RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName, const char* aCustomName, const bool aShouldExpose, const bool aCanEdit);
 
 		template<typename DataType, typename PropertyType>
 		constexpr size_t GetByteOffset(PropertyType DataType::* aProperty);
 	private:
 		ComponentRegistry();
 		~ComponentRegistry();
+
+		ComponentRegistry(const ComponentRegistry&) = delete;
+		ComponentRegistry(const ComponentRegistry&&) = delete;
+		ComponentRegistry operator=(const ComponentRegistry&) = delete;
+		ComponentRegistry operator=(const ComponentRegistry&&) = delete;
 	private:
 		inline static ComponentRegistry* myPtr = nullptr;
 	};
@@ -131,13 +157,33 @@ namespace ECS
 
 		TypeErasureObject typeErasureComponent;
 		typeErasureComponent.hasBeenAdded = true;
+		typeErasureComponent.mySize = sizeof(T);
 
 		typeErasureComponent.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 		typeErasureComponent.myComponentPrettyName = SimpleUtilities::RemoveSubStringIfExist(typeErasureComponent.myComponentName, "Component");
 
-		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> const ComponentID
+		typeErasureComponent.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> ComponentID
 			{
 				return aEntity.AddComponent<T>();
+			};
+
+		typeErasureComponent.InplaceAllocate = [](void* aDataPtr, const void* aDefaultValuePtr) -> void
+			{
+				if (aDefaultValuePtr != nullptr)
+				{
+					const T& defaultValue = *reinterpret_cast<const T*>(aDefaultValuePtr);
+					new(aDataPtr)T(defaultValue);
+				}
+				else
+				{
+					new(aDataPtr)T();
+				}
+			};
+
+		typeErasureComponent.Destroy = [](void* aDataPtr) -> void
+			{
+				T& value = *reinterpret_cast<T*>(aDataPtr);
+				value.~T();
 			};
 
 		typeErasureComponent.CopyFunctionPointer = [](void* aDestination, const void* aSource) -> void
@@ -154,11 +200,15 @@ namespace ECS
 				}
 			};
 
-		typeErasureComponent.CreateComponent = [](void* aDestination, const void* aSource) -> void
+		typeErasureComponent.SwapFunctionPointer = [](void* aDataPtr1, void* aDataPtr2) -> void
 			{
-				const T& source = *reinterpret_cast<const T*>(aSource);
-				new(aDestination)T(source);
+				using std::swap;
+
+				T& value1 = *reinterpret_cast<T*>(aDataPtr1);
+				T& value2 = *reinterpret_cast<T*>(aDataPtr2);
+				swap(value1, value2);
 			};
+
 
 		if constexpr (ECS::Editable<T>)
 		{
@@ -170,11 +220,6 @@ namespace ECS
 		}
 
 		myTypeErasureComponents[hashCode] = typeErasureComponent;
-
-		myTypeErasureComponentDestructorInvoker[typeid(T).hash_code()] = [](void* aPointer) -> void
-			{
-				static_cast<T*>(aPointer)->~T();
-			};
 
 		myComponentNameToHashCode[typeErasureComponent.myComponentName] = hashCode;
 	}
@@ -194,14 +239,14 @@ namespace ECS
 
 		dataType.myComponentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-		dataType.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> const ComponentID
+		dataType.AddComponentFunctionPointer = [](ECS::Entity& aEntity) -> ComponentID
 			{
 				return aEntity.AddComponent<T>();
 			};
 
 		if constexpr (ECS::Editable<T>)
 		{
-			dataType.EditorFunctionPointer = [](void* aDataPointer, const std::string& aVariableName) -> bool
+			dataType.EditorFunctionPointer = [](void* aDataPointer, const std::string& aVariableName) -> ViewAndEditResult
 				{
 					T* pointer = reinterpret_cast<T*>(aDataPointer);
 					return ECS::ViewAndEditValue(*pointer, aVariableName + "##" + std::to_string(reinterpret_cast<size_t>(aDataPointer)));
@@ -230,7 +275,7 @@ namespace ECS
 	}
 
 	template<typename DataType, typename Component>
-	inline void ComponentRegistry::RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName, const bool aShouldExpose, const bool aCanEdit)
+	inline void ComponentRegistry::RegisterProperty(DataType Component::* aVariable, const std::string& aVariableName, const char* aCustomName, const bool aShouldExpose, const bool aCanEdit)
 	{
 		ComponentProperty componentProperty;
 		componentProperty.name = aVariableName;
@@ -238,6 +283,15 @@ namespace ECS
 		componentProperty.byteOffset = GetByteOffset(aVariable);
 		componentProperty.shouldExpose = aShouldExpose;
 		componentProperty.canEdit = aCanEdit;
+
+		if (aCustomName != nullptr)
+		{
+			componentProperty.customVariableName = aCustomName;
+		}
+		else
+		{
+			componentProperty.customVariableName = SimpleUtilities::ConvertAndAddSpaceToSubStringWithUpperCase(aVariableName);
+		}
 
 		const bool componentDoesExist = myTypeErasureComponents.contains(typeid(Component).hash_code());
 
@@ -280,14 +334,16 @@ namespace ECS
 	{
 	public:
 		template<typename DataType, typename Component>
-		__RegisterProperty(DataType Component::* aVariable, const char* aVariableName, const bool aShouldExpose = true, const bool aCanEdit = true)
+		__RegisterProperty(DataType Component::* aVariable, const char* aVariableName, const char* aCustomName = nullptr, const bool aShouldExpose = true, const bool aCanEdit = true)
 		{
-			ECS::ComponentRegistry::GetInstance()->RegisterProperty(aVariable, aVariableName, aShouldExpose, aCanEdit);
+			ECS::ComponentRegistry::GetInstance()->RegisterProperty(aVariable, aVariableName, aCustomName, aShouldExpose, aCanEdit);
 		}
 	};
 }
 
 #include "Engine/SimpleUtilities/MacroUtility.hpp"
+
+//NOTE(v12.0.0): Anything below this is generated by ChatGPT. It works with trial and errors but I have no clue what's going on, please kindly, don't ask and just fix it if there's error :)
 
 #define COMPONENT(ComponentType) \
     struct ComponentType; \

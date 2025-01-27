@@ -54,6 +54,9 @@ namespace Simple
 		case ConsoleTextColor::Blue:
 			SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 			break;
+		case ConsoleTextColor::Yellow:
+			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			break;
 		case ConsoleTextColor::White:
 			SetConsoleTextAttribute(hConsole, defaultAttributes);
 			break;

@@ -31,32 +31,31 @@ namespace FLY_NAMESPACE
 		Internal::SaveCustomEvents(aFilePath);
 	}
 
-	StructFacade CreateStruct(std::string_view aName, std::string_view aSavePath)
+	GenericDataTypeProxy CreateStruct(std::string_view aName, std::string_view aSavePath)
 	{
-		StructID structID = Internal::CreateStruct(aName);
-		Internal::SaveStruct(Internal::GetStructByID(structID), aSavePath);
-		return StructFacade(structID);
+		const DataTypeID dataTypeID = Internal::CreateStruct(aName);
+		Internal::SaveDataType(*Internal::GetDataTypeByID(dataTypeID), aSavePath);
+		return GenericDataTypeProxy(dataTypeID);
 	}
 
-	ClassFacade CreateClass(const GenericDataTypeFacade aTargetFacade, const std::string_view aName, const std::string_view aSavePath)
+	ClassProxy CreateClass(const GenericDataTypeProxy aTargetProxy, const std::string_view aName, const std::string_view aSavePath)
 	{
-		ClassID createdClassID = Internal::CreateClass(aTargetFacade.GetID(), aName);
+		ClassID createdClassID = Internal::CreateClass(aTargetProxy.GetID(), aName);
 		Internal::SaveClass(Internal::GetClassByID(createdClassID), aSavePath);
-		return ClassFacade(createdClassID);
+		return ClassProxy(createdClassID);
 	}
 
-	ClassFacade CreateClassWithoutTarget(const std::string_view aName, const std::string_view aSavePath)
+	ClassProxy CreateClassWithoutTarget(const std::string_view aName, const std::string_view aSavePath)
 	{
-		return CreateClass(GenericDataTypeFacade(GetDataTypeID<None*>()), aName, aSavePath);
+		return CreateClass(GenericDataTypeProxy(GetDataTypeID<None*>()), aName, aSavePath);
 	}
 
-
-	StructFacade FindStructByName(const std::string_view aName)
+	GenericDataTypeProxy FindDataTypeByName(const std::string_view aName)
 	{
-		return StructFacade{ Internal::GetDataTypeManager().GetStructIDByName(aName) };
+		return GenericDataTypeProxy{ Internal::GetDataTypeManager().GetDataTypeIDByName(aName) };
 	}
 
-	ClassFacade FindClassByName(const std::string_view aName)
+	ClassProxy FindClassByName(const std::string_view aName)
 	{
 		auto& classes = Internal::GetDataTypeManager().GetClasses();
 
@@ -64,11 +63,11 @@ namespace FLY_NAMESPACE
 		{
 			if (classes[i]->mName == aName)
 			{
-				return ClassFacade(ClassID{ i });
+				return ClassProxy(ClassID{ i });
 			}
 		}
 
-		return ClassFacade();
+		return ClassProxy();
 	}
 
 
@@ -78,18 +77,18 @@ namespace FLY_NAMESPACE
 		Internal::GetDataTypeManager().SetDefaultColor(aColor);
 	}
 
-	void SetEditorTextFunction(EditorTextFunction aTextFunction)
+	void SetEditorTextFunction(void(*aTextFunction)(const std::string&))
 	{
 		Internal::GetDataTypeManager().SetEditorTextFunction(aTextFunction);
 	}
 
-	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraphFacade aCopiedFromNodeGraphFacade)
+	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraphProxy aCopiedFromNodeGraphProxy)
 	{
 		if (aNodeIDs.empty())
 		{
 			return;
 		}
-		const NodeGraph& copiedFromNodeGraph = aCopiedFromNodeGraphFacade.GetNodeGraph();
+		const NodeGraph& copiedFromNodeGraph = aCopiedFromNodeGraphProxy.GetNodeGraph();
 		EventGraph& eventGraphCopy = Internal::GetNodeGraphCopy();
 		eventGraphCopy = EventGraph{};
 
@@ -158,7 +157,7 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	void PasteCopyBuffer(const Vec2 aPosition, NodeGraphFacade aTargetNodeGraphFacade, CommandTracker* const aCommandTracker)
+	void PasteCopyBuffer(const Vec2 aPosition, NodeGraphProxy aTargetNodeGraphProxy, CommandTracker* const aCommandTracker)
 	{
 		const NodeGraph& nodeGraphCopy = Internal::GetNodeGraphCopy().mNodeGraph;
 
@@ -167,14 +166,14 @@ namespace FLY_NAMESPACE
 			aCommandTracker->BeginComposite("Paste Nodes");
 		}
 
-		NodeGraph& targetNodeGraph = aTargetNodeGraphFacade.GetNodeGraph();
+		NodeGraph& targetNodeGraph = aTargetNodeGraphProxy.GetNodeGraph();
 
 		std::unordered_map<NodeID, NodeID> nodeConverter;
 
 		for (NodeID sourceNodeID{ 0 }; sourceNodeID < nodeGraphCopy.mNodes.size(); sourceNodeID++)
 		{
 			const Node& node = nodeGraphCopy.mNodes.at(sourceNodeID);
-			const NodeID createdNodeID = Internal::CreateNode(aTargetNodeGraphFacade.GetVariant(), node.mTypeID, aPosition + node.mPosition, aCommandTracker);
+			const NodeID createdNodeID = Internal::CreateNode(aTargetNodeGraphProxy.GetVariant(), node.mTypeID, aPosition + node.mPosition, aCommandTracker);
 			nodeConverter.emplace(sourceNodeID, createdNodeID);
 
 			const Node& createdNode = Internal::GetNode(createdNodeID, targetNodeGraph);
@@ -207,14 +206,14 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	CustomEventFacade CreateCustomEvent(const std::string_view aName)
+	CustomEventProxy CreateCustomEvent(const std::string_view aName)
 	{
-		return CustomEventFacade(Internal::CreateCustomEvent(aName));
+		return CustomEventProxy(Internal::CreateCustomEvent(aName));
 	}
 
-	FunctionFacade CreateGlobalFunction(const std::string_view aName)
+	FunctionProxy CreateGlobalFunction(const std::string_view aName)
 	{
-		return FunctionFacade(Internal::CreateFunction(aName));
+		return FunctionProxy(Internal::CreateFunction(aName));
 	}
 
 	void BeginFrame(CommandTracker* const aCommandTracker)
@@ -223,22 +222,22 @@ namespace FLY_NAMESPACE
 	}
 
 	template<Predicate<const Pin&> Predicate>
-	std::vector<PinFacade> GetPinFacadesFiltered(Predicate&& aPredicate, const NodeGraphFacade& aNodeGraphFacade)
+	std::vector<PinProxy> GetPinProxysFiltered(Predicate&& aPredicate, const NodeGraphProxy& aNodeGraphProxy)
 	{
-		std::vector<PinFacade> pinFacades;
-		const NodeGraph& nodeGraph = aNodeGraphFacade.GetNodeGraph();
-		pinFacades.reserve(nodeGraph.mPins.size());
+		std::vector<PinProxy> pinProxys;
+		const NodeGraph& nodeGraph = aNodeGraphProxy.GetNodeGraph();
+		pinProxys.reserve(nodeGraph.mPins.size());
 
 		for (PinID pinID = 0; pinID < nodeGraph.mPins.size(); ++pinID)
 		{
 			const Pin& pin = nodeGraph.mPins[pinID];
 			if (aPredicate(pin))
 			{
-				pinFacades.push_back(PinFacade(pinID, aNodeGraphFacade));
+				pinProxys.push_back(PinProxy(pinID, aNodeGraphProxy));
 			}
 		}
 
-		return pinFacades;
+		return pinProxys;
 	}
 
 	bool& IsDebugging()
@@ -246,112 +245,112 @@ namespace FLY_NAMESPACE
 		return Internal::IsDebugging();
 	}
 
-	std::vector<DataTypeFacade> GetDataTypes()
+	std::vector<DataTypeProxy> GetDataTypes()
 	{
 		const auto& dataTypes = Internal::GetDataTypeManager().GetDataTypes();
-		std::vector<DataTypeFacade> dataTypeFacades;
-		dataTypeFacades.reserve(dataTypes.size());
+		std::vector<DataTypeProxy> dataTypeProxys;
+		dataTypeProxys.reserve(dataTypes.size());
 
 		for (const auto& [dataTypeID, dataType] : dataTypes)
 		{
-			dataTypeFacades.push_back(DataTypeFacade(dataTypeID));
+			dataTypeProxys.push_back(DataTypeProxy(dataTypeID));
 		}
 
-		return dataTypeFacades;
+		return dataTypeProxys;
 	}
 
-	std::vector<GenericDataTypeFacade> GetGenericDataTypes()
+	std::vector<GenericDataTypeProxy> GetGenericDataTypes()
 	{
 		const auto& dataTypes = Internal::GetDataTypeManager().GetDataTypes();
-		std::vector<GenericDataTypeFacade> dataTypeFacades;
-		dataTypeFacades.reserve(dataTypes.size());
+		std::vector<GenericDataTypeProxy> dataTypeProxys;
+		dataTypeProxys.reserve(dataTypes.size());
 
 		for (const auto& [dataTypeID, dataType] : dataTypes)
 		{
-			dataTypeFacades.push_back(GenericDataTypeFacade(dataTypeID));
+			dataTypeProxys.push_back(GenericDataTypeProxy(dataTypeID));
 		}
 
-		return dataTypeFacades;
+		return dataTypeProxys;
 	}
 
-	DataTypeFacade GetDataTypeFacadeByName(std::string_view aName)
+	DataTypeProxy GetDataTypeProxyByName(std::string_view aName)
 	{
-		return DataTypeFacade(Internal::GetDataTypeManager().GetDataTypeIDByName(std::string(aName)));
+		return DataTypeProxy(Internal::GetDataTypeManager().GetDataTypeIDByName(std::string(aName)));
 	}
 
-	std::vector<NodeTypeFacade> GetNodeTypes()
+	std::vector<NodeTypeProxy> GetNodeTypes()
 	{
 		const auto& nodeTypes = Internal::GetNodeTypeManager().GetNodeTypes();
-		std::vector<NodeTypeFacade> views;
+		std::vector<NodeTypeProxy> views;
 		views.reserve(nodeTypes.size());
 
 		for (NodeTypeID nodeTypeID{ 0 }; nodeTypeID < nodeTypes.size(); ++nodeTypeID)
 		{
-			views.push_back(NodeTypeFacade(nodeTypeID));
+			views.push_back(NodeTypeProxy(nodeTypeID));
 		}
 
 		return views;
 	}
 
-	std::vector<FunctionFacade> GetFunctions()
+	std::vector<FunctionProxy> GetFunctions()
 	{
 		const auto& mFunctions = Internal::GetNodeTypeManager().GetFunctions();
-		std::vector<FunctionFacade> views;
+		std::vector<FunctionProxy> views;
 		views.reserve(mFunctions.size());
 
 		for (FunctionID functionID{ 0 }; functionID < mFunctions.size(); ++functionID)
 		{
-			views.push_back(FunctionFacade(functionID));
+			views.push_back(FunctionProxy(functionID));
 		}
 
 		return views;
 	}
 
-	std::vector<CustomEventFacade> GetCustomEvents()
+	std::vector<CustomEventProxy> GetCustomEvents()
 	{
 		const auto& customEvents = Internal::GetNodeTypeManager().GetCustomEvents();
-		std::vector<CustomEventFacade> customEventFacades;
-		customEventFacades.reserve(customEvents.size());
+		std::vector<CustomEventProxy> customEventProxys;
+		customEventProxys.reserve(customEvents.size());
 
 		for (CustomEventID customEventID{ 0 }; customEventID < customEvents.size(); ++customEventID)
 		{
-			customEventFacades.push_back(CustomEventFacade(customEventID));
+			customEventProxys.push_back(CustomEventProxy(customEventID));
 		}
 
-		return customEventFacades;
+		return customEventProxys;
 	}
 
-	std::vector<LinkFacade> GetTraversedLinks()
+	std::vector<LinkProxy> GetTraversedLinks()
 	{
-		std::vector<LinkFacade> linkFacades;
+		std::vector<LinkProxy> linkProxys;
 		const std::vector<LinkRef> linkRefs = Internal::GetNodeExecutor().GetDebugger().GetTraversedLinks();
-		linkFacades.reserve(linkRefs.size());
+		linkProxys.reserve(linkRefs.size());
 
 		for (auto& linkRef : linkRefs)
 		{
-			linkFacades.push_back(LinkFacade(linkRef.mLinkID, NodeGraphFacade(linkRef.mNodeGraphVariantHandle)));
+			linkProxys.push_back(LinkProxy(linkRef.mLinkID, NodeGraphProxy(linkRef.mNodeGraphVariantHandle)));
 		}
 
-		return linkFacades;
+		return linkProxys;
 	}
 
 	template<typename FilterFunction>
-	std::vector<NodeTypeFacade> GetNodeTypesFiltered(FilterFunction&& aFilter)
+	std::vector<NodeTypeProxy> GetNodeTypesFiltered(FilterFunction&& aFilter)
 	{
-		std::vector<NodeTypeFacade> facades;
+		std::vector<NodeTypeProxy> facades;
 		const std::vector<NodeType>& nodeTypes = Internal::GetNodeTypeManager().GetNodeTypes();
 		facades.reserve(nodeTypes.size());
 		for (NodeTypeID id{ 0 }; id < nodeTypes.size(); id++)
 		{
 			if (aFilter(nodeTypes[id]))
 			{
-				facades.push_back(NodeTypeFacade(id));
+				facades.push_back(NodeTypeProxy(id));
 			}
 		}
 		return facades;
 	}
 
-	std::vector<NodeTypeFacade> GetNodeTypesFilteredByDataTypeAndFlowType(const GenericDataTypeID aDataTypeID, const eFlowType aFlowType)
+	std::vector<NodeTypeProxy> GetNodeTypesFilteredByDataTypeAndFlowType(const GenericDataTypeID aDataTypeID, const eFlowType aFlowType)
 	{
 		return GetNodeTypesFiltered([aDataTypeID, aFlowType](const NodeType& aNodeType) -> bool
 			{
@@ -369,7 +368,7 @@ namespace FLY_NAMESPACE
 		);
 	}
 
-	std::vector<NodeTypeFacade> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(const GenericDataTypeID aDataTypeID, const eFlowType aFlowType, const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
+	std::vector<NodeTypeProxy> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(const GenericDataTypeID aDataTypeID, const eFlowType aFlowType, const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
 	{
 		return GetNodeTypesFiltered([aDataTypeID, aFlowType, aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
 			{
@@ -393,7 +392,7 @@ namespace FLY_NAMESPACE
 		);
 	}
 
-	std::vector<NodeTypeFacade> GetNodeTypesFilteredByTrait(const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
+	std::vector<NodeTypeProxy> GetNodeTypesFilteredByTrait(const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
 	{
 		return GetNodeTypesFiltered([aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
 			{
@@ -402,31 +401,31 @@ namespace FLY_NAMESPACE
 		);
 	}
 
-	std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> GetClasses()
+	std::unordered_map<DataTypeProxy, std::vector<ClassProxy>> GetClasses()
 	{
 		auto& classes = Internal::GetDataTypeManager().GetClasses();
 
-		std::unordered_map<DataTypeFacade, std::vector<ClassFacade>> views;
+		std::unordered_map<DataTypeProxy, std::vector<ClassProxy>> views;
 
 		for (size_t i = 0; i < classes.size(); i++)
 		{
-			views[DataTypeFacade(classes[i]->mTargetID)].push_back(ClassFacade(ClassID{ i }));
+			views[DataTypeProxy(classes[i]->mTargetID)].push_back(ClassProxy(ClassID{ i }));
 		}
 
 		return views;
 	}
 
-	std::vector<ClassFacade> GetClassesByTargetDataType(const DataTypeFacade aDataTypeFacade)
+	std::vector<ClassProxy> GetClassesByTargetDataType(const DataTypeProxy aDataTypeProxy)
 	{
 		auto& classes = Internal::GetDataTypeManager().GetClasses();
 
-		std::vector<ClassFacade> views;
+		std::vector<ClassProxy> views;
 
 		for (size_t i = 0; i < classes.size(); ++i)
 		{
-			if (classes[i]->mTargetID == aDataTypeFacade.GetID())
+			if (classes[i]->mTargetID == aDataTypeProxy.GetID())
 			{
-				views.push_back(ClassFacade(ClassID{ i }));
+				views.push_back(ClassProxy(ClassID{ i }));
 			}
 		}
 

@@ -16,18 +16,18 @@ namespace Editor
 
 		void Update();
 
-		void SetStructFacade(Fly::StructFacade aStructFacade)
+		void SetStructProxy(Fly::GenericDataTypeProxy aDataType)
 		{
-			myStructFacade = aStructFacade;
+			myGenericDataType = aDataType;
 		}
 	private:
 
-		void ShowStructMember(Fly::VariableFacade aVariable);
+		void ShowStructMember(Fly::VariableProxy aVariable);
 
 	private:
 
 		NodeScriptingWindow* myParentWindow;
-		Fly::StructFacade myStructFacade;
+		Fly::GenericDataTypeProxy myGenericDataType;
 
 	};
 }

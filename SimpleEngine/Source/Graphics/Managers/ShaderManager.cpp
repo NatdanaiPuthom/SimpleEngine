@@ -98,7 +98,11 @@ namespace Graphics
 		case eShaderType::Copy:
 			shader = GetShader("Shaders\\FullScreenCopyPS.cso", "Shaders\\FullScreenVS.cso");
 			break;
+		case eShaderType::SkyBox_Unity:
+			shader = GetShader("Shaders\\SkyBoxUnityPS.cso", "Shaders\\DefaultVS.cso");
+			break;
 		default:
+			shader = GetShader("Shaders\\DefaultPS.cso", "Shaders\\DefaultVS.cso");
 			break;
 		}
 

@@ -1,0 +1,11 @@
+#include "Editor/Precomplied/EditorPch.hpp"
+#include "Editor/EditorProxy.hpp"
+
+
+namespace Editor
+{
+	CommandTracker& EditorProxy::GetCommandTracker()
+	{
+		return myEditorEngine->GetCommandTracker();
+	}
+}

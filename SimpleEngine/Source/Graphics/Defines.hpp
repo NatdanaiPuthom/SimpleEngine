@@ -12,6 +12,7 @@ namespace Graphics
 	constexpr size_t Global_Constant_Buffer_Slot_Joints = 4;
 	constexpr size_t Global_Constant_Buffer_Slot_PostProcess = 5;
 	constexpr size_t Global_Constant_Buffer_Slot_Pointlight = 6;
+	constexpr size_t Global_Constant_Buffer_Slot_SkyBox = 7;
 
 	constexpr size_t Global_StartSlot_GBuffer = 5;
 	constexpr size_t Global_GBuffer_Count = 5;

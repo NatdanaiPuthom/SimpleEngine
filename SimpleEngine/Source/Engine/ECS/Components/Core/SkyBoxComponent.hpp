@@ -15,6 +15,8 @@ namespace ECS
 		Math::Transform transform;
 		const Graphics::Texture* texture = nullptr;
 		const Graphics::Shader* shader = nullptr;
+		bool useSkyBoxFlooring = false;
+		bool useUnityShader = false;
 	};
 }
 
@@ -23,5 +25,7 @@ namespace ECS
 	//REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::transform, false, false);
 	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::mesh);
 	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::texture);
+	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::useSkyBoxFlooring);
+	REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::useUnityShader);
 	//REGISTER_AND_EXPOSE_PROPERTY(&SkyBoxComponent::shader);
 }

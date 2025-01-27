@@ -58,7 +58,17 @@ namespace ECS
 		{
 			if (entitiesIDWithAnimation.find(*it) != entitiesIDWithAnimation.end())
 			{
-				it = entitiesIDWithMesh.erase(it);
+				ECS::Entity& entity = aEntityComponentSystem->GetEntity(*it);
+				const AnimationComponent* animated = entity.GetComponent<ECS::AnimationComponent>();
+
+				if (animated->skeleton != nullptr && animated->animation != nullptr)
+				{
+					it = entitiesIDWithMesh.erase(it);
+				}
+				else
+				{
+					++it;
+				}
 			}
 			else
 			{
@@ -167,9 +177,19 @@ namespace ECS
 		{
 			ECS::Entity skyBox = aEntityComponentSystem->GetEntity(*entitiesWithSkyBoxComponent.begin());
 			SkyBoxComponent* skyBoxComponent = skyBox.GetComponent<SkyBoxComponent>();
+
+			graphicsEngine->GetConstantBufferManager()->UpdateSkyBoxConstantBuffer(skyBoxComponent->useSkyBoxFlooring);
 			skyBoxComponent->transform.SetPosition(graphicsEngine->GetCurrentCamera()->GetPosition());
 
-			renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
+			if (skyBoxComponent->useUnityShader == true)
+			{
+				const Graphics::Shader* unityShader = graphicsEngine->GetShaderManager()->GetShader(Graphics::eShaderType::SkyBox_Unity).get();
+				renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, unityShader, skyBoxComponent->texture);
+			}
+			else
+			{
+				renderer->RenderUnlitStaticModel(skyBoxComponent->transform.GetMatrix(), skyBoxComponent->mesh, skyBoxComponent->shader, skyBoxComponent->texture);
+			}
 		}
 
 		if (entitiesWithDirectionalLightComponent.empty() == false)

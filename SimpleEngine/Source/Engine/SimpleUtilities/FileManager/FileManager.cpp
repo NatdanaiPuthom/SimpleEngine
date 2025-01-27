@@ -8,6 +8,17 @@ namespace SimpleUtilities
 {
 	std::string FileManager::myStaticCurrentDirectory = SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_ASSETS);
 
+	bool IsDirectory(const std::string& path)
+	{
+		DWORD attributes = GetFileAttributesA(path.c_str());
+		if (attributes == INVALID_FILE_ATTRIBUTES)
+		{
+			// Handle the error (e.g., file not found)
+			return false;
+		}
+		return (attributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+	}
+
 	void FileManager::DropFiles(HDROP aHDROP)
 	{
 		char filePath[MAX_PATH]{};
@@ -20,6 +31,14 @@ namespace SimpleUtilities
 			{
 				const std::string name = GetFileName(filePath);
 				const std::string destinationPath = myStaticCurrentDirectory + "\\" + name;
+
+				if (IsDirectory(filePath))
+				{
+					Simple::Console::Print("Path ", Simple::ConsoleTextColor::White, false);
+					Simple::Console::Print(filePath, Simple::ConsoleTextColor::Yellow, false);
+					Simple::Console::Print(" is a folder and will be skipped.\n", Simple::ConsoleTextColor::White, true);
+					continue; // Skip processing if it's a folder
+				}
 
 				if (CopyFileA(filePath, destinationPath.c_str(), TRUE))
 				{

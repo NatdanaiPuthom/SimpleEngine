@@ -1,21 +1,21 @@
 #pragma once
-#include "NodeScript/Facade/FlyClassInstanceFacade.hpp"
+#include "NodeScript/Proxy/FlyClassInstanceProxy.hpp"
 #include "Engine/ECS/Reflection/ECSReflection.hpp"
 
 namespace Fly
 {
-	REGISTER_DATATYPE(ClassInstanceFacade);
+	REGISTER_DATATYPE(ClassInstanceProxy);
 }
 
 namespace ECS
 {
 	COMPONENT(ScriptComponent) final
 	{
-		Fly::ClassInstanceFacade classInstanceFacade;
+		Fly::ClassInstanceProxy classInstance;
 	};
 }
 
 namespace ECS
 {
-	REGISTER_AND_EXPOSE_PROPERTY(&ScriptComponent::classInstanceFacade);
+	REGISTER_AND_EXPOSE_PROPERTY(&ScriptComponent::classInstance);
 }
