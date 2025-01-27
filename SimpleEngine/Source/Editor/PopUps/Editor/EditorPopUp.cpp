@@ -390,7 +390,7 @@ namespace Editor
 				const ECS::ComponentRegistry& componentRegistry = *MainSingleton::GetComponentRegistry();
 
 				const size_t componentSize = componentRegistry.GetComponentSize(componentHashCode);
-				ECS::InplaceAllocateFunction inplaceAllocateFunction = componentRegistry.GetInplaceAllocateFunction(componentHashCode);
+				ECS::InPlaceAllocateFunction inplaceAllocateFunction = componentRegistry.GetInplaceAllocateFunction(componentHashCode);
 				ECS::DestroyFunction destroyFunction = componentRegistry.GetDestroyFunction(componentHashCode);
 				ECS::CopyFunction copyFunction = componentRegistry.GetCopyFunction(componentHashCode);
 

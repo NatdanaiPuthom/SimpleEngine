@@ -14,7 +14,7 @@ class MainSingleton;
 
 namespace ECS
 {
-	using InplaceAllocateFunction = void(*)(void* aData, const void* aDefaultValuePtr);
+	using InPlaceAllocateFunction = void(*)(void* aData, const void* aDefaultValuePtr);
 	using DestroyFunction = void(*)(void* aData);
 	using CopyFunction = void (*)(void* aDestination, const void* aSource);
 	using SwapFunction = void (*)(void* aDataPtr1, void* aDataPtr2);
@@ -71,7 +71,7 @@ namespace ECS
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
 		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
 
-		InplaceAllocateFunction InplaceAllocate = nullptr;
+		InPlaceAllocateFunction InplaceAllocate = nullptr;
 		DestroyFunction Destroy = nullptr;
 		CopyFunction CopyFunctionPointer = nullptr;
 		SwapFunction SwapFunctionPointer = nullptr;
@@ -110,7 +110,7 @@ namespace ECS
 
 	public:
 		size_t GetComponentSize(ComponentHashCode aHashCode) const;
-		InplaceAllocateFunction GetInplaceAllocateFunction(ComponentHashCode aHashCode) const;
+		InPlaceAllocateFunction GetInplaceAllocateFunction(ComponentHashCode aHashCode) const;
 		DestroyFunction GetDestroyFunction(ComponentHashCode aHashCode) const;
 		CopyFunction GetCopyFunction(ComponentHashCode aHashCode) const;
 	private:

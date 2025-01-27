@@ -61,7 +61,7 @@ namespace ECS
 		return myTypeErasureComponents.at(aHashCode).mySize;
 	}
 
-	InplaceAllocateFunction ComponentRegistry::GetInplaceAllocateFunction(ComponentHashCode aHashCode) const
+	InPlaceAllocateFunction ComponentRegistry::GetInplaceAllocateFunction(ComponentHashCode aHashCode) const
 	{
 		return myTypeErasureComponents.at(aHashCode).InplaceAllocate;
 	}
