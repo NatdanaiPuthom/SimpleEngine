@@ -15,6 +15,7 @@ namespace Editor
 		: PopUp(aName)
 		, myShowAdvanced(false)
 		, myCommandTracker(aCommandTracker)
+		, myGridSnapTool(&myTransformEntityTool)
 	{
 	}
 
@@ -127,6 +128,7 @@ namespace Editor
 
 		if (ImGui::Begin("Game##MainMenuBar", 0, ImGuiWindowFlags_NoScrollbar))
 		{
+			//myGridSnapTool.Render();
 			{	//Render Orientation Cube  
 				//TO-DO(v11.4.4): Make own class for this
 				//TO-DO(v12.0.0): The cube doesn't render when the window is pop out for unknown reason
@@ -160,9 +162,30 @@ namespace Editor
 			}
 
 			const ImVec2 size = ImGui::GetContentRegionAvail();
+			ImGui::SetNextItemAllowOverlap();
 			ImGui::Image(textureID, size);
 
 			myTransformEntityTool.Render();
+
+			// Popup currently in use for grid snapping. Might add more stuff later?
+			{
+				const ImVec2 previousCursorPos = ImGui::GetCursorPos();
+				const ImVec2 sceneSettingsPopupPosition{ ImGui::GetWindowContentRegionMax().x - 70.f, ImGui::GetWindowContentRegionMin().y + 5.f };
+				ImGui::SetCursorPos(sceneSettingsPopupPosition);
+
+				if (ImGui::Button("Options", ImVec2{ 60.f, 25.f }))
+				{
+					ImGui::OpenPopup("Scene Settings##EditorSceneSettings");
+				}
+
+				ImGui::SetCursorPos(previousCursorPos);
+
+				if (ImGui::BeginPopup("Scene Settings##EditorSceneSettings"))
+				{
+					myGridSnapTool.Render();
+					ImGui::EndPopup();
+				}
+			}
 		}
 		ImGui::End();
 

@@ -53,11 +53,14 @@ namespace Editor
 			}
 		}
 
+		const float snapValue = myUseSnap ? mySnapValue : 0.f;
+		const Math::Vector3f gridSnapValues(snapValue, snapValue, snapValue);
+
 		const bool isManipulatingEntityTransform = ImGuizmo::Manipulate(&view(1, 1),
 			&proj(1, 1),
 			operation,
 			ImGuizmo::MODE::WORLD,
-			&objectMatrix(1, 1)
+			&objectMatrix(1, 1), nullptr, &gridSnapValues.x
 		);
 
 		if (isManipulatingEntityTransform && inputManager.IsKeyDown(VK_LBUTTON) && !myIsDraggingEntity)
