@@ -101,9 +101,10 @@ namespace ECS
 		mySystemManager.mySystems[aSystemHashCode] = std::move(aSystem);
 	}
 
-	ECS::Entity& EntityComponentSystem::CreateEntity(const EntityID aEntityID)
+	EntityID EntityComponentSystem::CreateEntity(const EntityID aEntityID)
 	{
-		return myEntityManager.CreateEntity(aEntityID);
+		const Entity& entity = myEntityManager.CreateEntity(aEntityID);
+		return entity.GetID();
 	}
 
 	bool EntityComponentSystem::RemoveEntity(const EntityID aEntityID)
@@ -200,10 +201,11 @@ namespace ECS
 		for (size_t i = 0; i < jsonData["Entities"].size(); ++i)
 		{
 			const nlohmann::json& entityData = jsonData["Entities"][i];
-			const EntityID id = entityData["ID"];
+			const EntityID loadedEntityID = entityData["ID"];
 			const std::string name = entityData["Name"];
 
-			ECS::Entity& entity = aECS.CreateEntity(id);
+			EntityID newEntityID = aECS.CreateEntity(loadedEntityID);
+			Entity& entity = aECS.GetEntity(newEntityID);
 			entity.SetName(name);
 
 			if (entityData.contains("Components") == false)

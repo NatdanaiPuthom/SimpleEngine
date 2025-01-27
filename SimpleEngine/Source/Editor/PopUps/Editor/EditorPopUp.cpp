@@ -619,9 +619,6 @@ namespace Editor
 
 	ECS::EntityID EditorPopUp::CreateEntity()
 	{
-
-		ECS::Entity& entity = MainSingleton::GetSceneManager().GetCurrentECS().CreateEntity();
-
 		class CreateEntityCommand final
 		{
 		public:
@@ -640,14 +637,16 @@ namespace Editor
 			}
 		};
 
+		ECS::EntityID entityID = MainSingleton::GetSceneManager().GetCurrentECS().CreateEntity();
+
 		CreateEntityCommand createEntityCommand;
 		createEntityCommand.myHierarchyIndex = myVisibleEntityIDs.size();
 		createEntityCommand.myEntityIDs = &myVisibleEntityIDs;
-		createEntityCommand.myEntityID = entity.GetID();
+		createEntityCommand.myEntityID = entityID;
 
 		myCommandTracker->ExecuteCommand(Command(createEntityCommand, "Create Entity"));
 
-		return entity.GetID();
+		return entityID;
 	}
 
 	void EditorPopUp::ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS)

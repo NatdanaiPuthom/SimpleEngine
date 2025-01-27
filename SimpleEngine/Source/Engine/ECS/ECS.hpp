@@ -44,12 +44,16 @@ namespace ECS
 	public:
 		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
 	public: 
-		ECS::Entity& CreateEntity(const EntityID aEntityID = 0);
+		EntityID CreateEntity(const EntityID aEntityID = 0);
 	public:
 		bool RemoveEntity(const EntityID aEntityID);
 	public:
 		EntityManager* GetEntityManager();
+
+		//NOTE(v12.0.0): Careful when using this function as the Entity itself may get reallocated elsewhere.
+		//NOTE(v12.0.0): If CreateEntity are getting called, this possibly may be invalid, especially in threaded enviroment.
 		ECS::Entity& GetEntity(const EntityID aID);
+
 		std::vector<ECS::Entity>& GetAllEntities();
 		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
 
