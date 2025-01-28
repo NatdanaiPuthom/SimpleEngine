@@ -113,7 +113,9 @@ namespace Simple
 				.myHandle = memoryHandle,
 				.destroy = aDestructorFunction,
 				.copy = aCopyFunction,
+#ifdef _DEBUG
 				.myTypeInfo = nullptr
+#endif
 			}
 		);
 
