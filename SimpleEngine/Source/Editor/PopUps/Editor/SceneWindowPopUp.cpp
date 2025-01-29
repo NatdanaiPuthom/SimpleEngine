@@ -58,13 +58,20 @@ namespace Editor
 				}
 			}
 
-			RenderPlayButton();
 		}
 
 		ImGui::End();
 
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
+
+		if (ImGui::Begin(myImGuiName.c_str(), &myIsActive, ImGuiWindowFlags_NoScrollbar))
+		{
+			//TO-DO(v12.0.0): Make it render on Window's bar itself rather than MainMenuBar
+			RenderPlayButton();
+		}
+
+		ImGui::End();
 	}
 
 	void SceneWindowPopUp::RenderOrientationCube()
@@ -99,12 +106,10 @@ namespace Editor
 			Graphics::GraphicsEngine* graphicsEngine = Global::GetGraphicsEngine();
 
 			const bool isPlaying = sceneManager.GetIsPlaying();
+			const char* playIcon = isPlaying ? ICON_FA_PAUSE : ICON_FA_PLAY;
 
 			if (isPlaying == true)
 			{
-				ImGui::PushStyleColor(ImGuiCol_Button, ImColor(1.0f, 0.0f, 0.0f, 1.0f).Value);
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor(0.6f, 0.0f, 0.0f, 1.0f).Value);
-
 				Simple::ImGuiEngine::SetEditorMode(Simple::eImGuiEditorMode::Playing);
 
 				ECS::EntityComponentSystem& ecs = sceneManager.GetCurrentECS();
@@ -126,19 +131,20 @@ namespace Editor
 				graphicsEngine->SetCamera(graphicsEngine->GetEditorCamera().get());
 			}
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10);
+			if (isPlaying == true)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImColor(1.0f, 0.0f, 0.0f, 1.0f).Value);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor(0.6f, 0.0f, 0.0f, 1.0f).Value);
+			}
 
-			if (ImGui::Button(ICON_FA_PLAY))
+			if (ImGui::Button(playIcon))
 			{
 				sceneManager.SetIsPlaying(!isPlaying);
 			}
 
-			ImGui::PopStyleVar();
-
 			if (isPlaying == true)
 			{
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
+				ImGui::PopStyleColor(2);
 			}
 
 			ImGui::EndMainMenuBar();
