@@ -22,6 +22,7 @@
 
 #include "Editor/EditorProxy.hpp"
 
+#ifndef _SIMPLE
 namespace Editor
 {
 	EditorEngine::EditorEngine()
@@ -182,3 +183,4 @@ namespace Editor
 		}
 	}
 }
+#endif

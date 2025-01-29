@@ -7,6 +7,7 @@
 #include <string>
 #include <typeindex>
 
+#ifndef _SIMPLE
 namespace Editor
 {
 	class EditorEngine final
@@ -61,3 +62,21 @@ namespace Editor
 		return pointer;
 	}
 }
+#else
+namespace Editor
+{
+	class EditorEngine final
+	{
+	public:
+		EditorEngine() {}
+		~EditorEngine() {}
+
+		void Init() {}
+		void Update() {}
+		void Render() {}
+	public:
+		CommandTracker& GetCommandTracker() { return myCommandTracker; }
+		CommandTracker myCommandTracker;
+	};
+}
+#endif

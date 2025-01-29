@@ -4,6 +4,7 @@
 #include "Editor/Utility/EditorUtilities.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
+#ifndef _SIMPLE
 namespace Editor
 {
 	void EditorProxy::Init(EditorEngine* aEditorEngine)
@@ -77,3 +78,4 @@ namespace Editor
 		return mySelectedEntityIndex;
 	}
 }
+#endif
