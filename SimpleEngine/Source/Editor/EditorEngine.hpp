@@ -18,14 +18,16 @@ namespace Editor
 		void Init();
 		void Update();
 		void Render();
+
+	public:
 		CommandTracker& GetCommandTracker();
+
 	private:
 		template<DerivedFromPopUpWindow T, typename ... Args>
 		std::shared_ptr<T> AddPopUpWindow(const char* aName, Args&& ... args);
 
 		template<DerivedFromMainMenuTabBase T>
 		T* AddMenuTab(const char* aName);
-
 	private:
 		void SetUpDefaultLayout();
 	private:

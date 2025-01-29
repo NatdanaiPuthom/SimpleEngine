@@ -15,7 +15,6 @@
 #include "Editor/PopUps/Editor/SceneInspectorPopUp.hpp"
 #include "Editor/PopUps/Editor/AssetBrowserPopUp.hpp"
 #include "Editor/PopUps/Editor/SceneWindowPopUp.hpp"
-#include "Editor/PopUps/Editor/AssetBrowser.hpp"
 #include "Editor/FlyScript/NodeScriptingWindow.hpp"
 
 #include "Editor/Functions/SceneSettingFunctions.hpp"
@@ -58,6 +57,7 @@ namespace Editor
 		}
 
 		const Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
+
 		if (inputManager.IsKeyPressed(VK_F5))
 		{
 			if (Global::IsFullScreen())
@@ -105,7 +105,6 @@ namespace Editor
 		}
 	}
 
-
 	CommandTracker& EditorEngine::GetCommandTracker()
 	{
 		return myCommandTracker;
@@ -123,7 +122,7 @@ namespace Editor
 		MenuItemMenu* sceneCreateMenu = sceneTab->AddMenu("Create");
 		MenuItemButton* sceneReloadButton = sceneTab->AddButton("Reload");
 		MenuItemButton* sceneSetAsActiveButton = sceneTab->AddButton("Set As Active");
-	
+
 		MenuItemButton* sceneCreateNewButton = sceneCreateMenu->AddChild<MenuItemButton>("New");
 		MenuItemButton* sceneCreateCopyButton = sceneCreateMenu->AddChild<MenuItemButton>("Copy");
 
@@ -138,6 +137,8 @@ namespace Editor
 		MenuItemPopUp* postProcessPopUpButton = windowsTab->AddPopUp("PostProcess");
 		MenuItemPopUp* nodeScriptingPopUpButton = windowsTab->AddPopUp("NodeScript");
 
+		std::shared_ptr<NodeScriptingWindow> nodeScriptingPopUp = AddPopUpWindow<NodeScriptingWindow>("NodeScripting Window");
+
 		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUp = AddPopUpWindow<AudioSettingsPopUp>("Audio Settings");
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = AddPopUpWindow<CameraSettingsPopUp>("Camera Settings");
 		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUp = AddPopUpWindow<GraphicsSettingsPopUp>("Graphics Settings");
@@ -146,17 +147,8 @@ namespace Editor
 		std::shared_ptr<PostProcessPopUp> postProcessPopUp = AddPopUpWindow<PostProcessPopUp>("PostProcess Window");
 		std::shared_ptr<SceneHierachyPopUp> sceneHierarchyPopUp = AddPopUpWindow<SceneHierachyPopUp>("Hierarchy", &myCommandTracker);
 		std::shared_ptr<SceneInspectorPopUp> sceneInspectorPopUp = AddPopUpWindow<SceneInspectorPopUp>("Inspector");
-		std::shared_ptr<AssetBrowserPopUp2> assetBrowserPopUp2 = AddPopUpWindow<AssetBrowserPopUp2>("Asset Browser");
+		std::shared_ptr<AssetBrowserPopUp2> assetBrowserPopUp2 = AddPopUpWindow<AssetBrowserPopUp2>("Asset Browser", nodeScriptingPopUp.get(), windowsTab, nodeScriptingPopUpButton);
 		std::shared_ptr<SceneWindowPopUp> sceneWindowPopUp = AddPopUpWindow<SceneWindowPopUp>("Scene");
-
-		//std::shared_ptr<AssetBrowserPopUp> assetBrowserPopUp = AddPopUpWindow<AssetBrowserPopUp>("AssetBrowser Window");
-		std::shared_ptr<NodeScriptingWindow> nodeScriptingPopUp = AddPopUpWindow<NodeScriptingWindow>("NodeScripting Window");
-
-		{	//TO-DO(v12.0.0): Temp should be refactor
-			//assetBrowserPopUp->myNodeScriptingWindow = nodeScriptingPopUp.get();
-			//assetBrowserPopUp->myNodeScriptParentTab = windowsTab;
-			//assetBrowserPopUp->myNodeScriptButton = nodeScriptingPopUpButton;
-		}
 
 		{
 			const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
@@ -176,8 +168,6 @@ namespace Editor
 		settingsGraphicsButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(graphicsSettingPopUp, &settingsGraphicsButton->GetIsActiveRef())));
 		deferredPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(deferredPopUp, &deferredPopUpButton->GetIsActiveRef())));
 		postProcessPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(postProcessPopUp, &postProcessPopUpButton->GetIsActiveRef())));
-
-		//editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(assetBrowserPopUp, &editorPopUpButton->GetIsActiveRef())));
 
 		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(sceneHierarchyPopUp, &editorPopUpButton->GetIsActiveRef())));
 		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(sceneInspectorPopUp, &editorPopUpButton->GetIsActiveRef())));
