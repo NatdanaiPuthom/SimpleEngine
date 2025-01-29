@@ -27,8 +27,6 @@ namespace Editor
 		void Init() override;
 		void Render() override;
 
-		void RemoveMeLater();
-		void RemoveMeLaterLater();
 		ECS::Entity* GetSelectedEntity() const;
 	private:
 		void ShowInspector(ECS::EntityComponentSystem& aActiveECS);

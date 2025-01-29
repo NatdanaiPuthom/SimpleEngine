@@ -11,6 +11,10 @@
 
 #include "Editor/PopUps/PostProcessPopUp.hpp"
 #include "Editor/PopUps/DeferredPopUp.hpp"
+#include "Editor/PopUps/Editor/SceneHierachyPopUp.hpp"
+#include "Editor/PopUps/Editor/SceneInspectorPopUp.hpp"
+#include "Editor/PopUps/Editor/AssetBrowserPopUp.hpp"
+#include "Editor/PopUps/Editor/SceneWindowPopUp.hpp"
 #include "Editor/PopUps/Editor/EditorPopUp.hpp"
 #include "Editor/PopUps/Editor/AssetBrowser.hpp"
 #include "Editor/FlyScript/NodeScriptingWindow.hpp"
@@ -143,11 +147,15 @@ namespace Editor
 		std::shared_ptr<CameraControlsGuidePopUp> cameraHelpPopUp = AddPopUpWindow<CameraControlsGuidePopUp>("Editor Camera Control");
 		std::shared_ptr<DeferredPopUp> deferredPopUp = AddPopUpWindow<DeferredPopUp>("Deferred Window");
 		std::shared_ptr<PostProcessPopUp> postProcessPopUp = AddPopUpWindow<PostProcessPopUp>("PostProcess Window");
+		std::shared_ptr<SceneHierachyPopUp> sceneHierarchyPopUp = AddPopUpWindow<SceneHierachyPopUp>("Hierarchy");
+		std::shared_ptr<SceneInspectorPopUp> sceneInspectorPopUp = AddPopUpWindow<SceneInspectorPopUp>("Inspector");
+		std::shared_ptr<AssetBrowserPopUp2> assetBrowserPopUp2 = AddPopUpWindow<AssetBrowserPopUp2>("Asset Browser");
+		std::shared_ptr<SceneWindowPopUp> sceneWindowPopUp = AddPopUpWindow<SceneWindowPopUp>("Scene");
 
-		std::shared_ptr<EditorPopUp> editorPopUp = std::make_shared<EditorPopUp>("Editor Window", &myCommandTracker);
+		//std::shared_ptr<EditorPopUp> editorPopUp = std::make_shared<EditorPopUp>("Editor Window", &myCommandTracker);
 
 		{ //TO-DO(v12.0.0): Temp should be refactor
-			myPopUpWindows.push_back(editorPopUp);
+			//myPopUpWindows.push_back(editorPopUp);
 		}
 
 		std::shared_ptr<AssetBrowserPopUp> assetBrowserPopUp = AddPopUpWindow<AssetBrowserPopUp>("AssetBrowser Window");
@@ -177,8 +185,12 @@ namespace Editor
 		settingsGraphicsButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(graphicsSettingPopUp, &settingsGraphicsButton->GetIsActiveRef())));
 		deferredPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(deferredPopUp, &deferredPopUpButton->GetIsActiveRef())));
 		postProcessPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(postProcessPopUp, &postProcessPopUpButton->GetIsActiveRef())));
-		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(editorPopUp, &editorPopUpButton->GetIsActiveRef())));
-		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(assetBrowserPopUp, &editorPopUpButton->GetIsActiveRef())));
+		//editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(editorPopUp, &editorPopUpButton->GetIsActiveRef())));
+		//editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(assetBrowserPopUp, &editorPopUpButton->GetIsActiveRef())));
+		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(sceneHierarchyPopUp, &editorPopUpButton->GetIsActiveRef())));
+		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(sceneInspectorPopUp, &editorPopUpButton->GetIsActiveRef())));
+		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(assetBrowserPopUp2, &editorPopUpButton->GetIsActiveRef())));
+		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(sceneWindowPopUp, &editorPopUpButton->GetIsActiveRef())));
 		nodeScriptingPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(nodeScriptingPopUp, &nodeScriptingPopUpButton->GetIsActiveRef())));
 
 		{ //TO-DO(v11.4.5): Temp should be refactor
