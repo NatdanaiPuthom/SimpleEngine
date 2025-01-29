@@ -35,9 +35,10 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		EditorProxy::Init(this);
-
 		SetUpDefaultLayout();
+
+		EditorProxy::Init(this);
+		myTemporaryECSEditor.Init();
 
 		for (auto& menuTab : myMainMenuTabs)
 		{
@@ -109,6 +110,11 @@ namespace Editor
 	CommandTracker& EditorEngine::GetCommandTracker()
 	{
 		return myCommandTracker;
+	}
+
+	ECS::EntityComponentSystem& EditorEngine::GetEditorECS()
+	{
+		return myTemporaryECSEditor;
 	}
 
 	void EditorEngine::SetUpDefaultLayout()

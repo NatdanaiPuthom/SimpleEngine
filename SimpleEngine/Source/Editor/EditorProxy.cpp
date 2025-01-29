@@ -13,8 +13,6 @@ namespace Editor
 		SetSelectedEntityIDToInvalid();
 		SetSelectedEntityIndexToInvalid();
 
-		myTemporaryECSEditor.Init();
-
 		{
 			ECS::EntityComponentSystem& activeECS = MainSingleton::GetSceneManager().GetCurrentECS();
 			std::vector<ECS::Entity>& entities = activeECS.GetAllEntities();
@@ -50,7 +48,7 @@ namespace Editor
 
 	ECS::EntityComponentSystem& EditorProxy::GetEditorECS()
 	{
-		return myTemporaryECSEditor;
+		return myEditorEngine->GetEditorECS();
 	}
 
 	std::vector<size_t>& EditorProxy::GetVisibleEntityIDs()

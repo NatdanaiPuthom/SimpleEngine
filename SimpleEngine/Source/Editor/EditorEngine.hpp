@@ -22,7 +22,7 @@ namespace Editor
 
 	public:
 		CommandTracker& GetCommandTracker();
-
+		ECS::EntityComponentSystem& GetEditorECS();
 	private:
 		template<DerivedFromPopUpWindow T, typename ... Args>
 		std::shared_ptr<T> AddPopUpWindow(const char* aName, Args&& ... args);
@@ -32,6 +32,7 @@ namespace Editor
 	private:
 		void SetUpDefaultLayout();
 	private:
+		ECS::EntityComponentSystem myTemporaryECSEditor;
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
 		std::vector<std::unique_ptr<MainMenuTabBase>> myMainMenuTabs;
 		CommandTracker myCommandTracker;

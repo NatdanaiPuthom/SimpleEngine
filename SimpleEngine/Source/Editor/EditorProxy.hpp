@@ -33,7 +33,6 @@ namespace Editor
 		static size_t GetSelectedEntityIndex();
 		static size_t& GetSelectedEntityIndexRef();
 	private:
-		inline static ECS::EntityComponentSystem myTemporaryECSEditor;
 		inline static std::vector<size_t> myVisibleEntityIDs;
 		inline static EditorEngine* myEditorEngine = nullptr;
 		inline static size_t mySelectedEntityID = 0;
