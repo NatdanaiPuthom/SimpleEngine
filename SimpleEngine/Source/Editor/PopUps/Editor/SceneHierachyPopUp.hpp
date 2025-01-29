@@ -21,7 +21,6 @@ namespace Editor
 	public:
 		SceneHierachyPopUp(const std::string& aName, CommandTracker* aCommandTracker);
 
-		void Init() override;
 		void Render() override;
 	private:
 		void ShowAddButtons();
@@ -35,9 +34,6 @@ namespace Editor
 
 		ECS::Entity* GetSelectedEntity() const;
 	private:
-		std::vector<size_t> myVisibleEntityIDs;
-		std::unique_ptr<ECS::EntityComponentSystem> myTemporaryECSEditor;
 		CommandTracker* myCommandTracker;
-		size_t mySelectedEntityIndex;
 	};
 }

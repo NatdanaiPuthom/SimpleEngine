@@ -36,7 +36,7 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		EditorProxy::myEditorEngine = this;
+		EditorProxy::Init(this);
 
 		SetUpDefaultLayout();
 
