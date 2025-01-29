@@ -6,7 +6,6 @@
 
 namespace Editor
 {
-
 	void TransformEntityTool::Render()
 	{
 		if (EditorEngine::mySelectedEntityID == GetInvalidIndex<ECS::EntityID>()) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me

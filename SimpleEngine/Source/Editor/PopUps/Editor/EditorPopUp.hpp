@@ -26,22 +26,12 @@ namespace Editor
 
 		void Init() override;
 		void Render() override;
-
-		ECS::Entity* GetSelectedEntity() const;
 	private:
 		void ShowInspector(ECS::EntityComponentSystem& aActiveECS);
-		void ShowSceneHierachy(ECS::EntityComponentSystem& aActiveECS);
 		void ShowComponents(ECS::Entity& aSelectedEntity, ECS::EntityComponentSystem& aActiveECS) const;
-		void ShowSceneEntities();
-		void ShowActiveSceneName();
-		void RemoveSelectedEntity();
-		void RemoveEntity(size_t aEntityIndex);
-		ECS::EntityID CreateEntity();
-		void ShowAddPopUps(ECS::EntityComponentSystem& aActiveECS);
-		void SelectEntity(size_t aNewIndex);
 	private:
 		std::unique_ptr<ECS::EntityComponentSystem> myTemporaryECSEditor;
-		std::vector<ECS::EntityID> myVisibleEntityIDs;
+		std::vector<size_t> myVisibleEntityIDs;
 		CommandTracker* myCommandTracker = nullptr;
 		size_t mySelectedEntityIndex = 0;
 		bool myShowAdvanced = false;

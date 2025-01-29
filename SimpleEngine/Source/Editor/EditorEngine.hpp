@@ -22,8 +22,8 @@ namespace Editor
 		void Render();
 		CommandTracker& GetCommandTracker();
 	private:
-		template<DerivedFromPopUpWindow T>
-		std::shared_ptr<T> AddPopUpWindow(const char* aName);
+		template<DerivedFromPopUpWindow T, typename ... Args>
+		std::shared_ptr<T> AddPopUpWindow(const char* aName, Args&& ... args);
 
 		template<DerivedFromMainMenuTabBase T>
 		T* AddMenuTab(const char* aName);
@@ -36,12 +36,12 @@ namespace Editor
 		CommandTracker myCommandTracker;
 	};
 
-	template<DerivedFromPopUpWindow T>
-	inline std::shared_ptr<T> EditorEngine::AddPopUpWindow(const char* aName)
+	template<DerivedFromPopUpWindow T, typename ... Args>
+	inline std::shared_ptr<T> EditorEngine::AddPopUpWindow(const char* aName, Args&& ... args)
 	{
 		const std::string tag = std::string("##") + SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-		std::shared_ptr<T> window = std::make_shared<T>(aName);
+		std::shared_ptr<T> window = std::make_shared<T>(aName, std::forward<Args>(args)...);
 		window.get()->SetImGuiTag(tag.c_str());
 
 		myPopUpWindows.push_back(window);
