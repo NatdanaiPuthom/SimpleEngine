@@ -58,7 +58,7 @@ namespace ECS
 		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
 
 		template<typename T>
-		std::vector<T*>* GetAllComponentsOfType();
+		std::vector<T*>& GetAllComponentsOfType();
 
 		template<typename T>
 		T* GetComponent(EntityID aEntityID);
@@ -75,9 +75,9 @@ namespace ECS
 	};
 
 	template<typename T>
-	inline std::vector<T*>* EntityComponentSystem::GetAllComponentsOfType()
+	inline std::vector<T*>& EntityComponentSystem::GetAllComponentsOfType()
 	{
-		return myComponentManager.GetAllComponentsOfType<T>();
+		return *myComponentManager.GetAllComponentsOfType<T>();
 	}
 
 	template<typename T>
