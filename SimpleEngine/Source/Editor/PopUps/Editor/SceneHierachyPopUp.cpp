@@ -1,7 +1,7 @@
 #include "Editor/Precomplied/EditorPch.hpp"
 #include "Editor/PopUps/Editor/SceneHierachyPopUp.hpp"
+#include "Editor/EditorProxy.hpp"
 #include "Editor/Utility/EditorUtilities.hpp"
-#include "Editor/EditorEngine.hpp" //TO-DO(v12.0.0) Temp
 #include "Editor/Command/Commands/SelectEntityCommand.hpp"
 #include "MainSingleton/MainSingleton.hpp"
 
@@ -101,11 +101,11 @@ namespace Editor
 
 		if (myVisibleEntityIDs.empty() == false) //TO-DO(v12.0.0): Refactor, shouldn't be using from EditorEngine but EditorProxy if necessary
 		{
-			EditorEngine::mySelectedEntityID = myVisibleEntityIDs[mySelectedEntityIndex];
+			EditorProxy::SetSelectedEntityID(myVisibleEntityIDs[mySelectedEntityIndex]);
 		}
 		else
 		{
-			EditorEngine::mySelectedEntityID = GetInvalidIndex<ECS::EntityID>();
+			EditorProxy::SetSelectedEntityIDToInvalid();
 		}
 
 		if (MainSingleton::GetInputManager().IsKeyPressed(VK_DELETE))
@@ -115,7 +115,7 @@ namespace Editor
 				if (mySelectedEntityIndex >= 0)
 				{
 					RemoveSelectedEntity();
-					EditorEngine::mySelectedEntityID = GetInvalidIndex<ECS::EntityID>();
+					EditorProxy::SetSelectedEntityIDToInvalid();
 					return;
 				}
 			}
@@ -279,7 +279,7 @@ namespace Editor
 					if (ImGui::MenuItem(removeItem.c_str()))
 					{
 						RemoveEntity(mySelectedEntityIndex);
-						EditorEngine::mySelectedEntityID = GetInvalidIndex<ECS::EntityID>();
+						EditorProxy::SetSelectedEntityIDToInvalid();
 					}
 
 					ImGui::EndPopup();
