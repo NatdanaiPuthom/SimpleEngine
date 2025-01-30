@@ -15,6 +15,29 @@ namespace Simple
 		bool operator==(const EntityID& aOther) const { return value == aOther.value; }
 		bool operator!=(const EntityID& aOther) const { return value != aOther.value; }
 
+		EntityID& operator=(const EntityID& aOther)
+		{
+			if (this != &aOther)
+			{
+				value = aOther.value;
+			}
+
+			return *this;
+		}
+
+		EntityID& operator++()
+		{
+			++value;
+			return *this;
+		}
+
+		EntityID operator++(int)
+		{
+			EntityID temp = *this;
+			++value;
+			return temp;
+		}
+
 		static constexpr size_t Invalid = std::numeric_limits<size_t>::max();
 
 		struct Hash

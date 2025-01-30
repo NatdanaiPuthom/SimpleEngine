@@ -30,10 +30,13 @@ namespace Simple
 	{
 	public:
 		template<typename T>
-		void AddComponent(const EntityID aEntityID);
+		T* AddComponent(const EntityID aEntityID, const T& aComponent);
 
 		template<typename T>
 		bool RemoveComponent(const EntityID aEntityID);
+
+		template<typename T>
+		T* GetComponent(const EntityID aEntityID);
 
 		template<typename T>
 		ComponentStorage<T>& GetComponentStorage();
@@ -48,14 +51,16 @@ namespace Simple
 	};
 
 	template<typename T>
-	inline void ComponentManager::AddComponent(const EntityID aEntityID)
+	inline T* ComponentManager::AddComponent(const EntityID aEntityID, const T& aComponent)
 	{
 		ComponentStorage<T>& componentStorage = GetComponentStorage<T>();
-		const ComponentIndex index = componentStorage.Create();
+		const ComponentIndex index = componentStorage.Create(aComponent);
 
 		myEntityToComponentIndex[aEntityID][ComponentType(typeid(T))] = index;
 		myEntityToComponentTypes[aEntityID].insert(ComponentType(typeid(T)));
 		myComponentTypeToEntityIDs[ComponentType(typeid(T))].insert(aEntityID);
+
+		return componentStorage.GetComponentAtIndex(index);
 	}
 
 	template<typename T>
@@ -89,6 +94,20 @@ namespace Simple
 		}
 
 		return true;
+	}
+
+	template<typename T>
+	inline T* ComponentManager::GetComponent(const EntityID aEntityID)
+	{
+		auto it = myEntityToComponentIndex.find(aEntityID);
+
+		if (it != myEntityToComponentIndex.end())
+		{
+			ComponentStorage<T>& componentStorage = GetComponentStorage<T>();
+			return componentStorage.GetComponentAtIndex(it->second[ComponentType(typeid(T))]);
+		}
+
+		return nullptr;
 	}
 
 	template<typename T>

@@ -39,10 +39,10 @@ namespace Simple
 
 		void PrintMemoryPoolState(const bool aShouldPrintComponentAddresses = false) const;
 
-		ComponentIndex Create();
+		ComponentIndex Create(const T& aComponent);
 		bool Remove(const size_t aIndex);
 
-		T& GetComponentAtIndex(const size_t aIndex);
+		T* GetComponentAtIndex(const ComponentIndex aIndex);
 		std::vector<T*>& GetAllComponents();
 
 		constexpr size_t Size() const;
@@ -92,14 +92,14 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline ComponentIndex ComponentStorage<T>::Create()
+	inline ComponentIndex ComponentStorage<T>::Create(const T& aComponent)
 	{
 		if (sizeof(T) > GetAvaliableMemorySpace())
 		{
 			Reallocate();
 		}
 
-		new(myCurrentMemoryAddress)T;
+		new(myCurrentMemoryAddress)T(aComponent);
 
 		T* obj = reinterpret_cast<T*>(myCurrentMemoryAddress);
 		myComponentsPointerVector.push_back(obj);
@@ -139,15 +139,14 @@ namespace Simple
 	}
 
 	template<typename T>
-	inline T& ComponentStorage<T>::GetComponentAtIndex(const size_t aIndex)
+	inline T* ComponentStorage<T>::GetComponentAtIndex(const ComponentIndex aIndex)
 	{
 		if (aIndex >= Count())
 		{
 			throw std::out_of_range("Index is out of bounds");
 		}
 
-		T* obj = reinterpret_cast<T*>(myStartMemoryAddress + aIndex * sizeof(T));
-		return *obj;
+		return reinterpret_cast<T*>(myStartMemoryAddress + aIndex.index * sizeof(T));
 	}
 
 	template<typename T>
