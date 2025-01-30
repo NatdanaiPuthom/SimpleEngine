@@ -38,10 +38,12 @@ namespace Simple
 		template<typename T>
 		T* GetComponent(const EntityID aEntityID);
 
+		bool RemoveAllComponents(const EntityID& aEntityID);	
+		bool EntityHasComponent(const EntityID aEntityID, const ComponentType& aComponentType);
+
+	private:
 		template<typename T>
 		ComponentStorage<T>& GetComponentStorage();
-		
-		bool EntityHasComponent(const EntityID aEntityID, const ComponentType& aComponentType);
 
 	private:
 		std::unordered_map<ComponentType, std::shared_ptr<void>, ComponentType::Hash> myComponentStorages;
@@ -121,6 +123,11 @@ namespace Simple
 		}
 
 		return *std::static_pointer_cast<ComponentStorage<T>>(it->second);
+	}
+
+	inline bool ComponentManager::RemoveAllComponents(const EntityID& aEntityID)
+	{
+		aEntityID;
 	}
 
 	inline bool ComponentManager::EntityHasComponent(const EntityID aEntityID, const ComponentType& aComponentType)

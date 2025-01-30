@@ -25,10 +25,9 @@ namespace Simple
 
 	class ECS
 	{
+		using Index = size_t;
 	public:
-		ECS() :myNextID(EntityID(0))
-		{
-		}
+		ECS() :myNextID(EntityID(0)) {}
 
 		EntityID CreateEntity()
 		{
@@ -52,18 +51,31 @@ namespace Simple
 			return newID;
 		}
 
+		bool RemoveEntity(const EntityID& aEntityID)
+		{
+			auto it = myEntityIDMap.find(aEntityID);
+
+			if (it != myEntityIDMap.end())
+			{
+				myAllEntityIDs[it->second] = myAllEntityIDs.back();
+				myAllEntityIDs.pop_back();
+				myEntityIDMap.erase(it);
+			}
+
+			return myComponentManager.RemoveAllComponents(aEntityID);
+		}
+
 		template<typename T>
-		bool AddComponent(const EntityID aEntityID, const T& aComponent = T())
+		T* AddComponent(const EntityID aEntityID, const T& aComponent = T())
 		{
 			auto it = myEntityIDMap.find(aEntityID);
 
 			if (it == myEntityIDMap.end())
 			{
-				return false;
+				return nullptr;
 			}
 
-			myComponentManager.AddComponent<T>(aEntityID, aComponent);
-			return true;
+			return myComponentManager.AddComponent<T>(aEntityID, aComponent);
 		}
 
 		template<typename T>
@@ -72,14 +84,14 @@ namespace Simple
 			return myComponentManager.GetComponent<T>(aEntityID);
 		}
 
-		std::vector<EntityID>& GetAllEntityIDs()
+		const std::vector<EntityID>& GetAllEntityIDs()
 		{
 			return myAllEntityIDs;
 		}
 
 	private:
 		ComponentManager myComponentManager;
-		std::unordered_map<EntityID, size_t, EntityID::Hash> myEntityIDMap;
+		std::unordered_map<EntityID, Index, EntityID::Hash> myEntityIDMap;
 		std::vector<EntityID> myAllEntityIDs;
 		EntityID myNextID;
 	};
