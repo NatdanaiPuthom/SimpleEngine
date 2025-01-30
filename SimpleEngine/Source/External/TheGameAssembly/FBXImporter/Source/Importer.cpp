@@ -131,7 +131,7 @@ namespace TGA
 
 				outMesh.FileInfo.OriginalUpAxis = originalUpAxis == 0 ? Axis::X : (originalUpAxis == 1 ? Axis::Y : Axis::Z);
 
-				if (fbxScene->GetGlobalSettings().GetSystemUnit() != FbxSystemUnit::cm)
+				if (fbxScene->GetGlobalSettings().GetSystemUnit() != FbxSystemUnit::m)
 				{
 					constexpr FbxSystemUnit::ConversionOptions sysUnitConversion =
 					{
@@ -143,8 +143,8 @@ namespace TGA
 						true
 					};
 
-					FbxSystemUnit::cm.ConvertScene(fbxScene, sysUnitConversion);
-					assert(fbxScene->GetGlobalSettings().GetSystemUnit() == FbxSystemUnit::cm);
+					FbxSystemUnit::m.ConvertScene(fbxScene, sysUnitConversion);
+					assert(fbxScene->GetGlobalSettings().GetSystemUnit() == FbxSystemUnit::m);
 				}
 
 				// Load and set up Material data
