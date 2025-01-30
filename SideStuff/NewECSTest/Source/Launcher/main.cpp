@@ -29,7 +29,7 @@ int main()
 {
 	Simple::ComponentManager componentManager;
 
-	constexpr size_t size = 1000000;
+	constexpr size_t size = 10;
 
 	std::chrono::high_resolution_clock::time_point myStartTimerTime = std::chrono::high_resolution_clock::now();
 
