@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <vector>
 #include <tuple>
+#include <limits>
 
 namespace Simple
 {
@@ -17,12 +18,14 @@ namespace Simple
 		size_t index;
 
 		explicit ComponentIndex(size_t aIndex) : index(aIndex) {}
-		ComponentIndex() : index(0) {}
+		ComponentIndex() : index(Invalid) {}
 
 		operator size_t() const { return index; }
 
 		bool operator==(const ComponentIndex& aOther) const { return index == aOther.index; }
 		bool operator!=(const ComponentIndex& aOther) const { return index != aOther.index; }
+
+		static constexpr size_t Invalid = std::numeric_limits<size_t>::max();
 
 		struct Hash
 		{
