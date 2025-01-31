@@ -1,5 +1,5 @@
 #include "EntityComponentSystem/EntityComponentSystem.hpp"
-#include "EntityComponentSystem/Reflection/Register.hpp"
+#include "EntityComponentSystem/Reflection/Reflection.hpp"
 
 #include <iostream>
 #include <chrono>
