@@ -4,7 +4,6 @@
 
 namespace Editor
 {
-
 	template<std::integral T>
 	constexpr T GetInvalidIndex()
 	{

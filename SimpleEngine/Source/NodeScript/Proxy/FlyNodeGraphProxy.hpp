@@ -7,11 +7,16 @@
 #include "FlyGenericDataTypeProxy.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
 #include "../Node/FlyNodeDragData.hpp"
+#include "ProxyIterators/FlyProxyIterator.hpp"
 
 namespace FLY_NAMESPACE
 {
-
-	
+	using NodeProxyIterator = ProxyIterator<NodeID, NodeProxy>;
+	using NodeProxyIteratorService = ProxyIteratorService<NodeID, NodeProxyIterator>;
+	using PinProxyIterator = ProxyIterator<PinID, PinProxy>;
+	using PinProxyIteratorService = ProxyIteratorService<PinID, PinProxyIterator>;
+	using LinkProxyIterator = ProxyIterator<LinkID, LinkProxy>;
+	using LinkProxyIteratorService = ProxyIteratorService<LinkID, LinkProxyIterator>;
 	
 	class NodeGraph;
 	class EventGraph;
@@ -38,8 +43,8 @@ namespace FLY_NAMESPACE
 		explicit NodeGraphProxy(NodeGraphVariantHandle&& aNodeGraphVariant);
 		explicit NodeGraphProxy(const NodeGraphVariantHandle& aNodeGraphVariant);
 
-		[[nodiscard]] std::vector<NodeProxy> GetNodeProxys(bool aIncludeDestroyed = false) const;
-		[[nodiscard]] std::vector<PinProxy> GetPinProxys(bool aIncludeDestroyed = false) const;
+		[[nodiscard]] NodeProxyIteratorService IterateNodes(bool aIncludeDestroyed = false) const;
+		[[nodiscard]] LinkProxyIteratorService IterateLinks(bool aIncludeDestroyed = false) const;
 
 		[[nodiscard]] NodeGraph& GetNodeGraph();
 		[[nodiscard]] const NodeGraph& GetNodeGraph() const;
@@ -51,8 +56,6 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] std::vector<PinProxy> GetNonConnectedPinsByFlowType(eFlowType aFlowType) const;
 		[[nodiscard]] std::vector<PinProxy> GetNonConnectedPinsByFlowTypeAndDataType(eFlowType aFlowType, GenericDataTypeProxy aDataTypeProxy) const;
 		[[nodiscard]] std::vector<PinProxy> GetNonConnectedPinsByFlowTypeAndRelatedDataTypes(eFlowType aFlowType, GenericDataTypeProxy aDataTypeProxy) const;
-
-		[[nodiscard]] std::vector<LinkProxy> GetLinks(bool aIncludeDestroyed = false) const;
 
 		NodeProxy CreateNode(const NodeTypeProxy& aNodeTypeProxy, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr);
 		NodeProxy CreateNode(std::string_view aName, bool& aSuccess, Vec2 aPosition = Vec2(), CommandTracker* aCommandTracker = nullptr, bool aCreateIfNameNotFound = true);

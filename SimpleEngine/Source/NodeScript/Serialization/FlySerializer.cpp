@@ -749,7 +749,7 @@ namespace FLY_NAMESPACE
 
 					const GenericDataTypeID dataTypeID = GetDataTypeManager().GetGenericDataTypeIDByName(dataTypeName);
 
-					Internal::AddPinToCustomEvent(customEventID, dataTypeID, pinName, nullptr);
+					Internal::AddPinTypeToCustomEvent(customEventID, dataTypeID, pinName, nullptr);
 				}
 			}
 		}

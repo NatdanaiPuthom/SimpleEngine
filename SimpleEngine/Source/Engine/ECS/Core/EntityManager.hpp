@@ -62,7 +62,7 @@ namespace ECS
 	private:
 		std::vector<Entity> myAllEntities;
 		std::unordered_map<EntityID, size_t> myEntityIDToIndex;
-		std::unordered_map<EntityID, size_t> myIndexToEntityID;
+		std::unordered_map<size_t, EntityID> myIndexToEntityID;
 		std::unordered_map<EntityID, std::unordered_map<ComponentType, ComponentID>> myEntityComponents;
 
 		ComponentManager* myComponentManager;

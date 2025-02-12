@@ -13,7 +13,7 @@ namespace FLY_NAMESPACE
 
 	}
 
-	NodeTypeID NodeTypeManager::Register(NodeType&& aNodeType)
+	NodeTypeID NodeTypeManager::Register(NodeType aNodeType)
 	{
 		NodeTypeID id{ mNodeTypes.size() };
 		mNodeTypes.emplace_back(std::move(aNodeType));

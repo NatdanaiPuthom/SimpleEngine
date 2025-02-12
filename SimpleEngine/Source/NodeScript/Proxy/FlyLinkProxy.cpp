@@ -13,6 +13,12 @@ namespace FLY_NAMESPACE
 	{
 	}
 
+	LinkProxy::LinkProxy(const LinkID aLinkID, const NodeGraphVariantHandle& aNodeGraphVariant)
+		: mLinkID(aLinkID)
+		, mNodeGraphVariant(aNodeGraphVariant)
+	{
+	}
+
 	bool LinkProxy::IsDestroyed() const
 	{
 		return GetLink().mIsDestroyed;

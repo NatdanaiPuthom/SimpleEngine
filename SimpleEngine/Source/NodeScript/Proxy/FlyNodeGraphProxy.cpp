@@ -30,45 +30,45 @@ namespace FLY_NAMESPACE
 	{
 	}
 
-	std::vector<NodeProxy> NodeGraphProxy::GetNodeProxys(const bool aIncludeDestroyed) const
+	static auto FindFirstNonDestroyed(const auto& aList)
 	{
-		const std::vector<Node>& nodes = GetNodeGraph().mNodes;
-
-		std::vector<NodeProxy> nodeProxys;
-		nodeProxys.reserve(nodes.size());
-
-		for (NodeID nodeID{ 0 }; nodeID < nodes.size(); ++nodeID)
-		{
-			NodeProxy nodeProxy(nodeID, *this);
-			if (!aIncludeDestroyed && nodeProxy.IsDestroyed())
+		auto it = std::find_if(begin(aList), end(aList), [](const auto& aElement) -> bool
 			{
-				continue;
-			}
-			nodeProxys.push_back(nodeProxy);
-		}
-
-		return nodeProxys;
+				return !aElement.mIsDestroyed;
+			});
+		return std::distance(begin(aList), it);
 	}
 
-	std::vector<PinProxy> NodeGraphProxy::GetPinProxys(const bool aIncludeDestroyed) const
+	NodeProxyIteratorService NodeGraphProxy::IterateNodes(const bool aIncludeDestroyed) const
 	{
-		const std::vector<Pin>& pins = GetNodeGraph().mPins;
-
-		std::vector<PinProxy> pinProxys;
-		pinProxys.reserve(pins.size());
-
-		for (PinID pinID{ 0 }; pinID < pins.size(); ++pinID)
-		{
-			PinProxy pinProxy(pinID, *this);
-			NodeProxy nodeProxy(pinProxy.GetNodeID(), *this);
-			if (!aIncludeDestroyed && nodeProxy.IsDestroyed())
+		return NodeProxyIteratorService(mNodeGraphVariant, aIncludeDestroyed, [](const NodeGraphVariantHandle& aNodeGraphVariantHandle) -> NodeID
 			{
-				continue;
-			}
-			pinProxys.push_back(pinProxy);
-		}
+				const NodeGraph& nodeGraph = Internal::GetNodeGraph(aNodeGraphVariantHandle);
 
-		return pinProxys;
+				return NodeID{ static_cast<NodeID::id_type>(FindFirstNonDestroyed(nodeGraph.mNodes)) };
+			},
+			[](const NodeGraphVariantHandle& aNodeGraphVariantHandle) -> NodeID
+			{
+				const NodeGraph& nodeGraph = Internal::GetNodeGraph(aNodeGraphVariantHandle);
+				return NodeID{ static_cast<NodeID::id_type>(nodeGraph.mNodes.size()) };
+			}
+		);
+	}
+
+	LinkProxyIteratorService NodeGraphProxy::IterateLinks(const bool aIncludeDestroyed) const
+	{
+		return LinkProxyIteratorService(mNodeGraphVariant, aIncludeDestroyed, [](const NodeGraphVariantHandle& aNodeGraphVariantHandle) -> LinkID
+			{
+				const NodeGraph& nodeGraph = Internal::GetNodeGraph(aNodeGraphVariantHandle);
+
+				return LinkID{ static_cast<LinkID::id_type>(FindFirstNonDestroyed(nodeGraph.mLinks)) };
+			},
+			[](const NodeGraphVariantHandle& aNodeGraphVariantHandle) -> LinkID
+			{
+				const NodeGraph& nodeGraph = Internal::GetNodeGraph(aNodeGraphVariantHandle);
+				return LinkID{ static_cast<LinkID::id_type>(nodeGraph.mLinks.size()) };
+			}
+		);
 	}
 
 	NodeGraph& NodeGraphProxy::GetNodeGraph()
@@ -175,27 +175,6 @@ namespace FLY_NAMESPACE
 			},
 			*this
 		);
-	}
-
-
-	std::vector<LinkProxy> NodeGraphProxy::GetLinks(const bool aIncludeDestroyed) const
-	{
-		const std::vector<Link>& links = GetNodeGraph().mLinks;
-		std::vector<LinkProxy> linkProxys;
-		linkProxys.reserve(links.size());
-
-		for (LinkID linkID{ 0 }; linkID < links.size(); linkID++)
-		{
-			const Link& link = links[linkID];
-			if (!aIncludeDestroyed && link.mIsDestroyed)
-			{
-				continue;
-			}
-
-			linkProxys.emplace_back(linkID, *this);
-		}
-
-		return linkProxys;
 	}
 
 	NodeProxy NodeGraphProxy::CreateNode(const NodeTypeProxy& aNodeTypeProxy, const Vec2 aPosition, CommandTracker* const aCommandTracker)

@@ -40,34 +40,51 @@ namespace ECS
 
 		template<typename T>
 		void PrintMemoryPoolMemoryStateOfType() const;
+
 	public:
 		void AddClonedSystem(const size_t aSystemHashCode, std::unique_ptr<System> aSystem);
-	public:
-		ECS::Entity& CreateEntity(const EntityID aEntityID = 0);
+	public: 
+		EntityID CreateEntity(const EntityID aEntityID = 0);
 	public:
 		bool RemoveEntity(const EntityID aEntityID);
 	public:
 		EntityManager* GetEntityManager();
+
+		//NOTE(v12.0.0): Careful when using this function as the Entity itself may get reallocated elsewhere.
+		//NOTE(v12.0.0): If CreateEntity are getting called, this possibly may be invalid, especially in threaded enviroment.
 		ECS::Entity& GetEntity(const EntityID aID);
+
 		std::vector<ECS::Entity>& GetAllEntities();
 		void* GetComponentPointerByComponentID(const ComponentID aComponentID);
 
 		template<typename T>
-		T* GetComponent(EntityID aEntityID)
-		{
-			return myEntityManager.GetComponent<T>(aEntityID);
-		}
+		std::vector<T*>& GetAllComponentsOfType();
+
+		template<typename T>
+		T* GetComponent(EntityID aEntityID);
 
 		template<typename T>
 		const std::unordered_set<EntityID>& GetEntityIDsWithThisComponent();
 	private:
 		static void EraseMissingElementFromJSON(const nlohmann::json& aJsonData, const std::string& aAbsolutePath, const size_t aEntityIndex, const size_t aComponentIndex);
-		static void LoadComponentData(nlohmann::json& aPropertiesJSON, const std::vector<ComponentProperty>& aComponentProperties,const ComponentRegistry* aComponentRegistry, void* aComponentPointer);
+		static void LoadComponentData(nlohmann::json& aPropertiesJSON, const std::vector<ComponentProperty>& aComponentProperties, const ComponentRegistry* aComponentRegistry, void* aComponentPointer);
 	private:
 		EntityManager myEntityManager;
 		ComponentManager myComponentManager;
 		SystemManager mySystemManager;
 	};
+
+	template<typename T>
+	inline std::vector<T*>& EntityComponentSystem::GetAllComponentsOfType()
+	{
+		return *myComponentManager.GetAllComponentsOfType<T>();
+	}
+
+	template<typename T>
+	inline T* EntityComponentSystem::GetComponent(EntityID aEntityID)
+	{
+		return myEntityManager.GetComponent<T>(aEntityID);
+	}
 
 	template<typename T>
 	inline const std::unordered_set<EntityID>& EntityComponentSystem::GetEntityIDsWithThisComponent()

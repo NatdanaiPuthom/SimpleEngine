@@ -64,7 +64,7 @@ namespace FLY_NAMESPACE
 
 	void FunctionProxy::AddPin(GenericDataTypeProxy aDataTypeProxy, eFlowType aFlowType, std::string_view aName, CommandTracker* aCommandTracker)
 	{
-		Internal::AddPinToFunction(mFunctionID, aDataTypeProxy.GetID(), aFlowType, aName, aCommandTracker); 
+		Internal::AddPinTypeToFunction(mFunctionID, aDataTypeProxy.GetID(), aFlowType, aName, aCommandTracker); 
 	}
 
 	void FunctionProxy::SetPinNameAtIndex(std::string_view aName, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker)

@@ -21,7 +21,7 @@ namespace FLY_NAMESPACE
 		NodeTypeManager();
 		~NodeTypeManager();
 
-		NodeTypeID Register(NodeType&& aNodeType);
+		NodeTypeID Register(NodeType aNodeType);
 
 		void SetGetterNodeTypeID(DataTypeID aDataTypeID, NodeTypeID aNodeTypeID);
 		void SetSetterNodeTypeID(DataTypeID aDataTypeID, NodeTypeID aNodeTypeID);

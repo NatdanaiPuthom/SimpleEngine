@@ -33,7 +33,7 @@ namespace FLY_NAMESPACE
 
 	void CustomEventProxy::AddPin(GenericDataTypeProxy aDataTypeProxy, std::string_view aName, CommandTracker* aCommandTracker)
 	{
-		Internal::AddPinToCustomEvent(GetID(), aDataTypeProxy.GetID(), aName, aCommandTracker);
+		Internal::AddPinTypeToCustomEvent(GetID(), aDataTypeProxy.GetID(), aName, aCommandTracker);
 	}
 
 	void CustomEventProxy::SetPinNameAtIndex(std::string_view aName, size_t aIndex, CommandTracker* aCommandTracker)

@@ -6,10 +6,9 @@
 
 namespace Editor
 {
-
 	void TransformEntityTool::Render()
 	{
-		if (EditorEngine::mySelectedEntityID == GetInvalidIndex<ECS::EntityID>()) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
+		if (EditorProxy::GetSelectedEntityID() == GetInvalidIndex<ECS::EntityID>()) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
 		{
 			return;
 		}
@@ -20,7 +19,7 @@ namespace Editor
 		ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
 		ImGuizmo::SetRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
 
-		ECS::EntityID selectedEntityID = EditorEngine::mySelectedEntityID;
+		ECS::EntityID selectedEntityID = EditorProxy::GetSelectedEntityID();
 		ECS::Entity& selectedEntity = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(selectedEntityID);
 		ECS::TransformComponent* transformComponent = selectedEntity.GetComponent<ECS::TransformComponent>();
 
@@ -53,11 +52,14 @@ namespace Editor
 			}
 		}
 
+		const float snapValue = myUseSnap ? mySnapValue : 0.f;
+		const Math::Vector3f gridSnapValues(snapValue, snapValue, snapValue);
+
 		const bool isManipulatingEntityTransform = ImGuizmo::Manipulate(&view(1, 1),
 			&proj(1, 1),
 			operation,
 			ImGuizmo::MODE::WORLD,
-			&objectMatrix(1, 1)
+			&objectMatrix(1, 1), nullptr, &gridSnapValues.x
 		);
 
 		if (isManipulatingEntityTransform && inputManager.IsKeyDown(VK_LBUTTON) && !myIsDraggingEntity)

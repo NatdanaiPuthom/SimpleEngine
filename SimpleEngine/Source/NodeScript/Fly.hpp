@@ -14,9 +14,9 @@
 #include "Proxy/FlyGenericDataTypeProxy.hpp"
 #include "Proxy/FlyNodeGraphProxy.hpp"
 #include "Proxy/FlyClassInstanceProxy.hpp"
+#include "Proxy/FlyProxy.hpp"
 #include "SystemTypes/FlyNone.hpp"
 #include "SystemTypes/FlyWildcard.hpp"
-#include "Proxy/FlyProxy.hpp"
 #include <unordered_map>
 
 namespace FLY_NAMESPACE

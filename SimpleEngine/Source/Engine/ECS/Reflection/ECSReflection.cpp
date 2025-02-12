@@ -56,12 +56,27 @@ namespace ECS
 		myTypeErasureComponents.at(aHashCode).Destroy(aDataPtr);
 	}
 
+	void ComponentRegistry::DeleteComponentVector(ComponentHashCode aHashCode, void* aDataPtr) const
+	{
+		myTypeErasureComponents.at(aHashCode).DeleteComponentVector(aDataPtr);
+	}
+
+	void ComponentRegistry::SwapWithLastAndPop(ComponentHashCode aHashCode, void* aVectorPtr, void* aComponentPtr, const size_t aIndex) const
+	{
+		myTypeErasureComponents.at(aHashCode).SwapAndPopLastPointer(aVectorPtr, aComponentPtr, aIndex);
+	}
+
+	void ComponentRegistry::ClearComponentVector(ComponentHashCode aHashCode, void* aVectorPtr) const
+	{
+		myTypeErasureComponents.at(aHashCode).ClearComponentVectorPointer(aVectorPtr);
+	}
+
 	size_t ComponentRegistry::GetComponentSize(ComponentHashCode aHashCode) const
 	{
 		return myTypeErasureComponents.at(aHashCode).mySize;
 	}
 
-	InplaceAllocateFunction ComponentRegistry::GetInplaceAllocateFunction(ComponentHashCode aHashCode) const
+	InPlaceAllocateFunction ComponentRegistry::GetInplaceAllocateFunction(ComponentHashCode aHashCode) const
 	{
 		return myTypeErasureComponents.at(aHashCode).InplaceAllocate;
 	}

@@ -69,18 +69,16 @@ namespace Editor
 		const Fly::NodeGraphProxy& nodeGraphProxy = aNodeGraphContext.myNodeGraphProxy;
 		ImNodes::BeginNodeEditor();
 
-		const std::vector<Fly::NodeProxy> nodeProxys = nodeGraphProxy.GetNodeProxys();
-
-		for (const Fly::NodeProxy& nodeProxy : nodeProxys)
+		for (const auto& node : nodeGraphProxy.IterateNodes())
 		{
-			if (nodeProxy.IsDestroyed())
+			if (node.IsDestroyed())
 			{
 				continue;
 			}
 
 			ImNodesStyle& style = ImNodes::GetStyle();
 
-			if (nodeProxy.GetEventID() == Fly::InvalidID<Fly::EventID>())
+			if (node.GetEventID() == Fly::InvalidID<Fly::EventID>())
 			{
 				style.Colors[ImNodesCol_TitleBar] = ToImGuiColor(Fly::Color{ 0.1f, 0.3f, 0.6f, 1.f });
 				style.Colors[ImNodesCol_TitleBarHovered] = ToImGuiColor(Fly::Color{ 0.1f, 0.3f, 0.7f, 1.f });
@@ -93,10 +91,10 @@ namespace Editor
 				style.Colors[ImNodesCol_TitleBarSelected] = ToImGuiColor(Fly::Color{ 1.f, 0.1f, 0.1f, 1.f });
 			}
 
-			style.Colors[ImNodesCol_NodeOutline] = ImNodes::IsNodeSelected(nodeProxy.GetID()) ? ToImGuiColor(Fly::Color(0.8f, 0.8f, 0.8f, 1.f)) : ToImGuiColor(Fly::Color(0.f, 0.f, 0.f, 1.f));
+			style.Colors[ImNodesCol_NodeOutline] = ImNodes::IsNodeSelected(node.GetID()) ? ToImGuiColor(Fly::Color(0.8f, 0.8f, 0.8f, 1.f)) : ToImGuiColor(Fly::Color(0.f, 0.f, 0.f, 1.f));
 
-			ImNodes::SetNodeGridSpacePos(nodeProxy.GetID(), ImVec2{ nodeProxy.GetPosition().x, nodeProxy.GetPosition().y });
-			ImNodes::BeginNode(nodeProxy.GetID());
+			ImNodes::SetNodeGridSpacePos(node.GetID(), ImVec2{ node.GetPosition().x, node.GetPosition().y });
+			ImNodes::BeginNode(node.GetID());
 
 			float nodeNameWidth = 0;
 
@@ -106,7 +104,7 @@ namespace Editor
 
 				std::string nodeLabel;
 
-				if (nodeProxy.IsAccessor())
+				if (node.IsAccessor())
 				{
 					/*const Fly::VariableProxy variable = nodeProxy.GetVariableProxy();
 					const bool isGetter = Fly::HasFlag(nodeProxy.GetTraits(), Fly::eNodeTrait::Getter);
@@ -115,12 +113,12 @@ namespace Editor
 				}
 				else
 				{
-					nodeLabel = nodeProxy.GetNodeType().GetShortName();
+					nodeLabel = node.GetNodeType().GetShortName();
 				}
 
 				if (Fly::IsDebugging())
 				{
-					nodeLabel += ", ID: " + std::to_string(nodeProxy.GetID());
+					nodeLabel += ", ID: " + std::to_string(node.GetID());
 				}
 				ImGui::TextUnformatted(nodeLabel.c_str());
 
@@ -131,7 +129,7 @@ namespace Editor
 
 			ImVec2 cursorPos = ImGui::GetCursorPos();
 
-			std::vector<Fly::PinProxy> inputPinProxys = nodeProxy.GetSplitInputPins();
+			std::vector<Fly::PinProxy> inputPinProxys = node.GetSplitInputPins();
 			float nodeWidthLeft = inputPinProxys.empty() ? 0.f : 100.f;
 
 			for (const Fly::PinProxy& inputPinProxy : inputPinProxys)
@@ -144,7 +142,7 @@ namespace Editor
 
 			float nodeWidthRight = 0.f;
 
-			std::vector<Fly::PinProxy> outputPins = nodeProxy.GetSplitOutputPins();
+			std::vector<Fly::PinProxy> outputPins = node.GetSplitOutputPins();
 
 			for (const Fly::PinProxy& outputPinProxy : outputPins)
 			{
@@ -255,20 +253,18 @@ namespace Editor
 			ImNodes::EndNode();
 		}
 
-		std::vector<Fly::LinkProxy> linkProxys = nodeGraphProxy.GetLinks();
-
-		for (const Fly::LinkProxy& linkProxy : linkProxys)
+		for (const Fly::LinkProxy& link : nodeGraphProxy.IterateLinks())
 		{
-			if (linkProxy.IsDestroyed())
+			if (link.IsDestroyed())
 			{
 				continue;
 			}
-			const Fly::PinProxy pinProxy = linkProxy.GetInputPin();
+			const Fly::PinProxy pinProxy = link.GetInputPin();
 			const Fly::GenericDataTypeProxy pinDataType(pinProxy.GetDataTypeID());
 
 			const Fly::Color dataTypeColor = pinDataType.GetColor();
 			Fly::Color linkColor = dataTypeColor;
-			if (std::find(aNodeGraphContext.myTraversedLinks.begin(), aNodeGraphContext.myTraversedLinks.end(), linkProxy) != aNodeGraphContext.myTraversedLinks.end())
+			if (std::find(aNodeGraphContext.myTraversedLinks.begin(), aNodeGraphContext.myTraversedLinks.end(), link) != aNodeGraphContext.myTraversedLinks.end())
 			{
 				linkColor = NodeGraphContext::TRAVERSED_LINK_COLOR;
 			}
@@ -276,7 +272,7 @@ namespace Editor
 			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, ToImGuiColor(linkColor - NodeGraphContext::SELECTION_TINT));
 			ImNodes::PushColorStyle(ImNodesCol_LinkHovered, ToImGuiColor(linkColor - NodeGraphContext::HOVER_TINT));
 
-			ImNodes::Link(linkProxy.GetID(), linkProxy.GetInputPin().GetID(), linkProxy.GetOutputPin().GetID());
+			ImNodes::Link(link.GetID(), link.GetInputPin().GetID(), link.GetOutputPin().GetID());
 
 			ImNodes::PopColorStyle();
 			ImNodes::PopColorStyle();
@@ -309,24 +305,22 @@ namespace Editor
 			aNodeGraphContext.myIsDraggingNode = false;
 		}
 
-		const std::vector<Fly::NodeProxy> nodeProxys = nodeGraphProxy.GetNodeProxys();
-
-		for (Fly::NodeProxy nodeProxy : nodeProxys)
+		for (Fly::NodeProxy node : nodeGraphProxy.IterateNodes())
 		{
-			if (nodeProxy.IsDestroyed())
+			if (node.IsDestroyed())
 			{
 				continue;
 			}
 
-			const Fly::Vec2 newPos = ToFlyVec2(ImNodes::GetNodeGridSpacePos(nodeProxy.GetID()));
-			Fly::Vec2 oldPos = nodeProxy.GetPosition();
-			if (dragStarted && ImNodes::IsNodeSelected(nodeProxy.GetID()))
+			const Fly::Vec2 newPos = ToFlyVec2(ImNodes::GetNodeGridSpacePos(node.GetID()));
+			Fly::Vec2 oldPos = node.GetPosition();
+			if (dragStarted && ImNodes::IsNodeSelected(node.GetID()))
 			{
-				aNodeGraphContext.myNodeDragData.emplace(nodeProxy.GetID(), Fly::NodeDragData{ .mStartPos = oldPos });
+				aNodeGraphContext.myNodeDragData.emplace(node.GetID(), Fly::NodeDragData{ .mStartPos = oldPos });
 			}
 			else if (dragEnded)
 			{
-				auto it = aNodeGraphContext.myNodeDragData.find(nodeProxy.GetID());
+				auto it = aNodeGraphContext.myNodeDragData.find(node.GetID());
 
 				if (it != aNodeGraphContext.myNodeDragData.end())
 				{
@@ -335,7 +329,7 @@ namespace Editor
 			}
 			if (newPos != oldPos)
 			{
-				nodeProxy.SetPosition(newPos);
+				node.SetPosition(newPos);
 			}
 		}
 
@@ -599,16 +593,14 @@ namespace Editor
 
 				ImGui::Text("Links:");
 
-				const std::vector<Fly::LinkProxy> linkProxys = aNodeGraphContext.myNodeGraphProxy.GetLinks();
-
-				for (const Fly::LinkProxy& linkProxy : linkProxys)
+				for (const Fly::LinkProxy& link : aNodeGraphContext.myNodeGraphProxy.IterateLinks())
 				{
-					if (linkProxy.IsDestroyed())
+					if (link.IsDestroyed())
 					{
 						continue;
 					}
 					ImGui::Separator();
-					ImGui::Text("In: %d, Out: %d", linkProxy.GetInputPin().GetID(), linkProxy.GetOutputPin().GetID());
+					ImGui::Text("In: %d, Out: %d", link.GetInputPin().GetID(), link.GetOutputPin().GetID());
 				}
 
 				ImGui::Separator();

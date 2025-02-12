@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <typeindex>
 #include <cassert>
+#include <any>
 
 namespace ECS
 {
@@ -43,6 +44,9 @@ namespace ECS
 
 		template<typename T>
 		const T* GetComponentByComponentID(const ComponentID aID) const;
+
+		template<typename T>
+		std::vector<T*>* GetAllComponentsOfType();
 	private:
 		ComponentManager();
 		~ComponentManager();
@@ -52,7 +56,7 @@ namespace ECS
 		std::unordered_map<ComponentType, std::unordered_set<EntityID>> myComponentTypeToEntityIDs;
 		std::unordered_map<ComponentID, ComponentType> myComponentIDToComponentTypeMap;
 		size_t myCurrentComponentID;
-		char myPadding[8] = "Believ\0";
+		int myPadding[14] = { -1 };
 	};
 
 	template<typename T>
@@ -66,13 +70,17 @@ namespace ECS
 	{
 		myCurrentComponentID++;
 
-		if (!myComponents.contains(typeid(T)))
+		const size_t hashCode = typeid(T).hash_code();
+
+		if (myComponents.contains(typeid(T)) == false)
 		{
 			const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
-			myComponents.emplace(typeid(T), ComponentPool(16, componentName));
+
+			myComponents.emplace(typeid(T), ComponentPool(sizeof(T), hashCode, 16, componentName));
+			myComponents.at(typeid(T)).ConstructComponentVector<T>();
 		}
 
-		myComponents[typeid(T)].CreateComponent<T>(myCurrentComponentID, aComponent);
+		myComponents.at(typeid(T)).CreateComponent<T>(myCurrentComponentID, aComponent);
 
 		myComponentTypeToEntityIDs[typeid(T)].insert(aEntityID);
 		myComponentIDToComponentTypeMap.emplace(myCurrentComponentID, typeid(T));
@@ -122,5 +130,18 @@ namespace ECS
 		}
 
 		return nullptr;
+	}
+
+	template<typename T>
+	inline std::vector<T*>* ComponentManager::GetAllComponentsOfType()
+	{
+		if (myComponents.contains(typeid(T)) == false)
+		{
+			const std::string componentName = SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
+			myComponents.emplace(typeid(T), ComponentPool(sizeof(T), typeid(T).hash_code(), 16, componentName));
+			myComponents.at(typeid(T)).ConstructComponentVector<T>();
+		}
+
+		return myComponents.at(typeid(T)).GetAllComponentsOfType<T>();
 	}
 }

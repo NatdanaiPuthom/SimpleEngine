@@ -14,10 +14,12 @@ class MainSingleton;
 
 namespace ECS
 {
-	using InplaceAllocateFunction = void(*)(void* aData, const void* aDefaultValuePtr);
+	using InPlaceAllocateFunction = void(*)(void* aData, const void* aDefaultValuePtr);
 	using DestroyFunction = void(*)(void* aData);
 	using CopyFunction = void (*)(void* aDestination, const void* aSource);
 	using SwapFunction = void (*)(void* aDataPtr1, void* aDataPtr2);
+	using SwapAndPopLastFunction = void(*)(void* aVectorPtr, void* aComponentPtr, size_t aIndex);
+	using ClearComponentVectorFunction = void(*)(void* aVectorPtr);
 	using ComponentHashCode = size_t;
 }
 
@@ -71,8 +73,11 @@ namespace ECS
 		nlohmann::json(*GetDataAsJSON)(void* aData, const std::string& aVariableName) = nullptr;
 		bool (*LoadDataFromJSON)(void* aData, const std::string& aVariableName, const nlohmann::json& aJSONData) = nullptr;
 
-		InplaceAllocateFunction InplaceAllocate = nullptr;
+		InPlaceAllocateFunction InplaceAllocate = nullptr;
 		DestroyFunction Destroy = nullptr;
+		DestroyFunction DeleteComponentVector = nullptr;
+		SwapAndPopLastFunction SwapAndPopLastPointer = nullptr;
+		ClearComponentVectorFunction ClearComponentVectorPointer = nullptr;
 		CopyFunction CopyFunctionPointer = nullptr;
 		SwapFunction SwapFunctionPointer = nullptr;
 
@@ -107,10 +112,13 @@ namespace ECS
 		void CopyComponent(ComponentHashCode aHashCode, void* aDestination, const void* aSource) const;
 		void SwapComponent(ComponentHashCode aHashCode, void* aDataPtr1, void* aDataPtr2) const;
 		void DestroyComponent(ComponentHashCode aHashCode, void* aDataPtr) const;
+		void DeleteComponentVector(ComponentHashCode aHashCode, void* aDataPtr) const;
+		void SwapWithLastAndPop(ComponentHashCode aHashCode, void* aVectorPtr, void* aComponentPtr, const size_t aIndex) const;
+		void ClearComponentVector(ComponentHashCode aHashCode, void* aVectorPtr) const;
 
 	public:
 		size_t GetComponentSize(ComponentHashCode aHashCode) const;
-		InplaceAllocateFunction GetInplaceAllocateFunction(ComponentHashCode aHashCode) const;
+		InPlaceAllocateFunction GetInplaceAllocateFunction(ComponentHashCode aHashCode) const;
 		DestroyFunction GetDestroyFunction(ComponentHashCode aHashCode) const;
 		CopyFunction GetCopyFunction(ComponentHashCode aHashCode) const;
 	private:
@@ -184,6 +192,25 @@ namespace ECS
 			{
 				T& value = *reinterpret_cast<T*>(aDataPtr);
 				value.~T();
+			};
+
+		typeErasureComponent.DeleteComponentVector = [](void* aDataPtr) -> void
+			{
+				std::vector<T*>* originalVector = reinterpret_cast<std::vector<T*>*>(aDataPtr);
+				delete originalVector;
+			};
+
+		typeErasureComponent.SwapAndPopLastPointer = [](void* aVectorPtr, void* aComponentPtr, size_t aIndex) -> void
+			{
+				std::vector<T*>* originalVector = reinterpret_cast<std::vector<T*>*>(aVectorPtr);
+				(*originalVector)[aIndex] = reinterpret_cast<T*>(aComponentPtr);
+				originalVector->pop_back();
+			};
+
+		typeErasureComponent.ClearComponentVectorPointer = [](void* aVectorPtr) -> void
+			{
+				std::vector<T*>* originalVector = reinterpret_cast<std::vector<T*>*>(aVectorPtr);
+				originalVector->clear();
 			};
 
 		typeErasureComponent.CopyFunctionPointer = [](void* aDestination, const void* aSource) -> void

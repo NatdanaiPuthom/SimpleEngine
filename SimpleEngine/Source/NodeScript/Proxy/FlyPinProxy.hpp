@@ -16,7 +16,8 @@ namespace FLY_NAMESPACE
 	public:
 
 		PinProxy() = default;
-		PinProxy(PinID aPinID, const NodeGraphProxy& aNodeGraphFacade);
+		PinProxy(PinID aPinID, const NodeGraphProxy& aNodeGraphProxy);
+		PinProxy(PinID aPinID, const NodeGraphVariantHandle& aNodeGraphVariantHandle);
 
 		[[nodiscard]] const std::vector<PinID>& GetConnectedPinIDs() const;
 		[[nodiscard]] GenericDataTypeID GetDataTypeID() const;
@@ -34,7 +35,6 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] bool IsSplitable() const;
 		[[nodiscard]] bool IsRecombinable() const;
 		[[nodiscard]] std::vector<PinProxy> GetPotentialConnections() const;
-		//[[nodiscard]] std::vector<PinFacade> GetSplitPins() const;
 
 		[[nodiscard]] NodeGraphVariantHandle GetNodeGraphVariant() const;
 

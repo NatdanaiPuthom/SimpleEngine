@@ -20,14 +20,19 @@ namespace ECS
 		, myComponentIDToComponentTypeMap(aOther.myComponentIDToComponentTypeMap)
 		, myCurrentComponentID(aOther.myCurrentComponentID)
 	{
-		strcpy_s(myPadding, aOther.myPadding);
+		std::memcpy(myPadding, aOther.myPadding, sizeof(myPadding));
 	}
 
 	bool ComponentManager::RemoveComponentByTypeIndex(const ComponentType& aComponentType, const EntityID aEntityID, const ComponentID aComponentID)
 	{
-		ComponentPool& pool = myComponents[aComponentType];
+		if (myComponents.contains(aComponentType) == false)
+		{
+			return false;
+		}
 
-		myComponentTypeToEntityIDs[aComponentType].erase(aEntityID);
+		ComponentPool& pool = myComponents.at(aComponentType);
+
+		myComponentTypeToEntityIDs.at(aComponentType).erase(aEntityID);
 		myComponentIDToComponentTypeMap.erase(aComponentID);
 
 		return pool.SwapWithLastComponentAndRemove(aComponentID, aComponentType);

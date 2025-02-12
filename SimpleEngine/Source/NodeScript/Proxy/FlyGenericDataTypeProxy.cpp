@@ -106,7 +106,7 @@ namespace FLY_NAMESPACE
 
 	VariableProxy GenericDataTypeProxy::CreateMemberVariable(GenericDataTypeProxy aDataTypeProxy, std::string_view aName, CommandTracker* const aCommandTracker)
 	{
-		VariableContainer& varContainer = std::visit(Visitor{
+		/*VariableContainer& varContainer = std::visit(Visitor{
 			[](const DataTypeID aDataTypeID) -> VariableContainer&
 			{
 				return Internal::GetDataTypeManager().Find(aDataTypeID)->mVariableContainer;
@@ -115,8 +115,8 @@ namespace FLY_NAMESPACE
 			{
 				return Internal::GetDataTypeManager().Find(aClassID)->mVariableContainer;
 			}
-			}, mDataTypeID.mID);
-		VarID varID = Internal::CreateVariable(varContainer, aDataTypeProxy.GetID(), aName, aCommandTracker);
+			}, mDataTypeID.mID);*/
+		VarID varID = Internal::CreateVariable(GetID(), aDataTypeProxy.GetID(), aName, aCommandTracker);
 		return VariableProxy(varID, *this);
 	}
 
