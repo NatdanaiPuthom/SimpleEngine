@@ -13,11 +13,12 @@ namespace Simple
 		std::unordered_map<size_t, TypeErasureComponentObject> myTypeErasureComponents;
 		std::unordered_map<std::string, size_t> myComponentNameToHashCode;
 	public:
+
 		static ComponentRegistry* GetInstance()
 		{
 			if (myInstance == nullptr)
 			{
-				myInstance = new ComponentRegistry();
+				myInstance = new ComponentRegistry(); //NOTE: We need to create a new instance from GetInstance because we cannot guarantee the order of Initialization of inline variables
 			}
 
 			return myInstance;
@@ -37,7 +38,7 @@ namespace Simple
 		{
 			const size_t hashCode = typeid(T).hash_code();
 
-			if (myTypeErasureComponents.contains(hashCode))
+			if (myTypeErasureComponents.contains(hashCode) && myTypeErasureComponents.at(hashCode).isAdded == true)
 			{
 				throw std::runtime_error("Component with hash code " + std::to_string(hashCode) + " already exists");
 			}
@@ -57,7 +58,7 @@ namespace Simple
 		{
 			const size_t hashCode = typeid(Component).hash_code();
 
-			if (myTypeErasureComponents.contains(hashCode) == false)
+			if (myTypeErasureComponents.contains(hashCode) == false && myTypeErasureComponents.at(hashCode).isAdded == false)
 			{
 				RegisterComponentType<Component>();
 			}
