@@ -17,7 +17,11 @@ namespace Editor
 
 		void Execute() const
 		{
+			const size_t entityIDToRemove = (*myEntityIDs)[myHierarchyIndex];
 			myEntityIDs->erase(begin(*myEntityIDs) + myHierarchyIndex);
+
+			ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
+			ecs.RemoveEntity(entityIDToRemove);
 		}
 
 		void Undo() const
@@ -334,6 +338,7 @@ namespace Editor
 		{
 			newSelectedIndex = EditorProxy::GetSelectedEntityIndex() - 1;
 		}
+
 		SelectEntity(newSelectedIndex);
 
 		if (EditorProxy::GetSelectedEntityIndex() < 0 && visibleEntityIDs.size() > 0)
@@ -355,7 +360,7 @@ namespace Editor
 		{
 			return nullptr;
 		}
-		
+
 		const std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDsRef();
 
 		return &MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(visibleEntityIDs[EditorProxy::GetSelectedEntityIndex()]);
