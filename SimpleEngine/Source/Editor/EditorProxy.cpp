@@ -51,7 +51,7 @@ namespace Editor
 		return myEditorEngine->GetEditorECS();
 	}
 
-	std::vector<size_t>& EditorProxy::GetVisibleEntityIDs()
+	std::vector<size_t>& EditorProxy::GetVisibleEntityIDsRef()
 	{
 		return myVisibleEntityIDs;
 	}

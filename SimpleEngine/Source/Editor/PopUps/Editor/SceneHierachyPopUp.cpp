@@ -60,7 +60,7 @@ namespace Editor
 		ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
 		ECS::EntityComponentSystem& editorECS = EditorProxy::GetEditorECS();
 
-		std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDs();
+		std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDsRef();
 
 		if (ImGui::Begin(myImGuiName.c_str(), &myIsActive))
 		{
@@ -155,7 +155,7 @@ namespace Editor
 		static const std::string addButton = "Add" + myImGuiTag;
 		static const std::string addSceneObjectButton = "Add Scene Object" + myImGuiTag;
 
-		std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDs();
+		std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDsRef();
 
 		if (ImGui::Button(addButton.c_str()))
 		{
@@ -234,7 +234,7 @@ namespace Editor
 		static const std::string entityPropertyPopUp = "Entity Property" + myImGuiTag;
 		static const std::string removeItem = "Remove" + myImGuiTag;
 
-		std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDs();
+		std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDsRef();
 
 		const ImVec2 parentSize = ImGui::GetContentRegionAvail();
 
@@ -291,8 +291,8 @@ namespace Editor
 		ECS::EntityID entityID = MainSingleton::GetSceneManager().GetCurrentECS().CreateEntity();
 
 		CreateEntityCommand createEntityCommand;
-		createEntityCommand.myHierarchyIndex = EditorProxy::GetVisibleEntityIDs().size();
-		createEntityCommand.myEntityIDs = &EditorProxy::GetVisibleEntityIDs();
+		createEntityCommand.myHierarchyIndex = EditorProxy::GetVisibleEntityIDsRef().size();
+		createEntityCommand.myEntityIDs = &EditorProxy::GetVisibleEntityIDsRef();
 		createEntityCommand.myEntityID = entityID;
 
 		myCommandTracker->ExecuteCommand(Command(createEntityCommand, "Create Entity"));
@@ -317,7 +317,7 @@ namespace Editor
 
 	void SceneHierachyPopUp::RemoveEntity(size_t aEntityIndex)
 	{
-		std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDs();
+		std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDsRef();
 
 		RemoveEntityCommand removeEntityCommand;
 		removeEntityCommand.myHierarchyIndex = aEntityIndex;
@@ -356,7 +356,7 @@ namespace Editor
 			return nullptr;
 		}
 		
-		const std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDs();
+		const std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDsRef();
 
 		return &MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(visibleEntityIDs[EditorProxy::GetSelectedEntityIndex()]);
 	}

@@ -2,6 +2,7 @@
 #include "Engine/Debugger/Console/Console.hpp"
 #include "Engine/SimpleUtilities/FileManager/FileManager.hpp"
 #include "MainSingleton/MainSingleton.hpp"
+#include "EditorProxy.hpp"
 #include <functional>
 #include <fstream>
 
@@ -10,6 +11,22 @@ namespace Editor
 	class SceneSettingsFunction
 	{
 	public:
+		static void UpdateVisibleEntityIDs()
+		{
+			ECS::EntityComponentSystem& activeECS = MainSingleton::GetSceneManager().GetCurrentECS();
+			std::vector<ECS::Entity>& entities = activeECS.GetAllEntities();
+
+			std::vector<size_t>& entityIDs = EditorProxy::GetVisibleEntityIDsRef();
+
+			entityIDs.clear();
+			entityIDs.resize(entities.size());
+
+			for (size_t i = 0; i < entityIDs.size(); i++)
+			{
+				entityIDs[i] = entities[i].GetID();
+			}
+		}
+
 		static std::function<void()> Save()
 		{
 			return []() -> void
@@ -33,6 +50,8 @@ namespace Editor
 					Simple::Console::Print("Loaded scene ", Simple::ConsoleTextColor::White, false);
 					Simple::Console::Print(aString.c_str(), Simple::ConsoleTextColor::Green, false);
 					Simple::Console::Print("!", Simple::ConsoleTextColor::White, true);
+
+					SceneSettingsFunction::UpdateVisibleEntityIDs();
 				};
 		}
 
@@ -51,6 +70,8 @@ namespace Editor
 					Simple::Console::Print("New scene ", Simple::ConsoleTextColor::White, false);
 					Simple::Console::Print(sceneManager.GetCurrentSceneInfo()->name.c_str(), Simple::ConsoleTextColor::Green, false);
 					Simple::Console::Print(" has been created!", Simple::ConsoleTextColor::White, true);
+
+					SceneSettingsFunction::UpdateVisibleEntityIDs();
 				};
 		}
 
@@ -71,6 +92,8 @@ namespace Editor
 					Simple::Console::Print("New scene ", Simple::ConsoleTextColor::White, false);
 					Simple::Console::Print(sceneManager.GetCurrentSceneInfo()->name.c_str(), Simple::ConsoleTextColor::Green, false);
 					Simple::Console::Print(" has been created!", Simple::ConsoleTextColor::White, true);
+
+					SceneSettingsFunction::UpdateVisibleEntityIDs();
 				};
 		}
 
@@ -84,6 +107,8 @@ namespace Editor
 					Simple::Console::Print("Scene ", Simple::ConsoleTextColor::White, false);
 					Simple::Console::Print(sceneManager.GetCurrentSceneInfo()->name.c_str(), Simple::ConsoleTextColor::Green, false);
 					Simple::Console::Print(" has been reloaded!", Simple::ConsoleTextColor::White, true);
+
+					SceneSettingsFunction::UpdateVisibleEntityIDs();
 				};
 		}
 

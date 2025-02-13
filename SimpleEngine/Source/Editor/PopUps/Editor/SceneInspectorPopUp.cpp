@@ -50,7 +50,7 @@ namespace Editor
 	{
 		if (ImGui::Begin(myImGuiName.c_str(), &myIsActive))
 		{
-			std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDs();
+			std::vector<size_t>& visibleEntityIDs = EditorProxy::GetVisibleEntityIDsRef();
 			ECS::EntityComponentSystem& ecs = MainSingleton::GetSceneManager().GetCurrentECS();
 
 			if (visibleEntityIDs.empty() == true)
