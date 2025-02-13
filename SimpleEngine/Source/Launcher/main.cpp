@@ -1,11 +1,5 @@
 #define WIN32_LEAN_AND_MEAN //NOTE(v11.2.1): Fuck you Microsoft
 
-<<<<<<< HEAD
-//This should conflic. I will make this conflicccc
-=======
-//This should conflic. Lets merge it next
->>>>>>> ee6a9b3debcec7dd49c835bf80bfd27331fba0b2
-
 #include "Engine/Debugger/MemoryTracker/MemoryTracker.h"
 #include "Engine/Engine.hpp"
 #include "Engine/ECS/ECS.hpp"
