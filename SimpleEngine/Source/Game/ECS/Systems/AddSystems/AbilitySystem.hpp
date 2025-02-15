@@ -3,6 +3,7 @@
 
 namespace ECS
 {
+	struct AbilitComponent;
 	class AbilitySystem final : public ECS::System
 	{
 	public:
@@ -16,6 +17,12 @@ namespace ECS
 		void EarlyUpdate(EntityComponentSystem* aEntityComponentSystem) override;
 		void FixedUpdate(EntityComponentSystem* aEntityComponentSystem) override;
 		void LateUpdate(EntityComponentSystem* aEntityComponentSystem) override;
+
+		std::unordered_map<EntityID, std::vector<AbilitComponent>> EntitysAbilities;
+
+		AbilitComponent CreatAbility(std::string aName, int aManaCost, int aKey/*, EntityID aEntityID*/, void (*aExecute)(void));
+
+		bool oneTime = true;
 
 		virtual std::unique_ptr<System> Clone() const override;
 	};
