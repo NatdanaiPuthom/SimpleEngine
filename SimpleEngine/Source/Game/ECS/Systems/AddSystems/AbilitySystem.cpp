@@ -13,9 +13,11 @@ namespace ECS
 	AbilitySystem::AbilitySystem()
 	{
 	}
+
 	AbilitySystem::~AbilitySystem()
 	{
 	}
+
 	void AbilitySystem::Init(EntityComponentSystem* aEntityComponentSystem)
 	{
 		const std::unordered_set<EntityID>& statsEntities = aEntityComponentSystem->GetEntityIDsWithThisComponent<StatsComponent>();
@@ -26,16 +28,16 @@ namespace ECS
 			return;
 		}
 
+		constexpr int keyH = 0x48;
+		constexpr int manaCost = 40;
+
 		for (auto entityID : statsEntities)
 		{
-			/*Entity& entity = aEntityComponentSystem->GetEntity(entityID);*/
-
-			//H key = 0x48
-			//entity.AddComponent<AbilitComponent>(CreatAbility("Fire",40,0x48,FireAbility));
+			/*Entity& entity = aEntityComponentSystem->GetEntity(entityID);
+			entity.AddComponent<AbilitComponent>(CreatAbility("Fire",40,0x48,FireAbility));*/
 
 			std::vector<ECS::AbilitComponent> newAbilities;
-
-			newAbilities.push_back(CreatAbility("Fire", 40, 0x48, FireAbility));
+			newAbilities.push_back(CreatAbility("Fire", manaCost, keyH, FireAbility));
 
 			EntitysAbilities[entityID] = newAbilities;
 		}
@@ -55,7 +57,7 @@ namespace ECS
 
 			for (AbilitComponent& ability : abilities)
 			{
-				if (GetAsyncKeyState(ability.key) & 0x0001)
+				if (MainSingleton::GetInputManager().IsKeyPressed(ability.key))
 				{
 					if (statsComponent->currentMana >= ability.manaCost)
 					{
@@ -67,22 +69,25 @@ namespace ECS
 			}
 		}
 	}
+
 	void AbilitySystem::Render(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
-
 	}
+
 	void AbilitySystem::EarlyUpdate(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 	}
+
 	void AbilitySystem::FixedUpdate(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 	}
+
 	void AbilitySystem::LateUpdate(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 	}
+
 	AbilitComponent AbilitySystem::CreatAbility(std::string aName, int aManaCost, int aKey/*, EntityID aEntityID*/, void (*aExecute)(void))
 	{
-
 		AbilitComponent newAbilityComponent;
 
 		newAbilityComponent.name = aName;
@@ -98,4 +103,3 @@ namespace ECS
 		return std::make_unique<AbilitySystem>(*this);
 	}
 }
-

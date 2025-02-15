@@ -14,8 +14,25 @@ namespace ECS
 	{
 	}
 	void StatsSystem::Update(EntityComponentSystem* aEntityComponentSystem)
-	{
-		const std::unordered_set<EntityID>& statsEntities = aEntityComponentSystem->GetEntityIDsWithThisComponent<StatsComponent>();
+	{	
+		std::vector<StatsComponent*>& statComponents = aEntityComponentSystem->GetAllComponentsOfType<StatsComponent>();
+
+		const float deltaTime = Global::GetDeltaTime();
+
+		for (size_t i = 0; i < statComponents.size(); ++i)
+		{
+			if (statComponents[i]->currentMana < statComponents[i]->maxMana)
+			{
+				statComponents[i]->currentMana += statComponents[i]->manaPerSec * deltaTime;
+
+				if (statComponents[i]->currentMana >= statComponents[i]->maxMana)
+				{
+					statComponents[i]->currentMana = statComponents[i]->maxMana;
+				}
+			}
+		}
+
+		/*const std::unordered_set<EntityID>& statsEntities = aEntityComponentSystem->GetEntityIDsWithThisComponent<StatsComponent>();
 
 		for (auto entityID : statsEntities)
 		{
@@ -33,8 +50,9 @@ namespace ECS
 					statsComponent->currentMana = statsComponent->maxMana;
 				}
 			}
-		}
+		}*/
 	}
+
 	void StatsSystem::Render(EntityComponentSystem* aEntityComponentSystem)
 	{
 		const std::unordered_set<EntityID>& statsEntities = aEntityComponentSystem->GetEntityIDsWithThisComponent<StatsComponent>();
@@ -47,15 +65,19 @@ namespace ECS
 			std::cout << "\nID: " + std::to_string(entityID) + " Mana: " + std::to_string(statsComponent->currentMana) << std::endl;
 		}
 	}
+
 	void StatsSystem::EarlyUpdate(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 	}
+
 	void StatsSystem::FixedUpdate(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 	}
+
 	void StatsSystem::LateUpdate(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
 	}
+
 	std::unique_ptr<System> StatsSystem::Clone() const
 	{
 		return std::make_unique<StatsSystem>(*this);
