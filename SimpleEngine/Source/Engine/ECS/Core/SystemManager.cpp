@@ -87,6 +87,14 @@ namespace ECS
 		}
 	}
 
+	void SystemManager::EarlyRender(EntityComponentSystem* aEntityComponentSystem)
+	{
+		for (const auto& [key, system] : mySystems)
+		{
+			system->EarlyRender(aEntityComponentSystem);
+		}
+	}
+
 	void SystemManager::LateRender(EntityComponentSystem* aEntityComponentSystem)
 	{
 		for (const auto& [key, system] : mySystems)

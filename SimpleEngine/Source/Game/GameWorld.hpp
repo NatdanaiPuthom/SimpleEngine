@@ -9,11 +9,13 @@ namespace Simple
 		~GameWorld();
 
 		void Init();
-		void Update();
+
+		void EarlyRender();
 		void Render();
 		void LateRender();
 
 		void EarlyUpdate();
+		void Update();
 		void LateUpdate();
 		void FixedUpdate();
 

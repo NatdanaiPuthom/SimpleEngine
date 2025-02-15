@@ -116,6 +116,7 @@ static void Run(HINSTANCE& hInstance, int nCmdShow)
 
 		PROFILER_BEGIN("Render To GBuffer");
 		graphicsEngine.SetRenderTarget(Graphics::eRenderTargetType::GBuffer, true);
+		gameWorld.EarlyRender();
 		gameWorld.Render();
 		gameWorld.RenderBloomEntities();
 		PROFILER_END();

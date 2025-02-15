@@ -49,6 +49,11 @@ namespace Simple
 		MainSingleton::GetSceneManager().LateUpdate();
 	}
 
+	void GameWorld::EarlyRender()
+	{
+		MainSingleton::GetSceneManager().EarlyRender();
+	}
+
 	void GameWorld::Render()
 	{
 		MainSingleton::GetSceneManager().Render();

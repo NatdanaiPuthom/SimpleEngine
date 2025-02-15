@@ -77,6 +77,11 @@ namespace ECS
 		mySystemManager.EarlyUpdate(this);
 	}
 
+	void EntityComponentSystem::EarlyRender()
+	{
+		mySystemManager.EarlyRender(this);
+	}
+
 	void EntityComponentSystem::FixedUpdate()
 	{
 		mySystemManager.FixedUpdate(this);
