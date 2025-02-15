@@ -27,7 +27,7 @@ namespace Editor
 		static void SetSelectedEntityIndexToInvalid();
 	public:
 		static ECS::EntityComponentSystem& GetEditorECS();
-		static std::vector<size_t>& GetVisibleEntityIDs();
+		static std::vector<size_t>& GetVisibleEntityIDsRef();
 		static CommandTracker& GetCommandTracker();
 		static size_t GetSelectedEntityID();
 		static size_t GetSelectedEntityIndex();
@@ -57,7 +57,7 @@ namespace Editor
 		static void SetSelectedEntityIndexToInvalid() {}
 	public:
 		static ECS::EntityComponentSystem& GetEditorECS() { static ECS::EntityComponentSystem dummyECS; return dummyECS; }
-		static std::vector<size_t>& GetVisibleEntityIDs() { static std::vector<size_t> dummyVisibleEntities; return dummyVisibleEntities; }
+		static std::vector<size_t>& GetVisibleEntityIDsRef() { static std::vector<size_t> dummyVisibleEntities; return dummyVisibleEntities; }
 		static CommandTracker& GetCommandTracker() { static CommandTracker dummyCommandTracker;	return dummyCommandTracker; }
 		static size_t GetSelectedEntityID() { return 0; }
 		static size_t GetSelectedEntityIndex() { return 0; }

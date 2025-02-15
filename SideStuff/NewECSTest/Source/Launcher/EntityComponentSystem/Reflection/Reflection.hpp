@@ -1,5 +1,6 @@
 #pragma once
 #include "ComponentRegistry.hpp"
+#include "Macros.hpp"
 
 namespace Simple
 {
@@ -12,13 +13,25 @@ namespace Simple
 			ComponentRegistry::GetInstance()->RegisterProperty(aVariable, aVariableName, aCustomName, aShouldExpose, aCanEdit);
 		}
 	};
+
+	template<typename T>
+	class __RegisterComponent final
+	{
+	public:
+		__RegisterComponent()
+		{
+			ComponentRegistry::GetInstance()->RegisterComponentType<T>();
+		}
+	};
 }
 
-#define ECS_DATATYPE_NAME(aName) #aName
-#define ECS_CONVERT_TO_STRING(aName) ECS_DATATYPE_NAME(aName)
-
-#define ECS_COMBINE_STRINGS(aPropertyName, aNumberCounter) aPropertyName##aNumberCounter
-#define ECS_UNIQUE_NAME(aPropertyName, aNumberCounter) ECS_COMBINE_STRINGS(aPropertyName, aNumberCounter)
+#define COMPONENT(ComponentType) \
+    struct ComponentType; \
+    inline static bool ComponentRegistered_##ComponentType = []() { \
+       Simple::__RegisterComponent<ComponentType> Reflection_ECS_Registered_Component_##ComponentType; \
+        return true; \
+    }(); \
+    struct ComponentType final
 
 #define REGISTER_COMPONENT_PROPERTY(aComponentName, aVariablePtr, ...) \
-	inline Simple::__RegisterComponentProperty ECS_UNIQUE_NAME(ECS_Registered_Property_, ECS_COMBINE_STRINGS(aComponentName, __COUNTER__)) (aVariablePtr, Simple::ExtractVariableNameFromDataTypeName(ECS_CONVERT_TO_STRING(aVariablePtr)), __VA_ARGS__);
+    static inline Simple::__RegisterComponentProperty ECS_UNIQUE_NAME_2(ECS_Registered_Property_, __COUNTER__) (aVariablePtr, Simple::ExtractVariableNameFromDataTypeName(ECS_CONVERT_TO_STRING(aVariablePtr)), __VA_ARGS__);

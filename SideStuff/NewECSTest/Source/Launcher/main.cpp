@@ -4,68 +4,40 @@
 #include <iostream>
 #include <chrono>
 
-//static void ResetPosition(Position& aPosition, float x, float y, float z)
-//{
-//	aPosition.x = x;
-//	aPosition.y = y;
-//	aPosition.z = z;
-//}
-
-struct Test
+COMPONENT(Test)
 {
 	int value;
 	int value2;
 };
 
+REGISTER_COMPONENT_PROPERTY(Test, &Test::value)
 REGISTER_COMPONENT_PROPERTY(Test, &Test::value2)
 
+
+COMPONENT(HelloWorld)
+{
+	float testFloat;
+	bool boo;
+};
+
+REGISTER_COMPONENT_PROPERTY(HelloWorld, &HelloWorld::testFloat)
+REGISTER_COMPONENT_PROPERTY(HelloWorld, &HelloWorld::boo)
 
 using namespace Simple;
 
 int main()
 {
+	for (const auto& [hashCode, component] : ComponentRegistry::GetInstance()->myTypeErasureComponents)
+	{
+		std::cout << component.formattedName << std::endl;
+
+		for (const auto& property : component.properties)
+		{
+			std::cout << property.customVariableName << std::endl;
+		}
+	}
+
 	ComponentRegistry::GetInstance()->DestroyInstance();
-
-
-
-
-
-	/*EntityComponentSystem ecs;
-	EntityID entityID1 = ecs.CreateEntity();
-
-	auto a = ecs.GetComponent<Identifier>(entityID1);
-
-	if (a != nullptr)
-	{
-		std::cout << a->name << std::endl;
-	}*/
-
-
-
-
-	/*Simple::ComponentManager componentManager;
-
-	constexpr size_t size = 10;
-
-	std::chrono::high_resolution_clock::time_point myStartTimerTime = std::chrono::high_resolution_clock::now();
-
-	for (size_t i = 0; i < size; ++i)
-	{
-		componentManager.AddComponent<Position>(Simple::EntityID(i));
-	}
-
-	double time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - myStartTimerTime).count();
-
-	std::cout << "Time took to Add: " << time << std::endl;
-
-	myStartTimerTime = std::chrono::high_resolution_clock::now();
-	for (size_t i = 0; i < size; ++i)
-	{
-		componentManager.RemoveComponent<Position>(Simple::EntityID(i));
-	}
-	time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - myStartTimerTime).count();
-
-	std::cout << "Time took to Remove: " << time << std::endl;*/
 
 	return 0;
 }
