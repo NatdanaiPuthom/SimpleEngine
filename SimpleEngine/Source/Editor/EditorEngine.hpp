@@ -7,12 +7,11 @@
 #include <string>
 #include <typeindex>
 
+#ifndef _SIMPLE
 namespace Editor
 {
 	class EditorEngine final
 	{
-	public:
-		static size_t mySelectedEntityID;
 	public:
 		EditorEngine();
 		~EditorEngine();
@@ -20,28 +19,31 @@ namespace Editor
 		void Init();
 		void Update();
 		void Render();
+
+	public:
 		CommandTracker& GetCommandTracker();
+		ECS::EntityComponentSystem& GetEditorECS();
 	private:
-		template<DerivedFromPopUpWindow T>
-		std::shared_ptr<T> AddPopUpWindow(const char* aName);
+		template<DerivedFromPopUpWindow T, typename ... Args>
+		std::shared_ptr<T> AddPopUpWindow(const char* aName, Args&& ... args);
 
 		template<DerivedFromMainMenuTabBase T>
 		T* AddMenuTab(const char* aName);
-
 	private:
 		void SetUpDefaultLayout();
 	private:
+		ECS::EntityComponentSystem myTemporaryECSEditor;
 		std::vector<std::shared_ptr<PopUp>> myPopUpWindows;
 		std::vector<std::unique_ptr<MainMenuTabBase>> myMainMenuTabs;
 		CommandTracker myCommandTracker;
 	};
 
-	template<DerivedFromPopUpWindow T>
-	inline std::shared_ptr<T> EditorEngine::AddPopUpWindow(const char* aName)
+	template<DerivedFromPopUpWindow T, typename ... Args>
+	inline std::shared_ptr<T> EditorEngine::AddPopUpWindow(const char* aName, Args&& ... args)
 	{
 		const std::string tag = std::string("##") + SimpleUtilities::ConvertTypeIndexNameToPrettyName(typeid(T).name());
 
-		std::shared_ptr<T> window = std::make_shared<T>(aName);
+		std::shared_ptr<T> window = std::make_shared<T>(aName, std::forward<Args>(args)...);
 		window.get()->SetImGuiTag(tag.c_str());
 
 		myPopUpWindows.push_back(window);
@@ -61,3 +63,21 @@ namespace Editor
 		return pointer;
 	}
 }
+#else
+namespace Editor
+{
+	class EditorEngine final
+	{
+	public:
+		EditorEngine() {}
+		~EditorEngine() {}
+
+		void Init() {}
+		void Update() {}
+		void Render() {}
+	public:
+		CommandTracker& GetCommandTracker() { return myCommandTracker; }
+		CommandTracker myCommandTracker;
+	};
+}
+#endif

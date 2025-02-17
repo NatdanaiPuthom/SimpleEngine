@@ -32,6 +32,7 @@ namespace ECS
 		void EarlyUpdate(EntityComponentSystem* aEntityComponentSystem);
 		void FixedUpdate(EntityComponentSystem* aEntityComponentSystem);
 		void LateUpdate(EntityComponentSystem* aEntityComponentSystem);
+		void EarlyRender(EntityComponentSystem* aEntityComponentSystem);
 		void LateRender(EntityComponentSystem* aEntityComponentSystem);
 	private:
 		SystemManager();

@@ -30,13 +30,16 @@ namespace Simpleton
 		SceneManager operator=(const SceneManager&&) = delete;
 
 		void Init();
-		void Update();
-		void Render();
 
 		void EarlyUpdate();
 		void FixedUpdate();
+		void Update();
 		void LateUpdate();
+
+		void EarlyRender();
+		void Render();
 		void LateRender();
+
 		void RenderBloomEntities();
 
 		void ReloadSceneFromFile(const std::string& aSceneName);

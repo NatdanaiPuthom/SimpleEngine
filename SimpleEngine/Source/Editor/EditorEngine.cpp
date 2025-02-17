@@ -11,8 +11,10 @@
 
 #include "Editor/PopUps/PostProcessPopUp.hpp"
 #include "Editor/PopUps/DeferredPopUp.hpp"
-#include "Editor/PopUps/Editor/EditorPopUp.hpp"
-#include "Editor/PopUps/Editor/AssetBrowser.hpp"
+#include "Editor/PopUps/Editor/SceneHierachyPopUp.hpp"
+#include "Editor/PopUps/Editor/SceneInspectorPopUp.hpp"
+#include "Editor/PopUps/Editor/AssetBrowserPopUp.hpp"
+#include "Editor/PopUps/Editor/SceneWindowPopUp.hpp"
 #include "Editor/FlyScript/NodeScriptingWindow.hpp"
 
 #include "Editor/Functions/SceneSettingFunctions.hpp"
@@ -20,10 +22,9 @@
 
 #include "Editor/EditorProxy.hpp"
 
+#ifndef _SIMPLE
 namespace Editor
 {
-	size_t EditorEngine::mySelectedEntityID = static_cast<size_t>(-1);
-
 	EditorEngine::EditorEngine()
 	{
 	}
@@ -34,9 +35,10 @@ namespace Editor
 
 	void EditorEngine::Init()
 	{
-		EditorProxy::myEditorEngine = this;
-
 		SetUpDefaultLayout();
+
+		EditorProxy::Init(this);
+		myTemporaryECSEditor.Init();
 
 		for (auto& menuTab : myMainMenuTabs)
 		{
@@ -57,6 +59,7 @@ namespace Editor
 		}
 
 		const Simpleton::InputManager& inputManager = MainSingleton::GetInputManager();
+
 		if (inputManager.IsKeyPressed(VK_F5))
 		{
 			if (Global::IsFullScreen())
@@ -104,10 +107,14 @@ namespace Editor
 		}
 	}
 
-
 	CommandTracker& EditorEngine::GetCommandTracker()
 	{
 		return myCommandTracker;
+	}
+
+	ECS::EntityComponentSystem& EditorEngine::GetEditorECS()
+	{
+		return myTemporaryECSEditor;
 	}
 
 	void EditorEngine::SetUpDefaultLayout()
@@ -122,7 +129,7 @@ namespace Editor
 		MenuItemMenu* sceneCreateMenu = sceneTab->AddMenu("Create");
 		MenuItemButton* sceneReloadButton = sceneTab->AddButton("Reload");
 		MenuItemButton* sceneSetAsActiveButton = sceneTab->AddButton("Set As Active");
-	
+
 		MenuItemButton* sceneCreateNewButton = sceneCreateMenu->AddChild<MenuItemButton>("New");
 		MenuItemButton* sceneCreateCopyButton = sceneCreateMenu->AddChild<MenuItemButton>("Copy");
 
@@ -137,27 +144,18 @@ namespace Editor
 		MenuItemPopUp* postProcessPopUpButton = windowsTab->AddPopUp("PostProcess");
 		MenuItemPopUp* nodeScriptingPopUpButton = windowsTab->AddPopUp("NodeScript");
 
+		std::shared_ptr<NodeScriptingWindow> nodeScriptingPopUp = AddPopUpWindow<NodeScriptingWindow>("NodeScripting Window");
+
 		std::shared_ptr<AudioSettingsPopUp> audioSettingPopUp = AddPopUpWindow<AudioSettingsPopUp>("Audio Settings");
 		std::shared_ptr<CameraSettingsPopUp> cameraSettingPopUp = AddPopUpWindow<CameraSettingsPopUp>("Camera Settings");
 		std::shared_ptr<GraphicsSettingsPopUp> graphicsSettingPopUp = AddPopUpWindow<GraphicsSettingsPopUp>("Graphics Settings");
 		std::shared_ptr<CameraControlsGuidePopUp> cameraHelpPopUp = AddPopUpWindow<CameraControlsGuidePopUp>("Editor Camera Control");
 		std::shared_ptr<DeferredPopUp> deferredPopUp = AddPopUpWindow<DeferredPopUp>("Deferred Window");
 		std::shared_ptr<PostProcessPopUp> postProcessPopUp = AddPopUpWindow<PostProcessPopUp>("PostProcess Window");
-
-		std::shared_ptr<EditorPopUp> editorPopUp = std::make_shared<EditorPopUp>("Editor Window", &myCommandTracker);
-
-		{ //TO-DO(v12.0.0): Temp should be refactor
-			myPopUpWindows.push_back(editorPopUp);
-		}
-
-		std::shared_ptr<AssetBrowserPopUp> assetBrowserPopUp = AddPopUpWindow<AssetBrowserPopUp>("AssetBrowser Window");
-		std::shared_ptr<NodeScriptingWindow> nodeScriptingPopUp = AddPopUpWindow<NodeScriptingWindow>("NodeScripting Window");
-
-		{	//TO-DO(v12.0.0): Temp should be refactor
-			assetBrowserPopUp->myNodeScriptingWindow = nodeScriptingPopUp.get();
-			assetBrowserPopUp->myNodeScriptParentTab = windowsTab;
-			assetBrowserPopUp->myNodeScriptButton = nodeScriptingPopUpButton;
-		}
+		std::shared_ptr<SceneHierachyPopUp> sceneHierarchyPopUp = AddPopUpWindow<SceneHierachyPopUp>("Hierarchy", &myCommandTracker);
+		std::shared_ptr<SceneInspectorPopUp> sceneInspectorPopUp = AddPopUpWindow<SceneInspectorPopUp>("Inspector");
+		std::shared_ptr<AssetBrowserPopUp2> assetBrowserPopUp2 = AddPopUpWindow<AssetBrowserPopUp2>("Asset Browser", nodeScriptingPopUp.get(), windowsTab, nodeScriptingPopUpButton);
+		std::shared_ptr<SceneWindowPopUp> sceneWindowPopUp = AddPopUpWindow<SceneWindowPopUp>("Scene");
 
 		{
 			const std::vector<std::string> sceneNames = SimpleUtilities::FileManager::GetFileNamesFromDirectory(SimpleUtilities::GetAbsolutePath(SIMPLE_DIR_SCENES));
@@ -177,8 +175,12 @@ namespace Editor
 		settingsGraphicsButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(graphicsSettingPopUp, &settingsGraphicsButton->GetIsActiveRef())));
 		deferredPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(deferredPopUp, &deferredPopUpButton->GetIsActiveRef())));
 		postProcessPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(postProcessPopUp, &postProcessPopUpButton->GetIsActiveRef())));
-		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(editorPopUp, &editorPopUpButton->GetIsActiveRef())));
-		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(assetBrowserPopUp, &editorPopUpButton->GetIsActiveRef())));
+
+		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(sceneHierarchyPopUp, &editorPopUpButton->GetIsActiveRef())));
+		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(sceneInspectorPopUp, &editorPopUpButton->GetIsActiveRef())));
+		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(assetBrowserPopUp2, &editorPopUpButton->GetIsActiveRef())));
+		editorPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(sceneWindowPopUp, &editorPopUpButton->GetIsActiveRef())));
+
 		nodeScriptingPopUpButton->SetCallback(std::move(EditorCallbacks::SetPopUpActive(nodeScriptingPopUp, &nodeScriptingPopUpButton->GetIsActiveRef())));
 
 		{ //TO-DO(v11.4.5): Temp should be refactor
@@ -187,3 +189,4 @@ namespace Editor
 		}
 	}
 }
+#endif

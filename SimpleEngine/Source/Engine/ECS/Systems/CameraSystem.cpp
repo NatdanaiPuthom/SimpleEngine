@@ -15,9 +15,12 @@ namespace ECS
 	{
 	}
 
-	void CameraSystem::Render(EntityComponentSystem* aEntityComponentSystem)
+	void CameraSystem::Render(EntityComponentSystem* /*aEntityComponentSystem*/)
 	{
+	}
 
+	void CameraSystem::EarlyRender(EntityComponentSystem* aEntityComponentSystem)
+	{
 		if (MainSingleton::GetSceneManager().GetIsPlaying() == false) //TO-DO(v11.4.1): Better architecture/flow
 		{
 			return;

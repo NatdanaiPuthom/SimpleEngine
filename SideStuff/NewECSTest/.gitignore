@@ -1,0 +1,16 @@
+.vs/
+
+*.suo
+*.vcxproj
+*.vcxproj.filters
+*.sln
+*.pdb
+*.aps
+
+[Ll]ocal
+[Tt]emp
+
+[Bb]in/*.dll
+[Bb]in/*.exe
+
+[Dd]ependencies/

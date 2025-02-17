@@ -6,10 +6,9 @@
 
 namespace Editor
 {
-
 	void TransformEntityTool::Render()
 	{
-		if (EditorEngine::mySelectedEntityID == GetInvalidIndex<ECS::EntityID>()) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
+		if (EditorProxy::GetSelectedEntityID() == GetInvalidIndex<ECS::EntityID>()) //TO-DO(v11.4.1): This shouldn't be here pls fix, future me
 		{
 			return;
 		}
@@ -20,7 +19,7 @@ namespace Editor
 		ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
 		ImGuizmo::SetRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
 
-		ECS::EntityID selectedEntityID = EditorEngine::mySelectedEntityID;
+		ECS::EntityID selectedEntityID = EditorProxy::GetSelectedEntityID();
 		ECS::Entity& selectedEntity = MainSingleton::GetSceneManager().GetCurrentECS().GetEntity(selectedEntityID);
 		ECS::TransformComponent* transformComponent = selectedEntity.GetComponent<ECS::TransformComponent>();
 
