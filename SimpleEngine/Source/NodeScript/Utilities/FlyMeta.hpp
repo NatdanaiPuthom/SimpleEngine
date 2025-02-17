@@ -203,7 +203,7 @@ namespace FLY_NAMESPACE
 	};
 
 	template<typename T, typename... Args>
-	concept Predicate = ReturnsType<T, bool, Args...>;
+	concept IsPredicate = ReturnsType<T, bool, Args...>;
 
 	template<typename T, typename Base>
 	concept IsBaseOf = std::is_base_of_v<Base, T>;

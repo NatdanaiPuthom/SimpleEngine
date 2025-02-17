@@ -7,6 +7,7 @@
 #include "EditorNodeRegistration.hpp"
 
 #include <imnodes/imnodes_internal.h>
+#include "Engine/SimpleUtilities/Timer.hpp"
 
 namespace Editor
 {
@@ -17,7 +18,6 @@ namespace Editor
 		, myFunctionSettingsWindow(*this)
 		, myStructCreatorWindow(this)
 	{
-
 		Fly::SetEditorTextFunction([](const std::string& aText) { ImGui::TextWrapped(aText.c_str()); });
 	}
 
@@ -199,7 +199,6 @@ namespace Editor
 			ShowSelectionMenu();
 			ShowLoadingMenu();
 			UpdateContext();
-
 
 			ShowNodeGraph(*myNodeContextHistory.history[myNodeContextHistory.currentIndex]);
 

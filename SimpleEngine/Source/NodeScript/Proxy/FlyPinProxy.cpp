@@ -96,7 +96,7 @@ namespace FLY_NAMESPACE
 		return Internal::GetPin(pin.mParentPinID, Internal::GetNodeGraph(mNodeGraphVariant)).mIsSplit;
 	}
 
-	template<Predicate<const Pin&> Predicate>
+	template<IsPredicate<const Pin&> Predicate>
 	std::vector<PinProxy> GetPinsFiltered(Predicate&& aPredicate, const NodeGraphProxy& aNodeGraphProxy)
 	{
 		std::vector<PinProxy> pinProxys;

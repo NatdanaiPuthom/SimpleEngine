@@ -7,9 +7,11 @@
 namespace Editor
 {
 
+
 	FunctionWindow::FunctionWindow(NodeScriptingWindow& aParentWindow)
 		: myParentWindow(aParentWindow)
 	{
+		
 	}
 
 	FunctionWindow::~FunctionWindow()

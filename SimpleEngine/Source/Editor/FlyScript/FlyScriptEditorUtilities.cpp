@@ -71,10 +71,6 @@ namespace Editor
 
 		for (const auto& node : nodeGraphProxy.IterateNodes())
 		{
-			if (node.IsDestroyed())
-			{
-				continue;
-			}
 
 			ImNodesStyle& style = ImNodes::GetStyle();
 
@@ -307,10 +303,6 @@ namespace Editor
 
 		for (Fly::NodeProxy node : nodeGraphProxy.IterateNodes())
 		{
-			if (node.IsDestroyed())
-			{
-				continue;
-			}
 
 			const Fly::Vec2 newPos = ToFlyVec2(ImNodes::GetNodeGridSpacePos(node.GetID()));
 			Fly::Vec2 oldPos = node.GetPosition();
@@ -550,18 +542,29 @@ namespace Editor
 				{
 					const Fly::PinProxy pinProxy(aNodeGraphContext.myLinkCreationPinID, aNodeGraphContext.myNodeGraphProxy);
 
-					const std::vector<Fly::NodeTypeProxy> filteredNodeTypesByDataTypeAndFlowType = Fly::GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(pinProxy.GetDataTypeID(), InvertFlowType(pinProxy.GetFlowType()), Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
+					auto nodeTypePredicate = [pinProxy](const Fly::NodeTypeProxy& aNodeType) 
+						{ 
+							const auto& pinTypes = Fly::SelectByFlowType(Fly::InvertFlowType(pinProxy.GetFlowType()), aNodeType.GetInputPinTypes(), aNodeType.GetOutputPinTypes());
+							for (const Fly::PinTypeProxy pinType : pinTypes)
+							{
+								if (pinType.GetDataTypeID() == pinProxy.GetDataTypeID())
+								{
+									return true;
+								}
+							}
+							return false;
+						};
 
 					if (aNodeGraphContext.mySearchNodeData.myNodeTypeSearch[0] == '\0')
 					{
-						for (const Fly::NodeTypeProxy& nodeType : filteredNodeTypesByDataTypeAndFlowType)
+						for (const Fly::NodeTypeProxy& nodeType : Fly::IterateNodeTypes(nodeTypePredicate))
 						{
 							PopulateNodeCategories(nodeType.GetName(), nodeType, aMainCategory);
 						}
 					}
 					else
 					{
-						for (const Fly::NodeTypeProxy& nodeType : filteredNodeTypesByDataTypeAndFlowType)
+						for (const Fly::NodeTypeProxy& nodeType : Fly::IterateNodeTypes(nodeTypePredicate))
 						{
 							const bool isSearched = SearchString(nodeType.GetName(), std::string_view(aNodeGraphContext.mySearchNodeData.myNodeTypeSearch));
 							if (isSearched)
@@ -636,19 +639,15 @@ namespace Editor
 
 					if (aNodeGraphContext.mySearchNodeData.myNodeTypeSearch[0] == '\0')
 					{
-
-						const std::vector<Fly::NodeTypeProxy> filteredNodeTypes = Fly::GetNodeTypesFilteredByTrait(Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
-
-						for (const Fly::NodeTypeProxy& nodeType : filteredNodeTypes)
+						auto filterPredicate = [](const Fly::NodeTypeProxy& aNodeType) { return Fly::HasNotFlag(aNodeType.GetTraits(), Fly::eNodeTrait::NonTrivial); };
+						for (const Fly::NodeTypeProxy& nodeType : Fly::IterateNodeTypes(filterPredicate))
 						{
 							PopulateNodeCategories(nodeType.GetName(), nodeType, aMainCategory);
 						}
 					}
 					else
 					{
-						const std::vector<Fly::NodeTypeProxy> filteredNodeTypes = Fly::GetNodeTypesFilteredByTrait(Fly::eNodeTrait::NonTrivial, Fly::HasNotFlag);
-
-						for (const Fly::NodeTypeProxy& nodeType : filteredNodeTypes)
+						for (const Fly::NodeTypeProxy& nodeType : Fly::IterateNodeTypes())
 						{
 							const bool isSearched = SearchString(nodeType.GetName(), std::string_view(aNodeGraphContext.mySearchNodeData.myNodeTypeSearch));
 							if (isSearched)

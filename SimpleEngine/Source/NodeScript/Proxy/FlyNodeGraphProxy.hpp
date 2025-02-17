@@ -7,16 +7,16 @@
 #include "FlyGenericDataTypeProxy.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
 #include "../Node/FlyNodeDragData.hpp"
-#include "ProxyIterators/FlyProxyIterator.hpp"
+#include "ProxyIterators/FlyProxyContextIterator.hpp"
+#include "ProxyIterators/FlyNodeProxyIterator.hpp"
 
 namespace FLY_NAMESPACE
 {
-	using NodeProxyIterator = ProxyIterator<NodeID, NodeProxy>;
-	using NodeProxyIteratorService = ProxyIteratorService<NodeID, NodeProxyIterator>;
-	using PinProxyIterator = ProxyIterator<PinID, PinProxy>;
-	using PinProxyIteratorService = ProxyIteratorService<PinID, PinProxyIterator>;
-	using LinkProxyIterator = ProxyIterator<LinkID, LinkProxy>;
-	using LinkProxyIteratorService = ProxyIteratorService<LinkID, LinkProxyIterator>;
+
+	using PinProxyIterator = ProxyContextIterator<PinID, PinProxy>;
+	using PinProxyIteratorService = ProxyContextIteratorService<PinID, PinProxyIterator, PinProxy>;
+	using LinkProxyIterator = ProxyContextIterator<LinkID, LinkProxy>;
+	using LinkProxyIteratorService = ProxyContextIteratorService<LinkID, LinkProxyIterator>;
 	
 	class NodeGraph;
 	class EventGraph;
@@ -42,7 +42,8 @@ namespace FLY_NAMESPACE
 		explicit NodeGraphProxy(EventGraph& aEventGraph);
 		explicit NodeGraphProxy(NodeGraphVariantHandle&& aNodeGraphVariant);
 		explicit NodeGraphProxy(const NodeGraphVariantHandle& aNodeGraphVariant);
-
+		
+		[[nodiscard]] NodeProxyIteratorService IterateNodes(Predicate<NodeProxy> aFilterPredicate) const;
 		[[nodiscard]] NodeProxyIteratorService IterateNodes(bool aIncludeDestroyed = false) const;
 		[[nodiscard]] LinkProxyIteratorService IterateLinks(bool aIncludeDestroyed = false) const;
 

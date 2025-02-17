@@ -221,7 +221,7 @@ namespace FLY_NAMESPACE
 		Internal::BeginFrame(aCommandTracker);
 	}
 
-	template<Predicate<const Pin&> Predicate>
+	template<IsPredicate<const Pin&> Predicate>
 	std::vector<PinProxy> GetPinProxysFiltered(Predicate&& aPredicate, const NodeGraphProxy& aNodeGraphProxy)
 	{
 		std::vector<PinProxy> pinProxys;
@@ -366,6 +366,16 @@ namespace FLY_NAMESPACE
 				return false;
 			}
 		);
+	}
+
+	NodeTypeProxyIteratorService IterateNodeTypes()
+	{
+		return NodeTypeProxyIteratorService(NodeTypeID{ Internal::GetNodeTypeManager().GetNodeTypes().size() });
+	}
+
+	NodeTypeProxyIteratorService IterateNodeTypes(Predicate<NodeTypeProxy> aFilterPredicate)
+	{
+		return NodeTypeProxyIteratorService(NodeTypeID{ Internal::GetNodeTypeManager().GetNodeTypes().size() }, aFilterPredicate);
 	}
 
 	std::vector<NodeTypeProxy> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(const GenericDataTypeID aDataTypeID, const eFlowType aFlowType, const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))

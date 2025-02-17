@@ -17,6 +17,7 @@
 #include "Proxy/FlyProxy.hpp"
 #include "SystemTypes/FlyNone.hpp"
 #include "SystemTypes/FlyWildcard.hpp"
+#include "Proxy/ProxyIterators/FlyDataTypeProxyIterator.hpp"
 #include <unordered_map>
 
 namespace FLY_NAMESPACE
@@ -53,7 +54,7 @@ namespace FLY_NAMESPACE
 	[[nodiscard]] std::vector<GenericDataTypeProxy> GetGenericDataTypes();
 	[[nodiscard]] DataTypeProxy GetDataTypeProxyByName(std::string_view aName);
 
-	template<Predicate<const DataTypeProxy&> FilterPredicate>
+	template<IsPredicate<const DataTypeProxy&> FilterPredicate>
 	[[nodiscard]] std::vector<DataTypeProxy> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate);
 
 	[[nodiscard]] std::vector<NodeTypeProxy> GetNodeTypes();
@@ -63,32 +64,29 @@ namespace FLY_NAMESPACE
 
 	[[nodiscard]] std::vector<LinkProxy> GetTraversedLinks();
 
-	[[nodiscard]] std::vector<NodeTypeProxy> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(GenericDataTypeID aDataTypeID, eFlowType aFlowType, eNodeTrait aNodeTrait, bool(*aBitOperator)(eNodeTrait, eNodeTrait));
-	[[nodiscard]] std::vector<NodeTypeProxy> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);
+	using NodeTypeProxyIterator = ProxyGlobalIterator<NodeTypeID, NodeTypeProxy>;
+	using NodeTypeProxyIteratorService = ProxyGlobalIteratorService<NodeTypeID, NodeTypeProxyIterator>;
+
+	[[nodiscard]] NodeTypeProxyIteratorService IterateNodeTypes();
+	[[nodiscard]] NodeTypeProxyIteratorService IterateNodeTypes(Predicate<NodeTypeProxy> aFilterPredicate);
+
+	/*[[nodiscard]] std::vector<NodeTypeProxy> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(GenericDataTypeID aDataTypeID, eFlowType aFlowType, eNodeTrait aNodeTrait, bool(*aBitOperator)(eNodeTrait, eNodeTrait));
+	[[nodiscard]] std::vector<NodeTypeProxy> GetNodeTypesFilteredByTrait(eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait) = HasFlag);*/
 
 	[[nodiscard]] std::unordered_map<DataTypeProxy, std::vector<ClassProxy>> GetClasses();
 	[[nodiscard]] std::vector<ClassProxy> GetClassesByTargetDataType(DataTypeProxy aDataTypeProxy);
 
-	template<Predicate<const DataTypeProxy&> FilterPredicate>
-	[[nodiscard]] std::vector<DataTypeProxy> GetDataTypesFiltered(FilterPredicate&& aFilterPredicate)
+	[[nodiscard]] inline DataTypeProxyIteratorService IterateDataTypes()
 	{
-		const std::vector<DataTypeProxy> dataTypes = GetDataTypes();
-
-		std::vector<DataTypeProxy> filtered;
-		filtered.reserve(dataTypes.size());
-
-		for (const DataTypeProxy& dataType : dataTypes)
-		{
-			if (aFilterPredicate(dataType))
-			{
-				filtered.push_back(dataType);
-			}
-		}
-
-		return filtered;
+		return DataTypeProxyIteratorService();
 	}
 
-	template<Predicate<const GenericDataTypeProxy&> FilterPredicate>
+	[[nodiscard]] inline DataTypeProxyIteratorService IterateDataTypes(Predicate<DataTypeProxy> aFilterPredicate)
+	{
+		return DataTypeProxyIteratorService(aFilterPredicate);
+	}
+
+	template<IsPredicate<const GenericDataTypeProxy&> FilterPredicate>
 	[[nodiscard]] std::vector<GenericDataTypeProxy> GetGenericDataTypesFiltered(FilterPredicate&& aFilterPredicate)
 	{
 		const std::vector<GenericDataTypeProxy> dataTypes = GetGenericDataTypes();

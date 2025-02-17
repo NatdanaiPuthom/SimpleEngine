@@ -58,7 +58,7 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	[[nodiscard]] constexpr decltype(auto) SelectByFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
 	{
-		return aFlowType == eFlowType::Input ? std::forward<T>(aInputValue) : std::forward<T>(aOutputValue);
+		return aFlowType == eFlowType::Input ? aInputValue : aOutputValue;
 	}
 
 }

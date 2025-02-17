@@ -39,36 +39,31 @@ namespace FLY_NAMESPACE
 		return std::distance(begin(aList), it);
 	}
 
+	NodeProxyIteratorService NodeGraphProxy::IterateNodes(Predicate<NodeProxy> aFilterPredicate) const
+	{
+		return NodeProxyIteratorService(mNodeGraphVariant, NodeID{ static_cast<NodeID::id_type>(GetNodeGraph().mNodes.size()) }, aFilterPredicate);
+	}
+
 	NodeProxyIteratorService NodeGraphProxy::IterateNodes(const bool aIncludeDestroyed) const
 	{
-		return NodeProxyIteratorService(mNodeGraphVariant, aIncludeDestroyed, [](const NodeGraphVariantHandle& aNodeGraphVariantHandle) -> NodeID
+		Predicate<NodeProxy> filterPredicate = aIncludeDestroyed 
+			? Predicate<NodeProxy>()
+			: [](const NodeProxy& aNodeProxy) -> bool
 			{
-				const NodeGraph& nodeGraph = Internal::GetNodeGraph(aNodeGraphVariantHandle);
-
-				return NodeID{ static_cast<NodeID::id_type>(FindFirstNonDestroyed(nodeGraph.mNodes)) };
-			},
-			[](const NodeGraphVariantHandle& aNodeGraphVariantHandle) -> NodeID
-			{
-				const NodeGraph& nodeGraph = Internal::GetNodeGraph(aNodeGraphVariantHandle);
-				return NodeID{ static_cast<NodeID::id_type>(nodeGraph.mNodes.size()) };
-			}
-		);
+				return !aNodeProxy.IsDestroyed();
+			};
+		return NodeProxyIteratorService(mNodeGraphVariant, NodeID{ static_cast<NodeID::id_type>(GetNodeGraph().mNodes.size()) }, filterPredicate);
 	}
 
 	LinkProxyIteratorService NodeGraphProxy::IterateLinks(const bool aIncludeDestroyed) const
 	{
-		return LinkProxyIteratorService(mNodeGraphVariant, aIncludeDestroyed, [](const NodeGraphVariantHandle& aNodeGraphVariantHandle) -> LinkID
+		Predicate<LinkProxy> filterPredicate = aIncludeDestroyed
+			? Predicate<LinkProxy>()
+			: [](const LinkProxy& aLinkProxy) -> bool
 			{
-				const NodeGraph& nodeGraph = Internal::GetNodeGraph(aNodeGraphVariantHandle);
-
-				return LinkID{ static_cast<LinkID::id_type>(FindFirstNonDestroyed(nodeGraph.mLinks)) };
-			},
-			[](const NodeGraphVariantHandle& aNodeGraphVariantHandle) -> LinkID
-			{
-				const NodeGraph& nodeGraph = Internal::GetNodeGraph(aNodeGraphVariantHandle);
-				return LinkID{ static_cast<LinkID::id_type>(nodeGraph.mLinks.size()) };
-			}
-		);
+				return !aLinkProxy.IsDestroyed();
+			};
+		return LinkProxyIteratorService(mNodeGraphVariant, LinkID{ static_cast<LinkID::id_type>(GetNodeGraph().mLinks.size()) }, filterPredicate);
 	}
 
 	NodeGraph& NodeGraphProxy::GetNodeGraph()
@@ -96,7 +91,7 @@ namespace FLY_NAMESPACE
 			mNodeGraphVariant);
 	}
 
-	template<Predicate<const Pin&> Predicate>
+	template<IsPredicate<const Pin&> Predicate>
 	std::vector<PinProxy> GetPinsFiltered(Predicate&& aPredicate, const NodeGraphProxy& aNodeGraphProxy)
 	{
 		std::vector<PinProxy> pinProxys;
