@@ -95,7 +95,7 @@ workspace "SimpleEngine"
 	project "Launcher"
 		kind "WindowedApp"
 		location (directories.Local)
-		targetname "TestEngine_%{cfg.buildcfg}"
+		targetname "SimpleEngine_%{cfg.buildcfg}"
 		fatalwarnings { "All" }
 	
 		files {
