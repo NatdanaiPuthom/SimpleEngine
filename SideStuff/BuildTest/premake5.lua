@@ -1,5 +1,5 @@
 
-directories = {}
+local directories = {}
 directories["Root"]					= os.realpath("\\")
 directories["Bin"]					= os.realpath("Bin\\")
 directories["Local"]				= os.realpath("Local\\")
@@ -9,6 +9,7 @@ directories["Dependencies"]			= os.realpath("Dependencies\\")
 
 directories["Lib"]					= directories.Dependencies .. "Lib\\"
 directories["Launcher"]				= directories.Source .. "Launcher\\"
+directories["Engine"]				= directories.Source .. "Engine\\"
 
 for key, path in pairs(directories) do
     if key ~= "Root" then 
@@ -69,6 +70,28 @@ workspace "SimpleEngine"
   
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+	project "Engine"
+		kind "StaticLib"
+		location (directories.Local) 
+		targetdir (directories.Lib)
+		targetname("%{prj.name}_%{cfg.buildcfg}") 
+		fatalwarnings { "All" }
+
+		includedirs {
+			directories.Engine, 
+		} 
+
+		files {
+			directories.Engine .. "/**.h",
+			directories.Engine .. "/**.hpp",
+			directories.Engine .. "/**.cpp"
+		} 
+
+		links {
+		}
+			
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 	project "Launcher"
 		kind "WindowedApp"
 		location (directories.Local)
@@ -78,12 +101,15 @@ workspace "SimpleEngine"
 		files {
 			directories.Launcher .. "/**.h",
 			directories.Launcher .. "/**.hpp",
-			directories.Launcher .. "/**.cpp",
-			directories.Launcher .. "/**.ixx",
+			directories.Launcher .. "/**.cpp"
 		}
 
 		includedirs { 
 			directories.Launcher,
+		}
+
+		links {
+			"Engine"
 		}
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
