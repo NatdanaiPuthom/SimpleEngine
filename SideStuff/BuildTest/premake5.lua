@@ -13,10 +13,8 @@ directories["Launcher"]				= directories.Source .. "Launcher\\"
 for key, path in pairs(directories) do
     if key ~= "Root" then 
         os.mkdir(directories[key])
-		print(directories[key])
     end
 end
-
 
 workspace "SimpleEngine"
 	startproject "Launcher" 
@@ -24,7 +22,7 @@ workspace "SimpleEngine"
 	language "C++"
 	cdialect "C17"
 	cppdialect "C++20"
-	warnings "Extra"
+	warnings "Everything"
 	toolset "msc-v143"
 	objdir (directories.Temp)
 
@@ -40,6 +38,7 @@ workspace "SimpleEngine"
 		optimize "Off"
 		runtime "Debug"
 		linktimeoptimization "Off"
+		editandcontinue "On"
 
 	filter "configurations:Release"
 		defines { "_RELEASE" }
@@ -47,6 +46,7 @@ workspace "SimpleEngine"
 		optimize "Speed"
 		runtime "Release"
 		linktimeoptimization "On"
+		editandcontinue "On"
 
 	filter "configurations:Simple"
 		defines { "_SIMPLE", "NDEBUG" }
@@ -54,6 +54,7 @@ workspace "SimpleEngine"
 		optimize "Full"
 		runtime "Release"
 		linktimeoptimization "On"
+		editandcontinue "Off"
 
 	filter "system:windows"
 		systemversion "latest"
