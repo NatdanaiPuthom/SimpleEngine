@@ -17,6 +17,7 @@ namespace Simple
 			sockaddr_in address{};
 			bool isConnected = false;
 		};
+		
 
 	public:
 		Server();
