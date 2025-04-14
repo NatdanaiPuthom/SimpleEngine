@@ -10,6 +10,7 @@ directories["Dependencies"]			= os.realpath("Dependencies\\")
 directories["Lib"]					= directories.Dependencies .. "Lib\\"
 directories["Launcher"]				= directories.Source .. "Launcher\\"
 directories["Engine"]				= directories.Source .. "Engine\\"
+directories["Utility"]				= directories.Source .. "Utility\\"
 
 for key, path in pairs(directories) do
     if key ~= "Root" then 
@@ -22,8 +23,8 @@ workspace "SimpleEngine"
 	architecture "x64"
 	language "C++"
 	cdialect "C17"
-	cppdialect "C++20"
-	warnings "Everything"
+	cppdialect "C++23"
+	warnings "Extra"
 	toolset "msc-v143"
 	objdir (directories.Temp)
 
@@ -40,6 +41,7 @@ workspace "SimpleEngine"
 		runtime "Debug"
 		linktimeoptimization "Off"
 		editandcontinue "On"
+		libdirs { directories.Lib	}
 
 	filter "configurations:Release"
 		defines { "_RELEASE" }
@@ -48,6 +50,7 @@ workspace "SimpleEngine"
 		runtime "Release"
 		linktimeoptimization "On"
 		editandcontinue "On"
+		libdirs { directories.Lib	}
 
 	filter "configurations:Simple"
 		defines { "_SIMPLE", "NDEBUG" }
@@ -56,6 +59,7 @@ workspace "SimpleEngine"
 		runtime "Release"
 		linktimeoptimization "On"
 		editandcontinue "Off"
+		libdirs { directories.Lib	}
 
 	filter "system:windows"
 		systemversion "latest"
@@ -63,11 +67,26 @@ workspace "SimpleEngine"
 		flags {
 			"MultiProcessorCompile"
 		}
-
-		links {
-			"dwmapi"
-		}
   
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	project "Utility"
+		kind "StaticLib"
+		location (directories.Local) 
+		targetdir (directories.Lib)
+		targetname("%{prj.name}_%{cfg.buildcfg}") 
+		fatalwarnings { "All" }
+
+		includedirs {
+			directories.Utility, 
+		} 
+
+		files {
+			directories.Utility .. "/**.h",
+			directories.Utility .. "/**.hpp",
+			directories.Utility .. "/**.cpp"
+		} 
+			
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	project "Engine"
@@ -78,7 +97,8 @@ workspace "SimpleEngine"
 		fatalwarnings { "All" }
 
 		includedirs {
-			directories.Engine, 
+			directories.Source,
+			directories.Engine
 		} 
 
 		files {
@@ -88,6 +108,7 @@ workspace "SimpleEngine"
 		} 
 
 		links {
+			"Utility"
 		}
 			
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -105,11 +126,19 @@ workspace "SimpleEngine"
 		}
 
 		includedirs { 
-			directories.Launcher,
+			directories.Source,
+			directories.Launcher
 		}
 
 		links {
 			"Engine"
 		}
+
+		filter "system:windows"
+			systemversion "latest"
+
+			links {
+				"dwmapi"
+			}
 
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
