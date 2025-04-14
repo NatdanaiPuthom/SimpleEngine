@@ -24,10 +24,10 @@ workspace "SimpleEngine"
 	architecture "x64"
 	language "C++"
 	cdialect "C17"
-	cppdialect "C++23"
+	cppdialect "C++20"
 	warnings "Extra"
 	toolset "msc-v143"
-	objdir (directories.Temp)
+	objdir (directories["Temp"] .. "/%{cfg.buildcfg}/%{prj.name}")
 
 	configurations {
 		"Debug",
@@ -117,6 +117,7 @@ workspace "SimpleEngine"
 	project "Launcher"
 		kind "WindowedApp"
 		location (directories.Local)
+		targetdir (directories["Bin"] .. "/%{cfg.buildcfg}")
 		targetname "SimpleEngine_%{cfg.buildcfg}"
 		fatalwarnings { "All" }
 	
