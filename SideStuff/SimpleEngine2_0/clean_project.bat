@@ -1,35 +1,38 @@
 @echo off
+setlocal
 
+echo Cleaning Visual Studio generated files...
+echo.
 
-del *.sln
-del /q Source\Launcher\Resources\*.aps
-
-rmdir /s /q .vs
-
-for /r %%i in (*.vcxproj) do (
-    del "%%i" /q
+:: Delete solution files
+for %%f in (*.sln) do (
+    del "%%f" /q && echo Deleted: %%f
 )
 
-for /r %%i in (*.vcxproj.filters) do (
-    del "%%i" /q
+:: Delete .vs folder
+if exist ".vs" (
+    rmdir /s /q ".vs" && echo Deleted folder: .vs
 )
 
-for /r %%i in (*.vcxproj.user) do (
-    del "%%i" /q
+:: Delete project-related files
+set "extensions=vcxproj vcxproj.filters vcxproj.user"
+
+for %%e in (%extensions%) do (
+    for /r %%i in (*%%e) do (
+        del "%%i" /q && echo Deleted: %%~nxi
+    )
 )
 
-set "folderPaths=Temp"
+:: Delete folders like Temp and Local
+set "folders=Temp Local"
 
-for %%d in (%folderPaths%) do (
-    rd /s /q "%%d"
+for %%f in (%folders%) do (
+    if exist "%%f" (
+        rmdir /s /q "%%f" && echo Deleted: %%f
+    )
 )
 
-set "folderPaths=Local"
-
-for %%d in (%folderPaths%) do (
-    rd /s /q "%%d"
-)
-
-cd ..
-
-set /p DUMMY=Project cleaned, press any key to exit.
+echo.
+echo Project cleaned successfully.
+pause
+endlocal
