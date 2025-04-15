@@ -15,8 +15,8 @@ namespace Simple
 		wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 		wcex.lpszClassName = L"Natdanai";
-		//wcex.hIcon = LoadIcon(aHandleInstance, MAKEINTRESOURCE(101));
-		//wcex.hIconSm = LoadIcon(aHandleInstance, MAKEINTRESOURCE(101));
+		wcex.hIcon = LoadIcon(aHandleInstance, MAKEINTRESOURCE(101));
+		wcex.hIconSm = LoadIcon(aHandleInstance, MAKEINTRESOURCE(101));
 
 		if (!RegisterClassExW(&wcex))
 		{
@@ -43,7 +43,7 @@ namespace Simple
 
 		if (hwnd)
 		{
-			//NOTE(v11.4.5): Disable rounded corners
+			//NOTE: Disable rounded corners
 			enum DWM_WINDOW_CORNER_PREFERENCE {
 				DWMWCP_DEFAULT = 0,
 				DWMWCP_DONOTROUND = 1,
@@ -59,5 +59,32 @@ namespace Simple
 		}
 
 		return hwnd;
+	}
+
+	void ApplicationWindow::PeekAndDispatchMessages()
+	{
+		MSG msg = { 0 };
+
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+
+			if (msg.message == WM_QUIT)
+			{
+				Simple::ApplicationWindow::SetIsRunning(false);
+				break;
+			}
+		}
+	}
+
+	bool ApplicationWindow::IsRunning()
+	{
+		return myIsRunning;
+	}
+
+	void ApplicationWindow::SetIsRunning(const bool aShouldRun)
+	{
+		myIsRunning = aShouldRun;
 	}
 }

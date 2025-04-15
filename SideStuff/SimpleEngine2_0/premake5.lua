@@ -28,6 +28,7 @@ workspace "SimpleEngine"
 	warnings "Extra"
 	toolset "msc-v143"
 	objdir (directories["Temp"] .. "/%{cfg.buildcfg}/%{prj.name}")
+	libdirs (directories["Lib"] .. "/%{cfg.buildcfg}")
 
 	configurations {
 		"Debug",
@@ -41,8 +42,7 @@ workspace "SimpleEngine"
 		optimize "Off"
 		runtime "Debug"
 		linktimeoptimization "Off"
-		editandcontinue "On"
-		libdirs { directories.Lib	}
+		editandcontinue "On"		
 
 	filter "configurations:Release"
 		defines { "_RELEASE" }
@@ -51,16 +51,14 @@ workspace "SimpleEngine"
 		runtime "Release"
 		linktimeoptimization "On"
 		editandcontinue "On"
-		libdirs { directories.Lib	}
 
-	filter "configurations:Simple"
+	filter "configurations:Retail"
 		defines { "_RETAIL", "NDEBUG" }
 		symbols "Off"
 		optimize "Full"
 		runtime "Release"
 		linktimeoptimization "On"
 		editandcontinue "Off"
-		libdirs { directories.Lib	}
 
 	filter "system:windows"
 		systemversion "latest"
@@ -74,7 +72,7 @@ workspace "SimpleEngine"
 	project "Utility"
 		kind "StaticLib"
 		location (directories.Local) 
-		targetdir (directories.Lib)
+		targetdir (directories["Lib"] .. "/%{cfg.buildcfg}")
 		targetname("%{prj.name}_%{cfg.buildcfg}") 
 		fatalwarnings { "All" }
 
@@ -93,7 +91,7 @@ workspace "SimpleEngine"
 	project "Engine"
 		kind "StaticLib"
 		location (directories.Local) 
-		targetdir (directories.Lib)
+		targetdir (directories["Lib"] .. "/%{cfg.buildcfg}")
 		targetname("%{prj.name}_%{cfg.buildcfg}") 
 		fatalwarnings { "All" }
 
@@ -124,7 +122,8 @@ workspace "SimpleEngine"
 		files {
 			directories.Launcher .. "/**.h",
 			directories.Launcher .. "/**.hpp",
-			directories.Launcher .. "/**.cpp"
+			directories.Launcher .. "/**.cpp",
+			directories.Launcher .. "/**.rc"
 		}
 
 		includedirs { 

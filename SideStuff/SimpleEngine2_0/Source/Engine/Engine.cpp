@@ -1,43 +1,35 @@
 #include "Engine.hpp"
+#include "Engine/Debugger/Console/Console.hpp"
 #include "Utility/Timer.hpp"
-#include "Utility/ApplicationWindow/ApplicationWindow.hpp"
 #include <Windows.h>
 
 namespace Simple
 {
 	Engine::Engine()
 		: myTimer(nullptr)
-		, myIsRunning(false)
+		, myConsole(nullptr)
 	{
 	}
 
 	Engine::~Engine()
 	{
 		delete myTimer;
+		delete myConsole;
 
-		myIsRunning = false;
+		myTimer = nullptr;
+		myConsole = nullptr;
 	}
 
-	void Engine::Init(void* aHandleInstance, const int aCmdShow)
+	void Engine::Init()
 	{
 		myTimer = new Timer();
+		myConsole = new Console();
 
-		HINSTANCE hInstance = static_cast<HINSTANCE>(aHandleInstance);
-		HWND hwnd = ApplicationWindow::SetUpMainWindow(hInstance, 1280, 720, aCmdShow);
-
-		if (hwnd)
-		{
-			myIsRunning = true;
-		}
+		myConsole->Init();
 	}
 
 	void Engine::Update()
 	{
 		myTimer->Update();
-	}
-
-	bool Engine::IsRunning() const
-	{
-		return myIsRunning;
 	}
 }

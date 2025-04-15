@@ -1,9 +1,9 @@
 #pragma once
-#include <memory>
 
 namespace Simple
 {
 	class Timer;
+	class Console;
 }
 
 namespace Simple
@@ -14,12 +14,10 @@ namespace Simple
 		Engine();
 		~Engine();
 
-		void Init(void* aHandleInstance, const int aCmdShow);
+		void Init();
 		void Update();
-
-		bool IsRunning() const;
 	private:
 		Timer* myTimer;
-		bool myIsRunning;
+		Console* myConsole;
 	};
 }

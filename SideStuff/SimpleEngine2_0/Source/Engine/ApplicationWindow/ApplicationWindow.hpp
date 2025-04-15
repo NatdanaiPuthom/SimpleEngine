@@ -12,5 +12,11 @@ namespace Simple
 	{
 	public:
 		static HWND SetUpMainWindow(HINSTANCE& aHandleInstance, const int aWidth, const int aHeight, const int aCmdShow);
+		static void PeekAndDispatchMessages();
+
+		static bool IsRunning();
+		static void SetIsRunning(const bool aShouldRun);
+	private:
+		inline static bool  myIsRunning = false;
 	};
 }

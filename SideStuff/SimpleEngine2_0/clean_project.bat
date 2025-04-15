@@ -11,7 +11,7 @@ for %%f in (*.sln) do (
 
 :: Delete .vs folder
 if exist ".vs" (
-    rmdir /s /q ".vs" && echo Deleted folder: .vs
+    rmdir /s /q ".vs" && echo Deleted: .vs
 )
 
 :: Delete project-related files
@@ -29,6 +29,19 @@ set "folders=Temp Local"
 for %%f in (%folders%) do (
     if exist "%%f" (
         rmdir /s /q "%%f" && echo Deleted: %%f
+    )
+)
+
+set "libPaths=Dependencies\Lib\Debug Dependencies\Lib\Release Dependencies\Lib\Retail"
+
+for %%p in (%libPaths%) do (
+    if exist "%%p" (
+        for %%f in ("%%p\*") do (
+            if exist "%%f" (
+                echo Deleted: %%~nxf
+                del /q "%%f"
+            )
+        )
     )
 )
 
