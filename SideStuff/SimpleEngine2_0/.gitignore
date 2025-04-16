@@ -10,7 +10,8 @@
 [Ll]ocal
 [Tt]emp
 
-[Bb]in/*.dll
-[Bb]in/*.exe
+[Bb]in/[Dd]ebug
+[Bb]in/[Rr]elease
+[Bb]in/[Rr]etail
 
 [Dd]ependencies/
