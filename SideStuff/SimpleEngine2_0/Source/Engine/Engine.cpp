@@ -5,6 +5,37 @@
 
 namespace Simple
 {
+	Engine* Engine::GetInstance()
+	{
+		if (sInstance == nullptr)
+		{
+			Console::Print("Engine instance has not been created. This is unintended behaviour.", ConsoleTextColor::Red);
+			return nullptr;
+		}
+
+		return sInstance;
+	}
+
+	Engine* Engine::CreateInstance()
+	{
+		if (sInstance != nullptr)
+		{
+			Console::Print("An Engine instance has already been created. This is unintended behaviour.", ConsoleTextColor::Yellow);
+			return sInstance;
+		}
+
+		sInstance = new Engine();
+		Console::Print("Successfully created an Engine instance.", ConsoleTextColor::Green);
+
+		return sInstance;
+	}
+
+	void Engine::DestroyInstance()
+	{
+		delete sInstance;
+		sInstance = nullptr;
+	}
+
 	Engine::Engine()
 		: myTimer(nullptr)
 		, myConsole(nullptr)
@@ -22,8 +53,8 @@ namespace Simple
 
 	void Engine::Init()
 	{
-		myTimer = new Timer();
 		myConsole = new Console();
+		myTimer = new Timer();
 
 		myConsole->Init();
 	}

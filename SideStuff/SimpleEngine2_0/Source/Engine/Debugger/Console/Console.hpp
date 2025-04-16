@@ -1,7 +1,9 @@
 #pragma once
+#include "Engine/Debugger/Console/StreamBuffer.hpp"
 #include <stdio.h>
 #include <fcntl.h>
 #include <io.h>
+#include <iostream>
 
 namespace Simple
 {
@@ -17,7 +19,7 @@ namespace Simple
 	class Console final
 	{
 	public:
-		Console();
+		Console() = default;
 		~Console();
 
 		void Init();
@@ -28,6 +30,15 @@ namespace Simple
 		Console(Console&&) = delete;
 		Console& operator=(Console&&) = delete;
 
-		static void Print(const char* aText, const ConsoleTextColor aColor, const bool aShouldEndline = true);
+		//NOTE: Capture logs before the Engine is successfully initialize.
+		static void PreInit();
+
+		static void Print(const char* aText, const ConsoleTextColor aColor = ConsoleTextColor::White, const bool aShouldEndline = true);
+	private:
+		void CleanUp();
+	private:
+		inline static CaptureStreamBuffer* myCaptureBuffer = new CaptureStreamBuffer();
+		inline static std::ostream myCaptureStream{ myCaptureBuffer };
+		inline static std::streambuf* myOriginalCoutBuffer = nullptr;
 	};
 }
