@@ -1,6 +1,6 @@
 #pragma once
 
-//NOTE(Natdanai): I have modified this a lot so it may have fuckt up something else
+//NOTE(v??.??.??): I have modified this a lot so it may have fuckt up something else
 
 #include "StackWalker.h"
 #include <functional>

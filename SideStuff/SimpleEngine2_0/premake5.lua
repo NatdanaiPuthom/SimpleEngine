@@ -78,7 +78,6 @@ workspace "SimpleEngine"
 		fatalwarnings { "All" }
 
 		includedirs {
-			directories.Source,
 			directories.External, 
 		} 
 

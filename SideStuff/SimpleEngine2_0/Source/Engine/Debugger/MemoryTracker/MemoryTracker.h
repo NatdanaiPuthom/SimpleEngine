@@ -15,7 +15,8 @@
 #include <source_location>
 #include <memory>
 
-//The Game Assembly stuff but modified a little bit. NOTE(v9.36.4): Modified a lot
+//NOTE(v??.??.??):The Game Assembly stuff but modified a little bit. 
+//NOTE(v9.36.4): Modified a lot
 
 namespace SimpleTracker
 {
