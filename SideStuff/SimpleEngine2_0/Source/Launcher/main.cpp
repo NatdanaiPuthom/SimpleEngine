@@ -1,3 +1,4 @@
+#include "Engine/Debugger/MemoryTracker/MemoryTracker.h"
 #include "Engine/Engine.hpp"
 #include "Engine/ApplicationWindow/ApplicationWindow.hpp"
 #include "Engine/Debugger/Console/Console.hpp"

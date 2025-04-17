@@ -10,8 +10,9 @@ directories["Dependencies"]			= os.realpath("Dependencies\\")
 directories["Lib"]					= directories.Dependencies .. "Lib\\"
 
 directories["Launcher"]				= directories.Source .. "Launcher\\"
-directories["Engine"]				= directories.Source .. "Engine\\"
+directories["External"]				= directories.Source .. "External\\"
 directories["Utility"]				= directories.Source .. "Utility\\"
+directories["Engine"]				= directories.Source .. "Engine\\"
 
 for key, path in pairs(directories) do
     if key ~= "Root" then 
@@ -66,6 +67,26 @@ workspace "SimpleEngine"
 		flags {
 			"MultiProcessorCompile"
 		}
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	project "External"
+		kind "StaticLib"
+		location (directories.Local) 
+		targetdir (directories["Lib"] .. "/%{cfg.buildcfg}")
+		targetname("%{prj.name}_%{cfg.buildcfg}") 
+		fatalwarnings { "All" }
+
+		includedirs {
+			directories.Source,
+			directories.External, 
+		} 
+
+		files {
+			directories.External .. "/**.h",
+			directories.External .. "/**.hpp",
+			directories.External .. "/**.cpp"
+		} 
   
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -132,6 +153,7 @@ workspace "SimpleEngine"
 		}
 
 		links {
+			"External", 
 			"Engine"
 		}
 
