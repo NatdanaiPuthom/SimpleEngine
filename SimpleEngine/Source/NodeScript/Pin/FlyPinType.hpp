@@ -1,17 +1,12 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
+#include "../Pin/FlyIODirection.hpp"
 #include <string>
 #include <vector>
 
 namespace FLY_NAMESPACE
 {
-	enum class eFlowType
-	{
-		Input,
-		Output,
-	};
-
 	class NodeGraph;
 
 	struct SetPinValueData final
@@ -33,32 +28,82 @@ namespace FLY_NAMESPACE
 		PinID mReadFromPinID;
 	};
 
-	struct PinType final
+	class PinType final
 	{
+	public:
+
+		PinType(std::string aName, GenericDataTypeID aDataTypeID, SetPinValueF aSetPinValueFunction, SetPinValueFromPinF aSetPinValueFromPinFunction, MemoryPoolID aDefaultValueMemoryID, eIODirection aIODirection);
+
+		[[nodiscard]] const std::string& GetName() const;
+		[[nodiscard]] GenericDataTypeID GetDataTypeID() const;
+		[[nodiscard]] SetPinValueF GetSetPinValueFunction() const;
+		[[nodiscard]] SetPinValueFromPinF GetSetPinValueFromPinFunction() const;
+		[[nodiscard]] MemoryPoolID GetDefaultValueMemoryID() const;
+		[[nodiscard]] const std::vector<PinTypeID>& GetSplitPinTypeIDs() const;
+		[[nodiscard]] eIODirection GetIODirection() const;
+		
+		void SetName(std::string aName);
+		void AddSplitPinTypeID(PinTypeID aPinTypeID);
+
+	private:
+
 		std::string mName;
 		//const DataTypeID mDataTypeID = InvalidID<DataTypeID>();
-		const GenericDataTypeID mGenericDataTypeID;
-		const SetPinValueInterface mSetPinValueFunction = nullptr;
-		const SetPinValueFromPinInterface mSetPinValueFromPinFunction = nullptr;
+		GenericDataTypeID mGenericDataTypeID;
+		SetPinValueF mSetPinValueFunction;
+		SetPinValueFromPinF mSetPinValueFromPinFunction;
 		MemoryPoolID mDefaultValueID = InvalidID<MemoryPoolID>();
-		std::vector<PinTypeID> mSubPinTypeIDs;
-		const eFlowType mFlowType = eFlowType::Input;
+		std::vector<PinTypeID> mSplitPinTypeIDs;
+		eIODirection mIODirection = eIODirection::Input;
 	};
 
 
-	[[nodiscard]] constexpr eFlowType InvertFlowType(const eFlowType aFlowType)
+	inline GenericDataTypeID PinType::GetDataTypeID() const
 	{
-		return aFlowType == eFlowType::Input ? eFlowType::Output : eFlowType::Input;
+		return mGenericDataTypeID;
 	}
 
-	[[nodiscard]] std::string PinFlowTypeToString(const eFlowType aPinType);
-
-	[[nodiscard]] eFlowType StringToPinFlowType(const std::string& aName);
-
-	template<typename T>
-	[[nodiscard]] constexpr decltype(auto) SelectByFlowType(eFlowType aFlowType, T&& aInputValue, T&& aOutputValue)
+	inline SetPinValueF PinType::GetSetPinValueFunction() const
 	{
-		return aFlowType == eFlowType::Input ? aInputValue : aOutputValue;
+		return mSetPinValueFunction;
 	}
 
+	inline SetPinValueFromPinF PinType::GetSetPinValueFromPinFunction() const
+	{
+		return mSetPinValueFromPinFunction;
+	}
+
+	inline MemoryPoolID PinType::GetDefaultValueMemoryID() const
+	{
+		return mDefaultValueID;
+	}
+
+	inline const std::vector<PinTypeID>& PinType::GetSplitPinTypeIDs() const
+	{
+		return mSplitPinTypeIDs;
+	}
+
+	inline eIODirection PinType::GetIODirection() const
+	{
+		return mIODirection;
+	}
+
+	[[nodiscard]] constexpr eIODirection InvertIODirection(const eIODirection aIODirection)
+	{
+		return aIODirection == eIODirection::Input ? eIODirection::Output : eIODirection::Input;
+	}
+
+	[[nodiscard]] std::string IODirectionToString(const eIODirection aIODirection);
+
+	[[nodiscard]] eIODirection StringToIODirection(const std::string& aName);
+
+	[[nodiscard]] constexpr decltype(auto) SelectByIODirection(eIODirection aIODirection, auto&& aInputValue, auto&& aOutputValue)
+	{
+		return aIODirection == eIODirection::Input ? aInputValue : aOutputValue;
+	}
+
+	[[nodiscard]] constexpr decltype(auto) SelectByIODirection(eIODirection aIODirection, const auto& aInputValue, const auto& aOutputValue)
+	{
+		return aIODirection == eIODirection::Input ? aInputValue : aOutputValue;
+	}
 }

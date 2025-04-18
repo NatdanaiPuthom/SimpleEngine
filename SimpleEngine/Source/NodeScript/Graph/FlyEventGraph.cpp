@@ -8,10 +8,10 @@ namespace FLY_NAMESPACE
 
 	void EventGraph::BindNodeToEvent(const NodeID aNodeID)
 	{
-		const Node& node = mNodeGraph.mNodes.at(aNodeID);
-		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
+		const Node& node = mNodeGraph.GetNode(aNodeID);
+		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.GetTypeID());
 
-		const EventID eventID = nodeType.mNodeRecipe.mEventID;
+		const EventID eventID = nodeType.GetEventID();
 
 		if (eventID == InvalidID<EventID>())
 		{
@@ -39,10 +39,10 @@ namespace FLY_NAMESPACE
 
 	void EventGraph::UnbindNodeFromEvent(const NodeID aNodeID)
 	{
-		const Node& node = mNodeGraph.mNodes.at(aNodeID);
-		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
+		const Node& node = mNodeGraph.GetNode(aNodeID);
+		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.GetTypeID());
 
-		auto it = mEventNodes.find(nodeType.mNodeRecipe.mEventID);
+		auto it = mEventNodes.find(nodeType.GetEventID());
 
 		if (it != mEventNodes.end())
 		{

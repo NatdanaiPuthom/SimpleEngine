@@ -11,12 +11,10 @@ namespace FLY_NAMESPACE
 	}
 #endif
 
-
 	NodeRef CreateContextualNodeRef(NodeID aNodeID, NodeGraph& aNodeGraph)
 	{
 		return NodeRef(aNodeID, aNodeGraph);
 	}
-
 
 	GlobalNodeRef CreateGlobalNodeRef(const NodeRef& aNodeRef, Class& aClass)
 	{

@@ -35,7 +35,9 @@ namespace FLY_NAMESPACE
 		}
 
 		static void Destroy();
+
 	private:
+
 		Foundation();
 		~Foundation();
 
@@ -43,17 +45,28 @@ namespace FLY_NAMESPACE
 
 		void Initialize();
 
+		MemoryPool& GetMemoryPool();
+		const MemoryPool& GetMemoryPool() const;
+		NodeTypeManager& GetNodeTypeManager();
+		const NodeTypeManager& GetNodeTypeManager() const;
+		PinTypeManager& GetPinTypeManager();
+		const PinTypeManager& GetPinTypeManager() const;
+		DataTypeManager& GetDataTypeManager();
+		const DataTypeManager& GetDataTypeManager() const;
+		TraitManager& GetTraitManager();
+		const TraitManager& GetTraitManager() const;
 		NodeExecutor& GetNodeExecutor();
-
+		const NodeExecutor& GetNodeExecutor() const;
+		EventGraph& GetNodeGraphCopy();
+		const EventGraph& GetNodeGraphCopy() const;
 		const VariableRef& GetVariableRefByNodeRef(const GlobalNodeRef& aNodeRef) const;
-
 		std::vector<GlobalNodeRef> GetNodeRefsByVariableRef(const VariableRef& aVarRef) const;
 
 	private:
 
 		inline static Foundation* sInstance = nullptr;
 
-	public:
+	private:
 
 		MemoryPool mMemoryPool;
 		NodeTypeManager mNodeTypeManager;
@@ -64,7 +77,8 @@ namespace FLY_NAMESPACE
 		HeapObject<NodeExecutor> mNodeExecutor;
 		EventGraph mNodeGraphCopy;
 
-		std::unordered_map<GlobalNodeRef, VariableRef, GlobalNodeRefHasher> mNodeRefToVarRef;
+	public:
 
+		std::unordered_map<GlobalNodeRef, VariableRef, GlobalNodeRefHasher> mNodeRefToVarRef;
 	};
 }

@@ -31,9 +31,74 @@ namespace FLY_NAMESPACE
 		TestUtilityFunction();
 	}
 
+	MemoryPool& Foundation::GetMemoryPool()
+	{
+		return mMemoryPool;
+	}
+
+	const MemoryPool& Foundation::GetMemoryPool() const
+	{
+		return mMemoryPool;
+	}
+
+	NodeTypeManager& Foundation::GetNodeTypeManager()
+	{
+		return mNodeTypeManager;
+	}
+
+	const NodeTypeManager& Foundation::GetNodeTypeManager() const
+	{
+		return mNodeTypeManager;
+	}
+
+	PinTypeManager& Foundation::GetPinTypeManager()
+	{
+		return mPinTypeManager;
+	}
+
+	const PinTypeManager& Foundation::GetPinTypeManager() const
+	{
+		return mPinTypeManager;
+	}
+
+	DataTypeManager& Foundation::GetDataTypeManager()
+	{
+		return mDataTypeManager;
+	}
+
+	const DataTypeManager& Foundation::GetDataTypeManager() const
+	{
+		return mDataTypeManager;
+	}
+
+	TraitManager& Foundation::GetTraitManager()
+	{
+		return mTraitManager;
+	}
+
+	const TraitManager& Foundation::GetTraitManager() const
+	{
+		return mTraitManager;
+	}
+
 	NodeExecutor& Foundation::GetNodeExecutor()
 	{
 		return *mNodeExecutor;
+	}
+
+	const NodeExecutor& Foundation::GetNodeExecutor() const
+	{
+		return *mNodeExecutor;
+	}
+
+	EventGraph& Foundation::GetNodeGraphCopy()
+	{
+		return mNodeGraphCopy;
+	}
+
+	const EventGraph& Foundation::GetNodeGraphCopy() const
+	{
+		return mNodeGraphCopy;
 	}
 
 	const VariableRef& Foundation::GetVariableRefByNodeRef(const GlobalNodeRef& aNodeRef) const

@@ -33,14 +33,13 @@ namespace FLY_NAMESPACE
 	template<typename IDType>
 	struct IDWrapper
 	{
-
-		using id_type = IDType;
+		using value_type = IDType;
 
 		constexpr friend bool operator==(const IDWrapper& a, const IDWrapper& b)
 		{
 			return a.mID == b.mID;
 		}
-		constexpr operator IDType() const
+		constexpr operator value_type() const
 		{
 			return mID;
 		}
@@ -75,10 +74,10 @@ namespace FLY_NAMESPACE
 		IDType mID = Initialize();
 	};
 
-	template<typename IDWrapperType> requires std::is_base_of_v<IDWrapper<typename IDWrapperType::id_type>, IDWrapperType>
+	template<typename IDWrapperType> requires std::is_base_of_v<IDWrapper<typename IDWrapperType::value_type>, IDWrapperType>
 	constexpr IDWrapperType InvalidID()
 	{
-		return IDWrapperType{ InvalidID<typename IDWrapperType::id_type>() };
+		return IDWrapperType{ InvalidID<typename IDWrapperType::value_type>() };
 	}
 
 	struct PinID final : IDWrapper<int> {};
@@ -119,21 +118,75 @@ namespace FLY_NAMESPACE
 	template<typename ClassType, typename OutputType, typename... InputTypes>
 	using FuncPtrMember_Const = OutputType(ClassType::*)(InputTypes...) const;
 
+	template<typename...>
+	class FunctionWrapper;
+
+	template<typename StrongParam, typename Ret, typename... Args>
+	class FunctionWrapper<Ret(Args...), StrongParam> final
+	{
+		using FunctionType = Ret(Args...);
+	public:
+
+		FunctionWrapper() = default;
+		FunctionWrapper(std::nullptr_t) : mFunction(nullptr) {}
+
+		template<typename F>
+		FunctionWrapper(F aFunction)
+			: mFunction(aFunction)
+		{
+		}
+
+		FunctionWrapper(FunctionType* aFunction)
+			: mFunction(aFunction)
+		{
+		}
+
+		Ret Invoke(Args... aArgs) const
+		{
+			return mFunction(std::forward<Args>(aArgs)...);
+		}
+
+		Ret operator()(Args... aArgs) const
+		{
+			return Invoke(std::forward<Args>(aArgs)...);
+		}
+
+		operator bool() const
+		{
+			return !Empty();
+		}
+
+		[[nodiscard]] bool Empty() const
+		{
+			return mFunction == nullptr;
+		}
+
+		[[nodiscard]] FunctionType* GetPtr() const
+		{
+			return mFunction;
+		}
+
+	private:
+
+		FunctionType* mFunction = nullptr;
+	};
+
 	class Node;
 	class NodeGraph;
 	struct InternalExecutionContext;
 	struct NodeExecutionData;
 	class MemoryPool;
-	struct NodeType;
+	class NodeType;
 
-	using CreateNodeSignature = Node(*)(const NodeID aNodeID, const NodeTypeID aNodeTypeID, NodeGraph& aNodeGraph);
-	using ExecuteNodeSignature = void(*)(const NodeExecutionData& aNodeExecutionData, InternalExecutionContext& aContext);
-	using FastExecuteFunction = void(*)(InternalExecutionContext& aContext, const MemoryPool& aFoundationMemoryPool, const NodeType& aNodeType, const void* aMainInput, const void* aInputTuple, void* aOutputValue);
+	using CreateNodeFunction = FunctionWrapper<Node(const NodeID aNodeID, const NodeTypeID aNodeTypeID, NodeGraph& aNodeGraph), struct CreateNodeParam>;
+	using ExecuteNodeFunction = FunctionWrapper<void(const NodeExecutionData& aNodeExecutionData, InternalExecutionContext& aContext), struct ExecuteNodeParam>;
+	using FastExecuteNodeFunction = FunctionWrapper<void(InternalExecutionContext& aContext, const MemoryPool& aFoundationMemoryPool, const NodeType& aNodeType, const void* aMainInput, const void* aInputTuple, void* aOutputValue), struct FastExecuteNodeParam>;
 
 	struct SetPinValueData;
 	struct SetPinValueFromPinData;
-	using SetPinValueInterface = void(*)(const SetPinValueData&, const InternalExecutionContext&);
-	using SetPinValueFromPinInterface = void(*)(const SetPinValueFromPinData&, const InternalExecutionContext&);
+
+	using SetPinValueF = FunctionWrapper<void(const SetPinValueData&, const InternalExecutionContext&), struct SetPinValueParam>;
+	using SetPinValueFromPinF = FunctionWrapper<void(const SetPinValueFromPinData&, const InternalExecutionContext&), struct SetPinValueFromPinParam>;
 
 	template<typename T>
 	class OwningPtr final
@@ -269,23 +322,23 @@ namespace std
 	};
 
 	template<>
-	struct hash<Fly::DataTypeID> : hash<Fly::IDWrapper<Fly::DataTypeID::id_type>> {};
+	struct hash<Fly::DataTypeID> : hash<Fly::IDWrapper<Fly::DataTypeID::value_type>> {};
 
 	template<>
-	struct hash<Fly::ClassID> : hash<Fly::IDWrapper<Fly::ClassID::id_type>> {};
+	struct hash<Fly::ClassID> : hash<Fly::IDWrapper<Fly::ClassID::value_type>> {};
 
 	template<>
-	struct hash<Fly::NodeID> : hash<Fly::IDWrapper<Fly::NodeID::id_type>> {};
+	struct hash<Fly::NodeID> : hash<Fly::IDWrapper<Fly::NodeID::value_type>> {};
 
 	template<>
-	struct hash<Fly::NodeTypeID> : hash<Fly::IDWrapper<Fly::NodeTypeID::id_type>> {};
+	struct hash<Fly::NodeTypeID> : hash<Fly::IDWrapper<Fly::NodeTypeID::value_type>> {};
 
 	template<>
-	struct hash<Fly::CustomEventID> : hash<Fly::IDWrapper<Fly::CustomEventID::id_type>> {};
+	struct hash<Fly::CustomEventID> : hash<Fly::IDWrapper<Fly::CustomEventID::value_type>> {};
 
 	template<>
-	struct hash<Fly::EventID> : hash<Fly::IDWrapper<Fly::EventID::id_type>> {};
+	struct hash<Fly::EventID> : hash<Fly::IDWrapper<Fly::EventID::value_type>> {};
 
 	template<>
-	struct hash<Fly::TraitID> : hash<Fly::IDWrapper<Fly::TraitID::id_type>> {};
+	struct hash<Fly::TraitID> : hash<Fly::IDWrapper<Fly::TraitID::value_type>> {};
 }

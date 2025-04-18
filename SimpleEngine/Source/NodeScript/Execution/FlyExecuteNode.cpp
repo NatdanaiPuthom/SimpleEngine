@@ -16,10 +16,11 @@ namespace FLY_NAMESPACE
 
 			const PinID inputPinID = aInputPinIDs[i];
 
-			const Pin& inputPin = currentNodeGraph.mPins[inputPinID];
-			const PinType& inputPinType = aContext.mPinTypeManager->GetPinType(inputPin.mTypeID);
+			const Pin& inputPin = currentNodeGraph.GetPin(inputPinID);
+			const PinType& inputPinType = aContext.mPinTypeManager->GetPinType(inputPin.GetTypeID());
 
-			if (const DataTypeID* dataTypeID = std::get_if<DataTypeID>(&inputPinType.mGenericDataTypeID.mID))
+			const GenericDataTypeID dtID = inputPinType.GetDataTypeID();
+			if (const DataTypeID* dataTypeID = std::get_if<DataTypeID>(&dtID.mID))
 			{
 				if (*dataTypeID == Flow::mTypeID)
 				{
@@ -27,25 +28,25 @@ namespace FLY_NAMESPACE
 				}
 			}
 
-			if (inputPin.mConnectedPinIDs.empty())
+			if (inputPin.GetConnectedPinIDs().empty())
 			{
 				continue;
 			}
 
-			const PinID connectedOutputPinID = inputPin.mConnectedPinIDs.front();
+			const PinID connectedOutputPinID = inputPin.GetConnectedPinIDs().front();
 
-			const Pin& connectedOutputPin = currentNodeGraph.mPins[connectedOutputPinID];
-			const NodeID connectedNodeID = connectedOutputPin.mNodeID;
+			const Pin& connectedOutputPin = currentNodeGraph.GetPin(connectedOutputPinID);
+			const NodeID connectedNodeID = connectedOutputPin.GetNodeID();
 
-			const Node& connectedNode = currentNodeGraph.mNodes[connectedNodeID];
-			const NodeType& connectedNodeType = aContext.mNodeTypeManager->GetNodeType(connectedNode.mTypeID);
+			const Node& connectedNode = currentNodeGraph.GetNode(connectedNodeID);
+			const NodeType& connectedNodeType = aContext.mNodeTypeManager->GetNodeType(connectedNode.GetTypeID());
 
-			if (!HasFlag(connectedNodeType.mNodeRecipe.mTraits, eNodeTrait::HasFlow))
+			if (!HasFlag(connectedNodeType.GetTraits(), eNodeTrait::HasFlow))
 			{
 				aContext.mNodeExecutor->ExecuteNode(NodeExecutionData{ CreateContextualNodeRef(connectedNodeID, aContext.mNodeData.mNodeRef.GetNodeGraph()), eNodeTriggerReason::Read });
 			}
 
-			inputPinType.mSetPinValueFromPinFunction(SetPinValueFromPinData
+			inputPinType.GetSetPinValueFromPinFunction().Invoke(SetPinValueFromPinData
 				{
 					.mWriteToPinNodeGraph = &currentNodeGraph,
 					.mReadFromPinNodeGraph = &currentNodeGraph,

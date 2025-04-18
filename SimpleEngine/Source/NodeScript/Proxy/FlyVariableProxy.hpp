@@ -7,7 +7,7 @@ namespace FLY_NAMESPACE
 	class StructProxy;
 	class ClassProxy;
 	class GenericDataTypeProxy;
-	struct Variable;
+	class Variable;
 	class CommandTracker;
 
 	class VariableProxy final

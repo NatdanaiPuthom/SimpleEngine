@@ -8,7 +8,7 @@ namespace FLY_NAMESPACE
 
 	class DataTypeProxyIterator final
 	{
-		using InternalIteratorType = std::unordered_map<DataTypeID, struct DataType>::const_iterator;
+		using InternalIteratorType = std::unordered_map<DataTypeID, class DataType>::const_iterator;
 	public:
 
 		DataTypeProxyIterator(InternalIteratorType aIterator, InternalIteratorType aEndIterator, const Predicate<DataTypeProxy>* aPredicate)

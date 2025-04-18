@@ -11,7 +11,7 @@ namespace FLY_NAMESPACE
 		explicit PinTypeProxy(PinTypeID anID);
 
 		[[nodiscard]] const std::string& GetName() const;
-		[[nodiscard]] eFlowType GetFlowType() const;
+		[[nodiscard]] eIODirection GetIODirection() const;
 		//[[nodiscard]] DataTypeID GetDataTypeID() const;
 		[[nodiscard]] GenericDataTypeID GetDataTypeID() const;
 

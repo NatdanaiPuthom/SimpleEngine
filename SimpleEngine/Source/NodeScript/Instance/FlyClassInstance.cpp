@@ -8,7 +8,7 @@ namespace FLY_NAMESPACE
 	ClassInstance::ClassInstance(ClassID aClassID)
 		: mClassID(aClassID)
 		, mVariableContainerInstance(Internal::GetClassByID(aClassID).mVariableContainer)
-		, mEventGraphInstance(Internal::GetClassByID(aClassID).mEventGraph.mNodeGraph)
+		, mEventGraphInstance(Internal::GetClassByID(aClassID).mEventGraph.GetNodeGraph())
 	{
 	}
 

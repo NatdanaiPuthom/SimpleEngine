@@ -244,17 +244,17 @@ namespace FLY_NAMESPACE
 
 	bool LinkProxy::IsDestroyed() const
 	{
-		return GetLink().mIsDestroyed;
+		return GetLink().IsDestroyed();
 	}
 
 	PinProxy LinkProxy::GetInputPin() const
 	{
-		return PinProxy(GetLink().mInputPinID, NodeGraphProxy(mNodeGraphVariant));
+		return PinProxy(GetLink().GetInputPinID(), NodeGraphProxy(mNodeGraphVariant));
 	}
 
 	PinProxy LinkProxy::GetOutputPin() const
 	{
-		return PinProxy(GetLink().mOutputPinID, NodeGraphProxy(mNodeGraphVariant));
+		return PinProxy(GetLink().GetOutputPinID(), NodeGraphProxy(mNodeGraphVariant));
 	}
 
 	LinkID LinkProxy::GetID() const
@@ -280,6 +280,6 @@ namespace FLY_NAMESPACE
 
 	const Link& LinkProxy::GetLink() const
 	{
-		return NodeGraphProxy(mNodeGraphVariant).GetNodeGraph().mLinks.at(mLinkID);
+		return NodeGraphProxy(mNodeGraphVariant).GetNodeGraph().GetLink(mLinkID);
 	}
 }

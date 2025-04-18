@@ -23,9 +23,9 @@ namespace FLY_NAMESPACE
 
 	void NodeExecutor::ExecuteNode(const NodeExecutionData& aNodeExecutionData)
 	{
-		const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().mNodes[aNodeExecutionData.mNodeRef.GetNodeID()];
-		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
-		nodeType.mNodeRecipe.mExecuteFunction(aNodeExecutionData, mExecutionContext);
+		const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().GetNode(aNodeExecutionData.mNodeRef.GetNodeID());
+		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.GetTypeID());
+		nodeType.GetExecuteFunction().Invoke(aNodeExecutionData, mExecutionContext);
 	}
 
 	void NodeExecutor::ExecuteEvent(const EventID aEventID, ClassInstance& aClassInstance, void* const aTarget, const ExecutionContextBase& anExecutionContext)
@@ -49,10 +49,10 @@ namespace FLY_NAMESPACE
 #endif
 
 		EventGraph& eventGraph = c.mEventGraph;
-		auto it = eventGraph.mEventNodes.find(aEventID);
+		auto nodeIDs = eventGraph.GetNodeIDsByEventID(aEventID);
 
 
-		if (it == eventGraph.mEventNodes.end())
+		if (!nodeIDs)
 		{
 			return;
 		}
@@ -62,9 +62,9 @@ namespace FLY_NAMESPACE
 
 		mExecutionContext.mNodeExecutionQueue = &nodeExecutionQueue;
 
-		for (const NodeID nodeID : it->second)
+		for (const NodeID nodeID : nodeIDs.value())
 		{
-			nodeExecutionQueue.Push(NodeExecutionData{.mNodeRef = NodeRef{nodeID, eventGraph.mNodeGraph},
+			nodeExecutionQueue.Push(NodeExecutionData{ .mNodeRef = NodeRef{ nodeID, eventGraph.GetNodeGraph() },
 				.mTriggerReason = eNodeTriggerReason::Event });
 		}
 

@@ -1,57 +1,43 @@
 #pragma once
 #include "../FlyDefines.hpp"
-#include "nlohmann/json.hpp"
+#include "FlyDataTypeInterface.hpp"
 #include "FlyDataTypeTrait.hpp"
 #include "FlyVariableContainer.hpp"
 
 namespace FLY_NAMESPACE
 {
-	using AllocateInterface = void(*)(void* aDataPtr, const void* aDefaultValue);
-	using ReleaseInterface = void(*)(void* aDataPtr);
-	using CopyInterface = void(*)(void* aDestination, const void* aSource);
-	using SwapInterface = void(*)(void* aDataPtr1, void* aDataPtr2);
-	using EqualsInterface = bool(*)(const void* aDataPtr1, const void* aDataPtr2);
 
-	struct FundamentalInterface final
+	class DataType final
 	{
-		const AllocateInterface allocate = nullptr;
-		const ReleaseInterface release = nullptr;
-		const CopyInterface copy = nullptr;
-		const SwapInterface swap = nullptr;
-		const EqualsInterface equals = nullptr;
-	};
+	public:
 
-	using EditorTextFunction = void(*)(const std::string& aText);
-	using ViewAndEditInterface = ViewAndEditResult(*)(void* aDataPtr, EditorTextFunction aNullptrFunction);
-	using ViewInterface = void(*)(const void* aDataPtr, EditorTextFunction aNullptrFunction);
-	using SaveInterface = void(*)(const void* aDataPtr, nlohmann::json& aSaveObject);
-	using LoadInterface = void(*)(void* aDataPtr, const nlohmann::json& aLoadObject);
+		DataType() = default;
+		DataType(std::string aName, size_t aSize, size_t aAlignment, Color aColor, const std::type_info* aTypeInfo, DataTypeInterface aInterface, DataTypeID aToPointerDataTypeID, DataTypeID aToValueDataTypeID, eDataTypeTrait aTraits);
 
-	struct FunctionInterface final
-	{
-		ViewAndEditInterface viewAndEdit = nullptr;
-		ViewInterface view = nullptr;
-		SaveInterface save = nullptr;
-		LoadInterface load = nullptr;
-	};
+		[[nodiscard]] std::string& Name();
+		[[nodiscard]] const std::string& Name() const;
 
-	struct ExecutionInterface final
-	{
-		SetPinValueInterface setInputPinValue = nullptr;
-		SetPinValueInterface setOutputPinValue = nullptr;
-		SetPinValueFromPinInterface setInputPinValueFromPin = nullptr;
-		SetPinValueFromPinInterface setOutputPinValueFromPin = nullptr;
-	};
+		[[nodiscard]] size_t GetSize() const;
+		[[nodiscard]] size_t GetAlignment() const;
+		[[nodiscard]] Color GetColor() const;
+		[[nodiscard]] const std::type_info* GetTypeInfo() const;
+		[[nodiscard]] const DataTypeInterface& GetInterface() const;
+		[[nodiscard]] VariableContainer& GetVariableContainer();
+		[[nodiscard]] const VariableContainer& GetVariableContainer() const;
+		[[nodiscard]] const std::vector<NodeTypeID>& GetMemberNodeTypeIDs() const;
+		[[nodiscard]] NodeTypeID GetBreakerNodeTypeID() const;
+		[[nodiscard]] NodeTypeID GetMakerNodeTypeID() const;
+		[[nodiscard]] DataTypeID GetToPointerDataTypeID() const;
+		[[nodiscard]] DataTypeID GetToValueDataTypeID() const;
+		[[nodiscard]] eDataTypeTrait GetTypeTraits() const;
 
-	struct DataTypeInterface final
-	{
-		FundamentalInterface fundamental;
-		FunctionInterface function;
-		ExecutionInterface execution;
-	};
+		void SetColor(Color aColor);
+		void SetBreakerNodeTypeID(NodeTypeID aNodeTypeID);
+		void SetMakerNodeTypeID(NodeTypeID aNodeTypeID);
+		void AddMemberNodeTypeID(NodeTypeID aNodeTypeID);
 
-	struct DataType final
-	{
+	private:
+
 		std::string mName;
 		size_t mSize = 0;
 		size_t mAlignment = 0;
@@ -59,13 +45,68 @@ namespace FLY_NAMESPACE
 		const std::type_info* mTypeInfo = nullptr;
 		DataTypeInterface mInterface;
 		VariableContainer mVariableContainer;
-		std::vector<NodeTypeID> mNodeTypeIDs;
+		std::vector<NodeTypeID> mMemberNodeTypeIDs;
 		NodeTypeID mBreakerNodeTypeID;
 		NodeTypeID mMakerNodeTypeID;
 		DataTypeID mToPointerDataTypeID;
 		DataTypeID mToValueDataTypeID;
 		eDataTypeTrait mTypeTraits = eDataTypeTrait::None;
 	};
+
+	inline std::string& DataType::Name()
+	{
+		return mName;
+	}
+
+	inline const std::string& DataType::Name() const
+	{
+		return mName;
+	}
+
+	inline size_t DataType::GetSize() const
+	{
+		return mSize;
+	}
+
+	inline size_t DataType::GetAlignment() const
+	{
+		return mAlignment;
+	}
+
+	inline Color DataType::GetColor() const
+	{
+		return mColor;
+	}
+
+	inline const DataTypeInterface& DataType::GetInterface() const
+	{
+		return mInterface;
+	}
+
+	inline VariableContainer& DataType::GetVariableContainer()
+	{
+		return mVariableContainer;
+	}
+
+	inline const VariableContainer& DataType::GetVariableContainer() const
+	{
+		return mVariableContainer;
+	}
+
+	inline DataTypeID DataType::GetToPointerDataTypeID() const
+	{
+		return mToPointerDataTypeID;
+	}
+
+	inline DataTypeID DataType::GetToValueDataTypeID() const
+	{
+		return mToValueDataTypeID;
+	}
+
+	inline eDataTypeTrait DataType::GetTypeTraits() const
+	{
+		return mTypeTraits;
+	}
 
 	struct TemplateDataType
 	{

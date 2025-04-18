@@ -82,7 +82,7 @@ namespace FLY_NAMESPACE
 		Internal::GetDataTypeManager().SetEditorTextFunction(aTextFunction);
 	}
 
-	void CreateCopyBuffer(const std::vector<NodeID>& aNodeIDs, const NodeGraphProxy aCopiedFromNodeGraphProxy)
+	void CreateCopyBuffer(const std::span<NodeID> aNodeIDs, NodeGraphProxy aCopiedFromNodeGraphProxy)
 	{
 		if (aNodeIDs.empty())
 		{
@@ -92,7 +92,7 @@ namespace FLY_NAMESPACE
 		EventGraph& eventGraphCopy = Internal::GetNodeGraphCopy();
 		eventGraphCopy = EventGraph{};
 
-		NodeGraph& nodeGraphCopy = eventGraphCopy.mNodeGraph;
+		NodeGraph& nodeGraphCopy = eventGraphCopy.GetNodeGraph();
 
 		std::vector<NodeID> createdNodeIDs;
 		std::unordered_map<NodeID, NodeID> nodeConverter;
@@ -101,10 +101,10 @@ namespace FLY_NAMESPACE
 		Vec2 avgPos;
 		for (const NodeID nodeID : aNodeIDs)
 		{
-			const Node& node = copiedFromNodeGraph.mNodes.at(nodeID);
+			const Node& node = copiedFromNodeGraph.GetNode(nodeID);
 
-			const NodeID createdNodeID = Internal::CreateNode(&eventGraphCopy, node.mTypeID, node.mPosition, nullptr);
-			avgPos += node.mPosition;
+			const NodeID createdNodeID = Internal::CreateNode(&eventGraphCopy, node.GetTypeID(), node.GetPosition(), nullptr);
+			avgPos += node.GetPosition();
 
 			createdNodeIDs.push_back(createdNodeID);
 			nodeConverter.emplace(nodeID, createdNodeID);
@@ -112,19 +112,20 @@ namespace FLY_NAMESPACE
 
 		avgPos /= static_cast<float>(aNodeIDs.size());
 
-		for (Node& node : nodeGraphCopy.mNodes)
+		for (NodeID nodeID{ 0 }; nodeID < nodeGraphCopy.GetNodeCount(); ++nodeID)
 		{
-			node.mPosition = node.mPosition - avgPos;
+			Node& node = nodeGraphCopy.GetNode(nodeID);
+			node.SetPosition(node.GetPosition() - avgPos);
 		}
 
 		// Create links
-		for (NodeID copiedNodeID : aNodeIDs)
+		for (const NodeID copiedNodeID : aNodeIDs)
 		{
-			const Node& copiedNode = copiedFromNodeGraph.mNodes.at(copiedNodeID);
-			for (const PinID copiedInputPinID : copiedNode.mInputPins)
+			const Node& copiedNode = copiedFromNodeGraph.GetNode(copiedNodeID);
+			for (const PinID copiedInputPinID : copiedNode.GetInputPins())
 			{
 				const Pin& copiedInputPin = Internal::GetPin(copiedInputPinID, copiedFromNodeGraph);
-				const PinType& copiedInputPinType = Internal::GetPinTypeManager().GetPinType(copiedInputPin.mTypeID);
+				const PinType& copiedInputPinType = Internal::GetPinTypeManager().GetPinType(copiedInputPin.GetTypeID());
 
 				const NodeID createdNodeID = nodeConverter.at(copiedNodeID);
 				const PinID createdInputPinID = Internal::GetOpposingPinID(copiedFromNodeGraph, copiedInputPinID, nodeGraphCopy, createdNodeID);
@@ -134,13 +135,13 @@ namespace FLY_NAMESPACE
 
 				for (const LinkID connectedLinkID : connectedLinks)
 				{
-					const Link& connectedLink = copiedFromNodeGraph.mLinks[connectedLinkID];
+					const Link& connectedLink = copiedFromNodeGraph.GetLink(connectedLinkID);
 
-					const PinID connectedOutputPinID = connectedLink.mOutputPinID;
+					const PinID connectedOutputPinID = connectedLink.GetOutputPinID();
 					const Pin& connectedOutputPin = Internal::GetPin(connectedOutputPinID, copiedFromNodeGraph);
 
-					auto it = nodeConverter.find(connectedOutputPin.mNodeID);
-					if (it == nodeConverter.end())
+					auto it = nodeConverter.find(connectedOutputPin.GetNodeID());
+					if (it == end(nodeConverter))
 					{
 						continue;
 					}
@@ -152,14 +153,14 @@ namespace FLY_NAMESPACE
 
 				Pin& createdInputPin = Internal::GetPin(createdInputPinID, nodeGraphCopy);
 
-				Internal::GetDataTypeManager().CopyData(copiedInputPinType.mGenericDataTypeID, createdInputPin.mDataPtr, copiedInputPin.mDataPtr);
+				Internal::GetDataTypeManager().CopyData(copiedInputPinType.GetDataTypeID(), createdInputPin.GetDataPtr(), copiedInputPin.GetDataPtr());
 			}
 		}
 	}
 
-	void PasteCopyBuffer(const Vec2 aPosition, NodeGraphProxy aTargetNodeGraphProxy, CommandTracker* const aCommandTracker)
+	void PasteCopyBuffer(NodeGraphProxy aTargetNodeGraphProxy, const Vec2 aPosition, CommandTracker* const aCommandTracker)
 	{
-		const NodeGraph& nodeGraphCopy = Internal::GetNodeGraphCopy().mNodeGraph;
+		const NodeGraph& nodeGraphCopy = Internal::GetNodeGraphCopy().GetNodeGraph();
 
 		if (aCommandTracker)
 		{
@@ -170,31 +171,31 @@ namespace FLY_NAMESPACE
 
 		std::unordered_map<NodeID, NodeID> nodeConverter;
 
-		for (NodeID sourceNodeID{ 0 }; sourceNodeID < nodeGraphCopy.mNodes.size(); sourceNodeID++)
+		for (NodeID sourceNodeID{ 0 }; sourceNodeID < nodeGraphCopy.GetNodeCount(); sourceNodeID++)
 		{
-			const Node& node = nodeGraphCopy.mNodes.at(sourceNodeID);
-			const NodeID createdNodeID = Internal::CreateNode(aTargetNodeGraphProxy.GetVariant(), node.mTypeID, aPosition + node.mPosition, aCommandTracker);
+			const Node& node = nodeGraphCopy.GetNode(sourceNodeID);
+			const NodeID createdNodeID = Internal::CreateNode(aTargetNodeGraphProxy.GetVariant(), node.GetTypeID(), aPosition + node.GetPosition(), aCommandTracker);
 			nodeConverter.emplace(sourceNodeID, createdNodeID);
 
 			const Node& createdNode = Internal::GetNode(createdNodeID, targetNodeGraph);
 			DataTypeManager& dataTypeManager = Internal::GetDataTypeManager();
-			for (const PinID createdInputPinID : createdNode.mInputPins)
+			for (const PinID createdInputPinID : createdNode.GetInputPins())
 			{
 				Pin& createdInputPin = Internal::GetPin(createdInputPinID, targetNodeGraph);
-				const PinType& createdInputPinType = Internal::GetPinTypeManager().GetPinType(createdInputPin.mTypeID);
+				const PinType& createdInputPinType = Internal::GetPinTypeManager().GetPinType(createdInputPin.GetTypeID());
 
 				const PinID sourcePinID = Internal::GetOpposingPinID(targetNodeGraph, createdInputPinID, nodeGraphCopy, sourceNodeID);
-				const Pin& sourcePin = nodeGraphCopy.mPins.at(sourcePinID);
-				dataTypeManager.CopyData(createdInputPinType.mGenericDataTypeID, createdInputPin.mDataPtr, sourcePin.mDataPtr);
+				const Pin& sourcePin = nodeGraphCopy.GetPin(sourcePinID);
+				dataTypeManager.CopyData(createdInputPinType.GetDataTypeID(), createdInputPin.GetDataPtr(), sourcePin.GetDataPtr());
 			}
 		}
 
-		for (const Link& link : nodeGraphCopy.mLinks)
+		for (const Link& link : nodeGraphCopy.GetLinks())
 		{
-			const Pin& inputPin = nodeGraphCopy.mPins[link.mInputPinID];
-			const Pin& outputPin = nodeGraphCopy.mPins[link.mOutputPinID];
-			const PinID createdInputPinID = Internal::GetOpposingPinID(nodeGraphCopy, link.mInputPinID, targetNodeGraph, nodeConverter.at(inputPin.mNodeID));
-			const PinID createdOutputPinID = Internal::GetOpposingPinID(nodeGraphCopy, link.mOutputPinID, targetNodeGraph, nodeConverter.at(outputPin.mNodeID));
+			const Pin& inputPin = nodeGraphCopy.GetPin(link.GetInputPinID());
+			const Pin& outputPin = nodeGraphCopy.GetPin(link.GetOutputPinID());
+			const PinID createdInputPinID = Internal::GetOpposingPinID(nodeGraphCopy, link.GetInputPinID(), targetNodeGraph, nodeConverter.at(inputPin.GetNodeID()));
+			const PinID createdOutputPinID = Internal::GetOpposingPinID(nodeGraphCopy, link.GetOutputPinID(), targetNodeGraph, nodeConverter.at(outputPin.GetNodeID()));
 			const LinkID createdLinkID = Internal::TryCreateLink(targetNodeGraph, createdInputPinID, createdOutputPinID, aCommandTracker);
 
 			assert(createdLinkID != InvalidID<LinkID>());
@@ -294,11 +295,11 @@ namespace FLY_NAMESPACE
 
 	std::vector<FunctionProxy> GetFunctions()
 	{
-		const auto& mFunctions = Internal::GetNodeTypeManager().GetFunctions();
+		const auto& functions = Internal::GetNodeTypeManager().GetFunctions();
 		std::vector<FunctionProxy> views;
-		views.reserve(mFunctions.size());
+		views.reserve(functions.size());
 
-		for (FunctionID functionID{ 0 }; functionID < mFunctions.size(); ++functionID)
+		for (FunctionID functionID{ 0 }; functionID < functions.size(); ++functionID)
 		{
 			views.push_back(FunctionProxy(functionID));
 		}
@@ -350,15 +351,15 @@ namespace FLY_NAMESPACE
 		return facades;
 	}
 
-	std::vector<NodeTypeProxy> GetNodeTypesFilteredByDataTypeAndFlowType(const GenericDataTypeID aDataTypeID, const eFlowType aFlowType)
+	std::vector<NodeTypeProxy> GetNodeTypesFilteredByDataTypeAndFlowType(const GenericDataTypeID aDataTypeID, const eIODirection aIODirection)
 	{
-		return GetNodeTypesFiltered([aDataTypeID, aFlowType](const NodeType& aNodeType) -> bool
+		return GetNodeTypesFiltered([aDataTypeID, aIODirection](const NodeType& aNodeType) -> bool
 			{
-				const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, aNodeType.mNodeRecipe.mInputPinTypeIDs, aNodeType.mNodeRecipe.mOutputPinTypeIDs);
+				const std::vector<PinTypeID>& pinTypeIDs = SelectByIODirection(aIODirection, aNodeType.GetInputPinTypeIDs(), aNodeType.GetOutputPinTypeIDs());
 				for (const PinTypeID pinTypeID : pinTypeIDs)
 				{
 					const PinType& pinType = Internal::GetPinTypeManager().GetPinType(pinTypeID);
-					if (pinType.mGenericDataTypeID == aDataTypeID)
+					if (pinType.GetDataTypeID() == aDataTypeID)
 					{
 						return true;
 					}
@@ -378,20 +379,20 @@ namespace FLY_NAMESPACE
 		return NodeTypeProxyIteratorService(NodeTypeID{ Internal::GetNodeTypeManager().GetNodeTypes().size() }, aFilterPredicate);
 	}
 
-	std::vector<NodeTypeProxy> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(const GenericDataTypeID aDataTypeID, const eFlowType aFlowType, const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
+	std::vector<NodeTypeProxy> GetNodeTypesFilteredByRelatedDataTypesAndFlowTypeAndTrait(const GenericDataTypeID aDataTypeID, const eIODirection aIODirection, const eNodeTrait aNodeTrait, bool(*aBitOperation)(eNodeTrait, eNodeTrait))
 	{
-		return GetNodeTypesFiltered([aDataTypeID, aFlowType, aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
+		return GetNodeTypesFiltered([aDataTypeID, aIODirection, aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
 			{
-				if (!aBitOperation(aNodeTrait, aNodeType.mNodeRecipe.mTraits))
+				if (!aBitOperation(aNodeTrait, aNodeType.GetTraits()))
 				{
 					return false;
 				}
-				const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, aNodeType.mNodeRecipe.mInputPinTypeIDs, aNodeType.mNodeRecipe.mOutputPinTypeIDs);
+				const std::vector<PinTypeID>& pinTypeIDs = SelectByIODirection(aIODirection, aNodeType.GetInputPinTypeIDs(), aNodeType.GetOutputPinTypeIDs());
 				for (const PinTypeID pinTypeID : pinTypeIDs)
 				{
 					const PinType& pinType = Internal::GetPinTypeManager().GetPinType(pinTypeID);
-					const GenericDataTypeID inputDataTypeID = SelectByFlowType(aFlowType, pinType.mGenericDataTypeID, aDataTypeID);
-					const GenericDataTypeID outputDataTypeID = SelectByFlowType(aFlowType, aDataTypeID, pinType.mGenericDataTypeID);
+					const GenericDataTypeID inputDataTypeID = SelectByIODirection(aIODirection, pinType.GetDataTypeID(), aDataTypeID);
+					const GenericDataTypeID outputDataTypeID = SelectByIODirection(aIODirection, aDataTypeID, pinType.GetDataTypeID());
 					if (Internal::AreDataTypesLinkable(inputDataTypeID, outputDataTypeID))
 					{
 						return true;
@@ -406,7 +407,7 @@ namespace FLY_NAMESPACE
 	{
 		return GetNodeTypesFiltered([aNodeTrait, aBitOperation](const NodeType& aNodeType) -> bool
 			{
-				return aBitOperation(aNodeTrait, aNodeType.mNodeRecipe.mTraits);
+				return aBitOperation(aNodeTrait, aNodeType.GetTraits());
 			}
 		);
 	}

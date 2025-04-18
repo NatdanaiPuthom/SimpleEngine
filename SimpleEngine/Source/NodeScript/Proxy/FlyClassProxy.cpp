@@ -31,17 +31,17 @@ namespace FLY_NAMESPACE
 
 	std::vector<VariableProxy> ClassProxy::GetVariables(const bool aIncludeDestroyed) const
 	{
-		const std::vector<Variable>& variables = GetClass().mVariableContainer.mVariables;
+		const Class& flyClass = GetClass();
 		std::vector<VariableProxy> variableProxys;
 
-		variableProxys.reserve(variables.size());
+		variableProxys.reserve(flyClass.mVariableContainer.GetVariableCount());
 
 		if (!aIncludeDestroyed)
 		{
-			for (VarID varID{ 0 }; varID < variables.size(); ++varID)
+			for (VarID varID{ 0 }; varID < flyClass.mVariableContainer.GetVariableCount(); ++varID)
 			{
-				const Variable& variable = variables[varID];
-				if (variable.mIsDestroyed)
+				const Variable& variable = flyClass.mVariableContainer.GetVariable(varID);
+				if (variable.IsDestroyed())
 				{
 					continue;
 				}
@@ -50,7 +50,7 @@ namespace FLY_NAMESPACE
 		}
 		else
 		{
-			for (VarID varID{ 0 }; varID < variables.size(); ++varID)
+			for (VarID varID{ 0 }; varID < flyClass.mVariableContainer.GetVariableCount(); ++varID)
 			{
 				variableProxys.push_back(VariableProxy(varID, *this));
 			}

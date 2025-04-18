@@ -1,15 +1,15 @@
 #pragma once
 #include "../FlyDefines.hpp"
 #include "../Graph/FlyNodeGraphVariant.hpp"
+#include "../Pin/FlyIODirection.hpp"
 
 namespace FLY_NAMESPACE
 {
 
 	class CommandTracker;
 	class NodeGraphProxy;
-	struct Pin;
-	struct PinType;
-	enum class eFlowType;
+	class Pin;
+	class PinType;
 
 	class PinProxy final
 	{
@@ -22,7 +22,7 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] const std::vector<PinID>& GetConnectedPinIDs() const;
 		[[nodiscard]] GenericDataTypeID GetDataTypeID() const;
 		[[nodiscard]] std::string_view GetPinTypeName() const;
-		[[nodiscard]] eFlowType GetFlowType() const;
+		[[nodiscard]] eIODirection GetIODirection() const;
 		[[nodiscard]] NodeID GetNodeID() const;
 		[[nodiscard]] PinTypeID GetPinTypeID() const;
 

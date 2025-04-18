@@ -41,18 +41,18 @@ namespace FLY_NAMESPACE
 
 	NodeProxyIteratorService NodeGraphProxy::IterateNodes(Predicate<NodeProxy> aFilterPredicate) const
 	{
-		return NodeProxyIteratorService(mNodeGraphVariant, NodeID{ static_cast<NodeID::id_type>(GetNodeGraph().mNodes.size()) }, aFilterPredicate);
+		return NodeProxyIteratorService(mNodeGraphVariant, NodeID{ static_cast<NodeID::value_type>(GetNodeGraph().GetNodeCount()) }, aFilterPredicate);
 	}
 
 	NodeProxyIteratorService NodeGraphProxy::IterateNodes(const bool aIncludeDestroyed) const
 	{
-		Predicate<NodeProxy> filterPredicate = aIncludeDestroyed 
+		Predicate<NodeProxy> filterPredicate = aIncludeDestroyed
 			? Predicate<NodeProxy>()
 			: [](const NodeProxy& aNodeProxy) -> bool
 			{
 				return !aNodeProxy.IsDestroyed();
 			};
-		return NodeProxyIteratorService(mNodeGraphVariant, NodeID{ static_cast<NodeID::id_type>(GetNodeGraph().mNodes.size()) }, filterPredicate);
+		return NodeProxyIteratorService(mNodeGraphVariant, NodeID{ static_cast<NodeID::value_type>(GetNodeGraph().GetNodeCount()) }, filterPredicate);
 	}
 
 	LinkProxyIteratorService NodeGraphProxy::IterateLinks(const bool aIncludeDestroyed) const
@@ -63,7 +63,7 @@ namespace FLY_NAMESPACE
 			{
 				return !aLinkProxy.IsDestroyed();
 			};
-		return LinkProxyIteratorService(mNodeGraphVariant, LinkID{ static_cast<LinkID::id_type>(GetNodeGraph().mLinks.size()) }, filterPredicate);
+		return LinkProxyIteratorService(mNodeGraphVariant, LinkID{ static_cast<LinkID::value_type>(GetNodeGraph().GetLinks().size())}, filterPredicate);
 	}
 
 	NodeGraph& NodeGraphProxy::GetNodeGraph()
@@ -96,11 +96,11 @@ namespace FLY_NAMESPACE
 	{
 		std::vector<PinProxy> pinProxys;
 		const NodeGraph& nodeGraph = aNodeGraphProxy.GetNodeGraph();
-		pinProxys.reserve(nodeGraph.mPins.size());
+		pinProxys.reserve(nodeGraph.GetPinCount());
 
-		for (PinID pinID{ 0 }; pinID < nodeGraph.mPins.size(); ++pinID)
+		for (PinID pinID{ 0 }; pinID < nodeGraph.GetPinCount(); ++pinID)
 		{
-			const Pin& pin = nodeGraph.mPins[pinID];
+			const Pin& pin = nodeGraph.GetPin(pinID);
 			if (aPredicate(pin))
 			{
 				pinProxys.push_back(PinProxy(pinID, aNodeGraphProxy));
@@ -114,7 +114,7 @@ namespace FLY_NAMESPACE
 	{
 		return GetPinsFiltered([](const Pin& aPin)-> bool
 			{
-				return aPin.mConnectedPinIDs.empty() && Internal::GetPinType(aPin.mTypeID).mFlowType == eFlowType::Input;
+				return aPin.GetConnectedPinIDs().empty() && Internal::GetPinType(aPin.GetTypeID()).GetIODirection() == eIODirection::Input;
 			},
 			*this
 		);
@@ -124,49 +124,38 @@ namespace FLY_NAMESPACE
 	{
 		return GetPinsFiltered([](const Pin& aPin)-> bool
 			{
-				return aPin.mConnectedPinIDs.empty() && Internal::GetPinType(aPin.mTypeID).mFlowType == eFlowType::Output;
+				return aPin.GetConnectedPinIDs().empty() && Internal::GetPinType(aPin.GetTypeID()).GetIODirection() == eIODirection::Output;
 			},
 			*this
 		);
 	}
 
-	std::vector<PinProxy> NodeGraphProxy::GetNonConnectedPinsByFlowType(const eFlowType aFlowType) const
+	std::vector<PinProxy> NodeGraphProxy::GetNonConnectedPinsByIODirection(const eIODirection aIODirection) const
 	{
-		switch (aFlowType)
-		{
-		case eFlowType::Input:
-			return GetNonConnectedInputPins();
-			break;
-		case eFlowType::Output:
-			return GetNonConnectedOutputPins();
-			break;
-		default:
-			break;
-		}
-		return std::vector<PinProxy>();
+		return SelectByIODirection(aIODirection, GetNonConnectedInputPins(), GetNonConnectedOutputPins());
 	}
 
-	std::vector<PinProxy> NodeGraphProxy::GetNonConnectedPinsByFlowTypeAndDataType(const eFlowType aFlowType, const GenericDataTypeProxy aDataTypeProxy) const
+	std::vector<PinProxy> NodeGraphProxy::GetNonConnectedPinsByIODirectionAndDataType(const eIODirection aIODirection, const GenericDataTypeProxy aDataTypeProxy) const
 	{
 		return GetPinsFiltered(
-			[aFlowType, dataTypeID = aDataTypeProxy.GetID()](const Pin& aPin) -> bool
+			[aIODirection, dataTypeID = aDataTypeProxy.GetID()](const Pin& aPin) -> bool
 			{
-				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(aPin.mTypeID);
-				return aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType && pinType.mGenericDataTypeID == dataTypeID;
+				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(aPin.GetTypeID());
+				return aPin.GetConnectedPinIDs().empty() && pinType.GetIODirection() == aIODirection && pinType.GetDataTypeID() == dataTypeID;
 			},
 			*this
 		);
 	}
 
-	std::vector<PinProxy> NodeGraphProxy::GetNonConnectedPinsByFlowTypeAndRelatedDataTypes(const eFlowType aFlowType, const GenericDataTypeProxy aDataTypeProxy) const
+	std::vector<PinProxy> NodeGraphProxy::GetNonConnectedPinsByIODirectionAndRelatedDataTypes(const eIODirection aIODirection, const GenericDataTypeProxy aDataTypeProxy) const
 	{
 		return GetPinsFiltered(
-			[aFlowType, dataTypeID = aDataTypeProxy.GetID()](const Pin& aPin) -> bool
+			[aIODirection, dataTypeID = aDataTypeProxy.GetID()](const Pin& aPin) -> bool
 			{
-				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(aPin.mTypeID);
-				const bool a = aPin.mConnectedPinIDs.empty() && pinType.mFlowType == aFlowType;
+				const PinType& pinType = Internal::GetPinTypeManager().GetPinType(aPin.GetTypeID());
+				const bool a = aPin.GetConnectedPinIDs().empty() && pinType.GetIODirection() == aIODirection;
 
-				return a && Internal::AreDataTypesLinkable(SelectByFlowType(aFlowType, dataTypeID, pinType.mGenericDataTypeID), pinType.mGenericDataTypeID);
+				return a && Internal::AreDataTypesLinkable(SelectByIODirection(aIODirection, dataTypeID, pinType.GetDataTypeID()), pinType.GetDataTypeID());
 			},
 			*this
 		);
@@ -178,10 +167,17 @@ namespace FLY_NAMESPACE
 		return NodeProxy(nodeID, *this);
 	}
 
-	NodeProxy NodeGraphProxy::CreateNode(const std::string_view aName, bool& aSuccess, const Vec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
+	NodeProxy NodeGraphProxy::CreateNode(const std::string_view aName, const Vec2 aPosition, CommandTracker* const aCommandTracker, const bool aCreateIfNameNotFound)
 	{
-		const NodeID nodeID = Internal::CreateNode(mNodeGraphVariant, aName, aSuccess, aPosition, aCreateIfNameNotFound, aCommandTracker);
-		return NodeProxy(nodeID, *this);
+		const std::optional<NodeID> nodeID = Internal::CreateNode(mNodeGraphVariant, aName, aPosition, aCreateIfNameNotFound, aCommandTracker);
+		if (nodeID.has_value())
+		{
+			return NodeProxy(nodeID.value(), *this);
+		}
+		else
+		{
+			return NodeProxy(InvalidID<NodeID>(), *this);
+		}
 	}
 
 	NodeProxy NodeGraphProxy::CreateNodeAutoLink(const NodeTypeProxy aNodeTypeProxy, const PinID aConnection, const Vec2 aPosition, CommandTracker* const aCommandTracker)
@@ -202,7 +198,7 @@ namespace FLY_NAMESPACE
 		return NodeProxy(nodeID, *this);
 	}*/
 
-	void NodeGraphProxy::DestroySelection(const std::vector<NodeID>& aNodeIDs, const std::vector<LinkID>& aLinkIDs, CommandTracker* const aCommandTracker)
+	void NodeGraphProxy::DestroySelection(const std::span<NodeID> aNodeIDs, const std::span<LinkID> aLinkIDs, CommandTracker* const aCommandTracker)
 	{
 		Internal::DestroySelection(aNodeIDs, aLinkIDs, GetNodeGraph(), aCommandTracker);
 	}

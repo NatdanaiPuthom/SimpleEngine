@@ -61,7 +61,7 @@ namespace FLY_NAMESPACE
 
 				if constexpr (!std::same_as<VectorType, std::vector<bool>>)
 				{
-					const std::string& typeName = Internal::GetDataTypeManager().GetName(Fly::GetDataTypeID<T>());
+					const std::string& typeName = Internal::GetDataTypeManager().Find<T>()->Name();
 
 					TypeParameters containerTypeParams;
 					containerTypeParams.mName = "Vector <" + typeName + ">";
@@ -72,7 +72,7 @@ namespace FLY_NAMESPACE
 					Register<VectorType, eNodeOperatorTrait::None, true>(containerTypeParams);
 
 
-					RegisterSystemNodeType(ForEach<VectorType>, NodeCreationData{ .mName = "Execution/For Each " + typeName });
+					RegisterSystemNodeType(ForEachNode<VectorType>, NodeCreationData{ .mName = "Execution/For Each " + typeName });
 
 				}
 

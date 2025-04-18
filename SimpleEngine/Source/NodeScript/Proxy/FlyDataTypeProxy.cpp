@@ -22,7 +22,7 @@ namespace FLY_NAMESPACE
 
 	const std::string& DataTypeProxy::GetName() const
 	{
-		return Internal::GetDataTypeManager().GetName(mDataTypeID);
+		return GetDataType()->Name();
 	}
 
 	Color DataTypeProxy::GetColor() const
@@ -30,7 +30,7 @@ namespace FLY_NAMESPACE
 		const DataType* dataType = GetDataType();
 		if (dataType)
 		{
-			return dataType->mColor;
+			return dataType->GetColor();
 		}
 		return Internal::GetDataTypeManager().GetDefaultColor();
 	}
@@ -40,7 +40,7 @@ namespace FLY_NAMESPACE
 		const DataType* dataType = GetDataType();
 		if (dataType)
 		{
-			return dataType->mTypeTraits;
+			return dataType->GetTypeTraits();
 		}
 		return eDataTypeTrait::None;
 	}
@@ -50,7 +50,7 @@ namespace FLY_NAMESPACE
 		const DataType* dataType = GetDataType();
 		if (dataType)
 		{
-			return dataType->mSize;
+			return dataType->GetSize();
 		}
 		return 0;
 	}
@@ -60,7 +60,7 @@ namespace FLY_NAMESPACE
 		const DataType* dataType = GetDataType();
 		if (dataType)
 		{
-			return dataType->mAlignment;
+			return dataType->GetAlignment();
 		}
 		return 0;
 	}
@@ -94,8 +94,8 @@ namespace FLY_NAMESPACE
 		}
 
 		std::vector<VariableProxy> memberVariables;
-		memberVariables.reserve(dataType->mVariableContainer.mVariables.size());
-		for (VarID varID{ 0 }; varID < dataType->mVariableContainer.mVariables.size(); ++varID)
+		memberVariables.reserve(dataType->GetVariableContainer().GetVariableCount());
+		for (VarID varID{ 0 }; varID < dataType->GetVariableContainer().GetVariableCount(); ++varID)
 		{
 			VariableProxy facade(varID, *this);
 			memberVariables.push_back(facade);
@@ -111,12 +111,12 @@ namespace FLY_NAMESPACE
 		{
 			return std::nullopt;
 		}
-		return &dataType->mNodeTypeIDs;
+		return &dataType->GetMemberNodeTypeIDs();
 	}
 
 	void DataTypeProxy::SetColor(const Color& aColor)
 	{
-		GetDataType()->mColor = aColor;
+		GetDataType()->SetColor(aColor);
 	}
 
 	DataTypeProxy::operator bool() const

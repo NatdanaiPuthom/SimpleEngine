@@ -10,8 +10,8 @@ namespace FLY_NAMESPACE
 		for (NodeID nodeID{ 0 }; nodeID < mNodes.size(); ++nodeID)
 		{
 			const Node& node = mNodes[nodeID];
-			NodeType& nodeType = nodeTypeManager.GetNodeType(node.mTypeID);
-			std::erase(nodeType.mNodeRefs, NodeRef(nodeID, *this));
+			NodeType& nodeType = nodeTypeManager.GetNodeType(node.GetTypeID());
+			std::erase(nodeType.GetNodeRefs(), NodeRef(nodeID, *this));
 		}
 	}
 
@@ -22,7 +22,7 @@ namespace FLY_NAMESPACE
 	{
 		for (Pin& pin : mPins)
 		{
-			pin.mDataPtr = mMemoryArena.GetRenewedPointer(pin.mDataPtr, aOther.mMemoryArena);
+			pin.SetDataPtr(mMemoryArena.GetRenewedPointer(pin.GetDataPtr(), aOther.mMemoryArena));
 		}
 	}
 
@@ -34,7 +34,7 @@ namespace FLY_NAMESPACE
 
 		for (Pin& pin : mPins)
 		{
-			pin.mDataPtr = mMemoryArena.GetRenewedPointer(pin.mDataPtr, aOther.mMemoryArena);
+			pin.SetDataPtr(mMemoryArena.GetRenewedPointer(pin.GetDataPtr(), aOther.mMemoryArena));
 		}
 
 		return *this;

@@ -5,31 +5,60 @@
 namespace FLY_NAMESPACE
 {
 
-	struct Pin final
+	class Pin final
 	{
+	public:
+
+		Pin(PinTypeID aTypeID, NonOwningPtr<void> aDataPtr, NodeID aNodeID);
+
+		[[nodiscard]] PinTypeID GetTypeID() const;
+		void SetDataPtr(NonOwningPtr<void> aDataPtr);
+		[[nodiscard]] OwningPtr<void> GetDataPtr() const;
+		[[nodiscard]] const std::vector<PinID>& GetConnectedPinIDs() const;
+		void SetSplitPinIDs(std::vector<PinID> aPinIDs);
+		[[nodiscard]] const std::vector<PinID>& GetSplitPinIDs() const;
+		[[nodiscard]] NodeID GetNodeID() const;
+		void SetParentPinID(PinID aPinID);
+		[[nodiscard]] PinID GetParentPinID() const;
+		void SetIsSplit(bool aIsSplit);
+		[[nodiscard]] bool IsSplit() const;
+
+		void AddConnectedPin(PinID aPinID);
+		void RemoveConnectedPin(PinID aPinID);
+
+	private:
+
 		PinTypeID mTypeID = InvalidID<PinTypeID>();
 		OwningPtr<void> mDataPtr;
 		std::vector<PinID> mConnectedPinIDs;
-		std::vector<PinID> mSubPinIDs;
+		std::vector<PinID> mSplitPinIDs;
 		NodeID mNodeID = InvalidID<NodeID>();
 		PinID mParentPinID = InvalidID<PinID>();
 		bool mIsSplit = false;
 	};
 
-	struct Link final
+	inline PinTypeID Pin::GetTypeID() const
 	{
-		PinID mInputPinID = InvalidID<PinID>();
-		PinID mOutputPinID = InvalidID<PinID>();
-		bool mIsDestroyed = false;
+		return mTypeID;
+	}
 
-		explicit operator bool() const
-		{
-			return mInputPinID != InvalidID<PinID>() && mOutputPinID != InvalidID<PinID>();
-		}
-	};
-
-	inline bool operator==(const Link& aLink1, const Link& aLink2)
+	inline OwningPtr<void> Pin::GetDataPtr() const
 	{
-		return aLink1.mInputPinID == aLink2.mInputPinID && aLink1.mOutputPinID == aLink2.mOutputPinID;
+		return mDataPtr;
+	}
+
+	inline const std::vector<PinID>& Pin::GetConnectedPinIDs() const
+	{
+		return mConnectedPinIDs;
+	}
+
+	inline const std::vector<PinID>& Pin::GetSplitPinIDs() const
+	{
+		return mSplitPinIDs;
+	}
+
+	inline NodeID Pin::GetNodeID() const
+	{
+		return mNodeID;
 	}
 }

@@ -21,9 +21,9 @@ namespace FLY_NAMESPACE
 		if constexpr (Index < std::tuple_size_v<TupleType>)
 		{
 			const PinID outputPinID = aOutputPinIDs[Index];
-			const Pin& pin = aContext.mNodeData.mNodeRef.GetNodeGraph().mPins[outputPinID];
-			const PinType& pinType = Internal::GetPinTypeManager().GetPinType(pin.mTypeID);
-			assert(pinType.mFlowType == eFlowType::Output);
+			const Pin& pin = aContext.mNodeData.mNodeRef.GetNodeGraph().GetPin(outputPinID);
+			const PinType& pinType = Internal::GetPinTypeManager().GetPinType(pin.GetTypeID());
+			assert(pinType.GetIODirection() == eIODirection::Output);
 
 			const void* dataPtr = &std::get<Index>(aOutputValues);
 
@@ -37,22 +37,51 @@ namespace FLY_NAMESPACE
 #endif
 			};
 
-			pinType.mSetPinValueFunction(setPinValueData, aContext);
+			pinType.GetSetPinValueFunction().Invoke(setPinValueData, aContext);
 
 			SetOutputValues<Index + 1>(aOutputValues, aOutputPinIDs, aContext);
 		}
 	}
 
+	template<typename... Args>
+	std::tuple<ReferenceWrapper<Args>...> CreateInputPack(const std::vector<PinID>& aPinIDs, const InternalExecutionContext& aContext)
+	{
+		std::tuple<ReferenceWrapper<Args>...> tuple;
+
+		[&] <std::size_t... Index>(std::index_sequence<Index...>)
+		{
+			([&]
+				{
+					Pin& pin = aContext.mNodeData.mNodeRef.GetNodeGraph().GetPin(aPinIDs[Index]);
+					std::get<Index>(tuple) = ReferenceWrapper<Args>(*reinterpret_cast<Args*>(pin.GetDataPtr().Get()));
+				}(), ...);
+		}(std::make_index_sequence<sizeof...(Args)>{});
+
+		return tuple;
+	}
+
+	// Maybe we can use fold expression to call function without std::tuple
+	template<typename... InputTypes>
+	void CallInternalTest(const auto& aCallable, InternalExecutionContext& aContext)
+	{
+		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().GetNode(aContext.mNodeData.mNodeRef.GetNodeID());
+		[&] <size_t... Index>(std::index_sequence<Index...>)
+		{
+			aCallable(std::ref(*reinterpret_cast<InputTypes*>(aContext.mNodeData.mNodeRef.GetNodeGraph().GetPin(node.GetInputPins()[Index]).GetDataPtr().Get()))...);
+		}(std::make_index_sequence<sizeof...(InputTypes)>{});
+	}
+
+	// For returning void
 	template<bool TakesExecutionContext, bool TakesNodeState, bool TakesInternalExecutionContext, typename NodeExecutionContextType, typename NodeStateDataType, typename Callable, typename... OutputTypes, typename... InputTypes>
 		requires(sizeof...(OutputTypes) == 0)
 	void CallFunction(InternalExecutionContext& aContext, TypeList<OutputTypes...>, TypeList<InputTypes...>)
 	{
-		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext.mNodeData.mNodeRef.GetNodeID()];
-		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
+		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().GetNode(aContext.mNodeData.mNodeRef.GetNodeID());
+		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.GetTypeID());
 
-		Callable& callable = aContext.mFoundationMemoryPool->At<Callable>(nodeType.mNodeRecipe.mFunctionMemoryID);
+		Callable& callable = aContext.mFoundationMemoryPool->At<Callable>(nodeType.GetFunctionMemoryID());
 
-		std::tuple<ReferenceWrapper<InputTypes>...> inputTuple = CreateInputPack<InputTypes...>(node.mInputPins, aContext);
+		std::tuple<ReferenceWrapper<InputTypes>...> inputTuple = CreateInputPack<InputTypes...>(node.GetInputPins(), aContext);
 
 		if constexpr (TakesExecutionContext && TakesNodeState)
 		{
@@ -98,21 +127,23 @@ namespace FLY_NAMESPACE
 		}
 		else
 		{
-			return std::apply(callable, inputTuple);
+			CallInternalTest(callable, aContext);
+			//return std::apply(callable, inputTuple);
 		}
 
 	}
 
+	// For not returning void
 	template<bool TakesExecutionContext, bool TakesNodeState, bool TakesInternalExecutionContext, typename NodeExecutionContextType, typename NodeStateDataType, typename Callable, typename... OutputTypes, typename... InputTypes>
 	std::tuple<OutputTypes...> CallFunction(InternalExecutionContext& aContext, TypeList<OutputTypes...>, TypeList<InputTypes...>)
 	{
 
-		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext.mNodeData.mNodeRef.GetNodeID()];
-		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
+		const Node& node = aContext.mNodeData.mNodeRef.GetNodeGraph().GetNode(aContext.mNodeData.mNodeRef.GetNodeID());
+		const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.GetTypeID());
 
-		Callable& callable = aContext.mFoundationMemoryPool->At<Callable>(nodeType.mNodeRecipe.mFunctionMemoryID);
+		Callable& callable = aContext.mFoundationMemoryPool->At<Callable>(nodeType.GetFunctionMemoryID());
 
-		std::tuple<ReferenceWrapper<InputTypes>...> inputTuple = CreateInputPack<InputTypes...>(node.mInputPins, aContext);
+		std::tuple<ReferenceWrapper<InputTypes>...> inputTuple = CreateInputPack<InputTypes...>(node.GetInputPins(), aContext);
 
 		if constexpr (TakesExecutionContext && TakesNodeState)
 		{
@@ -163,22 +194,20 @@ namespace FLY_NAMESPACE
 	}
 
 	template<bool TakesExecutionContext, bool TakesNodeState, bool TakesInternalExecutionContext, typename NodeExecutionContextType, typename NodeStateDataType, typename Callable, typename... OutputTypes, typename... InputTypes>
-	ExecuteNodeSignature CreateExecuteNodeFunction(TypeList<OutputTypes...>, TypeList<InputTypes...>)
+	ExecuteNodeFunction CreateExecuteNodeFunction(TypeList<OutputTypes...>, TypeList<InputTypes...>)
 	{
 
-		constexpr bool HasInputs = !EmptyParameterPack<InputTypes...>;
+		constexpr bool HasInputs = !EmptyParams<InputTypes...>;
 
 		return [](const NodeExecutionData& aNodeExecutionData, InternalExecutionContext& aContext) -> void
 			{
 
-				[[maybe_unused]] const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().mNodes[aNodeExecutionData.mNodeRef.GetNodeID()];
-
-
+				[[maybe_unused]] const Node& node = aNodeExecutionData.mNodeRef.GetNodeGraph().GetNode(aNodeExecutionData.mNodeRef.GetNodeID());
 
 				// Evaluate input values
 				if constexpr (HasInputs)
 				{
-					EvaluateInputValues(node.mSplitInputPins, aContext);
+					EvaluateInputValues(node.GetSplitInputPins(), aContext);
 				}
 
 				// Set current node data before calling function
@@ -191,7 +220,7 @@ namespace FLY_NAMESPACE
 						NodeExecutionContextType, NodeStateDataType, Callable>(aContext, TypeList<OutputTypes...>{}, TypeList<InputTypes...>{});
 
 					// Set output of function
-					SetOutputValues(std::forward<std::tuple<OutputTypes...>>(std::move(outputValues)), node.mOutputPins, aContext);
+					SetOutputValues(std::forward<std::tuple<OutputTypes...>>(std::move(outputValues)), node.GetOutputPins(), aContext);
 				}
 				else
 				{
@@ -215,7 +244,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<bool TakesInternalExecutionContext, typename Callable, typename... InputTypes>
-	FastExecuteFunction CreateFastExecuteFunction(Callable)
+	FastExecuteNodeFunction CreateFastExecuteNodeFunction(Callable)
 	{
 		//using OutputType = GetOutputType<Callable>;
 		return []([[maybe_unused]] InternalExecutionContext& aContext, const MemoryPool& aFoundationMemoryPool, const NodeType& aNodeType, const void* aMainInput, const void* aInputTuple, void* aOutputValue) -> void
@@ -237,7 +266,7 @@ namespace FLY_NAMESPACE
 
 					auto inputTuple = std::tuple_cat(std::make_tuple(&aContext), firstTuple, restTuple);
 
-					const Callable& callable = aFoundationMemoryPool.At<Callable>(aNodeType.mNodeRecipe.mFunctionMemoryID);
+					const Callable& callable = aFoundationMemoryPool.At<Callable>(aNodeType.GetFunctionMemoryID());
 
 					using OutputType = decltype(std::apply(callable, inputTuple));
 					if constexpr (!std::same_as<OutputType, void>)
@@ -254,7 +283,7 @@ namespace FLY_NAMESPACE
 				{
 					auto inputTuple = std::tuple_cat(firstTuple, restTuple);
 
-					const Callable& callable = aFoundationMemoryPool.At<Callable>(aNodeType.mNodeRecipe.mFunctionMemoryID);
+					const Callable& callable = aFoundationMemoryPool.At<Callable>(aNodeType.GetFunctionMemoryID());
 
 					using OutputType = decltype(std::apply(callable, inputTuple));
 					if constexpr (!std::same_as<OutputType, void>)
