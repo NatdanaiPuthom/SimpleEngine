@@ -12,7 +12,8 @@ namespace Editor
 	static bool DataTypeCombo(const char* aComboLabel, Fly::GenericDataTypeProxy& aDataTypeProxy, auto aFilterPredicate)
 	{
 		bool wasSelected = false;
-		if (ImGui::BeginCombo(aComboLabel, aDataTypeProxy.GetName().c_str()))
+		const std::string defaultName = aDataTypeProxy ? aDataTypeProxy.GetName() : "None";
+		if (ImGui::BeginCombo(aComboLabel, defaultName.c_str()))
 		{
 			const std::vector<Fly::GenericDataTypeProxy> dataTypes = Fly::GetGenericDataTypesFiltered(aFilterPredicate);
 
@@ -201,7 +202,6 @@ namespace Editor
 				ImNodes::PopColorStyle();
 				ImNodes::PopColorStyle();
 			}
-
 
 			ImGui::SetCursorPos(cursorPos);
 
@@ -403,7 +403,7 @@ namespace Editor
 			ImGui::Text("Type: %s", pinDataType.GetName().c_str());
 			
 
-			if (aNodeGraphContext.myClickedPinProxy.GetFlowType() == Fly::eFlowType::Input)
+			if (aNodeGraphContext.myClickedPinProxy.GetIODirection() == Fly::eIODirection::Input)
 			{
 				aNodeGraphContext.myClickedPinProxy.ViewAndEdit(aNodeGraphContext.myCommandTracker.get());
 			}
@@ -544,7 +544,7 @@ namespace Editor
 
 					auto nodeTypePredicate = [pinProxy](const Fly::NodeTypeProxy& aNodeType) 
 						{ 
-							const auto& pinTypes = Fly::SelectByFlowType(Fly::InvertFlowType(pinProxy.GetFlowType()), aNodeType.GetInputPinTypes(), aNodeType.GetOutputPinTypes());
+							const auto& pinTypes = Fly::SelectByIODirection(Fly::InvertIODirection(pinProxy.GetIODirection()), aNodeType.GetInputPinTypes(), aNodeType.GetOutputPinTypes());
 							for (const Fly::PinTypeProxy pinType : pinTypes)
 							{
 								if (pinType.GetDataTypeID() == pinProxy.GetDataTypeID())
