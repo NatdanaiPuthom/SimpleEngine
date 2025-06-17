@@ -19,28 +19,15 @@ namespace ECS
 	void BasicPlayerSystem::Update(EntityComponentSystem* aEntityComponentSystem)
 	{
 		const std::unordered_set<EntityID>& playerEntities = aEntityComponentSystem->GetEntityIDsWithThisComponent<BasicPlayerComponent>();
-		const std::unordered_set<EntityID>& cameraEntities = aEntityComponentSystem->GetEntityIDsWithThisComponent<CameraComponent>();
 
-		EntityID cameraID = static_cast<size_t>(-1);
 		EntityID playerID = static_cast<size_t>(-1);
 
 		if (!playerEntities.empty())
 		{
 			playerID = *playerEntities.begin();
 		}
-
-		if (!cameraEntities.empty())
-		{
-			cameraID = *cameraEntities.begin();
-		}
-
-		if (cameraID == static_cast<size_t>(-1) && playerID == static_cast<size_t>(-1))
-		{
-			return;
-		}
-
+	
 		Entity& playerEntity = aEntityComponentSystem->GetEntity(playerID);
-		Entity& cameraEntity = aEntityComponentSystem->GetEntity(cameraID);
 
 		TransformComponent* transformComponent = playerEntity.GetComponent<TransformComponent>();
 		BasicPlayerComponent* basicPlayerComponent = playerEntity.GetComponent<BasicPlayerComponent>();
@@ -79,9 +66,6 @@ namespace ECS
 		position += velocity * basicPlayerComponent->moveSpeed * Global::GetDeltaTime();
 		transformComponent->transform.SetPosition(position);
 		transformComponent->transform.SetRotation(rotation);
-
-		const Math::Vector3f newCameraPosition = position + basicPlayerComponent->cameraOffsetDistance;
-		cameraEntity.GetComponent<TransformComponent>()->transform.SetPosition(newCameraPosition);
 	}
 
 	void BasicPlayerSystem::Render(EntityComponentSystem* /*aEntityComponentSystem*/)
@@ -96,8 +80,37 @@ namespace ECS
 	{
 	}
 
-	void BasicPlayerSystem::LateUpdate(EntityComponentSystem* /*aEntityComponentSystem*/)
+	void BasicPlayerSystem::LateUpdate(EntityComponentSystem* aEntityComponentSystem)
 	{
+		const std::unordered_set<EntityID>& cameraEntities = aEntityComponentSystem->GetEntityIDsWithThisComponent<CameraComponent>();
+		const std::unordered_set<EntityID>& playerEntities = aEntityComponentSystem->GetEntityIDsWithThisComponent<BasicPlayerComponent>();
+
+		EntityID cameraID = static_cast<size_t>(-1);
+		EntityID playerID = static_cast<size_t>(-1);
+
+		if (!playerEntities.empty())
+		{
+			playerID = *playerEntities.begin();
+		}
+
+		if (!cameraEntities.empty())
+		{
+			cameraID = *cameraEntities.begin();
+		}
+
+		if (cameraID == static_cast<size_t>(-1) && playerID == static_cast<size_t>(-1))
+		{
+			return;
+		}
+
+		Entity& playerEntity = aEntityComponentSystem->GetEntity(playerID);
+		Entity& cameraEntity = aEntityComponentSystem->GetEntity(cameraID);
+
+		TransformComponent* playerTransformComponent = playerEntity.GetComponent<TransformComponent>();
+		BasicPlayerComponent* basicPlayerComponent = playerEntity.GetComponent<BasicPlayerComponent>();
+
+		const Math::Vector3f newCameraPosition = playerTransformComponent->transform.GetPosition() + basicPlayerComponent->cameraOffsetDistance;
+		cameraEntity.GetComponent<TransformComponent>()->transform.SetPosition(newCameraPosition);
 	}
 
 	std::unique_ptr<System> BasicPlayerSystem::Clone() const

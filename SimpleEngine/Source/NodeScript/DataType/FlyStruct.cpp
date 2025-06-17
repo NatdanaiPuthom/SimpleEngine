@@ -7,4 +7,14 @@ namespace FLY_NAMESPACE
 		: mName(aName)
 	{
 	}
+
+	std::string& Struct::Name()
+	{
+		return mName;
+	}
+
+	const std::string& Struct::Name() const
+	{
+		return mName;
+	}
 }

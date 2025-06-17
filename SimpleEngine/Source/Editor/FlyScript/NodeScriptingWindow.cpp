@@ -7,6 +7,7 @@
 #include "EditorNodeRegistration.hpp"
 
 #include <imnodes/imnodes_internal.h>
+#include "Engine/SimpleUtilities/Timer.hpp"
 
 namespace Editor
 {
@@ -17,7 +18,6 @@ namespace Editor
 		, myFunctionSettingsWindow(*this)
 		, myStructCreatorWindow(this)
 	{
-
 		Fly::SetEditorTextFunction([](const std::string& aText) { ImGui::TextWrapped(aText.c_str()); });
 	}
 
@@ -144,12 +144,14 @@ namespace Editor
 
 				if (numSelectedNodes > 0)
 				{
-					std::vector<Fly::NodeID> selectedNodes(numSelectedNodes);
+					std::vector<int> selectedNodeIDs(numSelectedNodes);
 
+					ImNodes::GetSelectedNodes(selectedNodeIDs.data());
+					
+					std::vector<Fly::NodeID> nodeIDs;
+					std::ranges::transform(nodeIDs, std::back_inserter(nodeIDs), [](int aID) { return Fly::NodeID{ aID }; });
 
-					ImNodes::GetSelectedNodes(reinterpret_cast<int*>(selectedNodes.data()));
-
-					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().myNodeGraphProxy);
+					Fly::CreateCopyBuffer(std::span(nodeIDs), GetNodeContext().myNodeGraphProxy);
 				}
 			}
 			else if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_V))
@@ -157,7 +159,7 @@ namespace Editor
 
 				const Fly::Vec2 mousePos = Fly::Vec2{ GetMousePos().x, GetMousePos().y };
 
-				Fly::PasteCopyBuffer(mousePos, GetNodeContext().myNodeGraphProxy, GetNodeContext().myCommandTracker.get());
+				Fly::PasteCopyBuffer(GetNodeContext().myNodeGraphProxy, mousePos, GetNodeContext().myCommandTracker.get());
 			}
 			else if (ImGui::IsKeyDown(ImGuiKey_ModCtrl) && ImGui::IsKeyPressed(ImGuiKey_X))
 			{
@@ -165,12 +167,16 @@ namespace Editor
 
 				if (numSelectedNodes > 0)
 				{
-					std::vector<Fly::NodeID> selectedNodes(numSelectedNodes);
+					std::vector<int> selectedNodeIDs(numSelectedNodes);
 
-					ImNodes::GetSelectedNodes(reinterpret_cast<int*>(selectedNodes.data()));
+					ImNodes::GetSelectedNodes(selectedNodeIDs.data());
 
-					Fly::CreateCopyBuffer(selectedNodes, GetNodeContext().myNodeGraphProxy);
-					GetNodeContext().myNodeGraphProxy.DestroySelection(selectedNodes, {}, nullptr);
+					std::vector<Fly::NodeID> nodeIDs;
+					std::ranges::transform(nodeIDs, std::back_inserter(nodeIDs), [](int aID) { return Fly::NodeID{ aID }; });
+
+					Fly::CreateCopyBuffer(std::span(nodeIDs), GetNodeContext().myNodeGraphProxy); 
+					
+					GetNodeContext().myNodeGraphProxy.DestroySelection(nodeIDs, {}, nullptr);
 				}
 			}
 
@@ -199,7 +205,6 @@ namespace Editor
 			ShowSelectionMenu();
 			ShowLoadingMenu();
 			UpdateContext();
-
 
 			ShowNodeGraph(*myNodeContextHistory.history[myNodeContextHistory.currentIndex]);
 

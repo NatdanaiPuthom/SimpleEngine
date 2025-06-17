@@ -27,7 +27,7 @@ namespace FLY_NAMESPACE
 		void Begin(std::string_view aName);
 		eEndCode End();
 
-		const std::string& GetName();
+		const std::string& GetName() const;
 
 	private:
 

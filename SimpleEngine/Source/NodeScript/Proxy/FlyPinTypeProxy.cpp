@@ -12,12 +12,12 @@ namespace FLY_NAMESPACE
 
 	const std::string& PinTypeProxy::GetName() const
 	{
-		return GetPinType().mName;
+		return GetPinType().GetName();
 	}
 
-	eFlowType PinTypeProxy::GetFlowType() const
+	eIODirection PinTypeProxy::GetIODirection() const
 	{
-		return GetPinType().mFlowType;
+		return GetPinType().GetIODirection();
 	}
 
 	/*DataTypeID PinTypeProxy::GetDataTypeID() const
@@ -27,7 +27,7 @@ namespace FLY_NAMESPACE
 
 	GenericDataTypeID PinTypeProxy::GetDataTypeID() const
 	{
-		return GetPinType().mGenericDataTypeID;
+		return GetPinType().GetDataTypeID();
 	}
 
 	PinTypeID PinTypeProxy::GetID() const
@@ -39,7 +39,7 @@ namespace FLY_NAMESPACE
 	{
 		PinType& pinType = GetPinType();
 
-		pinType.mName = aName;
+		pinType.SetName(std::string(aName));
 	}
 
 	PinType& PinTypeProxy::GetPinType() 

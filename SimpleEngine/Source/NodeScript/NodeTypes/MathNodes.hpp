@@ -32,7 +32,7 @@ namespace std
 	template<typename T, typename... Rest>
 	void ShowSelectableVariantTypes(auto& aVariant, const size_t aCurrentIndex = 0)
 	{
-		const std::string& name = Fly::Internal::GetDataTypeManager().GetName(Fly::GetDataTypeID<T>());
+		const std::string& name = Fly::Internal::GetDataTypeManager().Find<T>()->Name();
 
 		const bool isSelected = aCurrentIndex == aVariant.index();
 		if (ImGui::Selectable(name.c_str(), isSelected))
@@ -55,7 +55,11 @@ namespace std
 		Fly::ViewAndEditResult viewAndEditResult;
 		const Fly::DataTypeManager& dataTypeManager = Fly::Internal::GetDataTypeManager();
 
-		const std::string& name = std::visit([&dataTypeManager](const auto& aValue) { return dataTypeManager.GetName(Fly::GetDataTypeID<decltype(aValue)>()); }, aVariant);
+		const std::string& name = std::visit([&dataTypeManager](const auto& aValue)
+			{ 
+				const Fly::DataTypeID dataTypeID = Fly::GetDataTypeID<decltype(aValue)>();
+				return dataTypeManager.Find(dataTypeID)->Name();
+			}, aVariant);
 		if (ImGui::BeginCombo("##VariantType", name.c_str()))
 		{
 

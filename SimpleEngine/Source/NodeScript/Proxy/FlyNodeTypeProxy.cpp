@@ -4,14 +4,14 @@
 
 namespace FLY_NAMESPACE
 {
-	NodeTypeProxy::NodeTypeProxy(const NodeTypeID anID)
-		: mNodeTypeID(anID)
+	NodeTypeProxy::NodeTypeProxy(const NodeTypeID aID)
+		: mNodeTypeID(aID)
 	{
 	}
 
 	const std::string& NodeTypeProxy::GetName() const
 	{
-		return GetNodeType().mNodeRecipe.mName;
+		return GetNodeType().GetName();
 	}
 
 	std::string NodeTypeProxy::GetShortName() const
@@ -26,22 +26,22 @@ namespace FLY_NAMESPACE
 
 	eNodeTrait NodeTypeProxy::GetTraits() const
 	{
-		return GetNodeType().mNodeRecipe.mTraits;
+		return GetNodeType().GetTraits();
 	}
 
 	EventID NodeTypeProxy::GetEventID() const
 	{
-		return GetNodeType().mNodeRecipe.mEventID;
+		return GetNodeType().GetEventID();
 	}
 
 	std::vector<PinTypeProxy> NodeTypeProxy::GetInputPinTypes() const
 	{
-		return GetPinTypes(eFlowType::Input);
+		return GetPinTypes(eIODirection::Input);
 	}
 
 	std::vector<PinTypeProxy> NodeTypeProxy::GetOutputPinTypes() const
 	{
-		return GetPinTypes(eFlowType::Output);
+		return GetPinTypes(eIODirection::Output);
 	}
 
 	std::vector<DataTypeProxy> NodeTypeProxy::GetReplacableDataTypes(const bool aUseTraits) const
@@ -49,7 +49,7 @@ namespace FLY_NAMESPACE
 		std::vector<DataTypeProxy> dataTypeProxys;
 		if (aUseTraits)
 		{
-			auto& dataTypes = Internal::GetNodeTypeManager().GetMapByTrait(GetNodeType().mNodeRecipe.mTraitID);
+			auto& dataTypes = Internal::GetNodeTypeManager().GetMapByTrait(GetNodeType().GetTraitID());
 			dataTypeProxys.reserve(dataTypes.size());
 			for (auto& [dataTypeID, nodeTypeID] : dataTypes)
 			{
@@ -60,7 +60,7 @@ namespace FLY_NAMESPACE
 		{
 
 
-			auto& dataTypes = Internal::GetNodeTypeManager().GetTemplateMapByOperator(GetNodeType().mNodeRecipe.mOperatorTrait);
+			auto& dataTypes = Internal::GetNodeTypeManager().GetTemplateMapByOperator(GetNodeType().GetOperatorTrait());
 			dataTypeProxys.reserve(dataTypes.size());
 			for (auto& [dataTypeID, nodeTypeID] : dataTypes)
 			{
@@ -91,10 +91,10 @@ namespace FLY_NAMESPACE
 		return Internal::GetNodeTypeManager().GetNodeType(mNodeTypeID);
 	}
 
-	std::vector<PinTypeProxy> NodeTypeProxy::GetPinTypes(const eFlowType aFlowType) const
+	std::vector<PinTypeProxy> NodeTypeProxy::GetPinTypes(const eIODirection aIODirection) const
 	{
 		const NodeType& nodeType = GetNodeType();
-		const std::vector<PinTypeID>& pinTypeIDs = SelectByFlowType(aFlowType, nodeType.mNodeRecipe.mInputPinTypeIDs, nodeType.mNodeRecipe.mOutputPinTypeIDs);
+		const std::vector<PinTypeID>& pinTypeIDs = SelectByIODirection(aIODirection, nodeType.GetInputPinTypeIDs(), nodeType.GetOutputPinTypeIDs());
 
 		std::vector<PinTypeProxy> views;
 		views.reserve(pinTypeIDs.size());

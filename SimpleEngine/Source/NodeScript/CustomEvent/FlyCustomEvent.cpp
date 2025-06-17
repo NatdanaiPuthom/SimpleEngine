@@ -8,21 +8,21 @@ namespace FLY_NAMESPACE
 	{
 		// Sets the values of the custom 
 
-		const Node& callerNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
-		const CustomEventID customEventID = Internal::GetNodeTypeManager().GetCustomEventID(callerNode.mTypeID);
+		const Node& callerNode = aContext->mNodeData.mNodeRef.GetNodeGraph().GetNode(aContext->mNodeData.mNodeRef.GetNodeID());
+		const CustomEventID customEventID = Internal::GetNodeTypeManager().GetCustomEventID(callerNode.GetTypeID());
 
 		const CustomEvent& customEvent = Internal::GetNodeTypeManager().GetCustomEvent(customEventID);
 
 		const NodeType& executorNodeType = Internal::GetNodeTypeManager().GetNodeType(customEvent.GetExecutorTypeID());
-		const std::vector<NodeRef>& executorNodeRefs = executorNodeType.mNodeRefs;
+		const std::vector<NodeRef>& executorNodeRefs = executorNodeType.GetNodeRefs();
 
 		for (const NodeRef& executorNodeRef : executorNodeRefs)
 		{
 			aContext->mNodeExecutionQueue->Push(NodeExecutionData{ executorNodeRef, eNodeTriggerReason::Flow });
 
-			const Node& executorNode = executorNodeRef.GetNodeGraph().mNodes[executorNodeRef.GetNodeID()];
+			const Node& executorNode = executorNodeRef.GetNodeGraph().GetNode(executorNodeRef.GetNodeID());
 
-			CopyPinData(*aContext, executorNode.mOutputPins, callerNode.mInputPins, executorNodeRef.GetNodeGraph(), aContext->mNodeData.mNodeRef.GetNodeGraph(), 1);
+			CopyPinData(*aContext, executorNode.GetOutputPins(), callerNode.GetInputPins(), executorNodeRef.GetNodeGraph(), aContext->mNodeData.mNodeRef.GetNodeGraph(), 1);
 
 		}
 	}

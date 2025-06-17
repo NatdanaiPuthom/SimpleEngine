@@ -12,37 +12,35 @@ namespace FLY_NAMESPACE
 
 	const std::string& FunctionProxy::GetName() const
 	{
-		return GetFunction().mName;
+		return GetFunction().GetName();
 	}
 
 	NodeProxy FunctionProxy::GetInputNode() const
 	{
-		const Function& function = GetFunction();
-		return NodeProxy(function.mInputNodeID, NodeGraphProxy(*this));
+		return NodeProxy(Function::INPUT_NODE_ID, NodeGraphProxy(*this));
 	}
 
 	NodeProxy FunctionProxy::GetOutputNode() const
 	{
-		const Function& function = GetFunction();
-		return NodeProxy(function.mOutputNodeID, NodeGraphProxy(*this));
+		return NodeProxy(Function::OUTPUT_NODE_ID, NodeGraphProxy(*this));
 	}
 
 	NodeTypeProxy FunctionProxy::GetCallerNodeType() const
 	{
 		const Function& function = GetFunction();
-		return NodeTypeProxy(function.mCallerNodeTypeID);
+		return NodeTypeProxy(function.GetCallerNodeTypeID());
 	}
 
 	NodeTypeProxy FunctionProxy::GetInputNodeType() const
 	{
 		const Function& function = GetFunction();
-		return NodeTypeProxy(function.mInputNodeTypeID);
+		return NodeTypeProxy(function.GetInputNodeTypeID());
 	}
 
 	NodeTypeProxy FunctionProxy::GetOutputNodeType() const
 	{
 		const Function& function = GetFunction();
-		return NodeTypeProxy(function.mOutputNodeTypeID);
+		return NodeTypeProxy(function.GetOutputNodeTypeID());
 	}
 
 	NodeGraphProxy FunctionProxy::GetNodeGraph()
@@ -59,22 +57,22 @@ namespace FLY_NAMESPACE
 	{
 		Function& function = Internal::GetNodeTypeManager().GetFunction(mFunctionID);
 
-		function.mName = aName;
+		function.SetName(std::string(aName));
 	}
 
-	void FunctionProxy::AddPin(GenericDataTypeProxy aDataTypeProxy, eFlowType aFlowType, std::string_view aName, CommandTracker* aCommandTracker)
+	void FunctionProxy::AddPin(GenericDataTypeProxy aDataTypeProxy, eIODirection aIODirection, std::string_view aName, CommandTracker* aCommandTracker)
 	{
-		Internal::AddPinTypeToFunction(mFunctionID, aDataTypeProxy.GetID(), aFlowType, aName, aCommandTracker); 
+		Internal::AddPinTypeToFunction(mFunctionID, aDataTypeProxy.GetID(), aIODirection, aName, aCommandTracker);
 	}
 
-	void FunctionProxy::SetPinNameAtIndex(std::string_view aName, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker)
+	void FunctionProxy::SetPinNameAtIndex(std::string_view aName, size_t aIndex, eIODirection aIODirection, CommandTracker* aCommandTracker)
 	{
-		Internal::SetPinNameAtIndexFunction(mFunctionID, aName, aIndex, aFlowType, aCommandTracker);
+		Internal::SetPinNameAtIndexFunction(mFunctionID, aName, aIndex, aIODirection, aCommandTracker);
 	}
 
-	void FunctionProxy::SetPinDataTypeAtIndex(GenericDataTypeProxy aDataTypeProxy, size_t aIndex, eFlowType aFlowType, CommandTracker* aCommandTracker)
+	void FunctionProxy::SetPinDataTypeAtIndex(GenericDataTypeProxy aDataTypeProxy, size_t aIndex, eIODirection aIODirection, CommandTracker* aCommandTracker)
 	{
-		Internal::SetPinDataTypeAtIndexFunction(mFunctionID, aDataTypeProxy.GetID(), aIndex, aFlowType, aCommandTracker);
+		Internal::SetPinDataTypeAtIndexFunction(mFunctionID, aDataTypeProxy.GetID(), aIndex, aIODirection, aCommandTracker);
 	}
 
 	FunctionProxy::operator bool() const

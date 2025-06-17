@@ -9,7 +9,7 @@
 namespace FLY_NAMESPACE
 {
 
-	struct NodeType;
+	class NodeType;
 	class NodeGraphProxy;
 
 	class NodeProxy final
@@ -56,8 +56,8 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] const Node& GetNode() const;
 
 		[[nodiscard]] std::vector<PinProxy> GetPins(const std::vector<PinID>& aPinIDs) const;
-		[[nodiscard]] std::vector<PinProxy> GetPins(const eFlowType aFlowType) const;
-		[[nodiscard]] std::vector<PinProxy> GetSplitPins(const eFlowType aFlowType) const;
+		[[nodiscard]] std::vector<PinProxy> GetPins(const eIODirection aIODirection) const;
+		[[nodiscard]] std::vector<PinProxy> GetSplitPins(const eIODirection aIODirection) const;
 
 	private:
 

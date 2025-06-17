@@ -8,16 +8,16 @@ namespace FLY_NAMESPACE
 
 	static Flow CallerNode(InternalExecutionContextPtr aContext, Flow)
 	{
-		const Node& callerNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
+		const Node& callerNode = aContext->mNodeData.mNodeRef.GetNodeGraph().GetNode(aContext->mNodeData.mNodeRef.GetNodeID());
 
 		NodeTypeManager& nodeTypeManager = Internal::GetNodeTypeManager();
-		const FunctionID functionID = nodeTypeManager.GetFunctionID(callerNode.mTypeID);
+		const FunctionID functionID = nodeTypeManager.GetFunctionID(callerNode.GetTypeID());
 		Function& function = nodeTypeManager.GetFunction(functionID);
-		const Node& inputNode = function.mNodeGraph.mNodes[function.mInputNodeID];
+		const Node& inputNode = function.GetNodeGraph().GetNode(Function::INPUT_NODE_ID);
 
-		CopyPinData(*aContext, inputNode.mOutputPins, callerNode.mInputPins, function.mNodeGraph, aContext->mNodeData.mNodeRef.GetNodeGraph(), 1);
+		CopyPinData(*aContext, inputNode.GetOutputPins(), callerNode.GetInputPins(), function.GetNodeGraph(), aContext->mNodeData.mNodeRef.GetNodeGraph(), 1);
 
-		aContext->mNodeExecutionQueue->Push(NodeExecutionData{ CreateContextualNodeRef(function.mInputNodeID, function.mNodeGraph), eNodeTriggerReason::Flow});
+		aContext->mNodeExecutionQueue->Push(NodeExecutionData{ CreateContextualNodeRef(Function::INPUT_NODE_ID, function.GetNodeGraph()), eNodeTriggerReason::Flow });
 		aContext->mNodeExecutor->GetCallStack().Push(aContext->mNodeData.mNodeRef);
 
 		return Flow(true);
@@ -30,16 +30,16 @@ namespace FLY_NAMESPACE
 
 	static void OutputNode(InternalExecutionContextPtr aContext, Flow)
 	{
-		const Node& outputNode = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
+		const Node& outputNode = aContext->mNodeData.mNodeRef.GetNodeGraph().GetNode(aContext->mNodeData.mNodeRef.GetNodeID());
 
 		const NodeTypeManager& nodeTypeManager = Internal::GetNodeTypeManager();
-		const FunctionID functionID = nodeTypeManager.GetFunctionID(outputNode.mTypeID);
+		const FunctionID functionID = nodeTypeManager.GetFunctionID(outputNode.GetTypeID());
 		const Function& function = nodeTypeManager.GetFunction(functionID);
 
 		const NodeRef& callerNodeRef = aContext->mNodeExecutor->GetCallStack().Pop();
-		const Node& callerNode = callerNodeRef.GetNodeGraph().mNodes[callerNodeRef.GetNodeID()];
+		const Node& callerNode = callerNodeRef.GetNodeGraph().GetNode(callerNodeRef.GetNodeID());
 
-		CopyPinData(*aContext, callerNode.mOutputPins, outputNode.mInputPins, callerNodeRef.GetNodeGraph(), function.mNodeGraph, 1);
+		CopyPinData(*aContext, callerNode.GetOutputPins(), outputNode.GetInputPins(), callerNodeRef.GetNodeGraph(), function.GetNodeGraph(), 1);
 	}
 
 	Function::Function(std::string_view aName)
@@ -48,18 +48,15 @@ namespace FLY_NAMESPACE
 		mCallerNodeTypeID = RegisterSystemNodeType(CallerNode, NodeCreationData{ .mName = "Function/Call Function" });
 		mInputNodeTypeID = RegisterSystemNodeType(InputNode, NodeCreationData{ .mName = "Function/Input Function" });
 		mOutputNodeTypeID = RegisterSystemNodeType(OutputNode, NodeCreationData{ .mName = "Function/Output Function" });
-
-		//std::tuple<ReferenceWrapper<const InternalExecutionContext*>, ReferenceWrapper<Flow>> t{};
-
-		//std::apply(OutputNode, t);
-
-		/*std::tuple<ReferenceWrapper<Flow>> t;
-		InternalExecutionContext i;
-
-		std::apply(OutputNode, std::tuple_cat(std::forward_as_tuple(&i), t));*/
-
 	}
 
-	Function::~Function() = default;
+	const std::string& Function::GetName() const
+	{
+		return mName;
+	}
 
+	void Function::SetName(std::string aName)
+	{
+		mName = std::move(aName);
+	}
 }

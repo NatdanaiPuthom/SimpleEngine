@@ -222,7 +222,7 @@ namespace FLY_NAMESPACE
 	{
 		NodeExecutionQueue* previousNodeExecutionQueue = aContext->mNodeExecutionQueue;
 		const NodeExecutionData nodeExecutionData = aContext->mNodeData;
-		const Node& node = nodeExecutionData.mNodeRef.GetNodeGraph().mNodes[nodeExecutionData.mNodeRef.GetNodeID()];
+		const Node& node = nodeExecutionData.mNodeRef.GetNodeGraph().GetNode(nodeExecutionData.mNodeRef.GetNodeID());
 
 		for (int i = aStartIndex; Compare(i, aEndIndex, aComparatorType); i += aIncrement)
 		{
@@ -230,7 +230,7 @@ namespace FLY_NAMESPACE
 
 			aContext->mNodeExecutionQueue = &executionQueue;
 
-			SetOutputValues(std::tuple{ Flow(true), i }, node.mOutputPins, *aContext);
+			SetOutputValues(std::tuple{ Flow(true), i }, node.GetOutputPins(), *aContext);
 
 			executionQueue.Execute();
 

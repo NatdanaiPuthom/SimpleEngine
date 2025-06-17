@@ -9,31 +9,29 @@ namespace FLY_NAMESPACE
 	NodeGraphInstance::NodeGraphInstance(const NodeGraph& aNodeGraph)
 		: mNodeGraph(&aNodeGraph)
 	{
-		for (NodeID nodeID{ 0 }; nodeID < aNodeGraph.mNodes.size(); ++nodeID)
+		for (NodeID nodeID{ 0 }; nodeID < aNodeGraph.GetNodes().size(); ++nodeID)
 		{
-			const Node& node = aNodeGraph.mNodes[nodeID];
-			const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
-			if (nodeType.mNodeRecipe.mNodeStateDataTypeID == InvalidID<DataTypeID>())
+			const Node& node = aNodeGraph.GetNode(nodeID);
+			const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.GetTypeID());
+			if (nodeType.GetNodeStateDataTypeID() == InvalidID<DataTypeID>())
 			{
 				continue;
 			}
-			void* const dataPtr = Internal::GetDataTypeManager().AllocateData(nodeType.mNodeRecipe.mNodeStateDataTypeID, mMemoryArena);
+			void* const dataPtr = Internal::GetDataTypeManager().AllocateData(nodeType.GetNodeStateDataTypeID(), mMemoryArena);
 			assert(dataPtr != nullptr);
 			mNodeStateMap.emplace(nodeID, dataPtr);
 		}
 	}
 
-	NodeGraphInstance::~NodeGraphInstance()
-	{
-	}
+	NodeGraphInstance::~NodeGraphInstance() = default;
 
 	void NodeGraphInstance::Mirror()
 	{
-		for (NodeID nodeID{ 0 }; nodeID < mNodeGraph->mNodes.size(); ++nodeID)
+		for (NodeID nodeID{ 0 }; nodeID < mNodeGraph->GetNodeCount(); ++nodeID)
 		{
-			const Node& node = mNodeGraph->mNodes[nodeID];
-			const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.mTypeID);
-			if (nodeType.mNodeRecipe.mNodeStateDataTypeID == InvalidID<DataTypeID>())
+			const Node& node = mNodeGraph->GetNode(nodeID);
+			const NodeType& nodeType = Internal::GetNodeTypeManager().GetNodeType(node.GetTypeID());
+			if (nodeType.GetNodeStateDataTypeID() == InvalidID<DataTypeID>())
 			{
 				continue;
 			}
@@ -41,7 +39,7 @@ namespace FLY_NAMESPACE
 			{
 				continue;
 			}
-			void* const dataPtr = Internal::GetDataTypeManager().AllocateData(nodeType.mNodeRecipe.mNodeStateDataTypeID, mMemoryArena);
+			void* const dataPtr = Internal::GetDataTypeManager().AllocateData(nodeType.GetNodeStateDataTypeID(), mMemoryArena);
 			assert(dataPtr != nullptr);
 			mNodeStateMap.emplace(nodeID, dataPtr);
 		}

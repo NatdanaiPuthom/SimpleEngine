@@ -37,11 +37,11 @@ namespace FLY_NAMESPACE
 
 	void CopyPinValueFromPin(const InternalExecutionContext& aContext, const PinID aDestinationPinID, NodeGraph& aDestinationNodeGraph, const PinID aSourcePinID, const NodeGraph& aSourceNodeGraph)
 	{
-		const Pin& destinationPin = aDestinationNodeGraph.mPins[aDestinationPinID];
+		const Pin& destinationPin = aDestinationNodeGraph.GetPin(aDestinationPinID);
 
-		const PinType& outputPinType = aContext.mPinTypeManager->GetPinType(destinationPin.mTypeID);
+		const PinType& outputPinType = aContext.mPinTypeManager->GetPinType(destinationPin.GetTypeID());
 
-		outputPinType.mSetPinValueFromPinFunction(SetPinValueFromPinData
+		outputPinType.GetSetPinValueFromPinFunction().Invoke(SetPinValueFromPinData
 			{
 				.mWriteToPinNodeGraph = &aDestinationNodeGraph,
 				.mReadFromPinNodeGraph = &aSourceNodeGraph,

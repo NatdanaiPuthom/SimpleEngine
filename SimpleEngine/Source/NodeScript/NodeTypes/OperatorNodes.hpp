@@ -317,7 +317,7 @@ namespace FLY_NAMESPACE
 
 		if constexpr (!std::same_as<T, Wildcard>)
 		{
-			const std::string& customTypeName = Internal::GetDataTypeManager().GetName(dataTypeID);
+			const std::string& customTypeName = Internal::GetDataTypeManager().Find(dataTypeID)->Name();
 			if (!customTypeName.empty())
 			{
 				aDefaultNodeName += " (" + customTypeName + ")";

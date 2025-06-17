@@ -73,7 +73,7 @@ namespace Editor
 					
 					if (Fly::FlyTraitImplementation* t2 = std::get_if<Fly::FlyTraitImplementation>(t))
 					{
-						myNodeGraphContext.myNodeGraphProxy = Fly::NodeGraphProxy(t2->mNodeGraph);
+						myNodeGraphContext.myNodeGraphProxy = Fly::NodeGraphProxy(t2->mEventGraph);
 						ShowNodeGraph(myNodeGraphContext);
 					}
 					

@@ -13,21 +13,22 @@ namespace FLY_NAMESPACE
 		PinTypeManager();
 		~PinTypeManager();
 
-		//PinTypeID CreatePinType(std::string_view aName, eFlowType aFlowType, DataTypeID aDataTypeID, SetPinValueInterface aSetPinValueFunction, SetPinValueFromPinInterface aSetPinValueFromPinInterface, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>());
+		//PinTypeID CreatePinType(std::string_view aName, eFlowType aFlowType, DataTypeID aDataTypeID, SetPinValueFunction aSetPinValueFunction, SetPinValueFromPinInterface aSetPinValueFromPinInterface, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>());
 
 		template<typename T>
-		PinTypeID CreatePinType(std::string_view aName, eFlowType aFlowType, SetPinValueInterface aSetPinValueFunction, SetPinValueFromPinInterface aSetPinValueFromPinInterface, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>())
+		[[nodiscard]] PinTypeID CreatePinType(std::string_view aName, eIODirection aIODirection, SetPinValueF aSetPinValueFunction, SetPinValueFromPinF aSetPinValueFromPinFunction, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>())
 		{
-			return CreatePinType(aName, aFlowType, GenericDataTypeID{ GetDataTypeID<T>() }, aSetPinValueFunction, aSetPinValueFromPinInterface, aDefaultValueMemoryID);
+			return CreatePinType(aName, aIODirection, GenericDataTypeID{ GetDataTypeID<T>() }, aSetPinValueFunction, aSetPinValueFromPinFunction, aDefaultValueMemoryID);
 		}
 
-		PinTypeID CreatePinType(std::string_view aName, eFlowType aFlowType, GenericDataTypeID aDataTypeID, SetPinValueInterface aSetPinValueFunction, SetPinValueFromPinInterface aSetPinValueFromPinFunction, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>());
+		[[nodiscard]] PinTypeID CreatePinType(std::string_view aName, eIODirection aIODirection, GenericDataTypeID aDataTypeID, SetPinValueF aSetPinValueFunction, SetPinValueFromPinF aSetPinValueFromPinFunction, MemoryPoolID aDefaultValueMemoryID = InvalidID<MemoryPoolID>());
 
-		PinType& GetPinType(PinTypeID aID)
+		[[nodiscard]] PinType& GetPinType(PinTypeID aID)
 		{
 			return mPinTypes[aID];
 		}
-		const PinType& GetPinType(PinTypeID aID) const
+
+		[[nodiscard]] const PinType& GetPinType(PinTypeID aID) const
 		{
 			return mPinTypes[aID];
 		}

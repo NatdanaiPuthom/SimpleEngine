@@ -13,7 +13,7 @@ namespace FLY_NAMESPACE
 
 	struct FlyTraitImplementation final
 	{
-		EventGraph mNodeGraph;
+		EventGraph mEventGraph;
 		NodeTypeID mInputNodeTypeID;
 		NodeTypeID mOutputNodeTypeID;
 

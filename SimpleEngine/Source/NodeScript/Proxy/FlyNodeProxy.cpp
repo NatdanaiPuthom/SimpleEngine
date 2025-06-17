@@ -22,37 +22,37 @@ namespace FLY_NAMESPACE
 
 	Vec2 NodeProxy::GetPosition() const
 	{
-		return GetNode().mPosition;
+		return GetNode().GetPosition();
 	}
 
 	bool NodeProxy::IsDestroyed() const
 	{
-		return GetNode().mIsDestroyed;
+		return GetNode().IsDestroyed();
 	}
 
 	std::vector<PinProxy> NodeProxy::GetInputPins() const
 	{
-		return GetPins(eFlowType::Input);
+		return GetPins(eIODirection::Input);
 	}
 
 	std::vector<PinProxy> NodeProxy::GetOutputPins() const
 	{
-		return GetPins(eFlowType::Output);
+		return GetPins(eIODirection::Output);
 	}
 
 	std::vector<PinProxy> NodeProxy::GetSplitInputPins() const
 	{
-		return GetSplitPins(eFlowType::Input);
+		return GetSplitPins(eIODirection::Input);
 	}
 
 	std::vector<PinProxy> NodeProxy::GetSplitOutputPins() const
 	{
-		return GetSplitPins(eFlowType::Output);
+		return GetSplitPins(eIODirection::Output);
 	}
 
 	const Node& NodeProxy::GetNode() const
 	{
-		return GetNodeGraph().mNodes.at(mNodeID);
+		return GetNodeGraph().GetNode(mNodeID);
 	}
 
 	NodeID NodeProxy::GetID() const
@@ -62,7 +62,7 @@ namespace FLY_NAMESPACE
 
 	eNodeTrait NodeProxy::GetTraits() const
 	{
-		return Internal::GetNodeType(GetNode().mTypeID).mNodeRecipe.mTraits;
+		return Internal::GetNodeType(GetNode().GetTypeID()).GetTraits();
 	}
 
 	bool NodeProxy::IsAccessor() const
@@ -72,7 +72,7 @@ namespace FLY_NAMESPACE
 
 	EventID NodeProxy::GetEventID() const
 	{
-		return Internal::GetNodeType(GetNode().mTypeID).mNodeRecipe.mEventID;
+		return Internal::GetNodeType(GetNode().GetTypeID()).GetEventID();
 	}
 
 	bool NodeProxy::HasAnyConnectedLinks() const
@@ -83,8 +83,8 @@ namespace FLY_NAMESPACE
 			{
 				for (const PinID pinID : aPinIDs)
 				{
-					const Pin& pin = aNodeGraph.mPins.at(pinID);
-					if (!pin.mConnectedPinIDs.empty())
+					const Pin& pin = aNodeGraph.GetPin(pinID);
+					if (!pin.GetConnectedPinIDs().empty())
 					{
 						return true;
 					}
@@ -93,7 +93,7 @@ namespace FLY_NAMESPACE
 				return false;
 			};
 
-		return hasConnectedLink(node.mInputPins, GetNodeGraph()) || hasConnectedLink(node.mOutputPins, GetNodeGraph());
+		return hasConnectedLink(node.GetInputPins(), GetNodeGraph()) || hasConnectedLink(node.GetOutputPins(), GetNodeGraph());
 	}
 
 	bool NodeProxy::IsReplacable() const
@@ -109,7 +109,7 @@ namespace FLY_NAMESPACE
 
 	NodeTypeProxy NodeProxy::GetNodeType() const
 	{
-		return NodeTypeProxy(GetNode().mTypeID);
+		return NodeTypeProxy(GetNode().GetTypeID());
 	}
 
 	void NodeProxy::Destroy(CommandTracker* const aCommandTracker)
@@ -119,7 +119,8 @@ namespace FLY_NAMESPACE
 
 	void NodeProxy::DestroyConnectedLinks(CommandTracker* const aCommandTracker)
 	{
-		Internal::DestroyLinks(Internal::GetLinkIDsByNode(NodeGraphProxy(mNodeGraphVariant).GetNodeGraph(), GetID()), NodeGraphProxy(mNodeGraphVariant).GetNodeGraph(), aCommandTracker);
+		std::vector<LinkID> linkIDs = Internal::GetLinkIDsByNode(NodeGraphProxy(mNodeGraphVariant).GetNodeGraph(), mNodeID);
+		Internal::DestroyLinks(std::span(linkIDs), NodeGraphProxy(mNodeGraphVariant).GetNodeGraph(), aCommandTracker);
 	}
 
 	void NodeProxy::SetPosition(const Vec2 aPosition, CommandTracker* const aCommandTracker)
@@ -146,16 +147,16 @@ namespace FLY_NAMESPACE
 		return pinProxys;
 	}
 
-	std::vector<PinProxy> NodeProxy::GetPins(const eFlowType aFlowType) const
+	std::vector<PinProxy> NodeProxy::GetPins(const eIODirection aIODirection) const
 	{
 		const Node& node = GetNode();
-		return GetPins(SelectByFlowType(aFlowType, node.mInputPins, node.mOutputPins));
+		return GetPins(SelectByIODirection(aIODirection, node.GetInputPins(), node.GetOutputPins()));
 	}
 
-	std::vector<PinProxy> NodeProxy::GetSplitPins(const eFlowType aFlowType) const
+	std::vector<PinProxy> NodeProxy::GetSplitPins(const eIODirection aIODirection) const
 	{
 		const Node& node = GetNode();
-		return GetPins(SelectByFlowType(aFlowType, node.mSplitInputPins, node.mSplitOutputPins));
+		return GetPins(SelectByIODirection(aIODirection, node.GetSplitInputPins(), node.GetSplitOutputPins()));
 	}
 
 	bool operator==(const NodeProxy& a, const NodeProxy& b)

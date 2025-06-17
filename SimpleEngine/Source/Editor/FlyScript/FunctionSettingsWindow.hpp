@@ -16,7 +16,7 @@ namespace Editor
 
 	private:
 
-		void ShowInputOutput(Fly::eFlowType aFlowType);
+		void ShowInputOutput(Fly::eIODirection aIODirection);
 
 	private:
 

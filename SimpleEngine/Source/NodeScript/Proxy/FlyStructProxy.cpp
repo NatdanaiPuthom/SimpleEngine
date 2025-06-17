@@ -16,7 +16,7 @@ namespace FLY_NAMESPACE
 
 	std::string_view StructProxy::GetName() const
 	{
-		return GetStruct().mName;
+		return GetStruct().Name();
 	}
 
 	StructID StructProxy::GetID() const
@@ -30,10 +30,10 @@ namespace FLY_NAMESPACE
 
 		Struct& s = GetStruct();
 
-		variableProxys.reserve(s.mVariableContainer.mVariables.size());
-		for (size_t i = 0; i < s.mVariableContainer.mVariables.size(); i++)
+		variableProxys.reserve(s.GetVariableContainer().GetVariables().size());
+		for (size_t i = 0; i < s.GetVariableContainer().GetVariableCount(); i++)
 		{
-			if (!aIncludeDestroyed && s.mVariableContainer.mVariables[i].mIsDestroyed)
+			if (!aIncludeDestroyed && s.GetVariableContainer().GetVariable(i).IsDestroyed())
 			{
 				continue;
 			}
@@ -46,7 +46,7 @@ namespace FLY_NAMESPACE
 
 	VariableProxy StructProxy::CreateVariable(const GenericDataTypeProxy& aDataTypeProxy, const std::string_view aName, CommandTracker* const aCommandTracker)
 	{
-		VarID varID = Internal::CreateVariable(GetStruct().mVariableContainer, aDataTypeProxy.GetID(), aName, aCommandTracker);
+		VarID varID = Internal::CreateVariable(GetStruct().GetVariableContainer(), aDataTypeProxy.GetID(), aName, aCommandTracker);
 		return VariableProxy(varID, *this);
 	}
 

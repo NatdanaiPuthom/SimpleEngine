@@ -18,7 +18,7 @@ namespace FLY_NAMESPACE
 	constexpr const char* NullptrString = "Nullptr";
 
 	template<typename T>
-	constexpr AllocateInterface CreateAllocateInterface()
+	constexpr InplaceAllocateInterface CreateInplaceAllocateInterface()
 	{
 		if constexpr (DefaultConstructible<T>)
 		{
@@ -37,10 +37,7 @@ namespace FLY_NAMESPACE
 		}
 		else
 		{
-			return [](void*, const void*) -> void
-				{
-					throw std::runtime_error("Can't instantiate an object that isn't default constructible.");
-				};
+			return nullptr;
 		}
 	}
 
@@ -115,15 +112,15 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	constexpr ViewAndEditInterface CreateViewAndEditInterface()
+	constexpr ViewAndEditF CreateViewAndEditInterface()
 	{
 		if constexpr (ViewAndEditable<T>)
 		{
-			return [](void* aDataPtr, EditorTextFunction) -> ViewAndEditResult
+			return ViewAndEditF([](void* aDataPtr, EditorTextFunction) -> ViewAndEditResult
 				{
 					T& value = *reinterpret_cast<T*>(aDataPtr);
 					return ViewAndEdit(value);
-				};
+				});
 		}
 		else if constexpr (PointerType<T>)
 		{
@@ -167,7 +164,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	constexpr ViewInterface CreateViewInterface()
+	constexpr ViewF CreateViewInterface()
 	{
 		if constexpr (Viewable<T>)
 		{
@@ -240,7 +237,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	constexpr SaveInterface CreateSaveInterface()
+	constexpr SaveF CreateSaveInterface()
 	{
 		if constexpr (Savable<T, nlohmann::json>)
 		{
@@ -266,7 +263,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	constexpr LoadInterface CreateLoadInterface()
+	constexpr LoadF CreateLoadInterface()
 	{
 		if constexpr (Loadable<T, nlohmann::json>)
 		{
@@ -291,7 +288,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	constexpr ViewAndEditInterface CreateEditTemplateInterface()
+	constexpr ViewAndEditF CreateEditTemplateInterface()
 	{
 		return [](void* aDataPtr) -> bool
 			{
@@ -301,7 +298,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	constexpr SaveInterface CreateSaveTemplateInterface()
+	constexpr SaveF CreateSaveTemplateInterface()
 	{
 		return [](nlohmann::json& aJson, const void* aDataPtr) -> void
 			{
@@ -311,7 +308,7 @@ namespace FLY_NAMESPACE
 	}
 
 	template<typename T>
-	constexpr LoadInterface CreateLoadTemplateInterface()
+	constexpr LoadF CreateLoadTemplateInterface()
 	{
 		return [](const nlohmann::json& aJson, void* aDataPtr) -> void
 			{
@@ -325,11 +322,11 @@ namespace FLY_NAMESPACE
 	{
 		return FundamentalInterface
 		{
-			.allocate = CreateAllocateInterface<T>(),
-			.release = CreateReleaseInterface<T>(),
-			.copy = CreateCopyInterface<T>(),
-			.swap = CreateSwapInterface<T>(),
-			.equals = CreateEqualsInterface<T>()
+			.mInplaceAllocateF = CreateInplaceAllocateInterface<T>(),
+			.mReleaseF = CreateReleaseInterface<T>(),
+			.mCopyF = CreateCopyInterface<T>(),
+			.mSwapF = CreateSwapInterface<T>(),
+			.mEqualsF = CreateEqualsInterface<T>()
 		};
 	}
 
@@ -338,10 +335,10 @@ namespace FLY_NAMESPACE
 	{
 		return FunctionInterface
 		{
-			.viewAndEdit = CreateViewAndEditInterface<T>(),
-			.view = CreateViewInterface<T>(),
-			.save = CreateSaveInterface<T>(),
-			.load = CreateLoadInterface<T>()
+			.mViewAndEditF = CreateViewAndEditInterface<T>(),
+			.mViewF = CreateViewInterface<T>(),
+			.mSaveF = CreateSaveInterface<T>(),
+			.mLoadF = CreateLoadInterface<T>()
 		};
 	}
 
@@ -350,22 +347,17 @@ namespace FLY_NAMESPACE
 	{
 		return ExecutionInterface
 		{
-			.setInputPinValue = CreateSetPinValueInterface<T, eFlowType::Input>(),
-			.setOutputPinValue = CreateSetPinValueInterface<T, eFlowType::Output>(),
-			.setInputPinValueFromPin = CreateSetPinValueFromPinInterface<T, eFlowType::Input>(),
-			.setOutputPinValueFromPin = CreateSetPinValueFromPinInterface<T, eFlowType::Output>(),
+			.mSetInputPinValueF = CreateSetPinValueFunction<T, eIODirection::Input>(),
+			.mSetOutputPinValueF = CreateSetPinValueFunction<T, eIODirection::Output>(),
+			.mSetInputPinValueFromPinF = CreateSetPinValueFromPinFunction<T, eIODirection::Input>(),
+			.mSetOutputPinValueFromPinF = CreateSetPinValueFromPinFunction<T, eIODirection::Output>(),
 		};
 	}
 
 	template<typename T>
 	constexpr DataTypeInterface CreateDataTypeInterface()
 	{
-		return DataTypeInterface
-		{
-			.fundamental = CreateFundamentalInterface<T>(),
-			.function = CreateFunctionInterface<T>(),
-			.execution = CreateExecutionInterface<T>()
-		};
+		return DataTypeInterface(CreateFundamentalInterface<T>(), CreateFunctionInterface<T>(), CreateExecutionInterface<T>());
 	}
 
 
@@ -436,7 +428,6 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] eDataTypeRelation GetDataTypeRelation(DataTypeID aDataTypeID1, DataTypeID aDataTypeID2) const;
 		[[nodiscard]] eDataTypeRelation GetDataTypeRelation(GenericDataTypeID aDataTypeID1, GenericDataTypeID aDataTypeID2) const;
 
-		[[nodiscard]] const std::string& GetName(DataTypeID aDataTypeID) const;
 		[[nodiscard]] const std::string& GetName(GenericDataTypeID aDataTypeID) const;
 
 		[[nodiscard]] Color GetDataTypeColor(GenericDataTypeID aDataTypeID) const;
@@ -444,10 +435,10 @@ namespace FLY_NAMESPACE
 		[[nodiscard]] size_t GetDataTypeSize(GenericDataTypeID aDataTypeID) const;
 		[[nodiscard]] size_t GetDataTypeAlignment(GenericDataTypeID aDataTypeID) const;
 
-		[[nodiscard]] SetPinValueInterface GetSetPinValueInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
-		[[nodiscard]] SetPinValueInterface GetSetPinValueInterface(GenericDataTypeID aDataTypeID, eFlowType aFlowType) const;
-		[[nodiscard]] SetPinValueFromPinInterface GetSetPinValueFromPinInterface(DataTypeID aDataTypeID, eFlowType aFlowType) const;
-		[[nodiscard]] SetPinValueFromPinInterface GetSetPinValueFromPinInterface(GenericDataTypeID aDataTypeID, eFlowType aFlowType) const;
+		[[nodiscard]] SetPinValueF GetSetPinValueFunction(DataTypeID aDataTypeID, eIODirection aIODirection) const;
+		[[nodiscard]] SetPinValueF GetSetPinValueFunction(GenericDataTypeID aDataTypeID, eIODirection aIODirection) const;
+		[[nodiscard]] SetPinValueFromPinF GetSetPinValueFromPinFunction(DataTypeID aDataTypeID, eIODirection aIODirection) const;
+		[[nodiscard]] SetPinValueFromPinF GetSetPinValueFromPinFunction(GenericDataTypeID aDataTypeID, eIODirection aIODirection) const;
 
 		[[nodiscard]] DataTypeID GetDataTypeIDByName(std::string_view aName) const;
 		[[nodiscard]] GenericDataTypeID GetGenericDataTypeIDByName(std::string_view aName) const;
@@ -599,18 +590,18 @@ namespace FLY_NAMESPACE
 	}
 
 	template<Decayed T>
-	inline void DataTypeManager::RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& anInterface, const bool aIsTargetable)
+	inline void DataTypeManager::RegisterInternal(const std::string& aName, const Color& aColor, const DataTypeInterface& aInterface, const bool aIsTargetable)
 	{
 		eDataTypeTrait typeTraits = eDataTypeTrait::None;
 		if constexpr (Fundamental<T>)
 		{
 			typeTraits |= eDataTypeTrait::Fundamental;
 		}
-		if (anInterface.function.viewAndEdit)
+		if (aInterface.GetViewAndEditFunction())
 		{
 			typeTraits |= eDataTypeTrait::ViewAndEditable;
 		}
-		if (anInterface.function.save && anInterface.function.load)
+		if (aInterface.GetSaveFunction() && aInterface.GetLoadFunction())
 		{
 			typeTraits |= eDataTypeTrait::SaveLoadable;
 		}
@@ -630,19 +621,19 @@ namespace FLY_NAMESPACE
 		const std::type_info& typeInfo = typeid(T);
 		DataType dataType
 		{
-			.mName = aName,
-			.mSize = sizeof(T),
-			.mAlignment = alignof(T),
-			.mColor = aColor,
-			.mTypeInfo = &typeInfo,
-			.mInterface = anInterface,
-			.mToPointerDataTypeID = GetDataTypeID<T*>(),
-			.mToValueDataTypeID = GetDataTypeID<std::remove_pointer_t<T>>(),
-			.mTypeTraits = typeTraits,
+			aName,
+			sizeof(T),
+			alignof(T),
+			aColor,
+			&typeInfo,
+			aInterface,
+			GetDataTypeID<T*>(),
+			GetDataTypeID<std::remove_pointer_t<T>>(),
+			typeTraits,
 		};
 
 		auto [it, success] = mDataTypes.emplace(GetDataTypeID<T>(), std::move(dataType));
-		if (!success && aName != it->second.mName)
+		if (!success && aName != it->second.Name())
 		{
 			throw std::runtime_error("Two data types have the same hash value");
 		}
@@ -659,14 +650,7 @@ namespace FLY_NAMESPACE
 
 		if (parentDataType)
 		{
-			parentDataType->mVariableContainer.mVariables.push_back(
-				Variable
-				{
-					.mDataTypeID = GenericDataTypeID{ dataTypeID },
-					.mName = aName,
-					.mByteOffset = byteOffset
-				}
-			);
+			parentDataType->GetVariableContainer().AddVariable(Variable(GenericDataTypeID{dataTypeID}, aName, byteOffset));
 		}
 	}
 
@@ -681,12 +665,13 @@ namespace FLY_NAMESPACE
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			if (dataType->mInterface.fundamental.allocate)
+			auto inplaceAllocateFunction = dataType->GetInterface().GetInplaceAllocateFunction();
+			if (inplaceAllocateFunction)
 			{
-				void* dataPtr = aArena.AllocateSize(dataType->mSize);
-				dataType->mInterface.fundamental.allocate(dataPtr, aDefaultValue);
+				void* dataPtr = aArena.AllocateSize(dataType->GetSize());
+				inplaceAllocateFunction(dataPtr, aDefaultValue);
 
-				if (HasNotFlag(dataType->mTypeTraits, eDataTypeTrait::TriviallyCopyable))
+				if (HasNotFlag(dataType->GetTypeTraits(), eDataTypeTrait::TriviallyCopyable))
 				{
 					aArena.RegisterMemoryObject(dataPtr, aDataTypeID);
 				}

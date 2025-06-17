@@ -14,13 +14,13 @@ namespace FLY_NAMESPACE
 	ViewAndEditResult DataTypeManager::ViewAndEditData(const DataType& aDataType, void* const aDataPtr, const bool aViewAndEditMembers) const
 	{
 		// If data type has a valid edit function
-		if (aDataType.mInterface.function.viewAndEdit)
+		if (aDataType.GetInterface().GetViewAndEditFunction())
 		{
-			return aDataType.mInterface.function.viewAndEdit(aDataPtr, mEditorTextFunction);
+			return aDataType.GetInterface().GetViewAndEditFunction().Invoke(aDataPtr, mEditorTextFunction);
 		}
-		else if (HasFlag(aDataType.mTypeTraits, eDataTypeTrait::Pointer))
+		else if (HasFlag(aDataType.GetTypeTraits(), eDataTypeTrait::Pointer))
 		{
-			if (const DataType* valueDataType = Find(aDataType.mToValueDataTypeID))
+			if (const DataType* valueDataType = Find(aDataType.GetToValueDataTypeID()))
 			{
 				void* valuePtr = *((void**)aDataPtr);
 				if (valuePtr)
@@ -32,15 +32,14 @@ namespace FLY_NAMESPACE
 
 		ViewAndEditResult viewAndEditResult;
 		// View and edit member variables instead
-
 		if (aViewAndEditMembers)
 		{
 
-			for (const Variable& variable : aDataType.mVariableContainer.mVariables)
+			for (const Variable& variable : aDataType.GetVariableContainer())
 			{
-				if (const DataType* variableDataType = Find(variable.mDataTypeID))
+				if (const DataType* variableDataType = Find(variable.GetDataTypeID()))
 				{
-					void* const propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
+					void* const propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.GetByteOffset());
 					viewAndEditResult.mIsItemActive |= ViewAndEditData(*variableDataType, propertyDataPtr, aViewAndEditMembers).mIsItemActive;
 				}
 			}
@@ -52,19 +51,19 @@ namespace FLY_NAMESPACE
 	void DataTypeManager::ViewData(const DataType& aDataType, const void* const aDataPtr) const
 	{
 		// If data type has a valid edit function
-		if (aDataType.mInterface.function.view)
+		if (aDataType.GetInterface().GetViewFunction())
 		{
-			aDataType.mInterface.function.view(aDataPtr, mEditorTextFunction);
+			aDataType.GetInterface().GetViewFunction().Invoke(aDataPtr, mEditorTextFunction);
 			return;
 		}
 
 		// View member variables instead
-		for (const Variable& variable : aDataType.mVariableContainer.mVariables)
+		for (const Variable& variable : aDataType.GetVariableContainer())
 		{
-			if (const DataType* variableDataType = Find(variable.mDataTypeID))
+			if (const DataType* variableDataType = Find(variable.GetDataTypeID()))
 			{
-				const void* const propertyDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
-				ViewData(*variableDataType, propertyDataPtr);
+				const void* const dataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + variable.GetByteOffset());
+				ViewData(*variableDataType, dataPtr);
 			}
 		}
 
@@ -73,22 +72,22 @@ namespace FLY_NAMESPACE
 	bool DataTypeManager::SaveData(const DataType& aDataType, const void* aDataPtr, nlohmann::json& aJson) const
 	{
 		// If data type has a valid save function
-		if (aDataType.mInterface.function.save)
+		if (aDataType.GetInterface().GetSaveFunction())
 		{
-			aDataType.mInterface.function.save(aDataPtr, aJson);
+			aDataType.GetInterface().GetSaveFunction().Invoke(aDataPtr, aJson);
 			return true;
 		}
 
 		// Save member variables instead
-		for (const Variable& variable : aDataType.mVariableContainer.mVariables)
+		for (const Variable& variable : aDataType.GetVariableContainer())
 		{
-			if (const DataType* variableDataType = Find(variable.mDataTypeID))
+			if (const DataType* variableDataType = Find(variable.GetDataTypeID()))
 			{
 				nlohmann::json variableJson;
-				const void* variableDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
+				const void* variableDataPtr = reinterpret_cast<const void*>(reinterpret_cast<size_t>(aDataPtr) + variable.GetByteOffset());
 				if (SaveData(*variableDataType, variableDataPtr, variableJson))
 				{
-					aJson[variable.mName] = variableJson;
+					aJson[variable.Name()] = variableJson;
 				}
 			}
 		}
@@ -99,23 +98,25 @@ namespace FLY_NAMESPACE
 	bool DataTypeManager::LoadData(const DataType& aDataType, void* const aDataPtr, const nlohmann::json& aJson) const
 	{
 		// If data type has a valid load function
-		if (aDataType.mInterface.function.load)
+		if (aDataType.GetInterface().GetLoadFunction())
 		{
-			aDataType.mInterface.function.load(aDataPtr, aJson);
+			aDataType.GetInterface().GetLoadFunction().Invoke(aDataPtr, aJson);
 			return true;
 		}
 
 		// Load member variables instead
-		for (const Variable& variable : aDataType.mVariableContainer.mVariables)
+		for (const Variable& variable : aDataType.GetVariableContainer())
 		{
-			if (const DataType* dataType = Find(variable.mDataTypeID))
+			if (const DataType* dataType = Find(variable.GetDataTypeID()))
 			{
-				auto it = aJson.find(variable.mName);
-				if (it != aJson.end())
+				auto it = aJson.find(variable.Name());
+				if (it == aJson.end())
 				{
-					void* propertyDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.mByteOffset);
-					LoadData(*dataType, propertyDataPtr, it.value());
+					continue;
 				}
+
+				void* const variableDataPtr = reinterpret_cast<void*>(reinterpret_cast<size_t>(aDataPtr) + variable.GetByteOffset());
+				LoadData(*dataType, variableDataPtr, it.value());
 			}
 		}
 
@@ -162,9 +163,9 @@ namespace FLY_NAMESPACE
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			if (dataType->mInterface.fundamental.release)
+			if (dataType->GetInterface().GetReleaseFunction())
 			{
-				dataType->mInterface.fundamental.release(aDataPtr);
+				dataType->GetInterface().GetReleaseFunction().Invoke(aDataPtr);
 			}
 		}
 	}
@@ -173,9 +174,9 @@ namespace FLY_NAMESPACE
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			if (dataType->mInterface.fundamental.copy)
+			if (dataType->GetInterface().GetCopyFunction())
 			{
-				dataType->mInterface.fundamental.copy(aDestination, aSource);
+				dataType->GetInterface().GetCopyFunction().Invoke(aDestination, aSource);
 			}
 		}
 	}
@@ -184,9 +185,9 @@ namespace FLY_NAMESPACE
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			if (dataType->mInterface.fundamental.swap)
+			if (dataType->GetInterface().GetSwapFunction())
 			{
-				dataType->mInterface.fundamental.swap(aDataPtr1, aDataPtr2);
+				dataType->GetInterface().GetSwapFunction().Invoke(aDataPtr1, aDataPtr2);
 			}
 		}
 	}
@@ -195,9 +196,9 @@ namespace FLY_NAMESPACE
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			if (dataType->mInterface.fundamental.equals)
+			if (dataType->GetInterface().GetEqualsFunction())
 			{
-				return dataType->mInterface.fundamental.equals(aDataPtr1, aDataPtr2);
+				return dataType->GetInterface().GetEqualsFunction().Invoke(aDataPtr1, aDataPtr2);
 			}
 		}
 		return false;
@@ -364,7 +365,7 @@ namespace FLY_NAMESPACE
 			{
 				if (const DataType* dataType = Find(a))
 				{
-					return dataType->mToPointerDataTypeID == b || dataType->mToValueDataTypeID == b;
+					return dataType->GetToPointerDataTypeID() == b || dataType->GetToValueDataTypeID() == b;
 				}
 				return false;
 			};
@@ -403,11 +404,11 @@ namespace FLY_NAMESPACE
 
 		if (const DataType* dataType = Find(aDataTypeID1))
 		{
-			if (dataType->mToPointerDataTypeID == aDataTypeID2)
+			if (dataType->GetToPointerDataTypeID() == aDataTypeID2)
 			{
 				return eDataTypeRelation::Value_Pointer;
 			}
-			else if (dataType->mToValueDataTypeID == aDataTypeID2)
+			else if (dataType->GetToValueDataTypeID() == aDataTypeID2)
 			{
 				return eDataTypeRelation::Pointer_Value;
 			}
@@ -447,22 +448,13 @@ namespace FLY_NAMESPACE
 			}, aDataTypeID1.mID, aDataTypeID2.mID);
 	}
 
-	const std::string& DataTypeManager::GetName(const DataTypeID aDataTypeID) const
-	{
-		if (mDataTypes.contains(aDataTypeID))
-		{
-			return mDataTypes.at(aDataTypeID).mName;
-		}
-		return mNullNameStr;
-	}
-
 	const std::string& DataTypeManager::GetName(GenericDataTypeID aDataTypeID) const
 	{
 		return std::visit(Visitor
 			{
 			[this](const DataTypeID aDataTypeID) -> const std::string&
 			{
-				return GetName(aDataTypeID);
+				return Find(aDataTypeID)->Name();
 			},
 			[this](const ClassID aClassID) -> const std::string&
 			{
@@ -479,7 +471,7 @@ namespace FLY_NAMESPACE
 			{
 				if (const DataType* dataType = Find(aDataTypeID))
 				{
-					return dataType->mColor;
+					return dataType->GetColor();
 				}
 				return mDefaultColor;
 			},
@@ -502,7 +494,7 @@ namespace FLY_NAMESPACE
 			{
 				if (const DataType* dataType = Find(aDataTypeID))
 				{
-					return dataType->mTypeTraits;
+					return dataType->GetTypeTraits();
 				}
 				return eDataTypeTrait::None;
 			},
@@ -525,7 +517,7 @@ namespace FLY_NAMESPACE
 			{
 				if (const DataType* dataType = Find(aDataTypeID))
 				{
-					return dataType->mSize;
+					return dataType->GetSize();
 				}
 				return 0;
 			},
@@ -548,7 +540,7 @@ namespace FLY_NAMESPACE
 			{
 				if (const DataType* dataType = Find(aDataTypeID))
 				{
-					return dataType->mAlignment;
+					return dataType->GetAlignment();
 				}
 				return 0;
 			},
@@ -563,55 +555,55 @@ namespace FLY_NAMESPACE
 			}, aDataTypeID.mID);
 	}
 
-	SetPinValueInterface DataTypeManager::GetSetPinValueInterface(const DataTypeID aDataTypeID, const eFlowType aFlowType) const
+	SetPinValueF DataTypeManager::GetSetPinValueFunction(const DataTypeID aDataTypeID, const eIODirection aIODirection) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			return SelectByFlowType(aFlowType, dataType->mInterface.execution.setInputPinValue, dataType->mInterface.execution.setOutputPinValue);
+			return SelectByIODirection(aIODirection, dataType->GetInterface().GetSetInputPinValueFunction(), dataType->GetInterface().GetSetOutputPinValueFunction());
 		}
 
 		assert(false);
-		return nullptr;
+		return SetPinValueF{};
 	}
 
-	SetPinValueInterface DataTypeManager::GetSetPinValueInterface(GenericDataTypeID aDataTypeID, eFlowType aFlowType) const
+	SetPinValueF DataTypeManager::GetSetPinValueFunction(GenericDataTypeID aDataTypeID, eIODirection aIODirection) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			return SelectByFlowType(aFlowType, dataType->mInterface.execution.setInputPinValue, dataType->mInterface.execution.setOutputPinValue);
+			return SelectByIODirection(aIODirection, dataType->GetInterface().GetSetInputPinValueFunction(), dataType->GetInterface().GetSetOutputPinValueFunction());
 		}
 
 		assert(false);
-		return nullptr;
+		return SetPinValueF{};
 	}
 
-	SetPinValueFromPinInterface DataTypeManager::GetSetPinValueFromPinInterface(const DataTypeID aDataTypeID, const eFlowType aFlowType) const
+	SetPinValueFromPinF DataTypeManager::GetSetPinValueFromPinFunction(const DataTypeID aDataTypeID, const eIODirection aIODirection) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			return SelectByFlowType(aFlowType, dataType->mInterface.execution.setInputPinValueFromPin, dataType->mInterface.execution.setOutputPinValueFromPin);
+			return SelectByIODirection(aIODirection, dataType->GetInterface().GetSetInputPinValueFromPinFunction(), dataType->GetInterface().GetSetOutputPinValueFromPinFunction());
 		}
 
 		assert(false);
-		return nullptr;
+		return SetPinValueFromPinF{};
 	}
 
-	SetPinValueFromPinInterface DataTypeManager::GetSetPinValueFromPinInterface(GenericDataTypeID aDataTypeID, eFlowType aFlowType) const
+	SetPinValueFromPinF DataTypeManager::GetSetPinValueFromPinFunction(GenericDataTypeID aDataTypeID, const eIODirection aIODirection) const
 	{
 		if (const DataType* dataType = Find(aDataTypeID))
 		{
-			return SelectByFlowType(aFlowType, dataType->mInterface.execution.setInputPinValueFromPin, dataType->mInterface.execution.setOutputPinValueFromPin);
+			return SelectByIODirection(aIODirection, dataType->GetInterface().GetSetInputPinValueFromPinFunction(), dataType->GetInterface().GetSetOutputPinValueFromPinFunction());
 		}
 
 		assert(false);
-		return nullptr;
+		return SetPinValueFromPinF{};
 	}
 
 	DataTypeID DataTypeManager::GetDataTypeIDByName(std::string_view aName) const
 	{
 		for (const auto& [dataTypeID, dataType] : mDataTypes)
 		{
-			if (aName == dataType.mName)
+			if (aName == dataType.Name())
 			{
 				return dataTypeID;
 			}
@@ -726,7 +718,7 @@ namespace FLY_NAMESPACE
 			{
 				if (DataType* dataType = Find(aDataTypeID))
 				{
-					dataType->mColor = aColor;
+					dataType->SetColor(aColor);
 				}
 			},
 			[&](const auto) -> void
@@ -763,7 +755,7 @@ namespace FLY_NAMESPACE
 		}
 
 		auto pair = mDataTypes.emplace(mDataTypeIDCounter, *structInstanceDataType);
-		pair.first->second.mName = std::string(aName);
+		pair.first->second.Name() = std::string(aName);
 		const DataTypeID dataTypeID = mDataTypeIDCounter;
 		mDataTypeIDCounter++;
 		return dataTypeID;

@@ -60,26 +60,26 @@ namespace FLY_NAMESPACE
 		return aStr.substr(0, aStr.find_first_of(':'));
 	}
 
-	inline NodeTypeID RegisterInternal(NodeRecipe&& aNodeRecipe, NodeTypeDesc&& aDescription = NodeTypeDesc())
+	inline NodeTypeID RegisterInternal(NodeType&& aNodeType, NodeTypeDesc&& aDescription = NodeTypeDesc())
 	{
 		const std::string defaultPinNames = aDescription.mShowDataTypePinNames ? TypeIdentifierStr : "";
-		aDescription.mInputPinNames.resize(aNodeRecipe.mInputPinTypeIDs.size(), defaultPinNames);
-		aDescription.mOutputPinNames.resize(aNodeRecipe.mOutputPinTypeIDs.size(), defaultPinNames);
+		aDescription.mInputPinNames.resize(aNodeType.GetInputPinTypeIDs().size(), defaultPinNames);
+		aDescription.mOutputPinNames.resize(aNodeType.GetOutputPinTypeIDs().size(), defaultPinNames);
 
 
 		for (size_t i = 0; i < aDescription.mInputPinNames.size(); ++i)
 		{
-			Internal::GetPinTypeManager().GetPinType(aNodeRecipe.mInputPinTypeIDs[i]).mName = aDescription.mInputPinNames[i];
+			Internal::GetPinTypeManager().GetPinType(aNodeType.GetInputPinTypeIDs()[i]).SetName(aDescription.mInputPinNames[i]);
 		}
 		for (size_t i = 0; i < aDescription.mOutputPinNames.size(); ++i)
 		{
-			Internal::GetPinTypeManager().GetPinType(aNodeRecipe.mOutputPinTypeIDs[i]).mName = aDescription.mOutputPinNames[i];
+			Internal::GetPinTypeManager().GetPinType(aNodeType.GetOutputPinTypeIDs()[i]).SetName(aDescription.mOutputPinNames[i]);
 		}
-		aNodeRecipe.mName = CleanUpNodeName(aNodeRecipe.mName);
+		aNodeType.SetName(CleanUpNodeName(aNodeType.GetName()));
 
-		assert(!aNodeRecipe.mName.empty());
+		assert(!aNodeType.GetName().empty());
 
-		return Internal::GetNodeTypeManager().Register(NodeType{ .mNodeRecipe = std::move(aNodeRecipe) });
+		return Internal::GetNodeTypeManager().Register(aNodeType);
 	}
 
 	template<eNodeTrait Traits = eNodeTrait::None, typename OutputType, typename... InputTypes>
@@ -109,7 +109,7 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	inline void RegisterGetterNodeType()
 	{
-		const std::string& typeName = Internal::GetDataTypeManager().GetName(GetDataTypeID<T>());
+		const std::string& typeName = Internal::GetDataTypeManager().Find<T>()->Name();
 		NodeCreationData getterData;
 		getterData.mName = "Get " + typeName;
 		const NodeTypeID nodeTypeID = RegisterInternal(FilterNodeType<eNodeTrait::Getter>(GetterNode<T>, getterData));
@@ -120,7 +120,7 @@ namespace FLY_NAMESPACE
 	template<typename T>
 	inline void RegisterSetterNodeType()
 	{
-		const std::string& typeName = Internal::GetDataTypeManager().GetName(GetDataTypeID<T>());
+		const std::string& typeName = Internal::GetDataTypeManager().Find<T>()->Name();
 
 		NodeCreationData setterData;
 		setterData.mName = "Set " + typeName;
@@ -136,10 +136,10 @@ namespace FLY_NAMESPACE
 
 
 	template<typename ContainerType>
-	std::tuple<Flow, std::add_pointer_t<typename ContainerType::value_type>, Flow> ForEach(InternalExecutionContextPtr aContext, Flow, const ContainerType& aContainer)
+	std::tuple<Flow, std::add_pointer_t<typename ContainerType::value_type>, Flow> ForEachNode(InternalExecutionContextPtr aContext, Flow, const ContainerType& aContainer)
 	{
 
-		const Node& node = aContext->mNodeData.mNodeRef.GetNodeGraph().mNodes[aContext->mNodeData.mNodeRef.GetNodeID()];
+		const Node& node = aContext->mNodeData.mNodeRef.GetNodeGraph().GetNode(aContext->mNodeData.mNodeRef.GetNodeID());
 		const NodeExecutionData nodeData = aContext->mNodeData;
 		NodeExecutionQueue* previousNodeExecutionQueue = aContext->mNodeExecutionQueue;
 
@@ -149,7 +149,7 @@ namespace FLY_NAMESPACE
 			NodeExecutionQueue nodeExecutionQueue(*aContext->mNodeExecutor);
 			aContext->mNodeExecutionQueue = &nodeExecutionQueue;
 
-			SetOutputValues(std::tuple{ Flow(true), &element }, node.mOutputPins, *aContext);
+			SetOutputValues(std::tuple{ Flow(true), &element }, node.GetOutputPins(), *aContext);
 
 			nodeExecutionQueue.Execute();
 
@@ -180,7 +180,7 @@ namespace FLY_NAMESPACE
 
 			if (DataType* dataType = Internal::GetDataTypeManager().Find<ClassType*>())
 			{
-				dataType->mNodeTypeIDs.push_back(nodeTypeID);
+				dataType->AddMemberNodeTypeID(nodeTypeID);
 			}
 		}
 
@@ -226,7 +226,7 @@ namespace FLY_NAMESPACE
 			getterData.mOwnerDataTypeID = GetDataTypeID<ClassType*>();
 
 			const NodeTypeID getterNodeTypeID = RegisterInternal(
-				CreateNodeRecipe(
+				CreateNodeType(
 					getterFunc,
 					TypeList<std::remove_const_t<MemberType>>(),
 					TypeList<ClassType*>(),
@@ -237,7 +237,7 @@ namespace FLY_NAMESPACE
 			DataType* dataType = Internal::GetDataTypeManager().Find<ClassType*>();
 			if (dataType)
 			{
-				dataType->mNodeTypeIDs.push_back(getterNodeTypeID);
+				dataType->AddMemberNodeTypeID(getterNodeTypeID);
 			}
 
 			if constexpr (!std::is_const_v<MemberType>)
@@ -256,7 +256,7 @@ namespace FLY_NAMESPACE
 				setterData.mName = aDirectory + "/Set " + aVariableName;
 				setterData.mOwnerDataTypeID = GetDataTypeID<ClassType*>();
 				const NodeTypeID setterNodeTypeID = RegisterInternal(
-					CreateNodeRecipe(
+					CreateNodeType(
 						setterFunc,
 						TypeList<Flow>(),
 						TypeList<Flow, ClassType*, std::remove_const_t<MemberType>>(),
@@ -266,7 +266,7 @@ namespace FLY_NAMESPACE
 
 				if (dataType)
 				{
-					dataType->mNodeTypeIDs.push_back(setterNodeTypeID);
+					dataType->AddMemberNodeTypeID(setterNodeTypeID);
 				}
 			}
 		}
@@ -568,7 +568,7 @@ namespace FLY_NAMESPACE
 					const DataType* c = Internal::GetDataTypeManager().Find(GetDataTypeID<ClassType>());
 					const DataType* classDataType = c ? c : Internal::GetDataTypeManager().Find<ClassType*>();
 					assert(classDataType);
-					nodeCreationData.mName = classDataType->mName + "/" + aFunctionName;
+					nodeCreationData.mName = classDataType->Name() + "/" + aFunctionName;
 				}
 				else
 				{
@@ -645,17 +645,17 @@ namespace FLY_NAMESPACE
 
 					OutputType outputValue{};
 
-					nodeType.mNodeRecipe.mFastExecuteFunction(*aContext, *aContext->mFoundationMemoryPool, nodeType, aTraitObject.mDataPtr.Get(), &inputTuple, &outputValue);
+					nodeType.GetFastExecuteFunction().Invoke(*aContext, *aContext->mFoundationMemoryPool, nodeType, aTraitObject.mDataPtr.Get(), &inputTuple, &outputValue);
 					return outputValue;
 				},
 				[aContext, &aInputTypes...](FlyTraitImplementation& aTraitImplementation) -> OutputType
 				{
 
-					const Node& inputNode = aTraitImplementation.mNodeGraph.mNodeGraph.mNodes[FlyTraitImplementation::sInputNodeID];
+					const Node& inputNode = aTraitImplementation.mEventGraph.GetNodeGraph().GetNode(FlyTraitImplementation::sInputNodeID);
 
-					SetPinValues(*aContext, inputNode.mInputPins, aTraitImplementation.mNodeGraph.mNodeGraph, std::forward<InputTypes>(aInputTypes)...);
+					SetPinValues(*aContext, inputNode.GetInputPins(), aTraitImplementation.mEventGraph.GetNodeGraph(), std::forward<InputTypes>(aInputTypes)...);
 
-					aContext->mNodeExecutionQueue->Push(NodeExecutionData{ .mNodeRef = NodeRef{ FlyTraitImplementation::sInputNodeID, aTraitImplementation.mNodeGraph.mNodeGraph }, .mTriggerReason = eNodeTriggerReason::Flow });
+					aContext->mNodeExecutionQueue->Push(NodeExecutionData{ .mNodeRef = NodeRef{ FlyTraitImplementation::sInputNodeID, aTraitImplementation.mEventGraph.GetNodeGraph() }, .mTriggerReason = eNodeTriggerReason::Flow});
 
 
 					return OutputType{};
@@ -734,7 +734,7 @@ namespace FLY_NAMESPACE
 			const std::string traitFunctionName = Internal::GetNodeTypeManager().GetShortName(traitObjectNodeTypeID);
 
 			NodeCreationData nodeCreationData;
-			nodeCreationData.mName = trait.mName + "/" + traitFunctionName + " (" + Internal::GetDataTypeManager().GetName(overloadedTypeID) + ")";
+			nodeCreationData.mName = trait.mName + "/" + traitFunctionName + " (" + Internal::GetDataTypeManager().Find(overloadedTypeID)->Name() + ")";
 			nodeCreationData.mTraitID = traitID;
 
 
@@ -757,7 +757,7 @@ namespace FLY_NAMESPACE
 						{
 							continue;
 						}
-						if (Internal::GetPinType(aPinTypeIDs1[i]).mGenericDataTypeID != Internal::GetPinType(aPinTypeIDs2[i]).mGenericDataTypeID)
+						if (Internal::GetPinType(aPinTypeIDs1[i]).GetDataTypeID() != Internal::GetPinType(aPinTypeIDs2[i]).GetDataTypeID())
 						{
 							return false;
 						}
@@ -766,11 +766,11 @@ namespace FLY_NAMESPACE
 					return true;
 				};
 
-			if (!areParameterTypesEqual(traitObjectNodeType.mNodeRecipe.mInputPinTypeIDs, createdNodeType.mNodeRecipe.mInputPinTypeIDs, 1))
+			if (!areParameterTypesEqual(traitObjectNodeType.GetInputPinTypeIDs(), createdNodeType.GetInputPinTypeIDs(), 1))
 			{
 				assert(false && "Input Parameter types are not equal");
 			}
-			if (!areParameterTypesEqual(traitObjectNodeType.mNodeRecipe.mOutputPinTypeIDs, createdNodeType.mNodeRecipe.mOutputPinTypeIDs))
+			if (!areParameterTypesEqual(traitObjectNodeType.GetOutputPinTypeIDs(), createdNodeType.GetOutputPinTypeIDs()))
 			{
 				assert(false && "Output Parameter types are not equal");
 			}

@@ -12,17 +12,17 @@ namespace FLY_NAMESPACE
 
 	std::string_view MemberVariableProxy::GetName() const
 	{
-		return GetVariable().mName;
+		return GetVariable().Name();
 	}
 
 	GenericDataTypeID MemberVariableProxy::GetDataTypeID() const
 	{
-		return GetVariable().mDataTypeID;
+		return GetVariable().GetDataTypeID();
 	}
 
 	size_t MemberVariableProxy::GetByteOffset() const
 	{
-		return GetVariable().mByteOffset;
+		return GetVariable().GetByteOffset();
 	}
 
 	const DataType& MemberVariableProxy::GetParentDataType() const
@@ -32,6 +32,6 @@ namespace FLY_NAMESPACE
 
 	const Variable& MemberVariableProxy::GetVariable() const
 	{
-		return Internal::GetDataTypeManager().Find(mParentDataTypeID)->mVariableContainer.mVariables[mMemberIndex];
+		return Internal::GetDataTypeManager().Find(mParentDataTypeID)->GetVariableContainer().GetVariable(mMemberIndex);
 	}
 }

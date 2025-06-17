@@ -22,37 +22,37 @@ namespace FLY_NAMESPACE
 
 	const std::vector<PinID>& PinProxy::GetConnectedPinIDs() const
 	{
-		return GetPin().mConnectedPinIDs;
+		return GetPin().GetConnectedPinIDs();
 	}
 
 	GenericDataTypeID PinProxy::GetDataTypeID() const
 	{
-		return GetPinType().mGenericDataTypeID;
+		return GetPinType().GetDataTypeID();
 	}
 
 	std::string_view PinProxy::GetPinTypeName() const
 	{
 		const PinType& pinType = GetPinType();
-		if (pinType.mName == TypeIdentifierStr)
+		if (pinType.GetName() == TypeIdentifierStr)
 		{
-			return Internal::GetDataTypeManager().GetName(pinType.mGenericDataTypeID);
+			return Internal::GetDataTypeManager().GetName(pinType.GetDataTypeID());
 		}
-		return pinType.mName;
+		return pinType.GetName();
 	}
 
-	eFlowType PinProxy::GetFlowType() const
+	eIODirection PinProxy::GetIODirection() const
 	{
-		return GetPinType().mFlowType;
+		return GetPinType().GetIODirection();
 	}
 
 	NodeID PinProxy::GetNodeID() const
 	{
-		return GetPin().mNodeID;
+		return GetPin().GetNodeID();
 	}
 
 	PinTypeID PinProxy::GetPinTypeID() const
 	{
-		return GetPin().mTypeID;
+		return GetPin().GetTypeID();
 	}
 
 	PinID PinProxy::GetID() const
@@ -72,40 +72,40 @@ namespace FLY_NAMESPACE
 
 	bool PinProxy::IsViewAndEditable() const
 	{
-		return GenericDataTypeProxy(GetPinType().mGenericDataTypeID).IsViewAndEditable();
+		return GenericDataTypeProxy(GetPinType().GetDataTypeID()).IsViewAndEditable();
 	}
 
 	bool PinProxy::IsViewable() const
 	{
-		return GenericDataTypeProxy(GetPinType().mGenericDataTypeID).IsViewable();
+		return GenericDataTypeProxy(GetPinType().GetDataTypeID()).IsViewable();
 	}
 
 	bool PinProxy::IsSplitable() const
 	{
 		const Pin& pin = GetPin();
-		return !pin.mIsSplit && !pin.mSubPinIDs.empty() && pin.mConnectedPinIDs.empty();
+		return !pin.IsSplit() && !pin.GetSplitPinIDs().empty() && pin.GetConnectedPinIDs().empty();
 	}
 
 	bool PinProxy::IsRecombinable() const
 	{
 		const Pin& pin = GetPin();
-		if (pin.mParentPinID == InvalidID<PinID>())
+		if (pin.GetParentPinID() == InvalidID<PinID>())
 		{
 			return false;
 		}
-		return Internal::GetPin(pin.mParentPinID, Internal::GetNodeGraph(mNodeGraphVariant)).mIsSplit;
+		return Internal::GetNodeGraph(mNodeGraphVariant).GetPin(pin.GetParentPinID()).IsSplit();
 	}
 
-	template<Predicate<const Pin&> Predicate>
+	template<IsPredicate<const Pin&> Predicate>
 	std::vector<PinProxy> GetPinsFiltered(Predicate&& aPredicate, const NodeGraphProxy& aNodeGraphProxy)
 	{
 		std::vector<PinProxy> pinProxys;
 		const NodeGraph& nodeGraph = aNodeGraphProxy.GetNodeGraph();
-		pinProxys.reserve(nodeGraph.mPins.size());
+		pinProxys.reserve(nodeGraph.GetPinCount());
 
-		for (PinID pinID{ 0 }; pinID < nodeGraph.mPins.size(); ++pinID)
+		for (PinID pinID{ 0 }; pinID < nodeGraph.GetPinCount(); ++pinID)
 		{
-			const Pin& pin = nodeGraph.mPins[pinID];
+			const Pin& pin = nodeGraph.GetPin(pinID);
 			if (aPredicate(pin))
 			{
 				pinProxys.push_back(PinProxy(pinID, aNodeGraphProxy));
@@ -117,15 +117,15 @@ namespace FLY_NAMESPACE
 
 	std::vector<PinProxy> PinProxy::GetPotentialConnections() const
 	{
-		const eFlowType flowType = GetFlowType();
+		const eIODirection ioDirection = GetIODirection();
 		const GenericDataTypeID dataTypeID = GetDataTypeID();
 		return GetPinsFiltered(
-			[flowType, dataTypeID](const Pin& aPin) -> bool
+			[ioDirection, dataTypeID](const Pin& aPin) -> bool
 			{
-				const PinType& pinType = Internal::GetPinType(aPin.mTypeID);
-				const bool a = aPin.mConnectedPinIDs.empty() && pinType.mFlowType == InvertFlowType(flowType);
+				const PinType& pinType = Internal::GetPinType(aPin.GetTypeID());
+				const bool a = aPin.GetConnectedPinIDs().empty() && pinType.GetIODirection() == InvertIODirection(ioDirection);
 
-				return a && Internal::AreDataTypesLinkable(SelectByFlowType(flowType, dataTypeID, pinType.mGenericDataTypeID), SelectByFlowType(flowType, pinType.mGenericDataTypeID, dataTypeID));
+				return a && Internal::AreDataTypesLinkable(SelectByIODirection(ioDirection, dataTypeID, pinType.GetDataTypeID()), SelectByIODirection(ioDirection, pinType.GetDataTypeID(), dataTypeID));
 			},
 			NodeGraphProxy(mNodeGraphVariant)
 		);
@@ -178,7 +178,7 @@ namespace FLY_NAMESPACE
 
 	void PinProxy::RecombineParentPin(CommandTracker* const aCommandTracker)
 	{
-		Internal::RecombinePin(GetPin().mParentPinID, Internal::GetNodeGraph(mNodeGraphVariant), aCommandTracker);
+		Internal::RecombinePin(GetPin().GetParentPinID(), Internal::GetNodeGraph(mNodeGraphVariant), aCommandTracker);
 	}
 
 	PinProxy::operator bool() const
@@ -188,13 +188,13 @@ namespace FLY_NAMESPACE
 
 	const Pin& PinProxy::GetPin() const
 	{
-		return NodeGraphProxy(mNodeGraphVariant).GetNodeGraph().mPins.at(mPinID);
+		return NodeGraphProxy(mNodeGraphVariant).GetNodeGraph().GetPin(mPinID);
 	}
 
 	const PinType& PinProxy::GetPinType() const
 	{
 		const Pin& pin = GetPin();
-		return Internal::GetPinTypeManager().GetPinType(pin.mTypeID);
+		return Internal::GetPinTypeManager().GetPinType(pin.GetTypeID());
 	}
 
 	bool operator==(const PinProxy& a, const PinProxy& b)

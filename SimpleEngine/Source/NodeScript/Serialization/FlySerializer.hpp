@@ -7,7 +7,7 @@ namespace FLY_NAMESPACE
 {
 	class Class;
 	class Struct;
-	struct DataType;
+	class DataType;
 
 	namespace Internal
 	{

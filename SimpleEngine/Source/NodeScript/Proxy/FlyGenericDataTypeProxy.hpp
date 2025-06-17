@@ -8,6 +8,7 @@ namespace FLY_NAMESPACE
 {
 
 	class DataTypeProxy;
+	class DataType;
 
 	class GenericDataTypeProxy final
 	{

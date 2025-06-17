@@ -8,7 +8,7 @@
 namespace FLY_NAMESPACE
 {
 
-	struct DataType;
+	class DataType;
 
 	class DataTypeProxy final
 	{

@@ -13,7 +13,7 @@ namespace FLY_NAMESPACE
 	public:
 
 		NodeTypeProxy() = default;
-		explicit NodeTypeProxy(NodeTypeID anID);
+		explicit NodeTypeProxy(NodeTypeID aID);
 
 		[[nodiscard]] const std::string& GetName() const;
 		[[nodiscard]] std::string GetShortName() const;
@@ -35,7 +35,7 @@ namespace FLY_NAMESPACE
 	private:
 
 		const NodeType& GetNodeType() const;
-		std::vector<PinTypeProxy> GetPinTypes(eFlowType aFlowType) const;
+		std::vector<PinTypeProxy> GetPinTypes(eIODirection aIODirection) const;
 
 	private:
 

@@ -5,7 +5,7 @@
 namespace FLY_NAMESPACE
 {
 	class CommandTracker;
-	struct Link;
+	class Link;
 
 	class LinkProxy final
 	{

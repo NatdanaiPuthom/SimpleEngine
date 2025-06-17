@@ -7,10 +7,75 @@ namespace FLY_NAMESPACE
 {
 
 	template<typename...>
-	struct TypeList { constexpr TypeList() {} };
+	struct TypeList { };
+
+	template<auto>
+	struct Info
+	{
+		constexpr auto friend get(Info);
+	};
+
+	template<typename T>
+	struct Type
+	{
+		using value_type = T;
+		static void id() {}
+
+		constexpr auto friend get(Info<id>) { return Type{}; }
+	};
+
+	template<typename T>
+	constexpr auto meta = Type<T>::id;
+
+	template<auto meta>
+	using TypeOf = typename decltype(get(Info<meta>{}))::value_type;
+
+	constexpr auto FindIndex(auto t, const std::ranges::range auto& ts) -> std::size_t
+	{
+		for (size_t i = 0; i < size(ts); i++)
+		{
+			if (ts[i] == t)
+			{
+				return i;
+			}
+		}
+		return size(ts);
+	}
+
+	template<typename T, typename... Ts>
+	constexpr std::size_t FindIndexMeta()
+	{
+		return FindIndex(meta<T>, std::array{ meta<Ts>... });
+	}
+
+	template<std::size_t Index, typename... Ts>
+	struct TypeAt
+	{
+		using type = TypeOf < std::array{ meta<Ts>... }[Index] > ;
+	};
+
+	template<typename A, template<typename...> typename B> struct mp_rename_impl;
+
+	template<template<typename...> typename A, typename... T, template<typename...> typename B>
+	struct mp_rename_impl<A<T...>, B>
+	{
+		using type = B<T...>;
+	};
+
+	template<typename A, template<typename...> typename B>
+	using mp_rename = typename mp_rename_impl<A, B>::type;
+
+	template<class L> struct mp_size_impl;
+
+	template<template<class...> class L, class... T> struct mp_size_impl<L<T...>>
+	{
+		using type = std::integral_constant<std::size_t, sizeof...(T)>;
+	};
+
+	template<class L> using mp_size = typename mp_size_impl<L>::type;
 
 	template <typename... Types>
-	concept EmptyParameterPack = sizeof...(Types) == 0;
+	concept EmptyParams = sizeof...(Types) == 0;
 
 	template<typename T>
 	concept Decayed = std::is_same_v<std::remove_cv_t<std::remove_reference_t<T>>, T>;
@@ -203,7 +268,7 @@ namespace FLY_NAMESPACE
 	};
 
 	template<typename T, typename... Args>
-	concept Predicate = ReturnsType<T, bool, Args...>;
+	concept IsPredicate = ReturnsType<T, bool, Args...>;
 
 	template<typename T, typename Base>
 	concept IsBaseOf = std::is_base_of_v<Base, T>;
@@ -419,24 +484,10 @@ namespace FLY_NAMESPACE
 		DefaultConstructible<T>&&
 		Copyable<T>;
 
-	template<typename Type, typename CurrentType, typename... Types>
+	template<typename Type, typename... Types>
 	constexpr bool PackContains()
 	{
-		if constexpr (std::same_as<Type, CurrentType>)
-		{
-			return true;
-		}
-		else
-		{
-			if constexpr (EmptyParameterPack<Types...>)
-			{
-				return false;
-			}
-			else
-			{
-				return PackContains<Type, Types...>();
-			}
-		}
+		return std::_Is_any_of_v<Type, Types...>;
 	}
 
 	template<typename ClassType, typename PropertyType>

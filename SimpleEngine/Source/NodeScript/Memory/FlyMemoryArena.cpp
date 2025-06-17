@@ -169,11 +169,11 @@ namespace FLY_NAMESPACE
 		DataType* dataType = GetDataType(aDataTypeID);
 		assert(dataType);
 
-		release = dataType->mInterface.fundamental.release;
-		copy = dataType->mInterface.fundamental.copy;
+		release = dataType->GetInterface().GetReleaseFunction().GetPtr();
+		copy = dataType->GetInterface().GetCopyFunction().GetPtr();
 
 #ifdef FLY_DEBUG
-		mTypeInfo = dataType->mTypeInfo;
+		mTypeInfo = dataType->GetTypeInfo();
 #endif
 	}
 

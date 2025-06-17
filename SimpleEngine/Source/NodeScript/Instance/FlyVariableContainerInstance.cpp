@@ -9,14 +9,14 @@ namespace FLY_NAMESPACE
 
 	VariableContainerInstance::VariableContainerInstance(const VariableContainer& aVariableContainer)
 		: mVariableContainer(&aVariableContainer)
-		, mVariableInstances(aVariableContainer.mVariables.size())
+		, mVariableInstances(aVariableContainer.GetVariableCount())
 	{
-		for (VarID varID{ 0 }; varID < aVariableContainer.mVariables.size(); ++varID)
+		for (VarID varID{ 0 }; varID < aVariableContainer.GetVariableCount(); ++varID)
 		{
-			const Variable& variable = aVariableContainer.mVariables[varID];
+			const Variable& variable = aVariableContainer.GetVariable(varID);
 			VariableInstance& variableInstance = mVariableInstances[varID];
-			variableInstance.mDefaultValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
-			variableInstance.mRuntimeValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
+			variableInstance.mDefaultValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.GetDataTypeID(), mMemoryArena, variable.GetDefaultValueDataPtr());
+			variableInstance.mRuntimeValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.GetDataTypeID(), mMemoryArena, variable.GetDefaultValueDataPtr());
 		}
 	}
 
@@ -53,24 +53,24 @@ namespace FLY_NAMESPACE
 	void VariableContainerInstance::Mirror()
 	{
 		const size_t previousSize = mVariableInstances.size();
-		mVariableInstances.resize(mVariableContainer->mVariables.size());
-		for (VarID varID{ previousSize }; varID < mVariableContainer->mVariables.size(); ++varID)
+		mVariableInstances.resize(mVariableContainer->GetVariableCount());
+		for (VarID varID{ previousSize }; varID < mVariableContainer->GetVariableCount(); ++varID)
 		{
-			const Variable& variable = mVariableContainer->mVariables[varID];
+			const Variable& variable = mVariableContainer->GetVariable(varID);
 			VariableInstance& variableInstance = mVariableInstances[varID];
 
-			variableInstance.mDefaultValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
-			variableInstance.mRuntimeValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.mDataTypeID, mMemoryArena, variable.mDefaultValueDataPtr);
+			variableInstance.mDefaultValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.GetDataTypeID(), mMemoryArena, variable.GetDefaultValueDataPtr());
+			variableInstance.mRuntimeValueDataPtr = Internal::GetDataTypeManager().AllocateData(variable.GetDataTypeID(), mMemoryArena, variable.GetDefaultValueDataPtr());
 		}
 	}
 
 	void VariableContainerInstance::InitRuntime()
 	{
-		for (VarID varID{ 0 }; varID < mVariableContainer->mVariables.size(); ++varID)
+		for (VarID varID{ 0 }; varID < mVariableContainer->GetVariableCount(); ++varID)
 		{
-			const Variable& variable = mVariableContainer->mVariables[varID];
+			const Variable& variable = mVariableContainer->GetVariable(varID);
 			VariableInstance& variableInstance = mVariableInstances[varID];
-			Internal::GetDataTypeManager().CopyData(variable.mDataTypeID, variableInstance.mRuntimeValueDataPtr, variableInstance.mDefaultValueDataPtr);
+			Internal::GetDataTypeManager().CopyData(variable.GetDataTypeID(), variableInstance.mRuntimeValueDataPtr, variableInstance.mDefaultValueDataPtr);
 		}
 	}
 
@@ -91,15 +91,15 @@ namespace FLY_NAMESPACE
 			const VariableInstance& variableInstanceA = a.mVariableInstances[i];
 			const VariableInstance& variableInstanceB = b.mVariableInstances[i];
 
-			const Variable& variableA = a.mVariableContainer->mVariables[i];
-			const Variable& variableB = b.mVariableContainer->mVariables[i];
+			const Variable& variableA = a.mVariableContainer->GetVariable(i);
+			const Variable& variableB = b.mVariableContainer->GetVariable(i);
 
-			if (variableA.mDataTypeID != variableB.mDataTypeID)
+			if (variableA.GetDataTypeID() != variableB.GetDataTypeID())
 			{
 				return false;
 			}
 
-			if (!Internal::GetDataTypeManager().DataEqualsTo(variableA.mDataTypeID, variableInstanceA.mDefaultValueDataPtr, variableInstanceB.mDefaultValueDataPtr))
+			if (!Internal::GetDataTypeManager().DataEqualsTo(variableA.GetDataTypeID(), variableInstanceA.mDefaultValueDataPtr, variableInstanceB.mDefaultValueDataPtr))
 			{
 				return false;
 			}

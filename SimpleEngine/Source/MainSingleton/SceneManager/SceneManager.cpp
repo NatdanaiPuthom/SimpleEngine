@@ -47,6 +47,14 @@ namespace Simpleton
 		}
 	}
 
+	void SceneManager::EarlyRender()
+	{
+		if (myIsPlaying)
+		{
+			myECSs.at(myCurrentSceneInfo->id).EarlyRender();
+		}
+	}
+
 	void SceneManager::Render()
 	{
 		myECSs.at(myCurrentSceneInfo->id).Render();

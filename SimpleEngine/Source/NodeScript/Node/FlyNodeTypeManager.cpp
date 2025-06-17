@@ -70,7 +70,7 @@ namespace FLY_NAMESPACE
 
 	Node NodeTypeManager::CreateNode(NodeGraph& aNodeGraph, const NodeID aNodeID, const NodeTypeID aNodeTypeID)
 	{
-		return mNodeTypes.at(aNodeTypeID).mNodeRecipe.mCreateFunction(aNodeID, aNodeTypeID, aNodeGraph);
+		return GetNodeType(aNodeTypeID).GetCreateFunction().Invoke(aNodeID, aNodeTypeID, aNodeGraph);
 	}
 
 	bool NodeTypeManager::CanCreateOperatorNode(const eNodeOperatorTrait aTrait, const DataTypeID aDataTypeID)
@@ -169,14 +169,14 @@ namespace FLY_NAMESPACE
 		return NodeTypeID{};
 	}
 
-	const std::string& NodeTypeManager::GetFullName(const NodeTypeID anID) const
+	const std::string& NodeTypeManager::GetFullName(const NodeTypeID aID) const
 	{
-		return mNodeTypes.at(anID).mNodeRecipe.mName;
+		return GetNodeType(aID).GetName();
 	}
 
-	std::string NodeTypeManager::GetShortName(const NodeTypeID anID) const
+	std::string NodeTypeManager::GetShortName(const NodeTypeID aID) const
 	{
-		const std::string& fullName = GetFullName(anID);
+		const std::string& fullName = GetFullName(aID);
 		if (fullName.find_last_of('/') != std::string::npos)
 		{
 			return fullName.substr(fullName.find_last_of('/') + 1, fullName.length());
@@ -188,9 +188,9 @@ namespace FLY_NAMESPACE
 		}
 	}
 
-	std::string NodeTypeManager::GetNameDirectory(const NodeTypeID anID) const
+	std::string NodeTypeManager::GetNameDirectory(const NodeTypeID aID) const
 	{
-		const std::string& fullName = GetFullName(anID);
+		const std::string& fullName = GetFullName(aID);
 		if (fullName.find_last_of('/') != std::string::npos)
 		{
 			return fullName.substr(0, fullName.find_last_of('/') + 1);
@@ -218,9 +218,9 @@ namespace FLY_NAMESPACE
 		const FunctionID id{ mFunctions.size() };
 		const HeapObject<Function>& function = mFunctions.emplace_back(HeapObject<Function>(aName));
 
-		mToFunctionID.emplace(function->mCallerNodeTypeID, id);
-		mToFunctionID.emplace(function->mInputNodeTypeID, id);
-		mToFunctionID.emplace(function->mOutputNodeTypeID, id);
+		mToFunctionID.emplace(function->GetCallerNodeTypeID(), id);
+		mToFunctionID.emplace(function->GetInputNodeTypeID(), id);
+		mToFunctionID.emplace(function->GetOutputNodeTypeID(), id);
 
 		return id;
 	}
@@ -243,15 +243,16 @@ namespace FLY_NAMESPACE
 
 	NodeType NodeTypeManager::CreateInvalidNodeType()
 	{
-		NodeRecipe recipe
-		{
-			.mCreateFunction = [](const NodeID, const NodeTypeID, NodeGraph&)->Node {return Node(NodeTypeID{ 0 }, std::array<PinID, 0>(), std::array<PinID, 0>()); },
-			.mExecuteFunction = [](const NodeExecutionData&, InternalExecutionContext&) {},
-			.mTraits = eNodeTrait::Invalid,
-			.mName = "Invalid Node"
-		};
+		CreateNodeFunction createNodeFunction{ [](const NodeID, const NodeTypeID, NodeGraph&) -> Node { return Node(NodeTypeID{ 0 }, std::array<PinID, 0>(), std::array<PinID, 0>()); } };
+		ExecuteNodeFunction executeNodeFunction{ [](const NodeExecutionData&, InternalExecutionContext&) {} };
+		eNodeTrait nodeTrait = eNodeTrait::Invalid;
+		std::string name = "Invalid Node";
 
-		return NodeType{ .mNodeRecipe = recipe };
+		NodeType nodeType(name, createNodeFunction, executeNodeFunction, nullptr, nodeTrait, 
+			InvalidID<EventID>(), InvalidID<DataTypeID>(), {}, {}, InvalidID<MemoryPoolID>(), 
+			InvalidID<DataTypeID>(), InvalidID<TraitID>(), eNodeOperatorTrait::None);
+
+		return nodeType;
 	}
 
 

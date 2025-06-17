@@ -74,7 +74,7 @@ namespace FLY_NAMESPACE
 		return eEndCode::Ended;
 	}
 
-	const std::string& CompositeCommand::GetName()
+	const std::string& CompositeCommand::GetName() const
 	{
 		return mName;
 	}

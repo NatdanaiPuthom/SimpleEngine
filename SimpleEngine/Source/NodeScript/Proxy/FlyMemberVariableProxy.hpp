@@ -4,8 +4,8 @@
 namespace FLY_NAMESPACE
 {
 
-	struct DataType;
-	struct Variable;
+	class DataType;
+	class Variable;
 
 	class MemberVariableProxy final
 	{

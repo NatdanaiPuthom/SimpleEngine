@@ -33,6 +33,7 @@ namespace ECS
 		void Render();
 
 		void EarlyUpdate();
+		void EarlyRender();
 		void FixedUpdate();
 		void LateUpdate();
 		void LateRender();
