@@ -6,6 +6,7 @@ namespace Editor
 	MenuItemPopUp::MenuItemPopUp(const char* aName, std::function<void()> aCallback) : MenuItemBase(aName)
 		, myIsActive(false)
 	{
+		UNREFERENCED_PARAMETER(aCallback);
 	}
 
 	void MenuItemPopUp::Render()
