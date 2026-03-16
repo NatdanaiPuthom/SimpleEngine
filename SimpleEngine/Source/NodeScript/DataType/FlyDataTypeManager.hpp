@@ -685,7 +685,7 @@ namespace FLY_NAMESPACE
 	template<size_t BufferCapacity>
 	inline ClassInstance* DataTypeManager::AllocateClassInstance(const ClassID aClassID, MemoryArena<BufferCapacity>& aArena) const
 	{
-		return &aArena.Allocate<ClassInstance>(aClassID);
+		return &aArena.template Allocate<ClassInstance>(aClassID);
 	}
 
 	template<size_t BufferCapacity>
