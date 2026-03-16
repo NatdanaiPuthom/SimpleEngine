@@ -10,6 +10,7 @@ workspace "SimpleEngine" -- Workspace, is not same as Project. Anything configur
 	cdialect "C17"
 	warnings "Extra" -- Global Highest Warning Level
 	objdir "Temp" -- Location for garbage created by Visual Studio
+	toolset "msc-v145"
 
 	local bin_dir = path.join(_SCRIPT_DIR, "Bin/") -- Returns absolute path to where this premake file is plus "Bin/" example -> C:\Users\panda\Desktop\SimpleEngine\Bin\
 	local shader_dir = path.join(_SCRIPT_DIR, "Bin/Shaders/") 
