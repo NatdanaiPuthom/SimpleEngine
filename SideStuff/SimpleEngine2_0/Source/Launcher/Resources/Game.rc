@@ -1,3 +1,0 @@
-#include "resource.h"
-
-IDI_ICON_HAMSTER               ICON                    "..\\..\\..\\Bin\\Assets\\Icon\\Hamster.ico"
