@@ -4,7 +4,7 @@
 2. Have Visual Studio 2026 ready.
 3. Run **generate_project.bat**
 4. Open newly generated **SimpleEngine.slnx**.
-5. Build/Rebuild the project. (Depending on the configuration, the folder will be created as Debug, Release or Retail where .exe will be. Example Bin/Debug/SimpleEngine_Debug.exe)
+5. Build/Rebuild the project.
 6. Run Local Windows Debugger or .exe from Bin.
  
 Hardware specifications:
